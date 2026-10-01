@@ -1,0 +1,13 @@
+# Private / non-public material (launch & marketing notes, demo scripts)
+private/
+
+# Runtime data & secrets
+data/
+.env
+*.local.json
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
