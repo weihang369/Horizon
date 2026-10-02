@@ -1,5 +1,5 @@
 // S07 1:1 layout (UXA §2.2, doc 03 §5, R14). Stage column 600 / 520 with the hero card bleeding off the bottom,
-// name plate at y = 96 over the card's right edge with the 10 px energy bar under it; log column 840 / 760 with an
+// name plate at y = 96 over the card's left edge (the right carries the thinking bubble) with the 10 px energy bar under it; log column 840 / 760 with an
 // 8° diagonal left cut overlapping the stage by ~120 px; the composer lives inside the log column.
 // Insight (O08) compresses the STAGE, never the log: stage 440 / 360, log ≥ 520 (R14).
 import { useMemo, type CSSProperties } from "react";

@@ -9,8 +9,9 @@
     radial-gradient(circle, color-mix(in srgb, var(--paper-50) 6%, transparent) 1.1px, transparent 1.5px) 0 0 / 9px 9px,
     var(--ink-900);
 }
-.head { display: flex; align-items: center; gap: 24px; padding: 20px 48px 12px; min-width: 0; }
-@media (max-width: 1380px) { .head { padding: 14px 24px 8px; gap: 16px; } }
+/* Right padding keeps the step rail clear of the global music chip (top-right, ~320 px). */
+.head { display: flex; align-items: center; gap: 24px; padding: 20px 340px 12px 48px; min-width: 0; }
+@media (max-width: 1380px) { .head { padding: 14px 330px 8px 24px; gap: 12px; } .title { zoom: 0.78; } .rail { margin-left: 4px; } }
 .title { flex: none; }
 .rail { display: flex; gap: 6px; margin: 0 0 0 16px; padding: 0; list-style: none; }
 .railStep {

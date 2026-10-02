@@ -61,7 +61,8 @@
 .plate {
   position: absolute;
   top: 96px;
-  left: calc(var(--card-x) + var(--card-w) - 320px + var(--card-shift));
+  /* Anchored over the card's LEFT edge: the right side carries the thinking bubble at (74%, 14%) (VMD §2.5). */
+  left: 16px;
   width: 320px;
   z-index: 3;
   display: flex;
@@ -71,9 +72,9 @@
   transition: left var(--t-slow) var(--ease-out);
 }
 @media (max-width: 1360px) {
-  .plate { width: 300px; left: calc(var(--card-x) + var(--card-w) - 300px + var(--card-shift)); }
+  .plate { width: 270px; left: 8px; }
 }
-.pushed .plate { left: 24px; }
+.pushed .plate { left: 12px; }
 .energyRow {
   display: flex;
   align-items: center;
@@ -141,3 +142,14 @@
 }
 .log { flex: 1; min-height: 0; padding-bottom: var(--log-pad); }
 .dock { flex: none; }
+
+/* The 8° log cut clips the card's bottom-right corner, so the "PLACEHOLDER · EMOTION" tape (R8) moves to the
+   bottom-left here. Matches the kit's CSS-module class by its local name; without a match it stays where it was. */
+.card :global([class*="phTape"]) {
+  right: auto;
+  left: calc(var(--frame, 8px) + 10px);
+}
+/* Insight push translates the card −80 px behind the stage edge: keep the tape on the visible part. */
+.pushed .card :global([class*="phTape"]) {
+  left: max(calc(var(--frame, 8px) + 10px), calc(var(--frame, 8px) + 10px - var(--card-shift) - var(--card-x)));
+}

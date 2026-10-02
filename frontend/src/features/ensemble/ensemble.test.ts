@@ -5,7 +5,7 @@ import {
   activeSpeakerId, debateColumns, frontFirst, lastSpeakerId, latestReactions, railSteps, recentSpeakerIn, roundBannerLabel,
   rubricRows, splitWings, verdictHeadline,
 } from "./shared";
-import { autoAssign, castLimits, estimateRoundSec, suggestMotions } from "./setupLogic";
+import { autoAssign, castLimits, defaultTurnLength, estimateRoundSec, setupConfigOk, suggestMotions, verdictOptionsFor } from "./setupLogic";
 
 const msg = (id: string, cid?: string, extra: Partial<Message> = {}): Message => ({
   id, sessionId: "ses_x", seq: 1, author: cid ? { type: "character", characterId: cid } : { type: "user" }, kind: "chat",
@@ -99,5 +99,25 @@ describe("setup", () => {
     expect(estimateRoundSec(3, "debate")).toBe(21);
     expect(suggestMotions("Meridian")).toEqual(suggestMotions("Meridian"));
     expect(new Set(suggestMotions("x")).size).toBe(3);
+  });
+  it("turn length defaults to Short with 5 debaters", () => {
+    expect(defaultTurnLength(4)).toBe("medium");
+    expect(defaultTurnLength(5)).toBe("short");
+  });
+  it("panel offers no 'You decide'", () => {
+    expect(verdictOptionsFor("panel")).toEqual(["arbiter", "none"]);
+    expect(verdictOptionsFor("two_sided")).toContain("user");
+  });
+  it("start gate: motion + one per side (debate), premise (watch), nothing for group (MULTI-05 AC1, MULTI-09)", () => {
+    const d = { motion: "THW tax sugar", format: "two_sided" as const, cast: ["a", "b"], sides: { a: "prop" as const, b: "opp" as const }, premise: "" };
+    expect(setupConfigOk("debate", d)).toBe(true);
+    expect(setupConfigOk("debate", { ...d, motion: "  " })).toBe(false);
+    expect(setupConfigOk("debate", { ...d, motion: "x".repeat(201) })).toBe(false);
+    expect(setupConfigOk("debate", { ...d, sides: { a: "prop", b: "prop" } })).toBe(false);
+    expect(setupConfigOk("debate", { ...d, format: "panel", sides: { a: "prop", b: "prop" } })).toBe(true);
+    expect(setupConfigOk("watch", { ...d, premise: "Rainy Sunday" })).toBe(true);
+    expect(setupConfigOk("watch", { ...d, premise: "x".repeat(301) })).toBe(false);
+    expect(setupConfigOk("group", d)).toBe(true);
+    expect(setupConfigOk(undefined, d)).toBe(false);
   });
 });

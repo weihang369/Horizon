@@ -233,6 +233,7 @@ function Reveal({ verdict, cfg, cols, chars }: RevealProps) {
                 </h3>
                 <ul>
                   {x.points.map((pt, j) => <li key={j}>{pt}</li>)}
+                  {x.points.length === 0 && <li className={s.muted}>No points recorded before the debate ended.</li>}
                 </ul>
               </div>
             ))}
@@ -354,7 +355,7 @@ function YouDecide({ cols, chars, list, sessionId }: { cols: { prop: string[]; o
             <div className={s.decideCast}>
               {cols[side].map((cid) => {
                 const c = chars[cid];
-                return c ? <PortraitCard key={cid} character={c} emotion="neutral" size="thumb" width={84} /> : null;
+                return c ? <PortraitCard key={cid} character={c} emotion="thinking" size="card" width="var(--d-card)" parallax={false} /> : null;
               })}
             </div>
             <ul className={s.quotes}>

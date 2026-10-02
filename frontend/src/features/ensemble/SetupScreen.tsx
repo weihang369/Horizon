@@ -17,8 +17,14 @@ import { sessionStore } from "../../stores/session";
 import { PaletteScope } from "../../theme";
 import { Button, EmptyState, RansomText, Segmented, Select, Skeleton, Tape, TextArea, TextField, Toggle, cx } from "../../ui";
 import { PACE_OPTIONS, firstName } from "./shared";
-import { autoAssign, castLimits, estimateRoundSec, suggestMotions } from "./setupLogic";
+import { autoAssign, castLimits, defaultTurnLength, estimateRoundSec, setupConfigOk, suggestMotions, verdictOptionsFor } from "./setupLogic";
 import s from "./SetupScreen.module.css";
+
+const VERDICT_LABEL: Record<DebateConfig["verdictBy"], (f: DebateConfig["format"]) => string> = {
+  arbiter: (f) => (f === "panel" ? "Arbiter summary" : "Arbiter (AI)"),
+  user: () => "You decide",
+  none: () => "None",
+};
 
 type SetupRoute = Extract<Route, { name: "setup" }>;
 type Mode = NonNullable<SetupRoute["mode"]>;
@@ -85,10 +91,7 @@ export function SetupScreen({ route }: { route: SetupRoute }) {
 
   const propN = cast.filter((id) => sides[id] === "prop").length;
   const oppN = cast.filter((id) => sides[id] === "opp").length;
-  const configOk =
-    mode === "group" ? true
-      : mode === "debate" ? motion.trim().length > 0 && motion.length <= 200 && (format === "panel" || (propN >= 1 && oppN >= 1))
-        : mode === "watch" ? premise.trim().length > 0 && premise.length <= 300 : false;
+  const configOk = setupConfigOk(mode, { motion, format, cast, sides, premise });
   const castOk = cast.length >= limits.min && cast.length <= limits.max;
 
   const doCreate = async () => {
@@ -101,7 +104,7 @@ export function SetupScreen({ route }: { route: SetupRoute }) {
             motion: motion.trim(), format,
             ...(format === "two_sided" ? { sides: { prop: cast.filter((id) => sides[id] === "prop"), opp: cast.filter((id) => sides[id] === "opp") } } : {}),
             roundsPreset: rounds, phases: rounds === "quick" ? ["opening", "closing"] : ["opening", "rebuttal", "closing"],
-            turnLength: turnLength ?? (cast.length >= 5 ? "short" : "medium"), moderator, verdictBy,
+            turnLength: turnLength ?? defaultTurnLength(cast.length), moderator, verdictBy,
             rubric: [{ id: "evidence", label: "Evidence" }, { id: "rebuttal", label: "Rebuttal" }, { id: "clarity", label: "Clarity" }, { id: "persuasion", label: "Persuasion" }],
             autoAdvance: true, pauseMs: 1500,
           } satisfies DebateConfig)
@@ -265,7 +268,7 @@ export function SetupScreen({ route }: { route: SetupRoute }) {
                   <Row label="Turn length">
                     <Segmented
                       label="Turn length"
-                      value={turnLength ?? (cast.length >= 5 ? "short" : "medium")}
+                      value={turnLength ?? defaultTurnLength(cast.length)}
                       onChange={setTurnLength}
                       options={[{ value: "short", label: "Short ≈80" }, { value: "medium", label: "Medium ≈150" }, { value: "long", label: "Long ≈250" }]}
                     />
@@ -278,9 +281,7 @@ export function SetupScreen({ route }: { route: SetupRoute }) {
                       label="Verdict by"
                       value={verdictBy}
                       onChange={setVerdictBy}
-                      options={format === "panel"
-                        ? [{ value: "arbiter", label: "Arbiter summary" }, { value: "none", label: "None" }]
-                        : [{ value: "arbiter", label: "Arbiter (AI)" }, { value: "user", label: "You decide" }, { value: "none", label: "None" }]}
+                      options={verdictOptionsFor(format).map((v) => ({ value: v, label: VERDICT_LABEL[v](format) }))}
                     />
                   </Row>
                 </>

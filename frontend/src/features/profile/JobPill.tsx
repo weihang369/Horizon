@@ -91,7 +91,8 @@ function GlobalJobs({ className }: { className?: string }) {
   const live = useJob(head?.id).data;
   const c = useCharacter(head?.characterId).data;
   // The wizard shows its own rail pips and the profile its own inline pill; both own the bottom-left corner.
-  if (!head || route.name === "wizard" || route.name === "profile") return null;
+  // Session and verdict own the bottom dock (transport, steering, composer), so the pill stays off the stage.
+  if (!head || route.name === "wizard" || route.name === "profile" || route.name === "session" || route.name === "verdict") return null;
   const job = live && running(live) ? live : head;
   const open = () => {
     if (!c) return;

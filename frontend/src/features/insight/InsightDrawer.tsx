@@ -153,7 +153,7 @@ function SpeakerHead({ m, c, live }: { m: Message; c?: Character; live: boolean 
 }
 
 export function InsightDrawer({ sessionId, close }: OverlayComponentProps<"O08">) {
-  const { runtime } = useSlotRuntime(sessionId);
+  const { runtime, replay } = useSlotRuntime(sessionId);
   const chars = useStore(entities, (st) => st.chars);
   const presenter = usePrefs((p) => p.presenterMode);
   const { reduced } = useMotionPrefs();
@@ -327,7 +327,7 @@ export function InsightDrawer({ sessionId, close }: OverlayComponentProps<"O08">
       <div className={s.stack} key={m.id}>
         {isChar(liveMsg) && liveMsg.id !== m.id && (
           <button type="button" className={s.liveStrip} onClick={() => selectInsight(liveMsg.id)}>
-            <span className={s.liveBadge}>● Live</span>
+            <span className={s.liveBadge}>{replay ? "● Now" : "● Live"}</span>
             <span>{nameOf(liveMsg.author.characterId!)} is replying</span>
             <span className={s.liveScan} aria-hidden="true" />
           </button>

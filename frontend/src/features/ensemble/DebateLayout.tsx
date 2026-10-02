@@ -22,7 +22,7 @@ import s from "./DebateLayout.module.css";
 
 type ColSide = "prop" | "opp";
 
-export function DebateLayout({ rt, replay, route }: LayoutProps) {
+export function DebateLayout({ rt, replay, route, insightOpen }: LayoutProps) {
   const chars = useCharMap();
   const session = rt.session!;
   const cfg = session.config as DebateConfig | null;
@@ -40,6 +40,10 @@ export function DebateLayout({ rt, replay, route }: LayoutProps) {
   const verdictReady = !!st?.verdict && (phase?.phase === "verdict" || phase?.phase === "ended");
 
   // ── Ceremonies (O16): VS on the first round, a Round banner on every later boundary ──
+  // Warm the lazy O16 chunk so the first VS lands on the phase beat, not a network round-trip later.
+  useEffect(() => {
+    void import("./VsSplash");
+  }, []);
   const phaseKey = phase && phase.phase !== "setup" && phase.phase !== "ended" ? `${phase.phase}:${phase.round}:${phase.iteration}` : null;
   useBoundary(phaseKey, seq, (_next, prev) => {
     if (!phase) return;
@@ -97,7 +101,7 @@ export function DebateLayout({ rt, replay, route }: LayoutProps) {
                 style={{ zIndex: 10 - rank } as CSSProperties}
               >
                 <NamePlate character={c} size="sm" subtitle={null} className={s.backTag} />
-                {next === cid && !speaking && <span className={s.upNext} aria-hidden="true">Up next</span>}
+                {next === cid && !speaking && !verdictReady && <span className={s.upNext} aria-hidden="true">Up next</span>}
                 <StageCard
                   sessionId={session.id}
                   character={c}
@@ -123,7 +127,7 @@ export function DebateLayout({ rt, replay, route }: LayoutProps) {
   };
 
   return (
-    <div className={s.root} data-layout="debate">
+    <div className={cx(s.root, insightOpen && s.insightOpen)} data-layout="debate">
       <div className={s.bands} aria-hidden="true">
         {rt.participants.map((p) => {
           const c = chars[p.characterId];
@@ -184,10 +188,10 @@ export function DebateLayout({ rt, replay, route }: LayoutProps) {
         </div>
       )}
 
-      <div className={cx(s.arena, hostLine && s.arenaHost)}>
+      <div className={cx(s.arena, hostLine && s.arenaHost, insightOpen && s.arenaInsight)}>
         {column("prop")}
         <div className={s.logPanel}>
-          <SessionLog rt={rt} className={s.log} />
+          <SessionLog rt={rt} className={s.log} emptyText={rt.status === "loading" ? "" : "Debaters take their marks. Opening statements begin shortly."} />
           {verdictReady && (
             <div className={s.verdictCta}>
               <Tape tone="ink" size="sm">The arbiter has spoken</Tape>

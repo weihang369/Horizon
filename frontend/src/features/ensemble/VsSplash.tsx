@@ -8,17 +8,20 @@ import type { DebateConfig } from "../../contract/types";
 import type { OverlayComponentProps } from "../../app/overlayTypes";
 import { audio } from "../../audio/engine";
 import { PortraitCard } from "../../character";
-import { playCeremony, useCeremony, useMotionPrefs } from "../../motion";
+import { getMotionPrefs, playCeremony, useCeremony, useMotionPrefs } from "../../motion";
 import { RansomText, Tape, cx } from "../../ui";
 import { debateColumns, useCharMap, useSlot } from "./shared";
 import s from "./VsSplash.module.css";
 
 const VS_MS = 1600;
 const BANNER_MS = 1500;
+/** Reduced motion: the conductor caps a ceremony at 200 ms, so the banner's end state is held this long to stay readable. */
+const REDUCED_HOLD_MS = 1200;
 let runSeq = 0;
 
 export function VsSplash({ sessionId, kind, label, close }: OverlayComponentProps<"O16">) {
   const [run, setRun] = useState<{ id: string; stage: "vs" | "round" } | null>(null);
+  const [holding, setHolding] = useState(false);
   const key = `${kind}:${label ?? ""}`;
 
   useEffect(() => {
@@ -26,7 +29,9 @@ export function VsSplash({ sessionId, kind, label, close }: OverlayComponentProp
     let handle: { skip(): void } | null = null;
     const n = ++runSeq;
     const go = async () => {
-      if (kind === "vs") {
+      // Reduced motion: no full-screen split (a 200 ms flash of colour is worse than none); the banner carries the beat.
+      const reduced = getMotionPrefs().reduced;
+      if (kind === "vs" && !reduced) {
         const id = `O16:vs:${n}`;
         setRun({ id, stage: "vs" });
         const sting = window.setTimeout(() => audio.playSfx("vs_sting"), 350);
@@ -39,12 +44,15 @@ export function VsSplash({ sessionId, kind, label, close }: OverlayComponentProp
       }
       if (!label) return close();
       const id = `O16:round:${n}`;
+      setHolding(reduced);
       setRun({ id, stage: "round" });
       const gong = window.setTimeout(() => audio.playSfx("round_gong"), 160);
       const h = playCeremony(id, { durationMs: BANNER_MS, onSkip: () => clearTimeout(gong) });
       handle = h;
-      await h.done;
+      const r = await h.done;
       clearTimeout(gong);
+      if (cancelled) return;
+      if (reduced && r !== "skipped") await holdUnlessSkipped(REDUCED_HOLD_MS, () => cancelled);
       if (!cancelled) close();
     };
     // Deferred one tick so StrictMode's mount→unmount→mount never queues a phantom ceremony.
@@ -60,7 +68,23 @@ export function VsSplash({ sessionId, kind, label, close }: OverlayComponentProp
   if (!run) return null;
   return run.stage === "vs"
     ? <VsView key={run.id} id={run.id} sessionId={sessionId} />
-    : <BannerView key={run.id} id={run.id} label={label ?? ""} />;
+    : <BannerView key={run.id} id={run.id} label={label ?? ""} holding={holding} />;
+}
+
+/** Wait `ms`, cut short by any key or pointer press (D-55: any input skips). */
+function holdUnlessSkipped(ms: number, gone: () => boolean): Promise<void> {
+  return new Promise((res) => {
+    const done = () => {
+      clearTimeout(t);
+      window.removeEventListener("keydown", done);
+      window.removeEventListener("pointerdown", done);
+      res();
+    };
+    const t = window.setTimeout(done, ms);
+    window.addEventListener("keydown", done);
+    window.addEventListener("pointerdown", done);
+    if (gone()) done();
+  });
 }
 
 /** `show` stays false while the ceremony waits in the conductor queue, so nothing animates early. */
@@ -124,8 +148,9 @@ function VsView({ id, sessionId }: { id: string; sessionId: string }) {
   );
 }
 
-function BannerView({ id, label }: { id: string; label: string }) {
-  const { show, end } = useEnd(id);
+function BannerView({ id, label, holding }: { id: string; label: string; holding: boolean }) {
+  const { show, end: ended } = useEnd(id);
+  const end = ended && !holding;
   const { reduced } = useMotionPrefs();
   if (!show) return null;
   const [round, ...rest] = label.split(":");

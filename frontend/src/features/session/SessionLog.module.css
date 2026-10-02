@@ -210,8 +210,8 @@
 .reaction {
   display: inline-flex;
   align-items: center;
-  height: 22px;
-  padding-right: 8px;
+  height: 24px;
+  padding: 0 8px 0 1px;
   gap: 5px;
   background: var(--ink-900);
   border: 1px solid color-mix(in srgb, var(--c-primary) 60%, transparent);
@@ -220,13 +220,26 @@
 }
 @keyframes rxPop { from { transform: scale(0.4); opacity: 0; } to { transform: none; opacity: 1; } }
 .rxHead {
+  position: relative;
   display: grid;
   place-items: center;
-  width: 20px;
-  height: 20px;
-  background: var(--c-primary);
+  width: 30px;
+  height: 22px;
+  overflow: hidden;
+  background: var(--c-stage, var(--ink-800));
   color: var(--c-on-primary);
   font: 400 12px/1 var(--font-display);
+  clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%);
+  box-shadow: inset 0 -2px 0 var(--c-primary);
+}
+.rxHead img {
+  position: absolute;
+  /* Eyes sit at ~43 % of the card width from its top (same crop as the speaker cut-in). */
+  left: -5px;
+  top: calc(11px - 40px * 0.433);
+  width: 40px;
+  max-width: none;
+  height: auto;
 }
 .rxIcon { font: 700 12px/1 var(--font-mono); color: var(--c-glow); }
 

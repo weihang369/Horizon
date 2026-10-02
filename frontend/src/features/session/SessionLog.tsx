@@ -51,6 +51,20 @@ export function SessionLog({ rt, variant = "chat", className, hideThinking, empt
     return isCharacterMsg(last) && last.status !== "streaming" && !last.error ? last.id : undefined;
   }, [live, rt.streamingId, mode, list]);
 
+  // Only the newest "asleep" note per character keeps its Top up · Wait actions.
+  const staleNotes = useMemo(() => {
+    const seen = new Set<string>();
+    const stale = new Set<string>();
+    for (let i = list.length - 1; i >= 0; i--) {
+      const m = list[i];
+      if (m.kind !== "system_note" || !(m.error?.code === "energy_exhausted" || /asleep/i.test(m.content))) continue;
+      const k = m.targetCharacterId ?? "";
+      if (seen.has(k)) stale.add(m.id);
+      else seen.add(k);
+    }
+    return stale;
+  }, [list]);
+
   const toBottom = useCallback((smooth = false) => {
     const el = scroller.current;
     if (!el) return;
@@ -133,6 +147,7 @@ export function SessionLog({ rt, variant = "chat", className, hideThinking, empt
               selected={m.id === selectedId}
               canRegenerate={m.id === regenId}
               fresh={!!initial.current && !initial.current.has(m.id)}
+              stale={staleNotes.has(m.id)}
               onOpenInsight={variant === "chat" ? openInsight : undefined}
             />
           ))}

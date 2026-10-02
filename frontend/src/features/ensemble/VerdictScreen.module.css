@@ -124,6 +124,8 @@
 .cards { grid-row: 2; display: flex; align-items: flex-end; justify-content: center; align-self: end; padding-bottom: 8px; }
 .card { margin-inline: -3px; transform: translateY(calc(var(--i) * -56px)); z-index: calc(5 - var(--i)); }
 .card:only-child { --v-card: calc(var(--side) * 0.62); }
+/* Two seats share the column side by side, so the back seat's plate is never under the front card. */
+.card:first-child:nth-last-child(2), .card:last-child:nth-child(2) { --v-card: calc((var(--side) - 56px) / 2); margin-inline: 6px; }
 .stack[data-role="win"] .cards { animation: winLift 420ms var(--ease-slam) 1500ms both; }
 .stack[data-role="lose"] { animation: loseDim 400ms var(--ease-out) 1500ms both; }
 @keyframes winLift { from { transform: none; } to { transform: scale(1.03); } }
@@ -195,8 +197,27 @@
 /* ── You decide ─────────────────────────────────────────────────────────── */
 .decide { display: grid; grid-template-rows: auto minmax(0, 1fr); min-height: 0; }
 .decideGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; padding: 12px 48px 24px; min-height: 0; }
-.decideSide { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 14px; min-height: 0; }
-.decideCast { display: flex; gap: 10px; }
+.decideSide {
+  --d-card: 168px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 22px 20px;
+  min-height: 0;
+}
+.decide_opp { grid-template-columns: minmax(0, 1fr) auto; }
+.decideCast { grid-row: 1; grid-column: 1; align-self: center; }
+.decideSide .quotes { grid-row: 1; grid-column: 2; }
+.decide_opp .decideCast { grid-column: 2; }
+.decide_opp .quotes { grid-column: 1; }
+.decideCast { display: flex; gap: 10px; align-items: flex-start; }
+.decideCast > :nth-child(even) { margin-top: 28px; }
+.decideSide .quotes { align-self: center; max-height: 100%; }
+.decideSide .pick { grid-row: 2; grid-column: 1 / -1; }
+.decide_prop .quotes li { border-left-color: var(--horizon-500); }
+.decide_opp .quotes li { border-left-color: var(--paper-50); }
+.decide_opp .pick { justify-self: end; }
+@media (max-height: 800px) { .decideSide { --d-card: 100px; gap: 16px; } }
 .decide_opp .decideCast { justify-content: flex-end; }
 .quotes { margin: 0; padding: 0; list-style: none; display: grid; align-content: start; gap: 10px; overflow-y: auto; font-size: var(--text-sm); color: var(--paper-300); }
 .quotes li { padding: 10px 12px; background: var(--ink-700); border-left: 3px solid var(--ink-500); }

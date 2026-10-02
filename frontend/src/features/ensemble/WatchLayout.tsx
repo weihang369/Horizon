@@ -75,7 +75,7 @@ export function WatchLayout({ rt, replay }: LayoutProps) {
       </header>
 
       <div className={s.script}>
-        <SessionLog rt={rt} variant="script" className={s.log} />
+        <SessionLog rt={rt} variant="script" className={s.log} emptyText={rt.status === "loading" ? "" : "The scene is about to begin."} />
       </div>
 
       <div className={s.row} data-stage-root="" aria-label="Cast">

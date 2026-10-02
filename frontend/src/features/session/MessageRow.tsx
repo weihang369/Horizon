@@ -28,6 +28,8 @@ export interface MessageRowProps {
   fresh: boolean;
   /** Show the full actions row (copy, insight). */
   onOpenInsight?: (id: string) => void;
+  /** Additive: an older "asleep" note (a newer one carries the Top up · Wait actions). */
+  stale?: boolean;
 }
 
 function StreamingText({ id, fallback }: { id: string; fallback: string }) {
@@ -76,7 +78,8 @@ function ErrorActions({ m, char }: { m: Message; char?: Character }) {
   const sid = m.sessionId;
   const regen = () => void run(() => client.chat.regenerate(sid, m.id));
   if (m.error.code === "energy_exhausted") return null;
-  const label = m.error.code === "content_refused" ? "Regenerate" : m.error.retryable ? "Retry" : null;
+  // A cut stream offers Continue · Regenerate on the row itself (STATE-03), so the tape carries no second button.
+  const label = m.status === "interrupted" ? null : m.error.code === "content_refused" ? "Regenerate" : m.error.retryable ? "Retry" : null;
   return (
     <div className={s.errRow} role="alert">
       <Tape tone="error" size="sm">Warning</Tape>
@@ -88,7 +91,7 @@ function ErrorActions({ m, char }: { m: Message; char?: Character }) {
   );
 }
 
-function AsleepNote({ m, chars }: { m: Message; chars: Record<string, Character> }) {
+function AsleepNote({ m, chars, stale }: { m: Message; chars: Record<string, Character>; stale?: boolean }) {
   const ctx = useSessionCtx();
   const [waiting, setWaiting] = useState(false);
   const cid = m.targetCharacterId;
@@ -98,7 +101,7 @@ function AsleepNote({ m, chars }: { m: Message; chars: Record<string, Character>
     <PaletteScope paletteId={c?.paletteId} className={s.asleep}>
       <span className={s.zzz} aria-hidden="true">Zzz</span>
       <span className={s.asleepText}>{m.content}</span>
-      {live && cid && !waiting && (
+      {live && cid && !waiting && !stale && (
         <span className={s.asleepActions}>
           <button
             type="button"
@@ -127,10 +130,14 @@ function Reactions({ m, chars }: { m: Message; chars: Record<string, Character> 
         const c = chars[r.characterId];
         const name = c ? firstName(c.profile.name) : "";
         const meta = emotionMeta[r.emotion];
+        // Half-scale "mini" reaction (VMD §2.5): the listener's face in that emotion, cropped to the eyes.
+        const face = c?.emotions[r.emotion]?.url ?? c?.emotions.neutral?.url;
         return (
-          <li key={r.characterId}>
+          <li key={r.characterId} title={`${name} · ${meta.label}`}>
             <PaletteScope paletteId={c?.paletteId} className={s.reaction} style={{ "--rx-d": `${(r.at.length % 5) * 20}ms` } as CSSProperties}>
-              <span className={s.rxHead} aria-hidden="true">{name.slice(0, 1)}</span>
+              <span className={s.rxHead} aria-hidden="true">
+                {face ? <img src={face} alt="" draggable={false} /> : name.slice(0, 1)}
+              </span>
               <span className={s.rxIcon} aria-hidden="true">{meta.icon}</span>
               <span className="sr-only">{name} reacted {meta.label.toLowerCase()}</span>
             </PaletteScope>
@@ -141,7 +148,7 @@ function Reactions({ m, chars }: { m: Message; chars: Record<string, Character> 
   );
 }
 
-function MessageRowImpl({ m, chars, variant, selected, canRegenerate, fresh, onOpenInsight }: MessageRowProps) {
+function MessageRowImpl({ m, chars, variant, selected, canRegenerate, fresh, onOpenInsight, stale }: MessageRowProps) {
   const ctx = useSessionCtx();
   const { name, char } = authorLabel(m, chars);
   const streaming = m.status === "streaming";
@@ -156,7 +163,7 @@ function MessageRowImpl({ m, chars, variant, selected, canRegenerate, fresh, onO
   // ── System notes ──
   if (m.kind === "system_note") {
     if (m.error?.code === "energy_exhausted" || /asleep/i.test(m.content)) {
-      return <li className={cx(s.row, s.noteRow, fresh && s.fresh)} data-kind="asleep"><AsleepNote m={m} chars={chars} /></li>;
+      return <li className={cx(s.row, s.noteRow, fresh && s.fresh)} data-kind="asleep"><AsleepNote m={m} chars={chars} stale={stale} /></li>;
     }
     return (
       <li className={cx(s.row, s.noteRow, fresh && s.fresh)} data-kind="note">
@@ -234,13 +241,13 @@ function MessageRowImpl({ m, chars, variant, selected, canRegenerate, fresh, onO
           )}
           {selected && <span className={s.insightTag}>Insight</span>}
         </div>
-        <div
+        {(streaming || content || statusTag || !m.error) && <div
           className={cx(s.bubble, isUser && s.userBubble, readable && s.readable, !isChar && !isUser && s.modBubble, streaming && s.isStreaming)}
           aria-hidden={streaming || undefined}
         >
           {streaming ? <StreamingText id={m.id} fallback={m.content} /> : <div className={s.md}>{body}</div>}
           {statusTag}
-        </div>
+        </div>}
         {streaming && <span className="sr-only">{name} is typing</span>}
         {m.error && <ErrorActions m={m} char={char} />}
         {(isChar || isUser) && !streaming && (

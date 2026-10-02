@@ -205,6 +205,13 @@
   min-height: 0;
   padding-top: 6px;
 }
+/* O08 Insight open: the drawer (fixed, right) overlays the Opp column; give that column the drawer's width so the
+   log never sits under it, and tighten the Prop column to keep the log readable at 1280. */
+.insightOpen .banner, .insightOpen .rail, .insightOpen .host { margin-right: calc(var(--drawer-w, 400px) + 12px); }
+.arena.arenaInsight {
+  grid-template-columns: min(var(--col), 280px) minmax(0, 1fr) calc(var(--drawer-w, 400px) + 12px);
+  transition: grid-template-columns var(--t-base) var(--ease-out);
+}
 
 .logPanel {
   position: relative;
