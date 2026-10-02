@@ -1,67 +1,87 @@
-/* O22 Demo tape: a left-edge vertical tab in the 30–70 % band (never a header, never a dock). Owner: Builder A. */
+/* O22 Demo tape: a slim tape stuck to the top edge, right-aligned over the mini-player column (≤ 272 px wide,
+   0–18 px tall). The mini-player drops under it via :root[data-demo-tape] (MiniPlayer.module.css). Owner: Builder A. */
 .tab {
   position: fixed;
-  left: 0;
-  top: 50%;
+  top: 0;
+  right: 16px;
   z-index: var(--z-chrome);
-  translate: 0 -50%;
   display: block;
   padding: 0;
-  max-height: 40vh;
-  color: var(--ink-900);
-  animation: tabIn var(--t-slow) var(--ease-slam) 300ms both;
+  color: var(--paper-50);
+  animation: tapeIn var(--t-slow) var(--ease-slam) 250ms both;
 }
-@keyframes tabIn { from { transform: translateX(-100%); } to { transform: none; } }
+@keyframes tapeIn { from { transform: translateY(-100%); } to { transform: none; } }
 .tab:focus-visible { outline: none; }
 
-.spine {
+.strip {
+  position: relative;
   display: flex;
-  flex-direction: column-reverse;
-  writing-mode: vertical-rl;
-  rotate: 180deg;
-  font: 400 15px/1 var(--font-display);
-  letter-spacing: 0.16em;
-  filter: drop-shadow(-3px 0 0 var(--ink-900));
+  align-items: stretch;
+  height: 18px;
+  max-width: 272px;
+  overflow: hidden;
+  filter: drop-shadow(3px 3px 0 var(--ink-900));
 }
-.spineDemo, .spineKey { display: block; padding: 14px 7px; }
-.spineDemo {
+/* One glint across the tape on first show: the "look here" beat without a flyout covering content. */
+.strip::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 40px;
+  background: linear-gradient(100deg, transparent, color-mix(in srgb, var(--paper-50) 55%, transparent), transparent);
+  transform: translateX(-60px);
+  animation: glint 900ms var(--ease-out) 1100ms 2 both;
+  pointer-events: none;
+}
+@keyframes glint { to { transform: translateX(300px); } }
+
+.demo, .cta { display: inline-flex; align-items: center; white-space: nowrap; }
+.demo {
+  padding: 0 10px 0 12px;
   background: var(--horizon-500);
   color: var(--on-brand);
-  clip-path: polygon(0 0, 100% 6px, 100% 100%, 0 100%);
-  padding-top: 18px;
+  font: 400 13px/1 var(--font-display);
+  letter-spacing: 0.1em;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 6px) 100%, 6px 100%);
 }
-.spineKey {
+.cta {
+  margin-left: -4px;
+  padding: 0 12px 0 12px;
   background: var(--ink-900);
-  color: var(--paper-50);
-  box-shadow: inset 0 0 0 2px var(--horizon-500);
-  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 6px), 0 100%);
-  padding-bottom: 18px;
+  box-shadow: inset 0 -2px 0 var(--horizon-500);
+  font: 700 10px/1 var(--font-mono);
+  letter-spacing: 0.08em;
+  clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+  transition: background var(--t-fast) var(--ease-out), color var(--t-fast) var(--ease-out);
 }
-.tab:hover .spineKey, .tab:focus-visible .spineKey { background: var(--paper-50); color: var(--ink-900); }
-.tab:focus-visible .spine { filter: drop-shadow(0 0 0 var(--c-glow)) drop-shadow(3px 0 0 var(--c-glow)); }
+.ctaSeed { color: var(--paper-300); margin-right: 6px; }
+.cta b { margin-left: 4px; color: var(--horizon-500); font-weight: 700; }
+.tab:hover .cta, .tab:focus-visible .cta { background: var(--paper-50); color: var(--ink-900); }
+.tab:hover .ctaSeed, .tab:focus-visible .ctaSeed { color: var(--ink-700); }
+.tab:focus-visible .strip { filter: drop-shadow(0 0 0 var(--c-glow)) drop-shadow(0 3px 0 var(--c-glow)); }
 
+/* Hover/focus only: the full AC1 copy drops beneath the mini-player (transient, never pointer-blocking). */
 .fly {
   position: absolute;
-  left: 100%;
-  top: 50%;
-  width: 292px;
-  margin-left: 6px;
+  right: 0;
+  top: 64px;
+  width: 300px;
   display: grid;
   gap: 8px;
-  padding: 16px 20px 16px 18px;
+  padding: 14px 20px 16px 18px;
   text-align: left;
   background: var(--ink-900);
   color: var(--paper-50);
   box-shadow: inset 4px 0 0 var(--horizon-500), inset 0 0 0 1px var(--ink-500), 8px 8px 0 color-mix(in srgb, var(--ink-900) 70%, transparent);
   clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
-  transform: translate(-16px, -50%);
+  transform: translateY(-10px);
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
   transition: transform var(--t-base) var(--ease-out), opacity var(--t-fast) linear, visibility 0s linear var(--t-base);
 }
-.tab:hover .fly, .tab:focus-visible .fly, .tab[data-open] .fly {
-  transform: translate(0, -50%);
+.tab:hover .fly, .tab:focus-visible .fly {
+  transform: none;
   opacity: 1;
   visibility: visible;
   transition: transform var(--t-base) var(--ease-out), opacity var(--t-fast) linear;
@@ -80,4 +100,6 @@
 }
 
 :global(:root[data-motion="reduced"]) .tab { animation: global(hz-fade-in) 160ms linear both; }
-:global(:root[data-motion="reduced"]) .fly { transition: opacity 160ms linear, visibility 0s; transform: translate(0, -50%); }
+:global(:root[data-motion="reduced"]) .strip::after { animation: none; display: none; }
+:global(:root[data-vfx="off"]) .strip::after { display: none; }
+:global(:root[data-motion="reduced"]) .fly { transition: opacity 160ms linear, visibility 0s; transform: none; }

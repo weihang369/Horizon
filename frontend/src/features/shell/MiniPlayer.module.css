@@ -64,3 +64,6 @@
 .player[data-state="playing"] .eq i:nth-child(4) { animation-duration: 760ms; animation-delay: -300ms; }
 @keyframes eq { from { transform: scaleY(0.25); } to { transform: scaleY(1); } }
 :global(:root[data-motion="reduced"]) .eq i { animation: none !important; transform: scaleY(0.6); }
+
+/* O22 demo tape sits on the top edge above the chip: drop 10 px and slim to 32 px so both stay inside the 56 px band. */
+:global(:root[data-demo-tape]) .player { top: 22px; height: 32px; }

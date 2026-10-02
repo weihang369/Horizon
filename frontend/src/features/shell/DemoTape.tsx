@@ -1,41 +1,44 @@
 // O22 Demo-mode tape (APP-09 AC1). Ambient, never takes focus by itself, never blocks.
-// Placement: a vertical tab on the LEFT EDGE, vertically centred in the 30–70 % band. Every screen's header lives in the
-// top ~22 % (session TopBar 56 + debate banner 64 + rail 36 = 156 px of 720) and every dock + dock expansion in the
-// bottom ~28 % (96 + 120 px), so this band can never collide with a header or a dock, whatever the screen's layout.
-// The full copy flies out on hover/focus, and once for 4.5 s on first show. Click → Settings → Connection.
-// Owner: Builder A. Statically imported by App (entry bundle): keep it light.
-import { useEffect, useState } from "react";
+// Placement: a slim tape stuck to the TOP EDGE, right-aligned above the mini-player, inside the same top-right
+// column every screen already keeps clear for the mini-player (the session TopBar reserves 296 px of it). While the
+// tape is up it sets `data-demo-tape` on <html>, and the mini-player drops 10 px to sit under it (both stay inside
+// the 56 px header band). So the tape never lands on a header, a portrait, a log or a dock, on any screen.
+// Hover/focus drops the full AC1 copy beneath it. Click → Settings → Connection. Hidden on Onboarding (its key card
+// already explains demo mode). Owner: Builder A. Statically imported by App (entry bundle): keep it light.
+import { useEffect } from "react";
 import type { OverlayComponentProps } from "../../app/overlayTypes";
-import { getRoute, navigate } from "../../router";
+import { getRoute, navigate, useRoute } from "../../router";
 import { formatRoute } from "../../router/routes";
 import s from "./DemoTape.module.css";
 
-let introShown = false;
-const COPY = "DEMO MODE · Browsing seed data · Add your OpenRouter key to chat & create";
+export const DEMO_COPY = "DEMO MODE · Browsing seed data · Add your OpenRouter key to chat & create";
 
 export function DemoTape(_: Partial<OverlayComponentProps<"O22">>) {
-  const [intro, setIntro] = useState(!introShown);
+  const route = useRoute();
+  const hidden = route.name === "onboarding";
   useEffect(() => {
-    if (!intro) return;
-    introShown = true;
-    const t = window.setTimeout(() => setIntro(false), 4500);
-    return () => window.clearTimeout(t);
-  }, [intro]);
+    if (hidden) return;
+    const root = document.documentElement;
+    root.setAttribute("data-demo-tape", "");
+    return () => root.removeAttribute("data-demo-tape");
+  }, [hidden]);
+  if (hidden) return null;
   return (
     <button
       type="button"
       className={s.tab}
-      data-open={intro || undefined}
-      aria-label={`${COPY}. Open Settings, Connection`}
+      aria-label={`${DEMO_COPY}. Open Settings, Connection`}
       onClick={() => navigate({ name: "settings", tab: "connection", from: formatRoute(getRoute()) })}
     >
-      <span className={s.spine} aria-hidden="true">
-        <span className={s.spineDemo}>DEMO</span>
-        <span className={s.spineKey}>⚿ ADD KEY</span>
+      <span className={s.strip} aria-hidden="true">
+        <span className={s.demo}>DEMO MODE</span>
+        <span className={s.cta}>
+          <span className={s.ctaSeed}>SEED DATA ·</span> ⚿ ADD KEY <b>▸</b>
+        </span>
       </span>
       <span className={s.fly} aria-hidden="true">
         <span className={s.flyTitle}>DEMO MODE</span>
-        <span className={s.flyText}>Browsing seed data · Add your OpenRouter key to chat &amp; create</span>
+        <span className={s.flyText}>Browsing seed data. Every recording plays; add your OpenRouter key to chat &amp; create.</span>
         <span className={s.flyCta}>Add key ▸</span>
       </span>
     </button>

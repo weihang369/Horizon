@@ -27,5 +27,9 @@ export function useHouseScreen(opts: { music?: boolean } = {}): void {
   useEffect(() => {
     setAppPalette(null);
     if (music) playMainTheme();
+    // A palette flood started just before leaving (profile / wizard) flips the root class at its cover point,
+    // which can land after this mount: snap back once more after the longest flood.
+    const t = window.setTimeout(() => setAppPalette(null), 900);
+    return () => window.clearTimeout(t);
   }, [music]);
 }

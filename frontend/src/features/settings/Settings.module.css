@@ -18,7 +18,7 @@
   bottom: 0;
   width: 360px;
   background:
-    radial-gradient(circle, color-mix(in srgb, var(--ink-900) 30%, transparent) 1.2px, transparent 1.7px) 0 0 / 9px 9px,
+    radial-gradient(circle, color-mix(in srgb, var(--ink-900) 16%, transparent) 1.2px, transparent 1.7px) 0 0 / 9px 9px,
     var(--horizon-500);
   clip-path: polygon(0 0, 100% 0, 78% 100%, 0 100%);
 }
@@ -61,9 +61,9 @@
 .tabNum { font: 400 15px/1 var(--font-display); opacity: 0.7; width: 20px; }
 .tabText { display: grid; gap: 2px; min-width: 0; }
 .tabLabel { font: 400 24px/1 var(--font-display); letter-spacing: 0.03em; text-transform: uppercase; }
-.tabBlurb { font: 600 10.5px/1.2 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.75; }
+.tabBlurb { font: 700 10.5px/1.2 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.85; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 @media (max-height: 800px) { .tabLabel { font-size: 20px; } .tabBlurb { display: none; } .tab { padding: 6px 14px 6px 10px; } }
-.tabDot { margin-left: auto; padding: 3px 6px; background: var(--paper-50); color: var(--ink-900); font: 700 10px/1 var(--font-mono); letter-spacing: 0.08em; }
+.tabDot { flex: none; white-space: nowrap; margin-left: auto; padding: 3px 6px; background: var(--paper-50); color: var(--ink-900); font: 700 10px/1 var(--font-mono); letter-spacing: 0.08em; }
 
 /* ── Panel ────────────────────────────────────────────────────────────── */
 .panel { min-height: 0; overflow-y: auto; padding: 64px var(--gutter) 80px 56px; animation: global(hz-slide-left) var(--t-base) var(--ease-out) both; }

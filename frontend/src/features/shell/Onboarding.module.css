@@ -108,7 +108,8 @@
 .coverB { right: 0; bottom: 2%; rotate: 5deg; animation: worldInR var(--t-scene) var(--ease-out) 90ms both; }
 @keyframes worldInL { from { opacity: 0; transform: translateX(-60px); } to { opacity: 1; transform: none; } }
 @keyframes worldInR { from { opacity: 0; transform: translateX(60px); } to { opacity: 1; transform: none; } }
-.coverName {
+.coverName,
+.worldsArt .cover > .coverName.coverName { /* beat WorldCover's `.cover > :not(.chrome)` (position: relative) */
   position: absolute;
   z-index: 2;
   left: 14px;
