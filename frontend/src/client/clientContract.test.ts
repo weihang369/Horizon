@@ -191,7 +191,11 @@ describe("HorizonClient contract (MockClient)", () => {
     const s = await c.sessions.create({ worldId: "wld_seedMeridian", mode: "one_on_one", characterIds: ["chr_seedVictor"] });
     await tick(6000);
     await c.chat.send(s.session.id, "Tell me everything about precedent.");
-    await tick(2000);
+    // Stop only once the reply is mid-stream, so the test doesn't race the virtual clock under load.
+    for (let i = 0; i < 40; i++) {
+      await tick(250);
+      if ((await c.sessions.messages(s.session.id)).some((m) => m.status === "streaming")) break;
+    }
     await c.chat.stop(s.session.id);
     await tick(1000);
     const last = chars(await c.sessions.messages(s.session.id)).at(-1)!;
@@ -250,6 +254,15 @@ describe("HorizonClient contract (MockClient)", () => {
     await c.jobs.retryTask(job.id, failed.id);
     await tick(25000);
     expect((await c.jobs.get(job.id)).status).toBe("succeeded");
+  });
+
+  it("an overlay scenario keeps user-created sessions, so it lands on the current screen (DoD #2)", async () => {
+    const { c } = await make({ key: true });
+    const fork = await c.sessions.forkSeedSession("ses_seedDebate4Day");
+    await c.dev.setScenario("character_exhausted");
+    expect((await c.sessions.messages(fork.session.id)).length).toBe(fork.messages.length);
+    await c.dev.resetDemoData();
+    expect(await code(c.sessions.messages(fork.session.id))).not.toBe("ok");
   });
 
   it("network down rejects queries too; Reset demo data restores the shipped fixtures", async () => {

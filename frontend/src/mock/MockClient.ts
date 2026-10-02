@@ -1038,7 +1038,9 @@ export class MockClient implements HorizonClient {
     this.devSubs.forEach((cb) => cb(s));
   }
 
-  private hardReset(s: Scenario): void {
+  /** `keepUserData` carries user-created records across the reseed, so a scenario lands on the current screen (DoD #2). */
+  private hardReset(s: Scenario, keepUserData = false): void {
+    const prev = this.db;
     this.runner.stopAll();
     for (const live of this.lives.values()) {
       clearLive(live);
@@ -1047,6 +1049,16 @@ export class MockClient implements HorizonClient {
     this.lives.clear();
     this.sched.cancelAll();
     this.reseed(s);
+    if (keepUserData && prev) {
+      for (const k of ["worlds", "characters", "assets", "songs", "sessions", "memory", "knowledge", "jobs"] as const) {
+        const into = this.db[k] as Record<string, unknown>;
+        // A scenario that empties a collection (no_worlds) means it; don't refill it.
+        if (!Object.keys(into).length) continue;
+        for (const [id, v] of Object.entries(prev[k])) if (!(id in into)) into[id] = v;
+      }
+      const seen = new Set(this.db.ledger.map((r) => r.id));
+      this.db.ledger.push(...prev.ledger.filter((r) => !seen.has(r.id)));
+    }
     this.resumeJobs();
   }
 
@@ -1061,7 +1073,7 @@ export class MockClient implements HorizonClient {
       setScenario: async (id) => {
         await this.ready;
         const s = SCENARIO_BY_ID[id];
-        if (s.overlay || id === "default") this.hardReset(s);
+        if (s.overlay || id === "default") this.hardReset(s, true);
         else {
           this.applyScenarioState(s);
           if (s.settingsPatch) this.db.settings = deepMerge(this.db.settings, s.settingsPatch);
