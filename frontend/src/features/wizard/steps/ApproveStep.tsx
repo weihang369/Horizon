@@ -1,6 +1,6 @@
 // S05h APPROVE (CHR-11): summary card (portrait, plate, role, tagline, palette, emotion thumbs, song, warnings) and
 // "Approve & Summon" → O15. Editing an approved character ends with "Save changes" instead (PRF-03 AC4). Owner: Builder B.
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { CSSProperties } from "react";
 import { openOverlay, toast } from "@/app/layers";
 import { reportError } from "@/app/errors";
@@ -25,6 +25,8 @@ export function ApproveStep() {
   const songJob = useJob(jobs.song).data;
   const emoJob = useJob(jobs.emotion_set).data;
   const [busy, setBusy] = useState(false);
+  // Warm the O15 chunk so the reveal's first frame lands on click, not after a lazy fetch.
+  useEffect(() => void import("../SummonReveal").catch(() => {}), []);
   if (!c) return null;
 
   const p = work.w.profile;

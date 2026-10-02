@@ -12,7 +12,7 @@ import { navigate, setLeaveGuard } from "@/router";
 import type { Route } from "@/router";
 import { setAppPalette } from "@/theme";
 import { EmptyState } from "@/ui";
-import { WizardContext } from "./context";
+import { seedDraft, WizardContext } from "./context";
 import type { WizardCtx } from "./context";
 import { createdThisSession, useCharacterJobs } from "./generate";
 import { furthestReachable, gateFacts, laterStep, profileValid, reachable } from "./gates";
@@ -116,7 +116,32 @@ export function WizardScreen({ route }: { route: WizardRoute }) {
   // ── Leave guard (CHR-01 AC2 → O13) ───────────────────────────────────────────
   useEffect(() => setLeaveGuard((to) => {
     const { c: cur, work: wk } = latest.current;
-    if (!cur) return true;
+    if (!cur) {
+      // Seed step: nothing exists yet, but a typed line still deserves the Save / Discard / Cancel prompt.
+      const text = seedDraft.text.trim();
+      if (!text) return true;
+      const intent = seedDraft.intent ?? "other";
+      openOverlay("O13", {
+        characterId: "",
+        onSave: async () => {
+          try {
+            const { character, job } = await client.characters.createDraft(route.worldId, { seedPrompt: text, intent });
+            createdThisSession.delete(character.id);
+            await client.jobs.cancel(job.id);
+            seedDraft.text = "";
+            toast({ variant: "success", text: `Saved as a draft: “${text.length > 40 ? `${text.slice(0, 40)}…` : text}”` });
+            navigate(to, { force: true, transition: "slash-back" });
+          } catch (err) {
+            reportError(err, { context: "Saving a draft needs your OpenRouter key." });
+          }
+        },
+        onDiscard: () => {
+          seedDraft.text = "";
+          navigate(to, { force: true, transition: "slash-back" });
+        },
+      });
+      return false;
+    }
     if (to.name === "wizard" && to.worldId === route.worldId && to.characterId === cur.id) return true;
     const approved = cur.status === "approved";
     if (approved && !wk.dirty) return true;

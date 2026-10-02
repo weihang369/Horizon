@@ -184,7 +184,7 @@ export function ProfileScreen({ route }: { route: ProfileRoute }) {
                 <h1 className={s.name}><RansomText key={c.id} text={c.profile.name} size="clamp(44px, 4.4vw, 72px)" slam tone="mixed" /></h1>
               </div>
               <p className={s.meta}>
-                {c.profile.age} · {c.profile.pronouns || "—"} · {c.intent === "expert" ? "Expert" : c.intent === "companion" ? "Companion" : "Character"}
+                {c.profile.title ? `${c.profile.title} · ` : ""}{c.profile.role} · {c.profile.age}{c.profile.pronouns ? ` · ${c.profile.pronouns}` : ""} · {c.intent === "expert" ? "Expert" : c.intent === "companion" ? "Companion" : "Character"}
                 {c.advisory && <Tape tone="paper" size="sm" className={s.advisory}>AI simulation · not professional advice</Tape>}
               </p>
               {c.profile.tagline && <p className={s.tagline}>“{c.profile.tagline}”</p>}

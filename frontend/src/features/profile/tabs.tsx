@@ -147,7 +147,7 @@ export function ThemeTab({ c, song }: { c: Character; song: ThemeSong | null }) 
         </Button>
         <span className={s.small}>One theme per character. Regenerating replaces it; there is no history.</span>
       </div>
-      <p className={s.fine}>Model {song?.generation?.model ?? "google/lyria-3-clip"} · {song?.licenseNote ?? "Placeholder: procedural WebAudio sketch (D-52)."}</p>
+      {song?.status !== "ready" && <p className={s.fine}>Model {song?.generation?.model ?? "google/lyria-3-clip"} · {song?.licenseNote ?? "Placeholder: procedural WebAudio sketch (D-52)."}</p>}
     </div>
   );
 }

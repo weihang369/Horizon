@@ -25,7 +25,7 @@ export function AssetCompare({ close, characterId, emotion, newAssetId }: Overla
   const old = assets?.find((a) => a.emotion === emotion && a.variant === (fresh?.variant ?? "default") && a.isActive && a.id !== newAssetId);
   const label = emotionMeta[emotion].label;
 
-  const useNew = async () => {
+  const applyNew = async () => {
     setBusy(true);
     try {
       await client.characters.acceptAssetVersion(newAssetId);
@@ -49,7 +49,7 @@ export function AssetCompare({ close, characterId, emotion, newAssetId }: Overla
         actions={
           <>
             <Button variant="ghost" onClick={close}>Keep old</Button>
-            <Button variant="primary" autoFocus disabled={busy || !fresh} onClick={() => void useNew()}>Use new</Button>
+            <Button variant="primary" autoFocus disabled={busy || !fresh} onClick={() => void applyNew()}>Use new</Button>
           </>
         }
       >

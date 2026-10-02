@@ -219,7 +219,13 @@
   align-content: start;
   gap: 16px;
   padding: 16px 18px;
-  background: color-mix(in srgb, var(--ink-900) 82%, transparent);
+  /* Scroll affordance: a primary glow sits at the bottom edge while more chips hide below; the local cover
+     slides over it once the end is reached (no JS). */
+  --lp: color-mix(in srgb, var(--ink-900) 82%, transparent);
+  background:
+    linear-gradient(var(--ink-900), var(--ink-900)) bottom / 100% 16px no-repeat local,
+    radial-gradient(farthest-side at 50% 100%, color-mix(in srgb, var(--c-primary) 55%, transparent), transparent) bottom / 100% 16px no-repeat scroll,
+    var(--lp);
   clip-path: polygon(0 0, 100% 0, 100% calc(100% - 18px), calc(100% - 18px) 100%, 0 100%);
   animation: workIn var(--t-base) var(--ease-out) both;
 }
@@ -298,14 +304,22 @@
 .emoBar span { position: absolute; inset: 0; background: var(--c-primary); transform-origin: 0 50%; transition: transform var(--t-slow) var(--ease-out); }
 .emoCount { font: 700 13px/1 var(--font-mono); letter-spacing: 0.06em; color: var(--c-glow); }
 .emoStage { flex: 1; min-height: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 22px; align-items: start; }
-.emoGrid { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 14px; max-width: 600px; }
+.emoGrid {
+  /* Two rows of 3:4 slots must clear the action bar at 720 px: width follows the height budget. */
+  --row-h: calc((100vh - var(--top-inset, 0px) - 64px - 80px - 262px) / 2);
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px 14px;
+  width: 100%;
+  max-width: min(600px, calc(var(--row-h) * 0.75 * 3 + 28px));
+}
 .slot { --sw: 100%; position: relative; display: grid; gap: 6px; min-width: 0; animation: workIn var(--t-base) var(--ease-out) both; animation-delay: calc(var(--i, 0) * 40ms); }
 .slotBase { width: clamp(170px, 15vw, 230px); }
 .slotArt {
   position: relative;
   width: 100%;
   aspect-ratio: 3 / 4;
-  max-height: calc((100vh - 64px - 80px - 210px) / 2);
   padding: 0;
   border: 0;
   background: var(--ink-900);

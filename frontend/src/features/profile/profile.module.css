@@ -88,6 +88,12 @@
 .portraitSkel { width: var(--pf-w); aspect-ratio: 3 / 4; display: grid; align-items: end; padding: 20px; background: var(--ink-900); clip-path: var(--clip-card); }
 .plate { position: absolute; left: -22px; bottom: 18px; z-index: 2; }
 .draftTape { position: absolute; top: 18px; right: -16px; z-index: 2; }
+/* Short viewports: the portrait shrinks, so the plate drops onto the frame's bottom edge (clear of the
+   PLACEHOLDER tape) and the column makes room for it. */
+@media (max-height: 820px) {
+  .portrait { margin-bottom: 26px; }
+  .plate { bottom: -30px; }
+}
 
 .energy {
   width: calc(var(--pf-w) + 40px);
@@ -162,8 +168,7 @@
 
 /* Gallery */
 .galleryWrap { display: grid; gap: 12px; }
-.gallery { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px; }
-@media (max-width: 1360px) { .gallery { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.gallery { display: grid; grid-template-columns: repeat(4, minmax(0, 160px)); gap: 12px 14px; }
 .gTile { position: relative; display: grid; gap: 6px; animation: panelIn var(--t-base) var(--ease-out) both; animation-delay: calc(var(--i) * 40ms); }
 .gArt {
   position: relative;

@@ -25,6 +25,22 @@ import s from "./summon.module.css";
 
 const CEREMONY_MS = 2600;
 const STING_AT = 1200;
+const REDUCED_HOLD_MS = 1200;
+
+/** Resolves after `ms`, or on the first key or pointer press (observed only, never cancelled). */
+function holdUnlessInput(ms: number): Promise<void> {
+  return new Promise((res) => {
+    const done = () => {
+      clearTimeout(t);
+      window.removeEventListener("keydown", done);
+      window.removeEventListener("pointerdown", done);
+      res();
+    };
+    const t = window.setTimeout(done, ms);
+    window.addEventListener("keydown", done);
+    window.addEventListener("pointerdown", done);
+  });
+}
 const TYPE_AT = 1150;
 const TYPE_MS = 28;
 const AMBIENT = "placeholder:system/ambient_bed";
@@ -97,7 +113,10 @@ export function SummonReveal({ close, characterId }: OverlayComponentProps<"O15"
         startMusic();
       },
     });
-    void h.done.then((r) => {
+    void h.done.then(async (r) => {
+      // Reduced motion: the end card holds still for a readable beat (same rule as the VS banner); any key or click
+      // ends it early, and the listeners never preventDefault, so input still reaches the profile (R6).
+      if (prefs.reduced && r !== "skipped") await holdUnlessInput(REDUCED_HOLD_MS);
       setPhase("leaving");
       window.setTimeout(close, r === "skipped" || prefs.reduced ? 140 : 380);
     });
@@ -142,6 +161,7 @@ export function SummonReveal({ close, characterId }: OverlayComponentProps<"O15"
         <span className={s.slash} />
         <span className={s.band} />
         <span className={s.rays} />
+        <span className={s.panel} />
       </div>
       <div className={s.portraitWrap} aria-hidden="true">
         <span className={cx(s.ghost, s.g3)}><PortraitCard character={c} emotion="happy" size="hero" width="var(--sm-w)" parallax={false} /></span>
@@ -161,12 +181,14 @@ export function SummonReveal({ close, characterId }: OverlayComponentProps<"O15"
         {tagline && (
           <p className={s.tagline}>
             <span>“{tagline.slice(0, typed)}</span>
-            <span className={s.ghostText}>{tagline.slice(typed)}”</span>
             {typed < tagline.length && <span className={s.caret} />}
+            <span className={s.ghostText}>{tagline.slice(typed)}</span>
+            <span className={typed < tagline.length ? s.ghostText : undefined}>”</span>
           </p>
         )}
         <span className={s.pal}><i />{pal.name}</span>
       </div>
+      <span className={s.flash} aria-hidden="true" />
       <span className={s.skipHint} aria-hidden="true">ANY KEY · SKIP</span>
     </PaletteScope>
   );

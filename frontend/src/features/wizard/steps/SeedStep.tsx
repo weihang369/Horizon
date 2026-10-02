@@ -8,7 +8,7 @@ import type { Character } from "@/contract/types";
 import { navigate } from "@/router";
 import { Button, RansomText, Tape } from "@/ui";
 import { ActionBar } from "../ActionBar";
-import { useWizard } from "../context";
+import { seedDraft, useWizard } from "../context";
 import { createdThisSession, rememberJob } from "../generate";
 import { INTENTS, SEED_EXAMPLES, SURPRISE } from "../options";
 import s from "./steps.module.css";
@@ -26,6 +26,9 @@ export function SeedStep() {
   const [ph, setPh] = useState(0);
   const surpriseAt = useRef(Math.floor(Math.random() * SURPRISE.length));
   const field = useRef<HTMLTextAreaElement>(null);
+  seedDraft.text = busy ? "" : seed;
+  seedDraft.intent = intent;
+  useEffect(() => () => void Object.assign(seedDraft, { text: "", intent: null }), []);
 
   useEffect(() => {
     field.current?.focus({ preventScroll: true });

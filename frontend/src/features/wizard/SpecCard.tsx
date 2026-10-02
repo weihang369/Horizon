@@ -55,9 +55,9 @@ export function SpecCard({ preview }: { preview?: { paletteId?: string } }) {
         <dl className={s.sheet}>
           <div><dt>Age</dt><dd>{work.w.profile.age || "—"}</dd></div>
           <div><dt>Intent</dt><dd>{INTENTS.find((i) => i.value === c.intent)?.label.split(" ")[0] ?? "—"}</dd></div>
-          <div><dt>Palette</dt><dd className={s.sheetPal}><i style={{ "--sw": pal.primary } as CSSProperties} />{pal.name}</dd></div>
           <div><dt>Faces</dt><dd className={cx(emotionsReady < 2 && s.sheetDim)}>{emotionsReady} / 7</dd></div>
           <div><dt>Theme</dt><dd className={cx(!song || song.status !== "ready" ? s.sheetDim : undefined)}>{song?.status === "ready" ? "♪ Ready" : song?.status === "failed" ? "Failed" : "Not yet"}</dd></div>
+          <div className={s.sheetWide}><dt>Palette</dt><dd className={s.sheetPal}><i style={{ "--sw": pal.primary } as CSSProperties} />{pal.name}</dd></div>
         </dl>
       )}
       {!c && (

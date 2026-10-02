@@ -11,12 +11,13 @@ export function UnsavedDraft({ close, characterId, onSave, onDiscard }: OverlayC
   const c = useCharacter(characterId).data;
   const [busy, setBusy] = useState(false);
   const editing = c?.status === "approved";
-  const name = c?.profile.name || "This character";
+  const seedOnly = !characterId;
+  const name = seedOnly ? "Your seed line" : c?.profile.name || "This character";
   return (
     <Modal
       title={editing ? "Unsaved changes" : "Leave the wizard?"}
       tape={editing ? "O13 · EDIT" : "O13 · UNSAVED DRAFT"}
-      size="sm"
+      size="md"
       onClose={close}
       actions={
         <>
@@ -36,7 +37,9 @@ export function UnsavedDraft({ close, characterId, onSave, onDiscard }: OverlayC
           <p className={s.draftName}>{name}</p>
           {c?.creationStep && !editing && <Tape tone="ink" size="sm">Stopped at {STEP_LABEL[c.creationStep]}</Tape>}
           <p className={s.draftBody}>
-            {editing
+            {seedOnly
+              ? "Save as draft keeps the line as a DRAFT in the roster (no AI call yet). Discard drops it."
+              : editing
               ? "Save keeps your edits. They apply to new messages only."
               : "Save as draft keeps everything. It waits in the roster with a DRAFT tape and reopens where you left off. Running generations keep going."}
           </p>

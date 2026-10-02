@@ -83,6 +83,45 @@
 @keyframes spin { to { rotate: 360deg; } }
 @keyframes fade { from { opacity: 0; } }
 
+/* Ink cut-panel behind the copy: the name slams onto ink, not onto the band (contrast at any palette). */
+.panel {
+  position: absolute;
+  left: calc(8vw + var(--sm-w) + 2.5vw);
+  right: -6vw;
+  top: 50%;
+  height: min(54vh, 470px);
+  margin-top: calc(min(54vh, 470px) / -2);
+  background: var(--c-primary);
+  clip-path: polygon(7vh 0, 100% 0, 100% 100%, 0 100%);
+  animation: panelIn 340ms 720ms var(--ease-slam) both;
+}
+.panel::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 0 12px;
+  background:
+    radial-gradient(circle, color-mix(in srgb, var(--c-primary) 30%, transparent) 1.2px, transparent 1.7px) 0 0 / 9px 9px,
+    color-mix(in srgb, var(--ink-900) 88%, transparent);
+  clip-path: polygon(7vh 0, 100% 0, 100% 100%, 0 100%);
+}
+@keyframes panelIn { from { transform: translateX(70vw); } }
+
+/* Impact frame as the portrait lands (gated by Flash intensity; Off → none). */
+.flash {
+  position: absolute;
+  inset: 0;
+  background: var(--c-glow);
+  opacity: 0;
+  mix-blend-mode: screen;
+  animation: impact 180ms 870ms var(--ease-out) forwards;
+}
+@keyframes impact { 0% { opacity: var(--flash-peak, 0.3); } 100% { opacity: 0; } }
+:global(:root[data-flash="low"]) .flash { --flash-peak: 0.12; }
+:global(:root[data-flash="off"]) .flash { display: none; }
+/* VFX Off / Subtle: the drifting halftone and spinning rays are decoration; the cut composition stays. */
+:global(:root[data-vfx="off"]) .rays, :global(:root[data-vfx="off"]) .halftone { display: none; }
+:global(:root[data-vfx="subtle"]) .rays { animation: fade 500ms 520ms both; }
+
 /* ── Portrait + motion-blur ghosts ─────────────────────────────────────────── */
 .portraitWrap {
   position: absolute;
@@ -101,12 +140,13 @@
   100% { transform: none; }
 }
 .ghost { position: absolute; inset: 0 auto auto 0; width: 100%; opacity: 0; }
-.g1 { animation: ghost1 460ms 500ms var(--ease-out) both; }
-.g2 { animation: ghost2 480ms 500ms var(--ease-out) both; }
+/* Ghosts ride the portrait's exact curve (380 ms, same easing) at 24/48/72 px behind, then collapse onto it. */
+.g1 { animation: ghost1 500ms 500ms var(--ease-out) both; }
+.g2 { animation: ghost2 500ms 500ms var(--ease-out) both; }
 .g3 { animation: ghost3 500ms 500ms var(--ease-out) both; }
-@keyframes ghost1 { from { transform: translateX(calc(40vw + 24px)); opacity: 0.25; } 75% { transform: translateX(24px); opacity: 0.25; } to { transform: none; opacity: 0; } }
-@keyframes ghost2 { from { transform: translateX(calc(40vw + 48px)); opacity: 0.12; } 75% { transform: translateX(48px); opacity: 0.12; } to { transform: none; opacity: 0; } }
-@keyframes ghost3 { from { transform: translateX(calc(40vw + 72px)); opacity: 0.06; } 75% { transform: translateX(72px); opacity: 0.06; } to { transform: none; opacity: 0; } }
+@keyframes ghost1 { from { transform: translateX(calc(40vw + 24px)); opacity: 0.25; } 76% { transform: translateX(24px); opacity: 0.25; } to { transform: none; opacity: 0; } }
+@keyframes ghost2 { from { transform: translateX(calc(40vw + 48px)); opacity: 0.12; } 76% { transform: translateX(48px); opacity: 0.12; } to { transform: none; opacity: 0; } }
+@keyframes ghost3 { from { transform: translateX(calc(40vw + 72px)); opacity: 0.06; } 76% { transform: translateX(72px); opacity: 0.06; } to { transform: none; opacity: 0; } }
 
 /* ── Copy ─────────────────────────────────────────────────────────────────── */
 .copy {
@@ -168,9 +208,9 @@
 
 /* ── Skip: jump every animation to its end state (≤ 120 ms, D-55) ─────────── */
 .skip *, .skip *::before, .skip *::after { animation-delay: 0s !important; animation-duration: 1ms !important; animation-iteration-count: 1 !important; }
-.skip .caret, .skip .skipHint { display: none; }
+.skip .caret, .skip .skipHint, .skip .flash { display: none; }
 
 /* ── Reduced motion: one short fade of the end composition ────────────────── */
 .reduced { animation: rootIn 160ms linear both; }
 .reduced *, .reduced *::before, .reduced *::after { animation: none !important; }
-.reduced .slash, .reduced .ghost, .reduced .caret { display: none; }
+.reduced .slash, .reduced .ghost, .reduced .caret, .reduced .flash { display: none; }

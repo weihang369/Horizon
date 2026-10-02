@@ -29,3 +29,7 @@ export function useWizard(): WizardCtx {
   if (!v) throw new Error("useWizard outside WizardScreen");
   return v;
 }
+
+/** The Seed step's unsent line (no character exists yet), read by the leave guard so typed text is never lost
+ *  silently (CHR-01 AC2). Module state: one wizard is mounted at a time. */
+export const seedDraft: { text: string; intent: Character["intent"] | null } = { text: "", intent: null };
