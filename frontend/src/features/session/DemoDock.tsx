@@ -1,22 +1,46 @@
-// DemoDock (R15, APP-09 AC5): foundation stub (Builder C replaces it). Owner: EE (stub).
-import { client } from "../../client";
-import { run } from "../../app/errors";
-import { openOverlay } from "../../app/layers";
+// DemoDock (R15, APP-09 AC5/AC6): "Recorded · ▶ Replay · Continue live (needs key)".
+// A seed recording stays replay-only even with a key; Continue live forks it (whole recording, R16).
+// A user's own session in demo mode (key removed) gets the Composer, whose Send asks for a key.
 import { navigate } from "../../router";
-import { Button } from "../../ui/Button";
+import { Tape } from "../../ui/Tape";
+import { KeyIcon, PlayIcon, ChevronRightIcon } from "../../ui/icons";
+import { Composer } from "./Composer";
+import { continueLive } from "./ReplayTransport";
+import { useSessionCtx } from "./sessionContext";
 import type { DockProps } from "./registry";
+import s from "./DemoDock.module.css";
 
-export function DemoDock({ rt, sessionId, worldId }: DockProps) {
-  const seed = rt.session?.isSeed;
+export function DemoDock(props: DockProps) {
+  const { rt, sessionId, worldId } = props;
+  const ctx = useSessionCtx();
+  const seed = rt.session?.isSeed ?? true;
+  const demo = ctx?.demo ?? true;
+  if (!seed) return <Composer {...props} variant={rt.session?.mode === "one_on_one" ? "inline" : "dock"} />;
   return (
-    <div style={{ display: "flex", gap: 12, alignItems: "center", padding: "12px 24px" }}>
-      <span>{seed ? "This is a recording." : "Demo mode."} Live replies need your OpenRouter key.</span>
-      <Button size="sm" variant="secondary" onClick={() => navigate({ name: "session", worldId, sessionId, replay: true })}>▶ Replay</Button>
-      <Button size="sm" keyLocked={!seed} onClick={async () => {
-        if (!seed) return void openOverlay("O05", {});
-        const snap = await run(() => client.sessions.forkSeedSession(sessionId));
-        if (snap) navigate({ name: "session", worldId, sessionId: snap.session.id });
-      }}>{seed ? "Continue live" : "Add key"}</Button>
+    <div className={s.dock} role="group" aria-label="Recorded session">
+      <div className={s.fake} aria-hidden="true">
+        <span className={s.fakeText}>This conversation is a recording.</span>
+      </div>
+      <div className={s.copy}>
+        <Tape tone="paper" size="sm">● Recorded</Tape>
+        <span className={s.note}>{demo ? "Live replies need your OpenRouter key." : "Recordings stay as shipped. Continue live makes your own copy."}</span>
+      </div>
+      <div className={s.actions}>
+        <button type="button" className={s.btn} onClick={() => navigate({ name: "session", worldId, sessionId, replay: true })}>
+          <span className={s.shape} aria-hidden="true" />
+          <span className={s.content}><PlayIcon width={16} height={16} />Replay</span>
+        </button>
+        <button
+          type="button"
+          className={`${s.btn} ${s.primary}`}
+          data-key-locked={demo || undefined}
+          onClick={() => void continueLive(sessionId, worldId, rt.session?.title ?? "", undefined, demo)}
+          aria-label={`Continue live${demo ? " (needs API key)" : ""}`}
+        >
+          <span className={s.shape} aria-hidden="true" />
+          <span className={s.content}>{demo && <KeyIcon width={14} height={14} />}Continue live<ChevronRightIcon width={16} height={16} /></span>
+        </button>
+      </div>
     </div>
   );
 }

@@ -1,0 +1,81 @@
+/* O11 Mention picker, O07 Emotion picker, MANUAL strip (C). Skewed edges via clip-path; text level (R7). */
+.mention, .emoPop {
+  min-width: 300px;
+  background: var(--ink-900);
+  border: 1px solid var(--ink-500);
+  border-top: 3px solid var(--horizon-500);
+  box-shadow: 10px 10px 0 color-mix(in srgb, var(--ink-900) 70%, transparent);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%);
+  animation: hz-rise-in var(--t-fast) var(--ease-out) both;
+}
+.mHead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  font: 400 14px/1 var(--font-display);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--horizon-500);
+}
+.hintKeys { margin-left: auto; font: 500 11px/1 var(--font-mono); color: var(--paper-300); letter-spacing: 0; text-transform: none; }
+.mList { list-style: none; margin: 0; padding: 0 0 6px; }
+.mRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  cursor: pointer;
+  position: relative;
+}
+.mActive { background: color-mix(in srgb, var(--horizon-500) 18%, var(--ink-700)); }
+.mActive::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--horizon-500); }
+.mDim .mName { color: var(--paper-300); }
+.mText { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.mName { font: 400 16px/1.1 var(--font-display); letter-spacing: 0.04em; text-transform: uppercase; }
+.mState { font: 500 11px/1.2 var(--font-mono); color: var(--paper-300); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
+.mFoot { padding: 6px 12px 8px; border-top: 1px solid var(--ink-700); font: 500 10px/1 var(--font-mono); color: var(--paper-300); }
+
+/* ── Face strip ───────────────────────────────────────────────────────── */
+.strip { display: flex; gap: 4px; }
+.vertical { flex-direction: column; }
+.grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 4px 12px 12px; }
+.face {
+  --h: 44px;
+  position: relative;
+  display: grid;
+  grid-template-columns: 26px 1fr auto;
+  align-items: center;
+  gap: 6px;
+  height: var(--h);
+  width: 44px;
+  padding: 0;
+  color: var(--paper-50);
+  background: color-mix(in srgb, var(--ink-900) 88%, transparent);
+  border: 1px solid var(--ink-500);
+  overflow: hidden;
+  transition: width var(--t-base) var(--ease-out), background var(--t-fast), transform var(--t-fast) var(--ease-slam);
+}
+.vertical .face { justify-items: center; grid-template-columns: 44px; }
+.vertical .face:hover, .vertical .face:focus-visible { width: 150px; grid-template-columns: 42px 1fr 22px; justify-items: start; }
+.grid .face { width: auto; grid-template-columns: 26px 1fr 16px; padding: 0 8px; }
+.face:hover { background: var(--ink-700); }
+.faceOn {
+  background: var(--c-primary);
+  color: var(--c-on-primary);
+  border-color: var(--c-primary);
+  transform: translateX(-6px);
+}
+.faceOn:hover { background: var(--c-primary); }
+.faceIcon { font: 700 16px/1 var(--font-mono); text-align: center; width: 100%; }
+.faceLabel {
+  font: 400 14px/1 var(--font-display);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.vertical .faceLabel, .vertical .faceKey { display: none; }
+.vertical .face:hover .faceLabel, .vertical .face:focus-visible .faceLabel,
+.vertical .face:hover .faceKey, .vertical .face:focus-visible .faceKey { display: inline; }
+.faceKey { font: 600 10px/1 var(--font-mono); opacity: 0.7; }
+.faceMissing { position: absolute; top: 4px; right: 4px; width: 5px; height: 5px; background: var(--signal-warn); }

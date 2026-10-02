@@ -1,0 +1,158 @@
+/* S09 Group: wings 400/360 | log 640/560 | wings, NEXT strip 40 (UXA §2.2, D-53). Builder D. */
+.root {
+  --wing: 400px;
+  --gut: 32px;
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-rows: 40px minmax(0, 1fr);
+  height: 100%;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 70% 45% at 50% 108%, color-mix(in srgb, var(--horizon-500) 8%, transparent), transparent 70%),
+    var(--ink-900);
+}
+@media (max-width: 1380px) { .root { --wing: 360px; --gut: 24px; } }
+
+.bands { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.band {
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  bottom: 6%;
+  height: 40%;
+  background: linear-gradient(90deg, var(--c-primary) 0 24%, color-mix(in srgb, var(--c-primary) 22%, transparent) 38% 62%, var(--c-primary) 76%);
+  transform: rotate(calc(var(--stripe) * -1));
+  opacity: 0;
+  transition: opacity var(--t-scene) var(--ease-out);
+}
+.bandOn { opacity: 0.26; }
+.bandHot { opacity: 0.5; }
+
+/* ── NEXT strip ──────────────────────────────────────────────────────────── */
+.strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 var(--gut);
+  border-bottom: 1px solid var(--ink-500);
+  background: color-mix(in srgb, var(--ink-900) 85%, transparent);
+}
+.controls { display: flex; align-items: center; gap: 10px; }
+.policy { min-width: 190px; }
+.nextChip {
+  --h: 28px;
+  --s: calc(var(--h) * var(--tan-tilt));
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: var(--h);
+  padding: 0 calc(var(--s) + 12px) 0 calc(var(--s) + 8px);
+  color: var(--ink-900);
+}
+.nextChip::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--paper-50);
+  clip-path: polygon(var(--s) 0, 100% 0, calc(100% - var(--s)) 100%, 0 100%);
+}
+.nextLabel, .nextName {
+  font-family: var(--font-display);
+  font-size: 15px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.nextLabel { color: var(--horizon-500); }
+
+/* ── Stage: wings | log | wings ─────────────────────────────────────────── */
+.stage {
+  display: grid;
+  grid-template-columns: var(--wing) minmax(0, 1fr) var(--wing);
+  min-height: 0;
+}
+.logPanel {
+  position: relative;
+  z-index: 2;
+  min-height: 0;
+  min-width: 0;
+  display: grid;
+  background: color-mix(in srgb, var(--ink-900) 90%, transparent);
+  clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 100%, 0 100%);
+  box-shadow: inset 0 2px 0 var(--ink-500);
+}
+.log { min-height: 0; padding-inline: 26px !important; }
+
+.wing {
+  position: relative;
+  container-type: size;
+  min-height: 0;
+  --dir: 1;
+  --seat-w: min(260px, calc((100cqh - 100px) * 0.75), calc(100cqw / 1.5 - 8px));
+  animation: wingIn var(--t-scene) var(--ease-slam) both;
+}
+.right { --dir: -1; animation-name: wingInR; }
+@keyframes wingIn { from { opacity: 0; transform: translateX(-80px); } to { opacity: 1; transform: none; } }
+@keyframes wingInR { from { opacity: 0; transform: translateX(80px); } to { opacity: 1; transform: none; } }
+
+.seat {
+  position: absolute;
+  bottom: 8px;
+  z-index: calc(10 - var(--i));
+  display: grid;
+  width: var(--seat-w);
+  transform-origin: 50% 85%;
+  transform: translate(0, calc(var(--i) * -22px));
+  transition: transform 320ms var(--ease-slam);
+}
+.left .seat { right: calc(10px + var(--i) * var(--seat-w) * 0.5); }
+.right .seat { left: calc(10px + var(--i) * var(--seat-w) * 0.5); }
+/* Single seat: centred in the wing. */
+.seat[data-i="0"]:only-child { right: auto; left: 50%; translate: -50% 0; }
+.back {
+  z-index: 1;
+  transform: translate(calc(var(--seat-w) * -0.32 * var(--dir)), -58px) scale(0.8);
+}
+.left .back { right: 18px; }
+.right .back { left: 18px; }
+.speaking { z-index: 20; transform: translate(calc(24px * var(--dir)), calc(var(--i) * -22px)) scale(1.08); }
+.lean:not(.speaking) { transform: translate(calc(8px * var(--dir)), calc(var(--i) * -22px)); }
+
+.foot {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  justify-items: start;
+  gap: 6px;
+  margin: -18px 0 0 -8px;
+}
+.right .seat:not(:only-child) .foot { justify-items: end; margin: -18px -8px 0 0; }
+.energy { width: calc(var(--seat-w) * 0.7); margin-left: 12px; }
+.right .seat:not(:only-child) .energy { margin: 0 12px 0 0; }
+.back .foot { opacity: 0; }
+
+.upNext {
+  position: absolute;
+  z-index: 5;
+  top: 12px;
+  right: 14px;
+  padding: 2px 10px 1px;
+  font-family: var(--font-display);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-900);
+  background: var(--paper-50);
+  clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+  animation: hz-pulse-soft 1.6s var(--ease-breathe) infinite;
+}
+
+:global(:root[data-motion="reduced"]) .wing { animation: hz-fade-in var(--t-reduced) linear both; }
+:global(:root[data-motion="reduced"]) .seat,
+:global(:root[data-motion="reduced"]) .band { transition-duration: var(--t-reduced); }
+:global(:root[data-motion="reduced"]) .upNext { animation: none; }

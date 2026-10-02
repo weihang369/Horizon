@@ -1,0 +1,66 @@
+/* Mini-player (MUS-04): skewed chip, top right. Owner: Builder A. */
+.player {
+  position: fixed;
+  top: 12px;
+  right: 16px;
+  z-index: var(--z-chrome);
+  display: flex;
+  align-items: stretch;
+  height: 34px;
+  filter: drop-shadow(4px 4px 0 var(--ink-900));
+  animation: global(hz-fade-in) var(--t-base) linear both;
+}
+.main, .mute {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--paper-50);
+  background: var(--ink-700);
+  box-shadow: inset 0 0 0 1px var(--ink-500);
+  transition: background var(--t-fast) var(--ease-out), color var(--t-fast) var(--ease-out);
+}
+.main {
+  max-width: 300px;
+  padding: 0 14px 0 18px;
+  clip-path: polygon(8px 0, 100% 0, 100% 100%, 0 100%);
+  font: 600 12px/1 var(--font-mono);
+  letter-spacing: 0.02em;
+}
+.mute {
+  justify-content: center;
+  width: 38px;
+  margin-left: 2px;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+  padding-right: 6px;
+}
+.main:hover, .mute:hover { background: var(--ink-500); }
+.main:focus-visible, .mute:focus-visible { outline: none; background: var(--paper-50); color: var(--ink-900); }
+.mute[aria-pressed="true"] { color: var(--signal-err); }
+.label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.sketch {
+  flex: none;
+  padding: 3px 6px;
+  background: var(--horizon-500);
+  color: var(--on-brand);
+  font: 400 11px/1 var(--font-display);
+  letter-spacing: 0.1em;
+}
+.play { color: var(--horizon-500); }
+.player[data-state="blocked"] .main { background: var(--horizon-500); color: var(--on-brand); clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%); padding-right: 18px; }
+.player[data-state="blocked"] .play { color: var(--on-brand); }
+.player[data-state="blocked"] .sketch { background: var(--ink-900); color: var(--paper-50); }
+
+.eq { display: inline-flex; align-items: flex-end; gap: 2px; height: 12px; flex: none; }
+.eq i {
+  display: block;
+  width: 3px;
+  height: 4px;
+  background: var(--horizon-500);
+  transform-origin: 50% 100%;
+}
+.player[data-state="playing"] .eq i { height: 12px; animation: eq 900ms var(--ease-breathe) infinite alternate; }
+.player[data-state="playing"] .eq i:nth-child(2) { animation-duration: 640ms; animation-delay: -200ms; }
+.player[data-state="playing"] .eq i:nth-child(3) { animation-duration: 1100ms; animation-delay: -500ms; }
+.player[data-state="playing"] .eq i:nth-child(4) { animation-duration: 760ms; animation-delay: -300ms; }
+@keyframes eq { from { transform: scaleY(0.25); } to { transform: scaleY(1); } }
+:global(:root[data-motion="reduced"]) .eq i { animation: none !important; transform: scaleY(0.6); }

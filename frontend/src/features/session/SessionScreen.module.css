@@ -1,0 +1,158 @@
+/* SessionScreen frame (C): TopBar 56 / tapes / Stage+Log / Dock. The DEMO tape adds 28 px on top and shrinks the
+   stage, never the dock. Insight pushes the 1:1 frame (400 px, 300 compact); other modes are overlaid. */
+.frame {
+  --demo-h: 0px;
+  position: relative;
+  height: 100vh;
+  padding-top: var(--demo-h);
+  display: grid;
+  grid-template-rows: 56px auto minmax(0, 1fr) auto;
+  background: var(--c-stage);
+  overflow: hidden;
+}
+.withDemo { --demo-h: 0px; } /* O22 is now a left-edge tab (Builder A), not a top strip */
+.push { padding-right: 400px; }
+.pushCompact { padding-right: 300px; }
+
+/* ── Header ───────────────────────────────────────────────────────── */
+.header {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 0 296px 0 20px; /* right: the mini-player chip */
+  grid-row: 1;
+  background: var(--ink-900);
+  border-bottom: 1px solid var(--ink-700);
+}
+.push .header, .pushCompact .header { padding-right: 20px; }
+.header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 180px;
+  height: 3px;
+  background: var(--c-primary);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 3px) 100%, 0 100%);
+}
+.title {
+  margin: 0;
+  min-width: 0;
+  font: 400 26px/1 var(--font-display);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.replayTag { display: inline-flex; }
+.recDot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 6px;
+  border-radius: 50%;
+  background: var(--ink-900);
+  vertical-align: 1px;
+  animation: hz-pulse-soft 1.4s var(--ease-breathe) infinite;
+}
+.tools { margin-left: auto; display: flex; align-items: center; gap: 8px; flex: none; }
+.hud {
+  font: 600 12px/1 var(--font-mono);
+  color: var(--paper-300);
+  padding: 6px 8px;
+  background: var(--ink-700);
+  white-space: nowrap;
+}
+.seg { display: inline-flex; }
+.segBtn, .toolBtn {
+  --h: 30px;
+  height: var(--h);
+  padding: 0 12px;
+  font: 400 14px/1 var(--font-display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--paper-300);
+  background: var(--ink-700);
+  clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+}
+.segBtn + .segBtn { margin-left: -3px; }
+.segBtn:hover, .toolBtn:hover { color: var(--paper-50); }
+.segOn { background: var(--c-primary); color: var(--c-on-primary); }
+.segOn:hover { color: var(--c-on-primary); }
+.toolOn { background: var(--paper-50); color: var(--ink-900); }
+.toolOn:hover { color: var(--ink-900); }
+.segBtn:focus-visible, .toolBtn:focus-visible { outline: none; background: var(--c-glow); color: var(--ink-900); }
+.modeStatic { font: 600 11px/1 var(--font-mono); text-transform: uppercase; letter-spacing: 0.08em; color: var(--paper-300); }
+
+.insightBtn {
+  --h: 34px;
+  position: relative;
+  isolation: isolate;
+  height: var(--h);
+  padding: 0 16px;
+  color: var(--on-brand);
+  font: 400 16px/1 var(--font-display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.insightShape {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--horizon-500);
+  clip-path: polygon(calc(var(--h) * var(--tan-tilt)) 0, 100% 0, calc(100% - var(--h) * var(--tan-tilt)) 100%, 0 100%);
+}
+.insightContent { display: inline-flex; align-items: center; gap: 6px; }
+.insightBtn:hover .insightShape, .insightOn .insightShape { background: var(--paper-50); }
+.insightBtn:focus-visible { outline: 2px solid var(--c-glow); outline-offset: 3px; }
+
+/* ── Tapes row (SME, paused) ───────────────────────────────────────── */
+.tapes { grid-row: 2; position: relative; z-index: 4; display: flex; gap: 0; }
+.sme {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 24px 0 20px;
+  font: 600 11px/1 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--paper-50);
+  color: var(--ink-900);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+}
+.pausedTape {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 24px 0 20px;
+  font: 400 14px/1 var(--font-display);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: var(--signal-warn);
+  color: var(--on-signal);
+  clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+}
+
+/* ── Stage / dock ──────────────────────────────────────────────────── */
+.stageArea { grid-row: 3; position: relative; min-height: 0; overflow: hidden; }
+.dock { grid-row: 4; position: relative; z-index: 5; }
+.loadingStage { height: 100%; background: linear-gradient(104deg, transparent 0 40%, color-mix(in srgb, var(--c-primary) 10%, transparent) 40% 52%, transparent 52%); }
+.retime { position: absolute; inset: 0; display: grid; place-items: center; background: color-mix(in srgb, var(--ink-900) 50%, transparent); z-index: 8; }
+
+.errorScreen { min-height: 100vh; display: grid; place-items: center; padding: 48px; }
+/* Insight overlays the right column in S09/S10/S12; the dock's controls slide out from under it. */
+.dockUnder { padding-right: 400px; }
+.dockUnderCompact { padding-right: 300px; }
+.modeTag {
+  flex: none;
+  padding: 4px 8px;
+  font: 700 11px/1 var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--paper-50);
+  border: 1px solid var(--paper-300);
+}

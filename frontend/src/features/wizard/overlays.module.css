@@ -1,0 +1,17 @@
+/* O04 cost confirm, O13 unsaved draft. Owner: Builder B. */
+.cost { display: grid; gap: 12px; }
+.costLabel { margin: 0; font: 600 13px/1 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--c-glow); }
+.costFigure { display: flex; align-items: baseline; gap: 6px; }
+.costApprox { font: 400 36px/1 var(--font-display); color: var(--paper-300); }
+.costUsd { font: 400 72px/0.9 var(--font-display); letter-spacing: 0.01em; color: var(--paper-50); text-shadow: 4px 4px 0 var(--c-primary); }
+.costBar { position: relative; height: 8px; background: var(--ink-500); clip-path: polygon(3px 0, 100% 0, calc(100% - 3px) 100%, 0 100%); }
+.costBar span { position: absolute; inset: 0; transform-origin: 0 50%; }
+.costBarAfter { background: color-mix(in srgb, var(--c-primary) 45%, transparent); }
+.costBarNow { background: var(--c-primary); z-index: 1; }
+.costMeta { margin: 0; font-size: 13px; line-height: 1.5; color: var(--paper-300); }
+.costFine { margin: 0; font: 500 11px/1.5 var(--font-mono); color: var(--paper-300); opacity: 0.85; }
+
+.draft { display: flex; gap: 16px; align-items: flex-start; }
+.draftText { display: grid; gap: 8px; justify-items: start; }
+.draftName { margin: 0; font: 400 26px/1 var(--font-display); text-transform: uppercase; letter-spacing: 0.03em; }
+.draftBody { margin: 0; font-size: 14px; line-height: 1.5; color: var(--paper-300); }

@@ -1,0 +1,113 @@
+/* SteeringBar + Transport docks (72 px) and the O12 DockExpansion. Chrome is house orange (R9). Builder D. */
+.dock {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 72px;
+  padding: 0 32px;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--ink-700) 92%, transparent), var(--ink-900));
+  border-top: 2px solid var(--ink-500);
+}
+.dock::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -2px;
+  width: 220px;
+  height: 2px;
+  background: var(--horizon-500);
+}
+@media (max-width: 1380px) { .dock { padding: 0 20px; gap: 10px; } }
+.group { display: flex; align-items: center; gap: 10px; min-width: 0; }
+@media (max-width: 1380px) { .group { gap: 6px; } }
+.right { flex: none; gap: 16px; }
+.square { min-width: 0; width: calc(var(--h) * 1.5); padding: 0; }
+.divider { width: 2px; height: 32px; margin: 0 4px; background: var(--ink-500); transform: skewX(-12deg); }
+.hint {
+  font-size: 12px;
+  color: var(--paper-300);
+  white-space: nowrap;
+}
+@media (max-width: 1380px) { .hint { display: none; } }
+.resume { animation: hz-pulse-soft 1.6s var(--ease-breathe) infinite; }
+:global(:root[data-motion="reduced"]) .resume { animation: none; }
+.pace { flex: none; }
+
+/* Episode rail */
+.episode { gap: 12px; }
+.ticks { display: flex; gap: 3px; align-items: center; }
+.ticks i {
+  display: block;
+  width: 6px;
+  height: 18px;
+  background: var(--ink-500);
+  clip-path: polygon(2px 0, 100% 0, calc(100% - 2px) 100%, 0 100%);
+}
+.ticks i[data-on] { background: var(--horizon-500); }
+.ticks:has(i:nth-child(21)) i { width: 4px; }
+.turn, .turnBtn {
+  font-family: var(--font-display);
+  font-size: 18px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--paper-300);
+}
+.turn b { font-weight: 400; color: var(--paper-50); font-size: 22px; }
+.turnBtn { color: var(--horizon-500); }
+.turnBtn:hover { color: var(--paper-50); }
+
+/* ── O12 DockExpansion: slides up 120 px over the log, keeps its draft (R5) ── */
+.expHost { position: relative; height: 0; z-index: 20; }
+.exp {
+  position: absolute;
+  left: 50%;
+  bottom: 8px;
+  width: min(880px, calc(100vw - 48px));
+  translate: -50% 0;
+  padding: 14px 18px 14px 22px;
+  background: var(--ink-700);
+  box-shadow: 0 -2px 0 var(--horizon-500), 0 18px 48px color-mix(in srgb, var(--ink-900) 80%, transparent);
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%);
+  animation: expIn 240ms cubic-bezier(0.2, 0.9, 0.3, 1.3) both;
+}
+@keyframes expIn { from { opacity: 0; transform: translateY(120px); } to { opacity: 1; transform: none; } }
+:global(:root[data-motion="reduced"]) .exp { animation: hz-fade-in var(--t-reduced) linear both; }
+.expHead { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.expHint { font-size: var(--text-xs); color: var(--paper-300); }
+.expClose { margin-left: auto; }
+.targets { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.target {
+  --h: 40px;
+  --s: calc(var(--h) * var(--tan-tilt-soft));
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: var(--h);
+  padding: 0 calc(var(--s) + 12px) 0 calc(var(--s) + 4px);
+  font-family: var(--font-display);
+  font-size: 16px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--paper-50);
+}
+.target::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--ink-500);
+  clip-path: polygon(var(--s) 0, 100% 0, calc(100% - var(--s)) 100%, 0 100%);
+}
+.target[aria-checked="true"] { color: var(--c-on-primary); }
+.target[aria-checked="true"]::before { background: var(--c-primary); }
+.target:focus-visible { outline: 2px solid var(--c-glow); outline-offset: 2px; }
+.target:disabled { opacity: 0.45; }
+.row { display: flex; align-items: flex-end; gap: 12px; }
+.field { flex: 1; min-width: 0; }
+.field textarea { min-height: 52px; max-height: 140px; resize: none; }
