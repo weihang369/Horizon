@@ -221,6 +221,11 @@ export interface Session {
   createdAt: string; updatedAt: string; lastMessageAt?: string;
 }
 
+/** Mid-session settings change carried by `session.state` (D-57). */
+export type SessionSettingsPatch = Partial<
+  Pick<Session, "title" | "titleIsCustom" | "emotionMode" | "musicPolicy" | "readableMode" | "config">
+>;
+
 // ── Message & trace ─────────────────────────────────────────────────────────
 export type MessageKind =
   | "chat" | "steer" | "interject" | "direction" | "narration" | "summary" | "verdict" | "system_note";
@@ -295,7 +300,7 @@ export type StreamEvent =
   | { type: "budget.warning"; payload: { scope: "daily" | "creation"; spentUsd: number; capUsd: number } }
   | { type: "error"; payload: { code: ErrorCode; message: string; retryable: boolean; messageId?: string } }
   | { type: "message"; payload: { message: Message } } // D-51: whole non-streamed message (user, steer, direction, system_note, verdict)
-  | { type: "session.state"; payload: { status?: SessionStatus; pausedReason?: PausedReason; state?: DebateState | WatchState; participants?: Participant[] } }; // D-51
+  | { type: "session.state"; payload: { status?: SessionStatus; pausedReason?: PausedReason; state?: DebateState | WatchState; participants?: Participant[]; settings?: SessionSettingsPatch } }; // D-51, D-57
 
 export type StreamEventType = StreamEvent["type"];
 

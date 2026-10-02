@@ -314,7 +314,7 @@ function render(c: Ctx, bars: number) {
   const swing = SWING[groove] ?? 0.5;
   const tAt = (bar: number, s: number) => {
     const eighthOff = s % 4 === 2 ? (2 * swing - 1) * (beat / 2) : 0;
-    return bar * 4 * beat + s * step + eighthOff + (rng.next() - 0.5) * 0.006;
+    return Math.max(0.001, bar * 4 * beat + s * step + eighthOff + (rng.next() - 0.5) * 0.006);
   };
   const prog = rng.pick(PROGRESSIONS[c.mode]);
   const melodyPool = PENTA[c.mode];

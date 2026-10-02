@@ -2,11 +2,11 @@
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.04em;
+  gap: 0.1em 0.3em;
   line-height: 1;
   font-weight: 400;
 }
-.space { display: inline-block; width: 0.3em; }
+.word { display: inline-flex; align-items: center; gap: 0.04em; white-space: nowrap; }
 .tile {
   display: inline-block;
   padding: 0.06em 0.16em 0.04em;

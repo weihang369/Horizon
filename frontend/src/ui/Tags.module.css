@@ -17,6 +17,7 @@
   text-transform: uppercase;
   white-space: nowrap;
   line-height: 1;
+  justify-self: start;
 }
 .tape::before {
   content: "";

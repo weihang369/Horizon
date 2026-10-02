@@ -1,0 +1,65 @@
+/* Name plate: primary parallelogram (−8°) + ink role strip offset 10 px right (VMD §2.2). */
+.plate {
+  --h: 44px;
+  --s: calc(var(--h) * var(--tan-tilt-soft));
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 100%;
+  min-width: 0;
+}
+.bar {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  height: var(--h);
+  max-width: 100%;
+  padding: 0 calc(var(--s) + 14px) 0 calc(var(--s) + 12px);
+  color: var(--c-on-primary);
+}
+.bar::before, .bar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(var(--s) 0, 100% 0, calc(100% - var(--s)) 100%, 0 100%);
+}
+.bar::before { z-index: -1; background: var(--c-primary); }
+/* misregistered ink block behind (print look) */
+.bar::after { z-index: -2; background: var(--ink-900); transform: translate(5px, 4px); }
+.name {
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: 28px;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  padding-top: 2px;
+}
+.role {
+  position: relative;
+  max-width: calc(100% - 10px);
+  margin: -1px 0 0 calc(10px + var(--s) * 0.5);
+  padding: 4px 12px 3px;
+  overflow: hidden;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--paper-50);
+  background: var(--ink-900);
+  clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%);
+}
+.lg { --h: 48px; }
+.lg .name { font-size: 32px; }
+.md { --h: 36px; }
+.md .name { font-size: 24px; }
+.sm { --h: 26px; }
+.sm .name { font-size: 16px; }
+.sm .role { font-size: 10px; padding: 2px 8px 2px; margin-left: calc(6px + var(--s) * 0.5); }

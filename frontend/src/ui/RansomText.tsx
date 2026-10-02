@@ -39,6 +39,12 @@ export function RansomText({
   text, size = 48, as: Tag = "span", tone = "mixed", slam, delayMs = 0, staggerMs = 30, className, style,
 }: RansomTextProps) {
   const letters = [...text];
+  // Group tiles into words so wrapping only happens between words, never mid-word.
+  const words: { ch: string; i: number }[][] = [[]];
+  letters.forEach((ch, i) => {
+    if (ch === " ") words.push([]);
+    else words[words.length - 1].push({ ch, i });
+  });
   let tileIndex = 0;
   return (
     <Tag
@@ -47,33 +53,35 @@ export function RansomText({
       aria-label={text}
       role={Tag === "span" ? "text" : undefined}
     >
-      {letters.map((ch, i) => {
-        if (ch === " ") return <span key={i} className={s.space} aria-hidden="true" />;
-        const r = hash(text, i);
-        const font = FONTS[Math.floor(hash(text, i + 101) * 3)];
-        const bg =
-          tone === "mixed" ? (["ink", "paper", "accent", "ink", "paper"] as const)[Math.floor(r * 5)]
-          : tone === "brand" ? (i % 3 === 1 ? "ink" : "brand")
-          : tone;
-        const rot = ROT[(Math.floor(r * 97) + i) % ROT.length];
-        const sc = 0.92 + hash(text, i + 7) * 0.16;
-        const idx = tileIndex++;
-        return (
-          <span
-            key={i}
-            aria-hidden="true"
-            className={cx(s.tile, s[`f_${font}`], s[`bg_${bg}`])}
-            style={{
-              "--r": `${rot}deg`,
-              "--sc": sc.toFixed(3),
-              "--r-from": `${rot * -2.5}deg`,
-              animationDelay: slam ? `${delayMs + idx * staggerMs}ms` : undefined,
-            } as CSSProperties}
-          >
-            {ch}
-          </span>
-        );
-      })}
+      {words.filter((w) => w.length).map((w) => (
+        <span key={w[0].i} className={s.word} aria-hidden="true">
+          {w.map(({ ch, i }) => {
+            const r = hash(text, i);
+            const font = FONTS[Math.floor(hash(text, i + 101) * 3)];
+            const bg =
+              tone === "mixed" ? (["ink", "paper", "accent", "ink", "paper"] as const)[Math.floor(r * 5)]
+              : tone === "brand" ? (i % 3 === 1 ? "ink" : "brand")
+              : tone;
+            const rot = ROT[(Math.floor(r * 97) + i) % ROT.length];
+            const sc = 0.92 + hash(text, i + 7) * 0.16;
+            const idx = tileIndex++;
+            return (
+              <span
+                key={i}
+                className={cx(s.tile, s[`f_${font}`], s[`bg_${bg}`])}
+                style={{
+                  "--r": `${rot}deg`,
+                  "--sc": sc.toFixed(3),
+                  "--r-from": `${rot * -2.5}deg`,
+                  animationDelay: slam ? `${delayMs + idx * staggerMs}ms` : undefined,
+                } as CSSProperties}
+              >
+                {ch}
+              </span>
+            );
+          })}
+        </span>
+      ))}
     </Tag>
   );
 }

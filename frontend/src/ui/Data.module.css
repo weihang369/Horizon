@@ -31,7 +31,7 @@
 .skelLine {
   position: relative;
   height: var(--skel-h, 14px);
-  background: var(--ink-700);
+  background: var(--ink-500);
   overflow: hidden;
   clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
 }

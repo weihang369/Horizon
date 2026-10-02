@@ -48,7 +48,8 @@
   text-transform: uppercase;
   color: var(--paper-300);
 }
-.tab:hover { color: var(--paper-50); }
+.tab:hover:not(:disabled) { color: var(--paper-50); }
+.tab:disabled { opacity: 0.4; }
 .tab[aria-selected="true"] { color: var(--paper-50); }
 .tab::after {
   content: "";

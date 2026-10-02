@@ -1,0 +1,148 @@
+/* Portrait card (VMD §2.2): 3:4, cut corner, 6 px palette frame, misregistered ink block, halftone stage. */
+.root {
+  --pc-w: 236px;
+  --frame: 6px;
+  --bleed: 6px;
+  --misreg: 10px;
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  width: var(--pc-w);
+  max-width: 100%;
+  vertical-align: top;
+}
+.hero { --bleed: 10px; }
+.stage { --bleed: 8px; }
+.thumb { --frame: 3px; --bleed: 0px; --misreg: 4px; }
+.head { --frame: 3px; --bleed: 0px; --misreg: 3px; --clip-card: polygon(0 0, 100% 0, 100% 84%, 84% 100%, 0 100%); }
+
+.pose {
+  position: relative;
+  container-type: inline-size;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  transform-origin: 50% 100%;
+  transition: transform 320ms var(--ease-slam);
+  outline: none;
+}
+.head .pose { aspect-ratio: 1; }
+.speaking .pose { transform: scale(1.04); z-index: 1; }
+.listening .pose { transform: scale(0.96); }
+.dimmed .pose { transform: scale(0.96); }
+.interactive .pose { cursor: pointer; }
+.interactive:not(.speaking) .pose:hover { transform: translateY(-6px); }
+
+.body { position: absolute; inset: 0; }
+
+.ring {
+  position: absolute;
+  inset: -5px;
+  background: var(--c-glow);
+  clip-path: var(--clip-card);
+  opacity: 0;
+}
+.pose:focus-visible .ring { opacity: 1; }
+
+.misreg {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--c-primary) 30%, var(--ink-900));
+  clip-path: var(--clip-card);
+  transform: translate(var(--misreg), var(--misreg)) rotate(-2deg);
+  transition: transform 320ms var(--ease-slam);
+}
+.speaking .misreg { background: var(--c-primary); transform: translate(calc(var(--misreg) * 1.4), calc(var(--misreg) * 1.2)) rotate(-3deg); opacity: 0.85; }
+
+.frame { position: absolute; inset: 0; background: var(--c-primary); clip-path: var(--clip-card); }
+.inner { position: absolute; inset: var(--frame); clip-path: var(--clip-card); overflow: hidden; background: var(--c-stage); }
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(104deg, transparent 0 52%, color-mix(in srgb, var(--c-primary) 22%, transparent) 52% 64%, transparent 64%),
+    radial-gradient(circle, color-mix(in srgb, var(--c-primary) 40%, transparent) 1.2px, transparent 1.6px) 0 0 / 8px 8px,
+    var(--c-stage);
+}
+
+.art { position: absolute; inset: calc(var(--bleed) * -1); will-change: transform; }
+.settle, .breathe { position: absolute; inset: 0; }
+.breathe { transform-origin: 50% 100%; animation: breathe 4s var(--ease-breathe) infinite; }
+.still { animation: none; }
+@keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.008); } }
+
+.layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: 50% 0;
+  opacity: 0;
+  user-select: none;
+  pointer-events: none;
+}
+.head .layer { transform: scale(1.75); transform-origin: 50% 36%; }
+.thumb .layer { transform: scale(1.12); transform-origin: 50% 30%; }
+.cur { opacity: 1; z-index: 2; animation: layerIn var(--t-swap) var(--ease-out) both; }
+.prev { opacity: 1; z-index: 1; }
+@keyframes layerIn { from { opacity: 0; } to { opacity: 1; } }
+/* blink: 120 ms of closed eyes every ~5.2 s */
+.blink { z-index: 3; animation: blink 5.2s steps(1, end) infinite; }
+@keyframes blink { 0% { opacity: 0; } 96% { opacity: 1; } 98.3% { opacity: 0; } }
+/* exhausted: static greyscale duplicate, only its opacity animates (R19) */
+.grey { z-index: 4; filter: grayscale(1) brightness(0.8); opacity: 0; transition: opacity 600ms var(--ease-out); }
+.greyOn { opacity: 0.6; }
+
+.tint { position: absolute; inset: 0; z-index: 5; background: var(--tint); mix-blend-mode: color; opacity: 0.4; }
+.veil { position: absolute; inset: 0; z-index: 6; background: var(--ink-900); opacity: 0; transition: opacity 320ms var(--ease-out); }
+.listening .veil { opacity: 0.25; }
+.dimmed .veil { opacity: 0.5; }
+.asleep .veil { opacity: 0.15; }
+.sheen {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+  background: linear-gradient(160deg, rgba(245, 242, 234, 0.1), transparent 34%);
+}
+
+.phTape {
+  position: absolute;
+  z-index: 8;
+  right: calc(var(--frame) + 2px);
+  bottom: 11%;
+  max-width: calc(100% - var(--frame) * 2 - 8px);
+  padding: 0.4em 0.8em 0.32em;
+  overflow: hidden;
+  font-family: var(--font-mono);
+  font-size: clamp(7px, 3.7cqw, 11px);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--ink-900);
+  background: var(--paper-50);
+  box-shadow: 2px 2px 0 var(--ink-900);
+  transform: rotate(-3deg);
+  transform-origin: right center;
+  pointer-events: none;
+}
+
+.footer {
+  position: relative;
+  z-index: 4;
+  display: grid;
+  justify-items: start;
+  gap: 8px;
+  margin: -24px 0 0 -10px;
+  max-width: calc(100% + 10px);
+}
+.energy { width: calc(var(--pc-w) * 0.72); margin-left: 16px; }
+.hero .energy { width: calc(var(--pc-w) * 0.62); }
+
+:global(:root[data-motion="reduced"]) .pose,
+:global(:root[data-motion="reduced"]) .misreg,
+:global(:root[data-motion="reduced"]) .veil { transition-duration: var(--t-reduced); }

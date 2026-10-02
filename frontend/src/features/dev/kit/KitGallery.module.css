@@ -1,0 +1,158 @@
+/* Kit Gallery layout. Owner: VMD. Its own scroll container (body is overflow: hidden). */
+.root {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  height: 100vh;
+  overflow-y: auto;
+  scroll-behavior: auto;
+  background:
+    radial-gradient(circle, rgba(255, 77, 46, 0.07) 1.2px, transparent 1.6px) 0 0 / 8px 8px,
+    var(--ink-900);
+}
+.nav {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 24px 18px;
+  border-right: 1px solid var(--ink-500);
+  background: var(--ink-900);
+  overflow-y: auto;
+  z-index: 5;
+}
+.navSub { font-family: var(--font-mono); font-size: 11px; color: var(--paper-300); }
+.nav ul { display: grid; gap: 2px; margin-top: 6px; }
+.nav a {
+  display: block;
+  padding: 4px 8px;
+  font-family: var(--font-display);
+  font-size: 15px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--paper-300);
+  text-decoration: none;
+  border-left: 3px solid transparent;
+}
+.nav a:hover { color: var(--paper-50); border-left-color: var(--horizon-500); }
+.prefs { display: grid; gap: 10px; margin-top: auto; padding-top: 12px; border-top: 1px solid var(--ink-500); }
+
+.main { min-width: 0; padding: 40px 48px 120px; display: grid; gap: 56px; align-content: start; }
+.hero { display: grid; gap: 14px; padding-bottom: 8px; }
+.lede { max-width: 62ch; color: var(--paper-300); }
+.footer { font-family: var(--font-mono); font-size: 12px; color: var(--paper-300); }
+
+.section { display: grid; gap: 18px; scroll-margin-top: 24px; }
+.sectionHead { display: flex; align-items: center; gap: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--ink-500); }
+.h2 { font-family: var(--font-display); font-size: 34px; letter-spacing: 0.02em; text-transform: uppercase; line-height: 1; }
+
+.row { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 16px; align-items: center; }
+.rowLabel { font-family: var(--font-mono); font-size: 11px; color: var(--paper-300); text-transform: uppercase; letter-spacing: 0.06em; }
+.rowBody { display: flex; flex-wrap: wrap; gap: 14px 16px; align-items: center; }
+.rowBodyNoWrap { display: flex; gap: 16px; align-items: flex-end; overflow-x: auto; }
+
+.display { font-family: var(--font-display); font-size: 40px; line-height: 1; text-transform: uppercase; }
+.body { font-size: var(--text-body); line-height: var(--leading-body); color: var(--paper-50); }
+.mono { font-family: var(--font-mono); font-size: 12px; color: var(--paper-300); }
+.note { font-size: 13px; color: var(--paper-300); max-width: 56ch; }
+
+.stack { display: grid; gap: 12px; align-content: start; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; align-items: start; }
+.panel {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  background: var(--ink-700);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%);
+}
+.slider { width: 260px; }
+.swatches { display: flex; flex-wrap: wrap; gap: 18px 10px; padding-top: 10px; }
+.menuHost { position: relative; display: flex; align-items: center; gap: 14px; }
+.develop { height: 140px; margin-top: 8px; }
+
+.panelsGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 40px; align-items: start; }
+.drawerBox { height: 300px; display: flex; justify-content: flex-end; padding-left: 30px; }
+
+/* Portrait 6 × 7 */
+.emoHead, .emoRow { display: grid; grid-template-columns: 150px repeat(7, 128px); gap: 14px 16px; align-items: center; }
+.emoRow { padding-bottom: 6px; }
+.emoLabel { font-family: var(--font-mono); font-size: 11px; color: var(--paper-300); text-transform: uppercase; }
+.emoLabel b { color: var(--horizon-500); }
+
+.sizesRow { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 40px; align-items: start; }
+.sizesSmall { display: flex; flex-wrap: wrap; gap: 36px; align-items: flex-start; margin-top: 18px; }
+.emoPicker { display: flex; flex-wrap: wrap; gap: 6px 4px; }
+.heads { display: grid; grid-template-columns: repeat(3, 72px); gap: 12px; }
+.labeled { display: grid; gap: 12px; justify-items: start; margin: 0; }
+
+.vfxGrid { display: grid; grid-template-columns: repeat(3, 200px); gap: 40px 72px; padding: 30px 60px; }
+.vfxBox { padding: 24px 40px; }
+.vfxCard {
+  position: relative;
+  display: block;
+  width: 140px;
+  aspect-ratio: 3 / 4;
+}
+.vfxCard img { width: 100%; height: 100%; clip-path: var(--clip-card); object-fit: cover; }
+
+.energyRow { display: grid; grid-template-columns: 150px 1fr 1fr; gap: 20px; align-items: center; }
+.energyCell { display: block; }
+.energyLive { display: grid; gap: 14px; padding: 8px 0 4px; }
+
+.shatterCard { cursor: pointer; transform: rotate(-6deg); width: 220px; }
+.shatterCover { aspect-ratio: 3 / 4; display: grid; place-items: end start; padding: 16px; clip-path: var(--clip-card); }
+.dot { display: inline-block; width: 10px; height: 10px; }
+.ceremonyWrap { display: grid; gap: 12px; width: 100%; }
+.ceremonyStage {
+  position: relative;
+  height: 180px;
+  overflow: hidden;
+  background: var(--ink-700);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%);
+}
+.ceremony { position: absolute; inset: 0; display: grid; place-items: center; }
+.ceremonyBand {
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  top: 34%;
+  height: 34%;
+  background: var(--horizon-500);
+  clip-path: polygon(3% 0, 100% 0, 97% 100%, 0 100%);
+  transform-origin: left center;
+  animation: global(hz-tape-in) 260ms var(--ease-wipe) both;
+}
+.ceremony[data-end] .ceremonyBand { animation: none; }
+
+.palGrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px; }
+.palCard {
+  display: grid;
+  grid-template-rows: 54px auto;
+  background: var(--c-stage);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%);
+}
+.palChips { display: grid; grid-template-columns: 3fr 1fr 1fr 1fr 1fr 1fr; }
+.palChips i { display: block; }
+.palBody { display: grid; gap: 10px; padding: 12px 14px 16px; background: var(--c-surface); color: var(--c-text); }
+.palName { font-family: var(--font-display); font-size: 22px; text-transform: uppercase; letter-spacing: 0.03em; line-height: 1; }
+.palFit { font-size: 12px; color: var(--paper-300); }
+
+.coverGrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 34px 26px; padding: 10px 6px; }
+.coverCard { display: grid; gap: 10px; margin: 0; }
+.cover {
+  aspect-ratio: 3 / 4;
+  display: grid;
+  align-items: end;
+  padding: 14px;
+  transform: rotate(-6deg);
+  clip-path: var(--clip-card);
+}
+
+@media (max-width: 1360px) {
+  .main { padding: 32px 28px 100px; }
+  .emoHead, .emoRow { grid-template-columns: 130px repeat(7, 112px); gap: 12px; }
+  .palGrid, .coverGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .vfxGrid { gap: 40px 48px; padding: 30px 40px; }
+}

@@ -365,6 +365,9 @@ export const SessionEventSchema = z.discriminatedUnion("type", [
     status: SessionStatusSchema.optional(), pausedReason: PausedReasonSchema.optional(),
     state: z.union([DebateStateSchema, WatchStateSchema]).optional(),
     participants: z.array(ParticipantSchema).optional(),
+    settings: SessionSchema.pick({
+      title: true, titleIsCustom: true, emotionMode: true, musicPolicy: true, readableMode: true, config: true,
+    }).partial().optional(), // D-57
   })),
 ]) satisfies z.ZodType<SessionEvent>;
 

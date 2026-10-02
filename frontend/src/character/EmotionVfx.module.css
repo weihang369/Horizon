@@ -1,0 +1,168 @@
+/* EmotionVfx overlay. Positions are card percentages; sizes are card-width relative (cqw).
+ * Only transform + opacity animate. */
+.root {
+  --k: 1;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  container-type: inline-size;
+  z-index: 3;
+}
+.mini { --k: 0.5; }
+.canvas { top: -25%; left: -35%; width: 170%; height: 150%; max-width: none; }
+
+/* Sad: blue vignette (loop; fades in to .55) */
+.vignette {
+  position: absolute;
+  inset: 0;
+  clip-path: var(--clip-card);
+  background: radial-gradient(ellipse 70% 62% at 50% 40%, transparent 45%, var(--sad-blue));
+  opacity: 0.55;
+  animation: vigIn 600ms var(--ease-out) both;
+}
+.vignetteShot { animation: vigShot 1100ms var(--ease-out) both; }
+@keyframes vigIn { from { opacity: 0; } to { opacity: 0.55; } }
+@keyframes vigShot { 0% { opacity: 0; } 30% { opacity: 0.5; } 100% { opacity: 0; } }
+
+/* Angry: red edge glow (loop .25 ↔ .45) */
+.edge {
+  position: absolute;
+  inset: 0;
+  clip-path: var(--clip-card);
+  box-shadow: inset 0 0 calc(10cqw) calc(2cqw) var(--signal-err);
+  opacity: 0.25;
+  animation: edge 2.4s var(--ease-breathe) infinite;
+}
+@keyframes edge { 0%, 100% { opacity: 0.25; } 50% { opacity: 0.45; } }
+
+/* Angry one-shot: cross-vein at (72,18) */
+.vein {
+  position: absolute;
+  left: 72%;
+  top: 18%;
+  width: calc(15cqw * var(--k));
+  translate: -50% -50%;
+  fill: none;
+  stroke: var(--signal-err);
+  stroke-width: 5;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 0 var(--ink-900)) drop-shadow(1px 1px 0 var(--ink-900));
+  animation: vein 1100ms var(--ease-slam) both;
+}
+@keyframes vein {
+  0% { opacity: 0; transform: scale(0.2) rotate(-20deg); }
+  18% { opacity: 1; transform: scale(1.25) rotate(4deg); }
+  30% { transform: scale(0.95) rotate(0deg); }
+  42% { transform: scale(1.08); }
+  54%, 80% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.1); }
+}
+
+/* Surprised one-shot: 12-point "!" burst at (70,12) */
+.burst {
+  position: absolute;
+  left: 70%;
+  top: 12%;
+  width: calc(26cqw * var(--k));
+  translate: -50% -50%;
+  overflow: visible;
+  animation: burst 1000ms var(--ease-slam) both;
+}
+.burst polygon { fill: var(--paper-50); stroke: var(--ink-900); stroke-width: 4; stroke-linejoin: round; }
+.burst text {
+  fill: var(--ink-900);
+  font-family: var(--font-display);
+  font-size: 52px;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+@keyframes burst {
+  0% { opacity: 0; transform: scale(0.3) rotate(-25deg); }
+  14% { opacity: 1; transform: scale(1.18) rotate(6deg); }
+  26% { transform: scale(1) rotate(0deg); }
+  75% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.9); }
+}
+
+/* Thinking: bubble at (74,14), dots light in sequence over 1.2 s */
+.bubble {
+  position: absolute;
+  left: 74%;
+  top: 14%;
+  width: calc(28cqw * var(--k));
+  aspect-ratio: 2 / 1.15;
+  translate: -50% -50%;
+  animation: bubbleIn 360ms var(--ease-slam) both;
+}
+.cloud {
+  position: absolute;
+  inset: 0 0 18% 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9%;
+  background: var(--paper-50);
+  border: 2px solid var(--ink-900);
+  border-radius: 50%;
+  box-shadow: 3px 3px 0 var(--ink-900);
+}
+.cloud i {
+  width: 13%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--ink-900);
+  opacity: 0.22;
+  animation: dot 1.2s steps(1, end) infinite;
+}
+.cloud i:nth-child(2) { animation-delay: 0.3s; }
+.cloud i:nth-child(3) { animation-delay: 0.6s; }
+@keyframes dot { 0% { opacity: 1; } 25%, 100% { opacity: 0.22; } }
+.trail1, .trail2 {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--paper-50);
+  border: 2px solid var(--ink-900);
+}
+.trail1 { width: 14%; aspect-ratio: 1; left: 8%; bottom: 4%; }
+.trail2 { width: 8%; aspect-ratio: 1; left: -4%; bottom: -14%; }
+@keyframes bubbleIn { from { opacity: 0; transform: scale(0.4) translateY(12%); } to { opacity: 1; transform: none; } }
+
+/* Embarrassed: blush hatching at (40,42) and (60,42), wipes in, held at .7 */
+.blush { position: absolute; inset: 0; opacity: 0.7; }
+.hatch {
+  position: absolute;
+  top: 42%;
+  width: 17cqw;
+  translate: -50% -50%;
+  fill: none;
+  stroke: var(--blush);
+  stroke-width: 3.2;
+  stroke-linecap: round;
+  transform-origin: left center;
+  animation: hatchIn 260ms var(--ease-out) both;
+}
+.hatchL { left: 39%; }
+.hatchR { left: 61%; animation-delay: 70ms; }
+.static .hatch { animation: none; }
+@keyframes hatchIn { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* Static badges (VFX off / reduced motion keep these, R19) */
+.badge {
+  position: absolute;
+  right: 6%;
+  top: 5%;
+  padding: 3px 9px 2px;
+  font-family: var(--font-display);
+  font-size: clamp(11px, 7cqw, 22px);
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+  color: var(--paper-50);
+  background: var(--ink-900);
+  box-shadow: 2px 2px 0 var(--c-primary);
+  clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
+}
+.badgeTired { font-family: var(--font-ui); font-weight: 700; }
+
+/* Subtle: quieter DOM layers */
+.subtle .edge { animation: none; opacity: 0.3; }
+.subtle .vein, .subtle .burst { animation-duration: 900ms; }

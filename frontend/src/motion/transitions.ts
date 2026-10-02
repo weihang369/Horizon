@@ -130,7 +130,11 @@ export function runTransition(kind: TransitionKind, opts: TransitionOpts): Trans
       const dir = effective === "slash" ? 1 : -1;
       const color = opts.color ?? "var(--c-primary)";
       // Pane A (covers): 160vw wide band, skewed (no text inside, so skew is fine here).
-      const a = el({ top: "-10vh", height: "120vh", width: "170vw", left: "-35vw", background: color }, parent);
+      // Leading paper hairline (box-shadow on the travel side) sells the cut.
+      const a = el({
+        top: "-10vh", height: "120vh", width: "170vw", left: "-35vw", background: color,
+        boxShadow: `${dir * 14}px 0 0 0 var(--paper-50)`,
+      }, parent);
       const b = el({ top: "-10vh", height: "120vh", width: "45vw", left: "0", background: "var(--ink-900)" }, parent);
       parent.insertBefore(b, a);
       const sk = `skewX(${-14 * dir}deg)`;
@@ -188,12 +192,15 @@ export function runTransition(kind: TransitionKind, opts: TransitionOpts): Trans
         const rot = (8 + seeded(i * 13 + 5) * 17) * (seeded(i + 3) > 0.5 ? 1 : -1);
         const dx = Math.cos(poly.angle) * dist;
         const dy = Math.sin(poly.angle) * dist;
+        // Crack (shards jump apart ~8 % in 70 ms), then accelerate out; fade is back-loaded.
         const anim = wrap.animate(
           [
-            { transform: "translate(0,0) rotate(0deg)", opacity: 1 },
-            { transform: `translate(${dx}px, ${dy}px) rotate(${rot}deg)`, opacity: 0 },
+            { transform: "translate(0,0) rotate(0deg) scale(1)", opacity: 1, easing: EASE.out },
+            { transform: `translate(${dx * 0.08}px, ${dy * 0.08}px) rotate(${rot * 0.15}deg) scale(1.02)`, opacity: 1, offset: 0.13, easing: "cubic-bezier(.4,0,.7,.4)" },
+            { transform: `translate(${dx * 0.55}px, ${dy * 0.55}px) rotate(${rot * 0.6}deg) scale(0.98)`, opacity: 0.9, offset: 0.62, easing: EASE.in },
+            { transform: `translate(${dx}px, ${dy}px) rotate(${rot}deg) scale(0.94)`, opacity: 0 },
           ],
-          { duration: 550, delay: i * STAGGER.shard, easing: EASE.in, fill: "both" },
+          { duration: 550, delay: i * STAGGER.shard, fill: "both" },
         );
         add(wrap, anim);
       });

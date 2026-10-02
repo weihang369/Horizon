@@ -242,6 +242,8 @@ export function applyEvent(state: SessionRuntimeState, evt: SessionEvent): Sessi
       s = {
         ...s,
         streamingId: s.streamingId === messageId ? undefined : s.streamingId,
+        // A turn stopped before turn.start still ends the typing indicator.
+        thinkingId: s.streamingId === messageId || !s.messages[messageId] ? undefined : s.thinkingId,
         turn: s.turn?.messageId === messageId ? { ...s.turn, endAt: evt.at } : s.turn,
         session: { ...s.session, costUsd: round6(s.session.costUsd + (usage?.costUsd ?? 0)) },
       };
@@ -284,6 +286,7 @@ export function applyEvent(state: SessionRuntimeState, evt: SessionEvent): Sessi
     case "session.paused":
       return {
         ...s,
+        thinkingId: undefined,
         paused: true,
         pausedReason: e.payload.reason,
         session: { ...s.session, status: "paused", pausedReason: e.payload.reason },
@@ -317,8 +320,8 @@ export function applyEvent(state: SessionRuntimeState, evt: SessionEvent): Sessi
     }
 
     case "session.state": {
-      const { status, pausedReason, state: st, participants } = e.payload;
-      let session: Session = { ...s.session };
+      const { status, pausedReason, state: st, participants, settings } = e.payload;
+      let session: Session = { ...s.session, ...settings };
       if (status) {
         session = { ...session, status, pausedReason: status === "paused" ? pausedReason ?? session.pausedReason : undefined };
       } else if (pausedReason) {

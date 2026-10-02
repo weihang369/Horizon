@@ -1,6 +1,6 @@
 # 05: Data Contract (contract rev. 1.1)
 
-> **Contract rev. 1.1 (2026-10-02, UI/UX stage):** additive only, `schemaVersion` stays `1`. Adds the `message` and `session.state` events, a face-change form of `emotion`, `AppSettings.pricing` and `forkSeedSession(…, atSeq?)` (D-51).
+> **Contract rev. 1.1 (2026-10-02, UI/UX stage):** additive only, `schemaVersion` stays `1`. Adds the `message` and `session.state` events, a face-change form of `emotion`, `AppSettings.pricing` and `forkSeedSession(…, atSeq?)` (D-51), plus `session.state.settings` for mid-session settings changes (D-57).
 >
 > **This is the single source of truth for data shapes.** The UI/UX mock fixtures, the FastAPI backend and the AI layer all use these shapes.
 > Types are framework-agnostic, written in TypeScript style. `?` = optional or nullable. SWE may refine the storage, but **must not change the wire shapes** without updating this doc (and bumping `schemaVersion`).
@@ -414,7 +414,7 @@ draft (wizard: seed → … → theme) ─→ review (APPROVE step) ─(Summon)�
 | `token` | `{ messageId, delta, variantId? }` | |
 | `emotion` | `{ messageId?, characterId, emotion, source }` | **May arrive before, during or after tokens.** The UI holds ≤ 800 ms, then switches late. Ignored for display in MANUAL. *(D-51)* **without `messageId` and with `source: "user"`** it records a MANUAL `setEmotion` (face change), so Replay reproduces it |
 | `message` *(D-51)* | `{ message: Message }` | A whole, **non-streamed** message: user chat, `steer`, `interject`, `direction`, `system_note`, `summary`, `verdict`. Without it, Replay can't show what the user said |
-| `session.state` *(D-51)* | `{ status?, pausedReason?, state?: DebateState \| WatchState, participants?: Participant[] }` | Snapshot after a non-message change: verdict set, participant muted, side or cast change. Replaces the matching fields |
+| `session.state` *(D-51, D-57)* | `{ status?, pausedReason?, state?: DebateState \| WatchState, participants?: Participant[], settings?: Partial<Pick<Session, "title" \| "titleIsCustom" \| "emotionMode" \| "musicPolicy" \| "readableMode" \| "config">> }` | Snapshot after a non-message change: verdict set, participant muted, side or cast change, or a mid-session settings change (rename, emotion mode, responder policy, auto-advance, music, Readable mode). Replaces the matching fields |
 | `turn.end` | `{ messageId, status, interruptedBy?, usage, variantId? }` | |
 | `energy` | `{ characterId, current, max, state, fullAt? }` | After every drain or top-up; drives the energy bar |
 | `reaction` | `{ messageId, characterId, emotion, p?, source }` | Listeners only. May be late or absent |

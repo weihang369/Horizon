@@ -163,7 +163,7 @@ export function renderShadowSvg(spec: ShadowSpec): string {
   const fig =
     `<ellipse cx="150" cy="135" rx="48" ry="58"/><rect x="131" y="180" width="38" height="60"/>` +
     `<path d="${torso(spec.shoulders)}"/><path d="${HAIR[spec.hair]}"/>`;
-  const back = spec.accessories.filter((a) => a === "headphones_neck" || a === "scarf");
+  const back: ShadowAccessory[] = spec.accessories.filter((a) => a === "headphones_neck" || a === "scarf");
   const front = spec.accessories.filter((a) => !back.includes(a));
   const streakPath = spec.streak ? STREAK[spec.hair] : undefined;
   const lapels = spec.lapels

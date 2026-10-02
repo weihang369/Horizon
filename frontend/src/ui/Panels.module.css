@@ -4,6 +4,7 @@
 .modal {
   position: relative;
   width: min(560px, calc(100vw - 48px));
+  max-width: 100%;
   max-height: calc(100vh - 96px);
   display: grid;
   grid-template-rows: auto 1fr auto;
