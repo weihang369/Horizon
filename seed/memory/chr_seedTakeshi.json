@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "data": [
+    {
+      "id": "mem_seedTakeshi1",
+      "characterId": "chr_seedTakeshi",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "event",
+      "text": "Took Rin fishing on a rainy Sunday; first fish named \"Patch Notes\"",
+      "importance": 0.6,
+      "sourceSessionId": "ses_seedRainySunday",
+      "sourceMessageId": "msg_seedW10",
+      "createdAt": "2026-09-27T02:45:00Z"
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+/* Generated from theme/palettes.ts (doc 04 §3). One class per palette; vars snap, never interpolate (R10). Owner: VMD. */
+:where(:root), .pal-house {
+  --c-primary: #FF4D2E; --c-secondary: #FFB199; --c-accent: #FFC53D; --c-stage: #0B0B0F;
+  --c-surface: #1A1A22; --c-on-primary: #0B0B0F; --c-glow: #FFB199; --c-text: #F5F2EA;
+}
+/* Crimson Rebel */
+.pal-crimson_rebel {
+  --c-primary: #E63946; --c-secondary: #FFD6D9; --c-accent: #FFD23F; --c-stage: #1A0B0E;
+  --c-surface: #2A1418; --c-on-primary: #1A0B0E; --c-glow: #FF6B76; --c-text: #F5F2EA;
+}
+/* Sakura Pop */
+.pal-sakura_pop {
+  --c-primary: #FF6FAE; --c-secondary: #FFE0EE; --c-accent: #7A2E5A; --c-stage: #1C0F17;
+  --c-surface: #2D1825; --c-on-primary: #1C0F17; --c-glow: #FF9CC8; --c-text: #F5F2EA;
+}
+/* Ocean Clinic */
+.pal-ocean_clinic {
+  --c-primary: #2EC4B6; --c-secondary: #CBF3F0; --c-accent: #FF9F80; --c-stage: #071A1F;
+  --c-surface: #0F2A31; --c-on-primary: #071A1F; --c-glow: #6FE3D8; --c-text: #F5F2EA;
+}
+/* Royal Verdict */
+.pal-royal_verdict {
+  --c-primary: #6E5FE6; --c-secondary: #D9D4FF; --c-accent: #F2C14E; --c-stage: #100C26;
+  --c-surface: #1C1740; --c-on-primary: #FFFFFF; --c-glow: #9488F0; --c-text: #F5F2EA;
+}
+/* Golden Ledger */
+.pal-golden_ledger {
+  --c-primary: #D4A017; --c-secondary: #FFF3C4; --c-accent: #2F5D8A; --c-stage: #17130A;
+  --c-surface: #262014; --c-on-primary: #17130A; --c-glow: #F0C64A; --c-text: #F5F2EA;
+}
+/* Citrus Spark */
+.pal-citrus_spark {
+  --c-primary: #FF9F1C; --c-secondary: #FFE8C2; --c-accent: #2EC4B6; --c-stage: #1A1308;
+  --c-surface: #2A2010; --c-on-primary: #1A1308; --c-glow: #FFC066; --c-text: #F5F2EA;
+}
+/* Forest Sage */
+.pal-forest_sage {
+  --c-primary: #3A9D5D; --c-secondary: #D4EDC2; --c-accent: #F4A259; --c-stage: #0B1A10;
+  --c-surface: #14291B; --c-on-primary: #0B1A10; --c-glow: #6CCB8C; --c-text: #F5F2EA;
+}
+/* Midnight Ink */
+.pal-midnight_ink {
+  --c-primary: #6286BA; --c-secondary: #BFD7EA; --c-accent: #EE6C4D; --c-stage: #0A111C;
+  --c-surface: #142033; --c-on-primary: #0A111C; --c-glow: #8FAEDB; --c-text: #F5F2EA;
+}
+/* Lavender Dream */
+.pal-lavender_dream {
+  --c-primary: #B388EB; --c-secondary: #F1E3FF; --c-accent: #FF8FAB; --c-stage: #150F1F;
+  --c-surface: #241A33; --c-on-primary: #150F1F; --c-glow: #D2B5FF; --c-text: #F5F2EA;
+}
+/* Neon Arcade */
+.pal-neon_arcade {
+  --c-primary: #00E5C7; --c-secondary: #C9FFF6; --c-accent: #F15BB5; --c-stage: #0B0B1A;
+  --c-surface: #16162E; --c-on-primary: #0B0B1A; --c-glow: #5CFFE6; --c-text: #F5F2EA;
+}
+/* Ember Ash */
+.pal-ember_ash {
+  --c-primary: #FF5E3A; --c-secondary: #FFD0C2; --c-accent: #8A8A99; --c-stage: #170D0A;
+  --c-surface: #281814; --c-on-primary: #170D0A; --c-glow: #FF8A6B; --c-text: #F5F2EA;
+}
+/* Frost Byte */
+.pal-frost_byte {
+  --c-primary: #7FD1FF; --c-secondary: #E6F6FF; --c-accent: #A06CD5; --c-stage: #0A1520;
+  --c-surface: #132536; --c-on-primary: #0A1520; --c-glow: #B5E6FF; --c-text: #F5F2EA;
+}

@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "data": {
+    "id": "ses_mockYouDecideVoting",
+    "worldId": "wld_seedMeridian",
+    "title": "Debate: Compulsory voting",
+    "titleIsCustom": false,
+    "mode": "debate",
+    "participants": [
+      {
+        "characterId": "chr_seedVictor",
+        "role": "debater",
+        "side": "prop",
+        "currentEmotion": "neutral",
+        "mutedByUser": false
+      },
+      {
+        "characterId": "chr_seedMei",
+        "role": "debater",
+        "side": "opp",
+        "currentEmotion": "neutral",
+        "mutedByUser": false
+      }
+    ],
+    "emotionMode": "llm",
+    "musicPolicy": "arena",
+    "readableMode": false,
+    "config": {
+      "motion": "This house would make voting compulsory",
+      "format": "two_sided",
+      "roundsPreset": "quick",
+      "phases": [
+        "opening",
+        "closing"
+      ],
+      "turnLength": "short",
+      "moderator": "user",
+      "verdictBy": "user",
+      "rubric": [
+        {
+          "id": "evidence",
+          "label": "Evidence"
+        },
+        {
+          "id": "rebuttal",
+          "label": "Rebuttal"
+        },
+        {
+          "id": "clarity",
+          "label": "Clarity"
+        },
+        {
+          "id": "persuasion",
+          "label": "Persuasion"
+        }
+      ],
+      "autoAdvance": true,
+      "pauseMs": 1500,
+      "sides": {
+        "prop": [
+          "chr_seedVictor"
+        ],
+        "opp": [
+          "chr_seedMei"
+        ]
+      }
+    },
+    "isSeed": false,
+    "status": "paused",
+    "state": {
+      "phase": "verdict",
+      "round": 3,
+      "iteration": 1,
+      "nextSpeakerId": "chr_seedMei"
+    },
+    "costUsd": 0.000475,
+    "messageCount": 7,
+    "createdAt": "2026-09-25T15:05:00Z",
+    "updatedAt": "2026-09-25T15:05:22.460Z",
+    "pausedReason": "user",
+    "lastMessageAt": "2026-09-25T15:05:20.760Z"
+  }
+}

@@ -1,0 +1,30 @@
+.root {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.04em;
+  line-height: 1;
+  font-weight: 400;
+}
+.space { display: inline-block; width: 0.3em; }
+.tile {
+  display: inline-block;
+  padding: 0.06em 0.16em 0.04em;
+  transform: rotate(var(--r)) scale(var(--sc));
+  text-transform: uppercase;
+}
+.f_a { font-family: var(--font-ransom-a); }
+.f_b { font-family: var(--font-ransom-b); font-size: 0.86em; }
+.f_c { font-family: var(--font-ransom-c); font-size: 0.82em; }
+.bg_ink { background: var(--ink-900); color: var(--paper-50); box-shadow: inset 0 0 0 2px var(--paper-50); }
+.bg_paper { background: var(--paper-50); color: var(--ink-900); }
+.bg_accent { background: var(--c-primary); color: var(--c-on-primary); }
+.bg_brand { background: var(--horizon-500); color: var(--on-brand); }
+
+.slam .tile {
+  animation: global(hz-tile-drop) 320ms var(--ease-slam) both;
+}
+:global(:root[data-motion="reduced"]) .slam .tile {
+  animation: global(hz-fade-in) var(--t-reduced) linear both;
+  animation-delay: 0ms !important;
+}

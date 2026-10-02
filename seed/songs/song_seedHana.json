@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "data": {
+    "id": "song_seedHana",
+    "characterId": "chr_seedHana",
+    "status": "ready",
+    "url": "/assets/placeholder/themes/chr_seedHana.proc.json",
+    "durationSec": 16,
+    "brief": {
+      "genres": [
+        "city-pop"
+      ],
+      "moods": [
+        "playful",
+        "romantic"
+      ],
+      "bpm": 120,
+      "instruments": [
+        "synth",
+        "bells",
+        "bass"
+      ],
+      "vibe": "Bright city-pop, synth bells, slap bass"
+    },
+    "instrumental": true,
+    "generation": {
+      "model": "google/lyria-3-clip",
+      "prompt": "Instrumental theme: Bright city-pop, synth bells, slap bass. city-pop; playful, romantic; 120 BPM; synth, bells, bass.",
+      "costUsd": 0.04
+    },
+    "licenseNote": "Placeholder: procedural WebAudio sketch (D-52). The real theme comes from Google Lyria 3 Clip via OpenRouter (provider terms apply)."
+  }
+}

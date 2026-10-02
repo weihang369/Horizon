@@ -1,0 +1,6 @@
+* text eol=lf
+*.webp binary
+*.avif binary
+*.png binary
+*.opus binary
+*.mp3 binary

@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "data": {
+    "id": "song_seedRin",
+    "characterId": "chr_seedRin",
+    "status": "ready",
+    "url": "/assets/placeholder/themes/chr_seedRin.proc.json",
+    "durationSec": 13.7,
+    "brief": {
+      "genres": [
+        "chiptune",
+        "EDM"
+      ],
+      "moods": [
+        "energetic",
+        "tense"
+      ],
+      "bpm": 140,
+      "instruments": [
+        "synth",
+        "drums"
+      ],
+      "vibe": "Chiptune-electro, punchy drums, arpeggiated synth"
+    },
+    "instrumental": true,
+    "generation": {
+      "model": "google/lyria-3-clip",
+      "prompt": "Instrumental theme: Chiptune-electro, punchy drums, arpeggiated synth. chiptune, EDM; energetic, tense; 140 BPM; synth, drums.",
+      "costUsd": 0.04
+    },
+    "licenseNote": "Placeholder: procedural WebAudio sketch (D-52). The real theme comes from Google Lyria 3 Clip via OpenRouter (provider terms apply)."
+  }
+}

@@ -1,0 +1,70 @@
+/* Tape, CostBadge, Kbd */
+.tape {
+  --h: 28px;
+  --s: calc(var(--h) * var(--tan-tilt));
+  --tape-bg: var(--horizon-500);
+  --tape-fg: var(--on-brand);
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  height: var(--h);
+  padding: 0 calc(var(--s) + 10px);
+  color: var(--tape-fg);
+  font-family: var(--font-display);
+  font-size: 15px;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  white-space: nowrap;
+  line-height: 1;
+}
+.tape::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--tape-bg);
+  clip-path: polygon(var(--s) 0, 100% 0, calc(100% - var(--s)) 100%, 0 100%);
+}
+.tapeText { position: relative; padding-top: 1px; }
+.tape_sm { --h: 22px; font-size: 12px; padding: 0 calc(var(--s) + 7px); }
+.tape_md { --h: 28px; }
+.tape_lg { --h: 40px; font-size: 22px; padding: 0 calc(var(--s) + 16px); }
+.tape_brand, .tape_prop { --tape-bg: var(--horizon-500); --tape-fg: var(--on-brand); }
+.tape_primary { --tape-bg: var(--c-primary); --tape-fg: var(--c-on-primary); }
+.tape_ink { --tape-bg: var(--ink-900); --tape-fg: var(--paper-50); }
+.tape_paper, .tape_opp { --tape-bg: var(--paper-50); --tape-fg: var(--ink-900); }
+.tape_ok { --tape-bg: var(--signal-ok); --tape-fg: var(--on-signal); }
+.tape_warn { --tape-bg: var(--signal-warn); --tape-fg: var(--on-signal); }
+.tape_error { --tape-bg: var(--signal-err); --tape-fg: var(--on-signal); }
+
+.cost {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 7px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  clip-path: polygon(3px 0, 100% 0, calc(100% - 3px) 100%, 0 100%);
+}
+.cost_ink { background: var(--ink-900); color: var(--paper-50); }
+.cost_paper { background: var(--paper-50); color: var(--ink-900); }
+.cost_brand { background: var(--horizon-500); color: var(--on-brand); }
+
+.kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--paper-50);
+  background: var(--ink-700);
+  border: 1px solid var(--ink-500);
+  border-bottom-width: 3px;
+  line-height: 1;
+}

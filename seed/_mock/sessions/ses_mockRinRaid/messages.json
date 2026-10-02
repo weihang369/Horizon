@@ -1,0 +1,308 @@
+{
+  "schemaVersion": 1,
+  "data": [
+    {
+      "kind": "chat",
+      "seq": 1,
+      "id": "msg_mockR01",
+      "sessionId": "ses_mockRinRaid",
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedRin"
+      },
+      "content": "oh. it's you. hi. (that was a warm greeting btw)",
+      "status": "complete",
+      "createdAt": "2026-09-26T12:15:00.700Z",
+      "emotion": "neutral",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 1947,
+        "tokensCached": 1346,
+        "tokensOut": 12,
+        "costUsd": 0.000101,
+        "energySpent": 2,
+        "firstTokenMs": 1292,
+        "totalMs": 1672
+      },
+      "trace": {
+        "messageId": "msg_mockR01",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1292,
+            "total": 1672
+          },
+          "tokensIn": 1947,
+          "tokensCached": 1346,
+          "tokensOut": 12,
+          "costUsd": 0.000101
+        },
+        "energy": {
+          "characterId": "chr_seedRin",
+          "spent": 2,
+          "remaining": 182,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "neutral",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "neutral",
+              "p": 0.874
+            },
+            {
+              "label": "surprised",
+              "p": 0.089
+            },
+            {
+              "label": "sad",
+              "p": 0.029
+            }
+          ]
+        },
+        "routing": {
+          "selected": "chr_seedRin"
+        },
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 69,
+          "used": {
+            "system": 900,
+            "persona": 783,
+            "memory": 0,
+            "knowledge": 0,
+            "history": 0,
+            "user": 44,
+            "mode": 220
+          }
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "sfw",
+              "verdict": "pass",
+              "p": 0.986
+            },
+            {
+              "name": "advice_scope",
+              "verdict": "pass"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "msg_mockR02",
+      "sessionId": "ses_mockRinRaid",
+      "seq": 2,
+      "author": {
+        "type": "user"
+      },
+      "kind": "chat",
+      "content": "Raid tonight?",
+      "status": "complete",
+      "createdAt": "2026-09-26T12:15:04.272Z"
+    },
+    {
+      "kind": "chat",
+      "seq": 3,
+      "id": "msg_mockR03",
+      "sessionId": "ses_mockRinRaid",
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedRin"
+      },
+      "content": "obviously. 9pm. if you queue as healer i will personally carry you. once.",
+      "status": "complete",
+      "createdAt": "2026-09-26T12:15:04.622Z",
+      "emotion": "happy",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 2000,
+        "tokensCached": 1707,
+        "tokensOut": 18,
+        "costUsd": 0.00006,
+        "energySpent": 1,
+        "firstTokenMs": 1321,
+        "totalMs": 1926
+      },
+      "trace": {
+        "messageId": "msg_mockR03",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1321,
+            "total": 1926
+          },
+          "tokensIn": 2000,
+          "tokensCached": 1707,
+          "tokensOut": 18,
+          "costUsd": 0.00006
+        },
+        "energy": {
+          "characterId": "chr_seedRin",
+          "spent": 1,
+          "remaining": 181,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "happy",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "happy",
+              "p": 0.79
+            },
+            {
+              "label": "neutral",
+              "p": 0.145
+            },
+            {
+              "label": "surprised",
+              "p": 0.05
+            }
+          ]
+        },
+        "routing": {
+          "selected": "chr_seedRin"
+        },
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 85,
+          "used": {
+            "system": 900,
+            "persona": 794,
+            "memory": 0,
+            "knowledge": 0,
+            "history": 15,
+            "user": 71,
+            "mode": 220
+          }
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "sfw",
+              "verdict": "pass",
+              "p": 0.963
+            },
+            {
+              "name": "advice_scope",
+              "verdict": "pass"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "msg_mockR04",
+      "sessionId": "ses_mockRinRaid",
+      "seq": 4,
+      "author": {
+        "type": "user"
+      },
+      "kind": "chat",
+      "content": "Deal. Don't tell Hana I'm skipping dinner.",
+      "status": "complete",
+      "createdAt": "2026-09-26T12:15:08.448Z"
+    },
+    {
+      "kind": "chat",
+      "seq": 5,
+      "id": "msg_mockR05",
+      "sessionId": "ses_mockRinRaid",
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedRin"
+      },
+      "content": "…i'm not a snitch. i'm a *strategic informant*. fine. our secret.",
+      "status": "complete",
+      "createdAt": "2026-09-26T12:15:08.798Z",
+      "emotion": "embarrassed",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 1999,
+        "tokensCached": 1731,
+        "tokensOut": 16,
+        "costUsd": 0.000055,
+        "energySpent": 1,
+        "firstTokenMs": 1665,
+        "totalMs": 2195
+      },
+      "trace": {
+        "messageId": "msg_mockR05",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1665,
+            "total": 2195
+          },
+          "tokensIn": 1999,
+          "tokensCached": 1731,
+          "tokensOut": 16,
+          "costUsd": 0.000055
+        },
+        "energy": {
+          "characterId": "chr_seedRin",
+          "spent": 1,
+          "remaining": 180,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "embarrassed",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "embarrassed",
+              "p": 0.698
+            },
+            {
+              "label": "angry",
+              "p": 0.225
+            },
+            {
+              "label": "thinking",
+              "p": 0.046
+            }
+          ]
+        },
+        "routing": {
+          "selected": "chr_seedRin"
+        },
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 87,
+          "used": {
+            "system": 900,
+            "persona": 792,
+            "memory": 0,
+            "knowledge": 0,
+            "history": 44,
+            "user": 43,
+            "mode": 220
+          }
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "sfw",
+              "verdict": "pass",
+              "p": 0.993
+            },
+            {
+              "name": "advice_scope",
+              "verdict": "pass"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

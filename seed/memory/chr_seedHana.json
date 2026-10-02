@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "data": [
+    {
+      "id": "mem_seedHana1",
+      "characterId": "chr_seedHana",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "preference",
+      "text": "Kai's favourite cake is yuzu",
+      "importance": 0.6,
+      "sourceSessionId": "ses_seedHanaLongDay",
+      "sourceMessageId": "msg_seedH02",
+      "createdAt": "2026-09-30T19:03:00Z"
+    },
+    {
+      "id": "mem_seedHana2",
+      "characterId": "chr_seedHana",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "event",
+      "text": "Sold Kai's bouquet to a nervous proposer",
+      "importance": 0.5,
+      "sourceSessionId": "ses_seedHanaLongDay",
+      "sourceMessageId": "msg_seedH06",
+      "createdAt": "2026-09-30T19:05:00Z"
+    }
+  ]
+}

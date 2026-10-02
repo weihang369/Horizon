@@ -1,5 +1,7 @@
-# 05: Data Contract (v1.0)
+# 05: Data Contract (contract rev. 1.1)
 
+> **Contract rev. 1.1 (2026-10-02, UI/UX stage):** additive only, `schemaVersion` stays `1`. Adds the `message` and `session.state` events, a face-change form of `emotion`, `AppSettings.pricing` and `forkSeedSession(…, atSeq?)` (D-51).
+>
 > **This is the single source of truth for data shapes.** The UI/UX mock fixtures, the FastAPI backend and the AI layer all use these shapes.
 > Types are framework-agnostic, written in TypeScript style. `?` = optional or nullable. SWE may refine the storage, but **must not change the wire shapes** without updating this doc (and bumping `schemaVersion`).
 
@@ -78,6 +80,7 @@ AppSettings {
             usdPerPoint: number;                         // 0.0001
             topUpStepPoints: number };                   // default 500
   spentTodayUsd: number;                                 // derived from the ledger
+  pricing: { period: "peak" | "off_peak"; nextChangeAt: string };   // D-51: drives the RUSH HOUR chip (ENG-06); derived from the MYT clock
   audio: { masterMuted: boolean; musicMuted: boolean; sfxMuted: boolean;
            master: number; music: number; sfx: number; duckMusic: boolean };   // volumes 0..1
   display: { reducedMotion: "system" | "on" | "off"; vfxIntensity: "off" | "subtle" | "full";
@@ -409,7 +412,9 @@ draft (wizard: seed → … → theme) ─→ review (APPROVE step) ─(Summon)�
 | `turn.thinking` | `{ characterId }` | Typing "…" + lean-in |
 | `turn.start` | `{ messageId, author, emotion?, variantId? }` | Speaker known |
 | `token` | `{ messageId, delta, variantId? }` | |
-| `emotion` | `{ messageId, characterId, emotion, source }` | **May arrive before, during or after tokens.** The UI holds ≤ 800 ms, then switches late. Ignored for display in MANUAL |
+| `emotion` | `{ messageId?, characterId, emotion, source }` | **May arrive before, during or after tokens.** The UI holds ≤ 800 ms, then switches late. Ignored for display in MANUAL. *(D-51)* **without `messageId` and with `source: "user"`** it records a MANUAL `setEmotion` (face change), so Replay reproduces it |
+| `message` *(D-51)* | `{ message: Message }` | A whole, **non-streamed** message: user chat, `steer`, `interject`, `direction`, `system_note`, `summary`, `verdict`. Without it, Replay can't show what the user said |
+| `session.state` *(D-51)* | `{ status?, pausedReason?, state?: DebateState \| WatchState, participants?: Participant[] }` | Snapshot after a non-message change: verdict set, participant muted, side or cast change. Replaces the matching fields |
 | `turn.end` | `{ messageId, status, interruptedBy?, usage, variantId? }` | |
 | `energy` | `{ characterId, current, max, state, fullAt? }` | After every drain or top-up; drives the energy bar |
 | `reaction` | `{ messageId, characterId, emotion, p?, source }` | Listeners only. May be late or absent |
@@ -422,7 +427,7 @@ draft (wizard: seed → … → theme) ─→ review (APPROVE step) ─(Summon)�
 | `job.progress` / `task.update` / `job.done` | job/task snapshots (+ `previewUrl?`) | Generation jobs (separate stream per job) |
 
 **Commands (REST):**
-- **Chat & sessions:** `send`, `stop`, `regenerate(messageId)`, `setEmotion(characterId, emotion)` (MANUAL), `setEmotionMode`, `setResponderPolicy`, `setMusicPolicy`, `everyoneAnswer`, `nextSpeaker(characterId)`, `muteParticipant(characterId, muted)`, `endSession`, `renameSession`, `forkSeedSession(sessionId)`.
+- **Chat & sessions:** `send`, `stop`, `regenerate(messageId)`, `setEmotion(characterId, emotion)` (MANUAL), `setEmotionMode`, `setResponderPolicy`, `setMusicPolicy`, `everyoneAnswer`, `nextSpeaker(characterId)`, `muteParticipant(characterId, muted)`, `endSession`, `renameSession`, `forkSeedSession(sessionId, atSeq?)` *(D-51: `atSeq` = "Continue live" from the Replay playhead; omitted = the whole recording)*.
 - **Debate:** `pause`, `resume`, `askCharacter(characterId, text)`, `interject(text)`, `extendRound`, `skipToClosing`, `endDebate(withVerdict: boolean)`, `pickStrongerCase(side)` (You decide).
 - **Watch:** `step`, `setPace`, `direct(text)`, `extendWatch(10)`, `summarise`.
 - **Energy:** `topUpEnergy(characterId, points)`, `setEnergyMax(characterId, points)`.

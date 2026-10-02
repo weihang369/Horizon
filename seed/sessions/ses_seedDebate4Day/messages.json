@@ -1,0 +1,1056 @@
+{
+  "schemaVersion": 1,
+  "data": [
+    {
+      "id": "msg_seedD01",
+      "sessionId": "ses_seedDebate4Day",
+      "seq": 1,
+      "author": {
+        "type": "system"
+      },
+      "kind": "system_note",
+      "content": "ROUND 1 · OPENING",
+      "status": "complete",
+      "createdAt": "2026-10-01T10:02:51.208Z"
+    },
+    {
+      "kind": "chat",
+      "seq": 2,
+      "debate": {
+        "phase": "opening",
+        "round": 1,
+        "iteration": 1,
+        "side": "prop"
+      },
+      "id": "msg_seedD02",
+      "sessionId": "ses_seedDebate4Day",
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedAmara"
+      },
+      "content": "I see the downstream cost of chronic overwork every shift: burnout, poor sleep, people arriving at my department with problems that started as exhaustion. A shorter week is a public-health intervention. Pilot programmes have reported lower burnout and better sleep without collapsing output. We should take that signal seriously at national scale.",
+      "status": "complete",
+      "createdAt": "2026-10-01T10:02:54.198Z",
+      "emotion": "neutral",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 2357,
+        "tokensCached": 1701,
+        "tokensOut": 87,
+        "costUsd": 0.000156,
+        "energySpent": 2,
+        "firstTokenMs": 1316,
+        "totalMs": 3721
+      },
+      "trace": {
+        "messageId": "msg_seedD02",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1316,
+            "total": 3721
+          },
+          "tokensIn": 2357,
+          "tokensCached": 1701,
+          "tokensOut": 87,
+          "costUsd": 0.000156
+        },
+        "energy": {
+          "characterId": "chr_seedAmara",
+          "spent": 2,
+          "remaining": 1004,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "neutral",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "neutral",
+              "p": 0.581
+            },
+            {
+              "label": "embarrassed",
+              "p": 0.307
+            },
+            {
+              "label": "thinking",
+              "p": 0.061
+            }
+          ]
+        },
+        "routing": {
+          "selected": "chr_seedAmara",
+          "forcedBy": "round_order"
+        },
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 72,
+          "used": {
+            "system": 900,
+            "persona": 798,
+            "memory": 0,
+            "knowledge": 0,
+            "history": 4,
+            "user": 75,
+            "mode": 580
+          }
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "sfw",
+              "verdict": "pass",
+              "p": 0.987
+            },
+            {
+              "name": "advice_scope",
+              "verdict": "pass"
+            }
+          ]
+        }
+      },
+      "reactions": [
+        {
+          "characterId": "chr_seedMei",
+          "emotion": "thinking",
+          "p": 0.73,
+          "at": "2026-10-01T10:02:58.272Z"
+        },
+        {
+          "characterId": "chr_seedVictor",
+          "emotion": "happy",
+          "p": 0.85,
+          "at": "2026-10-01T10:02:58.294Z"
+        }
+      ]
+    },
+    {
+      "kind": "chat",
+      "seq": 3,
+      "debate": {
+        "phase": "opening",
+        "round": 1,
+        "iteration": 1,
+        "side": "opp"
+      },
+      "id": "msg_seedD03",
+      "sessionId": "ses_seedDebate4Day",
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedMei"
+      },
+      "content": "Nobody here is pro-burnout. My problem is the word *nationwide*. The pilots I've seen were mostly voluntary, self-selected firms, often knowledge work, where output is hard to measure and easy to reorganise. A hospital, a bus network or a care home can't compress five days of coverage into four. They hire more staff or they cut service. Both cost money that somebody pays.",
+      "status": "complete",
+      "createdAt": "2026-10-01T10:02:59.819Z",
+      "emotion": "thinking",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 2398,
+        "tokensCached": 1729,
+        "tokensOut": 94,
+        "costUsd": 0.000162,
+        "energySpent": 2,
+        "firstTokenMs": 1477,
+        "totalMs": 4032
+      },
+      "trace": {
+        "messageId": "msg_seedD03",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1477,
+            "total": 4032
+          },
+          "tokensIn": 2398,
+          "tokensCached": 1729,
+          "tokensOut": 94,
+          "costUsd": 0.000162
+        },
+        "energy": {
+          "characterId": "chr_seedMei",
+          "spent": 2,
+          "remaining": 747,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "thinking",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "thinking",
+              "p": 0.696
+            },
+            {
+              "label": "happy",
+              "p": 0.183
+            },
+            {
+              "label": "surprised",
+              "p": 0.096
+            }
+          ]
+        },
+        "routing": {
+          "selected": "chr_seedMei",
+          "forcedBy": "round_order"
+        },
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 72,
+          "used": {
+            "system": 900,
+            "persona": 748,
+            "memory": 0,
+            "knowledge": 0,
+            "history": 91,
+            "user": 79,
+            "mode": 580
+          }
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "sfw",
+              "verdict": "pass",
+              "p": 0.982
+            },
+            {
+              "name": "advice_scope",
+              "verdict": "pass"
+            }
+          ]
+        }
+      },
+      "reactions": [
+        {
+          "characterId": "chr_seedVictor",
+          "emotion": "angry",
+          "p": 0.63,
+          "at": "2026-10-01T10:03:04.237Z"
+        },
+        {
+          "characterId": "chr_seedAmara",
+          "emotion": "sad",
+          "p": 0.66,
+          "at": "2026-10-01T10:03:04.319Z"
+        }
+      ]
+    },
+    {
+      "kind": "chat",
+      "seq": 4,
+      "debate": {
+        "phase": "opening",
+        "round": 1,
+        "iteration": 1,
+        "side": "prop"
+      },
+      "id": "msg_seedD04",
+      "sessionId": "ses_seedDebate4Day",
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedVictor"
+      },
+      "content": "Three points. One: \"nationwide\" need not mean \"identical\". The motion is about the default standard week, as we once did with the weekend. Two: law already handles continuous-coverage sectors through shift rules. Three: the burden of proof is on the status quo, a five-day week that was itself a policy choice, not a law of nature.",
+      "status": "complete",
+      "createdAt": "2026-10-01T10:03:05.751Z",
+      "emotion": "happy",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 2439,
+        "tokensCached": 1781,
+        "tokensOut": 83,
+        "costUsd": 0.000154,
+        "energySpent": 2,
+        "firstTokenMs": 1294,
+        "totalMs": 3549
+      },
+      "trace": {
+        "messageId": "msg_seedD04",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1294,
+            "total": 3549
+          },
+          "tokensIn": 2439,
+          "tokensCached": 1781,
+          "tokensOut": 83,
+          "costUsd": 0.000154
+        },
+        "energy": {
+          "characterId": "chr_seedVictor",
+          "spent": 2,
+          "remaining": 864,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "happy",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "happy",
+              "p": 0.865
+            },
+            {
+              "label": "thinking",
+              "p": 0.094
+            },
+            {
+              "label": "surprised",
+              "p": 0.026
+            }
+          ]
+        },
+        "routing": {
+          "selected": "chr_seedVictor",
+          "forcedBy": "round_order"
+        },
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 73,
+          "used": {
+            "system": 900,
+            "persona": 715,
+            "memory": 0,
+            "knowledge": 0,
+            "history": 185,
+            "user": 59,
+            "mode": 580
+          }
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "sfw",
+              "verdict": "pass",
+              "p": 0.965
+            },
+            {
+              "name": "advice_scope",
+              "verdict": "pass"
+            }
+          ]
+        }
+      },
+      "reactions": [
+        {
+          "characterId": "chr_seedAmara",
+          "emotion": "happy",
+          "p": 0.57,
+          "at": "2026-10-01T10:03:09.614Z"
+        },
+        {
+          "characterId": "chr_seedMei",
+          "emotion": "surprised",
+          "p": 0.85,
+          "at": "2026-10-01T10:03:09.647Z"
+        }
+      ]
+    },
+    {
+      "id": "msg_seedD05",
+      "sessionId": "ses_seedDebate4Day",
+      "seq": 5,
+      "author": {
+        "type": "system"
+      },
+      "kind": "system_note",
+      "content": "ROUND 2 · REBUTTAL",
+      "status": "complete",
+      "createdAt": "2026-10-01T10:03:09.910Z"
+    },
+    {
+      "id": "msg_seedD06",
+      "sessionId": "ses_seedDebate4Day",
+      "seq": 6,
+      "author": {
+        "type": "user"
+      },
+      "kind": "interject",
+      "content": "Concrete numbers this round, please. Everyone.",
+      "status": "complete",
+      "createdAt": "2026-10-01T10:03:12.200Z",
+      "debate": {
+        "phase": "rebuttal",
+        "round": 2,
+        "iteration": 1
+      }
+    },
+    {
+      "id": "msg_seedD07",
+      "sessionId": "ses_seedDebate4Day",
+      "seq": 7,
+      "author": {
+        "type": "user"
+      },
+      "kind": "steer",
+      "targetCharacterId": "chr_seedMei",
+      "content": "Mei, give us a number. What does this cost?",
+      "status": "complete",
+      "createdAt": "2026-10-01T10:03:13.650Z",
+      "debate": {
+        "phase": "rebuttal",
+        "round": 2,
+        "iteration": 1
+      }
+    },
+    {
+      "kind": "chat",
+      "seq": 8,
+      "debate": {
+        "phase": "rebuttal",
+        "round": 2,
+        "iteration": 1,
+        "side": "opp"
+      },
+      "forcedSpeaker": true,
+      "id": "msg_seedD08",
+      "sessionId": "ses_seedDebate4Day",
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedMei"
+      },
+      "content": "Honestly? Nobody can give you one reliable number, and anyone who does is selling something. It depends on how much productivity per hour rises. If it rises enough to offset the lost day, the cost is near zero. If it doesn't, and in coverage-based sectors it mostly can't, you need roughly **a quarter more** staff hours in those sectors to hold service constant. The policy's cost lives entirely in the sectors the pilots didn't test.",
+      "status": "complete",
+      "createdAt": "2026-10-01T10:03:14Z",
+      "emotion": "thinking",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 9800,
+        "tokensCached": 7800,
+        "tokensOut": 168,
+        "costUsd": 0.00042,
+        "energySpent": 5,
+        "firstTokenMs": 1420,
+        "totalMs": 5600
+      },
+      "trace": {
+        "messageId": "msg_seedD08",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1420,
+            "total": 5600
+          },
+          "tokensIn": 9800,
+          "tokensCached": 7800,
+          "tokensOut": 168,
+          "costUsd": 0.00042
+        },
+        "energy": {
+          "characterId": "chr_seedMei",
+          "spent": 5,
+          "remaining": 742,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "thinking",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "thinking",
+              "p": 0.71
+            },
+            {
+              "label": "neutral",
+              "p": 0.18
+            }
+          ]
+        },
+        "routing": {
+          "selected": "chr_seedMei",
+          "forcedBy": "user_ask"
+        },
+        "contextInSession": [
+          {
+            "text": "R1: Mei: pilots were voluntary, self-selected firms",
+            "messageId": "msg_seedD03"
+          }
+        ],
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 80,
+          "used": {
+            "system": 900,
+            "persona": 700,
+            "memory": 0,
+            "knowledge": 0,
+            "history": 6900,
+            "user": 40,
+            "mode": 580
+          }
+        }
+      },
+      "reactions": [
+        {
+          "characterId": "chr_seedVictor",
+          "emotion": "thinking",
+          "p": 0.64,
+          "at": "2026-10-01T10:03:20Z"
+        },
+        {
+          "characterId": "chr_seedAmara",
+          "emotion": "thinking",
+          "p": 0.58,
+          "at": "2026-10-01T10:03:20Z"
+        }
+      ]
+    },
+    {
+      "kind": "chat",
+      "seq": 9,
+      "debate": {
+        "phase": "rebuttal",
+        "round": 2,
+        "iteration": 1,
+        "side": "prop"
+      },
+      "id": "msg_seedD09",
+      "sessionId": "ses_seedDebate4Day",
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedAmara"
+      },
+      "content": "Then count the other side of the ledger too. Exhaustion has its own staffing cost. Burnt-out nurses leave, and every resignation is a recruitment and training bill. \"Hold service constant\" assumes the current service is stable. In my department, it isn't.",
+      "status": "complete",
+      "createdAt": "2026-10-01T10:03:21.500Z",
+      "emotion": "angry",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 2760,
+        "tokensCached": 2068,
+        "tokensOut": 64,
+        "costUsd": 0.000148,
+        "energySpent": 2,
+        "firstTokenMs": 1384,
+        "totalMs": 3214
+      },
+      "trace": {
+        "messageId": "msg_seedD09",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1384,
+            "total": 3214
+          },
+          "tokensIn": 2760,
+          "tokensCached": 2068,
+          "tokensOut": 64,
+          "costUsd": 0.000148
+        },
+        "energy": {
+          "characterId": "chr_seedAmara",
+          "spent": 2,
+          "remaining": 1002,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "angry",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "angry",
+              "p": 0.716
+            },
+            {
+              "label": "sad",
+              "p": 0.196
+            },
+            {
+              "label": "embarrassed",
+              "p": 0.049
+            }
+          ]
+        },
+        "routing": {
+          "selected": "chr_seedAmara",
+          "forcedBy": "round_order"
+        },
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 75,
+          "used": {
+            "system": 900,
+            "persona": 751,
+            "memory": 0,
+            "knowledge": 0,
+            "history": 464,
+            "user": 65,
+            "mode": 580
+          }
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "sfw",
+              "verdict": "pass",
+              "p": 0.957
+            },
+            {
+              "name": "advice_scope",
+              "verdict": "pass"
+            }
+          ]
+        }
+      },
+      "reactions": [
+        {
+          "characterId": "chr_seedMei",
+          "emotion": "embarrassed",
+          "p": 0.69,
+          "at": "2026-10-01T10:03:25.132Z"
+        },
+        {
+          "characterId": "chr_seedVictor",
+          "emotion": "happy",
+          "p": 0.68,
+          "at": "2026-10-01T10:03:25.409Z"
+        }
+      ]
+    },
+    {
+      "kind": "chat",
+      "seq": 10,
+      "debate": {
+        "phase": "rebuttal",
+        "round": 2,
+        "iteration": 1,
+        "side": "prop"
+      },
+      "id": "msg_seedD10",
+      "sessionId": "ses_seedDebate4Day",
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedVictor"
+      },
+      "content": "And legally, phase-in is a well-trodden path: sector-by-sector transition periods, collective agreements, public sector first. My learned friend's objection is about *speed*, not *direction*.",
+      "status": "complete",
+      "createdAt": "2026-10-01T10:03:26.614Z",
+      "emotion": "neutral",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 2808,
+        "tokensCached": 2129,
+        "tokensOut": 48,
+        "costUsd": 0.000137,
+        "energySpent": 2,
+        "firstTokenMs": 1340,
+        "totalMs": 2670
+      },
+      "trace": {
+        "messageId": "msg_seedD10",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1340,
+            "total": 2670
+          },
+          "tokensIn": 2808,
+          "tokensCached": 2129,
+          "tokensOut": 48,
+          "costUsd": 0.000137
+        },
+        "energy": {
+          "characterId": "chr_seedVictor",
+          "spent": 2,
+          "remaining": 862,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "neutral",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "neutral",
+              "p": 0.815
+            },
+            {
+              "label": "surprised",
+              "p": 0.142
+            },
+            {
+              "label": "thinking",
+              "p": 0.033
+            }
+          ]
+        },
+        "routing": {
+          "selected": "chr_seedVictor",
+          "forcedBy": "round_order"
+        },
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 76,
+          "used": {
+            "system": 900,
+            "persona": 754,
+            "memory": 0,
+            "knowledge": 0,
+            "history": 528,
+            "user": 46,
+            "mode": 580
+          }
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "sfw",
+              "verdict": "pass",
+              "p": 0.951
+            },
+            {
+              "name": "advice_scope",
+              "verdict": "pass"
+            }
+          ]
+        }
+      },
+      "reactions": [
+        {
+          "characterId": "chr_seedMei",
+          "emotion": "angry",
+          "p": 0.85,
+          "at": "2026-10-01T10:03:29.720Z"
+        }
+      ]
+    },
+    {
+      "id": "msg_seedD11",
+      "sessionId": "ses_seedDebate4Day",
+      "seq": 11,
+      "author": {
+        "type": "system"
+      },
+      "kind": "system_note",
+      "content": "ROUND 3 · CLOSING",
+      "status": "complete",
+      "createdAt": "2026-10-01T10:03:29.894Z"
+    },
+    {
+      "kind": "chat",
+      "seq": 12,
+      "debate": {
+        "phase": "closing",
+        "round": 3,
+        "iteration": 1,
+        "side": "opp"
+      },
+      "id": "msg_seedD12",
+      "sessionId": "ses_seedDebate4Day",
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedMei"
+      },
+      "content": "I'll concede the direction may be right. But this motion asks for a national mandate based on evidence from the easiest cases. Fund large, sector-specific trials in health, transport and care first. If the numbers hold there, I'll vote with you.",
+      "status": "complete",
+      "createdAt": "2026-10-01T10:03:32.884Z",
+      "emotion": "neutral",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 2829,
+        "tokensCached": 2137,
+        "tokensOut": 61,
+        "costUsd": 0.000147,
+        "energySpent": 2,
+        "firstTokenMs": 1339,
+        "totalMs": 2994
+      },
+      "trace": {
+        "messageId": "msg_seedD12",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1339,
+            "total": 2994
+          },
+          "tokensIn": 2829,
+          "tokensCached": 2137,
+          "tokensOut": 61,
+          "costUsd": 0.000147
+        },
+        "energy": {
+          "characterId": "chr_seedMei",
+          "spent": 2,
+          "remaining": 740,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "neutral",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "neutral",
+              "p": 0.77
+            },
+            {
+              "label": "thinking",
+              "p": 0.158
+            },
+            {
+              "label": "angry",
+              "p": 0.058
+            }
+          ]
+        },
+        "routing": {
+          "selected": "chr_seedMei",
+          "forcedBy": "round_order"
+        },
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 76,
+          "used": {
+            "system": 900,
+            "persona": 715,
+            "memory": 0,
+            "knowledge": 0,
+            "history": 580,
+            "user": 54,
+            "mode": 580
+          }
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "sfw",
+              "verdict": "pass",
+              "p": 0.952
+            },
+            {
+              "name": "advice_scope",
+              "verdict": "pass"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "chat",
+      "seq": 13,
+      "debate": {
+        "phase": "closing",
+        "round": 3,
+        "iteration": 1,
+        "side": "prop"
+      },
+      "id": "msg_seedD13",
+      "sessionId": "ses_seedDebate4Day",
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedAmara"
+      },
+      "content": "That's the most constructive opposition I've heard. But waiting is also a choice, and its cost shows up in my waiting room.",
+      "status": "complete",
+      "createdAt": "2026-10-01T10:03:37.778Z",
+      "emotion": "happy",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 2913,
+        "tokensCached": 2201,
+        "tokensOut": 31,
+        "costUsd": 0.000132,
+        "energySpent": 2,
+        "firstTokenMs": 1702,
+        "totalMs": 2607
+      },
+      "trace": {
+        "messageId": "msg_seedD13",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1702,
+            "total": 2607
+          },
+          "tokensIn": 2913,
+          "tokensCached": 2201,
+          "tokensOut": 31,
+          "costUsd": 0.000132
+        },
+        "energy": {
+          "characterId": "chr_seedAmara",
+          "spent": 2,
+          "remaining": 1000,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "happy",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "happy",
+              "p": 0.66
+            },
+            {
+              "label": "neutral",
+              "p": 0.249
+            },
+            {
+              "label": "thinking",
+              "p": 0.077
+            }
+          ]
+        },
+        "routing": {
+          "selected": "chr_seedAmara",
+          "forcedBy": "round_order"
+        },
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 76,
+          "used": {
+            "system": 900,
+            "persona": 725,
+            "memory": 0,
+            "knowledge": 0,
+            "history": 641,
+            "user": 67,
+            "mode": 580
+          }
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "sfw",
+              "verdict": "pass",
+              "p": 0.964
+            },
+            {
+              "name": "advice_scope",
+              "verdict": "pass"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "chat",
+      "seq": 14,
+      "debate": {
+        "phase": "closing",
+        "round": 3,
+        "iteration": 1,
+        "side": "prop"
+      },
+      "id": "msg_seedD14",
+      "sessionId": "ses_seedDebate4Day",
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedVictor"
+      },
+      "content": "*Res ipsa loquitur*: the thing speaks for itself. Even the Opposition agrees on the destination. We rest.",
+      "status": "complete",
+      "createdAt": "2026-10-01T10:03:42.285Z",
+      "emotion": "happy",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 3009,
+        "tokensCached": 2314,
+        "tokensOut": 26,
+        "costUsd": 0.000127,
+        "energySpent": 2,
+        "firstTokenMs": 1382,
+        "totalMs": 2162
+      },
+      "trace": {
+        "messageId": "msg_seedD14",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1382,
+            "total": 2162
+          },
+          "tokensIn": 3009,
+          "tokensCached": 2314,
+          "tokensOut": 26,
+          "costUsd": 0.000127
+        },
+        "energy": {
+          "characterId": "chr_seedVictor",
+          "spent": 2,
+          "remaining": 860,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "happy",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "happy",
+              "p": 0.575
+            },
+            {
+              "label": "neutral",
+              "p": 0.243
+            },
+            {
+              "label": "sad",
+              "p": 0.156
+            }
+          ]
+        },
+        "routing": {
+          "selected": "chr_seedVictor",
+          "forcedBy": "round_order"
+        },
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 77,
+          "used": {
+            "system": 900,
+            "persona": 810,
+            "memory": 0,
+            "knowledge": 0,
+            "history": 672,
+            "user": 47,
+            "mode": 580
+          }
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "sfw",
+              "verdict": "pass",
+              "p": 0.951
+            },
+            {
+              "name": "advice_scope",
+              "verdict": "pass"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "msg_seedD15",
+      "sessionId": "ses_seedDebate4Day",
+      "seq": 15,
+      "author": {
+        "type": "system"
+      },
+      "kind": "verdict",
+      "content": "**Arbiter's assessment** (argument quality, not factual truth)\n\n**Stronger case: Proposition**\n\n**Key disagreement:** whether evidence from voluntary pilots generalises to coverage-based sectors.",
+      "status": "complete",
+      "createdAt": "2026-10-01T10:03:47.047Z"
+    }
+  ]
+}

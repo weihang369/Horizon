@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "data": {
+    "id": "song_seedVictor",
+    "characterId": "chr_seedVictor",
+    "status": "ready",
+    "url": "/assets/placeholder/themes/chr_seedVictor.proc.json",
+    "durationSec": 17.5,
+    "brief": {
+      "genres": [
+        "orchestral"
+      ],
+      "moods": [
+        "confident",
+        "playful"
+      ],
+      "bpm": 110,
+      "instruments": [
+        "strings",
+        "brass"
+      ],
+      "vibe": "Orchestral swing with pizzicato strings and confident brass"
+    },
+    "instrumental": true,
+    "generation": {
+      "model": "google/lyria-3-clip",
+      "prompt": "Instrumental theme: Orchestral swing with pizzicato strings and confident brass. orchestral; confident, playful; 110 BPM; strings, brass.",
+      "costUsd": 0.04
+    },
+    "licenseNote": "Placeholder: procedural WebAudio sketch (D-52). The real theme comes from Google Lyria 3 Clip via OpenRouter (provider terms apply)."
+  }
+}

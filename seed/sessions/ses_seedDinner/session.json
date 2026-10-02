@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "data": {
+    "id": "ses_seedDinner",
+    "worldId": "wld_seedSunnyHollow",
+    "title": "Dinner's on me",
+    "titleIsCustom": true,
+    "mode": "group",
+    "participants": [
+      {
+        "characterId": "chr_seedHana",
+        "role": "speaker",
+        "currentEmotion": "happy",
+        "mutedByUser": false
+      },
+      {
+        "characterId": "chr_seedTakeshi",
+        "role": "speaker",
+        "currentEmotion": "happy",
+        "mutedByUser": false
+      },
+      {
+        "characterId": "chr_seedRin",
+        "role": "speaker",
+        "currentEmotion": "embarrassed",
+        "mutedByUser": false
+      }
+    ],
+    "emotionMode": "llm",
+    "musicPolicy": "follow_speaker",
+    "readableMode": false,
+    "config": {
+      "responderPolicy": "auto",
+      "maxAutoResponders": 2
+    },
+    "isSeed": true,
+    "status": "paused",
+    "state": null,
+    "costUsd": 0.00024,
+    "messageCount": 7,
+    "createdAt": "2026-09-30T10:30:00Z",
+    "updatedAt": "2026-09-30T10:30:15.705Z",
+    "pausedReason": "navigated_away",
+    "lastMessageAt": "2026-09-30T10:30:12.969Z"
+  }
+}

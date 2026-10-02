@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 1,
+  "data": {
+    "id": "ses_mockHostSugar",
+    "worldId": "wld_seedMeridian",
+    "title": "Debate: Sugar tax (auto host)",
+    "titleIsCustom": false,
+    "mode": "debate",
+    "participants": [
+      {
+        "characterId": "chr_seedAmara",
+        "role": "debater",
+        "side": "prop",
+        "currentEmotion": "happy",
+        "mutedByUser": false
+      },
+      {
+        "characterId": "chr_seedVictor",
+        "role": "debater",
+        "side": "opp",
+        "currentEmotion": "neutral",
+        "mutedByUser": false
+      }
+    ],
+    "emotionMode": "llm",
+    "musicPolicy": "arena",
+    "readableMode": false,
+    "config": {
+      "motion": "This house would tax sugary drinks",
+      "format": "two_sided",
+      "roundsPreset": "quick",
+      "phases": [
+        "opening",
+        "closing"
+      ],
+      "turnLength": "short",
+      "moderator": "auto_host",
+      "verdictBy": "arbiter",
+      "rubric": [
+        {
+          "id": "evidence",
+          "label": "Evidence"
+        },
+        {
+          "id": "rebuttal",
+          "label": "Rebuttal"
+        },
+        {
+          "id": "clarity",
+          "label": "Clarity"
+        },
+        {
+          "id": "persuasion",
+          "label": "Persuasion"
+        }
+      ],
+      "autoAdvance": true,
+      "pauseMs": 1500,
+      "sides": {
+        "prop": [
+          "chr_seedAmara"
+        ],
+        "opp": [
+          "chr_seedVictor"
+        ]
+      }
+    },
+    "isSeed": false,
+    "status": "ended",
+    "state": {
+      "phase": "ended",
+      "round": 3,
+      "iteration": 1,
+      "verdict": {
+        "decidedBy": "arbiter",
+        "strongerCase": "prop",
+        "scoresBy": "side",
+        "scores": [
+          {
+            "subjectId": "prop",
+            "criterionId": "evidence",
+            "value": 7.5
+          },
+          {
+            "subjectId": "prop",
+            "criterionId": "rebuttal",
+            "value": 7
+          },
+          {
+            "subjectId": "prop",
+            "criterionId": "clarity",
+            "value": 8
+          },
+          {
+            "subjectId": "prop",
+            "criterionId": "persuasion",
+            "value": 7.5
+          },
+          {
+            "subjectId": "opp",
+            "criterionId": "evidence",
+            "value": 6.5
+          },
+          {
+            "subjectId": "opp",
+            "criterionId": "rebuttal",
+            "value": 7
+          },
+          {
+            "subjectId": "opp",
+            "criterionId": "clarity",
+            "value": 7.5
+          },
+          {
+            "subjectId": "opp",
+            "criterionId": "persuasion",
+            "value": 6.5
+          }
+        ],
+        "summary": [
+          {
+            "subjectId": "prop",
+            "points": [
+              "Sugar taxes shift purchases measurably.",
+              "Revenue can fund school meals."
+            ]
+          },
+          {
+            "subjectId": "opp",
+            "points": [
+              "Regressive for low-income households.",
+              "Industry reformulates around thresholds."
+            ]
+          }
+        ],
+        "keyDisagreement": "Whether regressivity is outweighed by health gains.",
+        "rationale": "Proposition answered the regressivity point with earmarked revenue; Opposition did not rebut it."
+      }
+    },
+    "costUsd": 0.000487,
+    "messageCount": 11,
+    "createdAt": "2026-09-22T13:20:00Z",
+    "updatedAt": "2026-09-22T13:20:32.361Z",
+    "lastMessageAt": "2026-09-22T13:20:30.851Z"
+  }
+}

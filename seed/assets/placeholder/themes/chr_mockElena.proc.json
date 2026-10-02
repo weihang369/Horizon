@@ -1,0 +1,21 @@
+{
+  "kind": "horizon.theme",
+  "version": 1,
+  "seed": "chr_mockElena",
+  "title": "Elena's Theme",
+  "brief": {
+    "genres": [
+      "piano",
+      "ambient"
+    ],
+    "moods": [
+      "nostalgic"
+    ],
+    "bpm": 72,
+    "instruments": [
+      "piano",
+      "strings"
+    ],
+    "vibe": "Wistful piano over soft strings"
+  }
+}

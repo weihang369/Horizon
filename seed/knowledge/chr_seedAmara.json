@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "data": [
+    {
+      "id": "kno_seedAmara1",
+      "characterId": "chr_seedAmara",
+      "worldId": "wld_seedMeridian",
+      "title": "Burnout study protocol.pdf",
+      "type": "file",
+      "status": "indexed",
+      "bytes": 482113
+    },
+    {
+      "id": "kno_seedAmara2",
+      "characterId": "chr_seedAmara",
+      "worldId": "wld_seedMeridian",
+      "title": "ED triage guidelines",
+      "type": "url",
+      "status": "indexing"
+    }
+  ]
+}

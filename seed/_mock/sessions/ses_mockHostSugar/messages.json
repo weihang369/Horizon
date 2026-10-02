@@ -1,0 +1,505 @@
+{
+  "schemaVersion": 1,
+  "data": [
+    {
+      "id": "msg_mockS01",
+      "sessionId": "ses_mockHostSugar",
+      "seq": 1,
+      "author": {
+        "type": "host"
+      },
+      "kind": "narration",
+      "content": "Welcome to the Meridian Council. Tonight's motion: this house would tax sugary drinks. Dr. Okafor opens for the Proposition.",
+      "status": "complete",
+      "createdAt": "2026-09-22T13:20:00.800Z"
+    },
+    {
+      "id": "msg_mockS02",
+      "sessionId": "ses_mockHostSugar",
+      "seq": 2,
+      "author": {
+        "type": "system"
+      },
+      "kind": "system_note",
+      "content": "ROUND 1 · OPENING",
+      "status": "complete",
+      "createdAt": "2026-09-22T13:20:02.910Z"
+    },
+    {
+      "kind": "chat",
+      "seq": 3,
+      "debate": {
+        "phase": "opening",
+        "round": 1,
+        "iteration": 1,
+        "side": "prop"
+      },
+      "id": "msg_mockS03",
+      "sessionId": "ses_mockHostSugar",
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedAmara"
+      },
+      "content": "Where sugar taxes exist, purchases of taxed drinks fall, and the revenue can be earmarked for school meals. It's one of the few nutrition policies with a clear signal.",
+      "status": "complete",
+      "createdAt": "2026-09-22T13:20:05.600Z",
+      "emotion": "neutral",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 2345,
+        "tokensCached": 1686,
+        "tokensOut": 42,
+        "costUsd": 0.000129,
+        "energySpent": 2,
+        "firstTokenMs": 1383,
+        "totalMs": 2663
+      },
+      "trace": {
+        "messageId": "msg_mockS03",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1383,
+            "total": 2663
+          },
+          "tokensIn": 2345,
+          "tokensCached": 1686,
+          "tokensOut": 42,
+          "costUsd": 0.000129
+        },
+        "energy": {
+          "characterId": "chr_seedAmara",
+          "spent": 2,
+          "remaining": 1002,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "neutral",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "neutral",
+              "p": 0.731
+            },
+            {
+              "label": "embarrassed",
+              "p": 0.149
+            },
+            {
+              "label": "angry",
+              "p": 0.115
+            }
+          ]
+        },
+        "routing": {
+          "selected": "chr_seedAmara",
+          "forcedBy": "round_order"
+        },
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 72,
+          "used": {
+            "system": 900,
+            "persona": 755,
+            "memory": 0,
+            "knowledge": 0,
+            "history": 35,
+            "user": 75,
+            "mode": 580
+          }
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "sfw",
+              "verdict": "pass",
+              "p": 0.99
+            },
+            {
+              "name": "advice_scope",
+              "verdict": "pass"
+            }
+          ]
+        }
+      },
+      "reactions": [
+        {
+          "characterId": "chr_seedVictor",
+          "emotion": "thinking",
+          "p": 0.7,
+          "at": "2026-09-22T13:20:08.880Z"
+        }
+      ]
+    },
+    {
+      "id": "msg_mockS04",
+      "sessionId": "ses_mockHostSugar",
+      "seq": 4,
+      "author": {
+        "type": "host"
+      },
+      "kind": "narration",
+      "content": "Thank you. Mr. Hale, for the Opposition.",
+      "status": "complete",
+      "createdAt": "2026-09-22T13:20:08.963Z"
+    },
+    {
+      "kind": "chat",
+      "seq": 5,
+      "debate": {
+        "phase": "opening",
+        "round": 1,
+        "iteration": 1,
+        "side": "opp"
+      },
+      "id": "msg_mockS05",
+      "sessionId": "ses_mockHostSugar",
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedVictor"
+      },
+      "content": "Three points. It's regressive. It's paternalistic. And manufacturers simply reformulate to sit a gram under the threshold. You tax the poor and change the label.",
+      "status": "complete",
+      "createdAt": "2026-09-22T13:20:12.063Z",
+      "emotion": "angry",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 2359,
+        "tokensCached": 1720,
+        "tokensOut": 40,
+        "costUsd": 0.000125,
+        "energySpent": 2,
+        "firstTokenMs": 1636,
+        "totalMs": 2791
+      },
+      "trace": {
+        "messageId": "msg_mockS05",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1636,
+            "total": 2791
+          },
+          "tokensIn": 2359,
+          "tokensCached": 1720,
+          "tokensOut": 40,
+          "costUsd": 0.000125
+        },
+        "energy": {
+          "characterId": "chr_seedVictor",
+          "spent": 2,
+          "remaining": 862,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "angry",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "angry",
+              "p": 0.77
+            },
+            {
+              "label": "embarrassed",
+              "p": 0.154
+            },
+            {
+              "label": "thinking",
+              "p": 0.068
+            }
+          ]
+        },
+        "routing": {
+          "selected": "chr_seedVictor",
+          "forcedBy": "round_order"
+        },
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 73,
+          "used": {
+            "system": 900,
+            "persona": 742,
+            "memory": 0,
+            "knowledge": 0,
+            "history": 87,
+            "user": 50,
+            "mode": 580
+          }
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "sfw",
+              "verdict": "pass",
+              "p": 0.95
+            },
+            {
+              "name": "advice_scope",
+              "verdict": "pass"
+            }
+          ]
+        }
+      },
+      "reactions": [
+        {
+          "characterId": "chr_seedAmara",
+          "emotion": "surprised",
+          "p": 0.63,
+          "at": "2026-09-22T13:20:15.248Z"
+        }
+      ]
+    },
+    {
+      "id": "msg_mockS06",
+      "sessionId": "ses_mockHostSugar",
+      "seq": 6,
+      "author": {
+        "type": "host"
+      },
+      "kind": "narration",
+      "content": "Closing statements. Proposition first.",
+      "status": "complete",
+      "createdAt": "2026-09-22T13:20:15.554Z"
+    },
+    {
+      "id": "msg_mockS07",
+      "sessionId": "ses_mockHostSugar",
+      "seq": 7,
+      "author": {
+        "type": "system"
+      },
+      "kind": "system_note",
+      "content": "ROUND 2 · CLOSING",
+      "status": "complete",
+      "createdAt": "2026-09-22T13:20:17.664Z"
+    },
+    {
+      "kind": "chat",
+      "seq": 8,
+      "debate": {
+        "phase": "closing",
+        "round": 2,
+        "iteration": 1,
+        "side": "prop"
+      },
+      "id": "msg_mockS08",
+      "sessionId": "ses_mockHostSugar",
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedAmara"
+      },
+      "content": "Reformulation is the point. Less sugar in the bottle is a win, whoever drinks it.",
+      "status": "complete",
+      "createdAt": "2026-09-22T13:20:20.354Z",
+      "emotion": "happy",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 2433,
+        "tokensCached": 1759,
+        "tokensOut": 20,
+        "costUsd": 0.000118,
+        "energySpent": 2,
+        "firstTokenMs": 1585,
+        "totalMs": 2240
+      },
+      "trace": {
+        "messageId": "msg_mockS08",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1585,
+            "total": 2240
+          },
+          "tokensIn": 2433,
+          "tokensCached": 1759,
+          "tokensOut": 20,
+          "costUsd": 0.000118
+        },
+        "energy": {
+          "characterId": "chr_seedAmara",
+          "spent": 2,
+          "remaining": 1000,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "happy",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "happy",
+              "p": 0.625
+            },
+            {
+              "label": "embarrassed",
+              "p": 0.229
+            },
+            {
+              "label": "thinking",
+              "p": 0.137
+            }
+          ]
+        },
+        "routing": {
+          "selected": "chr_seedAmara",
+          "forcedBy": "round_order"
+        },
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 72,
+          "used": {
+            "system": 900,
+            "persona": 733,
+            "memory": 0,
+            "knowledge": 0,
+            "history": 141,
+            "user": 79,
+            "mode": 580
+          }
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "sfw",
+              "verdict": "pass",
+              "p": 0.989
+            },
+            {
+              "name": "advice_scope",
+              "verdict": "pass"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "chat",
+      "seq": 9,
+      "debate": {
+        "phase": "closing",
+        "round": 2,
+        "iteration": 1,
+        "side": "opp"
+      },
+      "id": "msg_mockS09",
+      "sessionId": "ses_mockHostSugar",
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedVictor"
+      },
+      "content": "A win bought from the poorest wallets. The Opposition rests.",
+      "status": "complete",
+      "createdAt": "2026-09-22T13:20:24.194Z",
+      "emotion": "neutral",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 2432,
+        "tokensCached": 1761,
+        "tokensOut": 15,
+        "costUsd": 0.000115,
+        "energySpent": 2,
+        "firstTokenMs": 1377,
+        "totalMs": 1857
+      },
+      "trace": {
+        "messageId": "msg_mockS09",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1377,
+            "total": 1857
+          },
+          "tokensIn": 2432,
+          "tokensCached": 1761,
+          "tokensOut": 15,
+          "costUsd": 0.000115
+        },
+        "energy": {
+          "characterId": "chr_seedVictor",
+          "spent": 2,
+          "remaining": 860,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "neutral",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "neutral",
+              "p": 0.856
+            },
+            {
+              "label": "surprised",
+              "p": 0.08
+            },
+            {
+              "label": "thinking",
+              "p": 0.06
+            }
+          ]
+        },
+        "routing": {
+          "selected": "chr_seedVictor",
+          "forcedBy": "round_order"
+        },
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 72,
+          "used": {
+            "system": 900,
+            "persona": 717,
+            "memory": 0,
+            "knowledge": 0,
+            "history": 161,
+            "user": 74,
+            "mode": 580
+          }
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "sfw",
+              "verdict": "pass",
+              "p": 0.962
+            },
+            {
+              "name": "advice_scope",
+              "verdict": "pass"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "msg_mockS10",
+      "sessionId": "ses_mockHostSugar",
+      "seq": 10,
+      "author": {
+        "type": "host"
+      },
+      "kind": "narration",
+      "content": "The arbiter will now assess the arguments.",
+      "status": "complete",
+      "createdAt": "2026-09-22T13:20:26.751Z"
+    },
+    {
+      "id": "msg_mockS11",
+      "sessionId": "ses_mockHostSugar",
+      "seq": 11,
+      "author": {
+        "type": "system"
+      },
+      "kind": "verdict",
+      "content": "**Arbiter's assessment** (argument quality, not factual truth)\n\n**Stronger case: Proposition**\n\n**Key disagreement:** Whether regressivity is outweighed by health gains.",
+      "status": "complete",
+      "createdAt": "2026-09-22T13:20:30.851Z"
+    }
+  ]
+}

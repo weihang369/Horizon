@@ -1,0 +1,22 @@
+{
+  "kind": "horizon.theme",
+  "version": 1,
+  "seed": "chr_seedHana",
+  "title": "Hana's Theme",
+  "brief": {
+    "genres": [
+      "city-pop"
+    ],
+    "moods": [
+      "playful",
+      "romantic"
+    ],
+    "bpm": 120,
+    "instruments": [
+      "synth",
+      "bells",
+      "bass"
+    ],
+    "vibe": "Bright city-pop, synth bells, slap bass"
+  }
+}

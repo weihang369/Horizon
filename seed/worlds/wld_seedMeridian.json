@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "data": {
+    "id": "wld_seedMeridian",
+    "name": "Meridian Council",
+    "cover": {
+      "kind": "preset",
+      "presetId": "cover_night_skyline"
+    },
+    "you": {
+      "displayName": "Kai",
+      "about": "A policy analyst who convenes the council"
+    },
+    "characterCount": 3,
+    "isSeed": true,
+    "createdAt": "2026-09-14T08:00:00Z",
+    "updatedAt": "2026-10-01T10:08:00Z",
+    "lastActiveAt": "2026-10-01T10:08:00Z"
+  }
+}

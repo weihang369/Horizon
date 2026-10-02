@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "data": {
+    "id": "song_seedAmara",
+    "characterId": "chr_seedAmara",
+    "status": "ready",
+    "url": "/assets/placeholder/themes/chr_seedAmara.proc.json",
+    "durationSec": 24,
+    "brief": {
+      "genres": [
+        "lo-fi",
+        "piano"
+      ],
+      "moods": [
+        "calm",
+        "hopeful"
+      ],
+      "bpm": 80,
+      "instruments": [
+        "piano",
+        "synth"
+      ],
+      "vibe": "Calm lo-fi piano with a soft pulse synth"
+    },
+    "instrumental": true,
+    "generation": {
+      "model": "google/lyria-3-clip",
+      "prompt": "Instrumental theme: Calm lo-fi piano with a soft pulse synth. lo-fi, piano; calm, hopeful; 80 BPM; piano, synth.",
+      "costUsd": 0.04
+    },
+    "licenseNote": "Placeholder: procedural WebAudio sketch (D-52). The real theme comes from Google Lyria 3 Clip via OpenRouter (provider terms apply)."
+  }
+}

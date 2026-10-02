@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "data": {
+    "id": "song_seedTakeshi",
+    "characterId": "chr_seedTakeshi",
+    "status": "ready",
+    "url": "/assets/placeholder/themes/chr_seedTakeshi.proc.json",
+    "durationSec": 20.2,
+    "brief": {
+      "genres": [
+        "acoustic folk"
+      ],
+      "moods": [
+        "calm",
+        "nostalgic"
+      ],
+      "bpm": 95,
+      "instruments": [
+        "guitar",
+        "harmonica"
+      ],
+      "vibe": "Acoustic folk guitar, harmonica, laid-back shuffle"
+    },
+    "instrumental": true,
+    "generation": {
+      "model": "google/lyria-3-clip",
+      "prompt": "Instrumental theme: Acoustic folk guitar, harmonica, laid-back shuffle. acoustic folk; calm, nostalgic; 95 BPM; guitar, harmonica.",
+      "costUsd": 0.04
+    },
+    "licenseNote": "Placeholder: procedural WebAudio sketch (D-52). The real theme comes from Google Lyria 3 Clip via OpenRouter (provider terms apply)."
+  }
+}

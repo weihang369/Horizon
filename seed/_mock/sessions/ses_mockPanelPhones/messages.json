@@ -1,0 +1,659 @@
+{
+  "schemaVersion": 1,
+  "data": [
+    {
+      "id": "msg_mockP01",
+      "sessionId": "ses_mockPanelPhones",
+      "seq": 1,
+      "author": {
+        "type": "system"
+      },
+      "kind": "system_note",
+      "content": "ROUND 1 · OPENING",
+      "status": "complete",
+      "createdAt": "2026-09-24T11:00:00.710Z"
+    },
+    {
+      "kind": "chat",
+      "seq": 2,
+      "debate": {
+        "phase": "opening",
+        "round": 1,
+        "iteration": 1
+      },
+      "id": "msg_mockP02",
+      "sessionId": "ses_mockPanelPhones",
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedAmara"
+      },
+      "content": "From the clinic side: teenagers are sleeping less and reporting more anxiety, and phones are part of that story. A school-day ban is cheap, reversible and gives kids six hours a day of protected attention.",
+      "status": "complete",
+      "createdAt": "2026-09-24T11:00:03.700Z",
+      "emotion": "neutral",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 2314,
+        "tokensCached": 1669,
+        "tokensOut": 51,
+        "costUsd": 0.000132,
+        "energySpent": 2,
+        "firstTokenMs": 1461,
+        "totalMs": 2941
+      },
+      "trace": {
+        "messageId": "msg_mockP02",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1461,
+            "total": 2941
+          },
+          "tokensIn": 2314,
+          "tokensCached": 1669,
+          "tokensOut": 51,
+          "costUsd": 0.000132
+        },
+        "energy": {
+          "characterId": "chr_seedAmara",
+          "spent": 2,
+          "remaining": 1002,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "neutral",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "neutral",
+              "p": 0.584
+            },
+            {
+              "label": "sad",
+              "p": 0.28
+            },
+            {
+              "label": "surprised",
+              "p": 0.085
+            }
+          ]
+        },
+        "routing": {
+          "selected": "chr_seedAmara",
+          "forcedBy": "round_order"
+        },
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 72,
+          "used": {
+            "system": 900,
+            "persona": 766,
+            "memory": 0,
+            "knowledge": 0,
+            "history": 4,
+            "user": 64,
+            "mode": 580
+          }
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "sfw",
+              "verdict": "pass",
+              "p": 0.966
+            },
+            {
+              "name": "advice_scope",
+              "verdict": "pass"
+            }
+          ]
+        }
+      },
+      "reactions": [
+        {
+          "characterId": "chr_seedMei",
+          "emotion": "thinking",
+          "p": 0.57,
+          "at": "2026-09-24T11:00:06.975Z"
+        }
+      ]
+    },
+    {
+      "kind": "chat",
+      "seq": 3,
+      "debate": {
+        "phase": "opening",
+        "round": 1,
+        "iteration": 1
+      },
+      "id": "msg_mockP03",
+      "sessionId": "ses_mockPanelPhones",
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedVictor"
+      },
+      "content": "Two points. One: schools can already confiscate a disruptive device; a statute adds nothing but rigidity. Two: a national ban invites exceptions for medical and safety use that swallow the rule.",
+      "status": "complete",
+      "createdAt": "2026-09-24T11:00:08.541Z",
+      "emotion": "thinking",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 2376,
+        "tokensCached": 1728,
+        "tokensOut": 49,
+        "costUsd": 0.000132,
+        "energySpent": 2,
+        "firstTokenMs": 1565,
+        "totalMs": 2920
+      },
+      "trace": {
+        "messageId": "msg_mockP03",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1565,
+            "total": 2920
+          },
+          "tokensIn": 2376,
+          "tokensCached": 1728,
+          "tokensOut": 49,
+          "costUsd": 0.000132
+        },
+        "energy": {
+          "characterId": "chr_seedVictor",
+          "spent": 2,
+          "remaining": 862,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "thinking",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "thinking",
+              "p": 0.784
+            },
+            {
+              "label": "surprised",
+              "p": 0.155
+            },
+            {
+              "label": "neutral",
+              "p": 0.052
+            }
+          ]
+        },
+        "routing": {
+          "selected": "chr_seedVictor",
+          "forcedBy": "round_order"
+        },
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 73,
+          "used": {
+            "system": 900,
+            "persona": 779,
+            "memory": 0,
+            "knowledge": 0,
+            "history": 55,
+            "user": 62,
+            "mode": 580
+          }
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "sfw",
+              "verdict": "pass",
+              "p": 0.972
+            },
+            {
+              "name": "advice_scope",
+              "verdict": "pass"
+            }
+          ]
+        }
+      },
+      "reactions": [
+        {
+          "characterId": "chr_seedAmara",
+          "emotion": "surprised",
+          "p": 0.73,
+          "at": "2026-09-24T11:00:11.787Z"
+        }
+      ]
+    },
+    {
+      "kind": "chat",
+      "seq": 4,
+      "debate": {
+        "phase": "opening",
+        "round": 1,
+        "iteration": 1
+      },
+      "id": "msg_mockP04",
+      "sessionId": "ses_mockPanelPhones",
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedMei"
+      },
+      "content": "The studies people quote are small and mostly correlational. I'd stage it: let some districts ban, measure grades and wellbeing, then decide. It depends, and here's on what: enforcement.",
+      "status": "complete",
+      "createdAt": "2026-09-24T11:00:13.361Z",
+      "emotion": "thinking",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 2437,
+        "tokensCached": 1779,
+        "tokensOut": 47,
+        "costUsd": 0.000132,
+        "energySpent": 2,
+        "firstTokenMs": 1311,
+        "totalMs": 2641
+      },
+      "trace": {
+        "messageId": "msg_mockP04",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1311,
+            "total": 2641
+          },
+          "tokensIn": 2437,
+          "tokensCached": 1779,
+          "tokensOut": 47,
+          "costUsd": 0.000132
+        },
+        "energy": {
+          "characterId": "chr_seedMei",
+          "spent": 2,
+          "remaining": 744,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "thinking",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "thinking",
+              "p": 0.868
+            },
+            {
+              "label": "happy",
+              "p": 0.074
+            },
+            {
+              "label": "embarrassed",
+              "p": 0.045
+            }
+          ]
+        },
+        "routing": {
+          "selected": "chr_seedMei",
+          "forcedBy": "round_order"
+        },
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 73,
+          "used": {
+            "system": 900,
+            "persona": 786,
+            "memory": 0,
+            "knowledge": 0,
+            "history": 104,
+            "user": 67,
+            "mode": 580
+          }
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "sfw",
+              "verdict": "pass",
+              "p": 0.986
+            },
+            {
+              "name": "advice_scope",
+              "verdict": "pass"
+            }
+          ]
+        }
+      },
+      "reactions": [
+        {
+          "characterId": "chr_seedVictor",
+          "emotion": "happy",
+          "p": 0.52,
+          "at": "2026-09-24T11:00:16.582Z"
+        }
+      ]
+    },
+    {
+      "id": "msg_mockP05",
+      "sessionId": "ses_mockPanelPhones",
+      "seq": 5,
+      "author": {
+        "type": "system"
+      },
+      "kind": "system_note",
+      "content": "ROUND 2 · CLOSING",
+      "status": "complete",
+      "createdAt": "2026-09-24T11:00:16.612Z"
+    },
+    {
+      "kind": "chat",
+      "seq": 6,
+      "debate": {
+        "phase": "closing",
+        "round": 2,
+        "iteration": 1
+      },
+      "id": "msg_mockP06",
+      "sessionId": "ses_mockPanelPhones",
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedAmara"
+      },
+      "content": "I'd take a staged rollout over nothing. Just don't let \"more data\" become \"never\".",
+      "status": "complete",
+      "createdAt": "2026-09-24T11:00:19.602Z",
+      "emotion": "happy",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 2474,
+        "tokensCached": 1802,
+        "tokensOut": 21,
+        "costUsd": 0.000119,
+        "energySpent": 2,
+        "firstTokenMs": 1649,
+        "totalMs": 2279
+      },
+      "trace": {
+        "messageId": "msg_mockP06",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1649,
+            "total": 2279
+          },
+          "tokensIn": 2474,
+          "tokensCached": 1802,
+          "tokensOut": 21,
+          "costUsd": 0.000119
+        },
+        "energy": {
+          "characterId": "chr_seedAmara",
+          "spent": 2,
+          "remaining": 1000,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "happy",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "happy",
+              "p": 0.793
+            },
+            {
+              "label": "angry",
+              "p": 0.136
+            },
+            {
+              "label": "thinking",
+              "p": 0.054
+            }
+          ]
+        },
+        "routing": {
+          "selected": "chr_seedAmara",
+          "forcedBy": "round_order"
+        },
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 73,
+          "used": {
+            "system": 900,
+            "persona": 763,
+            "memory": 0,
+            "knowledge": 0,
+            "history": 155,
+            "user": 76,
+            "mode": 580
+          }
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "sfw",
+              "verdict": "pass",
+              "p": 0.96
+            },
+            {
+              "name": "advice_scope",
+              "verdict": "pass"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "chat",
+      "seq": 7,
+      "debate": {
+        "phase": "closing",
+        "round": 2,
+        "iteration": 1
+      },
+      "id": "msg_mockP07",
+      "sessionId": "ses_mockPanelPhones",
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedVictor"
+      },
+      "content": "Local rules, clearly drafted, beat a national blunt instrument. The panel rests.",
+      "status": "complete",
+      "createdAt": "2026-09-24T11:00:23.781Z",
+      "emotion": "neutral",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 2497,
+        "tokensCached": 1841,
+        "tokensOut": 20,
+        "costUsd": 0.000116,
+        "energySpent": 2,
+        "firstTokenMs": 1393,
+        "totalMs": 2023
+      },
+      "trace": {
+        "messageId": "msg_mockP07",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1393,
+            "total": 2023
+          },
+          "tokensIn": 2497,
+          "tokensCached": 1841,
+          "tokensOut": 20,
+          "costUsd": 0.000116
+        },
+        "energy": {
+          "characterId": "chr_seedVictor",
+          "spent": 2,
+          "remaining": 860,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "neutral",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "neutral",
+              "p": 0.727
+            },
+            {
+              "label": "thinking",
+              "p": 0.191
+            },
+            {
+              "label": "angry",
+              "p": 0.065
+            }
+          ]
+        },
+        "routing": {
+          "selected": "chr_seedVictor",
+          "forcedBy": "round_order"
+        },
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 74,
+          "used": {
+            "system": 900,
+            "persona": 783,
+            "memory": 0,
+            "knowledge": 0,
+            "history": 176,
+            "user": 58,
+            "mode": 580
+          }
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "sfw",
+              "verdict": "pass",
+              "p": 0.954
+            },
+            {
+              "name": "advice_scope",
+              "verdict": "pass"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "chat",
+      "seq": 8,
+      "debate": {
+        "phase": "closing",
+        "round": 2,
+        "iteration": 1
+      },
+      "id": "msg_mockP08",
+      "sessionId": "ses_mockPanelPhones",
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedMei"
+      },
+      "content": "Pilot, measure, publish. Then argue.",
+      "status": "complete",
+      "createdAt": "2026-09-24T11:00:27.704Z",
+      "emotion": "neutral",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 2507,
+        "tokensCached": 1847,
+        "tokensOut": 9,
+        "costUsd": 0.00011,
+        "energySpent": 2,
+        "firstTokenMs": 1480,
+        "totalMs": 1785
+      },
+      "trace": {
+        "messageId": "msg_mockP08",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1480,
+            "total": 1785
+          },
+          "tokensIn": 2507,
+          "tokensCached": 1847,
+          "tokensOut": 9,
+          "costUsd": 0.00011
+        },
+        "energy": {
+          "characterId": "chr_seedMei",
+          "spent": 2,
+          "remaining": 742,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "neutral",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "neutral",
+              "p": 0.858
+            },
+            {
+              "label": "surprised",
+              "p": 0.108
+            },
+            {
+              "label": "sad",
+              "p": 0.031
+            }
+          ]
+        },
+        "routing": {
+          "selected": "chr_seedMei",
+          "forcedBy": "round_order"
+        },
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 74,
+          "used": {
+            "system": 900,
+            "persona": 771,
+            "memory": 0,
+            "knowledge": 0,
+            "history": 196,
+            "user": 60,
+            "mode": 580
+          }
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "sfw",
+              "verdict": "pass",
+              "p": 0.983
+            },
+            {
+              "name": "advice_scope",
+              "verdict": "pass"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "msg_mockP09",
+      "sessionId": "ses_mockPanelPhones",
+      "seq": 9,
+      "author": {
+        "type": "system"
+      },
+      "kind": "verdict",
+      "content": "**Panel summary** (no winner in panel format)",
+      "status": "complete",
+      "createdAt": "2026-09-24T11:00:32.089Z"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "data": [
+    {
+      "id": "mem_seedAmara1",
+      "characterId": "chr_seedAmara",
+      "worldId": "wld_seedMeridian",
+      "kind": "about_user",
+      "text": "Kai cut back on coffee recently; had temple headaches",
+      "importance": 0.7,
+      "sourceSessionId": "ses_seedAmaraHeadache",
+      "sourceMessageId": "msg_seedA04",
+      "createdAt": "2026-09-29T21:16:00Z"
+    }
+  ]
+}

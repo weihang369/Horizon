@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "data": {
+    "openRouterKeyStatus": "missing",
+    "demoMode": true,
+    "models": {
+      "chat": "deepseek/deepseek-v4.1-flash",
+      "decision": "typesafe/jev-1.13",
+      "image": "qwen/qwen-image-3",
+      "music": "google/lyria-3-clip"
+    },
+    "generationMode": "lean",
+    "autoGenerateMissingEmotions": false,
+    "budget": {
+      "dailyCapUsd": 1,
+      "perCharacterCreationCapUsd": 0.6,
+      "warnAtPct": 80
+    },
+    "energy": {
+      "defaultMaxPoints": 1000,
+      "usdPerPoint": 0.0001,
+      "topUpStepPoints": 500
+    },
+    "spentTodayUsd": 0,
+    "pricing": {
+      "period": "off_peak",
+      "nextChangeAt": "2026-10-02T01:00:00Z"
+    },
+    "audio": {
+      "masterMuted": false,
+      "musicMuted": false,
+      "sfxMuted": false,
+      "master": 0.8,
+      "music": 0.6,
+      "sfx": 0.8,
+      "duckMusic": true
+    },
+    "display": {
+      "reducedMotion": "system",
+      "vfxIntensity": "full",
+      "flashIntensity": "full",
+      "parallax": true,
+      "textSize": "m",
+      "speakerCutIns": true
+    },
+    "chat": {
+      "defaultEmotionMode": "llm",
+      "responderDefault": "auto",
+      "debateAutoAdvance": true,
+      "readableDefault": false
+    },
+    "cost": {
+      "showEstimates": true,
+      "confirmBeforeGenerate": true,
+      "showHud": true
+    },
+    "presenterMode": false,
+    "contentRating": "sfw"
+  }
+}

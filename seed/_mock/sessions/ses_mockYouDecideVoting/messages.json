@@ -1,0 +1,457 @@
+{
+  "schemaVersion": 1,
+  "data": [
+    {
+      "id": "msg_mockV01",
+      "sessionId": "ses_mockYouDecideVoting",
+      "seq": 1,
+      "author": {
+        "type": "system"
+      },
+      "kind": "system_note",
+      "content": "ROUND 1 · OPENING",
+      "status": "complete",
+      "createdAt": "2026-09-25T15:05:00.710Z"
+    },
+    {
+      "kind": "chat",
+      "seq": 2,
+      "debate": {
+        "phase": "opening",
+        "round": 1,
+        "iteration": 1,
+        "side": "prop"
+      },
+      "id": "msg_mockV02",
+      "sessionId": "ses_mockYouDecideVoting",
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedVictor"
+      },
+      "content": "Australia has compelled turnout for a century without tyranny. A duty to show up, with a box for \"none of the above\", is the cheapest legitimacy upgrade a democracy can buy.",
+      "status": "complete",
+      "createdAt": "2026-09-25T15:05:03.700Z",
+      "emotion": "happy",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 2304,
+        "tokensCached": 1643,
+        "tokensOut": 43,
+        "costUsd": 0.00013,
+        "energySpent": 2,
+        "firstTokenMs": 1487,
+        "totalMs": 2742
+      },
+      "trace": {
+        "messageId": "msg_mockV02",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1487,
+            "total": 2742
+          },
+          "tokensIn": 2304,
+          "tokensCached": 1643,
+          "tokensOut": 43,
+          "costUsd": 0.00013
+        },
+        "energy": {
+          "characterId": "chr_seedVictor",
+          "spent": 2,
+          "remaining": 862,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "happy",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "happy",
+              "p": 0.828
+            },
+            {
+              "label": "angry",
+              "p": 0.135
+            },
+            {
+              "label": "neutral",
+              "p": 0.022
+            }
+          ]
+        },
+        "routing": {
+          "selected": "chr_seedVictor",
+          "forcedBy": "round_order"
+        },
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 71,
+          "used": {
+            "system": 900,
+            "persona": 740,
+            "memory": 0,
+            "knowledge": 0,
+            "history": 4,
+            "user": 80,
+            "mode": 580
+          }
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "sfw",
+              "verdict": "pass",
+              "p": 0.993
+            },
+            {
+              "name": "advice_scope",
+              "verdict": "pass"
+            }
+          ]
+        }
+      },
+      "reactions": [
+        {
+          "characterId": "chr_seedMei",
+          "emotion": "thinking",
+          "p": 0.6,
+          "at": "2026-09-25T15:05:06.651Z"
+        }
+      ]
+    },
+    {
+      "kind": "chat",
+      "seq": 3,
+      "debate": {
+        "phase": "opening",
+        "round": 1,
+        "iteration": 1,
+        "side": "opp"
+      },
+      "id": "msg_mockV03",
+      "sessionId": "ses_mockYouDecideVoting",
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedMei"
+      },
+      "content": "Turnout goes up, sure. Informed turnout is a different variable. You'd raise the count and maybe lower the signal.",
+      "status": "complete",
+      "createdAt": "2026-09-25T15:05:08.342Z",
+      "emotion": "thinking",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 2312,
+        "tokensCached": 1683,
+        "tokensOut": 29,
+        "costUsd": 0.000117,
+        "energySpent": 2,
+        "firstTokenMs": 1649,
+        "totalMs": 2554
+      },
+      "trace": {
+        "messageId": "msg_mockV03",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1649,
+            "total": 2554
+          },
+          "tokensIn": 2312,
+          "tokensCached": 1683,
+          "tokensOut": 29,
+          "costUsd": 0.000117
+        },
+        "energy": {
+          "characterId": "chr_seedMei",
+          "spent": 2,
+          "remaining": 744,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "thinking",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "thinking",
+              "p": 0.833
+            },
+            {
+              "label": "surprised",
+              "p": 0.098
+            },
+            {
+              "label": "sad",
+              "p": 0.041
+            }
+          ]
+        },
+        "routing": {
+          "selected": "chr_seedMei",
+          "forcedBy": "round_order"
+        },
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 73,
+          "used": {
+            "system": 900,
+            "persona": 741,
+            "memory": 0,
+            "knowledge": 0,
+            "history": 47,
+            "user": 44,
+            "mode": 580
+          }
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "sfw",
+              "verdict": "pass",
+              "p": 0.979
+            },
+            {
+              "name": "advice_scope",
+              "verdict": "pass"
+            }
+          ]
+        }
+      },
+      "reactions": [
+        {
+          "characterId": "chr_seedVictor",
+          "emotion": "surprised",
+          "p": 0.51,
+          "at": "2026-09-25T15:05:11.375Z"
+        }
+      ]
+    },
+    {
+      "id": "msg_mockV04",
+      "sessionId": "ses_mockYouDecideVoting",
+      "seq": 4,
+      "author": {
+        "type": "system"
+      },
+      "kind": "system_note",
+      "content": "ROUND 2 · CLOSING",
+      "status": "complete",
+      "createdAt": "2026-09-25T15:05:11.506Z"
+    },
+    {
+      "kind": "chat",
+      "seq": 5,
+      "debate": {
+        "phase": "closing",
+        "round": 2,
+        "iteration": 1,
+        "side": "prop"
+      },
+      "id": "msg_mockV05",
+      "sessionId": "ses_mockYouDecideVoting",
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedVictor"
+      },
+      "content": "Signal improves when politicians must court everyone, not just the reliable voters.",
+      "status": "complete",
+      "createdAt": "2026-09-25T15:05:14.496Z",
+      "emotion": "neutral",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 2345,
+        "tokensCached": 1700,
+        "tokensOut": 21,
+        "costUsd": 0.000114,
+        "energySpent": 2,
+        "firstTokenMs": 1287,
+        "totalMs": 1892
+      },
+      "trace": {
+        "messageId": "msg_mockV05",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1287,
+            "total": 1892
+          },
+          "tokensIn": 2345,
+          "tokensCached": 1700,
+          "tokensOut": 21,
+          "costUsd": 0.000114
+        },
+        "energy": {
+          "characterId": "chr_seedVictor",
+          "spent": 2,
+          "remaining": 860,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "neutral",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "neutral",
+              "p": 0.605
+            },
+            {
+              "label": "sad",
+              "p": 0.292
+            },
+            {
+              "label": "surprised",
+              "p": 0.058
+            }
+          ]
+        },
+        "routing": {
+          "selected": "chr_seedVictor",
+          "forcedBy": "round_order"
+        },
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 72,
+          "used": {
+            "system": 900,
+            "persona": 728,
+            "memory": 0,
+            "knowledge": 0,
+            "history": 80,
+            "user": 57,
+            "mode": 580
+          }
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "sfw",
+              "verdict": "pass",
+              "p": 0.986
+            },
+            {
+              "name": "advice_scope",
+              "verdict": "pass"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "chat",
+      "seq": 6,
+      "debate": {
+        "phase": "closing",
+        "round": 2,
+        "iteration": 1,
+        "side": "opp"
+      },
+      "id": "msg_mockV06",
+      "sessionId": "ses_mockYouDecideVoting",
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedMei"
+      },
+      "content": "Or campaigns get louder and dumber. The evidence on that is honestly thin.",
+      "status": "complete",
+      "createdAt": "2026-09-25T15:05:18.288Z",
+      "emotion": "neutral",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 2438,
+        "tokensCached": 1791,
+        "tokensOut": 19,
+        "costUsd": 0.000114,
+        "energySpent": 2,
+        "firstTokenMs": 1282,
+        "totalMs": 1862
+      },
+      "trace": {
+        "messageId": "msg_mockV06",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1282,
+            "total": 1862
+          },
+          "tokensIn": 2438,
+          "tokensCached": 1791,
+          "tokensOut": 19,
+          "costUsd": 0.000114
+        },
+        "energy": {
+          "characterId": "chr_seedMei",
+          "spent": 2,
+          "remaining": 742,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "neutral",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "neutral",
+              "p": 0.66
+            },
+            {
+              "label": "embarrassed",
+              "p": 0.267
+            },
+            {
+              "label": "thinking",
+              "p": 0.06
+            }
+          ]
+        },
+        "routing": {
+          "selected": "chr_seedMei",
+          "forcedBy": "round_order"
+        },
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 73,
+          "used": {
+            "system": 900,
+            "persona": 801,
+            "memory": 0,
+            "knowledge": 0,
+            "history": 101,
+            "user": 56,
+            "mode": 580
+          }
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "sfw",
+              "verdict": "pass",
+              "p": 0.965
+            },
+            {
+              "name": "advice_scope",
+              "verdict": "pass"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "msg_mockV07",
+      "sessionId": "ses_mockYouDecideVoting",
+      "seq": 7,
+      "author": {
+        "type": "system"
+      },
+      "kind": "system_note",
+      "content": "VERDICT · YOUR CALL",
+      "status": "complete",
+      "createdAt": "2026-09-25T15:05:20.760Z"
+    }
+  ]
+}

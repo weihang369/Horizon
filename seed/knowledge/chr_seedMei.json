@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "data": [
+    {
+      "id": "kno_seedMei1",
+      "characterId": "chr_seedMei",
+      "worldId": "wld_seedMeridian",
+      "title": "Working-time pilots dataset.csv",
+      "type": "file",
+      "status": "failed",
+      "bytes": 2310442
+    }
+  ]
+}
