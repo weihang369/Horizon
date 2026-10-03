@@ -9,7 +9,7 @@ Horizon is an open-source multi-agent character sandbox. You summon AI personas,
 **You need:** Node.js **20.19+** or **22.12+** (Vite 8 requires one of these) and npm.
 
 ```bash
-git clone <this repo>
+git clone https://github.com/weihang369/Horizon.git
 cd Horizon/frontend
 npm install
 npm run dev

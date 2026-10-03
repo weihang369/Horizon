@@ -5,8 +5,8 @@
   z-index: var(--z-dev);
   display: grid;
   place-items: center;
-  padding: 24px;
-  overflow: hidden;
+  padding: 24px 16px;
+  overflow: hidden auto;
   background:
     radial-gradient(circle, color-mix(in srgb, var(--horizon-500) 45%, transparent) 1.2px, transparent 1.7px) 0 0 / 9px 9px,
     var(--ink-900);
@@ -39,3 +39,19 @@
 .size [data-bad] { color: var(--signal-err); }
 .need { color: var(--paper-300); }
 .tip { margin: 0; color: var(--paper-300); font-size: 14px; }
+.preview { display: block; width: 100%; height: auto; box-shadow: 0 0 0 2px var(--paper-50); }
+.actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.primary, .secondary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 22px;
+  font: 400 20px/1 var(--font-display);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+}
+.primary { color: var(--on-brand); background: var(--horizon-500); }
+.secondary { color: var(--ink-900); background: var(--paper-50); }
+@media (max-width: 480px) { .inner { padding: 22px 18px; gap: 12px; } }
