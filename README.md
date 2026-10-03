@@ -58,6 +58,7 @@ Run these inside `frontend/`:
 | `npm run build` | Type-check and build a production bundle into `frontend/dist/` |
 | `npm run preview` | Serve the production build locally |
 | `npm test` | Run the unit and contract tests (Vitest) |
+| `npm run e2e` | Run the Playwright end-to-end suite in Microsoft Edge (starts its own dev server on port 5186) |
 | `npm run typecheck` | Run the TypeScript project build with no output |
 | `npm run lint` | Run oxlint |
 | `npm run seed:build` | Regenerate `seed/` from the screenplays and fixtures in `frontend/scripts/seed-build/` |

@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "test": "vitest run",
+    "e2e": "playwright test",
     "typecheck": "tsc -b",
     "preview": "vite preview",
     "seed:build": "node scripts/seed-build/run.mjs build",
@@ -29,6 +30,7 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
