@@ -22,7 +22,7 @@ Open the URL Vite prints, usually <http://localhost:5173>.
 
 ## A 5-minute tour
 
-1. **Watch a debate.** Pick **Meridian Council** in World Select, open the Sessions tab, and replay the four-day-work-week debate.
+1. **Watch a debate.** On World Select, click **▶ Watch a 60-second AI debate**, then **Watch** (or press <kbd>Space</kbd>).
    - <kbd>Space</kbd> pauses and resumes.
    - **×2** and **×4** change the speed.
    - <kbd>I</kbd> opens the Insight drawer, which shows routing, recalled memory, context budget and cost.
@@ -39,7 +39,8 @@ Open the URL Vite prints, usually <http://localhost:5173>.
 |---|---|
 | <kbd>?</kbd> | Show every shortcut |
 | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd> | Open the mock state switcher (scenarios, mock key, demo speed) |
-| <kbd>Space</kbd> / <kbd>→</kbd> | Play/pause and step through a replay or debate |
+| <kbd>Space</kbd> | Play/pause a replay or debate |
+| <kbd>←</kbd> / <kbd>→</kbd> | Previous/next turn in a replay; move between worlds on World Select |
 | <kbd>I</kbd> | Open or close the Insight drawer in a session |
 | <kbd>L</kbd> | Open the session log |
 | <kbd>Ctrl</kbd>+<kbd>.</kbd> | Stop a streaming reply |
