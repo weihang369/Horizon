@@ -6,11 +6,11 @@ import type { KeyboardEvent, MouseEvent } from "react";
 import { openOverlay } from "../../app/layers";
 import { useShortcut } from "../../app/shortcuts";
 import { audio } from "../../audio/engine";
+import { client } from "../../client";
 import { useCharacters, useNow, useWorlds } from "../../client/hooks";
 import type { World } from "../../contract/types";
 import { formatRelative } from "../../domain/format";
 import { navigate } from "../../router";
-import { mockActions } from "../../stores/mock";
 import { Button } from "../../ui/Button";
 import { Kbd } from "../../ui/Kbd";
 import { EmptyState, ErrorTape } from "../../ui/Panels";
@@ -84,7 +84,7 @@ export function WorldSelectScreen() {
             body="Every story needs a horizon."
             action={{ label: "+ Create world", run: () => openOverlay("O02", {}) }}
           />
-          <Button variant="ghost" size="sm" onClick={() => void mockActions.resetDemoData()}>Restore demo data</Button>
+          <Button variant="ghost" size="sm" onClick={() => void client.admin.resetDemo()}>Restore demo data</Button>
         </div>
       ) : !error && (
         <div ref={rail} className={s.rail} role="list" aria-label="Worlds">

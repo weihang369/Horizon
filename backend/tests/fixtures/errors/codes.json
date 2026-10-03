@@ -1,0 +1,19 @@
+{
+  "comment": "Every ErrorCode with its default `retryable` (frontend errors.ts DEFAULT_RETRYABLE) and its HTTP status (doc 03 §2). Both test suites compare against this file. `network` is client-side only (status null).",
+  "codes": {
+    "missing_key": { "retryable": false, "status": 400 },
+    "invalid_key": { "retryable": false, "status": 401 },
+    "insufficient_credits": { "retryable": true, "status": 402 },
+    "rate_limited": { "retryable": true, "status": 429 },
+    "content_refused": { "retryable": true, "status": 451 },
+    "provider_error": { "retryable": true, "status": 502 },
+    "daily_budget_exceeded": { "retryable": false, "status": 402 },
+    "creation_budget_exceeded": { "retryable": false, "status": 402 },
+    "energy_exhausted": { "retryable": false, "status": 402 },
+    "timeout": { "retryable": true, "status": 504 },
+    "network": { "retryable": true, "status": null },
+    "not_found": { "retryable": false, "status": 404 },
+    "validation": { "retryable": false, "status": 422 },
+    "conflict": { "retryable": false, "status": 409 }
+  }
+}

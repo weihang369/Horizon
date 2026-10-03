@@ -2,7 +2,7 @@
 
 > **v1.0.** This revision applies the review debate (Rounds 1–2, 2026-10-03).
 
-**Loop:** `openspec propose` (from this pack) → review → `openspec apply` → tests green → `openspec archive` → squash merge to `dev`. Work happens on `feat/backend-api`.
+**Loop:** `openspec propose` (from this pack) → review → `openspec apply` → tests green → `openspec archive` → squash merge to `dev`. **One branch per milestone:** `feat/<change-name>` (e.g. `feat/backend-foundation`), cut from `dev` and squash-merged back after its change is archived.
 
 **Each milestone ships the HttpClient methods for its own routes**, so the app runs against the backend from M1b onwards. M6 only closes parity and E2E.
 
@@ -46,7 +46,7 @@
 - **World CRUD** (with the delete cascade and folder removal).
 - All **read** endpoints, `/assets` resolution, the error envelope, pagination, the idempotency middleware, `/health`, `/_test/*`.
 - Root `package.json` (`setup` in two steps, `dev` with concurrently, `demo`) and the Vite proxy.
-- **HttpClient:** settings get, worlds (full), the read methods for characters, sessions, usage, memory and knowledge, `sessions.events`/`subscribe` (replay only), `onGlobal`.
+- **HttpClient:** settings get, worlds (full), the read methods for characters, sessions, usage, memory and knowledge, **job reads (`jobs.get`, `listActive`, `subscribe` as snapshot + global filter)**, `sessions.events`/`subscribe` (replay only), `onGlobal`. Job writes stay in M4.
 - **`HorizonClient.admin.resetDemo()`** (rev 1.3 addendum, OQ-5 of `contract-rev-1-3`): the Settings and World Select "Reset demo data" buttons move from the mock-only dev API to it, on both clients.
 - **An HTTP harness for the portable contract suite** (`runPortableContract`, driven through `/_test/*`).
 

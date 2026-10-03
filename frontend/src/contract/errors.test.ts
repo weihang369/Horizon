@@ -1,4 +1,6 @@
 // HorizonError (contract rev 1.3): the new codes and the optional `details` survive serialisation.
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { DEFAULT_RETRYABLE, ERROR_COPY, HorizonError, toHorizonError } from "./errors";
 import { HorizonErrorShapeSchema } from "./schemas";
@@ -22,5 +24,11 @@ describe("HorizonError", () => {
   it("keeps details when normalising an existing HorizonError", () => {
     const e = new HorizonError("validation", "Too many sources.", { details: { limit: 20 } });
     expect(toHorizonError(e).details).toEqual({ limit: 20 });
+  });
+
+  it("default retryable flags match the shared table the backend also checks (backend/tests/fixtures/errors)", () => {
+    const file = path.resolve(__dirname, "../../../backend/tests/fixtures/errors/codes.json");
+    const { codes } = JSON.parse(readFileSync(file, "utf8")) as { codes: Record<string, { retryable: boolean }> };
+    expect(Object.fromEntries(Object.entries(codes).map(([k, v]) => [k, v.retryable]))).toEqual(DEFAULT_RETRYABLE);
   });
 });

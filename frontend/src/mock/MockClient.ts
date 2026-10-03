@@ -518,6 +518,20 @@ export class MockClient implements HorizonClient {
     return w;
   }
 
+  /** World names (worlds spec): trimmed, ≤ 40 chars, unique case-insensitively; shipped seed names are reserved
+   * for their own world, so "Reset demo data" can always restore them (demo-data spec, like the backend). */
+  private worldName(name: string, selfId?: string): string {
+    const clean = name.trim().slice(0, 40) || "New World";
+    const key = clean.toLowerCase();
+    for (const s of Object.values(this.seed.worlds)) {
+      if (s.name.trim().toLowerCase() === key && s.id !== selfId) throw conflict("That name belongs to a demo world.", { field: "name", reserved: true });
+    }
+    for (const w of Object.values(this.db.worlds)) {
+      if (w.id !== selfId && w.name.trim().toLowerCase() === key) throw conflict("A world with that name already exists.", { field: "name" });
+    }
+    return clean;
+  }
+
   worlds: HorizonClient["worlds"] = {
     list: () => this.query(() => Object.values(this.db.worlds).map((w) => this.worldView(w)).sort((a, b) => b.lastActiveAt.localeCompare(a.lastActiveAt))),
     get: (id) => this.query(() => this.worldView(this.world(id))),
@@ -535,7 +549,7 @@ export class MockClient implements HorizonClient {
     create: (input: WorldInput) => this.command(() => {
       const now = this.iso();
       const w: World = {
-        id: this.newId("wld"), name: input.name.trim().slice(0, 40) || "New World", cover: input.cover,
+        id: this.newId("wld"), name: this.worldName(input.name), cover: input.cover,
         ...(input.you ? { you: input.you } : {}), characterCount: 0, isSeed: false, createdAt: now, updatedAt: now, lastActiveAt: now,
       };
       this.db.worlds[w.id] = w;
@@ -544,7 +558,8 @@ export class MockClient implements HorizonClient {
     }),
     update: (id, patch) => this.command(() => {
       const w = this.world(id);
-      Object.assign(w, patch, { updatedAt: this.iso() });
+      const name = patch.name !== undefined ? this.worldName(patch.name, id) : w.name;
+      Object.assign(w, patch, { name, updatedAt: this.iso() });
       this.changed("world", id, id);
       return this.worldView(w);
     }),
@@ -1195,6 +1210,23 @@ export class MockClient implements HorizonClient {
   };
 
   // ── Usage ─────────────────────────────────────────────────────────────────
+  // ── Admin (rev 1.3 addendum) ───────────────────────────────────────────────
+  admin: HorizonClient["admin"] = {
+    resetDemo: () => this.resetDemo(),
+  };
+
+  /** D-70: re-seed seed records only (seed copies win by id); user worlds, characters, forks, memories and ledger
+   * rows survive, like the backend's POST /admin/reset-demo. Settings and the key aren't seed data: they stay. */
+  private async resetDemo(): Promise<void> {
+    await this.ready;
+    const settings = this.db.settings;
+    this.hardReset(SCENARIO_BY_ID.default, true);
+    this.db.settings = settings;
+    this.persistSoon();
+    this.global({ type: "mock.reset" });
+    this.notifyDev();
+  }
+
   usage: HorizonClient["usage"] = {
     list: (opts) => this.query(() => {
       const since = opts?.sinceDays ? this.sched.wallNow() - opts.sinceDays * 86_400_000 : -Infinity;
@@ -1294,17 +1326,7 @@ export class MockClient implements HorizonClient {
         this.sched.setSpeed(speed);
         this.notifyDev();
       },
-      // D-70 / rev 1.3: re-seed seed records only (seed copies win by id); user worlds, characters, forks,
-      // memories and ledger rows survive, like the backend's POST /admin/reset-demo.
-      resetDemoData: async () => {
-        await this.ready;
-        const settings = this.db.settings; // settings and the key aren't seed data: they stay
-        this.hardReset(SCENARIO_BY_ID.default, true);
-        this.db.settings = settings;
-        this.persistSoon();
-        this.global({ type: "mock.reset" });
-        this.notifyDev();
-      },
+      resetDemoData: () => this.resetDemo(),
       setMockKey: async () => {
         await this.settings.setKey("sk-or-mock-reviewer-0000");
       },

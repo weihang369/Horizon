@@ -96,14 +96,15 @@ image_assets  id PK (emo_… / cand_…), world_id FK→worlds (CASCADE), charac
               job_id NULL FK→generation_jobs (SET NULL),
               kind ('candidate'|'emotion'|'cover'), emotion NULL, variant ('default'|'blink'),
               status, rel_path NULL, width, height, format NULL, bytes, vfx_preset,
-              generation J NULL, version INTEGER, is_active BOOLEAN, created_at
+              generation J NULL, version INTEGER, is_active BOOLEAN, selected BOOLEAN, ord INTEGER, created_at
+              -- selected/ord (M1b): a portrait candidate's `selected` flag and its order in its batch
               CHECK ((kind = 'cover') = (character_id IS NULL))
               pUQ(character_id, emotion, variant, version) WHERE kind='emotion'
               pUQ(character_id, emotion, variant)          WHERE kind='emotion' AND is_active      -- ≤ 1 active per slot
               pUQ(world_id, version)                       WHERE kind='cover'
               IX(character_id, kind, job_id)
 theme_songs   id PK (song_…), character_id FK→characters (CASCADE), status, rel_path NULL, duration_sec, format, bytes,
-              loop J NULL, gain_db NULL, brief J, instrumental, generation J NULL, license_note, version, created_at
+              loop J NULL, gain_db NULL, brief J, instrumental, generation J NULL, license_note, version, is_seed, created_at
               -- no UQ(character_id): regeneration inserts a new row; characters.theme_song_id is the active pointer
 ```
 
@@ -170,7 +171,7 @@ session_summaries id INTEGER PK, session_id FK→sessions (CASCADE), upto_seq IN
 
 ```
 generation_jobs  id PK (job_…), character_id FK→characters (CASCADE), kind, target_field NULL, status, progress REAL,
-                 estimated_cost_usd, actual_cost_usd, input J, error J NULL, created_at, started_at NULL, finished_at NULL
+                 estimated_cost_usd, actual_cost_usd, input J, error J NULL, is_seed, created_at, started_at NULL, finished_at NULL
                  IX(status)  IX(character_id, created_at DESC)
                  pUQ(character_id) WHERE status IN ('queued','running')      -- one non-terminal job per character (= activeJobId)
 generation_tasks id PK (task_…), job_id FK→generation_jobs (CASCADE), ord INTEGER, type, emotion NULL, status,
@@ -237,7 +238,7 @@ memory_vec__{space}  vec0(rid INTEGER PRIMARY KEY, character_id TEXT PARTITION K
 
 ```
 knowledge_sources  id PK (kno_…), character_id FK→characters (CASCADE), world_id,
-                   title, type ('text'|'file'|'url'(legacy, read-only)), mime NULL, original_name NULL,
+                   title, type ('text'|'file'|'url'(legacy, read-only)), url NULL, mime NULL, original_name NULL,
                    bytes NULL, pages NULL, sha256 NULL,
                    status ('queued'|'extracting'|'chunking'|'embedding'|'indexed'|'keyword_only'|'failed'),
                    chunk_count, extractor_version NULL, chunker_version, tokenizer TEXT, embedding_space_id NULL,
@@ -327,7 +328,9 @@ embedding_spaces  id PK ('qwen3-emb-8b@1024'), model, provider, dims, dtype ('fl
   5. **Synthesise** knowledge sections.
   6. **Index** FTS immediately.
 
-  Vectors are created by an explicit **"Index seed knowledge"** action offered after `setKey`, an estimated < $0.001 (NFR-30). Until then the seed sources are `keyword_only`. `seed/_mock/**` is never imported.
+  Vectors are created by an explicit **"Index seed knowledge"** action offered after `setKey`, an estimated < $0.001 (NFR-30). Until then the seed sources are `keyword_only`. `seed/_mock/**` is never imported in normal runs. **In test mode (`HORIZON_TEST=1`) only**, its default-scenario overlays (characters, sessions, songs, jobs, ledger rows; not `variants/`) are imported as shipped rows, so the portable contract suite sees the MockClient's dataset.
+- **Wire `isSeed` vs. `is_seed`.** Worlds, characters and sessions store the wire `isSeed` they ship with (the `_mock` overlays ship `false`); reset finds them by the seed dataset's ids. Memory, knowledge, songs, jobs and ledger rows have no wire flag, so their `is_seed` means "shipped, restored by reset".
+- **Seed timestamps** are normalised everywhere they occur, nested JSON included, so events, messages and traces stay consistent.
 - **Contract schema.**
   - The frontend command `npm run export-schema` uses zod 4's native `z.toJSONSchema` to write `backend/horizon/contract/schema.json`.
   - CI fails on drift.

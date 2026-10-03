@@ -9,7 +9,7 @@ import type {
   ThemeSong, TurnCall, TurnTrace, UsageRecord, Verdict, WatchConfig, WatchState, World, YouCard,
 } from "./types";
 import type { HorizonErrorShape } from "./errors";
-import type { GlobalEvent, JobEvent } from "../client/HorizonClient";
+import type { GlobalEvent, JobEvent, SessionSnapshot, UsageSummary } from "../client/HorizonClient";
 
 const so = z.strictObject;
 
@@ -476,6 +476,18 @@ export const GlobalEventSchema = z.discriminatedUnion("type", [
   so({ type: z.literal("error"), error: HorizonErrorShapeSchema, context: z.string().optional() }),
   so({ type: z.literal("mock.reset") }),
 ]) satisfies z.ZodType<GlobalEvent>;
+
+// Query bodies that aren't entities (rev 1.3 addendum): `sessions.get` and `usage.summary`, so the backend validates them too.
+export const SessionSnapshotSchema = so({
+  session: SessionSchema, messages: z.array(MessageSchema), lastSeq: z.number().int().min(0),
+}) satisfies z.ZodType<SessionSnapshot>;
+const usd = z.number().min(0);
+export const UsageSummarySchema = so({
+  todayUsd: usd, totalUsd: usd, capUsd: usd,
+  byCategory: z.record(UsageRecordSchema.shape.category, usd),
+  byCharacter: z.record(z.string(), usd), bySession: z.record(z.string(), usd),
+  estimatedUsd: usd, actualUsd: usd,
+}) satisfies z.ZodType<UsageSummary>;
 
 // ── Fixture files ───────────────────────────────────────────────────────────
 // Every seed file is `{ "schemaVersion": 1, "data": … }` (doc 05 §1: fixtures carry schemaVersion at the root).

@@ -2,8 +2,9 @@
 // Portable: it touches only the HorizonClient interface plus a ContractHarness (time, scenarios, reset, key).
 // It must never import from src/mock: the MockClient harness lives in clientContract.mock.test.ts, and the M1b
 // HttpClient harness drives the backend's /_test/* routes instead. Owner: EE.
-import { describe, expect, it } from "vitest";
-import type { Message, SessionEvent } from "../contract/types";
+import { afterEach, describe, expect, it } from "vitest";
+import type { Message, Session, SessionEvent } from "../contract/types";
+import { initialRuntime, orderedMessages, reduceAll } from "../engine/sessionReducer";
 import { HorizonError } from "../contract/errors";
 import { CharacterSchema, GlobalEventSchema, KnowledgeChunkSchema, MessageSchema, SessionEventSchema } from "../contract/schemas";
 import type { GlobalEvent, HorizonClient, JobEvent } from "./HorizonClient";
@@ -21,8 +22,18 @@ export interface ContractHarness {
   reset(): Promise<void>;
   /** Set a valid key (leaves demo mode). */
   setKey(): Promise<void>;
+  /** Release the client's streams after the test (HTTP harness). */
+  dispose?(): void | Promise<void>;
 }
 export type MakeHarness = () => Promise<ContractHarness>;
+
+/** The backend milestone whose routes a test needs (doc backend/06). The mock supports everything ("all"). */
+export type Milestone = "M1b" | "M2" | "M3" | "M4" | "M5" | "M6";
+export const MILESTONES: readonly Milestone[] = ["M1b", "M2", "M3", "M4", "M5", "M6"];
+export interface PortableOptions {
+  /** The latest milestone this client's backend implements. Later tests are listed as `[pending Mx]`, never silently skipped. */
+  supports: Milestone | "all";
+}
 
 const code = async (p: Promise<unknown>) => {
   try {
@@ -43,10 +54,38 @@ const fail = async (p: Promise<unknown>): Promise<HorizonError> => {
   throw new Error("expected a rejection");
 };
 const chars = (msgs: Message[]) => msgs.filter((m) => m.author.type === "character");
+/** Wait (real time) for something a remote client delivers asynchronously, e.g. over SSE. */
+async function eventually(cond: () => boolean, ms = 5000): Promise<void> {
+  const end = Date.now() + ms;
+  while (!cond()) {
+    if (Date.now() > end) throw new Error("timed out waiting for a condition");
+    await new Promise((r) => setTimeout(r, 20));
+  }
+}
+/** The session a seed recording starts from (as scripts/seed-build builds it); its events set the rest. */
+function seedBase(final: Session): Session {
+  const { lastMessageAt: _l, pausedReason: _p, ...rest } = final;
+  return { ...rest, status: "active", state: null, costUsd: 0, messageCount: 0, updatedAt: final.createdAt };
+}
+const COVER = { kind: "preset" as const, presetId: "cover_night_skyline" };
 
-export function runPortableContract(label: string, makeHarness: MakeHarness): void {
+export function runPortableContract(label: string, makeHarness: MakeHarness, opts: PortableOptions = { supports: "all" }): void {
+  /** Declare a portable test with the milestone it needs; unknown milestones fail the suite at definition time. */
+  function test(m: Milestone, name: string, fn: () => Promise<void>, timeout?: number): void {
+    if (!MILESTONES.includes(m)) throw new Error(`portable test "${name}": unknown milestone ${String(m)}`);
+    const runs = opts.supports === "all" || MILESTONES.indexOf(m) <= MILESTONES.indexOf(opts.supports);
+    if (runs) it(name, fn, timeout);
+    else it.skip(`[pending ${m}] ${name}`, fn);
+  }
+
+  const made: ContractHarness[] = [];
+  afterEach(async () => {
+    for (const h of made.splice(0)) await h.dispose?.();
+  });
+
   async function make(opts: { key?: boolean } = {}) {
     const h = await makeHarness();
+    made.push(h);
     const c = h.client;
     if (opts.key) await h.setKey();
     const events: SessionEvent[] = [];
@@ -57,7 +96,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
   }
 
   describe(`HorizonClient contract (${label})`, () => {
-    it("queries work without a key; live actions reject with missing_key (R15 demo mode)", async () => {
+    test("M1b", "queries work without a key (R15 demo mode)", async () => {
       const { c } = await make();
       expect((await c.settings.get()).openRouterKeyStatus).toBe("missing");
       const worlds = await c.worlds.list();
@@ -67,11 +106,15 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
       expect(roster.some((x) => x.status === "archived")).toBe(false);
       expect((await c.characters.list("wld_seedSunnyHollow", { includeArchived: true })).some((x) => x.status === "archived")).toBe(true);
       expect((await c.sessions.list("wld_seedMeridian")).length).toBeGreaterThanOrEqual(5);
+    });
+
+    test("M4", "live actions without a key reject with missing_key (R15 demo mode)", async () => {
+      const { c } = await make();
       expect(await code(c.sessions.create({ worldId: "wld_seedMeridian", mode: "one_on_one", characterIds: ["chr_seedAmara"] }))).toBe("missing_key");
       expect(await code(c.jobs.start({ characterId: "chr_mockSarah", kind: "portrait_candidates" }))).toBe("missing_key");
     });
 
-    it("mock keys: sk-or-* valid, sk-or-bad* invalid", async () => {
+    test("M2", "mock keys: sk-or-* valid, sk-or-bad* invalid", async () => {
       const { c } = await make();
       expect((await c.settings.setKey("sk-or-bad-zzz")).openRouterKeyStatus).toBe("invalid");
       expect(await code(c.settings.testConnection())).toBe("invalid_key");
@@ -81,7 +124,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
       expect((await c.settings.testConnection()).ok).toBe(true);
     });
 
-    it("1:1: greeting, then send → user message, streamed reply, energy drain, ledger row", async () => {
+    test("M3", "1:1: greeting, then send → user message, streamed reply, energy drain, ledger row", async () => {
       const { c, tick, events, watch } = await make({ key: true });
       const before = (await c.characters.get("chr_seedAmara")).energy.current;
       const snap = await c.sessions.create({ worldId: "wld_seedMeridian", mode: "one_on_one", characterIds: ["chr_seedAmara"] });
@@ -106,7 +149,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
       expect((await c.usage.summary()).byCategory.chat).toBeGreaterThan(0);
     });
 
-    it("subscribe(sinceSeq) replays the backlog without gaps or duplicates", async () => {
+    test("M3", "subscribe(sinceSeq) replays the backlog without gaps or duplicates", async () => {
       const { c, tick } = await make({ key: true });
       const snap = await c.sessions.create({ worldId: "wld_seedMeridian", mode: "one_on_one", characterIds: ["chr_seedMei"] });
       await tick(6000);
@@ -117,7 +160,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
       expect(got).toEqual(all.filter((e) => e.seq > 3).map((e) => e.seq));
     });
 
-    it("seed sessions are replay-only; forkSeedSession(atSeq) continues live from the playhead (R16)", async () => {
+    test("M3", "seed sessions are replay-only; forkSeedSession(atSeq) continues live from the playhead (R16)", async () => {
       const { c, tick } = await make({ key: true });
       expect(await code(c.chat.send("ses_seedAmaraHeadache", "hi"))).toBe("conflict");
       const events = await c.sessions.events("ses_seedDebate4Day");
@@ -137,7 +180,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
       expect((await c.sessions.events("ses_seedDebate4Day")).length).toBe(events.length);
     });
 
-    it("debate (quick, arbiter) runs to a verdict and ends", async () => {
+    test("M3", "debate (quick, arbiter) runs to a verdict and ends", async () => {
       const { c, tick } = await make({ key: true });
       const s = await c.sessions.create({
         worldId: "wld_seedMeridian", mode: "debate", characterIds: ["chr_seedAmara", "chr_seedVictor"],
@@ -153,7 +196,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
       expect(st.verdict?.decidedBy).toBe("arbiter");
     });
 
-    it("watch stops at the turn cap with turn_cap; Continue +10 extends it", async () => {
+    test("M3", "watch stops at the turn cap with turn_cap; Continue +10 extends it", async () => {
       const { c, tick } = await make({ key: true });
       const s = await c.sessions.create({
         worldId: "wld_seedSunnyHollow", mode: "watch", characterIds: ["chr_seedHana", "chr_seedTakeshi"],
@@ -169,7 +212,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
       expect(chars(snap.messages).length).toBeGreaterThan(10);
     });
 
-    it("group: @mentioning an exhausted character gives an asleep note + energy_exhausted (ENG-04)", async () => {
+    test("M3", "group: @mentioning an exhausted character gives an asleep note + energy_exhausted (ENG-04)", async () => {
       const { c, tick, events, watch, setScenario } = await make({ key: true });
       await setScenario("character_exhausted");
       const s = await c.sessions.create({ worldId: "wld_seedSunnyHollow", mode: "group", characterIds: ["chr_seedHana", "chr_seedTakeshi"] });
@@ -184,7 +227,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
       expect((await c.characters.get("chr_seedTakeshi")).energy.current).toBe(500);
     });
 
-    it("stream cut: error(network) then turn.end(interrupted)", async () => {
+    test("M3", "stream cut: error(network) then turn.end(interrupted)", async () => {
       const { c, tick, setScenario } = await make({ key: true });
       const s = await c.sessions.create({ worldId: "wld_seedMeridian", mode: "one_on_one", characterIds: ["chr_seedVictor"] });
       await tick(6000);
@@ -196,7 +239,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
       expect(last.error?.code).toBe("network");
     });
 
-    it("Stop interrupts a streaming reply (interruptedBy user)", async () => {
+    test("M3", "Stop interrupts a streaming reply (interruptedBy user)", async () => {
       const { c, tick } = await make({ key: true });
       const s = await c.sessions.create({ worldId: "wld_seedMeridian", mode: "one_on_one", characterIds: ["chr_seedVictor"] });
       await tick(6000);
@@ -213,7 +256,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
       expect(last.interruptedBy).toBe("user");
     });
 
-    it("daily cap: spend reaching the cap pauses the session and blocks further sends (STATE-06)", async () => {
+    test("M3", "daily cap: spend reaching the cap pauses the session and blocks further sends (STATE-06)", async () => {
       const { c, tick, globals } = await make({ key: true });
       await c.settings.update({ budget: { dailyCapUsd: 0.00005 } });
       const s = await c.sessions.create({ worldId: "wld_seedMeridian", mode: "one_on_one", characterIds: ["chr_seedAmara"] });
@@ -223,7 +266,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
       expect(await code(c.chat.send(s.session.id, "hello?"))).toBe("daily_budget_exceeded");
     });
 
-    it("creation pipeline: draft → profile job → portrait candidate → lock → emotions (Lean)", async () => {
+    test("M4", "creation pipeline: draft → profile job → portrait candidate → lock → emotions (Lean)", async () => {
       const { c, tick } = await make({ key: true });
       const { character, job } = await c.characters.createDraft("wld_seedMeridian", { seedPrompt: "Sarah, a doctor", intent: "expert" });
       expect(character.status).toBe("draft");
@@ -252,7 +295,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
       expect((await c.characters.approve(character.id)).status).toBe("approved");
     });
 
-    it("partial image failure: task 2 fails at 60 %, Retry succeeds (F6)", async () => {
+    test("M4", "partial image failure: task 2 fails at 60 %, Retry succeeds (F6)", async () => {
       const { c, tick, setScenario } = await make({ key: true });
       await c.settings.update({ generationMode: "standard" });
       await setScenario("image_fail_partial");
@@ -266,14 +309,14 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
       expect((await c.jobs.get(job.id)).status).toBe("succeeded");
     });
 
-    it("an overlay scenario keeps user-created sessions, so it lands on the current screen (DoD #2)", async () => {
+    test("M3", "an overlay scenario keeps user-created sessions, so it lands on the current screen (DoD #2)", async () => {
       const { c, setScenario } = await make({ key: true });
       const fork = await c.sessions.forkSeedSession("ses_seedDebate4Day");
       await setScenario("character_exhausted");
       expect((await c.sessions.messages(fork.session.id)).length).toBe(fork.messages.length);
     });
 
-    it("network down rejects queries too; Reset demo data restores the shipped fixtures", async () => {
+    test("M6", "network down rejects queries too; Reset demo data restores the shipped fixtures", async () => {
       const { c, globals, setScenario, reset } = await make({ key: true });
       await setScenario("network_down");
       expect(await code(c.worlds.list())).toBe("network");
@@ -284,14 +327,19 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
       expect(globals.filter((g) => g.type === "mock.reset").length).toBeGreaterThanOrEqual(2);
     });
 
-    it("knowledge (D-59): knowledgeSource returns ordered passages; live replies cite them (zod-valid)", async () => {
-      const { c, tick, events, watch } = await make({ key: true });
+    test("M1b", "knowledge (D-59): knowledgeSource returns ordered passages; a seed source is readable", async () => {
+      const { c } = await make();
       const { source, chunks } = await c.characters.knowledgeSource("kno_seedAmara1");
-      expect(source.status).toBe("indexed");
+      // The mock simulates seed vectors (indexed); the backend has none until "Index seed knowledge" (OQ-1).
+      expect(["indexed", "keyword_only"]).toContain(source.status);
       expect(chunks.length).toBe(source.chunks);
       expect(chunks.map((k) => k.index)).toEqual(chunks.map((_, i) => i));
       for (const k of chunks) KnowledgeChunkSchema.parse(k);
       expect(await code(c.characters.knowledgeSource("kno_nope"))).toBe("not_found");
+    });
+
+    test("M3", "knowledge (D-59): live replies cite indexed passages (zod-valid)", async () => {
+      const { c, tick, events, watch } = await make({ key: true });
 
       const snap = await c.sessions.create({ worldId: "wld_seedMeridian", mode: "one_on_one", characterIds: ["chr_seedAmara"] });
       watch(snap.session.id);
@@ -317,7 +365,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
       expect(cited!.trace?.context?.used.knowledge).toBeGreaterThan(0);
     });
 
-    it("Markdown export turns citation markers into [^n] footnotes with title, locator and quote (D-59)", async () => {
+    test("M3", "Markdown export turns citation markers into [^n] footnotes with title, locator and quote (D-59)", async () => {
       const { c } = await make();
       const md = await c.sessions.export("ses_seedDebate4Day");
       expect(md).toContain("[^1]");
@@ -327,7 +375,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
     });
 
     // ── rev 1.3: error codes (client-contract spec) ─────────────────────────
-    it("unknown records reject with not_found (not network)", async () => {
+    test("M1b", "unknown records reject with not_found (not network)", async () => {
       const { c } = await make();
       expect(await code(c.sessions.get("ses_nope"))).toBe("not_found");
       expect(await code(c.characters.get("chr_nope"))).toBe("not_found");
@@ -337,7 +385,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
       expect(e.retryable).toBe(false);
     });
 
-    it("sending into a seed recording or an ended session rejects with conflict", async () => {
+    test("M3", "sending into a seed recording or an ended session rejects with conflict", async () => {
       const { c } = await make({ key: true });
       expect(await code(c.chat.send("ses_seedAmaraHeadache", "hi"))).toBe("conflict");
       const s = await c.sessions.create({ worldId: "wld_seedMeridian", mode: "one_on_one", characterIds: ["chr_seedAmara"] });
@@ -345,14 +393,14 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
       expect(await code(c.chat.send(s.session.id, "still there?"))).toBe("conflict");
     });
 
-    it("a wrong cast size rejects with validation and names the limit in details", async () => {
+    test("M3", "a wrong cast size rejects with validation and names the limit in details", async () => {
       const { c } = await make({ key: true });
       const e = await fail(c.sessions.create({ worldId: "wld_seedMeridian", mode: "one_on_one", characterIds: ["chr_seedAmara", "chr_seedVictor"] }));
       expect(e.code).toBe("validation");
       expect(e.details).toMatchObject({ min: 1, max: 1 });
     });
 
-    it("a second streaming session is refused with conflict naming the live one", async () => {
+    test("M3", "a second streaming session is refused with conflict naming the live one", async () => {
       const { c, tick } = await make({ key: true });
       const a = await c.sessions.create({ worldId: "wld_seedMeridian", mode: "one_on_one", characterIds: ["chr_seedAmara"] });
       await tick(6000);
@@ -369,7 +417,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
     });
 
     // ── rev 1.3: settings, usage, trace, global stream (client-contract spec) ─
-    it("estReplyPoints is read-only config and models include the embedding model", async () => {
+    test("M2", "estReplyPoints is read-only config and models include the embedding model", async () => {
       const { c } = await make({ key: true });
       const s = await c.settings.get();
       expect(s.energy.estReplyPoints).toEqual({ off_peak: 4, peak: 8 });
@@ -379,12 +427,12 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
       expect((await c.settings.testModel("embedding")).model).toBe(s.models.embedding);
     });
 
-    it("the usage summary has an embedding bucket", async () => {
+    test("M1b", "the usage summary has an embedding bucket", async () => {
       const { c } = await make();
       expect((await c.usage.summary()).byCategory.embedding).toBe(0);
     });
 
-    it("a live reply's trace lists its paid calls, with the reply cost matching usage", async () => {
+    test("M3", "a live reply's trace lists its paid calls, with the reply cost matching usage", async () => {
       const { c, tick } = await make({ key: true });
       const snap = await c.sessions.create({ worldId: "wld_seedMeridian", mode: "one_on_one", characterIds: ["chr_seedAmara"] });
       await tick(6000);
@@ -396,7 +444,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
       expect(call!.costUsd).toBe(reply.usage?.costUsd);
     });
 
-    it("group turns add a route call to the trace", async () => {
+    test("M3", "group turns add a route call to the trace", async () => {
       const { c, tick } = await make({ key: true });
       const s = await c.sessions.create({ worldId: "wld_seedSunnyHollow", mode: "group", characterIds: ["chr_seedHana", "chr_seedTakeshi"] });
       await c.chat.send(s.session.id, "What should we cook tonight?");
@@ -405,7 +453,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
       expect(replies.some((m) => m.trace?.calls?.some((x) => x.purpose === "route"))).toBe(true);
     });
 
-    it("job task updates are mirrored onto the global stream", async () => {
+    test("M4", "job task updates are mirrored onto the global stream", async () => {
       const { c, tick, globals } = await make({ key: true });
       const job = await c.jobs.start({ characterId: "chr_mockSarah", kind: "portrait_candidates" });
       await tick(25000);
@@ -415,7 +463,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
     });
 
     // ── rev 1.3: energy (energy spec, D-76, D-78) ─────────────────────────────
-    it("one threshold: 6 ⚡ is tired off-peak but exhausted (and skipped) at peak", async () => {
+    test("M3", "one threshold: 6 ⚡ is tired off-peak but exhausted (and skipped) at peak", async () => {
       const { c, tick, events, watch, setScenario } = await make({ key: true });
       await setScenario("character_exhausted"); // Takeshi at 0 ⚡
       await c.characters.topUpEnergy("chr_seedTakeshi", 6);
@@ -435,7 +483,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
       expect(skipped).toContainEqual({ characterId: "chr_seedTakeshi", reason: "exhausted" });
     });
 
-    it("top-up gate (D-76): repeated top-ups are bounded by today's budget headroom", async () => {
+    test("M2", "top-up gate (D-76): repeated top-ups are bounded by today's budget headroom", async () => {
       const { c } = await make({ key: true });
       await c.settings.update({ budget: { dailyCapUsd: 0.6 } });
       const spent = (await c.settings.get()).spentTodayUsd;
@@ -446,7 +494,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
       expect((await c.characters.get("chr_seedHana")).energy.current).toBe(first.current);
     });
 
-    it("a top-up is recorded at $0 with its points and does not count as spend", async () => {
+    test("M2", "a top-up is recorded at $0 with its points and does not count as spend", async () => {
       const { c } = await make({ key: true });
       const before = (await c.settings.get()).spentTodayUsd;
       await c.characters.topUpEnergy("chr_seedHana", 500);
@@ -457,7 +505,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
     });
 
     // ── rev 1.3: knowledge sources (knowledge-sources spec, D-65) ─────────────
-    it("knowledge: CSV and links are rejected with validation; nothing is created", async () => {
+    test("M5", "knowledge: CSV and links are rejected with validation; nothing is created", async () => {
       const { c } = await make();
       const before = (await c.characters.knowledge("chr_seedHana")).length;
       const e = await fail(c.characters.addKnowledge("chr_seedHana", { file: new File(["a,b\n1,2\n"], "sheet.csv", { type: "text/csv" }) }));
@@ -467,14 +515,14 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
       expect((await c.characters.knowledge("chr_seedHana")).length).toBe(before);
     });
 
-    it("knowledge: pasted text is accepted as type text, status indexing, with kno_ id", async () => {
+    test("M5", "knowledge: pasted text is accepted as type text, status indexing, with kno_ id", async () => {
       const { c } = await make();
       const src = await c.characters.addKnowledge("chr_seedHana", { type: "text", title: "Notes", text: "Rice first.\n\nThen the fish." });
       expect(src).toMatchObject({ type: "text", status: "indexing", title: "Notes", characterId: "chr_seedHana", worldId: "wld_seedSunnyHollow" });
       expect(src.id).toMatch(/^kno_[0-9A-Za-z]{1,40}$/);
     });
 
-    it("knowledge: files over 10 MB, a 21st source and duplicate content are refused", async () => {
+    test("M5", "knowledge: files over 10 MB, a 21st source and duplicate content are refused", async () => {
       const { c } = await make();
       const big = new File([new Uint8Array(10 * 1024 * 1024 + 1)], "huge.txt", { type: "text/plain" });
       expect((await fail(c.characters.addKnowledge("chr_seedHana", { file: big }))).details).toMatchObject({ limit: 10 * 1024 * 1024 });
@@ -489,7 +537,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
       expect(e.details?.limit).toBe(20);
     });
 
-    it("knowledge: with a key, progress climbs through the stages and the source ends indexed with an embedding row", async () => {
+    test("M5", "knowledge: with a key, progress climbs through the stages and the source ends indexed with an embedding row", async () => {
       const { c, tick, globals } = await make({ key: true });
       const src = await c.characters.addKnowledge("chr_seedHana", { file: new File(["# Soups\n\nMiso first.\n\nThen tofu."], "soups.md", { type: "text/markdown" }) });
       await tick(5000);
@@ -510,7 +558,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
       expect(rows[0].model).toBe((await c.settings.get()).models.embedding);
     });
 
-    it("knowledge: without a key the source ends keyword_only, readable, with no ledger row; reindex with a key upgrades it", async () => {
+    test("M5", "knowledge: without a key the source ends keyword_only, readable, with no ledger row; reindex with a key upgrades it", async () => {
       const { c, tick, h } = await make();
       const src = await c.characters.addKnowledge("chr_seedHana", { type: "text", title: "Tea", text: "Steep for three minutes." });
       await tick(5000);
@@ -527,7 +575,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
       expect((await c.usage.list()).filter((r) => r.category === "embedding").length).toBe(1);
     });
 
-    it("knowledge: deleting a cited source removes it, but old transcripts keep their citations", async () => {
+    test("M5", "knowledge: deleting a cited source removes it, but old transcripts keep their citations", async () => {
       const { c } = await make();
       const before = (await c.sessions.messages("ses_seedDebate4Day")).flatMap((m) => m.citations ?? []).filter((ct) => ct.sourceId === "kno_seedAmara1");
       expect(before.length).toBeGreaterThan(0);
@@ -539,7 +587,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
       expect(await code(c.characters.deleteKnowledge("kno_seedAmara1"))).toBe("not_found");
     });
 
-    it("knowledge: re-indexing a seed source keeps its chunk ids, so citations still resolve", async () => {
+    test("M5", "knowledge: re-indexing a seed source keeps its chunk ids, so citations still resolve", async () => {
       const { c, tick } = await make({ key: true });
       const ids = (await c.characters.knowledgeSource("kno_seedAmara1")).chunks.map((k) => k.id);
       await c.characters.reindexKnowledge("kno_seedAmara1");
@@ -550,7 +598,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
     });
 
     // ── rev 1.3: world cover upload (worlds spec) ──────────────────────────────
-    it("uploadCover: a PNG becomes an uploaded cover and the world change is announced", async () => {
+    test("M4", "uploadCover: a PNG becomes an uploaded cover and the world change is announced", async () => {
       const { c, globals } = await make();
       const png = new File([new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, ...new Array(1024).fill(0)])], "cover.png", { type: "image/png" });
       const w = await c.worlds.uploadCover("wld_seedMeridian", png);
@@ -560,7 +608,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
       expect(globals).toContainEqual(expect.objectContaining({ type: "entity.changed", kind: "world", id: "wld_seedMeridian" }));
     });
 
-    it("uploadCover: a GIF, a fake PNG or a 6 MB JPEG is rejected with validation and the cover is unchanged", async () => {
+    test("M4", "uploadCover: a GIF, a fake PNG or a 6 MB JPEG is rejected with validation and the cover is unchanged", async () => {
       const { c } = await make();
       const before = (await c.worlds.get("wld_seedMeridian")).cover;
       const gif = new File([new Uint8Array([0x47, 0x49, 0x46, 0x38])], "a.gif", { type: "image/gif" });
@@ -570,14 +618,14 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
       expect((await c.worlds.get("wld_seedMeridian")).cover).toEqual(before);
     });
 
-    it("uploadCover: an unknown world rejects with not_found", async () => {
+    test("M4", "uploadCover: an unknown world rejects with not_found", async () => {
       const { c } = await make();
       const png = new File([new Uint8Array([0x89, 0x50, 0x4e, 0x47])], "cover.png", { type: "image/png" });
       expect(await code(c.worlds.uploadCover("wld_nope", png))).toBe("not_found");
     });
 
     // ── rev 1.3: character lifecycle (character-lifecycle spec, D-70) ───────────
-    it("delete leaves a readable tombstone; memory and knowledge go", async () => {
+    test("M4", "delete leaves a readable tombstone; memory and knowledge go", async () => {
       const { c, globals } = await make();
       const before = await c.characters.get("chr_seedVictor");
       await c.characters.delete("chr_seedVictor");
@@ -592,7 +640,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
       expect(globals).toContainEqual(expect.objectContaining({ type: "entity.changed", kind: "character", id: "chr_seedVictor" }));
     });
 
-    it("tombstones leave the roster and the count, and every command on them is not_found", async () => {
+    test("M4", "tombstones leave the roster and the count, and every command on them is not_found", async () => {
       const { c } = await make({ key: true });
       const count = (await c.worlds.get("wld_seedMeridian")).characterCount;
       await c.characters.delete("chr_seedVictor");
@@ -604,7 +652,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
       expect(await code(c.sessions.create({ worldId: "wld_seedMeridian", mode: "one_on_one", characterIds: ["chr_seedVictor"] }))).toBe("not_found");
     });
 
-    it("transcripts with a deleted speaker still open, replay and export", async () => {
+    test("M4", "transcripts with a deleted speaker still open, replay and export", async () => {
       const { c } = await make();
       const msgs = await c.sessions.messages("ses_seedDebate4Day");
       expect(msgs.some((m) => m.author.characterId === "chr_seedVictor")).toBe(true);
@@ -615,7 +663,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
       expect(await c.sessions.export("ses_seedDebate4Day")).toContain((await c.characters.get("chr_seedVictor")).profile.name);
     });
 
-    it("deleting a character who is speaking in the live session is a conflict", async () => {
+    test("M4", "deleting a character who is speaking in the live session is a conflict", async () => {
       const { c, tick } = await make({ key: true });
       const s = await c.sessions.create({ worldId: "wld_seedMeridian", mode: "one_on_one", characterIds: ["chr_seedVictor"] });
       await tick(6000);
@@ -630,7 +678,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
     });
 
     // ── rev 1.3: Reset demo data keeps user data (demo-data spec, D-70) ─────────
-    it("reset: a fork of a seed session survives, an edited seed character goes back to shipped", async () => {
+    test("M4", "reset: a fork of a seed session survives, an edited seed character goes back to shipped", async () => {
       const { c, globals, reset } = await make({ key: true });
       const shipped = (await c.characters.get("chr_seedHana")).profile.tagline;
       const fork = await c.sessions.forkSeedSession("ses_seedHanaLongDay");
@@ -642,7 +690,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
       expect(globals.some((g) => g.type === "mock.reset")).toBe(true);
     });
 
-    it("reset: a user-created world and its character are untouched", async () => {
+    test("M4", "reset: a user-created world and its character are untouched", async () => {
       const { c, tick, reset } = await make({ key: true });
       const w = await c.worlds.create({ name: "My Street", cover: { kind: "preset", presetId: "cover_night_skyline" } });
       const { character } = await c.characters.createDraft(w.id, { seedPrompt: "Noor, a baker", intent: "companion" });
@@ -652,6 +700,72 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
       expect((await c.worlds.get(w.id)).name).toBe("My Street");
       expect(await c.characters.get(character.id)).toEqual(before);
       expect((await c.worlds.list()).length).toBe(3);
+    });
+
+    // ── M1b (backend-foundation): worlds, demo reset and replay over any client ─
+    test("M1b", "worlds: create, rename and delete", async () => {
+      const { c, globals } = await make();
+      const w = await c.worlds.create({ name: "  My Street  ", cover: COVER });
+      expect(w).toMatchObject({ name: "My Street", isSeed: false, characterCount: 0 });
+      expect((await c.worlds.list())[0].id).toBe(w.id);
+      expect((await c.worlds.update(w.id, { name: "Elm Street" })).name).toBe("Elm Street");
+      await c.worlds.delete(w.id);
+      expect(await code(c.worlds.get(w.id))).toBe("not_found");
+      expect(await code(c.worlds.update("wld_nope", { name: "X" }))).toBe("not_found");
+      await eventually(() => globals.some((g) => g.type === "entity.changed" && g.kind === "world" && g.id === w.id));
+    });
+
+    test("M1b", "worlds: duplicate and reserved names are refused with conflict", async () => {
+      const { c } = await make();
+      await c.worlds.create({ name: "My Street", cover: COVER });
+      const dup = await fail(c.worlds.create({ name: "my street ", cover: COVER }));
+      expect([dup.code, dup.details?.field]).toEqual(["conflict", "name"]);
+      await c.worlds.update("wld_seedMeridian", { name: "Council B" });
+      const taken = await fail(c.worlds.create({ name: "Meridian Council", cover: COVER }));
+      expect([taken.code, taken.details?.field]).toEqual(["conflict", "name"]);
+    });
+
+    test("M1b", "reset: a renamed and a deleted seed world come back; a user world stays", async () => {
+      const { c, globals, reset } = await make();
+      const mine = await c.worlds.create({ name: "My Street", cover: COVER });
+      await c.worlds.update("wld_seedMeridian", { name: "Council B" });
+      await c.worlds.delete("wld_seedSunnyHollow");
+      await reset();
+      const names = Object.fromEntries((await c.worlds.list()).map((w) => [w.id, w.name]));
+      expect(names).toMatchObject({ wld_seedMeridian: "Meridian Council", wld_seedSunnyHollow: "Sunny Hollow", [mine.id]: "My Street" });
+      expect((await c.sessions.list("wld_seedSunnyHollow")).some((s) => s.id === "ses_seedDinner")).toBe(true);
+      await eventually(() => globals.some((g) => g.type === "mock.reset"));
+    });
+
+    test("M1b", "subscribe(sinceSeq) on a seed recording replays exactly the stored events above it", async () => {
+      const { c } = await make();
+      const sid = "ses_seedAmaraHeadache";
+      const want = (await c.sessions.events(sid)).filter((e) => e.seq > 3).map((e) => e.seq);
+      const got: number[] = [];
+      const unsub = c.sessions.subscribe(sid, { sinceSeq: 3 }, (e) => {
+        SessionEventSchema.parse(e);
+        got.push(e.seq);
+      });
+      await eventually(() => got.length >= want.length);
+      unsub();
+      expect(got).toEqual(want);
+    });
+
+    test("M1b", "every seed session's session and messages are the reduction of its events", async () => {
+      const { c } = await make();
+      let checked = 0;
+      for (const w of await c.worlds.list()) {
+        for (const s of (await c.sessions.list(w.id)).filter((x) => x.isSeed)) {
+          const snap = await c.sessions.get(s.id);
+          const events = await c.sessions.events(s.id);
+          expect(snap.lastSeq).toBe(events.at(-1)?.seq ?? 0);
+          const final = reduceAll(initialRuntime(seedBase(snap.session)), events);
+          expect(JSON.parse(JSON.stringify(orderedMessages(final)))).toEqual(await c.sessions.messages(s.id));
+          expect(JSON.parse(JSON.stringify(final.session))).toEqual(snap.session);
+          checked += 1;
+        }
+      }
+      expect(checked).toBe(5);
     });
   });
 }

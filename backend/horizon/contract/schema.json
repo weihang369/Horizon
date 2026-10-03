@@ -3805,6 +3805,31 @@
       ],
       "type": "string"
     },
+    "SessionSnapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "lastSeq": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "messages": {
+          "items": {
+            "$ref": "#/$defs/Message"
+          },
+          "type": "array"
+        },
+        "session": {
+          "$ref": "#/$defs/Session"
+        }
+      },
+      "required": [
+        "session",
+        "messages",
+        "lastSeq"
+      ],
+      "type": "object"
+    },
     "SessionStatus": {
       "enum": [
         "active",
@@ -4631,6 +4656,94 @@
         "at",
         "category",
         "costUsd"
+      ],
+      "type": "object"
+    },
+    "UsageSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "actualUsd": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "byCategory": {
+          "additionalProperties": {
+            "minimum": 0,
+            "type": "number"
+          },
+          "propertyNames": {
+            "enum": [
+              "chat",
+              "decision",
+              "image",
+              "music",
+              "profile",
+              "summary",
+              "memory",
+              "embedding",
+              "energy_topup"
+            ],
+            "type": "string"
+          },
+          "required": [
+            "chat",
+            "decision",
+            "image",
+            "music",
+            "profile",
+            "summary",
+            "memory",
+            "embedding",
+            "energy_topup"
+          ],
+          "type": "object"
+        },
+        "byCharacter": {
+          "additionalProperties": {
+            "minimum": 0,
+            "type": "number"
+          },
+          "propertyNames": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "bySession": {
+          "additionalProperties": {
+            "minimum": 0,
+            "type": "number"
+          },
+          "propertyNames": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "capUsd": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "estimatedUsd": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "todayUsd": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "totalUsd": {
+          "minimum": 0,
+          "type": "number"
+        }
+      },
+      "required": [
+        "todayUsd",
+        "totalUsd",
+        "capUsd",
+        "byCategory",
+        "byCharacter",
+        "bySession",
+        "estimatedUsd",
+        "actualUsd"
       ],
       "type": "object"
     },

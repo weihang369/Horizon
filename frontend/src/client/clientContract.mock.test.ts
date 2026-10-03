@@ -34,7 +34,7 @@ async function mockHarness(opts: { speed?: 1 | 2 | 4 } = {}): Promise<ContractHa
       await new Promise((r) => setTimeout(r, 0));
     },
     setScenario: (id) => mock.dev.setScenario(id),
-    reset: () => mock.dev.resetDemoData(),
+    reset: () => mock.admin.resetDemo(),
     setKey: async () => { await mock.settings.setKey("sk-or-test-0001"); },
   };
 }
@@ -48,6 +48,17 @@ describe("MockClient only", () => {
     const src = readFileSync(path.resolve(__dirname, "clientContract.portable.ts"), "utf8");
     expect(src).not.toMatch(/from\s+["'][^"']*\/mock\//);
     expect(src).not.toMatch(/\._db\b|\.dev\./);
+  });
+
+  it("every portable test declares its milestone (no bare it())", () => {
+    const src = readFileSync(path.resolve(__dirname, "clientContract.portable.ts"), "utf8");
+    expect(src).not.toMatch(/^\s+it\(/m);
+    expect(src.match(/^\s+test\("M(1b|[2-6])", /gm)?.length).toBeGreaterThanOrEqual(50);
+  });
+
+  it("the mock runs every portable test: nothing is pending", () => {
+    const src = readFileSync(path.resolve(__dirname, "clientContract.mock.test.ts"), "utf8");
+    expect(src).toMatch(/runPortableContract\("MockClient", \(\) => mockHarness\(\)\);/);
   });
 
   it("demo speed ×4 compresses mock time", async () => {
@@ -67,5 +78,29 @@ describe("MockClient only", () => {
     await h.advance(21000);
     const ch = await h.client.characters.get(character.id);
     expect(ch.appearance.candidates.find((x) => x.status === "ready")?.url.startsWith("data:image/svg+xml")).toBe(true);
+  });
+
+  it("admin.resetDemo is the dev reset: it resolves, keeps settings and announces mock.reset", async () => {
+    const h = await mockHarness();
+    await h.setKey();
+    const seen: string[] = [];
+    h.client.onGlobal((e) => seen.push(e.type));
+    await h.client.admin.resetDemo();
+    expect(seen).toContain("mock.reset");
+    expect((await h.client.settings.get()).openRouterKeyStatus).toBe("set");
+  });
+
+  it("world names: trimmed, unique case-insensitively, seed names reserved for their own world", async () => {
+    const { client: c } = await mockHarness();
+    const cover = { kind: "preset" as const, presetId: "cover_night_skyline" };
+    const w = await c.worlds.create({ name: "  My Street ", cover });
+    expect(w.name).toBe("My Street");
+    const dup = await c.worlds.create({ name: "my street", cover }).catch((e: unknown) => e);
+    expect(dup).toMatchObject({ code: "conflict", details: { field: "name" } });
+    expect((await c.worlds.update(w.id, { name: "My Street" })).name).toBe("My Street");
+    await c.worlds.update("wld_seedMeridian", { name: "Council B" });
+    const taken = await c.worlds.create({ name: "MERIDIAN COUNCIL", cover }).catch((e: unknown) => e);
+    expect(taken).toMatchObject({ code: "conflict", details: { field: "name" } });
+    expect((await c.worlds.update("wld_seedMeridian", { name: "Meridian Council" })).name).toBe("Meridian Council");
   });
 });

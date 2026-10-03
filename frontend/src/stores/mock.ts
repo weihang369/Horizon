@@ -21,6 +21,5 @@ export const useMock = <T>(sel: (s: MockState) => T): T => useStore(mock, sel);
 export const mockActions = {
   setScenario: (id: ScenarioId) => mockDev?.setScenario(id),
   setSpeed: (s: DemoSpeed) => mockDev?.setSpeed(s),
-  resetDemoData: () => mockDev?.resetDemoData(),
   setMockKey: () => mockDev?.setMockKey(),
 };
