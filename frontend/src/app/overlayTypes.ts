@@ -41,7 +41,11 @@ export interface OverlayProps {
   O26: { sessionId: string };
   O27: { characterId: string; sessionId?: string };
   /** D-59 Source viewer: a knowledge source's passages, scrolled to and highlighting `chunkId`. */
-  O28: { sourceId: string; chunkId?: string; characterId?: string };
+  O28: {
+    sourceId: string; chunkId?: string; characterId?: string;
+    /** The citation snapshot, shown when the source was deleted after the answer (PRF-10 AC5). */
+    cited?: { n: number; title: string; locator?: string; quote: string };
+  };
 }
 
 export type OverlayId = keyof OverlayProps;
