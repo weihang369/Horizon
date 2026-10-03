@@ -1,0 +1,51 @@
+/* O02 world editor. Owner: Builder A. */
+.editor { display: grid; grid-template-columns: 220px 1fr; gap: 28px; align-items: start; }
+.preview { position: sticky; top: 0; padding-top: 6px; }
+.previewCard {
+  position: relative;
+  width: 220px;
+  aspect-ratio: 0.731;
+  rotate: -5deg;
+  clip-path: polygon(0 0, 100% 0, 100% 92%, 86% 100%, 0 100%);
+  box-shadow: inset 0 0 0 4px var(--paper-50);
+  overflow: hidden;
+}
+.previewCover { position: absolute !important; inset: 0; }
+.previewShade { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 45%, color-mix(in srgb, var(--ink-900) 85%, transparent)); box-shadow: inset 0 0 0 4px var(--paper-50); }
+.previewName { position: absolute; left: 16px; right: 16px; bottom: 40px; font: 400 30px/1 var(--font-display); text-transform: uppercase; overflow-wrap: anywhere; text-shadow: 3px 3px 0 var(--ink-900); }
+.previewYou { position: absolute; left: 16px; bottom: 16px; font: 500 11px/1 var(--font-mono); text-transform: uppercase; color: var(--paper-300); }
+.previewYou b { color: var(--on-brand); background: var(--horizon-500); padding: 2px 5px; margin-right: 4px; }
+.fields { display: grid; gap: 18px; min-width: 0; }
+.covers, .you { margin: 0; padding: 0; border: 0; display: grid; gap: 10px; min-width: 0; }
+.legend { padding: 0; margin-bottom: 8px; font: 600 12px/1 var(--font-ui); letter-spacing: 0.08em; text-transform: uppercase; color: var(--paper-300); }
+.optional { margin-left: 6px; color: var(--ink-500); background: var(--paper-300); padding: 1px 5px; font-size: 10px; }
+.coverGrid { display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 8px; }
+.coverOpt {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  clip-path: polygon(0 0, 100% 0, 100% 88%, 80% 100%, 0 100%);
+  box-shadow: inset 0 0 0 2px var(--ink-500);
+  transition: transform var(--t-fast) var(--ease-out);
+}
+.coverOpt:hover { transform: translateY(-3px); }
+.coverOpt[aria-checked="true"] { box-shadow: inset 0 0 0 3px var(--horizon-500); transform: translateY(-4px); }
+.coverOpt:focus-visible { outline: 2px solid var(--c-glow); outline-offset: 2px; }
+.coverThumb { position: absolute !important; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; }
+.coverOpt[aria-checked="true"] .coverThumb, .coverOpt .coverThumb { z-index: auto; }
+.coverOpt[aria-checked="true"]::after {
+  content: "✓";
+  position: absolute;
+  right: 4px;
+  top: 4px;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  background: var(--horizon-500);
+  color: var(--on-brand);
+  font-weight: 800;
+  font-size: 12px;
+}
+.upload { display: grid; place-items: center; background: var(--ink-700); font: 600 11px/1.2 var(--font-mono); text-transform: uppercase; color: var(--paper-300); text-align: center; }
+.youHint { margin: -4px 0 2px; color: var(--paper-300); font-size: var(--text-sm); }
+.del { margin-right: auto; color: var(--signal-err); }

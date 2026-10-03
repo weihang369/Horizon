@@ -1,0 +1,197 @@
+/* D-59 citations (C). Chips are slanted tapes in the speaker's palette; text stays level (R7). Tokens + palette only. */
+
+/* ── Inline chip ─────────────────────────────────────────────────────── */
+.chip,
+.pending {
+  --h: 1.3em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.6em;
+  height: var(--h);
+  margin: 0 1px 0 3px;
+  padding: 0 0.5em;
+  vertical-align: 0.38em;
+  font: 700 0.72em/1 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+  clip-path: polygon(calc(var(--h) * var(--tan-tilt-soft)) 0, 100% 0, calc(100% - var(--h) * var(--tan-tilt-soft)) 100%, 0 100%);
+}
+.chip {
+  border: 0;
+  cursor: pointer;
+  color: var(--c-on-primary);
+  background: var(--c-primary);
+  transition: background var(--t-fast) var(--ease-out), transform var(--t-fast) var(--ease-out);
+}
+.chip:hover { background: var(--c-glow); transform: translateY(-1px); }
+.chip:focus-visible {
+  outline: none;
+  background: var(--paper-50);
+  color: var(--ink-900);
+  box-shadow: inset 0 -2px 0 var(--c-primary);
+}
+.pending {
+  color: var(--paper-300);
+  background: color-mix(in srgb, var(--paper-50) 12%, transparent);
+  animation: pendingPulse 1.4s ease-in-out infinite;
+}
+@keyframes pendingPulse { 50% { opacity: 0.45; } }
+:global(:root[data-motion="reduced"]) .pending { animation: none; }
+:global(:root[data-motion="reduced"]) .chip:hover { transform: none; }
+
+/* ── Popover ─────────────────────────────────────────────────────────── */
+.popLayer { position: fixed; inset: 0; z-index: var(--z-toast); pointer-events: none; }
+.pop {
+  position: fixed;
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px 12px 18px;
+  color: var(--paper-50);
+  background: var(--ink-900);
+  border-left: 4px solid var(--c-primary);
+  box-shadow: inset 0 3px 0 var(--c-primary);
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+  filter: drop-shadow(6px 6px 0 rgba(0, 0, 0, 0.55));
+  animation: popIn var(--t-base) var(--ease-out) both;
+}
+.popBelow { animation-name: popInBelow; }
+@keyframes popIn { from { opacity: 0; transform: translate(-6px, 6px); } to { opacity: 1; transform: none; } }
+@keyframes popInBelow { from { opacity: 0; transform: translate(-6px, -6px); } to { opacity: 1; transform: none; } }
+:global(:root[data-motion="reduced"]) .pop { animation: global(hz-fade-in) var(--t-reduced) linear both; }
+
+.popHead { display: flex; align-items: center; gap: 8px; min-width: 0; flex-wrap: wrap; }
+.popN {
+  --h: 20px;
+  display: inline-flex;
+  align-items: center;
+  height: var(--h);
+  padding: 0 9px;
+  background: var(--c-primary);
+  color: var(--c-on-primary);
+  font: 700 12px/1 var(--font-mono);
+  clip-path: polygon(calc(var(--h) * var(--tan-tilt)) 0, 100% 0, calc(100% - var(--h) * var(--tan-tilt)) 100%, 0 100%);
+}
+.popTitle { flex: 1 1 140px; min-width: 0; font: 600 13px/1.3 var(--font-ui); color: var(--paper-50); }
+.popLoc { font: 600 11px/1 var(--font-mono); color: var(--c-glow); letter-spacing: 0.04em; white-space: nowrap; }
+
+.quote {
+  position: relative;
+  margin: 0;
+  padding: 8px 4px 2px 26px;
+  font: italic 400 14px/1.55 var(--font-ui);
+  color: var(--paper-50);
+  display: -webkit-box;
+  -webkit-line-clamp: 12;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.quote::before {
+  content: "\201C";
+  position: absolute;
+  left: -2px;
+  top: 4px;
+  font: 900 44px/0.8 var(--font-ui);
+  color: var(--c-primary);
+}
+
+.glyph {
+  display: inline-flex;
+  align-items: center;
+  height: 16px;
+  padding: 0 5px;
+  font: 700 9px/1 var(--font-mono);
+  letter-spacing: 0.08em;
+  color: var(--ink-900);
+  background: var(--paper-50);
+  flex: none;
+}
+.glyph[data-type="url"] { background: var(--c-glow); }
+.glyph[data-type="text"] { background: var(--paper-300); }
+
+.openBtn {
+  align-self: flex-end;
+  --h: 26px;
+  height: var(--h);
+  padding: 0 16px 0 14px;
+  border: 0;
+  cursor: pointer;
+  background: var(--paper-50);
+  color: var(--ink-900);
+  font: 400 14px/1 var(--font-display);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  clip-path: polygon(calc(var(--h) * var(--tan-tilt)) 0, 100% 0, calc(100% - var(--h) * var(--tan-tilt)) 100%, 0 100%);
+  transition: background var(--t-fast) var(--ease-out);
+}
+.openBtn:hover { background: var(--c-primary); color: var(--c-on-primary); }
+
+/* ── SOURCES strip ───────────────────────────────────────────────────── */
+.strip {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 2px;
+  padding-right: 14px;
+  min-width: 0;
+}
+.stripLabel {
+  --h: 20px;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  height: var(--h);
+  padding: 0 10px 0 8px;
+  background: var(--paper-50);
+  color: var(--ink-900);
+  font: 400 12px/1 var(--font-display);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  clip-path: polygon(0 0, 100% 0, calc(100% - var(--h) * var(--tan-tilt)) 100%, 0 100%);
+  transform: rotate(-2deg);
+  margin-top: 2px;
+}
+.stripList { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
+.stripList li { min-width: 0; max-width: 100%; }
+.entry {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  max-width: 100%;
+  min-height: 24px;
+  padding: 3px 12px 3px 6px;
+  border: 0;
+  cursor: pointer;
+  text-align: left;
+  color: var(--paper-50);
+  background: color-mix(in srgb, var(--c-primary) 14%, var(--ink-900));
+  border-left: 3px solid var(--c-primary);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+  transition: background var(--t-fast) var(--ease-out);
+}
+.entry:hover { background: color-mix(in srgb, var(--c-primary) 28%, var(--ink-900)); }
+.entry:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--c-glow); }
+.entryNs { display: inline-flex; gap: 2px; flex: none; }
+.entryN {
+  min-width: 18px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+  background: var(--c-primary);
+  color: var(--c-on-primary);
+  font: 700 10px/1 var(--font-mono);
+  clip-path: polygon(2px 0, 100% 0, calc(100% - 2px) 100%, 0 100%);
+}
+.entryGlyph { height: 14px; font-size: 8px; }
+.entryTitle { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 600 12.5px/1.2 var(--font-ui); }
+.entryLoc { flex: none; font: 500 11px/1 var(--font-mono); color: var(--c-glow); white-space: nowrap; }
+.entryLoc::before { content: "·"; margin-right: 6px; color: var(--paper-300); }
+
+.stripCompact { gap: 8px; }
+.stripCompact .stripLabel { --h: 17px; font-size: 10.5px; }
+.stripCompact .entry { min-height: 21px; padding-block: 2px; }
+.stripCompact .entryTitle { font-size: 12px; }

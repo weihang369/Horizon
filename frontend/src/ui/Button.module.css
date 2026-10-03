@@ -1,0 +1,93 @@
+/* Slash-shaped buttons (R7). The fill + hover sweep live in .shape (clipped); the focus
+ * ring is .ring, a slightly larger parallelogram behind, so it follows the slant. */
+.btn {
+  --h: 44px;
+  --s: calc(var(--h) * var(--tan-tilt));
+  --btn-bg: var(--c-primary);
+  --btn-fg: var(--c-on-primary);
+  --btn-sweep: var(--ink-900);
+  --btn-fg-hover: var(--paper-50);
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--h);
+  min-width: calc(var(--h) * 2);
+  padding: 0 calc(var(--s) + 16px);
+  color: var(--btn-fg);
+  font-family: var(--font-display);
+  font-size: 17px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  user-select: none;
+  transition: transform var(--t-tap) var(--ease-out);
+}
+.btn:focus-visible { outline: none; }
+.btn:active:not(:disabled) { transform: scale(0.98) translateY(1px); }
+.btn:disabled { opacity: 0.45; }
+.block { width: 100%; }
+
+.shape, .ring {
+  position: absolute;
+  pointer-events: none;
+  clip-path: polygon(var(--s) 0, 100% 0, calc(100% - var(--s)) 100%, 0 100%);
+}
+.shape { inset: 0; z-index: -1; background: var(--btn-bg); overflow: hidden; }
+.ring { inset: -3px -5px; z-index: -2; background: var(--c-glow); opacity: 0; }
+.btn:focus-visible .ring { opacity: 1; }
+.sweep {
+  position: absolute;
+  inset: 0;
+  background: var(--btn-sweep);
+  transform: translateX(-101%);
+  transition: transform var(--t-fast) var(--ease-wipe);
+}
+.btn:hover:not(:disabled) .sweep,
+.btn:focus-visible .sweep { transform: translateX(0); }
+.btn:hover:not(:disabled),
+.btn:focus-visible { color: var(--btn-fg-hover); }
+
+.content { display: inline-flex; align-items: center; gap: 8px; line-height: 1; }
+.cost {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0;
+  text-transform: none;
+  opacity: 0.85;
+  padding-left: 8px;
+  border-left: 1px solid currentColor;
+}
+.lock { display: inline-flex; opacity: 0.85; }
+
+/* Sizes */
+.sm { --h: 32px; font-size: 14px; padding: 0 calc(var(--s) + 10px); }
+.md { --h: 44px; }
+.lg { --h: 56px; font-size: 22px; padding: 0 calc(var(--s) + 22px); }
+
+/* Variants */
+.primary { --btn-bg: var(--c-primary); --btn-fg: var(--c-on-primary); --btn-sweep: var(--ink-900); --btn-fg-hover: var(--paper-50); }
+.secondary { --btn-bg: var(--ink-500); --btn-fg: var(--paper-50); --btn-sweep: var(--paper-50); --btn-fg-hover: var(--ink-900); }
+.ghost { --btn-bg: transparent; --btn-fg: var(--paper-50); --btn-sweep: var(--ink-500); --btn-fg-hover: var(--paper-50); }
+.danger { --btn-bg: var(--signal-err); --btn-fg: var(--on-signal); --btn-sweep: var(--ink-900); --btn-fg-hover: var(--signal-err); }
+
+/* IconButton */
+.icon {
+  --h: 40px;
+  --s: calc(var(--h) * var(--tan-tilt-soft));
+  min-width: 0;
+  width: calc(var(--h) + var(--s));
+  padding: 0;
+  font-family: var(--font-ui);
+  --btn-bg: var(--ink-700);
+  --btn-fg: var(--paper-50);
+  --btn-sweep: var(--c-primary);
+  --btn-fg-hover: var(--c-on-primary);
+}
+.icon.sm { --h: 32px; padding: 0; }
+.icon.lg { --h: 48px; padding: 0; }
+.icon svg { width: 18px; height: 18px; }
+
+:global(:root[data-motion="reduced"]) .sweep { transition: none; }
+:global(:root[data-motion="reduced"]) .btn:active:not(:disabled) { transform: none; }

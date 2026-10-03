@@ -1,0 +1,22 @@
+{
+  "kind": "horizon.theme",
+  "version": 1,
+  "seed": "chr_seedAmara",
+  "title": "Amara's Theme",
+  "brief": {
+    "genres": [
+      "lo-fi",
+      "piano"
+    ],
+    "moods": [
+      "calm",
+      "hopeful"
+    ],
+    "bpm": 80,
+    "instruments": [
+      "piano",
+      "synth"
+    ],
+    "vibe": "Calm lo-fi piano with a soft pulse synth"
+  }
+}

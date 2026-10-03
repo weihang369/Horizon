@@ -1,0 +1,157 @@
+{
+  "schemaVersion": 1,
+  "data": {
+    "id": "ses_seedDebate4Day",
+    "worldId": "wld_seedMeridian",
+    "title": "Debate: Four-day work week",
+    "titleIsCustom": false,
+    "mode": "debate",
+    "participants": [
+      {
+        "characterId": "chr_seedAmara",
+        "role": "debater",
+        "side": "prop",
+        "currentEmotion": "happy",
+        "mutedByUser": false
+      },
+      {
+        "characterId": "chr_seedVictor",
+        "role": "debater",
+        "side": "prop",
+        "currentEmotion": "happy",
+        "mutedByUser": false
+      },
+      {
+        "characterId": "chr_seedMei",
+        "role": "debater",
+        "side": "opp",
+        "currentEmotion": "neutral",
+        "mutedByUser": false
+      }
+    ],
+    "emotionMode": "llm",
+    "musicPolicy": "arena",
+    "readableMode": false,
+    "config": {
+      "motion": "This house would adopt a nationwide four-day work week.",
+      "format": "two_sided",
+      "sides": {
+        "prop": [
+          "chr_seedAmara",
+          "chr_seedVictor"
+        ],
+        "opp": [
+          "chr_seedMei"
+        ]
+      },
+      "roundsPreset": "standard",
+      "phases": [
+        "opening",
+        "rebuttal",
+        "closing"
+      ],
+      "turnLength": "medium",
+      "moderator": "user",
+      "verdictBy": "arbiter",
+      "rubric": [
+        {
+          "id": "evidence",
+          "label": "Evidence"
+        },
+        {
+          "id": "rebuttal",
+          "label": "Rebuttal"
+        },
+        {
+          "id": "clarity",
+          "label": "Clarity"
+        },
+        {
+          "id": "persuasion",
+          "label": "Persuasion"
+        }
+      ],
+      "autoAdvance": true,
+      "pauseMs": 1500
+    },
+    "isSeed": true,
+    "status": "ended",
+    "state": {
+      "phase": "ended",
+      "round": 4,
+      "iteration": 1,
+      "verdict": {
+        "decidedBy": "arbiter",
+        "strongerCase": "prop",
+        "scoresBy": "side",
+        "scores": [
+          {
+            "subjectId": "prop",
+            "criterionId": "evidence",
+            "value": 6.5
+          },
+          {
+            "subjectId": "prop",
+            "criterionId": "rebuttal",
+            "value": 7.5
+          },
+          {
+            "subjectId": "prop",
+            "criterionId": "clarity",
+            "value": 8
+          },
+          {
+            "subjectId": "prop",
+            "criterionId": "persuasion",
+            "value": 7.5
+          },
+          {
+            "subjectId": "opp",
+            "criterionId": "evidence",
+            "value": 7.5
+          },
+          {
+            "subjectId": "opp",
+            "criterionId": "rebuttal",
+            "value": 7
+          },
+          {
+            "subjectId": "opp",
+            "criterionId": "clarity",
+            "value": 8.5
+          },
+          {
+            "subjectId": "opp",
+            "criterionId": "persuasion",
+            "value": 7
+          }
+        ],
+        "summary": [
+          {
+            "subjectId": "prop",
+            "points": [
+              "Burnout is itself a staffing cost.",
+              "The five-day week is a policy choice, not a law of nature.",
+              "Phased legal implementation addresses coverage sectors."
+            ]
+          },
+          {
+            "subjectId": "opp",
+            "points": [
+              "Pilot evidence comes from self-selected, easier sectors.",
+              "Costs concentrate in health, transport and care.",
+              "Fund sector-specific trials before a national mandate."
+            ]
+          }
+        ],
+        "keyDisagreement": "Whether evidence from voluntary pilots generalises to coverage-based sectors.",
+        "rationale": "Opposition had the stronger evidential framing but conceded direction in closing. Proposition's \"cost of the status quo\" rebuttal went unanswered."
+      }
+    },
+    "costUsd": 0.00176,
+    "messageCount": 15,
+    "createdAt": "2026-10-01T10:02:50.373Z",
+    "updatedAt": "2026-10-01T10:03:48.607Z",
+    "lastMessageAt": "2026-10-01T10:03:47.097Z"
+  }
+}

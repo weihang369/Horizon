@@ -1,5 +1,7 @@
-# 05: Data Contract (v1.0)
+# 05: Data Contract (contract rev. 1.1)
 
+> **Contract rev. 1.1 (2026-10-02, UI/UX stage):** additive only, `schemaVersion` stays `1`. Adds the `message` and `session.state` events, a face-change form of `emotion`, `AppSettings.pricing` and `forkSeedSession(…, atSeq?)` (D-51), plus `session.state.settings` for mid-session settings changes (D-57).
+>
 > **This is the single source of truth for data shapes.** The UI/UX mock fixtures, the FastAPI backend and the AI layer all use these shapes.
 > Types are framework-agnostic, written in TypeScript style. `?` = optional or nullable. SWE may refine the storage, but **must not change the wire shapes** without updating this doc (and bumping `schemaVersion`).
 
@@ -78,6 +80,7 @@ AppSettings {
             usdPerPoint: number;                         // 0.0001
             topUpStepPoints: number };                   // default 500
   spentTodayUsd: number;                                 // derived from the ledger
+  pricing: { period: "peak" | "off_peak"; nextChangeAt: string };   // D-51: drives the RUSH HOUR chip (ENG-06); derived from the MYT clock
   audio: { masterMuted: boolean; musicMuted: boolean; sfxMuted: boolean;
            master: number; music: number; sfx: number; duckMusic: boolean };   // volumes 0..1
   display: { reducedMotion: "system" | "on" | "off"; vfxIntensity: "off" | "subtle" | "full";
@@ -312,6 +315,7 @@ Message {
             energySpent?: number;                 // ⚡ drained from the speaking character
             firstTokenMs: number; totalMs: number };
   trace?: TurnTrace;                              // may be loaded separately
+  citations?: Citation[];                         // D-59 (rev 1.2): knowledge quoted by this reply; content carries [n]
   error?: { code: ErrorCode; message: string; retryable: boolean };
   createdAt: string;
 }
@@ -321,6 +325,7 @@ Message {
 - Moderator steering by the user is `author.type: "user"`, `kind: "steer" | "interject"`.
 - An AI host is `author.type: "host"`, `kind: "narration"`.
 - "Hana is asleep (⚡ 0)" notices are `author.type: "system"`, `kind: "system_note"`.
+- **Citations (D-59, rev. 1.2):** `Citation { n, sourceId, title, type, chunkId, locator?, quote /*≤400*/, score? }`. The reply text carries `[n]` markers (1-based, unique per message); a marker with no matching entry renders as plain text. `title` is a snapshot, so a renamed or deleted source still reads correctly. Markers inside code blocks are ignored.
 
 ### TurnTrace (Insight drawer data; AI-owned; **every section optional**)
 ```ts
@@ -337,6 +342,9 @@ TurnTrace {
                skipped?: { characterId: string; reason: "exhausted" | "muted" | "archived" }[];
                reason?: string };                 // only if an LLM produces one; Jev never does
   memory?:   { recalled: { memoryItemId: string; text: string; sourceSessionId?: string; score?: number }[] };
+  knowledge?: { query?: string; trigger?: "always" | "tool_call" | "gated";            // D-59 (rev 1.2)
+                retrieved: { chunkId: string; sourceId: string; title: string; locator?: string;
+                             text: string; score: number; cited: boolean; n?: number }[] };
   contextInSession?: { text: string; messageId: string }[];   // in-session recall ≠ long-term memory
   context?:  { budget: number; cacheHitPct?: number;
                used: { system: number; persona: number; memory: number; knowledge: number;
@@ -379,8 +387,11 @@ GenerationTask {
 ### MemoryItem (**PROVISIONAL**: lets the UI mock the Memory tab; the AI team owns the final shape, OQ-AI-01)
 `{ id, characterId, worldId, kind: "fact" | "event" | "preference" | "about_user", text, importance: number /*0..1*/, sourceSessionId?, sourceMessageId?, createdAt }`
 
-### KnowledgeSource (**PLACEHOLDER**, v1.1)
-`{ id, characterId, worldId, title, type: "text" | "file" | "url", status: "indexing" | "indexed" | "failed", bytes? }`
+### KnowledgeSource (**PLACEHOLDER**, v1.1; extended by D-59)
+`{ id, characterId, worldId, title, type: "text" | "file" | "url", status: "indexing" | "indexed" | "failed", bytes?, pages?, chunks?, url?, citedCount?, addedAt?, error? }`
+
+### KnowledgeChunk (D-59, rev. 1.2)
+`{ id /*kch_…*/, sourceId, index, locator?, text }`. Read with `characters.knowledgeSource(sourceId) → { source, chunks }` for the O28 Source viewer. Chunking is AI-owned (OQ-AI-03); the UI only needs stable ids and a readable locator.
 
 ## 5. Lifecycles
 
@@ -409,8 +420,10 @@ draft (wizard: seed → … → theme) ─→ review (APPROVE step) ─(Summon)�
 | `turn.thinking` | `{ characterId }` | Typing "…" + lean-in |
 | `turn.start` | `{ messageId, author, emotion?, variantId? }` | Speaker known |
 | `token` | `{ messageId, delta, variantId? }` | |
-| `emotion` | `{ messageId, characterId, emotion, source }` | **May arrive before, during or after tokens.** The UI holds ≤ 800 ms, then switches late. Ignored for display in MANUAL |
-| `turn.end` | `{ messageId, status, interruptedBy?, usage, variantId? }` | |
+| `emotion` | `{ messageId?, characterId, emotion, source }` | **May arrive before, during or after tokens.** The UI holds ≤ 800 ms, then switches late. Ignored for display in MANUAL. *(D-51)* **without `messageId` and with `source: "user"`** it records a MANUAL `setEmotion` (face change), so Replay reproduces it |
+| `message` *(D-51)* | `{ message: Message }` | A whole, **non-streamed** message: user chat, `steer`, `interject`, `direction`, `system_note`, `summary`, `verdict`. Without it, Replay can't show what the user said |
+| `session.state` *(D-51, D-57)* | `{ status?, pausedReason?, state?: DebateState \| WatchState, participants?: Participant[], settings?: Partial<Pick<Session, "title" \| "titleIsCustom" \| "emotionMode" \| "musicPolicy" \| "readableMode" \| "config">> }` | Snapshot after a non-message change: verdict set, participant muted, side or cast change, or a mid-session settings change (rename, emotion mode, responder policy, auto-advance, music, Readable mode). Replaces the matching fields |
+| `turn.end` | `{ messageId, status, interruptedBy?, usage, variantId?, citations? }` | `citations` arrive here (D-59), so `[n]` chips appear when the reply completes |
 | `energy` | `{ characterId, current, max, state, fullAt? }` | After every drain or top-up; drives the energy bar |
 | `reaction` | `{ messageId, characterId, emotion, p?, source }` | Listeners only. May be late or absent |
 | `insight` | `{ messageId, trace: TurnTrace }` | After `turn.end`; never delays tokens |
@@ -422,7 +435,7 @@ draft (wizard: seed → … → theme) ─→ review (APPROVE step) ─(Summon)�
 | `job.progress` / `task.update` / `job.done` | job/task snapshots (+ `previewUrl?`) | Generation jobs (separate stream per job) |
 
 **Commands (REST):**
-- **Chat & sessions:** `send`, `stop`, `regenerate(messageId)`, `setEmotion(characterId, emotion)` (MANUAL), `setEmotionMode`, `setResponderPolicy`, `setMusicPolicy`, `everyoneAnswer`, `nextSpeaker(characterId)`, `muteParticipant(characterId, muted)`, `endSession`, `renameSession`, `forkSeedSession(sessionId)`.
+- **Chat & sessions:** `send`, `stop`, `regenerate(messageId)`, `setEmotion(characterId, emotion)` (MANUAL), `setEmotionMode`, `setResponderPolicy`, `setMusicPolicy`, `everyoneAnswer`, `nextSpeaker(characterId)`, `muteParticipant(characterId, muted)`, `endSession`, `renameSession`, `forkSeedSession(sessionId, atSeq?)` *(D-51: `atSeq` = "Continue live" from the Replay playhead; omitted = the whole recording)*.
 - **Debate:** `pause`, `resume`, `askCharacter(characterId, text)`, `interject(text)`, `extendRound`, `skipToClosing`, `endDebate(withVerdict: boolean)`, `pickStrongerCase(side)` (You decide).
 - **Watch:** `step`, `setPace`, `direct(text)`, `extendWatch(10)`, `summarise`.
 - **Energy:** `topUpEnergy(characterId, points)`, `setEnergyMax(characterId, points)`.

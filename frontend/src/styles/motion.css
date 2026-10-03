@@ -1,0 +1,54 @@
+/* Global keyframes + utility classes. Owner: VMD.
+ * Only transform and opacity are animated (NFR-03). CSS Modules that need these
+ * should use the global utility classes (hz-*) via className strings, or declare local keyframes. */
+
+@keyframes hz-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes hz-fade-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes hz-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.008); } }
+@keyframes hz-shake {
+  0% { transform: translate(6px, -3px); }
+  33% { transform: translate(-4px, 2px); }
+  66%, 100% { transform: translate(0, 0); }
+}
+@keyframes hz-jump {
+  0% { transform: translateY(0); animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+  50% { transform: translateY(-10px); animation-timing-function: cubic-bezier(0.5, 0, 0.75, 0); }
+  100% { transform: translateY(0); }
+}
+@keyframes hz-settle { from { transform: scale(1.02); } to { transform: scale(1); } }
+@keyframes hz-tile-drop {
+  from { opacity: 0; transform: translateY(-40px) rotate(var(--r-from, -14deg)) scale(1.25); }
+  to { opacity: 1; transform: translateY(0) rotate(var(--r, 0deg)) scale(var(--sc, 1)); }
+}
+@keyframes hz-tape-in { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes hz-tape-out { from { transform: translateX(0); opacity: 1; } to { transform: translateX(110%); opacity: 0; } }
+@keyframes hz-float-up { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-18px); } }
+@keyframes hz-pulse-soft { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+@keyframes hz-pulse-red { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
+@keyframes hz-sheen { from { transform: translateX(-100%); } to { transform: translateX(400%); } }
+@keyframes hz-scan { from { transform: translateX(-120%) skewX(-12deg); } to { transform: translateX(420%) skewX(-12deg); } }
+@keyframes hz-rise-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes hz-slide-up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@keyframes hz-slide-left { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: none; } }
+@keyframes hz-pop { 0% { opacity: 0; transform: scale(0.6); } 60% { opacity: 1; transform: scale(1.12); } 100% { opacity: 1; transform: scale(1); } }
+@keyframes hz-drift { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+.hz-fade-in { animation: hz-fade-in var(--t-base) var(--ease-out) both; }
+.hz-breathe { animation: hz-breathe 4s var(--ease-breathe) infinite; transform-origin: 50% 100%; }
+.hz-shake { animation: hz-shake 100ms steps(1, end) both; }
+.hz-jump { animation: hz-jump 120ms linear both; }
+.hz-settle { animation: hz-settle var(--t-swap) var(--ease-out) both; }
+.hz-rise-in { animation: hz-rise-in var(--t-base) var(--ease-out) both; }
+.hz-pop { animation: hz-pop 220ms var(--ease-slam) both; }
+.hz-pulse-soft { animation: hz-pulse-soft 1.6s var(--ease-breathe) infinite; }
+
+/* Reduced motion: movement-based utilities become instant / static. Fades stay. */
+:root[data-motion="reduced"] .hz-breathe,
+:root[data-motion="reduced"] .hz-shake,
+:root[data-motion="reduced"] .hz-jump,
+:root[data-motion="reduced"] .hz-settle,
+:root[data-motion="reduced"] .hz-pulse-soft { animation: none; }
+:root[data-motion="reduced"] .hz-rise-in,
+:root[data-motion="reduced"] .hz-pop { animation: hz-fade-in var(--t-reduced) linear both; }
+:root[data-vfx="off"] .hz-shake,
+:root[data-vfx="subtle"] .hz-shake { animation: none; }

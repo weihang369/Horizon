@@ -1,0 +1,43 @@
+/* Dev overlays (O18, PerfHUD). Owner: EE. */
+.panel { z-index: var(--z-dev); }
+.row { display: flex; gap: var(--space-2); align-items: center; flex-wrap: wrap; margin: 0 0 var(--space-3); }
+.label { font: 600 12px/1 var(--font-mono); color: var(--paper-300); margin-right: var(--space-2); }
+.note { color: var(--paper-300); font-size: var(--text-sm); }
+.group {
+  font: 400 14px/1 var(--font-display);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  margin: var(--space-4) 0 var(--space-2);
+  color: var(--horizon-300);
+}
+.list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.item {
+  all: unset;
+  box-sizing: border-box;
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  padding: 6px 10px;
+  cursor: pointer;
+  background: var(--ink-700);
+  color: var(--paper-50);
+  font-size: var(--text-sm);
+}
+.item span { color: var(--paper-300); font-size: var(--text-xs); }
+.item:hover, .item:focus-visible { background: var(--ink-500); outline: 2px solid var(--horizon-300); outline-offset: -2px; }
+.item[aria-pressed="true"] { background: var(--horizon-500); color: var(--on-brand); }
+.item[aria-pressed="true"] span { color: var(--ink-700); }
+
+.hud {
+  position: fixed;
+  left: var(--space-4);
+  top: var(--space-4);
+  z-index: var(--z-dev);
+  font: 500 11px/1.4 var(--font-mono);
+  background: color-mix(in srgb, var(--ink-900) 85%, transparent);
+  color: var(--paper-50);
+  padding: 6px 8px;
+  pointer-events: none;
+  white-space: pre;
+}
+.bad { color: var(--signal-err); }

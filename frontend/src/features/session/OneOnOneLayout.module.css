@@ -1,0 +1,155 @@
+/* S07 1:1 (UXA §2.2). 1440: stage 600 · log 840 · card 520. 1280: stage 520 · log 760 · card 420.
+   Insight open (push): stage 440 / 360, log 600 / 520 (never < 520, R14). The palette themes the app root (R9). */
+.oo {
+  --stage-w: 600px;
+  --cut: 120px;
+  --card-w: 520px;
+  --card-x: 40px;
+  --card-shift: 0px;
+  position: relative;
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: var(--stage-w) minmax(520px, 1fr);
+  overflow: hidden;
+}
+.pushed { --stage-w: 440px; --card-shift: -80px; }
+@media (max-width: 1360px) {
+  .oo { --stage-w: 520px; --card-w: 420px; }
+  .pushed { --stage-w: 360px; }
+}
+@media (max-height: 780px) {
+  .oo { --card-w: 420px; }
+}
+
+/* ── Stage ─────────────────────────────────────────────────────────── */
+.stage {
+  position: relative;
+  min-width: 0;
+  overflow: visible;
+  background: var(--c-stage);
+  isolation: isolate;
+}
+.band {
+  position: absolute;
+  inset: 0 calc(var(--cut) * -1) 0 0;
+  z-index: -1;
+  background:
+    linear-gradient(104deg, transparent 0 34%, color-mix(in srgb, var(--c-primary) 82%, transparent) 34% 47%, transparent 47% 49%, color-mix(in srgb, var(--c-primary) 30%, transparent) 49% 52%, transparent 52%),
+    radial-gradient(ellipse 70% 55% at 35% 70%, color-mix(in srgb, var(--c-primary) 26%, transparent), transparent 70%),
+    linear-gradient(180deg, var(--c-stage), color-mix(in srgb, var(--c-surface) 70%, var(--c-stage)));
+}
+.halftone {
+  position: absolute;
+  inset: 0 calc(var(--cut) * -1) 0 0;
+  z-index: -1;
+  background: radial-gradient(circle, var(--c-primary) 1.2px, transparent 1.6px) 0 0 / 8px 8px;
+  opacity: 0.12;
+  mask-image: linear-gradient(180deg, transparent 10%, #000 90%);
+}
+.card {
+  position: absolute;
+  left: var(--card-x);
+  bottom: -40px;
+  width: var(--card-w);
+  transform: translateX(var(--card-shift));
+  transition: transform var(--t-slow) var(--ease-out);
+  z-index: 1;
+}
+.leanIn { transform: translateX(var(--card-shift)) translateY(-8px) scale(1.012); transform-origin: 50% 100%; }
+
+.plate {
+  position: absolute;
+  top: 96px;
+  /* Anchored over the card's LEFT edge: the right side carries the thinking bubble at (74%, 14%) (VMD §2.5). */
+  left: 16px;
+  width: 320px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  transition: left var(--t-slow) var(--ease-out);
+}
+@media (max-width: 1360px) {
+  .plate { width: 270px; left: 8px; }
+}
+.pushed .plate { left: 12px; }
+.energyRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 6px 10px 6px 8px;
+  position: relative;
+  isolation: isolate;
+}
+/* Backdrop on a pseudo-element: a clip on the row itself would clip the tooltip and the "−N ⚡" float. */
+.energyRow::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: color-mix(in srgb, var(--ink-900) 88%, transparent);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+}
+.energyWrap { display: block; flex: 1; min-width: 0; max-width: 260px; outline: none; }
+.energyWrap:focus-visible { box-shadow: 0 0 0 2px var(--c-glow); }
+
+.strip {
+  position: absolute;
+  z-index: 6;
+  top: 50%;
+  left: calc(var(--stage-w) - var(--cut) / 2 - 58px);
+  transform: translateY(-40%);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+.stripTag {
+  font: 400 12px/1 var(--font-display);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  background: var(--paper-50);
+  color: var(--ink-900);
+  padding: 4px 8px;
+}
+
+/* ── Log column with the 8° diagonal cut ──────────────────────────── */
+.logCol {
+  position: relative;
+  min-width: 0;
+  margin-left: calc(var(--cut) * -1);
+  z-index: 2;
+}
+.cutEdge, .panel {
+  position: absolute;
+  inset: 0;
+}
+.cutEdge {
+  background: var(--c-primary);
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% 100%, 0 100%);
+}
+.panel {
+  left: 6px;
+  display: flex;
+  flex-direction: column;
+  padding-left: calc(var(--cut) * 0.55);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--ink-900) 94%, transparent), color-mix(in srgb, var(--c-surface) 45%, var(--ink-900)));
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% 100%, 0 100%);
+}
+.log { flex: 1; min-height: 0; padding-bottom: var(--log-pad); }
+.dock { flex: none; }
+
+/* The 8° log cut clips the card's bottom-right corner, so the "PLACEHOLDER · EMOTION" tape (R8) moves to the
+   bottom-left here. Matches the kit's CSS-module class by its local name; without a match it stays where it was. */
+.card :global([class*="phTape"]) {
+  right: auto;
+  left: calc(var(--frame, 8px) + 10px);
+}
+/* Insight push translates the card −80 px behind the stage edge: keep the tape on the visible part. */
+.pushed .card :global([class*="phTape"]) {
+  left: max(calc(var(--frame, 8px) + 10px), calc(var(--frame, 8px) + 10px - var(--card-shift) - var(--card-x)));
+}

@@ -1,0 +1,189 @@
+/* S12 Watch: marquee · subtitle script (760/680) · proscenium row (46 % vh). Builder D. */
+.root {
+  --script: 760px;
+  --drape: 56px;
+  --actor-w: min(300px, calc(44vh * 0.75));
+  position: relative;
+  isolation: isolate;
+  container-type: inline-size;
+  display: grid;
+  grid-template-rows: 44px minmax(0, 1fr) auto;
+  height: 100%;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, var(--ink-900) 0%, color-mix(in srgb, var(--ink-700) 70%, var(--ink-900)) 72%, var(--ink-900) 100%);
+}
+@media (max-width: 1380px) { .root { --script: 680px; --drape: 40px; } }
+
+/* ── Lighting: one palette spotlight per actor; the speaker's is up (R9 scoped) ── */
+.lights { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.spot {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 16% 78% at var(--x) 0%, color-mix(in srgb, var(--c-primary) 42%, transparent), transparent 72%),
+    radial-gradient(ellipse 14% 8% at var(--x) 96%, color-mix(in srgb, var(--c-primary) 40%, transparent), transparent 70%);
+  opacity: 0;
+  transition: opacity var(--t-scene) var(--ease-out);
+}
+.spotOn { opacity: 0.45; }
+.spotHot { opacity: 0.95; }
+
+/* Drapes: ink folds with a house-orange trim. */
+.curtainL, .curtainR {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 4;
+  width: var(--drape);
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(90deg, var(--ink-700) 0 9px, var(--ink-900) 9px 14px, var(--ink-500) 14px 16px, var(--ink-700) 16px 22px);
+}
+.curtainL { left: 0; box-shadow: inset -3px 0 0 var(--horizon-500); clip-path: polygon(0 0, 100% 0, 70% 100%, 0 100%); }
+.curtainR { right: 0; box-shadow: inset 3px 0 0 var(--horizon-500); clip-path: polygon(0 0, 100% 0, 100% 100%, 30% 100%); }
+
+/* ── Marquee ─────────────────────────────────────────────────────────────── */
+.marquee {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 0 calc(var(--drape) + 20px);
+  min-width: 0;
+}
+.onAir {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+  padding: 3px 12px 2px;
+  font-family: var(--font-display);
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--paper-300);
+  border: 2px solid var(--ink-500);
+}
+.onAir i { width: 9px; height: 9px; border-radius: 50%; background: var(--paper-300); }
+.onAirLive { color: var(--paper-50); border-color: var(--horizon-500); }
+.onAirLive i { background: var(--horizon-500); animation: hz-pulse-red 1.2s var(--ease-breathe) infinite; }
+.premise {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--text-sm);
+  font-style: italic;
+  color: var(--paper-300);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sceneTag {
+  flex: none;
+  padding: 1px 8px;
+  font-family: var(--font-display);
+  font-style: normal;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-900);
+  background: var(--paper-50);
+}
+.counter {
+  flex: none;
+  font-family: var(--font-display);
+  font-size: 16px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--paper-300);
+}
+.counter b { font-weight: 400; font-size: 20px; color: var(--paper-50); }
+
+/* ── Script: subtitle column, last ~8 lines, fade at the top ─────────────── */
+.script {
+  position: relative;
+  z-index: 3;
+  justify-self: center;
+  width: min(var(--script), calc(100% - var(--drape) * 2 - 40px));
+  min-height: 0;
+  display: grid;
+  mask-image: linear-gradient(180deg, transparent 0, #000 34%);
+}
+.log { min-height: 0; }
+
+/* ── Proscenium row ──────────────────────────────────────────────────────── */
+.row {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0 calc(var(--drape) + 12px) 6px;
+  --gap: clamp(-90px, calc((100cqw - var(--n) * var(--actor-w) - 140px) / max(var(--n) - 1, 1)), 36px);
+  gap: 0;
+}
+.floor {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 96px;
+  z-index: -1;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--horizon-500) 55%, transparent) 0 2px, transparent 2px),
+    repeating-linear-gradient(90deg, transparent 0 78px, color-mix(in srgb, var(--paper-50) 6%, transparent) 78px 80px),
+    linear-gradient(180deg, var(--ink-700), var(--ink-900));
+}
+.actor {
+  position: relative;
+  z-index: calc(5 - var(--i));
+  display: grid;
+  width: var(--actor-w);
+  flex: none;
+  transform-origin: 50% 90%;
+  transition: transform 320ms var(--ease-slam);
+  animation: actorIn var(--t-scene) var(--ease-out) both;
+  animation-delay: calc(var(--i) * 80ms);
+}
+.actor + .actor { margin-left: var(--gap); }
+@keyframes actorIn { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: none; } }
+.speaking { z-index: 10; transform: translateY(-10px) scale(1.05); }
+.lean:not(.speaking) { transform: translateY(-4px); }
+.foot { position: relative; z-index: 3; display: grid; justify-items: start; gap: 6px; margin: -18px 0 0 -8px; }
+.energy { width: calc(var(--actor-w) * 0.66); margin-left: 12px; }
+.cue {
+  position: absolute;
+  z-index: 5;
+  top: 12px;
+  right: 12px;
+  padding: 2px 10px 1px;
+  font-family: var(--font-display);
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-900);
+  background: var(--paper-50);
+  clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+  animation: hz-pulse-soft 1.6s var(--ease-breathe) infinite;
+}
+
+.curtainCard {
+  position: absolute;
+  z-index: 6;
+  left: 50%;
+  top: 40%;
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  translate: -50% -50%;
+  animation: hz-pop 260ms var(--ease-slam) both;
+}
+
+:global(:root[data-motion="reduced"]) .actor { animation: hz-fade-in var(--t-reduced) linear both; transition-duration: var(--t-reduced); }
+:global(:root[data-motion="reduced"]) .spot { transition-duration: var(--t-reduced); }
+:global(:root[data-motion="reduced"]) .cue,
+:global(:root[data-motion="reduced"]) .onAirLive i { animation: none; }

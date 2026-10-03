@@ -1,0 +1,216 @@
+/* O15 Summon reveal (VMD §2.4). transform/opacity only; palette vars snap under the flood (R10). Owner: Builder B. */
+.root {
+  --sm-w: calc(min(74vh, 700px) * 0.75);
+  --sm-name: clamp(72px, 8.6vw, 150px);
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none !important; /* R6: input reaches the profile underneath */
+  color: var(--c-text);
+  background:
+    radial-gradient(ellipse 70% 90% at 28% 60%, color-mix(in srgb, var(--c-primary) 26%, transparent), transparent 70%),
+    linear-gradient(180deg, var(--c-surface), var(--c-stage) 70%);
+  animation: rootIn 160ms linear both;
+  transition: opacity 360ms var(--ease-in), transform 360ms var(--ease-in);
+}
+@keyframes rootIn { from { opacity: 0; } }
+.root * { pointer-events: none !important; }
+.leaving { opacity: 0; transform: scale(1.03); }
+
+.stage { position: absolute; inset: 0; }
+.halftone {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, color-mix(in srgb, var(--c-primary) 70%, transparent) 1.4px, transparent 1.9px) 0 0 / 10px 10px;
+  opacity: 0.22;
+  -webkit-mask-image: linear-gradient(90deg, #000, transparent 55%);
+  mask-image: linear-gradient(90deg, #000, transparent 55%);
+  animation: fade 400ms 200ms both;
+}
+.word {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  font: 400 32vw/0.8 var(--font-display);
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  color: transparent;
+  -webkit-text-stroke: 3px var(--c-text);
+  opacity: 0.06;
+  transform: translate(-6vw, -50%) rotate(-6deg);
+  animation: drift 2600ms linear both;
+}
+@keyframes drift { from { transform: translate(4vw, -50%) rotate(-6deg); } to { transform: translate(-14vw, -50%) rotate(-6deg); } }
+.slash {
+  position: absolute;
+  left: -40vw;
+  top: 30%;
+  width: 180vw;
+  height: 40vh;
+  background: var(--c-primary);
+  transform: translateX(-140vw) rotate(-14deg);
+  animation: slash 460ms 350ms var(--ease-wipe) both;
+}
+@keyframes slash {
+  0% { transform: translateX(-140vw) rotate(-14deg); }
+  100% { transform: translateX(140vw) rotate(-14deg); }
+}
+.band {
+  position: absolute;
+  left: -20vw;
+  right: -20vw;
+  top: 46%;
+  height: 26vh;
+  background: linear-gradient(90deg, var(--c-primary), color-mix(in srgb, var(--c-primary) 50%, transparent) 70%, transparent);
+  transform-origin: 0 50%;
+  transform: rotate(-14deg) scaleX(1);
+  animation: band 420ms 640ms var(--ease-out) both;
+  opacity: 0.9;
+}
+@keyframes band { from { transform: rotate(-14deg) scaleX(0); } }
+.rays {
+  position: absolute;
+  left: calc(8vw + var(--sm-w) / 2);
+  top: 54%;
+  width: 150vh;
+  height: 150vh;
+  margin: -75vh 0 0 -75vh;
+  background: repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--c-glow) 22%, transparent) 0 6deg, transparent 6deg 18deg);
+  -webkit-mask-image: radial-gradient(circle, #000 0 20%, transparent 62%);
+  mask-image: radial-gradient(circle, #000 0 20%, transparent 62%);
+  animation: fade 500ms 520ms both, spin 24s linear infinite;
+}
+@keyframes spin { to { rotate: 360deg; } }
+@keyframes fade { from { opacity: 0; } }
+
+/* Ink cut-panel behind the copy: the name slams onto ink, not onto the band (contrast at any palette). */
+.panel {
+  position: absolute;
+  left: calc(8vw + var(--sm-w) + 2.5vw);
+  right: -6vw;
+  top: 50%;
+  height: min(54vh, 470px);
+  margin-top: calc(min(54vh, 470px) / -2);
+  background: var(--c-primary);
+  clip-path: polygon(7vh 0, 100% 0, 100% 100%, 0 100%);
+  animation: panelIn 340ms 720ms var(--ease-slam) both;
+}
+.panel::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 0 12px;
+  background:
+    radial-gradient(circle, color-mix(in srgb, var(--c-primary) 30%, transparent) 1.2px, transparent 1.7px) 0 0 / 9px 9px,
+    color-mix(in srgb, var(--ink-900) 88%, transparent);
+  clip-path: polygon(7vh 0, 100% 0, 100% 100%, 0 100%);
+}
+@keyframes panelIn { from { transform: translateX(70vw); } }
+
+/* Impact frame as the portrait lands (gated by Flash intensity; Off → none). */
+.flash {
+  position: absolute;
+  inset: 0;
+  background: var(--c-glow);
+  opacity: 0;
+  mix-blend-mode: screen;
+  animation: impact 180ms 870ms var(--ease-out) forwards;
+}
+@keyframes impact { 0% { opacity: var(--flash-peak, 0.3); } 100% { opacity: 0; } }
+:global(:root[data-flash="low"]) .flash { --flash-peak: 0.12; }
+:global(:root[data-flash="off"]) .flash { display: none; }
+/* VFX Off / Subtle: the drifting halftone and spinning rays are decoration; the cut composition stays. */
+:global(:root[data-vfx="off"]) .rays, :global(:root[data-vfx="off"]) .halftone { display: none; }
+:global(:root[data-vfx="subtle"]) .rays { animation: fade 500ms 520ms both; }
+
+/* ── Portrait + motion-blur ghosts ─────────────────────────────────────────── */
+.portraitWrap {
+  position: absolute;
+  left: 8vw;
+  bottom: calc(50% - var(--sm-w) * 2 / 3);
+  width: var(--sm-w);
+}
+.portrait, .ghost { display: block; }
+.portrait { position: relative; animation: slideIn 380ms 500ms var(--ease-out) both, shake 260ms 1200ms steps(1, end) both; }
+@keyframes slideIn { from { transform: translateX(40vw); opacity: 0.4; } 40% { opacity: 1; } }
+@keyframes shake {
+  0% { transform: translate(8px, -4px); }
+  25% { transform: translate(-6px, 3px); }
+  50% { transform: translate(4px, 2px); }
+  75% { transform: translate(-2px, -1px); }
+  100% { transform: none; }
+}
+.ghost { position: absolute; inset: 0 auto auto 0; width: 100%; opacity: 0; }
+/* Ghosts ride the portrait's exact curve (380 ms, same easing) at 24/48/72 px behind, then collapse onto it. */
+.g1 { animation: ghost1 500ms 500ms var(--ease-out) both; }
+.g2 { animation: ghost2 500ms 500ms var(--ease-out) both; }
+.g3 { animation: ghost3 500ms 500ms var(--ease-out) both; }
+@keyframes ghost1 { from { transform: translateX(calc(40vw + 24px)); opacity: 0.25; } 76% { transform: translateX(24px); opacity: 0.25; } to { transform: none; opacity: 0; } }
+@keyframes ghost2 { from { transform: translateX(calc(40vw + 48px)); opacity: 0.12; } 76% { transform: translateX(48px); opacity: 0.12; } to { transform: none; opacity: 0; } }
+@keyframes ghost3 { from { transform: translateX(calc(40vw + 72px)); opacity: 0.06; } 76% { transform: translateX(72px); opacity: 0.06; } to { transform: none; opacity: 0; } }
+
+/* ── Copy ─────────────────────────────────────────────────────────────────── */
+.copy {
+  position: absolute;
+  left: calc(8vw + var(--sm-w) + 5vw);
+  right: 5vw;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  gap: 18px;
+  justify-items: start;
+}
+.kicker {
+  padding: 6px 14px;
+  font: 700 13px/1 var(--font-mono);
+  letter-spacing: 0.16em;
+  background: var(--ink-900);
+  color: var(--c-glow);
+  clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+  animation: fromRight 320ms 780ms var(--ease-slam) both;
+}
+@keyframes fromRight { from { transform: translateX(60px); opacity: 0; } }
+.name { display: grid; gap: 6px; line-height: 0.95; animation: shake 260ms 1250ms steps(1, end) both; filter: drop-shadow(8px 8px 0 color-mix(in srgb, var(--c-primary) 75%, transparent)); }
+.role {
+  padding: 8px 18px;
+  font: 700 clamp(14px, 1.3vw, 18px)/1 var(--font-ui);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: var(--c-primary);
+  color: var(--c-on-primary);
+  clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+  animation: fromRight 300ms 1080ms var(--ease-slam) both;
+}
+.tagline { margin: 0; max-width: 36ch; font: 500 italic clamp(18px, 1.7vw, 26px)/1.35 var(--font-ui); color: var(--c-text); animation: fade 120ms 1140ms both; }
+.ghostText { opacity: 0; }
+.caret { display: inline-block; width: 0.5em; height: 1em; margin-left: 2px; vertical-align: -0.1em; background: var(--c-primary); animation: blink 500ms steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.pal {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: 600 12px/1 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--paper-300);
+  animation: fade 300ms 1400ms both;
+}
+.pal i { width: 12px; height: 12px; background: var(--c-primary); transform: rotate(45deg); }
+.skipHint {
+  position: absolute;
+  right: 24px;
+  bottom: 20px;
+  font: 600 11px/1 var(--font-mono);
+  letter-spacing: 0.12em;
+  color: var(--paper-300);
+  opacity: 0.7;
+  animation: fade 300ms 400ms both;
+}
+
+/* ── Skip: jump every animation to its end state (≤ 120 ms, D-55) ─────────── */
+.skip *, .skip *::before, .skip *::after { animation-delay: 0s !important; animation-duration: 1ms !important; animation-iteration-count: 1 !important; }
+.skip .caret, .skip .skipHint, .skip .flash { display: none; }
+
+/* ── Reduced motion: one short fade of the end composition ────────────────── */
+.reduced { animation: rootIn 160ms linear both; }
+.reduced *, .reduced *::before, .reduced *::after { animation: none !important; }
+.reduced .slash, .reduced .ghost, .reduced .caret, .reduced .flash { display: none; }

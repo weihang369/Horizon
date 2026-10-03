@@ -1,0 +1,172 @@
+/* Builder A overlays: O01 pause, O03 confirm, O05 key, O09 popover, O20 sheet, O21 budget. Owner: Builder A. */
+
+/* ── O09 popover ─────────────────────────────────────────────────────── */
+.pop {
+  width: 322px;
+  background: var(--ink-900);
+  color: var(--paper-50);
+  box-shadow: inset 0 0 0 1px var(--ink-500), 10px 10px 0 color-mix(in srgb, var(--ink-900) 75%, transparent);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 14px 100%);
+  animation: global(hz-slide-up) var(--t-base) var(--ease-out) both;
+}
+.popHead { display: grid; gap: 8px; justify-items: start; padding: 16px 18px 14px; background: var(--ink-700); }
+.popTrack { margin: 0; font: 400 26px/1.05 var(--font-display); text-transform: uppercase; letter-spacing: 0.02em; }
+.popSketch { margin: 0; font-size: 12.5px; line-height: 1.45; color: var(--paper-300); }
+.sketchTag {
+  display: inline-block;
+  margin-right: 6px;
+  padding: 2px 6px;
+  background: var(--horizon-500);
+  color: var(--on-brand);
+  font: 400 11px/1.2 var(--font-display);
+  letter-spacing: 0.1em;
+}
+.popBody { display: grid; gap: 12px; padding: 16px 18px 6px; }
+.popToggles { display: grid; gap: 8px; padding-top: 4px; }
+.popLink {
+  display: block;
+  width: 100%;
+  padding: 12px 18px 14px;
+  text-align: right;
+  font: 400 15px/1 var(--font-display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--horizon-300);
+}
+.popLink:hover, .popLink:focus-visible { color: var(--paper-50); outline: none; background: var(--ink-700); }
+
+/* ── O01 pause ───────────────────────────────────────────────────────── */
+.pause {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-columns: minmax(460px, 46%) 1fr;
+  align-items: center;
+  overflow: hidden;
+  color: var(--paper-50);
+}
+.pauseSlab {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 54%;
+  background: var(--horizon-500);
+  clip-path: polygon(0 0, 100% 0, 78% 100%, 0 100%);
+  animation: slabIn 260ms var(--ease-wipe) both;
+}
+.pauseSlab::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, color-mix(in srgb, var(--ink-900) 35%, transparent) 1.3px, transparent 1.8px) 0 0 / 9px 9px;
+  -webkit-mask-image: linear-gradient(90deg, transparent 30%, #000);
+  mask-image: linear-gradient(90deg, transparent 30%, #000);
+}
+@keyframes slabIn { from { transform: translateX(-100%); } to { transform: none; } }
+.pauseGhost {
+  position: absolute;
+  right: -2vw;
+  bottom: -6vh;
+  font: 400 34vh/1 var(--font-display);
+  color: transparent;
+  -webkit-text-stroke: 2px var(--paper-50);
+  opacity: 0.07;
+  pointer-events: none;
+}
+.pauseLeft { position: relative; display: grid; gap: 18px; padding: 0 0 0 clamp(40px, 6vw, 96px); }
+.pauseTitle { margin: 0 0 6px; filter: drop-shadow(6px 6px 0 var(--ink-900)); }
+.pauseList { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.pauseList li { animation: pauseItemIn 240ms var(--ease-out) both; animation-delay: calc(60ms + var(--i) * 35ms); }
+@keyframes pauseItemIn { from { opacity: 0; transform: translateX(-40px); } to { opacity: 1; transform: none; } }
+.pauseItem {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  width: min(520px, 100%);
+  padding: 6px 20px 8px;
+  color: var(--ink-900);
+  text-align: left;
+  transition: transform var(--t-fast) var(--ease-out), color var(--t-fast) var(--ease-out);
+}
+.pauseItemFill {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--ink-900);
+  clip-path: polygon(14px 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform var(--t-fast) var(--ease-wipe);
+}
+.pauseItem:focus-visible, .pauseItem:hover:not(:disabled) { outline: none; color: var(--paper-50); transform: translateX(18px); }
+.pauseItem:focus-visible .pauseItemFill, .pauseItem:hover:not(:disabled) .pauseItemFill { transform: scaleX(1); }
+.pauseItem:focus-visible .pauseItemFill { box-shadow: inset 0 0 0 3px var(--c-glow); }
+.pauseItem:disabled { opacity: 0.4; }
+.pauseLabel { flex: none; white-space: nowrap; font: 400 clamp(36px, 5.2vh, 48px)/1 var(--font-display); text-transform: uppercase; letter-spacing: 0.02em; }
+.pauseHint { min-width: 0; font: 600 12px/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.75; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pauseKeys { margin: 6px 0 0; font: 600 12px/1 var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-900); }
+.pauseRight { position: relative; display: grid; gap: 22px; justify-items: start; padding: 0 clamp(32px, 6vw, 96px) 0 48px; animation: global(hz-slide-left) var(--t-slow) var(--ease-out) 120ms both; }
+.pauseWorld {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 18px;
+  align-items: center;
+  padding: 16px;
+  max-width: 520px;
+  background: var(--ink-900);
+  box-shadow: inset 0 0 0 2px var(--paper-50), 10px 10px 0 var(--ink-700);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+  rotate: -2deg;
+}
+.pauseCover { width: 120px; aspect-ratio: 3 / 4; }
+.pauseWorldInfo { display: grid; gap: 8px; justify-items: start; padding-right: 12px; }
+.pauseWorldName { font: 400 36px/1 var(--font-display); text-transform: uppercase; }
+.pauseSession { color: var(--paper-300); font-size: 15px; }
+.pauseCast { display: grid; gap: 10px; justify-items: start; }
+.pauseCast ul { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 10px; }
+.pauseCast li { display: grid; justify-items: center; gap: 6px; font: 600 12px/1.2 var(--font-mono); text-transform: uppercase; max-width: 96px; text-align: center; }
+.pauseCast img {
+  width: 84px;
+  height: 84px;
+  object-fit: cover;
+  object-position: 50% 20%;
+  border: 3px solid var(--paper-50);
+  clip-path: polygon(12% 0, 100% 0, 88% 100%, 0 100%);
+}
+
+/* ── O03 confirm / O05 key / O21 budget ──────────────────────────────── */
+.confirm { display: grid; gap: 14px; }
+.confirmBody { margin: 0; color: var(--paper-50); line-height: 1.5; }
+.keyReq { display: grid; grid-template-columns: auto 1fr; gap: 18px; align-items: start; }
+.keyGlyph {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  background: var(--horizon-500);
+  color: var(--on-brand);
+  clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+}
+.keyLead { margin: 0 0 8px; font-weight: 600; line-height: 1.45; }
+.keyNote { margin: 0; color: var(--paper-300); font-size: var(--text-sm); line-height: 1.45; }
+.budget { display: grid; gap: 12px; }
+.budgetLead { margin: 0; line-height: 1.5; }
+.meter { position: relative; height: 14px; background: var(--ink-500); clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%); overflow: hidden; }
+.meterFill { position: absolute; inset: 0; background: var(--signal-warn); transform-origin: 0 50%; }
+.budgetNums { margin: 0; font: 500 14px/1 var(--font-mono); color: var(--paper-300); }
+.budgetNums b { color: var(--paper-50); font-size: 18px; }
+
+/* ── O20 sheet ───────────────────────────────────────────────────────── */
+.sheetNote { margin: 0 0 18px; color: var(--paper-300); font-size: var(--text-sm); }
+.sheet { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 40px; }
+.sheetTitle { margin: 0 0 10px; font: 400 20px/1 var(--font-display); letter-spacing: 0.06em; text-transform: uppercase; color: var(--horizon-500); }
+.sheetList { margin: 0; display: grid; grid-template-columns: max-content minmax(0, 1fr); align-items: baseline; gap: 8px 16px; }
+.sheetRow { display: contents; }
+.sheetRow dt { white-space: nowrap; }
+.sheetRow dd { margin: 0; color: var(--paper-300); font-size: var(--text-sm); }
+
+:global(:root[data-motion="reduced"]) .pause *,
+:global(:root[data-motion="reduced"]) .pop { animation-duration: 160ms !important; animation-delay: 0ms !important; }

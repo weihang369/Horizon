@@ -1,0 +1,94 @@
+/* Theme player + composing state. Owner: Builder B. */
+.player, .composing {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 18px 14px 14px;
+  background: var(--ink-900);
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+  box-shadow: inset 0 0 0 1px var(--ink-500);
+}
+.compact { padding: 8px 12px 8px 8px; gap: 12px; }
+
+.play {
+  --h: 56px;
+  width: 64px;
+  height: var(--h);
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: var(--c-primary);
+  color: var(--c-on-primary);
+  clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+  cursor: pointer;
+  transition: transform var(--t-fast) var(--ease-out);
+}
+.compact .play { --h: 40px; width: 48px; }
+.play:hover { transform: scale(1.05); }
+.play:active { transform: scale(0.97); }
+.play:focus-visible { outline: 2px solid var(--c-glow); outline-offset: 3px; }
+
+.meta { display: grid; gap: 6px; min-width: 0; }
+.titleRow { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.title { font: 400 22px/1 var(--font-display); letter-spacing: 0.03em; text-transform: uppercase; color: var(--paper-50); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.compact .title { font-size: 17px; }
+.loading, .pct { font: 500 11px/1 var(--font-mono); color: var(--paper-300); }
+.pct { margin-left: auto; color: var(--c-glow); }
+
+.wave {
+  position: relative;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.compact .wave { height: 26px; }
+.wave i {
+  flex: 1;
+  height: 100%;
+  background: color-mix(in srgb, var(--c-primary) 70%, var(--paper-50));
+  transform-origin: 50% 50%;
+  clip-path: polygon(30% 0, 100% 0, 70% 100%, 0 100%);
+  transition: transform var(--t-swap) var(--ease-out);
+}
+.playing .wave i { background: var(--c-primary); }
+.waveSkel i { background: var(--ink-500); transition: opacity var(--t-slow) linear; }
+.loop {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  background: color-mix(in srgb, var(--c-glow) 14%, transparent);
+  border-inline: 1px dashed var(--c-glow);
+}
+.head {
+  position: absolute;
+  top: -6px;
+  bottom: -6px;
+  left: 0;
+  width: 2px;
+  background: var(--paper-50);
+  box-shadow: 0 0 10px var(--c-glow);
+  animation: sweep var(--dur) linear infinite;
+}
+@keyframes sweep { from { left: 0; } to { left: 100%; } }
+:root[data-motion="reduced"] .head { animation: none; left: 50%; }
+
+.small { display: flex; justify-content: space-between; gap: 12px; font: 500 11px/1.4 var(--font-mono); color: var(--paper-300); }
+.small span:last-child { text-align: right; opacity: 0.8; }
+
+.vinyl {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, var(--c-primary) 0 18%, var(--ink-900) 19% 22%, transparent 23%),
+    repeating-radial-gradient(circle, var(--ink-700) 0 2px, var(--ink-900) 2px 4px);
+  box-shadow: 0 0 0 2px var(--ink-500);
+  animation: spin 1.6s linear infinite;
+  position: relative;
+}
+.vinyl i { position: absolute; inset: 6px; border-radius: 50%; background: conic-gradient(transparent 0 80%, color-mix(in srgb, var(--paper-50) 18%, transparent) 88%, transparent 96%); }
+@keyframes spin { to { transform: rotate(360deg); } }
+:root[data-motion="reduced"] .vinyl { animation: none; }

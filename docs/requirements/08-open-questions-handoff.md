@@ -104,6 +104,12 @@
 - Stores: sqlite-vec vs Chroma vs LanceDB.
 - Retrieval triggers: always / tool call / Jev-gated.
 - **Recommendation:** sqlite-vec (zero-config) with Jev-gated retrieval and an always-on fallback. Show citations.
+- **UI already built (D-59, PRF-10):** `Message.citations` with `[n]` markers, `TurnTrace.knowledge`, `KnowledgeChunk`, the O28 Source viewer. The AI team decides:
+  - chunking (size, overlap, page/section locators for PDF, MD and URLs);
+  - how the model is told to cite (marker format in the prompt, or a structured tool output mapped to `[n]`);
+  - a faithfulness check (does the quoted passage actually support the sentence? drop or flag unsupported markers);
+  - whether citations also apply to long-term memory, or stay knowledge-only;
+  - cost: the embedding model and re-indexing policy within the energy budget.
 
 **OQ-AI-04: Multi-agent orchestration** *(the stakeholder mentioned CrewAI/AutoGen as ideas)*
 - Options:

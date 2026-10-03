@@ -1,0 +1,112 @@
+/* Horizon design tokens (doc 04 §2 + VMD paper §2.1). Owner: VMD.
+ * Every colour a component uses comes from here or from a palette class (palettes.css).
+ * Root data attributes (set by motion/prefs.ts → applyDisplayPrefs):
+ *   data-motion="full|reduced"  data-vfx="full|subtle|off"  data-flash="full|low|off"
+ *   data-text-size="s|m|l"      data-parallax="on|off"
+ */
+:root {
+  /* ── House colours ───────────────────────────────────────────── */
+  --ink-900: #0b0b0f;
+  --ink-700: #1a1a22;
+  --ink-500: #2c2c38;
+  --paper-50: #f5f2ea;
+  --paper-300: #bdb8ac;
+  --horizon-500: #ff4d2e;
+  --horizon-300: #ffb199;
+  --signal-ok: #3ddc97;
+  --signal-warn: #ffc53d;
+  --signal-err: #ff3355;
+  --on-brand: #0b0b0f;
+  --on-signal: #0b0b0f;
+  --energy-amber: #ffc53d;
+  --energy-red: #ff3355;
+  --blush: #ff7a9a;
+  --sad-blue: #2b4c7e;
+
+  /* Palette slots --c-* live in palettes.css (house default on :where(:root)). */
+
+  /* ── Type ────────────────────────────────────────────────────── */
+  --font-display: "Anton", "Impact", "Arial Narrow", sans-serif;
+  --font-ransom-a: "Anton", "Impact", sans-serif;
+  --font-ransom-b: "Dela Gothic One", "Arial Black", sans-serif;
+  --font-ransom-c: "Bowlby One SC", "Arial Black", sans-serif;
+  --font-ui: "Inter Variable", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+  --text-body: 16px;           /* S/M/L = 14/16/18 (doc 06 §8) */
+  --text-sm: calc(var(--text-body) - 2px);
+  --text-xs: calc(var(--text-body) - 4px);
+  --text-lg: calc(var(--text-body) + 2px);
+  --leading-body: 1.55;
+  --tracking-caps: 0.06em;
+
+  /* ── Geometry: tilt / slant system (R7) ─────────────────────── */
+  --tilt: -12deg;
+  --tilt-soft: -8deg;
+  --stripe: 14deg;
+  --tan-tilt: 0.2126;          /* tan(12°) */
+  --tan-tilt-soft: 0.1405;     /* tan(8°) */
+  /* Slants: a component sets --h locally and writes its polygon with calc(var(--h) * var(--tan-tilt)).
+   * Derived vars are NOT defined here: custom properties resolve where declared, so a :root-level
+   * --slant would ignore a component's --h. Use the .u-para utilities in base.css or inline calc(). */
+  --clip-card: polygon(0 0, 100% 0, 100% 93%, 90% 100%, 0 100%);
+
+  /* ── Space & layers ──────────────────────────────────────────── */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --z-stage: 0;
+  --z-chrome: 10;
+  --z-drawer: 40;
+  --z-modal: 60;
+  --z-toast: 80;
+  --z-ceremony: 90;
+  --z-transition: 100;
+  --z-dev: 200;
+
+  /* ── Motion tokens (VMD §2.1). Mirrored in motion/tokens.ts ── */
+  --t-tap: 80ms;
+  --t-fast: 140ms;
+  --t-base: 220ms;
+  --t-swap: 300ms;
+  --t-slow: 400ms;
+  --t-scene: 550ms;
+  --t-reduced: 160ms;
+  --ease-wipe: cubic-bezier(0.7, 0, 0.2, 1);
+  --ease-slam: cubic-bezier(0.2, 0.9, 0.3, 1.3);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.5, 0, 0.75, 0);
+  --ease-breathe: cubic-bezier(0.45, 0, 0.55, 1);
+  --stagger-tile: 30ms;
+  --stagger-list: 40ms;
+  --stagger-shard: 25ms;
+
+  /* ── Flash intensity (R10 / NFR-16) ─────────────────────────── */
+  --flash-peak: 0.85;
+
+}
+
+/* Text sizes S / M / L */
+:root[data-text-size="s"] { --text-body: 14px; }
+:root[data-text-size="m"] { --text-body: 16px; }
+:root[data-text-size="l"] { --text-body: 18px; }
+
+/* Flash intensity */
+:root[data-flash="low"] { --flash-peak: 0.35; }
+:root[data-flash="off"] { --flash-peak: 0; }
+
+/* Reduced motion: collapse durations so any CSS transition becomes a short fade. */
+:root[data-motion="reduced"] {
+  --t-tap: 0ms;
+  --t-fast: 0ms;
+  --t-base: 160ms;
+  --t-slow: 160ms;
+  --t-scene: 160ms;
+  --stagger-tile: 0ms;
+  --stagger-list: 0ms;
+  --stagger-shard: 0ms;
+}

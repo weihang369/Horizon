@@ -1,0 +1,106 @@
+/* O24 Portrait menu · O26 End debate · O17 Episode end. Builder D. */
+
+/* ── O24: skewed 200 px menu, palette-scoped frame (R9) ─────────────────── */
+.pmenu {
+  width: 220px;
+  padding: 10px 0 8px;
+  background: var(--ink-900);
+  border-left: 5px solid var(--c-primary);
+  box-shadow: 8px 8px 0 color-mix(in srgb, var(--ink-900) 70%, transparent), 0 0 0 1px var(--ink-500);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%);
+  transform-origin: top left;
+  animation: pmIn var(--t-fast) var(--ease-out) both;
+}
+@keyframes pmIn { from { opacity: 0; transform: translateY(-6px) scale(0.97); } to { opacity: 1; transform: none; } }
+:global(:root[data-motion="reduced"]) .pmenu { animation: hz-fade-in var(--t-reduced) linear both; }
+.pmHead { display: flex; align-items: center; gap: 10px; padding: 0 12px 8px; border-bottom: 1px solid var(--ink-500); }
+.pmWho { display: grid; min-width: 0; }
+.pmName {
+  font-family: var(--font-display);
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--c-primary);
+}
+.pmSub { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--paper-300); }
+.pmList { margin: 6px 0 0; padding: 0; list-style: none; }
+.pmItem {
+  position: relative;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 14px 8px 16px;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-align: left;
+  color: var(--paper-50);
+}
+.pmItem::before {
+  content: "";
+  position: absolute;
+  inset: 2px 6px 2px 4px;
+  z-index: -1;
+  background: var(--c-primary);
+  clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+  opacity: 0;
+}
+.pmList { position: relative; isolation: isolate; }
+.pmItem:hover::before, .pmItem:focus-visible::before { opacity: 1; }
+.pmItem:hover, .pmItem:focus-visible { color: var(--c-on-primary); outline: none; }
+.pmChecked { color: var(--c-glow); }
+.pmChecked::after { content: "●"; position: absolute; left: 4px; font-size: 8px; }
+.pmHint { font-family: var(--font-mono); font-size: 11px; opacity: 0.75; }
+.pmNote { margin: 6px 14px 0; font-size: 11px; color: var(--paper-300); letter-spacing: 0.06em; text-transform: uppercase; }
+
+/* ── O26 ───────────────────────────────────────────────────────────────── */
+.modalText { color: var(--paper-300); line-height: 1.55; }
+
+/* ── O17 Episode end ───────────────────────────────────────────────────── */
+.episodeScrim {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none !important;
+  background: linear-gradient(180deg, transparent 20%, color-mix(in srgb, var(--ink-900) 55%, transparent));
+}
+.episode {
+  position: relative;
+  pointer-events: auto;
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  width: min(620px, calc(100vw - 48px));
+  padding: 34px 40px 30px;
+  text-align: center;
+  background: var(--ink-900);
+  box-shadow: 0 0 0 2px var(--paper-50), 14px 14px 0 var(--horizon-500);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 22px), calc(100% - 22px) 100%, 0 100%);
+  translate: 0 -6vh;
+}
+.episodeIn { animation: epDrop 520ms var(--ease-slam) both; }
+.episodeIn .epCurtain { animation: epCurtain 700ms var(--ease-wipe) both; }
+@keyframes epDrop { from { opacity: 0; transform: translateY(-60px) rotate(-2deg); } to { opacity: 1; transform: none; } }
+@keyframes epCurtain { from { transform: scaleY(1); } to { transform: scaleY(0); } }
+.epCurtain {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: repeating-linear-gradient(90deg, var(--ink-700) 0 10px, var(--ink-900) 10px 16px, var(--ink-500) 16px 18px);
+  transform-origin: top;
+  transform: scaleY(0);
+}
+.epKicker {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--horizon-500);
+}
+.epTitle { line-height: 1; }
+.epBody { max-width: 44ch; color: var(--paper-300); }
+.epActions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 8px; }

@@ -1,0 +1,4 @@
+/* App-root sizing only. Owner: EE. Everything visual lives in the VMD's styles/ (tokens, palettes, base, motion). */
+#root {
+  min-height: 100vh;
+}

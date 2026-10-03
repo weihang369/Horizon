@@ -246,6 +246,14 @@ As Jun, I want Sims-style pickers for appearance, so I can shape the look withou
 - AC1: A list of memory items (text, kind, source session, date, importance badge) with View source and Forget.
 
 **PRF-08: Knowledge tab** · Could *(mock; RAG is v1.1; same ribbon)*. A drop zone and a document list with status.
+- AC2 (D-59): Each indexed source shows its pages/passages and how often it has been cited; opening it shows the O28 Source viewer.
+
+**PRF-10: Knowledge citations** · Should *(D-59; UI built in the hardcoded stage, retrieval is OQ-AI-03)*
+- AC1: When a reply uses a character's knowledge, the text shows numbered `[n]` chips. Hovering or focusing a chip shows the quoted passage, the source title and its locator (e.g. "p. 4").
+- AC2: A "Sources" strip under the bubble lists each cited source once. Clicking an entry opens **O28 Source viewer**, scrolled to the passage with it highlighted.
+- AC3: The Insight drawer has a **Knowledge** section listing every retrieved passage with its score, marking which ones were cited.
+- AC4: Citations survive Replay, Readable mode, the Backlog and Markdown export (as footnotes).
+- AC5: A source that was deleted after the answer still shows its snapshot title, and its chip opens a "source removed" state instead of failing.
 
 **PRF-09: Energy panel** · Must. The profile shows the energy bar, ⚡ spent today, "full in …", the daily max selector (500 / 1000 / 2000) and Top up (ENG-03/05).
 

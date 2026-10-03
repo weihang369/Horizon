@@ -1,0 +1,536 @@
+{
+  "schemaVersion": 1,
+  "data": [
+    {
+      "id": "msg_seedC01",
+      "sessionId": "ses_seedDinner",
+      "seq": 1,
+      "author": {
+        "type": "user"
+      },
+      "kind": "chat",
+      "content": "Dinner's on me tonight. What should we order?",
+      "status": "complete",
+      "createdAt": "2026-09-30T10:30:00.700Z"
+    },
+    {
+      "kind": "chat",
+      "seq": 2,
+      "id": "msg_seedC02",
+      "sessionId": "ses_seedDinner",
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedTakeshi"
+      },
+      "content": "Sushi. And I'll be honest, I'm only saying that because I've been *fishing* for an invitation.",
+      "status": "complete",
+      "createdAt": "2026-09-30T10:30:01.050Z",
+      "emotion": "happy",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 2009,
+        "tokensCached": 1719,
+        "tokensOut": 24,
+        "costUsd": 0.000063,
+        "energySpent": 1,
+        "firstTokenMs": 1649,
+        "totalMs": 2329
+      },
+      "trace": {
+        "messageId": "msg_seedC02",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1649,
+            "total": 2329
+          },
+          "tokensIn": 2009,
+          "tokensCached": 1719,
+          "tokensOut": 24,
+          "costUsd": 0.000063
+        },
+        "energy": {
+          "characterId": "chr_seedTakeshi",
+          "spent": 1,
+          "remaining": 1000,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "happy",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "happy",
+              "p": 0.723
+            },
+            {
+              "label": "sad",
+              "p": 0.156
+            },
+            {
+              "label": "neutral",
+              "p": 0.11
+            }
+          ]
+        },
+        "routing": {
+          "question": "Who should answer?",
+          "selected": "chr_seedTakeshi",
+          "candidates": [
+            {
+              "characterId": "chr_seedTakeshi",
+              "p": 0.62
+            },
+            {
+              "characterId": "chr_seedRin",
+              "p": 0.57
+            },
+            {
+              "characterId": "chr_seedHana",
+              "p": 0.41
+            }
+          ]
+        },
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 86,
+          "used": {
+            "system": 900,
+            "persona": 810,
+            "memory": 0,
+            "knowledge": 0,
+            "history": 11,
+            "user": 68,
+            "mode": 220
+          }
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "sfw",
+              "verdict": "pass",
+              "p": 0.961
+            },
+            {
+              "name": "advice_scope",
+              "verdict": "pass"
+            }
+          ]
+        }
+      },
+      "reactions": [
+        {
+          "characterId": "chr_seedHana",
+          "emotion": "happy",
+          "p": 0.6,
+          "at": "2026-09-30T10:30:03.634Z"
+        },
+        {
+          "characterId": "chr_seedRin",
+          "emotion": "angry",
+          "p": 0.76,
+          "at": "2026-09-30T10:30:03.789Z"
+        }
+      ]
+    },
+    {
+      "kind": "chat",
+      "seq": 3,
+      "id": "msg_seedC03",
+      "sessionId": "ses_seedDinner",
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedRin"
+      },
+      "content": "dad. it's 7pm. the puns should be off-duty. pizza. extra pineapple. fight me.",
+      "status": "complete",
+      "createdAt": "2026-09-30T10:30:03.779Z",
+      "emotion": "angry",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 1997,
+        "tokensCached": 1700,
+        "tokensOut": 19,
+        "costUsd": 0.000061,
+        "energySpent": 1,
+        "firstTokenMs": 1707,
+        "totalMs": 2312
+      },
+      "trace": {
+        "messageId": "msg_seedC03",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1707,
+            "total": 2312
+          },
+          "tokensIn": 1997,
+          "tokensCached": 1700,
+          "tokensOut": 19,
+          "costUsd": 0.000061
+        },
+        "energy": {
+          "characterId": "chr_seedRin",
+          "spent": 1,
+          "remaining": 181,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "angry",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "angry",
+              "p": 0.773
+            },
+            {
+              "label": "sad",
+              "p": 0.134
+            },
+            {
+              "label": "surprised",
+              "p": 0.058
+            }
+          ]
+        },
+        "routing": {
+          "question": "Who should answer?",
+          "selected": "chr_seedRin",
+          "candidates": [
+            {
+              "characterId": "chr_seedRin",
+              "p": 0.71
+            },
+            {
+              "characterId": "chr_seedHana",
+              "p": 0.38
+            }
+          ]
+        },
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 85,
+          "used": {
+            "system": 900,
+            "persona": 769,
+            "memory": 0,
+            "knowledge": 0,
+            "history": 35,
+            "user": 73,
+            "mode": 220
+          }
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "sfw",
+              "verdict": "pass",
+              "p": 0.978
+            },
+            {
+              "name": "advice_scope",
+              "verdict": "pass"
+            }
+          ]
+        }
+      },
+      "reactions": [
+        {
+          "characterId": "chr_seedHana",
+          "emotion": "thinking",
+          "p": 0.78,
+          "at": "2026-09-30T10:30:06.669Z"
+        },
+        {
+          "characterId": "chr_seedTakeshi",
+          "emotion": "surprised",
+          "p": 0.78,
+          "at": "2026-09-30T10:30:06.680Z"
+        }
+      ]
+    },
+    {
+      "id": "msg_seedC04",
+      "sessionId": "ses_seedDinner",
+      "seq": 4,
+      "author": {
+        "type": "user"
+      },
+      "kind": "chat",
+      "content": "@Hana break the tie?",
+      "status": "complete",
+      "createdAt": "2026-09-30T10:30:07.991Z"
+    },
+    {
+      "kind": "chat",
+      "seq": 5,
+      "forcedSpeaker": true,
+      "id": "msg_seedC05",
+      "sessionId": "ses_seedDinner",
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedHana"
+      },
+      "content": "Compromise? That little place by the station does both… sort of. Their \"fusion roll\" has pineapple in it, and Grandma always said a spoon of pineapple keeps sushi rice bright.[1]",
+      "status": "complete",
+      "createdAt": "2026-09-30T10:30:08.341Z",
+      "emotion": "thinking",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 2125,
+        "tokensCached": 1727,
+        "tokensOut": 45,
+        "costUsd": 0.000092,
+        "energySpent": 1,
+        "firstTokenMs": 1573,
+        "totalMs": 2903
+      },
+      "citations": [
+        {
+          "n": 1,
+          "sourceId": "kno_seedHana1",
+          "title": "Grandma's recipe notebook",
+          "type": "text",
+          "chunkId": "kch_hanaRecipe02",
+          "locator": "p. 5",
+          "quote": "Sushi rice for a crowd: three cups of rice and a splash more vinegar than you think. A spoon of pineapple juice in the vinegar keeps it bright when the fish is rich. Your grandfather never noticed.",
+          "score": 0.77
+        }
+      ],
+      "trace": {
+        "messageId": "msg_seedC05",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1573,
+            "total": 2903
+          },
+          "tokensIn": 2125,
+          "tokensCached": 1727,
+          "tokensOut": 45,
+          "costUsd": 0.000092
+        },
+        "energy": {
+          "characterId": "chr_seedHana",
+          "spent": 1,
+          "remaining": 920,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "thinking",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "thinking",
+              "p": 0.782
+            },
+            {
+              "label": "surprised",
+              "p": 0.17
+            },
+            {
+              "label": "embarrassed",
+              "p": 0.045
+            }
+          ]
+        },
+        "routing": {
+          "selected": "chr_seedHana",
+          "forcedBy": "mention"
+        },
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 81,
+          "used": {
+            "system": 900,
+            "persona": 774,
+            "memory": 0,
+            "knowledge": 127,
+            "history": 59,
+            "user": 45,
+            "mode": 220
+          }
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "sfw",
+              "verdict": "pass",
+              "p": 0.976
+            },
+            {
+              "name": "advice_scope",
+              "verdict": "pass"
+            }
+          ]
+        },
+        "knowledge": {
+          "query": "sushi or pizza with pineapple",
+          "trigger": "always",
+          "retrieved": [
+            {
+              "chunkId": "kch_hanaRecipe02",
+              "sourceId": "kno_seedHana1",
+              "title": "Grandma's recipe notebook",
+              "locator": "p. 5",
+              "text": "Sushi rice for a crowd: three cups of rice and a splash more vinegar than you think. A spoon of pineapple juice in the vinegar keeps it bright when the fish is rich. Your grandfather never noticed.",
+              "score": 0.77,
+              "cited": true,
+              "n": 1
+            },
+            {
+              "chunkId": "kch_hanaRecipe05",
+              "sourceId": "kno_seedHana1",
+              "title": "Grandma's recipe notebook",
+              "locator": "p. 14",
+              "text": "Leftover rice becomes tomorrow's onigiri. Salt your hands, not the rice, and press as if you were holding a small bird.",
+              "score": 0.51,
+              "cited": false
+            }
+          ]
+        }
+      },
+      "reactions": [
+        {
+          "characterId": "chr_seedRin",
+          "emotion": "surprised",
+          "p": 0.7,
+          "at": "2026-09-30T10:30:11.527Z"
+        },
+        {
+          "characterId": "chr_seedTakeshi",
+          "emotion": "thinking",
+          "p": 0.78,
+          "at": "2026-09-30T10:30:11.662Z"
+        }
+      ]
+    },
+    {
+      "id": "msg_seedC06",
+      "sessionId": "ses_seedDinner",
+      "seq": 6,
+      "author": {
+        "type": "user"
+      },
+      "kind": "chat",
+      "content": "@Rin would you actually eat a pineapple sushi roll?",
+      "status": "complete",
+      "createdAt": "2026-09-30T10:30:13.144Z"
+    },
+    {
+      "kind": "chat",
+      "seq": 7,
+      "forcedSpeaker": true,
+      "id": "msg_seedC07",
+      "sessionId": "ses_seedDinner",
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedRin"
+      },
+      "content": "…i would eat it. i'm not happy about it. but i would eat it.",
+      "status": "complete",
+      "createdAt": "2026-09-30T10:30:13.494Z",
+      "emotion": "embarrassed",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 1990,
+        "tokensCached": 1712,
+        "tokensOut": 15,
+        "costUsd": 0.000056,
+        "energySpent": 1,
+        "firstTokenMs": 1596,
+        "totalMs": 2126
+      },
+      "trace": {
+        "messageId": "msg_seedC07",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1596,
+            "total": 2126
+          },
+          "tokensIn": 1990,
+          "tokensCached": 1712,
+          "tokensOut": 15,
+          "costUsd": 0.000056
+        },
+        "energy": {
+          "characterId": "chr_seedRin",
+          "spent": 1,
+          "remaining": 180,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "embarrassed",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "embarrassed",
+              "p": 0.584
+            },
+            {
+              "label": "thinking",
+              "p": 0.297
+            },
+            {
+              "label": "happy",
+              "p": 0.084
+            }
+          ]
+        },
+        "routing": {
+          "selected": "chr_seedRin",
+          "forcedBy": "mention"
+        },
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 86,
+          "used": {
+            "system": 900,
+            "persona": 707,
+            "memory": 0,
+            "knowledge": 0,
+            "history": 117,
+            "user": 46,
+            "mode": 220
+          }
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "sfw",
+              "verdict": "pass",
+              "p": 0.95
+            },
+            {
+              "name": "advice_scope",
+              "verdict": "pass"
+            }
+          ]
+        }
+      },
+      "reactions": [
+        {
+          "characterId": "chr_seedTakeshi",
+          "emotion": "happy",
+          "p": 0.8,
+          "at": "2026-09-30T10:30:15.861Z"
+        },
+        {
+          "characterId": "chr_seedHana",
+          "emotion": "happy",
+          "p": 0.48,
+          "at": "2026-09-30T10:30:16.120Z"
+        }
+      ]
+    }
+  ]
+}

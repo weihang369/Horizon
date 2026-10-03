@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "data": {
+    "id": "ses_mockPanelPhones",
+    "worldId": "wld_seedMeridian",
+    "title": "Panel: Phones in schools",
+    "titleIsCustom": false,
+    "mode": "debate",
+    "participants": [
+      {
+        "characterId": "chr_seedAmara",
+        "role": "debater",
+        "side": null,
+        "currentEmotion": "happy",
+        "mutedByUser": false
+      },
+      {
+        "characterId": "chr_seedVictor",
+        "role": "debater",
+        "side": null,
+        "currentEmotion": "neutral",
+        "mutedByUser": false
+      },
+      {
+        "characterId": "chr_seedMei",
+        "role": "debater",
+        "side": null,
+        "currentEmotion": "neutral",
+        "mutedByUser": false
+      }
+    ],
+    "emotionMode": "llm",
+    "musicPolicy": "arena",
+    "readableMode": false,
+    "config": {
+      "motion": "This house would ban smartphones in schools",
+      "format": "panel",
+      "roundsPreset": "quick",
+      "phases": [
+        "opening",
+        "closing"
+      ],
+      "turnLength": "short",
+      "moderator": "user",
+      "verdictBy": "arbiter",
+      "rubric": [
+        {
+          "id": "evidence",
+          "label": "Evidence"
+        },
+        {
+          "id": "rebuttal",
+          "label": "Rebuttal"
+        },
+        {
+          "id": "clarity",
+          "label": "Clarity"
+        },
+        {
+          "id": "persuasion",
+          "label": "Persuasion"
+        }
+      ],
+      "autoAdvance": true,
+      "pauseMs": 1500
+    },
+    "isSeed": false,
+    "status": "ended",
+    "state": {
+      "phase": "ended",
+      "round": 3,
+      "iteration": 1,
+      "verdict": {
+        "decidedBy": "arbiter",
+        "strongerCase": null,
+        "summary": [
+          {
+            "subjectId": "chr_seedAmara",
+            "points": [
+              "Phones fragment sleep and attention; a school-day ban is a cheap public-health win."
+            ]
+          },
+          {
+            "subjectId": "chr_seedVictor",
+            "points": [
+              "A blanket ban is overbroad; schools already have the power to set reasonable rules."
+            ]
+          },
+          {
+            "subjectId": "chr_seedMei",
+            "points": [
+              "The evidence is mixed; measure outcomes in a staged rollout before banning nationally."
+            ]
+          }
+        ],
+        "keyDisagreement": "Whether a national rule or local discretion should decide."
+      }
+    },
+    "costUsd": 0.000741,
+    "messageCount": 9,
+    "createdAt": "2026-09-24T11:00:00Z",
+    "updatedAt": "2026-09-24T11:00:33.599Z",
+    "lastMessageAt": "2026-09-24T11:00:32.089Z"
+  }
+}

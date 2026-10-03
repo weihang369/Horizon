@@ -1,0 +1,249 @@
+/* S03 World Select (UXA §2.2): ransom "WORLDS" 72 at (48,48); cards 380×520 @1440 / 300×410 @1280, −8°,
+ * 40 px overlap; focus straightens to −4°, lifts −12 px, 180 ms. Owner: Builder A. */
+.screen {
+  --gutter: 48px;
+  --title-size: 72px;
+  --ch: clamp(360px, calc(100vh - 310px), 520px);
+  --cw: calc(var(--ch) * 0.731);
+  --clip: polygon(0 0, 100% 0, 100% 92%, 86% 100%, 0 100%);
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+  isolation: isolate;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  padding: var(--gutter) var(--gutter) 24px;
+}
+@media (max-width: 1340px), (max-height: 800px) { .screen { --gutter: 32px; --title-size: 56px; } }
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(var(--stripe), transparent 0 58%, color-mix(in srgb, var(--horizon-500) 9%, transparent) 58% 74%, transparent 74%),
+    linear-gradient(calc(var(--stripe) + 180deg), transparent 0 80%, var(--ink-700) 80% 86%, transparent 86%),
+    radial-gradient(circle, color-mix(in srgb, var(--paper-50) 9%, transparent) 1px, transparent 1.5px) 0 0 / 10px 10px,
+    radial-gradient(ellipse 80% 60% at 50% 60%, var(--ink-700), var(--ink-900) 70%);
+}
+.backdrop::after {
+  content: "";
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  top: 62%;
+  height: 2px;
+  background: var(--horizon-500);
+  transform: rotate(calc(var(--stripe) * -1));
+  opacity: 0.55;
+}
+
+/* ── Head ─────────────────────────────────────────────────────────────── */
+.head { display: flex; align-items: flex-end; gap: 28px; flex-wrap: wrap; }
+.title { margin: 0; line-height: 1; }
+.sub {
+  margin: 0 0 6px;
+  font: 500 13px/1.2 var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--paper-300);
+  animation: global(hz-fade-in) var(--t-slow) linear 320ms both;
+}
+
+.state { display: grid; place-items: center; align-content: center; gap: 16px; }
+
+/* ── Rail ─────────────────────────────────────────────────────────────── */
+.rail {
+  display: flex;
+  align-items: center;
+  justify-content: safe center;
+  min-height: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 24px 64px 16px;
+  margin: 0 calc(var(--gutter) * -1);
+  scroll-padding: 0 96px;
+  scrollbar-width: none;
+}
+.rail::-webkit-scrollbar { display: none; }
+.slot {
+  flex: none;
+  margin-left: -40px;
+  animation: cardIn var(--t-scene) var(--ease-out) both;
+  animation-delay: calc(140ms + var(--i, 0) * 70ms);
+}
+.slot:first-child { margin-left: 0; }
+@keyframes cardIn {
+  from { opacity: 0; transform: translate(80px, 40px) rotate(4deg); }
+  to { opacity: 1; transform: none; }
+}
+
+.card {
+  position: relative;
+  display: block;
+  width: var(--cw);
+  height: var(--ch);
+  color: var(--paper-50);
+  text-align: left;
+  transform: rotate(-8deg);
+  transition: transform 180ms var(--ease-out);
+  z-index: 0;
+}
+.card::before {
+  /* misregistered ink block (doc 04 §2) */
+  content: "";
+  position: absolute;
+  inset: 0;
+  translate: 12px 12px;
+  rotate: -2deg;
+  background: var(--ink-900);
+  box-shadow: inset 0 0 0 2px var(--ink-500);
+  clip-path: var(--clip);
+  transition: translate 180ms var(--ease-out);
+}
+.card::after {
+  /* focus ring that follows the cut */
+  content: "";
+  position: absolute;
+  inset: -5px;
+  z-index: -1;
+  background: var(--c-glow);
+  clip-path: var(--clip);
+  opacity: 0;
+}
+.card:focus-visible { outline: none; }
+.card:focus-visible::after { opacity: 1; }
+.card:hover, .card:focus-visible {
+  transform: rotate(-4deg) translateY(-12px);
+  z-index: 2;
+}
+.card:hover::before, .card:focus-visible::before { translate: 18px 18px; }
+.slot:has(.card:hover), .slot:has(.card:focus-visible) { position: relative; z-index: 3; }
+
+.face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  clip-path: var(--clip);
+  box-shadow: inset 0 0 0 4px var(--paper-50);
+}
+.face .cover { position: absolute; inset: 0; }
+.shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 38%, color-mix(in srgb, var(--ink-900) 88%, transparent) 78%);
+  box-shadow: inset 0 0 0 4px var(--paper-50);
+}
+.index {
+  position: absolute;
+  left: 18px;
+  top: 14px;
+  font: 400 64px/1 var(--font-display);
+  color: transparent;
+  -webkit-text-stroke: 2px var(--paper-50);
+}
+.seedTape { position: absolute; right: 16px; top: 20px; }
+.info {
+  position: absolute;
+  left: 22px;
+  right: 48px;
+  bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.heads { display: flex; margin-bottom: 4px; }
+.heads img {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  object-fit: cover;
+  object-position: 50% 22%;
+  margin-right: -10px;
+  border: 3px solid var(--ink-900);
+  background: var(--ink-700);
+  clip-path: polygon(12% 0, 100% 0, 88% 100%, 0 100%);
+}
+.name {
+  font: 400 clamp(28px, calc(var(--cw) * 0.105), 42px)/0.98 var(--font-display);
+  overflow-wrap: anywhere;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  text-shadow: 3px 3px 0 var(--ink-900);
+}
+.meta {
+  font: 500 12.5px/1.3 var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--paper-300);
+}
+.meta b { color: var(--paper-50); }
+.dot { margin: 0 6px; color: var(--horizon-500); }
+.enter {
+  position: absolute;
+  right: -12px;
+  bottom: 40px;
+  padding: 8px 18px;
+  background: var(--horizon-500);
+  color: var(--on-brand);
+  font: 400 18px/1 var(--font-display);
+  letter-spacing: 0.08em;
+  clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+  transform: scaleX(0);
+  transform-origin: 100% 50%;
+  transition: transform var(--t-fast) var(--ease-wipe);
+}
+.card:hover .enter, .card:focus-visible .enter { transform: scaleX(1); }
+
+/* New world card */
+.newCard { color: var(--paper-50); }
+.newFace {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 28px;
+  text-align: center;
+  background:
+    radial-gradient(circle, color-mix(in srgb, var(--horizon-500) 40%, transparent) 1.2px, transparent 1.7px) 0 0 / 10px 10px,
+    var(--ink-700);
+  box-shadow: inset 0 0 0 3px var(--ink-500);
+}
+.newCard:hover .newFace, .newCard:focus-visible .newFace { box-shadow: inset 0 0 0 3px var(--horizon-500); }
+.newPlus {
+  display: grid;
+  place-items: center;
+  width: 96px;
+  height: 96px;
+  background: var(--horizon-500);
+  color: var(--on-brand);
+  clip-path: polygon(14px 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+}
+.newLabel { font: 400 40px/1 var(--font-display); text-transform: uppercase; letter-spacing: 0.02em; }
+.newHint { color: var(--paper-300); font-size: 15px; max-width: 22ch; }
+
+.skeleton {
+  background: linear-gradient(100deg, var(--ink-700) 30%, var(--ink-500) 50%, var(--ink-700) 70%) 0 0 / 300% 100%;
+  clip-path: var(--clip);
+  animation: global(hz-pulse-soft) 1.4s var(--ease-breathe) infinite;
+}
+
+/* ── Foot ─────────────────────────────────────────────────────────────── */
+.foot { display: flex; align-items: center; justify-content: flex-end; gap: 16px; min-height: 40px; }
+.headNav { display: flex; gap: 6px; margin-left: auto; margin-bottom: 2px; }
+.keys {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font: 500 12px/1 var(--font-mono);
+  color: var(--paper-300);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+:global(:root[data-motion="reduced"]) .slot { animation: global(hz-fade-in) 160ms linear both; }
+:global(:root[data-motion="reduced"]) .card,
+:global(:root[data-motion="reduced"]) .card::before { transition: none; }
+.card:focus-visible .face, .card:focus-visible .shade { box-shadow: inset 0 0 0 4px var(--c-glow); }

@@ -1,0 +1,649 @@
+{
+  "schemaVersion": 1,
+  "data": [
+    {
+      "id": "msg_mockT01",
+      "sessionId": "ses_mockTooCloseExams",
+      "seq": 1,
+      "author": {
+        "type": "system"
+      },
+      "kind": "system_note",
+      "content": "ROUND 1 · OPENING",
+      "status": "complete",
+      "createdAt": "2026-09-18T16:45:00.710Z"
+    },
+    {
+      "kind": "chat",
+      "seq": 2,
+      "debate": {
+        "phase": "opening",
+        "round": 1,
+        "iteration": 1,
+        "side": "prop"
+      },
+      "id": "msg_mockT02",
+      "sessionId": "ses_mockTooCloseExams",
+      "author": {
+        "type": "character",
+        "characterId": "chr_mockElena"
+      },
+      "content": "I taught for twelve years. The exam measured who slept well the night before. Coursework measured who learned.",
+      "status": "complete",
+      "createdAt": "2026-09-18T16:45:03.700Z",
+      "emotion": "neutral",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 2260,
+        "tokensCached": 1636,
+        "tokensOut": 28,
+        "costUsd": 0.000115,
+        "energySpent": 2,
+        "firstTokenMs": 1461,
+        "totalMs": 2266
+      },
+      "trace": {
+        "messageId": "msg_mockT02",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1461,
+            "total": 2266
+          },
+          "tokensIn": 2260,
+          "tokensCached": 1636,
+          "tokensOut": 28,
+          "costUsd": 0.000115
+        },
+        "energy": {
+          "characterId": "chr_mockElena",
+          "spent": 2,
+          "remaining": 642,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "neutral",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "neutral",
+              "p": 0.794
+            },
+            {
+              "label": "thinking",
+              "p": 0.121
+            },
+            {
+              "label": "happy",
+              "p": 0.066
+            }
+          ]
+        },
+        "routing": {
+          "selected": "chr_mockElena",
+          "forcedBy": "round_order"
+        },
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 72,
+          "used": {
+            "system": 900,
+            "persona": 733,
+            "memory": 0,
+            "knowledge": 0,
+            "history": 4,
+            "user": 43,
+            "mode": 580
+          }
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "sfw",
+              "verdict": "pass",
+              "p": 0.977
+            },
+            {
+              "name": "advice_scope",
+              "verdict": "pass"
+            }
+          ]
+        }
+      },
+      "reactions": [
+        {
+          "characterId": "chr_seedMei",
+          "emotion": "thinking",
+          "p": 0.7,
+          "at": "2026-09-18T16:45:06.182Z"
+        }
+      ]
+    },
+    {
+      "kind": "chat",
+      "seq": 3,
+      "debate": {
+        "phase": "opening",
+        "round": 1,
+        "iteration": 1,
+        "side": "opp"
+      },
+      "id": "msg_mockT03",
+      "sessionId": "ses_mockTooCloseExams",
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedMei"
+      },
+      "content": "Coursework measures who has a parent with a printer and an evening free. The exam is crude, but it's the same crude for everyone.",
+      "status": "complete",
+      "createdAt": "2026-09-18T16:45:07.866Z",
+      "emotion": "thinking",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 2401,
+        "tokensCached": 1742,
+        "tokensOut": 32,
+        "costUsd": 0.000123,
+        "energySpent": 2,
+        "firstTokenMs": 1713,
+        "totalMs": 2668
+      },
+      "trace": {
+        "messageId": "msg_mockT03",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1713,
+            "total": 2668
+          },
+          "tokensIn": 2401,
+          "tokensCached": 1742,
+          "tokensOut": 32,
+          "costUsd": 0.000123
+        },
+        "energy": {
+          "characterId": "chr_seedMei",
+          "spent": 2,
+          "remaining": 744,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "thinking",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "thinking",
+              "p": 0.805
+            },
+            {
+              "label": "sad",
+              "p": 0.122
+            },
+            {
+              "label": "happy",
+              "p": 0.039
+            }
+          ]
+        },
+        "routing": {
+          "selected": "chr_seedMei",
+          "forcedBy": "round_order"
+        },
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 73,
+          "used": {
+            "system": 900,
+            "persona": 814,
+            "memory": 0,
+            "knowledge": 0,
+            "history": 32,
+            "user": 75,
+            "mode": 580
+          }
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "sfw",
+              "verdict": "pass",
+              "p": 0.956
+            },
+            {
+              "name": "advice_scope",
+              "verdict": "pass"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "chat",
+      "seq": 4,
+      "debate": {
+        "phase": "opening",
+        "round": 1,
+        "iteration": 1,
+        "side": "prop"
+      },
+      "id": "msg_mockT04",
+      "sessionId": "ses_mockTooCloseExams",
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedAmara"
+      },
+      "content": "Continuous assessment also flags the kid who's struggling in October, not in June when it's too late.",
+      "status": "complete",
+      "createdAt": "2026-09-18T16:45:12.434Z",
+      "emotion": "happy",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 2348,
+        "tokensCached": 1713,
+        "tokensOut": 25,
+        "costUsd": 0.000115,
+        "energySpent": 2,
+        "firstTokenMs": 1540,
+        "totalMs": 2295
+      },
+      "trace": {
+        "messageId": "msg_mockT04",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1540,
+            "total": 2295
+          },
+          "tokensIn": 2348,
+          "tokensCached": 1713,
+          "tokensOut": 25,
+          "costUsd": 0.000115
+        },
+        "energy": {
+          "characterId": "chr_seedAmara",
+          "spent": 2,
+          "remaining": 1002,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "happy",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "happy",
+              "p": 0.678
+            },
+            {
+              "label": "neutral",
+              "p": 0.235
+            },
+            {
+              "label": "sad",
+              "p": 0.086
+            }
+          ]
+        },
+        "routing": {
+          "selected": "chr_seedAmara",
+          "forcedBy": "round_order"
+        },
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 73,
+          "used": {
+            "system": 900,
+            "persona": 756,
+            "memory": 0,
+            "knowledge": 0,
+            "history": 64,
+            "user": 48,
+            "mode": 580
+          }
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "sfw",
+              "verdict": "pass",
+              "p": 0.954
+            },
+            {
+              "name": "advice_scope",
+              "verdict": "pass"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "msg_mockT05",
+      "sessionId": "ses_mockTooCloseExams",
+      "seq": 5,
+      "author": {
+        "type": "system"
+      },
+      "kind": "system_note",
+      "content": "ROUND 2 · CLOSING",
+      "status": "complete",
+      "createdAt": "2026-09-18T16:45:15.339Z"
+    },
+    {
+      "kind": "chat",
+      "seq": 6,
+      "debate": {
+        "phase": "closing",
+        "round": 2,
+        "iteration": 1,
+        "side": "prop"
+      },
+      "id": "msg_mockT06",
+      "sessionId": "ses_mockTooCloseExams",
+      "author": {
+        "type": "character",
+        "characterId": "chr_mockElena"
+      },
+      "content": "Learning is continuous. Assessment should rhyme with it.",
+      "status": "complete",
+      "createdAt": "2026-09-18T16:45:18.329Z",
+      "emotion": "happy",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 2402,
+        "tokensCached": 1757,
+        "tokensOut": 14,
+        "costUsd": 0.00011,
+        "energySpent": 2,
+        "firstTokenMs": 1483,
+        "totalMs": 1938
+      },
+      "trace": {
+        "messageId": "msg_mockT06",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1483,
+            "total": 1938
+          },
+          "tokensIn": 2402,
+          "tokensCached": 1757,
+          "tokensOut": 14,
+          "costUsd": 0.00011
+        },
+        "energy": {
+          "characterId": "chr_mockElena",
+          "spent": 2,
+          "remaining": 640,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "happy",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "happy",
+              "p": 0.734
+            },
+            {
+              "label": "sad",
+              "p": 0.188
+            },
+            {
+              "label": "angry",
+              "p": 0.06
+            }
+          ]
+        },
+        "routing": {
+          "selected": "chr_mockElena",
+          "forcedBy": "round_order"
+        },
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 73,
+          "used": {
+            "system": 900,
+            "persona": 774,
+            "memory": 0,
+            "knowledge": 0,
+            "history": 93,
+            "user": 55,
+            "mode": 580
+          }
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "sfw",
+              "verdict": "pass",
+              "p": 0.969
+            },
+            {
+              "name": "advice_scope",
+              "verdict": "pass"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "chat",
+      "seq": 7,
+      "debate": {
+        "phase": "closing",
+        "round": 2,
+        "iteration": 1,
+        "side": "opp"
+      },
+      "id": "msg_mockT07",
+      "sessionId": "ses_mockTooCloseExams",
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedMei"
+      },
+      "content": "Fairness is a snapshot. I'll take the snapshot.",
+      "status": "complete",
+      "createdAt": "2026-09-18T16:45:22.167Z",
+      "emotion": "neutral",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 2459,
+        "tokensCached": 1799,
+        "tokensOut": 12,
+        "costUsd": 0.000112,
+        "energySpent": 2,
+        "firstTokenMs": 1382,
+        "totalMs": 1787
+      },
+      "trace": {
+        "messageId": "msg_mockT07",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1382,
+            "total": 1787
+          },
+          "tokensIn": 2459,
+          "tokensCached": 1799,
+          "tokensOut": 12,
+          "costUsd": 0.000112
+        },
+        "energy": {
+          "characterId": "chr_seedMei",
+          "spent": 2,
+          "remaining": 742,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "neutral",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "neutral",
+              "p": 0.698
+            },
+            {
+              "label": "thinking",
+              "p": 0.213
+            },
+            {
+              "label": "surprised",
+              "p": 0.054
+            }
+          ]
+        },
+        "routing": {
+          "selected": "chr_seedMei",
+          "forcedBy": "round_order"
+        },
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 73,
+          "used": {
+            "system": 900,
+            "persona": 803,
+            "memory": 0,
+            "knowledge": 0,
+            "history": 107,
+            "user": 69,
+            "mode": 580
+          }
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "sfw",
+              "verdict": "pass",
+              "p": 0.987
+            },
+            {
+              "name": "advice_scope",
+              "verdict": "pass"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "chat",
+      "seq": 8,
+      "debate": {
+        "phase": "closing",
+        "round": 2,
+        "iteration": 1,
+        "side": "prop"
+      },
+      "id": "msg_mockT08",
+      "sessionId": "ses_mockTooCloseExams",
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedAmara"
+      },
+      "content": "Then take two snapshots and a conversation. We rest.",
+      "status": "complete",
+      "createdAt": "2026-09-18T16:45:25.854Z",
+      "emotion": "neutral",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 2430,
+        "tokensCached": 1789,
+        "tokensOut": 13,
+        "costUsd": 0.000109,
+        "energySpent": 2,
+        "firstTokenMs": 1385,
+        "totalMs": 1840
+      },
+      "trace": {
+        "messageId": "msg_mockT08",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1385,
+            "total": 1840
+          },
+          "tokensIn": 2430,
+          "tokensCached": 1789,
+          "tokensOut": 13,
+          "costUsd": 0.000109
+        },
+        "energy": {
+          "characterId": "chr_seedAmara",
+          "spent": 2,
+          "remaining": 1000,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "neutral",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "neutral",
+              "p": 0.616
+            },
+            {
+              "label": "angry",
+              "p": 0.279
+            },
+            {
+              "label": "happy",
+              "p": 0.098
+            }
+          ]
+        },
+        "routing": {
+          "selected": "chr_seedAmara",
+          "forcedBy": "round_order"
+        },
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 74,
+          "used": {
+            "system": 900,
+            "persona": 782,
+            "memory": 0,
+            "knowledge": 0,
+            "history": 119,
+            "user": 49,
+            "mode": 580
+          }
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "sfw",
+              "verdict": "pass",
+              "p": 0.994
+            },
+            {
+              "name": "advice_scope",
+              "verdict": "pass"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "msg_mockT09",
+      "sessionId": "ses_mockTooCloseExams",
+      "seq": 9,
+      "author": {
+        "type": "system"
+      },
+      "kind": "verdict",
+      "content": "**Arbiter's assessment** (argument quality, not factual truth)\n\n**TOO CLOSE TO CALL**\n\n**Key disagreement:** Which method is harder to game.",
+      "status": "complete",
+      "createdAt": "2026-09-18T16:45:30.294Z"
+    }
+  ]
+}

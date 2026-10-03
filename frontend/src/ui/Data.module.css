@@ -1,0 +1,97 @@
+/* ProbBar, StackedBar, Skeleton, ScanLoader, HalftoneDevelop, Tooltip */
+.prob { display: grid; grid-template-columns: minmax(64px, auto) 1fr auto; align-items: center; gap: 10px; font-size: 13px; }
+.probLabel { color: var(--paper-50); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.probTrack { position: relative; height: 8px; background: var(--ink-500); overflow: hidden; clip-path: polygon(2px 0, 100% 0, calc(100% - 2px) 100%, 0 100%); }
+.probFill {
+  position: absolute;
+  inset: 0;
+  background: var(--prob-c, var(--c-primary));
+  transform-origin: left;
+  transform: scaleX(var(--p, 0));
+  transition: transform var(--t-slow) var(--ease-out);
+}
+.probValue { font-family: var(--font-mono); font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.band { display: inline-block; min-width: 34px; margin-left: 4px; font-weight: 700; }
+.band_HIGH { color: var(--signal-ok); }
+.band_MED { color: var(--signal-warn); }
+.band_LOW { color: var(--paper-300); }
+.forced { margin-left: 4px; }
+
+.stack { display: grid; gap: 8px; }
+.stackBar { display: flex; height: 14px; background: var(--ink-500); overflow: hidden; clip-path: polygon(3px 0, 100% 0, calc(100% - 3px) 100%, 0 100%); }
+.seg { height: 100%; flex: none; box-shadow: inset -1px 0 0 var(--ink-900); }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 0; padding: 0; list-style: none; font-size: 12px; color: var(--paper-300); }
+.legend li { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 10px; height: 10px; display: inline-block; }
+.legend b { font-family: var(--font-mono); font-weight: 500; color: var(--paper-50); font-variant-numeric: tabular-nums; }
+.stackMeta { font-family: var(--font-mono); font-size: 12px; color: var(--paper-300); }
+
+/* Skeleton: skewed blocks with a scanning stripe */
+.skeleton { display: grid; gap: 10px; }
+.skelLine {
+  position: relative;
+  height: var(--skel-h, 14px);
+  background: var(--ink-500);
+  overflow: hidden;
+  clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+}
+.skelLine::after, .scan::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 30%;
+  background: linear-gradient(90deg, transparent, rgba(245, 242, 234, 0.08), transparent);
+  animation: global(hz-scan) 1.6s linear infinite;
+}
+
+.scan {
+  position: relative;
+  height: 8px;
+  width: var(--scan-w, 160px);
+  background: var(--ink-500);
+  overflow: hidden;
+  clip-path: polygon(3px 0, 100% 0, calc(100% - 3px) 100%, 0 100%);
+}
+.scan::after { width: 34%; background: var(--c-primary); animation-duration: 1.2s; }
+.scanWrap { display: inline-grid; gap: 6px; font-size: 12px; color: var(--paper-300); }
+
+.develop { position: relative; overflow: hidden; background: var(--c-stage); }
+.developDots {
+  position: absolute;
+  inset: -8px;
+  background: radial-gradient(circle, var(--c-primary) 1.6px, transparent 2px) 0 0 / 10px 10px;
+  animation: develop 2.4s var(--ease-breathe) infinite;
+}
+.developDots2 { background-position: 5px 5px; animation-delay: -1.2s; }
+@keyframes develop {
+  0%, 100% { opacity: 0.08; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.04); }
+}
+.developLabel { position: absolute; left: 10px; bottom: 10px; }
+
+.tipWrap { position: relative; display: inline-flex; }
+.tip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  z-index: var(--z-toast);
+  width: max-content;
+  max-width: 280px;
+  padding: 7px 10px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--paper-50);
+  background: var(--ink-900);
+  border-left: 3px solid var(--c-primary);
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.5);
+  transform: translateX(-50%);
+  pointer-events: none;
+  animation: global(hz-fade-in) var(--t-fast) linear both;
+}
+.tip_bottom { bottom: auto; top: calc(100% + 8px); }
+
+:global(:root[data-motion="reduced"]) .skelLine::after,
+:global(:root[data-motion="reduced"]) .developDots { animation: none; }
+:global(:root[data-motion="reduced"]) .scan::after { animation-duration: 3s; }
+:global(:root[data-motion="reduced"]) .probFill { transition: none; }
