@@ -86,7 +86,7 @@
   clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 100%, 0 100%);
   box-shadow: inset 0 2px 0 var(--ink-500);
 }
-.log { min-height: 0; padding-inline: 26px !important; }
+.log { min-height: 0; min-width: 0; padding-inline: 26px !important; }
 
 .wing {
   position: relative;

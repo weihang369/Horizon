@@ -182,7 +182,7 @@ export function SourcesStrip({ cites, characterId, compact, className }: { cites
               >
                 <span className={s.entryNs} aria-hidden="true">{g.items.map((c) => <span key={c.n} className={s.entryN}>{c.n}</span>)}</span>
                 <TypeGlyph type={g.type} title={g.title} className={s.entryGlyph} />
-                <span className={s.entryTitle}>{g.title}</span>
+                <span className={s.entryTitle} title={g.title}>{g.title}</span>
                 {locs.length > 0 && <span className={s.entryLoc}>{locs.join(", ")}</span>}
               </button>
             </li>
