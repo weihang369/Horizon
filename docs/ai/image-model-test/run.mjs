@@ -22,7 +22,7 @@ import { fileURLToPath } from "node:url";
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ENDPOINT = "https://openrouter.ai/api/v1/images";
 
-// ---------- prompts (kept identical to IMAGE-MODEL-TESTING.md) ----------
+// ---------- prompts (kept identical to TESTING.md) ----------
 
 const STYLE =
   "Modern Japanese anime illustration, clean confident line art, soft cel shading with subtle gradients, " +
