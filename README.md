@@ -4,6 +4,8 @@ Horizon is an open-source multi-agent character sandbox. You summon AI personas,
 
 > **Status:** UI preview. The frontend is complete and runs on a built-in mock client with seeded demo data. You don't need a backend, an API key or a GPU. The FastAPI backend and the LangGraph agents come next.
 
+**Live demo:** <https://horizon-seven-mauve.vercel.app> (desktop browser, 1280 × 720 or larger).
+
 ## Quick start
 
 **You need:** Node.js **20.19+** or **22.12+** (Vite 8 requires one of these) and npm.
