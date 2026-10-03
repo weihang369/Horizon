@@ -10,12 +10,15 @@ import { EMOTIONS } from "@/contract/types";
 import { emotionMeta } from "@/character";
 import { formatRelative } from "@/domain/format";
 import { navigate } from "@/router";
-import { Button, EmptyState, ErrorTape, HalftoneDevelop, Skeleton, Tape } from "@/ui";
+import { Button, EmptyState, HalftoneDevelop, Skeleton, Tape } from "@/ui";
 import { cx } from "@/ui/cx";
 import { isRunning, startGeneration, useCharacterJobs, useEstimate } from "@/features/wizard/generate";
 import { useAssetCompareWatcher } from "./compare";
-import { Composing, ThemePlayer } from "./ThemePlayer";
+import { ThemeTrack } from "./ThemeTrack";
+import { formatAdded, sortSources, sourceFacts, TYPE_NAME } from "./knowledge";
+import { typeGlyph } from "@/features/session/citationUtils";
 import s from "./profile.module.css";
+import k from "./knowledge.module.css";
 
 // ── Profile ─────────────────────────────────────────────────────────────────
 export function ProfileTabView({ c }: { c: Character }) {
@@ -117,39 +120,7 @@ export function GalleryTab({ c, onPreview }: { c: Character; onPreview: (e: Emot
 
 // ── Theme ───────────────────────────────────────────────────────────────────
 export function ThemeTab({ c, song }: { c: Character; song: ThemeSong | null }) {
-  const jobs = useCharacterJobs(c.id);
-  const job = useJob(jobs.song).data;
-  const est = useEstimate({ characterId: c.id, kind: "song" });
-  const composing = isRunning(job);
-  const failed = !composing && (job?.status === "failed" || song?.status === "failed");
-  const compose = () => void startGeneration({ characterId: c.id, kind: "song", ...(song?.brief ? { brief: song.brief } : {}) }, song?.status === "ready" ? "Regenerate theme" : "Compose theme");
-  return (
-    <div className={s.theme}>
-      {composing && job ? <Composing progress={job.progress} /> : song?.status === "ready" ? <ThemePlayer song={song} characterName={c.profile.name} /> : (
-        <div className={s.themeNone}><span aria-hidden="true">♪</span><p>No theme yet. The ambient bed plays for {c.profile.name.split(" ")[0]} until one is composed.</p></div>
-      )}
-      {failed && <ErrorTape message="The composer stalled." action={{ label: "Retry", run: compose, cost: est ?? undefined }} />}
-      {song?.brief && (
-        <div className={s.card}>
-          <h3 className={s.cardTitle}>Song brief</h3>
-          <dl className={s.briefList}>
-            <div><dt>Genre</dt><dd>{song.brief.genres.join(", ")}</dd></div>
-            <div><dt>Mood</dt><dd>{song.brief.moods.join(", ")}</dd></div>
-            <div><dt>Tempo</dt><dd>{song.brief.bpm} BPM</dd></div>
-            <div><dt>Instruments</dt><dd>{song.brief.instruments.join(", ")}</dd></div>
-            <div className={s.briefWide}><dt>Vibe</dt><dd>{song.brief.vibe}</dd></div>
-          </dl>
-        </div>
-      )}
-      <div className={s.themeActions}>
-        <Button variant="secondary" cost={est ?? undefined} disabled={composing || c.status === "archived"} onClick={compose}>
-          {song?.status === "ready" ? "↻ Regenerate (replaces)" : "Compose ▸"}
-        </Button>
-        <span className={s.small}>One theme per character. Regenerating replaces it; there is no history.</span>
-      </div>
-      {song?.status !== "ready" && <p className={s.fine}>Model {song?.generation?.model ?? "google/lyria-3-clip"} · {song?.licenseNote ?? "Placeholder: procedural WebAudio sketch (D-52)."}</p>}
-    </div>
-  );
+  return <ThemeTrack c={c} song={song} />;
 }
 
 // ── Sessions ────────────────────────────────────────────────────────────────
@@ -225,39 +196,88 @@ export function MemoryTab({ c, worldId, onChat }: { c: Character; worldId: strin
   );
 }
 
-// ── Knowledge (Could; mock with ribbon) ─────────────────────────────────────
+// ── Knowledge (PRF-08; uploads are a preview, citations are real in the mock) ─
+const DOC_TONE = { indexed: "ok", indexing: "ink", failed: "error" } as const;
+
 export function KnowledgeTab({ c }: { c: Character }) {
   const q = useKnowledge(c.id);
   const [over, setOver] = useState(false);
-  const docs = q.data ?? [];
-  const kb = (n?: number) => (n ? (n > 1e6 ? `${(n / 1e6).toFixed(1)} MB` : `${Math.round(n / 1e3)} KB`) : "");
+  const first = c.profile.name.split(" ")[0];
+  const docs = sortSources(q.data ?? []);
+  const cites = docs.reduce((n, d) => n + (d.citedCount ?? 0), 0);
   const mock = () => toast({ variant: "info", text: "Knowledge uploads arrive with RAG in v1.1. This is a preview." });
+  const retry = () => toast({ variant: "info", text: "Retry ready in v1.1." });
+  const drop = (
+    <button
+      type="button"
+      className={cx(k.drop, docs.length > 0 && k.dropSlim, over && k.dropOver)}
+      onDragOver={(e) => { e.preventDefault(); setOver(true); }}
+      onDragLeave={() => setOver(false)}
+      onDrop={(e) => { e.preventDefault(); setOver(false); mock(); }}
+      onClick={mock}
+    >
+      <span className={k.dropGlyph} aria-hidden="true">⇪</span>
+      <span className={k.dropText}>
+        <b>{docs.length ? `Drop more documents to teach ${first}` : `Drop documents to teach ${first}.`}</b>
+        <span>PDF, TXT, MD, CSV, or a link · click to upload</span>
+      </span>
+    </button>
+  );
   return (
-    <div className={s.mem}>
-      <div className={s.ribbon}>Preview: final design by AI team</div>
-      <button
-        type="button"
-        className={cx(s.drop, over && s.dropOver)}
-        onDragOver={(e) => { e.preventDefault(); setOver(true); }}
-        onDragLeave={() => setOver(false)}
-        onDrop={(e) => { e.preventDefault(); setOver(false); mock(); }}
-        onClick={mock}
-      >
-        <span className={s.dropGlyph} aria-hidden="true">⇪</span>
-        <span>{docs.length ? "Drop more documents" : `Drop documents to teach ${c.profile.name.split(" ")[0]}.`}</span>
-        <span className={s.small}>PDF, TXT, MD, CSV · or click to upload</span>
-      </button>
-      {docs.length > 0 && (
-        <ul className={s.docs}>
-          {docs.map((d) => (
-            <li key={d.id} className={s.doc}>
-              <span className={s.docType}>{d.type.toUpperCase()}</span>
-              <span className={s.docTitle}>{d.title}</span>
-              <span className={s.small}>{kb(d.bytes)}</span>
-              <Tape tone={d.status === "indexed" ? "ok" : d.status === "failed" ? "error" : "ink"} size="sm">{d.status}</Tape>
-            </li>
-          ))}
-        </ul>
+    <div className={k.wrap}>
+      <div className={k.top}>
+        <div className={s.ribbon}>Preview: final design by AI team</div>
+        {docs.length > 0 && <p className={k.sum}>{docs.length} {docs.length === 1 ? "source" : "sources"}{cites ? <> · cited <b>{cites}×</b> in conversations</> : null}</p>}
+      </div>
+      {q.loading ? <Skeleton lines={3} height={64} /> : docs.length === 0 ? (
+        <>
+          {drop}
+          <p className={s.small}>{first} answers from what you teach here and cites the passage with a [n] marker.</p>
+        </>
+      ) : (
+        <>
+          <ul className={k.grid}>
+            {docs.map((d, i) => {
+              const facts = sourceFacts(d);
+              const body = (
+                <>
+                  <span className={cx(k.glyph, d.type === "url" && k.glyphLink)} aria-hidden="true">{typeGlyph(d.type, d.title)}</span>
+                  <span className={k.main}>
+                    <span className={k.kind}>{TYPE_NAME[d.type]}</span>
+                    <span className={k.title}>{d.title}</span>
+                    {d.url && <span className={k.url}>{d.url}</span>}
+                    <span className={k.facts}>{[...facts, d.addedAt ? `Added ${formatAdded(d.addedAt)}` : ""].filter(Boolean).join(" · ")}</span>
+                  </span>
+                  <span className={k.foot}>
+                    <Tape tone={DOC_TONE[d.status]} size="sm">{d.status}</Tape>
+                    {(d.citedCount ?? 0) > 0 && <span className={k.cited}>Cited {d.citedCount}×</span>}
+                    {d.status === "indexed" && <span className={k.open} aria-hidden="true">Read ▸</span>}
+                  </span>
+                </>
+              );
+              return (
+                <li key={d.id} className={cx(k.card, k[`st_${d.status}`])} style={{ "--i": i } as CSSProperties}>
+                  {d.status === "indexed" ? (
+                    <button type="button" className={k.hit} onClick={() => openOverlay("O28", { sourceId: d.id, characterId: c.id })} aria-label={`Open ${d.title}`}>{body}</button>
+                  ) : (
+                    <div className={k.hit}>
+                      {body}
+                      {d.status === "indexing" && <span className={k.scan} aria-hidden="true" />}
+                      {d.status === "indexing" && <span className={k.err} role="status">Reading and indexing…</span>}
+                      {d.status === "failed" && (
+                        <span className={k.failRow}>
+                          <span className={k.err}>{d.error ?? "Couldn't read this source."}</span>
+                          <Button size="sm" variant="secondary" onClick={retry}>↻ Retry</Button>
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+          {drop}
+        </>
       )}
     </div>
   );
