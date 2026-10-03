@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Horizon image-model test: base portrait (A1) + emotion edits (A2) for one character.
-// See IMAGE-MODEL-TESTING.md at the repo root and docs/ai/image-model-test/README.md for the prompts and the scorecard.
+// See docs/ai/image-model-test/TESTING.md and README.md for the prompts and the scorecard.
 //
 // Usage (from the repo root):
 //   node docs/ai/image-model-test/run.mjs --dry-run                 # print prompts, no API calls, no key needed

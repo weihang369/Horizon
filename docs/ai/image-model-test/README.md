@@ -4,7 +4,7 @@
 - generates the base portrait from text;
 - creates each emotion as an instruction edit of the locked base portrait.
 
-The prompts and the scorecard are in [IMAGE-MODEL-TESTING.md](../../../IMAGE-MODEL-TESTING.md).
+The prompts and the scorecard are in [TESTING.md](TESTING.md).
 
 ## Run 1: Hana, 2026-10-03
 
