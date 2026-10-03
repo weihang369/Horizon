@@ -1,10 +1,10 @@
-// Zod schemas for every doc 05 shape (contract rev 1.1). types.ts stays canonical:
+// Zod schemas for every doc 05 shape (contract rev 1.2). types.ts stays canonical:
 // each schema is checked against its type with `satisfies z.ZodType<T>`, so the two cannot drift.
 // Objects are strict, so fixture typos fail validation instead of being silently dropped.
 import { z } from "zod";
 import type {
-  AppSettings, Appearance, Character, CharacterProfile, DebateConfig, DebateState, EmotionAsset, EmotionAssetRef,
-  Energy, GenerationJob, GenerationTask, GroupConfig, KnowledgeSource, MemoryItem, Message, MessageAuthor,
+  AppSettings, Appearance, Character, CharacterProfile, Citation, DebateConfig, DebateState, EmotionAsset, EmotionAssetRef,
+  Energy, GenerationJob, GenerationTask, GroupConfig, KnowledgeChunk, KnowledgeSource, MemoryItem, Message, MessageAuthor,
   MessageUsage, Palette, Participant, Reaction, Session, SessionEvent, SongBrief, StylePreset, SystemTrack,
   ThemeSong, TurnTrace, UsageRecord, Verdict, WatchConfig, WatchState, World, YouCard,
 } from "./types";
@@ -294,6 +294,14 @@ export const TurnTraceSchema = so({
   memory: so({
     recalled: z.array(so({ memoryItemId: z.string(), text: z.string(), sourceSessionId: z.string().optional(), score: z.number().optional() })),
   }).optional(),
+  knowledge: so({
+    query: z.string().optional(),
+    trigger: z.enum(["always", "tool_call", "gated"]).optional(),
+    retrieved: z.array(so({
+      chunkId: z.string().regex(ID_RE), sourceId: z.string().regex(ID_RE), title: z.string(), locator: z.string().optional(),
+      text: z.string(), score: unit, cited: z.boolean(), n: z.number().int().positive().optional(),
+    })),
+  }).optional(),
   contextInSession: z.array(so({ text: z.string(), messageId: id("msg") })).optional(),
   context: so({
     budget: z.number().int().positive(), cacheHitPct: z.number().min(0).max(100).optional(),
@@ -305,6 +313,11 @@ export const TurnTraceSchema = so({
   guardrail: so({ checks: z.array(so({ name: z.string(), verdict: z.enum(["pass", "flag", "block"]), p: unit.optional() })) }).optional(),
   graph: so({ path: z.array(z.string()) }).optional(),
 }) satisfies z.ZodType<TurnTrace>;
+
+export const CitationSchema = so({
+  n: z.number().int().positive(), sourceId: z.string().regex(ID_RE), title: z.string(), type: z.enum(["text", "file", "url"]),
+  chunkId: z.string().regex(ID_RE), locator: z.string().optional(), quote: z.string().min(1).max(400), score: unit.optional(),
+}) satisfies z.ZodType<Citation>;
 
 export const MessageSchema = so({
   id: id("msg"), sessionId: id("ses"), seq: z.number().int().positive(),
@@ -322,6 +335,7 @@ export const MessageSchema = so({
   activeVariantId: z.string().optional(),
   usage: MessageUsageSchema.optional(),
   trace: TurnTraceSchema.optional(),
+  citations: z.array(CitationSchema).optional(),
   error: so({ code: ErrorCodeSchema, message: z.string(), retryable: z.boolean() }).optional(),
   createdAt: isoDate,
 }) satisfies z.ZodType<Message>;
@@ -345,6 +359,7 @@ export const SessionEventSchema = z.discriminatedUnion("type", [
   ev("turn.end", so({
     messageId: id("msg"), status: z.enum(["streaming", "complete", "interrupted", "error"]),
     interruptedBy: z.enum(["user", "error"]).optional(), usage: MessageUsageSchema.optional(), variantId: z.string().optional(),
+    citations: z.array(CitationSchema).optional(),
   })),
   ev("energy", so({
     characterId: id("chr"), current: z.number().min(0), max: z.number().int().positive(), state: EnergyStateSchema,
@@ -409,7 +424,13 @@ export const MemoryItemSchema = so({
 export const KnowledgeSourceSchema = so({
   id: z.string().regex(ID_RE), characterId: id("chr"), worldId: id("wld"), title: z.string(),
   type: z.enum(["text", "file", "url"]), status: z.enum(["indexing", "indexed", "failed"]), bytes: z.number().optional(),
+  pages: z.number().int().positive().optional(), chunks: z.number().int().min(0).optional(), url: z.string().optional(),
+  citedCount: z.number().int().min(0).optional(), addedAt: isoDate.optional(), error: z.string().optional(),
 }) satisfies z.ZodType<KnowledgeSource>;
+
+export const KnowledgeChunkSchema = so({
+  id: z.string().regex(ID_RE), sourceId: z.string().regex(ID_RE), index: z.number().int().min(0), locator: z.string().optional(), text: z.string().min(1),
+}) satisfies z.ZodType<KnowledgeChunk>;
 
 // ── Fixture files ───────────────────────────────────────────────────────────
 // Every seed file is `{ "schemaVersion": 1, "data": … }` (doc 05 §1: fixtures carry schemaVersion at the root).

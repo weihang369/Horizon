@@ -251,8 +251,27 @@ export interface Message {
   activeVariantId?: string;
   usage?: MessageUsage;
   trace?: TurnTrace;
+  /** Knowledge the reply quotes (D-59). `content` carries matching `[n]` markers; markers without an entry render as plain text. */
+  citations?: Citation[];
   error?: { code: ErrorCode; message: string; retryable: boolean };
   createdAt: string;
+}
+
+/** One cited knowledge passage (D-59, contract rev. 1.2, additive). AI-owned: OQ-AI-03 decides how it is produced. */
+export interface Citation {
+  /** 1-based marker as written in the reply: `[1]`. Unique within a message. */
+  n: number;
+  sourceId: string;
+  /** The source's title at answer time (it may be renamed or deleted later). */
+  title: string;
+  type: KnowledgeSource["type"];
+  chunkId: string;
+  /** Human locator: "p. 4", "§ 3.2", "row 118". */
+  locator?: string;
+  /** The passage text the character used (≤ 400 chars). */
+  quote: string;
+  /** Retrieval similarity 0..1. */
+  score?: number;
 }
 
 export interface TurnTrace {
@@ -272,6 +291,12 @@ export interface TurnTrace {
     reason?: string;
   };
   memory?: { recalled: { memoryItemId: string; text: string; sourceSessionId?: string; score?: number }[] };
+  /** Knowledge retrieval for this turn (D-59): every passage fetched, `cited` = it backs a `[n]` marker. */
+  knowledge?: {
+    query?: string;
+    trigger?: "always" | "tool_call" | "gated";
+    retrieved: { chunkId: string; sourceId: string; title: string; locator?: string; text: string; score: number; cited: boolean; n?: number }[];
+  };
   contextInSession?: { text: string; messageId: string }[];
   context?: {
     budget: number; cacheHitPct?: number;
@@ -289,7 +314,7 @@ export type StreamEvent =
   | { type: "token"; payload: { messageId: string; delta: string; variantId?: string } }
   // messageId absent + source "user" = MANUAL face change (D-51)
   | { type: "emotion"; payload: { messageId?: string; characterId: string; emotion: Emotion; source: EmotionSource } }
-  | { type: "turn.end"; payload: { messageId: string; status: Message["status"]; interruptedBy?: "user" | "error"; usage?: MessageUsage; variantId?: string } }
+  | { type: "turn.end"; payload: { messageId: string; status: Message["status"]; interruptedBy?: "user" | "error"; usage?: MessageUsage; variantId?: string; citations?: Citation[] } }
   | { type: "energy"; payload: { characterId: string; current: number; max: number; state: EnergyState; fullAt?: string; spent?: number } }
   | { type: "reaction"; payload: { messageId: string; characterId: string; emotion: Emotion; p?: number; source: EmotionSource } }
   | { type: "insight"; payload: { messageId: string; trace: TurnTrace } }
@@ -354,4 +379,16 @@ export interface MemoryItem {
 export interface KnowledgeSource {
   id: string; characterId: string; worldId: string; title: string;
   type: "text" | "file" | "url"; status: "indexing" | "indexed" | "failed"; bytes?: number;
+  /** D-59 additive: pages (file), chunk count once indexed, URL for type "url", times cited across sessions. */
+  pages?: number; chunks?: number; url?: string; citedCount?: number;
+  addedAt?: string; error?: string;
+}
+
+/** An indexed passage of a KnowledgeSource (D-59). The source viewer lists them; citations point at one. */
+export interface KnowledgeChunk {
+  id: string; sourceId: string;
+  /** Order within the source. */
+  index: number;
+  locator?: string;
+  text: string;
 }

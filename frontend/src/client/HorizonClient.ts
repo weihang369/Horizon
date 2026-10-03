@@ -4,7 +4,7 @@
 // The MockClient implements it now; the FastAPI HttpClient implements the same interface later.
 import type {
   AppSettings, Character, CharacterProfile, Appearance, DebateConfig, Emotion, EmotionAsset, Energy, GenerationJob,
-  GenerationJobKind, GenerationTask, GroupConfig, KnowledgeSource, MemoryItem, Message, ModelSet, MusicPolicy,
+  GenerationJobKind, GenerationTask, GroupConfig, KnowledgeChunk, KnowledgeSource, MemoryItem, Message, ModelSet, MusicPolicy,
   Participant, Session, SessionEvent, SessionMode, Side, SongBrief, ThemeSong, TurnTrace, UsageRecord, WatchConfig,
   World, YouCard,
 } from "../contract/types";
@@ -64,6 +64,8 @@ export interface CharactersApi {
   memory(id: string): Promise<MemoryItem[]>;
   forgetMemory(memoryItemId: string): Promise<void>;
   knowledge(id: string): Promise<KnowledgeSource[]>;
+  /** D-59: one source with its indexed passages (O28 source viewer). */
+  knowledgeSource(sourceId: string): Promise<{ source: KnowledgeSource; chunks: KnowledgeChunk[] }>;
 }
 
 // ── Jobs ─────────────────────────────────────────────────────────────────────

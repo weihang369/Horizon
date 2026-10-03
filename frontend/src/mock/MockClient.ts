@@ -600,6 +600,12 @@ export class MockClient implements HorizonClient {
       if (m) this.changed("memory", m.characterId, m.worldId);
     }),
     knowledge: (id) => this.query(() => Object.values(this.db.knowledge).filter((k) => k.characterId === id)),
+    // D-59 stub: Builder C replaces this with seeded passages (seed/knowledge chunks).
+    knowledgeSource: (sourceId) => this.query(() => {
+      const source = this.db.knowledge[sourceId];
+      if (!source) throw new HorizonError("network", "Source not found.", { retryable: false });
+      return { source, chunks: [] };
+    }),
   };
 
   /** Energy changed outside a turn (top-up, max): live sessions with that character get an `energy` event. */
