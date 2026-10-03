@@ -143,6 +143,39 @@
 .loadingStage { height: 100%; background: linear-gradient(104deg, transparent 0 40%, color-mix(in srgb, var(--c-primary) 10%, transparent) 40% 52%, transparent 52%); }
 .retime { position: absolute; inset: 0; display: grid; place-items: center; background: color-mix(in srgb, var(--ink-900) 50%, transparent); z-index: 8; }
 
+/* U1 · replay start call to action (the dock's ▶ keeps focus; this is the mouse way in). */
+.watch { position: absolute; inset: 0; z-index: 7; display: grid; place-items: center; pointer-events: none; animation: global(hz-fade-in) 360ms var(--ease-out) 450ms both; }
+.watchBtn {
+  --h: 76px;
+  position: relative;
+  isolation: isolate;
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  height: var(--h);
+  padding: 0 48px 0 40px;
+  color: var(--on-brand);
+  font: 400 44px/1 var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  filter: drop-shadow(8px 8px 0 var(--ink-900));
+  transition: transform var(--t-fast) var(--ease-out);
+}
+.watchShape {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--horizon-500);
+  clip-path: polygon(calc(var(--h) * var(--tan-tilt)) 0, 100% 0, calc(100% - var(--h) * var(--tan-tilt)) 100%, 0 100%);
+  transition: background var(--t-fast);
+}
+.watchBtn:hover { transform: translateX(6px) scale(1.03); }
+.watchBtn:hover .watchShape { background: var(--paper-50); }
+.watchKey { font-size: 14px; opacity: 0.85; }
+:global(:root[data-motion="reduced"]) .watchBtn { transition: none; }
+:global(:root[data-motion="reduced"]) .watchBtn:hover { transform: none; }
+
 .errorScreen { min-height: 100vh; display: grid; place-items: center; padding: 48px; }
 /* Insight overlays the right column in S09/S10/S12; the dock's controls slide out from under it. */
 .dockUnder { padding-right: 400px; }

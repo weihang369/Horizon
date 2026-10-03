@@ -60,19 +60,15 @@ const AT_END = /^(\d+:\d\d) of \1$/;
 
 /**
  * Jumps a replay to its last event via the Seek slider (keyboard End), and waits until the log has caught up.
- * The first keyboard seek after a replay opens snaps back to 0:00 without delivering anything (QA-01), so this presses
- * End again until the playhead is at the end AND the log shows delivered messages.
+ * One press must be enough (QA-01 regression guard).
  */
 export async function seekToEnd(page: Page): Promise<void> {
   const seek = page.getByRole("slider", { name: "Seek" });
   await expect(seek).toHaveAttribute("aria-valuetext", /of \d+:\d\d$/);
-  await expect(async () => {
-    await seek.focus();
-    await page.keyboard.press("End");
-    await expect(seek).toHaveAttribute("aria-valuetext", AT_END, { timeout: 1_000 });
-    await expect(page.getByRole("log").getByRole("listitem").nth(2)).toBeVisible({ timeout: 1_000 });
-  }).toPass({ timeout: 10_000 });
+  await seek.focus();
+  await page.keyboard.press("End");
   await expect(seek).toHaveAttribute("aria-valuetext", AT_END);
+  await expect(page.getByRole("log").getByRole("listitem").nth(2)).toBeVisible();
 }
 
 /** Waits for the title screen, then presses a key to start (keys pressed before it mounts are lost). */

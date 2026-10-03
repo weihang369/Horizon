@@ -1,5 +1,5 @@
 // O10 Backlog (CHAT-09): a full-screen visual-novel log (`L`) with in-session search and Markdown export.
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useStore } from "zustand";
 import { client } from "../../client";
 import type { OverlayComponentProps } from "../../app/overlayTypes";
@@ -40,7 +40,15 @@ export function Backlog({ sessionId, close }: OverlayComponentProps<"O10">) {
   const { runtime } = useSlotRuntime(sessionId);
   const chars = useStore(entities, (st) => st.chars);
   const [q, setQ] = useState("");
+  const root = useRef<HTMLDivElement>(null);
+  const search = useRef<HTMLInputElement>(null);
+  // Focus the panel, not the search: L must toggle the backlog closed (QA-02); "/" jumps to the search.
+  useEffect(() => root.current?.focus({ preventScroll: true }), []);
   useShortcut("l", close);
+  useShortcut("/", (e) => {
+    e.preventDefault();
+    search.current?.focus();
+  });
 
   const lines = useMemo(() => {
     if (!runtime) return [] as { m: Message; text: string; who: string }[];
@@ -67,17 +75,17 @@ export function Backlog({ sessionId, close }: OverlayComponentProps<"O10">) {
   };
 
   return (
-    <div className={s.backlog} role="dialog" aria-modal="false" aria-label="Backlog">
+    <div ref={root} tabIndex={-1} className={s.backlog} role="dialog" aria-modal="false" aria-label="Backlog">
       <header className={s.head}>
         <RansomText text="BACKLOG" size={44} as="h2" tone="mixed" />
         <span className={s.title}>{runtime?.session.title}</span>
         <label className={s.search}>
           <SearchIcon width={16} height={16} aria-hidden="true" />
           <input
-            autoFocus
+            ref={search}
             type="search"
             value={q}
-            placeholder="Search this conversation"
+            placeholder="Search this conversation  ( / )"
             aria-label="Search this conversation"
             onChange={(e) => setQ(e.target.value)}
           />

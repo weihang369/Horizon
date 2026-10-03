@@ -179,3 +179,21 @@ Ranked by how much they help a first-time visitor understand Horizon in 60 secon
 - **Browsers and devices:** Firefox and Safari, mobile, touch, and zoom.
 - **Non-functional:** visual regression, performance budgets, and bundle size (`npm run budget`).
 - **Accessibility:** no screen-reader runs (NVDA/VoiceOver) and no automated axe scan.
+
+## 5. Resolution (UI/UX adapt round, 2026-10-03)
+
+| ID | Status | Fix |
+|---|---|---|
+| QA-01 | Fixed | React's range `onChange` also fires on the native `change`, which re-seeked to the stale controlled value (a backward `rebuildTo`). The scrubber now writes the seek through to its state at once and drives the keyboard itself: ←/→ by turn, Home/End to the true ends, PgUp/PgDn ±10 s, and `step=1` so dragging reaches the end. Spec un-pinned; `seekToEnd()` presses once. |
+| QA-02 | Fixed | The Backlog focuses its panel on open, not the search, so L closes it; `/` jumps to the search (placeholder hint added). Spec un-pinned and extended. |
+| QA-03 | Backlog | Retry stays a v1.1 toast (no contract method yet). |
+| QA-04 | Fixed | The sheet adds a Browsing group (World Select ←/→ · Enter, profile `[`/`]`, intro ←/→), replay ←/→ and Home/End, `Ctrl+.`, the verdict's E and the Setup `Ctrl+Enter`. Alternatives render as "← / →". Two columns, keys aligned per group. |
+| QA-05 | Fixed | Pause-menu items are wider, and labels never wrap. |
+| QA-06 | Fixed | When nobody is speaking, the next (or last) speaker's seat comes forward. |
+| QA-07 | Fixed | The Theme tab says "Now playing" only once audio is unlocked; before that Play turns audio on ("Press Play to turn audio on"). |
+| QA-08 | Backlog | Needs a headed-browser check; not reproduced in a real window. |
+| U1 | Done | Replays open with a large "▶ Watch · Space" call to action over the stage (hidden once playing, past 0:00, or deep-linked). New spec. |
+| U2 | Done | World Select's header has "▶ Watch a 60-second AI debate", one click to the featured replay. New spec. |
+| U3 | Done (D-60) | The PLACEHOLDER tape shows only on the profile hero portrait; stages and cards are clean. |
+
+Suite after the round: **32 passed** (`npm run e2e`, 2.1 min).

@@ -30,6 +30,9 @@ export function hoverTick(): void {
   audio.playSfx("ui_hover");
 }
 
+/** The seed debate replay World Select links to directly (doc 06). */
+const FEATURED = { worldId: "wld_seedMeridian", sessionId: "ses_seedDebate4Day" } as const;
+
 export function WorldSelectScreen() {
   useHouseScreen();
   const { data: worlds, loading, error, reload } = useWorlds();
@@ -61,6 +64,10 @@ export function WorldSelectScreen() {
         </h1>
         <p className={s.sub}>Pick a universe. Nothing crosses between them.</p>
         <nav className={s.headNav} aria-label="Shell">
+          {worlds?.some((w) => w.id === FEATURED.worldId) && (
+            // U2: the strongest feature in one click (otherwise world → hub → Sessions → replay).
+            <Button size="sm" onClick={() => navigate({ name: "session", ...FEATURED, replay: true }, { transition: "slash" })}>▶ Watch a 60-second AI debate</Button>
+          )}
           <Button variant="ghost" size="sm" onClick={() => navigate({ name: "title" }, { transition: "slash-back" })}>◂ Title</Button>
           <Button variant="ghost" size="sm" onClick={() => navigate({ name: "onboarding", card: 1 })}>How it works</Button>
           <Button variant="ghost" size="sm" icon={<GearIcon />} onClick={() => navigate({ name: "settings", from: "/worlds" })}>Settings</Button>

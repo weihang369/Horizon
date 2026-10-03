@@ -71,3 +71,10 @@ test("Replay from the Sessions tab opens the recording in replay mode", async ({
   // Replays open with focus on ▶ so Space works immediately.
   await expect(page.getByRole("button", { name: "Play replay (Space)" })).toBeFocused();
 });
+
+test("World Select: “Watch a 60-second AI debate” opens the featured replay in one click", async ({ page }) => {
+  await open(page, "/worlds");
+  await page.getByRole("button", { name: "▶ Watch a 60-second AI debate" }).click();
+  await expect(page).toHaveURL(/#\/w\/wld_seedMeridian\/s\/ses_seedDebate4Day\?replay=1$/);
+  await expect(page.getByRole("slider", { name: "Seek" })).toBeVisible();
+});

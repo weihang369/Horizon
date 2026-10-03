@@ -32,7 +32,9 @@ export function ThemeTrack({ c, song }: { c: Character; song: ThemeSong | null }
   const phase: Phase = composing ? "composing" : ready ? "ready" : (jobFailed || song?.status === "failed") ? "failed" : "none";
   const stalled = phase === "failed" || (phase === "ready" && jobFailed);
   const peaks = usePeaks(ready ? song!.url : undefined);
-  const playing = ready && st.track?.url === song!.url;
+  // Queued but silent until the browser lets audio start (first click or key): don't claim "Now playing" (QA-07).
+  const queued = ready && st.track?.url === song!.url;
+  const playing = queued && st.unlocked;
   const sketch = ready && isProcedural(song!.url);
   const dur = song?.durationSec ?? 16;
   const loop = song?.loop;
@@ -41,7 +43,8 @@ export function ThemeTrack({ c, song }: { c: Character; song: ThemeSong | null }
 
   const toggle = () => {
     if (!ready) return;
-    if (playing) audio.setMusic(null, { crossfadeMs: 400 });
+    if (queued && !st.unlocked) void audio.unlock();
+    else if (playing) audio.setMusic(null, { crossfadeMs: 400 });
     else audio.setMusic(song!.url!, { label, crossfadeMs: 600, gainDb: song!.gainDb });
   };
   const compose = () => void startGeneration(
@@ -95,6 +98,7 @@ export function ThemeTrack({ c, song }: { c: Character; song: ThemeSong | null }
               {ready && song?.gainDb !== undefined && <div><dt>Gain</dt><dd>{song.gainDb > 0 ? "+" : ""}{song.gainDb}<small> dB</small></dd></div>}
             </dl>
             {playing && st.loading && <span className={s.loading} role="status">loading…</span>}
+            {queued && !st.unlocked && <span className={s.loading} role="status">Press Play to turn audio on</span>}
           </div>
         </div>
       </div>

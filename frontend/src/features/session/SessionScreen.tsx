@@ -21,7 +21,8 @@ import { Skeleton } from "../../ui/Data";
 import { ErrorTape } from "../../ui/Panels";
 import { Tape } from "../../ui/Tape";
 import { cx } from "../../ui/cx";
-import { BackIcon, InfoIcon } from "../../ui/icons";
+import { BackIcon, InfoIcon, PlayIcon } from "../../ui/icons";
+import { Kbd } from "../../ui/Kbd";
 import { DockExpansion } from "../ensemble/DockExpansion";
 import { setFace } from "./EmotionPicker";
 import { retimeBus } from "./ReplayTransport";
@@ -237,6 +238,17 @@ export function SessionScreen({ route }: { route: SessionRoute }) {
             />
           )}
           {retiming && <div className={s.retime}><Tape tone="ink" size="sm">Re-timing replay…</Tape></div>}
+          {replay && !retiming && route.t === undefined && rt.player && !rt.player.playing && !rt.player.ended && rt.player.position < 200 && (
+            // U1: a replay opens paused on an empty stage; give first-time viewers one obvious way in.
+            <div className={s.watch}>
+              <button type="button" className={s.watchBtn} onClick={() => rt.controls.play()} tabIndex={-1}>
+                <span className={s.watchShape} aria-hidden="true" />
+                <PlayIcon width={30} height={30} />
+                <span>Watch</span>
+                <span className={s.watchKey}><Kbd>Space</Kbd></span>
+              </button>
+            </div>
+          )}
         </div>
         {!ownsDock && (
           <div className={cx(s.dock, insightOpen && !push && (presenter ? s.dockUnderCompact : s.dockUnder))}>

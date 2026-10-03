@@ -34,6 +34,8 @@ export function GroupLayout({ rt, replay, insightOpen }: LayoutProps) {
   const byId = useMemo(() => Object.fromEntries(rt.participants.map((p) => [p.characterId, p])), [rt.participants]);
   const next = rt.nextSpeakerId;
   const nextChar = next ? chars[next] : undefined;
+  // Who the stage is about when nobody is speaking: the overlapping seats bring this card forward (QA-06).
+  const focusId = active ?? next ?? bandId;
   const busy = !!rt.streamingId || !!rt.thinkingId;
   const live = !replay && session.status !== "ended";
 
@@ -49,7 +51,7 @@ export function GroupLayout({ rt, replay, insightOpen }: LayoutProps) {
         return (
           <div
             key={cid}
-            className={cx(s.seat, speaking && s.speaking, p.leanIn && s.lean, back && s.back)}
+            className={cx(s.seat, speaking && s.speaking, !speaking && focusId === cid && s.front, p.leanIn && s.lean, back && s.back)}
             data-i={i}
             style={{ "--i": i, "--n": Math.min(list.length, 2) } as CSSProperties}
           >

@@ -120,6 +120,7 @@
 }
 .left .back { right: 18px; }
 .right .back { left: 18px; }
+.front { z-index: 15; }
 .speaking { z-index: 20; transform: translate(calc(24px * var(--dir)), calc(var(--i) * -22px)) scale(1.08); }
 .lean:not(.speaking) { transform: translate(calc(8px * var(--dir)), calc(var(--i) * -22px)); }
 

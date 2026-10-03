@@ -85,7 +85,7 @@
   display: flex;
   align-items: baseline;
   gap: 16px;
-  width: min(440px, 100%);
+  width: min(520px, 100%);
   padding: 6px 20px 8px;
   color: var(--ink-900);
   text-align: left;
@@ -105,8 +105,8 @@
 .pauseItem:focus-visible .pauseItemFill, .pauseItem:hover:not(:disabled) .pauseItemFill { transform: scaleX(1); }
 .pauseItem:focus-visible .pauseItemFill { box-shadow: inset 0 0 0 3px var(--c-glow); }
 .pauseItem:disabled { opacity: 0.4; }
-.pauseLabel { font: 400 clamp(36px, 5.2vh, 48px)/1 var(--font-display); text-transform: uppercase; letter-spacing: 0.02em; }
-.pauseHint { font: 600 12px/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.75; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pauseLabel { flex: none; white-space: nowrap; font: 400 clamp(36px, 5.2vh, 48px)/1 var(--font-display); text-transform: uppercase; letter-spacing: 0.02em; }
+.pauseHint { min-width: 0; font: 600 12px/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.75; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .pauseKeys { margin: 6px 0 0; font: 600 12px/1 var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-900); }
 .pauseRight { position: relative; display: grid; gap: 22px; justify-items: start; padding: 0 clamp(32px, 6vw, 96px) 0 48px; animation: global(hz-slide-left) var(--t-slow) var(--ease-out) 120ms both; }
 .pauseWorld {
@@ -161,10 +161,10 @@
 
 /* ── O20 sheet ───────────────────────────────────────────────────────── */
 .sheetNote { margin: 0 0 18px; color: var(--paper-300); font-size: var(--text-sm); }
-.sheet { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+.sheet { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 40px; }
 .sheetTitle { margin: 0 0 10px; font: 400 20px/1 var(--font-display); letter-spacing: 0.06em; text-transform: uppercase; color: var(--horizon-500); }
-.sheetList { margin: 0; display: grid; gap: 10px; }
-.sheetRow { display: grid; gap: 4px; }
+.sheetList { margin: 0; display: grid; grid-template-columns: max-content minmax(0, 1fr); align-items: baseline; gap: 8px 16px; }
+.sheetRow { display: contents; }
 .sheetRow dt { white-space: nowrap; }
 .sheetRow dd { margin: 0; color: var(--paper-300); font-size: var(--text-sm); }
 

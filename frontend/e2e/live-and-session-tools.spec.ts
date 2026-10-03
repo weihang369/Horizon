@@ -48,13 +48,15 @@ test("Backlog: L opens the full log, it exports Markdown, Esc closes it @layout"
 });
 
 test("Backlog: pressing L again closes it, as its “Close backlog (L)” button promises", async ({ page }) => {
-  // QA-02: the search box takes focus on open, so the second L is typed into the search instead of closing.
-  test.fail();
+  // QA-02 (fixed): the panel takes focus on open, not the search; "/" jumps to the search.
   await open(page, HEADACHE);
   await seekToEnd(page);
   await page.keyboard.press("l");
   const backlog = page.getByRole("dialog", { name: "Backlog" });
   await expect(backlog.getByRole("button", { name: "Close backlog (L)" })).toBeVisible();
+  await page.keyboard.press("/");
+  await expect(backlog.getByRole("searchbox", { name: "Search this conversation" })).toBeFocused();
+  await page.keyboard.press("Tab");
   await page.keyboard.press("l");
   await expect(backlog).toBeHidden({ timeout: 3_000 });
 });

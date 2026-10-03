@@ -2,7 +2,7 @@
 // 3:4 card, clip-path cut corner, 6 px palette frame, misregistered ink block behind, halftone stage.
 // Preloads + decode()s every emotion image on mount; crossfades ≤ 300 ms with a 1.02→1 settle.
 // Missing emotion art → neutral + VFX + tint (EMO-06). Exhausted → neutral (or blink) + a STATIC greyscale
-// duplicate whose opacity fades in (R19). `/placeholder/` art gets the DOM "PLACEHOLDER · EMOTION" tape (R8).
+// duplicate whose opacity fades in (R19). `/placeholder/` art gets the DOM "PLACEHOLDER · EMOTION" tape on the hero size only (R8, D-60).
 // Idle life: breathing (4 s), blink (neutral, if the asset exists), cursor parallax on the global ticker.
 import {
   useEffect, useLayoutEffect, useMemo, useRef, useState,
@@ -161,7 +161,8 @@ export function PortraitCard({
   const w = width ?? DEFAULT_W[size];
   const plateSize = PLATE[size];
   const name = c.profile.name;
-  const placeholder = isPlaceholderUrl(url) && (size === "hero" || size === "stage" || size === "card");
+  // D-60: one "placeholder art" note per screen, on the profile hero; stages and cards stay clean for demos.
+  const placeholder = isPlaceholderUrl(url) && size === "hero";
   const blinkOn = !!blinkUrl && shownEmotion === "neutral" && !asleep && !prefs.reduced && size !== "head" && size !== "thumb";
   const interactive = !!onClick;
   const delay = useMemo(() => `${(-hashId(c.id) * 5.2).toFixed(2)}s`, [c.id]);

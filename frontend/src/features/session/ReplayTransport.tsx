@@ -39,7 +39,9 @@ export async function continueLive(sessionId: string, worldId: string, title: st
   toast({ variant: "success", text: `Live copy of “${title}”${atSeq ? " from the playhead" : ""}.` });
 }
 
-function useLivePosition(rt: DockProps["rt"]): number {
+/** Playhead for the scrubber: follows the player (rAF while playing); `set` writes a seek through at once so the
+ * controlled range never re-renders the stale value (the native `change` that follows `input` would seek back). */
+function useLivePosition(rt: DockProps["rt"]): [number, (ms: number) => void] {
   const p = rt.player;
   const [pos, setPos] = useState(p?.position ?? 0);
   const playing = !!p?.playing;
@@ -54,14 +56,14 @@ function useLivePosition(rt: DockProps["rt"]): number {
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
   }, [playing, p?.position, rt.controls]);
-  return pos;
+  return [pos, setPos];
 }
 
 export function ReplayDock({ rt, sessionId, worldId }: DockProps) {
   const ctx = useSessionCtx();
   const p = rt.player;
   const duration = p?.duration ?? 0;
-  const pos = useLivePosition(rt);
+  const [pos, setLivePos] = useLivePosition(rt);
   const trim = usePrefs((x) => x.replayTrimGaps);
   const chars = useStore(entities, (st) => st.chars);
   const [events, setEvents] = useState<SessionEvent[] | null>(null);
@@ -91,9 +93,14 @@ export function ReplayDock({ rt, sessionId, worldId }: DockProps) {
   );
 
   const toggle = () => (p?.playing ? rt.controls.pause() : rt.controls.play());
+  const seekTo = (ms: number) => {
+    const t = Math.max(0, Math.min(ms, duration));
+    setLivePos(t);
+    rt.controls.seek(t);
+  };
   const step = (dir: 1 | -1) => {
     const t = stepTurn(markers, rt.controls.position(), dir);
-    if (t !== null) rt.controls.seek(t);
+    if (t !== null) seekTo(t);
   };
   useShortcut("space", (e) => {
     e.preventDefault();
@@ -149,16 +156,24 @@ export function ReplayDock({ rt, sessionId, worldId }: DockProps) {
             className={s.range}
             min={0}
             max={Math.max(1, Math.round(duration))}
-            step={100}
+            step={1}
             value={Math.round(pos)}
             aria-label="Seek"
             aria-valuetext={`${formatClock(pos)} of ${formatClock(duration)}`}
-            onChange={(e) => rt.controls.seek(Number(e.target.value))}
+            onChange={(e) => seekTo(Number(e.target.value))}
             onKeyDown={(e) => {
-              if (e.key === " ") {
-                e.preventDefault();
-                toggle();
-              }
+              // The keyboard drives the playhead here (not the native range): ←/→ step by turn like the global
+              // shortcut, Home/End hit the true ends, PgUp/PgDn jump 10 s. preventDefault keeps the global handler out.
+              const k = e.key;
+              if (k === " ") toggle();
+              else if (k === "ArrowRight" || k === "ArrowUp") step(1);
+              else if (k === "ArrowLeft" || k === "ArrowDown") step(-1);
+              else if (k === "Home") seekTo(0);
+              else if (k === "End") seekTo(duration);
+              else if (k === "PageUp") seekTo(rt.controls.position() + 10_000);
+              else if (k === "PageDown") seekTo(rt.controls.position() - 10_000);
+              else return;
+              e.preventDefault();
             }}
           />
         </div>

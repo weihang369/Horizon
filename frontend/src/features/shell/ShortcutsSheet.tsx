@@ -6,7 +6,11 @@ import { Kbd } from "../../ui/Kbd";
 import { Modal } from "../../ui/Panels";
 import s from "./Overlays.module.css";
 
-const k = (...keys: string[]): ReactNode => keys.map((x, i) => <span key={x}>{i > 0 && " + "}<Kbd>{x}</Kbd></span>);
+const join = (sep: string) => (...keys: string[]): ReactNode => keys.map((x, i) => <span key={x}>{i > 0 && sep}<Kbd>{x}</Kbd></span>);
+/** Keys pressed together (Ctrl + D). */
+const k = join(" + ");
+/** Alternative keys (← / →). */
+const or = join(" / ");
 
 const GROUPS: { title: string; rows: [ReactNode, string][] }[] = [
   {
@@ -18,13 +22,25 @@ const GROUPS: { title: string; rows: [ReactNode, string][] }[] = [
     ],
   },
   {
+    title: "Browsing",
+    rows: [
+      [or("←", "→"), "World Select: previous / next world"],
+      [k("Enter"), "Open the focused world or card"],
+      [or("[", "]"), "Character profile: previous / next tab"],
+      [or("←", "→"), "Intro: previous / next card"],
+    ],
+  },
+  {
     title: "Sessions",
     rows: [
       [k("I"), "Insight drawer"],
-      [k("L"), "Backlog (full log)"],
+      [k("L"), "Backlog (full log) · / searches it"],
       [k("Space"), "Pause / resume (debate, watch, replay)"],
-      [k("→"), "Next turn / step"],
+      [or("←", "→"), "Previous / next turn (replay) · step (debate)"],
+      [or("Home", "End"), "Replay scrubber: start / end"],
+      [k("Ctrl", "."), "Stop a streaming reply"],
       [k("Alt", "1…7"), "Set the face (MANUAL) · works while typing"],
+      [k("E"), "Verdict: export the transcript"],
     ],
   },
   {
@@ -32,7 +48,7 @@ const GROUPS: { title: string; rows: [ReactNode, string][] }[] = [
     rows: [
       [k("Enter"), "Send"],
       [k("Shift", "Enter"), "New line"],
-      [k("Ctrl", "Enter"), "Send (alias)"],
+      [k("Ctrl", "Enter"), "Send (alias) · start the debate on Setup"],
       [k("@"), "Mention picker"],
     ],
   },
@@ -41,7 +57,7 @@ const GROUPS: { title: string; rows: [ReactNode, string][] }[] = [
 export function ShortcutsSheet({ close }: OverlayComponentProps<"O20">) {
   return (
     <Modal title="Keyboard shortcuts" tape="CONTROLS" size="lg" onClose={close} actions={<Button onClick={close} autoFocus>Got it</Button>}>
-      <p className={s.sheetNote}>Single keys (I, L, ?, Space, →) only fire when you're not typing in a field.</p>
+      <p className={s.sheetNote}>Single keys (I, L, ?, Space, arrows) only fire when you're not typing in a field.</p>
       <div className={s.sheet}>
         {GROUPS.map((g) => (
           <section key={g.title} className={s.sheetGroup} aria-label={g.title}>

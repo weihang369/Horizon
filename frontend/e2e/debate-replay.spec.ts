@@ -37,8 +37,8 @@ test("debate replay: Space plays and pauses, speed radios, ←/→ step turn by 
   await expect(speed.getByRole("radio", { name: "×1" })).toHaveAttribute("aria-checked", "false");
 
   // ←/→ step turn by turn (focus back on the transport, as after a mouse click elsewhere).
-  // The first seek after opening is reverted (QA-01); ←/→ steps are also
-  // sometimes dropped, so the first step may need a second press.
+  // Pausing near 0:01 can leave the "Round 1" banner up; any key skips a ceremony first (D-55) and screen shortcuts
+  // are muted under it, so the first → may only dismiss the banner. Once it is gone, every press must land (QA-01).
   await play.focus();
   await expect(async () => {
     await page.keyboard.press("ArrowRight");
@@ -73,9 +73,7 @@ test("debate replay: “See the verdict” opens the verdict screen @layout", as
 });
 
 test("the first seek after opening a replay sticks (keyboard End on the Seek slider)", async ({ page }) => {
-  // QA-01: the first keyboard seek after a replay opens (End on the Seek slider) snaps back to 0:00 and
-  // delivers nothing; the second press works. Mouse clicks on the track are not affected.
-  test.fail();
+  // QA-01 (fixed): the first End used to snap back to 0:00 because the native `change` re-seeked to a stale value.
   await open(page, DEBATE);
   const seek = page.getByRole("slider", { name: "Seek" });
   await expect(seek).toHaveAttribute("aria-valuetext", /of 0:5\d$/);
@@ -84,4 +82,13 @@ test("the first seek after opening a replay sticks (keyboard End on the Seek sli
   await page.keyboard.press("End");
   await expect(page.getByText("The arbiter has spoken")).toBeVisible({ timeout: 3_000 });
   await expect(seek).toHaveAttribute("aria-valuetext", "0:57 of 0:57");
+});
+
+test("a replay opens with a Watch call to action that starts playback", async ({ page }) => {
+  await open(page, DEBATE);
+  const watch = page.getByRole("button", { name: /^Watch/ });
+  await expect(watch).toBeVisible();
+  await watch.click();
+  await expect(page.getByRole("button", { name: "Pause replay (Space)" })).toBeVisible();
+  await expect(watch).toBeHidden();
 });
