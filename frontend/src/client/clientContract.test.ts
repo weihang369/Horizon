@@ -3,6 +3,7 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import type { Message, SessionEvent } from "../contract/types";
 import { HorizonError } from "../contract/errors";
+import { KnowledgeChunkSchema, MessageSchema, SessionEventSchema } from "../contract/schemas";
 import type { Dataset } from "../mock/db/dataset";
 import { loadSeedDataset } from "../mock/db/loadSeed";
 import { MockClient } from "../mock/MockClient";
@@ -281,5 +282,47 @@ describe("HorizonClient contract (MockClient)", () => {
     const s = await c.sessions.create({ worldId: "wld_seedMeridian", mode: "one_on_one", characterIds: ["chr_seedAmara"] });
     await tick(1500);
     expect(chars(await c.sessions.messages(s.session.id))[0]?.status).toBe("complete");
+  });
+
+  it("knowledge (D-59): knowledgeSource returns ordered passages; live replies cite them (zod-valid)", async () => {
+    const { c, tick, events, watch } = await make({ key: true });
+    const { source, chunks } = await c.characters.knowledgeSource("kno_seedAmara1");
+    expect(source.status).toBe("indexed");
+    expect(chunks.length).toBe(source.chunks);
+    expect(chunks.map((k) => k.index)).toEqual(chunks.map((_, i) => i));
+    for (const k of chunks) KnowledgeChunkSchema.parse(k);
+    expect(await code(c.characters.knowledgeSource("kno_nope"))).toBe("network");
+
+    const snap = await c.sessions.create({ worldId: "wld_seedMeridian", mode: "one_on_one", characterIds: ["chr_seedAmara"] });
+    watch(snap.session.id);
+    await tick(6000);
+    let cited: Message | undefined;
+    for (let i = 0; i < 8 && !cited; i++) {
+      await c.chat.send(snap.session.id, `What does the review say about burnout? (${i})`);
+      await tick(14000);
+      cited = chars(await c.sessions.messages(snap.session.id)).find((m) => m.citations?.length);
+    }
+    expect(cited, "a live Amara reply cites her knowledge").toBeTruthy();
+    MessageSchema.parse(cited);
+    for (const ct of cited!.citations!) {
+      expect(cited!.content).toContain(`[${ct.n}]`);
+      expect(ct.quote.length).toBeLessThanOrEqual(400);
+    }
+    const end = events.find((e) => e.type === "turn.end" && (e.payload as { messageId: string }).messageId === cited!.id);
+    expect(end && SessionEventSchema.parse(end)).toBeTruthy();
+    expect((end!.payload as { citations?: unknown[] }).citations?.length).toBe(cited!.citations!.length);
+    const k = cited!.trace?.knowledge;
+    expect(k?.retrieved.some((r) => r.cited)).toBe(true);
+    expect(k?.retrieved.some((r) => !r.cited)).toBe(true);
+    expect(cited!.trace?.context?.used.knowledge).toBeGreaterThan(0);
+  });
+
+  it("Markdown export turns citation markers into [^n] footnotes with title, locator and quote (D-59)", async () => {
+    const { c } = await make();
+    const md = await c.sessions.export("ses_seedDebate4Day");
+    expect(md).toContain("[^1]");
+    expect(md).not.toMatch(/[a-z.,]\[\d\]/);
+    expect(md).toContain("## Sources");
+    expect(md).toMatch(/\[\^1\]: Meridian Shift Fatigue Review 2025\.pdf, p\. 4\. "/);
   });
 });

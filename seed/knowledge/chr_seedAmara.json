@@ -5,10 +5,14 @@
       "id": "kno_seedAmara1",
       "characterId": "chr_seedAmara",
       "worldId": "wld_seedMeridian",
-      "title": "Burnout study protocol.pdf",
+      "title": "Meridian Shift Fatigue Review 2025.pdf",
       "type": "file",
       "status": "indexed",
-      "bytes": 482113
+      "bytes": 482113,
+      "pages": 18,
+      "addedAt": "2026-09-18T08:40:00Z",
+      "chunks": 10,
+      "citedCount": 3
     },
     {
       "id": "kno_seedAmara2",
@@ -16,7 +20,11 @@
       "worldId": "wld_seedMeridian",
       "title": "ED triage guidelines",
       "type": "url",
-      "status": "indexing"
+      "status": "indexed",
+      "url": "https://meridian-health.example/ed/triage-guidelines",
+      "addedAt": "2026-09-21T19:12:00Z",
+      "chunks": 6,
+      "citedCount": 3
     }
   ]
 }

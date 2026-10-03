@@ -10,7 +10,7 @@ import { selectInsight } from "../../app/layers";
 import { useShortcut } from "../../app/shortcuts";
 import { PortraitCard } from "../../character/PortraitCard";
 import { emotionMeta } from "../../character/emotionMeta";
-import type { Character, Message, TurnTrace } from "../../contract/types";
+import type { Character, Citation, Message, TurnTrace } from "../../contract/types";
 import { formatUsd, probBand } from "../../domain/format";
 import { useMotionPrefs } from "../../motion/prefs";
 import { entities } from "../../stores/entities";
@@ -22,9 +22,11 @@ import { ProbBar, StackedBar } from "../../ui/Data";
 import { Drawer } from "../../ui/Panels";
 import { Tape } from "../../ui/Tape";
 import { cx } from "../../ui/cx";
-import { useStreamText } from "../../client/hooks";
+import { useKnowledge, useStreamText } from "../../client/hooks";
 import { useSlotRuntime } from "../session/slot";
 import { plainText } from "../session/markdown";
+import { TypeGlyph } from "../session/Citations";
+import { openCitation } from "../session/citationUtils";
 
 /** Bars and bands use the same 2-decimal value, so "0.70" never reads "MED" (no false precision, INS-01 AC4). */
 const r2 = (p: number) => Math.round(p * 100) / 100;
@@ -80,7 +82,7 @@ function Pipeline({ trace, streaming }: { trace?: TurnTrace; streaming: boolean 
     ? trace.graph.path.map((p) => ({ k: p, on: true }))
     : [
       { k: "Route", on: !!trace?.routing },
-      { k: "Recall", on: !!(trace?.memory || trace?.contextInSession || trace?.context) },
+      { k: "Recall", on: !!(trace?.memory || trace?.knowledge || trace?.contextInSession || trace?.context) },
       { k: "Generate", on: !!trace?.model },
       { k: "Emotion", on: !!trace?.emotion },
       { k: "Guard", on: !!trace?.guardrail },
@@ -128,6 +130,57 @@ function TokenSplit({ tin, cached, tout }: { tin: number; cached: number; tout: 
         <div><dt><i className={s.swOut} />Out</dt><dd>{tout.toLocaleString("en")}</dd></div>
       </dl>
     </div>
+  );
+}
+
+const TRIGGER_LABEL = { always: "Always", tool_call: "Tool call", gated: "Gated" } as const;
+
+/** D-59 Knowledge: every passage retrieved for this turn; cited ones carry their [n], the rest are dimmed. */
+function KnowledgeList({ k, m, armed }: { k: NonNullable<TurnTrace["knowledge"]>; m: Message; armed: boolean }) {
+  const rows = [...k.retrieved].sort((a, b) => (a.cited && b.cited ? (a.n ?? 0) - (b.n ?? 0) : a.cited === b.cited ? b.score - a.score : a.cited ? -1 : 1));
+  const sources = useKnowledge(m.author.characterId).data;
+  const types = new Map<string, Citation["type"]>([
+    ...(sources ?? []).map((x) => [x.id, x.type] as const),
+    ...(m.citations ?? []).map((c) => [c.sourceId, c.type] as const),
+  ]);
+  return (
+    <>
+      {k.query && <p className={s.kQuery}><span>Query</span>“{k.query}”</p>}
+      <ul className={s.kList}>
+        {rows.map((r) => {
+          const cite = r.cited ? m.citations?.find((c) => c.chunkId === r.chunkId) : undefined;
+          const type = types.get(r.sourceId) ?? (/\.[a-z]{2,4}$/i.test(r.title) ? "file" : "text");
+          const open = () => (cite
+            ? openCitation(cite, m.author.characterId)
+            : openCitation({ n: r.n ?? 0, sourceId: r.sourceId, chunkId: r.chunkId, title: r.title, locator: r.locator, quote: r.text }, m.author.characterId));
+          return (
+            <li key={r.chunkId}>
+              <button
+                type="button"
+                className={cx(s.kRow, !r.cited && s.kUnused)}
+                onClick={open}
+                aria-label={`${r.cited ? `Cited [${r.n}]` : "Retrieved, not used"}: ${r.title}${r.locator ? `, ${r.locator}` : ""}, score ${r.score.toFixed(2)}. Open source`}
+              >
+                <span className={s.kN} aria-hidden="true">{r.cited ? r.n : "–"}</span>
+                <span className={s.kMain}>
+                  <span className={s.kTitle}>
+                    <TypeGlyph type={type} title={r.title} />
+                    <span className={s.kName}>{r.title}</span>
+                    {r.locator && <span className={s.kLoc}>{r.locator}</span>}
+                  </span>
+                  <span className={s.kText}>{r.text}</span>
+                  <span className={s.kScore}>
+                    <span className={s.kTrack} aria-hidden="true"><span className={s.kFill} style={{ transform: `scaleX(${armed ? r.score : 0})` }} /></span>
+                    <b>{r.score.toFixed(2)}</b>
+                    {!r.cited && <em className={s.kTag}>retrieved · not used</em>}
+                  </span>
+                </span>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </>
   );
 }
 
@@ -201,6 +254,7 @@ export function InsightDrawer({ sessionId, close }: OverlayComponentProps<"O08">
   else if (!isChar(m)) body = <p className={s.empty}>Insight is available for character messages.</p>;
   else {
     let i = 0;
+    const num = (x: number) => String(x + 1).padStart(2, "0");
     const r = trace?.routing;
     const e = trace?.emotion;
     const md = trace?.model;
@@ -209,7 +263,7 @@ export function InsightDrawer({ sessionId, close }: OverlayComponentProps<"O08">
     if (r) {
       const cands = [...(r.candidates ?? [])].sort((a, b) => b.p - a.p);
       sections.push(
-        <Section key="routing" n="01" title="Routing · who speaks" i={i++} aside={r.forcedBy ? <Tape tone={r.forcedBy === "round_order" ? "ink" : "brand"} size="sm">{FORCED_LABEL[r.forcedBy]}</Tape> : null}>
+        <Section key="routing" n={num(i)} title="Routing · who speaks" i={i++} aside={r.forcedBy ? <Tape tone={r.forcedBy === "round_order" ? "ink" : "brand"} size="sm">{FORCED_LABEL[r.forcedBy]}</Tape> : null}>
           {r.question && <p className={s.question}>{r.question}</p>}
           {cands.length > 0 ? (
             <div className={s.bars}>
@@ -230,7 +284,7 @@ export function InsightDrawer({ sessionId, close }: OverlayComponentProps<"O08">
     if (e) {
       const cands = [...(e.candidates ?? [])].sort((a, b) => b.p - a.p).slice(0, 3);
       sections.push(
-        <Section key="emotion" n="02" title="Emotion" i={i++} aside={<span className={s.chip}>{e.source === "llm" ? "AI" : e.source}</span>}>
+        <Section key="emotion" n={num(i)} title="Emotion" i={i++} aside={<span className={s.chip}>{e.source === "llm" ? "AI" : e.source}</span>}>
           <p className={s.chosen}><span className={s.chosenIcon} aria-hidden="true">{emotionMeta[e.chosen].icon}</span>{emotionMeta[e.chosen].label}{cands[0] && <span className={cx(s.band, s[`band_${probBand(r2(cands[0].p))}`])}>{probBand(r2(cands[0].p))}</span>}</p>
           {cands.length > 0 && (
             <div className={s.bars}>
@@ -247,7 +301,7 @@ export function InsightDrawer({ sessionId, close }: OverlayComponentProps<"O08">
       const cached = md.tokensCached ?? 0;
       const hit = trace?.context?.cacheHitPct ?? (md.tokensIn ? Math.round((cached / md.tokensIn) * 100) : 0);
       sections.push(
-        <Section key="model" n="03" title="Model" i={i++} aside={<>
+        <Section key="model" n={num(i)} title="Model" i={i++} aside={<>
           {md.pricePeriod && <Tape tone={md.pricePeriod === "peak" ? "warn" : "ink"} size="sm">{md.pricePeriod === "peak" ? "Peak" : "Off-peak"}</Tape>}
           {hit > 0 && <span className={s.cache}>Cache {hit}%</span>}
         </>}>
@@ -261,7 +315,7 @@ export function InsightDrawer({ sessionId, close }: OverlayComponentProps<"O08">
     if (en) {
       const pct = en.max ? Math.min(1, en.remaining / en.max) : 0;
       sections.push(
-        <Section key="energy" n="04" title="Energy" i={i++}>
+        <Section key="energy" n={num(i)} title="Energy" i={i++}>
           <PaletteScope paletteId={chars[en.characterId]?.paletteId} className={s.energy}>
             <span className={s.drain}>−{en.spent} ⚡</span>
             <span className={s.remain}>{en.remaining.toLocaleString("en")} / {en.max.toLocaleString("en")}</span>
@@ -273,7 +327,7 @@ export function InsightDrawer({ sessionId, close }: OverlayComponentProps<"O08">
     if (!compact) {
       if (trace?.memory?.recalled.length) {
         sections.push(
-          <Section key="memory" n="05" title="Memory recalled" i={i++}>
+          <Section key="memory" n={num(i)} title="Memory recalled" i={i++}>
             <ul className={s.recall}>
               {trace.memory.recalled.map((x) => (
                 <li key={x.memoryItemId}><span>{x.text}</span>{x.score !== undefined && <b>{x.score.toFixed(2)}</b>}</li>
@@ -282,9 +336,23 @@ export function InsightDrawer({ sessionId, close }: OverlayComponentProps<"O08">
           </Section>,
         );
       }
+    }
+    if (trace?.knowledge?.retrieved.length) {
+      const kn = trace.knowledge;
+      const used = kn.retrieved.filter((x) => x.cited).length;
+      sections.push(
+        <Section key="knowledge" n={num(i)} title="Knowledge" i={i++} aside={<>
+          {kn.trigger && <span className={s.chip}>{TRIGGER_LABEL[kn.trigger]}</span>}
+          <span className={s.kUsed}>{used}/{kn.retrieved.length} cited</span>
+        </>}>
+          <KnowledgeList k={kn} m={m} armed={armed} />
+        </Section>,
+      );
+    }
+    if (!compact) {
       if (trace?.contextInSession?.length) {
         sections.push(
-          <Section key="recall" n="06" title="In-session recall" i={i++}>
+          <Section key="recall" n={num(i)} title="In-session recall" i={i++}>
             <ul className={s.recall}>
               {trace.contextInSession.map((x) => (
                 <li key={x.messageId}>
@@ -298,7 +366,7 @@ export function InsightDrawer({ sessionId, close }: OverlayComponentProps<"O08">
       if (trace?.context) {
         const u = trace.context.used;
         sections.push(
-          <Section key="context" n="07" title="Context budget" i={i++}>
+          <Section key="context" n={num(i)} title="Context budget" i={i++}>
             <StackedBar
               label="Context budget"
               total={trace.context.budget}
@@ -309,7 +377,7 @@ export function InsightDrawer({ sessionId, close }: OverlayComponentProps<"O08">
       }
       if (trace?.guardrail?.checks.length) {
         sections.push(
-          <Section key="guard" n="08" title="Guardrail" i={i++}>
+          <Section key="guard" n={num(i)} title="Guardrail" i={i++}>
             <ul className={s.checks}>
               {trace.guardrail.checks.map((x) => (
                 <li key={x.name} className={s[`v_${x.verdict}`]}>

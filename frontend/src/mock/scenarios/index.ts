@@ -78,6 +78,7 @@ export const SCENARIOS: Scenario[] = [
       ds.sessions = {};
       ds.memory = {};
       ds.knowledge = {};
+      ds.knowledgeChunks = {};
       ds.jobs = {};
       for (const w of Object.values(ds.worlds)) w.characterCount = 0;
     },
@@ -90,6 +91,7 @@ export const SCENARIOS: Scenario[] = [
       ds.sessions = {};
       ds.memory = {};
       ds.knowledge = {};
+      ds.knowledgeChunks = {};
       ds.jobs = {};
     },
   },

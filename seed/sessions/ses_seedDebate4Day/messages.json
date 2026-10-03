@@ -11,7 +11,7 @@
       "kind": "system_note",
       "content": "ROUND 1 · OPENING",
       "status": "complete",
-      "createdAt": "2026-10-01T10:02:51.208Z"
+      "createdAt": "2026-10-01T10:02:51.083Z"
     },
     {
       "kind": "chat",
@@ -28,20 +28,42 @@
         "type": "character",
         "characterId": "chr_seedAmara"
       },
-      "content": "I see the downstream cost of chronic overwork every shift: burnout, poor sleep, people arriving at my department with problems that started as exhaustion. A shorter week is a public-health intervention. Pilot programmes have reported lower burnout and better sleep without collapsing output. We should take that signal seriously at national scale.",
+      "content": "I see the downstream cost of chronic overwork every shift: burnout, poor sleep, people arriving at my department with problems that started as exhaustion.[1] A shorter week is a public-health intervention. Pilot programmes have reported lower burnout and better sleep without collapsing output.[2] We should take that signal seriously at national scale.",
       "status": "complete",
-      "createdAt": "2026-10-01T10:02:54.198Z",
+      "createdAt": "2026-10-01T10:02:54.073Z",
       "emotion": "neutral",
       "emotionSource": "llm",
       "usage": {
-        "tokensIn": 2357,
+        "tokensIn": 2662,
         "tokensCached": 1701,
-        "tokensOut": 87,
-        "costUsd": 0.000156,
-        "energySpent": 2,
+        "tokensOut": 88,
+        "costUsd": 0.000202,
+        "energySpent": 3,
         "firstTokenMs": 1316,
-        "totalMs": 3721
+        "totalMs": 3771
       },
+      "citations": [
+        {
+          "n": 1,
+          "sourceId": "kno_seedAmara1",
+          "title": "Meridian Shift Fatigue Review 2025.pdf",
+          "type": "file",
+          "chunkId": "kch_amaraFat03",
+          "locator": "p. 4",
+          "quote": "Self-reported burnout rose in every quarter of the review period. By October, 41% of emergency department staff met the review's threshold for high burnout, up from 29% in January.",
+          "score": 0.84
+        },
+        {
+          "n": 2,
+          "sourceId": "kno_seedAmara1",
+          "title": "Meridian Shift Fatigue Review 2025.pdf",
+          "type": "file",
+          "chunkId": "kch_amaraFat06",
+          "locator": "p. 9",
+          "quote": "Two wards piloted a compressed rota: four longer days, then three days off. After twelve weeks, burnout scores on both wards fell by roughly a fifth, sleep quality improved, and patient throughput stayed within normal variation.",
+          "score": 0.86
+        }
+      ],
       "trace": {
         "messageId": "msg_seedD02",
         "model": {
@@ -50,16 +72,16 @@
           "pricePeriod": "off_peak",
           "latencyMs": {
             "firstToken": 1316,
-            "total": 3721
+            "total": 3771
           },
-          "tokensIn": 2357,
+          "tokensIn": 2662,
           "tokensCached": 1701,
-          "tokensOut": 87,
-          "costUsd": 0.000156
+          "tokensOut": 88,
+          "costUsd": 0.000202
         },
         "energy": {
           "characterId": "chr_seedAmara",
-          "spent": 2,
+          "spent": 3,
           "remaining": 1004,
           "max": 1000
         },
@@ -87,12 +109,12 @@
         },
         "context": {
           "budget": 12000,
-          "cacheHitPct": 72,
+          "cacheHitPct": 64,
           "used": {
             "system": 900,
             "persona": 798,
             "memory": 0,
-            "knowledge": 0,
+            "knowledge": 305,
             "history": 4,
             "user": 75,
             "mode": 580
@@ -110,6 +132,50 @@
               "verdict": "pass"
             }
           ]
+        },
+        "knowledge": {
+          "query": "burnout and overwork evidence for a shorter working week",
+          "trigger": "always",
+          "retrieved": [
+            {
+              "chunkId": "kch_amaraFat06",
+              "sourceId": "kno_seedAmara1",
+              "title": "Meridian Shift Fatigue Review 2025.pdf",
+              "locator": "p. 9",
+              "text": "Two wards piloted a compressed rota: four longer days, then three days off. After twelve weeks, burnout scores on both wards fell by roughly a fifth, sleep quality improved, and patient throughput stayed within normal variation.",
+              "score": 0.86,
+              "cited": true,
+              "n": 2
+            },
+            {
+              "chunkId": "kch_amaraFat03",
+              "sourceId": "kno_seedAmara1",
+              "title": "Meridian Shift Fatigue Review 2025.pdf",
+              "locator": "p. 4",
+              "text": "Self-reported burnout rose in every quarter of the review period. By October, 41% of emergency department staff met the review's threshold for high burnout, up from 29% in January.",
+              "score": 0.84,
+              "cited": true,
+              "n": 1
+            },
+            {
+              "chunkId": "kch_amaraFat04",
+              "sourceId": "kno_seedAmara1",
+              "title": "Meridian Shift Fatigue Review 2025.pdf",
+              "locator": "p. 6",
+              "text": "Poor sleep was the most common complaint, named by 63% of respondents. Staff who slept under six hours before a shift were twice as likely to report a near-miss medication error that week.",
+              "score": 0.65,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraFat02",
+              "sourceId": "kno_seedAmara1",
+              "title": "Meridian Shift Fatigue Review 2025.pdf",
+              "locator": "p. 3",
+              "text": "Staff working more than three consecutive long shifts reported fatigue scores 38% higher than colleagues on shorter blocks. The effect was strongest in emergency and acute medicine, where rest days were most often cancelled at short notice.",
+              "score": 0.49,
+              "cited": false
+            }
+          ]
         }
       },
       "reactions": [
@@ -117,13 +183,13 @@
           "characterId": "chr_seedMei",
           "emotion": "thinking",
           "p": 0.73,
-          "at": "2026-10-01T10:02:58.272Z"
+          "at": "2026-10-01T10:02:58.197Z"
         },
         {
           "characterId": "chr_seedVictor",
           "emotion": "happy",
           "p": 0.85,
-          "at": "2026-10-01T10:02:58.294Z"
+          "at": "2026-10-01T10:02:58.219Z"
         }
       ]
     },
@@ -142,20 +208,42 @@
         "type": "character",
         "characterId": "chr_seedMei"
       },
-      "content": "Nobody here is pro-burnout. My problem is the word *nationwide*. The pilots I've seen were mostly voluntary, self-selected firms, often knowledge work, where output is hard to measure and easy to reorganise. A hospital, a bus network or a care home can't compress five days of coverage into four. They hire more staff or they cut service. Both cost money that somebody pays.",
+      "content": "Nobody here is pro-burnout. My problem is the word *nationwide*. The pilots I've seen were mostly voluntary, self-selected firms, often knowledge work,[1] where output is hard to measure and easy to reorganise.[2] A hospital, a bus network or a care home can't compress five days of coverage into four. They hire more staff or they cut service. Both cost money that somebody pays.",
       "status": "complete",
-      "createdAt": "2026-10-01T10:02:59.819Z",
+      "createdAt": "2026-10-01T10:02:59.744Z",
       "emotion": "thinking",
       "emotionSource": "llm",
       "usage": {
-        "tokensIn": 2398,
-        "tokensCached": 1729,
-        "tokensOut": 94,
-        "costUsd": 0.000162,
+        "tokensIn": 2614,
+        "tokensCached": 1730,
+        "tokensOut": 95,
+        "costUsd": 0.000195,
         "energySpent": 2,
         "firstTokenMs": 1477,
-        "totalMs": 4032
+        "totalMs": 4057
       },
+      "citations": [
+        {
+          "n": 1,
+          "sourceId": "kno_seedMei2",
+          "title": "Four-day week pilot summaries.pdf",
+          "type": "file",
+          "chunkId": "kch_meiPilot02",
+          "locator": "p. 3",
+          "quote": "Seventy-one percent of participating organisations were in professional services, software, marketing or the non-profit sector. Only nine provided round-the-clock or shift-based services.",
+          "score": 0.8
+        },
+        {
+          "n": 2,
+          "sourceId": "kno_seedMei2",
+          "title": "Four-day week pilot summaries.pdf",
+          "type": "file",
+          "chunkId": "kch_meiPilot03",
+          "locator": "p. 5",
+          "quote": "Across all pilots, self-reported burnout fell by an average of 32% and sick days by 21%. Revenue stayed broadly flat, but fewer than half of the firms tracked output with a consistent measure.",
+          "score": 0.92
+        }
+      ],
       "trace": {
         "messageId": "msg_seedD03",
         "model": {
@@ -164,12 +252,12 @@
           "pricePeriod": "off_peak",
           "latencyMs": {
             "firstToken": 1477,
-            "total": 4032
+            "total": 4057
           },
-          "tokensIn": 2398,
-          "tokensCached": 1729,
-          "tokensOut": 94,
-          "costUsd": 0.000162
+          "tokensIn": 2614,
+          "tokensCached": 1730,
+          "tokensOut": 95,
+          "costUsd": 0.000195
         },
         "energy": {
           "characterId": "chr_seedMei",
@@ -201,13 +289,13 @@
         },
         "context": {
           "budget": 12000,
-          "cacheHitPct": 72,
+          "cacheHitPct": 66,
           "used": {
             "system": 900,
             "persona": 748,
             "memory": 0,
-            "knowledge": 0,
-            "history": 91,
+            "knowledge": 215,
+            "history": 92,
             "user": 79,
             "mode": 580
           }
@@ -224,6 +312,41 @@
               "verdict": "pass"
             }
           ]
+        },
+        "knowledge": {
+          "query": "who took part in four-day week pilots",
+          "trigger": "always",
+          "retrieved": [
+            {
+              "chunkId": "kch_meiPilot03",
+              "sourceId": "kno_seedMei2",
+              "title": "Four-day week pilot summaries.pdf",
+              "locator": "p. 5",
+              "text": "Across all pilots, self-reported burnout fell by an average of 32% and sick days by 21%. Revenue stayed broadly flat, but fewer than half of the firms tracked output with a consistent measure.",
+              "score": 0.92,
+              "cited": true,
+              "n": 2
+            },
+            {
+              "chunkId": "kch_meiPilot02",
+              "sourceId": "kno_seedMei2",
+              "title": "Four-day week pilot summaries.pdf",
+              "locator": "p. 3",
+              "text": "Seventy-one percent of participating organisations were in professional services, software, marketing or the non-profit sector. Only nine provided round-the-clock or shift-based services.",
+              "score": 0.8,
+              "cited": true,
+              "n": 1
+            },
+            {
+              "chunkId": "kch_meiPilot01",
+              "sourceId": "kno_seedMei2",
+              "title": "Four-day week pilot summaries.pdf",
+              "locator": "p. 1",
+              "text": "This compendium summarises fourteen four-day week pilots run in Meridian between 2023 and 2025, covering 212 organisations and about 9,800 workers. Every participating organisation volunteered.",
+              "score": 0.5,
+              "cited": false
+            }
+          ]
         }
       },
       "reactions": [
@@ -231,13 +354,13 @@
           "characterId": "chr_seedVictor",
           "emotion": "angry",
           "p": 0.63,
-          "at": "2026-10-01T10:03:04.237Z"
+          "at": "2026-10-01T10:03:04.187Z"
         },
         {
           "characterId": "chr_seedAmara",
           "emotion": "sad",
           "p": 0.66,
-          "at": "2026-10-01T10:03:04.319Z"
+          "at": "2026-10-01T10:03:04.269Z"
         }
       ]
     },
@@ -256,20 +379,42 @@
         "type": "character",
         "characterId": "chr_seedVictor"
       },
-      "content": "Three points. One: \"nationwide\" need not mean \"identical\". The motion is about the default standard week, as we once did with the weekend. Two: law already handles continuous-coverage sectors through shift rules. Three: the burden of proof is on the status quo, a five-day week that was itself a policy choice, not a law of nature.",
+      "content": "Three points. One: \"nationwide\" need not mean \"identical\". The motion is about the default standard week, as we once did with the weekend.[1] Two: law already handles continuous-coverage sectors through shift rules.[2] Three: the burden of proof is on the status quo, a five-day week that was itself a policy choice, not a law of nature.",
       "status": "complete",
-      "createdAt": "2026-10-01T10:03:05.751Z",
+      "createdAt": "2026-10-01T10:03:05.701Z",
       "emotion": "happy",
       "emotionSource": "llm",
       "usage": {
-        "tokensIn": 2439,
-        "tokensCached": 1781,
-        "tokensOut": 83,
-        "costUsd": 0.000154,
+        "tokensIn": 2655,
+        "tokensCached": 1783,
+        "tokensOut": 84,
+        "costUsd": 0.000187,
         "energySpent": 2,
         "firstTokenMs": 1294,
-        "totalMs": 3549
+        "totalMs": 3599
       },
+      "citations": [
+        {
+          "n": 1,
+          "sourceId": "kno_seedVictor1",
+          "title": "Moot court notes",
+          "type": "text",
+          "chunkId": "kch_victorMoot02",
+          "locator": "¶ 2",
+          "quote": "Historical anchor: the Meridian Working Hours Act 1931 made the two-day weekend the default. It gave agriculture and shipping a ten-year transition and exempted continuous services.",
+          "score": 0.86
+        },
+        {
+          "n": 2,
+          "sourceId": "kno_seedVictor1",
+          "title": "Moot court notes",
+          "type": "text",
+          "chunkId": "kch_victorMoot03",
+          "locator": "¶ 3",
+          "quote": "Continuous-coverage sectors already run on shift rules under Part IV of the Working Time Code: rest periods, a cap on consecutive shifts, and averaging over a reference period. A shorter standard week sits inside that structure.",
+          "score": 0.79
+        }
+      ],
       "trace": {
         "messageId": "msg_seedD04",
         "model": {
@@ -278,12 +423,12 @@
           "pricePeriod": "off_peak",
           "latencyMs": {
             "firstToken": 1294,
-            "total": 3549
+            "total": 3599
           },
-          "tokensIn": 2439,
-          "tokensCached": 1781,
-          "tokensOut": 83,
-          "costUsd": 0.000154
+          "tokensIn": 2655,
+          "tokensCached": 1783,
+          "tokensOut": 84,
+          "costUsd": 0.000187
         },
         "energy": {
           "characterId": "chr_seedVictor",
@@ -315,13 +460,13 @@
         },
         "context": {
           "budget": 12000,
-          "cacheHitPct": 73,
+          "cacheHitPct": 67,
           "used": {
             "system": 900,
             "persona": 715,
             "memory": 0,
-            "knowledge": 0,
-            "history": 185,
+            "knowledge": 214,
+            "history": 187,
             "user": 59,
             "mode": 580
           }
@@ -336,6 +481,41 @@
             {
               "name": "advice_scope",
               "verdict": "pass"
+            }
+          ]
+        },
+        "knowledge": {
+          "query": "legal precedent for changing the standard working week",
+          "trigger": "always",
+          "retrieved": [
+            {
+              "chunkId": "kch_victorMoot02",
+              "sourceId": "kno_seedVictor1",
+              "title": "Moot court notes",
+              "locator": "¶ 2",
+              "text": "Historical anchor: the Meridian Working Hours Act 1931 made the two-day weekend the default. It gave agriculture and shipping a ten-year transition and exempted continuous services.",
+              "score": 0.86,
+              "cited": true,
+              "n": 1
+            },
+            {
+              "chunkId": "kch_victorMoot03",
+              "sourceId": "kno_seedVictor1",
+              "title": "Moot court notes",
+              "locator": "¶ 3",
+              "text": "Continuous-coverage sectors already run on shift rules under Part IV of the Working Time Code: rest periods, a cap on consecutive shifts, and averaging over a reference period. A shorter standard week sits inside that structure.",
+              "score": 0.79,
+              "cited": true,
+              "n": 2
+            },
+            {
+              "chunkId": "kch_victorMoot01",
+              "sourceId": "kno_seedVictor1",
+              "title": "Moot court notes",
+              "locator": "¶ 1",
+              "text": "Expect the opposition to say the evidence base is narrow. Concede scope early, then shift the burden: the status quo is also a policy and has to justify itself.",
+              "score": 0.46,
+              "cited": false
             }
           ]
         }
@@ -521,20 +701,32 @@
         "type": "character",
         "characterId": "chr_seedAmara"
       },
-      "content": "Then count the other side of the ledger too. Exhaustion has its own staffing cost. Burnt-out nurses leave, and every resignation is a recruitment and training bill. \"Hold service constant\" assumes the current service is stable. In my department, it isn't.",
+      "content": "Then count the other side of the ledger too. Exhaustion has its own staffing cost. Burnt-out nurses leave, and every resignation is a recruitment and training bill.[1] \"Hold service constant\" assumes the current service is stable. In my department, it isn't.",
       "status": "complete",
       "createdAt": "2026-10-01T10:03:21.500Z",
       "emotion": "angry",
       "emotionSource": "llm",
       "usage": {
-        "tokensIn": 2760,
-        "tokensCached": 2068,
-        "tokensOut": 64,
-        "costUsd": 0.000148,
+        "tokensIn": 2982,
+        "tokensCached": 2071,
+        "tokensOut": 65,
+        "costUsd": 0.000182,
         "energySpent": 2,
         "firstTokenMs": 1384,
         "totalMs": 3214
       },
+      "citations": [
+        {
+          "n": 1,
+          "sourceId": "kno_seedAmara1",
+          "title": "Meridian Shift Fatigue Review 2025.pdf",
+          "type": "file",
+          "chunkId": "kch_amaraFat08",
+          "locator": "p. 13",
+          "quote": "Voluntary resignations among nursing staff reached 14% over the year. The Trust's finance office puts each replacement at roughly four months of salary once recruitment, induction and supervised practice are counted.",
+          "score": 0.83
+        }
+      ],
       "trace": {
         "messageId": "msg_seedD09",
         "model": {
@@ -545,10 +737,10 @@
             "firstToken": 1384,
             "total": 3214
           },
-          "tokensIn": 2760,
-          "tokensCached": 2068,
-          "tokensOut": 64,
-          "costUsd": 0.000148
+          "tokensIn": 2982,
+          "tokensCached": 2071,
+          "tokensOut": 65,
+          "costUsd": 0.000182
         },
         "energy": {
           "characterId": "chr_seedAmara",
@@ -580,13 +772,13 @@
         },
         "context": {
           "budget": 12000,
-          "cacheHitPct": 75,
+          "cacheHitPct": 69,
           "used": {
             "system": 900,
             "persona": 751,
             "memory": 0,
-            "knowledge": 0,
-            "history": 464,
+            "knowledge": 219,
+            "history": 467,
             "user": 65,
             "mode": 580
           }
@@ -601,6 +793,40 @@
             {
               "name": "advice_scope",
               "verdict": "pass"
+            }
+          ]
+        },
+        "knowledge": {
+          "query": "staffing cost of burnout and resignations",
+          "trigger": "always",
+          "retrieved": [
+            {
+              "chunkId": "kch_amaraFat08",
+              "sourceId": "kno_seedAmara1",
+              "title": "Meridian Shift Fatigue Review 2025.pdf",
+              "locator": "p. 13",
+              "text": "Voluntary resignations among nursing staff reached 14% over the year. The Trust's finance office puts each replacement at roughly four months of salary once recruitment, induction and supervised practice are counted.",
+              "score": 0.83,
+              "cited": true,
+              "n": 1
+            },
+            {
+              "chunkId": "kch_amaraFat07",
+              "sourceId": "kno_seedAmara1",
+              "title": "Meridian Shift Fatigue Review 2025.pdf",
+              "locator": "p. 11",
+              "text": "The pilot wards needed 6% more agency hours during the transition month to cover handovers. That cost fell back to baseline by week eight, once teams had settled the new handover pattern.",
+              "score": 0.52,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraFat09",
+              "sourceId": "kno_seedAmara1",
+              "title": "Meridian Shift Fatigue Review 2025.pdf",
+              "locator": "p. 15",
+              "text": "Exit interviews named workload and unpredictable rotas as the two leading reasons for leaving, ahead of pay. Several leavers said they would have stayed for a guaranteed rest pattern.",
+              "score": 0.48,
+              "cited": false
             }
           ]
         }
@@ -641,8 +867,8 @@
       "emotion": "neutral",
       "emotionSource": "llm",
       "usage": {
-        "tokensIn": 2808,
-        "tokensCached": 2129,
+        "tokensIn": 2812,
+        "tokensCached": 2132,
         "tokensOut": 48,
         "costUsd": 0.000137,
         "energySpent": 2,
@@ -659,8 +885,8 @@
             "firstToken": 1340,
             "total": 2670
           },
-          "tokensIn": 2808,
-          "tokensCached": 2129,
+          "tokensIn": 2812,
+          "tokensCached": 2132,
           "tokensOut": 48,
           "costUsd": 0.000137
         },
@@ -700,7 +926,7 @@
             "persona": 754,
             "memory": 0,
             "knowledge": 0,
-            "history": 528,
+            "history": 532,
             "user": 46,
             "mode": 580
           }
@@ -755,20 +981,42 @@
         "type": "character",
         "characterId": "chr_seedMei"
       },
-      "content": "I'll concede the direction may be right. But this motion asks for a national mandate based on evidence from the easiest cases. Fund large, sector-specific trials in health, transport and care first. If the numbers hold there, I'll vote with you.",
+      "content": "I'll concede the direction may be right. But this motion asks for a national mandate based on evidence from the easiest cases.[1] Fund large, sector-specific trials in health, transport and care first.[2] If the numbers hold there, I'll vote with you.",
       "status": "complete",
       "createdAt": "2026-10-01T10:03:32.884Z",
       "emotion": "neutral",
       "emotionSource": "llm",
       "usage": {
-        "tokensIn": 2829,
-        "tokensCached": 2137,
-        "tokensOut": 61,
-        "costUsd": 0.000147,
+        "tokensIn": 3033,
+        "tokensCached": 2140,
+        "tokensOut": 63,
+        "costUsd": 0.000178,
         "energySpent": 2,
         "firstTokenMs": 1339,
-        "totalMs": 2994
+        "totalMs": 3044
       },
+      "citations": [
+        {
+          "n": 1,
+          "sourceId": "kno_seedMei2",
+          "title": "Four-day week pilot summaries.pdf",
+          "type": "file",
+          "chunkId": "kch_meiPilot05",
+          "locator": "p. 9",
+          "quote": "None of the pilots included an acute hospital, a public transport operator or a residential care provider. The authors flag this as the main gap in the evidence.",
+          "score": 0.87
+        },
+        {
+          "n": 2,
+          "sourceId": "kno_seedMei2",
+          "title": "Four-day week pilot summaries.pdf",
+          "type": "file",
+          "chunkId": "kch_meiPilot09",
+          "locator": "p. 20",
+          "quote": "The authors recommend sector-specific trials in health, transport and care, with independent measurement of output and service quality, before any national standard is set.",
+          "score": 0.78
+        }
+      ],
       "trace": {
         "messageId": "msg_seedD12",
         "model": {
@@ -777,12 +1025,12 @@
           "pricePeriod": "off_peak",
           "latencyMs": {
             "firstToken": 1339,
-            "total": 2994
+            "total": 3044
           },
-          "tokensIn": 2829,
-          "tokensCached": 2137,
-          "tokensOut": 61,
-          "costUsd": 0.000147
+          "tokensIn": 3033,
+          "tokensCached": 2140,
+          "tokensOut": 63,
+          "costUsd": 0.000178
         },
         "energy": {
           "characterId": "chr_seedMei",
@@ -814,13 +1062,13 @@
         },
         "context": {
           "budget": 12000,
-          "cacheHitPct": 76,
+          "cacheHitPct": 71,
           "used": {
             "system": 900,
             "persona": 715,
             "memory": 0,
-            "knowledge": 0,
-            "history": 580,
+            "knowledge": 200,
+            "history": 584,
             "user": 54,
             "mode": 580
           }
@@ -835,6 +1083,41 @@
             {
               "name": "advice_scope",
               "verdict": "pass"
+            }
+          ]
+        },
+        "knowledge": {
+          "query": "gaps in the four-day week pilot evidence",
+          "trigger": "always",
+          "retrieved": [
+            {
+              "chunkId": "kch_meiPilot05",
+              "sourceId": "kno_seedMei2",
+              "title": "Four-day week pilot summaries.pdf",
+              "locator": "p. 9",
+              "text": "None of the pilots included an acute hospital, a public transport operator or a residential care provider. The authors flag this as the main gap in the evidence.",
+              "score": 0.87,
+              "cited": true,
+              "n": 1
+            },
+            {
+              "chunkId": "kch_meiPilot09",
+              "sourceId": "kno_seedMei2",
+              "title": "Four-day week pilot summaries.pdf",
+              "locator": "p. 20",
+              "text": "The authors recommend sector-specific trials in health, transport and care, with independent measurement of output and service quality, before any national standard is set.",
+              "score": 0.78,
+              "cited": true,
+              "n": 2
+            },
+            {
+              "chunkId": "kch_meiPilot07",
+              "sourceId": "kno_seedMei2",
+              "title": "Four-day week pilot summaries.pdf",
+              "locator": "p. 14",
+              "text": "Ninety-two percent of organisations kept the four-day week after the pilot. Participants were not randomly selected, so the authors warn against reading this as a national estimate.",
+              "score": 0.66,
+              "cited": false
             }
           ]
         }
@@ -857,12 +1140,12 @@
       },
       "content": "That's the most constructive opposition I've heard. But waiting is also a choice, and its cost shows up in my waiting room.",
       "status": "complete",
-      "createdAt": "2026-10-01T10:03:37.778Z",
+      "createdAt": "2026-10-01T10:03:37.828Z",
       "emotion": "happy",
       "emotionSource": "llm",
       "usage": {
-        "tokensIn": 2913,
-        "tokensCached": 2201,
+        "tokensIn": 2919,
+        "tokensCached": 2207,
         "tokensOut": 31,
         "costUsd": 0.000132,
         "energySpent": 2,
@@ -879,8 +1162,8 @@
             "firstToken": 1702,
             "total": 2607
           },
-          "tokensIn": 2913,
-          "tokensCached": 2201,
+          "tokensIn": 2919,
+          "tokensCached": 2207,
           "tokensOut": 31,
           "costUsd": 0.000132
         },
@@ -920,7 +1203,7 @@
             "persona": 725,
             "memory": 0,
             "knowledge": 0,
-            "history": 641,
+            "history": 647,
             "user": 67,
             "mode": 580
           }
@@ -957,12 +1240,12 @@
       },
       "content": "*Res ipsa loquitur*: the thing speaks for itself. Even the Opposition agrees on the destination. We rest.",
       "status": "complete",
-      "createdAt": "2026-10-01T10:03:42.285Z",
+      "createdAt": "2026-10-01T10:03:42.335Z",
       "emotion": "happy",
       "emotionSource": "llm",
       "usage": {
-        "tokensIn": 3009,
-        "tokensCached": 2314,
+        "tokensIn": 3015,
+        "tokensCached": 2320,
         "tokensOut": 26,
         "costUsd": 0.000127,
         "energySpent": 2,
@@ -979,8 +1262,8 @@
             "firstToken": 1382,
             "total": 2162
           },
-          "tokensIn": 3009,
-          "tokensCached": 2314,
+          "tokensIn": 3015,
+          "tokensCached": 2320,
           "tokensOut": 26,
           "costUsd": 0.000127
         },
@@ -1020,7 +1303,7 @@
             "persona": 810,
             "memory": 0,
             "knowledge": 0,
-            "history": 672,
+            "history": 678,
             "user": 47,
             "mode": 580
           }
@@ -1050,7 +1333,7 @@
       "kind": "verdict",
       "content": "**Arbiter's assessment** (argument quality, not factual truth)\n\n**Stronger case: Proposition**\n\n**Key disagreement:** whether evidence from voluntary pilots generalises to coverage-based sectors.",
       "status": "complete",
-      "createdAt": "2026-10-01T10:03:47.047Z"
+      "createdAt": "2026-10-01T10:03:47.097Z"
     }
   ]
 }

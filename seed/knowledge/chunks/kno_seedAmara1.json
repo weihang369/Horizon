@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "data": [
+    {
+      "id": "kch_amaraFat01",
+      "sourceId": "kno_seedAmara1",
+      "index": 0,
+      "locator": "p. 2",
+      "text": "This review covers 1,140 clinical staff across four Meridian Health Trust sites between January and October 2025. Fatigue was measured with a fortnightly self-report scale and matched against rota data. All names and units are anonymised."
+    },
+    {
+      "id": "kch_amaraFat02",
+      "sourceId": "kno_seedAmara1",
+      "index": 1,
+      "locator": "p. 3",
+      "text": "Staff working more than three consecutive long shifts reported fatigue scores 38% higher than colleagues on shorter blocks. The effect was strongest in emergency and acute medicine, where rest days were most often cancelled at short notice."
+    },
+    {
+      "id": "kch_amaraFat03",
+      "sourceId": "kno_seedAmara1",
+      "index": 2,
+      "locator": "p. 4",
+      "text": "Self-reported burnout rose in every quarter of the review period. By October, 41% of emergency department staff met the review's threshold for high burnout, up from 29% in January."
+    },
+    {
+      "id": "kch_amaraFat04",
+      "sourceId": "kno_seedAmara1",
+      "index": 3,
+      "locator": "p. 6",
+      "text": "Poor sleep was the most common complaint, named by 63% of respondents. Staff who slept under six hours before a shift were twice as likely to report a near-miss medication error that week."
+    },
+    {
+      "id": "kch_amaraFat05",
+      "sourceId": "kno_seedAmara1",
+      "index": 4,
+      "locator": "p. 7",
+      "text": "Fatigue-related problems among staff themselves, from headaches and gastric complaints to minor injuries on the commute home, cost the Trust an estimated 2,300 lost shifts."
+    },
+    {
+      "id": "kch_amaraFat06",
+      "sourceId": "kno_seedAmara1",
+      "index": 5,
+      "locator": "p. 9",
+      "text": "Two wards piloted a compressed rota: four longer days, then three days off. After twelve weeks, burnout scores on both wards fell by roughly a fifth, sleep quality improved, and patient throughput stayed within normal variation."
+    },
+    {
+      "id": "kch_amaraFat07",
+      "sourceId": "kno_seedAmara1",
+      "index": 6,
+      "locator": "p. 11",
+      "text": "The pilot wards needed 6% more agency hours during the transition month to cover handovers. That cost fell back to baseline by week eight, once teams had settled the new handover pattern."
+    },
+    {
+      "id": "kch_amaraFat08",
+      "sourceId": "kno_seedAmara1",
+      "index": 7,
+      "locator": "p. 13",
+      "text": "Voluntary resignations among nursing staff reached 14% over the year. The Trust's finance office puts each replacement at roughly four months of salary once recruitment, induction and supervised practice are counted."
+    },
+    {
+      "id": "kch_amaraFat09",
+      "sourceId": "kno_seedAmara1",
+      "index": 8,
+      "locator": "p. 15",
+      "text": "Exit interviews named workload and unpredictable rotas as the two leading reasons for leaving, ahead of pay. Several leavers said they would have stayed for a guaranteed rest pattern."
+    },
+    {
+      "id": "kch_amaraFat10",
+      "sourceId": "kno_seedAmara1",
+      "index": 9,
+      "locator": "p. 17",
+      "text": "The review recommends extending the compressed-rota pilot to three further departments, protecting rest days from short-notice cancellation, and reporting fatigue scores to the Trust board every quarter."
+    }
+  ]
+}

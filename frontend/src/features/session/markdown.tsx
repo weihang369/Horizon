@@ -2,6 +2,7 @@
 // Bold, italics, inline code, fenced code, links (http/https/mailto only), bullet and numbered lists, quotes.
 // Raw HTML is never interpreted: everything is emitted as React text nodes (escaped by React).
 // Rendered only on turn.end (R12); streaming text stays plain.
+// D-59: `[n]` markers with a matching citation become `cite` nodes (never inside code); others stay literal text.
 import type { ReactNode } from "react";
 
 export type MdBlock =
@@ -16,7 +17,12 @@ export type MdInline =
   | { type: "code"; text: string }
   | { type: "strong"; children: MdInline[] }
   | { type: "em"; children: MdInline[] }
-  | { type: "link"; href: string; children: MdInline[] };
+  | { type: "link"; href: string; children: MdInline[] }
+  | { type: "cite"; n: number };
+
+/** Renders a citation marker (D-59). */
+export type CiteRenderer = (n: number, key: string) => ReactNode;
+export interface MdOptions { cites?: ReadonlySet<number>; renderCite?: CiteRenderer }
 
 const UL = /^\s{0,3}[-*+]\s+(.*)$/;
 const OL = /^\s{0,3}(\d{1,3})[.)]\s+(.*)$/;
@@ -88,8 +94,10 @@ export function parseBlocks(src: string): MdBlock[] {
 
 const SAFE_HREF = /^(https?:\/\/|mailto:)/i;
 
-/** Parse inline spans. Unclosed markers stay literal. */
-export function parseInline(src: string): MdInline[] {
+const CITE = /^\[(\d{1,2})\]/;
+
+/** Parse inline spans. Unclosed markers stay literal. `cites`: marker numbers that have a citation. */
+export function parseInline(src: string, cites?: ReadonlySet<number>): MdInline[] {
   const out: MdInline[] = [];
   let buf = "";
   const pushText = () => {
@@ -113,6 +121,15 @@ export function parseInline(src: string): MdInline[] {
         continue;
       }
     }
+    if (ch === "[" && cites?.size) {
+      const cm = CITE.exec(src.slice(i, i + 5));
+      if (cm && cites.has(Number(cm[1])) && src[i + cm[0].length] !== "(") {
+        pushText();
+        out.push({ type: "cite", n: Number(cm[1]) });
+        i += cm[0].length;
+        continue;
+      }
+    }
     if (ch === "[") {
       const close = src.indexOf("]", i + 1);
       if (close > i && src[close + 1] === "(") {
@@ -120,7 +137,7 @@ export function parseInline(src: string): MdInline[] {
         const href = end > close ? src.slice(close + 2, end).trim() : "";
         if (end > close && SAFE_HREF.test(href)) {
           pushText();
-          out.push({ type: "link", href, children: parseInline(src.slice(i + 1, close)) });
+          out.push({ type: "link", href, children: parseInline(src.slice(i + 1, close), cites) });
           i = end + 1;
           continue;
         }
@@ -131,7 +148,7 @@ export function parseInline(src: string): MdInline[] {
       const end = src.indexOf(marker, i + 2);
       if (end > i + 2) {
         pushText();
-        out.push({ type: "strong", children: parseInline(src.slice(i + 2, end)) });
+        out.push({ type: "strong", children: parseInline(src.slice(i + 2, end), cites) });
         i = end + 2;
         continue;
       }
@@ -151,7 +168,7 @@ export function parseInline(src: string): MdInline[] {
         }
         if (end > i + 1) {
           pushText();
-          out.push({ type: "em", children: parseInline(src.slice(i + 1, end)) });
+          out.push({ type: "em", children: parseInline(src.slice(i + 1, end), cites) });
           i = end + 1;
           continue;
         }
@@ -164,15 +181,16 @@ export function parseInline(src: string): MdInline[] {
   return out;
 }
 
-function renderInline(nodes: MdInline[], key = "i"): ReactNode[] {
+function renderInline(nodes: MdInline[], key = "i", cite?: CiteRenderer): ReactNode[] {
   return nodes.map((n, idx) => {
     const k = `${key}.${idx}`;
     switch (n.type) {
       case "text": return withBreaks(n.text, k);
       case "code": return <code key={k}>{n.text}</code>;
-      case "strong": return <strong key={k}>{renderInline(n.children, k)}</strong>;
-      case "em": return <em key={k}>{renderInline(n.children, k)}</em>;
-      case "link": return <a key={k} href={n.href} target="_blank" rel="noreferrer noopener">{renderInline(n.children, k)}</a>;
+      case "strong": return <strong key={k}>{renderInline(n.children, k, cite)}</strong>;
+      case "em": return <em key={k}>{renderInline(n.children, k, cite)}</em>;
+      case "link": return <a key={k} href={n.href} target="_blank" rel="noreferrer noopener">{renderInline(n.children, k, cite)}</a>;
+      case "cite": return cite ? cite(n.n, k) : `[${n.n}]`;
     }
     return null;
   });
@@ -185,16 +203,18 @@ function withBreaks(text: string, key: string): ReactNode {
 }
 
 /** Render Markdown source as React nodes (no raw HTML, ever). */
-export function renderMarkdown(src: string): ReactNode {
+export function renderMarkdown(src: string, opts: MdOptions = {}): ReactNode {
+  const cites = opts.renderCite ? opts.cites : undefined;
+  const inl = (text: string, k: string) => renderInline(parseInline(text, cites), k, opts.renderCite);
   return parseBlocks(src).map((b, i) => {
     const k = `b${i}`;
     switch (b.type) {
-      case "p": return <p key={k}>{renderInline(parseInline(b.text), k)}</p>;
-      case "h": return <p key={k}><strong>{renderInline(parseInline(b.text), k)}</strong></p>;
-      case "quote": return <blockquote key={k}>{renderInline(parseInline(b.text), k)}</blockquote>;
+      case "p": return <p key={k}>{inl(b.text, k)}</p>;
+      case "h": return <p key={k}><strong>{inl(b.text, k)}</strong></p>;
+      case "quote": return <blockquote key={k}>{inl(b.text, k)}</blockquote>;
       case "code": return <pre key={k}><code>{b.text}</code></pre>;
-      case "ul": return <ul key={k}>{b.items.map((it, j) => <li key={j}>{renderInline(parseInline(it), `${k}.${j}`)}</li>)}</ul>;
-      case "ol": return <ol key={k} start={b.start}>{b.items.map((it, j) => <li key={j}>{renderInline(parseInline(it), `${k}.${j}`)}</li>)}</ol>;
+      case "ul": return <ul key={k}>{b.items.map((it, j) => <li key={j}>{inl(it, `${k}.${j}`)}</li>)}</ul>;
+      case "ol": return <ol key={k} start={b.start}>{b.items.map((it, j) => <li key={j}>{inl(it, `${k}.${j}`)}</li>)}</ol>;
     }
     return null;
   });
@@ -202,7 +222,7 @@ export function renderMarkdown(src: string): ReactNode {
 
 /** Strip Markdown markers for plain displays (backlog search, cut-ins, copy). */
 export function plainText(src: string): string {
-  const flat = (n: MdInline[]): string => n.map((x) => (x.type === "text" || x.type === "code" ? x.text : flat(x.children))).join("");
+  const flat = (n: MdInline[]): string => n.map((x) => (x.type === "text" || x.type === "code" ? x.text : x.type === "cite" ? `[${x.n}]` : flat(x.children))).join("");
   return parseBlocks(src)
     .map((b) => {
       if (b.type === "code") return b.text;
@@ -210,4 +230,19 @@ export function plainText(src: string): string {
       return flat(parseInline(b.text));
     })
     .join("\n");
+}
+
+/** Split plain text into text runs and cited marker numbers (Backlog, streaming). `cites` undefined = every marker. */
+export function splitMarkers(text: string, cites?: ReadonlySet<number>): (string | number)[] {
+  const out: (string | number)[] = [];
+  let at = 0;
+  for (const m of text.matchAll(/\[(\d{1,2})\](?!\()/g)) {
+    const n = Number(m[1]);
+    if (cites && !cites.has(n)) continue;
+    if (m.index > at) out.push(text.slice(at, m.index));
+    out.push(n);
+    at = m.index + m[0].length;
+  }
+  if (at < text.length) out.push(text.slice(at));
+  return out;
 }

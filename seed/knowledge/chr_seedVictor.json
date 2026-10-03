@@ -8,7 +8,10 @@
       "title": "Moot court notes",
       "type": "text",
       "status": "indexed",
-      "bytes": 18220
+      "bytes": 18220,
+      "addedAt": "2026-09-22T22:30:00Z",
+      "chunks": 6,
+      "citedCount": 2
     }
   ]
 }

@@ -36,6 +36,7 @@ import { estimateJob, JobRunner } from "./engines/jobs";
 import type { JobHost } from "./engines/jobs";
 import * as oneEngine from "./engines/oneOnOne";
 import * as watchEngine from "./engines/watch";
+import { footnoteCitations } from "./script/citations";
 import { createRng, iso, makeId } from "./rng";
 import type { Faults, Scenario, ScenarioId } from "./scenarios";
 import { SCENARIO_BY_ID, isScenarioId } from "./scenarios";
@@ -452,6 +453,7 @@ export class MockClient implements HorizonClient {
       for (const [sid, r] of Object.entries(this.db.sessions)) if (r.session.worldId === id) this.dropSession(sid);
       for (const m of Object.values(this.db.memory)) if (m.worldId === id) delete this.db.memory[m.id];
       for (const k of Object.values(this.db.knowledge)) if (k.worldId === id) delete this.db.knowledge[k.id];
+      this.dropOrphanChunks();
       this.changed("world", id, id);
     }),
   };
@@ -559,6 +561,8 @@ export class MockClient implements HorizonClient {
       const c = this.char(id);
       delete this.db.characters[id];
       for (const m of Object.values(this.db.memory)) if (m.characterId === id) delete this.db.memory[m.id];
+      for (const k of Object.values(this.db.knowledge)) if (k.characterId === id) delete this.db.knowledge[k.id];
+      this.dropOrphanChunks();
       this.changed("character", id, c.worldId);
     }),
     assets: (id) => this.query(() => Object.values(this.db.assets).filter((a) => a.characterId === id).sort((a, b) => a.emotion.localeCompare(b.emotion) || a.version - b.version)),
@@ -600,13 +604,19 @@ export class MockClient implements HorizonClient {
       if (m) this.changed("memory", m.characterId, m.worldId);
     }),
     knowledge: (id) => this.query(() => Object.values(this.db.knowledge).filter((k) => k.characterId === id)),
-    // D-59 stub: Builder C replaces this with seeded passages (seed/knowledge chunks).
+    // D-59: a source and its indexed passages, in order (seed/knowledge/chunks).
     knowledgeSource: (sourceId) => this.query(() => {
       const source = this.db.knowledge[sourceId];
       if (!source) throw new HorizonError("network", "Source not found.", { retryable: false });
-      return { source, chunks: [] };
+      const chunks = Object.values(this.db.knowledgeChunks).filter((c) => c.sourceId === sourceId).sort((a, b) => a.index - b.index);
+      return { source, chunks };
     }),
   };
+
+  /** D-59: passages whose source is gone (world/character deleted) go with it. */
+  private dropOrphanChunks(): void {
+    for (const c of Object.values(this.db.knowledgeChunks)) if (!this.db.knowledge[c.sourceId]) delete this.db.knowledgeChunks[c.id];
+  }
 
   /** Energy changed outside a turn (top-up, max): live sessions with that character get an `energy` event. */
   private broadcastEnergy(c: Character): void {
@@ -863,12 +873,15 @@ export class MockClient implements HorizonClient {
     if (s.mode === "debate") lines.push(`- Motion: ${(s.config as DebateConfig).motion}`);
     if (s.mode === "watch") lines.push(`- Premise: ${(s.config as WatchConfig).premise}`);
     lines.push("");
+    const notes: string[] = [];
     for (const m of messages) {
       const who = m.author.type === "user" ? (m.kind === "chat" ? "You" : "MODERATOR") : m.author.type === "character" ? name(m.author.characterId) : m.author.type === "host" ? "HOST" : "—";
-      lines.push(`**${who}**${m.emotion ? ` [${m.emotion}]` : ""}: ${m.content}`, "");
+      lines.push(`**${who}**${m.emotion ? ` [${m.emotion}]` : ""}: ${footnoteCitations(m.content, m.citations, notes)}`, "");
     }
     const v = s.state && "verdict" in s.state ? s.state.verdict : undefined;
     if (v) lines.push("## Verdict", "", `Stronger case: ${v.strongerCase ?? "too close to call"}`, ...(v.rationale ? ["", v.rationale] : []));
+    // D-59: cited knowledge as Markdown footnotes (source title, locator, quote).
+    if (notes.length) lines.push("", "## Sources", "", ...notes);
     return lines.join("\n");
   }
 
@@ -1056,7 +1069,7 @@ export class MockClient implements HorizonClient {
     this.sched.cancelAll();
     this.reseed(s);
     if (keepUserData && prev) {
-      for (const k of ["worlds", "characters", "assets", "songs", "sessions", "memory", "knowledge", "jobs"] as const) {
+      for (const k of ["worlds", "characters", "assets", "songs", "sessions", "memory", "knowledge", "knowledgeChunks", "jobs"] as const) {
         const into = this.db[k] as Record<string, unknown>;
         // A scenario that empties a collection (no_worlds) means it; don't refill it.
         if (!Object.keys(into).length) continue;

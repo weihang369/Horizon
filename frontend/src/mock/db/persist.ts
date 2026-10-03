@@ -54,7 +54,7 @@ export function loadSnapshot(storage: KV | null, seed: Dataset): Dataset | null 
     if (!part.session) continue;
     sessions[id] = { session: part.session, messages: part.messages ?? orig?.messages ?? [], events: part.events ?? orig?.events ?? [] };
   }
-  return { ...snap.data, sessions };
+  return { ...snap.data, knowledgeChunks: snap.data.knowledgeChunks ?? seed.knowledgeChunks, sessions };
 }
 
 export function clearSnapshot(storage: KV | null): void {

@@ -13,6 +13,7 @@ import { Tape } from "../../ui/Tape";
 import { Tooltip } from "../../ui/Data";
 import { cx } from "../../ui/cx";
 import { InfoIcon, KeyIcon, RegenIcon } from "../../ui/icons";
+import { CiteChip, PendingText, SourcesStrip } from "./Citations";
 import { plainText, renderMarkdown } from "./markdown";
 import { firstName, READABLE_CHARS, useSessionCtx } from "./sessionContext";
 import s from "./SessionLog.module.css";
@@ -38,7 +39,7 @@ function StreamingText({ id, fallback }: { id: string; fallback: string }) {
   if (!text) return <TypingDots />;
   return (
     <span className={s.streamText}>
-      {text}
+      <PendingText text={text} />
       <span className={s.caret} aria-hidden="true" />
     </span>
   );
@@ -158,7 +159,17 @@ function MessageRowImpl({ m, chars, variant, selected, canRegenerate, fresh, onO
   const activeIdx = variants ? Math.max(0, variants.findIndex((v) => v.id === m.activeVariantId)) : 0;
   const shownIdx = variants && viewVariant ? Math.max(0, variants.findIndex((v) => v.id === viewVariant)) : activeIdx;
   const content = variants && !streaming && shownIdx !== activeIdx ? variants[shownIdx].content : m.content;
-  const body = useMemo(() => (streaming ? null : renderMarkdown(content)), [streaming, content]);
+  // D-59: citations belong to the active content (a non-active variant shows its markers as plain text).
+  const cites = !streaming && content === m.content && m.citations?.length ? m.citations : undefined;
+  const body = useMemo(() => {
+    if (streaming) return null;
+    if (!cites) return renderMarkdown(content);
+    const byN = new Map(cites.map((c) => [c.n, c]));
+    return renderMarkdown(content, {
+      cites: new Set(byN.keys()),
+      renderCite: (n, key) => <CiteChip key={key} c={byN.get(n)!} paletteId={char?.paletteId} characterId={m.author.characterId} />,
+    });
+  }, [streaming, content, cites, char?.paletteId, m.author.characterId]);
 
   // ── System notes ──
   if (m.kind === "system_note") {
@@ -210,6 +221,11 @@ function MessageRowImpl({ m, chars, variant, selected, canRegenerate, fresh, onO
           {streaming ? <StreamingText id={m.id} fallback={m.content} /> : body}
           {statusTag}
         </span>
+        {cites && (
+          <PaletteScope paletteId={char?.paletteId} className={s.scriptSources}>
+            <SourcesStrip cites={cites} characterId={m.author.characterId} compact />
+          </PaletteScope>
+        )}
         <Reactions m={m} chars={chars} />
       </li>
     );
@@ -248,6 +264,7 @@ function MessageRowImpl({ m, chars, variant, selected, canRegenerate, fresh, onO
           {streaming ? <StreamingText id={m.id} fallback={m.content} /> : <div className={s.md}>{body}</div>}
           {statusTag}
         </div>}
+        {cites && <SourcesStrip cites={cites} characterId={m.author.characterId} compact={!readable} />}
         {streaming && <span className="sr-only">{name} is typing</span>}
         {m.error && <ErrorActions m={m} char={char} />}
         {(isChar || isUser) && !streaming && (

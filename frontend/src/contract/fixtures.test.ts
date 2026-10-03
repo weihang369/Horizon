@@ -4,9 +4,9 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
-import type { Character, Message, Session, SessionEvent, World } from "./types";
+import type { Character, KnowledgeChunk, KnowledgeSource, Message, Session, SessionEvent, World } from "./types";
 import {
-  AppSettingsSchema, CharacterSchema, GenerationJobSchema, KnowledgeSourceSchema, MemoryItemSchema, MessageSchema,
+  AppSettingsSchema, CharacterSchema, GenerationJobSchema, KnowledgeChunkSchema, KnowledgeSourceSchema, MemoryItemSchema, MessageSchema,
   PaletteSchema, SessionEventSchema, SessionSchema, StylePresetSchema, SystemTrackSchema, ThemeSongSchema,
   UsageRecordSchema, WorldSchema, fixtureFile,
 } from "./schemas";
@@ -33,6 +33,7 @@ function schemaFor(rel: string): z.ZodType | null {
   if (r.startsWith("characters/")) return CharacterSchema;
   if (r.startsWith("songs/")) return ThemeSongSchema;
   if (r.startsWith("memory/")) return z.array(MemoryItemSchema);
+  if (r.startsWith("knowledge/chunks/")) return z.array(KnowledgeChunkSchema);
   if (r.startsWith("knowledge/")) return z.array(KnowledgeSourceSchema);
   if (r.startsWith("usage/")) return z.array(UsageRecordSchema);
   if (r.startsWith("jobs/")) return GenerationJobSchema;
@@ -96,5 +97,31 @@ describe("seed fixtures", () => {
     expect(restSeed).toEqual(restDoc);
     expect({ ...t2, messageId: undefined }).toEqual({ ...t1, messageId: undefined });
     expect(t2?.messageId).toBe("msg_seedD08");
+  });
+
+  it("knowledge citations (D-59): markers in text, chunks resolve, quotes match, citedCount matches", () => {
+    const sources = new Map<string, KnowledgeSource>();
+    for (const f of files.filter((x) => /^knowledge\/[^/]+\.json$/.test(x))) for (const k of read(f).data as KnowledgeSource[]) sources.set(k.id, k);
+    const chunks = new Map<string, KnowledgeChunk>();
+    for (const f of files.filter((x) => x.startsWith("knowledge/chunks/"))) for (const k of read(f).data as KnowledgeChunk[]) chunks.set(k.id, k);
+    for (const k of chunks.values()) expect(sources.has(k.sourceId), k.id).toBe(true);
+    for (const s of sources.values()) {
+      if (s.status === "indexed") expect([...chunks.values()].filter((k) => k.sourceId === s.id).length, s.id).toBe(s.chunks);
+      if (s.status === "failed") expect(s.error, s.id).toBeTruthy();
+    }
+    const counted: Record<string, number> = {};
+    for (const dir of sessionDirs.filter((d) => !d.startsWith("_mock/"))) {
+      for (const m of read(`${dir}/messages.json`).data as Message[]) {
+        for (const c of m.citations ?? []) {
+          expect(m.content, `${m.id} [${c.n}]`).toContain(`[${c.n}]`);
+          expect(chunks.get(c.chunkId)?.text, c.chunkId).toBe(c.quote);
+          expect(chunks.get(c.chunkId)?.sourceId).toBe(c.sourceId);
+          expect(m.trace?.knowledge?.retrieved.some((r) => r.chunkId === c.chunkId && r.cited && r.n === c.n), m.id).toBe(true);
+          counted[c.sourceId] = (counted[c.sourceId] ?? 0) + 1;
+        }
+      }
+    }
+    expect(Object.keys(counted).length).toBeGreaterThanOrEqual(4);
+    for (const s of sources.values()) if (s.status === "indexed") expect(s.citedCount ?? 0, s.id).toBe(counted[s.id] ?? 0);
   });
 });

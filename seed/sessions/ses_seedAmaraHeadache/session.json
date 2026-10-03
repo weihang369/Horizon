@@ -21,11 +21,11 @@
     "isSeed": true,
     "status": "paused",
     "state": null,
-    "costUsd": 0.000366,
+    "costUsd": 0.000434,
     "messageCount": 7,
     "createdAt": "2026-09-29T21:14:00Z",
-    "updatedAt": "2026-09-29T21:14:20.173Z",
+    "updatedAt": "2026-09-29T21:14:20.223Z",
     "pausedReason": "navigated_away",
-    "lastMessageAt": "2026-09-29T21:14:16.484Z"
+    "lastMessageAt": "2026-09-29T21:14:16.509Z"
   }
 }

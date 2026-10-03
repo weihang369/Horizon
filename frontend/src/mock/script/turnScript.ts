@@ -2,7 +2,7 @@
 // live MockClient engines, so recorded and live turns look identical: turn.next → thinking → start → tokens
 // (+ emotion before/early/late) → turn.end → energy → insight → listener reactions.
 import type {
-  Emotion, EmotionSource, Message, MessageUsage, StreamEvent, TurnTrace,
+  Citation, Emotion, EmotionSource, Message, MessageUsage, StreamEvent, TurnTrace,
 } from "../../contract/types";
 import { EMOTIONS } from "../../contract/types";
 import type { PricingTable } from "../../domain/cost";
@@ -45,6 +45,10 @@ export interface LineSpec {
   /** Overrides for fixtures that must match the docs exactly (doc 05 §8). */
   usageOverride?: MessageUsage;
   traceOverride?: TurnTrace;
+  /** D-59: passages the reply quotes (`text` carries the `[n]` markers). Sent on turn.end when the reply completes. */
+  citations?: Citation[];
+  /** D-59: knowledge retrieval for the trace (every fetched passage, cited or not). */
+  knowledge?: TurnTrace["knowledge"];
   /** Fault injection (Mock State Switcher). */
   fault?: { kind: "cut"; afterTokens: number } | { kind: "refuse" } | null;
   /** Omit turn.next/thinking (the caller already emitted them, e.g. a greeting). */
@@ -84,7 +88,8 @@ export function buildLineScript(spec: LineSpec, timing: TimingConfig, pricing: P
   const system = 900;
   const mode = spec.message?.debate ? 580 : 220;
   const user = 40 + rng.int(0, 40);
-  const tokensIn = system + persona + mode + user + spec.historyTokens;
+  const knowledgeTokens = spec.knowledge?.retrieved.reduce((n, r) => n + 24 + estimateTokens(r.text), 0) ?? 0;
+  const tokensIn = system + persona + mode + user + knowledgeTokens + spec.historyTokens;
   const tokensCached = Math.floor((system + persona + spec.historyTokens * 0.9) * (spec.historyTokens > 0 ? 1 : 0.8));
   const firstTokenMs = spec.usageOverride?.firstTokenMs ?? Math.round(timing.firstTokenMs * rng.range(0.85, 1.15));
   const streamMs = Math.round((tokens.length / timing.tokensPerSec) * 1000);
@@ -159,6 +164,7 @@ export function buildLineScript(spec: LineSpec, timing: TimingConfig, pricing: P
     payload: {
       messageId, status, ...(status === "interrupted" ? { interruptedBy: "error" as const } : {}), usage,
       ...(spec.variantId ? { variantId: spec.variantId } : {}),
+      ...(status === "complete" && spec.citations?.length ? { citations: spec.citations } : {}),
     },
   });
 
@@ -172,7 +178,7 @@ export function buildLineScript(spec: LineSpec, timing: TimingConfig, pricing: P
     });
   }
 
-  const trace: TurnTrace = spec.traceOverride ?? {
+  const baseTrace: TurnTrace = spec.traceOverride ?? {
     messageId,
     model: {
       id: pricing.chat.model, provider: pricing.chat.provider, pricePeriod: spec.period,
@@ -193,12 +199,21 @@ export function buildLineScript(spec: LineSpec, timing: TimingConfig, pricing: P
       budget: 12000,
       cacheHitPct: Math.round((100 * (usage.tokensCached ?? 0)) / Math.max(1, usage.tokensIn)),
       used: {
-        system, persona, memory: spec.memoryRecalled?.length ? 120 * spec.memoryRecalled.length : 0, knowledge: 0,
+        system, persona, memory: spec.memoryRecalled?.length ? 120 * spec.memoryRecalled.length : 0, knowledge: knowledgeTokens,
         history: spec.historyTokens, user, mode,
       },
     },
     guardrail: { checks: [{ name: "sfw", verdict: "pass", p: r3(rng.range(0.95, 0.995)) }, { name: "advice_scope", verdict: "pass" }] },
   };
+  const trace: TurnTrace = spec.knowledge?.retrieved.length && !baseTrace.knowledge
+    ? {
+        ...baseTrace,
+        knowledge: spec.knowledge,
+        ...(baseTrace.context && !baseTrace.context.used.knowledge
+          ? { context: { ...baseTrace.context, used: { ...baseTrace.context.used, knowledge: knowledgeTokens } } }
+          : {}),
+      }
+    : baseTrace;
   if (status !== "error") add(endAt + 60, { type: "insight", payload: { messageId, trace } });
 
   // Listener reactions: 300–800 ms after turn.end; never delay the next speaker.

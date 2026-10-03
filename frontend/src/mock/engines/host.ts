@@ -15,6 +15,8 @@ import { pickChatLine } from "../banks";
 import type { BankLine } from "../banks";
 import type { Dataset } from "../db/dataset";
 import type { Rng } from "../rng";
+import { liveCitations } from "../script/citations";
+import type { ChunkRef } from "../script/citations";
 import { buildLineScript } from "../script/turnScript";
 import type { EmotionTiming, LineScript, LineSpec } from "../script/turnScript";
 import type { TimingConfig } from "../timing.config";
@@ -154,6 +156,17 @@ export interface SpeakOpts {
 
 export interface SpeakResult { messageId: string; endMs: number; status: Message["status"] }
 
+/** D-59: the character's indexed passages (sources still present). */
+export function knowledgePool(db: Dataset, cid: string): ChunkRef[] {
+  const sources = Object.values(db.knowledge).filter((k) => k.characterId === cid && k.status === "indexed");
+  if (!sources.length) return [];
+  const byId = Object.fromEntries(sources.map((k) => [k.id, k]));
+  return Object.values(db.knowledgeChunks ?? {})
+    .filter((c) => byId[c.sourceId])
+    .sort((a, b) => a.sourceId.localeCompare(b.sourceId) || a.index - b.index)
+    .map((chunk) => ({ chunk, source: byId[chunk.sourceId] }));
+}
+
 /** Queue one character turn on the player. Returns null when the character can't afford it (asleep). */
 export function speak(h: EngineHost, sid: string, cid: string, opts: SpeakOpts = {}): SpeakResult | null {
   const live = h.live(sid);
@@ -175,11 +188,15 @@ export function speak(h: EngineHost, sid: string, cid: string, opts: SpeakOpts =
     .map((p) => p.characterId);
   const prior = live.state.order.map((id) => live.state.messages[id]).filter((m): m is Message => !!m && m.author.type === "character" && m.author.characterId !== cid);
   const recall = prior.length ? prior[prior.length - 1] : undefined;
+  // Separate rng stream: characters without knowledge replay exactly as before.
+  const pool = knowledgePool(h.db, cid);
+  const cited = pool.length ? liveCitations(`${sid}:${messageId}`, line.text, opts.prompt ?? "", pool, h.rng(`${sid}:${live.turn}:cite`)) : null;
+  const text = cited?.text ?? line.text;
   const spec: LineSpec = {
     sessionId: sid,
     messageId,
     characterId: cid,
-    text: line.text,
+    text,
     emotion: line.emotion,
     emotionSource: "llm",
     message: variantOf ? undefined : { kind: "chat", ...opts.message },
@@ -195,9 +212,10 @@ export function speak(h: EngineHost, sid: string, cid: string, opts: SpeakOpts =
     emotionTiming: pickEmotionTiming(h, rng),
     contextInSession: recall ? [{ text: `${recall.content.slice(0, 60)}…`, messageId: recall.id }] : undefined,
     fault: h.takeStreamFault(),
+    ...(cited ? { citations: cited.citations, knowledge: cited.knowledge } : {}),
   };
   const script = buildLineScript(spec, h.timing, h.pricing, rng);
-  live.current = { messageId, characterId: cid, script, startPos: live.player.position, text: line.text };
+  live.current = { messageId, characterId: cid, script, startPos: live.player.position, text };
   h.play(sid, script.entries, messageId);
   return { messageId, endMs: script.endMs, status: script.status };
 }

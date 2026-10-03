@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseBlocks, parseInline, plainText } from "./markdown";
+import { parseBlocks, parseInline, plainText, splitMarkers } from "./markdown";
 
 describe("markdown (CHAT-02 AC4)", () => {
   it("parses bold, italics, code and links", () => {
@@ -37,5 +37,22 @@ describe("markdown (CHAT-02 AC4)", () => {
 
   it("plainText strips markers", () => {
     expect(plainText("**Hi** *there*\n- a")).toBe("Hi there\n• a");
+  });
+
+  it("citation markers (D-59): only cited [n] become chips; code spans, links and unknown markers stay literal", () => {
+    const cites = new Set([1, 2]);
+    expect(parseInline("A.[1] B **c[2]** `[1]` [3] [x](https://x.io)", cites)).toEqual([
+      { type: "text", text: "A." },
+      { type: "cite", n: 1 },
+      { type: "text", text: " B " },
+      { type: "strong", children: [{ type: "text", text: "c" }, { type: "cite", n: 2 }] },
+      { type: "text", text: " " },
+      { type: "code", text: "[1]" },
+      { type: "text", text: " [3] " },
+      { type: "link", href: "https://x.io", children: [{ type: "text", text: "x" }] },
+    ]);
+    expect(parseInline("A.[1]")).toEqual([{ type: "text", text: "A.[1]" }]);
+    expect(splitMarkers("a[1] b[4]", cites)).toEqual(["a", 1, " b[4]"]);
+    expect(splitMarkers("a[1] b[4]")).toEqual(["a", 1, " b", 4]);
   });
 });

@@ -22,7 +22,7 @@ const POLICY: { value: GroupConfig["responderPolicy"]; label: string; hint: stri
   { value: "mentioned", label: "Mentioned only", hint: "Only @mentions reply" },
 ];
 
-export function GroupLayout({ rt, replay }: LayoutProps) {
+export function GroupLayout({ rt, replay, insightOpen }: LayoutProps) {
   const chars = useCharMap();
   const session = rt.session!;
   const cfg = session.config as GroupConfig | null;
@@ -81,7 +81,7 @@ export function GroupLayout({ rt, replay }: LayoutProps) {
   );
 
   return (
-    <div className={s.root} data-layout="group">
+    <div className={cx(s.root, insightOpen && s.insightOpen)} data-layout="group">
       <div className={s.bands} aria-hidden="true">
         {rt.participants.map((p) => (
           <PaletteScope

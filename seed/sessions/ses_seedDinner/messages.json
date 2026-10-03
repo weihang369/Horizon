@@ -275,20 +275,32 @@
         "type": "character",
         "characterId": "chr_seedHana"
       },
-      "content": "Compromise? That little place by the station does both… sort of. Their \"fusion roll\" has pineapple in it.",
+      "content": "Compromise? That little place by the station does both… sort of. Their \"fusion roll\" has pineapple in it, and Grandma always said a spoon of pineapple keeps sushi rice bright.[1]",
       "status": "complete",
       "createdAt": "2026-09-30T10:30:08.341Z",
       "emotion": "thinking",
       "emotionSource": "llm",
       "usage": {
-        "tokensIn": 1998,
+        "tokensIn": 2125,
         "tokensCached": 1727,
-        "tokensOut": 26,
-        "costUsd": 0.000061,
+        "tokensOut": 45,
+        "costUsd": 0.000092,
         "energySpent": 1,
         "firstTokenMs": 1573,
-        "totalMs": 2378
+        "totalMs": 2903
       },
+      "citations": [
+        {
+          "n": 1,
+          "sourceId": "kno_seedHana1",
+          "title": "Grandma's recipe notebook",
+          "type": "text",
+          "chunkId": "kch_hanaRecipe02",
+          "locator": "p. 5",
+          "quote": "Sushi rice for a crowd: three cups of rice and a splash more vinegar than you think. A spoon of pineapple juice in the vinegar keeps it bright when the fish is rich. Your grandfather never noticed.",
+          "score": 0.77
+        }
+      ],
       "trace": {
         "messageId": "msg_seedC05",
         "model": {
@@ -297,12 +309,12 @@
           "pricePeriod": "off_peak",
           "latencyMs": {
             "firstToken": 1573,
-            "total": 2378
+            "total": 2903
           },
-          "tokensIn": 1998,
+          "tokensIn": 2125,
           "tokensCached": 1727,
-          "tokensOut": 26,
-          "costUsd": 0.000061
+          "tokensOut": 45,
+          "costUsd": 0.000092
         },
         "energy": {
           "characterId": "chr_seedHana",
@@ -334,12 +346,12 @@
         },
         "context": {
           "budget": 12000,
-          "cacheHitPct": 86,
+          "cacheHitPct": 81,
           "used": {
             "system": 900,
             "persona": 774,
             "memory": 0,
-            "knowledge": 0,
+            "knowledge": 127,
             "history": 59,
             "user": 45,
             "mode": 220
@@ -357,6 +369,31 @@
               "verdict": "pass"
             }
           ]
+        },
+        "knowledge": {
+          "query": "sushi or pizza with pineapple",
+          "trigger": "always",
+          "retrieved": [
+            {
+              "chunkId": "kch_hanaRecipe02",
+              "sourceId": "kno_seedHana1",
+              "title": "Grandma's recipe notebook",
+              "locator": "p. 5",
+              "text": "Sushi rice for a crowd: three cups of rice and a splash more vinegar than you think. A spoon of pineapple juice in the vinegar keeps it bright when the fish is rich. Your grandfather never noticed.",
+              "score": 0.77,
+              "cited": true,
+              "n": 1
+            },
+            {
+              "chunkId": "kch_hanaRecipe05",
+              "sourceId": "kno_seedHana1",
+              "title": "Grandma's recipe notebook",
+              "locator": "p. 14",
+              "text": "Leftover rice becomes tomorrow's onigiri. Salt your hands, not the rice, and press as if you were holding a small bird.",
+              "score": 0.51,
+              "cited": false
+            }
+          ]
         }
       },
       "reactions": [
@@ -364,13 +401,13 @@
           "characterId": "chr_seedRin",
           "emotion": "surprised",
           "p": 0.7,
-          "at": "2026-09-30T10:30:11.002Z"
+          "at": "2026-09-30T10:30:11.527Z"
         },
         {
           "characterId": "chr_seedTakeshi",
           "emotion": "thinking",
           "p": 0.78,
-          "at": "2026-09-30T10:30:11.137Z"
+          "at": "2026-09-30T10:30:11.662Z"
         }
       ]
     },
@@ -384,7 +421,7 @@
       "kind": "chat",
       "content": "@Rin would you actually eat a pineapple sushi roll?",
       "status": "complete",
-      "createdAt": "2026-09-30T10:30:12.619Z"
+      "createdAt": "2026-09-30T10:30:13.144Z"
     },
     {
       "kind": "chat",
@@ -398,14 +435,14 @@
       },
       "content": "…i would eat it. i'm not happy about it. but i would eat it.",
       "status": "complete",
-      "createdAt": "2026-09-30T10:30:12.969Z",
+      "createdAt": "2026-09-30T10:30:13.494Z",
       "emotion": "embarrassed",
       "emotionSource": "llm",
       "usage": {
-        "tokensIn": 1971,
-        "tokensCached": 1695,
+        "tokensIn": 1990,
+        "tokensCached": 1712,
         "tokensOut": 15,
-        "costUsd": 0.000055,
+        "costUsd": 0.000056,
         "energySpent": 1,
         "firstTokenMs": 1596,
         "totalMs": 2126
@@ -420,10 +457,10 @@
             "firstToken": 1596,
             "total": 2126
           },
-          "tokensIn": 1971,
-          "tokensCached": 1695,
+          "tokensIn": 1990,
+          "tokensCached": 1712,
           "tokensOut": 15,
-          "costUsd": 0.000055
+          "costUsd": 0.000056
         },
         "energy": {
           "characterId": "chr_seedRin",
@@ -461,7 +498,7 @@
             "persona": 707,
             "memory": 0,
             "knowledge": 0,
-            "history": 98,
+            "history": 117,
             "user": 46,
             "mode": 220
           }
@@ -485,13 +522,13 @@
           "characterId": "chr_seedTakeshi",
           "emotion": "happy",
           "p": 0.8,
-          "at": "2026-09-30T10:30:15.336Z"
+          "at": "2026-09-30T10:30:15.861Z"
         },
         {
           "characterId": "chr_seedHana",
           "emotion": "happy",
           "p": 0.48,
-          "at": "2026-09-30T10:30:15.595Z"
+          "at": "2026-09-30T10:30:16.120Z"
         }
       ]
     }

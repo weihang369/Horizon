@@ -361,7 +361,7 @@ function YouDecide({ cols, chars, list, sessionId }: { cols: { prop: string[]; o
             <ul className={s.quotes}>
               {closing(side).map((m) => (
                 <li key={m.id}>
-                  <b>{chars[m.author.characterId ?? ""]?.profile.name.split(" ")[0]}</b> {trim(m.content, 220)}
+                  <b>{chars[m.author.characterId ?? ""]?.profile.name.split(" ")[0]}</b> {trim(m.citations?.length ? m.content.replace(/\[\d{1,2}\]/g, "") : m.content, 220)}
                 </li>
               ))}
               {closing(side).length === 0 && <li className={s.muted}>No closing statement recorded.</li>}

@@ -8,7 +8,22 @@
       "title": "Working-time pilots dataset.csv",
       "type": "file",
       "status": "failed",
-      "bytes": 2310442
+      "bytes": 2310442,
+      "addedAt": "2026-09-24T14:05:00Z",
+      "error": "Couldn't read this file: row 4,118 has 31 columns, expected 27. Fix the row or export the sheet again."
+    },
+    {
+      "id": "kno_seedMei2",
+      "characterId": "chr_seedMei",
+      "worldId": "wld_seedMeridian",
+      "title": "Four-day week pilot summaries.pdf",
+      "type": "file",
+      "status": "indexed",
+      "bytes": 1204660,
+      "pages": 24,
+      "addedAt": "2026-09-24T14:11:00Z",
+      "chunks": 10,
+      "citedCount": 4
     }
   ]
 }

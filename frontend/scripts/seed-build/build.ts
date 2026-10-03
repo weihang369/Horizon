@@ -18,6 +18,7 @@ import { CHARACTERS } from "./data/characters";
 import {
   DEFAULT_SETTINGS, JOBS, KNOWLEDGE, MEMORY, MEMORY_OWNERS, STYLE_PRESETS, SYSTEM_TRACKS, VARIANTS, WORLDS, songsFor,
 } from "./data/catalog";
+import { KNOWLEDGE_CHUNKS } from "./data/knowledge";
 import { ledgerFor } from "./ledger";
 import { MOCK_SCREENPLAYS } from "./screenplays/mock";
 import { SEED_SCREENPLAYS } from "./screenplays/seed";
@@ -74,8 +75,23 @@ export async function buildSeed(): Promise<{ outputs: Outputs; warnings: string[
 
   // ── Memory, knowledge, ledger, jobs, variants ──
   for (const owner of MEMORY_OWNERS) put(`memory/${owner}.json`, json(MEMORY.filter((m) => m.characterId === owner)));
-  const knowledgeOwners = [...new Set(KNOWLEDGE.map((k) => k.characterId))];
-  for (const owner of knowledgeOwners) put(`knowledge/${owner}.json`, json(KNOWLEDGE.filter((k) => k.characterId === owner)));
+  // D-59: citedCount = citation markers across the shipped (non-mock) sessions; chunks per source.
+  const citedCount: Record<string, number> = {};
+  for (const { c, mock } of compiled) {
+    if (mock) continue;
+    for (const m of c.messages) for (const ct of m.citations ?? []) citedCount[ct.sourceId] = (citedCount[ct.sourceId] ?? 0) + 1;
+  }
+  const sources = KNOWLEDGE.map((k) => {
+    const chunks = KNOWLEDGE_CHUNKS[k.id];
+    if (k.status === "indexed" && !chunks?.length) warnings.push(`indexed source without chunks: ${k.id}`);
+    return {
+      ...k,
+      ...(k.status === "indexed" ? { chunks: chunks?.length ?? 0, citedCount: citedCount[k.id] ?? 0 } : {}),
+    };
+  });
+  const knowledgeOwners = [...new Set(sources.map((k) => k.characterId))];
+  for (const owner of knowledgeOwners) put(`knowledge/${owner}.json`, json(sources.filter((k) => k.characterId === owner)));
+  for (const [sourceId, chunks] of Object.entries(KNOWLEDGE_CHUNKS)) put(`knowledge/chunks/${sourceId}.json`, json(chunks));
   const ledger = ledgerFor(
     compiled.map(({ c, mock }) => ({ sessionId: c.session.id, mode: c.session.mode, messages: c.messages, mock })),
     CHARACTERS,

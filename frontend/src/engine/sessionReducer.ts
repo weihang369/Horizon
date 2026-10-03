@@ -224,14 +224,20 @@ export function applyEvent(state: SessionRuntimeState, evt: SessionEvent): Sessi
     }
 
     case "turn.end": {
-      const { messageId, status, interruptedBy, usage, variantId } = e.payload;
-      s = patchMessage(s, messageId, (m) => ({
-        ...m,
-        status,
-        interruptedBy,
-        usage: usage ?? m.usage,
-        variants: variantId && m.variants ? m.variants : m.variants,
-      }));
+      const { messageId, status, interruptedBy, usage, variantId, citations } = e.payload;
+      s = patchMessage(s, messageId, (m) => {
+        const next: Message = {
+          ...m,
+          status,
+          interruptedBy,
+          usage: usage ?? m.usage,
+          variants: variantId && m.variants ? m.variants : m.variants,
+        };
+        // D-59: citations ride on turn.end; a regenerated variant without any drops the old ones.
+        if (citations?.length) next.citations = citations;
+        else if (variantId) delete next.citations;
+        return next;
+      });
       const m = s.messages[messageId];
       if (m?.author.characterId && s.pendingEmotion[m.author.characterId]) {
         const cid = m.author.characterId;

@@ -13,6 +13,7 @@ import { PaletteScope } from "../../theme/PaletteScope";
 import { Button, IconButton } from "../../ui/Button";
 import { CloseIcon, SearchIcon } from "../../ui/icons";
 import { RansomText } from "../../ui/RansomText";
+import { CitedText, SourcesStrip } from "./Citations";
 import { plainText } from "./markdown";
 import { firstName } from "./sessionContext";
 import { useSlotRuntime } from "./slot";
@@ -95,7 +96,13 @@ export function Backlog({ sessionId, close }: OverlayComponentProps<"O10">) {
                 <span className={s.whoTape}>{who}</span>
                 {m.emotion && <span className={s.emo} title={emotionMeta[m.emotion].label}>{emotionMeta[m.emotion].icon}</span>}
               </PaletteScope>
-              <p className={s.text}>{highlight(text, query)}{m.status === "interrupted" && <em className={s.cut}> ({m.interruptedBy === "user" ? "stopped" : "interrupted"})</em>}</p>
+              <PaletteScope paletteId={c?.paletteId} className={s.body}>
+                <p className={s.text}>
+                  <CitedText text={text} cites={m.citations} paletteId={c?.paletteId} characterId={m.author.characterId} mark={(t) => highlight(t, query)} />
+                  {m.status === "interrupted" && <em className={s.cut}> ({m.interruptedBy === "user" ? "stopped" : "interrupted"})</em>}
+                </p>
+                {m.citations?.length ? <SourcesStrip cites={m.citations} characterId={m.author.characterId} compact /> : null}
+              </PaletteScope>
             </li>
           );
         })}

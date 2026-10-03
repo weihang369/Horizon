@@ -156,3 +156,17 @@
 :global(:root[data-motion="reduced"]) .seat,
 :global(:root[data-motion="reduced"]) .band { transition-duration: var(--t-reduced); }
 :global(:root[data-motion="reduced"]) .upNext { animation: none; }
+
+/* Insight open (C, round 2): the drawer overlays the right edge, so the stage reserves its width and both wings
+ * compress (cards scale with the wing via --seat-w) instead of the right-hand cast sliding under the drawer. */
+.root { --log-min: 440px; --drawer-gap: calc(var(--drawer-w, 400px) + 12px); }
+@media (max-width: 1380px) { .root { --log-min: 400px; } }
+.insightOpen .stage {
+  grid-template-columns:
+    clamp(180px, calc((100% - var(--drawer-gap) - var(--log-min)) / 2), var(--wing))
+    minmax(0, 1fr)
+    clamp(180px, calc((100% - var(--drawer-gap) - var(--log-min)) / 2), var(--wing))
+    var(--drawer-gap);
+}
+.insightOpen .strip { padding-right: calc(var(--drawer-gap) + var(--gut)); }
+.insightOpen .seat { transition: transform 320ms var(--ease-slam), width var(--t-base) var(--ease-out); }

@@ -42,7 +42,7 @@
         "energy": {
           "characterId": "chr_seedAmara",
           "spent": 2,
-          "remaining": 1003,
+          "remaining": 1005,
           "max": 1000
         },
         "emotion": {
@@ -147,7 +147,7 @@
         "energy": {
           "characterId": "chr_seedAmara",
           "spent": 1,
-          "remaining": 1002,
+          "remaining": 1004,
           "max": 1000
         },
         "emotion": {
@@ -220,20 +220,42 @@
         "type": "character",
         "characterId": "chr_seedAmara"
       },
-      "content": "That's a really useful clue. Caffeine withdrawal headaches tend to start a day or so after cutting back and can hang around for several days. They're usually dull and on both sides, like you're describing. Taper rather than stopping cold, keep hydrated, and an over-the-counter painkiller is reasonable if it's safe for you.",
+      "content": "That's a really useful clue. Caffeine withdrawal headaches tend to start a day or so after cutting back and can hang around for several days.[1] They're usually dull and on both sides, like you're describing.[2] Taper rather than stopping cold, keep hydrated, and an over-the-counter painkiller is reasonable if it's safe for you.",
       "status": "complete",
       "createdAt": "2026-09-29T21:14:10.539Z",
       "emotion": "happy",
       "emotionSource": "llm",
       "usage": {
-        "tokensIn": 2059,
+        "tokensIn": 2288,
         "tokensCached": 1777,
-        "tokensOut": 81,
-        "costUsd": 0.000096,
-        "energySpent": 1,
+        "tokensOut": 83,
+        "costUsd": 0.000132,
+        "energySpent": 2,
         "firstTokenMs": 1440,
-        "totalMs": 3695
+        "totalMs": 3720
       },
+      "citations": [
+        {
+          "n": 1,
+          "sourceId": "kno_seedAmara2",
+          "title": "ED triage guidelines",
+          "type": "url",
+          "chunkId": "kch_amaraTri03",
+          "locator": "§ 2.4",
+          "quote": "Caffeine withdrawal headache usually begins 12 to 24 hours after a sharp cut in intake and can last two to nine days. Gradual tapering, fluids and simple painkillers are usually enough; it rarely needs emergency care.",
+          "score": 0.83
+        },
+        {
+          "n": 2,
+          "sourceId": "kno_seedAmara2",
+          "title": "ED triage guidelines",
+          "type": "url",
+          "chunkId": "kch_amaraTri02",
+          "locator": "§ 2.1",
+          "quote": "Most headaches seen in the department are primary headaches: tension-type, migraine, or medication- and caffeine-related. A dull, pressing pain on both sides without neurological signs is typical of tension-type or withdrawal headache.",
+          "score": 0.9
+        }
+      ],
       "trace": {
         "messageId": "msg_seedA05",
         "model": {
@@ -242,17 +264,17 @@
           "pricePeriod": "off_peak",
           "latencyMs": {
             "firstToken": 1440,
-            "total": 3695
+            "total": 3720
           },
-          "tokensIn": 2059,
+          "tokensIn": 2288,
           "tokensCached": 1777,
-          "tokensOut": 81,
-          "costUsd": 0.000096
+          "tokensOut": 83,
+          "costUsd": 0.000132
         },
         "energy": {
           "characterId": "chr_seedAmara",
-          "spent": 1,
-          "remaining": 1001,
+          "spent": 2,
+          "remaining": 1002,
           "max": 1000
         },
         "emotion": {
@@ -284,12 +306,12 @@
         ],
         "context": {
           "budget": 12000,
-          "cacheHitPct": 86,
+          "cacheHitPct": 78,
           "used": {
             "system": 900,
             "persona": 791,
             "memory": 0,
-            "knowledge": 0,
+            "knowledge": 229,
             "history": 96,
             "user": 52,
             "mode": 220
@@ -307,6 +329,41 @@
               "verdict": "pass"
             }
           ]
+        },
+        "knowledge": {
+          "query": "headache at the temples after cutting back on coffee",
+          "trigger": "always",
+          "retrieved": [
+            {
+              "chunkId": "kch_amaraTri02",
+              "sourceId": "kno_seedAmara2",
+              "title": "ED triage guidelines",
+              "locator": "§ 2.1",
+              "text": "Most headaches seen in the department are primary headaches: tension-type, migraine, or medication- and caffeine-related. A dull, pressing pain on both sides without neurological signs is typical of tension-type or withdrawal headache.",
+              "score": 0.9,
+              "cited": true,
+              "n": 2
+            },
+            {
+              "chunkId": "kch_amaraTri03",
+              "sourceId": "kno_seedAmara2",
+              "title": "ED triage guidelines",
+              "locator": "§ 2.4",
+              "text": "Caffeine withdrawal headache usually begins 12 to 24 hours after a sharp cut in intake and can last two to nine days. Gradual tapering, fluids and simple painkillers are usually enough; it rarely needs emergency care.",
+              "score": 0.83,
+              "cited": true,
+              "n": 1
+            },
+            {
+              "chunkId": "kch_amaraTri01",
+              "sourceId": "kno_seedAmara2",
+              "title": "ED triage guidelines",
+              "locator": "§ 1.2",
+              "text": "Triage assigns urgency, not diagnosis. Nurses grade each presentation from 1 (immediate) to 5 (non-urgent) using the presenting complaint and the observations taken on arrival.",
+              "score": 0.51,
+              "cited": false
+            }
+          ]
         }
       }
     },
@@ -320,7 +377,7 @@
       "kind": "chat",
       "content": "Thanks. Anything I should watch out for?",
       "status": "complete",
-      "createdAt": "2026-09-29T21:14:16.134Z"
+      "createdAt": "2026-09-29T21:14:16.159Z"
     },
     {
       "kind": "chat",
@@ -331,20 +388,32 @@
         "type": "character",
         "characterId": "chr_seedAmara"
       },
-      "content": "Yes, and this is the honest caveat: I can't examine you. If it's suddenly the worst headache of your life, or it comes with fever, a stiff neck, vision changes, confusion or weakness, that's same-day medical care, not a chat with me.",
+      "content": "Yes, and this is the honest caveat: I can't examine you. If it's suddenly the worst headache of your life, or it comes with fever, a stiff neck, vision changes, confusion or weakness, that's same-day medical care, not a chat with me.[1]",
       "status": "complete",
-      "createdAt": "2026-09-29T21:14:16.484Z",
+      "createdAt": "2026-09-29T21:14:16.509Z",
       "emotion": "neutral",
       "emotionSource": "llm",
       "usage": {
-        "tokensIn": 2089,
-        "tokensCached": 1806,
-        "tokensOut": 58,
-        "costUsd": 0.000083,
-        "energySpent": 1,
+        "tokensIn": 2302,
+        "tokensCached": 1808,
+        "tokensOut": 59,
+        "costUsd": 0.000115,
+        "energySpent": 2,
         "firstTokenMs": 1399,
-        "totalMs": 3079
+        "totalMs": 3104
       },
+      "citations": [
+        {
+          "n": 1,
+          "sourceId": "kno_seedAmara2",
+          "title": "ED triage guidelines",
+          "type": "url",
+          "chunkId": "kch_amaraTri04",
+          "locator": "§ 3.1",
+          "quote": "Escalate any headache that is sudden and severe (\"thunderclap\"), or that comes with fever, neck stiffness, confusion, new weakness or changes in vision. These patients are graded 2 or higher and seen by a doctor without delay.",
+          "score": 0.93
+        }
+      ],
       "trace": {
         "messageId": "msg_seedA07",
         "model": {
@@ -353,16 +422,16 @@
           "pricePeriod": "off_peak",
           "latencyMs": {
             "firstToken": 1399,
-            "total": 3079
+            "total": 3104
           },
-          "tokensIn": 2089,
-          "tokensCached": 1806,
-          "tokensOut": 58,
-          "costUsd": 0.000083
+          "tokensIn": 2302,
+          "tokensCached": 1808,
+          "tokensOut": 59,
+          "costUsd": 0.000115
         },
         "energy": {
           "characterId": "chr_seedAmara",
-          "spent": 1,
+          "spent": 2,
           "remaining": 1000,
           "max": 1000
         },
@@ -389,13 +458,13 @@
         },
         "context": {
           "budget": 12000,
-          "cacheHitPct": 86,
+          "cacheHitPct": 79,
           "used": {
             "system": 900,
             "persona": 738,
             "memory": 0,
-            "knowledge": 0,
-            "history": 187,
+            "knowledge": 211,
+            "history": 189,
             "user": 44,
             "mode": 220
           }
@@ -410,6 +479,40 @@
             {
               "name": "advice_scope",
               "verdict": "pass"
+            }
+          ]
+        },
+        "knowledge": {
+          "query": "headache warning signs that need urgent care",
+          "trigger": "always",
+          "retrieved": [
+            {
+              "chunkId": "kch_amaraTri04",
+              "sourceId": "kno_seedAmara2",
+              "title": "ED triage guidelines",
+              "locator": "§ 3.1",
+              "text": "Escalate any headache that is sudden and severe (\"thunderclap\"), or that comes with fever, neck stiffness, confusion, new weakness or changes in vision. These patients are graded 2 or higher and seen by a doctor without delay.",
+              "score": 0.93,
+              "cited": true,
+              "n": 1
+            },
+            {
+              "chunkId": "kch_amaraTri06",
+              "sourceId": "kno_seedAmara2",
+              "title": "ED triage guidelines",
+              "locator": "§ 4.2",
+              "text": "Advice given by phone or chat must say clearly that it is not an examination. Tell the patient which symptoms mean they should come in person.",
+              "score": 0.63,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraTri05",
+              "sourceId": "kno_seedAmara2",
+              "title": "ED triage guidelines",
+              "locator": "§ 3.3",
+              "text": "A first severe headache after age 50, a headache after a head injury, or one that wakes the patient from sleep should also be reviewed the same day, even when observations are normal.",
+              "score": 0.59,
+              "cited": false
             }
           ]
         }

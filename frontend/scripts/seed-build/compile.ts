@@ -8,10 +8,18 @@ import { energyState } from "../../src/domain/energy";
 import { initialRuntime, orderedMessages, reduceAll } from "../../src/engine/sessionReducer";
 import { PRICING } from "../../src/mock/pricing.config";
 import { createRng, iso } from "../../src/mock/rng";
+import { citeKnowledge } from "../../src/mock/script/citations";
 import { buildLineScript } from "../../src/mock/script/turnScript";
 import type { ReactionSpec } from "../../src/mock/script/turnScript";
 import { DEFAULT_TIMING } from "../../src/mock/timing.config";
+import { CHUNK_BY_ID } from "./data/knowledge";
 import type { Screenplay } from "./types";
+
+const chunkRef = (id: string) => {
+  const ref = CHUNK_BY_ID[id];
+  if (!ref) throw new Error(`[seed-build] unknown knowledge chunk ${id}`);
+  return ref;
+};
 
 export interface CompiledSession {
   session: Session;
@@ -160,6 +168,14 @@ function run(sp: Screenplay, startEnergy: Record<string, number>): RunResult {
               ...(beat.reactionTiming?.[characterId]?.delayMs !== undefined ? { delayMs: beat.reactionTiming[characterId]!.delayMs } : {}),
             }))
           : undefined;
+        const cited = beat.cites?.length || beat.retrieved?.length
+          ? citeKnowledge(`${sp.msgKey}:${id}`, (beat.cites ?? []).map(chunkRef), (beat.retrieved ?? []).map(chunkRef), {
+              query: beat.knowledgeQuery, trigger: "always",
+            })
+          : null;
+        for (const c of cited?.citations ?? []) {
+          if (!beat.text.includes(`[${c.n}]`)) throw new Error(`[seed-build] ${id}: marker [${c.n}] missing from text`);
+        }
         const script = buildLineScript(
           {
             sessionId: sid,
@@ -187,6 +203,7 @@ function run(sp: Screenplay, startEnergy: Record<string, number>): RunResult {
             memoryRecalled: beat.memory,
             usageOverride: beat.usage,
             traceOverride: beat.trace,
+            ...(cited ? { citations: cited.citations, knowledge: cited.knowledge } : {}),
           },
           timing, PRICING, rng,
         );

@@ -1,7 +1,7 @@
 // Dataset: the mock's in-memory copy of repo-root seed/ (doc 05 shapes). Owner: EE.
 // Built from the raw fixture files (path → parsed JSON). `_mock/` overlays (UI-phase-only fixtures) are merged in.
 import type {
-  AppSettings, Character, EmotionAsset, Emotion, GenerationJob, KnowledgeSource, MemoryItem, Message, Palette, Session, SessionEvent,
+  AppSettings, Character, EmotionAsset, Emotion, GenerationJob, KnowledgeChunk, KnowledgeSource, MemoryItem, Message, Palette, Session, SessionEvent,
   StylePreset, SystemTrack, ThemeSong, UsageRecord, World,
 } from "../../contract/types";
 import type { PricingTable } from "../../domain/cost";
@@ -27,6 +27,8 @@ export interface Dataset {
   sessions: Record<string, SessionRecord>;
   memory: Record<string, MemoryItem>;
   knowledge: Record<string, KnowledgeSource>;
+  /** D-59 indexed passages by chunk id (seed/knowledge/chunks/<sourceId>.json). */
+  knowledgeChunks: Record<string, KnowledgeChunk>;
   ledger: UsageRecord[];
   jobs: Record<string, GenerationJob>;
   variants: Record<string, FixtureVariant>;
@@ -59,7 +61,7 @@ export function datasetFromFiles(raw: Files, opts: { includeMock?: boolean } = {
     stylePresets: get<StylePreset[]>("style-presets.json"),
     systemTracks: get<SystemTrack[]>("system-tracks.json"),
     pricing: get<PricingTable>("pricing.json"),
-    worlds: {}, characters: {}, assets: {}, songs: {}, sessions: {}, memory: {}, knowledge: {}, ledger: [], jobs: {}, variants: {},
+    worlds: {}, characters: {}, assets: {}, songs: {}, sessions: {}, memory: {}, knowledge: {}, knowledgeChunks: {}, ledger: [], jobs: {}, variants: {},
   };
   const sessionParts: Record<string, Partial<SessionRecord>> = {};
   for (const rel of Object.keys(files).sort()) {
@@ -73,7 +75,10 @@ export function datasetFromFiles(raw: Files, opts: { includeMock?: boolean } = {
       case "characters": { const c = dataOf<Character>(v); ds.characters[c.id] = c; break; }
       case "songs": { const s = dataOf<ThemeSong>(v); ds.songs[s.id] = s; break; }
       case "memory": for (const m of dataOf<MemoryItem[]>(v)) ds.memory[m.id] = m; break;
-      case "knowledge": for (const k of dataOf<KnowledgeSource[]>(v)) ds.knowledge[k.id] = k; break;
+      case "knowledge":
+        if (r.startsWith("knowledge/chunks/")) for (const c of dataOf<KnowledgeChunk[]>(v)) ds.knowledgeChunks[c.id] = c;
+        else for (const k of dataOf<KnowledgeSource[]>(v)) ds.knowledge[k.id] = k;
+        break;
       case "usage": ds.ledger.push(...dataOf<UsageRecord[]>(v)); break;
       case "jobs": { const j = dataOf<GenerationJob>(v); ds.jobs[j.id] = j; break; }
       case "variants": { const x = dataOf<FixtureVariant>(v); ds.variants[x.id] = x; break; }

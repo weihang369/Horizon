@@ -22,6 +22,14 @@ export type Beat =
       trace?: TurnTrace;
       contextInSession?: TurnTrace["contextInSession"];
       memory?: NonNullable<TurnTrace["memory"]>["recalled"];
+      /**
+       * D-59 knowledge: chunk ids cited, in marker order (`cites[0]` backs `[1]`; `text` carries the markers).
+       * `retrieved` = passages fetched but not used (Insight shows them dimmed). Compiled into turn.end
+       * `citations` and `trace.knowledge`.
+       */
+      cites?: string[];
+      retrieved?: string[];
+      knowledgeQuery?: string;
       /** Group routing candidates (Auto responders). */
       candidates?: { characterId: string; p: number }[];
       gapMs?: number;

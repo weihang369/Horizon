@@ -367,3 +367,6 @@
 }
 .scriptText p { display: inline; }
 .scriptRow .reactions { justify-content: center; }
+
+/* D-59: the SOURCES strip under a Watch script line. */
+.scriptSources { display: flex; justify-content: center; max-width: 100%; }
