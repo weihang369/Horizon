@@ -222,6 +222,16 @@ export type GlobalEvent =
   /** Demo data was re-seeded (mock scenario, or "Reset demo data" on either client, rev 1.3): screens re-query in place. */
   | { type: "mock.reset" };
 
+// ── Admin (rev 1.3 addendum) ─────────────────────────────────────────────────
+export interface AdminApi {
+  /**
+   * "Reset demo data" (D-70): seed records go back to their shipped state; user worlds, characters, forks,
+   * memories and ledger rows survive; settings and the key are untouched. Resolves once done; `mock.reset` follows
+   * on the global stream so screens re-query.
+   */
+  resetDemo(): Promise<void>;
+}
+
 export interface HorizonClient {
   readonly kind: "mock" | "http";
   settings: SettingsApi;
@@ -233,6 +243,7 @@ export interface HorizonClient {
   debate: DebateApi;
   watch: WatchApi;
   usage: UsageApi;
+  admin: AdminApi;
   onGlobal(cb: (e: GlobalEvent) => void): Unsubscribe;
 }
 

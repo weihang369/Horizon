@@ -10,7 +10,6 @@ import type { AppSettings } from "../../contract/types";
 import type { Route, SettingsTab } from "../../router";
 import { navigate, parseRoute } from "../../router";
 import { SETTINGS_TABS } from "../../router/routes";
-import { mockActions } from "../../stores/mock";
 import { setPrefs, usePrefs } from "../../stores/prefs";
 import { Button } from "../../ui/Button";
 import { Segmented, Slider, Toggle } from "../../ui/Controls";
@@ -186,7 +185,7 @@ function DataTab() {
       body: "Restores the seed worlds, characters and recordings exactly as shipped. Worlds, characters and sessions you created stay, and so do your key and settings.",
       confirmLabel: "Reset demo data",
       onConfirm: async () => {
-        await mockActions.resetDemoData();
+        await client.admin.resetDemo();
         toast({ variant: "success", text: "Demo data restored." });
       },
     });

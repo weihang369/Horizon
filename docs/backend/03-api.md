@@ -85,6 +85,8 @@ Knowledge status changes are pushed as `entity.changed {kind:"knowledge", id}` o
 | `estimate` `POST /jobs/estimate` (`StartJobInput` → `{ estimatedCostUsd }`) · `start` `POST /jobs` (→ `GenerationJob`, 201) · `get` `GET /jobs/{id}` · `listActive` `GET /jobs?active=true` · `cancel` `POST /jobs/{id}/cancel` · `retryTask` `POST /jobs/{id}/tasks/{taskId}/retry` |
 |---|
 
+**M1b ships the reads** (`get`, `listActive` and `subscribe`); estimate/start/cancel/retry arrive with M4.
+
 **`subscribe`** has no dedicated stream. The HttpClient does `GET /jobs/{id}` (emitted as the first `job.progress` snapshot), then filters the **global** stream for this `jobId` (`job.progress`, `task.update` including `previewUrl`, `job.done`). This keeps the browser at ≤ 2 EventSources.
 
 `start` **reserves** the job's estimated cost against the caps (doc 04 §3). It rejects with 402 `creation_budget_exceeded` / `daily_budget_exceeded` **before** queueing if the estimate wouldn't fit (NFR-07). It rejects with 409 if the character already has a non-terminal job.
@@ -152,7 +154,7 @@ All session commands, plus `rename`, `leave`, `end` and `delete`, run through th
 | `GET /events` | Global SSE: `entity.changed` (+ optional `progress` for knowledge), `budget.warning`, `budget.reached`, `job.progress`, **`task.update`**, `job.done`, `error`, `mock.reset` (`HorizonClient.onGlobal`; `jobs.subscribe` filters it) |
 | `GET /health` | `{ ok, version, schemaVersion, db: "ok", vec: "ok", docling: "ready"\|"models_missing"\|"not_installed" }` |
 | `POST /admin/reset-demo` | Re-seed seed data only (doc 02 §4). Body `{ confirm: true }`. Emits `mock.reset` on the global stream so screens re-query |
-| `/_test/*` | **Only when `HORIZON_TEST=1`:** `POST /_test/clock` (freeze/advance), `POST /_test/scenario` (load a failure script), `POST /_test/ai-profile`, `POST /_test/decider-fixtures`. They exist for the portable `clientContract` and E2E suites |
+| `/_test/*` | **Only when `HORIZON_TEST=1`:** `POST /_test/clock` (`{ freezeAt?, advanceMs?, release? }`), `POST /_test/scenario` (`{ id }`; a registry, empty in M1b: an unsupported id is `validation` with `details.availableIn`), and later `POST /_test/ai-profile` (M3), `POST /_test/decider-fixtures` (M2/M3). Test mode also validates every response against `schema.json` and imports the default-scenario `seed/_mock/**` overlays, so the portable `clientContract` suite sees the MockClient's dataset. Per-test isolation uses `POST /admin/factory-reset` |
 | `POST /admin/factory-reset` | Body `{ confirm: "DELETE EVERYTHING" }`. Deletes `data/` except `models/` |
 | `GET /assets/{path}` | Static files: `data/assets` first, then `seed/assets`. Immutable caching for `gen/` |
 
@@ -168,7 +170,7 @@ data: {"messageId":"msg_…","delta":"Honestly? "}
 
 - **Session stream** (`/sessions/{id}/stream`).
   - `id` = the event seq, and `event` = the doc 05 §6 type.
-  - The payload is the exact stored `payload`, and `SessionEvent` = `{id, sessionId, seq, at, type, payload}` (the HttpClient rebuilds it from the SSE fields plus `data`).
+  - `data` is the whole stored `SessionEvent` = `{id, sessionId, seq, at, type, payload}` (M1b: the SSE fields can't carry `at` or the event id, which the reducer needs).
   - **Resume:**
     1. The effective start is `max(?sinceSeq, Last-Event-ID)`. EventSource reconnects reuse the original URL, so `Last-Event-ID` must win when it is higher.
     2. The server registers the live queue **first**.
@@ -198,7 +200,7 @@ data: {"messageId":"msg_…","delta":"Honestly? "}
 
 ## 7. Contract rev 1.3 (additive)
 
-`schemaVersion` stays `1`. Doc 05, `frontend/src/contract/{types,schemas}.ts`, the MockClient and the seed are all updated in M1a, under the `contract-rev-1-3` OpenSpec change. **Addendum for M1b:** `HorizonClient.admin.resetDemo()` (→ `POST /admin/reset-demo`), so "Reset demo data" works on the HttpClient too; until then the UI calls the mock-only dev API.
+`schemaVersion` stays `1`. Doc 05, `frontend/src/contract/{types,schemas}.ts`, the MockClient and the seed are all updated in M1a, under the `contract-rev-1-3` OpenSpec change. **Addendum for M1b:** `HorizonClient.admin.resetDemo()` (→ `POST /admin/reset-demo`), so "Reset demo data" works on the HttpClient too. **Shipped in M1b**; the Settings and World Select buttons call it on both clients. Also added in M1b: world names unique case-insensitively with shipped seed names reserved (`conflict`, `details.field: "name"`), and `SessionSnapshot`/`UsageSummary` in `schema.json`.
 
 | # | Change |
 |---|---|

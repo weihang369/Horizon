@@ -2,6 +2,7 @@
 // and Reset demo data. Hidden in Presenter Mode. Owner: EE.
 import type { OverlayComponentProps } from "../../app/overlayTypes";
 import { toast } from "../../app/layers";
+import { client } from "../../client";
 import { mockActions, useMock } from "../../stores/mock";
 import { SCENARIOS } from "../../mock/scenarios";
 import type { Scenario } from "../../mock/scenarios";
@@ -31,7 +32,7 @@ export function MockSwitcher({ close }: OverlayComponentProps<"O18">) {
           </section>
           <section className={s.row}>
             <Button size="sm" variant="secondary" onClick={async () => { await mockActions.setMockKey(); toast({ variant: "success", text: "Mock key set (sk-or-mock…)." }); }}>Set mock key</Button>
-            <Button size="sm" variant="danger" onClick={async () => { await mockActions.resetDemoData(); toast({ variant: "info", text: "Demo data reset." }); }}>Reset demo data</Button>
+            <Button size="sm" variant="danger" onClick={async () => { await client.admin.resetDemo(); toast({ variant: "info", text: "Demo data reset." }); }}>Reset demo data</Button>
           </section>
           {!ready && <p className={s.note}>Loading seed data…</p>}
           {GROUPS.map((g) => (

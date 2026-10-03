@@ -64,6 +64,13 @@ export default defineConfig({
   },
   server: {
     fs: { allow: [here, SEED_DIR] },
+    // `npm run dev` at the repo root (doc backend/01 §8): the API and generated assets come from the backend on
+    // :8000. SSE passes through unbuffered (the backend sends no-cache + X-Accel-Buffering: no). Seed placeholders
+    // under /assets/placeholder are still served by the seedAssets plugin above.
+    proxy: {
+      "/api": { target: "http://127.0.0.1:8000", changeOrigin: true },
+      "/assets/gen": { target: "http://127.0.0.1:8000", changeOrigin: true },
+    },
   },
   build: {
     chunkSizeWarningLimit: 600,
@@ -71,5 +78,7 @@ export default defineConfig({
   test: {
     environment: "node",
     include: ["src/**/*.test.ts", "scripts/**/*.test.ts"],
+    // The HTTP contract run needs a backend: `npm run test:http` (vitest.http.config.ts) starts one.
+    exclude: ["**/node_modules/**", "src/**/*.http.test.ts"],
   },
 });

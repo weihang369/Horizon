@@ -10,6 +10,8 @@
 > - `TurnTrace.calls`;
 > - `entity.changed.progress` and `task.update` on the global stream.
 >
+> **Rev 1.3 addendum (M1b `backend-foundation`):** `HorizonClient.admin.resetDemo()` (both clients; the app's "Reset demo data" buttons call it); world names unique case-insensitively, with the shipped seed world names reserved (`conflict`, `details.field: "name"`); `SessionSnapshot` and `UsageSummary` exported to `schema.json` so the backend validates those bodies too.
+>
 > §6 is reconciled with the code. The machine-readable form is `backend/horizon/contract/schema.json` (`npm run export-schema` in `frontend/`). Full list: [docs/backend/03 §7](../backend/03-api.md#7-contract-rev-13-additive).
 >
 > **Contract rev. 1.2 (D-59):** citations, `KnowledgeChunk` and knowledge traces.
@@ -123,7 +125,8 @@ AppSettings {
 ### World
 ```ts
 World {
-  id: string; name: string;                       // 1–40 chars, unique
+  id: string; name: string;                       // 1–40 chars (trimmed; empty → "New World"), unique case-insensitively;
+                                                  // a shipped seed world's name is reserved for that world (rev 1.3 addendum)
   cover: { kind: "preset" | "upload" | "generated"; presetId?: string; url?: string };
   you?: YouCard;                                  // how characters in THIS world know the user (D-43)
   characterCount: number;                         // derived
@@ -470,6 +473,7 @@ draft (wizard: seed → … → theme) ─→ review (APPROVE step) ─(Summon)�
 - **Knowledge & worlds (rev 1.3):** `addKnowledge(characterId, { file } | { type: "text", title, text })`, `deleteKnowledge(sourceId)`, `reindexKnowledge(sourceId)`, `uploadCover(worldId, file)` (PNG, JPEG or WebP ≤ 5 MB).
 - **Characters & jobs:** `cancelJob(jobId)`, `retryTask(taskId)`, `acceptAssetVersion(assetId)`, `archiveCharacter`, `restoreCharacter`, `deleteCharacter`, `forgetMemory(memoryItemId)`.
 - **Settings:** `testConnection`, `testModel(role)`.
+- **Admin (rev 1.3 addendum):** `admin.resetDemo()` re-seeds seed records only (D-70); `mock.reset` follows on the global stream.
 
 ## 7. Mock architecture for the UI phase
 

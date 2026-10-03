@@ -2,7 +2,7 @@
 
 Horizon is an open-source multi-agent character sandbox. You summon AI personas, give them faces, moods and theme songs, and have them advise you, debate each other, or just live their lives.
 
-> **Status:** UI preview. The frontend is complete and runs on a built-in mock client with seeded demo data. You don't need a backend, an API key or a GPU. The FastAPI backend and the LangGraph agents come next.
+> **Status:** UI preview. The frontend is complete and runs on a built-in mock client with seeded demo data. You don't need a backend, an API key or a GPU. The local FastAPI backend is being built milestone by milestone ([docs/backend/](docs/backend/)): today it serves the demo data (browse, profiles, replays) and world create/rename/delete. The LangGraph agents come after.
 
 **Live demo:** <https://horizon-seven-mauve.vercel.app> (desktop browser, 1280 × 720 or larger).
 
@@ -21,6 +21,31 @@ Open the URL Vite prints, usually <http://localhost:5173>.
 
 - **Window size:** use a desktop browser window of at least **1280 × 720**. Smaller viewports show a "screen too small" notice.
 - **Audio:** sound starts after your first click or key press, because of the browser's autoplay rules.
+
+## Run locally with the backend
+
+**You also need:** [uv](https://docs.astral.sh/uv/). It fetches Python 3.12 for the backend by itself; your system Python is untouched.
+
+```bash
+git clone https://github.com/weihang369/Horizon.git
+cd Horizon
+npm run setup      # npm installs (root + frontend) and `uv sync` for backend/
+npm run dev        # backend on http://127.0.0.1:8000 + the app on http://localhost:5173, talking to it
+```
+
+Ctrl-C stops both. The backend keeps its data in `data/` at the repo root (gitignored) and seeds it with the demo worlds on first start.
+
+| Command (repo root) | What it does |
+|---|---|
+| `npm run setup` | Step 1: everything the demo needs |
+| `npm run setup:docling` | Optional step 2: CPU PyTorch + Docling for document upload (the models download arrives with knowledge upload, milestone M5) |
+| `npm run dev` | Backend with auto-reload + Vite in `--mode http` (`VITE_HORIZON_CLIENT=http`, proxied `/api`) |
+| `npm run demo` | Build the app and serve it and the API on one port, <http://127.0.0.1:8000> |
+| `npm test` | Backend tests (pytest), frontend unit tests, then the client contract against a real test-mode backend |
+
+- **Reset:** Settings → Data → "Reset demo data" restores the shipped demo and keeps your own worlds. `uv run --project backend horizon reset --factory --yes` wipes `data/` (except downloaded models).
+- **What the backend does today:** reads, replays and world CRUD. Live chat, character creation, top-ups and knowledge upload arrive in later milestones; until then the app says "Not available on the local backend yet". The mock (`cd frontend && npm run dev`) still does everything.
+- The backend binds to `127.0.0.1` only. No API key is read yet.
 
 ## A 5-minute tour
 
@@ -80,13 +105,14 @@ Horizon/
 │       ├── features/  Screens: shell, worlds, wizard, profile, session, ensemble, insight, settings, dev
 │       ├── ui/ theme/ motion/ audio/ vfx/ character/   Design system and engines
 │       └── router/    Hash router (#/w/:world/...)
+├── backend/           FastAPI + SQLite local backend (uv); `horizon` CLI, tests, contract/schema.json
 ├── seed/              Demo worlds, characters, sessions, assets (served at /assets)
 └── docs/
     ├── requirements/  Vision, functional requirements, screens, data contract, decision log
     └── ui-ux/         UI/UX design notes
 ```
 
-The UI talks only to the typed `HorizonClient` interface. Today `frontend/src/client/index.ts` exports the `MockClient`; when the backend lands, it's a one-line swap to the HTTP client.
+The UI talks only to the typed `HorizonClient` interface. `frontend/src/client/index.ts` picks the `MockClient` by default (and on Vercel) or the `HttpClient` when built with `VITE_HORIZON_CLIENT=http`.
 
 ## Roadmap
 
