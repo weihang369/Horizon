@@ -51,7 +51,7 @@ Baseline canvas: **1440×900**. Every layout must also work at the **1280×720 m
 | O24 | Portrait menu | Click or right-click a stage portrait (MULTI-17) |
 | O25 | Old / New asset comparison | Regenerated asset on an approved character (PRF-03) |
 | O26 | End debate early | "End debate" before closing (MULTI-07) |
-| O27 | **Energy top-up** ("Give {name} +500 ⚡ (≈ US$0.05)?") | Top up from an exhausted note, energy bar or profile (ENG-05) |
+| O27 | **Energy top-up** ("Give {name} +500 ⚡?", ≈ US$0.05 of budget headroom) | Top up from an exhausted note, energy bar or profile (ENG-05). Free itself, bounded by today's budget (D-76); a refusal shows inline |
 
 ## 3. Navigation map
 

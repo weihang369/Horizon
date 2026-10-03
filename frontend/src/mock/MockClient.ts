@@ -14,7 +14,10 @@ import type {
   StartJobInput, Unsubscribe, UsageSummary, WorldInput,
 } from "../client/HorizonClient";
 import { chatCostUsd, round6 } from "../domain/cost";
-import { energyState, fullAt, makeEnergy, pointsForCost, settle, topUp, withMax } from "../domain/energy";
+import {
+  canTopUp, energyDay, energyState, EST_REPLY_POINTS, fullAt, makeEnergy, pointsForCost, regenAt, settle, topUp, toWireEnergy, withMax,
+} from "../domain/energy";
+import { MODELS } from "./pricing.config";
 import { pricePeriod, rushHourInfo } from "../domain/rushHour";
 import type { PricePeriod } from "../domain/rushHour";
 import { ScriptPlayer } from "../engine/ScriptPlayer";
@@ -26,7 +29,7 @@ import type { Dataset } from "./db/dataset";
 import { cloneDataset } from "./db/dataset";
 import { loadSeedDataset } from "./db/loadSeed";
 import type { KV } from "./db/persist";
-import { clearSnapshot, defaultStorage, loadSnapshot, saveSnapshot } from "./db/persist";
+import { defaultStorage, loadSnapshot, saveSnapshot } from "./db/persist";
 import * as debateEngine from "./engines/debate";
 import { DEFAULT_RUBRIC } from "./engines/debate";
 import * as groupEngine from "./engines/group";
@@ -34,6 +37,8 @@ import type { EngineHost, LiveSession } from "./engines/host";
 import { clearLive, systemNote } from "./engines/host";
 import { estimateJob, JobRunner } from "./engines/jobs";
 import type { JobHost } from "./engines/jobs";
+import type { KnowledgeHost, Prepared } from "./engines/knowledge";
+import * as knowledgeEngine from "./engines/knowledge";
 import * as oneEngine from "./engines/oneOnOne";
 import * as watchEngine from "./engines/watch";
 import { footnoteCitations } from "./script/citations";
@@ -73,6 +78,68 @@ export interface MockDevApi {
 const DEV_KEY = "horizon.mock.dev.v1";
 const clone = <T>(x: T): T => structuredClone(x);
 
+const isEnergy = (x: object): x is Energy => "regenPerHour" in x && "current" in x && "asOf" in x;
+/** The wire form of a result (doc backend/04 §4): energy is stored REAL, but `current` / `spentToday` leave floored. */
+function toWire<T>(x: T): T {
+  const out = clone(x);
+  const fix = (v: unknown): void => {
+    if (!v || typeof v !== "object") return;
+    if (Array.isArray(v)) { v.forEach(fix); return; }
+    const o = v as Record<string, unknown>;
+    if (isEnergy(o)) Object.assign(o, toWireEnergy(o));
+    else if (o.energy && typeof o.energy === "object" && isEnergy(o.energy)) o.energy = toWireEnergy(o.energy);
+    else if (o.character && typeof o.character === "object") fix(o.character);
+  };
+  fix(out);
+  return out;
+}
+
+// rev 1.3 error helpers (doc backend/03 §2): 404 not_found · 400/413/422 validation · 409 conflict. Never retryable.
+const notFound = (what: string) => new HorizonError("not_found", `${what} not found.`, { retryable: false });
+const invalid = (message: string, details?: Record<string, unknown>) => new HorizonError("validation", message, { retryable: false, details });
+const conflict = (message: string, details?: Record<string, unknown>) => new HorizonError("conflict", message, { retryable: false, details });
+
+/** rev 1.3 cover upload: PNG / JPEG / WebP ≤ 5 MB (checked by MIME and magic bytes, like the backend). */
+const COVER_MAGIC: Record<string, number[]> = { "image/png": [0x89, 0x50, 0x4e, 0x47], "image/jpeg": [0xff, 0xd8, 0xff], "image/webp": [0x52, 0x49, 0x46, 0x46] };
+const COVER_MAX_BYTES = 5 * 1024 * 1024;
+/** Small covers become a data URL (kept in the snapshot); larger ones an object URL for this tab only. */
+const COVER_INLINE_BYTES = 512 * 1024;
+async function coverUrl(file: File): Promise<string> {
+  const magic = COVER_MAGIC[file.type];
+  if (!magic) throw invalid("Covers must be PNG, JPEG or WebP.", { field: "file", accepted: Object.keys(COVER_MAGIC) });
+  if (file.size > COVER_MAX_BYTES) throw invalid("Covers can be at most 5 MB.", { field: "file", limit: COVER_MAX_BYTES, bytes: file.size });
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  if (!magic.every((b, i) => bytes[i] === b)) throw invalid("That file isn't a valid image.", { field: "file" });
+  if (file.size > COVER_INLINE_BYTES) return URL.createObjectURL(file);
+  let bin = "";
+  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  return `data:${file.type};base64,${btoa(bin)}`;
+}
+
+/** D-70 tombstone: identity, palette and the active neutral portrait survive; everything else is emptied. */
+function tombstone(c: Character, deletedAt: string): Character {
+  const p = c.profile;
+  const emotions = Object.fromEntries(Object.keys(c.emotions).map((e) => [e, null])) as Character["emotions"];
+  emotions.neutral = c.emotions.neutral;
+  return {
+    ...c,
+    profile: {
+      name: p.name, ...(p.title ? { title: p.title } : {}), role: p.role, age: p.age, ...(p.pronouns ? { pronouns: p.pronouns } : {}),
+      tagline: p.tagline, personality: { summary: "", traits: p.personality.traits }, backstory: "",
+      speakingStyle: { summary: "", tone: "", formality: p.speakingStyle.formality, quirks: [], catchphrases: [] },
+      expertise: [], boundaries: [], greeting: "",
+    },
+    profileMeta: undefined,
+    appearance: { ...c.appearance, candidates: [] },
+    emotions,
+    blink: null,
+    themeSongId: undefined,
+    activeJobId: undefined,
+    deletedAt,
+    updatedAt: deletedAt,
+  };
+}
+
 function deepMerge<T>(base: T, patch: DeepPartial<T> | undefined): T {
   if (!patch) return base;
   const out = { ...base } as Record<string, unknown>;
@@ -107,6 +174,7 @@ export class MockClient implements HorizonClient {
   private runner!: JobRunner;
   private host: EngineHost;
   private persistTimer: ReturnType<typeof setTimeout> | null = null;
+  private knowledgePending = new Map<string, Prepared>();
   private isReady = false;
 
   constructor(opts: MockClientOptions = {}) {
@@ -151,6 +219,7 @@ export class MockClient implements HorizonClient {
       this.reseed(SCENARIO_BY_ID[scenarioId] ?? SCENARIO_BY_ID.default);
     }
     this.resumeJobs();
+    knowledgeEngine.resumeIndexing(this.knowledgeHost());
     this.isReady = true;
     this.notifyDev();
   }
@@ -184,6 +253,9 @@ export class MockClient implements HorizonClient {
     return this.scenario.pricePeriod ?? pricePeriod(this.sched.wallNow());
   }
 
+  /** D-78: the one Exhausted threshold for the current price period (= AppSettings.energy.estReplyPoints). */
+  private est(): { estReplyPoints: number } { return { estReplyPoints: EST_REPLY_POINTS[this.period()] }; }
+
   private iso(): string { return iso(this.sched.wallNow()); }
   private newId(prefix: string): string { return makeId(prefix, this.sched.wallNow()); }
 
@@ -192,7 +264,7 @@ export class MockClient implements HorizonClient {
     await this.ready;
     const f = this.scenario.faults?.command;
     if (f?.queries) throw new HorizonError(f.code);
-    return clone(fn());
+    return toWire(fn());
   }
 
   /** Non-AI command (rename, mute, archive…): only the network can fail it. */
@@ -202,7 +274,7 @@ export class MockClient implements HorizonClient {
     if (f?.queries) throw new HorizonError(f.code);
     const r = fn();
     this.persistSoon();
-    return clone(r);
+    return toWire(r);
   }
 
   /** AI action: needs a key (O05), honours command faults and the daily cap. */
@@ -219,7 +291,7 @@ export class MockClient implements HorizonClient {
     if (opts.costs && this.dailyCapReached()) throw new HorizonError("daily_budget_exceeded");
     const r = fn();
     this.persistSoon();
-    return clone(r);
+    return toWire(r);
   }
 
   private takeStreamFault() {
@@ -296,7 +368,7 @@ export class MockClient implements HorizonClient {
     let live = this.lives.get(sid);
     if (live) return live;
     const rec = this.db.sessions[sid];
-    if (!rec) throw new HorizonError("network", "Session not found.", { retryable: false });
+    if (!rec) throw notFound("Session");
     const state = { ...initialRuntime(rec.session, rec.messages), lastSeq: rec.events.at(-1)?.seq ?? 0 };
     const player = new ScriptPlayer<StreamEvent>([], { clock: this.sched.clock, onEntry: (e) => this.deliver(sid, e) });
     live = { id: sid, player, state, turn: rec.messages.length, queue: [], busy: false, held: false, recent: [] };
@@ -332,7 +404,7 @@ export class MockClient implements HorizonClient {
         const c = this.db.characters[evt.payload.characterId];
         if (c) {
           const now = this.sched.wallNow();
-          const s = settle(c.energy, now);
+          const s = settle(c.energy, now, this.est());
           c.energy = {
             ...s, current: evt.payload.current, state: evt.payload.state,
             fullAt: fullAt(evt.payload.current, s.max, s.regenPerHour, now), spentToday: s.spentToday + (evt.payload.spent ?? 0),
@@ -364,15 +436,25 @@ export class MockClient implements HorizonClient {
 
   private snapshot(sid: string): SessionSnapshot {
     const rec = this.db.sessions[sid];
-    if (!rec) throw new HorizonError("network", "Session not found.", { retryable: false });
+    if (!rec) throw notFound("Session");
     return { session: rec.session, messages: rec.messages, lastSeq: rec.events.at(-1)?.seq ?? 0 };
+  }
+
+  /** One streaming session at a time (doc backend/03 §4): a session the user left (held) doesn't count. */
+  private assertNoOtherStreaming(sid?: string): void {
+    for (const live of this.lives.values()) {
+      if (live.id !== sid && live.current && !live.held) {
+        throw conflict("Another session is live. Leave it first.", { activeSessionId: live.id });
+      }
+    }
   }
 
   private liveSession(sid: string): LiveSession {
     const rec = this.db.sessions[sid];
-    if (!rec) throw new HorizonError("network", "Session not found.", { retryable: false });
-    if (rec.session.isSeed) throw new HorizonError("provider_error", "Seed sessions are replay-only. Use Continue live.", { retryable: false });
-    if (rec.session.status === "ended") throw new HorizonError("provider_error", "This session has ended.", { retryable: false });
+    if (!rec) throw notFound("Session");
+    if (rec.session.isSeed) throw conflict("Seed sessions are replay-only. Use Continue live.");
+    if (rec.session.status === "ended") throw conflict("This session has ended.");
+    this.assertNoOtherStreaming(sid);
     const live = this.liveOf(sid);
     if (live.state.session.status === "paused" && live.state.session.pausedReason !== "turn_cap") {
       if (live.state.session.pausedReason === "daily_budget" && this.dailyCapReached()) throw new HorizonError("daily_budget_exceeded");
@@ -394,13 +476,22 @@ export class MockClient implements HorizonClient {
   // ── Settings ──────────────────────────────────────────────────────────────
   private settingsView(): AppSettings {
     const r = rushHourInfo(this.sched.wallNow(), this.scenario.pricePeriod);
-    return { ...this.db.settings, pricing: { period: r.period, nextChangeAt: r.nextChangeAt } };
+    const s = this.db.settings;
+    return {
+      ...s,
+      // Config-owned (rev 1.3): older snapshots may lack them; the client can never change them.
+      models: { ...s.models, embedding: s.models.embedding ?? MODELS.embedding },
+      energy: { ...s.energy, estReplyPoints: { ...EST_REPLY_POINTS } },
+      pricing: { period: r.period, nextChangeAt: r.nextChangeAt },
+    };
   }
 
   settings: HorizonClient["settings"] = {
     get: () => this.query(() => this.settingsView()),
     update: (patch) => this.command(() => {
-      this.db.settings = deepMerge(this.db.settings, patch);
+      // estReplyPoints is read-only config (D-78): a patch can't move the energy threshold.
+      const { estReplyPoints: _ignored, ...energy } = patch.energy ?? {};
+      this.db.settings = deepMerge(this.db.settings, { ...patch, ...(patch.energy ? { energy } : {}) });
       this.changed("settings");
       return this.settingsView();
     }),
@@ -423,13 +514,24 @@ export class MockClient implements HorizonClient {
 
   private world(id: string): World {
     const w = this.db.worlds[id];
-    if (!w) throw new HorizonError("network", "World not found.", { retryable: false });
+    if (!w) throw notFound("World");
     return w;
   }
 
   worlds: HorizonClient["worlds"] = {
     list: () => this.query(() => Object.values(this.db.worlds).map((w) => this.worldView(w)).sort((a, b) => b.lastActiveAt.localeCompare(a.lastActiveAt))),
     get: (id) => this.query(() => this.worldView(this.world(id))),
+    uploadCover: async (id, file) => {
+      await this.query(() => this.world(id));
+      const url = await coverUrl(file);
+      return this.command(() => {
+        const w = this.world(id);
+        w.cover = { kind: "upload", url };
+        w.updatedAt = this.iso();
+        this.changed("world", w.id, w.id);
+        return this.worldView(w);
+      });
+    },
     create: (input: WorldInput) => this.command(() => {
       const now = this.iso();
       const w: World = {
@@ -452,7 +554,7 @@ export class MockClient implements HorizonClient {
       for (const c of Object.values(this.db.characters)) if (c.worldId === id) delete this.db.characters[c.id];
       for (const [sid, r] of Object.entries(this.db.sessions)) if (r.session.worldId === id) this.dropSession(sid);
       for (const m of Object.values(this.db.memory)) if (m.worldId === id) delete this.db.memory[m.id];
-      for (const k of Object.values(this.db.knowledge)) if (k.worldId === id) delete this.db.knowledge[k.id];
+      for (const k of Object.values(this.db.knowledge)) if (k.worldId === id) knowledgeEngine.removeSource(this.knowledgeHost(), k.id);
       this.dropOrphanChunks();
       this.changed("world", id, id);
     }),
@@ -461,8 +563,15 @@ export class MockClient implements HorizonClient {
   // ── Characters ────────────────────────────────────────────────────────────
   private char(id: string): Character {
     const c = this.db.characters[id];
-    if (!c || c.deletedAt) throw new HorizonError("network", "Character not found.", { retryable: false });
+    if (!c || c.deletedAt) throw notFound("Character");
     return c;
+  }
+
+  /** Read view: `energy.state` is derived at read time for the current price period (D-78), like the backend. */
+  private charView(c: Character): Character {
+    const e = c.energy;
+    const current = this.db.settings.demoMode ? e.current : regenAt(e, this.sched.wallNow());
+    return { ...c, energy: { ...e, state: energyState(current, e.max, this.est().estReplyPoints) } };
   }
 
   private touchChar(c: Character, bump = false): Character {
@@ -475,8 +584,14 @@ export class MockClient implements HorizonClient {
   characters: HorizonClient["characters"] = {
     list: (worldId, opts) => this.query(() => Object.values(this.db.characters)
       .filter((c) => c.worldId === worldId && !c.deletedAt && (opts?.includeArchived || c.status !== "archived"))
-      .sort((a, b) => Number(b.isSeed) - Number(a.isSeed) || a.createdAt.localeCompare(b.createdAt))),
-    get: (id) => this.query(() => this.char(id)),
+      .sort((a, b) => Number(b.isSeed) - Number(a.isSeed) || a.createdAt.localeCompare(b.createdAt))
+      .map((c) => this.charView(c))),
+    // Tombstones (deletedAt) stay readable so old transcripts render; every command on them is not_found.
+    get: (id) => this.query(() => {
+      const c = this.db.characters[id];
+      if (!c) throw notFound("Character");
+      return this.charView(c);
+    }),
     createDraft: (worldId, input) => this.live(() => {
       this.world(worldId);
       const now = this.iso();
@@ -505,7 +620,7 @@ export class MockClient implements HorizonClient {
         paletteId: this.db.palettes[0]?.id ?? "pal_ocean_clinic",
         emotionSet: [...EMOTIONS],
         emotions: Object.fromEntries(EMOTIONS.map((e) => [e, null])) as Character["emotions"],
-        energy: makeEnergy(max, max, now),
+        energy: makeEnergy(max, max, now, 0, this.est()),
         version: 1, isSeed: false, createdAt: now, updatedAt: now,
       };
       this.db.characters[c.id] = c;
@@ -524,7 +639,8 @@ export class MockClient implements HorizonClient {
     lockPortrait: (id, candidateId) => this.command(() => {
       const c = this.char(id);
       const cand = c.appearance.candidates.find((x) => x.id === candidateId);
-      if (!cand || cand.status !== "ready") throw new HorizonError("provider_error", "That candidate isn't ready.", { retryable: false });
+      if (!cand) throw notFound("Candidate");
+      if (cand.status !== "ready") throw conflict("That candidate isn't ready.");
       c.appearance.candidates = c.appearance.candidates.map((x) => ({ ...x, selected: x.id === candidateId }));
       c.appearance.basePortraitUrl = cand.url;
       const asset = { id: this.newId("emo"), characterId: c.id, emotion: "neutral" as Emotion, variant: "default" as const, status: "ready" as const, url: cand.url, vfxPreset: "none" as const, version: 1, isActive: true };
@@ -538,7 +654,7 @@ export class MockClient implements HorizonClient {
       const c = this.char(id);
       const p = c.profile;
       if (!p.name || !p.role || p.age < 18 || !c.appearance.basePortraitUrl) {
-        throw new HorizonError("provider_error", "Approval needs a valid profile (adult age) and a locked base portrait.", { retryable: false });
+        throw invalid("Approval needs a valid profile (adult age) and a locked base portrait.");
       }
       c.status = "approved";
       c.approvedAt = this.iso();
@@ -557,18 +673,32 @@ export class MockClient implements HorizonClient {
       c.archivedAt = undefined;
       return this.touchChar(c);
     }),
+    // D-70 / rev 1.3: delete leaves a tombstone (name, palette, neutral portrait) so transcripts keep rendering.
     delete: (id) => this.command(() => {
       const c = this.char(id);
-      delete this.db.characters[id];
+      for (const live of this.lives.values()) {
+        if (live.current && !live.held && live.state.session.participants.some((p) => p.characterId === id)) {
+          throw conflict(`${c.profile.name} is in the live session. Stop or leave it first.`, { activeSessionId: live.id });
+        }
+      }
+      for (const j of Object.values(this.db.jobs)) {
+        if (j.characterId !== id) continue;
+        if (j.status === "queued" || j.status === "running") this.runner.cancel(j.id);
+        delete this.db.jobs[j.id];
+      }
       for (const m of Object.values(this.db.memory)) if (m.characterId === id) delete this.db.memory[m.id];
-      for (const k of Object.values(this.db.knowledge)) if (k.characterId === id) delete this.db.knowledge[k.id];
+      for (const k of Object.values(this.db.knowledge)) if (k.characterId === id) knowledgeEngine.removeSource(this.knowledgeHost(), k.id);
+      for (const s of Object.values(this.db.songs)) if (s.characterId === id) delete this.db.songs[s.id];
+      const neutral = c.emotions.neutral;
+      for (const a of Object.values(this.db.assets)) if (a.characterId === id && a.id !== neutral?.assetId) delete this.db.assets[a.id];
       this.dropOrphanChunks();
+      this.db.characters[id] = tombstone(c, this.iso());
       this.changed("character", id, c.worldId);
     }),
     assets: (id) => this.query(() => Object.values(this.db.assets).filter((a) => a.characterId === id).sort((a, b) => a.emotion.localeCompare(b.emotion) || a.version - b.version)),
     acceptAssetVersion: (assetId) => this.command(() => {
       const a = this.db.assets[assetId];
-      if (!a) throw new HorizonError("provider_error", "Asset not found.", { retryable: false });
+      if (!a) throw notFound("Asset");
       const c = this.char(a.characterId);
       for (const x of Object.values(this.db.assets)) if (x.characterId === c.id && x.emotion === a.emotion && x.variant === a.variant) x.isActive = x.id === assetId;
       const ref = { assetId: a.id, url: a.url ?? "", vfxPreset: a.vfxPreset };
@@ -582,17 +712,24 @@ export class MockClient implements HorizonClient {
     }),
     topUpEnergy: (id, points) => this.live(() => {
       const c = this.char(id);
-      const cost = round6(points * this.db.settings.energy.usdPerPoint);
-      if (this.db.settings.spentTodayUsd + cost > this.db.settings.budget.dailyCapUsd + 1e-9) throw new HorizonError("daily_budget_exceeded");
-      c.energy = topUp(c.energy, points, this.sched.wallNow());
-      this.ledger({ category: "energy_topup", characterId: id, costUsd: cost, energyPoints: points });
+      const s = this.db.settings;
+      const nowMs = this.sched.wallNow();
+      const today = energyDay(nowMs);
+      const todayTopUpPoints = this.db.ledger
+        .filter((r) => r.category === "energy_topup" && energyDay(Date.parse(r.at)) === today)
+        .reduce((n, r) => n + (r.energyPoints ?? 0), 0);
+      // D-76: top-ups are bounded by today's budget headroom, but cost $0 (the replies they fund are the spend).
+      const gate = { spentTodayUsd: s.spentTodayUsd, todayTopUpPoints, points, usdPerPoint: s.energy.usdPerPoint, dailyCapUsd: s.budget.dailyCapUsd };
+      if (!canTopUp(gate)) throw new HorizonError("daily_budget_exceeded", undefined, { details: { todayTopUpPoints, points } });
+      c.energy = topUp(c.energy, points, nowMs, this.est());
+      this.ledger({ category: "energy_topup", characterId: id, costUsd: 0, energyPoints: points });
       this.broadcastEnergy(c);
       this.touchChar(c);
       return c.energy;
     }),
     setEnergyMax: (id, points) => this.command(() => {
       const c = this.char(id);
-      c.energy = withMax(c.energy, points, this.sched.wallNow());
+      c.energy = withMax(c.energy, points, this.sched.wallNow(), this.est());
       this.broadcastEnergy(c);
       this.touchChar(c);
       return c.energy;
@@ -607,11 +744,52 @@ export class MockClient implements HorizonClient {
     // D-59: a source and its indexed passages, in order (seed/knowledge/chunks).
     knowledgeSource: (sourceId) => this.query(() => {
       const source = this.db.knowledge[sourceId];
-      if (!source) throw new HorizonError("network", "Source not found.", { retryable: false });
+      if (!source) throw notFound("Source");
       const chunks = Object.values(this.db.knowledgeChunks).filter((c) => c.sourceId === sourceId).sort((a, b) => a.index - b.index);
       return { source, chunks };
     }),
+    // rev 1.3 (D-65): ingestion is local and free (Docling); only the embedding step needs a key and budget.
+    addKnowledge: async (id, input) => {
+      const c = await this.query(() => this.char(id));
+      const accepted = await knowledgeEngine.acceptInput(this.knowledgeHost(), c.id, input);
+      return this.command(() => {
+        const src = knowledgeEngine.startSource(this.knowledgeHost(), c.id, c.worldId, accepted);
+        this.changed("knowledge", src.id, src.worldId);
+        return src;
+      });
+    },
+    deleteKnowledge: (sourceId) => this.command(() => {
+      const s = this.db.knowledge[sourceId];
+      if (!s) throw notFound("Source");
+      knowledgeEngine.removeSource(this.knowledgeHost(), sourceId);
+      this.changed("knowledge", sourceId, s.worldId);
+    }),
+    reindexKnowledge: (sourceId) => this.command(() => {
+      const s = this.db.knowledge[sourceId];
+      if (!s) throw notFound("Source");
+      const out = knowledgeEngine.reindex(this.knowledgeHost(), s);
+      this.changed("knowledge", sourceId, s.worldId);
+      return out;
+    }),
   };
+
+  private knowledgeHost(): KnowledgeHost {
+    const self = this;
+    return {
+      get db() { return self.db; },
+      get sched() { return self.sched; },
+      get pricing() { return self.db.pricing; },
+      pending: this.knowledgePending,
+      newId: (p) => this.newId(p),
+      iso: () => this.iso(),
+      canEmbed: () => this.db.settings.openRouterKeyStatus === "set" && !this.dailyCapReached(),
+      ledger: (row) => this.ledger(row),
+      progress: (s, progress) => {
+        this.global({ type: "entity.changed", kind: "knowledge", id: s.id, worldId: s.worldId, ...(progress ? { progress } : {}) });
+        this.persistSoon();
+      },
+    };
+  }
 
   /** D-59: passages whose source is gone (world/character deleted) go with it. */
   private dropOrphanChunks(): void {
@@ -623,7 +801,7 @@ export class MockClient implements HorizonClient {
     const e: Energy = c.energy;
     for (const live of this.lives.values()) {
       if (!live.state.session.participants.some((p) => p.characterId === c.id)) continue;
-      this.host.emit(live.id, { type: "energy", payload: { characterId: c.id, current: e.current, max: e.max, state: energyState(e.current, e.max), ...(e.fullAt ? { fullAt: e.fullAt } : {}) } });
+      this.host.emit(live.id, { type: "energy", payload: { characterId: c.id, current: Math.floor(e.current), max: e.max, state: energyState(e.current, e.max, this.est().estReplyPoints), ...(e.fullAt ? { fullAt: e.fullAt } : {}) } });
     }
   }
 
@@ -640,8 +818,10 @@ export class MockClient implements HorizonClient {
       jobFault: () => this.scenario.faults?.job as Faults["job"],
       emitJob: (e, characterName) => {
         for (const cb of this.jobSubs.get(e.type === "task.update" ? e.jobId : e.job.id) ?? []) cb(clone(e));
+        // rev 1.3: the global stream mirrors every job event (the backend has no per-job stream).
         if (e.type === "job.done") this.global({ type: "job.done", job: clone(e.job), characterName });
         else if (e.type === "job.progress") this.global({ type: "job.progress", job: clone(e.job) });
+        else this.global({ type: "task.update", jobId: e.jobId, task: clone(e.task) });
       },
       ledger: (row) => this.ledger(row),
       changed: (kind, id) => this.changed(kind, id, kind === "character" ? this.db.characters[id]?.worldId : undefined),
@@ -653,10 +833,13 @@ export class MockClient implements HorizonClient {
       this.char(input.characterId);
       return { estimatedCostUsd: estimateJob(this.jobHost(), input) };
     }),
-    start: (input) => this.live(() => this.runner.start(input)),
+    start: (input) => this.live(() => {
+      this.char(input.characterId);
+      return this.runner.start(input);
+    }),
     get: (jobId) => this.query(() => {
       const j = this.db.jobs[jobId];
-      if (!j) throw new HorizonError("network", "Job not found.", { retryable: false });
+      if (!j) throw notFound("Job");
       return j;
     }),
     cancel: (jobId) => this.command(() => this.runner.cancel(jobId)),
@@ -698,11 +881,15 @@ export class MockClient implements HorizonClient {
   private createSession(input: CreateSessionInput): SessionSnapshot {
     const w = this.world(input.worldId);
     const cast = input.characterIds.map((id) => this.char(id));
-    if (cast.some((c) => c.worldId !== w.id)) throw new HorizonError("provider_error", "Characters must belong to this world.", { retryable: false });
-    if (cast.some((c) => c.status !== "approved")) throw new HorizonError("provider_error", "Drafts and archived characters can't join sessions.", { retryable: false });
+    // NFR-23: a character from another world is reported as missing, never as existing elsewhere.
+    if (cast.some((c) => c.worldId !== w.id)) throw notFound("Character");
+    if (cast.some((c) => c.status !== "approved")) throw invalid("Drafts and archived characters can't join sessions.");
     const min = input.mode === "one_on_one" ? 1 : 2;
     const max = input.mode === "one_on_one" ? 1 : 5;
-    if (cast.length < min || cast.length > max) throw new HorizonError("provider_error", `This mode needs ${min}–${max} characters.`, { retryable: false });
+    if (cast.length < min || cast.length > max) {
+      throw invalid(`This mode needs ${min}–${max} characters.`, { field: "characterIds", min, max, got: cast.length });
+    }
+    this.assertNoOtherStreaming();
     const s = this.db.settings;
     const now = this.iso();
     let config: Session["config"] = null;
@@ -750,8 +937,8 @@ export class MockClient implements HorizonClient {
     const sid = session.id;
     const open: StreamEvent[] = [{ type: "session.state", payload: { status: "active", ...(state ? { state } : {}), participants } }];
     for (const c of cast) {
-      const e = settle(c.energy, this.sched.wallNow());
-      open.push({ type: "energy", payload: { characterId: c.id, current: e.current, max: e.max, state: e.state } });
+      const e = settle(c.energy, this.sched.wallNow(), this.est());
+      open.push({ type: "energy", payload: { characterId: c.id, current: Math.floor(e.current), max: e.max, state: e.state } });
     }
     if (input.seedSummary) open.push({ type: "message", payload: { message: systemNote(this.host, sid, input.seedSummary, "summary") } });
     // Deliver the opening snapshot synchronously so the returned snapshot already reflects it.
@@ -766,7 +953,7 @@ export class MockClient implements HorizonClient {
 
   private fork(id: string, atSeq?: number): SessionSnapshot {
     const rec = this.db.sessions[id];
-    if (!rec) throw new HorizonError("network", "Session not found.", { retryable: false });
+    if (!rec) throw notFound("Session");
     let events = rec.events;
     if (atSeq !== undefined) {
       let cut = events.filter((e) => e.seq <= atSeq);
@@ -814,7 +1001,7 @@ export class MockClient implements HorizonClient {
       if (this.lives.has(id)) this.patchSession(id, { title: t, titleIsCustom: true });
       else {
         const r = this.db.sessions[id];
-        if (!r) throw new HorizonError("network", "Session not found.", { retryable: false });
+        if (!r) throw notFound("Session");
         r.session = { ...r.session, title: t, titleIsCustom: true };
         this.changed("session", id, r.session.worldId);
       }
@@ -946,9 +1133,9 @@ export class MockClient implements HorizonClient {
     if (msg && usage.energySpent > 0) {
       const c = this.db.characters[cur.characterId];
       if (c) {
-        const now = settle(c.energy, this.sched.wallNow());
-        const current = Math.max(0, now.current - usage.energySpent);
-        events.push({ type: "energy", payload: { characterId: c.id, current, max: now.max, state: energyState(current, now.max), spent: usage.energySpent } });
+        const now = settle(c.energy, this.sched.wallNow(), this.est());
+        const current = Math.max(0, Math.floor(now.current) - usage.energySpent);
+        events.push({ type: "energy", payload: { characterId: c.id, current, max: now.max, state: energyState(current, now.max, this.est().estReplyPoints), spent: usage.energySpent } });
       }
     }
     this.host.emit(sid, ...events);
@@ -1014,7 +1201,7 @@ export class MockClient implements HorizonClient {
       return this.db.ledger.filter((r) => Date.parse(r.at) >= since);
     }),
     summary: () => this.query((): UsageSummary => {
-      const byCategory = { chat: 0, decision: 0, image: 0, music: 0, profile: 0, summary: 0, memory: 0, energy_topup: 0 } as UsageSummary["byCategory"];
+      const byCategory: UsageSummary["byCategory"] = { chat: 0, decision: 0, image: 0, music: 0, profile: 0, summary: 0, memory: 0, embedding: 0, energy_topup: 0 };
       const byCharacter: Record<string, number> = {};
       const bySession: Record<string, number> = {};
       let total = 0;
@@ -1067,6 +1254,7 @@ export class MockClient implements HorizonClient {
     }
     this.lives.clear();
     this.sched.cancelAll();
+    this.knowledgePending.clear();
     this.reseed(s);
     if (keepUserData && prev) {
       for (const k of ["worlds", "characters", "assets", "songs", "sessions", "memory", "knowledge", "knowledgeChunks", "jobs"] as const) {
@@ -1079,6 +1267,7 @@ export class MockClient implements HorizonClient {
       this.db.ledger.push(...prev.ledger.filter((r) => !seen.has(r.id)));
     }
     this.resumeJobs();
+    knowledgeEngine.resumeIndexing(this.knowledgeHost());
   }
 
   private makeDev(): MockDevApi {
@@ -1105,10 +1294,14 @@ export class MockClient implements HorizonClient {
         this.sched.setSpeed(speed);
         this.notifyDev();
       },
+      // D-70 / rev 1.3: re-seed seed records only (seed copies win by id); user worlds, characters, forks,
+      // memories and ledger rows survive, like the backend's POST /admin/reset-demo.
       resetDemoData: async () => {
         await this.ready;
-        clearSnapshot(this.storage);
-        this.hardReset(SCENARIO_BY_ID.default);
+        const settings = this.db.settings; // settings and the key aren't seed data: they stay
+        this.hardReset(SCENARIO_BY_ID.default, true);
+        this.db.settings = settings;
+        this.persistSoon();
         this.global({ type: "mock.reset" });
         this.notifyDev();
       },

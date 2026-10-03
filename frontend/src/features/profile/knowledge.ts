@@ -35,3 +35,11 @@ export function sourceFacts(s: KnowledgeSource, opts: { bytes?: boolean } = {}):
 }
 
 export const TYPE_NAME: Record<KnowledgeSource["type"], string> = { file: "Document", url: "Web page", text: "Pasted text" };
+/** Badge text per status (rev 1.3 adds `keyword_only`: searchable by keyword only until re-indexed). */
+export const STATUS_LABEL: Record<KnowledgeSource["status"], string> = {
+  indexed: "indexed", indexing: "indexing", keyword_only: "keyword only", failed: "failed",
+};
+/** Badge tone per status (Knowledge tab, O28 viewer, dev kit). */
+export const STATUS_TONE = { indexed: "ok", indexing: "ink", keyword_only: "warn", failed: "error" } as const satisfies Record<KnowledgeSource["status"], string>;
+/** Sources with readable passages open in the O28 viewer. */
+export const isReadable = (s: KnowledgeSource) => s.status === "indexed" || s.status === "keyword_only";

@@ -83,7 +83,7 @@
       "basePortraitUrl": "/assets/placeholder/portraits/chr_mockKenji/neutral.svg",
       "candidates": [
         {
-          "id": "cand_1",
+          "id": "cand_mockKenji1",
           "url": "/assets/placeholder/portraits/chr_mockKenji/neutral.svg",
           "selected": true,
           "status": "ready"

@@ -1,5 +1,19 @@
-# 05: Data Contract (contract rev. 1.1)
+# 05: Data Contract (contract rev. 1.3)
 
+> **Contract rev. 1.3 (2026-10-03, backend design, D-75):** additive only, `schemaVersion` stays `1`. Adds:
+> - error codes `not_found`, `validation` and `conflict`, plus `HorizonErrorShape.details`;
+> - the ID prefixes `kno_`, `kch_`, `ksec_` and `cmd_`;
+> - knowledge add, delete and reindex, the `keyword_only` status, and `"url"` as a legacy read-only type;
+> - world cover upload;
+> - `models.embedding` and the `embedding` ledger category;
+> - `AppSettings.energy.estReplyPoints` (D-78);
+> - `TurnTrace.calls`;
+> - `entity.changed.progress` and `task.update` on the global stream.
+>
+> §6 is reconciled with the code. The machine-readable form is `backend/horizon/contract/schema.json` (`npm run export-schema` in `frontend/`). Full list: [docs/backend/03 §7](../backend/03-api.md#7-contract-rev-13-additive).
+>
+> **Contract rev. 1.2 (D-59):** citations, `KnowledgeChunk` and knowledge traces.
+>
 > **Contract rev. 1.1 (2026-10-02, UI/UX stage):** additive only, `schemaVersion` stays `1`. Adds the `message` and `session.state` events, a face-change form of `emotion`, `AppSettings.pricing` and `forkSeedSession(…, atSeq?)` (D-51), plus `session.state.settings` for mid-session settings changes (D-57).
 >
 > **This is the single source of truth for data shapes.** The UI/UX mock fixtures, the FastAPI backend and the AI layer all use these shapes.
@@ -8,14 +22,14 @@
 ## 1. Conventions
 
 - **IDs:** `^[a-z]+_[0-9A-Za-z]{1,40}$`.
-  - Prefixes: `wld_`, `chr_`, `ses_`, `msg_`, `emo_`, `song_`, `job_`, `task_`, `mem_`, `trk_`, `evt_`.
+  - Prefixes: `wld_`, `chr_`, `ses_`, `msg_`, `emo_`, `song_`, `job_`, `task_`, `mem_`, `trk_`, `evt_`; rev 1.3 adds `kno_` (knowledge source), `kch_` (child chunk), `ksec_` (knowledge section) and `cmd_` (command receipt).
   - Generated IDs use a **ULID** after the prefix.
   - Seed IDs are **readable** and are *not* ULIDs, e.g. `chr_seedAmara`, `wld_seedMeridian`, `ses_seedDebate4Day`. Validators must accept both forms.
 - **Timestamps:** ISO-8601 UTC strings.
 - **Asset URLs:** **relative** (`/assets/...`), so mock and backend serve identical paths.
 - **Fixtures and exports:** carry `schemaVersion: 1` at the root.
 - **World isolation:** every Character, Session, MemoryItem and KnowledgeSource resolves to exactly one `worldId`. No API, memory or retrieval call may cross worlds (NFR-23).
-- **Money:** USD numbers. **Energy:** integer ⚡ points, where **1 ⚡ = US$0.0001** (config `energy.usdPerPoint`).
+- **Money:** USD numbers. **Energy:** ⚡ points, where **1 ⚡ = US$0.0001** (config `energy.usdPerPoint`). Stored as a real number; the wire floors `current` and `spentToday` to integers (D-78).
 
 ## 2. Entity map
 
@@ -58,7 +72,10 @@ type VfxPreset = "none" | "sparkle" | "rain" | "anger" | "shock" | "ponder" | "b
 type EnergyState = "active" | "tired" | "exhausted";      // tired < 20 %, exhausted = cannot afford a reply
 type ErrorCode = "missing_key" | "invalid_key" | "insufficient_credits" | "rate_limited" | "content_refused"
                | "provider_error" | "daily_budget_exceeded" | "creation_budget_exceeded" | "energy_exhausted"
-               | "timeout" | "network";
+               | "timeout" | "network"
+               | "not_found" | "validation" | "conflict";   // rev 1.3: missing/other-world record · bad input or limit · forbidden state transition
+// Every rejection carries { code, message, retryable, retryAfterSec?, details? }; `details` is machine-readable
+// (e.g. { activeSessionId } on a live-session conflict, { limit } on a limit violation).
 type DebatePhase = "setup" | "opening" | "rebuttal" | "closing" | "verdict" | "ended";
 ```
 
@@ -69,7 +86,7 @@ type DebatePhase = "setup" | "opening" | "rebuttal" | "closing" | "verdict" | "e
 AppSettings {
   openRouterKeyStatus: "missing" | "set" | "invalid";   // the key itself is NEVER sent to the frontend
   demoMode: boolean;                                     // true when no key is set
-  models: { chat: string; decision: string; image: string; music: string };  // config defaults
+  models: { chat: string; decision: string; image: string; music: string; embedding: string };  // config defaults (embedding: rev 1.3)
   modelOverrides?: Partial<AppSettings["models"]>;      // local, git-ignored
   generationMode: "lean" | "standard";                   // DEFAULT "lean" (D-40)
   autoGenerateMissingEmotions: boolean;                  // default false
@@ -78,7 +95,8 @@ AppSettings {
             warnAtPct: number };                         // default 80
   energy: { defaultMaxPoints: number;                    // default 1000 ⚡ (= US$0.10) per character per day
             usdPerPoint: number;                         // 0.0001
-            topUpStepPoints: number };                   // default 500
+            topUpStepPoints: number;                     // default 500
+            estReplyPoints: { off_peak: number; peak: number } };  // rev 1.3, read-only (4 / 8): the ONE Exhausted threshold (D-78)
   spentTodayUsd: number;                                 // derived from the ledger
   pricing: { period: "peak" | "off_peak"; nextChangeAt: string };   // D-51: drives the RUSH HOUR chip (ENG-06); derived from the MYT clock
   audio: { masterMuted: boolean; musicMuted: boolean; sfxMuted: boolean;
@@ -149,7 +167,7 @@ Energy {
   current: number;             // ⚡ at `asOf`
   asOf: string;                // timestamp the value was computed
   regenPerHour: number;        // = max / 24 → refills from empty to full in ~24 h
-  state: EnergyState;          // derived: exhausted if current < estimated reply cost; tired if < 20 % of max
+  state: EnergyState;          // derived: exhausted if current < AppSettings.energy.estReplyPoints[period]; tired if < 20 % of max
   fullAt?: string;             // when it will be full again (UI countdown)
   spentToday: number;          // ⚡ spent since local midnight (MYT by default), for the profile stat
 }
@@ -157,7 +175,8 @@ Energy {
 - **Regeneration is computed lazily:** `current = min(max, current + regenPerHour × hoursSince(asOf))`. There are no timers.
 - **Drain (D-42):** only the **character's own talking** drains its energy: the LLM call that generates that character's reply (1:1, group, debate, watch). The drain equals that call's actual cost in ⚡, rounded up.
 - **Does not drain:** routing, listener reactions, host lines, verdicts, memory writes, profile drafting, images, the theme song. These count only against the **daily cap**.
-- **Top-up:** `topUpEnergy(characterId, points)` adds ⚡ (it may exceed `max` for today) and is recorded in the ledger. Top-ups are bounded by the daily cap.
+- **Top-up (D-76):** `topUpEnergy(characterId, points)` adds ⚡ (it may exceed `max` for today). It is allowed while `spentTodayUsd + (todayTopUpPoints + points) × usdPerPoint ≤ dailyCapUsd`, else `daily_budget_exceeded`. The ledger row costs $0.
+- **One threshold (D-78):** `exhausted` ⇔ `current < estReplyPoints[period]` (4 ⚡ off-peak, 8 ⚡ at peak). The same value decides the displayed state and whether the character may speak.
 
 ### CharacterProfile (the source of the system prompt)
 ```ts
@@ -351,6 +370,8 @@ TurnTrace {
                        history: number; user: number; mode: number } };
   guardrail?: { checks: { name: string; verdict: "pass" | "flag" | "block"; p?: number }[] };
   graph?:    { path: string[] };                  // LangGraph node path (INS-03, Could)
+  calls?:    { purpose: string; model: string; costUsd: number; latencyMs: number; fallback?: boolean }[];
+             // rev 1.3: every paid call behind this turn (Jev route/gate/rerank, embeddings, the reply itself)
 }
 ```
 
@@ -382,13 +403,17 @@ GenerationTask {
 ```
 
 ### UsageRecord (cost ledger)
-`{ id, at, category: "chat" | "decision" | "image" | "music" | "profile" | "summary" | "memory" | "energy_topup", model?, provider?, pricePeriod?, sessionId?, characterId?, jobId?, tokensIn?, tokensCached?, tokensOut?, costUsd, estimatedCostUsd?, energyPoints?, latencyMs? }`. `costUsd` comes from the provider-reported cost (`usage.cost`) when available.
+`{ id, at, category: "chat" | "decision" | "image" | "music" | "profile" | "summary" | "memory" | "embedding" /*rev 1.3*/ | "energy_topup", model?, provider?, pricePeriod?, sessionId?, characterId?, jobId?, tokensIn?, tokensCached?, tokensOut?, costUsd, estimatedCostUsd?, energyPoints?, latencyMs? }`. `costUsd` comes from the provider-reported cost (`usage.cost`) when available. An `energy_topup` row has `costUsd: 0` and `energyPoints` set: a top-up authorises spend, and the replies it funds are recorded as `chat` (D-76).
 
 ### MemoryItem (**PROVISIONAL**: lets the UI mock the Memory tab; the AI team owns the final shape, OQ-AI-01)
 `{ id, characterId, worldId, kind: "fact" | "event" | "preference" | "about_user", text, importance: number /*0..1*/, sourceSessionId?, sourceMessageId?, createdAt }`
 
-### KnowledgeSource (**PLACEHOLDER**, v1.1; extended by D-59)
-`{ id, characterId, worldId, title, type: "text" | "file" | "url", status: "indexing" | "indexed" | "failed", bytes?, pages?, chunks?, url?, citedCount?, addedAt?, error? }`
+### KnowledgeSource (D-59; rev 1.3 per D-65)
+`{ id /*kno_…*/, characterId, worldId, title, type: "text" | "file" | "url", status: "indexing" | "indexed" | "keyword_only" | "failed", bytes?, pages?, chunks?, url?, citedCount?, addedAt?, error? }`
+- **New sources** are `"file"` (PDF, DOCX, MD, TXT; ≤ 10 MB, ≤ 300 pages) or `"text"` (pasted), with at most 20 per character. `"url"` is **legacy and read-only**: no command creates it.
+- **Status:** `indexing` → `indexed` (keyword and vector search) | `keyword_only` (keyword search only, because embedding was unavailable; `reindexKnowledge` upgrades it) | `failed` (`error` says why).
+- **Commands (rev 1.3):** `characters.addKnowledge(id, { file } | { type: "text", title, text })`, `deleteKnowledge(sourceId)` and `reindexKnowledge(sourceId)`. Progress arrives as `entity.changed { kind: "knowledge", id, progress: { stage: "extracting" | "chunking" | "embedding", pct } }`.
+- **Seed status:** the backend imports seed sources as `keyword_only` until the user runs "Index seed knowledge" (doc [backend/02](../backend/02-storage.md)). The MockClient shows them as `indexed`, so the public demo's citations look the same.
 
 ### KnowledgeChunk (D-59, rev. 1.2)
 `{ id /*kch_…*/, sourceId, index, locator?, text }`. Read with `characters.knowledgeSource(sourceId) → { source, chunks }` for the O28 Source viewer. Chunking is AI-owned (OQ-AI-03); the UI only needs stable ids and a readable locator.
@@ -397,11 +422,12 @@ GenerationTask {
 
 **Character**
 ```
-draft (wizard: seed → … → theme) ─→ review (APPROVE step) ─(Summon)→ approved ─→ archived ─→ (deleted)
+draft (wizard: seed → … → theme) ─→ review (APPROVE step) ─(Summon)→ approved ─→ archived ─→ (deleted = tombstone)
                                                                        ↑   │            │
                                                                        │   └─(Edit / regenerate; stays approved)
                                                                        └──────(Restore)─┘
 ```
+- **Delete leaves a tombstone (D-70, rev 1.3):** `deletedAt` is set, and the id, name, palette and neutral portrait are kept so old transcripts still render. `get` returns the tombstone, while `list` and `characterCount` skip it. Every command on it rejects with `not_found`, and deleting a character who is speaking in the live session rejects with `conflict`.
 - **Approval gate:** profile valid + base portrait locked (= neutral). Other emotions may be `null`. A song is optional.
 - **Only `approved` characters with `energy.state ≠ exhausted` can speak.** Exhausted characters stay in sessions but are skipped.
 - Regenerating an image on an approved character creates a new version. The old one stays active until the user picks "Use new". **A song regeneration replaces the song.**
@@ -418,27 +444,30 @@ draft (wizard: seed → … → theme) ─→ review (APPROVE step) ─(Summon)�
 |---|---|---|
 | `turn.next` | `{ nextSpeakerId, forcedBy?, skipped? }` | ≤ 500 ms after the previous `turn.end`. `skipped` lists exhausted or muted characters |
 | `turn.thinking` | `{ characterId }` | Typing "…" + lean-in |
-| `turn.start` | `{ messageId, author, emotion?, variantId? }` | Speaker known |
+| `turn.start` | `{ messageId, author, emotion?, variantId?, message? }` | Speaker known. `message?` (a partial `Message`) seeds fields such as `kind`, `debate` or `targetCharacterId` *(rev 1.3: documents existing code)* |
 | `token` | `{ messageId, delta, variantId? }` | |
 | `emotion` | `{ messageId?, characterId, emotion, source }` | **May arrive before, during or after tokens.** The UI holds ≤ 800 ms, then switches late. Ignored for display in MANUAL. *(D-51)* **without `messageId` and with `source: "user"`** it records a MANUAL `setEmotion` (face change), so Replay reproduces it |
 | `message` *(D-51)* | `{ message: Message }` | A whole, **non-streamed** message: user chat, `steer`, `interject`, `direction`, `system_note`, `summary`, `verdict`. Without it, Replay can't show what the user said |
 | `session.state` *(D-51, D-57)* | `{ status?, pausedReason?, state?: DebateState \| WatchState, participants?: Participant[], settings?: Partial<Pick<Session, "title" \| "titleIsCustom" \| "emotionMode" \| "musicPolicy" \| "readableMode" \| "config">> }` | Snapshot after a non-message change: verdict set, participant muted, side or cast change, or a mid-session settings change (rename, emotion mode, responder policy, auto-advance, music, Readable mode). Replaces the matching fields |
 | `turn.end` | `{ messageId, status, interruptedBy?, usage, variantId?, citations? }` | `citations` arrive here (D-59), so `[n]` chips appear when the reply completes |
-| `energy` | `{ characterId, current, max, state, fullAt? }` | After every drain or top-up; drives the energy bar |
+| `energy` | `{ characterId, current, max, state, fullAt?, spent? }` | After every drain or top-up; drives the energy bar. `spent?` = ⚡ drained by this event, added to `spentToday` *(rev 1.3)* |
 | `reaction` | `{ messageId, characterId, emotion, p?, source }` | Listeners only. May be late or absent |
-| `insight` | `{ messageId, trace: TurnTrace }` | After `turn.end`; never delays tokens |
+| `insight` | `{ messageId, trace: TurnTrace }` | After `turn.end`; never delays tokens. **A later `insight` for the same `messageId` replaces the earlier trace** (rev 1.3) |
 | `phase` | `{ phase, round, iteration }` | Debate banners |
 | `watch.state` | `{ status, paceMs, turnsTaken, turnLimit }` | Transport sync |
 | `session.paused` / `session.resumed` | `{ reason? }` | |
 | `budget.warning` | `{ scope: "daily" \| "creation", spentUsd, capUsd }` | 80% toast |
-| `error` | `{ code, message, retryable }` | |
-| `job.progress` / `task.update` / `job.done` | job/task snapshots (+ `previewUrl?`) | Generation jobs (separate stream per job) |
+| `error` | `{ code, message, retryable, messageId? }` | `messageId?` ties the error to the message it broke (e.g. a stream cut) *(rev 1.3)* |
+| `job.progress` / `task.update` / `job.done` | job/task snapshots (+ `previewUrl?`) | Generation jobs. **rev 1.3:** all three are mirrored onto the **global** stream; `jobs.subscribe(jobId)` is a snapshot plus a filter of it |
+
+**Global stream (`onGlobal`, rev 1.3):** `entity.changed { kind, id?, worldId?, progress? }` (`progress = { stage: "extracting" | "chunking" | "embedding", pct }` during knowledge ingestion), `budget.warning`, `budget.reached`, `job.progress`, `task.update`, `job.done`, `error { error: HorizonErrorShape, context? }` and `mock.reset`. Despite its name, `mock.reset` is also emitted by the backend after "Reset demo data", so screens re-query in place.
 
 **Commands (REST):**
 - **Chat & sessions:** `send`, `stop`, `regenerate(messageId)`, `setEmotion(characterId, emotion)` (MANUAL), `setEmotionMode`, `setResponderPolicy`, `setMusicPolicy`, `everyoneAnswer`, `nextSpeaker(characterId)`, `muteParticipant(characterId, muted)`, `endSession`, `renameSession`, `forkSeedSession(sessionId, atSeq?)` *(D-51: `atSeq` = "Continue live" from the Replay playhead; omitted = the whole recording)*.
 - **Debate:** `pause`, `resume`, `askCharacter(characterId, text)`, `interject(text)`, `extendRound`, `skipToClosing`, `endDebate(withVerdict: boolean)`, `pickStrongerCase(side)` (You decide).
 - **Watch:** `step`, `setPace`, `direct(text)`, `extendWatch(10)`, `summarise`.
-- **Energy:** `topUpEnergy(characterId, points)`, `setEnergyMax(characterId, points)`.
+- **Energy:** `topUpEnergy(characterId, points)` (gated by D-76), `setEnergyMax(characterId, points)`.
+- **Knowledge & worlds (rev 1.3):** `addKnowledge(characterId, { file } | { type: "text", title, text })`, `deleteKnowledge(sourceId)`, `reindexKnowledge(sourceId)`, `uploadCover(worldId, file)` (PNG, JPEG or WebP ≤ 5 MB).
 - **Characters & jobs:** `cancelJob(jobId)`, `retryTask(taskId)`, `acceptAssetVersion(assetId)`, `archiveCharacter`, `restoreCharacter`, `deleteCharacter`, `forgetMemory(memoryItemId)`.
 - **Settings:** `testConnection`, `testModel(role)`.
 

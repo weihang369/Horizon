@@ -118,7 +118,21 @@
               "verdict": "pass"
             }
           ]
-        }
+        },
+        "calls": [
+          {
+            "purpose": "route",
+            "model": "typesafe/jev-1.13",
+            "costUsd": 0.000025,
+            "latencyMs": 240
+          },
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000063,
+            "latencyMs": 2329
+          }
+        ]
       },
       "reactions": [
         {
@@ -236,7 +250,21 @@
               "verdict": "pass"
             }
           ]
-        }
+        },
+        "calls": [
+          {
+            "purpose": "route",
+            "model": "typesafe/jev-1.13",
+            "costUsd": 0.000025,
+            "latencyMs": 240
+          },
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000061,
+            "latencyMs": 2312
+          }
+        ]
       },
       "reactions": [
         {
@@ -370,6 +398,14 @@
             }
           ]
         },
+        "calls": [
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000092,
+            "latencyMs": 2903
+          }
+        ],
         "knowledge": {
           "query": "sushi or pizza with pineapple",
           "trigger": "always",
@@ -515,7 +551,15 @@
               "verdict": "pass"
             }
           ]
-        }
+        },
+        "calls": [
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000056,
+            "latencyMs": 2126
+          }
+        ]
       },
       "reactions": [
         {

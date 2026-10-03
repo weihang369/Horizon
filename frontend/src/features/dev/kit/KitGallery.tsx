@@ -25,6 +25,7 @@ import {
 import { SFX_IDS, renderSfx, type SfxId } from "../../../audio/synth/sfx";
 import { SYSTEM_TRACK_KINDS } from "../../../audio/synth/system";
 import { resolveAudio } from "../../../audio/resolve";
+import { STATUS_LABEL, STATUS_TONE } from "../../profile/knowledge";
 import s from "./KitGallery.module.css";
 
 const unwrap = (j: unknown) => (j as { data: Character }).data;
@@ -140,6 +141,11 @@ function TypeSection() {
         ))}
         <Tape tone="ink" size="lg" rotate={-3}>REPLAY</Tape>
         <Tape tone="brand" size="sm">RUSH HOUR · 2× ⚡</Tape>
+      </Row>
+      <Row label="Knowledge status">
+        {(Object.keys(STATUS_LABEL) as (keyof typeof STATUS_LABEL)[]).map((st) => (
+          <Tape key={st} tone={STATUS_TONE[st]} size="sm">{STATUS_LABEL[st]}</Tape>
+        ))}
       </Row>
       <Row label="Kbd / cost">
         <span><Kbd>Ctrl</Kbd> + <Kbd>Shift</Kbd> + <Kbd>P</Kbd></span>

@@ -1,0 +1,201 @@
+{
+  "schemaVersion": 1,
+  "name": "stop-interruption",
+  "description": "Stop mid-stream: the partial text stays, status interrupted by the user, and the partial cost still counts.",
+  "session": {
+    "id": "ses_fx",
+    "worldId": "wld_fx",
+    "title": "Fixture",
+    "titleIsCustom": false,
+    "mode": "one_on_one",
+    "status": "active",
+    "participants": [
+      {
+        "characterId": "chr_a",
+        "role": "speaker",
+        "currentEmotion": "neutral",
+        "mutedByUser": false
+      }
+    ],
+    "emotionMode": "llm",
+    "musicPolicy": "character_theme",
+    "readableMode": false,
+    "config": null,
+    "state": null,
+    "isSeed": false,
+    "costUsd": 0,
+    "messageCount": 0,
+    "createdAt": "2026-10-01T10:00:00Z",
+    "updatedAt": "2026-10-01T10:00:00Z"
+  },
+  "events": [
+    {
+      "id": "evt_fx1",
+      "sessionId": "ses_fx",
+      "seq": 1,
+      "at": "2026-10-01T10:00:00.000Z",
+      "type": "message",
+      "payload": {
+        "message": {
+          "id": "msg_fxu1",
+          "sessionId": "ses_fx",
+          "seq": 1,
+          "author": {
+            "type": "user"
+          },
+          "kind": "chat",
+          "content": "Explain the rota.",
+          "status": "complete",
+          "createdAt": "2026-10-01T10:00:00.000Z"
+        }
+      }
+    },
+    {
+      "id": "evt_fx2",
+      "sessionId": "ses_fx",
+      "seq": 2,
+      "at": "2026-10-01T10:00:00.250Z",
+      "type": "turn.next",
+      "payload": {
+        "nextSpeakerId": "chr_a"
+      }
+    },
+    {
+      "id": "evt_fx3",
+      "sessionId": "ses_fx",
+      "seq": 3,
+      "at": "2026-10-01T10:00:00.500Z",
+      "type": "turn.start",
+      "payload": {
+        "messageId": "msg_fx1",
+        "author": {
+          "type": "character",
+          "characterId": "chr_a"
+        }
+      }
+    },
+    {
+      "id": "evt_fx4",
+      "sessionId": "ses_fx",
+      "seq": 4,
+      "at": "2026-10-01T10:00:00.750Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_fx1",
+        "delta": "The rota "
+      }
+    },
+    {
+      "id": "evt_fx5",
+      "sessionId": "ses_fx",
+      "seq": 5,
+      "at": "2026-10-01T10:00:01.000Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_fx1",
+        "delta": "works by"
+      }
+    },
+    {
+      "id": "evt_fx6",
+      "sessionId": "ses_fx",
+      "seq": 6,
+      "at": "2026-10-01T10:00:01.250Z",
+      "type": "turn.end",
+      "payload": {
+        "messageId": "msg_fx1",
+        "status": "interrupted",
+        "interruptedBy": "user",
+        "usage": {
+          "tokensIn": 900,
+          "tokensCached": 600,
+          "tokensOut": 40,
+          "costUsd": 0.0002,
+          "energySpent": 2,
+          "firstTokenMs": 800,
+          "totalMs": 1600
+        }
+      }
+    },
+    {
+      "id": "evt_fx7",
+      "sessionId": "ses_fx",
+      "seq": 7,
+      "at": "2026-10-01T10:00:01.500Z",
+      "type": "energy",
+      "payload": {
+        "characterId": "chr_a",
+        "current": 742,
+        "max": 1000,
+        "state": "active",
+        "spent": 2
+      }
+    }
+  ],
+  "expected": {
+    "session": {
+      "id": "ses_fx",
+      "worldId": "wld_fx",
+      "title": "Fixture",
+      "titleIsCustom": false,
+      "mode": "one_on_one",
+      "status": "active",
+      "participants": [
+        {
+          "characterId": "chr_a",
+          "role": "speaker",
+          "currentEmotion": "neutral",
+          "mutedByUser": false
+        }
+      ],
+      "emotionMode": "llm",
+      "musicPolicy": "character_theme",
+      "readableMode": false,
+      "config": null,
+      "state": null,
+      "isSeed": false,
+      "costUsd": 0.0002,
+      "messageCount": 2,
+      "createdAt": "2026-10-01T10:00:00Z",
+      "updatedAt": "2026-10-01T10:00:01.500Z",
+      "lastMessageAt": "2026-10-01T10:00:00.500Z"
+    },
+    "messages": [
+      {
+        "id": "msg_fxu1",
+        "sessionId": "ses_fx",
+        "seq": 1,
+        "author": {
+          "type": "user"
+        },
+        "kind": "chat",
+        "content": "Explain the rota.",
+        "status": "complete",
+        "createdAt": "2026-10-01T10:00:00.000Z"
+      },
+      {
+        "kind": "chat",
+        "id": "msg_fx1",
+        "sessionId": "ses_fx",
+        "seq": 2,
+        "author": {
+          "type": "character",
+          "characterId": "chr_a"
+        },
+        "content": "The rota works by",
+        "status": "interrupted",
+        "createdAt": "2026-10-01T10:00:00.500Z",
+        "interruptedBy": "user",
+        "usage": {
+          "tokensIn": 900,
+          "tokensCached": 600,
+          "tokensOut": 40,
+          "costUsd": 0.0002,
+          "energySpent": 2,
+          "firstTokenMs": 800,
+          "totalMs": 1600
+        }
+      }
+    ]
+  }
+}

@@ -109,7 +109,15 @@
               "verdict": "pass"
             }
           ]
-        }
+        },
+        "calls": [
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000132,
+            "latencyMs": 2941
+          }
+        ]
       },
       "reactions": [
         {
@@ -216,7 +224,15 @@
               "verdict": "pass"
             }
           ]
-        }
+        },
+        "calls": [
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000132,
+            "latencyMs": 2920
+          }
+        ]
       },
       "reactions": [
         {
@@ -323,7 +339,15 @@
               "verdict": "pass"
             }
           ]
-        }
+        },
+        "calls": [
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000132,
+            "latencyMs": 2641
+          }
+        ]
       },
       "reactions": [
         {
@@ -442,7 +466,15 @@
               "verdict": "pass"
             }
           ]
-        }
+        },
+        "calls": [
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000119,
+            "latencyMs": 2279
+          }
+        ]
       }
     },
     {
@@ -541,7 +573,15 @@
               "verdict": "pass"
             }
           ]
-        }
+        },
+        "calls": [
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000116,
+            "latencyMs": 2023
+          }
+        ]
       }
     },
     {
@@ -640,7 +680,15 @@
               "verdict": "pass"
             }
           ]
-        }
+        },
+        "calls": [
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.00011,
+            "latencyMs": 1785
+          }
+        ]
       }
     },
     {

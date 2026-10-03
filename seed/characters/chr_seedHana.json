@@ -91,13 +91,13 @@
       "basePortraitUrl": "/assets/placeholder/portraits/chr_seedHana/neutral.svg",
       "candidates": [
         {
-          "id": "cand_1",
+          "id": "cand_seedHana1",
           "url": "/assets/placeholder/portraits/chr_seedHana/neutral.svg",
           "selected": true,
           "status": "ready"
         },
         {
-          "id": "cand_2",
+          "id": "cand_seedHana2",
           "url": "/assets/placeholder/portraits/chr_seedHana/cand-2.svg",
           "selected": false,
           "status": "ready"

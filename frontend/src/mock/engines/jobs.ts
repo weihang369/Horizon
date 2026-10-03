@@ -105,7 +105,7 @@ export class JobRunner {
   start(input: StartJobInput): GenerationJob {
     const h = this.h;
     const c = h.db.characters[input.characterId];
-    if (!c) throw new HorizonError("provider_error", "Character not found.", { retryable: false });
+    if (!c) throw new HorizonError("not_found", "Character not found.", { retryable: false });
     const { plans, parallel } = planTasks(h, input, () => h.newId("task"));
     const estimatedCostUsd = round6(plans.reduce((a, p) => a + p.cost, 0));
     checkJobBudget(h, c, estimatedCostUsd);
@@ -162,7 +162,7 @@ export class JobRunner {
     const job = this.h.db.jobs[jobId];
     const task = job?.tasks.find((t) => t.id === taskId);
     if (!job || !task || task.status !== "failed") return;
-    if (task.attempt >= task.maxAttempts) throw new HorizonError("provider_error", "This task has used all its retries.", { retryable: false });
+    if (task.attempt >= task.maxAttempts) throw new HorizonError("conflict", "This task has used all its retries.", { retryable: false });
     task.status = "queued";
     task.error = undefined;
     const r = this.running.get(jobId);

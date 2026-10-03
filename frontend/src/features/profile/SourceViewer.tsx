@@ -13,7 +13,7 @@ import { paletteClass } from "@/theme";
 import { Button, CloseIcon, IconButton, Skeleton, Tape } from "@/ui";
 import { cx } from "@/ui/cx";
 import { typeGlyph } from "@/features/session/citationUtils";
-import { formatAdded, sourceFacts, TYPE_NAME } from "./knowledge";
+import { formatAdded, sourceFacts, STATUS_LABEL, STATUS_TONE, TYPE_NAME } from "./knowledge";
 import s from "./SourceViewer.module.css";
 
 type Load =
@@ -146,7 +146,7 @@ export function SourceViewer({ close, sourceId, chunkId, characterId, cited }: O
           {source && (
             <div className={s.metaRow}>
               {owner && <OwnerChip c={owner} />}
-              <Tape tone={source.status === "indexed" ? "ok" : source.status === "failed" ? "error" : "ink"} size="sm">{source.status}</Tape>
+              <Tape tone={STATUS_TONE[source.status]} size="sm">{STATUS_LABEL[source.status]}</Tape>
               {facts.length > 0 && <span className={s.facts}>{facts.join(" · ")}</span>}
               {cites > 0 && <span className={s.cited}>Cited {cites}×</span>}
               {source.addedAt && <span className={s.facts}>Added {formatAdded(source.addedAt)}</span>}

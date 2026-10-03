@@ -37,8 +37,8 @@
       "category": "image",
       "model": "qwen/qwen-image-3",
       "characterId": "chr_mockElena",
-      "costUsd": 0.036,
-      "estimatedCostUsd": 0.036,
+      "costUsd": 0.018,
+      "estimatedCostUsd": 0.018,
       "latencyMs": 19800
     },
     {
@@ -47,8 +47,8 @@
       "category": "image",
       "model": "qwen/qwen-image-3",
       "characterId": "chr_mockKenji",
-      "costUsd": 0.036,
-      "estimatedCostUsd": 0.036,
+      "costUsd": 0.018,
+      "estimatedCostUsd": 0.018,
       "latencyMs": 19800
     },
     {
@@ -57,8 +57,8 @@
       "category": "image",
       "model": "qwen/qwen-image-3",
       "characterId": "chr_mockMochi",
-      "costUsd": 0.036,
-      "estimatedCostUsd": 0.036,
+      "costUsd": 0.018,
+      "estimatedCostUsd": 0.018,
       "latencyMs": 19800
     },
     {
@@ -67,8 +67,8 @@
       "category": "image",
       "model": "qwen/qwen-image-3",
       "characterId": "chr_mockElena",
-      "costUsd": 0.039,
-      "estimatedCostUsd": 0.039,
+      "costUsd": 0.018,
+      "estimatedCostUsd": 0.018,
       "latencyMs": 15200
     },
     {
@@ -77,8 +77,8 @@
       "category": "image",
       "model": "qwen/qwen-image-3",
       "characterId": "chr_mockKenji",
-      "costUsd": 0.039,
-      "estimatedCostUsd": 0.039,
+      "costUsd": 0.018,
+      "estimatedCostUsd": 0.018,
       "latencyMs": 15200
     },
     {
@@ -87,8 +87,8 @@
       "category": "image",
       "model": "qwen/qwen-image-3",
       "characterId": "chr_mockMochi",
-      "costUsd": 0.039,
-      "estimatedCostUsd": 0.039,
+      "costUsd": 0.018,
+      "estimatedCostUsd": 0.018,
       "latencyMs": 15200
     },
     {
@@ -97,8 +97,8 @@
       "category": "image",
       "model": "qwen/qwen-image-3",
       "characterId": "chr_mockElena",
-      "costUsd": 0.039,
-      "estimatedCostUsd": 0.039,
+      "costUsd": 0.018,
+      "estimatedCostUsd": 0.018,
       "latencyMs": 15200
     },
     {
@@ -107,8 +107,8 @@
       "category": "image",
       "model": "qwen/qwen-image-3",
       "characterId": "chr_mockKenji",
-      "costUsd": 0.039,
-      "estimatedCostUsd": 0.039,
+      "costUsd": 0.018,
+      "estimatedCostUsd": 0.018,
       "latencyMs": 15200
     },
     {
@@ -117,8 +117,8 @@
       "category": "image",
       "model": "qwen/qwen-image-3",
       "characterId": "chr_mockMochi",
-      "costUsd": 0.039,
-      "estimatedCostUsd": 0.039,
+      "costUsd": 0.018,
+      "estimatedCostUsd": 0.018,
       "latencyMs": 15200
     },
     {
@@ -127,8 +127,8 @@
       "category": "image",
       "model": "qwen/qwen-image-3",
       "characterId": "chr_mockElena",
-      "costUsd": 0.039,
-      "estimatedCostUsd": 0.039,
+      "costUsd": 0.018,
+      "estimatedCostUsd": 0.018,
       "latencyMs": 15200
     },
     {
@@ -137,8 +137,8 @@
       "category": "image",
       "model": "qwen/qwen-image-3",
       "characterId": "chr_mockKenji",
-      "costUsd": 0.039,
-      "estimatedCostUsd": 0.039,
+      "costUsd": 0.018,
+      "estimatedCostUsd": 0.018,
       "latencyMs": 15200
     },
     {
@@ -147,8 +147,8 @@
       "category": "image",
       "model": "qwen/qwen-image-3",
       "characterId": "chr_mockMochi",
-      "costUsd": 0.039,
-      "estimatedCostUsd": 0.039,
+      "costUsd": 0.018,
+      "estimatedCostUsd": 0.018,
       "latencyMs": 15200
     },
     {
@@ -661,8 +661,8 @@
       "category": "image",
       "model": "qwen/qwen-image-3",
       "characterId": "chr_mockAoi",
-      "costUsd": 0.036,
-      "estimatedCostUsd": 0.036,
+      "costUsd": 0.018,
+      "estimatedCostUsd": 0.018,
       "latencyMs": 19800
     },
     {
@@ -671,8 +671,8 @@
       "category": "image",
       "model": "qwen/qwen-image-3",
       "characterId": "chr_mockAoi",
-      "costUsd": 0.039,
-      "estimatedCostUsd": 0.039,
+      "costUsd": 0.018,
+      "estimatedCostUsd": 0.018,
       "latencyMs": 15200
     },
     {
@@ -681,8 +681,8 @@
       "category": "image",
       "model": "qwen/qwen-image-3",
       "characterId": "chr_mockAoi",
-      "costUsd": 0.039,
-      "estimatedCostUsd": 0.039,
+      "costUsd": 0.018,
+      "estimatedCostUsd": 0.018,
       "latencyMs": 15200
     },
     {

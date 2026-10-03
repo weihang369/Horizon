@@ -183,7 +183,7 @@ function DataTab() {
   const reset = () =>
     openOverlay("O03", {
       title: "Reset demo data?",
-      body: "Restores the seed worlds, characters and recordings exactly as shipped. Anything you created in this browser is removed. Your key and display settings stay.",
+      body: "Restores the seed worlds, characters and recordings exactly as shipped. Worlds, characters and sessions you created stay, and so do your key and settings.",
       confirmLabel: "Reset demo data",
       onConfirm: async () => {
         await mockActions.resetDemoData();

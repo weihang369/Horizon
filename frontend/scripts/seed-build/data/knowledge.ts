@@ -11,13 +11,15 @@ export const KNOWLEDGE_SOURCES: KnowledgeSource[] = [
     type: "file", status: "indexed", bytes: 482_113, pages: 18, addedAt: "2026-09-18T08:40:00Z",
   },
   {
-    id: "kno_seedAmara2", characterId: "chr_seedAmara", worldId: MERIDIAN, title: "ED triage guidelines",
-    type: "url", status: "indexed", url: "https://meridian-health.example/ed/triage-guidelines", addedAt: "2026-09-21T19:12:00Z",
+    // rev 1.3: URL sources are no longer ingested (D-65), so the guidelines are an uploaded PDF.
+    id: "kno_seedAmara2", characterId: "chr_seedAmara", worldId: MERIDIAN, title: "ED triage guidelines.pdf",
+    type: "file", status: "indexed", bytes: 214_336, pages: 9, addedAt: "2026-09-21T19:12:00Z",
   },
   {
-    id: "kno_seedMei1", characterId: "chr_seedMei", worldId: MERIDIAN, title: "Working-time pilots dataset.csv",
-    type: "file", status: "failed", bytes: 2_310_442, addedAt: "2026-09-24T14:05:00Z",
-    error: "Couldn't read this file: row 4,118 has 31 columns, expected 27. Fix the row or export the sheet again.",
+    // rev 1.3: CSV isn't supported (D-65); the demo keeps one failed source to show the failed state.
+    id: "kno_seedMei1", characterId: "chr_seedMei", worldId: MERIDIAN, title: "Working-time pilots appendix.docx",
+    type: "file", status: "failed", bytes: 1_120_884, addedAt: "2026-09-24T14:05:00Z",
+    error: "This document is password-protected. Remove the password and add it again.",
   },
   {
     id: "kno_seedMei2", characterId: "chr_seedMei", worldId: MERIDIAN, title: "Four-day week pilot summaries.pdf",

@@ -34,6 +34,8 @@ export interface WorldsApi {
   create(input: WorldInput): Promise<World>;
   update(id: string, patch: Partial<WorldInput>): Promise<World>;
   delete(id: string): Promise<void>;
+  /** rev 1.3: PNG, JPEG or WebP ≤ 5 MB → `cover.kind: "upload"` (else `validation`). */
+  uploadCover(id: string, file: File): Promise<World>;
 }
 
 // ── Characters ───────────────────────────────────────────────────────────────
@@ -66,7 +68,19 @@ export interface CharactersApi {
   knowledge(id: string): Promise<KnowledgeSource[]>;
   /** D-59: one source with its indexed passages (O28 source viewer). */
   knowledgeSource(sourceId: string): Promise<{ source: KnowledgeSource; chunks: KnowledgeChunk[] }>;
+  /**
+   * rev 1.3 (D-65): PDF, DOCX, MD or TXT file, or pasted text. Resolves with the source in `indexing`; progress arrives as
+   * `entity.changed { kind: "knowledge", id, progress }` until `indexed`, `keyword_only` or `failed`.
+   * Rejects with `validation` (type, > 10 MB, > 20 sources) or `conflict` (same content already added).
+   */
+  addKnowledge(id: string, input: AddKnowledgeInput): Promise<KnowledgeSource>;
+  /** rev 1.3: removes the source and its passages; citations keep their stored title and quote. */
+  deleteKnowledge(sourceId: string): Promise<void>;
+  /** rev 1.3: re-runs indexing (a `keyword_only` source becomes `indexed` once a key is set). */
+  reindexKnowledge(sourceId: string): Promise<KnowledgeSource>;
 }
+
+export type AddKnowledgeInput = { file: File } | { type: "text"; title: string; text: string };
 
 // ── Jobs ─────────────────────────────────────────────────────────────────────
 export interface StartJobInput {
@@ -194,14 +208,18 @@ export interface UsageApi {
 
 // ── Global events ────────────────────────────────────────────────────────────
 export type EntityKind = "settings" | "world" | "character" | "session" | "usage" | "memory" | "knowledge" | "job";
+/** rev 1.3: knowledge ingestion progress carried by `entity.changed`. */
+export interface IngestProgress { stage: "extracting" | "chunking" | "embedding"; pct: number }
 export type GlobalEvent =
-  | { type: "entity.changed"; kind: EntityKind; id?: string; worldId?: string }
+  | { type: "entity.changed"; kind: EntityKind; id?: string; worldId?: string; progress?: IngestProgress }
   | { type: "budget.warning"; scope: "daily" | "creation"; spentUsd: number; capUsd: number }
   | { type: "budget.reached"; scope: "daily" | "creation"; spentUsd: number; capUsd: number; sessionId?: string; jobId?: string }
   | { type: "job.progress"; job: GenerationJob }
+  /** rev 1.3: every task change is mirrored onto the global stream (the backend has no per-job stream). */
+  | { type: "task.update"; jobId: string; task: GenerationTask }
   | { type: "job.done"; job: GenerationJob; characterName?: string }
   | { type: "error"; error: HorizonErrorShape; context?: string }
-  /** The mock DB was re-seeded (scenario or "Reset demo data"): screens re-query in place. */
+  /** Demo data was re-seeded (mock scenario, or "Reset demo data" on either client, rev 1.3): screens re-query in place. */
   | { type: "mock.reset" };
 
 export interface HorizonClient {

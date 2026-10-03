@@ -1,0 +1,4918 @@
+{
+  "$defs": {
+    "AppSettings": {
+      "additionalProperties": false,
+      "properties": {
+        "audio": {
+          "additionalProperties": false,
+          "properties": {
+            "duckMusic": {
+              "type": "boolean"
+            },
+            "master": {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            "masterMuted": {
+              "type": "boolean"
+            },
+            "music": {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            "musicMuted": {
+              "type": "boolean"
+            },
+            "sfx": {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            "sfxMuted": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "masterMuted",
+            "musicMuted",
+            "sfxMuted",
+            "master",
+            "music",
+            "sfx",
+            "duckMusic"
+          ],
+          "type": "object"
+        },
+        "autoGenerateMissingEmotions": {
+          "type": "boolean"
+        },
+        "budget": {
+          "additionalProperties": false,
+          "properties": {
+            "dailyCapUsd": {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            "perCharacterCreationCapUsd": {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            "warnAtPct": {
+              "maximum": 100,
+              "minimum": 1,
+              "type": "number"
+            }
+          },
+          "required": [
+            "dailyCapUsd",
+            "perCharacterCreationCapUsd",
+            "warnAtPct"
+          ],
+          "type": "object"
+        },
+        "chat": {
+          "additionalProperties": false,
+          "properties": {
+            "debateAutoAdvance": {
+              "type": "boolean"
+            },
+            "defaultEmotionMode": {
+              "enum": [
+                "llm",
+                "user"
+              ],
+              "type": "string"
+            },
+            "readableDefault": {
+              "type": "boolean"
+            },
+            "responderDefault": {
+              "enum": [
+                "auto",
+                "everyone",
+                "mentioned"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "defaultEmotionMode",
+            "responderDefault",
+            "debateAutoAdvance",
+            "readableDefault"
+          ],
+          "type": "object"
+        },
+        "contentRating": {
+          "const": "sfw",
+          "type": "string"
+        },
+        "cost": {
+          "additionalProperties": false,
+          "properties": {
+            "confirmBeforeGenerate": {
+              "type": "boolean"
+            },
+            "showEstimates": {
+              "type": "boolean"
+            },
+            "showHud": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "showEstimates",
+            "confirmBeforeGenerate",
+            "showHud"
+          ],
+          "type": "object"
+        },
+        "demoMode": {
+          "type": "boolean"
+        },
+        "display": {
+          "additionalProperties": false,
+          "properties": {
+            "flashIntensity": {
+              "enum": [
+                "off",
+                "low",
+                "full"
+              ],
+              "type": "string"
+            },
+            "parallax": {
+              "type": "boolean"
+            },
+            "reducedMotion": {
+              "enum": [
+                "system",
+                "on",
+                "off"
+              ],
+              "type": "string"
+            },
+            "speakerCutIns": {
+              "type": "boolean"
+            },
+            "textSize": {
+              "enum": [
+                "s",
+                "m",
+                "l"
+              ],
+              "type": "string"
+            },
+            "vfxIntensity": {
+              "enum": [
+                "off",
+                "subtle",
+                "full"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "reducedMotion",
+            "vfxIntensity",
+            "flashIntensity",
+            "parallax",
+            "textSize",
+            "speakerCutIns"
+          ],
+          "type": "object"
+        },
+        "energy": {
+          "additionalProperties": false,
+          "properties": {
+            "defaultMaxPoints": {
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991,
+              "type": "integer"
+            },
+            "estReplyPoints": {
+              "additionalProperties": false,
+              "properties": {
+                "off_peak": {
+                  "exclusiveMinimum": 0,
+                  "type": "number"
+                },
+                "peak": {
+                  "exclusiveMinimum": 0,
+                  "type": "number"
+                }
+              },
+              "required": [
+                "off_peak",
+                "peak"
+              ],
+              "type": "object"
+            },
+            "topUpStepPoints": {
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991,
+              "type": "integer"
+            },
+            "usdPerPoint": {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            }
+          },
+          "required": [
+            "defaultMaxPoints",
+            "usdPerPoint",
+            "topUpStepPoints",
+            "estReplyPoints"
+          ],
+          "type": "object"
+        },
+        "generationMode": {
+          "enum": [
+            "lean",
+            "standard"
+          ],
+          "type": "string"
+        },
+        "modelOverrides": {
+          "additionalProperties": false,
+          "properties": {
+            "chat": {
+              "type": "string"
+            },
+            "decision": {
+              "type": "string"
+            },
+            "embedding": {
+              "type": "string"
+            },
+            "image": {
+              "type": "string"
+            },
+            "music": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "models": {
+          "additionalProperties": false,
+          "properties": {
+            "chat": {
+              "type": "string"
+            },
+            "decision": {
+              "type": "string"
+            },
+            "embedding": {
+              "type": "string"
+            },
+            "image": {
+              "type": "string"
+            },
+            "music": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "chat",
+            "decision",
+            "image",
+            "music",
+            "embedding"
+          ],
+          "type": "object"
+        },
+        "openRouterKeyStatus": {
+          "enum": [
+            "missing",
+            "set",
+            "invalid"
+          ],
+          "type": "string"
+        },
+        "presenterMode": {
+          "type": "boolean"
+        },
+        "pricing": {
+          "additionalProperties": false,
+          "properties": {
+            "nextChangeAt": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "period": {
+              "enum": [
+                "peak",
+                "off_peak"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "period",
+            "nextChangeAt"
+          ],
+          "type": "object"
+        },
+        "spentTodayUsd": {
+          "minimum": 0,
+          "type": "number"
+        }
+      },
+      "required": [
+        "openRouterKeyStatus",
+        "demoMode",
+        "models",
+        "generationMode",
+        "autoGenerateMissingEmotions",
+        "budget",
+        "energy",
+        "spentTodayUsd",
+        "pricing",
+        "audio",
+        "display",
+        "chat",
+        "cost",
+        "presenterMode",
+        "contentRating"
+      ],
+      "type": "object"
+    },
+    "Appearance": {
+      "additionalProperties": false,
+      "properties": {
+        "appearanceSummary": {
+          "type": "string"
+        },
+        "attributes": {
+          "additionalProperties": false,
+          "properties": {
+            "accessories": {
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 3,
+              "type": "array"
+            },
+            "body": {
+              "additionalProperties": false,
+              "properties": {
+                "ageBand": {
+                  "enum": [
+                    "young_adult",
+                    "adult",
+                    "middle_aged",
+                    "senior"
+                  ],
+                  "type": "string"
+                },
+                "build": {
+                  "type": "string"
+                },
+                "height": {
+                  "type": "string"
+                },
+                "skinTone": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "ageBand",
+                "build",
+                "height",
+                "skinTone"
+              ],
+              "type": "object"
+            },
+            "extraDetails": {
+              "type": "string"
+            },
+            "eyes": {
+              "additionalProperties": false,
+              "properties": {
+                "color": {
+                  "type": "string"
+                },
+                "glasses": {
+                  "enum": [
+                    "none",
+                    "round",
+                    "square",
+                    "half_rim"
+                  ],
+                  "type": "string"
+                },
+                "shape": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "shape",
+                "color",
+                "glasses"
+              ],
+              "type": "object"
+            },
+            "face": {
+              "additionalProperties": false,
+              "properties": {
+                "baseline": {
+                  "enum": [
+                    "soft",
+                    "neutral",
+                    "sharp"
+                  ],
+                  "type": "string"
+                },
+                "marks": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "shape": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "shape",
+                "baseline",
+                "marks"
+              ],
+              "type": "object"
+            },
+            "hair": {
+              "additionalProperties": false,
+              "properties": {
+                "color": {
+                  "type": "string"
+                },
+                "fringe": {
+                  "type": "string"
+                },
+                "length": {
+                  "type": "string"
+                },
+                "streakColor": {
+                  "type": "string"
+                },
+                "style": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "length",
+                "style",
+                "color",
+                "fringe"
+              ],
+              "type": "object"
+            },
+            "outfit": {
+              "additionalProperties": false,
+              "properties": {
+                "archetype": {
+                  "type": "string"
+                },
+                "primaryColor": {
+                  "type": "string"
+                },
+                "secondaryColor": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "archetype",
+                "primaryColor",
+                "secondaryColor"
+              ],
+              "type": "object"
+            },
+            "vibe": {
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 2,
+              "type": "array"
+            }
+          },
+          "required": [
+            "body",
+            "face",
+            "eyes",
+            "hair",
+            "outfit",
+            "accessories",
+            "vibe"
+          ],
+          "type": "object"
+        },
+        "basePortraitUrl": {
+          "pattern": "^(/assets/|data:|placeholder:)",
+          "type": "string"
+        },
+        "candidates": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "selected": {
+                "type": "boolean"
+              },
+              "status": {
+                "$ref": "#/$defs/AssetStatus"
+              },
+              "url": {
+                "pattern": "^(/assets/|data:|placeholder:)",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "url",
+              "selected",
+              "status"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "stylePresetId": {
+          "type": "string"
+        },
+        "stylePresetVersion": {
+          "exclusiveMinimum": 0,
+          "maximum": 9007199254740991,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "attributes",
+        "appearanceSummary",
+        "candidates",
+        "stylePresetId",
+        "stylePresetVersion"
+      ],
+      "type": "object"
+    },
+    "AssetStatus": {
+      "enum": [
+        "pending",
+        "generating",
+        "ready",
+        "failed",
+        "rejected"
+      ],
+      "type": "string"
+    },
+    "Character": {
+      "additionalProperties": false,
+      "properties": {
+        "activeJobId": {
+          "pattern": "^job_[0-9A-Za-z]{1,40}$",
+          "type": "string"
+        },
+        "advisory": {
+          "type": "boolean"
+        },
+        "appearance": {
+          "$ref": "#/$defs/Appearance"
+        },
+        "approvedAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "archivedAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "blink": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EmotionAssetRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "createdAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "creationStep": {
+          "$ref": "#/$defs/CreationStep"
+        },
+        "deletedAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "emotionSet": {
+          "items": {
+            "$ref": "#/$defs/Emotion"
+          },
+          "type": "array"
+        },
+        "emotions": {
+          "additionalProperties": false,
+          "properties": {
+            "angry": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/EmotionAssetRef"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "embarrassed": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/EmotionAssetRef"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "happy": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/EmotionAssetRef"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "neutral": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/EmotionAssetRef"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sad": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/EmotionAssetRef"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "surprised": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/EmotionAssetRef"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "thinking": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/EmotionAssetRef"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "neutral",
+            "happy",
+            "sad",
+            "angry",
+            "surprised",
+            "thinking",
+            "embarrassed"
+          ],
+          "type": "object"
+        },
+        "energy": {
+          "$ref": "#/$defs/Energy"
+        },
+        "id": {
+          "pattern": "^chr_[0-9A-Za-z]{1,40}$",
+          "type": "string"
+        },
+        "intent": {
+          "enum": [
+            "expert",
+            "companion",
+            "other"
+          ],
+          "type": "string"
+        },
+        "isSeed": {
+          "type": "boolean"
+        },
+        "paletteId": {
+          "format": "starts_with",
+          "pattern": "^pal_.*",
+          "type": "string"
+        },
+        "profile": {
+          "$ref": "#/$defs/CharacterProfile"
+        },
+        "profileMeta": {
+          "additionalProperties": false,
+          "properties": {
+            "editedFields": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "editedFields"
+          ],
+          "type": "object"
+        },
+        "seedPrompt": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/CharacterStatus"
+        },
+        "themeSongId": {
+          "pattern": "^song_[0-9A-Za-z]{1,40}$",
+          "type": "string"
+        },
+        "updatedAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "version": {
+          "exclusiveMinimum": 0,
+          "maximum": 9007199254740991,
+          "type": "integer"
+        },
+        "worldId": {
+          "pattern": "^wld_[0-9A-Za-z]{1,40}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "worldId",
+        "status",
+        "seedPrompt",
+        "intent",
+        "advisory",
+        "profile",
+        "appearance",
+        "paletteId",
+        "emotionSet",
+        "emotions",
+        "energy",
+        "version",
+        "isSeed",
+        "createdAt",
+        "updatedAt"
+      ],
+      "type": "object"
+    },
+    "CharacterProfile": {
+      "additionalProperties": false,
+      "properties": {
+        "age": {
+          "maximum": 9007199254740991,
+          "minimum": 18,
+          "type": "integer"
+        },
+        "backstory": {
+          "type": "string"
+        },
+        "boundaries": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "exampleLines": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 3,
+          "type": "array"
+        },
+        "expertise": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "goals": {
+          "type": "string"
+        },
+        "greeting": {
+          "type": "string"
+        },
+        "name": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "personality": {
+          "additionalProperties": false,
+          "properties": {
+            "summary": {
+              "type": "string"
+            },
+            "traits": {
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 8,
+              "minItems": 3,
+              "type": "array"
+            }
+          },
+          "required": [
+            "summary",
+            "traits"
+          ],
+          "type": "object"
+        },
+        "pronouns": {
+          "type": "string"
+        },
+        "relationshipToUser": {
+          "type": "string"
+        },
+        "role": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "speakingStyle": {
+          "additionalProperties": false,
+          "properties": {
+            "catchphrases": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "formality": {
+              "enum": [
+                "casual",
+                "neutral",
+                "formal"
+              ],
+              "type": "string"
+            },
+            "quirks": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "summary": {
+              "type": "string"
+            },
+            "tone": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "summary",
+            "tone",
+            "formality",
+            "quirks",
+            "catchphrases"
+          ],
+          "type": "object"
+        },
+        "systemPromptPreview": {
+          "type": "string"
+        },
+        "tagline": {
+          "maxLength": 80,
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "role",
+        "age",
+        "tagline",
+        "personality",
+        "backstory",
+        "speakingStyle",
+        "expertise",
+        "boundaries",
+        "greeting"
+      ],
+      "type": "object"
+    },
+    "CharacterStatus": {
+      "enum": [
+        "draft",
+        "review",
+        "approved",
+        "archived"
+      ],
+      "type": "string"
+    },
+    "Citation": {
+      "additionalProperties": false,
+      "properties": {
+        "chunkId": {
+          "pattern": "^[a-z]+_[0-9A-Za-z]{1,40}$",
+          "type": "string"
+        },
+        "locator": {
+          "type": "string"
+        },
+        "n": {
+          "exclusiveMinimum": 0,
+          "maximum": 9007199254740991,
+          "type": "integer"
+        },
+        "quote": {
+          "maxLength": 400,
+          "minLength": 1,
+          "type": "string"
+        },
+        "score": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "sourceId": {
+          "pattern": "^[a-z]+_[0-9A-Za-z]{1,40}$",
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "text",
+            "file",
+            "url"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "n",
+        "sourceId",
+        "title",
+        "type",
+        "chunkId",
+        "quote"
+      ],
+      "type": "object"
+    },
+    "CreationStep": {
+      "enum": [
+        "seed",
+        "profile",
+        "look",
+        "portrait",
+        "emotions",
+        "palette",
+        "theme",
+        "approve"
+      ],
+      "type": "string"
+    },
+    "DebateConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "autoAdvance": {
+          "type": "boolean"
+        },
+        "format": {
+          "enum": [
+            "two_sided",
+            "panel"
+          ],
+          "type": "string"
+        },
+        "moderator": {
+          "enum": [
+            "user",
+            "auto_host"
+          ],
+          "type": "string"
+        },
+        "motion": {
+          "maxLength": 200,
+          "minLength": 1,
+          "type": "string"
+        },
+        "pauseMs": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "phases": {
+          "items": {
+            "enum": [
+              "opening",
+              "rebuttal",
+              "closing"
+            ],
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "roundsPreset": {
+          "enum": [
+            "quick",
+            "standard"
+          ],
+          "type": "string"
+        },
+        "rubric": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "label"
+            ],
+            "type": "object"
+          },
+          "maxItems": 6,
+          "minItems": 2,
+          "type": "array"
+        },
+        "sides": {
+          "additionalProperties": false,
+          "properties": {
+            "opp": {
+              "items": {
+                "pattern": "^chr_[0-9A-Za-z]{1,40}$",
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "prop": {
+              "items": {
+                "pattern": "^chr_[0-9A-Za-z]{1,40}$",
+                "type": "string"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "prop",
+            "opp"
+          ],
+          "type": "object"
+        },
+        "turnLength": {
+          "enum": [
+            "short",
+            "medium",
+            "long"
+          ],
+          "type": "string"
+        },
+        "verdictBy": {
+          "enum": [
+            "arbiter",
+            "user",
+            "none"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "motion",
+        "format",
+        "roundsPreset",
+        "phases",
+        "turnLength",
+        "moderator",
+        "verdictBy",
+        "rubric",
+        "autoAdvance",
+        "pauseMs"
+      ],
+      "type": "object"
+    },
+    "DebatePhase": {
+      "enum": [
+        "setup",
+        "opening",
+        "rebuttal",
+        "closing",
+        "verdict",
+        "ended"
+      ],
+      "type": "string"
+    },
+    "DebateState": {
+      "additionalProperties": false,
+      "properties": {
+        "iteration": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "nextSpeakerId": {
+          "type": "string"
+        },
+        "phase": {
+          "$ref": "#/$defs/DebatePhase"
+        },
+        "round": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "verdict": {
+          "$ref": "#/$defs/Verdict"
+        }
+      },
+      "required": [
+        "phase",
+        "round",
+        "iteration"
+      ],
+      "type": "object"
+    },
+    "Emotion": {
+      "enum": [
+        "neutral",
+        "happy",
+        "sad",
+        "angry",
+        "surprised",
+        "thinking",
+        "embarrassed"
+      ],
+      "type": "string"
+    },
+    "EmotionAsset": {
+      "additionalProperties": false,
+      "properties": {
+        "bytes": {
+          "type": "number"
+        },
+        "characterId": {
+          "pattern": "^chr_[0-9A-Za-z]{1,40}$",
+          "type": "string"
+        },
+        "emotion": {
+          "$ref": "#/$defs/Emotion"
+        },
+        "format": {
+          "enum": [
+            "webp",
+            "avif"
+          ],
+          "type": "string"
+        },
+        "generation": {
+          "additionalProperties": false,
+          "properties": {
+            "costUsd": {
+              "type": "number"
+            },
+            "jobId": {
+              "type": "string"
+            },
+            "model": {
+              "type": "string"
+            },
+            "prompt": {
+              "type": "string"
+            },
+            "referenceUrls": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "seed": {
+              "type": "number"
+            },
+            "technique": {
+              "enum": [
+                "reference_edit",
+                "expression_sheet",
+                "prompt_only",
+                "manual"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "model",
+            "technique",
+            "prompt",
+            "referenceUrls",
+            "costUsd"
+          ],
+          "type": "object"
+        },
+        "height": {
+          "type": "number"
+        },
+        "id": {
+          "pattern": "^emo_[0-9A-Za-z]{1,40}$",
+          "type": "string"
+        },
+        "isActive": {
+          "type": "boolean"
+        },
+        "status": {
+          "$ref": "#/$defs/AssetStatus"
+        },
+        "url": {
+          "pattern": "^(/assets/|data:|placeholder:)",
+          "type": "string"
+        },
+        "variant": {
+          "enum": [
+            "default",
+            "blink"
+          ],
+          "type": "string"
+        },
+        "version": {
+          "exclusiveMinimum": 0,
+          "maximum": 9007199254740991,
+          "type": "integer"
+        },
+        "vfxPreset": {
+          "$ref": "#/$defs/VfxPreset"
+        },
+        "width": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "id",
+        "characterId",
+        "emotion",
+        "variant",
+        "status",
+        "vfxPreset",
+        "version",
+        "isActive"
+      ],
+      "type": "object"
+    },
+    "EmotionAssetRef": {
+      "additionalProperties": false,
+      "properties": {
+        "assetId": {
+          "pattern": "^emo_[0-9A-Za-z]{1,40}$",
+          "type": "string"
+        },
+        "url": {
+          "pattern": "^(/assets/|data:|placeholder:)",
+          "type": "string"
+        },
+        "vfxPreset": {
+          "$ref": "#/$defs/VfxPreset"
+        }
+      },
+      "required": [
+        "assetId",
+        "url",
+        "vfxPreset"
+      ],
+      "type": "object"
+    },
+    "EmotionSource": {
+      "enum": [
+        "user",
+        "llm",
+        "classifier",
+        "default"
+      ],
+      "type": "string"
+    },
+    "Energy": {
+      "additionalProperties": false,
+      "properties": {
+        "asOf": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "current": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "fullAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "max": {
+          "exclusiveMinimum": 0,
+          "maximum": 9007199254740991,
+          "type": "integer"
+        },
+        "regenPerHour": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "spentToday": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "state": {
+          "$ref": "#/$defs/EnergyState"
+        }
+      },
+      "required": [
+        "max",
+        "current",
+        "asOf",
+        "regenPerHour",
+        "state",
+        "spentToday"
+      ],
+      "type": "object"
+    },
+    "EnergyState": {
+      "enum": [
+        "active",
+        "tired",
+        "exhausted"
+      ],
+      "type": "string"
+    },
+    "ErrorCode": {
+      "enum": [
+        "missing_key",
+        "invalid_key",
+        "insufficient_credits",
+        "rate_limited",
+        "content_refused",
+        "provider_error",
+        "daily_budget_exceeded",
+        "creation_budget_exceeded",
+        "energy_exhausted",
+        "timeout",
+        "network",
+        "not_found",
+        "validation",
+        "conflict"
+      ],
+      "type": "string"
+    },
+    "GenerationJob": {
+      "additionalProperties": false,
+      "properties": {
+        "actualCostUsd": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "characterId": {
+          "pattern": "^chr_[0-9A-Za-z]{1,40}$",
+          "type": "string"
+        },
+        "createdAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "error": {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "$ref": "#/$defs/ErrorCode"
+            },
+            "message": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "code",
+            "message"
+          ],
+          "type": "object"
+        },
+        "estimatedCostUsd": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "finishedAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "id": {
+          "pattern": "^job_[0-9A-Za-z]{1,40}$",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "profile_draft",
+            "profile_regenerate",
+            "portrait_candidates",
+            "portrait_tweak",
+            "emotion_set",
+            "emotion_regenerate",
+            "song"
+          ],
+          "type": "string"
+        },
+        "progress": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "startedAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "queued",
+            "running",
+            "succeeded",
+            "partial",
+            "failed",
+            "cancelled"
+          ],
+          "type": "string"
+        },
+        "targetField": {
+          "type": "string"
+        },
+        "tasks": {
+          "items": {
+            "$ref": "#/$defs/GenerationTask"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "characterId",
+        "kind",
+        "status",
+        "progress",
+        "estimatedCostUsd",
+        "actualCostUsd",
+        "tasks",
+        "createdAt"
+      ],
+      "type": "object"
+    },
+    "GenerationTask": {
+      "additionalProperties": false,
+      "properties": {
+        "attempt": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "emotion": {
+          "$ref": "#/$defs/Emotion"
+        },
+        "error": {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "$ref": "#/$defs/ErrorCode"
+            },
+            "message": {
+              "type": "string"
+            },
+            "retryable": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "code",
+            "message",
+            "retryable"
+          ],
+          "type": "object"
+        },
+        "id": {
+          "pattern": "^task_[0-9A-Za-z]{1,40}$",
+          "type": "string"
+        },
+        "maxAttempts": {
+          "maximum": 3,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "previewUrl": {
+          "type": "string"
+        },
+        "resultRef": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "queued",
+            "running",
+            "succeeded",
+            "failed",
+            "skipped"
+          ],
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "profile",
+            "appearance_summary",
+            "palette_pick",
+            "portrait_candidate",
+            "emotion_image",
+            "expression_sheet",
+            "blink_frame",
+            "song_brief",
+            "theme_song"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "status",
+        "attempt",
+        "maxAttempts"
+      ],
+      "type": "object"
+    },
+    "GlobalEvent": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "kind": {
+              "enum": [
+                "settings",
+                "world",
+                "character",
+                "session",
+                "usage",
+                "memory",
+                "knowledge",
+                "job"
+              ],
+              "type": "string"
+            },
+            "progress": {
+              "additionalProperties": false,
+              "properties": {
+                "pct": {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                "stage": {
+                  "enum": [
+                    "extracting",
+                    "chunking",
+                    "embedding"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "stage",
+                "pct"
+              ],
+              "type": "object"
+            },
+            "type": {
+              "const": "entity.changed",
+              "type": "string"
+            },
+            "worldId": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "kind"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "capUsd": {
+              "type": "number"
+            },
+            "scope": {
+              "enum": [
+                "daily",
+                "creation"
+              ],
+              "type": "string"
+            },
+            "spentUsd": {
+              "type": "number"
+            },
+            "type": {
+              "const": "budget.warning",
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "scope",
+            "spentUsd",
+            "capUsd"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "capUsd": {
+              "type": "number"
+            },
+            "jobId": {
+              "type": "string"
+            },
+            "scope": {
+              "enum": [
+                "daily",
+                "creation"
+              ],
+              "type": "string"
+            },
+            "sessionId": {
+              "type": "string"
+            },
+            "spentUsd": {
+              "type": "number"
+            },
+            "type": {
+              "const": "budget.reached",
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "scope",
+            "spentUsd",
+            "capUsd"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "job": {
+              "$ref": "#/$defs/GenerationJob"
+            },
+            "type": {
+              "const": "job.progress",
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "job"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "jobId": {
+              "pattern": "^job_[0-9A-Za-z]{1,40}$",
+              "type": "string"
+            },
+            "task": {
+              "$ref": "#/$defs/GenerationTask"
+            },
+            "type": {
+              "const": "task.update",
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "jobId",
+            "task"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "characterName": {
+              "type": "string"
+            },
+            "job": {
+              "$ref": "#/$defs/GenerationJob"
+            },
+            "type": {
+              "const": "job.done",
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "job"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "context": {
+              "type": "string"
+            },
+            "error": {
+              "$ref": "#/$defs/HorizonErrorShape"
+            },
+            "type": {
+              "const": "error",
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "error"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "mock.reset",
+              "type": "string"
+            }
+          },
+          "required": [
+            "type"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "GroupConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "maxAutoResponders": {
+          "const": 2,
+          "type": "number"
+        },
+        "responderPolicy": {
+          "enum": [
+            "auto",
+            "everyone",
+            "mentioned"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "responderPolicy",
+        "maxAutoResponders"
+      ],
+      "type": "object"
+    },
+    "HorizonErrorShape": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/ErrorCode"
+        },
+        "details": {
+          "additionalProperties": {},
+          "propertyNames": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "message": {
+          "type": "string"
+        },
+        "retryAfterSec": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "retryable": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "code",
+        "message",
+        "retryable"
+      ],
+      "type": "object"
+    },
+    "JobEvent": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "job": {
+              "$ref": "#/$defs/GenerationJob"
+            },
+            "type": {
+              "const": "job.progress",
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "job"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "jobId": {
+              "pattern": "^job_[0-9A-Za-z]{1,40}$",
+              "type": "string"
+            },
+            "task": {
+              "$ref": "#/$defs/GenerationTask"
+            },
+            "type": {
+              "const": "task.update",
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "jobId",
+            "task"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "job": {
+              "$ref": "#/$defs/GenerationJob"
+            },
+            "type": {
+              "const": "job.done",
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "job"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "KnowledgeChunk": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^kch_[0-9A-Za-z]{1,40}$",
+          "type": "string"
+        },
+        "index": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "locator": {
+          "type": "string"
+        },
+        "sourceId": {
+          "pattern": "^kno_[0-9A-Za-z]{1,40}$",
+          "type": "string"
+        },
+        "text": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "sourceId",
+        "index",
+        "text"
+      ],
+      "type": "object"
+    },
+    "KnowledgeSource": {
+      "additionalProperties": false,
+      "properties": {
+        "addedAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "bytes": {
+          "type": "number"
+        },
+        "characterId": {
+          "pattern": "^chr_[0-9A-Za-z]{1,40}$",
+          "type": "string"
+        },
+        "chunks": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "citedCount": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "error": {
+          "type": "string"
+        },
+        "id": {
+          "pattern": "^kno_[0-9A-Za-z]{1,40}$",
+          "type": "string"
+        },
+        "pages": {
+          "exclusiveMinimum": 0,
+          "maximum": 9007199254740991,
+          "type": "integer"
+        },
+        "status": {
+          "enum": [
+            "indexing",
+            "indexed",
+            "keyword_only",
+            "failed"
+          ],
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "text",
+            "file",
+            "url"
+          ],
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "worldId": {
+          "pattern": "^wld_[0-9A-Za-z]{1,40}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "characterId",
+        "worldId",
+        "title",
+        "type",
+        "status"
+      ],
+      "type": "object"
+    },
+    "MemoryItem": {
+      "additionalProperties": false,
+      "properties": {
+        "characterId": {
+          "pattern": "^chr_[0-9A-Za-z]{1,40}$",
+          "type": "string"
+        },
+        "createdAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "id": {
+          "pattern": "^mem_[0-9A-Za-z]{1,40}$",
+          "type": "string"
+        },
+        "importance": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "kind": {
+          "enum": [
+            "fact",
+            "event",
+            "preference",
+            "about_user"
+          ],
+          "type": "string"
+        },
+        "sourceMessageId": {
+          "type": "string"
+        },
+        "sourceSessionId": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        },
+        "worldId": {
+          "pattern": "^wld_[0-9A-Za-z]{1,40}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "characterId",
+        "worldId",
+        "kind",
+        "text",
+        "importance",
+        "createdAt"
+      ],
+      "type": "object"
+    },
+    "Message": {
+      "additionalProperties": false,
+      "properties": {
+        "activeVariantId": {
+          "type": "string"
+        },
+        "author": {
+          "$ref": "#/$defs/MessageAuthor"
+        },
+        "citations": {
+          "items": {
+            "$ref": "#/$defs/Citation"
+          },
+          "type": "array"
+        },
+        "content": {
+          "type": "string"
+        },
+        "createdAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "debate": {
+          "additionalProperties": false,
+          "properties": {
+            "iteration": {
+              "maximum": 9007199254740991,
+              "minimum": -9007199254740991,
+              "type": "integer"
+            },
+            "phase": {
+              "$ref": "#/$defs/DebatePhase"
+            },
+            "round": {
+              "maximum": 9007199254740991,
+              "minimum": -9007199254740991,
+              "type": "integer"
+            },
+            "side": {
+              "$ref": "#/$defs/Side"
+            }
+          },
+          "required": [
+            "phase",
+            "round",
+            "iteration"
+          ],
+          "type": "object"
+        },
+        "emotion": {
+          "$ref": "#/$defs/Emotion"
+        },
+        "emotionSource": {
+          "$ref": "#/$defs/EmotionSource"
+        },
+        "error": {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "$ref": "#/$defs/ErrorCode"
+            },
+            "message": {
+              "type": "string"
+            },
+            "retryable": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "code",
+            "message",
+            "retryable"
+          ],
+          "type": "object"
+        },
+        "forcedSpeaker": {
+          "type": "boolean"
+        },
+        "id": {
+          "pattern": "^msg_[0-9A-Za-z]{1,40}$",
+          "type": "string"
+        },
+        "interruptedBy": {
+          "enum": [
+            "user",
+            "error"
+          ],
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "chat",
+            "steer",
+            "interject",
+            "direction",
+            "narration",
+            "summary",
+            "verdict",
+            "system_note"
+          ],
+          "type": "string"
+        },
+        "reactions": {
+          "items": {
+            "$ref": "#/$defs/Reaction"
+          },
+          "type": "array"
+        },
+        "seq": {
+          "exclusiveMinimum": 0,
+          "maximum": 9007199254740991,
+          "type": "integer"
+        },
+        "sessionId": {
+          "pattern": "^ses_[0-9A-Za-z]{1,40}$",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "streaming",
+            "complete",
+            "interrupted",
+            "error"
+          ],
+          "type": "string"
+        },
+        "targetCharacterId": {
+          "pattern": "^chr_[0-9A-Za-z]{1,40}$",
+          "type": "string"
+        },
+        "trace": {
+          "$ref": "#/$defs/TurnTrace"
+        },
+        "usage": {
+          "$ref": "#/$defs/MessageUsage"
+        },
+        "variants": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "content": {
+                "type": "string"
+              },
+              "createdAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "emotion": {
+                "$ref": "#/$defs/Emotion"
+              },
+              "id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "content",
+              "createdAt"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "sessionId",
+        "seq",
+        "author",
+        "kind",
+        "content",
+        "status",
+        "createdAt"
+      ],
+      "type": "object"
+    },
+    "MessageAuthor": {
+      "additionalProperties": false,
+      "properties": {
+        "characterId": {
+          "pattern": "^chr_[0-9A-Za-z]{1,40}$",
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "user",
+            "character",
+            "host",
+            "system"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "type": "object"
+    },
+    "MessageUsage": {
+      "additionalProperties": false,
+      "properties": {
+        "costUsd": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "energySpent": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "firstTokenMs": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "tokensCached": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "tokensIn": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "tokensOut": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "totalMs": {
+          "minimum": 0,
+          "type": "number"
+        }
+      },
+      "required": [
+        "tokensIn",
+        "tokensOut",
+        "costUsd",
+        "firstTokenMs",
+        "totalMs"
+      ],
+      "type": "object"
+    },
+    "Palette": {
+      "additionalProperties": false,
+      "properties": {
+        "accent": {
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "type": "string"
+        },
+        "fit": {
+          "type": "string"
+        },
+        "glow": {
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "type": "string"
+        },
+        "id": {
+          "format": "starts_with",
+          "pattern": "^pal_.*",
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "onPrimary": {
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "type": "string"
+        },
+        "primary": {
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "type": "string"
+        },
+        "secondary": {
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "type": "string"
+        },
+        "stage": {
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "type": "string"
+        },
+        "surface": {
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "type": "string"
+        },
+        "text": {
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "primary",
+        "secondary",
+        "accent",
+        "stage",
+        "surface",
+        "onPrimary",
+        "glow",
+        "text"
+      ],
+      "type": "object"
+    },
+    "Participant": {
+      "additionalProperties": false,
+      "properties": {
+        "characterId": {
+          "pattern": "^chr_[0-9A-Za-z]{1,40}$",
+          "type": "string"
+        },
+        "currentEmotion": {
+          "$ref": "#/$defs/Emotion"
+        },
+        "mutedByUser": {
+          "type": "boolean"
+        },
+        "role": {
+          "enum": [
+            "speaker",
+            "debater"
+          ],
+          "type": "string"
+        },
+        "side": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Side"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "characterId",
+        "role",
+        "currentEmotion",
+        "mutedByUser"
+      ],
+      "type": "object"
+    },
+    "PausedReason": {
+      "enum": [
+        "user",
+        "turn_cap",
+        "daily_budget",
+        "error",
+        "navigated_away"
+      ],
+      "type": "string"
+    },
+    "Reaction": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "characterId": {
+          "pattern": "^chr_[0-9A-Za-z]{1,40}$",
+          "type": "string"
+        },
+        "emotion": {
+          "$ref": "#/$defs/Emotion"
+        },
+        "p": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        }
+      },
+      "required": [
+        "characterId",
+        "emotion",
+        "at"
+      ],
+      "type": "object"
+    },
+    "Session": {
+      "additionalProperties": false,
+      "properties": {
+        "config": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/GroupConfig"
+                },
+                {
+                  "$ref": "#/$defs/DebateConfig"
+                },
+                {
+                  "$ref": "#/$defs/WatchConfig"
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "continuedFrom": {
+          "pattern": "^ses_[0-9A-Za-z]{1,40}$",
+          "type": "string"
+        },
+        "costUsd": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "createdAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "emotionMode": {
+          "enum": [
+            "llm",
+            "user"
+          ],
+          "type": "string"
+        },
+        "id": {
+          "pattern": "^ses_[0-9A-Za-z]{1,40}$",
+          "type": "string"
+        },
+        "isSeed": {
+          "type": "boolean"
+        },
+        "lastMessageAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "messageCount": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "mode": {
+          "$ref": "#/$defs/SessionMode"
+        },
+        "musicPolicy": {
+          "enum": [
+            "character_theme",
+            "follow_speaker",
+            "arena",
+            "scene_bed"
+          ],
+          "type": "string"
+        },
+        "participants": {
+          "items": {
+            "$ref": "#/$defs/Participant"
+          },
+          "maxItems": 5,
+          "minItems": 1,
+          "type": "array"
+        },
+        "pausedReason": {
+          "$ref": "#/$defs/PausedReason"
+        },
+        "readableMode": {
+          "type": "boolean"
+        },
+        "state": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/DebateState"
+                },
+                {
+                  "$ref": "#/$defs/WatchState"
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "$ref": "#/$defs/SessionStatus"
+        },
+        "title": {
+          "type": "string"
+        },
+        "titleIsCustom": {
+          "type": "boolean"
+        },
+        "updatedAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "worldId": {
+          "pattern": "^wld_[0-9A-Za-z]{1,40}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "worldId",
+        "title",
+        "titleIsCustom",
+        "mode",
+        "status",
+        "participants",
+        "emotionMode",
+        "musicPolicy",
+        "readableMode",
+        "config",
+        "state",
+        "isSeed",
+        "costUsd",
+        "messageCount",
+        "createdAt",
+        "updatedAt"
+      ],
+      "type": "object"
+    },
+    "SessionEvent": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "at": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "id": {
+              "pattern": "^evt_[0-9A-Za-z]{1,40}$",
+              "type": "string"
+            },
+            "payload": {
+              "additionalProperties": false,
+              "properties": {
+                "forcedBy": {
+                  "type": "string"
+                },
+                "nextSpeakerId": {
+                  "type": "string"
+                },
+                "skipped": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "characterId": {
+                        "pattern": "^chr_[0-9A-Za-z]{1,40}$",
+                        "type": "string"
+                      },
+                      "reason": {
+                        "enum": [
+                          "exhausted",
+                          "muted",
+                          "archived"
+                        ],
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "characterId",
+                      "reason"
+                    ],
+                    "type": "object"
+                  },
+                  "type": "array"
+                }
+              },
+              "required": [
+                "nextSpeakerId"
+              ],
+              "type": "object"
+            },
+            "seq": {
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991,
+              "type": "integer"
+            },
+            "sessionId": {
+              "pattern": "^ses_[0-9A-Za-z]{1,40}$",
+              "type": "string"
+            },
+            "type": {
+              "const": "turn.next",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "sessionId",
+            "seq",
+            "at",
+            "type",
+            "payload"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "at": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "id": {
+              "pattern": "^evt_[0-9A-Za-z]{1,40}$",
+              "type": "string"
+            },
+            "payload": {
+              "additionalProperties": false,
+              "properties": {
+                "characterId": {
+                  "pattern": "^chr_[0-9A-Za-z]{1,40}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "characterId"
+              ],
+              "type": "object"
+            },
+            "seq": {
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991,
+              "type": "integer"
+            },
+            "sessionId": {
+              "pattern": "^ses_[0-9A-Za-z]{1,40}$",
+              "type": "string"
+            },
+            "type": {
+              "const": "turn.thinking",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "sessionId",
+            "seq",
+            "at",
+            "type",
+            "payload"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "at": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "id": {
+              "pattern": "^evt_[0-9A-Za-z]{1,40}$",
+              "type": "string"
+            },
+            "payload": {
+              "additionalProperties": false,
+              "properties": {
+                "author": {
+                  "$ref": "#/$defs/MessageAuthor"
+                },
+                "emotion": {
+                  "$ref": "#/$defs/Emotion"
+                },
+                "message": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "activeVariantId": {
+                      "type": "string"
+                    },
+                    "author": {
+                      "$ref": "#/$defs/MessageAuthor"
+                    },
+                    "citations": {
+                      "items": {
+                        "$ref": "#/$defs/Citation"
+                      },
+                      "type": "array"
+                    },
+                    "content": {
+                      "type": "string"
+                    },
+                    "createdAt": {
+                      "format": "date-time",
+                      "type": "string"
+                    },
+                    "debate": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "iteration": {
+                          "maximum": 9007199254740991,
+                          "minimum": -9007199254740991,
+                          "type": "integer"
+                        },
+                        "phase": {
+                          "$ref": "#/$defs/DebatePhase"
+                        },
+                        "round": {
+                          "maximum": 9007199254740991,
+                          "minimum": -9007199254740991,
+                          "type": "integer"
+                        },
+                        "side": {
+                          "$ref": "#/$defs/Side"
+                        }
+                      },
+                      "required": [
+                        "phase",
+                        "round",
+                        "iteration"
+                      ],
+                      "type": "object"
+                    },
+                    "emotion": {
+                      "$ref": "#/$defs/Emotion"
+                    },
+                    "emotionSource": {
+                      "$ref": "#/$defs/EmotionSource"
+                    },
+                    "error": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "code": {
+                          "$ref": "#/$defs/ErrorCode"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "retryable": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message",
+                        "retryable"
+                      ],
+                      "type": "object"
+                    },
+                    "forcedSpeaker": {
+                      "type": "boolean"
+                    },
+                    "id": {
+                      "pattern": "^msg_[0-9A-Za-z]{1,40}$",
+                      "type": "string"
+                    },
+                    "interruptedBy": {
+                      "enum": [
+                        "user",
+                        "error"
+                      ],
+                      "type": "string"
+                    },
+                    "kind": {
+                      "enum": [
+                        "chat",
+                        "steer",
+                        "interject",
+                        "direction",
+                        "narration",
+                        "summary",
+                        "verdict",
+                        "system_note"
+                      ],
+                      "type": "string"
+                    },
+                    "reactions": {
+                      "items": {
+                        "$ref": "#/$defs/Reaction"
+                      },
+                      "type": "array"
+                    },
+                    "seq": {
+                      "exclusiveMinimum": 0,
+                      "maximum": 9007199254740991,
+                      "type": "integer"
+                    },
+                    "sessionId": {
+                      "pattern": "^ses_[0-9A-Za-z]{1,40}$",
+                      "type": "string"
+                    },
+                    "status": {
+                      "enum": [
+                        "streaming",
+                        "complete",
+                        "interrupted",
+                        "error"
+                      ],
+                      "type": "string"
+                    },
+                    "targetCharacterId": {
+                      "pattern": "^chr_[0-9A-Za-z]{1,40}$",
+                      "type": "string"
+                    },
+                    "trace": {
+                      "$ref": "#/$defs/TurnTrace"
+                    },
+                    "usage": {
+                      "$ref": "#/$defs/MessageUsage"
+                    },
+                    "variants": {
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "content": {
+                            "type": "string"
+                          },
+                          "createdAt": {
+                            "format": "date-time",
+                            "type": "string"
+                          },
+                          "emotion": {
+                            "$ref": "#/$defs/Emotion"
+                          },
+                          "id": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "content",
+                          "createdAt"
+                        ],
+                        "type": "object"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                },
+                "messageId": {
+                  "pattern": "^msg_[0-9A-Za-z]{1,40}$",
+                  "type": "string"
+                },
+                "variantId": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "messageId",
+                "author"
+              ],
+              "type": "object"
+            },
+            "seq": {
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991,
+              "type": "integer"
+            },
+            "sessionId": {
+              "pattern": "^ses_[0-9A-Za-z]{1,40}$",
+              "type": "string"
+            },
+            "type": {
+              "const": "turn.start",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "sessionId",
+            "seq",
+            "at",
+            "type",
+            "payload"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "at": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "id": {
+              "pattern": "^evt_[0-9A-Za-z]{1,40}$",
+              "type": "string"
+            },
+            "payload": {
+              "additionalProperties": false,
+              "properties": {
+                "delta": {
+                  "type": "string"
+                },
+                "messageId": {
+                  "pattern": "^msg_[0-9A-Za-z]{1,40}$",
+                  "type": "string"
+                },
+                "variantId": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "messageId",
+                "delta"
+              ],
+              "type": "object"
+            },
+            "seq": {
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991,
+              "type": "integer"
+            },
+            "sessionId": {
+              "pattern": "^ses_[0-9A-Za-z]{1,40}$",
+              "type": "string"
+            },
+            "type": {
+              "const": "token",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "sessionId",
+            "seq",
+            "at",
+            "type",
+            "payload"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "at": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "id": {
+              "pattern": "^evt_[0-9A-Za-z]{1,40}$",
+              "type": "string"
+            },
+            "payload": {
+              "additionalProperties": false,
+              "properties": {
+                "characterId": {
+                  "pattern": "^chr_[0-9A-Za-z]{1,40}$",
+                  "type": "string"
+                },
+                "emotion": {
+                  "$ref": "#/$defs/Emotion"
+                },
+                "messageId": {
+                  "pattern": "^msg_[0-9A-Za-z]{1,40}$",
+                  "type": "string"
+                },
+                "source": {
+                  "$ref": "#/$defs/EmotionSource"
+                }
+              },
+              "required": [
+                "characterId",
+                "emotion",
+                "source"
+              ],
+              "type": "object"
+            },
+            "seq": {
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991,
+              "type": "integer"
+            },
+            "sessionId": {
+              "pattern": "^ses_[0-9A-Za-z]{1,40}$",
+              "type": "string"
+            },
+            "type": {
+              "const": "emotion",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "sessionId",
+            "seq",
+            "at",
+            "type",
+            "payload"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "at": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "id": {
+              "pattern": "^evt_[0-9A-Za-z]{1,40}$",
+              "type": "string"
+            },
+            "payload": {
+              "additionalProperties": false,
+              "properties": {
+                "citations": {
+                  "items": {
+                    "$ref": "#/$defs/Citation"
+                  },
+                  "type": "array"
+                },
+                "interruptedBy": {
+                  "enum": [
+                    "user",
+                    "error"
+                  ],
+                  "type": "string"
+                },
+                "messageId": {
+                  "pattern": "^msg_[0-9A-Za-z]{1,40}$",
+                  "type": "string"
+                },
+                "status": {
+                  "enum": [
+                    "streaming",
+                    "complete",
+                    "interrupted",
+                    "error"
+                  ],
+                  "type": "string"
+                },
+                "usage": {
+                  "$ref": "#/$defs/MessageUsage"
+                },
+                "variantId": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "messageId",
+                "status"
+              ],
+              "type": "object"
+            },
+            "seq": {
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991,
+              "type": "integer"
+            },
+            "sessionId": {
+              "pattern": "^ses_[0-9A-Za-z]{1,40}$",
+              "type": "string"
+            },
+            "type": {
+              "const": "turn.end",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "sessionId",
+            "seq",
+            "at",
+            "type",
+            "payload"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "at": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "id": {
+              "pattern": "^evt_[0-9A-Za-z]{1,40}$",
+              "type": "string"
+            },
+            "payload": {
+              "additionalProperties": false,
+              "properties": {
+                "characterId": {
+                  "pattern": "^chr_[0-9A-Za-z]{1,40}$",
+                  "type": "string"
+                },
+                "current": {
+                  "minimum": 0,
+                  "type": "number"
+                },
+                "fullAt": {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                "max": {
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991,
+                  "type": "integer"
+                },
+                "spent": {
+                  "maximum": 9007199254740991,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "state": {
+                  "$ref": "#/$defs/EnergyState"
+                }
+              },
+              "required": [
+                "characterId",
+                "current",
+                "max",
+                "state"
+              ],
+              "type": "object"
+            },
+            "seq": {
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991,
+              "type": "integer"
+            },
+            "sessionId": {
+              "pattern": "^ses_[0-9A-Za-z]{1,40}$",
+              "type": "string"
+            },
+            "type": {
+              "const": "energy",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "sessionId",
+            "seq",
+            "at",
+            "type",
+            "payload"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "at": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "id": {
+              "pattern": "^evt_[0-9A-Za-z]{1,40}$",
+              "type": "string"
+            },
+            "payload": {
+              "additionalProperties": false,
+              "properties": {
+                "characterId": {
+                  "pattern": "^chr_[0-9A-Za-z]{1,40}$",
+                  "type": "string"
+                },
+                "emotion": {
+                  "$ref": "#/$defs/Emotion"
+                },
+                "messageId": {
+                  "pattern": "^msg_[0-9A-Za-z]{1,40}$",
+                  "type": "string"
+                },
+                "p": {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                "source": {
+                  "$ref": "#/$defs/EmotionSource"
+                }
+              },
+              "required": [
+                "messageId",
+                "characterId",
+                "emotion",
+                "source"
+              ],
+              "type": "object"
+            },
+            "seq": {
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991,
+              "type": "integer"
+            },
+            "sessionId": {
+              "pattern": "^ses_[0-9A-Za-z]{1,40}$",
+              "type": "string"
+            },
+            "type": {
+              "const": "reaction",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "sessionId",
+            "seq",
+            "at",
+            "type",
+            "payload"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "at": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "id": {
+              "pattern": "^evt_[0-9A-Za-z]{1,40}$",
+              "type": "string"
+            },
+            "payload": {
+              "additionalProperties": false,
+              "properties": {
+                "messageId": {
+                  "pattern": "^msg_[0-9A-Za-z]{1,40}$",
+                  "type": "string"
+                },
+                "trace": {
+                  "$ref": "#/$defs/TurnTrace"
+                }
+              },
+              "required": [
+                "messageId",
+                "trace"
+              ],
+              "type": "object"
+            },
+            "seq": {
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991,
+              "type": "integer"
+            },
+            "sessionId": {
+              "pattern": "^ses_[0-9A-Za-z]{1,40}$",
+              "type": "string"
+            },
+            "type": {
+              "const": "insight",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "sessionId",
+            "seq",
+            "at",
+            "type",
+            "payload"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "at": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "id": {
+              "pattern": "^evt_[0-9A-Za-z]{1,40}$",
+              "type": "string"
+            },
+            "payload": {
+              "additionalProperties": false,
+              "properties": {
+                "iteration": {
+                  "maximum": 9007199254740991,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "phase": {
+                  "$ref": "#/$defs/DebatePhase"
+                },
+                "round": {
+                  "maximum": 9007199254740991,
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "phase",
+                "round",
+                "iteration"
+              ],
+              "type": "object"
+            },
+            "seq": {
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991,
+              "type": "integer"
+            },
+            "sessionId": {
+              "pattern": "^ses_[0-9A-Za-z]{1,40}$",
+              "type": "string"
+            },
+            "type": {
+              "const": "phase",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "sessionId",
+            "seq",
+            "at",
+            "type",
+            "payload"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "at": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "id": {
+              "pattern": "^evt_[0-9A-Za-z]{1,40}$",
+              "type": "string"
+            },
+            "payload": {
+              "additionalProperties": false,
+              "properties": {
+                "paceMs": {
+                  "type": "number"
+                },
+                "status": {
+                  "enum": [
+                    "playing",
+                    "paused",
+                    "ended"
+                  ],
+                  "type": "string"
+                },
+                "turnLimit": {
+                  "maximum": 9007199254740991,
+                  "minimum": -9007199254740991,
+                  "type": "integer"
+                },
+                "turnsTaken": {
+                  "maximum": 9007199254740991,
+                  "minimum": -9007199254740991,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "status",
+                "paceMs",
+                "turnsTaken",
+                "turnLimit"
+              ],
+              "type": "object"
+            },
+            "seq": {
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991,
+              "type": "integer"
+            },
+            "sessionId": {
+              "pattern": "^ses_[0-9A-Za-z]{1,40}$",
+              "type": "string"
+            },
+            "type": {
+              "const": "watch.state",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "sessionId",
+            "seq",
+            "at",
+            "type",
+            "payload"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "at": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "id": {
+              "pattern": "^evt_[0-9A-Za-z]{1,40}$",
+              "type": "string"
+            },
+            "payload": {
+              "additionalProperties": false,
+              "properties": {
+                "reason": {
+                  "$ref": "#/$defs/PausedReason"
+                }
+              },
+              "type": "object"
+            },
+            "seq": {
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991,
+              "type": "integer"
+            },
+            "sessionId": {
+              "pattern": "^ses_[0-9A-Za-z]{1,40}$",
+              "type": "string"
+            },
+            "type": {
+              "const": "session.paused",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "sessionId",
+            "seq",
+            "at",
+            "type",
+            "payload"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "at": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "id": {
+              "pattern": "^evt_[0-9A-Za-z]{1,40}$",
+              "type": "string"
+            },
+            "payload": {
+              "additionalProperties": false,
+              "properties": {
+                "reason": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "seq": {
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991,
+              "type": "integer"
+            },
+            "sessionId": {
+              "pattern": "^ses_[0-9A-Za-z]{1,40}$",
+              "type": "string"
+            },
+            "type": {
+              "const": "session.resumed",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "sessionId",
+            "seq",
+            "at",
+            "type",
+            "payload"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "at": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "id": {
+              "pattern": "^evt_[0-9A-Za-z]{1,40}$",
+              "type": "string"
+            },
+            "payload": {
+              "additionalProperties": false,
+              "properties": {
+                "capUsd": {
+                  "type": "number"
+                },
+                "scope": {
+                  "enum": [
+                    "daily",
+                    "creation"
+                  ],
+                  "type": "string"
+                },
+                "spentUsd": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "scope",
+                "spentUsd",
+                "capUsd"
+              ],
+              "type": "object"
+            },
+            "seq": {
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991,
+              "type": "integer"
+            },
+            "sessionId": {
+              "pattern": "^ses_[0-9A-Za-z]{1,40}$",
+              "type": "string"
+            },
+            "type": {
+              "const": "budget.warning",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "sessionId",
+            "seq",
+            "at",
+            "type",
+            "payload"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "at": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "id": {
+              "pattern": "^evt_[0-9A-Za-z]{1,40}$",
+              "type": "string"
+            },
+            "payload": {
+              "additionalProperties": false,
+              "properties": {
+                "code": {
+                  "$ref": "#/$defs/ErrorCode"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "messageId": {
+                  "pattern": "^msg_[0-9A-Za-z]{1,40}$",
+                  "type": "string"
+                },
+                "retryable": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "code",
+                "message",
+                "retryable"
+              ],
+              "type": "object"
+            },
+            "seq": {
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991,
+              "type": "integer"
+            },
+            "sessionId": {
+              "pattern": "^ses_[0-9A-Za-z]{1,40}$",
+              "type": "string"
+            },
+            "type": {
+              "const": "error",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "sessionId",
+            "seq",
+            "at",
+            "type",
+            "payload"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "at": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "id": {
+              "pattern": "^evt_[0-9A-Za-z]{1,40}$",
+              "type": "string"
+            },
+            "payload": {
+              "additionalProperties": false,
+              "properties": {
+                "message": {
+                  "$ref": "#/$defs/Message"
+                }
+              },
+              "required": [
+                "message"
+              ],
+              "type": "object"
+            },
+            "seq": {
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991,
+              "type": "integer"
+            },
+            "sessionId": {
+              "pattern": "^ses_[0-9A-Za-z]{1,40}$",
+              "type": "string"
+            },
+            "type": {
+              "const": "message",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "sessionId",
+            "seq",
+            "at",
+            "type",
+            "payload"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "at": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "id": {
+              "pattern": "^evt_[0-9A-Za-z]{1,40}$",
+              "type": "string"
+            },
+            "payload": {
+              "additionalProperties": false,
+              "properties": {
+                "participants": {
+                  "items": {
+                    "$ref": "#/$defs/Participant"
+                  },
+                  "type": "array"
+                },
+                "pausedReason": {
+                  "$ref": "#/$defs/PausedReason"
+                },
+                "settings": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "config": {
+                      "anyOf": [
+                        {
+                          "anyOf": [
+                            {
+                              "$ref": "#/$defs/GroupConfig"
+                            },
+                            {
+                              "$ref": "#/$defs/DebateConfig"
+                            },
+                            {
+                              "$ref": "#/$defs/WatchConfig"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "emotionMode": {
+                      "enum": [
+                        "llm",
+                        "user"
+                      ],
+                      "type": "string"
+                    },
+                    "musicPolicy": {
+                      "enum": [
+                        "character_theme",
+                        "follow_speaker",
+                        "arena",
+                        "scene_bed"
+                      ],
+                      "type": "string"
+                    },
+                    "readableMode": {
+                      "type": "boolean"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "titleIsCustom": {
+                      "type": "boolean"
+                    }
+                  },
+                  "type": "object"
+                },
+                "state": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/$defs/DebateState"
+                    },
+                    {
+                      "$ref": "#/$defs/WatchState"
+                    }
+                  ]
+                },
+                "status": {
+                  "$ref": "#/$defs/SessionStatus"
+                }
+              },
+              "type": "object"
+            },
+            "seq": {
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991,
+              "type": "integer"
+            },
+            "sessionId": {
+              "pattern": "^ses_[0-9A-Za-z]{1,40}$",
+              "type": "string"
+            },
+            "type": {
+              "const": "session.state",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "sessionId",
+            "seq",
+            "at",
+            "type",
+            "payload"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "SessionMode": {
+      "enum": [
+        "one_on_one",
+        "group",
+        "debate",
+        "watch"
+      ],
+      "type": "string"
+    },
+    "SessionStatus": {
+      "enum": [
+        "active",
+        "paused",
+        "ended"
+      ],
+      "type": "string"
+    },
+    "Side": {
+      "enum": [
+        "prop",
+        "opp"
+      ],
+      "type": "string"
+    },
+    "SongBrief": {
+      "additionalProperties": false,
+      "properties": {
+        "bpm": {
+          "maximum": 160,
+          "minimum": 60,
+          "type": "number"
+        },
+        "genres": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "instruments": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "moods": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "vibe": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "genres",
+        "moods",
+        "bpm",
+        "instruments",
+        "vibe"
+      ],
+      "type": "object"
+    },
+    "StylePreset": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "promptFragment": {
+          "type": "string"
+        },
+        "referenceImageUrls": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "version": {
+          "exclusiveMinimum": 0,
+          "maximum": 9007199254740991,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "promptFragment",
+        "referenceImageUrls"
+      ],
+      "type": "object"
+    },
+    "SystemTrack": {
+      "additionalProperties": false,
+      "properties": {
+        "credit": {
+          "type": "string"
+        },
+        "durationSec": {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        },
+        "gainDb": {
+          "type": "number"
+        },
+        "id": {
+          "pattern": "^trk_[0-9A-Za-z]{1,40}$",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "main_theme",
+            "arena",
+            "ambient_bed"
+          ],
+          "type": "string"
+        },
+        "licence": {
+          "type": "string"
+        },
+        "loop": {
+          "additionalProperties": false,
+          "properties": {
+            "endSec": {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            "startSec": {
+              "minimum": 0,
+              "type": "number"
+            }
+          },
+          "required": [
+            "startSec",
+            "endSec"
+          ],
+          "type": "object"
+        },
+        "source": {
+          "const": "free_library",
+          "type": "string"
+        },
+        "url": {
+          "pattern": "^(/assets/|data:|placeholder:)",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "url",
+        "durationSec",
+        "source",
+        "credit",
+        "licence"
+      ],
+      "type": "object"
+    },
+    "ThemeSong": {
+      "additionalProperties": false,
+      "properties": {
+        "brief": {
+          "$ref": "#/$defs/SongBrief"
+        },
+        "bytes": {
+          "type": "number"
+        },
+        "characterId": {
+          "pattern": "^chr_[0-9A-Za-z]{1,40}$",
+          "type": "string"
+        },
+        "durationSec": {
+          "type": "number"
+        },
+        "format": {
+          "enum": [
+            "opus",
+            "aac",
+            "mp3"
+          ],
+          "type": "string"
+        },
+        "gainDb": {
+          "type": "number"
+        },
+        "generation": {
+          "additionalProperties": false,
+          "properties": {
+            "costUsd": {
+              "type": "number"
+            },
+            "jobId": {
+              "type": "string"
+            },
+            "model": {
+              "type": "string"
+            },
+            "prompt": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "model",
+            "prompt",
+            "costUsd"
+          ],
+          "type": "object"
+        },
+        "id": {
+          "pattern": "^song_[0-9A-Za-z]{1,40}$",
+          "type": "string"
+        },
+        "instrumental": {
+          "type": "boolean"
+        },
+        "licenseNote": {
+          "type": "string"
+        },
+        "loop": {
+          "additionalProperties": false,
+          "properties": {
+            "endSec": {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            "startSec": {
+              "minimum": 0,
+              "type": "number"
+            }
+          },
+          "required": [
+            "startSec",
+            "endSec"
+          ],
+          "type": "object"
+        },
+        "status": {
+          "$ref": "#/$defs/AssetStatus"
+        },
+        "url": {
+          "pattern": "^(/assets/|data:|placeholder:)",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "characterId",
+        "status",
+        "brief",
+        "instrumental",
+        "licenseNote"
+      ],
+      "type": "object"
+    },
+    "TurnCall": {
+      "additionalProperties": false,
+      "properties": {
+        "costUsd": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "fallback": {
+          "type": "boolean"
+        },
+        "latencyMs": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "model": {
+          "type": "string"
+        },
+        "purpose": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "purpose",
+        "model",
+        "costUsd",
+        "latencyMs"
+      ],
+      "type": "object"
+    },
+    "TurnTrace": {
+      "additionalProperties": false,
+      "properties": {
+        "calls": {
+          "items": {
+            "$ref": "#/$defs/TurnCall"
+          },
+          "type": "array"
+        },
+        "context": {
+          "additionalProperties": false,
+          "properties": {
+            "budget": {
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991,
+              "type": "integer"
+            },
+            "cacheHitPct": {
+              "maximum": 100,
+              "minimum": 0,
+              "type": "number"
+            },
+            "used": {
+              "additionalProperties": false,
+              "properties": {
+                "history": {
+                  "maximum": 9007199254740991,
+                  "minimum": -9007199254740991,
+                  "type": "integer"
+                },
+                "knowledge": {
+                  "maximum": 9007199254740991,
+                  "minimum": -9007199254740991,
+                  "type": "integer"
+                },
+                "memory": {
+                  "maximum": 9007199254740991,
+                  "minimum": -9007199254740991,
+                  "type": "integer"
+                },
+                "mode": {
+                  "maximum": 9007199254740991,
+                  "minimum": -9007199254740991,
+                  "type": "integer"
+                },
+                "persona": {
+                  "maximum": 9007199254740991,
+                  "minimum": -9007199254740991,
+                  "type": "integer"
+                },
+                "system": {
+                  "maximum": 9007199254740991,
+                  "minimum": -9007199254740991,
+                  "type": "integer"
+                },
+                "user": {
+                  "maximum": 9007199254740991,
+                  "minimum": -9007199254740991,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "system",
+                "persona",
+                "memory",
+                "knowledge",
+                "history",
+                "user",
+                "mode"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "budget",
+            "used"
+          ],
+          "type": "object"
+        },
+        "contextInSession": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "messageId": {
+                "pattern": "^msg_[0-9A-Za-z]{1,40}$",
+                "type": "string"
+              },
+              "text": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "messageId"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "emotion": {
+          "additionalProperties": false,
+          "properties": {
+            "candidates": {
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "label": {
+                    "$ref": "#/$defs/Emotion"
+                  },
+                  "p": {
+                    "maximum": 1,
+                    "minimum": 0,
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "label",
+                  "p"
+                ],
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "chosen": {
+              "$ref": "#/$defs/Emotion"
+            },
+            "source": {
+              "$ref": "#/$defs/EmotionSource"
+            }
+          },
+          "required": [
+            "chosen",
+            "source"
+          ],
+          "type": "object"
+        },
+        "energy": {
+          "additionalProperties": false,
+          "properties": {
+            "characterId": {
+              "pattern": "^chr_[0-9A-Za-z]{1,40}$",
+              "type": "string"
+            },
+            "max": {
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991,
+              "type": "integer"
+            },
+            "remaining": {
+              "minimum": 0,
+              "type": "number"
+            },
+            "spent": {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "characterId",
+            "spent",
+            "remaining",
+            "max"
+          ],
+          "type": "object"
+        },
+        "graph": {
+          "additionalProperties": false,
+          "properties": {
+            "path": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "path"
+          ],
+          "type": "object"
+        },
+        "guardrail": {
+          "additionalProperties": false,
+          "properties": {
+            "checks": {
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "p": {
+                    "maximum": 1,
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "verdict": {
+                    "enum": [
+                      "pass",
+                      "flag",
+                      "block"
+                    ],
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name",
+                  "verdict"
+                ],
+                "type": "object"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "checks"
+          ],
+          "type": "object"
+        },
+        "knowledge": {
+          "additionalProperties": false,
+          "properties": {
+            "query": {
+              "type": "string"
+            },
+            "retrieved": {
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "chunkId": {
+                    "pattern": "^[a-z]+_[0-9A-Za-z]{1,40}$",
+                    "type": "string"
+                  },
+                  "cited": {
+                    "type": "boolean"
+                  },
+                  "locator": {
+                    "type": "string"
+                  },
+                  "n": {
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991,
+                    "type": "integer"
+                  },
+                  "score": {
+                    "maximum": 1,
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "sourceId": {
+                    "pattern": "^[a-z]+_[0-9A-Za-z]{1,40}$",
+                    "type": "string"
+                  },
+                  "text": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "chunkId",
+                  "sourceId",
+                  "title",
+                  "text",
+                  "score",
+                  "cited"
+                ],
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "trigger": {
+              "enum": [
+                "always",
+                "tool_call",
+                "gated"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "retrieved"
+          ],
+          "type": "object"
+        },
+        "memory": {
+          "additionalProperties": false,
+          "properties": {
+            "recalled": {
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "memoryItemId": {
+                    "type": "string"
+                  },
+                  "score": {
+                    "type": "number"
+                  },
+                  "sourceSessionId": {
+                    "type": "string"
+                  },
+                  "text": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "memoryItemId",
+                  "text"
+                ],
+                "type": "object"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "recalled"
+          ],
+          "type": "object"
+        },
+        "messageId": {
+          "pattern": "^msg_[0-9A-Za-z]{1,40}$",
+          "type": "string"
+        },
+        "model": {
+          "additionalProperties": false,
+          "properties": {
+            "costUsd": {
+              "type": "number"
+            },
+            "id": {
+              "type": "string"
+            },
+            "latencyMs": {
+              "additionalProperties": false,
+              "properties": {
+                "firstToken": {
+                  "type": "number"
+                },
+                "total": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "firstToken",
+                "total"
+              ],
+              "type": "object"
+            },
+            "pricePeriod": {
+              "enum": [
+                "peak",
+                "off_peak"
+              ],
+              "type": "string"
+            },
+            "provider": {
+              "type": "string"
+            },
+            "quantization": {
+              "type": "string"
+            },
+            "tokensCached": {
+              "maximum": 9007199254740991,
+              "minimum": -9007199254740991,
+              "type": "integer"
+            },
+            "tokensIn": {
+              "maximum": 9007199254740991,
+              "minimum": -9007199254740991,
+              "type": "integer"
+            },
+            "tokensOut": {
+              "maximum": 9007199254740991,
+              "minimum": -9007199254740991,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "id",
+            "provider",
+            "latencyMs",
+            "tokensIn",
+            "tokensOut",
+            "costUsd"
+          ],
+          "type": "object"
+        },
+        "routing": {
+          "additionalProperties": false,
+          "properties": {
+            "candidates": {
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "characterId": {
+                    "pattern": "^chr_[0-9A-Za-z]{1,40}$",
+                    "type": "string"
+                  },
+                  "p": {
+                    "maximum": 1,
+                    "minimum": 0,
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "characterId",
+                  "p"
+                ],
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "forcedBy": {
+              "enum": [
+                "user_ask",
+                "mention",
+                "nudge",
+                "round_order"
+              ],
+              "type": "string"
+            },
+            "question": {
+              "type": "string"
+            },
+            "reason": {
+              "type": "string"
+            },
+            "selected": {
+              "type": "string"
+            },
+            "skipped": {
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "characterId": {
+                    "pattern": "^chr_[0-9A-Za-z]{1,40}$",
+                    "type": "string"
+                  },
+                  "reason": {
+                    "enum": [
+                      "exhausted",
+                      "muted",
+                      "archived"
+                    ],
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "characterId",
+                  "reason"
+                ],
+                "type": "object"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "selected"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "messageId"
+      ],
+      "type": "object"
+    },
+    "UsageRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "category": {
+          "enum": [
+            "chat",
+            "decision",
+            "image",
+            "music",
+            "profile",
+            "summary",
+            "memory",
+            "embedding",
+            "energy_topup"
+          ],
+          "type": "string"
+        },
+        "characterId": {
+          "type": "string"
+        },
+        "costUsd": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "energyPoints": {
+          "maximum": 9007199254740991,
+          "minimum": -9007199254740991,
+          "type": "integer"
+        },
+        "estimatedCostUsd": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "id": {
+          "type": "string"
+        },
+        "jobId": {
+          "type": "string"
+        },
+        "latencyMs": {
+          "type": "number"
+        },
+        "model": {
+          "type": "string"
+        },
+        "pricePeriod": {
+          "enum": [
+            "peak",
+            "off_peak"
+          ],
+          "type": "string"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "sessionId": {
+          "type": "string"
+        },
+        "tokensCached": {
+          "maximum": 9007199254740991,
+          "minimum": -9007199254740991,
+          "type": "integer"
+        },
+        "tokensIn": {
+          "maximum": 9007199254740991,
+          "minimum": -9007199254740991,
+          "type": "integer"
+        },
+        "tokensOut": {
+          "maximum": 9007199254740991,
+          "minimum": -9007199254740991,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "at",
+        "category",
+        "costUsd"
+      ],
+      "type": "object"
+    },
+    "Verdict": {
+      "additionalProperties": false,
+      "properties": {
+        "decidedBy": {
+          "enum": [
+            "arbiter",
+            "user",
+            "none"
+          ],
+          "type": "string"
+        },
+        "keyDisagreement": {
+          "type": "string"
+        },
+        "rationale": {
+          "type": "string"
+        },
+        "scores": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "criterionId": {
+                "type": "string"
+              },
+              "subjectId": {
+                "type": "string"
+              },
+              "value": {
+                "maximum": 10,
+                "minimum": 0,
+                "type": "number"
+              }
+            },
+            "required": [
+              "subjectId",
+              "criterionId",
+              "value"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "scoresBy": {
+          "enum": [
+            "side",
+            "debater"
+          ],
+          "type": "string"
+        },
+        "strongerCase": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Side"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "summary": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "points": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "subjectId": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "subjectId",
+              "points"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "decidedBy",
+        "summary"
+      ],
+      "type": "object"
+    },
+    "VfxPreset": {
+      "enum": [
+        "none",
+        "sparkle",
+        "rain",
+        "anger",
+        "shock",
+        "ponder",
+        "blush",
+        "sleep"
+      ],
+      "type": "string"
+    },
+    "WatchConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "maxTurns": {
+          "anyOf": [
+            {
+              "const": 10,
+              "type": "number"
+            },
+            {
+              "const": 20,
+              "type": "number"
+            },
+            {
+              "const": 40,
+              "type": "number"
+            }
+          ]
+        },
+        "openingSpeaker": {
+          "type": "string"
+        },
+        "paceMs": {
+          "anyOf": [
+            {
+              "const": 3000,
+              "type": "number"
+            },
+            {
+              "const": 1500,
+              "type": "number"
+            },
+            {
+              "const": 500,
+              "type": "number"
+            }
+          ]
+        },
+        "premise": {
+          "maxLength": 300,
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "premise",
+        "maxTurns",
+        "paceMs",
+        "openingSpeaker"
+      ],
+      "type": "object"
+    },
+    "WatchState": {
+      "additionalProperties": false,
+      "properties": {
+        "nextSpeakerId": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "playing",
+            "paused",
+            "ended"
+          ],
+          "type": "string"
+        },
+        "turnLimit": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "turnsTaken": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "status",
+        "turnsTaken",
+        "turnLimit"
+      ],
+      "type": "object"
+    },
+    "World": {
+      "additionalProperties": false,
+      "properties": {
+        "characterCount": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "cover": {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "enum": [
+                "preset",
+                "upload",
+                "generated"
+              ],
+              "type": "string"
+            },
+            "presetId": {
+              "type": "string"
+            },
+            "url": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "type": "object"
+        },
+        "createdAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "id": {
+          "pattern": "^wld_[0-9A-Za-z]{1,40}$",
+          "type": "string"
+        },
+        "isSeed": {
+          "type": "boolean"
+        },
+        "lastActiveAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "name": {
+          "maxLength": 40,
+          "minLength": 1,
+          "type": "string"
+        },
+        "updatedAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "you": {
+          "$ref": "#/$defs/YouCard"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "cover",
+        "characterCount",
+        "isSeed",
+        "createdAt",
+        "updatedAt",
+        "lastActiveAt"
+      ],
+      "type": "object"
+    },
+    "YouCard": {
+      "additionalProperties": false,
+      "properties": {
+        "about": {
+          "maxLength": 160,
+          "type": "string"
+        },
+        "displayName": {
+          "maxLength": 30,
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "displayName"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "https://github.com/horizon/contract/schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Generated from frontend/src/contract/schemas.ts by `npm run export-schema`. Do not edit. Contract rev 1.3; fixtures carry schemaVersion 1.",
+  "title": "Horizon data contract",
+  "x-contract-rev": "1.3",
+  "x-schema-version": 1
+}

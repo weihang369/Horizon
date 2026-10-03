@@ -112,7 +112,7 @@ export const firstName = (c: Character): string =>
 export function energyNow(h: EngineHost, cid: string): { current: number; max: number } {
   const c = h.db.characters[cid];
   if (!c) return { current: 0, max: 1000 };
-  const e = liveEnergy(c.energy, h.wallNow());
+  const e = liveEnergy(c.energy, h.wallNow(), { estReplyPoints: EST_REPLY_POINTS[h.period()] });
   return { current: e.current, max: e.max };
 }
 

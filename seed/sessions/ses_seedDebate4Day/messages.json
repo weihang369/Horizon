@@ -133,6 +133,14 @@
             }
           ]
         },
+        "calls": [
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000202,
+            "latencyMs": 3771
+          }
+        ],
         "knowledge": {
           "query": "burnout and overwork evidence for a shorter working week",
           "trigger": "always",
@@ -313,6 +321,14 @@
             }
           ]
         },
+        "calls": [
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000195,
+            "latencyMs": 4057
+          }
+        ],
         "knowledge": {
           "query": "who took part in four-day week pilots",
           "trigger": "always",
@@ -484,6 +500,14 @@
             }
           ]
         },
+        "calls": [
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000187,
+            "latencyMs": 3599
+          }
+        ],
         "knowledge": {
           "query": "legal precedent for changing the standard working week",
           "trigger": "always",
@@ -796,6 +820,14 @@
             }
           ]
         },
+        "calls": [
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000182,
+            "latencyMs": 3214
+          }
+        ],
         "knowledge": {
           "query": "staffing cost of burnout and resignations",
           "trigger": "always",
@@ -943,7 +975,15 @@
               "verdict": "pass"
             }
           ]
-        }
+        },
+        "calls": [
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000137,
+            "latencyMs": 2670
+          }
+        ]
       },
       "reactions": [
         {
@@ -1086,6 +1126,14 @@
             }
           ]
         },
+        "calls": [
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000178,
+            "latencyMs": 3044
+          }
+        ],
         "knowledge": {
           "query": "gaps in the four-day week pilot evidence",
           "trigger": "always",
@@ -1220,7 +1268,15 @@
               "verdict": "pass"
             }
           ]
-        }
+        },
+        "calls": [
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000132,
+            "latencyMs": 2607
+          }
+        ]
       }
     },
     {
@@ -1320,7 +1376,15 @@
               "verdict": "pass"
             }
           ]
-        }
+        },
+        "calls": [
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000127,
+            "latencyMs": 2162
+          }
+        ]
       }
     },
     {

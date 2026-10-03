@@ -110,7 +110,15 @@
               "verdict": "pass"
             }
           ]
-        }
+        },
+        "calls": [
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.00013,
+            "latencyMs": 2742
+          }
+        ]
       },
       "reactions": [
         {
@@ -218,7 +226,15 @@
               "verdict": "pass"
             }
           ]
-        }
+        },
+        "calls": [
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000117,
+            "latencyMs": 2554
+          }
+        ]
       },
       "reactions": [
         {
@@ -338,7 +354,15 @@
               "verdict": "pass"
             }
           ]
-        }
+        },
+        "calls": [
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000114,
+            "latencyMs": 1892
+          }
+        ]
       }
     },
     {
@@ -438,7 +462,15 @@
               "verdict": "pass"
             }
           ]
-        }
+        },
+        "calls": [
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000114,
+            "latencyMs": 1862
+          }
+        ]
       }
     },
     {

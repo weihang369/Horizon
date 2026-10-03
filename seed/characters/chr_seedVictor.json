@@ -95,7 +95,7 @@
       "basePortraitUrl": "/assets/placeholder/portraits/chr_seedVictor/neutral.svg",
       "candidates": [
         {
-          "id": "cand_1",
+          "id": "cand_seedVictor1",
           "url": "/assets/placeholder/portraits/chr_seedVictor/neutral.svg",
           "selected": true,
           "status": "ready"

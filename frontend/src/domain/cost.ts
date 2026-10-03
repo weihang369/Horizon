@@ -14,10 +14,27 @@ export interface GenerationPrices {
   blinkFrame: number;
 }
 
+/** rev 1.3: embeddings bill input tokens only (D-64). */
+export interface EmbeddingPrice { model: string; provider: string; inputPerM: number }
+
 export interface PricingTable {
   chat: ChatPrice;
   decision: ChatPrice;
+  embedding: EmbeddingPrice;
   generation: GenerationPrices;
+}
+
+/** Typical Jev routing question size (state + one choice question). Output is free (D-66). */
+export const ROUTE_DECISION_TOKENS = 600;
+
+/** Cost of one Jev decision call: input tokens only (no output charge, no peak multiplier). */
+export function decisionCostUsd(tokensIn: number, price: ChatPrice): number {
+  return round6((tokensIn * price.inputPerM) / 1e6);
+}
+
+/** Cost of embedding `tokens` input tokens (no output, no peak multiplier). */
+export function embeddingCostUsd(tokens: number, price: EmbeddingPrice): number {
+  return round6((tokens * price.inputPerM) / 1e6);
 }
 
 export interface TokenUsage { tokensIn: number; tokensCached?: number; tokensOut: number }

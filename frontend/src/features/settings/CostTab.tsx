@@ -98,10 +98,10 @@ function Controls({ settings }: { settings: AppSettings }) {
 // ── Spend view (SET-09) ──────────────────────────────────────────────────────
 const CAT_COLOR: Record<UsageRecord["category"], string> = {
   chat: "var(--horizon-500)", decision: "var(--horizon-300)", image: "var(--signal-ok)", music: "var(--blush)",
-  profile: "var(--signal-warn)", summary: "var(--paper-300)", memory: "var(--sad-blue)", energy_topup: "var(--energy-amber)",
+  profile: "var(--signal-warn)", summary: "var(--paper-300)", memory: "var(--sad-blue)", embedding: "var(--ink-500)", energy_topup: "var(--energy-amber)",
 };
 const CAT_LABEL: Record<UsageRecord["category"], string> = {
-  chat: "Chat", decision: "Decision", image: "Images", music: "Music", profile: "Profiles", summary: "Summaries", memory: "Memory", energy_topup: "Top-ups",
+  chat: "Chat", decision: "Decision", image: "Images", music: "Music", profile: "Profiles", summary: "Summaries", memory: "Memory", embedding: "Embeddings", energy_topup: "Top-ups",
 };
 
 function SpendView({ capUsd }: { capUsd: number }) {

@@ -11,18 +11,23 @@
     "decision": {
       "model": "typesafe/jev-1.13",
       "provider": "TypeSafe",
-      "inputPerM": 0.02,
-      "cachedInputPerM": 0.002,
-      "outputPerM": 0.02
+      "inputPerM": 0.042,
+      "cachedInputPerM": 0.042,
+      "outputPerM": 0
+    },
+    "embedding": {
+      "model": "qwen/qwen3-embedding-8b",
+      "provider": "Nebius",
+      "inputPerM": 0.01
     },
     "generation": {
-      "portrait": 0.036,
-      "emotionEdit": 0.039,
-      "tweak": 0.039,
-      "expressionSheet": 0.04,
+      "portrait": 0.018,
+      "emotionEdit": 0.018,
+      "tweak": 0.018,
+      "expressionSheet": 0.018,
       "song": 0.04,
       "profileDraft": 0.002,
-      "blinkFrame": 0.039
+      "blinkFrame": 0.018
     }
   }
 }

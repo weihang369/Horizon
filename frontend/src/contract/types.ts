@@ -1,4 +1,4 @@
-// Horizon data contract v1.0: a direct transcription of docs/requirements/05-data-contract.md.
+// Horizon data contract (rev 1.3, additive; SCHEMA_VERSION stays 1): a direct transcription of docs/requirements/05-data-contract.md.
 // The mock, the FastAPI backend and the AI layer all share these wire shapes.
 // Do not change a shape here without updating doc 05 (and bumping SCHEMA_VERSION).
 
@@ -20,12 +20,14 @@ export type EnergyState = "active" | "tired" | "exhausted";
 export type ErrorCode =
   | "missing_key" | "invalid_key" | "insufficient_credits" | "rate_limited" | "content_refused"
   | "provider_error" | "daily_budget_exceeded" | "creation_budget_exceeded" | "energy_exhausted"
-  | "timeout" | "network";
+  | "timeout" | "network"
+  // rev 1.3: missing or other-world record / rule or limit violation / forbidden state transition
+  | "not_found" | "validation" | "conflict";
 export type DebatePhase = "setup" | "opening" | "rebuttal" | "closing" | "verdict" | "ended";
 export type Side = "prop" | "opp";
 
 // ── AppSettings ─────────────────────────────────────────────────────────────
-export interface ModelSet { chat: string; decision: string; image: string; music: string }
+export interface ModelSet { chat: string; decision: string; image: string; music: string; embedding: string }
 export interface AppSettings {
   openRouterKeyStatus: "missing" | "set" | "invalid";
   demoMode: boolean;
@@ -34,7 +36,11 @@ export interface AppSettings {
   generationMode: "lean" | "standard";
   autoGenerateMissingEmotions: boolean;
   budget: { dailyCapUsd: number; perCharacterCreationCapUsd: number; warnAtPct: number };
-  energy: { defaultMaxPoints: number; usdPerPoint: number; topUpStepPoints: number };
+  energy: {
+    defaultMaxPoints: number; usdPerPoint: number; topUpStepPoints: number;
+    /** rev 1.3 (D-78), read-only from config: the one threshold for the Exhausted state and the speak/skip gate. */
+    estReplyPoints: { off_peak: number; peak: number };
+  };
   spentTodayUsd: number;
   pricing: { period: "peak" | "off_peak"; nextChangeAt: string }; // D-51
   audio: {
@@ -304,7 +310,11 @@ export interface TurnTrace {
   };
   guardrail?: { checks: { name: string; verdict: "pass" | "flag" | "block"; p?: number }[] };
   graph?: { path: string[] };
+  /** rev 1.3: every paid call behind this turn (Jev, embeddings, the reply itself). */
+  calls?: TurnCall[];
 }
+
+export interface TurnCall { purpose: string; model: string; costUsd: number; latencyMs: number; fallback?: boolean }
 
 // ── Streaming events (doc 05 §6) ────────────────────────────────────────────
 export type StreamEvent =
@@ -365,7 +375,7 @@ export interface GenerationJob {
 // ── Ledger, memory, knowledge ───────────────────────────────────────────────
 export interface UsageRecord {
   id: string; at: string;
-  category: "chat" | "decision" | "image" | "music" | "profile" | "summary" | "memory" | "energy_topup";
+  category: "chat" | "decision" | "image" | "music" | "profile" | "summary" | "memory" | "embedding" | "energy_topup";
   model?: string; provider?: string; pricePeriod?: "peak" | "off_peak";
   sessionId?: string; characterId?: string; jobId?: string;
   tokensIn?: number; tokensCached?: number; tokensOut?: number;
@@ -378,7 +388,10 @@ export interface MemoryItem {
 }
 export interface KnowledgeSource {
   id: string; characterId: string; worldId: string; title: string;
-  type: "text" | "file" | "url"; status: "indexing" | "indexed" | "failed"; bytes?: number;
+  /** rev 1.3: new sources are "text" or "file"; "url" is legacy and read-only (no command creates it). */
+  type: "text" | "file" | "url";
+  /** rev 1.3: `keyword_only` = searchable by keyword only (embedding unavailable; re-index to upgrade). */
+  status: "indexing" | "indexed" | "keyword_only" | "failed"; bytes?: number;
   /** D-59 additive: pages (file), chunk count once indexed, URL for type "url", times cited across sessions. */
   pages?: number; chunks?: number; url?: string; citedCount?: number;
   addedAt?: string; error?: string;

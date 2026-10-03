@@ -1,0 +1,218 @@
+{
+  "schemaVersion": 1,
+  "name": "manual-emotion",
+  "description": "MANUAL mode: an emotion event without messageId and source user changes the face; AI emotions do not.",
+  "session": {
+    "id": "ses_fx",
+    "worldId": "wld_fx",
+    "title": "Fixture",
+    "titleIsCustom": false,
+    "mode": "group",
+    "status": "active",
+    "participants": [
+      {
+        "characterId": "chr_a",
+        "role": "speaker",
+        "currentEmotion": "neutral",
+        "mutedByUser": false
+      },
+      {
+        "characterId": "chr_b",
+        "role": "speaker",
+        "currentEmotion": "neutral",
+        "mutedByUser": false
+      }
+    ],
+    "emotionMode": "user",
+    "musicPolicy": "character_theme",
+    "readableMode": false,
+    "config": {
+      "responderPolicy": "auto",
+      "maxAutoResponders": 2
+    },
+    "state": null,
+    "isSeed": false,
+    "costUsd": 0,
+    "messageCount": 0,
+    "createdAt": "2026-10-01T10:00:00Z",
+    "updatedAt": "2026-10-01T10:00:00Z"
+  },
+  "events": [
+    {
+      "id": "evt_fx1",
+      "sessionId": "ses_fx",
+      "seq": 1,
+      "at": "2026-10-01T10:00:00.000Z",
+      "type": "emotion",
+      "payload": {
+        "characterId": "chr_b",
+        "emotion": "surprised",
+        "source": "user"
+      }
+    },
+    {
+      "id": "evt_fx2",
+      "sessionId": "ses_fx",
+      "seq": 2,
+      "at": "2026-10-01T10:00:00.250Z",
+      "type": "turn.next",
+      "payload": {
+        "nextSpeakerId": "chr_a"
+      }
+    },
+    {
+      "id": "evt_fx3",
+      "sessionId": "ses_fx",
+      "seq": 3,
+      "at": "2026-10-01T10:00:00.500Z",
+      "type": "turn.thinking",
+      "payload": {
+        "characterId": "chr_a"
+      }
+    },
+    {
+      "id": "evt_fx4",
+      "sessionId": "ses_fx",
+      "seq": 4,
+      "at": "2026-10-01T10:00:00.750Z",
+      "type": "turn.start",
+      "payload": {
+        "messageId": "msg_fx1",
+        "author": {
+          "type": "character",
+          "characterId": "chr_a"
+        }
+      }
+    },
+    {
+      "id": "evt_fx5",
+      "sessionId": "ses_fx",
+      "seq": 5,
+      "at": "2026-10-01T10:00:01.000Z",
+      "type": "emotion",
+      "payload": {
+        "messageId": "msg_fx1",
+        "characterId": "chr_a",
+        "emotion": "sad",
+        "source": "llm"
+      }
+    },
+    {
+      "id": "evt_fx6",
+      "sessionId": "ses_fx",
+      "seq": 6,
+      "at": "2026-10-01T10:00:01.250Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_fx1",
+        "delta": "Okay."
+      }
+    },
+    {
+      "id": "evt_fx7",
+      "sessionId": "ses_fx",
+      "seq": 7,
+      "at": "2026-10-01T10:00:01.500Z",
+      "type": "turn.end",
+      "payload": {
+        "messageId": "msg_fx1",
+        "status": "complete",
+        "usage": {
+          "tokensIn": 900,
+          "tokensCached": 600,
+          "tokensOut": 40,
+          "costUsd": 0.0004,
+          "energySpent": 4,
+          "firstTokenMs": 800,
+          "totalMs": 1600
+        }
+      }
+    },
+    {
+      "id": "evt_fx8",
+      "sessionId": "ses_fx",
+      "seq": 8,
+      "at": "2026-10-01T10:00:01.750Z",
+      "type": "reaction",
+      "payload": {
+        "messageId": "msg_fx1",
+        "characterId": "chr_b",
+        "emotion": "happy",
+        "p": 0.7,
+        "source": "classifier"
+      }
+    }
+  ],
+  "expected": {
+    "session": {
+      "id": "ses_fx",
+      "worldId": "wld_fx",
+      "title": "Fixture",
+      "titleIsCustom": false,
+      "mode": "group",
+      "status": "active",
+      "participants": [
+        {
+          "characterId": "chr_a",
+          "role": "speaker",
+          "currentEmotion": "neutral",
+          "mutedByUser": false
+        },
+        {
+          "characterId": "chr_b",
+          "role": "speaker",
+          "currentEmotion": "surprised",
+          "mutedByUser": false
+        }
+      ],
+      "emotionMode": "user",
+      "musicPolicy": "character_theme",
+      "readableMode": false,
+      "config": {
+        "responderPolicy": "auto",
+        "maxAutoResponders": 2
+      },
+      "state": null,
+      "isSeed": false,
+      "costUsd": 0.0004,
+      "messageCount": 1,
+      "createdAt": "2026-10-01T10:00:00Z",
+      "updatedAt": "2026-10-01T10:00:01.750Z",
+      "lastMessageAt": "2026-10-01T10:00:00.750Z"
+    },
+    "messages": [
+      {
+        "kind": "chat",
+        "id": "msg_fx1",
+        "sessionId": "ses_fx",
+        "seq": 1,
+        "author": {
+          "type": "character",
+          "characterId": "chr_a"
+        },
+        "content": "Okay.",
+        "status": "complete",
+        "createdAt": "2026-10-01T10:00:00.750Z",
+        "emotion": "sad",
+        "emotionSource": "llm",
+        "usage": {
+          "tokensIn": 900,
+          "tokensCached": 600,
+          "tokensOut": 40,
+          "costUsd": 0.0004,
+          "energySpent": 4,
+          "firstTokenMs": 800,
+          "totalMs": 1600
+        },
+        "reactions": [
+          {
+            "characterId": "chr_b",
+            "emotion": "happy",
+            "p": 0.7,
+            "at": "2026-10-01T10:00:01.750Z"
+          }
+        ]
+      }
+    ]
+  }
+}

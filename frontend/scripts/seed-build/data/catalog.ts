@@ -2,6 +2,7 @@
 import type {
   AppSettings, GenerationJob, MemoryItem, StylePreset, SystemTrack, ThemeSong, World,
 } from "../../../src/contract/types";
+import { EST_REPLY_POINTS } from "../../../src/domain/energy";
 import { MODELS } from "../../../src/mock/pricing.config";
 import { themeUrl } from "../assets";
 import type { CharacterDef } from "./characters";
@@ -13,7 +14,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   generationMode: "lean",
   autoGenerateMissingEmotions: false,
   budget: { dailyCapUsd: 1.0, perCharacterCreationCapUsd: 0.6, warnAtPct: 80 },
-  energy: { defaultMaxPoints: 1000, usdPerPoint: 0.0001, topUpStepPoints: 500 },
+  energy: { defaultMaxPoints: 1000, usdPerPoint: 0.0001, topUpStepPoints: 500, estReplyPoints: { ...EST_REPLY_POINTS } },
   spentTodayUsd: 0,
   pricing: { period: "off_peak", nextChangeAt: "2026-10-02T01:00:00Z" },
   audio: { masterMuted: false, musicMuted: false, sfxMuted: false, master: 0.8, music: 0.6, sfx: 0.8, duckMusic: true },

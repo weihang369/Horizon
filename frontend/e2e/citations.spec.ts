@@ -8,7 +8,7 @@ test("1:1 replay: a citation chip opens O28 on the highlighted passage; Esc clos
   await open(page, HEADACHE);
   await seekToEnd(page);
 
-  const chip = page.getByRole("button", { name: "Source 1: ED triage guidelines, § 2.4. Open source" });
+  const chip = page.getByRole("button", { name: "Source 1: ED triage guidelines.pdf, § 2.4. Open source" });
   await chip.click();
   const viewer = page.getByRole("dialog", { name: /ED triage guidelines/ });
   await expect(viewer).toBeVisible();

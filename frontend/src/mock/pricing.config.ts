@@ -1,5 +1,8 @@
 // Mock pricing table (CHR-13 / doc 06 §8, chat prices from doc 05 §8). The seed build writes it to seed/pricing.json.
+// Image prices: Seedream 5.0 Flash (D-61). Jev: $0.042/M input, output free (D-66). Embedding: Qwen3 Embedding 8B (D-64).
 import type { PricingTable } from "../domain/cost";
+
+const SEEDREAM_PER_IMAGE = 0.018;
 
 export const PRICING: PricingTable = {
   chat: {
@@ -8,22 +11,27 @@ export const PRICING: PricingTable = {
   },
   decision: {
     model: "typesafe/jev-1.13", provider: "TypeSafe",
-    inputPerM: 0.02, cachedInputPerM: 0.002, outputPerM: 0.02,
+    inputPerM: 0.042, cachedInputPerM: 0.042, outputPerM: 0,
+  },
+  embedding: {
+    model: "qwen/qwen3-embedding-8b", provider: "Nebius",
+    inputPerM: 0.01,
   },
   generation: {
-    portrait: 0.036,
-    emotionEdit: 0.039,
-    tweak: 0.039,
-    expressionSheet: 0.04,
+    portrait: SEEDREAM_PER_IMAGE,
+    emotionEdit: SEEDREAM_PER_IMAGE,
+    tweak: SEEDREAM_PER_IMAGE,
+    expressionSheet: SEEDREAM_PER_IMAGE,
     song: 0.04,
     profileDraft: 0.002,
-    blinkFrame: 0.039,
+    blinkFrame: SEEDREAM_PER_IMAGE,
   },
 };
 
 export const MODELS = {
   chat: PRICING.chat.model,
   decision: PRICING.decision.model,
-  image: "qwen/qwen-image-3",
+  image: "bytedance-seed/seedream-5-0-flash",
   music: "google/lyria-3-clip",
+  embedding: PRICING.embedding.model,
 };

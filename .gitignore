@@ -7,6 +7,8 @@ data/
 !frontend/scripts/seed-build/data/
 .env
 *.local.json
+# Image-model test output (generated images, can be large)
+docs/ai/image-model-test/output/
 
 # OS / editor
 .DS_Store

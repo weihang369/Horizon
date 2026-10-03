@@ -91,7 +91,15 @@
               "verdict": "pass"
             }
           ]
-        }
+        },
+        "calls": [
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000105,
+            "latencyMs": 2089
+          }
+        ]
       }
     },
     {
@@ -196,7 +204,15 @@
               "verdict": "pass"
             }
           ]
-        }
+        },
+        "calls": [
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000082,
+            "latencyMs": 3250
+          }
+        ]
       }
     },
     {
@@ -238,8 +254,8 @@
         {
           "n": 1,
           "sourceId": "kno_seedAmara2",
-          "title": "ED triage guidelines",
-          "type": "url",
+          "title": "ED triage guidelines.pdf",
+          "type": "file",
           "chunkId": "kch_amaraTri03",
           "locator": "§ 2.4",
           "quote": "Caffeine withdrawal headache usually begins 12 to 24 hours after a sharp cut in intake and can last two to nine days. Gradual tapering, fluids and simple painkillers are usually enough; it rarely needs emergency care.",
@@ -248,8 +264,8 @@
         {
           "n": 2,
           "sourceId": "kno_seedAmara2",
-          "title": "ED triage guidelines",
-          "type": "url",
+          "title": "ED triage guidelines.pdf",
+          "type": "file",
           "chunkId": "kch_amaraTri02",
           "locator": "§ 2.1",
           "quote": "Most headaches seen in the department are primary headaches: tension-type, migraine, or medication- and caffeine-related. A dull, pressing pain on both sides without neurological signs is typical of tension-type or withdrawal headache.",
@@ -330,6 +346,14 @@
             }
           ]
         },
+        "calls": [
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000132,
+            "latencyMs": 3720
+          }
+        ],
         "knowledge": {
           "query": "headache at the temples after cutting back on coffee",
           "trigger": "always",
@@ -337,7 +361,7 @@
             {
               "chunkId": "kch_amaraTri02",
               "sourceId": "kno_seedAmara2",
-              "title": "ED triage guidelines",
+              "title": "ED triage guidelines.pdf",
               "locator": "§ 2.1",
               "text": "Most headaches seen in the department are primary headaches: tension-type, migraine, or medication- and caffeine-related. A dull, pressing pain on both sides without neurological signs is typical of tension-type or withdrawal headache.",
               "score": 0.9,
@@ -347,7 +371,7 @@
             {
               "chunkId": "kch_amaraTri03",
               "sourceId": "kno_seedAmara2",
-              "title": "ED triage guidelines",
+              "title": "ED triage guidelines.pdf",
               "locator": "§ 2.4",
               "text": "Caffeine withdrawal headache usually begins 12 to 24 hours after a sharp cut in intake and can last two to nine days. Gradual tapering, fluids and simple painkillers are usually enough; it rarely needs emergency care.",
               "score": 0.83,
@@ -357,7 +381,7 @@
             {
               "chunkId": "kch_amaraTri01",
               "sourceId": "kno_seedAmara2",
-              "title": "ED triage guidelines",
+              "title": "ED triage guidelines.pdf",
               "locator": "§ 1.2",
               "text": "Triage assigns urgency, not diagnosis. Nurses grade each presentation from 1 (immediate) to 5 (non-urgent) using the presenting complaint and the observations taken on arrival.",
               "score": 0.51,
@@ -406,8 +430,8 @@
         {
           "n": 1,
           "sourceId": "kno_seedAmara2",
-          "title": "ED triage guidelines",
-          "type": "url",
+          "title": "ED triage guidelines.pdf",
+          "type": "file",
           "chunkId": "kch_amaraTri04",
           "locator": "§ 3.1",
           "quote": "Escalate any headache that is sudden and severe (\"thunderclap\"), or that comes with fever, neck stiffness, confusion, new weakness or changes in vision. These patients are graded 2 or higher and seen by a doctor without delay.",
@@ -482,6 +506,14 @@
             }
           ]
         },
+        "calls": [
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000115,
+            "latencyMs": 3104
+          }
+        ],
         "knowledge": {
           "query": "headache warning signs that need urgent care",
           "trigger": "always",
@@ -489,7 +521,7 @@
             {
               "chunkId": "kch_amaraTri04",
               "sourceId": "kno_seedAmara2",
-              "title": "ED triage guidelines",
+              "title": "ED triage guidelines.pdf",
               "locator": "§ 3.1",
               "text": "Escalate any headache that is sudden and severe (\"thunderclap\"), or that comes with fever, neck stiffness, confusion, new weakness or changes in vision. These patients are graded 2 or higher and seen by a doctor without delay.",
               "score": 0.93,
@@ -499,7 +531,7 @@
             {
               "chunkId": "kch_amaraTri06",
               "sourceId": "kno_seedAmara2",
-              "title": "ED triage guidelines",
+              "title": "ED triage guidelines.pdf",
               "locator": "§ 4.2",
               "text": "Advice given by phone or chat must say clearly that it is not an examination. Tell the patient which symptoms mean they should come in person.",
               "score": 0.63,
@@ -508,7 +540,7 @@
             {
               "chunkId": "kch_amaraTri05",
               "sourceId": "kno_seedAmara2",
-              "title": "ED triage guidelines",
+              "title": "ED triage guidelines.pdf",
               "locator": "§ 3.3",
               "text": "A first severe headache after age 50, a headache after a head injury, or one that wakes the patient from sleep should also be reviewed the same day, even when observations are normal.",
               "score": 0.59,

@@ -5,12 +5,12 @@
       "id": "kno_seedMei1",
       "characterId": "chr_seedMei",
       "worldId": "wld_seedMeridian",
-      "title": "Working-time pilots dataset.csv",
+      "title": "Working-time pilots appendix.docx",
       "type": "file",
       "status": "failed",
-      "bytes": 2310442,
+      "bytes": 1120884,
       "addedAt": "2026-09-24T14:05:00Z",
-      "error": "Couldn't read this file: row 4,118 has 31 columns, expected 27. Fix the row or export the sheet again."
+      "error": "This document is password-protected. Remove the password and add it again."
     },
     {
       "id": "kno_seedMei2",

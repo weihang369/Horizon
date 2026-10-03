@@ -24,6 +24,17 @@ const turn = (emotion: "happy" | "sad" = "happy"): StreamEvent[] => [
 ];
 
 describe("sessionReducer", () => {
+  it("a later insight for the same message replaces the earlier trace (doc 05 §6, rev 1.3)", () => {
+    const first = { messageId: "msg_1", routing: { selected: "chr_a", reason: "first" } };
+    const second = { messageId: "msg_1", routing: { selected: "chr_a", reason: "second" }, calls: [{ purpose: "reply", model: "m", costUsd: 0.0002, latencyMs: 1500 }] };
+    const s = reduceAll(initialRuntime(session()), evs(
+      ...turn(),
+      { type: "insight", payload: { messageId: "msg_1", trace: first } },
+      { type: "insight", payload: { messageId: "msg_1", trace: second } },
+    ));
+    expect(orderedMessages(s)[0].trace).toEqual(second);
+  });
+
   it("streams a turn into one complete message and adds its cost", () => {
     const s = reduceAll(initialRuntime(session()), evs(...turn()));
     const [m] = orderedMessages(s);
