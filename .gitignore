@@ -3,6 +3,8 @@ private/
 
 # Runtime data & secrets
 data/
+# ...but the seed build's source data is code, not runtime data
+!frontend/scripts/seed-build/data/
 .env
 *.local.json
 
