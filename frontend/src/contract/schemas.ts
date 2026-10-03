@@ -1,4 +1,4 @@
-// Zod schemas for every doc 05 shape (contract rev 1.2). types.ts stays canonical:
+// Zod schemas for every doc 05 shape (contract rev 1.3). types.ts stays canonical:
 // each schema is checked against its type with `satisfies z.ZodType<T>`, so the two cannot drift.
 // Objects are strict, so fixture typos fail validation instead of being silently dropped.
 import { z } from "zod";
@@ -6,15 +6,18 @@ import type {
   AppSettings, Appearance, Character, CharacterProfile, Citation, DebateConfig, DebateState, EmotionAsset, EmotionAssetRef,
   Energy, GenerationJob, GenerationTask, GroupConfig, KnowledgeChunk, KnowledgeSource, MemoryItem, Message, MessageAuthor,
   MessageUsage, Palette, Participant, Reaction, Session, SessionEvent, SongBrief, StylePreset, SystemTrack,
-  ThemeSong, TurnTrace, UsageRecord, Verdict, WatchConfig, WatchState, World, YouCard,
+  ThemeSong, TurnCall, TurnTrace, UsageRecord, Verdict, WatchConfig, WatchState, World, YouCard,
 } from "./types";
+import type { HorizonErrorShape } from "./errors";
+import type { GlobalEvent, JobEvent } from "../client/HorizonClient";
 
 const so = z.strictObject;
 
 export const ID_RE = /^[a-z]+_[0-9A-Za-z]{1,40}$/;
+// The prefix lives in the regex (not a refinement) so the exported JSON Schema enforces it too.
 export const id = (prefix?: string) =>
   prefix
-    ? z.string().regex(ID_RE).refine((s) => s.startsWith(`${prefix}_`), { message: `id must start with ${prefix}_` })
+    ? z.string().regex(new RegExp(`^${prefix}_[0-9A-Za-z]{1,40}$`), { message: `id must start with ${prefix}_` })
     : z.string().regex(ID_RE);
 export const isoDate = z.string().refine((s) => !Number.isNaN(Date.parse(s)) && /\d{4}-\d{2}-\d{2}T/.test(s), {
   message: "expected an ISO-8601 timestamp",
@@ -39,13 +42,14 @@ export const EnergyStateSchema = z.enum(["active", "tired", "exhausted"]);
 export const ErrorCodeSchema = z.enum([
   "missing_key", "invalid_key", "insufficient_credits", "rate_limited", "content_refused", "provider_error",
   "daily_budget_exceeded", "creation_budget_exceeded", "energy_exhausted", "timeout", "network",
+  "not_found", "validation", "conflict", // rev 1.3
 ]);
 export const DebatePhaseSchema = z.enum(["setup", "opening", "rebuttal", "closing", "verdict", "ended"]);
 export const SideSchema = z.enum(["prop", "opp"]);
 const PricePeriodSchema = z.enum(["peak", "off_peak"]);
 
 // ── Settings & catalogues ───────────────────────────────────────────────────
-const ModelSetSchema = so({ chat: z.string(), decision: z.string(), image: z.string(), music: z.string() });
+const ModelSetSchema = so({ chat: z.string(), decision: z.string(), image: z.string(), music: z.string(), embedding: z.string() });
 const unit = z.number().min(0).max(1);
 export const AppSettingsSchema = so({
   openRouterKeyStatus: z.enum(["missing", "set", "invalid"]),
@@ -55,7 +59,10 @@ export const AppSettingsSchema = so({
   generationMode: z.enum(["lean", "standard"]),
   autoGenerateMissingEmotions: z.boolean(),
   budget: so({ dailyCapUsd: z.number().positive(), perCharacterCreationCapUsd: z.number().positive(), warnAtPct: z.number().min(1).max(100) }),
-  energy: so({ defaultMaxPoints: z.number().int().positive(), usdPerPoint: z.number().positive(), topUpStepPoints: z.number().int().positive() }),
+  energy: so({
+    defaultMaxPoints: z.number().int().positive(), usdPerPoint: z.number().positive(), topUpStepPoints: z.number().int().positive(),
+    estReplyPoints: so({ off_peak: z.number().positive(), peak: z.number().positive() }), // rev 1.3 (D-78)
+  }),
   spentTodayUsd: z.number().min(0),
   pricing: so({ period: PricePeriodSchema, nextChangeAt: isoDate }),
   audio: so({
@@ -272,6 +279,9 @@ export const MessageUsageSchema = so({
   firstTokenMs: z.number().min(0), totalMs: z.number().min(0),
 }) satisfies z.ZodType<MessageUsage>;
 const SkipReasonSchema = z.enum(["exhausted", "muted", "archived"]);
+export const TurnCallSchema = so({
+  purpose: z.string().min(1), model: z.string(), costUsd: z.number().min(0), latencyMs: z.number().min(0), fallback: z.boolean().optional(),
+}) satisfies z.ZodType<TurnCall>;
 export const TurnTraceSchema = so({
   messageId: id("msg"),
   model: so({
@@ -312,6 +322,7 @@ export const TurnTraceSchema = so({
   }).optional(),
   guardrail: so({ checks: z.array(so({ name: z.string(), verdict: z.enum(["pass", "flag", "block"]), p: unit.optional() })) }).optional(),
   graph: so({ path: z.array(z.string()) }).optional(),
+  calls: z.array(TurnCallSchema).optional(), // rev 1.3
 }) satisfies z.ZodType<TurnTrace>;
 
 export const CitationSchema = so({
@@ -410,7 +421,7 @@ export const GenerationJobSchema = so({
 }) satisfies z.ZodType<GenerationJob>;
 export const UsageRecordSchema = so({
   id: z.string(), at: isoDate,
-  category: z.enum(["chat", "decision", "image", "music", "profile", "summary", "memory", "energy_topup"]),
+  category: z.enum(["chat", "decision", "image", "music", "profile", "summary", "memory", "embedding", "energy_topup"]),
   model: z.string().optional(), provider: z.string().optional(), pricePeriod: PricePeriodSchema.optional(),
   sessionId: z.string().optional(), characterId: z.string().optional(), jobId: z.string().optional(),
   tokensIn: z.number().int().optional(), tokensCached: z.number().int().optional(), tokensOut: z.number().int().optional(),
@@ -422,15 +433,49 @@ export const MemoryItemSchema = so({
   text: z.string(), importance: unit, sourceSessionId: z.string().optional(), sourceMessageId: z.string().optional(), createdAt: isoDate,
 }) satisfies z.ZodType<MemoryItem>;
 export const KnowledgeSourceSchema = so({
-  id: z.string().regex(ID_RE), characterId: id("chr"), worldId: id("wld"), title: z.string(),
-  type: z.enum(["text", "file", "url"]), status: z.enum(["indexing", "indexed", "failed"]), bytes: z.number().optional(),
+  id: id("kno"), characterId: id("chr"), worldId: id("wld"), title: z.string(),
+  type: z.enum(["text", "file", "url"]), // "url" = legacy, read-only (rev 1.3)
+  status: z.enum(["indexing", "indexed", "keyword_only", "failed"]), bytes: z.number().optional(),
   pages: z.number().int().positive().optional(), chunks: z.number().int().min(0).optional(), url: z.string().optional(),
   citedCount: z.number().int().min(0).optional(), addedAt: isoDate.optional(), error: z.string().optional(),
 }) satisfies z.ZodType<KnowledgeSource>;
 
 export const KnowledgeChunkSchema = so({
-  id: z.string().regex(ID_RE), sourceId: z.string().regex(ID_RE), index: z.number().int().min(0), locator: z.string().optional(), text: z.string().min(1),
+  id: id("kch"), sourceId: id("kno"), index: z.number().int().min(0), locator: z.string().optional(), text: z.string().min(1),
 }) satisfies z.ZodType<KnowledgeChunk>;
+
+// ── Client surface: error envelope, job and global events (rev 1.3) ─────────
+// The backend emits these over HTTP/SSE, so they are part of the exported JSON Schema too.
+export const HorizonErrorShapeSchema = so({
+  code: ErrorCodeSchema, message: z.string(), retryable: z.boolean(),
+  retryAfterSec: z.number().min(0).optional(), details: z.record(z.string(), z.unknown()).optional(),
+}) satisfies z.ZodType<HorizonErrorShape>;
+
+export const JobEventSchema = z.discriminatedUnion("type", [
+  so({ type: z.literal("job.progress"), job: GenerationJobSchema }),
+  so({ type: z.literal("task.update"), jobId: id("job"), task: GenerationTaskSchema }),
+  so({ type: z.literal("job.done"), job: GenerationJobSchema }),
+]) satisfies z.ZodType<JobEvent>;
+
+const BudgetScopeSchema = z.enum(["daily", "creation"]);
+export const GlobalEventSchema = z.discriminatedUnion("type", [
+  so({
+    type: z.literal("entity.changed"),
+    kind: z.enum(["settings", "world", "character", "session", "usage", "memory", "knowledge", "job"]),
+    id: z.string().optional(), worldId: z.string().optional(),
+    progress: so({ stage: z.enum(["extracting", "chunking", "embedding"]), pct: unit }).optional(),
+  }),
+  so({ type: z.literal("budget.warning"), scope: BudgetScopeSchema, spentUsd: z.number(), capUsd: z.number() }),
+  so({
+    type: z.literal("budget.reached"), scope: BudgetScopeSchema, spentUsd: z.number(), capUsd: z.number(),
+    sessionId: z.string().optional(), jobId: z.string().optional(),
+  }),
+  so({ type: z.literal("job.progress"), job: GenerationJobSchema }),
+  so({ type: z.literal("task.update"), jobId: id("job"), task: GenerationTaskSchema }),
+  so({ type: z.literal("job.done"), job: GenerationJobSchema, characterName: z.string().optional() }),
+  so({ type: z.literal("error"), error: HorizonErrorShapeSchema, context: z.string().optional() }),
+  so({ type: z.literal("mock.reset") }),
+]) satisfies z.ZodType<GlobalEvent>;
 
 // ── Fixture files ───────────────────────────────────────────────────────────
 // Every seed file is `{ "schemaVersion": 1, "data": … }` (doc 05 §1: fixtures carry schemaVersion at the root).

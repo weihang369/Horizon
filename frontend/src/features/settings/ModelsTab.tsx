@@ -1,4 +1,4 @@
-// Settings → Models (SET-05, Advanced): editable model IDs for chat / decision / image / music, each with Test and an
+// Settings → Models (SET-05, Advanced): editable model IDs for chat / decision / image / music / embedding, each with Test and an
 // "Unverified model" warning when it differs from the default. Overrides are saved locally. Owner: Builder A.
 import { useState } from "react";
 import { openOverlay, toast } from "../../app/layers";
@@ -16,12 +16,15 @@ const ROLES: { id: keyof ModelSet; label: string; desc: string }[] = [
   { id: "decision", label: "Decision model (System One)", desc: "Routing, emotions, who speaks next." },
   { id: "image", label: "Image model", desc: "Portraits and emotion edits." },
   { id: "music", label: "Music model", desc: "Theme songs." },
+  { id: "embedding", label: "Embedding model", desc: "Knowledge and memory search." },
 ];
 
 export function ModelsTab({ settings }: { settings: AppSettings }) {
   const defaults = settings.models;
   const effective = (r: keyof ModelSet) => settings.modelOverrides?.[r] ?? defaults[r];
-  const [draft, setDraft] = useState<ModelSet>(() => ({ chat: effective("chat"), decision: effective("decision"), image: effective("image"), music: effective("music") }));
+  const [draft, setDraft] = useState<ModelSet>(() => ({
+    chat: effective("chat"), decision: effective("decision"), image: effective("image"), music: effective("music"), embedding: effective("embedding"),
+  }));
   const [results, setResults] = useState<Partial<Record<keyof ModelSet, string>>>({});
   const { save, saving } = useSettingsPatch();
   const dirty = ROLES.some((r) => draft[r.id].trim() !== effective(r.id));

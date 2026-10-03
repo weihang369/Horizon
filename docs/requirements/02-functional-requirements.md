@@ -469,9 +469,9 @@ As any user, I want to see each character's energy at a glance, so I know how mu
 - AC4: **Tired** (< 20%) is cosmetic only: an occasional yawn VFX and the red bar. They still talk.
 
 **ENG-05: Top up** · Must
-- AC1: "Top up" opens a small confirmation: "Give {name} +500 ⚡ (≈ US$0.05)?" with ⚡ +500 / +1000 options. It counts against the **daily cap** and is recorded in the ledger.
+- AC1: "Top up" opens a small confirmation: "Give {name} +500 ⚡?" with ⚡ +500 / +1000 options, each showing the budget headroom it uses (≈ US$0.05). **A top-up costs nothing itself (D-76):** it is recorded in the ledger as `energy_topup` with its points and $0, because the replies it funds are recorded as chat when they happen.
 - AC2: A top-up plays a short "recharge" animation (the bar fills with a spark burst) and wakes the character.
-- AC3: If the daily cap would be exceeded, the top-up is blocked with STATE-06.
+- AC3 *(amended by D-76)*: Top-ups are bounded by today's budget: allowed while `spentToday + (today's top-up points + points) × usdPerPoint ≤ daily cap`. A refused top-up shows the reason **inside the dialog**, which stays open, and the energy bar is unchanged.
 
 **ENG-06: Rush hour** · Should
 - AC1: During DeepSeek peak pricing (Mon–Fri 09:00–12:00 and 14:00–18:00 Malaysia time), a small **"RUSH HOUR · replies cost 2× ⚡"** chip shows next to the energy bars. The energy actually drained reflects the real cost.

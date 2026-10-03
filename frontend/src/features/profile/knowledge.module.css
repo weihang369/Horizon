@@ -32,6 +32,7 @@ button.hit:hover { background: color-mix(in srgb, var(--c-primary) 16%, var(--in
 button.hit:focus-visible { outline: 2px solid var(--c-glow); outline-offset: -4px; }
 .st_failed .hit { box-shadow: inset 3px 0 0 var(--signal-err); }
 .st_indexing .hit { box-shadow: inset 3px 0 0 var(--paper-300); }
+.st_keyword_only .hit { box-shadow: inset 3px 0 0 var(--signal-warn); }
 
 .glyph {
   grid-row: 1 / 3;

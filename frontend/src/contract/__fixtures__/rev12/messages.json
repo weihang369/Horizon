@@ -1,0 +1,320 @@
+{
+  "schemaVersion": 1,
+  "data": [
+    {
+      "id": "msg_seedH01",
+      "sessionId": "ses_seedHanaLongDay",
+      "seq": 1,
+      "author": {
+        "type": "user"
+      },
+      "kind": "chat",
+      "content": "I'm home! Long day.",
+      "status": "complete",
+      "createdAt": "2026-09-30T19:02:02.800Z"
+    },
+    {
+      "kind": "chat",
+      "seq": 2,
+      "id": "msg_seedH02",
+      "sessionId": "ses_seedHanaLongDay",
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedHana"
+      },
+      "content": "Welcome back!! I saved you the last slice of yuzu cake. It's on the counter. Probably. Rin was circling it.",
+      "status": "complete",
+      "createdAt": "2026-09-30T19:02:03.150Z",
+      "emotion": "happy",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 1977,
+        "tokensCached": 1681,
+        "tokensOut": 27,
+        "costUsd": 0.000066,
+        "energySpent": 1,
+        "firstTokenMs": 1567,
+        "totalMs": 2372
+      },
+      "trace": {
+        "messageId": "msg_seedH02",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1567,
+            "total": 2372
+          },
+          "tokensIn": 1977,
+          "tokensCached": 1681,
+          "tokensOut": 27,
+          "costUsd": 0.000066
+        },
+        "energy": {
+          "characterId": "chr_seedHana",
+          "spent": 1,
+          "remaining": 922,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "happy",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "happy",
+              "p": 0.745
+            },
+            {
+              "label": "thinking",
+              "p": 0.149
+            },
+            {
+              "label": "neutral",
+              "p": 0.073
+            }
+          ]
+        },
+        "routing": {
+          "selected": "chr_seedHana"
+        },
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 85,
+          "used": {
+            "system": 900,
+            "persona": 777,
+            "memory": 0,
+            "knowledge": 0,
+            "history": 5,
+            "user": 75,
+            "mode": 220
+          }
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "sfw",
+              "verdict": "pass",
+              "p": 0.987
+            },
+            {
+              "name": "advice_scope",
+              "verdict": "pass"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "msg_seedH03",
+      "sessionId": "ses_seedHanaLongDay",
+      "seq": 3,
+      "author": {
+        "type": "user"
+      },
+      "kind": "chat",
+      "content": "You're the best. What did you do today?",
+      "status": "complete",
+      "createdAt": "2026-09-30T19:02:07.422Z"
+    },
+    {
+      "kind": "chat",
+      "seq": 4,
+      "id": "msg_seedH04",
+      "sessionId": "ses_seedHanaLongDay",
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedHana"
+      },
+      "content": "Oh! A customer ordered fifty sunflowers for a proposal. FIFTY. The whole shop looked like a sunrise.",
+      "status": "complete",
+      "createdAt": "2026-09-30T19:02:07.772Z",
+      "emotion": "happy",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 1962,
+        "tokensCached": 1658,
+        "tokensOut": 25,
+        "costUsd": 0.000066,
+        "energySpent": 1,
+        "firstTokenMs": 1616,
+        "totalMs": 2396
+      },
+      "trace": {
+        "messageId": "msg_seedH04",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1616,
+            "total": 2396
+          },
+          "tokensIn": 1962,
+          "tokensCached": 1658,
+          "tokensOut": 25,
+          "costUsd": 0.000066
+        },
+        "energy": {
+          "characterId": "chr_seedHana",
+          "spent": 1,
+          "remaining": 921,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "happy",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "happy",
+              "p": 0.711
+            },
+            {
+              "label": "surprised",
+              "p": 0.171
+            },
+            {
+              "label": "angry",
+              "p": 0.106
+            }
+          ]
+        },
+        "routing": {
+          "selected": "chr_seedHana"
+        },
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 85,
+          "used": {
+            "system": 900,
+            "persona": 721,
+            "memory": 0,
+            "knowledge": 0,
+            "history": 42,
+            "user": 79,
+            "mode": 220
+          }
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "sfw",
+              "verdict": "pass",
+              "p": 0.968
+            },
+            {
+              "name": "advice_scope",
+              "verdict": "pass"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "msg_seedH05",
+      "sessionId": "ses_seedHanaLongDay",
+      "seq": 5,
+      "author": {
+        "type": "user"
+      },
+      "kind": "chat",
+      "content": "…why are you making that face? What happened?",
+      "status": "complete",
+      "createdAt": "2026-09-30T19:02:12.868Z"
+    },
+    {
+      "kind": "chat",
+      "seq": 6,
+      "id": "msg_seedH06",
+      "sessionId": "ses_seedHanaLongDay",
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedHana"
+      },
+      "content": "…also, um. I might have sold the bouquet I was making for *you* to that same customer. He looked so nervous! I'll make you another one. With extra ranunculus. Please don't laugh.",
+      "status": "complete",
+      "createdAt": "2026-09-30T19:02:13.218Z",
+      "emotion": "embarrassed",
+      "emotionSource": "llm",
+      "usage": {
+        "tokensIn": 2048,
+        "tokensCached": 1742,
+        "tokensOut": 45,
+        "costUsd": 0.000078,
+        "energySpent": 1,
+        "firstTokenMs": 1372,
+        "totalMs": 2652
+      },
+      "trace": {
+        "messageId": "msg_seedH06",
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "DeepSeek",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1372,
+            "total": 2652
+          },
+          "tokensIn": 2048,
+          "tokensCached": 1742,
+          "tokensOut": 45,
+          "costUsd": 0.000078
+        },
+        "energy": {
+          "characterId": "chr_seedHana",
+          "spent": 1,
+          "remaining": 920,
+          "max": 1000
+        },
+        "emotion": {
+          "chosen": "embarrassed",
+          "source": "llm",
+          "candidates": [
+            {
+              "label": "embarrassed",
+              "p": 0.7
+            },
+            {
+              "label": "happy",
+              "p": 0.177
+            },
+            {
+              "label": "sad",
+              "p": 0.095
+            }
+          ]
+        },
+        "routing": {
+          "selected": "chr_seedHana"
+        },
+        "context": {
+          "budget": 12000,
+          "cacheHitPct": 85,
+          "used": {
+            "system": 900,
+            "persona": 772,
+            "memory": 0,
+            "knowledge": 0,
+            "history": 78,
+            "user": 78,
+            "mode": 220
+          }
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "sfw",
+              "verdict": "pass",
+              "p": 0.958
+            },
+            {
+              "name": "advice_scope",
+              "verdict": "pass"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

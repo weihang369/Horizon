@@ -29,6 +29,8 @@ export interface Dataset {
   knowledge: Record<string, KnowledgeSource>;
   /** D-59 indexed passages by chunk id (seed/knowledge/chunks/<sourceId>.json). */
   knowledgeChunks: Record<string, KnowledgeChunk>;
+  /** rev 1.3: content hash per user-added source (duplicate detection). Absent in seed and old snapshots. */
+  knowledgeHashes?: Record<string, string>;
   ledger: UsageRecord[];
   jobs: Record<string, GenerationJob>;
   variants: Record<string, FixtureVariant>;

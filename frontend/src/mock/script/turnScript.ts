@@ -6,7 +6,7 @@ import type {
 } from "../../contract/types";
 import { EMOTIONS } from "../../contract/types";
 import type { PricingTable } from "../../domain/cost";
-import { chatCostUsd, estimateTokens } from "../../domain/cost";
+import { chatCostUsd, decisionCostUsd, estimateTokens, ROUTE_DECISION_TOKENS } from "../../domain/cost";
 import { energyState, EST_REPLY_POINTS, pointsForCost } from "../../domain/energy";
 import type { PricePeriod } from "../../domain/rushHour";
 import type { TimelineEntry } from "../../engine/ScriptPlayer";
@@ -204,6 +204,13 @@ export function buildLineScript(spec: LineSpec, timing: TimingConfig, pricing: P
       },
     },
     guardrail: { checks: [{ name: "sfw", verdict: "pass", p: r3(rng.range(0.95, 0.995)) }, { name: "advice_scope", verdict: "pass" }] },
+    // rev 1.3: every paid call behind the turn. The group router's Jev call is charged by the group engine.
+    calls: [
+      ...(spec.routing?.candidates?.length
+        ? [{ purpose: "route", model: pricing.decision.model, costUsd: decisionCostUsd(ROUTE_DECISION_TOKENS, pricing.decision), latencyMs: 240 }]
+        : []),
+      { purpose: "reply", model: pricing.chat.model, costUsd: usage.costUsd, latencyMs: usage.totalMs },
+    ],
   };
   const trace: TurnTrace = spec.knowledge?.retrieved.length && !baseTrace.knowledge
     ? {

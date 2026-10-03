@@ -1,6 +1,7 @@
 // Group engine (MULTI-02/03/04, ENG-04 AC3): mentions first, then up to 2 by score (Auto), everyone, or mentioned
 // only. Exhausted or muted characters are skipped with a system note; routing candidates go into the trace. Owner: EE.
 import type { GroupConfig } from "../../contract/types";
+import { decisionCostUsd, ROUTE_DECISION_TOKENS } from "../../domain/cost";
 import type { EngineHost } from "./host";
 import { asleepNote, enqueue, isAsleep, speakThen, userMessage } from "./host";
 
@@ -69,6 +70,8 @@ function pickResponders(h: EngineHost, sid: string, text: string, mentions: stri
 export function send(h: EngineHost, sid: string, text: string, mentions: string[] = []): void {
   h.emit(sid, { type: "message", payload: { message: userMessage(h, sid, text) } });
   const r = pickResponders(h, sid, text, mentions);
+  // The Jev routing question (TurnTrace.calls "route") is a paid decision call.
+  if (r.candidates.length) h.charge(sid, "decision", decisionCostUsd(ROUTE_DECISION_TOKENS, h.pricing.decision));
   if (!r.speakers.length) {
     if (policyOf(h, sid) === "mentioned") return; // the UI shows "Mention someone with @…"
   }

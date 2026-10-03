@@ -147,6 +147,8 @@ export interface EnergyView { current: number; max: number; state: EnergyState; 
 export function useEnergy(characterId: string | null | undefined): EnergyView | null {
   const now = useNow(15_000);
   const { peak } = useRushHour();
+  // D-78: the threshold comes from settings (config-owned), so the UI and the speak/skip gate agree.
+  const estPoints = useStore(entities, (s) => s.settings?.energy.estReplyPoints);
   const char = useStore(entities, (s) => (characterId ? s.chars[characterId] : undefined));
   const demo = useStore(entities, (s) => s.settings?.demoMode ?? true);
   const rtEnergy = useStore(sessionStore, (s) => {
@@ -160,7 +162,7 @@ export function useEnergy(characterId: string | null | undefined): EnergyView | 
     if (characterId && !entities.getState().chars[characterId]) loadResource(resKeys.character(characterId), () => client.characters.get(characterId)).catch(() => {});
   }, [characterId]);
   return useMemo(() => {
-    const est = EST_REPLY_POINTS[peak ? "peak" : "off_peak"];
+    const est = (estPoints ?? EST_REPLY_POINTS)[peak ? "peak" : "off_peak"];
     if (rtEnergy) {
       const frozen = rtReplay || demo || !rtEnergy.at;
       const regen = rtEnergy.max / 24;
@@ -171,7 +173,7 @@ export function useEnergy(characterId: string | null | undefined): EnergyView | 
     if (!char) return null;
     const e = liveEnergy(char.energy, now, { frozen: demo, estReplyPoints: est });
     return { current: e.current, max: e.max, state: demo ? char.energy.state : e.state, fullAt: e.fullAt, pct: e.pct };
-  }, [char, rtEnergy, rtReplay, demo, now, peak]);
+  }, [char, rtEnergy, rtReplay, demo, now, peak, estPoints]);
 }
 
 // ── Session runtime (R1) ─────────────────────────────────────────────────────

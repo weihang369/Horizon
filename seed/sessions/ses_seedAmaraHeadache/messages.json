@@ -91,7 +91,15 @@
               "verdict": "pass"
             }
           ]
-        }
+        },
+        "calls": [
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000105,
+            "latencyMs": 2089
+          }
+        ]
       }
     },
     {
@@ -196,7 +204,15 @@
               "verdict": "pass"
             }
           ]
-        }
+        },
+        "calls": [
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000082,
+            "latencyMs": 3250
+          }
+        ]
       }
     },
     {
@@ -330,6 +346,14 @@
             }
           ]
         },
+        "calls": [
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000132,
+            "latencyMs": 3720
+          }
+        ],
         "knowledge": {
           "query": "headache at the temples after cutting back on coffee",
           "trigger": "always",
@@ -482,6 +506,14 @@
             }
           ]
         },
+        "calls": [
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000115,
+            "latencyMs": 3104
+          }
+        ],
         "knowledge": {
           "query": "headache warning signs that need urgent care",
           "trigger": "always",

@@ -15,7 +15,7 @@ import { cx } from "@/ui/cx";
 import { isRunning, startGeneration, useCharacterJobs, useEstimate } from "@/features/wizard/generate";
 import { useAssetCompareWatcher } from "./compare";
 import { ThemeTrack } from "./ThemeTrack";
-import { formatAdded, sortSources, sourceFacts, TYPE_NAME } from "./knowledge";
+import { formatAdded, isReadable, sortSources, sourceFacts, STATUS_LABEL, STATUS_TONE, TYPE_NAME } from "./knowledge";
 import { typeGlyph } from "@/features/session/citationUtils";
 import s from "./profile.module.css";
 import k from "./knowledge.module.css";
@@ -197,7 +197,6 @@ export function MemoryTab({ c, worldId, onChat }: { c: Character; worldId: strin
 }
 
 // ── Knowledge (PRF-08; uploads are a preview, citations are real in the mock) ─
-const DOC_TONE = { indexed: "ok", indexing: "ink", failed: "error" } as const;
 
 export function KnowledgeTab({ c }: { c: Character }) {
   const q = useKnowledge(c.id);
@@ -219,7 +218,7 @@ export function KnowledgeTab({ c }: { c: Character }) {
       <span className={k.dropGlyph} aria-hidden="true">⇪</span>
       <span className={k.dropText}>
         <b>{docs.length ? `Drop more documents to teach ${first}` : `Drop documents to teach ${first}.`}</b>
-        <span>PDF, TXT, MD, CSV, or a link · click to upload</span>
+        <span>PDF, DOCX, MD, TXT or pasted text · click to upload</span>
       </span>
     </button>
   );
@@ -249,15 +248,15 @@ export function KnowledgeTab({ c }: { c: Character }) {
                     <span className={k.facts}>{[...facts, d.addedAt ? `Added ${formatAdded(d.addedAt)}` : ""].filter(Boolean).join(" · ")}</span>
                   </span>
                   <span className={k.foot}>
-                    <Tape tone={DOC_TONE[d.status]} size="sm">{d.status}</Tape>
+                    <Tape tone={STATUS_TONE[d.status]} size="sm">{STATUS_LABEL[d.status]}</Tape>
                     {(d.citedCount ?? 0) > 0 && <span className={k.cited}>Cited {d.citedCount}×</span>}
-                    {d.status === "indexed" && <span className={k.open} aria-hidden="true">Read ▸</span>}
+                    {isReadable(d) && <span className={k.open} aria-hidden="true">Read ▸</span>}
                   </span>
                 </>
               );
               return (
                 <li key={d.id} className={cx(k.card, k[`st_${d.status}`])} style={{ "--i": i } as CSSProperties}>
-                  {d.status === "indexed" ? (
+                  {isReadable(d) ? (
                     <button type="button" className={k.hit} onClick={() => openOverlay("O28", { sourceId: d.id, characterId: c.id })} aria-label={`Open ${d.title}`}>{body}</button>
                   ) : (
                     <div className={k.hit}>

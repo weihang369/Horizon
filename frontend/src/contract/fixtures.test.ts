@@ -43,6 +43,27 @@ function schemaFor(rel: string): z.ZodType | null {
   return null; // manifest, pricing, variants: build artefacts, checked by seed:check
 }
 
+// Contract rev 1.3 is additive: entities frozen from the rev 1.2 seed (before the rev 1.3 seed fixes) still validate.
+describe("rev 1.2 entities validate under rev 1.3", () => {
+  const REV12 = path.resolve(__dirname, "__fixtures__/rev12");
+  const cases: [string, z.ZodType][] = [
+    ["character.json", CharacterSchema],
+    ["session.json", SessionSchema],
+    ["messages.json", z.array(MessageSchema)],
+    ["knowledge.json", z.array(KnowledgeSourceSchema)],
+  ];
+  for (const [file, schema] of cases) {
+    it(file, () => {
+      const res = fixtureFile(schema).safeParse(JSON.parse(readFileSync(path.join(REV12, file), "utf8")));
+      if (!res.success) throw new Error(`${file}: ${z.prettifyError(res.error)}`);
+    });
+  }
+  it("still includes a legacy url source", () => {
+    const { data } = JSON.parse(readFileSync(path.join(REV12, "knowledge.json"), "utf8")) as { data: KnowledgeSource[] };
+    expect(data.some((k) => k.type === "url")).toBe(true);
+  });
+});
+
 describe("seed fixtures", () => {
   it("found the seed folder", () => {
     expect(files.length).toBeGreaterThan(50);

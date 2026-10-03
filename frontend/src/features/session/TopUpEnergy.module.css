@@ -23,3 +23,4 @@
 .optBig { font: 400 24px/1 var(--font-display); letter-spacing: 0.04em; }
 .optCost { font: 600 12px/1 var(--font-mono); opacity: 0.85; }
 .fine { margin-top: 14px; font-size: var(--text-sm); color: var(--paper-300); }
+.refused { margin-top: 14px; padding: 8px 10px; font-size: var(--text-sm); color: var(--paper-50); background: color-mix(in srgb, var(--signal-err) 28%, var(--ink-900)); box-shadow: inset 3px 0 0 var(--signal-err); }
