@@ -9,6 +9,7 @@
     "lint": "oxlint",
     "test": "vitest run",
     "e2e": "playwright test",
+    "e2e:prod": "npm run build && playwright test",
     "typecheck": "tsc -b",
     "preview": "vite preview",
     "seed:build": "node scripts/seed-build/run.mjs build",

@@ -6,6 +6,10 @@ const PORT = 5186;
 // Edge is installed on the dev machines, so no browser download is needed. Set PW_CHANNEL="" to use the bundled
 // Chromium instead (needs `npx playwright install chromium`).
 const channel = process.env.PW_CHANNEL ?? "msedge";
+// Targets: the dev server (default); the production build via `npm run e2e:prod` (vite preview of dist/, what Vercel
+// serves); or a deployed site with E2E_BASE_URL=https://… (no local server).
+const remote = process.env.E2E_BASE_URL;
+const prod = process.env.npm_lifecycle_event === "e2e:prod";
 
 export default defineConfig({
   testDir: "./e2e",
@@ -19,7 +23,7 @@ export default defineConfig({
   expect: { timeout: 8_000 },
   reporter: process.env.CI ? [["list"], ["html", { open: "never" }]] : [["list"]],
   use: {
-    baseURL: `http://localhost:${PORT}`,
+    baseURL: remote ?? `http://localhost:${PORT}`,
     ...devices["Desktop Chrome"],
     ...(channel ? { channel } : {}),
     trace: "retain-on-failure",
@@ -37,10 +41,11 @@ export default defineConfig({
       use: { viewport: { width: 1280, height: 720 }, reducedMotion: "reduce" },
     },
   ],
-  webServer: {
-    command: `npx vite --port ${PORT} --strictPort`,
+  webServer: remote ? undefined : {
+    command: prod ? `npx vite preview --port ${PORT} --strictPort` : `npx vite --port ${PORT} --strictPort`,
     url: `http://localhost:${PORT}`,
-    reuseExistingServer: !process.env.CI,
+    // Never reuse a dev server for a production run (and vice versa).
+    reuseExistingServer: !process.env.CI && !prod,
     timeout: 60_000,
   },
 });
