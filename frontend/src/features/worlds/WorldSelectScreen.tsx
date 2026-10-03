@@ -4,6 +4,7 @@
 import { useRef } from "react";
 import type { KeyboardEvent, MouseEvent } from "react";
 import { openOverlay } from "../../app/layers";
+import { useShortcut } from "../../app/shortcuts";
 import { audio } from "../../audio/engine";
 import { useCharacters, useNow, useWorlds } from "../../client/hooks";
 import type { World } from "../../contract/types";
@@ -35,18 +36,21 @@ export function WorldSelectScreen() {
   const rail = useRef<HTMLDivElement>(null);
   const sorted = worlds ? [...worlds].sort((a, b) => Date.parse(b.lastActiveAt) - Date.parse(a.lastActiveAt)) : [];
 
-  const onRailKey = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (e.key !== "ArrowRight" && e.key !== "ArrowLeft" && e.key !== "Home" && e.key !== "End") return;
+  // ←/→ (and Home/End) choose a card from anywhere on the screen, not only once a card has focus: after a load or a
+  // mouse click focus sits on <body>, and the footer promises the keys work.
+  const moveFocus = (key: "arrowright" | "arrowleft" | "home" | "end") => {
     const items = [...(rail.current?.querySelectorAll<HTMLElement>("[data-card]") ?? [])];
+    if (!items.length) return;
     const i = items.indexOf(document.activeElement as HTMLElement);
-    const next = e.key === "Home" ? 0 : e.key === "End" ? items.length - 1 : i + (e.key === "ArrowRight" ? 1 : -1);
+    const next = key === "home" ? 0 : key === "end" ? items.length - 1 : i < 0 ? 0 : i + (key === "arrowright" ? 1 : -1);
     const el = items[Math.max(0, Math.min(items.length - 1, next))];
-    if (el) {
-      e.preventDefault();
-      el.focus();
-      el.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
-    }
+    el.focus();
+    el.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
   };
+  useShortcut("arrowright", () => moveFocus("arrowright"));
+  useShortcut("arrowleft", () => moveFocus("arrowleft"));
+  useShortcut("home", () => moveFocus("home"));
+  useShortcut("end", () => moveFocus("end"));
 
   return (
     <main className={s.screen} data-screen="S03" aria-labelledby="worlds-title">
@@ -58,6 +62,7 @@ export function WorldSelectScreen() {
         <p className={s.sub}>Pick a universe. Nothing crosses between them.</p>
         <nav className={s.headNav} aria-label="Shell">
           <Button variant="ghost" size="sm" onClick={() => navigate({ name: "title" }, { transition: "slash-back" })}>◂ Title</Button>
+          <Button variant="ghost" size="sm" onClick={() => navigate({ name: "onboarding", card: 1 })}>How it works</Button>
           <Button variant="ghost" size="sm" icon={<GearIcon />} onClick={() => navigate({ name: "settings", from: "/worlds" })}>Settings</Button>
           <Button variant="ghost" size="sm" onClick={() => openOverlay("O01")}>☰ Menu</Button>
         </nav>
@@ -75,7 +80,7 @@ export function WorldSelectScreen() {
           <Button variant="ghost" size="sm" onClick={() => void mockActions.resetDemoData()}>Restore demo data</Button>
         </div>
       ) : !error && (
-        <div ref={rail} className={s.rail} role="list" aria-label="Worlds" onKeyDown={onRailKey}>
+        <div ref={rail} className={s.rail} role="list" aria-label="Worlds">
           {loading
             ? [0, 1].map((i) => <div key={i} role="listitem" className={`${s.card} ${s.skeleton}`} aria-label="Loading world" />)
             : sorted.map((w, i) => <WorldCard key={w.id} world={w} index={i} />)}

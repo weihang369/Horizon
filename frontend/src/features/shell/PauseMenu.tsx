@@ -1,5 +1,5 @@
 // O01 Pause menu (APP-02, R4, R13): Esc outside fields/modals or the ☰ button. Resume · Worlds · World Hub ·
-// History (deep link: hub ?tab=sessions) · Settings · Title, with the current world and active character.
+// History (deep link: hub ?tab=sessions) · Settings · How it works (replays S02) · Title, with the current world and active character.
 // ↑/↓ move, Enter picks, Esc again resumes (LayerStack). Owner: Builder A.
 import { useEffect, useRef } from "react";
 import type { KeyboardEvent } from "react";
@@ -33,6 +33,7 @@ export function PauseMenu({ close }: OverlayComponentProps<"O01">) {
     { id: "hub", label: "World Hub", hint: world?.name, to: worldId ? { name: "hub", worldId } : undefined, disabled: !worldId },
     { id: "history", label: "History", hint: worldId ? "Sessions in this world" : undefined, to: worldId ? { name: "hub", worldId, tab: "sessions" } : undefined, disabled: !worldId },
     { id: "settings", label: "Settings", to: { name: "settings", from: formatRoute(route) } },
+    { id: "intro", label: "How it works", hint: "Replay the intro", to: { name: "onboarding", card: 1 } },
     { id: "title", label: "Title", to: { name: "title" } },
   ];
 

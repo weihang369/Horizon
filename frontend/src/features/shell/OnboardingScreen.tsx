@@ -1,5 +1,6 @@
 // S02 Onboarding (APP-04): 4 intro cards (copy: doc 06 §8) + a key step ("Enter key" / "Explore demo first").
-// Shown once (prefs.seenOnboarding), replayable from Settings → About. ←/→ page, Enter = next. Owner: Builder A.
+// Shown once (prefs.seenOnboarding), replayable from World Select ("How it works"), the Esc menu and Settings → About.
+// ←/→ page, Enter = next. A replay with a key already set ends on "You're live" instead of the key form. Owner: Builder A.
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { toast } from "../../app/layers";
@@ -7,6 +8,7 @@ import { useShortcut } from "../../app/shortcuts";
 import { audio } from "../../audio/engine";
 import { EnergyBar } from "../../character/EnergyBar";
 import { client } from "../../client";
+import { useSettings } from "../../client/hooks";
 import type { HorizonErrorShape } from "../../contract/errors";
 import type { Route } from "../../router";
 import { navigate } from "../../router";
@@ -93,6 +95,7 @@ export function OnboardingScreen({ route }: { route: Extract<Route, { name: "onb
 
 // ── Key step ────────────────────────────────────────────────────────────────
 function KeyStep({ onDone, onBack }: { onDone: (to: Route) => void; onBack: () => void }) {
+  const live = useSettings().data?.openRouterKeyStatus === "set";
   const [key, setKey] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -126,32 +129,38 @@ function KeyStep({ onDone, onBack }: { onDone: (to: Route) => void; onBack: () =
         <p className={s.line}>
           Horizon thinks with your own <strong>OpenRouter</strong> key. No key? Every recording still plays: browse the seed worlds and replay their sessions.
         </p>
-        <form
-          className={s.keyForm}
-          onSubmit={(e) => {
-            e.preventDefault();
-            void save();
-          }}
-        >
-          <TextField
-            label="OpenRouter key"
-            type="password"
-            placeholder="sk-or-…"
-            value={key}
-            autoComplete="off"
-            spellCheck={false}
-            onChange={(e) => {
-              setKey(e.target.value);
-              setError(null);
-            }}
-            error={error}
-            hint="Stored on this machine only. Never sent anywhere but OpenRouter."
-          />
+        {live ? (
           <div className={s.nav}>
-            <Button type="submit" disabled={busy}>{busy ? "Checking…" : "Enter key ▸"}</Button>
-            <Button variant="secondary" onClick={() => onDone({ name: "worlds" })} autoFocus>Explore demo first</Button>
+            <Button onClick={() => onDone({ name: "worlds" })} autoFocus>You're live · To worlds ▸</Button>
           </div>
-        </form>
+        ) : (
+          <form
+            className={s.keyForm}
+            onSubmit={(e) => {
+              e.preventDefault();
+              void save();
+            }}
+          >
+            <TextField
+              label="OpenRouter key"
+              type="password"
+              placeholder="sk-or-…"
+              value={key}
+              autoComplete="off"
+              spellCheck={false}
+              onChange={(e) => {
+                setKey(e.target.value);
+                setError(null);
+              }}
+              error={error}
+              hint="Stored on this machine only. Never sent anywhere but OpenRouter."
+            />
+            <div className={s.nav}>
+              <Button type="submit" disabled={busy}>{busy ? "Checking…" : "Enter key ▸"}</Button>
+              <Button variant="secondary" onClick={() => onDone({ name: "worlds" })} autoFocus>Explore demo first</Button>
+            </div>
+          </form>
+        )}
         <div className={s.nav}>
           <Button variant="ghost" size="sm" onClick={onBack}>◂ Back</Button>
         </div>
