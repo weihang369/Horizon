@@ -198,7 +198,7 @@ data: {"messageId":"msg_…","delta":"Honestly? "}
 
 ## 7. Contract rev 1.3 (additive)
 
-`schemaVersion` stays `1`. Doc 05, `frontend/src/contract/{types,schemas}.ts`, the MockClient and the seed are all updated in M1, under the M1 OpenSpec change.
+`schemaVersion` stays `1`. Doc 05, `frontend/src/contract/{types,schemas}.ts`, the MockClient and the seed are all updated in M1a, under the `contract-rev-1-3` OpenSpec change. **Addendum for M1b:** `HorizonClient.admin.resetDemo()` (→ `POST /admin/reset-demo`), so "Reset demo data" works on the HttpClient too; until then the UI calls the mock-only dev API.
 
 | # | Change |
 |---|---|

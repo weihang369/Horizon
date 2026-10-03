@@ -83,7 +83,7 @@
       "basePortraitUrl": "/assets/placeholder/portraits/chr_mockMochi/neutral.svg",
       "candidates": [
         {
-          "id": "cand_1",
+          "id": "cand_mockMochi1",
           "url": "/assets/placeholder/portraits/chr_mockMochi/neutral.svg",
           "selected": true,
           "status": "ready"

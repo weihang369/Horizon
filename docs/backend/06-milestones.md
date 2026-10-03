@@ -47,6 +47,8 @@
 - All **read** endpoints, `/assets` resolution, the error envelope, pagination, the idempotency middleware, `/health`, `/_test/*`.
 - Root `package.json` (`setup` in two steps, `dev` with concurrently, `demo`) and the Vite proxy.
 - **HttpClient:** settings get, worlds (full), the read methods for characters, sessions, usage, memory and knowledge, `sessions.events`/`subscribe` (replay only), `onGlobal`.
+- **`HorizonClient.admin.resetDemo()`** (rev 1.3 addendum, OQ-5 of `contract-rev-1-3`): the Settings and World Select "Reset demo data" buttons move from the mock-only dev API to it, on both clients.
+- **An HTTP harness for the portable contract suite** (`runPortableContract`, driven through `/_test/*`).
 
 **Acceptance**
 - With `npm run dev` and `VITE_HORIZON_CLIENT=http`, both seed worlds can be browsed, every profile opens and **every seed session replays** from the backend.
@@ -95,6 +97,7 @@
 - The JobScheduler and workers (semaphores, one non-terminal job per character, the `provider_called_at` restart rule); job events mirrored onto the global stream; estimate/start (with reservation)/cancel/retry.
 - `characters.update` (PATCH, deep-merge, version bump), `profile_draft`/`profile_regenerate` (naive), `portrait_candidates`/`portrait_tweak` (with `job_id` batches), `lockPortrait`, `emotion_set`/`emotion_regenerate`/blink (Seedream 5.0 Flash + `ImagePromptCompiler` v2), originals first then WebP, asset versions + `acceptAssetVersion`, `song` (Lyria + the ambient fallback).
 - approve/archive/restore/**delete (tombstone, 409 while streaming)**; world cover upload.
+- **UI wiring for cover upload** in the World editor (`worlds.uploadCover`, already implemented by the MockClient in M1a; OQ-3).
 - HttpClient: characters (full), jobs (snapshot + global filter).
 
 **Acceptance**
@@ -112,6 +115,7 @@
 - `MemoryStore.apply(MemoryOp…)`; memory read; **Forget** (supersede chain, `turn_traces` + `insight` events scrub, purge outbox).
 - `QueryBundle` vectors filled in; the `MemoryRetriever`/`KnowledgeRetriever` scripted and naive implementations; `entity.changed` knowledge progress and memory events.
 - HttpClient: knowledge (full), memory.
+- **UI wiring for knowledge add/delete/reindex** in the Knowledge tab: the drop zone (file + pasted text), per-source delete and ↻ Retry (= reindex), and live `progress` from `entity.changed`. The MockClient has implemented these since M1a (OQ-3).
 
 **Acceptance**
 - PDF, DOCX, MD and pasted text reach `indexed`, and O28 shows chunks with the right locators.

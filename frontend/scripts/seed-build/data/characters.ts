@@ -23,6 +23,8 @@ export interface CharacterDef {
 }
 
 const cap = (s: string) => s[0].toUpperCase() + s.slice(1);
+/** `chr_seedHana` → `seedHana`: the per-character part of a seed candidate id. */
+const candKey = (characterId: string) => characterId.replace(/^chr_/, "");
 
 function emotionRefs(characterId: string, key: string, present: Emotion[]): Record<Emotion, EmotionAssetRef | null> {
   const out = {} as Record<Emotion, EmotionAssetRef | null>;
@@ -61,8 +63,9 @@ function build(d: Def): CharacterDef {
       ...(locked ? { basePortraitUrl: portraitUrl(d.id, "neutral") } : {}),
       candidates: locked
         ? [
-            { id: "cand_1", url: portraitUrl(d.id, "neutral"), selected: true, status: "ready" },
-            ...(d.candidate2 ? [{ id: "cand_2", url: portraitUrl(d.id, "cand-2"), selected: false, status: "ready" as const }] : []),
+            // Candidate ids are unique across the whole seed (rev 1.3): the backend imports them as rows.
+            { id: `cand_${candKey(d.id)}1`, url: portraitUrl(d.id, "neutral"), selected: true, status: "ready" },
+            ...(d.candidate2 ? [{ id: `cand_${candKey(d.id)}2`, url: portraitUrl(d.id, "cand-2"), selected: false, status: "ready" as const }] : []),
           ]
         : [],
       stylePresetId: "style_horizon_anime",

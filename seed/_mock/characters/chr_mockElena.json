@@ -82,7 +82,7 @@
       "basePortraitUrl": "/assets/placeholder/portraits/chr_mockElena/neutral.svg",
       "candidates": [
         {
-          "id": "cand_1",
+          "id": "cand_mockElena1",
           "url": "/assets/placeholder/portraits/chr_mockElena/neutral.svg",
           "selected": true,
           "status": "ready"

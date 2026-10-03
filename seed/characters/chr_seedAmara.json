@@ -96,13 +96,13 @@
       "basePortraitUrl": "/assets/placeholder/portraits/chr_seedAmara/neutral.svg",
       "candidates": [
         {
-          "id": "cand_1",
+          "id": "cand_seedAmara1",
           "url": "/assets/placeholder/portraits/chr_seedAmara/neutral.svg",
           "selected": true,
           "status": "ready"
         },
         {
-          "id": "cand_2",
+          "id": "cand_seedAmara2",
           "url": "/assets/placeholder/portraits/chr_seedAmara/cand-2.svg",
           "selected": false,
           "status": "ready"

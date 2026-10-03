@@ -7,7 +7,7 @@ test("Knowledge tab: Amara's source cards open the O28 Source viewer", async ({ 
   await expect(panel.getByText("2 sources · cited 6× in conversations")).toBeVisible();
   await expect(panel.getByRole("button", { name: "Open Meridian Shift Fatigue Review 2025.pdf" })).toBeVisible();
 
-  const card = panel.getByRole("button", { name: "Open ED triage guidelines" });
+  const card = panel.getByRole("button", { name: "Open ED triage guidelines.pdf" });
   await card.click();
   const viewer = page.getByRole("dialog", { name: /ED triage guidelines/ });
   await expect(viewer).toBeVisible();
@@ -17,11 +17,11 @@ test("Knowledge tab: Amara's source cards open the O28 Source viewer", async ({ 
   await expect(card).toBeFocused();
 });
 
-test("Knowledge tab: Mei's unreadable CSV shows the reason and a Retry button", async ({ page }) => {
+test("Knowledge tab: Mei's unreadable document shows the reason and a Retry button", async ({ page }) => {
   await open(page, "/w/wld_seedMeridian/c/chr_seedMei?tab=knowledge");
-  const failed = page.getByRole("tabpanel", { name: "Knowledge" }).getByRole("listitem").filter({ hasText: "Working-time pilots dataset.csv" });
+  const failed = page.getByRole("tabpanel", { name: "Knowledge" }).getByRole("listitem").filter({ hasText: "Working-time pilots appendix.docx" });
   await expect(failed).toContainText("failed");
-  await expect(failed).toContainText("row 4,118 has 31 columns, expected 27");
+  await expect(failed).toContainText("This document is password-protected.");
   await expect(failed.getByRole("button", { name: "↻ Retry" })).toBeVisible();
 });
 

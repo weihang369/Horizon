@@ -29,7 +29,7 @@ import type { Dataset } from "./db/dataset";
 import { cloneDataset } from "./db/dataset";
 import { loadSeedDataset } from "./db/loadSeed";
 import type { KV } from "./db/persist";
-import { clearSnapshot, defaultStorage, loadSnapshot, saveSnapshot } from "./db/persist";
+import { defaultStorage, loadSnapshot, saveSnapshot } from "./db/persist";
 import * as debateEngine from "./engines/debate";
 import { DEFAULT_RUBRIC } from "./engines/debate";
 import * as groupEngine from "./engines/group";
@@ -114,6 +114,30 @@ async function coverUrl(file: File): Promise<string> {
   let bin = "";
   for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
   return `data:${file.type};base64,${btoa(bin)}`;
+}
+
+/** D-70 tombstone: identity, palette and the active neutral portrait survive; everything else is emptied. */
+function tombstone(c: Character, deletedAt: string): Character {
+  const p = c.profile;
+  const emotions = Object.fromEntries(Object.keys(c.emotions).map((e) => [e, null])) as Character["emotions"];
+  emotions.neutral = c.emotions.neutral;
+  return {
+    ...c,
+    profile: {
+      name: p.name, ...(p.title ? { title: p.title } : {}), role: p.role, age: p.age, ...(p.pronouns ? { pronouns: p.pronouns } : {}),
+      tagline: p.tagline, personality: { summary: "", traits: p.personality.traits }, backstory: "",
+      speakingStyle: { summary: "", tone: "", formality: p.speakingStyle.formality, quirks: [], catchphrases: [] },
+      expertise: [], boundaries: [], greeting: "",
+    },
+    profileMeta: undefined,
+    appearance: { ...c.appearance, candidates: [] },
+    emotions,
+    blink: null,
+    themeSongId: undefined,
+    activeJobId: undefined,
+    deletedAt,
+    updatedAt: deletedAt,
+  };
 }
 
 function deepMerge<T>(base: T, patch: DeepPartial<T> | undefined): T {
@@ -530,7 +554,7 @@ export class MockClient implements HorizonClient {
       for (const c of Object.values(this.db.characters)) if (c.worldId === id) delete this.db.characters[c.id];
       for (const [sid, r] of Object.entries(this.db.sessions)) if (r.session.worldId === id) this.dropSession(sid);
       for (const m of Object.values(this.db.memory)) if (m.worldId === id) delete this.db.memory[m.id];
-      for (const k of Object.values(this.db.knowledge)) if (k.worldId === id) delete this.db.knowledge[k.id];
+      for (const k of Object.values(this.db.knowledge)) if (k.worldId === id) knowledgeEngine.removeSource(this.knowledgeHost(), k.id);
       this.dropOrphanChunks();
       this.changed("world", id, id);
     }),
@@ -562,7 +586,12 @@ export class MockClient implements HorizonClient {
       .filter((c) => c.worldId === worldId && !c.deletedAt && (opts?.includeArchived || c.status !== "archived"))
       .sort((a, b) => Number(b.isSeed) - Number(a.isSeed) || a.createdAt.localeCompare(b.createdAt))
       .map((c) => this.charView(c))),
-    get: (id) => this.query(() => this.charView(this.char(id))),
+    // Tombstones (deletedAt) stay readable so old transcripts render; every command on them is not_found.
+    get: (id) => this.query(() => {
+      const c = this.db.characters[id];
+      if (!c) throw notFound("Character");
+      return this.charView(c);
+    }),
     createDraft: (worldId, input) => this.live(() => {
       this.world(worldId);
       const now = this.iso();
@@ -644,12 +673,26 @@ export class MockClient implements HorizonClient {
       c.archivedAt = undefined;
       return this.touchChar(c);
     }),
+    // D-70 / rev 1.3: delete leaves a tombstone (name, palette, neutral portrait) so transcripts keep rendering.
     delete: (id) => this.command(() => {
       const c = this.char(id);
-      delete this.db.characters[id];
+      for (const live of this.lives.values()) {
+        if (live.current && !live.held && live.state.session.participants.some((p) => p.characterId === id)) {
+          throw conflict(`${c.profile.name} is in the live session. Stop or leave it first.`, { activeSessionId: live.id });
+        }
+      }
+      for (const j of Object.values(this.db.jobs)) {
+        if (j.characterId !== id) continue;
+        if (j.status === "queued" || j.status === "running") this.runner.cancel(j.id);
+        delete this.db.jobs[j.id];
+      }
       for (const m of Object.values(this.db.memory)) if (m.characterId === id) delete this.db.memory[m.id];
-      for (const k of Object.values(this.db.knowledge)) if (k.characterId === id) delete this.db.knowledge[k.id];
+      for (const k of Object.values(this.db.knowledge)) if (k.characterId === id) knowledgeEngine.removeSource(this.knowledgeHost(), k.id);
+      for (const s of Object.values(this.db.songs)) if (s.characterId === id) delete this.db.songs[s.id];
+      const neutral = c.emotions.neutral;
+      for (const a of Object.values(this.db.assets)) if (a.characterId === id && a.id !== neutral?.assetId) delete this.db.assets[a.id];
       this.dropOrphanChunks();
+      this.db.characters[id] = tombstone(c, this.iso());
       this.changed("character", id, c.worldId);
     }),
     assets: (id) => this.query(() => Object.values(this.db.assets).filter((a) => a.characterId === id).sort((a, b) => a.emotion.localeCompare(b.emotion) || a.version - b.version)),
@@ -790,7 +833,10 @@ export class MockClient implements HorizonClient {
       this.char(input.characterId);
       return { estimatedCostUsd: estimateJob(this.jobHost(), input) };
     }),
-    start: (input) => this.live(() => this.runner.start(input)),
+    start: (input) => this.live(() => {
+      this.char(input.characterId);
+      return this.runner.start(input);
+    }),
     get: (jobId) => this.query(() => {
       const j = this.db.jobs[jobId];
       if (!j) throw notFound("Job");
@@ -1248,10 +1294,14 @@ export class MockClient implements HorizonClient {
         this.sched.setSpeed(speed);
         this.notifyDev();
       },
+      // D-70 / rev 1.3: re-seed seed records only (seed copies win by id); user worlds, characters, forks,
+      // memories and ledger rows survive, like the backend's POST /admin/reset-demo.
       resetDemoData: async () => {
         await this.ready;
-        clearSnapshot(this.storage);
-        this.hardReset(SCENARIO_BY_ID.default);
+        const settings = this.db.settings; // settings and the key aren't seed data: they stay
+        this.hardReset(SCENARIO_BY_ID.default, true);
+        this.db.settings = settings;
+        this.persistSoon();
         this.global({ type: "mock.reset" });
         this.notifyDev();
       },

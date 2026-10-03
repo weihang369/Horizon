@@ -13,6 +13,7 @@ import { useShortcut } from "../../app/shortcuts";
 import { emotionForHotkey } from "../../character/emotionMeta";
 import type { SessionMode } from "../../contract/types";
 import { formatTokens, formatUsd } from "../../domain/format";
+import { loadResource, resKeys } from "../../stores/entities";
 import { usePrefs } from "../../stores/prefs";
 import { useUi } from "../../stores/ui";
 import { setAppPalette } from "../../theme/appPalette";
@@ -56,6 +57,20 @@ export function SessionScreen({ route }: { route: SessionRoute }) {
   const demo = settings?.demoMode ?? true;
   useCharacters(rt.session?.worldId, { includeArchived: true });
   const chars = useChars();
+  // Deleted characters are tombstones (D-70): `list` skips them, so fetch any speaker it didn't return.
+  const castIds = useMemo(() => {
+    const ids = new Set(rt.session?.participants.map((p) => p.characterId) ?? []);
+    for (const id of rt.order) {
+      const cid = rt.messages[id]?.author.characterId;
+      if (cid) ids.add(cid);
+    }
+    return [...ids].sort().join(",");
+  }, [rt.session?.participants, rt.order, rt.messages]);
+  useEffect(() => {
+    for (const id of castIds ? castIds.split(",") : []) {
+      if (!chars[id]) loadResource(resKeys.character(id), () => client.characters.get(id)).catch(() => {});
+    }
+  }, [castIds, chars]);
   const expansion = useUi((u) => u.dockExpansion);
   const insightOpen = useUi((u) => u.layers.some((l) => l.id === "O08"));
   const presenter = usePrefs((p) => p.presenterMode);

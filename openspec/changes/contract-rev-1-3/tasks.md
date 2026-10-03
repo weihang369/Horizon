@@ -122,15 +122,15 @@ Tasks marked **(OQ-n)** use the proposed default in design.md § Open Questions.
 
 ## 8. Cover upload and the tombstone
 
-- [ ] 8.1 Implement `worlds.uploadCover` in the mock. It accepts PNG, JPEG or WebP up to 5 MB, else `validation`; an unknown world gets `not_found`. It stores an object URL (or a data URL when persisting), sets `cover.kind: "upload"` and emits `entity.changed`. Verify: the three worlds-spec scenarios pass as portable tests (in Node, `File` comes from `node:buffer`).
-- [ ] 8.2 Implement the tombstone delete (design D4):
+- [x] 8.1 Implement `worlds.uploadCover` in the mock. It accepts PNG, JPEG or WebP up to 5 MB, else `validation`; an unknown world gets `not_found`. It stores an object URL (or a data URL when persisting), sets `cover.kind: "upload"` and emits `entity.changed`. Verify: the three worlds-spec scenarios pass as portable tests (in Node, `File` comes from `node:buffer`).
+- [x] 8.2 Implement the tombstone delete (design D4):
   - strip the record to the kept fields and set `deletedAt`;
   - remove memory, knowledge, chunks, songs, non-neutral assets and non-terminal jobs;
   - `get` returns tombstones, `list` and `characterCount` skip them, and commands reject with `not_found`;
   - `conflict` while the character is streaming in a live session.
 
   Verify: every character-lifecycle spec scenario passes as a portable test.
-- [ ] 8.3 Check that the UI renders transcripts with tombstoned speakers: participants resolve name and neutral portrait from `characters.get`. Fix any lookup that relies on `list`. Verify: a new E2E step deletes a character, then opens one of their sessions and replays it without errors.
+- [x] 8.3 Check that the UI renders transcripts with tombstoned speakers: participants resolve name and neutral portrait from `characters.get`. Fix any lookup that relies on `list`. Verify: a new E2E step deletes a character, then opens one of their sessions and replays it without errors.
 
 ## 9. Seed fixes and seed-only reset
 
@@ -141,21 +141,21 @@ Tasks marked **(OQ-n)** use the proposed default in design.md § Open Questions.
   - `MODELS.image` set to `bytedance-seed/seedream-5-0-flash` and `MODELS.embedding` added (confirm the OpenRouter slug for Qwen3 Embedding 8B and note it in the PR).
 
   Verify: `energy.test.ts` and the cost tests pass with any expectations that depend on these numbers updated.
-- [ ] 9.2 Update the seed data:
+- [x] 9.2 Update the seed data:
   - `data/knowledge.ts`: Amara's source becomes "ED triage guidelines.pdf" (`type: "file"`, with `pages`, no `url`), and **(OQ-4)** Mei's CSV is replaced by the failed, password-protected DOCX;
   - `data/characters.ts`: candidate IDs become `cand_<charKey><n>`;
   - `DEFAULT_SETTINGS`: add `estReplyPoints`.
 
   Run `npm run seed:build`. Verify: `npm run seed:check` passes, and new `fixtures.test.ts` assertions check unique candidate IDs, no url or csv sources, and the demo-data pricing values.
-- [ ] 9.3 Update the E2E tests for the seed changes: the failed-source test in `profile-knowledge-theme.spec.ts` uses the new title, and the triage source glyph in `citations.spec.ts` may change from link to document. Verify: these two specs pass.
-- [ ] 9.4 Make `resetDemoData` a seed-wins merge that keeps user records (design D5), applied to "Restore demo data" too. **(OQ-5)** It stays on the dev API. Verify: the demo-data spec scenarios "Fork survives reset" and "User world survives reset" pass, implemented as portable tests through the harness `reset()`.
+- [x] 9.3 Update the E2E tests for the seed changes: the failed-source test in `profile-knowledge-theme.spec.ts` uses the new title, and the triage source glyph in `citations.spec.ts` may change from link to document. Verify: these two specs pass.
+- [x] 9.4 Make `resetDemoData` a seed-wins merge that keeps user records (design D5), applied to "Restore demo data" too. **(OQ-5)** It stays on the dev API. Verify: the demo-data spec scenarios "Fork survives reset" and "User world survives reset" pass, implemented as portable tests through the harness `reset()`.
 
 ## 10. Docs and integration
 
-- [ ] 10.1 Update the docs:
+- [x] 10.1 Update the docs:
   - `docs/backend/03-api.md` §7: "M1 OpenSpec change" becomes "M1a".
   - **(OQ-3, OQ-5)** `docs/backend/06-milestones.md`: add "UI wiring for knowledge add/delete/reindex" to M5 and "cover upload UI" to M4, and add `HorizonClient.admin.resetDemo()` to M1b.
 
   Verify: the referenced lines are present.
-- [ ] 10.2 Run the full gate: `npm run lint`, `npm run typecheck`, `npm test`, `npm run seed:check`, `npm run export-schema:check`, `npm run build` and `npm run e2e`. Verify: every command exits 0, recorded with test counts in the PR description.
-- [ ] 10.3 Run `openspec validate contract-rev-1-3 --strict` and tick every task above. Verify: the change validates.
+- [x] 10.2 Run the full gate: `npm run lint`, `npm run typecheck`, `npm test`, `npm run seed:check`, `npm run export-schema:check`, `npm run build` and `npm run e2e`. Verify: every command exits 0, recorded with test counts in the PR description.
+- [x] 10.3 Run `openspec validate contract-rev-1-3 --strict` and tick every task above. Verify: the change validates.

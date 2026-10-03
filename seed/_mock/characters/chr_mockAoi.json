@@ -84,7 +84,7 @@
       "basePortraitUrl": "/assets/placeholder/portraits/chr_mockAoi/neutral.svg",
       "candidates": [
         {
-          "id": "cand_1",
+          "id": "cand_mockAoi1",
           "url": "/assets/placeholder/portraits/chr_mockAoi/neutral.svg",
           "selected": true,
           "status": "ready"

@@ -5,7 +5,7 @@
 import { describe, expect, it } from "vitest";
 import type { Message, SessionEvent } from "../contract/types";
 import { HorizonError } from "../contract/errors";
-import { GlobalEventSchema, KnowledgeChunkSchema, MessageSchema, SessionEventSchema } from "../contract/schemas";
+import { CharacterSchema, GlobalEventSchema, KnowledgeChunkSchema, MessageSchema, SessionEventSchema } from "../contract/schemas";
 import type { GlobalEvent, HorizonClient, JobEvent } from "./HorizonClient";
 
 /** Scenario ids every harness must support (the backend mirrors them under /_test/scenario). */
@@ -574,6 +574,84 @@ export function runPortableContract(label: string, makeHarness: MakeHarness): vo
       const { c } = await make();
       const png = new File([new Uint8Array([0x89, 0x50, 0x4e, 0x47])], "cover.png", { type: "image/png" });
       expect(await code(c.worlds.uploadCover("wld_nope", png))).toBe("not_found");
+    });
+
+    // ── rev 1.3: character lifecycle (character-lifecycle spec, D-70) ───────────
+    it("delete leaves a readable tombstone; memory and knowledge go", async () => {
+      const { c, globals } = await make();
+      const before = await c.characters.get("chr_seedVictor");
+      await c.characters.delete("chr_seedVictor");
+      const t = await c.characters.get("chr_seedVictor");
+      expect(t.deletedAt).toBeDefined();
+      expect(t.profile.name).toBe(before.profile.name);
+      expect(t.paletteId).toBe(before.paletteId);
+      expect(t.emotions.neutral?.url).toBe(before.emotions.neutral?.url);
+      CharacterSchema.parse(JSON.parse(JSON.stringify(t)));
+      expect(await c.characters.memory("chr_seedVictor")).toEqual([]);
+      expect(await c.characters.knowledge("chr_seedVictor")).toEqual([]);
+      expect(globals).toContainEqual(expect.objectContaining({ type: "entity.changed", kind: "character", id: "chr_seedVictor" }));
+    });
+
+    it("tombstones leave the roster and the count, and every command on them is not_found", async () => {
+      const { c } = await make({ key: true });
+      const count = (await c.worlds.get("wld_seedMeridian")).characterCount;
+      await c.characters.delete("chr_seedVictor");
+      expect((await c.characters.list("wld_seedMeridian", { includeArchived: true })).some((x) => x.id === "chr_seedVictor")).toBe(false);
+      expect((await c.worlds.get("wld_seedMeridian")).characterCount).toBe(count - 1);
+      expect(await code(c.characters.update("chr_seedVictor", { advisory: true }))).toBe("not_found");
+      expect(await code(c.jobs.start({ characterId: "chr_seedVictor", kind: "song" }))).toBe("not_found");
+      expect(await code(c.characters.delete("chr_seedVictor"))).toBe("not_found");
+      expect(await code(c.sessions.create({ worldId: "wld_seedMeridian", mode: "one_on_one", characterIds: ["chr_seedVictor"] }))).toBe("not_found");
+    });
+
+    it("transcripts with a deleted speaker still open, replay and export", async () => {
+      const { c } = await make();
+      const msgs = await c.sessions.messages("ses_seedDebate4Day");
+      expect(msgs.some((m) => m.author.characterId === "chr_seedVictor")).toBe(true);
+      await c.characters.delete("chr_seedVictor");
+      const snap = await c.sessions.get("ses_seedDebate4Day");
+      expect(snap.messages.length).toBe(msgs.length);
+      expect((await c.sessions.events("ses_seedDebate4Day")).length).toBeGreaterThan(0);
+      expect(await c.sessions.export("ses_seedDebate4Day")).toContain((await c.characters.get("chr_seedVictor")).profile.name);
+    });
+
+    it("deleting a character who is speaking in the live session is a conflict", async () => {
+      const { c, tick } = await make({ key: true });
+      const s = await c.sessions.create({ worldId: "wld_seedMeridian", mode: "one_on_one", characterIds: ["chr_seedVictor"] });
+      await tick(6000);
+      await c.chat.send(s.session.id, "Walk me through the whole case, step by step.");
+      for (let i = 0; i < 40; i++) {
+        await tick(250);
+        if ((await c.sessions.messages(s.session.id)).some((m) => m.status === "streaming")) break;
+      }
+      const e = await fail(c.characters.delete("chr_seedVictor"));
+      expect(e.code).toBe("conflict");
+      expect((await c.characters.get("chr_seedVictor")).deletedAt).toBeUndefined();
+    });
+
+    // ── rev 1.3: Reset demo data keeps user data (demo-data spec, D-70) ─────────
+    it("reset: a fork of a seed session survives, an edited seed character goes back to shipped", async () => {
+      const { c, globals, reset } = await make({ key: true });
+      const shipped = (await c.characters.get("chr_seedHana")).profile.tagline;
+      const fork = await c.sessions.forkSeedSession("ses_seedHanaLongDay");
+      await c.characters.update("chr_seedHana", { profile: { tagline: "Edited by the user" } });
+      expect((await c.characters.get("chr_seedHana")).profile.tagline).toBe("Edited by the user");
+      await reset();
+      expect((await c.sessions.get(fork.session.id)).messages.length).toBe(fork.messages.length);
+      expect((await c.characters.get("chr_seedHana")).profile.tagline).toBe(shipped);
+      expect(globals.some((g) => g.type === "mock.reset")).toBe(true);
+    });
+
+    it("reset: a user-created world and its character are untouched", async () => {
+      const { c, tick, reset } = await make({ key: true });
+      const w = await c.worlds.create({ name: "My Street", cover: { kind: "preset", presetId: "cover_night_skyline" } });
+      const { character } = await c.characters.createDraft(w.id, { seedPrompt: "Noor, a baker", intent: "companion" });
+      await tick(5000);
+      const before = await c.characters.get(character.id);
+      await reset();
+      expect((await c.worlds.get(w.id)).name).toBe("My Street");
+      expect(await c.characters.get(character.id)).toEqual(before);
+      expect((await c.worlds.list()).length).toBe(3);
     });
   });
 }
