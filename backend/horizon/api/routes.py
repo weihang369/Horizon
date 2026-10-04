@@ -10,7 +10,7 @@ import importlib.util
 from datetime import datetime
 from typing import Annotated, Any, Literal
 
-from fastapi import APIRouter, Query, Request, Response
+from fastapi import APIRouter, Body, Query, Request, Response
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import text
 
@@ -18,10 +18,14 @@ from horizon import SCHEMA_VERSION, __version__
 from horizon.api.common import check, json_response, read_ctx, rt_of
 from horizon.api.errors import HorizonHTTPError, validation
 from horizon.domain.clock import FrozenClock, SystemClock
-from horizon.domain.timeutil import parse_iso
-from horizon.services import reads
+from horizon.domain.timeutil import parse_iso, to_iso
+from horizon.events.bus import GLOBAL
+from horizon.runtime import Runtime
+from horizon.services import energy_writes, probes, reads
 from horizon.services import settings as settings_svc
 from horizon.services import worlds as worlds_svc
+from horizon.services.keys import write_json_atomic
+from horizon.services.ledger import LedgerWriter
 
 router = APIRouter()
 
@@ -60,12 +64,90 @@ def _dump(m: BaseModel | None) -> dict[str, Any] | None:
 
 
 # ── Settings ─────────────────────────────────────────────────────────────────
+async def settings_body(rt: Runtime) -> dict[str, Any]:
+    async with rt.db.read() as conn:
+        return await settings_svc.app_settings(conn, seed=rt.seed_settings, local=rt.local_settings(), clock=rt.clock,
+                                               key_status=rt.keys.status())
+
+
 @router.get("/settings")
 async def get_settings(request: Request) -> Response:
     rt = rt_of(request)
-    async with rt.db.read() as conn:
-        body = await settings_svc.app_settings(conn, seed=rt.seed_settings, local=rt.local_settings(), clock=rt.clock)
-    return json_response(rt, body, def_name="AppSettings")
+    return json_response(rt, await settings_body(rt), def_name="AppSettings")
+
+
+@router.patch("/settings")
+async def patch_settings(request: Request, body: Annotated[dict[str, Any], Body()]) -> Response:
+    """Deep-merge the editable fields into data/settings.local.json; computed and config-owned fields are ignored."""
+    rt = rt_of(request)
+    async with rt.settings_lock:
+        local = settings_svc.deep_merge(rt.local_settings(), settings_svc.strip_read_only(body))
+        candidate = settings_svc.deep_merge(rt.seed_settings, local)
+        problems = rt.schema.errors("AppSettings", candidate)
+        fields = settings_svc.range_problems(candidate)
+        if problems or fields:
+            raise validation("Invalid settings.", {"fields": [{"field": f, "problem": "out of range"} for f in fields]
+                                                   + [{"field": "body", "problem": p} for p in problems[:5]]})
+        write_json_atomic(rt.cfg.settings_local_path, local)
+        rt.publish(GLOBAL, {"type": "entity.changed", "kind": "settings"})
+    return json_response(rt, await settings_body(rt), def_name="AppSettings")
+
+
+@router.post("/settings/test-connection")
+async def post_test_connection(request: Request) -> Response:
+    rt = rt_of(request)
+    return json_response(rt, await probes.probe_connection(rt.gateway))
+
+
+class ModelBody(_Model):
+    role: probes.Role
+
+
+@router.post("/settings/test-model")
+async def post_test_model(request: Request, body: ModelBody) -> Response:
+    rt = rt_of(request)
+    return json_response(rt, await probes.probe_model(rt.gateway, rt.settings_doc(), body.role))
+
+
+class PointsBody(_Model):
+    points: Annotated[int, Field(gt=0, le=1_000_000)]
+
+
+@router.post("/characters/{character_id}/energy/top-up")
+async def post_top_up(request: Request, character_id: str, body: PointsBody) -> Response:
+    """D-76: needs a usable key (mock parity, OQ-L); gated by today's budget; an `energy_topup` row at $0."""
+    rt = rt_of(request)
+    rt.gateway.core.require_key()
+    p = rt.energy_params()
+    now = rt.clock.now()
+    day = rt.clock.calendar.today(now).isoformat()
+    async with rt.energy_locks.lock(character_id), rt.db.write() as tx:
+        spent = await LedgerWriter.spent_on(tx.conn, day)
+        wire = await energy_writes.top_up(tx, character_id, body.points, p, energy_writes.TopUpBudget(
+            spent_today_usd=spent, daily_cap_usd=rt.caps().daily_cap_usd, local_day=day, at=to_iso(now)))
+    return json_response(rt, wire, def_name="Energy")
+
+
+@router.put("/characters/{character_id}/energy/max")
+async def put_energy_max(request: Request, character_id: str, body: PointsBody) -> Response:
+    """No key needed; in demo mode the settle is frozen (no regeneration is applied by the write)."""
+    rt = rt_of(request)
+    p = rt.energy_params()
+    async with rt.energy_locks.lock(character_id), rt.db.write() as tx:
+        wire = await energy_writes.set_max(tx, character_id, body.points, p)
+    return json_response(rt, wire, def_name="Energy")
+
+
+class KeyBody(_Model):
+    key: str | None  # required; null deletes the secrets file
+
+
+@router.put("/settings/key")
+async def put_settings_key(request: Request, body: KeyBody) -> Response:
+    """Format check only, no network (testConnection does that). PUT, so the body never reaches the idempotency store."""
+    rt = rt_of(request)
+    rt.keys.set_key(body.key)
+    return json_response(rt, await settings_body(rt), def_name="AppSettings")
 
 
 # ── Worlds ───────────────────────────────────────────────────────────────────

@@ -1,0 +1,30 @@
+{
+  "verified": true,
+  "source": "POST /api/v1/chat/completions (non-streaming): OpenRouter API docs (chat completions / streaming / usage accounting), 2026-10; doc backend/04 §1 Confirmed by the live run on 2026-10-04.",
+  "status": 200,
+  "body": {
+    "id": "gen-rec-000002",
+    "provider": "DeepSeek",
+    "model": "deepseek/deepseek-v4.1-flash",
+    "object": "chat.completion",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "ok"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 9,
+      "completion_tokens": 1,
+      "total_tokens": 10,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "cost": 2e-06
+    }
+  }
+}

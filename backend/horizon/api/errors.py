@@ -14,6 +14,9 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+from horizon.gateway.errors import ProviderError
+from horizon.gateway.redact import redact, redact_obj
+
 log = logging.getLogger("horizon.api")
 
 DEFAULT_RETRYABLE: dict[str, bool] = {
@@ -42,11 +45,12 @@ class HorizonHTTPError(Exception):
         self.retry_after = retry_after
 
     def body(self) -> dict[str, Any]:
-        err: dict[str, Any] = {"code": self.code, "message": self.message, "retryable": self.retryable}
+        # Redacted on the way out (NFR-12): provider messages and details may echo the key.
+        err: dict[str, Any] = {"code": self.code, "message": redact(self.message), "retryable": self.retryable}
         if self.retry_after is not None:
             err["retryAfterSec"] = self.retry_after
         if self.details is not None:
-            err["details"] = self.details
+            err["details"] = redact_obj(self.details)
         return {"error": err}
 
 
@@ -72,10 +76,19 @@ def error_response(err: HorizonHTTPError) -> JSONResponse:
     return JSONResponse(err.body(), status_code=err.status, headers=headers)
 
 
+def from_provider(e: ProviderError) -> HorizonHTTPError:
+    """A gateway failure as the API's error envelope (doc 03 §2 statuses; the message is already redacted)."""
+    return HorizonHTTPError(e.code, e.message, retry_after=e.retry_after)
+
+
 def install(app: FastAPI) -> None:
     @app.exception_handler(HorizonHTTPError)
     async def _horizon(_req: Request, exc: HorizonHTTPError) -> JSONResponse:
         return error_response(exc)
+
+    @app.exception_handler(ProviderError)
+    async def _provider(_req: Request, exc: ProviderError) -> JSONResponse:
+        return error_response(from_provider(exc))
 
     @app.exception_handler(RequestValidationError)
     async def _invalid(_req: Request, exc: RequestValidationError) -> JSONResponse:

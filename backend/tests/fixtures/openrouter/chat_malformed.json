@@ -1,0 +1,8 @@
+{
+  "verified": false,
+  "source": "A 200 whose body isn't a completion (malformed)",
+  "status": 200,
+  "body": {
+    "unexpected": true
+  }
+}

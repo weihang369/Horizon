@@ -74,33 +74,48 @@ def _est(est_reply_points: float | None) -> float:
     return EST_REPLY_POINTS["off_peak"] if est_reply_points is None else est_reply_points
 
 
-def settle(e: Energy, now_ms: float, *, frozen: bool = False, est_reply_points: float | None = None) -> Energy:
-    """Materialise regen and the day roll at `now_ms` (REAL value kept). `frozen` = demo mode: state only."""
+def settle(e: Energy, now_ms: float, *, frozen: bool = False, est_reply_points: float | None = None,
+           utc_offset_min: int = DAY_UTC_OFFSET_MIN) -> Energy:
+    """Materialise regen and the day roll at `now_ms` (REAL value kept). `frozen` = demo mode: state only.
+
+    `utc_offset_min` is the energy-day offset: the fixtures pin MYT; the backend passes HORIZON_TZ's offset."""
     est = _est(est_reply_points)
     if frozen:
         return _with(e, state=energy_state(e["current"], e["max"], est))
-    rolled = day_roll(e, now_ms)
+    rolled = day_roll(e, now_ms, utc_offset_min)
     current = regen_at(rolled, now_ms)
     return _with(rolled, current=current, asOf=iso_from_ms(now_ms), state=energy_state(current, e["max"], est),
                  fullAt=full_at(current, e["max"], e["regenPerHour"], now_ms))
 
 
-def drain(e: Energy, points: float, now_ms: float, *, frozen: bool = False, est_reply_points: float | None = None) -> Energy:
+def drain(e: Energy, points: float, now_ms: float, *, frozen: bool = False, est_reply_points: float | None = None,
+          utc_offset_min: int = DAY_UTC_OFFSET_MIN) -> Energy:
     """A character's own reply (D-42). Overdraft clamps at 0; the reply still finishes."""
     est = _est(est_reply_points)
-    s = settle(e, now_ms, frozen=frozen, est_reply_points=est)
+    s = settle(e, now_ms, frozen=frozen, est_reply_points=est, utc_offset_min=utc_offset_min)
     current = max(0.0, s["current"] - points)
     return _with(s, current=current, state=energy_state(current, e["max"], est),
                  fullAt=full_at(current, e["max"], e["regenPerHour"], now_ms), spentToday=s["spentToday"] + points)
 
 
-def top_up(e: Energy, points: float, now_ms: float, *, frozen: bool = False, est_reply_points: float | None = None) -> Energy:
+def top_up(e: Energy, points: float, now_ms: float, *, frozen: bool = False, est_reply_points: float | None = None,
+           utc_offset_min: int = DAY_UTC_OFFSET_MIN) -> Energy:
     """ENG-05: may exceed max for today. Gate it with `can_top_up` first (D-76)."""
     est = _est(est_reply_points)
-    s = settle(e, now_ms, frozen=frozen, est_reply_points=est)
+    s = settle(e, now_ms, frozen=frozen, est_reply_points=est, utc_offset_min=utc_offset_min)
     current = s["current"] + points
     return _with(s, current=current, state=energy_state(current, e["max"], est),
                  fullAt=full_at(current, e["max"], e["regenPerHour"], now_ms))
+
+
+def with_max(e: Energy, max_: float, now_ms: float, *, frozen: bool = False,
+             est_reply_points: float | None = None, utc_offset_min: int = DAY_UTC_OFFSET_MIN) -> Energy:
+    """Set-max (ENG-05): settle first, then the new max with `regenPerHour = max / 24`. Current is kept, even above max."""
+    est = _est(est_reply_points)
+    s = settle(e, now_ms, frozen=frozen, est_reply_points=est, utc_offset_min=utc_offset_min)
+    regen = max_ / 24
+    return _with(s, max=max_, regenPerHour=regen, state=energy_state(s["current"], max_, est),
+                 fullAt=full_at(s["current"], max_, regen, now_ms))
 
 
 class TopUpGate(TypedDict):
@@ -121,7 +136,8 @@ def to_wire_energy(e: Energy) -> Energy:
     return {**e, "current": math.floor(e["current"]), "spentToday": math.floor(e["spentToday"])}
 
 
-def read_energy(stored: Energy, now_ms: float, *, frozen: bool, est_reply_points: float) -> Energy:
+def read_energy(stored: Energy, now_ms: float, *, frozen: bool, est_reply_points: float,
+                utc_offset_min: int = DAY_UTC_OFFSET_MIN) -> Energy:
     """A character read (energy spec): derive `state` / `fullAt` for the current period, then floor for the wire.
 
     Frozen (demo mode, ENG-07): nothing regenerates, and `fullAt` is what it was at `asOf`.
@@ -131,5 +147,5 @@ def read_energy(stored: Energy, now_ms: float, *, frozen: bool, est_reply_points
         out = _with(stored, state=energy_state(cur, stored["max"], est_reply_points),
                     fullAt=full_at(cur, stored["max"], stored["regenPerHour"], ms_from_iso(stored["asOf"])))
     else:
-        out = settle(stored, now_ms, est_reply_points=est_reply_points)
+        out = settle(stored, now_ms, est_reply_points=est_reply_points, utc_offset_min=utc_offset_min)
     return to_wire_energy(out)

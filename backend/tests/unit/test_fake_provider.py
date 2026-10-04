@@ -1,0 +1,99 @@
+"""FakeOpenRouter (task 4.3): deterministic answers, 401 for sk-or-bad*, and no socket ever opened."""
+
+from __future__ import annotations
+
+import json
+import socket
+from collections.abc import Iterator
+
+import pytest
+
+from horizon.gateway.client import HttpCore
+from horizon.gateway.errors import ProviderError
+from horizon.gateway.fake import CHAT_COST, FakeOpenRouter
+from tests.gwkit import FakeKeys, block_network
+
+
+@pytest.fixture
+def no_sockets(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
+    attempts = block_network(monkeypatch)
+    yield
+    assert attempts == []
+
+
+def test_guard_blocks_real_hosts(monkeypatch: pytest.MonkeyPatch) -> None:
+    attempts = block_network(monkeypatch)
+    with pytest.raises(AssertionError):
+        socket.create_connection(("openrouter.ai", 443), timeout=1)
+    assert attempts == ["openrouter.ai"]
+
+
+def core(key: str = "sk-or-test-0001", fake: FakeOpenRouter | None = None) -> tuple[HttpCore, FakeOpenRouter]:
+    f = fake or FakeOpenRouter(models=["deepseek/deepseek-v4.1-flash", "bytedance-seed/seedream-5-0-flash"])
+    return HttpCore(FakeKeys(key), transport=f.transport()), f
+
+
+async def test_every_endpoint_answers(no_sockets: None) -> None:
+    c, f = core()
+    try:
+        assert (await c.request("GET", "/v1/key", http_timeout=5)).json()["data"]["label"] == "fake"
+        credits = (await c.request("GET", "/v1/credits", http_timeout=5)).json()["data"]
+        assert round(credits["total_credits"] - credits["total_usage"], 6) == 4.21
+        models = (await c.request("GET", "/v1/models", http_timeout=5)).json()["data"]
+        assert {"id": "bytedance-seed/seedream-5-0-flash"} in models
+        chat = (await c.request("POST", "/v1/chat/completions", json={"model": "m", "messages": [{"role": "user", "content": "hi"}]},
+                                http_timeout=5)).json()
+        assert chat["choices"][0]["message"]["content"] == "ok" and chat["usage"]["cost"] == CHAT_COST
+        gen = (await c.request("GET", "/v1/generation", params={"id": chat["id"]}, http_timeout=5)).json()["data"]
+        assert gen["total_cost"] == CHAT_COST
+        dec = (await c.request("POST", "/alpha/decisions", json={"model": "typesafe/jev-1.13", "state": {"a": 1}, "questions": {
+            "who": {"type": "choice", "instructions": "pick", "criteria": {"amara": "A", "none": "nobody"}},
+            "gate": {"type": "noul", "instructions": "need?", "criteria": {"true": "yes", "false": "no"}},
+            "tone": {"type": "score", "instructions": "how", "criteria": ["low", "mid", "high"]}}}, http_timeout=5)).json()
+        assert dec["answers"]["who"]["choice"] == "amara" and dec["answers"]["gate"] == {"noul": 0.5}
+        assert dec["answers"]["tone"]["score"] == 1 and dec["usage"]["output_tokens"] == 0
+        emb = (await c.request("POST", "/v1/embeddings", json={"model": "q", "input": ["a", "b"], "dimensions": 8},
+                               http_timeout=5)).json()
+        assert [d["index"] for d in emb["data"]] == [0, 1] and len(emb["data"][0]["embedding"]) == 8
+        assert abs(sum(x * x for x in emb["data"][0]["embedding"]) - 1) < 1e-9
+        img = (await c.request("POST", "/v1/images", json={"model": "bytedance-seed/seedream-5-0-flash", "prompt": "p"},
+                               http_timeout=5)).json()
+        assert img["usage"]["cost"] == 0.018 and img["data"][0]["b64_json"]
+    finally:
+        await c.aclose()
+    assert len(f.requests) == 8
+
+
+async def test_streaming_chat_is_sse(no_sockets: None) -> None:
+    c, _ = core()
+    try:
+        async with c.stream("POST", "/v1/chat/completions", json={"model": "m", "messages": [], "stream": True},
+                            http_timeout=5) as r:
+            lines = [ln async for ln in r.aiter_lines() if ln.startswith("data: ")]
+    finally:
+        await c.aclose()
+    assert lines[-1] == "data: [DONE]"
+    first = json.loads(lines[0][6:])
+    last = json.loads(lines[-2][6:])
+    assert first["id"] == last["id"] and last["usage"]["cost"] == CHAT_COST
+
+
+async def test_bad_key_gets_401_everywhere(no_sockets: None) -> None:
+    for path, method in (("/v1/key", "GET"), ("/v1/credits", "GET"), ("/v1/chat/completions", "POST")):
+        c, _ = core("sk-or-bad-zzz")
+        try:
+            with pytest.raises(ProviderError) as e:
+                await c.request(method, path, json={} if method == "POST" else None, http_timeout=5)
+        finally:
+            await c.aclose()
+        assert e.value.code == "invalid_key", path
+
+
+async def test_unknown_generation_is_404(no_sockets: None) -> None:
+    c, _ = core()
+    try:
+        with pytest.raises(ProviderError) as e:
+            await c.request("GET", "/v1/generation", params={"id": "gen-nope"}, http_timeout=5)
+    finally:
+        await c.aclose()
+    assert e.value.status == 404

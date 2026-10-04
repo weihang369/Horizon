@@ -114,10 +114,14 @@ export function runPortableContract(label: string, makeHarness: MakeHarness, opt
       expect(await code(c.jobs.start({ characterId: "chr_mockSarah", kind: "portrait_candidates" }))).toBe("missing_key");
     });
 
-    test("M2", "mock keys: sk-or-* valid, sk-or-bad* invalid", async () => {
+    // client-contract "Key validity is learned from the provider": only what both clients share. The mock knows a
+    // bad key at once (mock-only test); the backend learns it from OpenRouter's 401 (its test-mode fake provider).
+    test("M2", "key validity: a rejected key reads invalid after testConnection; a good key is set and passes", async () => {
       const { c } = await make();
-      expect((await c.settings.setKey("sk-or-bad-zzz")).openRouterKeyStatus).toBe("invalid");
+      await c.settings.setKey("sk-or-bad-zzz");
       expect(await code(c.settings.testConnection())).toBe("invalid_key");
+      const bad = await c.settings.get();
+      expect([bad.openRouterKeyStatus, bad.demoMode]).toEqual(["invalid", true]);
       const s = await c.settings.setKey("sk-or-good");
       expect(s.openRouterKeyStatus).toBe("set");
       expect(s.demoMode).toBe(false);

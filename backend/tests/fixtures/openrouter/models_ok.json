@@ -1,0 +1,24 @@
+{
+  "verified": true,
+  "source": "GET /api/v1/models?output_modalities=all (without the filter OpenRouter lists text models only; google/lyria-3-clip is not on OpenRouter at all). Confirmed by the live run on 2026-10-04.",
+  "status": 200,
+  "body": {
+    "data": [
+      {
+        "id": "deepseek/deepseek-v4.1-flash"
+      },
+      {
+        "id": "typesafe/jev-1.13"
+      },
+      {
+        "id": "qwen/qwen3-embedding-8b"
+      },
+      {
+        "id": "bytedance-seed/seedream-5-0-flash"
+      },
+      {
+        "id": "google/lyria-3-clip"
+      }
+    ]
+  }
+}

@@ -4,7 +4,9 @@ Precedence for every setting: environment > `.env` (repo root) > `data/settings.
 This module owns the process-level values (paths, time zone, test mode, bind address). The UI-editable `AppSettings`
 layering (local JSON over seed JSON) lives in `services/settings.py`.
 
-M1b never reads the OpenRouter key: key handling arrives with M2 (design OQ-3).
+The OpenRouter key (M2, doc 01 §5) is read from the environment, then `.env`, into a `SecretStr`; `data/secrets.local.json`
+is the fallback, owned by `services/keys.py`. Test mode never reads a key from either (openrouter-key spec), so a
+developer's real key can't leak into a test run or make a live call.
 """
 
 from __future__ import annotations
@@ -14,15 +16,16 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from dotenv import dotenv_values
+from pydantic import SecretStr
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 LOOPBACK = "127.0.0.1"
 DEFAULT_PORT = 8000
 
-# Process variables this module reads. OPENROUTER_API_KEY is deliberately absent.
+# Process variables this module reads. An empty value counts as unset (`.env.example` ships blanks).
 KNOWN_VARS = (
     "HORIZON_ROOT", "HORIZON_DATA_DIR", "HORIZON_SEED_DIR", "HORIZON_TZ", "HORIZON_TEST", "HORIZON_PORT",
-    "HORIZON_LOG_LEVEL", "HORIZON_STATIC_DIR",
+    "HORIZON_LOG_LEVEL", "HORIZON_STATIC_DIR", "OPENROUTER_API_KEY",
 )
 
 
@@ -32,10 +35,10 @@ def _layered_env(root: Path, environ: dict[str, str] | None) -> dict[str, str]:
     file_vals = {k: v for k, v in dotenv_values(dot).items() if v is not None} if dot.is_file() else {}
     merged: dict[str, str] = {}
     for k in KNOWN_VARS:
-        if k in env:
-            merged[k] = env[k]
-        elif k in file_vals:
-            merged[k] = file_vals[k]
+        if env.get(k, "").strip():
+            merged[k] = env[k].strip()
+        elif file_vals.get(k, "").strip():
+            merged[k] = file_vals[k].strip()
     return merged
 
 
@@ -49,7 +52,13 @@ class Config:
     port: int = DEFAULT_PORT
     log_level: str = "INFO"
     static_dir: Path | None = None
+    # From OPENROUTER_API_KEY (env > .env). Always None in test mode. SecretStr: repr/str never show it.
+    openrouter_key: SecretStr | None = None
     extra: dict[str, str] = field(default_factory=dict)
+
+    def __post_init__(self) -> None:
+        if self.test_mode and self.openrouter_key is not None:  # holds for CLI/test overrides too
+            object.__setattr__(self, "openrouter_key", None)
 
     @property
     def db_path(self) -> Path:
@@ -84,15 +93,18 @@ def load_config(environ: dict[str, str] | None = None, **overrides: object) -> C
     data_dir = Path(env["HORIZON_DATA_DIR"]).resolve() if "HORIZON_DATA_DIR" in env else root / "data"
     seed_dir = Path(env["HORIZON_SEED_DIR"]).resolve() if "HORIZON_SEED_DIR" in env else root / "seed"
     static = env.get("HORIZON_STATIC_DIR")
+    test_mode = env.get("HORIZON_TEST") == "1"
+    key = env.get("OPENROUTER_API_KEY")
     values: dict[str, object] = {
         "repo_root": root,
         "data_dir": data_dir,
         "seed_dir": seed_dir,
         "tz": env.get("HORIZON_TZ", "Asia/Kuala_Lumpur"),
-        "test_mode": env.get("HORIZON_TEST") == "1",
+        "test_mode": test_mode,
         "port": int(env.get("HORIZON_PORT", DEFAULT_PORT)),
         "log_level": env.get("HORIZON_LOG_LEVEL", "INFO").upper(),
         "static_dir": Path(static).resolve() if static else None,
+        "openrouter_key": SecretStr(key) if key and not test_mode else None,
     }
     values.update(overrides)
     return Config(**values)  # type: ignore[arg-type]

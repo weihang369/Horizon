@@ -30,6 +30,7 @@ dev = [
   "ruff>=0.8",
   "mypy>=1.13",
   "types-jsonschema>=4.23",
+  "respx>=0.21",
 ]
 # Setup step 2 (optional, D-62): document conversion on the CPU. Synced by `npm run setup:docling`, never by `setup`.
 docling = [
@@ -62,6 +63,8 @@ testpaths = ["tests"]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
 filterwarnings = ["ignore::DeprecationWarning:aiosqlite.*"]
+markers = ["live: calls the real OpenRouter API with the key from the environment (manual, <= $0.05; never in CI)"]
+addopts = "-m 'not live'"
 
 [tool.ruff]
 line-length = 140
@@ -69,8 +72,15 @@ target-version = "py312"
 extend-exclude = ["horizon/db/migrations/versions"]
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "UP", "B", "ASYNC", "RUF"]
+select = ["E", "F", "I", "UP", "B", "ASYNC", "RUF", "TID"]
 ignore = ["RUF001", "RUF002", "RUF003"]
+
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+"httpx".msg = "Outbound HTTP lives only in horizon/gateway/ (doc 01 §2): call the gateway instead."
+
+[tool.ruff.lint.per-file-ignores]
+"horizon/gateway/**" = ["TID251"]
+"tests/**" = ["TID251"]
 
 [tool.mypy]
 python_version = "3.12"
@@ -78,5 +88,5 @@ packages = ["horizon"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
-module = ["horizon.domain.*", "horizon.contract.*", "horizon.services.runtime.reducer"]
+module = ["horizon.domain.*", "horizon.contract.*", "horizon.services.runtime.reducer", "horizon.gateway.*", "horizon.ai.decider"]
 strict = true

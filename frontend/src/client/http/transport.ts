@@ -56,6 +56,11 @@ export class Transport {
     return this.send<T>("PATCH", path, { body });
   }
 
+  /** PUT replaces a value (the key, an energy max): naturally idempotent, so no Idempotency-Key. */
+  put<T>(path: string, body: unknown): Promise<T> {
+    return this.send<T>("PUT", path, { body });
+  }
+
   delete(path: string): Promise<void> {
     return this.send<void>("DELETE", path, {});
   }

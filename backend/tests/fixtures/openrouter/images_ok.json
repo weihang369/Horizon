@@ -1,0 +1,18 @@
+{
+  "verified": false,
+  "source": "POST /api/v1/images (doc 04 §1; response shape assumed OpenAI-like)",
+  "status": 200,
+  "body": {
+    "id": "gen-rec-000008",
+    "model": "bytedance-seed/seedream-5-0-flash",
+    "provider": "ByteDance",
+    "data": [
+      {
+        "b64_json": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="
+      }
+    ],
+    "usage": {
+      "cost": 0.018
+    }
+  }
+}

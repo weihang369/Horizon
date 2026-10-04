@@ -182,7 +182,7 @@ async def test_settings_peak_and_today_spend(api: Api) -> None:
     assert (await api.json("/api/v1/usage/summary"))["todayUsd"] == 0.0123
 
 
-async def test_settings_ignore_a_configured_key(make_api: Any, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+async def test_test_mode_ignores_a_configured_key(make_api: Any, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("OPENROUTER_API_KEY", "sk-or-v1-should-not-appear")
     a: Api = await make_api(data_dir=tmp_path / "keyed")
     r = await a.get("/api/v1/settings")

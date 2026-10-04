@@ -3,11 +3,11 @@
 // without a request, with a non-retryable `validation` error whose `details.availableIn` names the milestone.
 import { HorizonError } from "../../contract/errors";
 import type {
-  AppSettings, Character, EmotionAsset, GenerationJob, KnowledgeChunk, KnowledgeSource, MemoryItem, Message, Session,
+  AppSettings, Character, EmotionAsset, Energy, GenerationJob, KnowledgeChunk, KnowledgeSource, MemoryItem, Message, Session,
   SessionEvent, ThemeSong, TurnTrace, UsageRecord, World,
 } from "../../contract/types";
 import type {
-  GlobalEvent, HorizonClient, JobEvent, SessionSnapshot, Unsubscribe, UsageSummary,
+  ConnectionResult, GlobalEvent, HorizonClient, JobEvent, ModelTestResult, SessionSnapshot, Unsubscribe, UsageSummary,
 } from "../HorizonClient";
 import { collect } from "./paging";
 import { GlobalStream, SessionStreams } from "./sse";
@@ -15,7 +15,7 @@ import type { EventSourceCtor } from "./sse";
 import { Transport } from "./transport";
 import type { FetchLike } from "./transport";
 
-export type Milestone = "M2" | "M3" | "M4" | "M5" | "M6";
+export type Milestone = "M3" | "M4" | "M5" | "M6";
 
 export interface HttpClientOptions {
   /** "/api/v1" in the browser (Vite proxies it); an absolute URL in Node tests. */
@@ -59,10 +59,10 @@ export class HttpClient implements HorizonClient {
 
   settings: HorizonClient["settings"] = {
     get: () => this.t.get<AppSettings>("/settings"),
-    update: later("M2"),
-    setKey: later("M2"),
-    testConnection: later("M2"),
-    testModel: later("M2"),
+    update: (patch) => this.t.patch<AppSettings>("/settings", patch),
+    setKey: (key) => this.t.put<AppSettings>("/settings/key", { key }),
+    testConnection: () => this.t.post<ConnectionResult>("/settings/test-connection"),
+    testModel: (role) => this.t.post<ModelTestResult>("/settings/test-model", { role }),
   };
 
   worlds: HorizonClient["worlds"] = {
@@ -90,8 +90,8 @@ export class HttpClient implements HorizonClient {
     restore: later("M4"),
     delete: later("M4"),
     acceptAssetVersion: later("M4"),
-    topUpEnergy: later("M2"),
-    setEnergyMax: later("M2"),
+    topUpEnergy: (id, points) => this.t.post<Energy>(`/characters/${enc(id)}/energy/top-up`, { points }),
+    setEnergyMax: (id, points) => this.t.put<Energy>(`/characters/${enc(id)}/energy/max`, { points }),
     forgetMemory: later("M5"),
     addKnowledge: later("M5"),
     deleteKnowledge: later("M5"),

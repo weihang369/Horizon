@@ -23,7 +23,7 @@ def rt_of(request: Request) -> Runtime:
 
 
 def read_ctx(rt: Runtime) -> ReadContext:
-    return ReadContext(now_ms=to_ms(rt.clock.now()), est_reply_points=rt.est_reply_points(), demo_mode=True)
+    return ReadContext(now_ms=to_ms(rt.clock.now()), est_reply_points=rt.est_reply_points(), demo_mode=rt.keys.demo_mode())
 
 
 def check(rt: Runtime, def_name: str, value: Any) -> None:

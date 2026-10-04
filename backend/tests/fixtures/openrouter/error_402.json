@@ -1,0 +1,11 @@
+{
+  "verified": false,
+  "source": "Out of credits: OpenRouter API docs (chat completions / streaming / usage accounting), 2026-10; doc backend/04 §1",
+  "status": 402,
+  "body": {
+    "error": {
+      "code": 402,
+      "message": "Insufficient credits. Add more using https://openrouter.ai/credits"
+    }
+  }
+}

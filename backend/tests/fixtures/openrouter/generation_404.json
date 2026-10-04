@@ -1,0 +1,11 @@
+{
+  "verified": true,
+  "source": "GET /api/v1/generation before the generation is indexed: OpenRouter API docs (chat completions / streaming / usage accounting), 2026-10; doc backend/04 §1 Confirmed by the live run on 2026-10-04.",
+  "status": 404,
+  "body": {
+    "error": {
+      "code": 404,
+      "message": "Generation not found"
+    }
+  }
+}

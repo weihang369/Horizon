@@ -47,7 +47,7 @@
 - **NFR-33 (provider routing):**
   - Committed config pins the main LLM to the **DeepSeek first-party endpoint**, with `require_parameters: true`.
   - Fallback goes only to **full-precision** providers (no fp4/fp8).
-  - A data-collection policy is set.
+  - A data-collection policy is set: `allow` for the main LLM, so the DeepSeek first-party endpoint stays eligible (D-80).
   - The ledger records `provider` and `pricePeriod`.
 - **NFR-35 (cache-friendly prompts):** Prompt layout puts static content first (style/persona), then history, with dynamic blocks (memory, retrieval) **last**, to maximise cache hits. The cache-hit % appears in Insight.
 

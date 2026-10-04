@@ -28,6 +28,53 @@
       "song": 0.04,
       "profileDraft": 0.002,
       "blinkFrame": 0.018
+    },
+    "peak": {
+      "multiplier": 2,
+      "tz": "Asia/Kuala_Lumpur",
+      "windows": [
+        [
+          540,
+          720
+        ],
+        [
+          840,
+          1080
+        ]
+      ]
+    },
+    "gateway": {
+      "routing": {
+        "order": [
+          "DeepSeek"
+        ],
+        "require_parameters": true,
+        "allow_fallbacks": true,
+        "quantizations": [
+          "bf16",
+          "fp16",
+          "fp32",
+          "unknown"
+        ],
+        "data_collection": "allow"
+      },
+      "fallbackModel": "deepseek/deepseek-v4-flash",
+      "embeddingProvider": "Nebius",
+      "embedBatch": 32,
+      "timeoutsMs": {
+        "chatFirstToken": 20000,
+        "chatIdle": 30000,
+        "image": 180000,
+        "embedding": 30000,
+        "meta": 10000,
+        "decision": {
+          "route": 400,
+          "gate": 500,
+          "rerank": 600,
+          "emotion": 300,
+          "default": 3000
+        }
+      }
     }
   }
 }

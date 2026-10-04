@@ -1,7 +1,12 @@
 """The backend runtime: everything the app holds between requests, and the startup lifespan (doc 01 §8).
 
 Startup (in order): create `data/` → logging → `alembic upgrade head` → SpaceManager → seed if empty →
-close leftover `streaming` messages → [recover jobs: M4] → [drain the AI purge queue: M3] → sweeper.
+close leftover `streaming` messages → [recover jobs: M4] → [drain the AI purge queue: M3] → resume cost corrections
+(M2) → sweeper.
+
+M2 (design D15): the key store, the gateway (the in-process fake provider in test mode), the reservation book, the
+ledger writer, per-character energy locks and the cost corrector are built on start and torn down on stop, so a factory
+reset drops reservations, the rejected-key memory and the secrets file together.
 
 `factory_reset()` runs the Windows-safe sequence (doc 02 §4, design D12) behind a lifecycle gate: new requests
 wait, in-flight requests drain, the engines and log file are closed, `data/` is removed except `models/`, and
@@ -25,6 +30,7 @@ from typing import Any
 from sqlalchemy import select, text
 
 from horizon import logs
+from horizon.ai.decider import Decider, DeciderFixtures
 from horizon.config import Config
 from horizon.contract import mappers as mp
 from horizon.contract.validate import ContractSchema, default_schema
@@ -35,11 +41,21 @@ from horizon.db.uow import Database
 from horizon.domain.clock import Clock, SystemClock, calendar_for
 from horizon.domain.energy import energy_day as _energy_day_ms
 from horizon.domain.ids import new_id
+from horizon.domain.pricing import PriceTable, load_price_table
 from horizon.domain.timeutil import ms_from_iso, to_iso
 from horizon.events.bus import GLOBAL, EventBus, session_channel
+from horizon.gateway.client import HttpCore
+from horizon.gateway.fake import FakeOpenRouter
+from horizon.gateway.pipeline import Caps, Gateway
+from horizon.gateway.reservations import ReservationBook
+from horizon.gateway.types import GatewayConfig
 from horizon.services import seed as seeding
+from horizon.services.corrector import CostCorrector
+from horizon.services.energy_writes import EnergyLocks, EnergyParams
+from horizon.services.keys import KeyStore
+from horizon.services.ledger import LedgerWriter
 from horizon.services.runtime.reducer import apply_event, initial_runtime, ordered_messages
-from horizon.services.settings import local_day, read_local_settings, read_seed_settings
+from horizon.services.settings import deep_merge, local_day, read_local_settings, read_seed_settings
 
 log = logging.getLogger("horizon.runtime")
 
@@ -82,7 +98,9 @@ class Runtime:
     def __init__(self, cfg: Config, *, clock: Clock | None = None, schema: ContractSchema | None = None) -> None:
         self.cfg = cfg
         self.schema = schema or default_schema()
-        self.clock: Clock = clock or SystemClock(calendar_for(cfg.tz))
+        self.prices: PriceTable = load_price_table(cfg.seed_dir)
+        peak = self.prices.peak
+        self.clock: Clock = clock or SystemClock(calendar_for(cfg.tz, peak_tz=peak.tz, windows=peak.windows))
         self.bus = EventBus()
         self.gate = Gate()
         self._db: Database | None = None
@@ -92,6 +110,16 @@ class Runtime:
         self.started = False
         self.sse_ping_sec = 15.0
         self.loop: asyncio.AbstractEventLoop | None = None
+        # M2: built in start(), torn down in stop().
+        self.energy_locks = EnergyLocks()
+        self.book = ReservationBook()
+        self._keys: KeyStore | None = None
+        self._gateway: Gateway | None = None
+        self._corrector: CostCorrector | None = None
+        self._decider: Decider | None = None
+        self.decider_fixtures = DeciderFixtures()
+        self.settings_lock = asyncio.Lock()
+        self.fake: FakeOpenRouter | None = None
 
     # ── accessors ──
     @property
@@ -99,6 +127,79 @@ class Runtime:
         if self._db is None:
             raise RuntimeError("runtime not started")
         return self._db
+
+    @property
+    def keys(self) -> KeyStore:
+        if self._keys is None:
+            raise RuntimeError("runtime not started")
+        return self._keys
+
+    @property
+    def gateway(self) -> Gateway:
+        if self._gateway is None:
+            raise RuntimeError("runtime not started")
+        return self._gateway
+
+    @property
+    def corrector(self) -> CostCorrector:
+        if self._corrector is None:
+            raise RuntimeError("runtime not started")
+        return self._corrector
+
+    @property
+    def decider(self) -> Decider:
+        if self._decider is None:
+            raise RuntimeError("runtime not started")
+        return self._decider
+
+    def settings_doc(self) -> dict[str, Any]:
+        """Seed settings overlaid by the local file (the editable layer; computed fields come from services/settings)."""
+        return deep_merge(self.seed_settings, self.local_settings())
+
+    def caps(self) -> Caps:
+        b = self.settings_doc()["budget"]
+        return Caps(daily_cap_usd=float(b["dailyCapUsd"]), creation_cap_usd=float(b["perCharacterCreationCapUsd"]),
+                    warn_at_pct=float(b["warnAtPct"]))
+
+    def utc_offset_min(self) -> int:
+        offset = self.clock.calendar.local(self.clock.now()).utcoffset()
+        return int(offset.total_seconds() // 60) if offset is not None else 0
+
+    def energy_params(self) -> EnergyParams:
+        return EnergyParams(now_ms=ms_from_iso(self.now_iso()), frozen=self.keys.demo_mode(),
+                            est_reply_points=self.est_reply_points(),
+                            usd_per_point=float(self.settings_doc()["energy"]["usdPerPoint"]),
+                            utc_offset_min=self.utc_offset_min())
+
+    def _settings_changed(self) -> None:
+        self.publish(GLOBAL, {"type": "entity.changed", "kind": "settings"})
+
+    def _build_m2(self) -> None:
+        cfg = self.cfg
+        models = self.seed_settings["models"]
+        self._keys = KeyStore(cfg.openrouter_key, cfg.data_dir, on_change=self._settings_changed)
+        self.fake = FakeOpenRouter(models=models.values()) if cfg.test_mode else None
+        core = HttpCore(self._keys, transport=self.fake.transport() if self.fake else None)
+        ledger = LedgerWriter(self.db, self.clock, self.energy_locks, self.energy_params)
+        self.book.clear()
+        self._gateway = Gateway(core=core, cfg=GatewayConfig.from_mapping(self.prices.gateway), prices=self.prices,
+                                book=self.book, ledger=ledger, caps=self.caps, period=self.clock.pricing_period,
+                                publish=lambda ev: self.publish(GLOBAL, ev), decision_model=str(models["decision"]),
+                                on_estimate_row=lambda row_id: self.corrector.enqueue(row_id))
+        self._corrector = CostCorrector(self.db, self.clock, self._gateway.meta.generation, self.energy_locks,
+                                        self.energy_params)
+        self._decider = Decider(self._gateway.decide, self._gateway.cfg.timeouts, self.decider_fixtures)
+
+    async def _stop_m2(self) -> None:
+        if self._decider is not None:
+            await self._decider.stop()  # late decisions are recorded at their estimate on the way out
+        if self._corrector is not None:
+            await self._corrector.stop()
+        if self._gateway is not None:
+            await self._gateway.drain_background()
+            await self._gateway.core.aclose()
+        self.book.clear()
+        self._gateway = self._corrector = self._keys = self._decider = None
 
     def publish(self, channel: str, event: dict[str, Any]) -> None:
         if self.cfg.test_mode:
@@ -144,11 +245,14 @@ class Runtime:
             await self.import_seed()
         await self.close_interrupted_streams()
         # Step 6 (recover jobs) arrives with M4; step 7 (drain ai_purge_queue) with M3.
+        self._build_m2()
+        await self.corrector.scan()
         await asyncio.to_thread(sweep, cfg.data_dir, self.referenced_files_sync())
         self.started = True
         log.info("horizon backend ready (data=%s, test_mode=%s)", cfg.data_dir, cfg.test_mode)
 
     async def stop(self) -> None:
+        await self._stop_m2()
         self.bus.close_all()
         if self._db is not None:
             await self._db.dispose()

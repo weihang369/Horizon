@@ -83,6 +83,19 @@
 
     { "name": "toWireEnergy: floors current and spentToday only", "fn": "toWireEnergy",
       "args": { "energy": { "max": 1000, "current": 500.17, "asOf": "2026-10-01T00:00:00.000Z", "regenPerHour": 41.666666666666664, "state": "active", "spentToday": 12.9 } },
-      "expected": { "current": 500, "spentToday": 12, "max": 1000, "regenPerHour": 41.666666666666664, "state": "active" } }
+      "expected": { "current": 500, "spentToday": 12, "max": 1000, "regenPerHour": 41.666666666666664, "state": "active" } },
+
+    { "name": "withMax: lowering below current keeps current", "fn": "withMax",
+      "args": { "energy": { "max": 1000, "current": 800, "asOf": "2026-10-01T04:00:00.000Z", "regenPerHour": 41.666666666666664, "state": "active", "spentToday": 0 }, "max": 500, "now": "2026-10-01T04:00:00.000Z", "estReplyPoints": 4 },
+      "expected": { "max": 500, "current": 800, "regenPerHour": 20.833333333333332, "state": "active", "spentToday": 0 } },
+    { "name": "withMax: raising settles regen first, then regen is max/24", "fn": "withMax",
+      "args": { "energy": { "max": 1000, "current": 100, "asOf": "2026-10-01T04:00:00.000Z", "regenPerHour": 41.666666666666664, "state": "tired", "spentToday": 0 }, "max": 1200, "now": "2026-10-01T05:00:00.000Z", "estReplyPoints": 4 },
+      "expected": { "max": 1200, "current": 141.66666666666666, "regenPerHour": 50, "state": "tired", "asOf": "2026-10-01T05:00:00.000Z", "fullAt": "2026-10-02T02:10:00.000Z" } },
+    { "name": "withMax: lowering can lift a character out of tired", "fn": "withMax",
+      "args": { "energy": { "max": 1000, "current": 150, "asOf": "2026-10-01T04:00:00.000Z", "regenPerHour": 41.666666666666664, "state": "tired", "spentToday": 0 }, "max": 500, "now": "2026-10-01T04:00:00.000Z", "estReplyPoints": 4 },
+      "expected": { "max": 500, "current": 150, "regenPerHour": 20.833333333333332, "state": "active", "fullAt": "2026-10-01T20:48:00.000Z" } },
+    { "name": "withMax: frozen (demo mode) applies no regen", "fn": "withMax",
+      "args": { "energy": { "max": 1000, "current": 300, "asOf": "2026-10-01T00:00:00.000Z", "regenPerHour": 41.666666666666664, "state": "active", "spentToday": 3 }, "max": 1200, "now": "2026-10-02T00:00:00.000Z", "estReplyPoints": 4, "frozen": true },
+      "expected": { "max": 1200, "current": 300, "regenPerHour": 50, "state": "active", "spentToday": 3, "asOf": "2026-10-01T00:00:00.000Z", "fullAt": "2026-10-02T18:00:00.000Z" } }
   ]
 }

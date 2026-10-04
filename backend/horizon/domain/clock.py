@@ -1,14 +1,15 @@
 """The Clock (doc 01 §4.7): the only source of "now". Pacing uses `sleep`, so tests can move virtual time.
 
-Pricing period (R-23, ENG-06): DeepSeek peak runs Mon–Fri 09:00–12:00 and 14:00–18:00 in HORIZON_TZ.
-The same windows as `frontend/src/domain/rushHour.ts`.
+Pricing period (R-23, ENG-06): DeepSeek peak runs Mon–Fri 09:00–12:00 and 14:00–18:00 Malaysia time. That is the
+provider's schedule, so it is pinned to `seed/pricing.json` `peak.tz` whatever HORIZON_TZ says (M2 design OQ-G). Day
+boundaries (`today`, `day_start`: spentToday, the energy day) stay in HORIZON_TZ. Same windows as `rushHour.ts`.
 """
 
 from __future__ import annotations
 
 import asyncio
 from collections.abc import Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import UTC, date, datetime, time, timedelta
 from typing import Literal
 from zoneinfo import ZoneInfo
@@ -16,7 +17,8 @@ from zoneinfo import ZoneInfo
 PricePeriod = Literal["peak", "off_peak"]
 
 DEFAULT_TZ = "Asia/Kuala_Lumpur"
-# Peak windows in local minutes-of-day: [start, end).
+PEAK_TZ = "Asia/Kuala_Lumpur"  # mirrors seed/pricing.json peak.tz (a test pins the two together)
+# Peak windows in PEAK_TZ minutes-of-day: [start, end).
 PEAK_WINDOWS: tuple[tuple[int, int], ...] = ((9 * 60, 12 * 60), (14 * 60, 18 * 60))
 
 
@@ -24,9 +26,13 @@ PEAK_WINDOWS: tuple[tuple[int, int], ...] = ((9 * 60, 12 * 60), (14 * 60, 18 * 6
 class PricingCalendar:
     tz: ZoneInfo
     windows: Sequence[tuple[int, int]] = PEAK_WINDOWS
+    peak_tz: ZoneInfo = field(default_factory=lambda: ZoneInfo(PEAK_TZ))
 
     def local(self, at: datetime) -> datetime:
         return at.astimezone(self.tz)
+
+    def peak_local(self, at: datetime) -> datetime:
+        return at.astimezone(self.peak_tz)
 
     def today(self, at: datetime) -> date:
         return self.local(at).date()
@@ -36,7 +42,7 @@ class PricingCalendar:
         return datetime.combine(d, time(0), tzinfo=self.tz).astimezone(UTC)
 
     def period(self, at: datetime) -> PricePeriod:
-        loc = self.local(at)
+        loc = self.peak_local(at)
         if loc.weekday() >= 5:
             return "off_peak"
         minutes = loc.hour * 60 + loc.minute + loc.second / 60 + loc.microsecond / 60_000_000
@@ -44,14 +50,14 @@ class PricingCalendar:
 
     def next_change(self, at: datetime) -> datetime:
         """The first peak/off-peak boundary strictly after `at`."""
-        start = self.local(at).date()
+        start = self.peak_local(at).date()
         for offset in range(8):
             d = start + timedelta(days=offset)
             if d.weekday() >= 5:
                 continue
             for a, b in self.windows:
                 for m in (a, b):
-                    t = datetime.combine(d, time(m // 60, m % 60), tzinfo=self.tz).astimezone(UTC)
+                    t = datetime.combine(d, time(m // 60, m % 60), tzinfo=self.peak_tz).astimezone(UTC)
                     if t > at:
                         return t
         return at + timedelta(days=1)
@@ -110,5 +116,6 @@ class FrozenClock(Clock):
         await asyncio.sleep(0)
 
 
-def calendar_for(tz_name: str) -> PricingCalendar:
-    return PricingCalendar(tz=ZoneInfo(tz_name))
+def calendar_for(tz_name: str, *, peak_tz: str = PEAK_TZ,
+                 windows: Sequence[tuple[int, int]] = PEAK_WINDOWS) -> PricingCalendar:
+    return PricingCalendar(tz=ZoneInfo(tz_name), windows=tuple(windows), peak_tz=ZoneInfo(peak_tz))

@@ -1,0 +1,38 @@
+{
+  "verified": true,
+  "source": "POST /api/v1/embeddings: OpenRouter API docs (chat completions / streaming / usage accounting), 2026-10; doc backend/04 §1 Confirmed by the live run on 2026-10-04.",
+  "status": 200,
+  "body": {
+    "id": "gen-rec-000007",
+    "object": "list",
+    "model": "qwen/qwen3-embedding-8b",
+    "provider": "Nebius",
+    "data": [
+      {
+        "object": "embedding",
+        "index": 1,
+        "embedding": [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "object": "embedding",
+        "index": 0,
+        "embedding": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 6,
+      "total_tokens": 6,
+      "cost": 6e-08
+    }
+  }
+}
