@@ -1,0 +1,14 @@
+{
+  "verified": true,
+  "source": "GET /api/v1/key: OpenRouter API docs (chat completions / streaming / usage accounting), 2026-10; doc backend/04 §1 Confirmed by the live run on 2026-10-04.",
+  "status": 200,
+  "body": {
+    "data": {
+      "label": "sk-or-test-…0001",
+      "usage": 0.79,
+      "limit": null,
+      "limit_remaining": null,
+      "is_free_tier": false
+    }
+  }
+}

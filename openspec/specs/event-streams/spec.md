@@ -16,6 +16,8 @@ Defines the backend's two Server-Sent Event streams: the global stream that anno
 ### Requirement: Changes are announced
 After a write commits, the backend SHALL publish:
 - `entity.changed { kind: "world", id, worldId }` when a world is created, renamed or deleted;
+- `entity.changed { kind: "settings" }` when settings or the key are changed, or when the key status changes;
+- `entity.changed { kind: "character", id, worldId }` when a character's energy is written (top-up, set-max, a reply drain or an energy correction);
 - `mock.reset` after a demo-data reset.
 
 An event SHALL NOT be published for a write that failed.
@@ -27,6 +29,14 @@ An event SHALL NOT be published for a write that failed.
 #### Scenario: Reset announced
 - **WHEN** demo data is reset
 - **THEN** every connected global subscriber receives `{ "type": "mock.reset" }`
+
+#### Scenario: Top-up announced
+- **WHEN** a global subscriber is connected and a top-up succeeds for `chr_seedHana`
+- **THEN** the subscriber receives `entity.changed` with `kind: "character"` and `id: "chr_seedHana"`
+
+#### Scenario: Refused top-up is silent
+- **WHEN** a top-up is refused by the gate
+- **THEN** no `entity.changed` is published for it
 
 ### Requirement: Slow subscribers are dropped
 Each subscriber SHALL have a bounded queue of 1,000 events. A subscriber whose queue overflows SHALL have its stream closed, and other subscribers SHALL be unaffected.
@@ -54,3 +64,10 @@ An unknown session SHALL be rejected with 404 before the stream opens.
 #### Scenario: Unknown session
 - **WHEN** `GET /sessions/ses_nope/stream` is requested
 - **THEN** the response is 404 with the error envelope, not an event stream
+
+### Requirement: Budget events on the global stream
+The global stream SHALL carry `budget.warning { scope, spentUsd, capUsd }` when spend crosses a warning line, and `budget.reached { scope, spentUsd, capUsd, sessionId?, jobId? }` when a paid call is refused by a cap (see `budget-caps`). Each SHALL validate as a `GlobalEvent`.
+
+#### Scenario: Warning delivered
+- **WHEN** a recorded call moves daily spend across 80 % of the cap while a global subscriber is connected
+- **THEN** the subscriber receives one `budget.warning` with `scope: "daily"`

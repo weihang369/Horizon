@@ -1,0 +1,11 @@
+{
+  "verified": false,
+  "source": "Request timeout: OpenRouter API docs (chat completions / streaming / usage accounting), 2026-10; doc backend/04 §1",
+  "status": 408,
+  "body": {
+    "error": {
+      "code": 408,
+      "message": "Request timed out"
+    }
+  }
+}

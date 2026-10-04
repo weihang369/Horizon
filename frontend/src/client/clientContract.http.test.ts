@@ -1,5 +1,6 @@
 // HorizonClient contract over HTTP: the portable suite against a real test-mode backend (`npm run test:http`).
-// The backend implements milestone M1b, so later tests are listed as `[pending Mx]` (client-contract spec).
+// The backend implements milestone M2, so later tests are listed as `[pending Mx]` (client-contract spec). In test mode
+// the backend's provider is an in-process fake OpenRouter: no network, and `sk-or-bad…` keys get a 401.
 // Each test starts from a factory reset (fresh seed + _mock overlays) with the clock frozen at the mock harness's START.
 // Owner: SWE.
 import { EventSource } from "eventsource";
@@ -32,9 +33,9 @@ async function httpHarness(): Promise<ContractHarness> {
       if (r.status === 422) throw new Error(`scenario ${id} is not available on the backend yet`);
     },
     reset: () => client.admin.resetDemo(),
-    setKey: () => Promise.reject(new Error("pending M2: key handling")),
+    setKey: async () => { await client.settings.setKey("sk-or-test-0001"); },
     dispose: () => client.dispose(),
   };
 }
 
-runPortableContract("HttpClient", httpHarness, { supports: "M1b" });
+runPortableContract("HttpClient", httpHarness, { supports: "M2" });

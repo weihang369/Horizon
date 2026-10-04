@@ -2,8 +2,8 @@
 fields that are computed per request.
 
 Computed: `spentTodayUsd` (today's ledger in HORIZON_TZ), `pricing` (the Clock), `energy.estReplyPoints` and
-`models.embedding` (config-owned; a local override can't move them). Until key handling ships (M2, OQ-3) the
-key is never read: `openRouterKeyStatus` is "missing" and `demoMode` is true.
+`models.embedding` (config-owned; a local override can't move them), and `openRouterKeyStatus`/`demoMode` from the
+key store (M2, openrouter-key spec). The key itself is never part of AppSettings.
 """
 
 from __future__ import annotations
@@ -63,12 +63,49 @@ async def spent_today(conn: AsyncConnection, clock: Clock) -> float:
     return round(float(total), 6)
 
 
-async def app_settings(conn: AsyncConnection, *, seed: dict[str, Any], local: dict[str, Any], clock: Clock) -> dict[str, Any]:
+async def app_settings(conn: AsyncConnection, *, seed: dict[str, Any], local: dict[str, Any], clock: Clock,
+                       key_status: str = "missing") -> dict[str, Any]:
     s = deep_merge(seed, local)
     s["models"] = {**s["models"], "embedding": seed["models"]["embedding"]}
     s["energy"] = {**s["energy"], "estReplyPoints": dict(seed["energy"]["estReplyPoints"])}
-    s["openRouterKeyStatus"] = "missing"
-    s["demoMode"] = True
+    s["openRouterKeyStatus"] = key_status
+    s["demoMode"] = key_status != "set"
     s["spentTodayUsd"] = await spent_today(conn, clock)
     s["pricing"] = {"period": clock.pricing_period(), "nextChangeAt": to_iso(clock.next_change_at())}
     return s
+
+
+# ── PATCH /settings (http-api "Settings update", design D12) ─────────────────────
+# Computed or config-owned: ignored when a patch carries them (the portable contract test expects "ignored", OQ-E).
+IGNORED_TOP = ("openRouterKeyStatus", "demoMode", "spentTodayUsd", "pricing", "models")
+IGNORED_ENERGY = ("estReplyPoints",)
+
+
+def strip_read_only(patch: dict[str, Any]) -> dict[str, Any]:
+    out = {k: v for k, v in patch.items() if k not in IGNORED_TOP}
+    energy = out.get("energy")
+    if isinstance(energy, dict):
+        out["energy"] = {k: v for k, v in energy.items() if k not in IGNORED_ENERGY}
+    return out
+
+
+def range_problems(s: dict[str, Any]) -> list[str]:
+    """Business rules the schema can't express. Returns the offending field paths."""
+    bad: list[str] = []
+
+    def positive(path: str, v: Any) -> None:
+        if not isinstance(v, int | float) or isinstance(v, bool) or v <= 0:
+            bad.append(path)
+
+    b, e = s.get("budget", {}), s.get("energy", {})
+    positive("budget.dailyCapUsd", b.get("dailyCapUsd"))
+    positive("budget.perCharacterCreationCapUsd", b.get("perCharacterCreationCapUsd"))
+    pct = b.get("warnAtPct")
+    if not isinstance(pct, int | float) or isinstance(pct, bool) or not 0 < pct <= 100:
+        bad.append("budget.warnAtPct")
+    for k in ("defaultMaxPoints", "usdPerPoint", "topUpStepPoints"):
+        positive(f"energy.{k}", e.get(k))
+    for role, model in (s.get("modelOverrides") or {}).items():
+        if not isinstance(model, str) or not model.strip() or "latest" in model:
+            bad.append(f"modelOverrides.{role}")
+    return bad

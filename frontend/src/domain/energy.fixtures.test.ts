@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import type { Energy } from "../contract/types";
-import { canTopUp, dayRoll, drain, energyState, pointsForCost, regenAt, settle, topUp, toWireEnergy } from "./energy";
+import { canTopUp, dayRoll, drain, energyState, pointsForCost, regenAt, settle, topUp, toWireEnergy, withMax } from "./energy";
 
 interface Case { name: string; fn: string; args: Record<string, unknown>; expected: unknown }
 const FILE = path.resolve(__dirname, "../../../backend/tests/fixtures/energy/cases.json");
@@ -26,6 +26,7 @@ function run(c: Case): unknown {
     case "dayRoll": return dayRoll(e, ms(a.now), fixture.dayUtcOffsetMin);
     case "canTopUp": return canTopUp(a as never);
     case "toWireEnergy": return toWireEnergy(e);
+    case "withMax": return withMax(e, a.max as number, ms(a.now), opts(a));
     default: throw new Error(`unknown fn ${c.fn}`);
   }
 }
@@ -45,7 +46,7 @@ function match(actual: unknown, expected: unknown, at: string): void {
 describe("energy fixtures (shared with the backend)", () => {
   it("has cases for every function", () => {
     const fns = new Set(fixture.cases.map((c) => c.fn));
-    for (const f of ["pointsForCost", "regenAt", "energyState", "drain", "topUp", "settle", "dayRoll", "canTopUp", "toWireEnergy"]) expect(fns, f).toContain(f);
+    for (const f of ["pointsForCost", "regenAt", "energyState", "drain", "topUp", "settle", "dayRoll", "canTopUp", "toWireEnergy", "withMax"]) expect(fns, f).toContain(f);
   });
   for (const c of fixture.cases) {
     it(c.name, () => match(run(c), c.expected, c.fn));

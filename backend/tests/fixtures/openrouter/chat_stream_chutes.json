@@ -1,0 +1,48 @@
+{
+  "verified": false,
+  "source": "Streaming served by a non-DeepSeek provider (require_parameters fallback): OpenRouter API docs (chat completions / streaming / usage accounting), 2026-10; doc backend/04 §1",
+  "status": 200,
+  "sse": [
+    {
+      "id": "gen-rec-000004",
+      "provider": "Chutes",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "object": "chat.completion.chunk",
+      "created": 1791000000,
+      "choices": [
+        {
+          "index": 0,
+          "delta": {
+            "role": "assistant",
+            "content": "Hi"
+          },
+          "finish_reason": null
+        }
+      ]
+    },
+    {
+      "id": "gen-rec-000004",
+      "provider": "Chutes",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "object": "chat.completion.chunk",
+      "created": 1791000000,
+      "choices": [
+        {
+          "index": 0,
+          "delta": {},
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 1200,
+        "completion_tokens": 40,
+        "total_tokens": 1240,
+        "prompt_tokens_details": {
+          "cached_tokens": 1024
+        },
+        "cost": 0.0011
+      }
+    },
+    "[DONE]"
+  ]
+}

@@ -26,6 +26,22 @@ export const PRICING: PricingTable = {
     profileDraft: 0.002,
     blinkFrame: SEEDREAM_PER_IMAGE,
   },
+  // DeepSeek first-party peak (R-23, D-41): Mon–Fri 09:00–12:00 and 14:00–18:00 Malaysia time, ×2. Same as rushHour.ts.
+  peak: { multiplier: 2, tz: "Asia/Kuala_Lumpur", windows: [[540, 720], [840, 1080]] },
+  // Backend gateway (doc backend/04 §1, NFR-33, D-80): pinned routing for the main LLM, per-purpose timeouts, embedding batches.
+  gateway: {
+    routing: {
+      order: ["DeepSeek"], require_parameters: true, allow_fallbacks: true,
+      quantizations: ["bf16", "fp16", "fp32", "unknown"], data_collection: "allow", // D-80
+    },
+    fallbackModel: "deepseek/deepseek-v4-flash",
+    embeddingProvider: "Nebius",
+    embedBatch: 32,
+    timeoutsMs: {
+      chatFirstToken: 20_000, chatIdle: 30_000, image: 180_000, embedding: 30_000, meta: 10_000,
+      decision: { route: 400, gate: 500, rerank: 600, emotion: 300, default: 3_000 },
+    },
+  },
 };
 
 export const MODELS = {

@@ -40,11 +40,12 @@ ChatChunk   = { generation_id (required; taken from the first chunk), content?, 
 
 ```json
 { "provider": { "order": ["DeepSeek"], "require_parameters": true, "allow_fallbacks": true,
-                "quantizations": ["bf16", "fp16", "fp32", "unknown"], "data_collection": "deny" },
+                "quantizations": ["bf16", "fp16", "fp32", "unknown"], "data_collection": "allow" },
   "usage": { "include": true } }
 ```
 
 - Model IDs are pinned in config. The fallback model is `deepseek/deepseek-v4-flash`.
+- **`data_collection: "allow"` (D-80).** DeepSeek's first-party endpoint may train on inputs, so under `deny` OpenRouter removes it and routes to the cheapest third party. The user's OpenRouter privacy settings must also allow paid endpoints that may train on inputs; otherwise OpenRouter's guardrail still removes DeepSeek (verified in the M2 live run).
 - **If the provider that served the call isn't DeepSeek, a warning goes into the trace.** `require_parameters` can route a call away from the first-party endpoint when a parameter such as `logprobs` isn't supported there (verify in M2), which loses caching and breaks the price assumptions.
 
 **Timeouts.**

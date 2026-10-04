@@ -1,0 +1,48 @@
+{
+  "verified": true,
+  "source": "POST /api/alpha/decisions: top level {id, model, provider, answers, usage}; each answer carries its `type`; a score's `legend` is an object keyed by level. Confirmed by the live run on 2026-10-04.",
+  "status": 200,
+  "body": {
+    "id": "dec-rec-000001",
+    "model": "typesafe/jev-1.13",
+    "answers": {
+      "route": {
+        "type": "choice",
+        "choice": "chr_seedAmara",
+        "confidence": 0.82,
+        "probabilities": {
+          "chr_seedAmara": 0.82,
+          "chr_seedHana": 0.15,
+          "none": 0.03
+        }
+      },
+      "gate": {
+        "type": "noul",
+        "noul": 0.71
+      },
+      "tone": {
+        "type": "score",
+        "score": 2.4,
+        "confidence": 0.6,
+        "probabilities": {
+          "0": 0.05,
+          "1": 0.1,
+          "2": 0.3,
+          "3": 0.55
+        },
+        "legend": {
+          "0": "cold",
+          "1": "neutral",
+          "2": "warm",
+          "3": "glowing"
+        }
+      }
+    },
+    "usage": {
+      "input_tokens": 840,
+      "output_tokens": 0,
+      "cost": 3.528e-05
+    },
+    "provider": "TypeSafe"
+  }
+}

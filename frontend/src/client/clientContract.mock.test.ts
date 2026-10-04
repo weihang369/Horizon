@@ -61,6 +61,12 @@ describe("MockClient only", () => {
     expect(src).toMatch(/runPortableContract\("MockClient", \(\) => mockHarness\(\)\);/);
   });
 
+  it("setKey(sk-or-bad…) is invalid immediately (mock semantics; the backend learns it from a 401)", async () => {
+    const { client } = await mockHarness();
+    expect((await client.settings.setKey("sk-or-bad-zzz")).openRouterKeyStatus).toBe("invalid");
+    expect((await client.settings.setKey("not-a-key")).openRouterKeyStatus).toBe("invalid");
+  });
+
   it("demo speed ×4 compresses mock time", async () => {
     const h = await mockHarness({ speed: 4 });
     await h.setKey();

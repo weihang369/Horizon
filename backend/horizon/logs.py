@@ -1,28 +1,24 @@
 """Structured JSON logs (doc 01 §9): `data/logs/horizon.log` (rotating 5 × 5 MB) and the console.
 
 Every line carries `request_id` while a request is being handled. The key is redacted from the message,
-its arguments and exception text (NFR-12): any `sk-or-…` token becomes `sk-or-[REDACTED]`.
+its arguments and exception text (NFR-12) with the shared rule in `gateway/redact.py`: any `sk-or-…` token
+becomes `sk-or-***`.
 """
 
 from __future__ import annotations
 
 import json
 import logging
-import re
 from contextvars import ContextVar
 from datetime import UTC, datetime
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
+from horizon.gateway.redact import redact
+
 request_id_var: ContextVar[str | None] = ContextVar("request_id", default=None)
 
-KEY_RE = re.compile(r"sk-or-[A-Za-z0-9_\-]+")
-REDACTED = "sk-or-[REDACTED]"
 _HANDLER_TAG = "_horizon_handler"
-
-
-def redact(text: str) -> str:
-    return KEY_RE.sub(REDACTED, text)
 
 
 class RedactFilter(logging.Filter):

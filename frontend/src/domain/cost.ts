@@ -17,11 +17,33 @@ export interface GenerationPrices {
 /** rev 1.3: embeddings bill input tokens only (D-64). */
 export interface EmbeddingPrice { model: string; provider: string; inputPerM: number }
 
+/** DeepSeek peak pricing (R-23, ENG-06): windows are [start, end) minutes of the day in `tz`, Mon–Fri. */
+export interface PeakConfig { multiplier: number; tz: string; windows: [number, number][] }
+
+/** Backend-only gateway config (doc backend/04 §1): pinned routing, timeouts, embedding batching. The mock ignores it. */
+export interface GatewayConfig {
+  routing: {
+    order: string[]; require_parameters: boolean; allow_fallbacks: boolean;
+    quantizations: string[]; data_collection: "allow" | "deny";
+  };
+  fallbackModel: string;
+  embeddingProvider: string;
+  embedBatch: number;
+  timeoutsMs: {
+    chatFirstToken: number; chatIdle: number; image: number; embedding: number; meta: number;
+    decision: { route: number; gate: number; rerank: number; emotion: number; default: number };
+  };
+}
+
 export interface PricingTable {
   chat: ChatPrice;
   decision: ChatPrice;
   embedding: EmbeddingPrice;
   generation: GenerationPrices;
+  /** M2 additive: read by the backend's pricing clock and estimates. */
+  peak?: PeakConfig;
+  /** M2 additive: read by the backend gateway only. */
+  gateway?: GatewayConfig;
 }
 
 /** Typical Jev routing question size (state + one choice question). Output is free (D-66). */

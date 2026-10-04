@@ -102,8 +102,6 @@ describe("HttpClient", () => {
       ["chat.send", () => c.chat.send("ses_a", "hi"), "M3"],
       ["sessions.create", () => c.sessions.create({ worldId: "w", mode: "one_on_one", characterIds: [] }), "M3"],
       ["sessions.export", () => c.sessions.export("ses_a"), "M3"],
-      ["settings.setKey", () => c.settings.setKey("sk-or-x"), "M2"],
-      ["characters.topUpEnergy", () => c.characters.topUpEnergy("chr_a", 5), "M2"],
       ["jobs.start", () => c.jobs.start({ characterId: "chr_a", kind: "song" }), "M4"],
       ["worlds.uploadCover", () => c.worlds.uploadCover("wld_a", new Blob() as File), "M4"],
       ["characters.addKnowledge", () => c.characters.addKnowledge("chr_a", { type: "text", title: "t", text: "x" }), "M5"],
@@ -114,6 +112,38 @@ describe("HttpClient", () => {
       expect([e.code, e.retryable, e.details?.availableIn], name).toEqual(["validation", false, m]);
     }
     expect(calls).toEqual([]);
+  });
+
+  it("M2 settings and energy methods call their routes (no longer pending)", async () => {
+    const energy = { max: 1000, current: 600, asOf: "2026-10-03T03:00:00.000Z", regenPerHour: 41.67, state: "active", spentToday: 0 };
+    const { c, calls } = make((url) => json(200, url.includes("/energy/") ? energy : url.includes("test-") ? { ok: true, latencyMs: 9 } : {}));
+    await c.settings.setKey("sk-or-test-0001");
+    await c.settings.setKey(null);
+    await c.settings.update({ budget: { dailyCapUsd: 0.6 } });
+    await c.settings.testConnection();
+    await c.settings.testModel("embedding");
+    expect(await c.characters.topUpEnergy("chr_a", 500)).toEqual(energy);
+    await c.characters.setEnergyMax("chr_a", 800);
+    const seen = calls.map((x) => [x.init?.method, x.url.replace(/^.*\/api\/v1/, ""), x.init?.body ?? null]);
+    expect(seen).toEqual([
+      ["PUT", "/settings/key", JSON.stringify({ key: "sk-or-test-0001" })],
+      ["PUT", "/settings/key", JSON.stringify({ key: null })],
+      ["PATCH", "/settings", JSON.stringify({ budget: { dailyCapUsd: 0.6 } })],
+      ["POST", "/settings/test-connection", null],
+      ["POST", "/settings/test-model", JSON.stringify({ role: "embedding" })],
+      ["POST", "/characters/chr_a/energy/top-up", JSON.stringify({ points: 500 })],
+      ["PUT", "/characters/chr_a/energy/max", JSON.stringify({ points: 800 })],
+    ]);
+    const headers = (i: number) => calls[i].init?.headers as Record<string, string>;
+    expect(headers(5)["Idempotency-Key"]).toBeTruthy(); // the top-up POST
+    expect(headers(0)["Idempotency-Key"]).toBeUndefined(); // PUTs are naturally idempotent
+  });
+
+  it("a refused top-up maps to daily_budget_exceeded", async () => {
+    const { c } = make(() => json(402, { error: { code: "daily_budget_exceeded", message: "Top-ups are bounded by today's budget.", retryable: false, details: { todayTopUpPoints: 5000, points: 5000 } } }));
+    const e = (await c.characters.topUpEnergy("chr_a", 5000).catch((x: unknown) => x)) as HorizonError;
+    expect(e).toBeInstanceOf(HorizonError);
+    expect([e.code, e.details?.points]).toEqual(["daily_budget_exceeded", 5000]);
   });
 
   it("onGlobal shares one EventSource; the last unsubscribe closes it", () => {

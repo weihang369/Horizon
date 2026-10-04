@@ -43,11 +43,13 @@ class Api:
         return r.json()
 
 
-def make_config(data_dir: Path, *, test_mode: bool) -> Config:
+def make_config(data_dir: Path, *, test_mode: bool, **overrides: Any) -> Config:
     env = {"HORIZON_DATA_DIR": str(data_dir)}
     if test_mode:
         env["HORIZON_TEST"] = "1"
-    return load_config(environ=env)
+    # Never pick up a developer's real key from the repo's .env: normal-mode tests opt in with a fake one.
+    overrides.setdefault("openrouter_key", None)
+    return load_config(environ=env, **overrides)
 
 
 @pytest.fixture

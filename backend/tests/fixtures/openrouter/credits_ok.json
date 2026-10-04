@@ -1,0 +1,11 @@
+{
+  "verified": true,
+  "source": "GET /api/v1/credits: OpenRouter API docs (chat completions / streaming / usage accounting), 2026-10; doc backend/04 §1 Confirmed by the live run on 2026-10-04.",
+  "status": 200,
+  "body": {
+    "data": {
+      "total_credits": 5.0,
+      "total_usage": 0.79
+    }
+  }
+}

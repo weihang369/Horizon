@@ -55,10 +55,37 @@ def test_local_settings_override_seed(tmp_path: Path) -> None:
     assert merged["audio"]["master"] == read_seed_settings(SEED)["audio"]["master"]
 
 
-def test_key_is_never_read(tmp_path: Path) -> None:
-    (tmp_path / ".env").write_text("OPENROUTER_API_KEY=sk-or-v1-secret\n", encoding="utf-8")
-    cfg = load_config(environ={"HORIZON_ROOT": str(tmp_path), "OPENROUTER_API_KEY": "sk-or-v1-secret"})
+# ── M2 task 2.2: the key from env/.env (openrouter-key "Key sources", "Test mode ignores real keys") ──
+def test_key_env_wins_over_dotenv(tmp_path: Path) -> None:
+    (tmp_path / ".env").write_text("OPENROUTER_API_KEY=sk-or-test-dotenv\n", encoding="utf-8")
+    cfg = load_config(environ={"HORIZON_ROOT": str(tmp_path), "OPENROUTER_API_KEY": "sk-or-test-env"})
+    assert cfg.openrouter_key is not None
+    assert cfg.openrouter_key.get_secret_value() == "sk-or-test-env"
+
+
+def test_key_from_dotenv_and_blank_is_unset(tmp_path: Path) -> None:
+    (tmp_path / ".env").write_text("OPENROUTER_API_KEY=sk-or-test-dotenv\nHORIZON_DATA_DIR=\n", encoding="utf-8")
+    cfg = load_config(environ={"HORIZON_ROOT": str(tmp_path)})
+    assert cfg.openrouter_key is not None and cfg.openrouter_key.get_secret_value() == "sk-or-test-dotenv"
+    assert cfg.data_dir == tmp_path.resolve() / "data"  # a blank value is unset, never the cwd
+    blank = load_config(environ={"HORIZON_ROOT": str(tmp_path), "OPENROUTER_API_KEY": "  "})
+    assert blank.openrouter_key is not None  # a blank env value falls through to .env
+    (tmp_path / ".env").write_text("OPENROUTER_API_KEY=\n", encoding="utf-8")
+    assert load_config(environ={"HORIZON_ROOT": str(tmp_path)}).openrouter_key is None
+
+
+def test_test_mode_ignores_every_key_source(tmp_path: Path) -> None:
+    (tmp_path / ".env").write_text("OPENROUTER_API_KEY=sk-or-test-dotenv\n", encoding="utf-8")
+    env = {"HORIZON_ROOT": str(tmp_path), "OPENROUTER_API_KEY": "sk-or-test-env", "HORIZON_TEST": "1"}
+    assert load_config(environ=env).openrouter_key is None
+    plain = {"HORIZON_ROOT": str(tmp_path)}
+    assert load_config(environ=plain, test_mode=True).openrouter_key is None  # an override can't sneak one in
+
+
+def test_key_never_shows_in_repr(tmp_path: Path) -> None:
+    cfg = load_config(environ={"HORIZON_ROOT": str(tmp_path), "OPENROUTER_API_KEY": "sk-or-test-secret0001"})
     assert "sk-or" not in repr(cfg)
+    assert "sk-or" not in str(cfg.openrouter_key) and "sk-or" not in f"{cfg.openrouter_key}"
 
 
 # ── 2.3 logging ──
@@ -73,7 +100,7 @@ def test_key_is_redacted_everywhere(tmp_path: Path) -> None:
     close_file_logging()
     text = (tmp_path / "logs" / "horizon.log").read_text(encoding="utf-8")
     assert "sk-or-v1" not in text
-    assert text.count("sk-or-[REDACTED]") >= 3
+    assert text.count("sk-or-***") >= 3
     for line in text.splitlines():
         json.loads(line)
 

@@ -36,6 +36,8 @@ def run(c: dict[str, Any]) -> Any:
         return en.day_roll(e, ms_from_iso(a["now"]), FIXTURE["dayUtcOffsetMin"])
     if fn == "canTopUp":
         return en.can_top_up(a)
+    if fn == "withMax":
+        return en.with_max(e, a["max"], ms_from_iso(a["now"]), **kw)
     if fn == "toWireEnergy":
         return en.to_wire_energy(e)
     raise AssertionError(f"unknown fn {fn}")
@@ -57,7 +59,7 @@ def match(actual: Any, expected: Any, at: str) -> None:
 
 def test_every_function_has_cases() -> None:
     fns = {c["fn"] for c in FIXTURE["cases"]}
-    for f in ("pointsForCost", "regenAt", "energyState", "drain", "topUp", "settle", "dayRoll", "canTopUp", "toWireEnergy"):
+    for f in ("pointsForCost", "regenAt", "energyState", "drain", "topUp", "settle", "dayRoll", "canTopUp", "toWireEnergy", "withMax"):
         assert f in fns
 
 
@@ -89,3 +91,10 @@ def test_frozen_read_keeps_fullat_from_asof_and_floors() -> None:
     six = {**stored, "current": 6.0}
     assert en.read_energy(six, later, frozen=True, est_reply_points=8)["state"] == "exhausted"
     assert en.read_energy(six, later, frozen=True, est_reply_points=4)["state"] == "tired"
+
+
+def test_with_max_drops_fullat_when_full() -> None:
+    e = {"max": 1000, "current": 800, "asOf": "2026-10-01T04:00:00.000Z", "regenPerHour": 1000 / 24, "spentToday": 0,
+         "fullAt": "2026-10-01T08:48:00.000Z"}
+    out = en.with_max(e, 500, ms_from_iso("2026-10-01T04:00:00.000Z"), est_reply_points=4)
+    assert "fullAt" not in out and out["current"] == 800

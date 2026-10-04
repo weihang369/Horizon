@@ -45,7 +45,7 @@ Every non-2xx response has this body:
 | Method | Route | Body → Response |
 |---|---|---|
 | `get` | `GET /settings` | → `AppSettings` |
-| `update` | `PATCH /settings` | `DeepPartial<AppSettings>` (read-only fields rejected) → `AppSettings` |
+| `update` | `PATCH /settings` | `DeepPartial<AppSettings>` (computed and config-owned fields such as `estReplyPoints` are ignored, M2 OQ-E) → `AppSettings` |
 | `setKey` | `PUT /settings/key` | `{ key: string \| null }` → `AppSettings` (validates the format and saves it; it doesn't call the network, `testConnection` does). `null` deletes the secret file |
 | `testConnection` | `POST /settings/test-connection` | → `{ ok, latencyMs, creditsUsd? }` (OpenRouter key-info call; sets `openRouterKeyStatus`) |
 | `testModel` | `POST /settings/test-model` | `{ role: "chat"\|"decision"\|"image"\|"music"\|"embedding" }` → `{ ok, latencyMs, model }`: the cheapest possible probe per role (chat: 1-token completion; decision: a one-question Jev call; embedding: one word; image and music: a *metadata* check only, **never** a paid generation) |
