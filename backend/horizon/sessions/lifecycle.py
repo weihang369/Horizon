@@ -82,6 +82,11 @@ async def create(rt: Runtime, body: Wire) -> Wire:
                              {"field": "characterIds", "min": lo, "max": hi, "got": len(cast)})
         check_no_other_live(manager, None)
         session = _new_session(rt, body, w, cast)
+        cfg_def = {"group": "GroupConfig", "debate": "DebateConfig", "watch": "WatchConfig"}.get(mode)
+        if cfg_def is not None:
+            problems = rt.schema.errors(cfg_def, session["config"])
+            if problems:
+                raise validation(f"Invalid {mode} config.", {"field": "config", "problems": problems[:3]})
         now = session["createdAt"]
         srow, prows = mp.session_rows(session, is_seed=False)
         async with rt.db.write() as tx:

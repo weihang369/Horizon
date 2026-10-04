@@ -115,16 +115,16 @@
 
 ## 8. Debate
 
-- [ ] 8.1 Write `sessions/modes/debate.py`: the phase machine (setup → phases → verdict → ended), `phaseOrder`, round notes and host narration, `forcedBy: "round_order"` and debate tags, auto-advance after `pauseMs`, and cursor rebuild for forks/resumes. Verify with the scenario "Quick debate to a verdict" (4 character messages, a `verdict` message, ended).
-- [ ] 8.2 Implement pause/resume/next/extend-round/skip-to-closing/interject/auto-advance. Verify with unit or integration tests for each: an extended phase repeats with `iteration` 2, and skip lands on closing at the boundary.
-- [ ] 8.3 Implement Ask at the boundary, from the queue front. Verify with the scenario "Ask lands at the boundary".
-- [ ] 8.4 Implement the verdict paths: arbiter (a billed `simulated_decision`, `Verdict` scores 0–10), user (wait for `pick`), none/panel, and `end(withVerdict)`. Verify with the scenario "User decides", plus an arbiter test checking rubric scores within 0–10.
+- [x] 8.1 Write `sessions/modes/debate.py`: the phase machine (setup → phases → verdict → ended), `phaseOrder`, round notes and host narration, `forcedBy: "round_order"` and debate tags, auto-advance after `pauseMs`, and cursor rebuild for forks/resumes. Verify with the scenario "Quick debate to a verdict" (4 character messages, a `verdict` message, ended).
+- [x] 8.2 Implement pause/resume/next/extend-round/skip-to-closing/interject/auto-advance. Verify with unit or integration tests for each: an extended phase repeats with `iteration` 2, and skip lands on closing at the boundary.
+- [x] 8.3 Implement Ask at the boundary, from the queue front. Verify with the scenario "Ask lands at the boundary".
+- [x] 8.4 Implement the verdict paths: arbiter (a billed `simulated_decision`, `Verdict` scores 0–10), user (wait for `pick`), none/panel, and `end(withVerdict)`. Verify with the scenario "User decides", plus an arbiter test checking rubric scores within 0–10.
 
 ## 9. Watch
 
-- [ ] 9.1 Write `sessions/modes/watch.py`: the premise `direction` message, round-robin from `openingSpeaker`, `paceMs` gaps on the clock, `turnsTaken` (`watch.state` + `session.state`) and the `turn_cap` pause. Verify with the scenario "Stop at the cap, then extend".
-- [ ] 9.2 Implement play/pause/step/pace/direct (2 turns)/step-in (pause, then up to 2 replies)/next-speaker/summarise (billed, a `summary` message), and the everyone-asleep pause. Verify with "Step while paused", plus tests for direct, step-in and the everyone-asleep note.
-- [ ] 9.3 Remove the remaining "not implemented" command stubs from task 2.5. Verify: a test iterates every doc 03 command route and none answers with the stub error.
+- [x] 9.1 Write `sessions/modes/watch.py`: the premise `direction` message, round-robin from `openingSpeaker`, `paceMs` gaps on the clock, `turnsTaken` (`watch.state` + `session.state`) and the `turn_cap` pause. Verify with the scenario "Stop at the cap, then extend".
+- [x] 9.2 Implement play/pause/step/pace/direct (2 turns)/step-in (pause, then up to 2 replies)/next-speaker/summarise (billed, a `summary` message), and the everyone-asleep pause. Verify with "Step while paused", plus tests for direct, step-in and the everyone-asleep note.
+- [x] 9.3 Remove the remaining "not implemented" command stubs from task 2.5. Verify: a test iterates every doc 03 command route and none answers with the stub error.
 
 ## 10. Naive TurnEngine
 

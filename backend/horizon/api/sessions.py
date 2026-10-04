@@ -162,7 +162,7 @@ class PickBody(_Model):
 
 
 class PaceBody(_Model):
-    paceMs: float = Field(gt=0, le=60_000)
+    paceMs: Literal[500, 1500, 3000]
 
 
 class ExtendBody(_Model):

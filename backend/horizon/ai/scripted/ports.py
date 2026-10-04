@@ -242,8 +242,8 @@ class ScriptedDebateHost:
         return "Closing statements. Make them count."
 
     async def verdict(self, ctx: SessionContext, by: str, picked: str | None) -> dict[str, Any]:
-        """The mock's `makeVerdict`; an arbiter verdict is a paid call first."""
-        if by == "arbiter":
+        """The mock's `makeVerdict`; a verdict the user doesn't pick is a paid call first (as the mock charges it)."""
+        if by != "user":
             prices = self.deps.prices
             await self.deps.gateway().simulated_call(
                 ctx.call_ctx("verdict"), model=prices.chat.model, tokens_in=6200, tokens_cached=2400, tokens_out=420,
