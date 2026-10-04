@@ -58,9 +58,9 @@ async def asleep_note(actor: SessionActor, character_id: str, *, skipping: bool)
         "code": "energy_exhausted", "message": f"{name} is asleep (⚡ 0).", "retryable": False, "messageId": msg["id"]}})
 
 
-async def speak_then(actor: SessionActor, spec: TurnSpec) -> TurnOutcome:
+async def speak_then(actor: SessionActor, spec: TurnSpec, *, prefetch: Any = None) -> TurnOutcome:
     """One turn, then the turn gap before the next queued turn (the mock's `speakThen`)."""
-    out = await runner(actor).run(actor, spec)
+    out = await runner(actor).run(actor, spec, prefetch=prefetch)
     if out.status in ("complete", "interrupted", "error"):
         await actor.rt.clock.sleep(actor.rt.runtime_cfg.timing.turn_gap_ms / 1000)
     return out

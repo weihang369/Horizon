@@ -99,19 +99,19 @@
 - [x] 6.3 Implement the cap pause in the manager (design D7): on crossing or on a `daily_budget_exceeded` refusal, pause every active session with `daily_budget` (`keepCurrentTurn`); a refused turn leaves no message; generating commands are refused while the cap is still reached. Verify with the scenario "Cap reached by the greeting", plus a crossing test where the cap is raised mid-session and the sessions resume.
 - [x] 6.4 Mirror `budget.warning` onto the live session's stream. Verify with the `event-streams` scenario "Warning inside a session".
 - [x] 6.5 Announce `entity.changed { kind: "session" | "usage" }` after commits. Verify with the `event-streams` scenario "Session created", and a usage announcement after a reply.
-- [ ] 6.6 Add `POST /_test/decider-fixtures {set|clear}` on top of M2's `DeciderFixtures`. Verify with the `http-api` scenario "Decider fixture over HTTP": the router is naive by override and the fixture picks the speaker, with no route ledger row.
+- [x] 6.6 Add `POST /_test/decider-fixtures {set|clear}` on top of M2's `DeciderFixtures`. Verify with the `http-api` scenario "Decider fixture over HTTP": the router is naive by override and the fixture picks the speaker, with no route ledger row.
 
 ## 7. Group, router and prefetch
 
-- [ ] 7.1 Write `sessions/modes/group.py`: mentions first (`forcedSpeaker`), then the policies `auto`/`everyone`/`mentioned`, muted and exhausted skips, and the routing trace on every reply. Verify with the `session-modes` scenarios "Auto policy with a mention" and "Route call in the trace".
-- [ ] 7.2 Implement `everyone-answer` and `next-speaker` (nudge / random eligible), and route-call capture into `TurnTrace.calls` for every reply of a send (OQ-13). Verify with "Muted participant is skipped", and that two replies of one send both list the same `route` call.
-- [ ] 7.3 Write `ai/naive/router.py` (design D12): one Decider choice question, `queue` ≤ 2 above p 0.25, and the deterministic fallback (`fallback: true`, no candidates). Verify with respx/fake-provider tests: an answer is used, a 400 ms timeout gives the fallback with the late answer still recorded, and an invalid answer gives a partial fallback.
-- [ ] 7.4 Prefetched openings (design D5): N ≤ 2 for group `everyone-answer` and the debate opening round, buffered unsequenced, released at speaking pace, and `link_message` on release. Verify:
+- [x] 7.1 Write `sessions/modes/group.py`: mentions first (`forcedSpeaker`), then the policies `auto`/`everyone`/`mentioned`, muted and exhausted skips, and the routing trace on every reply. Verify with the `session-modes` scenarios "Auto policy with a mention" and "Route call in the trace".
+- [x] 7.2 Implement `everyone-answer` and `next-speaker` (nudge / random eligible), and route-call capture into `TurnTrace.calls` for every reply of a send (OQ-13). Verify with "Muted participant is skipped", and that two replies of one send both list the same `route` call.
+- [x] 7.3 Write `ai/naive/router.py` (design D12): one Decider choice question, `queue` ≤ 2 above p 0.25, and the deterministic fallback (`fallback: true`, no candidates). Verify with respx/fake-provider tests: an answer is used, a 400 ms timeout gives the fallback with the late answer still recorded, and an invalid answer gives a partial fallback.
+- [x] 7.4 Prefetched openings (design D5): N ≤ 2 for group `everyone-answer` and the debate opening round, buffered unsequenced, released at speaking pace, and `link_message` on release. Verify:
   - released prefetches produce the same events as non-prefetched turns;
   - `trace.calls` lists the reply;
   - `llm_slots` never exceeds 4.
-- [ ] 7.5 Implement the D-77 discard. Verify with the scenario "Stop during a debate opening": the prefetched row keeps `message_id` NULL, energy is drained, and no event mentions the discarded reply.
-- [ ] 7.6 Measure the preflight lock (OQ-7): log the p95 lock wait in the group/prefetch tests. Verify the number is recorded in the test output, and add a `spentToday` cache only if p95 > 20 ms (document the result in design.md).
+- [x] 7.5 Implement the D-77 discard. Verify with the scenario "Stop during a debate opening": the prefetched row keeps `message_id` NULL, energy is drained, and no event mentions the discarded reply.
+- [x] 7.6 Measure the preflight lock (OQ-7): log the p95 lock wait in the group/prefetch tests. Verify the number is recorded in the test output, and add a `spentToday` cache only if p95 > 20 ms (document the result in design.md).
 
 ## 8. Debate
 

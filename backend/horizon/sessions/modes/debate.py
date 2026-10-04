@@ -23,6 +23,7 @@ from horizon.sessions.modes.common import (
     speak_then,
     user_message,
 )
+from horizon.sessions.prefetch import Prefetch
 from horizon.sessions.turn import TurnSpec
 
 if TYPE_CHECKING:
@@ -69,6 +70,9 @@ def _host(actor: SessionActor) -> Any:
 
 
 async def begin_phase(actor: SessionActor, phase: str, iteration: int = 1) -> None:
+    for pf in actor.mode.debate_prefetch.values():
+        await pf.discard()
+    actor.mode.debate_prefetch = {}
     cfg = cfg_of(actor)
     phases = list(cfg.get("phases") or [])
     round_ = phases.index(phase) + 1 if phase in phases else len(phases)
@@ -139,21 +143,23 @@ def step(actor: SessionActor) -> None:
                 return
             schedule_next(actor)
             return
-        cid = order[m.debate_idx]
+        idx = m.debate_idx
+        cid = order[idx]
         m.debate_idx += 1
-        if await is_asleep(actor, cid):
+        pf = m.debate_prefetch.pop(idx, None)
+        if pf is None and await is_asleep(actor, cid):
             await asleep_note(actor, cid, skipping=True)
             schedule_next(actor, 200)
             return
         now = state_of(actor)
-        side = side_of(actor, cid)
-        meta: Wire = {"phase": now["phase"], "round": now["round"], "iteration": now["iteration"]}
-        if side:
-            meta["side"] = side
-        await speak_then(actor, TurnSpec(
-            speaker=cid, line=LineHint(kind="debate"), forced_by="round_order", message={"debate": meta},
-            debate=DebateMeta(phase=str(now["phase"]), round=int(now["round"]), iteration=int(now["iteration"]), side=side,
-                              motion=str(cfg.get("motion", "")))))
+        if now.get("phase") == "opening" and int(now.get("iteration", 1)) == 1:
+            # The opening round is known in advance: generate up to 2 later openings now (design D5).
+            for j in range(idx + 1, min(len(order), idx + 1 + actor.rt.runtime_cfg.runtime.prefetch_max)):
+                if j not in m.debate_prefetch and not await is_asleep(actor, order[j]):
+                    p = await Prefetch.start(actor, turn_spec(actor, order[j], now))
+                    if p is not None:
+                        m.debate_prefetch[j] = p
+        await speak_then(actor, turn_spec(actor, cid, now), prefetch=pf)
         order = m.debate_order or []
         upcoming = order[m.debate_idx] if m.debate_idx < len(order) else None
         if upcoming:
@@ -161,6 +167,16 @@ def step(actor: SessionActor) -> None:
         schedule_next(actor)
 
     actor.enqueue(job)
+
+
+def turn_spec(actor: SessionActor, cid: str, now: Wire) -> TurnSpec:
+    side = side_of(actor, cid)
+    meta: Wire = {"phase": now["phase"], "round": now["round"], "iteration": now["iteration"]}
+    if side:
+        meta["side"] = side
+    return TurnSpec(speaker=cid, line=LineHint(kind="debate"), forced_by="round_order", message={"debate": meta},
+                    debate=DebateMeta(phase=str(now["phase"]), round=int(now["round"]), iteration=int(now["iteration"]),
+                                      side=side, motion=str(cfg_of(actor).get("motion", ""))))
 
 
 def schedule_next(actor: SessionActor, ms: float | None = None) -> None:

@@ -14,6 +14,7 @@ spend (NFR-30).
 from __future__ import annotations
 
 import asyncio
+import contextvars
 import json
 import logging
 import time
@@ -49,6 +50,10 @@ T = TypeVar("T")
 
 
 SCRIPTED_PROVIDER = "scripted"
+# A turn that runs ahead of its slot (a prefetched opening, session-runtime D5) learns its ledger rows through this
+# ambient sink, so it can link them to its message when it is released; the AI ports never see it.
+RECORDED_SINK: contextvars.ContextVar[Callable[[str], None] | None] = contextvars.ContextVar("horizon_recorded_sink",
+                                                                                          default=None)
 
 
 @dataclass(frozen=True)
@@ -159,6 +164,7 @@ class Gateway:
     embeddings: EmbeddingsClient = field(init=False)
     meta: MetaClient = field(init=False)
     _background: set[asyncio.Task[Any]] = field(init=False, default_factory=set)
+    lock_waits_ms: list[float] = field(init=False, default_factory=list)   # preflight lock waits (OQ-7 measurement)
 
     def __post_init__(self) -> None:
         t = self.cfg.timeouts
@@ -185,7 +191,10 @@ class Gateway:
     async def _preflight(self, ctx: CallContext, estimate: float) -> Hold:
         self.core.require_key()
         caps = self.caps()
+        waited = time.perf_counter()
         async with self.book.lock:
+            self.lock_waits_ms.append((time.perf_counter() - waited) * 1000)
+            del self.lock_waits_ms[:-1000]
             spent = await self.ledger.spent_today()
             moved = self.book.take_from_job(ctx.job_id, estimate) if ctx.job_id else 0.0
             if budget.exceeds_daily(spent, self.book.total(), estimate, caps.daily_cap_usd):
@@ -242,6 +251,9 @@ class Gateway:
         res = await self.ledger.record(row, drain=ctx.drains)
         if on_recorded is not None:
             self._notify(on_recorded, res.row_id)
+        sink = RECORDED_SINK.get()
+        if sink is not None:
+            self._notify(sink, res.row_id)
         caps = self.caps()
         line = budget.warn_at(caps.daily_cap_usd, caps.warn_at_pct)
         if budget.crossed(res.spent_before, res.spent_after, line):

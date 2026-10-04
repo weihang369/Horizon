@@ -24,6 +24,7 @@ from horizon.sessions.modes.common import (
     speak_then,
     user_message,
 )
+from horizon.sessions.prefetch import Prefetch
 from horizon.sessions.turn import TurnSpec
 
 if TYPE_CHECKING:
@@ -39,31 +40,51 @@ def policy_of(actor: SessionActor) -> str:
 
 async def run_speakers(actor: SessionActor, speakers: list[str], prompt: str, *, forced: set[str] | None = None,
                        forced_by: str | None = None, decision: RoutingDecision | None = None,
-                       skipped: list[Wire] | None = None) -> None:
+                       skipped: list[Wire] | None = None, prefetch: bool = False) -> None:
     """Speakers one after another inside the current job; a `clear()` (stop, leave, cap pause) ends the run at the
-    next boundary."""
+    next boundary. With `prefetch` (everyone-answer, design D5), up to 2 later speakers are generated ahead."""
     epoch = actor.epoch
     forced = forced or set()
-    for i, cid in enumerate(speakers):
-        if actor.epoch != epoch:
-            return
-        if await is_asleep(actor, cid):
-            await asleep_note(actor, cid, skipping=cid not in forced)
-            continue
-        is_forced = cid in forced
-        routing: Wire | None = None
-        if decision is not None and decision.candidates:
-            routing = {"question": decision.question, "selected": cid, "candidates": decision.candidates}
-            if is_forced:
-                routing["forcedBy"] = forced_by or "mention"
-            if skipped:
-                routing["skipped"] = skipped
-            if decision.fallback:
-                routing["reason"] = "fallback"
-        await speak_then(actor, TurnSpec(
-            speaker=cid, prompt=prompt, forced_by=(forced_by or "mention") if is_forced else None,
-            message={"forcedSpeaker": True} if is_forced else None, skipped=skipped if i == 0 else None,
-            routing=routing, calls=[decision.call] if decision is not None and decision.call else []))
+    ahead: dict[int, Prefetch] = {}
+    limit = actor.rt.runtime_cfg.runtime.prefetch_max
+    try:
+        for i, cid in enumerate(speakers):
+            if actor.epoch != epoch:
+                return
+            pf = ahead.pop(i, None)
+            if pf is None and await is_asleep(actor, cid):
+                await asleep_note(actor, cid, skipping=cid not in forced)
+                continue
+            if prefetch:
+                for j in range(i + 1, min(len(speakers), i + 1 + limit)):
+                    if j not in ahead and actor.epoch == epoch and not await is_asleep(actor, speakers[j]):
+                        p = await Prefetch.start(actor, _spec(speakers[j], j, prompt, forced, forced_by, decision, skipped))
+                        if p is not None:
+                            ahead[j] = p
+            await speak_then(actor, _spec(cid, i, prompt, forced, forced_by, decision, skipped), prefetch=pf)
+    finally:
+        for p in ahead.values():
+            await p.discard()
+
+
+def _spec(cid: str, i: int, prompt: str, forced: set[str], forced_by: str | None, decision: RoutingDecision | None,
+          skipped: list[Wire] | None) -> TurnSpec:
+    is_forced = cid in forced
+    routing: Wire | None = None
+    if decision is not None and (decision.candidates or decision.fallback):
+        routing = {"question": decision.question, "selected": cid}
+        if decision.candidates:
+            routing["candidates"] = decision.candidates
+        if is_forced:
+            routing["forcedBy"] = forced_by or "mention"
+        if skipped:
+            routing["skipped"] = skipped
+        if decision.fallback:
+            routing["reason"] = "fallback"
+    return TurnSpec(
+        speaker=cid, prompt=prompt, forced_by=(forced_by or "mention") if is_forced else None,
+        message={"forcedSpeaker": True} if is_forced else None, skipped=skipped if i == 0 else None,
+        routing=routing, calls=[decision.call] if decision is not None and decision.call else [])
 
 
 async def _route(actor: SessionActor, text: str, mentions: list[str]) -> tuple[RoutingDecision, list[Wire]]:
@@ -111,7 +132,7 @@ def everyone_answer(actor: SessionActor) -> None:
     prompt = last_user_text(actor)
 
     async def job() -> None:
-        await run_speakers(actor, speakers, prompt)
+        await run_speakers(actor, speakers, prompt, prefetch=True)
 
     actor.enqueue(job)
 

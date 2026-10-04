@@ -76,6 +76,7 @@ class ModeState:
     debate_idx: int = 0
     skip_to_closing: bool = False
     extend: bool = False
+    debate_prefetch: dict[int, Any] = field(default_factory=dict)   # opening-round prefetches by order index
 
 
 class SessionActor:
@@ -97,6 +98,8 @@ class SessionActor:
         self._idle: asyncio.Task[None] | None = None
         self._timers: set[asyncio.Task[None]] = set()
         self._background: set[asyncio.Task[Any]] = set()
+        self.prefetches: set[Any] = set()   # sessions.prefetch.Prefetch runs ahead of their slot (design D5)
+        self.epoch = 0
         self.stopped = False
 
     # ── views ──
@@ -136,7 +139,8 @@ class SessionActor:
     async def stop(self) -> None:
         """Cancel everything (delete, idle release, shutdown). In-flight ledger writes still land (M2 shielding)."""
         self.stopped = True
-        tasks = [x for x in (self._loop, self._worker, self._idle, *self._timers, *self._background) if x is not None]
+        tasks = [x for x in (self._loop, self._worker, self._idle, *self._timers, *self._background,
+                             *(pf.task for pf in self.prefetches)) if x is not None]
         current = asyncio.current_task()
         for x in tasks:
             if x is not current:
@@ -221,18 +225,20 @@ class SessionActor:
         task.add_done_callback(self._background.discard)
 
     async def clear(self, *, keep_current: bool = False) -> None:
-        """Cancel pending work (the mock's `clearLive`). `keep_current` lets a turn already streaming finish."""
+        """Cancel pending work (the mock's `clearLive`). `keep_current` lets a turn already streaming finish.
+        Prefetched turns are discarded either way (D-77: their spend and drain stand)."""
         self.turns.clear()
         for x in list(self._timers):
             x.cancel()
         self._timers.clear()
+        for pf in list(self.prefetches):
+            if not pf.released:
+                await pf.discard()
         if keep_current and self.current is not None and not self.current.closed:
             self.mode_epoch_bump()
             return
         self.mode_epoch_bump()
         await self._cut_worker()
-
-    epoch = 0
 
     def mode_epoch_bump(self) -> None:
         """Jobs check the epoch between turns: after a clear, a running job ends at its next boundary."""

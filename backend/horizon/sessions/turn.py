@@ -34,6 +34,7 @@ from horizon.gateway.errors import ProviderError
 from horizon.sessions.actor import SessionActor, TurnInfo
 from horizon.sessions.coalesce import Coalescer
 from horizon.sessions.context import character_view, characters, energy_of, session_context
+from horizon.sessions.prefetch import Prefetch
 from horizon.sessions.writer import TraceMeta
 
 if TYPE_CHECKING:
@@ -114,19 +115,24 @@ class TurnRunner:
         return self.rt.keys.status() == "set"
 
     # ── one turn ──
-    async def run(self, actor: SessionActor, spec: TurnSpec) -> TurnOutcome:
+    async def run(self, actor: SessionActor, spec: TurnSpec, *, prefetch: Prefetch | None = None) -> TurnOutcome:
+        """One turn. A `prefetch` (design D5) was generated ahead of its slot: it is released here, its energy already
+        spent, so it skips the gate."""
         rt = self.rt
         rows = await characters(rt, [spec.speaker])
         row = rows.get(spec.speaker)
         if row is None or row["deleted_at"] is not None:
+            if prefetch is not None:
+                await prefetch.discard()
             return TurnOutcome(None, "missing")
-        if float(energy_of(rt, row)["current"]) < rt.est_reply_points():
+        if prefetch is None and float(energy_of(rt, row)["current"]) < rt.est_reply_points():
             return TurnOutcome(None, "asleep")
         existing = actor.state["messages"].get(spec.variant_of) if spec.variant_of else None
-        mid = spec.variant_of or new_id("msg")
+        mid = prefetch.message_id if prefetch is not None else spec.variant_of or new_id("msg")
         # The mock's rule: `${messageId}_v${(variants.length || 1) + 1}`.
         vid = f"{mid}_v{(len((existing or {}).get('variants') or []) or 1) + 1}" if spec.variant_of else None
-        info = TurnInfo(mid, spec.speaker, vid, started_iso=rt.now_iso(), t0_ms=float(to_ms(rt.clock.now())), spec=spec)
+        info = TurnInfo(mid, spec.speaker, vid, started_iso="" if prefetch is not None else rt.now_iso(),
+                        t0_ms=float(to_ms(rt.clock.now())), spec=spec)
         actor.current = info
         started_iso = info.started_iso
         t0 = info.t0_ms
@@ -139,6 +145,9 @@ class TurnRunner:
             await actor.emit({"type": "turn.next", "payload": nxt})
             await rt.clock.sleep(rt.runtime_cfg.timing.thinking_ms / 1000)
             await actor.emit({"type": "turn.thinking", "payload": {"characterId": spec.speaker}})
+            if prefetch is not None:
+                info.ctx = prefetch.ctx
+                return await self._stream(actor, spec, info, prefetch.ctx, t0, started_iso, prefetch=prefetch)
             sctx = await session_context(rt, actor)
             caps = rt.runtime_cfg.runtime.reply_max_tokens
             cfg = sctx.config or {}
@@ -154,11 +163,11 @@ class TurnRunner:
                 actor.current = None
 
     async def _stream(self, actor: SessionActor, spec: TurnSpec, info: TurnInfo, ctx: TurnContext, t0: float,
-                      started_iso: str) -> TurnOutcome:
+                      started_iso: str, *, prefetch: Prefetch | None = None) -> TurnOutcome:
         rt = self.rt
         knobs = rt.runtime_cfg.runtime
         clock = rt.clock
-        engine = info.engine = rt.ai.turn(self.key_set())
+        engine = info.engine = prefetch.engine if prefetch is not None else rt.ai.turn(self.key_set())
         co = Coalescer(knobs.coalesce_max_chars, knobs.coalesce_max_ms, lambda: float(to_ms(clock.now())))
         timer: asyncio.Task[None] | None = None
         trace: dict[str, Any] = {}
@@ -194,9 +203,10 @@ class TurnRunner:
                     await timer
             timer = None
 
+        slot: Any = rt.llm_slots.slot() if prefetch is None else contextlib.nullcontext()
         try:
-            async with rt.llm_slots.slot():
-                agen = engine.run(ctx)
+            async with slot:
+                agen: Any = prefetch.replay() if prefetch is not None else engine.run(ctx)
                 try:
                     async for ev in agen:
                         if not info.started:
@@ -243,6 +253,8 @@ class TurnRunner:
             raise
         await settle_timer()
         await flush()
+        if prefetch is not None:
+            await prefetch.link()
         status = "complete"
         if err is not None:
             status = STATUS_BY_CODE.get(err.code, "interrupted")
@@ -280,8 +292,9 @@ class TurnRunner:
                 status, scrub = "error", True
                 err = ProviderError("content_refused", "The reply was blocked by the safety check.")
         ledger = rt.ledger
-        usage = await ledger.reply_usage(mid, since=started_iso)
-        row = await ledger.reply_row(mid, since=started_iso)
+        since = started_iso or None   # a released prefetch's row was recorded before its slot
+        usage = await ledger.reply_usage(mid, since=since)
+        row = await ledger.reply_row(mid, since=since)
         spent = points_for_cost(float(usage["costUsd"])) if usage else 0
         events: list[Wire] = []
         if err is not None:
@@ -334,7 +347,7 @@ class TurnRunner:
                 if spec.skipped:
                     routing["skipped"] = spec.skipped
             full["routing"] = routing
-            full["calls"] = [*spec.calls, *await ledger.calls_for_message(mid, since=started_iso)]
+            full["calls"] = [*spec.calls, *await ledger.calls_for_message(mid, since=since)]
             events.append({"type": "insight", "payload": {"messageId": mid, "trace": full}})
         meta = TraceMeta(engine=getattr(engine, "name", None), engine_version=getattr(engine, "version", None),
                          prompt_version=getattr(engine, "prompt_version", None))
