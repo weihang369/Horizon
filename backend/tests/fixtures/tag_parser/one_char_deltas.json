@@ -1,0 +1,36 @@
+{
+  "name": "one_char_deltas",
+  "doc": "Naive-style 1-character deltas",
+  "chunks": [
+    "<",
+    "e",
+    ":",
+    "s",
+    "u",
+    "r",
+    "p",
+    "r",
+    "i",
+    "s",
+    "e",
+    "d",
+    ">",
+    "W",
+    "a",
+    "i",
+    "t",
+    ",",
+    " ",
+    "w",
+    "h",
+    "a",
+    "t",
+    "?"
+  ],
+  "previous": "neutral",
+  "expected": {
+    "emotion": "surprised",
+    "source": "llm",
+    "text": "Wait, what?"
+  }
+}

@@ -251,7 +251,8 @@ class Runtime:
         self.gateway.on_spend = manager.on_spend
         self.gateway.on_budget = manager.on_budget
         deps = AiDeps(gateway=lambda: self.gateway, decider=lambda: self.decider, prices=self.prices,
-                      timing=self.runtime_cfg.timing, clock=lambda: self.clock)
+                      timing=self.runtime_cfg.timing, clock=lambda: self.clock,
+                      window_tokens=self.runtime_cfg.runtime.window_tokens)
         self._ai = AiPorts(deps, self.profile)
         self._purge = PurgeWorker(self.db, self.hooks, self.now_iso)
         self._purge.start()

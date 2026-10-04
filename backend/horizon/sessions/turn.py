@@ -33,7 +33,7 @@ from horizon.domain.timeutil import to_ms
 from horizon.gateway.errors import ProviderError
 from horizon.sessions.actor import SessionActor, TurnInfo
 from horizon.sessions.coalesce import Coalescer
-from horizon.sessions.context import character_view, characters, energy_of, session_context
+from horizon.sessions.context import character_view, characters, energy_of, maintain_window, session_context
 from horizon.sessions.prefetch import Prefetch
 from horizon.sessions.writer import TraceMeta
 
@@ -148,6 +148,7 @@ class TurnRunner:
             if prefetch is not None:
                 info.ctx = prefetch.ctx
                 return await self._stream(actor, spec, info, prefetch.ctx, t0, started_iso, prefetch=prefetch)
+            await maintain_window(rt, actor)
             sctx = await session_context(rt, actor)
             caps = rt.runtime_cfg.runtime.reply_max_tokens
             cfg = sctx.config or {}

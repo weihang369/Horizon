@@ -82,6 +82,7 @@ class AiDeps:
     prices: PriceTable
     timing: Timing
     clock: Callable[[], Clock]
+    window_tokens: int = 6000
 
 
 def emotion_candidates(chosen: str, rng: random.Random) -> list[dict[str, Any]]:
@@ -149,17 +150,21 @@ class ScriptedTurnEngine:
         emitted = False
         sent = 0
         clock = self.deps.clock()
-        async for chunk in self.deps.gateway().simulated_stream(ctx.call_ctx("reply"), spec, clock.sleep):
-            if chunk.content is None:
-                if timing == "before":
+        stream: Any = self.deps.gateway().simulated_stream(ctx.call_ctx("reply"), spec, clock.sleep)
+        try:
+            async for chunk in stream:
+                if chunk.content is None:
+                    if timing == "before":
+                        emitted = True
+                        yield Emotion(line.emotion)
+                    continue
+                yield Token(chunk.content)
+                sent += 1
+                if not emitted and sent >= at_chunk:
                     emitted = True
                     yield Emotion(line.emotion)
-                continue
-            yield Token(chunk.content)
-            sent += 1
-            if not emitted and sent >= at_chunk:
-                emitted = True
-                yield Emotion(line.emotion)
+        finally:
+            await stream.aclose()  # a cut or a Stop records the estimate now, not when the generator is collected
         if not emitted:
             yield Emotion(line.emotion)
         patch: dict[str, Any] = {

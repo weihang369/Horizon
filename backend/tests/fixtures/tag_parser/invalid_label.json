@@ -1,0 +1,13 @@
+{
+  "name": "invalid_label",
+  "doc": "An unknown label: the previous face, and the tag is dropped",
+  "chunks": [
+    "<e:furious>Hi"
+  ],
+  "previous": "sad",
+  "expected": {
+    "emotion": "sad",
+    "source": "default",
+    "text": "Hi"
+  }
+}

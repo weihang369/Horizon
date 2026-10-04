@@ -1,0 +1,15 @@
+{
+  "name": "stray_mid_text",
+  "doc": "Stray tags later in the stream are stripped, even split",
+  "chunks": [
+    "<e:happy>Hi ",
+    "there <e:sa",
+    "d>friend"
+  ],
+  "previous": "neutral",
+  "expected": {
+    "emotion": "happy",
+    "source": "llm",
+    "text": "Hi there friend"
+  }
+}

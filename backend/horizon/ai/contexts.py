@@ -44,6 +44,7 @@ class ParticipantView(Frozen):
     role: str
     side: str | None = None
     muted: bool = False
+    emotion: str = "neutral"        # the face shown now (the naive engine's default when no tag arrives)
     energy: dict[str, Any]
 
 
