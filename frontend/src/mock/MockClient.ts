@@ -22,8 +22,8 @@ import { pricePeriod, rushHourInfo } from "../domain/rushHour";
 import type { PricePeriod } from "../domain/rushHour";
 import { ScriptPlayer } from "../engine/ScriptPlayer";
 import type { TimelineEntry } from "../engine/ScriptPlayer";
-import { applyEvent, initialRuntime, orderedMessages, reduceAll } from "../engine/sessionReducer";
-import { replayBase } from "../engine/replay";
+import { applyEvent, initialRuntime, orderedMessages } from "../engine/sessionReducer";
+import { forkEvents } from "../engine/fork";
 import { shadowDataUrl, specFromAppearance } from "../vfx/shadow";
 import type { Dataset } from "./db/dataset";
 import { cloneDataset } from "./db/dataset";
@@ -969,27 +969,9 @@ export class MockClient implements HorizonClient {
   private fork(id: string, atSeq?: number): SessionSnapshot {
     const rec = this.db.sessions[id];
     if (!rec) throw notFound("Session");
-    let events = rec.events;
-    if (atSeq !== undefined) {
-      let cut = events.filter((e) => e.seq <= atSeq);
-      // Finish the turn that was streaming at the playhead.
-      const partial = reduceAll(initialRuntime(this.replayBase(rec.session)), cut);
-      if (partial.streamingId) {
-        const end = events.find((e) => e.seq > atSeq && e.type === "turn.end" && (e.payload as { messageId: string }).messageId === partial.streamingId);
-        if (end) cut = events.filter((e) => e.seq <= end.seq);
-      }
-      events = cut;
-    }
     const sid = this.newId("ses");
-    let json = JSON.stringify(events).split(`"${id}"`).join(`"${sid}"`);
-    const reduced = reduceAll(initialRuntime(this.replayBase(rec.session)), events);
-    reduced.order.forEach((mid, i) => { json = json.split(`"${mid}"`).join(`"${sid.replace("ses_", "msg_")}m${i}"`); });
-    const now = this.iso();
-    const reEvents = (JSON.parse(json) as SessionEvent[]).map((e, i) => ({ ...e, id: `${sid.replace("ses_", "evt_")}e${i + 1}`, seq: i + 1 }));
-    const base: Session = {
-      ...this.replayBase(rec.session), id: sid, title: `${rec.session.title} · live`, titleIsCustom: false, isSeed: false, continuedFrom: id, createdAt: now, updatedAt: now,
-    };
-    const final = reduceAll(initialRuntime(base), reEvents);
+    const { events: reEvents, state: final } = forkEvents(rec.events, rec.session, atSeq, sid, this.iso());
+    const base = final.session;
     const multi = base.mode === "debate" || base.mode === "watch";
     const ended = final.session.status === "ended";
     this.db.sessions[sid] = { session: final.session, messages: orderedMessages(final), events: reEvents };
@@ -1003,8 +985,6 @@ export class MockClient implements HorizonClient {
     this.changed("session", sid, base.worldId);
     return this.snapshot(sid);
   }
-
-  private replayBase(s: Session): Session { return replayBase(s); }
 
   sessions: HorizonClient["sessions"] = {
     list: (worldId) => this.query(() => Object.values(this.db.sessions).map((r) => r.session).filter((s) => s.worldId === worldId)

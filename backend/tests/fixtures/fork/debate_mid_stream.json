@@ -1,0 +1,3883 @@
+{
+ "name": "debate_mid_stream",
+ "doc": "A playhead inside a streaming reply: the cut extends to that turn's turn.end.",
+ "source": "ses_seedDebate4Day",
+ "atSeq": 186,
+ "newSessionId": "ses_forkFixture1",
+ "now": "2026-10-03T03:00:00.000Z",
+ "expected": {
+  "events": [
+   {
+    "id": "evt_forkFixture1e1",
+    "sessionId": "ses_forkFixture1",
+    "seq": 1,
+    "at": "2026-10-01T10:02:50.373Z",
+    "type": "session.state",
+    "payload": {
+     "status": "active",
+     "state": {
+      "phase": "setup",
+      "round": 0,
+      "iteration": 0
+     },
+     "participants": [
+      {
+       "characterId": "chr_seedAmara",
+       "role": "debater",
+       "side": "prop",
+       "currentEmotion": "neutral",
+       "mutedByUser": false
+      },
+      {
+       "characterId": "chr_seedVictor",
+       "role": "debater",
+       "side": "prop",
+       "currentEmotion": "neutral",
+       "mutedByUser": false
+      },
+      {
+       "characterId": "chr_seedMei",
+       "role": "debater",
+       "side": "opp",
+       "currentEmotion": "neutral",
+       "mutedByUser": false
+      }
+     ]
+    }
+   },
+   {
+    "id": "evt_forkFixture1e2",
+    "sessionId": "ses_forkFixture1",
+    "seq": 2,
+    "at": "2026-10-01T10:02:50.378Z",
+    "type": "energy",
+    "payload": {
+     "characterId": "chr_seedAmara",
+     "current": 1007,
+     "max": 1000,
+     "state": "active"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e3",
+    "sessionId": "ses_forkFixture1",
+    "seq": 3,
+    "at": "2026-10-01T10:02:50.379Z",
+    "type": "energy",
+    "payload": {
+     "characterId": "chr_seedVictor",
+     "current": 866,
+     "max": 1000,
+     "state": "active"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e4",
+    "sessionId": "ses_forkFixture1",
+    "seq": 4,
+    "at": "2026-10-01T10:02:50.380Z",
+    "type": "energy",
+    "payload": {
+     "characterId": "chr_seedMei",
+     "current": 749,
+     "max": 1000,
+     "state": "active"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e5",
+    "sessionId": "ses_forkFixture1",
+    "seq": 5,
+    "at": "2026-10-01T10:02:51.073Z",
+    "type": "phase",
+    "payload": {
+     "phase": "opening",
+     "round": 1,
+     "iteration": 1
+    }
+   },
+   {
+    "id": "evt_forkFixture1e6",
+    "sessionId": "ses_forkFixture1",
+    "seq": 6,
+    "at": "2026-10-01T10:02:51.083Z",
+    "type": "message",
+    "payload": {
+     "message": {
+      "id": "msg_forkFixture1m0",
+      "sessionId": "ses_forkFixture1",
+      "seq": 1,
+      "author": {
+       "type": "system"
+      },
+      "kind": "system_note",
+      "content": "ROUND 1 · OPENING",
+      "status": "complete",
+      "createdAt": "2026-10-01T10:02:51.083Z"
+     }
+    }
+   },
+   {
+    "id": "evt_forkFixture1e7",
+    "sessionId": "ses_forkFixture1",
+    "seq": 7,
+    "at": "2026-10-01T10:02:53.973Z",
+    "type": "turn.next",
+    "payload": {
+     "nextSpeakerId": "chr_seedAmara",
+     "forcedBy": "round_order"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e8",
+    "sessionId": "ses_forkFixture1",
+    "seq": 8,
+    "at": "2026-10-01T10:02:54.033Z",
+    "type": "turn.thinking",
+    "payload": {
+     "characterId": "chr_seedAmara"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e9",
+    "sessionId": "ses_forkFixture1",
+    "seq": 9,
+    "at": "2026-10-01T10:02:54.073Z",
+    "type": "turn.start",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "author": {
+      "type": "character",
+      "characterId": "chr_seedAmara"
+     },
+     "message": {
+      "seq": 2,
+      "kind": "chat",
+      "debate": {
+       "phase": "opening",
+       "round": 1,
+       "iteration": 1,
+       "side": "prop"
+      }
+     }
+    }
+   },
+   {
+    "id": "evt_forkFixture1e10",
+    "sessionId": "ses_forkFixture1",
+    "seq": 10,
+    "at": "2026-10-01T10:02:54.113Z",
+    "type": "emotion",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "characterId": "chr_seedAmara",
+     "emotion": "neutral",
+     "source": "llm"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e11",
+    "sessionId": "ses_forkFixture1",
+    "seq": 11,
+    "at": "2026-10-01T10:02:55.289Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": "I see the"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e12",
+    "sessionId": "ses_forkFixture1",
+    "seq": 12,
+    "at": "2026-10-01T10:02:55.367Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": " downstream"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e13",
+    "sessionId": "ses_forkFixture1",
+    "seq": 13,
+    "at": "2026-10-01T10:02:55.444Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": " cost of chro"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e14",
+    "sessionId": "ses_forkFixture1",
+    "seq": 14,
+    "at": "2026-10-01T10:02:55.522Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": "nic overwork"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e15",
+    "sessionId": "ses_forkFixture1",
+    "seq": 15,
+    "at": "2026-10-01T10:02:55.599Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": " every shif"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e16",
+    "sessionId": "ses_forkFixture1",
+    "seq": 16,
+    "at": "2026-10-01T10:02:55.677Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": "t: burnout,"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e17",
+    "sessionId": "ses_forkFixture1",
+    "seq": 17,
+    "at": "2026-10-01T10:02:55.754Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": " poor sleep,"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e18",
+    "sessionId": "ses_forkFixture1",
+    "seq": 18,
+    "at": "2026-10-01T10:02:55.832Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": " people arri"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e19",
+    "sessionId": "ses_forkFixture1",
+    "seq": 19,
+    "at": "2026-10-01T10:02:55.910Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": "ving at my"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e20",
+    "sessionId": "ses_forkFixture1",
+    "seq": 20,
+    "at": "2026-10-01T10:02:55.987Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": " department"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e21",
+    "sessionId": "ses_forkFixture1",
+    "seq": 21,
+    "at": "2026-10-01T10:02:56.065Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": " with problems"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e22",
+    "sessionId": "ses_forkFixture1",
+    "seq": 22,
+    "at": "2026-10-01T10:02:56.142Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": " that started"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e23",
+    "sessionId": "ses_forkFixture1",
+    "seq": 23,
+    "at": "2026-10-01T10:02:56.220Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": " as exhausti"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e24",
+    "sessionId": "ses_forkFixture1",
+    "seq": 24,
+    "at": "2026-10-01T10:02:56.298Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": "on.[1] A"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e25",
+    "sessionId": "ses_forkFixture1",
+    "seq": 25,
+    "at": "2026-10-01T10:02:56.375Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": " shorter week"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e26",
+    "sessionId": "ses_forkFixture1",
+    "seq": 26,
+    "at": "2026-10-01T10:02:56.453Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": " is a publ"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e27",
+    "sessionId": "ses_forkFixture1",
+    "seq": 27,
+    "at": "2026-10-01T10:02:56.530Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": "ic-health"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e28",
+    "sessionId": "ses_forkFixture1",
+    "seq": 28,
+    "at": "2026-10-01T10:02:56.608Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": " intervention"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e29",
+    "sessionId": "ses_forkFixture1",
+    "seq": 29,
+    "at": "2026-10-01T10:02:56.685Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": ". Pilot"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e30",
+    "sessionId": "ses_forkFixture1",
+    "seq": 30,
+    "at": "2026-10-01T10:02:56.763Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": " programmes"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e31",
+    "sessionId": "ses_forkFixture1",
+    "seq": 31,
+    "at": "2026-10-01T10:02:56.841Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": " have reported"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e32",
+    "sessionId": "ses_forkFixture1",
+    "seq": 32,
+    "at": "2026-10-01T10:02:56.918Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": " lower burn"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e33",
+    "sessionId": "ses_forkFixture1",
+    "seq": 33,
+    "at": "2026-10-01T10:02:56.996Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": "out and bett"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e34",
+    "sessionId": "ses_forkFixture1",
+    "seq": 34,
+    "at": "2026-10-01T10:02:57.073Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": "er sleep"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e35",
+    "sessionId": "ses_forkFixture1",
+    "seq": 35,
+    "at": "2026-10-01T10:02:57.151Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": " without coll"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e36",
+    "sessionId": "ses_forkFixture1",
+    "seq": 36,
+    "at": "2026-10-01T10:02:57.229Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": "apsing outp"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e37",
+    "sessionId": "ses_forkFixture1",
+    "seq": 37,
+    "at": "2026-10-01T10:02:57.306Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": "ut.[2] We"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e38",
+    "sessionId": "ses_forkFixture1",
+    "seq": 38,
+    "at": "2026-10-01T10:02:57.384Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": " should take"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e39",
+    "sessionId": "ses_forkFixture1",
+    "seq": 39,
+    "at": "2026-10-01T10:02:57.461Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": " that signal"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e40",
+    "sessionId": "ses_forkFixture1",
+    "seq": 40,
+    "at": "2026-10-01T10:02:57.539Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": " seriously"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e41",
+    "sessionId": "ses_forkFixture1",
+    "seq": 41,
+    "at": "2026-10-01T10:02:57.616Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": " at national"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e42",
+    "sessionId": "ses_forkFixture1",
+    "seq": 42,
+    "at": "2026-10-01T10:02:57.694Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": " scale."
+    }
+   },
+   {
+    "id": "evt_forkFixture1e43",
+    "sessionId": "ses_forkFixture1",
+    "seq": 43,
+    "at": "2026-10-01T10:02:57.744Z",
+    "type": "turn.end",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "status": "complete",
+     "usage": {
+      "tokensIn": 2662,
+      "tokensCached": 1701,
+      "tokensOut": 88,
+      "costUsd": 0.000202,
+      "energySpent": 3,
+      "firstTokenMs": 1316,
+      "totalMs": 3771
+     },
+     "citations": [
+      {
+       "n": 1,
+       "sourceId": "kno_seedAmara1",
+       "title": "Meridian Shift Fatigue Review 2025.pdf",
+       "type": "file",
+       "chunkId": "kch_amaraFat03",
+       "locator": "p. 4",
+       "quote": "Self-reported burnout rose in every quarter of the review period. By October, 41% of emergency department staff met the review's threshold for high burnout, up from 29% in January.",
+       "score": 0.84
+      },
+      {
+       "n": 2,
+       "sourceId": "kno_seedAmara1",
+       "title": "Meridian Shift Fatigue Review 2025.pdf",
+       "type": "file",
+       "chunkId": "kch_amaraFat06",
+       "locator": "p. 9",
+       "quote": "Two wards piloted a compressed rota: four longer days, then three days off. After twelve weeks, burnout scores on both wards fell by roughly a fifth, sleep quality improved, and patient throughput stayed within normal variation.",
+       "score": 0.86
+      }
+     ]
+    }
+   },
+   {
+    "id": "evt_forkFixture1e44",
+    "sessionId": "ses_forkFixture1",
+    "seq": 44,
+    "at": "2026-10-01T10:02:57.754Z",
+    "type": "energy",
+    "payload": {
+     "characterId": "chr_seedAmara",
+     "current": 1004,
+     "max": 1000,
+     "state": "active",
+     "spent": 3
+    }
+   },
+   {
+    "id": "evt_forkFixture1e45",
+    "sessionId": "ses_forkFixture1",
+    "seq": 45,
+    "at": "2026-10-01T10:02:57.804Z",
+    "type": "insight",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "trace": {
+      "messageId": "msg_forkFixture1m1",
+      "model": {
+       "id": "deepseek/deepseek-v4.1-flash",
+       "provider": "DeepSeek",
+       "pricePeriod": "off_peak",
+       "latencyMs": {
+        "firstToken": 1316,
+        "total": 3771
+       },
+       "tokensIn": 2662,
+       "tokensCached": 1701,
+       "tokensOut": 88,
+       "costUsd": 0.000202
+      },
+      "energy": {
+       "characterId": "chr_seedAmara",
+       "spent": 3,
+       "remaining": 1004,
+       "max": 1000
+      },
+      "emotion": {
+       "chosen": "neutral",
+       "source": "llm",
+       "candidates": [
+        {
+         "label": "neutral",
+         "p": 0.581
+        },
+        {
+         "label": "embarrassed",
+         "p": 0.307
+        },
+        {
+         "label": "thinking",
+         "p": 0.061
+        }
+       ]
+      },
+      "routing": {
+       "selected": "chr_seedAmara",
+       "forcedBy": "round_order"
+      },
+      "context": {
+       "budget": 12000,
+       "cacheHitPct": 64,
+       "used": {
+        "system": 900,
+        "persona": 798,
+        "memory": 0,
+        "knowledge": 305,
+        "history": 4,
+        "user": 75,
+        "mode": 580
+       }
+      },
+      "guardrail": {
+       "checks": [
+        {
+         "name": "sfw",
+         "verdict": "pass",
+         "p": 0.987
+        },
+        {
+         "name": "advice_scope",
+         "verdict": "pass"
+        }
+       ]
+      },
+      "calls": [
+       {
+        "purpose": "reply",
+        "model": "deepseek/deepseek-v4.1-flash",
+        "costUsd": 0.000202,
+        "latencyMs": 3771
+       }
+      ],
+      "knowledge": {
+       "query": "burnout and overwork evidence for a shorter working week",
+       "trigger": "always",
+       "retrieved": [
+        {
+         "chunkId": "kch_amaraFat06",
+         "sourceId": "kno_seedAmara1",
+         "title": "Meridian Shift Fatigue Review 2025.pdf",
+         "locator": "p. 9",
+         "text": "Two wards piloted a compressed rota: four longer days, then three days off. After twelve weeks, burnout scores on both wards fell by roughly a fifth, sleep quality improved, and patient throughput stayed within normal variation.",
+         "score": 0.86,
+         "cited": true,
+         "n": 2
+        },
+        {
+         "chunkId": "kch_amaraFat03",
+         "sourceId": "kno_seedAmara1",
+         "title": "Meridian Shift Fatigue Review 2025.pdf",
+         "locator": "p. 4",
+         "text": "Self-reported burnout rose in every quarter of the review period. By October, 41% of emergency department staff met the review's threshold for high burnout, up from 29% in January.",
+         "score": 0.84,
+         "cited": true,
+         "n": 1
+        },
+        {
+         "chunkId": "kch_amaraFat04",
+         "sourceId": "kno_seedAmara1",
+         "title": "Meridian Shift Fatigue Review 2025.pdf",
+         "locator": "p. 6",
+         "text": "Poor sleep was the most common complaint, named by 63% of respondents. Staff who slept under six hours before a shift were twice as likely to report a near-miss medication error that week.",
+         "score": 0.65,
+         "cited": false
+        },
+        {
+         "chunkId": "kch_amaraFat02",
+         "sourceId": "kno_seedAmara1",
+         "title": "Meridian Shift Fatigue Review 2025.pdf",
+         "locator": "p. 3",
+         "text": "Staff working more than three consecutive long shifts reported fatigue scores 38% higher than colleagues on shorter blocks. The effect was strongest in emergency and acute medicine, where rest days were most often cancelled at short notice.",
+         "score": 0.49,
+         "cited": false
+        }
+       ]
+      }
+     }
+    }
+   },
+   {
+    "id": "evt_forkFixture1e46",
+    "sessionId": "ses_forkFixture1",
+    "seq": 46,
+    "at": "2026-10-01T10:02:58.197Z",
+    "type": "reaction",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "characterId": "chr_seedMei",
+     "emotion": "thinking",
+     "p": 0.73,
+     "source": "classifier"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e47",
+    "sessionId": "ses_forkFixture1",
+    "seq": 47,
+    "at": "2026-10-01T10:02:58.219Z",
+    "type": "reaction",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "characterId": "chr_seedVictor",
+     "emotion": "happy",
+     "p": 0.85,
+     "source": "classifier"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e48",
+    "sessionId": "ses_forkFixture1",
+    "seq": 48,
+    "at": "2026-10-01T10:02:59.644Z",
+    "type": "turn.next",
+    "payload": {
+     "nextSpeakerId": "chr_seedMei",
+     "forcedBy": "round_order"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e49",
+    "sessionId": "ses_forkFixture1",
+    "seq": 49,
+    "at": "2026-10-01T10:02:59.704Z",
+    "type": "turn.thinking",
+    "payload": {
+     "characterId": "chr_seedMei"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e50",
+    "sessionId": "ses_forkFixture1",
+    "seq": 50,
+    "at": "2026-10-01T10:02:59.744Z",
+    "type": "turn.start",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "author": {
+      "type": "character",
+      "characterId": "chr_seedMei"
+     },
+     "message": {
+      "seq": 3,
+      "kind": "chat",
+      "debate": {
+       "phase": "opening",
+       "round": 1,
+       "iteration": 1,
+       "side": "opp"
+      }
+     }
+    }
+   },
+   {
+    "id": "evt_forkFixture1e51",
+    "sessionId": "ses_forkFixture1",
+    "seq": 51,
+    "at": "2026-10-01T10:02:59.784Z",
+    "type": "emotion",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "characterId": "chr_seedMei",
+     "emotion": "thinking",
+     "source": "llm"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e52",
+    "sessionId": "ses_forkFixture1",
+    "seq": 52,
+    "at": "2026-10-01T10:03:01.121Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "delta": "Nobody here"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e53",
+    "sessionId": "ses_forkFixture1",
+    "seq": 53,
+    "at": "2026-10-01T10:03:01.198Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "delta": " is pro-burn"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e54",
+    "sessionId": "ses_forkFixture1",
+    "seq": 54,
+    "at": "2026-10-01T10:03:01.274Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "delta": "out. My prob"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e55",
+    "sessionId": "ses_forkFixture1",
+    "seq": 55,
+    "at": "2026-10-01T10:03:01.351Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "delta": "lem is the"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e56",
+    "sessionId": "ses_forkFixture1",
+    "seq": 56,
+    "at": "2026-10-01T10:03:01.428Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "delta": " word *nationw"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e57",
+    "sessionId": "ses_forkFixture1",
+    "seq": 57,
+    "at": "2026-10-01T10:03:01.504Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "delta": "ide*. The"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e58",
+    "sessionId": "ses_forkFixture1",
+    "seq": 58,
+    "at": "2026-10-01T10:03:01.581Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "delta": " pilots I've"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e59",
+    "sessionId": "ses_forkFixture1",
+    "seq": 59,
+    "at": "2026-10-01T10:03:01.658Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "delta": " seen were most"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e60",
+    "sessionId": "ses_forkFixture1",
+    "seq": 60,
+    "at": "2026-10-01T10:03:01.734Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "delta": "ly voluntar"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e61",
+    "sessionId": "ses_forkFixture1",
+    "seq": 61,
+    "at": "2026-10-01T10:03:01.811Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "delta": "y, self-sel"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e62",
+    "sessionId": "ses_forkFixture1",
+    "seq": 62,
+    "at": "2026-10-01T10:03:01.888Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "delta": "ected firm"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e63",
+    "sessionId": "ses_forkFixture1",
+    "seq": 63,
+    "at": "2026-10-01T10:03:01.964Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "delta": "s, often"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e64",
+    "sessionId": "ses_forkFixture1",
+    "seq": 64,
+    "at": "2026-10-01T10:03:02.041Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "delta": " knowledge"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e65",
+    "sessionId": "ses_forkFixture1",
+    "seq": 65,
+    "at": "2026-10-01T10:03:02.118Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "delta": " work,[1] wher"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e66",
+    "sessionId": "ses_forkFixture1",
+    "seq": 66,
+    "at": "2026-10-01T10:03:02.194Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "delta": "e output"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e67",
+    "sessionId": "ses_forkFixture1",
+    "seq": 67,
+    "at": "2026-10-01T10:03:02.271Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "delta": " is hard to"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e68",
+    "sessionId": "ses_forkFixture1",
+    "seq": 68,
+    "at": "2026-10-01T10:03:02.348Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "delta": " measure and"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e69",
+    "sessionId": "ses_forkFixture1",
+    "seq": 69,
+    "at": "2026-10-01T10:03:02.424Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "delta": " easy to reor"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e70",
+    "sessionId": "ses_forkFixture1",
+    "seq": 70,
+    "at": "2026-10-01T10:03:02.501Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "delta": "ganise.[2]"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e71",
+    "sessionId": "ses_forkFixture1",
+    "seq": 71,
+    "at": "2026-10-01T10:03:02.578Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "delta": " A hospital"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e72",
+    "sessionId": "ses_forkFixture1",
+    "seq": 72,
+    "at": "2026-10-01T10:03:02.654Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "delta": ", a bus"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e73",
+    "sessionId": "ses_forkFixture1",
+    "seq": 73,
+    "at": "2026-10-01T10:03:02.731Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "delta": " network or"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e74",
+    "sessionId": "ses_forkFixture1",
+    "seq": 74,
+    "at": "2026-10-01T10:03:02.808Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "delta": " a care home"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e75",
+    "sessionId": "ses_forkFixture1",
+    "seq": 75,
+    "at": "2026-10-01T10:03:02.884Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "delta": " can't comp"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e76",
+    "sessionId": "ses_forkFixture1",
+    "seq": 76,
+    "at": "2026-10-01T10:03:02.961Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "delta": "ress five days"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e77",
+    "sessionId": "ses_forkFixture1",
+    "seq": 77,
+    "at": "2026-10-01T10:03:03.038Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "delta": " of coverage"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e78",
+    "sessionId": "ses_forkFixture1",
+    "seq": 78,
+    "at": "2026-10-01T10:03:03.114Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "delta": " into four."
+    }
+   },
+   {
+    "id": "evt_forkFixture1e79",
+    "sessionId": "ses_forkFixture1",
+    "seq": 79,
+    "at": "2026-10-01T10:03:03.191Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "delta": " They hire more"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e80",
+    "sessionId": "ses_forkFixture1",
+    "seq": 80,
+    "at": "2026-10-01T10:03:03.268Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "delta": " staff or"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e81",
+    "sessionId": "ses_forkFixture1",
+    "seq": 81,
+    "at": "2026-10-01T10:03:03.344Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "delta": " they cut serv"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e82",
+    "sessionId": "ses_forkFixture1",
+    "seq": 82,
+    "at": "2026-10-01T10:03:03.421Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "delta": "ice. Both cost"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e83",
+    "sessionId": "ses_forkFixture1",
+    "seq": 83,
+    "at": "2026-10-01T10:03:03.498Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "delta": " money that"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e84",
+    "sessionId": "ses_forkFixture1",
+    "seq": 84,
+    "at": "2026-10-01T10:03:03.574Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "delta": " somebody pays"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e85",
+    "sessionId": "ses_forkFixture1",
+    "seq": 85,
+    "at": "2026-10-01T10:03:03.651Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "delta": "."
+    }
+   },
+   {
+    "id": "evt_forkFixture1e86",
+    "sessionId": "ses_forkFixture1",
+    "seq": 86,
+    "at": "2026-10-01T10:03:03.701Z",
+    "type": "turn.end",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "status": "complete",
+     "usage": {
+      "tokensIn": 2614,
+      "tokensCached": 1730,
+      "tokensOut": 95,
+      "costUsd": 0.000195,
+      "energySpent": 2,
+      "firstTokenMs": 1477,
+      "totalMs": 4057
+     },
+     "citations": [
+      {
+       "n": 1,
+       "sourceId": "kno_seedMei2",
+       "title": "Four-day week pilot summaries.pdf",
+       "type": "file",
+       "chunkId": "kch_meiPilot02",
+       "locator": "p. 3",
+       "quote": "Seventy-one percent of participating organisations were in professional services, software, marketing or the non-profit sector. Only nine provided round-the-clock or shift-based services.",
+       "score": 0.8
+      },
+      {
+       "n": 2,
+       "sourceId": "kno_seedMei2",
+       "title": "Four-day week pilot summaries.pdf",
+       "type": "file",
+       "chunkId": "kch_meiPilot03",
+       "locator": "p. 5",
+       "quote": "Across all pilots, self-reported burnout fell by an average of 32% and sick days by 21%. Revenue stayed broadly flat, but fewer than half of the firms tracked output with a consistent measure.",
+       "score": 0.92
+      }
+     ]
+    }
+   },
+   {
+    "id": "evt_forkFixture1e87",
+    "sessionId": "ses_forkFixture1",
+    "seq": 87,
+    "at": "2026-10-01T10:03:03.711Z",
+    "type": "energy",
+    "payload": {
+     "characterId": "chr_seedMei",
+     "current": 747,
+     "max": 1000,
+     "state": "active",
+     "spent": 2
+    }
+   },
+   {
+    "id": "evt_forkFixture1e88",
+    "sessionId": "ses_forkFixture1",
+    "seq": 88,
+    "at": "2026-10-01T10:03:03.761Z",
+    "type": "insight",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "trace": {
+      "messageId": "msg_forkFixture1m2",
+      "model": {
+       "id": "deepseek/deepseek-v4.1-flash",
+       "provider": "DeepSeek",
+       "pricePeriod": "off_peak",
+       "latencyMs": {
+        "firstToken": 1477,
+        "total": 4057
+       },
+       "tokensIn": 2614,
+       "tokensCached": 1730,
+       "tokensOut": 95,
+       "costUsd": 0.000195
+      },
+      "energy": {
+       "characterId": "chr_seedMei",
+       "spent": 2,
+       "remaining": 747,
+       "max": 1000
+      },
+      "emotion": {
+       "chosen": "thinking",
+       "source": "llm",
+       "candidates": [
+        {
+         "label": "thinking",
+         "p": 0.696
+        },
+        {
+         "label": "happy",
+         "p": 0.183
+        },
+        {
+         "label": "surprised",
+         "p": 0.096
+        }
+       ]
+      },
+      "routing": {
+       "selected": "chr_seedMei",
+       "forcedBy": "round_order"
+      },
+      "context": {
+       "budget": 12000,
+       "cacheHitPct": 66,
+       "used": {
+        "system": 900,
+        "persona": 748,
+        "memory": 0,
+        "knowledge": 215,
+        "history": 92,
+        "user": 79,
+        "mode": 580
+       }
+      },
+      "guardrail": {
+       "checks": [
+        {
+         "name": "sfw",
+         "verdict": "pass",
+         "p": 0.982
+        },
+        {
+         "name": "advice_scope",
+         "verdict": "pass"
+        }
+       ]
+      },
+      "calls": [
+       {
+        "purpose": "reply",
+        "model": "deepseek/deepseek-v4.1-flash",
+        "costUsd": 0.000195,
+        "latencyMs": 4057
+       }
+      ],
+      "knowledge": {
+       "query": "who took part in four-day week pilots",
+       "trigger": "always",
+       "retrieved": [
+        {
+         "chunkId": "kch_meiPilot03",
+         "sourceId": "kno_seedMei2",
+         "title": "Four-day week pilot summaries.pdf",
+         "locator": "p. 5",
+         "text": "Across all pilots, self-reported burnout fell by an average of 32% and sick days by 21%. Revenue stayed broadly flat, but fewer than half of the firms tracked output with a consistent measure.",
+         "score": 0.92,
+         "cited": true,
+         "n": 2
+        },
+        {
+         "chunkId": "kch_meiPilot02",
+         "sourceId": "kno_seedMei2",
+         "title": "Four-day week pilot summaries.pdf",
+         "locator": "p. 3",
+         "text": "Seventy-one percent of participating organisations were in professional services, software, marketing or the non-profit sector. Only nine provided round-the-clock or shift-based services.",
+         "score": 0.8,
+         "cited": true,
+         "n": 1
+        },
+        {
+         "chunkId": "kch_meiPilot01",
+         "sourceId": "kno_seedMei2",
+         "title": "Four-day week pilot summaries.pdf",
+         "locator": "p. 1",
+         "text": "This compendium summarises fourteen four-day week pilots run in Meridian between 2023 and 2025, covering 212 organisations and about 9,800 workers. Every participating organisation volunteered.",
+         "score": 0.5,
+         "cited": false
+        }
+       ]
+      }
+     }
+    }
+   },
+   {
+    "id": "evt_forkFixture1e89",
+    "sessionId": "ses_forkFixture1",
+    "seq": 89,
+    "at": "2026-10-01T10:03:04.187Z",
+    "type": "reaction",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "characterId": "chr_seedVictor",
+     "emotion": "angry",
+     "p": 0.63,
+     "source": "classifier"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e90",
+    "sessionId": "ses_forkFixture1",
+    "seq": 90,
+    "at": "2026-10-01T10:03:04.269Z",
+    "type": "reaction",
+    "payload": {
+     "messageId": "msg_forkFixture1m2",
+     "characterId": "chr_seedAmara",
+     "emotion": "sad",
+     "p": 0.66,
+     "source": "classifier"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e91",
+    "sessionId": "ses_forkFixture1",
+    "seq": 91,
+    "at": "2026-10-01T10:03:05.601Z",
+    "type": "turn.next",
+    "payload": {
+     "nextSpeakerId": "chr_seedVictor",
+     "forcedBy": "round_order"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e92",
+    "sessionId": "ses_forkFixture1",
+    "seq": 92,
+    "at": "2026-10-01T10:03:05.661Z",
+    "type": "turn.thinking",
+    "payload": {
+     "characterId": "chr_seedVictor"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e93",
+    "sessionId": "ses_forkFixture1",
+    "seq": 93,
+    "at": "2026-10-01T10:03:05.701Z",
+    "type": "turn.start",
+    "payload": {
+     "messageId": "msg_forkFixture1m3",
+     "author": {
+      "type": "character",
+      "characterId": "chr_seedVictor"
+     },
+     "message": {
+      "seq": 4,
+      "kind": "chat",
+      "debate": {
+       "phase": "opening",
+       "round": 1,
+       "iteration": 1,
+       "side": "prop"
+      }
+     }
+    }
+   },
+   {
+    "id": "evt_forkFixture1e94",
+    "sessionId": "ses_forkFixture1",
+    "seq": 94,
+    "at": "2026-10-01T10:03:05.741Z",
+    "type": "emotion",
+    "payload": {
+     "messageId": "msg_forkFixture1m3",
+     "characterId": "chr_seedVictor",
+     "emotion": "happy",
+     "source": "llm"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e95",
+    "sessionId": "ses_forkFixture1",
+    "seq": 95,
+    "at": "2026-10-01T10:03:06.895Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m3",
+     "delta": "Three poin"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e96",
+    "sessionId": "ses_forkFixture1",
+    "seq": 96,
+    "at": "2026-10-01T10:03:06.973Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m3",
+     "delta": "ts. One: \"nat"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e97",
+    "sessionId": "ses_forkFixture1",
+    "seq": 97,
+    "at": "2026-10-01T10:03:07.051Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m3",
+     "delta": "ionwide\" need"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e98",
+    "sessionId": "ses_forkFixture1",
+    "seq": 98,
+    "at": "2026-10-01T10:03:07.128Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m3",
+     "delta": " not mean \"ide"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e99",
+    "sessionId": "ses_forkFixture1",
+    "seq": 99,
+    "at": "2026-10-01T10:03:07.206Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m3",
+     "delta": "ntical\". The"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e100",
+    "sessionId": "ses_forkFixture1",
+    "seq": 100,
+    "at": "2026-10-01T10:03:07.284Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m3",
+     "delta": " motion is"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e101",
+    "sessionId": "ses_forkFixture1",
+    "seq": 101,
+    "at": "2026-10-01T10:03:07.362Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m3",
+     "delta": " about the"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e102",
+    "sessionId": "ses_forkFixture1",
+    "seq": 102,
+    "at": "2026-10-01T10:03:07.439Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m3",
+     "delta": " default stan"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e103",
+    "sessionId": "ses_forkFixture1",
+    "seq": 103,
+    "at": "2026-10-01T10:03:07.517Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m3",
+     "delta": "dard week,"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e104",
+    "sessionId": "ses_forkFixture1",
+    "seq": 104,
+    "at": "2026-10-01T10:03:07.595Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m3",
+     "delta": " as we once"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e105",
+    "sessionId": "ses_forkFixture1",
+    "seq": 105,
+    "at": "2026-10-01T10:03:07.673Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m3",
+     "delta": " did with the"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e106",
+    "sessionId": "ses_forkFixture1",
+    "seq": 106,
+    "at": "2026-10-01T10:03:07.750Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m3",
+     "delta": " weekend.[1]"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e107",
+    "sessionId": "ses_forkFixture1",
+    "seq": 107,
+    "at": "2026-10-01T10:03:07.828Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m3",
+     "delta": " Two: law alre"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e108",
+    "sessionId": "ses_forkFixture1",
+    "seq": 108,
+    "at": "2026-10-01T10:03:07.906Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m3",
+     "delta": "ady handles"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e109",
+    "sessionId": "ses_forkFixture1",
+    "seq": 109,
+    "at": "2026-10-01T10:03:07.984Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m3",
+     "delta": " continuous-c"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e110",
+    "sessionId": "ses_forkFixture1",
+    "seq": 110,
+    "at": "2026-10-01T10:03:08.061Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m3",
+     "delta": "overage sect"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e111",
+    "sessionId": "ses_forkFixture1",
+    "seq": 111,
+    "at": "2026-10-01T10:03:08.139Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m3",
+     "delta": "ors through"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e112",
+    "sessionId": "ses_forkFixture1",
+    "seq": 112,
+    "at": "2026-10-01T10:03:08.217Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m3",
+     "delta": " shift rule"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e113",
+    "sessionId": "ses_forkFixture1",
+    "seq": 113,
+    "at": "2026-10-01T10:03:08.295Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m3",
+     "delta": "s.[2] Thre"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e114",
+    "sessionId": "ses_forkFixture1",
+    "seq": 114,
+    "at": "2026-10-01T10:03:08.372Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m3",
+     "delta": "e: the burd"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e115",
+    "sessionId": "ses_forkFixture1",
+    "seq": 115,
+    "at": "2026-10-01T10:03:08.450Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m3",
+     "delta": "en of proo"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e116",
+    "sessionId": "ses_forkFixture1",
+    "seq": 116,
+    "at": "2026-10-01T10:03:08.528Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m3",
+     "delta": "f is on"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e117",
+    "sessionId": "ses_forkFixture1",
+    "seq": 117,
+    "at": "2026-10-01T10:03:08.606Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m3",
+     "delta": " the status"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e118",
+    "sessionId": "ses_forkFixture1",
+    "seq": 118,
+    "at": "2026-10-01T10:03:08.683Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m3",
+     "delta": " quo, a five"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e119",
+    "sessionId": "ses_forkFixture1",
+    "seq": 119,
+    "at": "2026-10-01T10:03:08.761Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m3",
+     "delta": "-day week that"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e120",
+    "sessionId": "ses_forkFixture1",
+    "seq": 120,
+    "at": "2026-10-01T10:03:08.839Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m3",
+     "delta": " was itself"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e121",
+    "sessionId": "ses_forkFixture1",
+    "seq": 121,
+    "at": "2026-10-01T10:03:08.917Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m3",
+     "delta": " a policy"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e122",
+    "sessionId": "ses_forkFixture1",
+    "seq": 122,
+    "at": "2026-10-01T10:03:08.994Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m3",
+     "delta": " choice, not"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e123",
+    "sessionId": "ses_forkFixture1",
+    "seq": 123,
+    "at": "2026-10-01T10:03:09.072Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m3",
+     "delta": " a law of"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e124",
+    "sessionId": "ses_forkFixture1",
+    "seq": 124,
+    "at": "2026-10-01T10:03:09.150Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m3",
+     "delta": " nature."
+    }
+   },
+   {
+    "id": "evt_forkFixture1e125",
+    "sessionId": "ses_forkFixture1",
+    "seq": 125,
+    "at": "2026-10-01T10:03:09.200Z",
+    "type": "turn.end",
+    "payload": {
+     "messageId": "msg_forkFixture1m3",
+     "status": "complete",
+     "usage": {
+      "tokensIn": 2655,
+      "tokensCached": 1783,
+      "tokensOut": 84,
+      "costUsd": 0.000187,
+      "energySpent": 2,
+      "firstTokenMs": 1294,
+      "totalMs": 3599
+     },
+     "citations": [
+      {
+       "n": 1,
+       "sourceId": "kno_seedVictor1",
+       "title": "Moot court notes",
+       "type": "text",
+       "chunkId": "kch_victorMoot02",
+       "locator": "¶ 2",
+       "quote": "Historical anchor: the Meridian Working Hours Act 1931 made the two-day weekend the default. It gave agriculture and shipping a ten-year transition and exempted continuous services.",
+       "score": 0.86
+      },
+      {
+       "n": 2,
+       "sourceId": "kno_seedVictor1",
+       "title": "Moot court notes",
+       "type": "text",
+       "chunkId": "kch_victorMoot03",
+       "locator": "¶ 3",
+       "quote": "Continuous-coverage sectors already run on shift rules under Part IV of the Working Time Code: rest periods, a cap on consecutive shifts, and averaging over a reference period. A shorter standard week sits inside that structure.",
+       "score": 0.79
+      }
+     ]
+    }
+   },
+   {
+    "id": "evt_forkFixture1e126",
+    "sessionId": "ses_forkFixture1",
+    "seq": 126,
+    "at": "2026-10-01T10:03:09.210Z",
+    "type": "energy",
+    "payload": {
+     "characterId": "chr_seedVictor",
+     "current": 864,
+     "max": 1000,
+     "state": "active",
+     "spent": 2
+    }
+   },
+   {
+    "id": "evt_forkFixture1e127",
+    "sessionId": "ses_forkFixture1",
+    "seq": 127,
+    "at": "2026-10-01T10:03:09.260Z",
+    "type": "insight",
+    "payload": {
+     "messageId": "msg_forkFixture1m3",
+     "trace": {
+      "messageId": "msg_forkFixture1m3",
+      "model": {
+       "id": "deepseek/deepseek-v4.1-flash",
+       "provider": "DeepSeek",
+       "pricePeriod": "off_peak",
+       "latencyMs": {
+        "firstToken": 1294,
+        "total": 3599
+       },
+       "tokensIn": 2655,
+       "tokensCached": 1783,
+       "tokensOut": 84,
+       "costUsd": 0.000187
+      },
+      "energy": {
+       "characterId": "chr_seedVictor",
+       "spent": 2,
+       "remaining": 864,
+       "max": 1000
+      },
+      "emotion": {
+       "chosen": "happy",
+       "source": "llm",
+       "candidates": [
+        {
+         "label": "happy",
+         "p": 0.865
+        },
+        {
+         "label": "thinking",
+         "p": 0.094
+        },
+        {
+         "label": "surprised",
+         "p": 0.026
+        }
+       ]
+      },
+      "routing": {
+       "selected": "chr_seedVictor",
+       "forcedBy": "round_order"
+      },
+      "context": {
+       "budget": 12000,
+       "cacheHitPct": 67,
+       "used": {
+        "system": 900,
+        "persona": 715,
+        "memory": 0,
+        "knowledge": 214,
+        "history": 187,
+        "user": 59,
+        "mode": 580
+       }
+      },
+      "guardrail": {
+       "checks": [
+        {
+         "name": "sfw",
+         "verdict": "pass",
+         "p": 0.965
+        },
+        {
+         "name": "advice_scope",
+         "verdict": "pass"
+        }
+       ]
+      },
+      "calls": [
+       {
+        "purpose": "reply",
+        "model": "deepseek/deepseek-v4.1-flash",
+        "costUsd": 0.000187,
+        "latencyMs": 3599
+       }
+      ],
+      "knowledge": {
+       "query": "legal precedent for changing the standard working week",
+       "trigger": "always",
+       "retrieved": [
+        {
+         "chunkId": "kch_victorMoot02",
+         "sourceId": "kno_seedVictor1",
+         "title": "Moot court notes",
+         "locator": "¶ 2",
+         "text": "Historical anchor: the Meridian Working Hours Act 1931 made the two-day weekend the default. It gave agriculture and shipping a ten-year transition and exempted continuous services.",
+         "score": 0.86,
+         "cited": true,
+         "n": 1
+        },
+        {
+         "chunkId": "kch_victorMoot03",
+         "sourceId": "kno_seedVictor1",
+         "title": "Moot court notes",
+         "locator": "¶ 3",
+         "text": "Continuous-coverage sectors already run on shift rules under Part IV of the Working Time Code: rest periods, a cap on consecutive shifts, and averaging over a reference period. A shorter standard week sits inside that structure.",
+         "score": 0.79,
+         "cited": true,
+         "n": 2
+        },
+        {
+         "chunkId": "kch_victorMoot01",
+         "sourceId": "kno_seedVictor1",
+         "title": "Moot court notes",
+         "locator": "¶ 1",
+         "text": "Expect the opposition to say the evidence base is narrow. Concede scope early, then shift the burden: the status quo is also a policy and has to justify itself.",
+         "score": 0.46,
+         "cited": false
+        }
+       ]
+      }
+     }
+    }
+   },
+   {
+    "id": "evt_forkFixture1e128",
+    "sessionId": "ses_forkFixture1",
+    "seq": 128,
+    "at": "2026-10-01T10:03:09.614Z",
+    "type": "reaction",
+    "payload": {
+     "messageId": "msg_forkFixture1m3",
+     "characterId": "chr_seedAmara",
+     "emotion": "happy",
+     "p": 0.57,
+     "source": "classifier"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e129",
+    "sessionId": "ses_forkFixture1",
+    "seq": 129,
+    "at": "2026-10-01T10:03:09.647Z",
+    "type": "reaction",
+    "payload": {
+     "messageId": "msg_forkFixture1m3",
+     "characterId": "chr_seedMei",
+     "emotion": "surprised",
+     "p": 0.85,
+     "source": "classifier"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e130",
+    "sessionId": "ses_forkFixture1",
+    "seq": 130,
+    "at": "2026-10-01T10:03:09.900Z",
+    "type": "phase",
+    "payload": {
+     "phase": "rebuttal",
+     "round": 2,
+     "iteration": 1
+    }
+   },
+   {
+    "id": "evt_forkFixture1e131",
+    "sessionId": "ses_forkFixture1",
+    "seq": 131,
+    "at": "2026-10-01T10:03:09.910Z",
+    "type": "message",
+    "payload": {
+     "message": {
+      "id": "msg_forkFixture1m4",
+      "sessionId": "ses_forkFixture1",
+      "seq": 5,
+      "author": {
+       "type": "system"
+      },
+      "kind": "system_note",
+      "content": "ROUND 2 · REBUTTAL",
+      "status": "complete",
+      "createdAt": "2026-10-01T10:03:09.910Z"
+     }
+    }
+   },
+   {
+    "id": "evt_forkFixture1e132",
+    "sessionId": "ses_forkFixture1",
+    "seq": 132,
+    "at": "2026-10-01T10:03:12.200Z",
+    "type": "message",
+    "payload": {
+     "message": {
+      "id": "msg_forkFixture1m5",
+      "sessionId": "ses_forkFixture1",
+      "seq": 6,
+      "author": {
+       "type": "user"
+      },
+      "kind": "interject",
+      "content": "Concrete numbers this round, please. Everyone.",
+      "status": "complete",
+      "createdAt": "2026-10-01T10:03:12.200Z",
+      "debate": {
+       "phase": "rebuttal",
+       "round": 2,
+       "iteration": 1
+      }
+     }
+    }
+   },
+   {
+    "id": "evt_forkFixture1e133",
+    "sessionId": "ses_forkFixture1",
+    "seq": 133,
+    "at": "2026-10-01T10:03:13.650Z",
+    "type": "message",
+    "payload": {
+     "message": {
+      "id": "msg_forkFixture1m6",
+      "sessionId": "ses_forkFixture1",
+      "seq": 7,
+      "author": {
+       "type": "user"
+      },
+      "kind": "steer",
+      "targetCharacterId": "chr_seedMei",
+      "content": "Mei, give us a number. What does this cost?",
+      "status": "complete",
+      "createdAt": "2026-10-01T10:03:13.650Z",
+      "debate": {
+       "phase": "rebuttal",
+       "round": 2,
+       "iteration": 1
+      }
+     }
+    }
+   },
+   {
+    "id": "evt_forkFixture1e134",
+    "sessionId": "ses_forkFixture1",
+    "seq": 134,
+    "at": "2026-10-01T10:03:13.900Z",
+    "type": "turn.next",
+    "payload": {
+     "nextSpeakerId": "chr_seedMei",
+     "forcedBy": "user_ask"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e135",
+    "sessionId": "ses_forkFixture1",
+    "seq": 135,
+    "at": "2026-10-01T10:03:13.960Z",
+    "type": "turn.thinking",
+    "payload": {
+     "characterId": "chr_seedMei"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e136",
+    "sessionId": "ses_forkFixture1",
+    "seq": 136,
+    "at": "2026-10-01T10:03:14Z",
+    "type": "turn.start",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "author": {
+      "type": "character",
+      "characterId": "chr_seedMei"
+     },
+     "message": {
+      "seq": 8,
+      "kind": "chat",
+      "debate": {
+       "phase": "rebuttal",
+       "round": 2,
+       "iteration": 1,
+       "side": "opp"
+      },
+      "forcedSpeaker": true
+     }
+    }
+   },
+   {
+    "id": "evt_forkFixture1e137",
+    "sessionId": "ses_forkFixture1",
+    "seq": 137,
+    "at": "2026-10-01T10:03:14.040Z",
+    "type": "emotion",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "characterId": "chr_seedMei",
+     "emotion": "thinking",
+     "source": "llm"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e138",
+    "sessionId": "ses_forkFixture1",
+    "seq": 138,
+    "at": "2026-10-01T10:03:15.320Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": "Honestly?"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e139",
+    "sessionId": "ses_forkFixture1",
+    "seq": 139,
+    "at": "2026-10-01T10:03:15.429Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": " Nobody can"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e140",
+    "sessionId": "ses_forkFixture1",
+    "seq": 140,
+    "at": "2026-10-01T10:03:15.537Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": " give you one"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e141",
+    "sessionId": "ses_forkFixture1",
+    "seq": 141,
+    "at": "2026-10-01T10:03:15.646Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": " reliable numb"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e142",
+    "sessionId": "ses_forkFixture1",
+    "seq": 142,
+    "at": "2026-10-01T10:03:15.755Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": "er, and anyo"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e143",
+    "sessionId": "ses_forkFixture1",
+    "seq": 143,
+    "at": "2026-10-01T10:03:15.863Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": "ne who does"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e144",
+    "sessionId": "ses_forkFixture1",
+    "seq": 144,
+    "at": "2026-10-01T10:03:15.972Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": " is selling"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e145",
+    "sessionId": "ses_forkFixture1",
+    "seq": 145,
+    "at": "2026-10-01T10:03:16.081Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": " something."
+    }
+   },
+   {
+    "id": "evt_forkFixture1e146",
+    "sessionId": "ses_forkFixture1",
+    "seq": 146,
+    "at": "2026-10-01T10:03:16.189Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": " It depends"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e147",
+    "sessionId": "ses_forkFixture1",
+    "seq": 147,
+    "at": "2026-10-01T10:03:16.298Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": " on how much"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e148",
+    "sessionId": "ses_forkFixture1",
+    "seq": 148,
+    "at": "2026-10-01T10:03:16.407Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": " productivity"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e149",
+    "sessionId": "ses_forkFixture1",
+    "seq": 149,
+    "at": "2026-10-01T10:03:16.516Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": " per hour rise"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e150",
+    "sessionId": "ses_forkFixture1",
+    "seq": 150,
+    "at": "2026-10-01T10:03:16.624Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": "s. If it"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e151",
+    "sessionId": "ses_forkFixture1",
+    "seq": 151,
+    "at": "2026-10-01T10:03:16.733Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": " rises enou"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e152",
+    "sessionId": "ses_forkFixture1",
+    "seq": 152,
+    "at": "2026-10-01T10:03:16.842Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": "gh to offs"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e153",
+    "sessionId": "ses_forkFixture1",
+    "seq": 153,
+    "at": "2026-10-01T10:03:16.950Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": "et the lost"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e154",
+    "sessionId": "ses_forkFixture1",
+    "seq": 154,
+    "at": "2026-10-01T10:03:17.059Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": " day, the cost"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e155",
+    "sessionId": "ses_forkFixture1",
+    "seq": 155,
+    "at": "2026-10-01T10:03:17.168Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": " is near zero"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e156",
+    "sessionId": "ses_forkFixture1",
+    "seq": 156,
+    "at": "2026-10-01T10:03:17.276Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": ". If it"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e157",
+    "sessionId": "ses_forkFixture1",
+    "seq": 157,
+    "at": "2026-10-01T10:03:17.385Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": " doesn't, and"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e158",
+    "sessionId": "ses_forkFixture1",
+    "seq": 158,
+    "at": "2026-10-01T10:03:17.494Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": " in coverage"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e159",
+    "sessionId": "ses_forkFixture1",
+    "seq": 159,
+    "at": "2026-10-01T10:03:17.602Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": "-based sect"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e160",
+    "sessionId": "ses_forkFixture1",
+    "seq": 160,
+    "at": "2026-10-01T10:03:17.711Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": "ors it most"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e161",
+    "sessionId": "ses_forkFixture1",
+    "seq": 161,
+    "at": "2026-10-01T10:03:17.820Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": "ly can't,"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e162",
+    "sessionId": "ses_forkFixture1",
+    "seq": 162,
+    "at": "2026-10-01T10:03:17.928Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": " you need roug"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e163",
+    "sessionId": "ses_forkFixture1",
+    "seq": 163,
+    "at": "2026-10-01T10:03:18.037Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": "hly **a quar"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e164",
+    "sessionId": "ses_forkFixture1",
+    "seq": 164,
+    "at": "2026-10-01T10:03:18.146Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": "ter more**"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e165",
+    "sessionId": "ses_forkFixture1",
+    "seq": 165,
+    "at": "2026-10-01T10:03:18.254Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": " staff hour"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e166",
+    "sessionId": "ses_forkFixture1",
+    "seq": 166,
+    "at": "2026-10-01T10:03:18.363Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": "s in thos"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e167",
+    "sessionId": "ses_forkFixture1",
+    "seq": 167,
+    "at": "2026-10-01T10:03:18.472Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": "e sectors"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e168",
+    "sessionId": "ses_forkFixture1",
+    "seq": 168,
+    "at": "2026-10-01T10:03:18.581Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": " to hold serv"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e169",
+    "sessionId": "ses_forkFixture1",
+    "seq": 169,
+    "at": "2026-10-01T10:03:18.689Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": "ice constant"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e170",
+    "sessionId": "ses_forkFixture1",
+    "seq": 170,
+    "at": "2026-10-01T10:03:18.798Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": ". The poli"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e171",
+    "sessionId": "ses_forkFixture1",
+    "seq": 171,
+    "at": "2026-10-01T10:03:18.907Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": "cy's cost live"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e172",
+    "sessionId": "ses_forkFixture1",
+    "seq": 172,
+    "at": "2026-10-01T10:03:19.015Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": "s entirely"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e173",
+    "sessionId": "ses_forkFixture1",
+    "seq": 173,
+    "at": "2026-10-01T10:03:19.124Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": " in the sect"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e174",
+    "sessionId": "ses_forkFixture1",
+    "seq": 174,
+    "at": "2026-10-01T10:03:19.233Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": "ors the pilo"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e175",
+    "sessionId": "ses_forkFixture1",
+    "seq": 175,
+    "at": "2026-10-01T10:03:19.341Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": "ts didn't"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e176",
+    "sessionId": "ses_forkFixture1",
+    "seq": 176,
+    "at": "2026-10-01T10:03:19.450Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "delta": " test."
+    }
+   },
+   {
+    "id": "evt_forkFixture1e177",
+    "sessionId": "ses_forkFixture1",
+    "seq": 177,
+    "at": "2026-10-01T10:03:19.500Z",
+    "type": "turn.end",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "status": "complete",
+     "usage": {
+      "tokensIn": 9800,
+      "tokensCached": 7800,
+      "tokensOut": 168,
+      "costUsd": 0.00042,
+      "energySpent": 5,
+      "firstTokenMs": 1420,
+      "totalMs": 5600
+     }
+    }
+   },
+   {
+    "id": "evt_forkFixture1e178",
+    "sessionId": "ses_forkFixture1",
+    "seq": 178,
+    "at": "2026-10-01T10:03:19.510Z",
+    "type": "energy",
+    "payload": {
+     "characterId": "chr_seedMei",
+     "current": 742,
+     "max": 1000,
+     "state": "active",
+     "spent": 5
+    }
+   },
+   {
+    "id": "evt_forkFixture1e179",
+    "sessionId": "ses_forkFixture1",
+    "seq": 179,
+    "at": "2026-10-01T10:03:19.560Z",
+    "type": "insight",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "trace": {
+      "messageId": "msg_forkFixture1m7",
+      "model": {
+       "id": "deepseek/deepseek-v4.1-flash",
+       "provider": "DeepSeek",
+       "pricePeriod": "off_peak",
+       "latencyMs": {
+        "firstToken": 1420,
+        "total": 5600
+       },
+       "tokensIn": 9800,
+       "tokensCached": 7800,
+       "tokensOut": 168,
+       "costUsd": 0.00042
+      },
+      "energy": {
+       "characterId": "chr_seedMei",
+       "spent": 5,
+       "remaining": 742,
+       "max": 1000
+      },
+      "emotion": {
+       "chosen": "thinking",
+       "source": "llm",
+       "candidates": [
+        {
+         "label": "thinking",
+         "p": 0.71
+        },
+        {
+         "label": "neutral",
+         "p": 0.18
+        }
+       ]
+      },
+      "routing": {
+       "selected": "chr_seedMei",
+       "forcedBy": "user_ask"
+      },
+      "contextInSession": [
+       {
+        "text": "R1: Mei: pilots were voluntary, self-selected firms",
+        "messageId": "msg_forkFixture1m2"
+       }
+      ],
+      "context": {
+       "budget": 12000,
+       "cacheHitPct": 80,
+       "used": {
+        "system": 900,
+        "persona": 700,
+        "memory": 0,
+        "knowledge": 0,
+        "history": 6900,
+        "user": 40,
+        "mode": 580
+       }
+      }
+     }
+    }
+   },
+   {
+    "id": "evt_forkFixture1e180",
+    "sessionId": "ses_forkFixture1",
+    "seq": 180,
+    "at": "2026-10-01T10:03:20Z",
+    "type": "reaction",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "characterId": "chr_seedVictor",
+     "emotion": "thinking",
+     "p": 0.64,
+     "source": "classifier"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e181",
+    "sessionId": "ses_forkFixture1",
+    "seq": 181,
+    "at": "2026-10-01T10:03:20Z",
+    "type": "reaction",
+    "payload": {
+     "messageId": "msg_forkFixture1m7",
+     "characterId": "chr_seedAmara",
+     "emotion": "thinking",
+     "p": 0.58,
+     "source": "classifier"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e182",
+    "sessionId": "ses_forkFixture1",
+    "seq": 182,
+    "at": "2026-10-01T10:03:21.400Z",
+    "type": "turn.next",
+    "payload": {
+     "nextSpeakerId": "chr_seedAmara",
+     "forcedBy": "round_order"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e183",
+    "sessionId": "ses_forkFixture1",
+    "seq": 183,
+    "at": "2026-10-01T10:03:21.460Z",
+    "type": "turn.thinking",
+    "payload": {
+     "characterId": "chr_seedAmara"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e184",
+    "sessionId": "ses_forkFixture1",
+    "seq": 184,
+    "at": "2026-10-01T10:03:21.500Z",
+    "type": "turn.start",
+    "payload": {
+     "messageId": "msg_forkFixture1m8",
+     "author": {
+      "type": "character",
+      "characterId": "chr_seedAmara"
+     },
+     "message": {
+      "seq": 9,
+      "kind": "chat",
+      "debate": {
+       "phase": "rebuttal",
+       "round": 2,
+       "iteration": 1,
+       "side": "prop"
+      }
+     }
+    }
+   },
+   {
+    "id": "evt_forkFixture1e185",
+    "sessionId": "ses_forkFixture1",
+    "seq": 185,
+    "at": "2026-10-01T10:03:21.540Z",
+    "type": "emotion",
+    "payload": {
+     "messageId": "msg_forkFixture1m8",
+     "characterId": "chr_seedAmara",
+     "emotion": "angry",
+     "source": "llm"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e186",
+    "sessionId": "ses_forkFixture1",
+    "seq": 186,
+    "at": "2026-10-01T10:03:22.784Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m8",
+     "delta": "Then count"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e187",
+    "sessionId": "ses_forkFixture1",
+    "seq": 187,
+    "at": "2026-10-01T10:03:22.861Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m8",
+     "delta": " the other"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e188",
+    "sessionId": "ses_forkFixture1",
+    "seq": 188,
+    "at": "2026-10-01T10:03:22.939Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m8",
+     "delta": " side of the"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e189",
+    "sessionId": "ses_forkFixture1",
+    "seq": 189,
+    "at": "2026-10-01T10:03:23.016Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m8",
+     "delta": " ledger too."
+    }
+   },
+   {
+    "id": "evt_forkFixture1e190",
+    "sessionId": "ses_forkFixture1",
+    "seq": 190,
+    "at": "2026-10-01T10:03:23.094Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m8",
+     "delta": " Exhaustion"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e191",
+    "sessionId": "ses_forkFixture1",
+    "seq": 191,
+    "at": "2026-10-01T10:03:23.171Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m8",
+     "delta": " has its own"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e192",
+    "sessionId": "ses_forkFixture1",
+    "seq": 192,
+    "at": "2026-10-01T10:03:23.248Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m8",
+     "delta": " staffing cost"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e193",
+    "sessionId": "ses_forkFixture1",
+    "seq": 193,
+    "at": "2026-10-01T10:03:23.326Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m8",
+     "delta": ". Burnt-ou"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e194",
+    "sessionId": "ses_forkFixture1",
+    "seq": 194,
+    "at": "2026-10-01T10:03:23.403Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m8",
+     "delta": "t nurses"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e195",
+    "sessionId": "ses_forkFixture1",
+    "seq": 195,
+    "at": "2026-10-01T10:03:23.481Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m8",
+     "delta": " leave, and"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e196",
+    "sessionId": "ses_forkFixture1",
+    "seq": 196,
+    "at": "2026-10-01T10:03:23.558Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m8",
+     "delta": " every resi"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e197",
+    "sessionId": "ses_forkFixture1",
+    "seq": 197,
+    "at": "2026-10-01T10:03:23.635Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m8",
+     "delta": "gnation is"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e198",
+    "sessionId": "ses_forkFixture1",
+    "seq": 198,
+    "at": "2026-10-01T10:03:23.713Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m8",
+     "delta": " a recruitm"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e199",
+    "sessionId": "ses_forkFixture1",
+    "seq": 199,
+    "at": "2026-10-01T10:03:23.790Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m8",
+     "delta": "ent and trai"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e200",
+    "sessionId": "ses_forkFixture1",
+    "seq": 200,
+    "at": "2026-10-01T10:03:23.867Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m8",
+     "delta": "ning bill.[1]"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e201",
+    "sessionId": "ses_forkFixture1",
+    "seq": 201,
+    "at": "2026-10-01T10:03:23.945Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m8",
+     "delta": " \"Hold serv"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e202",
+    "sessionId": "ses_forkFixture1",
+    "seq": 202,
+    "at": "2026-10-01T10:03:24.022Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m8",
+     "delta": "ice constant"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e203",
+    "sessionId": "ses_forkFixture1",
+    "seq": 203,
+    "at": "2026-10-01T10:03:24.100Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m8",
+     "delta": "\" assumes"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e204",
+    "sessionId": "ses_forkFixture1",
+    "seq": 204,
+    "at": "2026-10-01T10:03:24.177Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m8",
+     "delta": " the current"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e205",
+    "sessionId": "ses_forkFixture1",
+    "seq": 205,
+    "at": "2026-10-01T10:03:24.254Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m8",
+     "delta": " service is"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e206",
+    "sessionId": "ses_forkFixture1",
+    "seq": 206,
+    "at": "2026-10-01T10:03:24.332Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m8",
+     "delta": " stable. In"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e207",
+    "sessionId": "ses_forkFixture1",
+    "seq": 207,
+    "at": "2026-10-01T10:03:24.409Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m8",
+     "delta": " my departme"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e208",
+    "sessionId": "ses_forkFixture1",
+    "seq": 208,
+    "at": "2026-10-01T10:03:24.487Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m8",
+     "delta": "nt, it isn'"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e209",
+    "sessionId": "ses_forkFixture1",
+    "seq": 209,
+    "at": "2026-10-01T10:03:24.564Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m8",
+     "delta": "t."
+    }
+   },
+   {
+    "id": "evt_forkFixture1e210",
+    "sessionId": "ses_forkFixture1",
+    "seq": 210,
+    "at": "2026-10-01T10:03:24.614Z",
+    "type": "turn.end",
+    "payload": {
+     "messageId": "msg_forkFixture1m8",
+     "status": "complete",
+     "usage": {
+      "tokensIn": 2982,
+      "tokensCached": 2071,
+      "tokensOut": 65,
+      "costUsd": 0.000182,
+      "energySpent": 2,
+      "firstTokenMs": 1384,
+      "totalMs": 3214
+     },
+     "citations": [
+      {
+       "n": 1,
+       "sourceId": "kno_seedAmara1",
+       "title": "Meridian Shift Fatigue Review 2025.pdf",
+       "type": "file",
+       "chunkId": "kch_amaraFat08",
+       "locator": "p. 13",
+       "quote": "Voluntary resignations among nursing staff reached 14% over the year. The Trust's finance office puts each replacement at roughly four months of salary once recruitment, induction and supervised practice are counted.",
+       "score": 0.83
+      }
+     ]
+    }
+   }
+  ],
+  "session": {
+   "id": "ses_forkFixture1",
+   "worldId": "wld_seedMeridian",
+   "title": "Debate: Four-day work week · live",
+   "titleIsCustom": false,
+   "mode": "debate",
+   "participants": [
+    {
+     "characterId": "chr_seedAmara",
+     "role": "debater",
+     "side": "prop",
+     "currentEmotion": "angry",
+     "mutedByUser": false
+    },
+    {
+     "characterId": "chr_seedVictor",
+     "role": "debater",
+     "side": "prop",
+     "currentEmotion": "thinking",
+     "mutedByUser": false
+    },
+    {
+     "characterId": "chr_seedMei",
+     "role": "debater",
+     "side": "opp",
+     "currentEmotion": "thinking",
+     "mutedByUser": false
+    }
+   ],
+   "emotionMode": "llm",
+   "musicPolicy": "arena",
+   "readableMode": false,
+   "config": {
+    "motion": "This house would adopt a nationwide four-day work week.",
+    "format": "two_sided",
+    "sides": {
+     "prop": [
+      "chr_seedAmara",
+      "chr_seedVictor"
+     ],
+     "opp": [
+      "chr_seedMei"
+     ]
+    },
+    "roundsPreset": "standard",
+    "phases": [
+     "opening",
+     "rebuttal",
+     "closing"
+    ],
+    "turnLength": "medium",
+    "moderator": "user",
+    "verdictBy": "arbiter",
+    "rubric": [
+     {
+      "id": "evidence",
+      "label": "Evidence"
+     },
+     {
+      "id": "rebuttal",
+      "label": "Rebuttal"
+     },
+     {
+      "id": "clarity",
+      "label": "Clarity"
+     },
+     {
+      "id": "persuasion",
+      "label": "Persuasion"
+     }
+    ],
+    "autoAdvance": true,
+    "pauseMs": 1500
+   },
+   "isSeed": false,
+   "status": "active",
+   "state": {
+    "phase": "rebuttal",
+    "round": 2,
+    "iteration": 1,
+    "nextSpeakerId": "chr_seedAmara"
+   },
+   "costUsd": 0.001186,
+   "messageCount": 9,
+   "createdAt": "2026-10-03T03:00:00.000Z",
+   "updatedAt": "2026-10-01T10:03:24.614Z",
+   "lastMessageAt": "2026-10-01T10:03:21.500Z",
+   "continuedFrom": "ses_seedDebate4Day"
+  },
+  "messages": [
+   {
+    "id": "msg_forkFixture1m0",
+    "sessionId": "ses_forkFixture1",
+    "seq": 1,
+    "author": {
+     "type": "system"
+    },
+    "kind": "system_note",
+    "content": "ROUND 1 · OPENING",
+    "status": "complete",
+    "createdAt": "2026-10-01T10:02:51.083Z"
+   },
+   {
+    "kind": "chat",
+    "seq": 2,
+    "debate": {
+     "phase": "opening",
+     "round": 1,
+     "iteration": 1,
+     "side": "prop"
+    },
+    "id": "msg_forkFixture1m1",
+    "sessionId": "ses_forkFixture1",
+    "author": {
+     "type": "character",
+     "characterId": "chr_seedAmara"
+    },
+    "content": "I see the downstream cost of chronic overwork every shift: burnout, poor sleep, people arriving at my department with problems that started as exhaustion.[1] A shorter week is a public-health intervention. Pilot programmes have reported lower burnout and better sleep without collapsing output.[2] We should take that signal seriously at national scale.",
+    "status": "complete",
+    "createdAt": "2026-10-01T10:02:54.073Z",
+    "emotion": "neutral",
+    "emotionSource": "llm",
+    "usage": {
+     "tokensIn": 2662,
+     "tokensCached": 1701,
+     "tokensOut": 88,
+     "costUsd": 0.000202,
+     "energySpent": 3,
+     "firstTokenMs": 1316,
+     "totalMs": 3771
+    },
+    "citations": [
+     {
+      "n": 1,
+      "sourceId": "kno_seedAmara1",
+      "title": "Meridian Shift Fatigue Review 2025.pdf",
+      "type": "file",
+      "chunkId": "kch_amaraFat03",
+      "locator": "p. 4",
+      "quote": "Self-reported burnout rose in every quarter of the review period. By October, 41% of emergency department staff met the review's threshold for high burnout, up from 29% in January.",
+      "score": 0.84
+     },
+     {
+      "n": 2,
+      "sourceId": "kno_seedAmara1",
+      "title": "Meridian Shift Fatigue Review 2025.pdf",
+      "type": "file",
+      "chunkId": "kch_amaraFat06",
+      "locator": "p. 9",
+      "quote": "Two wards piloted a compressed rota: four longer days, then three days off. After twelve weeks, burnout scores on both wards fell by roughly a fifth, sleep quality improved, and patient throughput stayed within normal variation.",
+      "score": 0.86
+     }
+    ],
+    "trace": {
+     "messageId": "msg_forkFixture1m1",
+     "model": {
+      "id": "deepseek/deepseek-v4.1-flash",
+      "provider": "DeepSeek",
+      "pricePeriod": "off_peak",
+      "latencyMs": {
+       "firstToken": 1316,
+       "total": 3771
+      },
+      "tokensIn": 2662,
+      "tokensCached": 1701,
+      "tokensOut": 88,
+      "costUsd": 0.000202
+     },
+     "energy": {
+      "characterId": "chr_seedAmara",
+      "spent": 3,
+      "remaining": 1004,
+      "max": 1000
+     },
+     "emotion": {
+      "chosen": "neutral",
+      "source": "llm",
+      "candidates": [
+       {
+        "label": "neutral",
+        "p": 0.581
+       },
+       {
+        "label": "embarrassed",
+        "p": 0.307
+       },
+       {
+        "label": "thinking",
+        "p": 0.061
+       }
+      ]
+     },
+     "routing": {
+      "selected": "chr_seedAmara",
+      "forcedBy": "round_order"
+     },
+     "context": {
+      "budget": 12000,
+      "cacheHitPct": 64,
+      "used": {
+       "system": 900,
+       "persona": 798,
+       "memory": 0,
+       "knowledge": 305,
+       "history": 4,
+       "user": 75,
+       "mode": 580
+      }
+     },
+     "guardrail": {
+      "checks": [
+       {
+        "name": "sfw",
+        "verdict": "pass",
+        "p": 0.987
+       },
+       {
+        "name": "advice_scope",
+        "verdict": "pass"
+       }
+      ]
+     },
+     "calls": [
+      {
+       "purpose": "reply",
+       "model": "deepseek/deepseek-v4.1-flash",
+       "costUsd": 0.000202,
+       "latencyMs": 3771
+      }
+     ],
+     "knowledge": {
+      "query": "burnout and overwork evidence for a shorter working week",
+      "trigger": "always",
+      "retrieved": [
+       {
+        "chunkId": "kch_amaraFat06",
+        "sourceId": "kno_seedAmara1",
+        "title": "Meridian Shift Fatigue Review 2025.pdf",
+        "locator": "p. 9",
+        "text": "Two wards piloted a compressed rota: four longer days, then three days off. After twelve weeks, burnout scores on both wards fell by roughly a fifth, sleep quality improved, and patient throughput stayed within normal variation.",
+        "score": 0.86,
+        "cited": true,
+        "n": 2
+       },
+       {
+        "chunkId": "kch_amaraFat03",
+        "sourceId": "kno_seedAmara1",
+        "title": "Meridian Shift Fatigue Review 2025.pdf",
+        "locator": "p. 4",
+        "text": "Self-reported burnout rose in every quarter of the review period. By October, 41% of emergency department staff met the review's threshold for high burnout, up from 29% in January.",
+        "score": 0.84,
+        "cited": true,
+        "n": 1
+       },
+       {
+        "chunkId": "kch_amaraFat04",
+        "sourceId": "kno_seedAmara1",
+        "title": "Meridian Shift Fatigue Review 2025.pdf",
+        "locator": "p. 6",
+        "text": "Poor sleep was the most common complaint, named by 63% of respondents. Staff who slept under six hours before a shift were twice as likely to report a near-miss medication error that week.",
+        "score": 0.65,
+        "cited": false
+       },
+       {
+        "chunkId": "kch_amaraFat02",
+        "sourceId": "kno_seedAmara1",
+        "title": "Meridian Shift Fatigue Review 2025.pdf",
+        "locator": "p. 3",
+        "text": "Staff working more than three consecutive long shifts reported fatigue scores 38% higher than colleagues on shorter blocks. The effect was strongest in emergency and acute medicine, where rest days were most often cancelled at short notice.",
+        "score": 0.49,
+        "cited": false
+       }
+      ]
+     }
+    },
+    "reactions": [
+     {
+      "characterId": "chr_seedMei",
+      "emotion": "thinking",
+      "p": 0.73,
+      "at": "2026-10-01T10:02:58.197Z"
+     },
+     {
+      "characterId": "chr_seedVictor",
+      "emotion": "happy",
+      "p": 0.85,
+      "at": "2026-10-01T10:02:58.219Z"
+     }
+    ]
+   },
+   {
+    "kind": "chat",
+    "seq": 3,
+    "debate": {
+     "phase": "opening",
+     "round": 1,
+     "iteration": 1,
+     "side": "opp"
+    },
+    "id": "msg_forkFixture1m2",
+    "sessionId": "ses_forkFixture1",
+    "author": {
+     "type": "character",
+     "characterId": "chr_seedMei"
+    },
+    "content": "Nobody here is pro-burnout. My problem is the word *nationwide*. The pilots I've seen were mostly voluntary, self-selected firms, often knowledge work,[1] where output is hard to measure and easy to reorganise.[2] A hospital, a bus network or a care home can't compress five days of coverage into four. They hire more staff or they cut service. Both cost money that somebody pays.",
+    "status": "complete",
+    "createdAt": "2026-10-01T10:02:59.744Z",
+    "emotion": "thinking",
+    "emotionSource": "llm",
+    "usage": {
+     "tokensIn": 2614,
+     "tokensCached": 1730,
+     "tokensOut": 95,
+     "costUsd": 0.000195,
+     "energySpent": 2,
+     "firstTokenMs": 1477,
+     "totalMs": 4057
+    },
+    "citations": [
+     {
+      "n": 1,
+      "sourceId": "kno_seedMei2",
+      "title": "Four-day week pilot summaries.pdf",
+      "type": "file",
+      "chunkId": "kch_meiPilot02",
+      "locator": "p. 3",
+      "quote": "Seventy-one percent of participating organisations were in professional services, software, marketing or the non-profit sector. Only nine provided round-the-clock or shift-based services.",
+      "score": 0.8
+     },
+     {
+      "n": 2,
+      "sourceId": "kno_seedMei2",
+      "title": "Four-day week pilot summaries.pdf",
+      "type": "file",
+      "chunkId": "kch_meiPilot03",
+      "locator": "p. 5",
+      "quote": "Across all pilots, self-reported burnout fell by an average of 32% and sick days by 21%. Revenue stayed broadly flat, but fewer than half of the firms tracked output with a consistent measure.",
+      "score": 0.92
+     }
+    ],
+    "trace": {
+     "messageId": "msg_forkFixture1m2",
+     "model": {
+      "id": "deepseek/deepseek-v4.1-flash",
+      "provider": "DeepSeek",
+      "pricePeriod": "off_peak",
+      "latencyMs": {
+       "firstToken": 1477,
+       "total": 4057
+      },
+      "tokensIn": 2614,
+      "tokensCached": 1730,
+      "tokensOut": 95,
+      "costUsd": 0.000195
+     },
+     "energy": {
+      "characterId": "chr_seedMei",
+      "spent": 2,
+      "remaining": 747,
+      "max": 1000
+     },
+     "emotion": {
+      "chosen": "thinking",
+      "source": "llm",
+      "candidates": [
+       {
+        "label": "thinking",
+        "p": 0.696
+       },
+       {
+        "label": "happy",
+        "p": 0.183
+       },
+       {
+        "label": "surprised",
+        "p": 0.096
+       }
+      ]
+     },
+     "routing": {
+      "selected": "chr_seedMei",
+      "forcedBy": "round_order"
+     },
+     "context": {
+      "budget": 12000,
+      "cacheHitPct": 66,
+      "used": {
+       "system": 900,
+       "persona": 748,
+       "memory": 0,
+       "knowledge": 215,
+       "history": 92,
+       "user": 79,
+       "mode": 580
+      }
+     },
+     "guardrail": {
+      "checks": [
+       {
+        "name": "sfw",
+        "verdict": "pass",
+        "p": 0.982
+       },
+       {
+        "name": "advice_scope",
+        "verdict": "pass"
+       }
+      ]
+     },
+     "calls": [
+      {
+       "purpose": "reply",
+       "model": "deepseek/deepseek-v4.1-flash",
+       "costUsd": 0.000195,
+       "latencyMs": 4057
+      }
+     ],
+     "knowledge": {
+      "query": "who took part in four-day week pilots",
+      "trigger": "always",
+      "retrieved": [
+       {
+        "chunkId": "kch_meiPilot03",
+        "sourceId": "kno_seedMei2",
+        "title": "Four-day week pilot summaries.pdf",
+        "locator": "p. 5",
+        "text": "Across all pilots, self-reported burnout fell by an average of 32% and sick days by 21%. Revenue stayed broadly flat, but fewer than half of the firms tracked output with a consistent measure.",
+        "score": 0.92,
+        "cited": true,
+        "n": 2
+       },
+       {
+        "chunkId": "kch_meiPilot02",
+        "sourceId": "kno_seedMei2",
+        "title": "Four-day week pilot summaries.pdf",
+        "locator": "p. 3",
+        "text": "Seventy-one percent of participating organisations were in professional services, software, marketing or the non-profit sector. Only nine provided round-the-clock or shift-based services.",
+        "score": 0.8,
+        "cited": true,
+        "n": 1
+       },
+       {
+        "chunkId": "kch_meiPilot01",
+        "sourceId": "kno_seedMei2",
+        "title": "Four-day week pilot summaries.pdf",
+        "locator": "p. 1",
+        "text": "This compendium summarises fourteen four-day week pilots run in Meridian between 2023 and 2025, covering 212 organisations and about 9,800 workers. Every participating organisation volunteered.",
+        "score": 0.5,
+        "cited": false
+       }
+      ]
+     }
+    },
+    "reactions": [
+     {
+      "characterId": "chr_seedVictor",
+      "emotion": "angry",
+      "p": 0.63,
+      "at": "2026-10-01T10:03:04.187Z"
+     },
+     {
+      "characterId": "chr_seedAmara",
+      "emotion": "sad",
+      "p": 0.66,
+      "at": "2026-10-01T10:03:04.269Z"
+     }
+    ]
+   },
+   {
+    "kind": "chat",
+    "seq": 4,
+    "debate": {
+     "phase": "opening",
+     "round": 1,
+     "iteration": 1,
+     "side": "prop"
+    },
+    "id": "msg_forkFixture1m3",
+    "sessionId": "ses_forkFixture1",
+    "author": {
+     "type": "character",
+     "characterId": "chr_seedVictor"
+    },
+    "content": "Three points. One: \"nationwide\" need not mean \"identical\". The motion is about the default standard week, as we once did with the weekend.[1] Two: law already handles continuous-coverage sectors through shift rules.[2] Three: the burden of proof is on the status quo, a five-day week that was itself a policy choice, not a law of nature.",
+    "status": "complete",
+    "createdAt": "2026-10-01T10:03:05.701Z",
+    "emotion": "happy",
+    "emotionSource": "llm",
+    "usage": {
+     "tokensIn": 2655,
+     "tokensCached": 1783,
+     "tokensOut": 84,
+     "costUsd": 0.000187,
+     "energySpent": 2,
+     "firstTokenMs": 1294,
+     "totalMs": 3599
+    },
+    "citations": [
+     {
+      "n": 1,
+      "sourceId": "kno_seedVictor1",
+      "title": "Moot court notes",
+      "type": "text",
+      "chunkId": "kch_victorMoot02",
+      "locator": "¶ 2",
+      "quote": "Historical anchor: the Meridian Working Hours Act 1931 made the two-day weekend the default. It gave agriculture and shipping a ten-year transition and exempted continuous services.",
+      "score": 0.86
+     },
+     {
+      "n": 2,
+      "sourceId": "kno_seedVictor1",
+      "title": "Moot court notes",
+      "type": "text",
+      "chunkId": "kch_victorMoot03",
+      "locator": "¶ 3",
+      "quote": "Continuous-coverage sectors already run on shift rules under Part IV of the Working Time Code: rest periods, a cap on consecutive shifts, and averaging over a reference period. A shorter standard week sits inside that structure.",
+      "score": 0.79
+     }
+    ],
+    "trace": {
+     "messageId": "msg_forkFixture1m3",
+     "model": {
+      "id": "deepseek/deepseek-v4.1-flash",
+      "provider": "DeepSeek",
+      "pricePeriod": "off_peak",
+      "latencyMs": {
+       "firstToken": 1294,
+       "total": 3599
+      },
+      "tokensIn": 2655,
+      "tokensCached": 1783,
+      "tokensOut": 84,
+      "costUsd": 0.000187
+     },
+     "energy": {
+      "characterId": "chr_seedVictor",
+      "spent": 2,
+      "remaining": 864,
+      "max": 1000
+     },
+     "emotion": {
+      "chosen": "happy",
+      "source": "llm",
+      "candidates": [
+       {
+        "label": "happy",
+        "p": 0.865
+       },
+       {
+        "label": "thinking",
+        "p": 0.094
+       },
+       {
+        "label": "surprised",
+        "p": 0.026
+       }
+      ]
+     },
+     "routing": {
+      "selected": "chr_seedVictor",
+      "forcedBy": "round_order"
+     },
+     "context": {
+      "budget": 12000,
+      "cacheHitPct": 67,
+      "used": {
+       "system": 900,
+       "persona": 715,
+       "memory": 0,
+       "knowledge": 214,
+       "history": 187,
+       "user": 59,
+       "mode": 580
+      }
+     },
+     "guardrail": {
+      "checks": [
+       {
+        "name": "sfw",
+        "verdict": "pass",
+        "p": 0.965
+       },
+       {
+        "name": "advice_scope",
+        "verdict": "pass"
+       }
+      ]
+     },
+     "calls": [
+      {
+       "purpose": "reply",
+       "model": "deepseek/deepseek-v4.1-flash",
+       "costUsd": 0.000187,
+       "latencyMs": 3599
+      }
+     ],
+     "knowledge": {
+      "query": "legal precedent for changing the standard working week",
+      "trigger": "always",
+      "retrieved": [
+       {
+        "chunkId": "kch_victorMoot02",
+        "sourceId": "kno_seedVictor1",
+        "title": "Moot court notes",
+        "locator": "¶ 2",
+        "text": "Historical anchor: the Meridian Working Hours Act 1931 made the two-day weekend the default. It gave agriculture and shipping a ten-year transition and exempted continuous services.",
+        "score": 0.86,
+        "cited": true,
+        "n": 1
+       },
+       {
+        "chunkId": "kch_victorMoot03",
+        "sourceId": "kno_seedVictor1",
+        "title": "Moot court notes",
+        "locator": "¶ 3",
+        "text": "Continuous-coverage sectors already run on shift rules under Part IV of the Working Time Code: rest periods, a cap on consecutive shifts, and averaging over a reference period. A shorter standard week sits inside that structure.",
+        "score": 0.79,
+        "cited": true,
+        "n": 2
+       },
+       {
+        "chunkId": "kch_victorMoot01",
+        "sourceId": "kno_seedVictor1",
+        "title": "Moot court notes",
+        "locator": "¶ 1",
+        "text": "Expect the opposition to say the evidence base is narrow. Concede scope early, then shift the burden: the status quo is also a policy and has to justify itself.",
+        "score": 0.46,
+        "cited": false
+       }
+      ]
+     }
+    },
+    "reactions": [
+     {
+      "characterId": "chr_seedAmara",
+      "emotion": "happy",
+      "p": 0.57,
+      "at": "2026-10-01T10:03:09.614Z"
+     },
+     {
+      "characterId": "chr_seedMei",
+      "emotion": "surprised",
+      "p": 0.85,
+      "at": "2026-10-01T10:03:09.647Z"
+     }
+    ]
+   },
+   {
+    "id": "msg_forkFixture1m4",
+    "sessionId": "ses_forkFixture1",
+    "seq": 5,
+    "author": {
+     "type": "system"
+    },
+    "kind": "system_note",
+    "content": "ROUND 2 · REBUTTAL",
+    "status": "complete",
+    "createdAt": "2026-10-01T10:03:09.910Z"
+   },
+   {
+    "id": "msg_forkFixture1m5",
+    "sessionId": "ses_forkFixture1",
+    "seq": 6,
+    "author": {
+     "type": "user"
+    },
+    "kind": "interject",
+    "content": "Concrete numbers this round, please. Everyone.",
+    "status": "complete",
+    "createdAt": "2026-10-01T10:03:12.200Z",
+    "debate": {
+     "phase": "rebuttal",
+     "round": 2,
+     "iteration": 1
+    }
+   },
+   {
+    "id": "msg_forkFixture1m6",
+    "sessionId": "ses_forkFixture1",
+    "seq": 7,
+    "author": {
+     "type": "user"
+    },
+    "kind": "steer",
+    "targetCharacterId": "chr_seedMei",
+    "content": "Mei, give us a number. What does this cost?",
+    "status": "complete",
+    "createdAt": "2026-10-01T10:03:13.650Z",
+    "debate": {
+     "phase": "rebuttal",
+     "round": 2,
+     "iteration": 1
+    }
+   },
+   {
+    "kind": "chat",
+    "seq": 8,
+    "debate": {
+     "phase": "rebuttal",
+     "round": 2,
+     "iteration": 1,
+     "side": "opp"
+    },
+    "forcedSpeaker": true,
+    "id": "msg_forkFixture1m7",
+    "sessionId": "ses_forkFixture1",
+    "author": {
+     "type": "character",
+     "characterId": "chr_seedMei"
+    },
+    "content": "Honestly? Nobody can give you one reliable number, and anyone who does is selling something. It depends on how much productivity per hour rises. If it rises enough to offset the lost day, the cost is near zero. If it doesn't, and in coverage-based sectors it mostly can't, you need roughly **a quarter more** staff hours in those sectors to hold service constant. The policy's cost lives entirely in the sectors the pilots didn't test.",
+    "status": "complete",
+    "createdAt": "2026-10-01T10:03:14Z",
+    "emotion": "thinking",
+    "emotionSource": "llm",
+    "usage": {
+     "tokensIn": 9800,
+     "tokensCached": 7800,
+     "tokensOut": 168,
+     "costUsd": 0.00042,
+     "energySpent": 5,
+     "firstTokenMs": 1420,
+     "totalMs": 5600
+    },
+    "trace": {
+     "messageId": "msg_forkFixture1m7",
+     "model": {
+      "id": "deepseek/deepseek-v4.1-flash",
+      "provider": "DeepSeek",
+      "pricePeriod": "off_peak",
+      "latencyMs": {
+       "firstToken": 1420,
+       "total": 5600
+      },
+      "tokensIn": 9800,
+      "tokensCached": 7800,
+      "tokensOut": 168,
+      "costUsd": 0.00042
+     },
+     "energy": {
+      "characterId": "chr_seedMei",
+      "spent": 5,
+      "remaining": 742,
+      "max": 1000
+     },
+     "emotion": {
+      "chosen": "thinking",
+      "source": "llm",
+      "candidates": [
+       {
+        "label": "thinking",
+        "p": 0.71
+       },
+       {
+        "label": "neutral",
+        "p": 0.18
+       }
+      ]
+     },
+     "routing": {
+      "selected": "chr_seedMei",
+      "forcedBy": "user_ask"
+     },
+     "contextInSession": [
+      {
+       "text": "R1: Mei: pilots were voluntary, self-selected firms",
+       "messageId": "msg_forkFixture1m2"
+      }
+     ],
+     "context": {
+      "budget": 12000,
+      "cacheHitPct": 80,
+      "used": {
+       "system": 900,
+       "persona": 700,
+       "memory": 0,
+       "knowledge": 0,
+       "history": 6900,
+       "user": 40,
+       "mode": 580
+      }
+     }
+    },
+    "reactions": [
+     {
+      "characterId": "chr_seedVictor",
+      "emotion": "thinking",
+      "p": 0.64,
+      "at": "2026-10-01T10:03:20Z"
+     },
+     {
+      "characterId": "chr_seedAmara",
+      "emotion": "thinking",
+      "p": 0.58,
+      "at": "2026-10-01T10:03:20Z"
+     }
+    ]
+   },
+   {
+    "kind": "chat",
+    "seq": 9,
+    "debate": {
+     "phase": "rebuttal",
+     "round": 2,
+     "iteration": 1,
+     "side": "prop"
+    },
+    "id": "msg_forkFixture1m8",
+    "sessionId": "ses_forkFixture1",
+    "author": {
+     "type": "character",
+     "characterId": "chr_seedAmara"
+    },
+    "content": "Then count the other side of the ledger too. Exhaustion has its own staffing cost. Burnt-out nurses leave, and every resignation is a recruitment and training bill.[1] \"Hold service constant\" assumes the current service is stable. In my department, it isn't.",
+    "status": "complete",
+    "createdAt": "2026-10-01T10:03:21.500Z",
+    "emotion": "angry",
+    "emotionSource": "llm",
+    "usage": {
+     "tokensIn": 2982,
+     "tokensCached": 2071,
+     "tokensOut": 65,
+     "costUsd": 0.000182,
+     "energySpent": 2,
+     "firstTokenMs": 1384,
+     "totalMs": 3214
+    },
+    "citations": [
+     {
+      "n": 1,
+      "sourceId": "kno_seedAmara1",
+      "title": "Meridian Shift Fatigue Review 2025.pdf",
+      "type": "file",
+      "chunkId": "kch_amaraFat08",
+      "locator": "p. 13",
+      "quote": "Voluntary resignations among nursing staff reached 14% over the year. The Trust's finance office puts each replacement at roughly four months of salary once recruitment, induction and supervised practice are counted.",
+      "score": 0.83
+     }
+    ]
+   }
+  ]
+ }
+}

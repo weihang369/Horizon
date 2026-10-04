@@ -1,0 +1,342 @@
+{
+ "name": "dinner_mid_stream",
+ "doc": "A group recording cut inside a reply.",
+ "source": "ses_seedDinner",
+ "atSeq": 10,
+ "newSessionId": "ses_forkFixture1",
+ "now": "2026-10-03T03:00:00.000Z",
+ "expected": {
+  "events": [
+   {
+    "id": "evt_forkFixture1e1",
+    "sessionId": "ses_forkFixture1",
+    "seq": 1,
+    "at": "2026-09-30T10:30:00Z",
+    "type": "session.state",
+    "payload": {
+     "status": "active",
+     "participants": [
+      {
+       "characterId": "chr_seedHana",
+       "role": "speaker",
+       "currentEmotion": "neutral",
+       "mutedByUser": false
+      },
+      {
+       "characterId": "chr_seedTakeshi",
+       "role": "speaker",
+       "currentEmotion": "neutral",
+       "mutedByUser": false
+      },
+      {
+       "characterId": "chr_seedRin",
+       "role": "speaker",
+       "currentEmotion": "neutral",
+       "mutedByUser": false
+      }
+     ]
+    }
+   },
+   {
+    "id": "evt_forkFixture1e2",
+    "sessionId": "ses_forkFixture1",
+    "seq": 2,
+    "at": "2026-09-30T10:30:00.005Z",
+    "type": "energy",
+    "payload": {
+     "characterId": "chr_seedHana",
+     "current": 921,
+     "max": 1000,
+     "state": "active"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e3",
+    "sessionId": "ses_forkFixture1",
+    "seq": 3,
+    "at": "2026-09-30T10:30:00.006Z",
+    "type": "energy",
+    "payload": {
+     "characterId": "chr_seedTakeshi",
+     "current": 1001,
+     "max": 1000,
+     "state": "active"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e4",
+    "sessionId": "ses_forkFixture1",
+    "seq": 4,
+    "at": "2026-09-30T10:30:00.007Z",
+    "type": "energy",
+    "payload": {
+     "characterId": "chr_seedRin",
+     "current": 182,
+     "max": 1000,
+     "state": "tired"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e5",
+    "sessionId": "ses_forkFixture1",
+    "seq": 5,
+    "at": "2026-09-30T10:30:00.700Z",
+    "type": "message",
+    "payload": {
+     "message": {
+      "id": "msg_forkFixture1m0",
+      "sessionId": "ses_forkFixture1",
+      "seq": 1,
+      "author": {
+       "type": "user"
+      },
+      "kind": "chat",
+      "content": "Dinner's on me tonight. What should we order?",
+      "status": "complete",
+      "createdAt": "2026-09-30T10:30:00.700Z"
+     }
+    }
+   },
+   {
+    "id": "evt_forkFixture1e6",
+    "sessionId": "ses_forkFixture1",
+    "seq": 6,
+    "at": "2026-09-30T10:30:00.950Z",
+    "type": "turn.next",
+    "payload": {
+     "nextSpeakerId": "chr_seedTakeshi"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e7",
+    "sessionId": "ses_forkFixture1",
+    "seq": 7,
+    "at": "2026-09-30T10:30:01.010Z",
+    "type": "turn.thinking",
+    "payload": {
+     "characterId": "chr_seedTakeshi"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e8",
+    "sessionId": "ses_forkFixture1",
+    "seq": 8,
+    "at": "2026-09-30T10:30:01.050Z",
+    "type": "turn.start",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "author": {
+      "type": "character",
+      "characterId": "chr_seedTakeshi"
+     },
+     "message": {
+      "seq": 2,
+      "kind": "chat"
+     }
+    }
+   },
+   {
+    "id": "evt_forkFixture1e9",
+    "sessionId": "ses_forkFixture1",
+    "seq": 9,
+    "at": "2026-09-30T10:30:01.090Z",
+    "type": "emotion",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "characterId": "chr_seedTakeshi",
+     "emotion": "happy",
+     "source": "llm"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e10",
+    "sessionId": "ses_forkFixture1",
+    "seq": 10,
+    "at": "2026-09-30T10:30:02.599Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": "Sushi. And"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e11",
+    "sessionId": "ses_forkFixture1",
+    "seq": 11,
+    "at": "2026-09-30T10:30:02.689Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": " I'll be hone"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e12",
+    "sessionId": "ses_forkFixture1",
+    "seq": 12,
+    "at": "2026-09-30T10:30:02.779Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": "st, I'm only"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e13",
+    "sessionId": "ses_forkFixture1",
+    "seq": 13,
+    "at": "2026-09-30T10:30:02.869Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": " saying that"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e14",
+    "sessionId": "ses_forkFixture1",
+    "seq": 14,
+    "at": "2026-09-30T10:30:02.959Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": " because I've"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e15",
+    "sessionId": "ses_forkFixture1",
+    "seq": 15,
+    "at": "2026-09-30T10:30:03.049Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": " been *fishing"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e16",
+    "sessionId": "ses_forkFixture1",
+    "seq": 16,
+    "at": "2026-09-30T10:30:03.139Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": "* for an"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e17",
+    "sessionId": "ses_forkFixture1",
+    "seq": 17,
+    "at": "2026-09-30T10:30:03.229Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": " invitation."
+    }
+   },
+   {
+    "id": "evt_forkFixture1e18",
+    "sessionId": "ses_forkFixture1",
+    "seq": 18,
+    "at": "2026-09-30T10:30:03.279Z",
+    "type": "turn.end",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "status": "complete",
+     "usage": {
+      "tokensIn": 2009,
+      "tokensCached": 1719,
+      "tokensOut": 24,
+      "costUsd": 0.000063,
+      "energySpent": 1,
+      "firstTokenMs": 1649,
+      "totalMs": 2329
+     }
+    }
+   }
+  ],
+  "session": {
+   "id": "ses_forkFixture1",
+   "worldId": "wld_seedSunnyHollow",
+   "title": "Dinner's on me · live",
+   "titleIsCustom": false,
+   "mode": "group",
+   "participants": [
+    {
+     "characterId": "chr_seedHana",
+     "role": "speaker",
+     "currentEmotion": "neutral",
+     "mutedByUser": false
+    },
+    {
+     "characterId": "chr_seedTakeshi",
+     "role": "speaker",
+     "currentEmotion": "happy",
+     "mutedByUser": false
+    },
+    {
+     "characterId": "chr_seedRin",
+     "role": "speaker",
+     "currentEmotion": "neutral",
+     "mutedByUser": false
+    }
+   ],
+   "emotionMode": "llm",
+   "musicPolicy": "follow_speaker",
+   "readableMode": false,
+   "config": {
+    "responderPolicy": "auto",
+    "maxAutoResponders": 2
+   },
+   "isSeed": false,
+   "status": "active",
+   "state": null,
+   "costUsd": 0.000063,
+   "messageCount": 2,
+   "createdAt": "2026-10-03T03:00:00.000Z",
+   "updatedAt": "2026-09-30T10:30:03.279Z",
+   "lastMessageAt": "2026-09-30T10:30:01.050Z",
+   "continuedFrom": "ses_seedDinner"
+  },
+  "messages": [
+   {
+    "id": "msg_forkFixture1m0",
+    "sessionId": "ses_forkFixture1",
+    "seq": 1,
+    "author": {
+     "type": "user"
+    },
+    "kind": "chat",
+    "content": "Dinner's on me tonight. What should we order?",
+    "status": "complete",
+    "createdAt": "2026-09-30T10:30:00.700Z"
+   },
+   {
+    "kind": "chat",
+    "seq": 2,
+    "id": "msg_forkFixture1m1",
+    "sessionId": "ses_forkFixture1",
+    "author": {
+     "type": "character",
+     "characterId": "chr_seedTakeshi"
+    },
+    "content": "Sushi. And I'll be honest, I'm only saying that because I've been *fishing* for an invitation.",
+    "status": "complete",
+    "createdAt": "2026-09-30T10:30:01.050Z",
+    "emotion": "happy",
+    "emotionSource": "llm",
+    "usage": {
+     "tokensIn": 2009,
+     "tokensCached": 1719,
+     "tokensOut": 24,
+     "costUsd": 0.000063,
+     "energySpent": 1,
+     "firstTokenMs": 1649,
+     "totalMs": 2329
+    }
+   }
+  ]
+ }
+}

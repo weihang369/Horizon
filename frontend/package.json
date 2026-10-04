@@ -15,6 +15,8 @@
     "preview": "vite preview",
     "seed:build": "node scripts/seed-build/run.mjs build",
     "seed:check": "node scripts/seed-build/run.mjs check",
+    "fixtures:build": "node scripts/fork-fixtures/run.mjs build",
+    "fixtures:check": "node scripts/fork-fixtures/run.mjs check",
     "export-schema": "node scripts/export-schema/run.mjs",
     "export-schema:check": "node scripts/export-schema/run.mjs --check",
     "budget": "node scripts/budget.mjs"
