@@ -15,7 +15,7 @@ import type { EventSourceCtor } from "./sse";
 import { Transport } from "./transport";
 import type { FetchLike } from "./transport";
 
-export type Milestone = "M3" | "M4" | "M5" | "M6";
+export type Milestone = "M4" | "M5" | "M6";
 
 export interface HttpClientOptions {
   /** "/api/v1" in the browser (Vite proxies it); an absolute URL in Node tests. */
@@ -128,29 +128,57 @@ export class HttpClient implements HorizonClient {
     trace: (messageId) => this.t.get<TurnTrace | null>(`/messages/${enc(messageId)}/trace`),
     events: (id) => collect<SessionEvent>(this.t, `/sessions/${enc(id)}/events`),
     subscribe: (id, opts, cb): Unsubscribe => this.streams.subscribe(id, opts.sinceSeq, cb),
-    create: later("M3"),
-    rename: later("M3"),
-    delete: later("M3"),
-    forkSeedSession: later("M3"),
-    export: later("M3"),
-    leave: later("M3"),
-    end: later("M3"),
+    // M3 (session-runtime): the session lifecycle routes.
+    create: (input) => this.t.post<SessionSnapshot>("/sessions", input),
+    rename: (id, title) => this.t.patch<Session>(`/sessions/${enc(id)}`, { title }),
+    delete: (id) => this.t.delete(`/sessions/${enc(id)}`),
+    forkSeedSession: (id, atSeq) => this.t.post<SessionSnapshot>(`/sessions/${enc(id)}/fork`, atSeq === undefined ? {} : { atSeq }),
+    export: (id) => this.t.getText(`/sessions/${enc(id)}/export`),
+    leave: (id) => this.t.post<void>(`/sessions/${enc(id)}/leave`),
+    end: (id) => this.t.post<void>(`/sessions/${enc(id)}/end`),
   };
 
+  /** A session command: resolves once the backend accepts it (202); its effects arrive on the session stream. */
+  private cmd(sid: string, name: string, body: object = {}): Promise<void> {
+    return this.t.post<unknown>(`/sessions/${enc(sid)}/${name}`, body).then(() => undefined);
+  }
+
   chat: HorizonClient["chat"] = {
-    send: later("M3"), stop: later("M3"), regenerate: later("M3"), setEmotion: later("M3"), setEmotionMode: later("M3"),
-    setResponderPolicy: later("M3"), setMusicPolicy: later("M3"), setReadableMode: later("M3"), everyoneAnswer: later("M3"),
-    nextSpeaker: later("M3"), muteParticipant: later("M3"),
+    send: (sid, text, opts) => this.cmd(sid, "send", opts?.mentions?.length ? { text, mentions: opts.mentions } : { text }),
+    stop: (sid) => this.cmd(sid, "stop"),
+    regenerate: (sid, messageId) => this.cmd(sid, "regenerate", { messageId }),
+    setEmotion: (sid, characterId, emotion) => this.cmd(sid, "set-emotion", { characterId, emotion }),
+    setEmotionMode: (sid, mode) => this.cmd(sid, "set-emotion-mode", { mode }),
+    setResponderPolicy: (sid, policy) => this.cmd(sid, "set-responder-policy", { policy }),
+    setMusicPolicy: (sid, policy) => this.cmd(sid, "set-music-policy", { policy }),
+    setReadableMode: (sid, on) => this.cmd(sid, "set-readable-mode", { on }),
+    everyoneAnswer: (sid) => this.cmd(sid, "everyone-answer"),
+    nextSpeaker: (sid, characterId) => this.cmd(sid, "next-speaker", characterId ? { characterId } : {}),
+    muteParticipant: (sid, characterId, muted) => this.cmd(sid, "mute", { characterId, muted }),
   };
 
   debate: HorizonClient["debate"] = {
-    pause: later("M3"), resume: later("M3"), next: later("M3"), setAutoAdvance: later("M3"), askCharacter: later("M3"),
-    interject: later("M3"), extendRound: later("M3"), skipToClosing: later("M3"), endDebate: later("M3"), pickStrongerCase: later("M3"),
+    pause: (sid) => this.cmd(sid, "debate/pause"),
+    resume: (sid) => this.cmd(sid, "debate/resume"),
+    next: (sid) => this.cmd(sid, "debate/next"),
+    setAutoAdvance: (sid, on) => this.cmd(sid, "debate/auto-advance", { on }),
+    askCharacter: (sid, characterId, text) => this.cmd(sid, "debate/ask", { characterId, text }),
+    interject: (sid, text) => this.cmd(sid, "debate/interject", { text }),
+    extendRound: (sid) => this.cmd(sid, "debate/extend-round"),
+    skipToClosing: (sid) => this.cmd(sid, "debate/skip-to-closing"),
+    endDebate: (sid, withVerdict) => this.cmd(sid, "debate/end", { withVerdict }),
+    pickStrongerCase: (sid, side) => this.cmd(sid, "debate/pick", { side }),
   };
 
   watch: HorizonClient["watch"] = {
-    play: later("M3"), pause: later("M3"), step: later("M3"), setPace: later("M3"), direct: later("M3"), stepIn: later("M3"),
-    extendWatch: later("M3"), summarise: later("M3"),
+    play: (sid) => this.cmd(sid, "watch/play"),
+    pause: (sid) => this.cmd(sid, "watch/pause"),
+    step: (sid) => this.cmd(sid, "watch/step"),
+    setPace: (sid, paceMs) => this.cmd(sid, "watch/pace", { paceMs }),
+    direct: (sid, text) => this.cmd(sid, "watch/direct", { text }),
+    stepIn: (sid, text) => this.cmd(sid, "watch/step-in", { text }),
+    extendWatch: (sid, turns) => this.cmd(sid, "watch/extend", turns === undefined ? {} : { turns }),
+    summarise: (sid) => this.cmd(sid, "watch/summarise"),
   };
 
   usage: HorizonClient["usage"] = {

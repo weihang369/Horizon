@@ -61,7 +61,7 @@ export default async function setup(project: TestProject): Promise<() => Promise
   const base = `http://127.0.0.1:${port}/api/v1`;
   const child = spawn("uv", ["run", "--project", BACKEND, "horizon", "serve", "--port", String(port)], {
     cwd: BACKEND,
-    env: { ...process.env, HORIZON_TEST: "1", HORIZON_DATA_DIR: dataDir, HORIZON_LOG_LEVEL: "WARNING" },
+    env: { ...process.env, HORIZON_TEST: "1", HORIZON_DATA_DIR: dataDir, HORIZON_LOG_LEVEL: "WARNING", HORIZON_AI_PROFILE: "scripted" },
     stdio: ["ignore", "ignore", "inherit"],
     detached: process.platform !== "win32",
   });

@@ -147,15 +147,15 @@
 
 ## 12. HttpClient and the portable suite
 
-- [ ] 12.1 Implement `sessions.create/rename/delete/forkSeedSession/export/leave/end` in `HttpClient`, with text responses for export in `transport.ts`. Verify: `http.test.ts` unit tests for each method (route, method, `Idempotency-Key` on POSTs), and `npm run typecheck`.
-- [ ] 12.2 Implement every `chat`, `debate` and `watch` command in `HttpClient` (resolving on 202), and move the "not available yet" unit test example to `jobs.start` (`availableIn: "M4"`). Verify with the `http-client` scenarios "Send over HTTP", "Conflict surfaces with details" and "Sending a chat message in M1b" (updated), as unit tests.
-- [ ] 12.3 Edit the portable suite (design D16):
+- [x] 12.1 Implement `sessions.create/rename/delete/forkSeedSession/export/leave/end` in `HttpClient`, with text responses for export in `transport.ts`. Verify: `http.test.ts` unit tests for each method (route, method, `Idempotency-Key` on POSTs), and `npm run typecheck`.
+- [x] 12.2 Implement every `chat`, `debate` and `watch` command in `HttpClient` (resolving on 202), and move the "not available yet" unit test example to `jobs.start` (`availableIn: "M4"`). Verify with the `http-client` scenarios "Send over HTTP", "Conflict surfaces with details" and "Sending a chat message in M1b" (updated), as unit tests.
+- [x] 12.3 Edit the portable suite (design D16):
   - wrap the stream-collected assertions (`events`, `globals`, `got`) in `eventually`;
   - re-tag "knowledge (D-59): live replies cite indexed passages" as `"M5"`;
   - narrow `Milestone` in `HttpClient.ts` to `"M4"|"M5"|"M6"`.
 
   Verify: the MockClient portable run (`npm test`) still passes every test with none pending.
-- [ ] 12.4 Switch the HTTP harness to `supports: "M3"`. Verify: `npm run test:http` passes every M1b/M2/M3 test, and lists M4/M5/M6 (including the citation test) as pending, matching the `client-contract` scenario "HTTP run in M3".
+- [x] 12.4 Switch the HTTP harness to `supports: "M3"`. Verify: `npm run test:http` passes every M1b/M2/M3 test, and lists M4/M5/M6 (including the citation test) as pending, matching the `client-contract` scenario "HTTP run in M3".
 
 ## 13. Integration and gates
 

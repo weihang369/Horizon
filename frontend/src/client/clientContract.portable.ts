@@ -145,8 +145,11 @@ export function runPortableContract(label: string, makeHarness: MakeHarness, opt
       const reply = chars(msgs)[1];
       expect(reply.status).toBe("complete");
       expect(reply.trace?.energy?.spent).toBeGreaterThan(0);
+      const wanted = ["turn.next", "turn.thinking", "turn.start", "token", "emotion", "turn.end", "energy", "insight", "message"];
+      // A remote client receives the stream asynchronously: wait for delivery (client-contract spec).
+      await eventually(() => wanted.every((t) => events.some((e) => e.type === t)) && events.some((e) => e.type === "insight" && (e.payload as { messageId: string }).messageId === reply.id));
       const types = new Set(events.map((e) => e.type));
-      for (const t of ["turn.next", "turn.thinking", "turn.start", "token", "emotion", "turn.end", "energy", "insight", "message"]) expect(types.has(t as SessionEvent["type"]), t).toBe(true);
+      for (const t of wanted) expect(types.has(t as SessionEvent["type"]), t).toBe(true);
       for (let i = 1; i < events.length; i++) expect(events[i].seq).toBe(events[i - 1].seq + 1);
       const after = (await c.characters.get("chr_seedAmara")).energy.current;
       expect(after).toBeLessThan(before);
@@ -161,7 +164,9 @@ export function runPortableContract(label: string, makeHarness: MakeHarness, opt
       const got: number[] = [];
       c.sessions.subscribe(snap.session.id, { sinceSeq: 3 }, (e) => got.push(e.seq));
       await tick(10);
-      expect(got).toEqual(all.filter((e) => e.seq > 3).map((e) => e.seq));
+      const want = all.filter((e) => e.seq > 3).map((e) => e.seq);
+      await eventually(() => got.length >= want.length);
+      expect(got.slice(0, want.length)).toEqual(want);
     });
 
     test("M3", "seed sessions are replay-only; forkSeedSession(atSeq) continues live from the playhead (R16)", async () => {
@@ -225,7 +230,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness, opt
       await tick(15000);
       const msgs = await c.sessions.messages(s.session.id);
       expect(msgs.some((m) => m.kind === "system_note" && /Takeshi is asleep/.test(m.content))).toBe(true);
-      expect(events.some((e) => e.type === "error" && (e.payload as { code: string }).code === "energy_exhausted")).toBe(true);
+      await eventually(() => events.some((e) => e.type === "error" && (e.payload as { code: string }).code === "energy_exhausted"));
       expect(chars(msgs).every((m) => m.author.characterId !== "chr_seedTakeshi")).toBe(true);
       await c.characters.topUpEnergy("chr_seedTakeshi", 500);
       expect((await c.characters.get("chr_seedTakeshi")).energy.current).toBe(500);
@@ -265,7 +270,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness, opt
       await c.settings.update({ budget: { dailyCapUsd: 0.00005 } });
       const s = await c.sessions.create({ worldId: "wld_seedMeridian", mode: "one_on_one", characterIds: ["chr_seedAmara"] });
       await tick(8000);
-      expect(globals.some((g) => g.type === "budget.reached")).toBe(true);
+      await eventually(() => globals.some((g) => g.type === "budget.reached"));
       expect((await c.sessions.get(s.session.id)).session.pausedReason).toBe("daily_budget");
       expect(await code(c.chat.send(s.session.id, "hello?"))).toBe("daily_budget_exceeded");
     });
@@ -342,7 +347,8 @@ export function runPortableContract(label: string, makeHarness: MakeHarness, opt
       expect(await code(c.characters.knowledgeSource("kno_nope"))).toBe("not_found");
     });
 
-    test("M3", "knowledge (D-59): live replies cite indexed passages (zod-valid)", async () => {
+    // Live citations need retrieval over indexed seed knowledge, which arrives with M5 (session-runtime OQ-2).
+    test("M5", "knowledge (D-59): live replies cite indexed passages (zod-valid)", async () => {
       const { c, tick, events, watch } = await make({ key: true });
 
       const snap = await c.sessions.create({ worldId: "wld_seedMeridian", mode: "one_on_one", characterIds: ["chr_seedAmara"] });
@@ -479,7 +485,9 @@ export function runPortableContract(label: string, makeHarness: MakeHarness, opt
       watch(s.session.id);
       await c.chat.send(s.session.id, "Anyone hungry?");
       await tick(20000);
-      const opening = events.find((e) => e.type === "energy" && (e.payload as { characterId: string }).characterId === "chr_seedTakeshi");
+      const isTakeshiEnergy = (e: SessionEvent) => e.type === "energy" && (e.payload as { characterId: string }).characterId === "chr_seedTakeshi";
+      await eventually(() => events.some(isTakeshiEnergy));
+      const opening = events.find(isTakeshiEnergy);
       expect((opening?.payload as { state: string }).state).toBe("exhausted");
       const msgs = await c.sessions.messages(s.session.id);
       expect(chars(msgs).every((m) => m.author.characterId !== "chr_seedTakeshi")).toBe(true);
