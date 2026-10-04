@@ -7,6 +7,7 @@ import path from "node:path";
 import type { Emotion } from "../../src/contract/types";
 import { SCHEMA_VERSION } from "../../src/contract/types";
 import { PRICING } from "../../src/mock/pricing.config";
+import { DEFAULT_TIMING } from "../../src/mock/timing.config";
 import { hashString } from "../../src/mock/rng";
 import { PALETTES } from "../../src/theme/palettes";
 import { themeSpecFromBrief } from "../../src/audio/synth/spec";
@@ -20,6 +21,7 @@ import {
 } from "./data/catalog";
 import { KNOWLEDGE_CHUNKS } from "./data/knowledge";
 import { ledgerFor } from "./ledger";
+import { RUNTIME } from "./runtime.config";
 import { MOCK_SCREENPLAYS } from "./screenplays/mock";
 import { SEED_SCREENPLAYS } from "./screenplays/seed";
 
@@ -53,6 +55,8 @@ export async function buildSeed(): Promise<{ outputs: Outputs; warnings: string[
   put("style-presets.json", json(STYLE_PRESETS));
   put("system-tracks.json", json(SYSTEM_TRACKS));
   put("pricing.json", json(PRICING));
+  // session-runtime D9: one pacing table for the mock and the backend.
+  put("runtime.json", json({ timing: DEFAULT_TIMING, runtime: RUNTIME }));
 
   // ── Characters & songs ──
   for (const d of CHARACTERS) put(`${d.mock ? "_mock/" : ""}characters/${d.character.id}.json`, json(d.character));

@@ -17,7 +17,7 @@ from sqlalchemy import text
 from horizon import SCHEMA_VERSION, __version__
 from horizon.api.common import check, json_response, read_ctx, rt_of
 from horizon.api.errors import HorizonHTTPError, validation
-from horizon.domain.clock import FrozenClock, SystemClock
+from horizon.domain.clock import FrozenClock
 from horizon.domain.timeutil import parse_iso, to_iso
 from horizon.events.bus import GLOBAL
 from horizon.runtime import Runtime
@@ -393,23 +393,22 @@ class ClockBody(_Model):
 
 @test_router.post("/clock")
 async def test_clock(request: Request, body: ClockBody) -> Response:
+    """Virtual time (session-runtime D2): an advance fires due timers in order and returns once their work settled."""
     rt = rt_of(request)
+    if not isinstance(rt.clock, FrozenClock):  # a test-mode runtime normally starts with a released FrozenClock
+        rt.clock = FrozenClock(rt.clock.calendar, released=True)
+    clock = rt.clock
     if body.release:
-        rt.clock = SystemClock(rt.clock.calendar)
+        clock.release()
     if body.freezeAt is not None:
         try:
             at: datetime = parse_iso(body.freezeAt)
         except ValueError as e:
             raise validation("freezeAt must be an ISO-8601 instant.", {"field": "freezeAt"}) from e
-        if isinstance(rt.clock, FrozenClock):
-            rt.clock.set(at)
-        else:
-            rt.clock = FrozenClock(rt.clock.calendar, at)
+        clock.set(at)
     if body.advanceMs:
-        if not isinstance(rt.clock, FrozenClock):
-            rt.clock = FrozenClock(rt.clock.calendar, rt.clock.now())
-        rt.clock.advance(body.advanceMs)
-    return json_response(rt, {"now": rt.now_iso(), "frozen": isinstance(rt.clock, FrozenClock)})
+        await clock.advance(body.advanceMs)
+    return json_response(rt, {"now": rt.now_iso(), "frozen": clock.frozen})
 
 
 class ScenarioBody(_Model):

@@ -21,7 +21,7 @@ from collections.abc import AsyncIterator, Awaitable, Callable, Mapping, Sequenc
 from dataclasses import dataclass, field
 from typing import Any, Protocol, TypeVar
 
-from horizon.domain import budget
+from horizon.domain import budget, vclock
 from horizon.domain.pricing import (
     PricePeriod,
     PriceTable,
@@ -228,6 +228,7 @@ class Gateway:
     async def _record_shielded(self, ctx: CallContext, row: LedgerRow, summary: Mapping[str, Any]) -> None:
         """Record even while being cancelled: the write runs as its own task, and a second cancel can't abort it."""
         task = asyncio.get_running_loop().create_task(self._record(ctx, row, summary))
+        vclock.track(task, "ledger-record")  # a virtual-time advance waits for the row (session-runtime D2)
         self._background.add(task)
         task.add_done_callback(self._background.discard)
         try:

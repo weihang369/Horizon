@@ -126,10 +126,25 @@ def test_pricing_period(local: str, period: str, next_local: str) -> None:
     assert clock.next_change_at() == _at(next_local)
 
 
-async def test_frozen_sleep_advances_virtual_time() -> None:
+async def test_frozen_sleep_waits_for_virtual_time() -> None:
+    """Session-runtime D2: a frozen sleep waits until an advance passes its deadline (time never moves by itself)."""
+    import asyncio
+
     clock = FrozenClock(CAL, _at("2026-10-03T11:00:00"))
-    await clock.sleep(90)
-    assert clock.now() == _at("2026-10-03T11:01:30")
+    woke: list[str] = []
+
+    async def sleeper() -> None:
+        await clock.sleep(90)
+        woke.append(clock.now().isoformat())
+
+    task = clock.activity.spawn("sleeper", sleeper())
+    await clock.settle()
+    assert woke == [] and clock.now() == _at("2026-10-03T11:00:00")
+    await clock.advance(89_000)
+    assert woke == []
+    await clock.advance(1_000)
+    assert woke == [_at("2026-10-03T11:01:30").isoformat()]
+    await asyncio.wait_for(task, 1)
 
 
 def test_ids_match_the_contract() -> None:

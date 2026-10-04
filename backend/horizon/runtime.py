@@ -22,10 +22,10 @@ import os
 import shutil
 import stat
 import time
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Coroutine
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import Any
+from typing import Any, TypeVar
 
 from sqlalchemy import select, text
 
@@ -38,7 +38,7 @@ from horizon.db import spaces
 from horizon.db import tables as t
 from horizon.db.migrate import upgrade_head
 from horizon.db.uow import Database
-from horizon.domain.clock import Clock, SystemClock, calendar_for
+from horizon.domain.clock import Clock, FrozenClock, SystemClock, calendar_for
 from horizon.domain.energy import energy_day as _energy_day_ms
 from horizon.domain.ids import new_id
 from horizon.domain.pricing import PriceTable, load_price_table
@@ -58,6 +58,7 @@ from horizon.services.runtime.reducer import apply_event, initial_runtime, order
 from horizon.services.settings import deep_merge, local_day, read_local_settings, read_seed_settings
 
 log = logging.getLogger("horizon.runtime")
+T = TypeVar("T")
 
 
 class Gate:
@@ -100,7 +101,9 @@ class Runtime:
         self.schema = schema or default_schema()
         self.prices: PriceTable = load_price_table(cfg.seed_dir)
         peak = self.prices.peak
-        self.clock: Clock = clock or SystemClock(calendar_for(cfg.tz, peak_tz=peak.tz, windows=peak.windows))
+        cal = calendar_for(cfg.tz, peak_tz=peak.tz, windows=peak.windows)
+        # Test mode: a released FrozenClock, so `/_test/clock` can freeze it in place (everything holding it follows).
+        self.clock: Clock = clock or (FrozenClock(cal, released=True) if cfg.test_mode else SystemClock(cal))
         self.bus = EventBus()
         self.gate = Gate()
         self._db: Database | None = None
@@ -200,6 +203,11 @@ class Runtime:
             await self._gateway.core.aclose()
         self.book.clear()
         self._gateway = self._corrector = self._keys = self._decider = None
+
+    def spawn(self, name: str, coro: Coroutine[Any, Any, T]) -> asyncio.Task[T]:
+        """The only way `sessions/` and `ai/` start background work: the task holds an activity token while it runs,
+        so a virtual-time advance waits for it (session-runtime D2)."""
+        return self.clock.activity.spawn(name, coro)
 
     def publish(self, channel: str, event: dict[str, Any]) -> None:
         if self.cfg.test_mode:

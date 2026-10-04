@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "data": {
+    "timing": {
+      "thinkingMs": 60,
+      "firstTokenMs": 1500,
+      "tokensPerSec": 40,
+      "charsPerToken": 4,
+      "tokensPerEvent": 3,
+      "turnGapMs": 400,
+      "reactionDelayMs": [
+        300,
+        800
+      ],
+      "reactionChance": 0.7,
+      "emotionTiming": {
+        "before": 0.7,
+        "early": 0.25,
+        "late": 0.05
+      },
+      "lateEmotionMs": 1200,
+      "profileDraftMs": 4000,
+      "fieldRegenerateMs": 2000,
+      "portraitMs": 20000,
+      "portraitParallel": 2,
+      "emotionMs": 15000,
+      "emotionParallel": 2,
+      "sheetMs": 30000,
+      "songMs": 40000,
+      "jobTickMs": 250,
+      "debateStartMs": 1600,
+      "watchStartMs": 800,
+      "greetingMs": 300
+    },
+    "runtime": {
+      "replyMaxTokens": {
+        "one_on_one": 350,
+        "group": 250,
+        "watch": 220,
+        "debate": {
+          "short": 200,
+          "medium": 320,
+          "long": 480
+        }
+      },
+      "windowTokens": 6000,
+      "coalesce": {
+        "maxChars": 48,
+        "maxMs": 50
+      },
+      "idleReleaseMs": 600000,
+      "prefetchMax": 2,
+      "llmConcurrency": 4
+    }
+  }
+}
