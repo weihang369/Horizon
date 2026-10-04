@@ -42,9 +42,25 @@ class Api:
         assert r.status_code == status, f"{path}: {r.status_code} {r.text[:300]}"
         return r.json()
 
+    async def post(self, path: str, body: Any = None, status: int | None = None, **kw: Any) -> httpx.Response:
+        r = await self.client.post(path, json=body if body is not None else {}, **kw)
+        if status is not None:
+            assert r.status_code == status, f"{path}: {r.status_code} {r.text[:400]}"
+        return r
+
+    async def set_key(self, key: str = "sk-or-test-0001") -> None:
+        r = await self.client.put("/api/v1/settings/key", json={"key": key})
+        assert r.status_code == 200, r.text
+
+    async def drive(self, ms: float) -> None:
+        """Advance virtual time and let the woken work settle (session-runtime D2)."""
+        clock = self.rt.clock
+        assert isinstance(clock, FrozenClock)
+        await clock.advance(ms)
+
 
 def make_config(data_dir: Path, *, test_mode: bool, **overrides: Any) -> Config:
-    env = {"HORIZON_DATA_DIR": str(data_dir)}
+    env = {"HORIZON_DATA_DIR": str(data_dir), "HORIZON_AI_PROFILE": overrides.pop("ai_profile", "scripted")}
     if test_mode:
         env["HORIZON_TEST"] = "1"
     # Never pick up a developer's real key from the repo's .env: normal-mode tests opt in with a fake one.

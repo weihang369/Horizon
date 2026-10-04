@@ -380,8 +380,12 @@ async def health(request: Request) -> Response:
 # ── Test-only (HORIZON_TEST=1) ───────────────────────────────────────────────
 test_router = APIRouter(prefix="/_test")
 
-SCENARIOS: dict[str, str] = {}  # id → description. Empty in M1b; scenarios arrive with M2/M3 (design D13).
-SCENARIO_MILESTONE = {"character_exhausted": "M2", "rush_hour": "M2", "stream_cut": "M3", "image_fail_partial": "M4",
+SCENARIOS: dict[str, str] = {  # id → description (design D15)
+    "character_exhausted": "Reset demo data (seed only), then Takeshi at 0 energy (the exhausted_takeshi variant).",
+    "rush_hour": "Peak pricing whatever the clock says.",
+    "stream_cut": "The next character turn cuts after 24 tokens with a network error.",
+}
+SCENARIO_MILESTONE = {"character_exhausted": "M3", "rush_hour": "M3", "stream_cut": "M3", "image_fail_partial": "M4",
                       "network_down": "M6", "no_worlds": "M6"}
 
 
@@ -417,7 +421,95 @@ class ScenarioBody(_Model):
 
 @test_router.post("/scenario")
 async def test_scenario(request: Request, body: ScenarioBody) -> Response:
+    rt = rt_of(request)
     if body.id not in SCENARIOS:
         raise HorizonHTTPError("validation", f"Scenario {body.id!r} is not available on the backend yet.", status=422,
                                details={"field": "id", "availableIn": SCENARIO_MILESTONE.get(body.id, "later")})
+    if body.id == "character_exhausted":
+        await rt.reset_demo()
+        await apply_variant(rt, "exhausted_takeshi")
+    elif body.id == "rush_hour":
+        rt.clock.period_override = "peak"
+        rt.publish(GLOBAL, {"type": "entity.changed", "kind": "settings"})
+    elif body.id == "stream_cut":
+        rt.stream_faults.append(24)
+    return Response(status_code=204)
+
+
+async def apply_variant(rt: Runtime, variant_id: str) -> None:
+    """A `_mock/variants` energy patch (the mock's overlay): current set, regeneration counted from now."""
+    import json
+
+    from sqlalchemy import update
+
+    from horizon.db import tables as t
+
+    doc = json.loads((rt.cfg.seed_dir / "_mock" / "variants" / f"{variant_id}.json").read_text(encoding="utf-8"))
+    p = rt.energy_params()
+    async with rt.db.write() as tx:
+        for patch in doc["data"].get("characterPatches", []):
+            e = patch.get("energy")
+            if not e:
+                continue
+            await tx.conn.execute(update(t.characters).where(t.characters.c.id == patch["characterId"]).values(
+                energy_current=float(e["current"]), energy_as_of=rt.now_iso(), energy_day=p.energy_day()))
+            tx.publish(GLOBAL, {"type": "entity.changed", "kind": "character", "id": patch["characterId"]})
+
+
+class AiProfileBody(_Model):
+    profile: Literal["scripted", "naive"] | None = None
+    overrides: dict[Literal["turn", "router", "reactions", "host", "director", "summariser", "guardrail"],
+                    Literal["scripted", "naive"]] | None = None
+
+
+@test_router.post("/ai-profile")
+async def test_ai_profile(request: Request, body: AiProfileBody) -> Response:
+    """Test mode: the AI profile for subsequent turns, optionally per port (design D15, OQ-14)."""
+    from horizon.ai.profile import ProfileSpec
+
+    rt = rt_of(request)
+    overrides: dict[str, Literal["scripted", "naive"]] = {str(k): v for k, v in (body.overrides or {}).items()}
+    rt.set_profile(ProfileSpec(profile=body.profile, overrides=overrides))
+    return Response(status_code=204)
+
+
+class FixtureAnswer(_Model):
+    choice: str | None = None
+    confidence: float | None = None
+    probabilities: dict[str, float] | None = None
+    p: float | None = None
+    score: float | None = None
+
+
+class FixtureItem(_Model):
+    purpose: str
+    question: str
+    answer: FixtureAnswer
+
+
+class DeciderFixturesBody(_Model):
+    set: list[FixtureItem] | None = None
+    clear: bool = False
+
+
+@test_router.post("/decider-fixtures")
+async def test_decider_fixtures(request: Request, body: DeciderFixturesBody) -> Response:
+    """Test mode: scripted Decider answers keyed by purpose and question (no request, no ledger row)."""
+    from horizon.ai.decider import ChoiceAnswer, NoulAnswer, ScoreAnswer
+
+    rt = rt_of(request)
+    if body.clear:
+        rt.decider_fixtures.clear()
+    for item in body.set or []:
+        a = item.answer
+        answer: ChoiceAnswer | NoulAnswer | ScoreAnswer
+        if a.choice is not None:
+            answer = ChoiceAnswer(choice=a.choice, confidence=a.confidence, probabilities=a.probabilities)
+        elif a.p is not None:
+            answer = NoulAnswer(p=a.p)
+        elif a.score is not None:
+            answer = ScoreAnswer(score=a.score, confidence=a.confidence, probabilities=a.probabilities)
+        else:
+            raise validation("A fixture answer needs choice, p or score.", {"field": "answer"})
+        rt.decider_fixtures.set(item.purpose, item.question, answer)
     return Response(status_code=204)

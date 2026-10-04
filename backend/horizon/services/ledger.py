@@ -98,18 +98,39 @@ class LedgerWriter:
         return (await conn.execute(q)).first() is not None
 
     # ── reads for M3 (TurnTrace.calls[], Message.usage) ──
-    async def calls_for_message(self, message_id: str) -> list[dict[str, Any]]:
+    async def calls_for_message(self, message_id: str, since: str | None = None) -> list[dict[str, Any]]:
+        """`since` (an ISO instant) keeps one turn's calls when a regenerated message has several turns."""
+        q = select(U.purpose, U.model, U.cost_usd, U.latency_ms).where(U.message_id == message_id)
+        if since is not None:
+            q = q.where(U.at >= since)
         async with self.db.read() as conn:
-            rows = (await conn.execute(select(U.purpose, U.model, U.cost_usd, U.latency_ms).where(U.message_id == message_id)
-                                       .order_by(U.at, U.id))).mappings().all()
+            rows = (await conn.execute(q.order_by(U.at, U.id))).mappings().all()
         return [{"purpose": r["purpose"] or "", "model": r["model"] or "", "costUsd": round(float(r["cost_usd"]), 6),
                  "latencyMs": int(r["latency_ms"] or 0)} for r in rows]
 
-    async def reply_usage(self, message_id: str) -> dict[str, Any] | None:
-        """The reply's tokens and cost (purpose = reply); the actor adds firstTokenMs/totalMs/energySpent in M3."""
+    async def link_message(self, row_id: str, message_id: str) -> None:
+        """A prefetched reply was released as `message_id` (session-runtime D5): link its row (one-row update)."""
+        async with self.db.write() as tx:
+            await tx.conn.execute(t.usage_records.update().where(U.id == row_id).values(message_id=message_id))
+
+    async def reply_row(self, message_id: str, since: str | None = None) -> dict[str, Any] | None:
+        """The reply's ledger row (model, provider, period, latency) for `TurnTrace.model`."""
+        q = select(U.model, U.provider, U.price_period, U.latency_ms, U.cost_source).where(
+            U.message_id == message_id).where(U.purpose == "reply")
+        if since is not None:
+            q = q.where(U.at >= since)
         async with self.db.read() as conn:
-            rows = (await conn.execute(select(U.tokens_in, U.tokens_cached, U.tokens_out, U.cost_usd)
-                                       .where(U.message_id == message_id).where(U.purpose == "reply"))).mappings().all()
+            r = (await conn.execute(q.order_by(U.at.desc(), U.id.desc()).limit(1))).mappings().first()
+        return dict(r) if r is not None else None
+
+    async def reply_usage(self, message_id: str, since: str | None = None) -> dict[str, Any] | None:
+        """The reply's tokens and cost (purpose = reply); the actor adds firstTokenMs/totalMs/energySpent in M3."""
+        q = select(U.tokens_in, U.tokens_cached, U.tokens_out, U.cost_usd).where(U.message_id == message_id).where(
+            U.purpose == "reply")
+        if since is not None:
+            q = q.where(U.at >= since)
+        async with self.db.read() as conn:
+            rows = (await conn.execute(q)).mappings().all()
         if not rows:
             return None
         out: dict[str, Any] = {"tokensIn": sum(int(r["tokens_in"] or 0) for r in rows),

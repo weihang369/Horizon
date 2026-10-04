@@ -23,9 +23,11 @@ LOOPBACK = "127.0.0.1"
 DEFAULT_PORT = 8000
 
 # Process variables this module reads. An empty value counts as unset (`.env.example` ships blanks).
+AI_VARS = ("HORIZON_AI_PROFILE", "HORIZON_AI_TURN", "HORIZON_AI_ROUTER", "HORIZON_AI_REACTIONS", "HORIZON_AI_HOST",
+           "HORIZON_AI_DIRECTOR", "HORIZON_AI_SUMMARISER", "HORIZON_AI_GUARDRAIL")  # M3 (doc 05 §1)
 KNOWN_VARS = (
     "HORIZON_ROOT", "HORIZON_DATA_DIR", "HORIZON_SEED_DIR", "HORIZON_TZ", "HORIZON_TEST", "HORIZON_PORT",
-    "HORIZON_LOG_LEVEL", "HORIZON_STATIC_DIR", "OPENROUTER_API_KEY",
+    "HORIZON_LOG_LEVEL", "HORIZON_STATIC_DIR", "OPENROUTER_API_KEY", *AI_VARS,
 )
 
 
@@ -55,6 +57,7 @@ class Config:
     # From OPENROUTER_API_KEY (env > .env). Always None in test mode. SecretStr: repr/str never show it.
     openrouter_key: SecretStr | None = None
     extra: dict[str, str] = field(default_factory=dict)
+    ai_env: dict[str, str] = field(default_factory=dict)   # HORIZON_AI_PROFILE and the per-port overrides
 
     def __post_init__(self) -> None:
         if self.test_mode and self.openrouter_key is not None:  # holds for CLI/test overrides too
@@ -105,6 +108,7 @@ def load_config(environ: dict[str, str] | None = None, **overrides: object) -> C
         "log_level": env.get("HORIZON_LOG_LEVEL", "INFO").upper(),
         "static_dir": Path(static).resolve() if static else None,
         "openrouter_key": SecretStr(key) if key and not test_mode else None,
+        "ai_env": {k: env[k] for k in AI_VARS if k in env},
     }
     values.update(overrides)
     return Config(**values)  # type: ignore[arg-type]
