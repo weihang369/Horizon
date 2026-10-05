@@ -1,0 +1,14 @@
+{
+  "name": "leading_space",
+  "doc": "Whitespace before the tag and after it is dropped",
+  "chunks": [
+    " <e:sad>",
+    " Oh."
+  ],
+  "previous": "neutral",
+  "expected": {
+    "emotion": "sad",
+    "source": "llm",
+    "text": "Oh."
+  }
+}

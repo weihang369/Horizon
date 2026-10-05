@@ -122,6 +122,13 @@ def reduce_all(initial: State, events: Iterable[Event]) -> State:
     return s
 
 
+def apply_in_place(s: State, events: Iterable[Event]) -> None:
+    """Apply events to a state the caller owns (the live EventWriter): no copy of the whole state per event."""
+    for evt in events:
+        if evt["seq"] > s["lastSeq"]:
+            _apply(s, evt)
+
+
 def ordered_messages(s: State) -> list[Msg]:
     return [s["messages"][mid] for mid in s["order"] if mid in s["messages"]]
 

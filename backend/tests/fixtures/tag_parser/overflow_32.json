@@ -1,0 +1,14 @@
+{
+  "name": "overflow_32",
+  "doc": "No closing > within 32 characters: released as text",
+  "chunks": [
+    "<e:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    " and more"
+  ],
+  "previous": "neutral",
+  "expected": {
+    "emotion": "neutral",
+    "source": "default",
+    "text": "<e:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx and more"
+  }
+}

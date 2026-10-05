@@ -1,0 +1,14 @@
+{
+  "name": "split_tag",
+  "doc": "A tag split across chunks",
+  "chunks": [
+    "<e:ha",
+    "ppy>Hello"
+  ],
+  "previous": "neutral",
+  "expected": {
+    "emotion": "happy",
+    "source": "llm",
+    "text": "Hello"
+  }
+}

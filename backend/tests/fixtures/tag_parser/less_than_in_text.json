@@ -1,0 +1,14 @@
+{
+  "name": "less_than_in_text",
+  "doc": "A '<' that never becomes a tag stays in the text",
+  "chunks": [
+    "<e:thinking>2 < 3 and ",
+    "x<y"
+  ],
+  "previous": "neutral",
+  "expected": {
+    "emotion": "thinking",
+    "source": "llm",
+    "text": "2 < 3 and x<y"
+  }
+}

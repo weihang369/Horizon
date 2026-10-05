@@ -88,5 +88,6 @@ packages = ["horizon"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
-module = ["horizon.domain.*", "horizon.contract.*", "horizon.services.runtime.reducer", "horizon.gateway.*", "horizon.ai.decider"]
+module = ["horizon.domain.*", "horizon.contract.*", "horizon.services.runtime.reducer", "horizon.gateway.*", "horizon.ai.*",
+          "horizon.sessions.*"]
 strict = true

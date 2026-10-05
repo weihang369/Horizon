@@ -24,6 +24,7 @@ from collections.abc import Awaitable, Callable, Coroutine, Mapping, Sequence
 from dataclasses import dataclass, replace
 from typing import Any, Literal
 
+from horizon.domain import vclock
 from horizon.domain.pricing import count_tokens
 from horizon.gateway.context import CallContext
 from horizon.gateway.decisions import DecisionsResponse
@@ -194,6 +195,7 @@ class Decider:
         timeout = timeout_ms / 1000 if timeout_ms is not None else self.timeouts.for_decision(purpose)
         task: asyncio.Task[DecisionsResponse] = asyncio.get_running_loop().create_task(
             self._decide(state, wire, ctx), name=f"decide:{purpose}")
+        vclock.track(task, f"decide:{purpose}")  # a late answer's ledger row still lands before an advance returns
         done, _ = await asyncio.wait({task}, timeout=timeout)
         if not done:
             self._keep(task)  # still recorded in the ledger when it lands; the answer is discarded

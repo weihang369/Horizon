@@ -14,14 +14,15 @@ spend (NFR-30).
 from __future__ import annotations
 
 import asyncio
+import contextvars
 import json
 import logging
 import time
 from collections.abc import AsyncIterator, Awaitable, Callable, Mapping, Sequence
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any, Protocol, TypeVar
 
-from horizon.domain import budget
+from horizon.domain import budget, vclock
 from horizon.domain.pricing import (
     PricePeriod,
     PriceTable,
@@ -46,6 +47,37 @@ from horizon.gateway.types import GatewayConfig, Usage
 
 log = logging.getLogger("horizon.gateway")
 T = TypeVar("T")
+
+
+SCRIPTED_PROVIDER = "scripted"
+# A turn that runs ahead of its slot (a prefetched opening, session-runtime D5) learns its ledger rows through this
+# ambient sink, so it can link them to its message when it is released; the AI ports never see it.
+RECORDED_SINK: contextvars.ContextVar[Callable[[str], None] | None] = contextvars.ContextVar("horizon_recorded_sink",
+                                                                                          default=None)
+
+
+@dataclass(frozen=True)
+class SimulatedReply:
+    """A scripted reply's stream plan: chunks, pacing (ms) and the usage it bills."""
+
+    chunks: Sequence[str]
+    first_token_ms: float
+    step_ms: float
+    tail_ms: float
+    total_ms: int
+    model: str
+    tokens_in: int
+    tokens_cached: int
+    tokens_out: int
+    cost_usd: float
+
+
+@dataclass(frozen=True)
+class SimulatedCall:
+    row_id: str
+    cost_usd: float
+    model: str
+    latency_ms: int
 
 
 # ── the ledger, as the gateway sees it ──
@@ -123,12 +155,16 @@ class Gateway:
     decision_model: str
     on_estimate_row: Callable[[str], None] = lambda _row_id: None   # the cost corrector's queue
     on_call: OnCall = no_op_hook
+    # M3: the session manager's view of spend (cap pause on crossing; budget events of a session's call).
+    on_spend: Callable[[CallContext, RecordResult], None] = lambda _ctx, _res: None
+    on_budget: Callable[[dict[str, Any], CallContext], None] = lambda _ev, _ctx: None
     chat: ChatClient = field(init=False)
     decisions: DecisionsClient = field(init=False)
     images: ImagesClient = field(init=False)
     embeddings: EmbeddingsClient = field(init=False)
     meta: MetaClient = field(init=False)
     _background: set[asyncio.Task[Any]] = field(init=False, default_factory=set)
+    lock_waits_ms: list[float] = field(init=False, default_factory=list)   # preflight lock waits (OQ-7 measurement)
 
     def __post_init__(self) -> None:
         t = self.cfg.timeouts
@@ -155,7 +191,10 @@ class Gateway:
     async def _preflight(self, ctx: CallContext, estimate: float) -> Hold:
         self.core.require_key()
         caps = self.caps()
+        waited = time.perf_counter()
         async with self.book.lock:
+            self.lock_waits_ms.append((time.perf_counter() - waited) * 1000)
+            del self.lock_waits_ms[:-1000]
             spent = await self.ledger.spent_today()
             moved = self.book.take_from_job(ctx.job_id, estimate) if ctx.job_id else 0.0
             if budget.exceeds_daily(spent, self.book.total(), estimate, caps.daily_cap_usd):
@@ -182,6 +221,14 @@ class Gateway:
         if ctx.job_id:
             ev["jobId"] = ctx.job_id
         self.publish(ev)
+        self._notify(self.on_budget, ev, ctx)
+
+    @staticmethod
+    def _notify(hook: Callable[..., None], *args: Any) -> None:
+        try:
+            hook(*args)
+        except Exception:
+            log.exception("gateway hook failed (ignored)")
 
     # ── 3–5. record, settle, emit ──
     def _row(self, ctx: CallContext, estimate: float, *, cost: float | None, bill: Billing | None, model: str | None,
@@ -199,13 +246,22 @@ class Gateway:
             tokens_in=u.tokens_in if u else None, tokens_cached=u.tokens_cached if u else None,
             tokens_out=u.tokens_out if u else None, latency_ms=latency_ms)
 
-    async def _record(self, ctx: CallContext, row: LedgerRow, summary: Mapping[str, Any]) -> RecordResult:
+    async def _record(self, ctx: CallContext, row: LedgerRow, summary: Mapping[str, Any],
+                      on_recorded: Callable[[str], None] | None = None) -> RecordResult:
         res = await self.ledger.record(row, drain=ctx.drains)
+        if on_recorded is not None:
+            self._notify(on_recorded, res.row_id)
+        sink = RECORDED_SINK.get()
+        if sink is not None:
+            self._notify(sink, res.row_id)
         caps = self.caps()
         line = budget.warn_at(caps.daily_cap_usd, caps.warn_at_pct)
         if budget.crossed(res.spent_before, res.spent_after, line):
-            self.publish({"type": "budget.warning", "scope": "daily", "spentUsd": round(res.spent_after, 6),
-                          "capUsd": caps.daily_cap_usd})
+            warning = {"type": "budget.warning", "scope": "daily", "spentUsd": round(res.spent_after, 6),
+                       "capUsd": caps.daily_cap_usd}
+            self.publish(warning)
+            self._notify(self.on_budget, warning, ctx)
+        self._notify(self.on_spend, ctx, res)
         if ctx.creation and res.creation_before is not None and res.creation_after is not None:
             cline = budget.warn_at(caps.creation_cap_usd, caps.warn_at_pct)
             if budget.crossed(res.creation_before, res.creation_after, cline):
@@ -225,9 +281,11 @@ class Gateway:
         except Exception:
             log.exception("on_call hook failed (ignored)")
 
-    async def _record_shielded(self, ctx: CallContext, row: LedgerRow, summary: Mapping[str, Any]) -> None:
+    async def _record_shielded(self, ctx: CallContext, row: LedgerRow, summary: Mapping[str, Any],
+                               on_recorded: Callable[[str], None] | None = None) -> None:
         """Record even while being cancelled: the write runs as its own task, and a second cancel can't abort it."""
-        task = asyncio.get_running_loop().create_task(self._record(ctx, row, summary))
+        task = asyncio.get_running_loop().create_task(self._record(ctx, row, summary, on_recorded))
+        vclock.track(task, "ledger-record")  # a virtual-time advance waits for the row (session-runtime D2)
         self._background.add(task)
         task.add_done_callback(self._background.discard)
         try:
@@ -278,8 +336,10 @@ class Gateway:
 
         return await self.paid(ctx, est, send, model=req.model, summary={"kind": "chat", "maxTokens": req.max_tokens})
 
-    async def chat_stream(self, req: ChatRequest, ctx: CallContext, *, estimate: float | None = None) -> AsyncIterator[ChatChunk]:
-        """Streamed chat through the pipeline. Stopping early (aclose / cancel) records the estimate + generation_id."""
+    async def chat_stream(self, req: ChatRequest, ctx: CallContext, *, estimate: float | None = None,
+                          on_recorded: Callable[[str], None] | None = None) -> AsyncIterator[ChatChunk]:
+        """Streamed chat through the pipeline. Stopping early (aclose / cancel) records the estimate + generation_id.
+        `on_recorded(row_id)` reports the ledger row (a prefetched reply links it to its message on release)."""
         est = self.chat_estimate(req) if estimate is None else estimate
         hold = await self._preflight(ctx, est)
         started = time.monotonic()
@@ -304,13 +364,60 @@ class Gateway:
             except ProviderError as e:
                 gid = e.generation_id or gid
                 if e.cost_usd is not None or e.maybe_charged:
-                    await self._record_shielded(ctx, row(e.cost_usd, None), summ)
+                    await self._record_shielded(ctx, row(e.cost_usd, None), summ, on_recorded)
                 raise
             except (asyncio.CancelledError, GeneratorExit):
-                await self._record_shielded(ctx, row(None, None), summ)
+                await self._record_shielded(ctx, row(None, None), summ, on_recorded)
                 raise
             if done:
-                await self._record(ctx, row(None, Billing(gid, usage, provider, req.model)), summ)
+                await self._record(ctx, row(None, Billing(gid, usage, provider, req.model)), summ, on_recorded)
+        finally:
+            self.book.release(hold)
+
+    # ── the scripted source (session-runtime design D10; provider-gateway "Scripted chat source") ──
+    async def simulated_stream(self, ctx: CallContext, spec: SimulatedReply, sleep: Callable[[float], Awaitable[None]], *,
+                               on_recorded: Callable[[str], None] | None = None) -> AsyncIterator[ChatChunk]:
+        """A scripted reply through the same pipeline as a real stream: preflight (caps, reservation), paced chunks on
+        the backend clock, one ledger row (`provider: "scripted"`) priced from the price table, settle (the reply drain),
+        emit. It never opens a connection. The first chunk (no content) means the stream is open; a Stop or a cut
+        records the estimate, like a real stream."""
+        est = spec.cost_usd
+        hold = await self._preflight(ctx, est)
+        started = time.monotonic()
+        gid = "scripted"
+        summ = {"kind": "chat_stream", "model": spec.model, "purpose": ctx.purpose, "scripted": True}
+
+        def row(*, final: bool) -> LedgerRow:
+            r = self._row(ctx, est, cost=spec.cost_usd if final else None, bill=None, model=spec.model, generation_id=None,
+                          latency_ms=round((time.monotonic() - started) * 1000))
+            return replace(r, provider=SCRIPTED_PROVIDER, tokens_in=spec.tokens_in, tokens_cached=spec.tokens_cached,
+                           tokens_out=spec.tokens_out if final else 0, latency_ms=spec.total_ms if final else r.latency_ms)
+
+        try:
+            try:
+                yield ChatChunk(generation_id=gid, provider=SCRIPTED_PROVIDER)
+                for i, chunk in enumerate(spec.chunks):
+                    await sleep((spec.first_token_ms if i == 0 else spec.step_ms) / 1000)
+                    yield ChatChunk(generation_id=gid, content=chunk, provider=SCRIPTED_PROVIDER)
+                await sleep(max(0.0, spec.tail_ms) / 1000)
+            except (asyncio.CancelledError, GeneratorExit, ProviderError):
+                await self._record_shielded(ctx, row(final=False), summ, on_recorded)
+                raise
+            await self._record(ctx, row(final=True), summ, on_recorded)
+        finally:
+            self.book.release(hold)
+
+    async def simulated_call(self, ctx: CallContext, *, cost_usd: float, model: str, tokens_in: int, tokens_cached: int = 0,
+                             tokens_out: int = 0, latency_ms: int = 240,
+                             on_recorded: Callable[[str], None] | None = None) -> SimulatedCall:
+        """A scripted non-streamed call (route decision, verdict, summary) through the pipeline: one priced row."""
+        hold = await self._preflight(ctx, cost_usd)
+        try:
+            r = self._row(ctx, cost_usd, cost=cost_usd, bill=None, model=model, generation_id=None, latency_ms=latency_ms)
+            r = replace(r, provider=SCRIPTED_PROVIDER, tokens_in=tokens_in, tokens_cached=tokens_cached or None,
+                        tokens_out=tokens_out)
+            res = await self._record(ctx, r, {"kind": "simulated", "model": model, "purpose": ctx.purpose}, on_recorded)
+            return SimulatedCall(row_id=res.row_id, cost_usd=cost_usd, model=model, latency_ms=latency_ms)
         finally:
             self.book.release(hold)
 

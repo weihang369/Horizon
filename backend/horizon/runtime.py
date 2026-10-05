@@ -22,15 +22,18 @@ import os
 import shutil
 import stat
 import time
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Coroutine
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import Any
+from typing import Any, TypeVar
 
 from sqlalchemy import select, text
 
 from horizon import logs
 from horizon.ai.decider import Decider, DeciderFixtures
+from horizon.ai.hooks import AiStateHooks, NoOpHooks
+from horizon.ai.profile import AiPorts, ProfileSpec
+from horizon.ai.scripted.ports import AiDeps
 from horizon.config import Config
 from horizon.contract import mappers as mp
 from horizon.contract.validate import ContractSchema, default_schema
@@ -38,11 +41,13 @@ from horizon.db import spaces
 from horizon.db import tables as t
 from horizon.db.migrate import upgrade_head
 from horizon.db.uow import Database
-from horizon.domain.clock import Clock, SystemClock, calendar_for
+from horizon.domain.clock import Clock, FrozenClock, SystemClock, calendar_for
 from horizon.domain.energy import energy_day as _energy_day_ms
 from horizon.domain.ids import new_id
 from horizon.domain.pricing import PriceTable, load_price_table
+from horizon.domain.runtime_config import RuntimeConfig, load_runtime_config
 from horizon.domain.timeutil import ms_from_iso, to_iso
+from horizon.domain.vclock import Slots
 from horizon.events.bus import GLOBAL, EventBus, session_channel
 from horizon.gateway.client import HttpCore
 from horizon.gateway.fake import FakeOpenRouter
@@ -54,10 +59,12 @@ from horizon.services.corrector import CostCorrector
 from horizon.services.energy_writes import EnergyLocks, EnergyParams
 from horizon.services.keys import KeyStore
 from horizon.services.ledger import LedgerWriter
+from horizon.services.purge import PurgeWorker
 from horizon.services.runtime.reducer import apply_event, initial_runtime, ordered_messages
 from horizon.services.settings import deep_merge, local_day, read_local_settings, read_seed_settings
 
 log = logging.getLogger("horizon.runtime")
+T = TypeVar("T")
 
 
 class Gate:
@@ -100,7 +107,9 @@ class Runtime:
         self.schema = schema or default_schema()
         self.prices: PriceTable = load_price_table(cfg.seed_dir)
         peak = self.prices.peak
-        self.clock: Clock = clock or SystemClock(calendar_for(cfg.tz, peak_tz=peak.tz, windows=peak.windows))
+        cal = calendar_for(cfg.tz, peak_tz=peak.tz, windows=peak.windows)
+        # Test mode: a released FrozenClock, so `/_test/clock` can freeze it in place (everything holding it follows).
+        self.clock: Clock = clock or (FrozenClock(cal, released=True) if cfg.test_mode else SystemClock(cal))
         self.bus = EventBus()
         self.gate = Gate()
         self._db: Database | None = None
@@ -120,6 +129,16 @@ class Runtime:
         self.decider_fixtures = DeciderFixtures()
         self.settings_lock = asyncio.Lock()
         self.fake: FakeOpenRouter | None = None
+        # M3 (session-runtime design D1): the pacing table, LLM slots, AI ports, the live sessions and the purge worker.
+        self.runtime_cfg: RuntimeConfig = load_runtime_config(cfg.seed_dir)
+        self.llm_slots = Slots(self.runtime_cfg.runtime.llm_concurrency)
+        self.profile = ProfileSpec.from_env(cfg.ai_env)
+        self.hooks: AiStateHooks = NoOpHooks()
+        self._ledger: LedgerWriter | None = None
+        self._sessions: Any = None
+        self._ai: AiPorts | None = None
+        self._purge: PurgeWorker | None = None
+        self.stream_faults: list[int] = []   # test mode: `stream_cut` one-shot faults (afterTokens), consumed per turn
 
     # ── accessors ──
     @property
@@ -152,6 +171,40 @@ class Runtime:
             raise RuntimeError("runtime not started")
         return self._decider
 
+    @property
+    def ledger(self) -> LedgerWriter:
+        if self._ledger is None:
+            raise RuntimeError("runtime not started")
+        return self._ledger
+
+    @property
+    def sessions(self) -> Any:
+        """The LiveSessionManager (`horizon.sessions.manager`)."""
+        if self._sessions is None:
+            raise RuntimeError("runtime not started")
+        return self._sessions
+
+    @property
+    def ai(self) -> AiPorts:
+        if self._ai is None:
+            raise RuntimeError("runtime not started")
+        return self._ai
+
+    @property
+    def purge(self) -> PurgeWorker:
+        if self._purge is None:
+            raise RuntimeError("runtime not started")
+        return self._purge
+
+    def take_stream_fault(self) -> int | None:
+        """The next character turn's `stream_cut` fault (afterTokens), consumed once."""
+        return self.stream_faults.pop(0) if self.stream_faults else None
+
+    def set_profile(self, spec: ProfileSpec) -> None:
+        self.profile = spec
+        if self._ai is not None:
+            self._ai = AiPorts(self._ai.deps, spec)
+
     def settings_doc(self) -> dict[str, Any]:
         """Seed settings overlaid by the local file (the editable layer; computed fields come from services/settings)."""
         return deep_merge(self.seed_settings, self.local_settings())
@@ -180,7 +233,7 @@ class Runtime:
         self._keys = KeyStore(cfg.openrouter_key, cfg.data_dir, on_change=self._settings_changed)
         self.fake = FakeOpenRouter(models=models.values()) if cfg.test_mode else None
         core = HttpCore(self._keys, transport=self.fake.transport() if self.fake else None)
-        ledger = LedgerWriter(self.db, self.clock, self.energy_locks, self.energy_params)
+        ledger = self._ledger = LedgerWriter(self.db, self.clock, self.energy_locks, self.energy_params)
         self.book.clear()
         self._gateway = Gateway(core=core, cfg=GatewayConfig.from_mapping(self.prices.gateway), prices=self.prices,
                                 book=self.book, ledger=ledger, caps=self.caps, period=self.clock.pricing_period,
@@ -189,6 +242,27 @@ class Runtime:
         self._corrector = CostCorrector(self.db, self.clock, self._gateway.meta.generation, self.energy_locks,
                                         self.energy_params)
         self._decider = Decider(self._gateway.decide, self._gateway.cfg.timeouts, self.decider_fixtures)
+
+    def _build_m3(self) -> None:
+        from horizon.sessions.manager import LiveSessionManager
+
+        manager = LiveSessionManager(self)
+        self._sessions = manager
+        self.gateway.on_spend = manager.on_spend
+        self.gateway.on_budget = manager.on_budget
+        deps = AiDeps(gateway=lambda: self.gateway, decider=lambda: self.decider, prices=self.prices,
+                      timing=self.runtime_cfg.timing, clock=lambda: self.clock,
+                      window_tokens=self.runtime_cfg.runtime.window_tokens)
+        self._ai = AiPorts(deps, self.profile)
+        self._purge = PurgeWorker(self.db, self.hooks, self.now_iso)
+        self._purge.start()
+
+    async def _stop_m3(self) -> None:
+        if self._sessions is not None:
+            await self._sessions.shutdown()
+        if self._purge is not None:
+            await self._purge.stop()
+        self._sessions = self._purge = None
 
     async def _stop_m2(self) -> None:
         if self._decider is not None:
@@ -200,6 +274,11 @@ class Runtime:
             await self._gateway.core.aclose()
         self.book.clear()
         self._gateway = self._corrector = self._keys = self._decider = None
+
+    def spawn(self, name: str, coro: Coroutine[Any, Any, T]) -> asyncio.Task[T]:
+        """The only way `sessions/` and `ai/` start background work: the task holds an activity token while it runs,
+        so a virtual-time advance waits for it (session-runtime D2)."""
+        return self.clock.activity.spawn(name, coro)
 
     def publish(self, channel: str, event: dict[str, Any]) -> None:
         if self.cfg.test_mode:
@@ -244,14 +323,18 @@ class Runtime:
         if empty:
             await self.import_seed()
         await self.close_interrupted_streams()
-        # Step 6 (recover jobs) arrives with M4; step 7 (drain ai_purge_queue) with M3.
+        # Step 6 (recover jobs) arrives with M4. Step 7 (drain ai_purge_queue) starts with the purge worker below.
+        self.clock.period_override = None
+        self.stream_faults = []
         self._build_m2()
+        self._build_m3()
         await self.corrector.scan()
         await asyncio.to_thread(sweep, cfg.data_dir, self.referenced_files_sync())
         self.started = True
         log.info("horizon backend ready (data=%s, test_mode=%s)", cfg.data_dir, cfg.test_mode)
 
     async def stop(self) -> None:
+        await self._stop_m3()
         await self._stop_m2()
         self.bus.close_all()
         if self._db is not None:
@@ -274,6 +357,9 @@ class Runtime:
     async def reset_demo(self) -> None:
         """POST /admin/reset-demo (doc 02 §4): re-seed seed records in place; user data survives."""
         data = await self.load_seed()
+        if self._sessions is not None:  # seed sessions are replay-only, but drop any actor that read their old events
+            for sid in [s.session["id"] for s in data.sessions]:
+                await self._sessions.release(sid)
         async with self.db.write() as tx:
             sids = await seeding.apply_seed(tx.conn, data, energy_day=self.energy_day, local_day=self.local_day)
             if sids:

@@ -11,7 +11,9 @@ How the AI *thinks* is decided at the AI stage. The rule here is that **swapping
 
 ## 1. Selection
 
-`HORIZON_AI_PROFILE = scripted | naive` (default `naive` when a key is set, `scripted` otherwise), with per-port overrides (`HORIZON_AI_TURN=scripted`). Tests and `/_test/ai-profile` use `scripted`.
+`HORIZON_AI_PROFILE = scripted | naive` (default `naive` when a key is set, `scripted` otherwise), with per-port overrides: `HORIZON_AI_TURN`, `HORIZON_AI_ROUTER`, `HORIZON_AI_REACTIONS`, `HORIZON_AI_HOST`, `HORIZON_AI_DIRECTOR`, `HORIZON_AI_SUMMARISER`, `HORIZON_AI_GUARDRAIL` (e.g. `HORIZON_AI_TURN=scripted`). In M3 only the turn engine and the router have naive implementations; every other port is scripted in both profiles. Tests and the HTTP contract run use `scripted`; `/_test/ai-profile { profile, overrides? }` changes the selection at runtime (e.g. the Jev router with the scripted turn engine).
+
+**Scripted spend is simulated and billed (D-81).** Scripted ports never open a connection, but their calls (replies, route decisions, verdicts, summaries) run through the same gateway pipeline as real ones: preflight with caps and reservations, one ledger row priced from `seed/pricing.json` (`provider: "scripted"`), the reply drain and the budget events. Energy, caps and Insight therefore behave exactly as on the MockClient. Picking `scripted` with a real key spends simulated amounts against the real daily cap; the default with a key is `naive`.
 
 ## 2. Ports (`horizon/ai/ports.py`)
 

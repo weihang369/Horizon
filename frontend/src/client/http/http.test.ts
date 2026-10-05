@@ -99,9 +99,6 @@ describe("HttpClient", () => {
   it("methods without a backend yet reject with validation + availableIn, without a request", async () => {
     const { c, calls } = make(() => json(200, {}));
     const notYet: [string, () => Promise<unknown>, string][] = [
-      ["chat.send", () => c.chat.send("ses_a", "hi"), "M3"],
-      ["sessions.create", () => c.sessions.create({ worldId: "w", mode: "one_on_one", characterIds: [] }), "M3"],
-      ["sessions.export", () => c.sessions.export("ses_a"), "M3"],
       ["jobs.start", () => c.jobs.start({ characterId: "chr_a", kind: "song" }), "M4"],
       ["worlds.uploadCover", () => c.worlds.uploadCover("wld_a", new Blob() as File), "M4"],
       ["characters.addKnowledge", () => c.characters.addKnowledge("chr_a", { type: "text", title: "t", text: "x" }), "M5"],
@@ -137,6 +134,99 @@ describe("HttpClient", () => {
     const headers = (i: number) => calls[i].init?.headers as Record<string, string>;
     expect(headers(5)["Idempotency-Key"]).toBeTruthy(); // the top-up POST
     expect(headers(0)["Idempotency-Key"]).toBeUndefined(); // PUTs are naturally idempotent
+  });
+
+  it("M3 session methods call their routes; POSTs carry an Idempotency-Key", async () => {
+    const snap = { session: { id: "ses_n" }, messages: [], lastSeq: 2 };
+    const md = ["# Title", "", "**You**: hi"].join("\n");
+    const { c, calls } = make((url, init) => {
+      if (url.endsWith("/export")) return new Response(md, { status: 200, headers: { "content-type": "text/markdown" } });
+      if (init?.method === "DELETE" || url.endsWith("/leave") || url.endsWith("/end")) return new Response(null, { status: 204 });
+      if (init?.method === "PATCH") return json(200, { id: "ses_n", title: "New" });
+      return json(201, snap);
+    });
+    expect(await c.sessions.create({ worldId: "wld_a", mode: "one_on_one", characterIds: ["chr_a"] })).toEqual(snap);
+    expect(await c.sessions.forkSeedSession("ses_seed", 12)).toEqual(snap);
+    await c.sessions.forkSeedSession("ses_seed");
+    expect((await c.sessions.rename("ses_n", "New")).title).toBe("New");
+    expect(await c.sessions.export("ses_n")).toBe(md);
+    await c.sessions.leave("ses_n");
+    await c.sessions.end("ses_n");
+    await c.sessions.delete("ses_n");
+    const seen = calls.map((x) => [x.init?.method, x.url.replace(/^.*\/api\/v1/, ""), x.init?.body ?? null]);
+    expect(seen).toEqual([
+      ["POST", "/sessions", JSON.stringify({ worldId: "wld_a", mode: "one_on_one", characterIds: ["chr_a"] })],
+      ["POST", "/sessions/ses_seed/fork", JSON.stringify({ atSeq: 12 })],
+      ["POST", "/sessions/ses_seed/fork", JSON.stringify({})],
+      ["PATCH", "/sessions/ses_n", JSON.stringify({ title: "New" })],
+      ["GET", "/sessions/ses_n/export", null],
+      ["POST", "/sessions/ses_n/leave", null],
+      ["POST", "/sessions/ses_n/end", null],
+      ["DELETE", "/sessions/ses_n", null],
+    ]);
+    const posts = calls.filter((x) => x.init?.method === "POST");
+    expect(posts.every((x) => ((x.init?.headers ?? {}) as Record<string, string>)["Idempotency-Key"])).toBe(true);
+  });
+
+  it("send over HTTP: one POST with an Idempotency-Key, resolving on 202", async () => {
+    const { c, calls } = make(() => json(202, {}), ["send-key"]);
+    await expect(c.chat.send("ses_a", "hello", { mentions: ["chr_b"] })).resolves.toBeUndefined();
+    expect(calls).toHaveLength(1);
+    expect(calls[0].url).toBe("http://h/api/v1/sessions/ses_a/send");
+    expect(calls[0].init?.body).toBe(JSON.stringify({ text: "hello", mentions: ["chr_b"] }));
+    expect(((calls[0].init?.headers ?? {}) as Record<string, string>)["Idempotency-Key"]).toBe("send-key");
+  });
+
+  it("every chat, debate and watch command posts to its route", async () => {
+    const { c, calls } = make(() => json(202, {}));
+    await c.chat.stop("s");
+    await c.chat.regenerate("s", "msg_a");
+    await c.chat.setEmotion("s", "chr_a", "happy");
+    await c.chat.setEmotionMode("s", "user");
+    await c.chat.setResponderPolicy("s", "everyone");
+    await c.chat.setMusicPolicy("s", "arena");
+    await c.chat.setReadableMode("s", true);
+    await c.chat.everyoneAnswer("s");
+    await c.chat.nextSpeaker("s");
+    await c.chat.nextSpeaker("s", "chr_a");
+    await c.chat.muteParticipant("s", "chr_a", true);
+    await c.debate.pause("s");
+    await c.debate.resume("s");
+    await c.debate.next("s");
+    await c.debate.setAutoAdvance("s", false);
+    await c.debate.askCharacter("s", "chr_a", "why?");
+    await c.debate.interject("s", "hm");
+    await c.debate.extendRound("s");
+    await c.debate.skipToClosing("s");
+    await c.debate.endDebate("s", true);
+    await c.debate.pickStrongerCase("s", "prop");
+    await c.watch.play("s");
+    await c.watch.pause("s");
+    await c.watch.step("s");
+    await c.watch.setPace("s", 500);
+    await c.watch.direct("s", "rain");
+    await c.watch.stepIn("s", "hi");
+    await c.watch.extendWatch("s");
+    await c.watch.extendWatch("s", 5);
+    await c.watch.summarise("s");
+    const seen = calls.map((x) => `${x.url.replace(/^.*\/sessions\/s\//, "")} ${x.init?.body ?? ""}`);
+    expect(seen).toEqual([
+      "stop {}", 'regenerate {"messageId":"msg_a"}', 'set-emotion {"characterId":"chr_a","emotion":"happy"}',
+      'set-emotion-mode {"mode":"user"}', 'set-responder-policy {"policy":"everyone"}', 'set-music-policy {"policy":"arena"}',
+      'set-readable-mode {"on":true}', "everyone-answer {}", "next-speaker {}", 'next-speaker {"characterId":"chr_a"}',
+      'mute {"characterId":"chr_a","muted":true}', "debate/pause {}", "debate/resume {}", "debate/next {}",
+      'debate/auto-advance {"on":false}', 'debate/ask {"characterId":"chr_a","text":"why?"}', 'debate/interject {"text":"hm"}',
+      "debate/extend-round {}", "debate/skip-to-closing {}", 'debate/end {"withVerdict":true}', 'debate/pick {"side":"prop"}',
+      "watch/play {}", "watch/pause {}", "watch/step {}", 'watch/pace {"paceMs":500}', 'watch/direct {"text":"rain"}',
+      'watch/step-in {"text":"hi"}', "watch/extend {}", 'watch/extend {"turns":5}', "watch/summarise {}",
+    ]);
+  });
+
+  it("a refused create surfaces conflict with details.activeSessionId", async () => {
+    const { c } = make(() => json(409, { error: { code: "conflict", message: "Another session is live. Leave it first.", retryable: false, details: { activeSessionId: "ses_live" } } }));
+    const e = (await c.sessions.create({ worldId: "wld_a", mode: "one_on_one", characterIds: ["chr_a"] }).catch((x: unknown) => x)) as HorizonError;
+    expect(e).toBeInstanceOf(HorizonError);
+    expect([e.code, e.details?.activeSessionId]).toEqual(["conflict", "ses_live"]);
   });
 
   it("a refused top-up maps to daily_budget_exceeded", async () => {

@@ -44,6 +44,22 @@ async def test_the_key_appears_nowhere(api: Api, monkeypatch: pytest.MonkeyPatch
         assert (await call("POST", "/settings/test-model", json={"role": role})).status_code == 200
     assert (await call("POST", "/characters/chr_seedHana/energy/top-up", json={"points": 500})).status_code == 200
 
+    # M3: a live exchange (session SSE frames go through the bus spy), its traces, events and the Markdown export.
+    r = await call("POST", "/sessions", json={"worldId": "wld_seedMeridian", "mode": "one_on_one",
+                                              "characterIds": ["chr_seedAmara"]})
+    assert r.status_code == 201, r.text
+    sid = r.json()["session"]["id"]
+    await api.drive(6000)
+    assert (await call("POST", f"/sessions/{sid}/send", json={"text": "How do I sleep after nights?"})).status_code == 202
+    await api.drive(12000)
+    msgs = (await call("GET", f"/sessions/{sid}/messages")).json()["items"]
+    assert any(m.get("trace") for m in msgs)
+    for m in msgs:
+        await call("GET", f"/messages/{m['id']}/trace")
+    await call("GET", f"/sessions/{sid}/events")
+    assert (await call("GET", f"/sessions/{sid}/export")).status_code == 200
+    assert any(sid in e for e in sse)  # session events went through the bus
+
     # A cancelled stream, then its correction.
     agen = rt.gateway.chat_stream(ChatRequest(model="deepseek/deepseek-v4.1-flash", messages=[{"role": "user", "content": "hi"}],
                                               max_tokens=8), call_ctx("host", world_id="wld_seedSunnyHollow"), estimate=0.0006)

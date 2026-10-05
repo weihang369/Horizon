@@ -1,0 +1,14 @@
+{
+  "name": "no_tag",
+  "doc": "No tag at all: the default face, the text released",
+  "chunks": [
+    "Hello there",
+    ", friend."
+  ],
+  "previous": "thinking",
+  "expected": {
+    "emotion": "thinking",
+    "source": "default",
+    "text": "Hello there, friend."
+  }
+}

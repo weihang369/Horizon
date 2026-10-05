@@ -102,6 +102,7 @@ Doc [04](04-gateway-budget-energy.md). Every paid call does preflight (caps, **r
 
 ### 4.7 Clock
 - `domain/clock.py`: `now()`, `today_start(tz)`, `pricing_period()`, `next_change_at()` and **`sleep()`**. Pacing (watch `paceMs`, debate `pauseMs`, reveal timing) uses `clock.sleep`, so tests can advance virtual time.
+- **Virtual time in tests (D-82).** While the test clock is frozen, `sleep` registers a timer and **waits** until the clock is advanced past it; time never moves on its own. `advance(ms)` fires due timers in deadline order (registration order on ties) and, after each one, waits for the work it woke to **settle**: every runtime task holds an activity token while it runs and hands it over while it waits on a timer, its inbox or an LLM slot (`domain/vclock.py`). `POST /_test/clock { advanceMs }` returns only once that work is stored, so the portable suite's `tick(ms)` drives live sessions over HTTP deterministically. Background work in `sessions/` and `ai/` starts only through `rt.spawn`; a settle that takes longer than 10 s of real time fails naming the busy tasks. `release: true` returns the same clock object to real time and wakes every sleeper. A test-mode `period_override` (the `rush_hour` scenario) pins the pricing period.
 - `HORIZON_TZ` defaults to `Asia/Kuala_Lumpur`.
 
 ## 5. Configuration

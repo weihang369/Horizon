@@ -48,6 +48,11 @@ export class Transport {
     return this.send<T>("GET", path, { query });
   }
 
+  /** A text body (the Markdown export), not JSON. */
+  getText(path: string, query?: Query): Promise<string> {
+    return this.send<string>("GET", path, { query, text: true });
+  }
+
   post<T>(path: string, body?: unknown): Promise<T> {
     return this.send<T>("POST", path, { body, idempotent: true });
   }
@@ -65,8 +70,8 @@ export class Transport {
     return this.send<void>("DELETE", path, {});
   }
 
-  private async send<T>(method: string, path: string, o: { body?: unknown; query?: Query; idempotent?: boolean }): Promise<T> {
-    const headers: Record<string, string> = { Accept: "application/json" };
+  private async send<T>(method: string, path: string, o: { body?: unknown; query?: Query; idempotent?: boolean; text?: boolean }): Promise<T> {
+    const headers: Record<string, string> = { Accept: o.text ? "text/markdown, text/plain" : "application/json" };
     if (o.body !== undefined) headers["Content-Type"] = "application/json";
     if (o.idempotent) headers["Idempotency-Key"] = this.newKey();
     const init: RequestInit = { method, headers, body: o.body === undefined ? undefined : JSON.stringify(o.body) };
@@ -85,6 +90,7 @@ export class Transport {
     if (!res.ok) throw await toError(res);
     if (res.status === 204) return undefined as T;
     const text = await res.text();
+    if (o.text) return text as T;
     return (text ? JSON.parse(text) : null) as T;
   }
 }

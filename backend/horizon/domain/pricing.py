@@ -121,3 +121,20 @@ def estimate_image(t: PriceTable, kind: str = "portrait") -> float:
 
 def estimate_embedding(t: PriceTable, tokens: int) -> float:
     return tokens * t.embedding.input_per_m / 1e6
+
+
+def round6(n: float) -> float:
+    """JS `Math.round(n * 1e6) / 1e6` (half rounds up)."""
+    return math.floor(n * 1e6 + 0.5) / 1e6
+
+
+def chat_cost(price: ChatPrice, *, tokens_in: int, tokens_cached: int, tokens_out: int, mult: float = 1.0) -> float:
+    """`cost.ts` `chatCostUsd`: uncached input = tokensIn - tokensCached; rounded to 6 places like the mock."""
+    uncached = max(0, tokens_in - tokens_cached)
+    raw = (uncached * price.input_per_m + tokens_cached * price.cached_input_per_m + tokens_out * price.output_per_m) / 1e6
+    return round6(raw * mult)
+
+
+def decision_cost(price: ChatPrice, tokens_in: int) -> float:
+    """`cost.ts` `decisionCostUsd`: Jev bills input only, no peak multiplier (D-66)."""
+    return round6(tokens_in * price.input_per_m / 1e6)
