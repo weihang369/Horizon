@@ -165,7 +165,7 @@ describe("HttpClient", () => {
       ["DELETE", "/sessions/ses_n", null],
     ]);
     const posts = calls.filter((x) => x.init?.method === "POST");
-    expect(posts.every((x) => (x.init?.headers as Record<string, string>)["Idempotency-Key"])).toBe(true);
+    expect(posts.every((x) => ((x.init?.headers ?? {}) as Record<string, string>)["Idempotency-Key"])).toBe(true);
   });
 
   it("send over HTTP: one POST with an Idempotency-Key, resolving on 202", async () => {
@@ -174,7 +174,7 @@ describe("HttpClient", () => {
     expect(calls).toHaveLength(1);
     expect(calls[0].url).toBe("http://h/api/v1/sessions/ses_a/send");
     expect(calls[0].init?.body).toBe(JSON.stringify({ text: "hello", mentions: ["chr_b"] }));
-    expect((calls[0].init?.headers as Record<string, string>)["Idempotency-Key"]).toBe("send-key");
+    expect(((calls[0].init?.headers ?? {}) as Record<string, string>)["Idempotency-Key"]).toBe("send-key");
   });
 
   it("every chat, debate and watch command posts to its route", async () => {

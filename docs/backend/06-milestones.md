@@ -91,6 +91,7 @@
 - Stop or pause takes effect within 500 ms; a mid-stream reconnect loses and duplicates nothing.
 - Replay equals what was seen live, and a fork at any `atSeq` equals the mock's.
 - A second live session gets a 409; a paused 1:1 send auto-resumes.
+- The portable suite runs over HTTP with `supports: "M3"`. Live knowledge citations need retrieval over indexed seed knowledge, so the portable "live replies cite indexed passages" test is tagged **M5**; M3 stores and exports citations an engine provides (`message_citations`, Markdown footnotes), and the export is tested on the seed debate.
 
 ## M4: `generation-jobs`
 **Scope**

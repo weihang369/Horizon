@@ -159,10 +159,10 @@
 
 ## 13. Integration and gates
 
-- [ ] 13.1 Extend the leak sweep (`test_leak_sweep`) to session SSE frames, the Markdown export and `turn_traces` after a live exchange with a key set. Verify that no `sk-or-` string appears outside the redaction token.
-- [ ] 13.2 Run an end-to-end scripted pass in Python: 1:1, group, debate and watch each run to completion on the virtual clock in one test module, with `reduce(events) == messages` asserted for each and every response schema-validated. Verify that the module is green.
-- [ ] 13.3 Update the docs: `docs/backend/01-architecture.md` §4.7 (virtual-time `sleep` semantics), `docs/backend/05-ai-seams.md` §1 (per-port overrides, scripted spend is simulated), `docs/backend/06-milestones.md` (citation test → M5), and `docs/requirements/09-decision-log.md` (D-81 for scripted simulated spend, D-82 for virtual-time test clock semantics). Verify: the links resolve and `openspec validate session-runtime --strict` passes.
-- [ ] 13.4 Run the full gates:
+- [x] 13.1 Extend the leak sweep (`test_leak_sweep`) to session SSE frames, the Markdown export and `turn_traces` after a live exchange with a key set. Verify that no `sk-or-` string appears outside the redaction token.
+- [x] 13.2 Run an end-to-end scripted pass in Python: 1:1, group, debate and watch each run to completion on the virtual clock in one test module, with `reduce(events) == messages` asserted for each and every response schema-validated. Verify that the module is green.
+- [x] 13.3 Update the docs: `docs/backend/01-architecture.md` §4.7 (virtual-time `sleep` semantics), `docs/backend/05-ai-seams.md` §1 (per-port overrides, scripted spend is simulated), `docs/backend/06-milestones.md` (citation test → M5), and `docs/requirements/09-decision-log.md` (D-81 for scripted simulated spend, D-82 for virtual-time test clock semantics). Verify: the links resolve and `openspec validate session-runtime --strict` passes.
+- [x] 13.4 Run the full gates:
   - backend: `uv run pytest -q`, `uv run ruff check`, `uv run mypy`;
   - frontend: `npm test`, `npm run typecheck`, `npm run lint` (no new warnings), `npm run test:http`, `npm run seed:check`, `npm run export-schema:check` (unchanged), and `npm run e2e` (MockClient).
 
