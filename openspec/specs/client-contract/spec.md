@@ -117,7 +117,7 @@ Each portable contract test SHALL declare the milestone whose backend routes it 
 - tests within that milestone SHALL run;
 - every other test SHALL be reported as pending under a name that states its milestone, never skipped silently.
 
-The suite SHALL run against the backend through an HTTP harness. From M2, the HTTP harness SHALL support M2, and its `setKey` SHALL save an obviously fake key (`sk-or-test-…`) through `settings.setKey`.
+The suite SHALL run against the backend through an HTTP harness. From M2, the HTTP harness SHALL save an obviously fake key (`sk-or-test-…`) through `settings.setKey` as its `setKey`. From M3, it SHALL support M3. A portable assertion on events collected from a subscription SHALL wait, within a bounded time, for them to be delivered, because a remote client receives them asynchronously. A test whose behaviour depends on a later milestone's feature SHALL be tagged with that milestone. Live knowledge citations are tagged M5.
 
 #### Scenario: HTTP run in M1b
 - **WHEN** an HTTP harness declares `supports: "M1b"`
@@ -126,6 +126,10 @@ The suite SHALL run against the backend through an HTTP harness. From M2, the HT
 #### Scenario: HTTP run in M2
 - **WHEN** the portable suite runs with the HTTP harness against a test-mode backend
 - **THEN** every M1b and M2 test passes, and every later test is listed as pending with its milestone in the name
+
+#### Scenario: HTTP run in M3
+- **WHEN** the portable suite runs with the HTTP harness declaring `supports: "M3"` against a test-mode backend
+- **THEN** every M1b, M2 and M3 test passes, and every M4, M5 and M6 test, including live knowledge citations, is listed as pending with its milestone in the name
 
 #### Scenario: Mock run is complete
 - **WHEN** the portable suite runs with the MockClient harness
