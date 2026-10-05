@@ -132,7 +132,8 @@
 - [x] 10.2 Write `ai/naive/prompt.py` (the scripted `PromptCompiler`: persona fields, SFW/adult clause, You card) and `ai/naive/window.py` (the `windowTokens` window, half drop, Summariser refresh into `session_summaries`). Verify with the scenarios "Window drops half at once" and "Prefix stays stable between drops".
 - [x] 10.3 Write `ai/naive/turn.py`: one `chat_stream` with reasoning off and `max_tokens` from `replyMaxTokens`, the warm-prefix hash passed to `chat_estimate`, tag parsing, and mid-stream errors keeping the partial text. Verify with fake-provider integration tests: a streamed reply, the warm flag on a repeated prefix, and a mid-stream error ending `interrupted`.
 - [x] 10.4 Implement the guardrail block scrub (design D13). Verify with the `session-runtime` scenario "Blocked after streaming", using an injected blocking Guardrail.
-- [ ] 10.5 Add the naive-mode live test (`tests/live/test_live_sessions.py`, `-m live`, manual): one 1:1 reply and one group send with the Jev router. It prints the summed `cost_usd` of `is_seed = 0` rows and asserts ≤ $0.05. Verify that it is deselected by default (`pytest -q` doesn't run it). The user runs it once with their `.env` key; record the result in the archive notes.
+- [x] 10.5 Add the naive-mode live test (`tests/live/test_live_sessions.py`, `-m live`, manual): one 1:1 reply and one group send with the Jev router. It prints the summed `cost_usd` of `is_seed = 0` rows and asserts ≤ $0.05. Verify that it is deselected by default (`pytest -q` doesn't run it). The user runs it once with their `.env` key; record the result in the archive notes.
+  - **Live run (2026-10-05): passed.** The DeepSeek 1:1 reply streamed with a valid tag (`thinking`, source `llm`); the Jev router picked Hana (p 0.76 vs 0.08, no fallback); total spend $0.000479 (limit $0.05).
 
 ## 11. Lifecycle: fork, export, rename/leave/end/delete
 
