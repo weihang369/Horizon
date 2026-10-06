@@ -23,7 +23,8 @@ On startup, the backend SHALL do the following before it accepts requests:
 - apply all pending migrations;
 - make sure the active embedding space's tables exist;
 - import the seed if the database has no worlds;
-- close any message left `streaming` as `interrupted`.
+- close any message left `streaming` as `interrupted`;
+- recover every job left `queued` or `running` (see `generation-jobs`).
 
 Restarting SHALL NOT duplicate the seed.
 
@@ -34,6 +35,10 @@ Restarting SHALL NOT duplicate the seed.
 #### Scenario: Restart keeps data
 - **WHEN** the backend is stopped and started again after a user world was created
 - **THEN** the user world is still listed, and each seed world appears exactly once
+
+#### Scenario: Restart with a job in flight
+- **WHEN** the backend is stopped while a job is running and started again
+- **THEN** before the first request is served, that job's tasks are requeued, finished or failed by the recovery rules
 
 ### Requirement: Health report
 `GET /api/v1/health` SHALL return `{ ok, version, schemaVersion: 1, db, vec, docling }`. `db` and `vec` SHALL be `"ok"` only when the database answers and the vector extension is loaded. `docling` SHALL be `"not_installed"`, `"models_missing"` or `"ready"`.
@@ -83,6 +88,7 @@ The backend SHALL write JSON log lines to `data/logs/horizon.log`, rotating at 5
 
 ### Requirement: Factory reset
 `POST /api/v1/admin/factory-reset` with body `{ "confirm": "DELETE EVERYTHING" }` SHALL:
+- stop the job scheduler, letting any provider call already sent be recorded;
 - delete everything in `data/` except `models/`;
 - re-run startup in the same process, so the backend keeps serving freshly seeded data without a restart.
 
@@ -95,6 +101,10 @@ Any other body SHALL be rejected with `validation`, and nothing SHALL be deleted
 #### Scenario: Missing confirmation
 - **WHEN** the factory reset is called with `{ "confirm": true }`
 - **THEN** it rejects with `validation`, and all data is unchanged
+
+#### Scenario: Reset during a job
+- **WHEN** a portrait job is running and the factory reset is confirmed
+- **THEN** the call succeeds, no job exists afterwards, and no job task runs after the reset
 
 ### Requirement: Command-line interface
 The `horizon` command SHALL provide these subcommands:

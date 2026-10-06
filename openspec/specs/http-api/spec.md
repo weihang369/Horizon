@@ -113,8 +113,8 @@ The key itself SHALL never appear in the response.
 ### Requirement: Test-only control routes
 Routes under `/api/v1/_test/` SHALL exist only when `HORIZON_TEST=1`; otherwise they SHALL return 404.
 - **`POST /_test/clock`:** freezes the server clock at a given instant, or advances it by a given number of milliseconds. While frozen, any wait in the backend SHALL last until the clock is advanced past its deadline. An advance SHALL wake due waits in deadline order, and SHALL respond only after the work they started has settled.
-- **`POST /_test/scenario`:** applies `character_exhausted`, `rush_hour` or `stream_cut` as the MockClient does, and rejects a scenario it does not support with `validation`.
-- **`POST /_test/ai-profile`:** sets the AI profile (`scripted` or `naive`) for subsequent turns, optionally with per-port overrides.
+- **`POST /_test/scenario`:** applies `character_exhausted`, `rush_hour`, `stream_cut`, `image_fail_partial`, `image_fail_all` or `song_fails` as the MockClient does, and rejects a scenario it does not support with `validation`.
+- **`POST /_test/ai-profile`:** sets the AI profile (`scripted` or `naive`) for subsequent turns and jobs, optionally with per-port overrides.
 - **`POST /_test/decider-fixtures`:** sets or clears scripted Decider answers keyed by purpose and question.
 
 In test mode, the provider SHALL be the in-process fake (see `provider-gateway`), so no test-mode request reaches the network.
@@ -134,6 +134,10 @@ In test mode, the provider SHALL be the in-process fake (see `provider-gateway`)
 #### Scenario: Advance drives a live session
 - **WHEN** the clock is frozen, a 1:1 session is created, and `POST /_test/clock { advanceMs: 6000 }` returns
 - **THEN** the greeting is already complete in `GET /sessions/{id}/messages`
+
+#### Scenario: Advance drives a job
+- **WHEN** the clock is frozen, a Lean `portrait_candidates` job is started, and `POST /_test/clock { advanceMs: 21000 }` returns
+- **THEN** `GET /jobs/{id}` reports `succeeded`, and the candidate is `ready`
 
 #### Scenario: Scenarios mirror the mock
 - **WHEN** `rush_hour` is applied
@@ -220,3 +224,39 @@ Every chat, debate and watch command in doc 03 SHALL be served as `POST /session
 #### Scenario: Retried command
 - **WHEN** the same send is retried with the same `Idempotency-Key`
 - **THEN** the stored 202 is returned, and only one user message exists
+
+### Requirement: Character write routes
+The backend SHALL serve the character write routes (see `character-lifecycle` and `generated-assets`):
+
+| Route | Response |
+|---|---|
+| `POST /worlds/{worldId}/characters` `DraftInput` | 201 `{ character, job }` |
+| `PATCH /characters/{id}` `CharacterPatch` | `Character` |
+| `POST /characters/{id}/lock-portrait` `{ candidateId }` | `Character` |
+| `POST /characters/{id}/approve`, `/archive`, `/restore` | `Character` |
+| `DELETE /characters/{id}` | 204 |
+| `POST /assets/{assetId}/accept` | `Character` |
+
+Every JSON response SHALL validate against `schema.json`.
+
+#### Scenario: Draft over HTTP
+- **WHEN** `POST /worlds/wld_seedMeridian/characters` is sent with a key set
+- **THEN** the response is 201 with a `draft` character and a `queued` or `running` `profile_draft` job, both valid against `schema.json`
+
+#### Scenario: Command on a tombstone
+- **WHEN** `PATCH /characters/chr_seedVictor` is sent after Victor was deleted
+- **THEN** the response is 404 `not_found`
+
+### Requirement: Job write routes
+The backend SHALL serve `POST /jobs/estimate` (`StartJobInput` → `{ estimatedCostUsd }`), `POST /jobs` (201 `GenerationJob`), `POST /jobs/{id}/cancel` (`GenerationJob`) and `POST /jobs/{id}/tasks/{taskId}/retry` (`GenerationJob`). Unknown jobs or tasks SHALL be 404 `not_found`. `POST /jobs` SHALL reject before storing anything as described in `generation-jobs`.
+
+#### Scenario: Start and read back
+- **WHEN** `POST /jobs` starts a portrait job and `GET /jobs/{id}` is requested
+- **THEN** both return the same job ID, and the job is listed by `GET /jobs?active=true` until it finishes
+
+### Requirement: Cover upload route
+`POST /worlds/{id}/cover` SHALL take `multipart/form-data` with one `file` part. A request whose declared length is over 5 MB SHALL be refused before its body is read, and the body SHALL also be counted while it is read, so an upload without a length can't exceed the limit. Both cases SHALL be 413 with the `validation` error.
+
+#### Scenario: Chunked oversize upload
+- **WHEN** a 6 MB file is sent without a `Content-Length` header
+- **THEN** the response is 413 `validation`, and nothing is stored
