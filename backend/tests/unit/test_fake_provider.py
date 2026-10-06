@@ -97,3 +97,49 @@ async def test_unknown_generation_is_404(no_sockets: None) -> None:
     finally:
         await c.aclose()
     assert e.value.status == 404
+
+
+async def test_fake_image_is_a_decodable_portrait_and_counted(no_sockets: None) -> None:
+    """provider-gateway "Fake image" (M4): a decodable image with a cost; the images counter goes up by one per call."""
+    import io
+
+    from PIL import Image
+
+    from horizon.gateway.images import ImagesClient
+
+    c, f = core()
+    try:
+        client = ImagesClient(c, 5)
+        r1 = await client.generate(model="bytedance-seed/seedream-5-0-flash", prompt="Hana", aspect_ratio="3:4",
+                                   refs=["data:image/png;base64,AAAA"])
+        assert f.counts["images"] == 1
+        r2 = await client.generate(model="bytedance-seed/seedream-5-0-flash", prompt="Hana", aspect_ratio="3:4")
+        assert f.counts["images"] == 2 and f.counts["chat"] == 0
+    finally:
+        await c.aclose()
+    with Image.open(io.BytesIO(r1.images[0])) as img:
+        assert img.size == (832, 1110)
+    assert r1.images[0] == r2.images[0]  # deterministic for the same prompt
+    assert r1.usage is not None and r1.usage.cost_usd == 0.018
+    body = json.loads(f.requests[0].content)
+    assert body["input_references"][0]["type"] == "image_url"
+    assert body["input_references"][0]["image_url"]["url"].startswith("data:image/")
+
+
+async def test_park_holds_the_nth_image_request(no_sockets: None) -> None:
+    import asyncio
+
+    from horizon.gateway.images import ImagesClient
+
+    c, f = core()
+    gate = f.park_image(2)
+    try:
+        client = ImagesClient(c, 5)
+        await client.generate(model="m", prompt="one")
+        second = asyncio.ensure_future(client.generate(model="m", prompt="two"))
+        await asyncio.wait_for(f.parked.wait(), 2)
+        assert not second.done() and f.counts["images"] == 2
+        gate.set()
+        assert (await asyncio.wait_for(second, 2)).images
+    finally:
+        await c.aclose()

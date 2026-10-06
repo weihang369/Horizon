@@ -23,7 +23,7 @@ from horizon.domain.clock import Clock
 from horizon.domain.ids import new_id
 from horizon.domain.timeutil import to_iso
 from horizon.events.bus import GLOBAL
-from horizon.gateway.pipeline import LedgerRow, RecordResult
+from horizon.gateway.pipeline import CommitWith, LedgerRow, RecordResult
 from horizon.gateway.redact import redact
 from horizon.services.energy_writes import EnergyLocks, EnergyParams, apply_energy, drain_change
 
@@ -63,7 +63,9 @@ class LedgerWriter:
         async with self.db.read() as conn:
             return await self._sum(conn, U.character_id == character_id, U.counts_to_creation_cap.is_(True))
 
-    async def record(self, row: LedgerRow, *, drain: bool) -> RecordResult:
+    async def record(self, row: LedgerRow, *, drain: bool, extra: CommitWith | None = None) -> RecordResult:
+        """One row (plus the reply drain) in one writer transaction. `extra(conn, row_id)` runs inside the same
+        transaction (a job task's `result_ref`, design D3): if it raises, the row rolls back with it."""
         drained = row.character_id if drain and row.character_id else None
         lock = self.locks.lock(drained) if drained else contextlib.nullcontext()
         async with lock:
@@ -76,20 +78,31 @@ class LedgerWriter:
                     creation_before = await self._sum(tx.conn, U.character_id == row.character_id,
                                                       U.counts_to_creation_cap.is_(True))
                 row_id = new_id("use")
+                job_id = row.job_id if row.job_id and await self._has(tx.conn, t.generation_jobs, row.job_id) else None
+                character_id = (row.character_id if row.character_id and await self._has(tx.conn, t.characters, row.character_id)
+                                else None)
                 await tx.conn.execute(t.usage_records.insert().values(
                     id=row_id, at=to_iso(now), local_day=day, category=row.category, purpose=row.purpose,
                     model=_r(row.model), provider=_r(row.provider), price_period=row.price_period,
-                    generation_id=_r(row.generation_id), session_id=row.session_id, character_id=row.character_id,
-                    job_id=row.job_id, message_id=row.message_id, tokens_in=row.tokens_in, tokens_cached=row.tokens_cached,
+                    generation_id=_r(row.generation_id), session_id=row.session_id, character_id=character_id,
+                    job_id=job_id, message_id=row.message_id, tokens_in=row.tokens_in, tokens_cached=row.tokens_cached,
                     tokens_out=row.tokens_out, cost_usd=row.cost_usd, cost_source=row.cost_source,
                     estimated_cost_usd=row.estimated_cost_usd, energy_points=None, latency_ms=row.latency_ms,
                     counts_to_creation_cap=row.counts_to_creation_cap, is_seed=False))
                 if drained and await self._exists(tx.conn, drained):
                     await apply_energy(tx, drained, drain_change(row.cost_usd, self.energy_params()), self.energy_params())
+                if extra is not None:
+                    await extra(tx.conn, row_id)
                 tx.publish(GLOBAL, {"type": "entity.changed", "kind": "usage"})
         after_creation = creation_before + row.cost_usd if creation_before is not None else None
         return RecordResult(row_id=row_id, spent_before=before, spent_after=before + row.cost_usd,
                             creation_before=creation_before, creation_after=after_creation)
+
+    @staticmethod
+    async def _has(conn: AsyncConnection, table: Any, row_id: str) -> bool:
+        """A late row (a shielded call landing after its job or world was deleted) keeps its spend: a reference to a row
+        that no longer exists is stored as NULL, like ON DELETE SET NULL would have done (generation-jobs design D6)."""
+        return (await conn.execute(select(table.c.id).where(table.c.id == row_id))).first() is not None
 
     @staticmethod
     async def _exists(conn: AsyncConnection, character_id: str) -> bool:

@@ -1,7 +1,9 @@
 // O02 Create / Edit World (WLD-02/03, D-43): name (1–40, unique), cover (8 presets or an uploaded image) and the
 // optional "You in this world" card. Live preview card on the left. Create lands in the new hub's empty state.
+// rev 1.3 / M4: a picked image is kept as a File (previewed with an object URL) and uploaded through
+// `worlds.uploadCover` after the world is saved; no data URL goes into the world record (worldSave.ts).
 // Owner: Builder A.
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { ChangeEvent } from "react";
 import type { OverlayComponentProps } from "../../app/overlayTypes";
 import { openOverlay, toast } from "../../app/layers";
@@ -17,9 +19,8 @@ import { TextArea, TextField } from "../../ui/Fields";
 import { ErrorTape, Modal } from "../../ui/Panels";
 import { WorldCover } from "../../ui/WorldCover";
 import { validateWorldName } from "./worldValidation";
+import { COVER_TYPES, coverFileError, saveWorld } from "./worldSave";
 import s from "./WorldEditor.module.css";
-
-const MAX_UPLOAD = 2_500_000;
 
 export function WorldEditor({ close, worldId }: OverlayComponentProps<"O02">) {
   const existing = useWorld(worldId).data;
@@ -29,9 +30,13 @@ export function WorldEditor({ close, worldId }: OverlayComponentProps<"O02">) {
   return <EditorForm close={close} world={existing} worlds={worlds} />;
 }
 
-function EditorForm({ close, world, worlds }: { close: () => void; world?: World; worlds: World[] }) {
-  const [name, setName] = useState(world?.name ?? "");
-  const [cover, setCover] = useState<World["cover"]>(world?.cover ?? { kind: "preset", presetId: COVER_PRESETS[0].id });
+function EditorForm({ close, world: initial, worlds }: { close: () => void; world?: World; worlds: World[] }) {
+  // After a create whose cover upload failed, the editor keeps editing that world (saving again never duplicates it).
+  const [world, setWorld] = useState<World | undefined>(initial);
+  const [createdHere, setCreatedHere] = useState(false);
+  const [name, setName] = useState(initial?.name ?? "");
+  const [cover, setCover] = useState<World["cover"]>(initial?.cover ?? { kind: "preset", presetId: COVER_PRESETS[0].id });
+  const [picked, setPicked] = useState<{ file: File; url: string } | null>(null);
   const [youName, setYouName] = useState(world?.you?.displayName ?? "");
   const [youAbout, setYouAbout] = useState(world?.you?.about ?? "");
   const [touched, setTouched] = useState(false);
@@ -42,18 +47,22 @@ function EditorForm({ close, world, worlds }: { close: () => void; world?: World
   const nameError = useMemo(() => validateWorldName(name, worlds, world?.id), [name, worlds, world?.id]);
   const showNameError = touched ? nameError : null;
 
+  useEffect(() => () => { if (picked) URL.revokeObjectURL(picked.url); }, [picked]);
+  const shown: World["cover"] = picked ? { kind: "upload", url: picked.url } : cover;
+
   const onUpload = (e: ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
     e.target.value = "";
     if (!f) return;
-    if (!f.type.startsWith("image/")) return setError("Pick an image file (PNG, JPG, WebP).");
-    if (f.size > MAX_UPLOAD) return setError("That image is over 2.5 MB. Try a smaller one.");
-    const r = new FileReader();
-    r.onload = () => {
-      setCover({ kind: "upload", url: String(r.result) });
-      setError(null);
-    };
-    r.readAsDataURL(f);
+    const problem = coverFileError(f);
+    if (problem) return setError(problem);
+    setPicked({ file: f, url: URL.createObjectURL(f) });
+    setError(null);
+  };
+
+  const pickPreset = (presetId: string) => {
+    setPicked(null);
+    setCover({ kind: "preset", presetId });
   };
 
   const save = async () => {
@@ -63,16 +72,24 @@ function EditorForm({ close, world, worlds }: { close: () => void; world?: World
     setError(null);
     const you = youName.trim() ? { displayName: youName.trim().slice(0, 30), ...(youAbout.trim() ? { about: youAbout.trim().slice(0, 160) } : {}) } : undefined;
     try {
-      if (world) {
-        await client.worlds.update(world.id, { name: name.trim(), cover, you });
-        toast({ variant: "success", text: "World updated." });
-        close();
-      } else {
-        const w = await client.worlds.create({ name: name.trim(), cover, you });
+      const r = await saveWorld(client, { existing: world, name: name.trim(), cover, you, file: picked?.file });
+      if (r.uploadError) {
+        // The world is saved; only the cover failed. Stay open on that world, showing why.
+        setWorld(r.world);
+        setCover(r.world.cover);
+        if (r.created) setCreatedHere(true);
+        setError(r.uploadError);
+        setBusy(false);
+        return;
+      }
+      if (r.created || createdHere) {
         audio.playSfx("ui_confirm");
         close();
-        navigate({ name: "hub", worldId: w.id });
-        toast({ variant: "success", text: `${w.name} is ready. Summon someone.` });
+        navigate({ name: "hub", worldId: r.world.id });
+        toast({ variant: "success", text: `${r.world.name} is ready. Summon someone.` });
+      } else {
+        toast({ variant: "success", text: "World updated." });
+        close();
       }
     } catch (e) {
       setError((e as HorizonErrorShape)?.message ?? "Couldn't save the world.");
@@ -113,7 +130,7 @@ function EditorForm({ close, world, worlds }: { close: () => void; world?: World
       <form className={s.editor} onSubmit={(e) => { e.preventDefault(); void save(); }}>
         <div className={s.preview} aria-hidden="true">
           <div className={s.previewCard}>
-            <WorldCover cover={cover} className={s.previewCover} />
+            <WorldCover cover={shown} className={s.previewCover} />
             <span className={s.previewShade} />
             <span className={s.previewName}>{name.trim() || "Your world"}</span>
             {youName.trim() && <span className={s.previewYou}><b>YOU</b> {youName.trim()}</span>}
@@ -135,7 +152,7 @@ function EditorForm({ close, world, worlds }: { close: () => void; world?: World
             <legend className={s.legend}>Cover</legend>
             <div className={s.coverGrid} role="radiogroup" aria-label="Cover">
               {COVER_PRESETS.map((p) => {
-                const on = cover.kind === "preset" && cover.presetId === p.id;
+                const on = !picked && cover.kind === "preset" && cover.presetId === p.id;
                 return (
                   <button
                     key={p.id}
@@ -145,7 +162,7 @@ function EditorForm({ close, world, worlds }: { close: () => void; world?: World
                     aria-label={p.name}
                     title={p.name}
                     className={s.coverOpt}
-                    onClick={() => setCover({ kind: "preset", presetId: p.id })}
+                    onClick={() => pickPreset(p.id)}
                   >
                     <WorldCover presetId={p.id} chrome={false} className={s.coverThumb} />
                   </button>
@@ -154,13 +171,13 @@ function EditorForm({ close, world, worlds }: { close: () => void; world?: World
               <button
                 type="button"
                 role="radio"
-                aria-checked={cover.kind !== "preset"}
+                aria-checked={shown.kind !== "preset"}
                 className={`${s.coverOpt} ${s.upload}`}
                 onClick={() => file.current?.click()}
               >
-                {cover.kind !== "preset" && cover.url ? <img src={cover.url} alt="" className={s.coverThumb} /> : <span>Upload<br />image</span>}
+                {shown.kind !== "preset" && shown.url ? <img src={shown.url} alt="" className={s.coverThumb} /> : <span>Upload<br />image</span>}
               </button>
-              <input ref={file} type="file" accept="image/*" hidden onChange={onUpload} />
+              <input ref={file} type="file" accept={COVER_TYPES.join(",")} hidden onChange={onUpload} />
             </div>
           </fieldset>
           <fieldset className={s.you}>

@@ -4,6 +4,7 @@ the ledger, exports and SSE). One fake key goes through every M2 path, then ever
 from __future__ import annotations
 
 import asyncio
+import io
 import json
 import logging
 from pathlib import Path
@@ -11,6 +12,7 @@ from typing import Any
 
 import httpx
 import pytest
+from PIL import Image
 
 from horizon.gateway.chat import ChatRequest
 from horizon.gateway.context import call_ctx
@@ -59,6 +61,33 @@ async def test_the_key_appears_nowhere(api: Api, monkeypatch: pytest.MonkeyPatch
     await call("GET", f"/sessions/{sid}/events")
     assert (await call("GET", f"/sessions/{sid}/export")).status_code == 200
     assert any(sid in e for e in sse)  # session events went through the bus
+
+    # M4: job rows, job input, task errors and the cover upload response.
+    for j in (await call("GET", "/jobs", params={"active": "true"})).json():
+        await rt.jobs.cancel(j["id"])   # the test-mode overlay job: keep the queued provider answers for this test
+    r = await call("POST", "/worlds/wld_seedMeridian/characters", json={"seedPrompt": "Sarah, a doctor", "intent": "expert"})
+    assert r.status_code == 201, r.text
+    await api.drive(5000)
+    r = await call("POST", "/jobs", json={"characterId": "chr_mockSarah", "kind": "portrait_candidates",
+                                          "prompt": "a kind, tired smile"})
+    assert r.status_code == 201, r.text
+    await api.drive(21000)
+    await call("GET", f"/jobs/{r.json()['id']}")
+    await call("POST", "/_test/ai-profile", json={"profile": "scripted", "overrides": {"image": "naive"}})
+    rt.fake.queued.append(httpx.Response(500, json={"error": {"message": f"upstream said: bad token {KEY}"}}))
+    r = await call("POST", "/jobs", json={"characterId": "chr_seedAmara", "kind": "portrait_candidates"})
+    assert r.status_code == 201, r.text
+    for _ in range(100):
+        failed = (await call("GET", f"/jobs/{r.json()['id']}")).json()
+        if failed["status"] not in ("queued", "running"):
+            break
+        await asyncio.sleep(0.02)
+    assert failed["tasks"][0]["status"] == "failed" and "sk-or-***" in failed["tasks"][0]["error"]["message"]
+    await call("POST", "/_test/ai-profile", json={"profile": "scripted"})
+    buf = io.BytesIO()
+    Image.new("RGB", (32, 18), (10, 20, 30)).save(buf, "PNG")
+    assert (await call("POST", "/worlds/wld_seedMeridian/cover", files={"file": ("c.png", buf.getvalue(), "image/png")})
+            ).status_code == 200
 
     # A cancelled stream, then its correction.
     agen = rt.gateway.chat_stream(ChatRequest(model="deepseek/deepseek-v4.1-flash", messages=[{"role": "user", "content": "hi"}],

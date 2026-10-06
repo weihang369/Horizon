@@ -384,9 +384,14 @@ SCENARIOS: dict[str, str] = {  # id → description (design D15)
     "character_exhausted": "Reset demo data (seed only), then Takeshi at 0 energy (the exhausted_takeshi variant).",
     "rush_hour": "Peak pricing whatever the clock says.",
     "stream_cut": "The next character turn cuts after 24 tokens with a network error.",
+    # M4 (generation-jobs design D12): for jobs started afterwards, until a factory reset; failures land at 60 %.
+    "image_fail_partial": "The second image task of each job fails on its first attempt (Retry succeeds).",
+    "image_fail_all": "Every image task fails, every attempt.",
+    "song_fails": "Theme-song tasks fail on their first attempt.",
 }
+JOB_FAULTS = {"image_fail_partial": "partial", "image_fail_all": "all", "song_fails": "song"}
 SCENARIO_MILESTONE = {"character_exhausted": "M3", "rush_hour": "M3", "stream_cut": "M3", "image_fail_partial": "M4",
-                      "network_down": "M6", "no_worlds": "M6"}
+                      "image_fail_all": "M4", "song_fails": "M4", "network_down": "M6", "no_worlds": "M6"}
 
 
 class ClockBody(_Model):
@@ -433,6 +438,8 @@ async def test_scenario(request: Request, body: ScenarioBody) -> Response:
         rt.publish(GLOBAL, {"type": "entity.changed", "kind": "settings"})
     elif body.id == "stream_cut":
         rt.stream_faults.append(24)
+    elif body.id in JOB_FAULTS:
+        rt.job_faults = JOB_FAULTS[body.id]
     return Response(status_code=204)
 
 
@@ -458,8 +465,8 @@ async def apply_variant(rt: Runtime, variant_id: str) -> None:
 
 class AiProfileBody(_Model):
     profile: Literal["scripted", "naive"] | None = None
-    overrides: dict[Literal["turn", "router", "reactions", "host", "director", "summariser", "guardrail"],
-                    Literal["scripted", "naive"]] | None = None
+    overrides: dict[Literal["turn", "router", "reactions", "host", "director", "summariser", "guardrail", "drafter",
+                            "image", "song"], Literal["scripted", "naive"]] | None = None
 
 
 @test_router.post("/ai-profile")

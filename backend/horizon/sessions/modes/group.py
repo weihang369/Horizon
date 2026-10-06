@@ -91,9 +91,13 @@ async def _route(actor: SessionActor, text: str, mentions: list[str]) -> tuple[R
     s = actor.session
     skipped: list[Wire] = []
     eligible: list[str] = []
+    gone: set[str] = set()
     for p in s["participants"]:
         cid = p["characterId"]
-        if p.get("mutedByUser"):
+        if await runner(actor).energy_now(cid) is None:  # deleted (a tombstone, M4): never routed, even if mentioned
+            gone.add(cid)
+            skipped.append({"characterId": cid, "reason": "archived"})
+        elif p.get("mutedByUser"):
             skipped.append({"characterId": cid, "reason": "muted"})
         elif cid not in mentions and await is_asleep(actor, cid):
             skipped.append({"characterId": cid, "reason": "exhausted"})
@@ -104,6 +108,7 @@ async def _route(actor: SessionActor, text: str, mentions: list[str]) -> tuple[R
     for m in sctx.recent:
         if m.character_id:
             last[m.character_id] = m.seq
+    mentions = [m for m in mentions if m not in gone]
     rctx = RouteContext(session=sctx, text=text, mentions=mentions, eligible=eligible, policy=policy_of(actor),
                         turn_index=actor.mode.turn, last_spoke=last)
     router = actor.rt.ai.router(runner(actor).key_set())

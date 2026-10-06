@@ -3,6 +3,7 @@
 // - A request that can't reach the server rejects with `network` (retryable).
 // - Every POST carries an Idempotency-Key; the one automatic retry (network failure only) reuses it, so a create
 //   whose response was lost is never applied twice.
+// - `postForm` sends multipart/form-data (the cover upload, M4); the browser sets the boundary.
 import { HorizonError } from "../../contract/errors";
 import type { HorizonErrorShape } from "../../contract/errors";
 import type { ErrorCode } from "../../contract/types";
@@ -57,6 +58,11 @@ export class Transport {
     return this.send<T>("POST", path, { body, idempotent: true });
   }
 
+  /** A multipart POST (one `file` part for an upload). Same Idempotency-Key and error mapping as `post`. */
+  postForm<T>(path: string, form: FormData): Promise<T> {
+    return this.send<T>("POST", path, { form, idempotent: true });
+  }
+
   patch<T>(path: string, body: unknown): Promise<T> {
     return this.send<T>("PATCH", path, { body });
   }
@@ -70,11 +76,11 @@ export class Transport {
     return this.send<void>("DELETE", path, {});
   }
 
-  private async send<T>(method: string, path: string, o: { body?: unknown; query?: Query; idempotent?: boolean; text?: boolean }): Promise<T> {
+  private async send<T>(method: string, path: string, o: { body?: unknown; form?: FormData; query?: Query; idempotent?: boolean; text?: boolean }): Promise<T> {
     const headers: Record<string, string> = { Accept: o.text ? "text/markdown, text/plain" : "application/json" };
     if (o.body !== undefined) headers["Content-Type"] = "application/json";
     if (o.idempotent) headers["Idempotency-Key"] = this.newKey();
-    const init: RequestInit = { method, headers, body: o.body === undefined ? undefined : JSON.stringify(o.body) };
+    const init: RequestInit = { method, headers, body: o.form ?? (o.body === undefined ? undefined : JSON.stringify(o.body)) };
     const url = this.url(path, o.query);
     let res: Response;
     try {

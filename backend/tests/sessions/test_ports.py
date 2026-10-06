@@ -27,6 +27,7 @@ from horizon.gateway.pipeline import SimulatedReply
 from horizon.services.purge import PurgeWorker
 from tests.conftest import Api
 from tests.gwkit import block_network
+from tests.jobs.kit import cancel_overlay_jobs
 from tests.sessions.kit import API, chars, command, create, ledger, messages
 
 
@@ -112,6 +113,7 @@ async def test_scripted_stream_is_billed_drains_and_never_touches_the_network(ap
 
 async def test_scripted_stream_refused_at_the_cap_before_any_chunk(api: Api) -> None:
     await api.set_key()
+    await cancel_overlay_jobs(api)  # M4: the test-mode overlay job would also hit the tiny cap
     r = await api.client.patch(f"{API}/settings", json={"budget": {"dailyCapUsd": 0.0001}})
     assert r.status_code == 200
     seen: list[Any] = []

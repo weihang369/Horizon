@@ -198,9 +198,9 @@ async def test_clock_freeze_and_advance(api: Api) -> None:
 
 
 async def test_unknown_scenario_is_validation(api: Api) -> None:
-    r = await api.client.post("/api/v1/_test/scenario", json={"id": "image_fail_partial"})  # M3 serves stream_cut
+    r = await api.client.post("/api/v1/_test/scenario", json={"id": "network_down"})  # M4 serves the job faults
     assert r.status_code == 422
-    assert r.json()["error"]["details"]["availableIn"] == "M4"
+    assert r.json()["error"]["details"]["availableIn"] == "M6"
 
 
 # ── 8.1 world CRUD ──

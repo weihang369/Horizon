@@ -1,0 +1,60 @@
+{
+ "input": {
+  "characterId": "chr_x",
+  "kind": "emotion_set",
+  "technique": "expression_sheet"
+ },
+ "mode": "standard",
+ "parallel": 1,
+ "estimatedCostUsd": 0.018,
+ "tasks": [
+  {
+   "type": "expression_sheet",
+   "ms": 30000,
+   "cost": 0.018,
+   "category": "image"
+  },
+  {
+   "type": "emotion_image",
+   "emotion": "happy",
+   "ms": 0,
+   "cost": 0,
+   "category": "image"
+  },
+  {
+   "type": "emotion_image",
+   "emotion": "sad",
+   "ms": 0,
+   "cost": 0,
+   "category": "image"
+  },
+  {
+   "type": "emotion_image",
+   "emotion": "angry",
+   "ms": 0,
+   "cost": 0,
+   "category": "image"
+  },
+  {
+   "type": "emotion_image",
+   "emotion": "surprised",
+   "ms": 0,
+   "cost": 0,
+   "category": "image"
+  },
+  {
+   "type": "emotion_image",
+   "emotion": "thinking",
+   "ms": 0,
+   "cost": 0,
+   "category": "image"
+  },
+  {
+   "type": "emotion_image",
+   "emotion": "embarrassed",
+   "ms": 0,
+   "cost": 0,
+   "category": "image"
+  }
+ ]
+}

@@ -98,9 +98,19 @@ async def _roundtrip(api: Api, root: Path, *, worlds: bool) -> int:
         checked += len(rows)
     for p in sorted((root / "jobs").glob("*.json")):
         j = data(p)
-        assert await api.json(f"/api/v1/jobs/{j['id']}") == norm(j), p.name
+        assert await api.json(f"/api/v1/jobs/{j['id']}") == norm(recovered(j)), p.name
         checked += 1
     return checked
+
+
+def recovered(job: dict[str, Any]) -> dict[str, Any]:
+    """A shipped non-terminal job is resumed by startup recovery (M4, generation-jobs design D4): a task left `running`
+    that was never sent goes back to `queued`, and that attempt doesn't count. Nothing runs before the clock moves."""
+    if job["status"] not in ("queued", "running"):
+        return job
+    tasks = [{**t, "status": "queued", "attempt": max(0, t["attempt"] - 1)} if t["status"] == "running" else t
+             for t in job["tasks"]]
+    return {**job, "tasks": tasks}
 
 
 async def test_seed_roundtrips_exactly(api_normal: Api) -> None:

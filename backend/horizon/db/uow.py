@@ -10,17 +10,22 @@ a rollback drops them. The writer lock is never held across a network await.
 from __future__ import annotations
 
 import asyncio
+import logging
 from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from sqlalchemy.ext.asyncio import AsyncConnection
+from sqlalchemy.pool import QueuePool
 
 from horizon.db.engines import make_engines
 
 Publish = Callable[[str, dict[str, Any]], None]
+
+log = logging.getLogger("horizon.db")
+DISPOSE_WAIT_S = 5.0
 
 
 @dataclass
@@ -38,12 +43,14 @@ class Database:
         self.writer, self.reader = make_engines(db_path)
         self.write_lock = asyncio.Lock()
         self._publish = publish
+        self._closed = False
 
     def set_publisher(self, publish: Publish | None) -> None:
         self._publish = publish
 
     @asynccontextmanager
     async def write(self) -> AsyncIterator[WriteTx]:
+        self._check_open()
         async with self.write_lock:
             async with self.writer.begin() as conn:
                 tx = WriteTx(conn)
@@ -54,9 +61,28 @@ class Database:
 
     @asynccontextmanager
     async def read(self) -> AsyncIterator[AsyncConnection]:
+        self._check_open()
         async with self.reader.connect() as conn, conn.begin():
             yield conn
 
+    def _check_open(self) -> None:
+        if self._closed:
+            raise RuntimeError("database is closed")
+
     async def dispose(self) -> None:
+        """Close every pooled connection. Later reads and writes raise instead of reopening the file, and one already
+        under way gets DISPOSE_WAIT_S to finish first: `engine.dispose()` cannot close a checked-out connection, which
+        then goes back to the detached pool and holds `horizon.db` open (a factory reset's wipe fails on Windows)."""
+        self._closed = True
+        loop = asyncio.get_running_loop()
+        deadline = loop.time() + DISPOSE_WAIT_S
+        while self._checked_out():
+            if loop.time() >= deadline:
+                log.warning("disposing the database with connections still checked out")
+                break
+            await asyncio.sleep(0.01)
         await self.writer.dispose()
         await self.reader.dispose()
+
+    def _checked_out(self) -> int:
+        return sum(cast(QueuePool, e.pool).checkedout() for e in (self.writer, self.reader))

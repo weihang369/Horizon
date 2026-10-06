@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 import shutil
 from pathlib import Path
@@ -132,6 +133,29 @@ async def test_factory_reset_wipes_and_continues(api: Api) -> None:
     assert models.read_bytes() == b"model"
     assert (api.data_dir / "logs" / "horizon.log").exists()
 
+
+
+async def test_factory_reset_waits_for_a_request_in_flight(api: Api) -> None:
+    """The reset's own request is not gated, so every gated one counts: a reset that left one running disposed the
+    database under its write, and the connection it held kept `horizon.db` open (the wipe failed on Windows)."""
+    entered, release = asyncio.Event(), asyncio.Event()
+
+    async def stall() -> dict[str, bool]:
+        async with api.rt.db.write():
+            entered.set()
+            await release.wait()
+        return {"ok": True}
+
+    api.app.add_api_route("/api/v1/test-stall", stall, methods=["POST"])
+    slow = asyncio.create_task(api.client.post("/api/v1/test-stall"))
+    await entered.wait()
+    reset = asyncio.create_task(api.client.post("/api/v1/admin/factory-reset", json={"confirm": "DELETE EVERYTHING"}))
+    await asyncio.sleep(0.2)
+    assert not reset.done() and api.rt._gateway is not None  # waiting at the gate: nothing has been stopped yet
+    release.set()
+    assert (await slow).status_code == 200
+    assert (await reset).status_code == 204
+    assert {x["id"] for x in await api.json("/api/v1/worlds")} == {"wld_seedMeridian", "wld_seedSunnyHollow"}
 
 # ── 6.6 interrupted streams are closed at startup ──
 async def test_streaming_message_is_closed_on_restart(make_api: Any, tmp_path: Path) -> None:

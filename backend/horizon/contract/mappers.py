@@ -105,9 +105,35 @@ def _ref(a: Row) -> Wire:
     return {"assetId": a["id"], "url": rel_to_url(a["rel_path"]) or "", "vfxPreset": a["vfx_preset"]}
 
 
+# A generating or failed candidate has no file yet, but the contract requires a URL: a blank 1×1 image (renders as nothing).
+BLANK_URL = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+
+
+def visible_candidates(cands: list[Row]) -> list[Row]:
+    """The candidate list (generation-jobs design D8, D-85): the latest `portrait_candidates` batch (or the seed batch
+    when no such job ran), plus every later `portrait_tweak` batch, with earlier `selected` candidates first. Rows of
+    a job batch carry `job_kind` and `job_created_at` (joined by the read); seed rows have no `job_id`."""
+    jobs: dict[str, tuple[str, str]] = {}
+    for a in cands:
+        if a["job_id"]:
+            jobs.setdefault(a["job_id"], (str(a.get("job_created_at") or a["created_at"]), str(a.get("job_kind") or "")))
+    order = sorted(jobs, key=lambda j: (jobs[j][0], j))
+    base_at = max((i for i, j in enumerate(order) if jobs[j][1] == "portrait_candidates"), default=-1)
+
+    def batch(job_id: str | None) -> list[Row]:
+        return sorted((a for a in cands if a["job_id"] == job_id), key=lambda a: (a["ord"], a["id"]))
+
+    base = batch(order[base_at]) if base_at >= 0 else batch(None)
+    tweaks = [j for j in order[base_at + 1:] if jobs[j][1] == "portrait_tweak"]
+    shown = base + [a for j in tweaks for a in batch(j)]
+    ids = {a["id"] for a in shown}
+    earlier = sorted((a for a in cands if a["selected"] and a["id"] not in ids), key=lambda a: (a["created_at"], a["id"]))
+    return earlier + shown
+
+
 def character_wire(r: Row, assets: Iterable[Row], energy: Wire) -> Wire:
     """`assets`: this character's image_assets rows. Active default emotion rows → `emotions`; the active
-    neutral blink row → `blink`; candidates from the latest job batch (or the seed batch) → `appearance.candidates`."""
+    neutral blink row → `blink`; `visible_candidates` → `appearance.candidates`."""
     rows = list(assets)
     emotions: dict[str, Wire | None] = dict.fromkeys(EMOTIONS)
     blink: Wire | None = None
@@ -118,15 +144,12 @@ def character_wire(r: Row, assets: Iterable[Row], energy: Wire) -> Wire:
             blink = _ref(a)
         else:
             emotions[a["emotion"]] = _ref(a)
-    cands = [a for a in rows if a["kind"] == "candidate"]
-    job_ids = sorted({a["job_id"] for a in cands if a["job_id"]})
-    latest = max(job_ids, key=lambda j: max(a["created_at"] for a in cands if a["job_id"] == j)) if job_ids else None
-    batch = sorted((a for a in cands if a["job_id"] == latest), key=lambda a: (a["ord"], a["id"]))
+    batch = visible_candidates([a for a in rows if a["kind"] == "candidate"])
     appearance = dict(r["appearance"])
     neutral = emotions["neutral"]
     if neutral:
         appearance["basePortraitUrl"] = neutral["url"]
-    appearance["candidates"] = [{"id": a["id"], "url": rel_to_url(a["rel_path"]) or "", "selected": bool(a["selected"]),
+    appearance["candidates"] = [{"id": a["id"], "url": rel_to_url(a["rel_path"]) or BLANK_URL, "selected": bool(a["selected"]),
                                  "status": a["status"]} for a in batch]
     out: Wire = {"id": r["id"], "worldId": r["world_id"], "status": r["status"]}
     _opt(out, "creationStep", r["creation_step"])
@@ -407,7 +430,8 @@ def task_wire(t: Row) -> Wire:
     out: Wire = {"id": t["id"], "type": t["type"]}
     _opt(out, "emotion", t["emotion"])
     out.update(status=t["status"], attempt=t["attempt"], maxAttempts=t["max_attempts"])
-    _opt(out, "resultRef", t["result_ref"])
+    ref = t["result_ref"]
+    _opt(out, "resultRef", ref if isinstance(ref, str) and not ref.startswith("originals/") else None)  # internal path
     _opt(out, "previewUrl", t["preview_url"])
     _opt(out, "error", t["error"])
     return out

@@ -125,3 +125,11 @@ async def test_missing_key_stops_quietly(api: Api) -> None:
     cc.enqueue(queued[0])
     await cc.idle()
     assert (await the_row(api))["cost_source"] == "estimate"
+
+
+async def test_enqueue_after_stop_is_a_no_op(api: Api) -> None:
+    """A late shielded record on the way out must not start a task that outlives stop() (factory reset, Windows)."""
+    cc = corrector(api, build_gateway(api))
+    await cc.stop()
+    cc.enqueue("use_late")
+    assert cc.pending == 0

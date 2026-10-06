@@ -1,0 +1,29 @@
+{
+ "input": {
+  "characterId": "chr_x",
+  "kind": "emotion_regenerate",
+  "emotions": [
+   "sad",
+   "angry"
+  ]
+ },
+ "mode": "lean",
+ "parallel": 1,
+ "estimatedCostUsd": 0.036,
+ "tasks": [
+  {
+   "type": "emotion_image",
+   "emotion": "sad",
+   "ms": 15000,
+   "cost": 0.018,
+   "category": "image"
+  },
+  {
+   "type": "emotion_image",
+   "emotion": "angry",
+   "ms": 15000,
+   "cost": 0.018,
+   "category": "image"
+  }
+ ]
+}

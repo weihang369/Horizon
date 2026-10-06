@@ -9,11 +9,14 @@ router) and drops a patch's attempt to set them, applying the rest.
 
 from __future__ import annotations
 
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Awaitable, Callable, Mapping
 from dataclasses import dataclass, field
 from typing import Any, Protocol
 
+from sqlalchemy.ext.asyncio import AsyncConnection
+
 from horizon.ai.contexts import RouteContext, SessionContext, TurnContext
+from horizon.gateway.context import CallContext
 
 OWNED_TRACE_KEYS = frozenset({"model", "energy", "routing", "calls", "messageId"})
 
@@ -100,3 +103,54 @@ class Summariser(Protocol):
 
 class Guardrail(Protocol):
     async def check(self, ctx: TurnContext, text: str) -> GuardrailResult: ...
+
+
+# ── Creation ports (M4, generation-jobs design D9) ──
+@dataclass(frozen=True)
+class PaidHooks:
+    """The job worker's never-pay-twice steps, passed through to the gateway's paid call (design D3)."""
+
+    before_send: Callable[[], Awaitable[None]] | None = None
+    after_response: Callable[[Any], Awaitable[None]] | None = None
+    commit_with: Callable[[AsyncConnection, str], Awaitable[None]] | None = None
+
+
+@dataclass(frozen=True)
+class ImageJob:
+    """One image to make. `mode`: `base` (text-to-image), `edit` (an edit of `reference`, the locked base original) or
+    `sheet` (a 2×4 expression sheet). `duration_ms` paces the scripted generator; `label` and `palette` (stage,
+    primary, secondary) draw its placeholder."""
+
+    task_id: str
+    mode: str
+    prompt: str
+    model: str
+    price_kind: str
+    duration_ms: float
+    label: str
+    palette: tuple[str, str, str]
+    reference: bytes | None = None
+    aspect_ratio: str = "3:4"
+
+
+class ProfileDrafter(Protocol):
+    shared_call: bool   # True: one call (the `profile` task) feeds the other draft parts at $0
+
+    def expected_ms(self, duration_ms: float) -> float: ...
+    async def draft(self, ctx: CallContext, *, seed_prompt: str, intent: str, cost_usd: float, duration_ms: float,
+                    model: str, hooks: PaidHooks) -> dict[str, Any]: ...
+    async def regenerate_field(self, ctx: CallContext, *, profile: Mapping[str, Any], field: str, attempt: int,
+                               cost_usd: float, duration_ms: float, model: str, hooks: PaidHooks) -> dict[str, Any]: ...
+
+
+class ImageGenerator(Protocol):
+    name: str
+
+    def expected_ms(self, job: ImageJob) -> float: ...
+    async def generate(self, ctx: CallContext, job: ImageJob, hooks: PaidHooks) -> bytes: ...
+
+
+class SongGenerator(Protocol):
+    model: str
+
+    def theme(self, seed: str, brief: Mapping[str, Any], title: str | None) -> dict[str, Any]: ...

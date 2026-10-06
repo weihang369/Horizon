@@ -32,7 +32,9 @@ async def test_factory_reset_during_a_pending_correction(api: Api) -> None:
     r = await api.client.post("/api/v1/admin/factory-reset", json={"confirm": "DELETE EVERYTHING"})
     assert r.status_code == 204
     assert old_corrector.pending == 0 and rt.corrector is not old_corrector and rt.corrector.pending == 0
-    assert rt.book.total() == 0
+    # The old holds are gone; the only one is the test-mode overlay job's remaining estimate, re-reserved by the
+    # restart's job recovery (M4, generation-jobs design D4).
+    assert rt.book.total() == pytest.approx(rt.book.job_remaining("job_mockKenjiEmotions"))
     assert not (api.data_dir / "secrets.local.json").exists()
     s = await api.json("/api/v1/settings")
     assert s["openRouterKeyStatus"] == "missing" and s["demoMode"] is True

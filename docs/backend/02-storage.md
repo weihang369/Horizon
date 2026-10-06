@@ -112,7 +112,7 @@ theme_songs   id PK (song_…), character_id FK→characters (CASCADE), status, 
   - `Character.emotions` comes from the active `emotion` rows with variant `default`.
   - `blink` comes from the active `neutral`/`blink` row.
   - `basePortraitUrl` is the active `neutral`/`default` row.
-  - **`Appearance.candidates`** comes from the `candidate` rows of the **latest `job_id` batch**, or from the seed batch (`job_id IS NULL`) when there is no job.
+  - **`Appearance.candidates`** (D-85, M4) comes from the `candidate` rows of the **latest `portrait_candidates` batch** (or the seed batch, `job_id IS NULL`, when no such job ran), plus every later `portrait_tweak` batch, with earlier `selected` candidates first. A candidate is inserted `generating` when its job starts; until its file exists its `url` is a blank 1×1 data URL (the contract requires one). Locking a candidate inserts the next active neutral version pointing at the candidate's own file, so `emotions.neutral.url` equals the candidate's URL.
 - **`characters.assets`** returns `kind='emotion'` rows only, in every version.
 - **`acceptAssetVersion`** runs in one transaction: it **deactivates the old row first, then activates the new one** (SQLite can't defer unique checks).
 - **Seed candidate IDs must be globally unique.** The seed generator emits `cand_{characterSuffix}{n}`, because `cand_1` currently collides across six characters (M1a fix).

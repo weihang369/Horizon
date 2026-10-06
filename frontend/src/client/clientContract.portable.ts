@@ -29,6 +29,13 @@ export type MakeHarness = () => Promise<ContractHarness>;
 
 /** The backend milestone whose routes a test needs (doc backend/06). The mock supports everything ("all"). */
 export type Milestone = "M1b" | "M2" | "M3" | "M4" | "M5" | "M6";
+
+/** A valid 16×9 PNG (83 bytes) for the cover upload tests. */
+const TINY_PNG = [
+  137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 16, 0, 0, 0, 9, 8, 2, 0, 0, 0, 180, 72, 59, 101, 0, 0,
+  0, 26, 73, 68, 65, 84, 120, 156, 99, 212, 59, 178, 141, 129, 20, 192, 68, 146, 106, 134, 81, 13, 196, 1, 146, 131, 21, 0, 231,
+  232, 1, 186, 121, 203, 221, 186, 0, 0, 0, 0, 73, 69, 78, 68, 174, 66, 96, 130,
+];
 export const MILESTONES: readonly Milestone[] = ["M1b", "M2", "M3", "M4", "M5", "M6"];
 export interface PortableOptions {
   /** The latest milestone this client's backend implements. Later tests are listed as `[pending Mx]`, never silently skipped. */
@@ -612,7 +619,8 @@ export function runPortableContract(label: string, makeHarness: MakeHarness, opt
     // ── rev 1.3: world cover upload (worlds spec) ──────────────────────────────
     test("M4", "uploadCover: a PNG becomes an uploaded cover and the world change is announced", async () => {
       const { c, globals } = await make();
-      const png = new File([new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, ...new Array(1024).fill(0)])], "cover.png", { type: "image/png" });
+      // A real (tiny) PNG: the backend decodes and re-encodes the upload, so magic bytes alone aren't enough there.
+      const png = new File([new Uint8Array(TINY_PNG)], "cover.png", { type: "image/png" });
       const w = await c.worlds.uploadCover("wld_seedMeridian", png);
       expect(w.cover.kind).toBe("upload");
       expect(w.cover.url?.length).toBeGreaterThan(0);

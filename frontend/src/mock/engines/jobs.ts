@@ -35,9 +35,10 @@ const VFX: Record<Emotion, EmotionAsset["vfxPreset"]> = {
   neutral: "none", happy: "sparkle", sad: "rain", angry: "anger", surprised: "shock", thinking: "ponder", embarrassed: "blush",
 };
 
-interface Plan { task: GenerationTask; ms: number; cost: number; category: UsageRecord["category"]; model: string }
+export interface Plan { task: GenerationTask; ms: number; cost: number; category: UsageRecord["category"]; model: string }
 
-function planTasks(h: JobHost, input: StartJobInput, newTaskId: () => string): { plans: Plan[]; parallel: number } {
+/** Exported for the shared backend fixtures (`npm run fixtures:build`); the MockClient's own use is unchanged. */
+export function planTasks(h: JobHost, input: StartJobInput, newTaskId: () => string): { plans: Plan[]; parallel: number } {
   const g = h.pricing.generation;
   const t = h.timing;
   const img = h.db.settings.models.image;

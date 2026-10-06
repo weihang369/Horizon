@@ -1,0 +1,366 @@
+{
+ "cases": [
+  {
+   "seed": "chr_seedAmara",
+   "title": "chr_seedAmara's Theme",
+   "brief": {
+    "genres": [
+     "lo-fi",
+     "piano"
+    ],
+    "moods": [
+     "calm",
+     "hopeful"
+    ],
+    "bpm": 80,
+    "instruments": [
+     "piano",
+     "synth"
+    ],
+    "vibe": "Calm lo-fi piano with a soft pulse synth"
+   },
+   "spec": {
+    "kind": "horizon.theme",
+    "version": 1,
+    "seed": "chr_seedAmara",
+    "title": "chr_seedAmara's Theme",
+    "brief": {
+     "genres": [
+      "lo-fi",
+      "piano"
+     ],
+     "moods": [
+      "calm",
+      "hopeful"
+     ],
+     "bpm": 80,
+     "instruments": [
+      "piano",
+      "synth"
+     ],
+     "vibe": "Calm lo-fi piano with a soft pulse synth"
+    }
+   }
+  },
+  {
+   "seed": "chr_seedHana",
+   "title": "chr_seedHana's Theme",
+   "brief": {
+    "genres": [
+     "city-pop"
+    ],
+    "moods": [
+     "playful",
+     "romantic"
+    ],
+    "bpm": 120,
+    "instruments": [
+     "synth",
+     "bells",
+     "bass"
+    ],
+    "vibe": "Bright city-pop, synth bells, slap bass"
+   },
+   "spec": {
+    "kind": "horizon.theme",
+    "version": 1,
+    "seed": "chr_seedHana",
+    "title": "chr_seedHana's Theme",
+    "brief": {
+     "genres": [
+      "city-pop"
+     ],
+     "moods": [
+      "playful",
+      "romantic"
+     ],
+     "bpm": 120,
+     "instruments": [
+      "synth",
+      "bells",
+      "bass"
+     ],
+     "vibe": "Bright city-pop, synth bells, slap bass"
+    }
+   }
+  },
+  {
+   "seed": "chr_seedMei",
+   "title": "chr_seedMei's Theme",
+   "brief": {
+    "genres": [
+     "jazz hip-hop"
+    ],
+    "moods": [
+     "calm",
+     "playful"
+    ],
+    "bpm": 90,
+    "instruments": [
+     "bass",
+     "drums",
+     "vinyl crackle"
+    ],
+    "vibe": "Jazzy hip-hop, upright bass, vinyl crackle"
+   },
+   "spec": {
+    "kind": "horizon.theme",
+    "version": 1,
+    "seed": "chr_seedMei",
+    "title": "chr_seedMei's Theme",
+    "brief": {
+     "genres": [
+      "jazz hip-hop"
+     ],
+     "moods": [
+      "calm",
+      "playful"
+     ],
+     "bpm": 90,
+     "instruments": [
+      "bass",
+      "drums",
+      "vinyl crackle"
+     ],
+     "vibe": "Jazzy hip-hop, upright bass, vinyl crackle"
+    }
+   }
+  },
+  {
+   "seed": "chr_seedRin",
+   "title": "chr_seedRin's Theme",
+   "brief": {
+    "genres": [
+     "chiptune",
+     "EDM"
+    ],
+    "moods": [
+     "energetic",
+     "tense"
+    ],
+    "bpm": 140,
+    "instruments": [
+     "synth",
+     "drums"
+    ],
+    "vibe": "Chiptune-electro, punchy drums, arpeggiated synth"
+   },
+   "spec": {
+    "kind": "horizon.theme",
+    "version": 1,
+    "seed": "chr_seedRin",
+    "title": "chr_seedRin's Theme",
+    "brief": {
+     "genres": [
+      "chiptune",
+      "EDM"
+     ],
+     "moods": [
+      "energetic",
+      "tense"
+     ],
+     "bpm": 140,
+     "instruments": [
+      "synth",
+      "drums"
+     ],
+     "vibe": "Chiptune-electro, punchy drums, arpeggiated synth"
+    }
+   }
+  },
+  {
+   "seed": "chr_seedTakeshi",
+   "title": "chr_seedTakeshi's Theme",
+   "brief": {
+    "genres": [
+     "acoustic folk"
+    ],
+    "moods": [
+     "calm",
+     "nostalgic"
+    ],
+    "bpm": 95,
+    "instruments": [
+     "guitar",
+     "harmonica"
+    ],
+    "vibe": "Acoustic folk guitar, harmonica, laid-back shuffle"
+   },
+   "spec": {
+    "kind": "horizon.theme",
+    "version": 1,
+    "seed": "chr_seedTakeshi",
+    "title": "chr_seedTakeshi's Theme",
+    "brief": {
+     "genres": [
+      "acoustic folk"
+     ],
+     "moods": [
+      "calm",
+      "nostalgic"
+     ],
+     "bpm": 95,
+     "instruments": [
+      "guitar",
+      "harmonica"
+     ],
+     "vibe": "Acoustic folk guitar, harmonica, laid-back shuffle"
+    }
+   }
+  },
+  {
+   "seed": "chr_seedVictor",
+   "title": "chr_seedVictor's Theme",
+   "brief": {
+    "genres": [
+     "orchestral"
+    ],
+    "moods": [
+     "confident",
+     "playful"
+    ],
+    "bpm": 110,
+    "instruments": [
+     "strings",
+     "brass"
+    ],
+    "vibe": "Orchestral swing with pizzicato strings and confident brass"
+   },
+   "spec": {
+    "kind": "horizon.theme",
+    "version": 1,
+    "seed": "chr_seedVictor",
+    "title": "chr_seedVictor's Theme",
+    "brief": {
+     "genres": [
+      "orchestral"
+     ],
+     "moods": [
+      "confident",
+      "playful"
+     ],
+     "bpm": 110,
+     "instruments": [
+      "strings",
+      "brass"
+     ],
+     "vibe": "Orchestral swing with pizzicato strings and confident brass"
+    }
+   }
+  },
+  {
+   "seed": "chr_editA",
+   "title": "Ada's Theme",
+   "brief": {
+    "genres": [
+     "city-pop"
+    ],
+    "moods": [
+     "playful"
+    ],
+    "bpm": 112,
+    "instruments": [
+     "piano",
+     "bells"
+    ],
+    "vibe": "late shift, neon puddles"
+   },
+   "spec": {
+    "kind": "horizon.theme",
+    "version": 1,
+    "seed": "chr_editA",
+    "title": "Ada's Theme",
+    "brief": {
+     "genres": [
+      "city-pop"
+     ],
+     "moods": [
+      "playful"
+     ],
+     "bpm": 112,
+     "instruments": [
+      "piano",
+      "bells"
+     ],
+     "vibe": "late shift, neon puddles"
+    }
+   }
+  },
+  {
+   "seed": "chr_editB",
+   "brief": {
+    "genres": [
+     "piano"
+    ],
+    "moods": [
+     "calm"
+    ],
+    "bpm": 72,
+    "instruments": [
+     "piano"
+    ],
+    "vibe": "rain on the window"
+   },
+   "spec": {
+    "kind": "horizon.theme",
+    "version": 1,
+    "seed": "chr_editB",
+    "brief": {
+     "genres": [
+      "piano"
+     ],
+     "moods": [
+      "calm"
+     ],
+     "bpm": 72,
+     "instruments": [
+      "piano"
+     ],
+     "vibe": "rain on the window"
+    }
+   }
+  },
+  {
+   "seed": "chr_editC",
+   "title": "Ünal’s Theme",
+   "brief": {
+    "genres": [
+     "synthwave",
+     "lo-fi"
+    ],
+    "moods": [
+     "confident",
+     "hopeful"
+    ],
+    "bpm": 124,
+    "instruments": [
+     "synth",
+     "guitar"
+    ],
+    "vibe": "a road trip at dawn"
+   },
+   "spec": {
+    "kind": "horizon.theme",
+    "version": 1,
+    "seed": "chr_editC",
+    "title": "Ünal’s Theme",
+    "brief": {
+     "genres": [
+      "synthwave",
+      "lo-fi"
+     ],
+     "moods": [
+      "confident",
+      "hopeful"
+     ],
+     "bpm": 124,
+     "instruments": [
+      "synth",
+      "guitar"
+     ],
+     "vibe": "a road trip at dawn"
+    }
+   }
+  }
+ ]
+}

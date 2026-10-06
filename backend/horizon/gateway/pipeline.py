@@ -9,6 +9,13 @@
 The gateway reaches the ledger through `LedgerPort`, so it never imports services (doc 01 §2 layering). A call that
 is cancelled or breaks after it was sent is recorded at its estimate inside `asyncio.shield`, so a Stop can't lose
 spend (NFR-30).
+
+M4 (generation-jobs design D3, D-84): `paid()` takes three optional hooks so a job task never pays twice:
+`before_send()` runs after preflight and before the request (the task commits `provider_called_at`);
+`after_response(value)` runs once the provider answered (the task writes the original atomically); `commit_with(conn,
+row_id)` runs inside the ledger row's transaction (the task's `result_ref` commits with its row). A preflight refusal
+runs none of them. If `after_response` or `commit_with` fails after the provider charged, the row is still recorded
+(without the caller's step) and the error is re-raised.
 """
 
 from __future__ import annotations
@@ -21,6 +28,8 @@ import time
 from collections.abc import AsyncIterator, Awaitable, Callable, Mapping, Sequence
 from dataclasses import dataclass, field, replace
 from typing import Any, Protocol, TypeVar
+
+from sqlalchemy.ext.asyncio import AsyncConnection
 
 from horizon.domain import budget, vclock
 from horizon.domain.pricing import (
@@ -112,10 +121,14 @@ class RecordResult:
     creation_after: float | None = None
 
 
+CommitWith = Callable[[AsyncConnection, str], Awaitable[None]]
+BeforeSend = Callable[[], Awaitable[None]]
+
+
 class LedgerPort(Protocol):
     async def spent_today(self) -> float: ...
     async def creation_spent(self, character_id: str) -> float: ...
-    async def record(self, row: LedgerRow, *, drain: bool) -> RecordResult: ...
+    async def record(self, row: LedgerRow, *, drain: bool, extra: CommitWith | None = None) -> RecordResult: ...
 
 
 @dataclass(frozen=True)
@@ -195,33 +208,63 @@ class Gateway:
         async with self.book.lock:
             self.lock_waits_ms.append((time.perf_counter() - waited) * 1000)
             del self.lock_waits_ms[:-1000]
-            spent = await self.ledger.spent_today()
+            # Reservations are read BEFORE the ledger: a hold is released only after its row commits, so a call that
+            # finishes during the await is counted twice (safe), never zero times (one call over the cap).
             moved = self.book.take_from_job(ctx.job_id, estimate) if ctx.job_id else 0.0
-            if budget.exceeds_daily(spent, self.book.total(), estimate, caps.daily_cap_usd):
+            reserved = self.book.total()
+            held_for_creation = self.book.reserved_for(ctx.character_id) if ctx.creation and ctx.character_id else 0.0
+            spent = await self.ledger.spent_today()
+            if budget.exceeds_daily(spent, reserved, estimate, caps.daily_cap_usd):
                 self._give_back(ctx, moved)
                 self._reached(ctx, "daily", spent, caps.daily_cap_usd)
                 raise ProviderError("daily_budget_exceeded", "Today's spending cap is reached.")
             if ctx.creation and ctx.character_id:
                 creation = await self.ledger.creation_spent(ctx.character_id)
-                if budget.exceeds_creation(creation, self.book.reserved_for(ctx.character_id), estimate, caps.creation_cap_usd):
+                if budget.exceeds_creation(creation, held_for_creation, estimate, caps.creation_cap_usd):
                     self._give_back(ctx, moved)
                     self._reached(ctx, "creation", creation, caps.creation_cap_usd)
                     raise ProviderError("creation_budget_exceeded", "This character's creation budget is used up.")
             return self.book.reserve(estimate, character_id=ctx.character_id, creation=ctx.creation)
+
+    async def reserve_job(self, ctx: CallContext, estimate: float, *, existing: bool = False) -> None:
+        """A job's start or retry (budget-caps "Jobs are refused before they are queued", design D5): check `estimate`
+        included); refuse with 402 and `budget.reached`, or add `estimate` to the job's hold. Nothing is sent.
+        `existing` (a retry): the refusal event names the job; a refused start has no job to name."""
+        if ctx.job_id is None:
+            raise ValueError("reserve_job needs ctx.job_id")
+        caps = self.caps()
+        announce = ctx if existing else replace(ctx, job_id=None)
+        async with self.book.lock:
+            reserved = self.book.total()  # before the ledger, as in _preflight
+            held_for_creation = self.book.reserved_for(ctx.character_id) if ctx.creation and ctx.character_id else 0.0
+            spent = await self.ledger.spent_today()
+            if budget.exceeds_daily(spent, reserved, estimate, caps.daily_cap_usd):
+                self._reached(announce, "daily", spent, caps.daily_cap_usd, sessions=False)
+                raise ProviderError("daily_budget_exceeded", "Today's spending cap is reached.")
+            if ctx.creation and ctx.character_id:
+                creation = await self.ledger.creation_spent(ctx.character_id)
+                if budget.exceeds_creation(creation, held_for_creation, estimate, caps.creation_cap_usd):
+                    self._reached(announce, "creation", creation, caps.creation_cap_usd, sessions=False)
+                    raise ProviderError("creation_budget_exceeded", "This character's creation budget is used up.")
+            held = self.book.job_remaining(ctx.job_id)
+            self.book.reserve_job(ctx.job_id, held + estimate, character_id=ctx.character_id, creation=ctx.creation)
 
     def _give_back(self, ctx: CallContext, moved: float) -> None:
         if moved and ctx.job_id:
             j = self.book.job_remaining(ctx.job_id)
             self.book.reserve_job(ctx.job_id, j + moved, character_id=ctx.character_id, creation=ctx.creation)
 
-    def _reached(self, ctx: CallContext, scope: str, spent: float, cap: float) -> None:
+    def _reached(self, ctx: CallContext, scope: str, spent: float, cap: float, *, sessions: bool = True) -> None:
+        """Publish `budget.reached`. `sessions=False` for a refused job estimate: a whole job not fitting doesn't mean a
+        small reply can't, so the live sessions are not paused for it."""
         ev: dict[str, Any] = {"type": "budget.reached", "scope": scope, "spentUsd": round(spent, 6), "capUsd": cap}
         if ctx.session_id:
             ev["sessionId"] = ctx.session_id
         if ctx.job_id:
             ev["jobId"] = ctx.job_id
         self.publish(ev)
-        self._notify(self.on_budget, ev, ctx)
+        if sessions:
+            self._notify(self.on_budget, ev, ctx)
 
     @staticmethod
     def _notify(hook: Callable[..., None], *args: Any) -> None:
@@ -247,8 +290,8 @@ class Gateway:
             tokens_out=u.tokens_out if u else None, latency_ms=latency_ms)
 
     async def _record(self, ctx: CallContext, row: LedgerRow, summary: Mapping[str, Any],
-                      on_recorded: Callable[[str], None] | None = None) -> RecordResult:
-        res = await self.ledger.record(row, drain=ctx.drains)
+                      on_recorded: Callable[[str], None] | None = None, extra: CommitWith | None = None) -> RecordResult:
+        res = await self.ledger.record(row, drain=ctx.drains, extra=extra)
         if on_recorded is not None:
             self._notify(on_recorded, res.row_id)
         sink = RECORDED_SINK.get()
@@ -300,15 +343,19 @@ class Gateway:
 
     # ── the generic paid call ──
     async def paid(self, ctx: CallContext, estimate: float, send: Callable[[], Awaitable[tuple[T, Billing]]], *,
-                   model: str | None, summary: Mapping[str, Any] | None = None) -> T:
+                   model: str | None, summary: Mapping[str, Any] | None = None, before_send: BeforeSend | None = None,
+                   after_response: Callable[[T], Awaitable[None]] | None = None,
+                   commit_with: CommitWith | None = None) -> T:
         hold = await self._preflight(ctx, estimate)
-        started = time.monotonic()
         summ = dict(summary or {}, model=model, purpose=ctx.purpose)
-
-        def ms() -> int:
-            return round((time.monotonic() - started) * 1000)
-
         try:
+            if before_send is not None:
+                await before_send()  # a failure here means nothing was sent: no row
+            started = time.monotonic()
+
+            def ms() -> int:
+                return round((time.monotonic() - started) * 1000)
+
             try:
                 value, bill = await send()
             except ProviderError as e:
@@ -320,21 +367,37 @@ class Gateway:
                 await self._record_shielded(ctx, self._row(ctx, estimate, cost=None, bill=None, model=model,
                                                            generation_id=None, latency_ms=ms()), summ)
                 raise
-            await self._record(ctx, self._row(ctx, estimate, cost=None, bill=bill, model=model, generation_id=None,
-                                              latency_ms=ms()), summ)
+            row = self._row(ctx, estimate, cost=None, bill=bill, model=model, generation_id=None, latency_ms=ms())
+            if after_response is not None:
+                try:
+                    await after_response(value)
+                except BaseException:
+                    await self._record_shielded(ctx, row, summ)  # the provider charged: the row is never lost
+                    raise
+            try:
+                await self._record(ctx, row, summ, extra=commit_with)
+            except Exception:
+                if commit_with is None:
+                    raise
+                await self._record_shielded(ctx, row, summ)  # the caller's step rolled back with its row: keep the spend
+                raise
             return value
         finally:
             self.book.release(hold)
 
     # ── clients behind the pipeline ──
-    async def chat_complete(self, req: ChatRequest, ctx: CallContext, *, estimate: float | None = None) -> ChatResult:
+    async def chat_complete(self, req: ChatRequest, ctx: CallContext, *, estimate: float | None = None,
+                            before_send: BeforeSend | None = None,
+                            after_response: Callable[[ChatResult], Awaitable[None]] | None = None,
+                            commit_with: CommitWith | None = None) -> ChatResult:
         est = self.chat_estimate(req) if estimate is None else estimate
 
         async def send() -> tuple[ChatResult, Billing]:
             r = await self.chat.complete(req)
             return r, Billing(r.generation_id, r.usage, r.provider, r.model)
 
-        return await self.paid(ctx, est, send, model=req.model, summary={"kind": "chat", "maxTokens": req.max_tokens})
+        return await self.paid(ctx, est, send, model=req.model, summary={"kind": "chat", "maxTokens": req.max_tokens},
+                               before_send=before_send, after_response=after_response, commit_with=commit_with)
 
     async def chat_stream(self, req: ChatRequest, ctx: CallContext, *, estimate: float | None = None,
                           on_recorded: Callable[[str], None] | None = None) -> AsyncIterator[ChatChunk]:
@@ -435,13 +498,30 @@ class Gateway:
 
     async def generate_image(self, ctx: CallContext, *, model: str, prompt: str, kind: str = "portrait",
                              refs: list[str] | None = None, resolution: str | None = None, aspect_ratio: str | None = None,
-                             seed: int | None = None) -> ImageResult:
+                             seed: int | None = None, before_send: BeforeSend | None = None,
+                             after_response: Callable[[ImageResult], Awaitable[None]] | None = None,
+                             commit_with: CommitWith | None = None) -> ImageResult:
         async def send() -> tuple[ImageResult, Billing]:
             r = await self.images.generate(model=model, prompt=prompt, refs=refs, resolution=resolution,
                                            aspect_ratio=aspect_ratio, seed=seed)
             return r, Billing(r.generation_id, r.usage, r.provider, model)
 
-        return await self.paid(ctx, estimate_image(self.prices, kind), send, model=model, summary={"kind": "image"})
+        return await self.paid(ctx, estimate_image(self.prices, kind), send, model=model, summary={"kind": "image"},
+                               before_send=before_send, after_response=after_response, commit_with=commit_with)
+
+    async def scripted_generation(self, ctx: CallContext, *, cost_usd: float, model: str,
+                                  produce: Callable[[], Awaitable[T]], before_send: BeforeSend | None = None,
+                                  after_response: Callable[[T], Awaitable[None]] | None = None,
+                                  commit_with: CommitWith | None = None) -> T:
+        """A scripted generation (profile draft, placeholder image) through the same paid-call pipeline as a real one
+        (provider-gateway "Scripted generation source", D-81): caps and holds, the hooks, one row priced from the
+        price table with `provider: "scripted"`. `produce()` paces on the backend clock and never opens a connection."""
+        async def send() -> tuple[T, Billing]:
+            value = await produce()
+            return value, Billing(None, Usage(cost_usd=cost_usd), SCRIPTED_PROVIDER, model)
+
+        return await self.paid(ctx, cost_usd, send, model=model, summary={"kind": ctx.category, "scripted": True},
+                               before_send=before_send, after_response=after_response, commit_with=commit_with)
 
     async def embed(self, texts: Sequence[str], ctx: CallContext, *, model: str, dimensions: int | None = None) -> list[list[float]]:
         """Batches of `embed_batch` texts; each batch is one paid call and one ledger row. Vectors keep input order."""

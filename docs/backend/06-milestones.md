@@ -96,7 +96,7 @@
 ## M4: `generation-jobs`
 **Scope**
 - The JobScheduler and workers (semaphores, one non-terminal job per character, the `provider_called_at` restart rule); job events mirrored onto the global stream; estimate/start (with reservation)/cancel/retry.
-- `characters.update` (PATCH, deep-merge, version bump), `profile_draft`/`profile_regenerate` (naive), `portrait_candidates`/`portrait_tweak` (with `job_id` batches), `lockPortrait`, `emotion_set`/`emotion_regenerate`/blink (Seedream 5.0 Flash + `ImagePromptCompiler` v2), originals first then WebP, asset versions + `acceptAssetVersion`, `song` (Lyria + the ambient fallback).
+- `characters.update` (PATCH, deep-merge, version bump), `profile_draft`/`profile_regenerate` (naive), `portrait_candidates`/`portrait_tweak` (with `job_id` batches), `lockPortrait`, `emotion_set`/`emotion_regenerate`/blink (Seedream 5.0 Flash + `ImagePromptCompiler` v2), originals first then WebP, asset versions + `acceptAssetVersion`, `song` (the procedural theme while OpenRouter lists no music model, D-83).
 - approve/archive/restore/**delete (tombstone, 409 while streaming)**; world cover upload.
 - **UI wiring for cover upload** in the World editor (`worlds.uploadCover`, already implemented by the MockClient in M1a; OQ-3).
 - HttpClient: characters (full), jobs (snapshot + global filter).
@@ -106,6 +106,7 @@
 - Killing the server mid-job and restarting **never pays twice** (asserted with recorded HTTP).
 - The creation cap blocks before spending.
 - Assets are ≤ 250 KB WebP.
+- The `song` job produces the procedural theme (`.proc.json`, $0, D-83); a paid music call is not part of M4.
 
 ## M5: `knowledge-memory-storage`
 **Scope**

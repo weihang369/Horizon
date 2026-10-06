@@ -99,10 +99,14 @@ async def get_world(conn: AsyncConnection, world_id: str) -> Wire:
 
 # ── Characters ───────────────────────────────────────────────────────────────
 async def _assets_for(conn: AsyncConnection, character_ids: Sequence[str]) -> dict[str, list[RowMapping]]:
+    """Image rows per character, each with its job's `job_kind` and `job_created_at` (the candidate derivation, D-85)."""
     out: dict[str, list[RowMapping]] = {cid: [] for cid in character_ids}
     if character_ids:
-        rows = (await conn.execute(select(t.image_assets).where(t.image_assets.c.character_id.in_(character_ids)))).mappings().all()
-        for a in rows:
+        j = t.generation_jobs.c
+        q = (select(t.image_assets, j.kind.label("job_kind"), j.created_at.label("job_created_at"))
+             .select_from(t.image_assets.outerjoin(t.generation_jobs, t.image_assets.c.job_id == j.id))
+             .where(t.image_assets.c.character_id.in_(character_ids)))
+        for a in (await conn.execute(q)).mappings().all():
             out.setdefault(a["character_id"], []).append(a)
     return out
 

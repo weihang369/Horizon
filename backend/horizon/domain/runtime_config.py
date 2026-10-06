@@ -29,6 +29,21 @@ class Timing:
 
 
 @dataclass(frozen=True)
+class JobTiming:
+    """The generation-job pacing from the same table (`timing.config.ts`, generation-jobs design D2)."""
+
+    profile_draft_ms: float
+    field_regenerate_ms: float
+    portrait_ms: float
+    portrait_parallel: int
+    emotion_ms: float
+    emotion_parallel: int
+    sheet_ms: float
+    song_ms: float
+    job_tick_ms: float
+
+
+@dataclass(frozen=True)
 class ReplyCaps:
     one_on_one: int
     group: int
@@ -56,6 +71,7 @@ class RuntimeKnobs:
 class RuntimeConfig:
     timing: Timing
     runtime: RuntimeKnobs
+    jobs: JobTiming
 
     @staticmethod
     def from_json(data: dict[str, Any]) -> RuntimeConfig:
@@ -78,7 +94,12 @@ class RuntimeConfig:
                                            debate={str(k): int(v) for k, v in caps["debate"].items()}),
                 window_tokens=int(r["windowTokens"]), coalesce_max_chars=int(r["coalesce"]["maxChars"]),
                 coalesce_max_ms=float(r["coalesce"]["maxMs"]), idle_release_ms=float(r["idleReleaseMs"]),
-                prefetch_max=int(r["prefetchMax"]), llm_concurrency=int(r["llmConcurrency"])))
+                prefetch_max=int(r["prefetchMax"]), llm_concurrency=int(r["llmConcurrency"])),
+            jobs=JobTiming(
+                profile_draft_ms=float(t["profileDraftMs"]), field_regenerate_ms=float(t["fieldRegenerateMs"]),
+                portrait_ms=float(t["portraitMs"]), portrait_parallel=int(t["portraitParallel"]),
+                emotion_ms=float(t["emotionMs"]), emotion_parallel=int(t["emotionParallel"]), sheet_ms=float(t["sheetMs"]),
+                song_ms=float(t["songMs"]), job_tick_ms=float(t["jobTickMs"])))
 
 
 def load_runtime_config(seed_dir: Path) -> RuntimeConfig:

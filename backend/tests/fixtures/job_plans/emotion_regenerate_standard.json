@@ -1,0 +1,18 @@
+{
+ "input": {
+  "characterId": "chr_x",
+  "kind": "emotion_regenerate"
+ },
+ "mode": "standard",
+ "parallel": 1,
+ "estimatedCostUsd": 0.018,
+ "tasks": [
+  {
+   "type": "emotion_image",
+   "emotion": "happy",
+   "ms": 15000,
+   "cost": 0.018,
+   "category": "image"
+  }
+ ]
+}

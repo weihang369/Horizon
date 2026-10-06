@@ -1,8 +1,10 @@
 """The images client (doc backend/04 §1, D-61): `POST /api/v1/images` (Seedream 5.0 Flash by default).
 
-`generate(...)` returns the raw image bytes plus the provider cost. Reference images go in as data URLs (emotions are
-edits of the locked base portrait). The response wrapper is assumed OpenAI-like (`data[].b64_json` or a data/HTTP
-`url`) until the live run confirms it (design OQ-C). Post-processing (WebP, originals) is M4.
+`generate(...)` returns the raw image bytes plus the provider cost. The request is the shape the D-61 test run proved
+(`docs/ai/image-model-test/run.mjs`, generation-jobs design D3): `model`, `prompt`, `n: 1`, `aspect_ratio`,
+`resolution`, and reference images as `input_references: [{type: "image_url", image_url: {url}}]` with data URLs
+(emotions are edits of the locked base portrait). The image is read from `data[].b64_json` (or a data URL) and the cost
+from `usage.cost`. Post-processing (originals, WebP) lives in `horizon/storage/` (M4).
 """
 
 from __future__ import annotations
@@ -49,10 +51,12 @@ class ImagesClient:
 
     async def generate(self, *, model: str, prompt: str, refs: list[str] | None = None, resolution: str | None = None,
                        aspect_ratio: str | None = None, seed: int | None = None) -> ImageResult:
-        body: dict[str, Any] = {"model": model, "prompt": prompt}
-        for k, v in (("images", refs or None), ("resolution", resolution), ("aspect_ratio", aspect_ratio), ("seed", seed)):
+        body: dict[str, Any] = {"model": model, "prompt": prompt, "n": 1}
+        for k, v in (("resolution", resolution), ("aspect_ratio", aspect_ratio), ("seed", seed)):
             if v is not None:
                 body[k] = v
+        if refs:
+            body["input_references"] = [{"type": "image_url", "image_url": {"url": url}} for url in refs]
         resp = await self.core.request("POST", PATH, json=body, http_timeout=self.timeout_s)
         try:
             obj = resp.json()
