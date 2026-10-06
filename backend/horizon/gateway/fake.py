@@ -7,16 +7,24 @@ gateway code with no socket ever opened.
 - A bearer starting `sk-or-bad` gets 401 everywhere (the portable "bad key" test).
 - Chat answers "ok" (SSE or JSON) from provider DeepSeek; decisions take the first option / 0.5 / the middle level;
   embeddings are deterministic unit vectors; every paid answer carries a generation ID and `usage.cost`.
+- Images (M4) answer a deterministic PNG in `data[0].b64_json` sized for the requested aspect ratio (3:4 → 832×1110,
+  Seedream's 1K size), with `usage.cost` from the price table.
+- `counts` tallies requests per endpoint, so tests can assert exactly how many provider calls were made, and
+  `park_image(n)` holds the n-th images request open on an event (the restart tests' "request in flight").
 
 The response shapes follow the recorded fixtures in `tests/fixtures/openrouter/` (unverified until the live run).
 """
 
 from __future__ import annotations
 
+import asyncio
+import base64
 import hashlib
+import io
 import json
 import math
-from collections.abc import Iterable
+from collections import Counter
+from collections.abc import Awaitable, Iterable
 from typing import Any
 
 import httpx
@@ -28,8 +36,31 @@ IMAGE_COST = 0.018
 CREDITS_TOTAL = 5.0
 CREDITS_USED = 0.79
 DEFAULT_DIMS = 1024
-# A 1×1 transparent PNG, the fake image result.
+# A 1×1 transparent PNG (kept for tests that need a tiny decodable image).
 PNG_1PX = ("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==")
+# Seedream's 1K output sizes per aspect ratio (the D-61 run returned 832×1110 for 3:4).
+IMAGE_SIZES = {"3:4": (832, 1110), "3:2": (1536, 1024), "16:9": (1600, 900), "1:1": (1024, 1024)}
+ENDPOINTS = {("GET", "/v1/key"): "key", ("GET", "/v1/credits"): "credits", ("GET", "/v1/models"): "models",
+             ("GET", "/v1/generation"): "generation", ("POST", "/v1/chat/completions"): "chat",
+             ("POST", "/alpha/decisions"): "decisions", ("POST", "/v1/embeddings"): "embeddings",
+             ("POST", "/v1/images"): "images"}
+
+
+def fake_png(prompt: str, aspect_ratio: str | None) -> bytes:
+    """A deterministic placeholder portrait: a plain tinted background and a silhouette, seeded by the prompt."""
+    from PIL import Image, ImageDraw
+
+    w, h = IMAGE_SIZES.get(aspect_ratio or "3:4", IMAGE_SIZES["3:4"])
+    d = hashlib.sha256(prompt.encode("utf-8")).digest()
+    img = Image.new("RGB", (w, h), (200 + d[0] % 40, 196 + d[1] % 40, 190 + d[2] % 40))
+    draw = ImageDraw.Draw(img)
+    tone = (40 + d[3] % 120, 40 + d[4] % 120, 60 + d[5] % 120)
+    draw.ellipse((w * 0.35, h * 0.12, w * 0.65, h * 0.42), fill=tone)
+    draw.rounded_rectangle((w * 0.2, h * 0.45, w * 0.8, h * 1.05), radius=int(w * 0.12), fill=tone)
+    buf = io.BytesIO()
+    img.save(buf, "PNG")
+    return buf.getvalue()
+
 
 
 def _tokens(value: Any) -> int:
@@ -43,15 +74,25 @@ def unit_vector(text: str, dims: int) -> list[float]:
 
 
 class FakeOpenRouter:
-    def __init__(self, models: Iterable[str] = ()) -> None:
+    def __init__(self, models: Iterable[str] = (), *, image_cost: float = IMAGE_COST) -> None:
         self.models = set(models)
+        self.image_cost = image_cost
         self._n = 0
         self.costs: dict[str, float] = {}  # generation id → cost, for /generation lookups
         self.requests: list[httpx.Request] = []
         self.queued: list[httpx.Response] = []  # test hook: answered first, in order (e.g. a 500 or a 401)
+        self.counts: Counter[str] = Counter()   # requests received per endpoint (`ENDPOINTS` names)
+        self._parks: dict[int, asyncio.Event] = {}
+        self.parked = asyncio.Event()             # set once a parked images request is being held
+
+    def park_image(self, n: int) -> asyncio.Event:
+        """Hold the n-th images request (1-based, counted over this fake's life) until the returned event is set."""
+        ev = asyncio.Event()
+        self._parks[n] = ev
+        return ev
 
     def transport(self) -> httpx.MockTransport:
-        return httpx.MockTransport(self.handle)
+        return httpx.MockTransport(self.handle)  # type: ignore[arg-type]  # sync answers, or a held (async) one
 
     def _gen(self, prefix: str, cost: float) -> str:
         self._n += 1
@@ -59,16 +100,29 @@ class FakeOpenRouter:
         self.costs[gid] = cost
         return gid
 
-    def handle(self, request: httpx.Request) -> httpx.Response:
+    def handle(self, request: httpx.Request) -> httpx.Response | Awaitable[httpx.Response]:
         self.requests.append(request)
+        path = request.url.path.removeprefix("/api")
+        route = (request.method, path)
+        self.counts[ENDPOINTS.get(route, "other")] += 1
+        park = self._parks.pop(self.counts["images"], None) if route == ("POST", "/v1/images") else None
+        if park is not None:
+            return self._held(park, request)
+        return self._answer(request, route)
+
+    async def _held(self, park: asyncio.Event, request: httpx.Request) -> httpx.Response:
+        self.parked.set()
+        await park.wait()
+        return self._answer(request, (request.method, request.url.path.removeprefix("/api")))
+
+    def _answer(self, request: httpx.Request, route: tuple[str, str]) -> httpx.Response:
         if self.queued:
             return self.queued.pop(0)
         auth = request.headers.get("authorization", "")
         if not auth.startswith("Bearer sk-or-") or auth.startswith("Bearer sk-or-bad"):
             return httpx.Response(401, json={"error": {"code": 401, "message": "No auth credentials found"}})
-        path = request.url.path.removeprefix("/api")
+        path = route[1]
         body: Any = json.loads(request.content) if request.content else None
-        route = (request.method, path)
         if route == ("GET", "/v1/key"):
             return httpx.Response(200, json={"data": {"label": "fake", "usage": CREDITS_USED, "limit": None,
                                                       "limit_remaining": None, "is_free_tier": False}})
@@ -88,9 +142,11 @@ class FakeOpenRouter:
         if route == ("POST", "/v1/embeddings"):
             return self._embed(body)
         if route == ("POST", "/v1/images"):
-            gid = self._gen("gen", IMAGE_COST)
-            return httpx.Response(200, json={"id": gid, "model": body.get("model"), "provider": "ByteDance",
-                                             "data": [{"b64_json": PNG_1PX}], "usage": {"cost": IMAGE_COST}})
+            gid = self._gen("gen", self.image_cost)
+            png = base64.b64encode(fake_png(str(body.get("prompt", "")), body.get("aspect_ratio"))).decode("ascii")
+            return httpx.Response(200, json={"id": gid, "model": body.get("model"), "provider": "Seed",
+                                             "data": [{"b64_json": png, "media_type": "image/png"}],
+                                             "usage": {"cost": self.image_cost}})
         return httpx.Response(404, json={"error": {"code": 404, "message": f"No fake for {request.method} {path}"}})
 
     def _chat(self, body: dict[str, Any]) -> httpx.Response:

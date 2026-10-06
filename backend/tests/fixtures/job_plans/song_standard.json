@@ -1,0 +1,17 @@
+{
+ "input": {
+  "characterId": "chr_x",
+  "kind": "song"
+ },
+ "mode": "standard",
+ "parallel": 1,
+ "estimatedCostUsd": 0.04,
+ "tasks": [
+  {
+   "type": "theme_song",
+   "ms": 40000,
+   "cost": 0.04,
+   "category": "music"
+  }
+ ]
+}

@@ -15,7 +15,7 @@ import type { EventSourceCtor } from "./sse";
 import { Transport } from "./transport";
 import type { FetchLike } from "./transport";
 
-export type Milestone = "M4" | "M5" | "M6";
+export type Milestone = "M5" | "M6";
 
 export interface HttpClientOptions {
   /** "/api/v1" in the browser (Vite proxies it); an absolute URL in Node tests. */
@@ -71,7 +71,12 @@ export class HttpClient implements HorizonClient {
     create: (input) => this.t.post<World>("/worlds", input),
     update: (id, patch) => this.t.patch<World>(`/worlds/${enc(id)}`, patch),
     delete: (id) => this.t.delete(`/worlds/${enc(id)}`),
-    uploadCover: later("M4"),
+    // M4: multipart, one `file` part; the backend checks the content (magic bytes) and re-encodes it.
+    uploadCover: (id, file) => {
+      const form = new FormData();
+      form.append("file", file, file.name || "cover");
+      return this.t.postForm<World>(`/worlds/${enc(id)}/cover`, form);
+    },
   };
 
   characters: HorizonClient["characters"] = {
@@ -82,14 +87,15 @@ export class HttpClient implements HorizonClient {
     memory: (id) => this.t.get<MemoryItem[]>(`/characters/${enc(id)}/memory`),
     knowledge: (id) => this.t.get<KnowledgeSource[]>(`/characters/${enc(id)}/knowledge`),
     knowledgeSource: (sourceId) => this.t.get<{ source: KnowledgeSource; chunks: KnowledgeChunk[] }>(`/knowledge/${enc(sourceId)}`),
-    createDraft: later("M4"),
-    update: later("M4"),
-    lockPortrait: later("M4"),
-    approve: later("M4"),
-    archive: later("M4"),
-    restore: later("M4"),
-    delete: later("M4"),
-    acceptAssetVersion: later("M4"),
+    // M4 (generation-jobs): the character lifecycle.
+    createDraft: (worldId, input) => this.t.post<{ character: Character; job: GenerationJob }>(`/worlds/${enc(worldId)}/characters`, input),
+    update: (id, patch) => this.t.patch<Character>(`/characters/${enc(id)}`, patch),
+    lockPortrait: (id, candidateId) => this.t.post<Character>(`/characters/${enc(id)}/lock-portrait`, { candidateId }),
+    approve: (id) => this.t.post<Character>(`/characters/${enc(id)}/approve`),
+    archive: (id) => this.t.post<Character>(`/characters/${enc(id)}/archive`),
+    restore: (id) => this.t.post<Character>(`/characters/${enc(id)}/restore`),
+    delete: (id) => this.t.delete(`/characters/${enc(id)}`),
+    acceptAssetVersion: (assetId) => this.t.post<Character>(`/assets/${enc(assetId)}/accept`),
     topUpEnergy: (id, points) => this.t.post<Energy>(`/characters/${enc(id)}/energy/top-up`, { points }),
     setEnergyMax: (id, points) => this.t.put<Energy>(`/characters/${enc(id)}/energy/max`, { points }),
     forgetMemory: later("M5"),
@@ -115,10 +121,11 @@ export class HttpClient implements HorizonClient {
         unsub();
       };
     },
-    estimate: later("M4"),
-    start: later("M4"),
-    cancel: later("M4"),
-    retryTask: later("M4"),
+    // M4 (generation-jobs): `start` is refused before anything is queued (key, one active job, caps).
+    estimate: (input) => this.t.post<{ estimatedCostUsd: number }>("/jobs/estimate", input),
+    start: (input) => this.t.post<GenerationJob>("/jobs", input),
+    cancel: (jobId) => this.t.post<GenerationJob>(`/jobs/${enc(jobId)}/cancel`).then(() => undefined),
+    retryTask: (jobId, taskId) => this.t.post<GenerationJob>(`/jobs/${enc(jobId)}/tasks/${enc(taskId)}/retry`).then(() => undefined),
   };
 
   sessions: HorizonClient["sessions"] = {

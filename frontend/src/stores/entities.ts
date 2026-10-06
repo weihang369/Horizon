@@ -26,7 +26,11 @@ export const IDLE: Res = { status: "idle", stale: 0 };
 
 export const entities = createStore<EntitiesState>(() => ({ res: {}, chars: {} }));
 
-const inflight = new Map<string, Promise<unknown>>();
+/** In-flight fetches, tagged with the key's version when they started. */
+const inflight = new Map<string, { v: number; p: Promise<unknown> }>();
+/** Bumped by invalidate() and putResource(): a fetch that started before a bump is stale and never written. */
+const versions = new Map<string, number>();
+const bump = (key: string) => versions.set(key, (versions.get(key) ?? 0) + 1);
 
 function absorb(data: unknown): void {
   const put = (c: Character) => entities.setState((s) => ({ chars: { ...s.chars, [c.id]: c } }));
@@ -40,36 +44,55 @@ function absorb(data: unknown): void {
   }
 }
 
-/** Fetch a resource (deduped). Keeps old data visible while refetching. */
+/**
+ * Fetch a resource (deduped). Keeps old data visible while refetching. A fetch that started before the key was
+ * invalidated or written is not reused, and its late answer never overwrites newer data (an event can land while a
+ * request is on the wire).
+ */
 export function loadResource<T>(key: string, fetcher: () => Promise<T>, opts?: { force?: boolean }): Promise<T> {
   const cur = entities.getState().res[key];
   if (!opts?.force && cur?.status === "ready") return Promise.resolve(cur.data as T);
+  const v = versions.get(key) ?? 0;
   const running = inflight.get(key);
-  if (running) return running as Promise<T>;
+  if (running && running.v === v) return running.p as Promise<T>;
   entities.setState((s) => ({ res: { ...s.res, [key]: { ...(s.res[key] ?? IDLE), status: s.res[key]?.data !== undefined ? "ready" : "loading" } } }));
+  const entry: { v: number; p: Promise<unknown> } = { v, p: Promise.resolve() };
+  const settle = (): boolean => {
+    if (inflight.get(key) === entry) inflight.delete(key);
+    return (versions.get(key) ?? 0) === v;
+  };
+  // Superseded: answer with the newer data, or (a first load invalidated mid-flight, which no hook refetches while it
+  // is "loading") with a fresh fetch, joining one already under way.
+  const again = (): T | Promise<T> => {
+    const now = entities.getState().res[key];
+    return now?.status === "loading" ? loadResource(key, fetcher, { force: true }) : (now?.data as T);
+  };
   const p = fetcher().then(
     (data) => {
-      inflight.delete(key);
+      if (!settle()) return again();
       absorb(data);
       entities.setState((s) => ({ res: { ...s.res, [key]: { data, status: "ready", stale: s.res[key]?.stale ?? 0 } } }));
       return data;
     },
     (err) => {
-      inflight.delete(key);
+      if (!settle()) return again();
       const e = toHorizonError(err).toJSON();
       entities.setState((s) => ({ res: { ...s.res, [key]: { ...(s.res[key] ?? IDLE), status: "error", error: e } } }));
       throw err;
     },
   );
-  inflight.set(key, p);
+  entry.p = p;
+  inflight.set(key, entry);
   return p;
 }
 
 /** Mark keys stale (prefix match). Mounted hooks refetch. */
 export function invalidate(pred: (key: string) => boolean): void {
+  const keys = Object.keys(entities.getState().res).filter(pred);
+  keys.forEach(bump);
   entities.setState((s) => {
     const res = { ...s.res };
-    for (const k of Object.keys(res)) if (pred(k)) res[k] = { ...res[k], stale: res[k].stale + 1 };
+    for (const k of keys) if (res[k]) res[k] = { ...res[k], stale: res[k].stale + 1 };
     return { res };
   });
 }
@@ -80,6 +103,7 @@ export function invalidateAll(): void {
 
 /** Optimistic local write (after a command resolves with the new entity). */
 export function putResource<T>(key: string, data: T): void {
+  bump(key);
   absorb(data);
   entities.setState((s) => ({ res: { ...s.res, [key]: { data, status: "ready", stale: s.res[key]?.stale ?? 0 } } }));
 }

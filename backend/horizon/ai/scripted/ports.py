@@ -10,7 +10,7 @@ from __future__ import annotations
 import math
 import random
 import re
-from collections.abc import AsyncIterator, Callable
+from collections.abc import AsyncIterator, Callable, Sequence
 from dataclasses import dataclass
 from typing import Any
 
@@ -83,6 +83,8 @@ class AiDeps:
     timing: Timing
     clock: Callable[[], Clock]
     window_tokens: int = 6000
+    palette_ids: Callable[[], Sequence[str]] = lambda: ()    # M4: the shipped palettes (drafts pick from these)
+    schema: Callable[[], Any] = lambda: None                 # M4: the contract schema (the naive drafter validates)
 
 
 def emotion_candidates(chosen: str, rng: random.Random) -> list[dict[str, Any]]:

@@ -99,9 +99,8 @@ describe("HttpClient", () => {
   it("methods without a backend yet reject with validation + availableIn, without a request", async () => {
     const { c, calls } = make(() => json(200, {}));
     const notYet: [string, () => Promise<unknown>, string][] = [
-      ["jobs.start", () => c.jobs.start({ characterId: "chr_a", kind: "song" }), "M4"],
-      ["worlds.uploadCover", () => c.worlds.uploadCover("wld_a", new Blob() as File), "M4"],
       ["characters.addKnowledge", () => c.characters.addKnowledge("chr_a", { type: "text", title: "t", text: "x" }), "M5"],
+      ["characters.forgetMemory", () => c.characters.forgetMemory("mem_a"), "M5"],
     ];
     for (const [name, call, m] of notYet) {
       const e = (await call().catch((x: unknown) => x)) as HorizonError;
@@ -292,5 +291,59 @@ describe("HttpClient", () => {
     es.emit("message", { type: "task.update", jobId: "job_a", task: {} });
     es.emit("message", { type: "job.done", job: { ...job, status: "succeeded" } });
     expect(seen).toEqual(["job.progress", "task.update", "job.done"]);
+  });
+
+  it("M4: uploadCover is one multipart POST with an Idempotency-Key", async () => {
+    const world = { id: "wld_a", name: "A", cover: { kind: "upload", url: "/assets/gen/wld_a/cover_v1.webp" } };
+    const { c, calls } = make(() => json(200, world), ["k-cover"]);
+    const png = new File([new Uint8Array([0x89, 0x50, 0x4e, 0x47])], "cover.png", { type: "image/png" });
+    const w = await c.worlds.uploadCover("wld_a", png);
+    expect(w.cover).toEqual({ kind: "upload", url: "/assets/gen/wld_a/cover_v1.webp" });
+    expect(calls).toHaveLength(1);
+    const { url, init } = calls[0];
+    expect([url, init?.method]).toEqual(["http://h/api/v1/worlds/wld_a/cover", "POST"]);
+    const headers = init?.headers as Record<string, string>;
+    expect(headers["Idempotency-Key"]).toBe("k-cover");
+    expect(headers["Content-Type"]).toBeUndefined();   // fetch sets the multipart boundary
+    const form = init?.body as FormData;
+    expect(form).toBeInstanceOf(FormData);
+    expect((form.get("file") as File).name).toBe("cover.png");
+  });
+
+  it("M4: jobs.start is one POST /jobs; subscribe gets its task.update and job.done from the global stream", async () => {
+    FakeES.all = [];
+    const job = { id: "job_p", characterId: "chr_a", kind: "portrait_candidates", status: "queued", tasks: [] };
+    const { c, calls } = make(() => json(201, job), ["k-job"]);
+    const started = await c.jobs.start({ characterId: "chr_a", kind: "portrait_candidates" });
+    expect(started.id).toBe("job_p");
+    const sent = calls[0].init?.headers as Record<string, string> | undefined;
+    expect([calls[0].url, calls[0].init?.method, sent?.["Idempotency-Key"]]).toEqual(["http://h/api/v1/jobs", "POST", "k-job"]);
+    expect(JSON.parse(String(calls[0].init?.body))).toEqual({ characterId: "chr_a", kind: "portrait_candidates" });
+    const seen: string[] = [];
+    c.jobs.subscribe("job_p", (e) => seen.push(e.type));
+    await new Promise((r) => setTimeout(r, 0));
+    const es = FakeES.all[0];
+    es.emit("message", { type: "task.update", jobId: "job_p", task: { id: "task_1", status: "running" } });
+    es.emit("message", { type: "job.done", job: { ...job, status: "succeeded" } });
+    expect(seen).toEqual(["job.progress", "task.update", "job.done"]);
+  });
+
+  it("M4: the character and job routes", async () => {
+    const { c, calls } = make((url) => json(url.endsWith("/delete") ? 204 : 200, url.includes("/jobs") ? { id: "job_a" } : { id: "chr_a" }));
+    await c.characters.createDraft("wld_a", { seedPrompt: "Sarah, a doctor", intent: "expert" });
+    await c.characters.update("chr_a", { profile: { tagline: "x" } });
+    await c.characters.lockPortrait("chr_a", "cand_1");
+    await c.characters.approve("chr_a");
+    await c.characters.archive("chr_a");
+    await c.characters.restore("chr_a");
+    await c.characters.acceptAssetVersion("emo_1");
+    await c.jobs.estimate({ characterId: "chr_a", kind: "song" });
+    await c.jobs.cancel("job_a");
+    await c.jobs.retryTask("job_a", "task_1");
+    expect(calls.map((x) => `${x.init?.method} ${x.url.replace("http://h/api/v1", "")}`)).toEqual([
+      "POST /worlds/wld_a/characters", "PATCH /characters/chr_a", "POST /characters/chr_a/lock-portrait",
+      "POST /characters/chr_a/approve", "POST /characters/chr_a/archive", "POST /characters/chr_a/restore",
+      "POST /assets/emo_1/accept", "POST /jobs/estimate", "POST /jobs/job_a/cancel", "POST /jobs/job_a/tasks/task_1/retry",
+    ]);
   });
 });

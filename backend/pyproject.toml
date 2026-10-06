@@ -17,6 +17,8 @@ dependencies = [
   "jsonschema>=4.23",
   "python-dotenv>=1.0",
   "tzdata>=2024.2",
+  "pillow>=12.3.0",
+  "python-multipart>=0.0.32",
 ]
 
 [project.scripts]
@@ -89,5 +91,6 @@ ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 module = ["horizon.domain.*", "horizon.contract.*", "horizon.services.runtime.reducer", "horizon.gateway.*", "horizon.ai.*",
-          "horizon.sessions.*"]
+          "horizon.sessions.*", "horizon.services.jobs.*", "horizon.services.assets", "horizon.services.characters",
+          "horizon.services.theme", "horizon.storage.*"]
 strict = true

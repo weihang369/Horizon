@@ -114,3 +114,20 @@ async def test_completed_stream_records_provider_cost(api: Api) -> None:
     assert len(chunks) == 5
     (row,) = await ledger(api)
     assert row["cost_source"] == "provider" and row["cost_usd"] == 0.00042 and row["tokens_cached"] == 1024
+
+
+async def test_a_hold_released_during_the_spend_read_still_counts(api: Api) -> None:
+    """A call commits its row and releases its hold while a preflight awaits the ledger, whose snapshot predates the
+    commit: the hold must still be counted, or the call is counted nowhere and one more fits under the cap."""
+    gw = build_gateway(api, caps=Caps(daily_cap_usd=0.05, creation_cap_usd=1, warn_at_pct=80))
+    other = gw.book.reserve(0.047)
+
+    async def stale_spent_today() -> float:
+        gw.book.release(other)  # the other call finishes mid-read
+        return 0.0              # but this read's snapshot predates its row
+
+    gw.ledger.spent_today = stale_spent_today
+    with pytest.raises(ProviderError) as e:
+        await gw._preflight(call_ctx("host", world_id="wld_seedMeridian"), 0.004)
+    assert e.value.code == "daily_budget_exceeded"
+    assert gw.book.total() == 0

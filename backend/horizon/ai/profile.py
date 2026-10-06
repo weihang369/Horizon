@@ -1,9 +1,10 @@
 """AI profile selection (doc 05 §1; ai-ports "AI profile selection"; design OQ-3, OQ-14).
 
 `HORIZON_AI_PROFILE` (`scripted` | `naive`) selects every port; without it the profile is `naive` when a key is set and
-`scripted` otherwise. `HORIZON_AI_<PORT>` overrides one port. Only the turn engine and the router have naive
-implementations in M3; every other port is scripted in both profiles. In test mode, `POST /_test/ai-profile` replaces
-the selection at runtime.
+`scripted` otherwise. `HORIZON_AI_<PORT>` overrides one port. The turn engine, the router (M3), the profile drafter and
+the image generator (M4) have naive implementations; every other port is scripted in both profiles (the song is the
+procedural theme in both, D-83). The creation port is called `drafter`, not `profile`, because `HORIZON_AI_PROFILE` is
+the selector itself. In test mode, `POST /_test/ai-profile` replaces the selection at runtime.
 """
 
 from __future__ import annotations
@@ -12,6 +13,7 @@ from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
 from typing import Any, Literal
 
+from horizon.ai.scripted.creation import ProceduralSong, ScriptedDrafter, ScriptedImageGenerator
 from horizon.ai.scripted.ports import (
     AiDeps,
     ScriptedDebateHost,
@@ -24,8 +26,8 @@ from horizon.ai.scripted.ports import (
 )
 
 Impl = Literal["scripted", "naive"]
-PORTS = ("turn", "router", "reactions", "host", "director", "summariser", "guardrail")
-NAIVE_PORTS = frozenset({"turn", "router"})
+PORTS = ("turn", "router", "reactions", "host", "director", "summariser", "guardrail", "drafter", "image", "song")
+NAIVE_PORTS = frozenset({"turn", "router", "drafter", "image"})
 ENV_PROFILE = "HORIZON_AI_PROFILE"
 
 
@@ -86,13 +88,20 @@ class AiPorts:
             if port == "turn":
                 from horizon.ai.naive.turn import NaiveTurnEngine
                 return NaiveTurnEngine(d)
+            if port == "drafter":
+                from horizon.ai.naive.creation import NaiveDrafter
+                return NaiveDrafter(d, d.schema, d.palette_ids)
+            if port == "image":
+                from horizon.ai.naive.creation import NaiveImageGenerator
+                return NaiveImageGenerator(d)
             from horizon.ai.naive.router import JevRouter
             return JevRouter(d)
         builders: dict[str, Callable[[], Any]] = {
             "turn": lambda: ScriptedTurnEngine(d), "router": lambda: ScriptedRouter(d),
             "reactions": lambda: ScriptedReactions(d), "host": lambda: ScriptedDebateHost(d),
             "director": lambda: ScriptedWatchDirector(), "summariser": lambda: ScriptedSummariser(d),
-            "guardrail": lambda: ScriptedGuardrail()}
+            "guardrail": lambda: ScriptedGuardrail(), "drafter": lambda: ScriptedDrafter(d, d.palette_ids),
+            "image": lambda: ScriptedImageGenerator(d), "song": lambda: ProceduralSong()}
         return builders[port]()
 
     def turn(self, key_set: bool) -> Any:
@@ -115,6 +124,15 @@ class AiPorts:
 
     def guardrail(self, key_set: bool) -> Any:
         return self._get("guardrail", key_set)
+
+    def drafter(self, key_set: bool) -> Any:
+        return self._get("drafter", key_set)
+
+    def image(self, key_set: bool) -> Any:
+        return self._get("image", key_set)
+
+    def song(self, key_set: bool) -> Any:
+        return self._get("song", key_set)
 
     def override(self, port: str, impl: Any) -> None:
         """Tests: inject one port's implementation for both profiles (e.g. a blocking guardrail, design D13)."""

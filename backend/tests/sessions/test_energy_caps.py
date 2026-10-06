@@ -8,6 +8,7 @@ from typing import Any
 
 from horizon.events.bus import GLOBAL
 from tests.conftest import Api
+from tests.jobs.kit import cancel_overlay_jobs
 from tests.sessions.kit import API, assert_reduces, chars, command, create, events, messages, snapshot
 from tests.sessions.test_turns import FixedEngine
 
@@ -94,6 +95,7 @@ async def test_cap_reached_by_the_greeting(api: Api) -> None:
 
 async def test_crossing_the_cap_pauses_then_a_raised_cap_resumes(api: Api) -> None:
     await api.set_key()
+    await cancel_overlay_jobs(api)  # M4: the test-mode overlay job would spend in the background
     sid = (await create(api, "one_on_one", ["chr_seedAmara"]))["session"]["id"]
     await api.drive(6000)
     spent = (await api.json(f"{API}/settings"))["spentTodayUsd"]
@@ -118,6 +120,7 @@ async def test_crossing_the_cap_pauses_then_a_raised_cap_resumes(api: Api) -> No
 
 async def test_budget_warning_inside_a_session(api: Api) -> None:
     await api.set_key()
+    await cancel_overlay_jobs(api)
     sid = (await create(api, "one_on_one", ["chr_seedAmara"]))["session"]["id"]
     await api.drive(6000)
     spent = (await api.json(f"{API}/settings"))["spentTodayUsd"]

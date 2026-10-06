@@ -4,7 +4,8 @@
   lifecycle gate (requests wait while a factory reset runs). Streams are logged but never counted as in-flight.
 - `Idempotency` (doc 03 §1, design D10): `POST` + `Idempotency-Key` → stored in `idempotency_keys` (24 h, survives
   restarts). Same key + same body → the stored status and body; a different body → 409; while the first request is
-  still in flight → wait for it. A 5xx result is not kept, so a retry runs again.
+  still in flight → wait for it. A 5xx result is not kept, so a retry runs again. An upload path's byte limit (M4:
+  the world cover) applies while the body is buffered, so a keyed upload can't grow past it either (413).
 """
 
 from __future__ import annotations
@@ -21,7 +22,8 @@ from typing import Any
 from sqlalchemy import delete, select
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
-from horizon.api.errors import conflict
+from horizon.api.errors import HorizonHTTPError, conflict
+from horizon.api.uploads import body_limit, too_large
 from horizon.db import tables as t
 from horizon.domain.timeutil import to_iso
 from horizon.logs import request_id_var
@@ -86,12 +88,20 @@ class Idempotency:
             await self.app(scope, receive, send)
             return
         rt = scope["app"].state.rt
+        limit = body_limit(path)
+        declared = next((v.decode() for k, v in scope["headers"] if k == b"content-length"), "")
+        if limit is not None and declared.isdigit() and int(declared) > limit:
+            await _send_error(send, too_large())
+            return
         body = b""
         more = True
         while more:
             msg = await receive()
             body += msg.get("body", b"")
             more = bool(msg.get("more_body", False))
+            if limit is not None and len(body) > limit:
+                await _send_error(send, too_large())
+                return
         sha = hashlib.sha256(body).hexdigest()
 
         while True:
@@ -146,6 +156,12 @@ class Idempotency:
             ev = self._waiting.pop(key, None)
             if ev is not None:
                 ev.set()
+
+
+async def _send_error(send: Send, err: HorizonHTTPError) -> None:
+    payload = json.dumps(err.body(), separators=(",", ":")).encode("utf-8")
+    await send({"type": "http.response.start", "status": err.status, "headers": [(b"content-type", b"application/json")]})
+    await send({"type": "http.response.body", "body": payload})
 
 
 async def _send_raw(send: Send, status: int, body: str, ctype: str | None) -> None:

@@ -66,6 +66,13 @@ class LiveSessionManager:
             del self.actors[sid]
         await current.stop()
 
+    def generating_with(self, character_id: str) -> str | None:
+        """The live session in which this character is a participant while a turn is under way (delete → 409)."""
+        for sid, a in self.actors.items():
+            if not a.stopped and a.generating and any(p["characterId"] == character_id for p in a.session["participants"]):
+                return sid
+        return None
+
     def active_other(self, sid: str | None) -> str | None:
         for other, a in self.actors.items():
             if other != sid and not a.stopped and a.generating:

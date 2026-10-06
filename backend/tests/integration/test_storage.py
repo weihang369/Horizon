@@ -6,6 +6,7 @@ import asyncio
 import json
 from pathlib import Path
 
+import pytest
 from alembic.autogenerate import compare_metadata
 from alembic.migration import MigrationContext
 from sqlalchemy import create_engine, select, text
@@ -85,6 +86,39 @@ async def test_reader_sees_committed_state_only(tmp_path: Path) -> None:
         assert (await conn.execute(text("SELECT count(*) FROM worlds"))).scalar_one() == 1
     await db.dispose()
 
+
+async def test_a_disposed_database_never_reopens(tmp_path: Path) -> None:
+    db = Database(_migrated(tmp_path))
+    await db.dispose()
+    with pytest.raises(RuntimeError, match="closed"):
+        async with db.read():
+            pass
+    with pytest.raises(RuntimeError, match="closed"):
+        async with db.write():
+            pass
+
+
+
+async def test_dispose_waits_for_a_read_under_way(tmp_path: Path) -> None:
+    """engine.dispose() cannot close a checked-out connection: dispose waits for it to come back first."""
+    db = Database(_migrated(tmp_path))
+    entered, release = asyncio.Event(), asyncio.Event()
+
+    async def reader() -> None:
+        async with db.read() as conn:
+            entered.set()
+            await release.wait()
+            await conn.execute(text("SELECT 1"))
+
+    task = asyncio.create_task(reader())
+    await entered.wait()
+    disposing = asyncio.create_task(db.dispose())
+    await asyncio.sleep(0.1)
+    assert not disposing.done()
+    release.set()
+    await task
+    await disposing
+    assert db._checked_out() == 0
 
 # ── 4.4 SpaceManager ──
 async def test_default_space_once(tmp_path: Path) -> None:

@@ -32,7 +32,10 @@ async def test_image_generate(core: HttpCore) -> None:
     r = await ImagesClient(core, 180).generate(model="bytedance-seed/seedream-5-0-flash", prompt="a portrait",
                                                refs=["data:image/png;base64,AAAA"], aspect_ratio="3:4", seed=7)
     sent = json.loads(route.calls.last.request.content)
-    assert sent["images"] == ["data:image/png;base64,AAAA"] and sent["seed"] == 7 and "resolution" not in sent
+    # The D-61 shape (run.mjs): `input_references` of type image_url, `n: 1`; no unverified `images` field.
+    assert sent["input_references"] == [{"type": "image_url", "image_url": {"url": "data:image/png;base64,AAAA"}}]
+    assert sent["n"] == 1 and sent["aspect_ratio"] == "3:4" and sent["seed"] == 7
+    assert "images" not in sent and "resolution" not in sent
     assert r.images[0].startswith(b"\x89PNG") and r.usage is not None and r.usage.cost_usd == 0.018
     assert r.generation_id == "gen-rec-000008"
 

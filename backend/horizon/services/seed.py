@@ -250,6 +250,11 @@ async def apply_seed(conn: AsyncConnection, data: SeedData, *, energy_day: Calla
         await conn.execute(update(t.image_assets).where(and_(t.image_assets.c.character_id.in_(seed_chars),
                                                              t.image_assets.c.id.not_in(seed_assets),
                                                              t.image_assets.c.kind == "emotion")).values(is_active=False))
+        # M4: user-generated candidate batches of seed characters go, so the shipped candidates show again (a locked
+        # one survives as an inactive neutral version pointing at the same file).
+        await conn.execute(delete(t.image_assets).where(and_(t.image_assets.c.character_id.in_(seed_chars),
+                                                             t.image_assets.c.kind == "candidate",
+                                                             t.image_assets.c.job_id.is_not(None))))
         await conn.execute(delete(t.image_assets).where(t.image_assets.c.id.in_(seed_assets)))
     await _insert(conn, t.image_assets, asset_rows)
 

@@ -1,0 +1,59 @@
+{
+ "input": {
+  "characterId": "chr_x",
+  "kind": "emotion_set"
+ },
+ "mode": "standard",
+ "parallel": 2,
+ "estimatedCostUsd": 0.126,
+ "tasks": [
+  {
+   "type": "emotion_image",
+   "emotion": "happy",
+   "ms": 15000,
+   "cost": 0.018,
+   "category": "image"
+  },
+  {
+   "type": "emotion_image",
+   "emotion": "sad",
+   "ms": 15000,
+   "cost": 0.018,
+   "category": "image"
+  },
+  {
+   "type": "emotion_image",
+   "emotion": "angry",
+   "ms": 15000,
+   "cost": 0.018,
+   "category": "image"
+  },
+  {
+   "type": "emotion_image",
+   "emotion": "surprised",
+   "ms": 15000,
+   "cost": 0.018,
+   "category": "image"
+  },
+  {
+   "type": "emotion_image",
+   "emotion": "thinking",
+   "ms": 15000,
+   "cost": 0.018,
+   "category": "image"
+  },
+  {
+   "type": "emotion_image",
+   "emotion": "embarrassed",
+   "ms": 15000,
+   "cost": 0.018,
+   "category": "image"
+  },
+  {
+   "type": "blink_frame",
+   "ms": 15000,
+   "cost": 0.018,
+   "category": "image"
+  }
+ ]
+}

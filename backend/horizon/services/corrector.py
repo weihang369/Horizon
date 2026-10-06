@@ -53,11 +53,12 @@ class CostCorrector:
         self.sleeper = sleeper
         self.max_attempts = max_attempts
         self._tasks: dict[str, asyncio.Task[None]] = {}
+        self._stopped = False
 
     # ── queue ──
     def enqueue(self, row_id: str) -> None:
-        if row_id in self._tasks:
-            return
+        if self._stopped or row_id in self._tasks:
+            return  # after stop() (a late shielded record on the way out) the next startup scan() picks the row up
         task = asyncio.get_running_loop().create_task(self._correct(row_id), name=f"correct:{row_id}")
         self._tasks[row_id] = task
 
@@ -86,6 +87,7 @@ class CostCorrector:
             await asyncio.gather(*list(self._tasks.values()), return_exceptions=True)
 
     async def stop(self) -> None:
+        self._stopped = True
         tasks = list(self._tasks.values())
         for task in tasks:
             task.cancel()

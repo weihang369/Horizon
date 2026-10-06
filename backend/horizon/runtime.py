@@ -1,8 +1,12 @@
 """The backend runtime: everything the app holds between requests, and the startup lifespan (doc 01 §8).
 
 Startup (in order): create `data/` → logging → `alembic upgrade head` → SpaceManager → seed if empty →
-close leftover `streaming` messages → [recover jobs: M4] → [drain the AI purge queue: M3] → resume cost corrections
-(M2) → sweeper.
+close leftover `streaming` messages → build the gateway, sessions and job scheduler → recover jobs (M4, step 6: never
+sent → requeued; result stored → derived only; sent without a result → failed, retryable) → drain the AI purge queue
+(M3) → resume cost corrections (M2) → sweeper.
+
+M4 (generation-jobs design D1): the JobScheduler, `image_slots` (2) and `music_slots` (1) beside the shared
+`llm_slots`, and the test-mode job faults. `stop()` and the factory reset stop the scheduler first.
 
 M2 (design D15): the key store, the gateway (the in-process fake provider in test mode), the reservation book, the
 ledger writer, per-character energy locks and the cost corrector are built on start and torn down on stop, so a factory
@@ -32,6 +36,7 @@ from sqlalchemy import select, text
 from horizon import logs
 from horizon.ai.decider import Decider, DeciderFixtures
 from horizon.ai.hooks import AiStateHooks, NoOpHooks
+from horizon.ai.image_prompt import ImagePromptCompiler
 from horizon.ai.profile import AiPorts, ProfileSpec
 from horizon.ai.scripted.ports import AiDeps
 from horizon.config import Config
@@ -90,12 +95,13 @@ class Gate:
                 self._idle.set()
 
     @asynccontextmanager
-    async def closed(self, own_requests: int = 1) -> AsyncIterator[None]:
+    async def closed(self) -> AsyncIterator[None]:
+        """Close the gate and wait for every in-flight request. The reset's own request is not gated (middleware
+        `UNGATED_SUFFIXES`), so there is none to leave out: counting one let the reset dispose the database under a
+        request still writing, whose connection then kept `horizon.db` open."""
         self._open.clear()
         try:
-            while self._inflight > own_requests:
-                self._idle.clear()
-                await asyncio.sleep(0.01)
+            await self._idle.wait()
             yield
         finally:
             self._open.set()
@@ -139,6 +145,13 @@ class Runtime:
         self._ai: AiPorts | None = None
         self._purge: PurgeWorker | None = None
         self.stream_faults: list[int] = []   # test mode: `stream_cut` one-shot faults (afterTokens), consumed per turn
+        # M4 (generation-jobs design D1): the scheduler, provider slots, scenario faults, palettes and the compiler.
+        self.image_slots = Slots(2)
+        self.music_slots = Slots(1)
+        self.job_faults: str | None = None   # test mode: "partial" | "all" | "song" (design D12)
+        self._jobs: Any = None
+        self.palettes: dict[str, tuple[str, str, str]] = load_palettes(cfg.seed_dir)
+        self.prompt_compiler = ImagePromptCompiler(load_style_presets(cfg.seed_dir))
 
     # ── accessors ──
     @property
@@ -191,6 +204,20 @@ class Runtime:
         return self._ai
 
     @property
+    def jobs(self) -> Any:
+        """The JobScheduler (`horizon.services.jobs.scheduler`)."""
+        if self._jobs is None:
+            raise RuntimeError("runtime not started")
+        return self._jobs
+
+    def palette_ids(self) -> list[str]:
+        return list(self.palettes)
+
+    def palette(self, palette_id: str) -> tuple[str, str, str]:
+        """(stage, primary, secondary) colours for the scripted placeholder portrait."""
+        return self.palettes.get(palette_id) or next(iter(self.palettes.values()), ("#1A1A22", "#FF4D2E", "#FFB199"))
+
+    @property
     def purge(self) -> PurgeWorker:
         if self._purge is None:
             raise RuntimeError("runtime not started")
@@ -231,7 +258,8 @@ class Runtime:
         cfg = self.cfg
         models = self.seed_settings["models"]
         self._keys = KeyStore(cfg.openrouter_key, cfg.data_dir, on_change=self._settings_changed)
-        self.fake = FakeOpenRouter(models=models.values()) if cfg.test_mode else None
+        self.fake = (FakeOpenRouter(models=models.values(), image_cost=self.prices.generation["portrait"])
+                     if cfg.test_mode else None)
         core = HttpCore(self._keys, transport=self.fake.transport() if self.fake else None)
         ledger = self._ledger = LedgerWriter(self.db, self.clock, self.energy_locks, self.energy_params)
         self.book.clear()
@@ -252,10 +280,21 @@ class Runtime:
         self.gateway.on_budget = manager.on_budget
         deps = AiDeps(gateway=lambda: self.gateway, decider=lambda: self.decider, prices=self.prices,
                       timing=self.runtime_cfg.timing, clock=lambda: self.clock,
-                      window_tokens=self.runtime_cfg.runtime.window_tokens)
+                      window_tokens=self.runtime_cfg.runtime.window_tokens, palette_ids=self.palette_ids,
+                      schema=lambda: self.schema)
         self._ai = AiPorts(deps, self.profile)
         self._purge = PurgeWorker(self.db, self.hooks, self.now_iso)
         self._purge.start()
+
+    def _build_m4(self) -> None:
+        from horizon.services.jobs.scheduler import JobScheduler
+
+        self._jobs = JobScheduler(self)
+
+    async def _stop_m4(self) -> None:
+        if self._jobs is not None:
+            await self._jobs.stop()
+        self._jobs = None
 
     async def _stop_m3(self) -> None:
         if self._sessions is not None:
@@ -267,10 +306,11 @@ class Runtime:
     async def _stop_m2(self) -> None:
         if self._decider is not None:
             await self._decider.stop()  # late decisions are recorded at their estimate on the way out
+        if self._gateway is not None:
+            await self._gateway.drain_background()  # before the corrector stops: a late row may still enqueue into it
         if self._corrector is not None:
             await self._corrector.stop()
         if self._gateway is not None:
-            await self._gateway.drain_background()
             await self._gateway.core.aclose()
         self.book.clear()
         self._gateway = self._corrector = self._keys = self._decider = None
@@ -323,17 +363,20 @@ class Runtime:
         if empty:
             await self.import_seed()
         await self.close_interrupted_streams()
-        # Step 6 (recover jobs) arrives with M4. Step 7 (drain ai_purge_queue) starts with the purge worker below.
         self.clock.period_override = None
         self.stream_faults = []
+        self.job_faults = None
         self._build_m2()
-        self._build_m3()
+        self._build_m3()  # step 7 (drain ai_purge_queue) starts with the purge worker
+        self._build_m4()
+        await self.jobs.recover()  # step 6, before the first request is served
         await self.corrector.scan()
         await asyncio.to_thread(sweep, cfg.data_dir, self.referenced_files_sync())
         self.started = True
         log.info("horizon backend ready (data=%s, test_mode=%s)", cfg.data_dir, cfg.test_mode)
 
     async def stop(self) -> None:
+        await self._stop_m4()
         await self._stop_m3()
         await self._stop_m2()
         self.bus.close_all()
@@ -360,12 +403,16 @@ class Runtime:
         if self._sessions is not None:  # seed sessions are replay-only, but drop any actor that read their old events
             for sid in [s.session["id"] for s in data.sessions]:
                 await self._sessions.release(sid)
+        if self._jobs is not None:  # M4: user jobs on seed characters are cancelled; overlay jobs are re-adopted below
+            await self._jobs.before_reset({c["id"] for c in data.characters}, {j["id"] for j in data.jobs})
         async with self.db.write() as tx:
             sids = await seeding.apply_seed(tx.conn, data, energy_day=self.energy_day, local_day=self.local_day)
             if sids:
                 await tx.conn.execute(t.ai_purge_queue.insert().values(scope="session", ids=sids, created_at=self.now_iso(),
                                                                        attempts=0, done_at=None))
             tx.publish(GLOBAL, {"type": "mock.reset"})
+        if self._jobs is not None:
+            await self._jobs.recover()
 
     async def factory_reset(self) -> None:
         """Wipe `data/` except `models/` and start again in-process (Windows-safe)."""
@@ -430,6 +477,16 @@ class Runtime:
         return refs
 
 
+def load_palettes(seed_dir: Path) -> dict[str, tuple[str, str, str]]:
+    doc = json.loads((seed_dir / "palettes.json").read_text(encoding="utf-8"))
+    return {str(p["id"]): (str(p.get("stage", "#1A1A22")), str(p["primary"]), str(p["secondary"])) for p in doc["data"]}
+
+
+def load_style_presets(seed_dir: Path) -> list[dict[str, Any]]:
+    doc = json.loads((seed_dir / "style-presets.json").read_text(encoding="utf-8"))
+    return list(doc["data"])
+
+
 def sweep(data_dir: Path, referenced: set[str], *, max_age_s: float = 3600) -> int:
     """Startup sweeper (doc 02 §2): remove `*.tmp` files and unreferenced generated files older than an hour."""
     removed = 0
@@ -457,8 +514,9 @@ def _on_rm_error(func: Any, path: str, _exc: Any) -> None:
     func(path)
 
 
-def wipe_data_dir(data_dir: Path, *, attempts: int = 5, delay: float = 0.2) -> None:
-    """Delete everything in `data/` except `models/`, retrying for Windows file locks (doc 02 §4)."""
+def wipe_data_dir(data_dir: Path, *, attempts: int = 10, delay: float = 0.2) -> None:
+    """Delete everything in `data/` except `models/`, retrying for Windows file locks (doc 02 §4). The back-off grows
+    (≈ 11 s in all): a virus scan or the indexer can hold `horizon.db` for a moment after a burst of writes."""
     if not data_dir.is_dir():
         return
     for child in list(data_dir.iterdir()):
@@ -474,4 +532,4 @@ def wipe_data_dir(data_dir: Path, *, attempts: int = 5, delay: float = 0.2) -> N
             except OSError:
                 if i == attempts - 1:
                     raise
-                time.sleep(delay)
+                time.sleep(delay * (i + 1))

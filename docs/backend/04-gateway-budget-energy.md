@@ -24,9 +24,9 @@ CallContext = { category, purpose, world_id, character_id?, session_id?, job_id?
 |---|---|---|
 | `chat` | `POST /api/v1/chat/completions` | `stream(req: ChatRequest, ctx) → AsyncIterator[ChatChunk]` · `complete(req, ctx) → ChatResult` |
 | `decisions` | `POST /api/alpha/decisions` (Jev, alpha) | `decide(state, questions, ctx, timeout_ms) → DecisionsResponse` (only the `Decider` calls it) |
-| `images` | `POST /api/v1/images` | `generate(prompt, refs: list[DataURL], resolution, aspect_ratio, seed?, ctx) → ImageResult` |
+| `images` | `POST /api/v1/images` | `generate(prompt, refs: list[DataURL], resolution, aspect_ratio, seed?, ctx) → ImageResult`. Body (the shape the D-61 run proved, M4): `model`, `prompt`, `n: 1`, `aspect_ratio`, `resolution`, and references as `input_references: [{type: "image_url", image_url: {url}}]` with data URLs; the image comes back in `data[0].b64_json`, the cost in `usage.cost` |
 | `embeddings` | `POST /api/v1/embeddings` | `embed(texts, model, ctx) → list[vector]` (batches of 32, pinned provider) |
-| `music` | Lyria 3 Clip (exact endpoint and format verified in M4) | `generate(brief_prompt, ctx) → AudioResult`; when unavailable, the free ambient bed (R-05) |
+| `music` | none yet: `google/lyria-3-clip` is not on OpenRouter (404, M2 live run) | Until a music model is listed, the `song` job writes the free procedural theme (`.proc.json`, D-83) and logs a free `model_exists` check; a real client plugs in behind `SongGenerator` later |
 | `meta` | `GET /api/v1/key`, `/api/v1/credits`, `/api/v1/generation?id=` (verified in M2) | `testConnection`, credits display, cost correction. Free; no ledger |
 
 ```python
