@@ -308,6 +308,8 @@ The song check is free (`model_exists` only). A paid music call needs a separate
 
 Recommended defaults are recorded here; confirm or override them before apply. The tasks implement the defaults.
 
+**Resolved on 2026-10-06 (stakeholder):** OQ-1/OQ-9 → Lyria 3 Clip in naive, procedural in scripted and as the fallback (D-87); OQ-7 → no automated image gate, users judge by eye (D-88); OQ-6 → hide the setting until specified (D-89); OQ-2 → keep the refusal, show "Generate a portrait first" in the UI (D-90). These four are built in a follow-up change. OQ-3, OQ-4, OQ-5, OQ-8, OQ-10, OQ-11, OQ-12 and OQ-13 are closed as implemented.
+
 | # | Question | Default (implemented) | Why |
 |---|---|---|---|
 | OQ-1 | **Theme songs without Lyria** (404 on OpenRouter) | **The procedural theme in both profiles, $0, no ledger row** (D9, D-83). `model_exists` is logged. A paid music call is never made in M4. | OpenRouter-only constraint. The app already renders `.proc.json`, and R-05 names this fallback. |
