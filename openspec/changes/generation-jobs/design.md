@@ -191,8 +191,9 @@ A second case covers "crash after step 5": the result is present, so only the We
 - **Scripted drafter.** It ports `draftFromSeed`/`regenerateField` (88 lines, deterministic) byte for byte. Shared fixtures (`backend/tests/fixtures/drafts/*.json`) are written by the existing `scripts/fork-fixtures/build.ts` (renamed in spirit to "shared fixtures"), and both languages assert them.
   - Billing follows the mock: four `profile` tasks, each a `simulated_call` at `profileDraft/4`.
 - **Naive drafter.**
-  - One DeepSeek `chat_complete` with `response_format: {type: "json_schema", strict: true}`, built from the contract's `CharacterProfile` + `AppearanceAttributes` + `paletteId` enum + `SongBrief`.
-  - The call uses `purpose: "profile"`, `creation: True`, `reasoning: {enabled: false}`, pinned routing (M2), and a 1,200 max-token budget.
+  - One DeepSeek `chat_complete` in JSON mode (`response_format: {type: "json_object"}`), with a JSON schema in the system prompt built from the contract's `CharacterProfile` + `AppearanceAttributes` + `paletteId` enum + `SongBrief`, restating every contract limit (a unit test keeps them in step).
+  - The call uses `purpose: "profile"`, `creation: True`, `reasoning: {enabled: false}`, pinned routing (M2), and a 2,400 max-token budget (one field: 1,200).
+  - *Amended after the live run (D13).* The first plan was strict `json_schema` with 1,200 tokens. Live, a whole draft measured 1,229 tokens, so every draft was cut off mid-JSON; and DeepSeek's own endpoint has no structured outputs, so under `require_parameters` the pinned provider was always skipped (45–99 s on a fallback, against 7–8 s on DeepSeek). The schema also lacked the contract's `vibe` ≤ 2, `tagline` ≤ 80 and non-empty `name`/`role`.
   - Its result is validated with the contract validator, and `age < 18` is a failure.
   - It runs in the first task. The other three tasks apply parts of the same result, at $0 and with no provider call. Their estimates are still `profileDraft/4` each, so the job's estimate stays mock-equal; the release at job end returns the unused hold.
   - `regenerate_field` uses one smaller call for one field.
@@ -267,6 +268,13 @@ It asserts:
 - a total under $0.05.
 
 The song check is free (`model_exists` only). A paid music call needs a separate approval (OQ-1).
+
+**Live run, 2026-10-06 (user-approved; $0.0062 of diagnosis plus $0.0379 for the passing run, $0.044 in all).** The first run failed at the draft (see D9: the 1,200-token cut-off and the routing). After the fix it passed in 35 s:
+- draft on DeepSeek, contract-valid, $0.001873;
+- Seedream base portrait 67 KB and `happy` edit 70 KB, both 768×1024 WebP, $0.018 each with `cost_source: provider`, so the image response shape matched;
+- each job's `actualCostUsd` equalled its ledger rows; total $0.037873.
+
+`model_exists("google/lyria-3-clip")` is false, but OpenRouter now lists `google/lyria-3-clip-preview` and `google/lyria-3-pro-preview`. D-83's premise ("OpenRouter lists no music model") no longer holds; wiring a real music model is a separate decision (OQ-1).
 
 ### D14. Tooling
 

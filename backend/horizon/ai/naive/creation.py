@@ -1,7 +1,7 @@
 """Naive creation ports (generation-jobs design D9; ai-ports "Profile drafter", "Image generator").
 
-- `NaiveDrafter`: one DeepSeek structured-output call (`response_format: json_schema`, strict) labelled `profile`,
-  validated against the contract (an age under 18, a missing field or a bad palette fails the task, retryably). The
+- `NaiveDrafter`: one DeepSeek JSON-mode call (`response_format: json_object`, the schema in the system prompt)
+  labelled `profile`, validated against the contract (an age under 18, a missing field or a bad palette fails the task, retryably). The
   draft's `profile` task makes the call; the other three draft tasks apply parts of the stored answer at $0.
 - `NaiveImageGenerator`: Seedream 5.0 Flash (D-61) through `generate_image` at 3:4 and 1K, `n: 1`. Edits, blinks and
   tweaks send the locked base original as their only reference image (a data URL).
@@ -23,8 +23,10 @@ from horizon.gateway.images import ImageResult
 from horizon.storage.images import data_url
 
 LATENCY_MS = {"base": 17_000.0, "edit": 8_000.0, "sheet": 17_000.0}   # the D-61 run's figures
-DRAFT_LATENCY_MS = 4_000.0
-MAX_TOKENS = 1_200
+DRAFT_LATENCY_MS = 8_000.0   # measured on DeepSeek in the 2026-10-06 live run (7–8 s)
+MAX_TOKENS = 2_400           # a whole draft measured 1,229 tokens: 1,200 cut every draft off mid-JSON
+FIELD_MAX_TOKENS = 1_200     # one rewritten field
+SCHEMA_PREFIX = "\nReturn only a JSON object that matches this JSON Schema (every property is required):\n"
 FIELDS = ("tagline", "greeting", "backstory", "goals")
 
 SYSTEM = ("You are Horizon's character drafter. From a one-line seed you write ONE original adult character (18 or "
@@ -46,11 +48,13 @@ def _obj(props: dict[str, Any]) -> dict[str, Any]:
 
 
 def draft_schema(palette_ids: Sequence[str]) -> dict[str, Any]:
-    """The strict JSON schema, built from the contract's `CharacterProfile`, `Appearance.attributes`, the shipped
-    palettes and `SongBrief` (strict mode: every property required, no extras)."""
+    """The JSON schema sent in the system prompt, built from the contract's `CharacterProfile`, `Appearance.attributes`,
+    the shipped palettes and `SongBrief`: every property required, no extras, and every contract limit restated (a test
+    keeps them in step), so the model is told each limit `parse_draft` enforces."""
     s = _str()
     profile = _obj({
-        "name": s, "role": s, "age": {"type": "integer", "minimum": 18}, "pronouns": s, "tagline": s,
+        "name": _str(minLength=1), "role": _str(minLength=1), "age": {"type": "integer", "minimum": 18}, "pronouns": s,
+        "tagline": _str(maxLength=80),
         "personality": _obj({"summary": s, "traits": _arr(s, minItems=3, maxItems=8)}), "backstory": s,
         "speakingStyle": _obj({"summary": s, "tone": s, "formality": _str(enum=["casual", "neutral", "formal"]),
                                "quirks": _arr(s), "catchphrases": _arr(s)}),
@@ -63,7 +67,7 @@ def draft_schema(palette_ids: Sequence[str]) -> dict[str, Any]:
         "hair": _obj({"length": s, "style": s, "color": s, "fringe": s}),
         "outfit": _obj({"archetype": s, "primaryColor": _str(pattern="^#[0-9A-Fa-f]{6}$"),
                         "secondaryColor": _str(pattern="^#[0-9A-Fa-f]{6}$")}),
-        "accessories": _arr(s, maxItems=3), "vibe": _arr(s)})
+        "accessories": _arr(s, maxItems=3), "vibe": _arr(s, maxItems=2)})
     brief = _obj({"genres": _arr(s), "moods": _arr(s), "bpm": {"type": "integer", "minimum": 60, "maximum": 160},
                   "instruments": _arr(s), "vibe": s})
     return _obj({"profile": profile, "attributes": attributes, "appearanceSummary": s,
@@ -110,16 +114,19 @@ class NaiveDrafter:
         return DRAFT_LATENCY_MS
 
     @staticmethod
-    def _request(model: str, system: str, user: str, schema_name: str, schema: dict[str, Any]) -> ChatRequest:
-        return ChatRequest(model=model, max_tokens=MAX_TOKENS, reasoning={"enabled": False},
+    def _request(model: str, user: str, schema: dict[str, Any], max_tokens: int) -> ChatRequest:
+        """JSON mode, not strict `json_schema`: DeepSeek's own endpoint has no structured outputs, so under
+        `require_parameters` the pinned provider was always skipped for a fallback (45–99 s, against DeepSeek's 7–8 s,
+        in the 2026-10-06 live run). `parse_draft` still checks every answer against the contract."""
+        system = SYSTEM + SCHEMA_PREFIX + json.dumps(schema, separators=(",", ":"))
+        return ChatRequest(model=model, max_tokens=max_tokens, reasoning={"enabled": False},
                            messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
-                           response_format={"type": "json_schema",
-                                            "json_schema": {"name": schema_name, "strict": True, "schema": schema}})
+                           response_format={"type": "json_object"})
 
     async def draft(self, ctx: CallContext, *, seed_prompt: str, intent: str, cost_usd: float, duration_ms: float,
                     model: str, hooks: PaidHooks) -> dict[str, Any]:
         ids = list(self.palette_ids())
-        req = self._request(model, SYSTEM, f"Seed: {seed_prompt}\nIntent: {intent}", "character_draft", draft_schema(ids))
+        req = self._request(model, f"Seed: {seed_prompt}\nIntent: {intent}", draft_schema(ids), MAX_TOKENS)
         parsed: dict[str, Any] = {}
 
         async def after(r: ChatResult) -> None:
@@ -151,7 +158,7 @@ class NaiveDrafter:
             if hooks.after_response is not None:
                 await hooks.after_response(out)
 
-        await self.deps.gateway().chat_complete(self._request(model, SYSTEM, user, "field", schema), ctx,
+        await self.deps.gateway().chat_complete(self._request(model, user, schema, FIELD_MAX_TOKENS), ctx,
                                                 before_send=hooks.before_send, after_response=after,
                                                 commit_with=hooks.commit_with)
         return out

@@ -11,8 +11,11 @@ from typing import Any
 import httpx
 from PIL import Image
 
+from horizon.ai.naive.creation import draft_schema
 from horizon.ai.scripted.drafts import draft_from_seed
-from tests.conftest import Api
+from horizon.contract.validate import default_schema
+from horizon.runtime import load_palettes
+from tests.conftest import SEED_DIR, Api
 from tests.jobs.kit import API, cancel_overlay_jobs, character, job, ledger, rows, start
 
 SEED = Path(__file__).resolve().parents[3] / "seed"
@@ -73,9 +76,36 @@ async def test_naive_draft_is_schema_valid(api: Api) -> None:
     assert len(rows_) == 1 and rows_[0]["purpose"] == "profile" and rows_[0]["counts_to_creation_cap"]
     assert fake.counts["chat"] == 1   # one call; the other three parts apply the stored answer at $0
     body = json.loads(next(r for r in reversed(fake.requests) if r.url.path.endswith("/chat/completions")).content)
-    assert body["response_format"]["type"] == "json_schema" and body["response_format"]["json_schema"]["strict"] is True
+    # JSON mode (DeepSeek's own endpoint has no strict json_schema, so that skipped the pinned provider), the schema in
+    # the system prompt, and room for a whole draft (one measured 1,229 tokens in the 2026-10-06 live run)
+    assert body["response_format"] == {"type": "json_object"}
+    assert json.dumps(draft_schema(list(load_palettes(SEED_DIR))), separators=(",", ":")) in body["messages"][0]["content"]
     assert body["provider"]["order"] == ["DeepSeek"] and body["reasoning"] == {"enabled": False}
-    assert body["max_tokens"] == 1200
+    assert body["max_tokens"] == 2400
+
+
+def test_draft_schema_restates_every_contract_limit() -> None:
+    """The model is told each limit `parse_draft` enforces: a limit missing here (as `vibe` ≤ 2 was) fails drafts."""
+    defs = default_schema().defs
+    keys = ("minItems", "maxItems", "minLength", "maxLength", "minimum", "maximum", "pattern", "enum")
+
+    def walk(contract: Any, ours: Any, path: str) -> list[str]:
+        if not isinstance(contract, dict) or not isinstance(ours, dict):
+            return []
+        out = [f"{path}: {k}={contract[k]!r}, draft has {ours.get(k)!r}" for k in keys
+               if k in contract and contract[k] != ours.get(k) and not (k == "maximum" and contract[k] >= 2**53 - 1)]
+        for name, sub in (contract.get("properties") or {}).items():
+            if name in (ours.get("properties") or {}):
+                out += walk(sub, ours["properties"][name], f"{path}.{name}")
+        if "items" in contract and "items" in ours:
+            out += walk(contract["items"], ours["items"], f"{path}[]")
+        return out
+
+    ours = draft_schema(list(load_palettes(SEED_DIR)))["properties"]
+    gaps = (walk(defs["CharacterProfile"], ours["profile"], "profile")
+            + walk(defs["Appearance"]["properties"]["attributes"], ours["attributes"], "attributes")
+            + walk(defs["SongBrief"], ours["brief"], "brief"))
+    assert gaps == []
 
 
 async def test_naive_draft_missing_field_or_minor_fails(api: Api) -> None:

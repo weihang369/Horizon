@@ -143,6 +143,8 @@
 - [x] 9.3 A naive wizard run against the fake provider: `createDraft` → profile → Lean candidates → lock → emotion set → song → approve, under `HORIZON_AI_PROFILE=naive` in test mode. Verify: an integration test reaches `approved`, every asset is a ≤ 250 KB WebP, and the fake's request counts equal the planned calls exactly.
 - [x] 9.4 Write `tests/live/test_live_jobs.py` (design D13; marker `live`, key presence only, never printed): draft + one base + one emotion edit; assert the response shape, WebP ≤ 250 KB, `actualCostUsd` = the ledger sum, total < $0.05; a free `model_exists` for music. Verify: it is skipped in the default run. **The manual run happens only when the user asks**, and its result is recorded in this file and in design D13.
 
+  Run on 2026-10-06 at the user's request. The first run failed at the draft: every naive draft was cut off at 1,200 tokens (one measured 1,229), and strict `json_schema` routing skipped DeepSeek for a 45–99 s fallback. Fixed (design D9): 2,400 tokens, JSON mode on DeepSeek, and the contract limits restated in the schema with a drift test. The rerun passed in 35 s for $0.037873: a contract-valid draft on DeepSeek, a 67 KB base and a 70 KB `happy` edit (768×1024 WebP), and `actualCostUsd` equal to the ledger rows. Total spend, diagnosis included: $0.044. Finding left open: OpenRouter now lists `google/lyria-3-clip-preview` (D-83, OQ-1).
+
 ## 10. Close-out (integration checks only)
 
 - [x] 10.1 The full gates:
@@ -153,6 +155,7 @@
 
   Done on 2026-10-06, all on the final code:
   - backend: `uv run pytest` 583 passed, 3 deselected (the `live` tests), twice; `ruff` clean; `mypy` no issues in 118 source files;
+  - after the live-run drafter fix (9.4): `uv run pytest` 584 passed (the new schema drift test), `ruff` and `mypy` clean;
   - frontend: `npm test` 381 passed (29 files); `typecheck` clean; `lint` 87 warnings, the same as before this change (none new); `seed:check`, `fixtures:check` and `export-schema:check` pass;
   - `test:http`: 43 passed (every M1b–M4 test) and 9 skipped (the 8 M5 and 1 M6 tests), five runs in a row;
   - e2e on the MockClient: 34 passed.
