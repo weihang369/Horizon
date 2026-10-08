@@ -7,7 +7,7 @@ Defines the seams between the session runtime and the AI layer: which AI impleme
 ## Requirements
 
 ### Requirement: AI profile selection
-`HORIZON_AI_PROFILE` SHALL select `scripted` or `naive` for every AI port. Without it, the profile SHALL be `naive` when a key is set and `scripted` otherwise. A per-port variable (`HORIZON_AI_TURN`, `HORIZON_AI_ROUTER`, `HORIZON_AI_DRAFTER`, `HORIZON_AI_IMAGE`, and the others for each port) SHALL override the profile for that port. The turn engine, the router, the profile drafter and the image generator have naive implementations; every other port SHALL use its scripted one in both profiles.
+`HORIZON_AI_PROFILE` SHALL select `scripted` or `naive` for every AI port. Without it, the profile SHALL be `naive` when a key is set and `scripted` otherwise. A per-port variable (`HORIZON_AI_TURN`, `HORIZON_AI_ROUTER`, `HORIZON_AI_DRAFTER`, `HORIZON_AI_IMAGE`, `HORIZON_AI_SONG`, and the others for each port) SHALL override the profile for that port. The turn engine, the router, the profile drafter, the image generator and the song generator have naive implementations; every other port SHALL use its scripted one in both profiles.
 
 #### Scenario: Override one port
 - **WHEN** the backend starts with `HORIZON_AI_PROFILE=naive` and `HORIZON_AI_TURN=scripted`
@@ -16,6 +16,10 @@ Defines the seams between the session runtime and the AI layer: which AI impleme
 #### Scenario: Scripted images under a naive profile
 - **WHEN** the backend starts with `HORIZON_AI_PROFILE=naive` and `HORIZON_AI_IMAGE=scripted`
 - **THEN** portrait jobs produce placeholder images with no provider image request, while profile drafts use the naive drafter
+
+#### Scenario: Procedural songs under a naive profile
+- **WHEN** the backend starts with `HORIZON_AI_PROFILE=naive` and `HORIZON_AI_SONG=scripted`
+- **THEN** a `song` job produces the procedural theme with no provider music request and no music ledger row
 
 ### Requirement: Ports see frozen, scoped context
 Every AI port SHALL receive an immutable, JSON-serialisable context: the session, its participants with their energy, recent messages (active variants only), the latest rolling summary, mode config and state, and the world and character scope. A port SHALL reach the provider only through the gateway, with calls labelled by purpose. A port SHALL NOT read or write session rows directly.
@@ -108,8 +112,12 @@ The image generator SHALL produce one image from a prompt and optional reference
 - **THEN** the provider request carries the base portrait as its only reference image and the compiled edit instruction as its prompt
 
 ### Requirement: Song generator
-The song generator SHALL turn a brief into a theme song. While the provider lists no music model, it SHALL produce the free procedural theme from the brief, identical to the app's own mapping, in both profiles. The brief comes from the profile drafter's draft, or from the user's edit in the job input.
+The song generator SHALL turn a brief into a theme song. The brief comes from the profile drafter's draft, or from the user's edit in the job input. The scripted generator SHALL produce the free procedural theme from the brief, identical to the app's own mapping. The naive generator SHALL make one music call to the configured music model (`models.music`, Lyria 3 Clip by default) with an instrumental prompt compiled from the brief, and SHALL return the audio.
 
 #### Scenario: Procedural theme matches the app
 - **WHEN** the procedural theme is built for a brief in TypeScript and in Python
 - **THEN** both equal the shared fixture
+
+#### Scenario: Naive song prompt comes from the brief
+- **WHEN** the naive song generator runs for a brief with genres, moods, a BPM, instruments and a vibe
+- **THEN** the provider request names the configured music model, and its prompt states each of those brief values and asks for an instrumental piece with no vocals
