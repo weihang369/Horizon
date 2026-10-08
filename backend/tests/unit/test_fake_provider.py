@@ -143,3 +143,38 @@ async def test_park_holds_the_nth_image_request(no_sockets: None) -> None:
         assert (await asyncio.wait_for(second, 2)).images
     finally:
         await c.aclose()
+
+
+async def test_fake_music_streams_a_silent_mp3_and_counts_it(no_sockets: None) -> None:
+    """creation-followups task 2.3: an audio-modality chat request gets an MP3 stub in three pieces, at $0.04."""
+    from dataclasses import replace
+
+    from horizon.gateway.music import MusicClient
+    from horizon.storage.audio import is_mp3, mp3_duration
+    from tests.gwkit import gateway_config
+
+    c, f = core()
+    cfg = gateway_config()
+    try:
+        client = MusicClient(c, cfg)
+        r = await client.generate(model="google/lyria-3-clip-preview", prompt="Instrumental theme")
+        assert is_mp3(r.audio) and mp3_duration(r.audio) == round(8 * 1152 / 44100, 3)
+        assert r.chunks == 3 and r.usage is not None and r.usage.cost_usd == 0.04
+        assert f.counts["music"] == 1 and f.counts["chat"] == 1
+
+        f.music_mode = "fail"
+        with pytest.raises(ProviderError) as e:
+            await client.generate(model="m", prompt="x")
+        assert e.value.code == "provider_error" and not e.value.maybe_charged
+
+        f.music_mode = "not_mp3"
+        assert not is_mp3((await client.generate(model="m", prompt="x")).audio)
+
+        f.music_mode = "stall"
+        quick = MusicClient(c, replace(cfg, timeouts=replace(cfg.timeouts, music=0.2)))
+        with pytest.raises(ProviderError) as e:
+            await quick.generate(model="m", prompt="x")
+        assert e.value.code == "timeout" and e.value.maybe_charged
+        assert f.counts["music"] == 4
+    finally:
+        await c.aclose()

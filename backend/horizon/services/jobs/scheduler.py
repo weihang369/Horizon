@@ -134,9 +134,14 @@ class JobScheduler:
     # ── estimate / start ──
     def plan(self, job_input: Mapping[str, Any]) -> plans.JobPlan:
         try:
-            return plans.plan(job_input, lean=self.lean(), prices=self.rt.prices.generation, timing=self.timing)
+            return plans.plan(job_input, lean=self.lean(), prices=self.rt.prices.generation, timing=self.timing,
+                              song_paid=self.song_paid())
         except ValueError as e:
             raise validation(str(e), {"field": "kind"}) from e
+
+    def song_paid(self) -> bool:
+        """Whether a theme song is one paid Lyria call (naive, D-87) or the free procedural theme (design D5)."""
+        return bool(self.rt.ai.song(True).paid)
 
     async def estimate(self, job_input: Mapping[str, Any]) -> float:
         async with self.rt.db.read() as conn:
@@ -187,20 +192,21 @@ class JobScheduler:
             self.rt.book.release_job(job_id)
             raise
         self.launch(job_id)
-        if job_input["kind"] == "song":
+        if job_input["kind"] == "song" and self.song_paid():
             self.rt.spawn(f"music-probe:{job_id}", self._probe_music())
         async with self.rt.db.read() as conn:
             return await self._job_wire(conn, job_id)
 
     async def _probe_music(self) -> None:
-        """D-83: a free check that the configured music model is listed, logged once per song job start."""
+        """A free check that the configured music model is listed, logged once per Lyria song job start (D-87). It
+        gates nothing: an unlisted model fails its call, and the task falls back to the procedural theme."""
         model = str(self.rt.settings_doc()["models"].get("music", ""))
         try:
             listed = await self.rt.gateway.meta.model_exists(model)
         except Exception as e:  # informational only
             log.info("music model check failed for %s: %s", model, type(e).__name__)
             return
-        log.info("music model %s is %s on OpenRouter; the song job uses the procedural theme (D-83)", model,
+        log.info("music model %s is %s on OpenRouter; the song job calls it, with the procedural fallback (D-87)", model,
                  "listed" if listed else "not listed")
 
     async def _reserve(self, ch: Mapping[str, Any], job_id: str, amount: float, *, existing: bool) -> None:
@@ -476,7 +482,7 @@ class JobScheduler:
         if int(task["attempt"]) >= int(task["max_attempts"]):
             raise conflict("This task has used all its retries.", {"attempt": task["attempt"]})
         spec = plans.task_spec(job["kind"], task["type"], task["emotion"], sheet_job=sheet is not None,
-                               prices=self.rt.prices.generation, timing=self.timing)
+                               prices=self.rt.prices.generation, timing=self.timing, song_paid=self.song_paid())
         await self._reserve(ch, job_id, spec.est_usd, existing=True)
         try:
             async with self.rt.db.write() as tx:
@@ -589,8 +595,9 @@ class JobScheduler:
         async with self.rt.db.read() as conn:
             tasks = await self._task_rows(conn, job_id)
         sheet = any(x["type"] == "expression_sheet" for x in tasks)
+        paid = self.song_paid()
         return sum(plans.task_spec(kind, x["type"], x["emotion"], sheet_job=sheet, prices=self.rt.prices.generation,
-                                   timing=self.timing).est_usd for x in tasks if x["status"] == "queued")
+                                   timing=self.timing, song_paid=paid).est_usd for x in tasks if x["status"] == "queued")
 
     # ── shutdown ──
     async def stop(self) -> None:

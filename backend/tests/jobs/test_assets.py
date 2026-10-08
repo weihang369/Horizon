@@ -147,7 +147,7 @@ async def test_procedural_theme(api: Api) -> None:
     assert spec["kind"] == "horizon.theme" and spec["version"] == 1 and spec["seed"] == "chr_seedHana" and spec["brief"]
     assert [r for r in await ledger(api, j["id"]) if r["category"] == "music"] == []
     assert (await character(api, "chr_seedHana"))["themeSongId"] == song["id"]
-    assert api.rt.fake is not None and api.rt.fake.counts["models"] >= 1  # the free music-model check
+    assert api.rt.fake is not None and api.rt.fake.counts["models"] == 0  # no music model to check without Lyria
 
 
 async def test_regenerated_emotion_gets_a_new_url(api: Api) -> None:

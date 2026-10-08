@@ -69,7 +69,7 @@ export function ThemeStep() {
               </Button>
               {failed && <Button variant="ghost" onClick={() => void goStep("approve")}>Approve without song</Button>}
             </div>
-            <p className={s.fine}>Music: {song?.generation?.model ?? "google/lyria-3-clip"} · instrumental · {song?.licenseNote ?? "Placeholder: procedural WebAudio sketch (D-52)."}</p>
+            <p className={s.fine}>Music: {song?.generation?.model ?? "google/lyria-3-clip-preview"} · instrumental · {song?.licenseNote ?? "Placeholder: procedural WebAudio sketch (D-52)."}</p>
           </div>
         </div>
       </section>

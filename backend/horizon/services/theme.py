@@ -1,8 +1,9 @@
 """The procedural theme song (generation-jobs design D9, D-83): a port of `themeSpecFromBrief` (`frontend/src/audio/synth/
 spec.ts`), pinned by the shared fixtures in `tests/fixtures/theme_spec/`.
 
-While OpenRouter lists no music model, a `song` job writes this `.proc.json` spec; the app renders it with WebAudio
-(R-05, D-52). It costs nothing and has no audio `format`.
+The scripted song generator writes this `.proc.json` spec, and so does a naive song job whose Lyria call failed
+(creation-followups design D7, D-87); the app renders it with WebAudio (R-05, D-52). It costs nothing and has no audio
+`format`.
 """
 
 from __future__ import annotations
@@ -11,8 +12,15 @@ import math
 from collections.abc import Mapping
 from typing import Any
 
-LICENSE_NOTE = "Procedural theme rendered in the app from the brief (D-83): no music model is available yet, so it costs nothing."
+LICENSE_NOTE = "Procedural theme rendered in the app from the brief (D-83): it costs nothing."
+FALLBACK_NOTE = ("The music model was unavailable, so this is the procedural theme rendered in the app from the brief. "
+                 "Regenerate to try again.")
 MODEL = "procedural"
+CLIP_SECONDS = 30.0   # a Lyria 3 Clip's length, used when the MP3's frames can't be read
+
+
+def lyria_note(model: str) -> str:
+    return f"Composed by {model} through OpenRouter (D-87)."
 
 
 def theme_spec_from_brief(seed: str, brief: Mapping[str, Any], title: str | None = None) -> dict[str, Any]:

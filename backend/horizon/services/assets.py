@@ -45,8 +45,9 @@ def emotion_rel(world_id: str, character_id: str, emotion: str, variant: str, ve
     return f"{gen_dir(world_id, character_id)}/portrait_{emotion}{blink}_v{version}.webp"
 
 
-def song_rel(world_id: str, character_id: str, version: int) -> str:
-    return f"{gen_dir(world_id, character_id)}/song_v{version}.proc.json"
+def song_rel(world_id: str, character_id: str, version: int, ext: str = "proc.json") -> str:
+    """`song_v{N}.proc.json` (the procedural theme) or `song_v{N}.mp3` (a Lyria clip, D-87)."""
+    return f"{gen_dir(world_id, character_id)}/song_v{version}.{ext}"
 
 
 def cover_rel(world_id: str, version: int) -> str:

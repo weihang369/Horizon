@@ -65,6 +65,7 @@
         "chatFirstToken": 20000,
         "chatIdle": 30000,
         "image": 180000,
+        "music": 120000,
         "embedding": 30000,
         "meta": 10000,
         "decision": {

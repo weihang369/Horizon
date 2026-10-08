@@ -29,11 +29,14 @@ def test_placeholder_is_deterministic_per_task() -> None:
 
 
 def test_naive_ports_and_overrides() -> None:
-    assert NAIVE_PORTS == {"turn", "router", "drafter", "image"}
+    assert NAIVE_PORTS == {"turn", "router", "drafter", "image", "song"}
     spec = ProfileSpec.from_env({"HORIZON_AI_PROFILE": "naive", "HORIZON_AI_IMAGE": "scripted"})
     assert spec.choose("image", key_set=True) == "scripted"
     assert spec.choose("drafter", key_set=True) == "naive"
-    assert spec.choose("song", key_set=True) == "scripted"  # the procedural theme in both profiles (D-83)
+    assert spec.choose("song", key_set=True) == "naive"  # Lyria 3 Clip (D-87)
+    procedural = ProfileSpec.from_env({"HORIZON_AI_PROFILE": "naive", "HORIZON_AI_SONG": "scripted"})
+    assert procedural.choose("song", key_set=True) == "scripted"
+    assert ProfileSpec.from_env({}).choose("song", key_set=False) == "scripted"
     assert ProfileSpec.from_env({"HORIZON_AI_DRAFTER": "scripted"}).choose("drafter", key_set=True) == "scripted"
 
 

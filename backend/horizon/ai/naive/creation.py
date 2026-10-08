@@ -5,6 +5,9 @@
   draft's `profile` task makes the call; the other three draft tasks apply parts of the stored answer at $0.
 - `NaiveImageGenerator`: Seedream 5.0 Flash (D-61) through `generate_image` at 3:4 and 1K, `n: 1`. Edits, blinks and
   tweaks send the locked base original as their only reference image (a data URL).
+- `NaiveSong`: Lyria 3 Clip (D-87) through `generate_music`: one instrumental prompt compiled from the brief, a
+  30-second MP3 back. Audio that isn't a usable MP3 fails as a billed `provider_error` before it is stored; the job
+  worker then falls back to the procedural theme (creation-followups design D7).
 """
 
 from __future__ import annotations
@@ -13,16 +16,20 @@ import json
 from collections.abc import Callable, Mapping, Sequence
 from typing import Any
 
-from horizon.ai.ports import ImageJob, PaidHooks
+from horizon.ai.ports import ImageJob, PaidHooks, SongJob
 from horizon.ai.scripted.ports import AiDeps
 from horizon.contract.validate import ContractSchema
 from horizon.gateway.chat import ChatRequest, ChatResult
 from horizon.gateway.context import CallContext
 from horizon.gateway.errors import ProviderError
 from horizon.gateway.images import ImageResult
+from horizon.gateway.music import MusicResult
+from horizon.services import theme
+from horizon.storage.audio import MAX_SONG_BYTES, is_mp3
 from horizon.storage.images import data_url
 
 LATENCY_MS = {"base": 17_000.0, "edit": 8_000.0, "sheet": 17_000.0}   # the D-61 run's figures
+NAIVE_SONG_LATENCY_MS = 17_000.0   # measured in the 2026-10-08 live run: one 28 s clip in 16.3 s (design D9)
 DRAFT_LATENCY_MS = 8_000.0   # measured on DeepSeek in the 2026-10-06 live run (7–8 s)
 MAX_TOKENS = 2_400           # a whole draft measured 1,229 tokens: 1,200 cut every draft off mid-JSON
 FIELD_MAX_TOKENS = 1_200     # one rewritten field
@@ -187,3 +194,48 @@ class NaiveImageGenerator:
             aspect_ratio=job.aspect_ratio, before_send=hooks.before_send, after_response=after,
             commit_with=hooks.commit_with)
         return result.images[0]
+
+
+def _listed(values: Any) -> str:
+    return ", ".join(str(v).strip() for v in values if str(v).strip()) if isinstance(values, list) else ""
+
+
+def song_prompt(brief: Mapping[str, Any], title: str) -> str:
+    """The instrumental prompt for one clip (creation-followups design D4): every brief value that is set, then the
+    constraints. Deterministic, so the same brief always asks for the same piece."""
+    parts = [f'Instrumental theme music for "{title}".']
+    for label, key in (("Genres", "genres"), ("Mood", "moods"), ("Instruments", "instruments")):
+        if text := _listed(brief.get(key)):
+            parts.append(f"{label}: {text}.")
+    if isinstance(brief.get("bpm"), int | float):
+        parts.append(f"Tempo: about {int(brief['bpm'])} BPM.")
+    if vibe := str(brief.get("vibe") or "").strip():
+        parts.append(f"Feel: {vibe}.")
+    parts.append("No vocals, no lyrics. A 30-second piece that loops cleanly.")
+    return " ".join(parts)
+
+
+class NaiveSong:
+    model = "lyria"   # the configured `models.music` travels on each SongJob
+    paid = True
+
+    def __init__(self, deps: AiDeps) -> None:
+        self.deps = deps
+
+    def expected_ms(self, duration_ms: float) -> float:
+        return NAIVE_SONG_LATENCY_MS
+
+    def theme(self, seed: str, brief: Mapping[str, Any], title: str | None) -> dict[str, Any]:
+        return theme.theme_spec_from_brief(seed, brief, title)
+
+    async def generate(self, ctx: CallContext, job: SongJob, hooks: PaidHooks) -> bytes:
+        async def after(r: MusicResult) -> None:
+            if len(r.audio) > MAX_SONG_BYTES or not is_mp3(r.audio):   # billed: the row is still recorded, then raise
+                raise ProviderError("provider_error", "The music provider returned audio we couldn't use.")
+            if hooks.after_response is not None:
+                await hooks.after_response(r.audio)
+
+        result = await self.deps.gateway().generate_music(
+            ctx, model=job.model, prompt=song_prompt(job.brief, job.title), before_send=hooks.before_send,
+            after_response=after, commit_with=hooks.commit_with)
+        return result.audio

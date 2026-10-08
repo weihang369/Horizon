@@ -100,20 +100,42 @@ async def apply_emotion(conn: AsyncConnection, ch: RowMapping, *, emotion: str, 
 
 # ── song ──
 async def apply_theme(conn: AsyncConnection, ch: RowMapping, *, spec: Mapping[str, Any], brief: Mapping[str, Any],
-                      assets_dir: Path, job_id: str, now: str) -> str:
-    """D-83: the procedural theme as a new `.proc.json` version; the character's song row points at it."""
+                      assets_dir: Path, job_id: str, now: str, license_note: str = theme.LICENSE_NOTE,
+                      cost_usd: float = 0.0) -> str:
+    """D-83: the procedural theme as a new `.proc.json` version (the scripted song, or the D-87 fallback with its own
+    note and whatever a failed music call was billed); the character's song row points at it."""
+    return await _put_song(conn, ch, ext="proc.json", data=json.dumps(spec, ensure_ascii=False).encode("utf-8"),
+                           assets_dir=assets_dir, now=now, values={
+                               "duration_sec": theme.duration_sec(float(brief["bpm"])), "format": None, "bytes": None,
+                               "brief": dict(brief),
+                               "generation": {"model": theme.MODEL, "prompt": f"Instrumental theme: {brief.get('vibe', '')}",
+                                              "costUsd": round(cost_usd, 6), "jobId": job_id},
+                               "license_note": license_note})
+
+
+async def apply_audio_theme(conn: AsyncConnection, ch: RowMapping, *, audio: bytes, duration_sec: float | None,
+                            brief: Mapping[str, Any], model: str, prompt: str, cost_usd: float, assets_dir: Path,
+                            job_id: str, now: str) -> str:
+    """D-87: a Lyria clip (the stored original's bytes) as a new `.mp3` version."""
+    return await _put_song(conn, ch, ext="mp3", data=audio, assets_dir=assets_dir, now=now, values={
+        "duration_sec": duration_sec if duration_sec else theme.CLIP_SECONDS, "format": "mp3", "bytes": len(audio),
+        "brief": dict(brief),
+        "generation": {"model": model, "prompt": prompt, "costUsd": round(cost_usd, 6), "jobId": job_id},
+        "license_note": theme.lyria_note(model)})
+
+
+async def _put_song(conn: AsyncConnection, ch: RowMapping, *, ext: str, data: bytes, assets_dir: Path, now: str,
+                    values: Mapping[str, Any]) -> str:
+    """The next song version: its file first (a new immutable name), then the row, then `themeSongId`."""
     song_id = ch["theme_song_id"] or new_id("song")
     s = t.theme_songs.c
     prev = (await conn.execute(select(t.theme_songs).where(s.id == song_id))).mappings().first()
     top = (await conn.execute(select(func.coalesce(func.max(s.version), 0)).where(s.character_id == ch["id"]))).scalar_one()
     version = int(top) + 1 if prev is None or prev["rel_path"] else max(1, int(top))
-    rel = assets.song_rel(ch["world_id"], ch["id"], version)
-    await write_file(assets_dir, rel, json.dumps(spec, ensure_ascii=False).encode("utf-8"))
-    values = {"character_id": ch["id"], "status": "ready", "rel_path": rel, "duration_sec": theme.duration_sec(float(brief["bpm"])),
-              "format": None, "bytes": None, "loop": None, "gain_db": None, "brief": dict(brief), "instrumental": True,
-              "generation": {"model": theme.MODEL, "prompt": f"Instrumental theme: {brief.get('vibe', '')}", "costUsd": 0,
-                             "jobId": job_id},
-              "license_note": theme.LICENSE_NOTE, "version": version}
+    rel = assets.song_rel(ch["world_id"], ch["id"], version, ext)
+    await write_file(assets_dir, rel, data)
+    values = {"character_id": ch["id"], "status": "ready", "rel_path": rel, "loop": None, "gain_db": None,
+              "instrumental": True, "version": version, **values}
     if prev is not None:
         await conn.execute(update(t.theme_songs).where(s.id == song_id).values(**values))
     else:

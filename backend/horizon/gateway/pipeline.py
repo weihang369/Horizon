@@ -50,6 +50,7 @@ from horizon.gateway.embeddings import EmbeddingsClient, batches
 from horizon.gateway.errors import ProviderError
 from horizon.gateway.images import ImageResult, ImagesClient
 from horizon.gateway.meta import MetaClient
+from horizon.gateway.music import MusicClient, MusicResult
 from horizon.gateway.redact import redact_obj
 from horizon.gateway.reservations import Hold, ReservationBook
 from horizon.gateway.types import GatewayConfig, Usage
@@ -174,6 +175,7 @@ class Gateway:
     chat: ChatClient = field(init=False)
     decisions: DecisionsClient = field(init=False)
     images: ImagesClient = field(init=False)
+    music: MusicClient = field(init=False)
     embeddings: EmbeddingsClient = field(init=False)
     meta: MetaClient = field(init=False)
     _background: set[asyncio.Task[Any]] = field(init=False, default_factory=set)
@@ -184,6 +186,7 @@ class Gateway:
         self.chat = ChatClient(self.core, self.cfg)
         self.decisions = DecisionsClient(self.core, self.decision_model)
         self.images = ImagesClient(self.core, t.image)
+        self.music = MusicClient(self.core, self.cfg)
         self.embeddings = EmbeddingsClient(self.core, provider=self.cfg.embedding_provider, batch_size=self.cfg.embed_batch,
                                            timeout_s=t.embedding)
         self.meta = MetaClient(self.core, t.meta)
@@ -507,6 +510,17 @@ class Gateway:
             return r, Billing(r.generation_id, r.usage, r.provider, model)
 
         return await self.paid(ctx, estimate_image(self.prices, kind), send, model=model, summary={"kind": "image"},
+                               before_send=before_send, after_response=after_response, commit_with=commit_with)
+
+    async def generate_music(self, ctx: CallContext, *, model: str, prompt: str, before_send: BeforeSend | None = None,
+                             after_response: Callable[[MusicResult], Awaitable[None]] | None = None,
+                             commit_with: CommitWith | None = None) -> MusicResult:
+        """One theme-song clip (creation-followups D1, D-87), estimated at the song price (`pricing.generation.song`)."""
+        async def send() -> tuple[MusicResult, Billing]:
+            r = await self.music.generate(model=model, prompt=prompt)
+            return r, Billing(r.generation_id, r.usage, r.provider, model)
+
+        return await self.paid(ctx, self.prices.generation["song"], send, model=model, summary={"kind": "music"},
                                before_send=before_send, after_response=after_response, commit_with=commit_with)
 
     async def scripted_generation(self, ctx: CallContext, *, cost_usd: float, model: str,

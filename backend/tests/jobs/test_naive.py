@@ -166,12 +166,15 @@ async def test_svg_base_is_rejected_for_naive_edits(api: Api) -> None:
     assert r.status_code == 422
     err = r.json()["error"]
     assert err["code"] == "validation" and err["details"]["reason"] == "base_not_raster"
+    r = await api.post(f"{API}/jobs", {"characterId": "chr_seedHana", "kind": "emotion_set"})   # D-90's scenario
+    assert r.status_code == 422 and r.json()["error"]["details"]["reason"] == "base_not_raster"
     assert await rows(api, "SELECT id FROM generation_jobs WHERE character_id = 'chr_seedHana'") == []
+    assert api.rt.book.total() == 0   # rejected before anything was reserved
     r = await api.post(f"{API}/jobs", {"characterId": "chr_mockSarah", "kind": "emotion_set"})
     assert r.status_code == 422 and r.json()["error"]["details"]["reason"] == "no_base"
     # the scripted generator accepts any base
     await api.post(f"{API}/_test/ai-profile", {"profile": "scripted"}, status=204)
-    assert (await api.post(f"{API}/jobs", {"characterId": "chr_seedHana", "kind": "emotion_regenerate"})).status_code == 201
+    assert (await api.post(f"{API}/jobs", {"characterId": "chr_seedHana", "kind": "emotion_set"})).status_code == 201
 
 
 # ── 9.3: a naive wizard run against the fake ──
@@ -202,6 +205,7 @@ async def test_naive_wizard_run(api: Api) -> None:
         with Image.open(io.BytesIO(served.content)) as img:
             assert img.format == "WEBP" and img.size == (768, 1024)
     song = await api.json(f"{API}/characters/{cid}/song")
-    assert song["status"] == "ready" and song["url"].endswith(".proc.json")
+    assert song["status"] == "ready" and song["url"].endswith(".mp3") and song["format"] == "mp3"   # Lyria 3 Clip (D-87)
     delta = {k: fake.counts[k] - before.get(k, 0) for k in fake.counts}
-    assert delta.get("chat", 0) == 1 and delta.get("images", 0) == 4 and delta.get("models", 0) == 1
+    assert delta.get("chat", 0) == 2 and delta.get("music", 0) == 1   # the draft, then the song (both on the chat endpoint)
+    assert delta.get("images", 0) == 4 and delta.get("models", 0) == 1

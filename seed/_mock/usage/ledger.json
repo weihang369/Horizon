@@ -155,7 +155,7 @@
       "id": "usg_0068",
       "at": "2026-09-14T09:07:00Z",
       "category": "music",
-      "model": "google/lyria-3-clip",
+      "model": "google/lyria-3-clip-preview",
       "characterId": "chr_mockElena",
       "costUsd": 0.04,
       "estimatedCostUsd": 0.04,

@@ -24,7 +24,7 @@
     },
     "instrumental": true,
     "generation": {
-      "model": "google/lyria-3-clip",
+      "model": "google/lyria-3-clip-preview",
       "prompt": "Instrumental theme: Calm lo-fi piano with a soft pulse synth. lo-fi, piano; calm, hopeful; 80 BPM; piano, synth.",
       "costUsd": 0.04
     },

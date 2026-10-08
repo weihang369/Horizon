@@ -77,7 +77,7 @@ export default defineConfig({
   },
   test: {
     environment: "node",
-    include: ["src/**/*.test.ts", "scripts/**/*.test.ts"],
+    include: ["src/**/*.test.ts", "src/**/*.test.tsx", "scripts/**/*.test.ts"],
     // The HTTP contract run needs a backend: `npm run test:http` (vitest.http.config.ts) starts one.
     exclude: ["**/node_modules/**", "src/**/*.http.test.ts"],
   },

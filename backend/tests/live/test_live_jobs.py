@@ -116,3 +116,60 @@ async def test_live_naive_creation(tmp_path: Path) -> None:
         print(f"  music model listed on OpenRouter: {listed} (the song job stays procedural, D-83)")
         print(f"  total: ${total:.6f}")
         assert total < BUDGET_USD
+
+
+async def test_live_song(tmp_path: Path) -> None:
+    """creation-followups task 7.2, design D9: one naive `song` job (one Lyria 3 Clip call, $0.04) for a seed character,
+    under a daily cap of today's spend + $0.05. Prints only the shape: chunks, bytes, format, duration, latency, cost.
+
+        PowerShell:  $env:HORIZON_LIVE=1; uv run pytest -m live -s tests/live/test_live_jobs.py -k song
+    """
+    from horizon.gateway.errors import ProviderError
+    from horizon.gateway.music import MusicResult
+    from horizon.storage.audio import is_mp3, mp3_duration
+
+    cfg = load_config()
+    if os.environ.get("HORIZON_LIVE") != "1" or cfg.openrouter_key is None:
+        pytest.skip("live run: set HORIZON_LIVE=1 and OPENROUTER_API_KEY (env or .env)")
+    cfg = replace(cfg, data_dir=tmp_path / "live-song", test_mode=False, ai_env={})
+    rt = Runtime(cfg)
+    app = create_app(cfg, runtime=rt)
+    seen: dict[str, Any] = {}
+    async with LifespanManager(app, startup_timeout=60, shutdown_timeout=60), httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=app), base_url="http://127.0.0.1", timeout=240) as client:
+        assert rt.ai.impl("song", key_set=True) == "naive"
+        original = rt.gateway.music.generate
+
+        async def observed(*, model: str, prompt: str) -> MusicResult:
+            seen["model"], seen["prompt_chars"] = model, len(prompt)
+            try:
+                r = await original(model=model, prompt=prompt)
+            except ProviderError as e:
+                seen["error"] = f"{e.code} (status {e.status}, maybe charged {e.maybe_charged})"
+                raise
+            seen.update(chunks=r.chunks, bytes=len(r.audio), head=r.audio[:4].hex(), mp3=is_mp3(r.audio),
+                        duration=mp3_duration(r.audio), latency_ms=r.latency_ms, provider=r.provider,
+                        cost=r.usage.cost_usd if r.usage else None)
+            return r
+
+        rt.gateway.music.generate = observed  # type: ignore[method-assign]
+        spent = (await client.get(f"{API}/settings")).json()["spentTodayUsd"]
+        r = await client.patch(f"{API}/settings", json={"budget": {"dailyCapUsd": round(spent + BUDGET_USD, 6)}})
+        assert r.status_code == 200, r.text
+        r = await client.post(f"{API}/jobs", json={"characterId": "chr_seedHana", "kind": "song"})
+        assert r.status_code == 201, r.text
+        assert r.json()["estimatedCostUsd"] == 0.04
+        done = await _finish(client, r.json()["id"], wait_s=240)
+        song = (await client.get(f"{API}/characters/chr_seedHana/song")).json()
+        rows = await _rows(rt, done["id"])
+        total = round(sum(float(x["cost_usd"]) for x in rows), 6)
+        print(f"\n  music call: {seen}")
+        print(f"  job: {done['status']}, song: {song['url'].rsplit('/', 1)[-1]}, format {song.get('format')}, "
+              f"duration {song.get('durationSec')}, licenseNote: {song['licenseNote']}")
+        print(f"  ledger: {[(x['category'], x['purpose'], x['cost_usd'], x['cost_source']) for x in rows]}  total ${total:.6f}")
+        assert done["status"] == "succeeded", done
+        if song.get("format") == "mp3":
+            assert 5 <= float(song["durationSec"]) <= 40 and len(rows) == 1
+        else:
+            print("  Lyria unavailable at run time: the song fell back to the procedural theme (design D7)")
+        assert total <= BUDGET_USD

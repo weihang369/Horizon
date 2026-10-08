@@ -7,7 +7,7 @@
       "chat": "deepseek/deepseek-v4.1-flash",
       "decision": "typesafe/jev-1.13",
       "image": "bytedance-seed/seedream-5-0-flash",
-      "music": "google/lyria-3-clip",
+      "music": "google/lyria-3-clip-preview",
       "embedding": "qwen/qwen3-embedding-8b"
     },
     "generationMode": "lean",

@@ -1,6 +1,6 @@
 // ~2.5 weeks of usage records (SET-09 spend view), derived from the compiled sessions + character creation.
 import type { Message, UsageRecord } from "../../src/contract/types";
-import { PRICING } from "../../src/mock/pricing.config";
+import { MODELS, PRICING } from "../../src/mock/pricing.config";
 import type { CharacterDef } from "./data/characters";
 
 const add = (ms: number, deltaMs: number) => new Date(ms + deltaMs).toISOString().replace(".000Z", "Z");
@@ -27,7 +27,7 @@ export function ledgerFor(
       for (let i = 0; i < emos; i++) push(target, { at: add(created, 180_000 + i * 16_000), category: "image", model: "qwen/qwen-image-3", characterId: cid, costUsd: g.emotionEdit, estimatedCostUsd: g.emotionEdit, latencyMs: 15_200 });
       if (c.renderBlink) push(target, { at: add(created, 300_000), category: "image", model: "qwen/qwen-image-3", characterId: cid, costUsd: g.blinkFrame, estimatedCostUsd: g.blinkFrame, latencyMs: 14_900 });
     }
-    if (c.song) push(target, { at: add(created, 420_000), category: "music", model: "google/lyria-3-clip", characterId: cid, costUsd: g.song, estimatedCostUsd: g.song, latencyMs: 41_000 });
+    if (c.song) push(target, { at: add(created, 420_000), category: "music", model: MODELS.music, characterId: cid, costUsd: g.song, estimatedCostUsd: g.song, latencyMs: 41_000 });
   }
 
   for (const s of sessions) {

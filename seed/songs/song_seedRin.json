@@ -24,7 +24,7 @@
     },
     "instrumental": true,
     "generation": {
-      "model": "google/lyria-3-clip",
+      "model": "google/lyria-3-clip-preview",
       "prompt": "Instrumental theme: Chiptune-electro, punchy drums, arpeggiated synth. chiptune, EDM; energetic, tense; 140 BPM; synth, drums.",
       "costUsd": 0.04
     },

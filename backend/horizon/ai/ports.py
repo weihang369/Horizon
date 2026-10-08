@@ -150,7 +150,24 @@ class ImageGenerator(Protocol):
     async def generate(self, ctx: CallContext, job: ImageJob, hooks: PaidHooks) -> bytes: ...
 
 
-class SongGenerator(Protocol):
-    model: str
+@dataclass(frozen=True)
+class SongJob:
+    """One theme song to make (creation-followups design D3): the brief and title the prompt is compiled from, and
+    the configured music model."""
 
+    task_id: str
+    model: str
+    brief: Mapping[str, Any]
+    title: str
+
+
+class SongGenerator(Protocol):
+    """`paid` False: the procedural theme only ($0, no ledger row, D-83); `paid` True: one music call per attempt
+    through `generate` (D-87), with `theme` still building the procedural fallback (design D7)."""
+
+    model: str
+    paid: bool
+
+    def expected_ms(self, duration_ms: float) -> float: ...
     def theme(self, seed: str, brief: Mapping[str, Any], title: str | None) -> dict[str, Any]: ...
+    async def generate(self, ctx: CallContext, job: SongJob, hooks: PaidHooks) -> bytes: ...
