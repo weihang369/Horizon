@@ -41,8 +41,8 @@ data/                                       gitignored (NFR-22)
   assets/gen/{worldId}/cover_v{n}.webp
   assets/gen/{worldId}/{characterId}/candidate_{assetId}.webp
   assets/gen/{worldId}/{characterId}/portrait_{emotion}[_blink]_v{n}.webp
-  assets/gen/{worldId}/{characterId}/song_v{n}.{mp3|aac|opus}
-  originals/{worldId}/{characterId}/{taskId}.{jpg|png|mp3}       raw provider output (written first, see §3.6)
+  assets/gen/{worldId}/{characterId}/song_v{n}.{mp3|proc.json}   a Lyria clip (D-87) or the procedural theme (D-83)
+  originals/{worldId}/{characterId}/{taskId}_a{attempt}.{jpg|png|json|mp3}   raw provider output (written first, see §3.6)
   knowledge/{worldId}/{characterId}/{sourceId}/original.{pdf|docx|md|txt}
   knowledge/{worldId}/{characterId}/{sourceId}/extracted.md     Docling output + <!-- page N --> markers
   models/                                   Docling / Hugging Face cache (downloaded once; HF_HUB_OFFLINE=1 afterwards)
@@ -60,6 +60,11 @@ seed/assets/**                              committed seed art and themes, serve
   2. Pillow resizes it to 768×1024 (Lanczos, a 1–2 px centre crop) and saves WebP q≈85, about 80–120 KB.
   3. The WebP is **re-derivable** from the original for free.
   4. The emotion edit sends the base portrait to the provider as a data URL.
+- **Song pipeline (D-87, creation-followups design D6–D7).**
+  1. The Lyria MP3 goes to `originals/` **first**, checked by content (ID3 or MPEG Layer III frames, ≤ 8 MB).
+  2. It is copied byte for byte to `song_v{n}.mp3`; `durationSec` comes from a frame-header walk (30 s if unreadable).
+  3. A naive song whose call failed for a provider reason, and every scripted song, is the free procedural theme
+     (`song_v{n}.proc.json`); the fallback's `licenseNote` says the music model was unavailable.
 - **Seed SVG placeholders** are served as-is; their `EmotionAsset.format` is omitted (the contract enum is `webp | avif`).
 
 ## 3. Tables

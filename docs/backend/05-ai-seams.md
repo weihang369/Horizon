@@ -50,7 +50,7 @@ TurnEvent = (
 | `PromptCompiler` | `system_prompt(character, world, mode) → str` | Field join + adult/SFW clauses | + You card | OQ-AI-02/16 |
 | `ImagePromptCompiler` | `base(appearance, age, preset)`, `emotion_edit(emotion)`, `tweak(text)` | **Real** (TESTING.md template + v2 fixes) | = | OQ-AI-09/10 |
 | `ImageGenerator` | `generate(prompt, refs, seed?, ctx) → ImageResult` | Placeholder file | **Seedream 5.0 Flash** | D-61 |
-| `SongBriefWriter` / `SongGenerator` | the brief comes from the `ProfileDrafter`'s draft (or the user's edit in the job input); `theme(seed, brief, title)` | **The procedural theme** (`.proc.json`, `themeSpecFromBrief`) | = (D-83: no music model on OpenRouter yet; a real client plugs in here later) | OQ-AI-11 |
+| `SongBriefWriter` / `SongGenerator` | the brief comes from the `ProfileDrafter`'s draft (or the user's edit in the job input); `theme(seed, brief, title)` | **The procedural theme** (`.proc.json`, `themeSpecFromBrief`; free, D-83) | **Lyria 3 Clip** (`google/lyria-3-clip-preview`, D-87): one instrumental prompt compiled from the brief, a 30 s MP3 at $0.04; on a provider fault (error, timeout, refusal, rate limit, unusable audio) the task falls back to the procedural theme (creation-followups design D7) | OQ-AI-11 |
 | `TurnEngine` | §2.1 | Bank lines, `Emotion` first | **One DeepSeek stream** (§5) | OQ-AI-02/04/07/13 |
 | `Router` | `next(ctx) → RoutingDecision{selected, queue: list[str], candidates[{id,p}], forcedBy?, skipped[]}` | Mentions, then round-robin | **Jev choice** over the cast + `none`; `queue` ≤ 2 for group auto | OQ-AI-06/17 |
 | `ReactionPredictor` | `react(ctx, listeners) → [{characterId, emotion, p}]` | None | **Jev:** one choice per listener, one call | OQ-AI-12 |

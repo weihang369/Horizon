@@ -30,7 +30,7 @@ export interface GatewayConfig {
   embeddingProvider: string;
   embedBatch: number;
   timeoutsMs: {
-    chatFirstToken: number; chatIdle: number; image: number; embedding: number; meta: number;
+    chatFirstToken: number; chatIdle: number; image: number; music: number; embedding: number; meta: number;
     decision: { route: number; gate: number; rerank: number; emotion: number; default: number };
   };
 }

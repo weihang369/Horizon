@@ -4,7 +4,8 @@
   MockClient (four `profile` tasks at `profileDraft / 4`).
 - `ScriptedImageGenerator`: a deterministic placeholder drawn with Pillow (palette background, a silhouette and the
   emotion name, seeded by the task ID), billed at the task's image price.
-- `ProceduralSong`: the procedural theme (D-83), in both profiles while OpenRouter lists no music model.
+- `ProceduralSong`: the procedural theme (D-83): free, no ledger row, paced like the mock's song. The naive song
+  generator (Lyria 3 Clip, D-87) lives in `ai/naive/creation.py`.
 
 Both paid ports run through the gateway's scripted source (`scripted_generation`): the same preflight, hooks and
 ledger row as a real call, paced on the backend clock, and never a connection.
@@ -18,7 +19,7 @@ import io
 from collections.abc import Callable, Mapping, Sequence
 from typing import Any
 
-from horizon.ai.ports import ImageJob, PaidHooks
+from horizon.ai.ports import ImageJob, PaidHooks, SongJob
 from horizon.ai.scripted import drafts
 from horizon.ai.scripted.ports import AiDeps
 from horizon.gateway.context import CallContext
@@ -112,6 +113,13 @@ class ScriptedImageGenerator:
 
 class ProceduralSong:
     model = theme.MODEL
+    paid = False
+
+    def expected_ms(self, duration_ms: float) -> float:
+        return duration_ms
 
     def theme(self, seed: str, brief: Mapping[str, Any], title: str | None) -> dict[str, Any]:
         return theme.theme_spec_from_brief(seed, brief, title)
+
+    async def generate(self, ctx: CallContext, job: SongJob, hooks: PaidHooks) -> bytes:
+        raise NotImplementedError("the procedural theme makes no call")

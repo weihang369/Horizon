@@ -9,6 +9,10 @@
 | 5. the ledger row **and** `result_ref` commit together (`commit_with`) | the paid result is recorded |
 | 6. derive the WebP, then apply in one transaction (asset row, character change, task `succeeded`) | done |
 
+A theme song (creation-followups design D7) is one Lyria call with the naive song port. When the provider can't make
+it (`SONG_FALLBACK`), the attempt still succeeds with the free procedural theme; any charge was already recorded at
+step 3. The scripted port makes no call: the procedural theme, paced like the mock's song.
+
 A scenario fault fails the attempt at 60 % of its paced duration, before step 1, so it costs nothing. A task whose
 job was cancelled after step 2 finishes its call (its spend is recorded) but its result is kept, not applied (D-86).
 After a restart, a task with a stored result resumes at step 6 with no call.
@@ -20,22 +24,25 @@ import asyncio
 import json
 import logging
 from collections.abc import Mapping
+from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import and_, func, select, update
+from sqlalchemy.engine import RowMapping
 from sqlalchemy.ext.asyncio import AsyncConnection
 
 from horizon.ai.image_prompt import CompiledPrompt, ImagePromptCompiler
-from horizon.ai.ports import ImageJob, PaidHooks
+from horizon.ai.ports import ImageJob, PaidHooks, SongJob
 from horizon.api.errors import DEFAULT_RETRYABLE
 from horizon.db import tables as t
 from horizon.events.bus import GLOBAL
 from horizon.gateway.errors import ProviderError
-from horizon.services import assets
+from horizon.services import assets, theme
 from horizon.services.jobs import apply as ap
 from horizon.services.jobs import plans
 from horizon.storage.atomic import write_atomic
+from horizon.storage.audio import is_mp3, mp3_duration
 from horizon.storage.images import EXT, ImageRejected, TooLarge, portrait_webp, sheet_cells, sniff
 
 if TYPE_CHECKING:
@@ -46,8 +53,18 @@ log = logging.getLogger("horizon.jobs")
 T = t.generation_tasks.c
 J = t.generation_jobs.c
 PURPOSE = {"portrait_candidate": "image_portrait", "emotion_image": "image_emotion", "blink_frame": "image_blink",
-           "expression_sheet": "image_sheet"}
+           "expression_sheet": "image_sheet", "theme_song": "song"}
 PROFILE_PARTS = ("profile", "appearance_summary", "palette_pick", "song_brief")
+# The music call's failures that leave the user a procedural theme instead of a failed task (design D7). Key, credit
+# and cap failures are not here: they need the user to act, and they fail the task like any other paid task.
+SONG_FALLBACK = frozenset({"provider_error", "timeout", "content_refused", "rate_limited"})
+
+
+@dataclass(frozen=True)
+class SongFallback:
+    """The Lyria call failed with `reason`: apply the procedural theme with the fallback note."""
+
+    reason: str
 
 
 class Fault(Exception):
@@ -70,18 +87,18 @@ async def run_attempt(sched: JobScheduler, run: Run, a: Attempt) -> None:
             await finish(sched, run, dict(task), resume=True)
             return
         spec = plans.task_spec(run.kind, task["type"], task["emotion"], sheet_job=run.sheet,
-                               prices=rt.prices.generation, timing=sched.timing)
+                               prices=rt.prices.generation, timing=sched.timing, song_paid=sched.song_paid())
         a.expected_ms = expected_ms(sched, spec, task["type"])
         if a.fault:
             await rt.clock.sleep(0.6 * a.expected_ms / 1000)
             raise Fault()
-        await call(sched, run, a, dict(task), dict(ch), spec)
+        fallback = await call(sched, run, a, dict(task), dict(ch), spec)
         if run.cancelled:
             return  # cancelled after it was sent: the spend and the original are kept, nothing is applied
         async with rt.db.read() as conn:
             task = (await conn.execute(select(t.generation_tasks).where(T.id == a.task_id))).mappings().first()
         if task is not None:
-            await finish(sched, run, dict(task), resume=False)
+            await finish(sched, run, dict(task), resume=False, fallback=fallback)
     except asyncio.CancelledError:
         raise
     except Fault:
@@ -111,7 +128,7 @@ def expected_ms(sched: JobScheduler, spec: plans.TaskPlan, type_: str) -> float:
         drafter = rt.ai.drafter(True)
         return float(drafter.expected_ms(spec.duration_ms)) if type_ == "profile" or not drafter.shared_call else 0.0
     if type_ == "theme_song":
-        return spec.duration_ms if song_paced(sched) else 0.0
+        return float(rt.ai.song(True).expected_ms(spec.duration_ms))
     if spec.duration_ms <= 0:
         return 0.0
     image = rt.ai.image(True)
@@ -121,11 +138,6 @@ def expected_ms(sched: JobScheduler, spec: plans.TaskPlan, type_: str) -> float:
     return float(image.expected_ms(probe))
 
 
-def song_paced(sched: JobScheduler) -> bool:
-    """The procedural theme costs nothing; it is paced like the mock's song only in the scripted profile."""
-    return sched.rt.ai.impl("drafter", key_set=True) == "scripted"
-
-
 # ── step 1–5: the call ──
 def task_ctx(sched: JobScheduler, run: Run, ch: Mapping[str, Any], type_: str) -> Any:
     creation = ch["status"] != "approved"
@@ -133,7 +145,8 @@ def task_ctx(sched: JobScheduler, run: Run, ch: Mapping[str, Any], type_: str) -
         return sched.ctx("profile", category="profile", world_id=run.world_id, character_id=run.character_id,
                          job_id=run.job_id, creation=creation)
     purpose = "image_tweak" if run.kind == "portrait_tweak" else PURPOSE[type_]
-    return sched.ctx(purpose, category="image", world_id=run.world_id, character_id=run.character_id, job_id=run.job_id,
+    category = "music" if type_ == "theme_song" else "image"
+    return sched.ctx(purpose, category=category, world_id=run.world_id, character_id=run.character_id, job_id=run.job_id,
                      creation=creation)
 
 
@@ -154,7 +167,8 @@ def hooks_for(sched: JobScheduler, run: Run, a: Attempt, task: Mapping[str, Any]
         if run.deleted:
             return  # the character was deleted while this call was in flight: bill it, keep nothing
         if isinstance(value, bytes | bytearray):
-            data, ext = bytes(value), EXT.get(sniff(bytes(value)) or "png", "png")
+            data = bytes(value)
+            ext = "mp3" if is_mp3(data) else EXT.get(sniff(data) or "png", "png")
         else:
             data, ext = json.dumps(value, ensure_ascii=False).encode("utf-8"), "json"
         rel = f"{stem}.{ext}"
@@ -174,14 +188,14 @@ def hooks_for(sched: JobScheduler, run: Run, a: Attempt, task: Mapping[str, Any]
 
 
 async def call(sched: JobScheduler, run: Run, a: Attempt, task: dict[str, Any], ch: dict[str, Any],
-               spec: plans.TaskPlan) -> None:
+               spec: plans.TaskPlan) -> SongFallback | None:
     rt = sched.rt
     type_ = task["type"]
     models = rt.settings_doc()["models"]
     if type_ in PROFILE_PARTS:
         drafter = rt.ai.drafter(True)
         if drafter.shared_call and type_ != "profile":
-            return  # applied from the profile task's stored draft at $0
+            return None  # applied from the profile task's stored draft at $0
         hooks = hooks_for(sched, run, a, task, ch)
         ctx = task_ctx(sched, run, ch, type_)
         slots = rt.llm_slots if drafter.shared_call else None
@@ -193,18 +207,39 @@ async def call(sched: JobScheduler, run: Run, a: Attempt, task: dict[str, Any], 
             else:
                 await drafter.draft(ctx, seed_prompt=ch["seed_prompt"], intent=ch["intent"], cost_usd=spec.est_usd,
                                     duration_ms=spec.duration_ms, model=str(models["chat"]), hooks=hooks)
-        return
+        return None
     if type_ == "theme_song":
-        if song_paced(sched):
-            await rt.clock.sleep(spec.duration_ms / 1000)
-        return
+        return await call_song(sched, run, a, task, ch, spec, str(models["music"]))
     if spec.price_kind is None:
-        return  # an emotion sliced from a sheet: nothing to call
+        return None  # an emotion sliced from a sheet: nothing to call
     image = rt.ai.image(True)
     job = await image_job(sched, run, task, ch, spec, str(models["image"]))
     hooks = hooks_for(sched, run, a, task, ch)
     async with Slot(rt.image_slots if image.name == "naive" else None):
         await image.generate(task_ctx(sched, run, ch, type_), job, hooks)
+    return None
+
+
+async def call_song(sched: JobScheduler, run: Run, a: Attempt, task: dict[str, Any], ch: dict[str, Any],
+                    spec: plans.TaskPlan, model: str) -> SongFallback | None:
+    """The procedural port only paces; the paid port makes one music call and falls back on a provider fault (D7)."""
+    rt = sched.rt
+    song = rt.ai.song(True)
+    if not song.paid:
+        await rt.clock.sleep(song.expected_ms(spec.duration_ms) / 1000)
+        return None
+    async with rt.db.read() as conn:
+        brief = await song_brief(sched, conn, run, ch)
+    job = SongJob(task_id=task["id"], model=model, brief=brief, title=theme.theme_title(str(ch["profile"].get("name", ""))))
+    try:
+        async with Slot(rt.music_slots):
+            await song.generate(task_ctx(sched, run, ch, "theme_song"), job, hooks_for(sched, run, a, task, ch))
+    except ProviderError as e:
+        if e.code not in SONG_FALLBACK:
+            raise
+        log.info("task %s: the music model failed (%s); using the procedural theme (D-87)", task["id"], e.code)
+        return SongFallback(e.code)
+    return None
 
 
 class Slot:
@@ -298,7 +333,8 @@ async def shared_draft(sched: JobScheduler, run: Run) -> dict[str, Any]:
     return loaded
 
 
-async def finish(sched: JobScheduler, run: Run, task: dict[str, Any], *, resume: bool) -> None:
+async def finish(sched: JobScheduler, run: Run, task: dict[str, Any], *, resume: bool,
+                 fallback: SongFallback | None = None) -> None:
     type_ = task["type"]
     ref = task["result_ref"]
     payload: Any = None
@@ -308,7 +344,12 @@ async def finish(sched: JobScheduler, run: Run, task: dict[str, Any], *, resume:
         else:
             payload = await shared_draft(sched, run)
     elif type_ == "theme_song":
-        payload = None
+        if ref and str(ref).startswith("originals/"):
+            payload = await load_original(sched, str(ref))   # a Lyria clip (also after a restart: no call)
+        elif fallback is None and task["provider_called_at"]:
+            raise ProviderError("provider_error", "The provider's song was not stored.")
+        else:
+            payload = fallback                                # None: the scripted procedural theme
     elif type_ == "emotion_image" and run.sheet:
         return  # filled by the sheet's own finish
     else:
@@ -354,14 +395,7 @@ async def commit_result(sched: JobScheduler, run: Run, task: dict[str, Any], pay
         elif type_ == "song_brief":
             await ap.apply_song_brief(conn, ch, payload, now)
         elif type_ == "theme_song":
-            song = rt.ai.song(True)
-            prev = (await conn.execute(select(t.theme_songs.c.brief).where(t.theme_songs.c.id == ch["theme_song_id"]))).scalar() \
-                if ch["theme_song_id"] else None
-            brief = run.input.get("brief") or prev or (await _draft_brief(sched, dict(ch)))
-            title = f"{str(ch['profile'].get('name', '')).split(' ')[0]}'s Theme"
-            spec = song.theme(ch["id"], brief, title)
-            values["result_ref"] = await ap.apply_theme(conn, ch, spec=spec, brief=brief, assets_dir=rt.cfg.assets_dir,
-                                                        job_id=run.job_id, now=now)
+            values["result_ref"] = await commit_song(sched, conn, run, ch, payload, cur, str(models["music"]), now)
         elif type_ == "portrait_candidate":
             gen = generation(str(models["image"]), "prompt_only" if run.kind == "portrait_candidates" else "reference_edit",
                              "", [base_url] if run.kind == "portrait_tweak" and base_url else [], cur["cost_usd"], run.job_id)
@@ -417,6 +451,37 @@ async def _draft_brief(sched: JobScheduler, ch: Mapping[str, Any]) -> dict[str, 
 
     brief: dict[str, Any] = draft_from_seed(ch["seed_prompt"], ch["intent"], sched.rt.palette_ids())["brief"]
     return brief
+
+
+async def song_brief(sched: JobScheduler, conn: AsyncConnection, run: Run, ch: Any) -> dict[str, Any]:
+    """The edited brief in the job input, else the character's stored brief, else the draft bank's."""
+    prev = (await conn.execute(select(t.theme_songs.c.brief).where(t.theme_songs.c.id == ch["theme_song_id"]))).scalar() \
+        if ch["theme_song_id"] else None
+    brief: dict[str, Any] = run.input.get("brief") or prev or (await _draft_brief(sched, dict(ch)))
+    return brief
+
+
+async def commit_song(sched: JobScheduler, conn: AsyncConnection, run: Run, ch: RowMapping, payload: Any,
+                      cur: Any, model: str, now: str) -> str:
+    """A Lyria clip as an `.mp3` version, or the procedural theme (scripted, or the D7 fallback with its note and
+    whatever the failed call was billed). Returns the song ID."""
+    from horizon.ai.naive.creation import song_prompt
+
+    rt = sched.rt
+    brief = await song_brief(sched, conn, run, ch)
+    title = theme.theme_title(str(ch["profile"].get("name", "")))
+    if isinstance(payload, bytes | bytearray):
+        audio = bytes(payload)
+        return await ap.apply_audio_theme(conn, ch, audio=audio, duration_sec=mp3_duration(audio), brief=brief, model=model,
+                                          prompt=song_prompt(brief, title), cost_usd=float(cur["cost_usd"] or 0.0),
+                                          assets_dir=rt.cfg.assets_dir, job_id=run.job_id, now=now)
+    spec = rt.ai.song(True).theme(ch["id"], brief, title)
+    if isinstance(payload, SongFallback):
+        u = t.usage_records.c
+        billed = (await conn.execute(select(func.coalesce(func.sum(u.cost_usd), 0.0)).where(u.job_id == run.job_id))).scalar()
+        return await ap.apply_theme(conn, ch, spec=spec, brief=brief, assets_dir=rt.cfg.assets_dir, job_id=run.job_id,
+                                    now=now, license_note=theme.FALLBACK_NOTE, cost_usd=float(billed or 0.0))
+    return await ap.apply_theme(conn, ch, spec=spec, brief=brief, assets_dir=rt.cfg.assets_dir, job_id=run.job_id, now=now)
 
 
 async def fail(sched: JobScheduler, run: Run, task_id: str, code: str, message: str, retryable: bool) -> None:

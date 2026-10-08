@@ -26,7 +26,7 @@ CallContext = { category, purpose, world_id, character_id?, session_id?, job_id?
 | `decisions` | `POST /api/alpha/decisions` (Jev, alpha) | `decide(state, questions, ctx, timeout_ms) → DecisionsResponse` (only the `Decider` calls it) |
 | `images` | `POST /api/v1/images` | `generate(prompt, refs: list[DataURL], resolution, aspect_ratio, seed?, ctx) → ImageResult`. Body (the shape the D-61 run proved, M4): `model`, `prompt`, `n: 1`, `aspect_ratio`, `resolution`, and references as `input_references: [{type: "image_url", image_url: {url}}]` with data URLs; the image comes back in `data[0].b64_json`, the cost in `usage.cost` |
 | `embeddings` | `POST /api/v1/embeddings` | `embed(texts, model, ctx) → list[vector]` (batches of 32, pinned provider) |
-| `music` | none yet: `google/lyria-3-clip` is not on OpenRouter (404, M2 live run) | Until a music model is listed, the `song` job writes the free procedural theme (`.proc.json`, D-83) and logs a free `model_exists` check; a real client plugs in behind `SongGenerator` later |
+| `music` | `POST /api/v1/chat/completions`, streamed, model `google/lyria-3-clip-preview` (D-87; the bare `google/lyria-3-clip` was a 404 in M2) | `generate(model, prompt) → MusicResult` (creation-followups design D1). Body: `model`, `messages`, `modalities: ["text","audio"]`, `stream: true`, `usage.include`; **no** main-LLM routing block and **no** fallback model. The clip is the joined base64 `choices[0].delta.audio.data` pieces (an MP3), the cost `usage.cost` ($0.04 per 30 s clip). When Lyria can't make the song (provider error, timeout, refusal, rate limit, unusable audio) the task falls back to the free procedural theme; key, credit and cap failures still fail the task (design D7). The scripted profile keeps the procedural theme ($0, D-83) |
 | `meta` | `GET /api/v1/key`, `/api/v1/credits`, `/api/v1/generation?id=` (verified in M2) | `testConnection`, credits display, cost correction. Free; no ledger |
 
 ```python
@@ -54,6 +54,7 @@ ChatChunk   = { generation_id (required; taken from the first chunk), content?, 
 |---|---|
 | Chat time to first token | 20 s |
 | Images | 180 s |
+| Music: first audio chunk (then the chat idle timeout between chunks) | 120 s |
 | Embeddings | 30 s |
 | **Decisions, per purpose** (config, defaults below) | |
 | `route` | 400 ms |

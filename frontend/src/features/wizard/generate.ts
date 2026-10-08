@@ -2,13 +2,15 @@
 // key gating (O05), and a per-character memory of the latest job per kind (jobs live in the client, so they
 // survive navigation; this map only remembers which job a step belongs to). Owner: Builder B.
 import { useEffect, useMemo, useState } from "react";
-import { openOverlay } from "@/app/layers";
+import { openOverlay, toast } from "@/app/layers";
 import { ui } from "@/stores/ui";
 import { reportError } from "@/app/errors";
 import { client } from "@/client";
 import type { StartJobInput } from "@/client/HorizonClient";
 import { useActiveJobs } from "@/client/hooks";
+import { toHorizonError } from "@/contract/errors";
 import type { GenerationJob, GenerationJobKind } from "@/contract/types";
+import { navigate } from "@/router";
 
 /** Drafts created during this app session: "Discard" deletes them (resumed drafts only drop unsaved edits). */
 export const createdThisSession = new Set<string>();
@@ -108,9 +110,28 @@ export async function startGeneration(input: StartJobInput, label: string, opts:
     rememberJob(job);
     return job;
   } catch (err) {
+    if (await offerPortraitFirst(err, input.characterId)) return null;
     reportError(err, { context: `${label} needs your OpenRouter key.` });
     return null;
   }
+}
+
+export const PORTRAIT_FIRST = "Generate a portrait first. This character's portrait is a placeholder drawing the image model can't edit.";
+
+/**
+ * D-90 (generation-jobs "Naive edits need a raster base"): an edit of a seed SVG placeholder is rejected with
+ * `validation` / `base_not_raster`. Instead of the generic error, offer the next step: the portrait step (the wizard in
+ * edit mode for an approved character). Resolves false for any other error.
+ */
+export async function offerPortraitFirst(err: unknown, characterId: string): Promise<boolean> {
+  const e = toHorizonError(err);
+  if (e.code !== "validation" || e.details?.reason !== "base_not_raster") return false;
+  const c = await client.characters.get(characterId).catch(() => null);
+  const open = c
+    ? () => navigate({ name: "wizard", worldId: c.worldId, characterId: c.id, step: "portrait", ...(c.status === "approved" ? { edit: true } : {}) })
+    : null;
+  toast({ variant: "error", text: PORTRAIT_FIRST, ...(open ? { action: { label: "Generate a portrait", run: open } } : {}) });
+  return true;
 }
 
 

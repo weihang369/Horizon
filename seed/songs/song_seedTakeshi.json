@@ -23,7 +23,7 @@
     },
     "instrumental": true,
     "generation": {
-      "model": "google/lyria-3-clip",
+      "model": "google/lyria-3-clip-preview",
       "prompt": "Instrumental theme: Acoustic folk guitar, harmonica, laid-back shuffle. acoustic folk; calm, nostalgic; 95 BPM; guitar, harmonica.",
       "costUsd": 0.04
     },

@@ -24,7 +24,7 @@
     },
     "instrumental": true,
     "generation": {
-      "model": "google/lyria-3-clip",
+      "model": "google/lyria-3-clip-preview",
       "prompt": "Instrumental theme: Bright city-pop, synth bells, slap bass. city-pop; playful, romantic; 120 BPM; synth, bells, bass.",
       "costUsd": 0.04
     },

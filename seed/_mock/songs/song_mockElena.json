@@ -23,7 +23,7 @@
     },
     "instrumental": true,
     "generation": {
-      "model": "google/lyria-3-clip",
+      "model": "google/lyria-3-clip-preview",
       "prompt": "Instrumental theme: Wistful piano over soft strings. piano, ambient; nostalgic; 72 BPM; piano, strings.",
       "costUsd": 0.04
     },

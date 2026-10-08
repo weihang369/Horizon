@@ -24,7 +24,7 @@
     },
     "instrumental": true,
     "generation": {
-      "model": "google/lyria-3-clip",
+      "model": "google/lyria-3-clip-preview",
       "prompt": "Instrumental theme: Jazzy hip-hop, upright bass, vinyl crackle. jazz hip-hop; calm, playful; 90 BPM; bass, drums, vinyl crackle.",
       "costUsd": 0.04
     },

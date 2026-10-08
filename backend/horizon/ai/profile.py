@@ -1,10 +1,11 @@
 """AI profile selection (doc 05 §1; ai-ports "AI profile selection"; design OQ-3, OQ-14).
 
 `HORIZON_AI_PROFILE` (`scripted` | `naive`) selects every port; without it the profile is `naive` when a key is set and
-`scripted` otherwise. `HORIZON_AI_<PORT>` overrides one port. The turn engine, the router (M3), the profile drafter and
-the image generator (M4) have naive implementations; every other port is scripted in both profiles (the song is the
-procedural theme in both, D-83). The creation port is called `drafter`, not `profile`, because `HORIZON_AI_PROFILE` is
-the selector itself. In test mode, `POST /_test/ai-profile` replaces the selection at runtime.
+`scripted` otherwise. `HORIZON_AI_<PORT>` overrides one port. The turn engine, the router (M3), the profile drafter,
+the image generator (M4) and the song generator (Lyria 3 Clip, D-87) have naive implementations; every other port is
+scripted in both profiles. The scripted song is the free procedural theme (D-83). The creation port is called
+`drafter`, not `profile`, because `HORIZON_AI_PROFILE` is the selector itself. In test mode, `POST /_test/ai-profile`
+replaces the selection at runtime.
 """
 
 from __future__ import annotations
@@ -27,7 +28,7 @@ from horizon.ai.scripted.ports import (
 
 Impl = Literal["scripted", "naive"]
 PORTS = ("turn", "router", "reactions", "host", "director", "summariser", "guardrail", "drafter", "image", "song")
-NAIVE_PORTS = frozenset({"turn", "router", "drafter", "image"})
+NAIVE_PORTS = frozenset({"turn", "router", "drafter", "image", "song"})
 ENV_PROFILE = "HORIZON_AI_PROFILE"
 
 
@@ -91,6 +92,9 @@ class AiPorts:
             if port == "drafter":
                 from horizon.ai.naive.creation import NaiveDrafter
                 return NaiveDrafter(d, d.schema, d.palette_ids)
+            if port == "song":
+                from horizon.ai.naive.creation import NaiveSong
+                return NaiveSong(d)
             if port == "image":
                 from horizon.ai.naive.creation import NaiveImageGenerator
                 return NaiveImageGenerator(d)

@@ -1,8 +1,8 @@
 """Task plans per job kind (generation-jobs design D2): a pure port of the MockClient's `planTasks`/`estimateJob`.
 
 Each task carries its paced duration (the shared timing table), its estimate (the committed price table) and the
-price kind its image call is billed at. One exception to the mock, by decision D-83: a theme song is the procedural
-theme while OpenRouter lists no music model, so it is estimated (and costs) $0.
+price kind its call is billed at. A theme song follows the song port (creation-followups design D5): with Lyria (the naive
+profile, D-87) it is the song price, like the mock; with the procedural theme (scripted, D-83) it is $0.
 
 `task_spec()` rebuilds one task's plan from the job kind and the task type, so recovery, retry and the test-mode
 overlay jobs (stored without an input) get the same durations and prices as a fresh start.
@@ -46,7 +46,7 @@ class JobPlan:
 
 
 def task_spec(kind: str, type_: str, emotion: str | None, *, sheet_job: bool, prices: Mapping[str, float],
-              timing: JobTiming) -> TaskPlan:
+              timing: JobTiming, song_paid: bool = False) -> TaskPlan:
     g = prices
     if type_ in PROFILE_PARTS:
         ms = timing.field_regenerate_ms if kind == "profile_regenerate" else timing.profile_draft_ms / 4
@@ -63,6 +63,8 @@ def task_spec(kind: str, type_: str, emotion: str | None, *, sheet_job: bool, pr
     if type_ == "blink_frame":
         return TaskPlan(type_, None, g["blinkFrame"], timing.emotion_ms, "blinkFrame", "image")  # the neutral blink
     if type_ == "theme_song":
+        if song_paid:
+            return TaskPlan(type_, None, g["song"], timing.song_ms, "song", "music")   # one Lyria clip (D-87)
         return TaskPlan(type_, None, 0.0, timing.song_ms, None, "music")  # D-83: the procedural theme is free
     raise ValueError(f"unknown task type {type_!r}")
 
@@ -75,13 +77,14 @@ def parallel_for(kind: str, timing: JobTiming, *, sheet_job: bool = False) -> in
     return 1
 
 
-def plan(job_input: Mapping[str, Any], *, lean: bool, prices: Mapping[str, float], timing: JobTiming) -> JobPlan:
+def plan(job_input: Mapping[str, Any], *, lean: bool, prices: Mapping[str, float], timing: JobTiming,
+         song_paid: bool = False) -> JobPlan:
     kind = str(job_input["kind"])
     emotions: Sequence[str] | None = job_input.get("emotions")
     sheet = kind == "emotion_set" and job_input.get("technique") == "expression_sheet"
 
     def mk(type_: str, emotion: str | None = None) -> TaskPlan:
-        return task_spec(kind, type_, emotion, sheet_job=sheet, prices=prices, timing=timing)
+        return task_spec(kind, type_, emotion, sheet_job=sheet, prices=prices, timing=timing, song_paid=song_paid)
 
     if kind == "profile_draft":
         tasks = [mk(t) for t in PROFILE_PARTS]

@@ -38,7 +38,7 @@ export const PRICING: PricingTable = {
     embeddingProvider: "Nebius",
     embedBatch: 32,
     timeoutsMs: {
-      chatFirstToken: 20_000, chatIdle: 30_000, image: 180_000, embedding: 30_000, meta: 10_000,
+      chatFirstToken: 20_000, chatIdle: 30_000, image: 180_000, music: 120_000, embedding: 30_000, meta: 10_000,
       decision: { route: 400, gate: 500, rerank: 600, emotion: 300, default: 3_000 },
     },
   },
@@ -48,6 +48,6 @@ export const MODELS = {
   chat: PRICING.chat.model,
   decision: PRICING.decision.model,
   image: "bytedance-seed/seedream-5-0-flash",
-  music: "google/lyria-3-clip",
+  music: "google/lyria-3-clip-preview", // D-87: OpenRouter lists the -preview ID
   embedding: PRICING.embedding.model,
 };

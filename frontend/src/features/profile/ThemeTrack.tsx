@@ -130,7 +130,7 @@ export function ThemeTrack({ c, song }: { c: Character; song: ThemeSong | null }
             <div><dt>Vocals</dt><dd>{song.instrumental ? "None (instrumental)" : "With vocals"}</dd></div>
           </dl>
           <p className={s.credits}>
-            <span>Composed by {song.generation?.model ?? "google/lyria-3-clip"}</span>
+            <span>Composed by {song.generation?.model ?? "google/lyria-3-clip-preview"}</span>
             {song.generation?.costUsd !== undefined && <span>Cost {formatUsd(song.generation.costUsd)}</span>}
             <span>{song.licenseNote || (sketch ? "Placeholder: procedural WebAudio sketch (D-52)." : "")}</span>
           </p>

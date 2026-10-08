@@ -62,9 +62,8 @@ function Controls({ settings }: { settings: AppSettings }) {
             </button>
           ))}
         </div>
-        <Row label="Auto-generate missing emotions" desc="Fill empty emotion slots in the background when a character first needs them.">
-          <Toggle label="Auto-generate missing emotions" hideLabel checked={settings.autoGenerateMissingEmotions} onChange={(v) => void save({ autoGenerateMissingEmotions: v })} />
-        </Row>
+        {/* D-89: `autoGenerateMissingEmotions` stays in the stored settings but isn't offered: it would pre-authorise
+            spend (NFR-30) and has no specified behaviour yet. */}
       </Section>
       <Section title="Budget & energy" desc="There is no per-session cap: each character's ⚡ energy keeps conversations cheap.">
         <Row label="Daily cap" desc={`Spent today: ${formatUsd(settings.spentTodayUsd)}. At 100 % Horizon pauses and asks.`}>
