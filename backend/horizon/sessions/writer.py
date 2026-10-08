@@ -29,6 +29,7 @@ from horizon.db import tables as t
 from horizon.db.uow import Database, WriteTx
 from horizon.domain.ids import new_id
 from horizon.events.bus import GLOBAL, session_channel
+from horizon.services.memory.refs import replace_refs
 from horizon.services.runtime.reducer import apply_in_place, initial_runtime, ordered_messages
 
 Wire = dict[str, Any]
@@ -162,6 +163,7 @@ class EventWriter:
                 stmt = sqlite_insert(t.turn_traces).values(**row)
                 await conn.execute(stmt.on_conflict_do_update(index_elements=["message_id"],
                                                               set_={k: stmt.excluded[k] for k in row if k != "message_id"}))
+                await replace_refs(conn, mid, e["payload"]["trace"])  # M5 design D14: Forget finds this trace
             elif e["type"] == "turn.end":
                 mid = e["payload"]["messageId"]
                 if mid not in msgs:

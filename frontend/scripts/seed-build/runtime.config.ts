@@ -14,6 +14,9 @@ export interface RuntimeConfig {
   prefetchMax: number;
   /** Concurrent LLM calls (shared with M4's job scheduler). */
   llmConcurrency: number;
+  /** M5 retrieval (knowledge-memory-storage design D12, D13): hits per reply, and how long a reply waits for the
+   *  user message's query embedding before using keyword retrieval alone. AI-stage tunables. */
+  retrieval: { knowledgeK: number; memoryK: number; queryEmbedWaitMs: number };
 }
 
 export const RUNTIME: RuntimeConfig = {
@@ -23,4 +26,5 @@ export const RUNTIME: RuntimeConfig = {
   idleReleaseMs: 600_000,
   prefetchMax: 2,
   llmConcurrency: 4,
+  retrieval: { knowledgeK: 5, memoryK: 3, queryEmbedWaitMs: 400 },
 };

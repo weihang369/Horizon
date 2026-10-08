@@ -12,6 +12,7 @@ import random
 import re
 from collections.abc import AsyncIterator, Callable, Sequence
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 from horizon.ai.contexts import MessageView, RouteContext, SessionContext, TurnContext
@@ -85,6 +86,8 @@ class AiDeps:
     window_tokens: int = 6000
     palette_ids: Callable[[], Sequence[str]] = lambda: ()    # M4: the shipped palettes (drafts pick from these)
     schema: Callable[[], Any] = lambda: None                 # M4: the contract schema (the naive drafter validates)
+    models_dir: Callable[[], Path] = lambda: Path("data/models")   # M5: the conversion models (D-62)
+    convert_timeout_s: float = 600.0                        # M5: a document conversion's limit (design D4)
 
 
 def emotion_candidates(chosen: str, rng: random.Random) -> list[dict[str, Any]]:
@@ -95,6 +98,13 @@ def emotion_candidates(chosen: str, rng: random.Random) -> list[dict[str, Any]]:
     second = r3(rest * rng.uniform(0.55, 0.8))
     third = r3(max(0.01, rest - second - rng.uniform(0, max(0.0, rest - second)) * 0.5))
     return [{"label": chosen, "p": top}, {"label": others[0], "p": second}, {"label": others[1], "p": third}]
+
+
+class NoMemoryWriter:
+    """The memory writer of both profiles until the AI stage (doc 05 §2.2): it remembers nothing."""
+
+    async def after_turn(self, ctx: TurnContext, perspective: str, message_id: str) -> list[Any]:
+        return []
 
 
 class ScriptedTurnEngine:

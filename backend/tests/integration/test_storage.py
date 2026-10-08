@@ -37,9 +37,59 @@ def test_migrate_twice_and_no_drift(tmp_path: Path) -> None:
         names = set(conn.execute(text("SELECT name FROM sqlite_master WHERE type='table'")).scalars())
     engine.dispose()
     assert diff == [], diff
-    assert version == "0001"
+    assert version == "0002"
     assert {"memory_fts", "knowledge_fts"} <= names
     assert not any("_vec__" in n for n in names)  # vec tables belong to the SpaceManager
+
+
+def test_0002_marker_column_and_fts_secure_delete(tmp_path: Path) -> None:
+    """knowledge-memory-storage 1.2: `embed_sent_at` exists and both FTS tables delete securely (design D2, D16)."""
+    import sqlite3
+
+    db = _migrated(tmp_path)
+    conn = sqlite3.connect(db)
+    try:
+        cols = {r[1] for r in conn.execute("PRAGMA table_info(knowledge_sources)")}
+        assert "embed_sent_at" in cols
+        for fts in ("memory_fts", "knowledge_fts"):
+            cfg = dict(conn.execute(f"SELECT k, v FROM {fts}_config").fetchall())
+            assert cfg.get("secure-delete") == 1, (fts, cfg)
+        triggers = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='trigger'")}
+        assert {"knowledge_chunks_ai", "knowledge_chunks_ad", "knowledge_chunks_au"} <= triggers
+    finally:
+        conn.close()
+
+
+def test_0002_keeps_rows_of_an_m4_database(tmp_path: Path) -> None:
+    import sqlite3
+
+    from alembic import command
+
+    from horizon.db.migrate import alembic_config
+
+    db = tmp_path / "m4.db"
+    command.upgrade(alembic_config(db), "0001")
+    conn = sqlite3.connect(db)
+    now = "2026-10-03T03:00:00.000Z"
+    conn.execute("INSERT INTO worlds(id, name, cover, you, is_seed, created_at, updated_at, last_active_at) "
+                 "VALUES ('wld_a', 'A', '{}', NULL, 0, ?, ?, ?)", (now, now, now))
+    conn.commit()
+    conn.close()
+    upgrade_head(db)
+    conn = sqlite3.connect(db)
+    try:
+        assert conn.execute("SELECT name FROM worlds").fetchall() == [("A",)]
+    finally:
+        conn.close()
+
+
+async def test_writer_deletes_securely_and_readers_do_not_write(tmp_path: Path) -> None:
+    db = Database(_migrated(tmp_path), publish=lambda ch, ev: None)
+    async with db.write() as tx:
+        assert (await tx.conn.execute(text("PRAGMA secure_delete"))).scalar_one() == 1
+    async with db.read() as conn:
+        assert (await conn.execute(text("PRAGMA secure_delete"))).scalar_one() == 0
+    await db.dispose()
 
 
 # ── 4.3 engines and the unit of work ──

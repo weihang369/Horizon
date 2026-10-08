@@ -1,6 +1,7 @@
 """The SpaceManager (doc 02 §3.9, D-64): embedding spaces and their vec0 tables.
 
-vec tables are created here at runtime, never by Alembic. For the active space it ensures:
+vec tables are created here at runtime, never by Alembic. For the active space (and a `building` one during a switch,
+knowledge-memory-storage design D9) it ensures:
 - `memory_vec__{space}` and `knowledge_vec__{space}` (vec0, `character_id` partition key, cosine distance);
 - `AFTER DELETE` triggers on `memory_items` / `knowledge_chunks` that delete the vector by `rid`
   (spike 02: they fire on FK-cascade deletes too).
@@ -11,11 +12,12 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
+from typing import Any
 
-from sqlalchemy import select, text
+from sqlalchemy import select, text, update
 from sqlalchemy.ext.asyncio import AsyncConnection
 
-from horizon.db.tables import embedding_spaces
+from horizon.db.tables import embedding_spaces, knowledge_sources
 
 
 @dataclass(frozen=True)
@@ -86,3 +88,59 @@ async def drop_retired(conn: AsyncConnection) -> None:
         for stmt in (f"DROP TRIGGER IF EXISTS memory_items_vec_ad__{s}", f"DROP TRIGGER IF EXISTS knowledge_chunks_vec_ad__{s}",
                      f"DROP TABLE IF EXISTS {mem}", f"DROP TABLE IF EXISTS {kno}"):
             await conn.execute(text(stmt))
+
+
+def spec_of(row: Any) -> SpaceSpec:
+    return SpaceSpec(id=str(row["id"]), model=str(row["model"]), provider=str(row["provider"]), dims=int(row["dims"]),
+                     query_instruction=row["query_instruction"], normalized=bool(row["normalized"]))
+
+
+async def active(conn: AsyncConnection) -> SpaceSpec:
+    row = (await conn.execute(select(embedding_spaces).where(embedding_spaces.c.status == "active"))).mappings().first()
+    if row is None:
+        raise RuntimeError("no active embedding space")
+    return spec_of(row)
+
+
+async def building(conn: AsyncConnection) -> SpaceSpec | None:
+    row = (await conn.execute(select(embedding_spaces).where(embedding_spaces.c.status == "building"))).mappings().first()
+    return spec_of(row) if row is not None else None
+
+
+async def non_retired(conn: AsyncConnection) -> list[SpaceSpec]:
+    """The spaces every new vector is written to: the active one first, then a building one (dual-write, D9)."""
+    rows = (await conn.execute(select(embedding_spaces).where(embedding_spaces.c.status.in_(("active", "building")))
+                               .order_by(embedding_spaces.c.status))).mappings().all()   # 'active' < 'building'
+    return [spec_of(r) for r in rows]
+
+
+async def create_building(conn: AsyncConnection, spec: SpaceSpec, now_iso: str) -> None:
+    """Start a switch: register `spec` as `building` with its vec tables and delete triggers. One build at a time."""
+    if await building(conn) is not None:
+        raise RuntimeError("an embedding space is already building")
+    await conn.execute(embedding_spaces.insert().values(
+        id=spec.id, model=spec.model, provider=spec.provider, dims=spec.dims, dtype="float32",
+        normalized=spec.normalized, query_instruction=spec.query_instruction, doc_template=None,
+        status="building", created_at=now_iso))
+    for stmt in _ddl(spec.id, spec.dims):
+        await conn.execute(text(stmt))
+
+
+async def flip(conn: AsyncConnection, building_id: str) -> None:
+    """The switch, in the caller's transaction (D9): building → active, active → retired. A source whose every chunk
+    has a vector in the new space moves its `embedding_space_id` there; the others become keyword-only."""
+    row = (await conn.execute(select(embedding_spaces).where(embedding_spaces.c.id == building_id))).mappings().first()
+    if row is None or row["status"] != "building":
+        raise RuntimeError(f"{building_id} is not building")
+    _, kno = vec_tables(building_id)
+    S = knowledge_sources.c
+    await conn.execute(update(embedding_spaces).where(embedding_spaces.c.status == "active").values(status="retired"))
+    await conn.execute(update(embedding_spaces).where(embedding_spaces.c.id == building_id).values(status="active"))
+    full = text(f"SELECT s.id FROM knowledge_sources s WHERE s.chunk_count > 0 AND NOT EXISTS ("
+                f"SELECT 1 FROM knowledge_chunks c WHERE c.source_id = s.id AND c.rid NOT IN (SELECT rid FROM {kno}))")
+    ids = [r[0] for r in (await conn.execute(full)).all()]
+    await conn.execute(update(knowledge_sources).where(S.id.in_(ids)).values(embedding_space_id=building_id))
+    await conn.execute(update(knowledge_sources).where(S.id.not_in(ids), S.embedding_space_id.is_not(None))
+                       .values(embedding_space_id=None))
+    await conn.execute(update(knowledge_sources).where(S.id.not_in(ids), S.status == "indexed")
+                       .values(status="keyword_only"))

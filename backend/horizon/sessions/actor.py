@@ -90,6 +90,7 @@ class SessionActor:
         self.write_lock = asyncio.Lock()
         self.held = writer.session["status"] == "paused" and writer.session.get("pausedReason") != "turn_cap"
         self.current: TurnInfo | None = None
+        self.pending_query: Any = None   # M5: the latest user message's query embedding (sessions/retrieve.py)
         self.mode = ModeState(turn=len(writer.state["order"]))
         self.busy = False               # a job is running
         self.last_active_ms = to_ms(rt.clock.now())

@@ -258,3 +258,34 @@ class Slots:
             yield
         finally:
             self.release()
+
+
+async def wait_at_most(clock: Any, task: asyncio.Future[Any], seconds: float) -> bool:
+    """Wait for `task` for at most `seconds` of clock time, with the caller's token given up; True if it finished.
+
+    The timeout is a clock timer (virtual in tests), so a slow task loses the race in virtual time exactly as it would
+    in real time. `task` is never cancelled; the caller decides what a late result means.
+    """
+    if task.done():
+        return True
+    fut: asyncio.Future[None] = asyncio.get_running_loop().create_future()
+    holder = current_holder()
+
+    def wake(_t: Any = None) -> None:
+        if not fut.done():
+            if holder is not None:
+                holder.hold()
+            fut.set_result(None)
+
+    async def timer() -> None:
+        await clock.sleep(seconds)
+        wake()
+
+    t = clock.activity.spawn("wait-at-most", timer())
+    task.add_done_callback(wake)
+    try:
+        await wait_handoff(fut, holder)
+    finally:
+        task.remove_done_callback(wake)
+        t.cancel()
+    return task.done()

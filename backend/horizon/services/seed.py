@@ -33,6 +33,7 @@ from horizon.contract import mappers as mp
 from horizon.contract.validate import ContractSchema
 from horizon.db import tables as t
 from horizon.domain.timeutil import normalise_iso
+from horizon.services.memory.refs import refs_from_trace
 from horizon.services.runtime.reducer import initial_runtime, ordered_messages, reduce_all
 
 Wire = dict[str, Any]
@@ -278,9 +279,8 @@ async def apply_seed(conn: AsyncConnection, data: SeedData, *, energy_day: Calla
                    "prompt_version": None, "created_at": normalise_iso(m["createdAt"])} for m in s.messages if m.get("trace")]
         await _insert(conn, t.turn_traces, traces)
         await _insert(conn, t.message_citations, [r for m in s.messages for r in mp.citation_rows(m)])
-        refs = [{"memory_item_id": r["memoryItemId"], "message_id": m["id"]}
-                for m in s.messages for r in ((m.get("trace") or {}).get("memory") or {}).get("recalled", [])]
-        await _insert(conn, t.trace_memory_refs, list({(x["memory_item_id"], x["message_id"]): x for x in refs}.values()))
+        refs = [r for m in s.messages for r in refs_from_trace(m["id"], m.get("trace"))]   # the M5 shared helper (D14)
+        await _insert(conn, t.trace_memory_refs, refs)
 
     # Memory: seed rows replaced; user-earned memories (is_seed = 0) survive.
     await conn.execute(delete(t.memory_items).where(t.memory_items.c.is_seed.is_(True)))

@@ -57,12 +57,12 @@ TurnEvent = (
 | `DebateHost` | `narrate(ctx) → AsyncIterator[TurnEvent]`; `verdict(ctx) → Verdict` | Fixed phases + canned lines; verdict `none` | DeepSeek narration; structured verdict | OQ-AI-05 |
 | `WatchDirector` | `next_beat(ctx) → {speakerId, direction?, end_p?}`; `summarise(session, ctx)` | Round-robin; canned summary | Jev speaker choice; DeepSeek summary | OQ-AI-06 |
 | `Summariser` | `rolling(ctx, upto_seq) → str`, stored in `session_summaries` | Last N lines | DeepSeek at block boundaries (§5) | OQ-AI-02 |
-| `MemoryWriter` | `after_turn(ctx, perspective_character_id) → list[MemoryOp]` | `[]` | `[]` | OQ-AI-01 |
+| `MemoryWriter` | `after_turn(ctx, perspective_character_id, message_id) → list[MemoryOp]` (port `memory_writer`) | `[]` | `[]` (scripted in both profiles) | OQ-AI-01 |
 | `MemoryRetriever` | `recall(ctx, query: QueryBundle, k) → [MemoryHit{item, score}]` | Most recent k | FTS5 only | OQ-AI-01 |
-| `DocumentConverter` | `convert(path, mime) → ConvertedDoc{markdown_with_page_markers, pages}` | Plain-text read | **Docling (CPU, spawned process)** | D-62 |
+| `DocumentConverter` | `convert(path, mime) → ConvertedDoc{markdown_with_page_markers, pages}` | Plain-text read; placeholder passages for PDF/DOCX (the mock's rule) | **Docling (CPU, spawned process)**. Not chosen by the profile or the key: real conversion by default, scripted by default in test mode, `HORIZON_AI_CONVERTER` overrides (D-96) | D-62 |
 | `KnowledgeIndexer` | `chunk(doc) → [Section{text, heading_path, pages, children[{text, locator, heading, offsets}]}]` + `tokenizer_id` | Heading split + fixed windows | Same (sizes are AI-stage tunables) | OQ-AI-03 |
 | `KnowledgeRetriever` | `retrieve(ctx, query: QueryBundle, k) → [Hit{chunk, section, score, rank_sources}]` | FTS5 only | FTS5 + vector + RRF | OQ-AI-03 (MMR, Jev rerank) |
-| `Embedder` | `embed(texts, kind: "query"\|"document", space: EmbeddingSpace, ctx) → vectors` (LRU keyed by `(space.id, sha256(text))`) | Hash → unit vector | **Qwen3 Embedding 8B**; query instruction from the space; truncate + renormalise | D-64 |
+| `Embedder` | `embed(texts, kind: "query"\|"document", space: EmbeddingSpace, ctx, hooks?) → Embedded{vectors, cached}` (LRU keyed by `(space.id, kind, sha256(text))`; per-batch hooks store vectors in the ledger row's transaction) | Hash → unit vector, billed as simulated spend (D-81) | **Qwen3 Embedding 8B** with the active space's model and dimensions (D-95); query instruction from the space; truncate + renormalise | D-64 |
 | `Guardrail` | `check_input(text, ctx)` / `check_output(text, ctx) → [Check{name, verdict, p}]` | Pass | **Jev noul**, fail-open with a flag | OQ-AI-08 |
 
 ```python
@@ -119,6 +119,7 @@ class Decider:
 class AiStateHooks(Protocol):            # implemented by the AI layer; called from the ai_purge_queue outbox worker
     async def on_forget(self, memory_item_ids: list[str], character_id: str, message_ids: list[str]) -> None: ...
     async def on_delete(self, scope: Literal["message", "session", "character", "world"], ids: list[str]) -> None: ...
+# A Forget's queue row carries {memoryItemIds, characterId, messageIds} (scope 'memory') and goes to on_forget (M5).
 ```
 
 - **Delivery.** Lifecycle services commit, then write an `ai_purge_queue` row. The worker calls the hooks **at least once**, with retries at startup, so hook implementations must be idempotent.

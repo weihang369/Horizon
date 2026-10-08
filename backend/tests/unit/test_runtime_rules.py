@@ -12,7 +12,7 @@ def test_sessions_and_ai_spawn_only_through_the_runtime() -> None:
     """Background work in `sessions/`, `ai/` and `services/jobs/` (M4) must hold an activity token, so it goes
     through `rt.spawn`."""
     offenders = []
-    for pkg in ("sessions", "ai", "services/jobs"):
+    for pkg in ("sessions", "ai", "services/jobs", "services/knowledge", "services/memory"):
         for p in (HORIZON / pkg).rglob("*.py"):
             text = p.read_text(encoding="utf-8")
             if re.search(r"\bcreate_task\s*\(|\bensure_future\s*\(", text):

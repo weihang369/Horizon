@@ -18,6 +18,7 @@ from horizon.contract import mappers as mp
 from horizon.db import tables as t
 from horizon.domain.ids import new_id
 from horizon.events.bus import GLOBAL
+from horizon.services.memory.refs import refs_from_trace
 from horizon.sessions.context import characters, energy_of
 from horizon.sessions.modes import debate, one_on_one, watch
 from horizon.sessions.modes.common import message_event, note
@@ -288,6 +289,9 @@ async def fork(rt: Runtime, sid: str, at_seq: int | None) -> Wire:
                    "prompt_version": None, "created_at": m["createdAt"]} for m in messages if m.get("trace")]
         if traces:
             await tx.conn.execute(t.turn_traces.insert(), traces)
+            refs = [r for x in traces for r in refs_from_trace(x["message_id"], x["trace"])]
+            if refs:  # M5 design D14: Forget must reach the fork's copies too
+                await tx.conn.execute(t.trace_memory_refs.insert(), refs)
         cites = [r for m in messages for r in mp.citation_rows(m)]
         if cites:
             await tx.conn.execute(t.message_citations.insert(), cites)

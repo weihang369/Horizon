@@ -12,6 +12,7 @@ import asyncio
 import contextlib
 import logging
 from collections.abc import Awaitable, Callable
+from typing import Any
 
 from sqlalchemy import select, update
 
@@ -51,11 +52,20 @@ class PurgeWorker:
                 await self._task
             self._task = None
 
-    async def _pending(self) -> list[tuple[int, str, list[str], int]]:
+    async def _pending(self) -> list[tuple[int, str, Any, int]]:
         async with self.db.read() as conn:
             rows = (await conn.execute(select(Q.id, Q.scope, Q.ids, Q.attempts).where(Q.done_at.is_(None))
                                        .order_by(Q.id))).all()
-        return [(int(r[0]), str(r[1]), list(r[2] or []), int(r[3])) for r in rows]
+        return [(int(r[0]), str(r[1]), r[2], int(r[3])) for r in rows]
+
+    async def _deliver(self, scope: str, ids: Any) -> None:
+        """A memory Forget carries `{memoryItemIds, characterId, messageIds}` and goes to `on_forget` (M5 design D16);
+        every other scope carries a list of IDs and goes to `on_delete`."""
+        if scope == "memory" and isinstance(ids, dict):
+            await self.hooks.on_forget(list(ids.get("memoryItemIds") or []), str(ids.get("characterId") or ""),
+                                       list(ids.get("messageIds") or []))
+            return
+        await self.hooks.on_delete(scope, list(ids or []))
 
     async def _run(self) -> None:
         while True:
@@ -65,7 +75,7 @@ class PurgeWorker:
             failed = False
             for row_id, scope, ids, attempts in await self._pending():
                 try:
-                    await self.hooks.on_delete(scope, ids)
+                    await self._deliver(scope, ids)
                 except Exception:
                     log.exception("purge hook failed for %s %s (attempt %d)", scope, ids, attempts + 1)
                     async with self.db.write() as tx:

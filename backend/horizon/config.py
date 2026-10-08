@@ -77,6 +77,18 @@ class Config:
         return self.data_dir / "assets"
 
     @property
+    def knowledge_dir(self) -> Path:
+        return self.data_dir / "knowledge"
+
+    @property
+    def tmp_dir(self) -> Path:
+        return self.data_dir / "tmp"
+
+    @property
+    def models_dir(self) -> Path:
+        return self.data_dir / "models"
+
+    @property
     def settings_local_path(self) -> Path:
         return self.data_dir / "settings.local.json"
 

@@ -72,12 +72,12 @@ Every non-2xx response has this body:
 | `topUpEnergy` | `POST /characters/{id}/energy/top-up` `{ points }` → `Energy` (ledger `energy_topup`; bounded by the daily cap) |
 | `setEnergyMax` | `PUT /characters/{id}/energy/max` `{ points }` → `Energy` |
 | `memory` | `GET /characters/{id}/memory` → `MemoryItem[]` |
-| `forgetMemory` | `DELETE /memory/{memoryItemId}` → 204 (scrubs traces) |
+| `forgetMemory` | `DELETE /memory/{memoryItemId}` → 204 (scrubs traces and the files, doc 02 §3.7); unknown → 404 `not_found` |
 | `knowledge` | `GET /characters/{id}/knowledge` → `KnowledgeSource[]` |
 | `knowledgeSource` | `GET /knowledge/{sourceId}` → `{ source, chunks }` |
-| **rev 1.3** `addKnowledge` | `POST /characters/{id}/knowledge`: multipart `file` **or** JSON `{ type:"text", title, text }` → `KnowledgeSource` (`status: indexing`) |
-| **rev 1.3** `deleteKnowledge` | `DELETE /knowledge/{sourceId}` → 204 |
-| **rev 1.3** `reindexKnowledge` | `POST /knowledge/{sourceId}/reindex` → `KnowledgeSource` |
+| **rev 1.3** `addKnowledge` | `POST /characters/{id}/knowledge`: multipart `file` **or** JSON `{ type:"text", title, text }` → **201** `KnowledgeSource` (`status: indexing`). Other `Content-Type` → 422 `validation`. A file over 10 MB → **413** `validation` (`details.limit: 10485760`), refused on `Content-Length` and again while counting; wrong extension or content (magic bytes, DOCX = `word/document.xml`, UTF-8 for MD/TXT) → 422 (`details.field`, `reason`); pasted text over 200 KB → 422 (`details.limit: 204800`); a 21st source → 422 (`details.limit: 20`); the same content twice → 409 `conflict` (`details.existingSourceId`); unknown or tombstoned character → 404 |
+| **rev 1.3** `deleteKnowledge` | `DELETE /knowledge/{sourceId}` → 204 (stops its indexing first; rows, vectors and files go); unknown → 404 |
+| **rev 1.3** `reindexKnowledge` | `POST /knowledge/{sourceId}/reindex` → `KnowledgeSource` (`status: indexing`); already indexing or a legacy `url` source → 409 `conflict`; unknown → 404 |
 
 Knowledge status changes are pushed as `entity.changed {kind:"knowledge", id}` on the global stream.
 

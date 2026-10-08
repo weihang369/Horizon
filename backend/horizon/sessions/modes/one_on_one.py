@@ -8,6 +8,7 @@ from horizon.ai.contexts import LineHint
 from horizon.ai.scripted.bank import greeting
 from horizon.sessions.context import characters
 from horizon.sessions.modes.common import asleep_note, is_asleep, last_user_text, message_event, speak_then, user_message
+from horizon.sessions.retrieve import start_query
 from horizon.sessions.turn import TurnSpec
 
 if TYPE_CHECKING:
@@ -38,7 +39,9 @@ def greet(actor: SessionActor) -> None:
 
 async def send(actor: SessionActor, text: str) -> None:
     cid = _speaker(actor)
-    await actor.emit(message_event(user_message(actor, text)))
+    msg = user_message(actor, text)
+    await actor.emit(message_event(msg))
+    start_query(actor, text, str(msg["id"]), [cid] if cid else [])  # M5 design D12: in parallel with the turn
     if cid is None:
         return
 

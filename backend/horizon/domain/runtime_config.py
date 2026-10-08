@@ -57,6 +57,15 @@ class ReplyCaps:
 
 
 @dataclass(frozen=True)
+class RetrievalKnobs:
+    """M5 (knowledge-memory-storage design D12, D13): hits per reply and the query-embedding wait. AI-stage tunables."""
+
+    knowledge_k: int
+    memory_k: int
+    query_embed_wait_ms: float
+
+
+@dataclass(frozen=True)
 class RuntimeKnobs:
     reply_max_tokens: ReplyCaps
     window_tokens: int
@@ -65,6 +74,7 @@ class RuntimeKnobs:
     idle_release_ms: float
     prefetch_max: int
     llm_concurrency: int
+    retrieval: RetrievalKnobs
 
 
 @dataclass(frozen=True)
@@ -94,7 +104,10 @@ class RuntimeConfig:
                                            debate={str(k): int(v) for k, v in caps["debate"].items()}),
                 window_tokens=int(r["windowTokens"]), coalesce_max_chars=int(r["coalesce"]["maxChars"]),
                 coalesce_max_ms=float(r["coalesce"]["maxMs"]), idle_release_ms=float(r["idleReleaseMs"]),
-                prefetch_max=int(r["prefetchMax"]), llm_concurrency=int(r["llmConcurrency"])),
+                prefetch_max=int(r["prefetchMax"]), llm_concurrency=int(r["llmConcurrency"]),
+                retrieval=RetrievalKnobs(knowledge_k=int(r["retrieval"]["knowledgeK"]),
+                                         memory_k=int(r["retrieval"]["memoryK"]),
+                                         query_embed_wait_ms=float(r["retrieval"]["queryEmbedWaitMs"]))),
             jobs=JobTiming(
                 profile_draft_ms=float(t["profileDraftMs"]), field_regenerate_ms=float(t["fieldRegenerateMs"]),
                 portrait_ms=float(t["portraitMs"]), portrait_parallel=int(t["portraitParallel"]),

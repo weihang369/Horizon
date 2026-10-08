@@ -65,8 +65,9 @@ testpaths = ["tests"]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
 filterwarnings = ["ignore::DeprecationWarning:aiosqlite.*"]
-markers = ["live: calls the real OpenRouter API with the key from the environment (manual, <= $0.05; never in CI)"]
-addopts = "-m 'not live'"
+markers = ["live: calls the real OpenRouter API with the key from the environment (manual, <= $0.05; never in CI)",
+           "docling: needs the optional Docling install and its fetched models (manual, local; never in CI)"]
+addopts = "-m 'not live and not docling'"
 
 [tool.ruff]
 line-length = 140
@@ -92,5 +93,6 @@ ignore_missing_imports = true
 [[tool.mypy.overrides]]
 module = ["horizon.domain.*", "horizon.contract.*", "horizon.services.runtime.reducer", "horizon.gateway.*", "horizon.ai.*",
           "horizon.sessions.*", "horizon.services.jobs.*", "horizon.services.assets", "horizon.services.characters",
-          "horizon.services.theme", "horizon.storage.*"]
+          "horizon.services.theme", "horizon.storage.*", "horizon.services.knowledge.*", "horizon.services.memory.*",
+          "horizon.db.spaces", "horizon.db.fts"]
 strict = true

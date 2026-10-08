@@ -38,7 +38,7 @@ Ctrl-C stops both. The backend keeps its data in `data/` at the repo root (gitig
 | Command (repo root) | What it does |
 |---|---|
 | `npm run setup` | Step 1: everything the demo needs |
-| `npm run setup:docling` | Optional step 2: CPU PyTorch + Docling for document upload (the models download arrives with knowledge upload, milestone M5) |
+| `npm run setup:docling` | Optional step 2: CPU PyTorch + Docling for PDF and DOCX knowledge uploads. Then run `uv run --project backend horizon models fetch` once to download the conversion models into `data/models/` (Markdown, text and pasted text work without either) |
 | `npm run dev` | Backend with auto-reload + Vite in `--mode http` (`VITE_HORIZON_CLIENT=http`, proxied `/api`) |
 | `npm run demo` | Build the app and serve it and the API on one port, <http://127.0.0.1:8000> |
 | `npm test` | Backend tests (pytest), frontend unit tests, then the client contract against a real test-mode backend |
