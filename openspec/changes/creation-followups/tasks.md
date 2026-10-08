@@ -112,8 +112,14 @@
   - `seed:check`, `fixtures:check` and `export-schema:check` exited 0;
   - e2e: 34 passed;
   - `openspec validate --strict`: valid.
-- [ ] 7.2 Add the live check `tests/live/test_live_jobs.py::test_live_song` (marked `live`, deselected by default):
+- [x] 7.2 Add the live check `tests/live/test_live_jobs.py::test_live_song` (marked `live`, deselected by default):
   - a $0.05 cap and the key presence check only;
   - it prints shape, chunks, bytes, format, duration, latency and cost, never the key.
 
   Verify that `pytest -m live --collect-only` lists it and that a normal run deselects it. **Run it only after the user explicitly approves the spend (≤ $0.05)**, then record the result in design.md (a D9 record) and here. If the real shape differs from D1, fix D1 and re-run 7.1.
+
+  **Run 2026-10-08 (user-approved): 1 passed, $0.040000.**
+  - Lyria 3 Clip returned one audio piece: a 679,456-byte ID3 MP3 of 28.056 s.
+  - It took 16.3 s, and `usage.cost` was $0.04 (`cost_source: provider`).
+  - The song is `song_v2.mp3` with `format: "mp3"`. The D1 shape was confirmed with no change.
+  - `NAIVE_SONG_LATENCY_MS` is set to the measured 17,000.

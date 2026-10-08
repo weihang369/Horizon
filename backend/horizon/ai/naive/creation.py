@@ -29,7 +29,7 @@ from horizon.storage.audio import MAX_SONG_BYTES, is_mp3
 from horizon.storage.images import data_url
 
 LATENCY_MS = {"base": 17_000.0, "edit": 8_000.0, "sheet": 17_000.0}   # the D-61 run's figures
-NAIVE_SONG_LATENCY_MS = 40_000.0   # the mock's song pacing until the live check measures Lyria (design D9)
+NAIVE_SONG_LATENCY_MS = 17_000.0   # measured in the 2026-10-08 live run: one 28 s clip in 16.3 s (design D9)
 DRAFT_LATENCY_MS = 8_000.0   # measured on DeepSeek in the 2026-10-06 live run (7–8 s)
 MAX_TOKENS = 2_400           # a whole draft measured 1,229 tokens: 1,200 cut every draft off mid-JSON
 FIELD_MAX_TOKENS = 1_200     # one rewritten field

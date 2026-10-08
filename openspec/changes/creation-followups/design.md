@@ -70,7 +70,7 @@ class SongGenerator(Protocol):
 
 - **`ProceduralSong`** (scripted): `paid = False`; `expected_ms` returns the timing table's `songMs`; `generate` is never called.
 - **`NaiveSong`** (in `ai/naive/creation.py`, following `NaiveDrafter`'s hooks pattern):
-  - `paid = True`, `model` from the job, `expected_ms = NAIVE_SONG_LATENCY_MS` (40 000 until D9 measures it);
+  - `paid = True`, `model` from the job, `expected_ms = NAIVE_SONG_LATENCY_MS` (17,000: the D9 live run measured 16.3 s);
   - `generate` builds the prompt (D4) and calls `gateway.generate_music`;
   - its `after` hook validates the bytes (D6) and only then forwards them to `hooks.after_response`, so unusable audio is still recorded as a charged call (the pipeline records a row when `after_response` raises).
 - **Registration.** `profile.py` registers `"song": NaiveSong(d)` in the naive builders. `HORIZON_AI_SONG` already works through the per-port override.
@@ -156,13 +156,21 @@ The rule runs at the end of the music call, inside `worker.call` for `theme_song
 ### D9. Live check (manual, ≤ $0.05, user approval required)
 
 `tests/live/test_live_jobs.py::test_live_song` is marked `live`, so it is deselected by default:
-- one naive `song` job for a fresh draft, with a $0.05 daily cap;
+- one naive `song` job for the seed character Hana (no draft call needed), with a daily cap of today's spend + $0.05;
 - it asserts either:
   - (a) an MP3 song (`format == "mp3"`, `durationSec` between 5 and 40, one music ledger row ≤ $0.05); or
   - (b) a fallback with the licenseNote, recorded as "Lyria unavailable at run time";
 - it prints only the request shape, the chunk count, the byte size, the detected format, the duration, the latency and the cost. It never prints the key; the key is checked only for presence.
 
 The result is recorded in this design (D9 record) and in tasks.md. If the real response differs from D1 (for example, the audio needs an `audio: {format: "mp3"}` request field, or arrives in `message.audio` without streaming), D1 changes before archive. It runs **only after the user explicitly approves the spend**.
+
+**D9 record (2026-10-08, approved by the user, one run, $0.04):**
+- Lyria 3 Clip worked through the D1 request exactly as designed. Model `google/lyria-3-clip-preview`, served by Google AI Studio. The request was streamed with `modalities: ["text","audio"]`, with no `audio` config, no routing block and no fallback model.
+- **Audio:** it arrived as **one** `delta.audio.data` piece (679,456 bytes) starting with an ID3v2 tag (`49 44 33 03`). `is_mp3` accepted it, and the frame walk read **28.056 s**.
+- **Latency:** 16.3 s from send to the end of the stream, inside the 120 s first-audio deadline (D2). `NAIVE_SONG_LATENCY_MS` is now 17,000.
+- **Cost:** `usage.cost` was reported in the stream as **$0.04**. The ledger row is `music` / `song`, $0.04, `cost_source: provider`, so no CostCorrector pass is needed.
+- **Result:** the job succeeded, the song is `song_v2.mp3` with `format: "mp3"`, `durationSec: 28.056` and the Lyria licenseNote. The total was $0.040000, under the $0.05 cap.
+- No change to D1 was needed.
 
 ### D10. D-90: one place in the client
 
@@ -199,4 +207,4 @@ The result is recorded in this design (D9 record) and in tasks.md. If the real r
 
 ## Open Questions
 
-- The exact Lyria latency and whether `usage.cost` is reported in the stream are answered by the D9 live check. They change only constants (D2, D3) and whether the CostCorrector runs, not the approach.
+- None left. The D9 live check answered both earlier unknowns: the latency is 16.3 s (`NAIVE_SONG_LATENCY_MS` 17,000), and `usage.cost` is reported in the stream ($0.04, `cost_source: provider`).
