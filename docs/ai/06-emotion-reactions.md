@@ -134,8 +134,8 @@ DeepSeek streams, told the mood by one
   neutral plus that emotion's effects and tint (EMO-06), and the mood line (E4) still shapes the words.
 - **Which paths ask again after the first reply:** the group **auto** policy's second replier (and Step in's) is
   chosen by doc 07 G2's follow plan, which also asks its gates and emotion, so its face can react to the first reply.
-  A **prefetched** reply (Everyone, debate openings) keeps the answers from its own Jev call 1, because it was planned
-  before the line it follows existed. Watch never prefetches: its next plan starts at `turn.end` (doc 07 G8).
+  A **prefetched** reply keeps the answers it was planned with, before the line it follows existed: debate openings
+  from their own Jev call 1, and every Everyone reply from the run's single call 1 (doc 07 G4). Watch never prefetches: its next plan starts at `turn.end` (doc 07 G8).
 - **MANUAL mode still asks it** (it costs almost nothing inside the same request): see E2 for where the answer goes.
 - **Confidence floor:** set by doc 02 B5's grid against E8's target. Below the floor counts as unsure (E3).
 
@@ -404,7 +404,7 @@ trusted):
   one-append `turn.start` + `emotion`, the E6 reducer fixtures, and the derived seeds.
 - **Doc 02 B7 cost:** `decisions` ≈ $0.07 (was $0.06: 60 more emotion items and 90 reaction items, both orders);
   `conversations` unchanged at ≈ $0.38 (the new noul is under a cent); **`all` ≈ $0.59** (about RM 2.5); ≈ $0.81 at
-  peak; ≈ $0.42 once `naive` replies are cached.
+  peak; ≈ $0.42 once `naive` replies are cached (doc 07 G11 later makes these $0.65 / $0.92 / $0.46).
 
 ### E9. Speed and cost, in one place
 

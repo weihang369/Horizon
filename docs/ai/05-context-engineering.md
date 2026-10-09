@@ -323,7 +323,7 @@ Doc 01 A3 rule 6: Jev gets less accurate as irrelevant content grows, so the sta
 - **Not included:** full cards, the history window, the summary outside watch, memories, passages.
 - **Quoted text** (user lines, character lines, titles) is marked as quoted content, never instructions (doc 01 A3
   rule 8; task 11 sets the wording).
-- **Numbers become labels in code** (doc 01 A3 rule 7): "2 turns ago", "tired".
+- **Numbers become labels in code** (doc 01 A3 rule 7): "2 turns ago", "not yet".
 - **Over the limit, in this order:** drop `documents` titles past 5; shorten `about` to 30; drop the oldest `recent`
   lines, **keeping at least 3**; cut `latest` to 300. If it is still over (a very large cast), the per-candidate gate
   questions are dropped for the candidates furthest down the `last_spoke` order, which falls back to a quick reply
@@ -364,7 +364,7 @@ Doc 01 A3 rule 6: Jev gets less accurate as irrelevant content grows, so the sta
 - **Offline, $0:** the byte-identical prefix test (X6), the X7 mapping on fixture turns, the X2 drop, ceiling and
   fork cases on synthetic histories, the X4 multi-line attribution, and the X9 limit and cut order.
 - **Doc 02 B7 cost:** `all` ≈ $0.58 (was $0.50); ≈ $0.80 at peak; ≈ $0.41 once `naive` replies are cached (doc 06
-  E8 later makes these $0.59 / $0.81 / $0.42). `long` ≈ $0.12, run rarely.
+  E8 later makes these $0.59 / $0.81 / $0.42, and doc 07 G11 $0.65 / $0.92 / $0.46). `long` ≈ $0.12, run rarely.
 
 ## 5. Checks before this is locked
 

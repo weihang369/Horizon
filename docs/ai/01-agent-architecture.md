@@ -182,7 +182,8 @@ $0.
    member, and where `none` sits). The shuffle uses a per-turn seed that is stored in the trace, so the request can be
    reproduced exactly. The answer itself can still vary, because Jev takes no seed.
 5. **What `none` means is defined for every choice:**
-   - who speaks: nobody (watch: let the talk rest);
+   - who speaks: nobody, offered **only for group's optional second slot** (doc 07 G2); the first slot, Next
+     speaker and watch have no `none` (doc 07 G1, G4, G6);
    - emotion: keep the current face;
    - debate member: invalid, so the fallback applies.
 6. **Keep the state small and relevant,** because accuracy drops as irrelevant content grows. Pass only what a question
