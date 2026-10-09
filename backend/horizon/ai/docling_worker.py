@@ -40,7 +40,7 @@ class Refused(Exception):
 def parent_alive(pid: int) -> bool:
     if pid <= 0:
         return True
-    if os.name == "nt":
+    if sys.platform == "win32":   # not `os.name`: mypy narrows on sys.platform, so Linux CI skips the windll branch
         import ctypes
 
         synchronize, wait_timeout = 0x00100000, 0x00000102
