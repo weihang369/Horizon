@@ -91,6 +91,9 @@ export default defineConfig<{ client: ClientKind }>({
           url: `http://127.0.0.1:${BACKEND_PORT}/api/v1/health`,
           reuseExistingServer: false,
           timeout: 180_000,
+          // Linux/macOS: SIGTERM first so the launcher stops the backend and removes its temp dir; SIGKILL after 15 s.
+          // Windows ignores this and force-kills the tree (the launcher sweeps stale dirs on its next start).
+          gracefulShutdown: { signal: "SIGTERM" as const, timeout: 15_000 },
           stdout: "ignore" as const,
           stderr: "pipe" as const,
         },

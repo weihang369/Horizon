@@ -378,3 +378,12 @@ Local development uses Node v24.18.0, and `package.json` has no `engines` field.
 - **D19, measured.** The cold Windows run took 18.8 s (clone 1.4, setup 10.9, dev → demo mode 6.5) against the 300 s budget. The temp caches really were empty: 43 MB of npm tarballs, 110 MB of uv packages and a Python 3.12.13 runtime were downloaded, and the clone's venv was built on that Python. On Windows the script runs npm through the shell as one command string (npm is `npm.cmd`), which avoids Node's DEP0190 warning.
 - **D18, verified offline.** The workflow parses with PyYAML (already in the backend venv; nothing downloaded). Every `npm run` it names exists, it contains no `secrets.` reference, and the cold boot step comes before every cache restore. Its first real run is task 8.3.
 - **One unexplained `test:http` failure.** In the final gate pass, one `test:http` run failed all 56 tests, each after about 9 s. It started right after the 16-minute backend suite, and the backend did come up (a startup failure is a setup error, not 56 test failures). The full log wasn't kept. Three runs right after it passed 56/56. Treat a repeat on CI as a real signal: keep the log and look at the backend's stderr before re-running.
+- **Task 8.3, what Linux CI caught.** Three issues that never show on Windows:
+  - Run 1, mypy: `ctypes.windll` in the Docling parent check. mypy narrows on `sys.platform == "win32"` and not on `os.name`, so the check now uses `sys.platform`.
+  - Run 2, `test_storage.py`: Ubuntu's SQLite is built with `secure_delete` on, and the Windows build has it off. Readers keep the build default and only the writer forces it, so the test now compares readers to the build default.
+  - Run 3, a hung Playwright teardown that hit the 45-minute limit after all 68 E2E tests had run.
+    - On POSIX, Playwright stops a web server by SIGKILLing its process group, then waits for the server's stdio pipes to close.
+    - The launcher had spawned `uv` with `detached: true`, a group of its own, so the backend survived the kill and held the inherited stderr pipe open.
+    - Fixed: the backend now stays in the launcher's group, and the backend web server has `gracefulShutdown: SIGTERM, 15 s`, so on Linux the launcher's handler runs and removes its temp dir.
+    - Windows is unaffected, since `taskkill /T` kills the tree.
+  - Run 3 timings: cold boot 11 s, backend tests 23.5 min (16.7 min on Windows), HTTP contract 76 s, E2E tests about 4 min.

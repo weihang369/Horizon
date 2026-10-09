@@ -5,6 +5,9 @@
 // - Ctrl-C / SIGTERM / its own exit: kill the backend's process tree (uv → python → uvicorn), then remove the temp dir;
 // - Playwright on Windows kills this launcher forcefully, so no handler runs. Each temp dir therefore records its
 //   launcher's PID, and every start sweeps the dirs of launchers that are no longer alive.
+// - On Linux/macOS the backend stays in this launcher's process group (not detached): Playwright SIGTERMs, then
+//   SIGKILLs, that group, and waits for the stderr pipe the backend inherits. A detached backend would survive the
+//   kill, hold the pipe open and hang Playwright's teardown (CI run 3 hit the 45 min limit that way).
 // Owner: SWE.
 import { spawn } from "node:child_process";
 import { readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
@@ -47,7 +50,6 @@ const child = spawn("uv", serveArgs(port), {
   cwd: BACKEND,
   env: testBackendEnv(dirs),
   stdio: ["ignore", "inherit", "inherit"],
-  detached: process.platform !== "win32",
 });
 
 let stopping = false;
