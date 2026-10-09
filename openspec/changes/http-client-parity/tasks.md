@@ -170,4 +170,4 @@
   - frontend `typecheck`, `lint`, `test`, `test:http` (0 pending), `seed:check`, `fixtures:check`, `export-schema:check` and `assets:check`;
   - `npm run e2e` on Edge (both clients).
 - [x] 8.2 Run `openspec validate http-client-parity --strict` and `openspec validate --specs --strict`, and verify both are clean. Commit the final checkpoint without attribution.
-- [ ] 8.3 **Manual (user):** the user pushes `feat/http-client-parity`, and the first CI run is green. If it fails only on Linux, fix it on the branch and repeat until green. Record the run's boot timings from the job summary in `docs/backend/06` §M6.
+- [x] 8.3 **Manual (user):** the user pushes `feat/http-client-parity`, and the first CI run is green. If it fails only on Linux, fix it on the branch and repeat until green. Record the run's boot timings from the job summary in `docs/backend/06` §M6.
