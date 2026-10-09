@@ -178,6 +178,8 @@ Jev question is validated as B4 describes before it is trusted.
   | Layer 1: every other question | **40 items**, plus another 40 **only when the interval straddles the target** | 40 items catch a gross failure, and we grow a set only where the answer is unclear |
   | Layer 2: retrieval | **100 answerable questions and 40 unanswerable ones** on the same topics | 50 items can never show "≤ 5 % wrong abstains" (0 of 50 still allows up to 7 %) |
   | Layer 3: frozen transcripts | **20**, each 8–12 turns, across both worlds: 1:1 × 6, group × 5, debate × 4, watch × 5 | About 200 compared turns |
+  | Layer 3 targeted lines (doc 04 P12) | **At least 10 Malay, Chinese or mixed user lines and 10 planted wrong claims**, placed in those transcripts, split dev / test | The language and push-back checks would pass trivially without them |
+  | Drafter suite (doc 04 P12) | **20 seeds** across the three intents and both worlds, 10 dev / 10 test | Enough to see a systematic drafting fault |
   | Layer 3: free-running conversations | **4**, one per mode | What only a live run shows (B3) |
   | Judge checks (B4) | **60 per judge question** (30 real + 30 planted failures), **30 pairs** for the pairwise judge | Planted failures have known answers, so they cost no labelling |
 
@@ -266,6 +268,8 @@ Jev question is validated as B4 describes before it is trusted.
   | **Agent vs naive** | a choice of "reply A", "reply B" or "about the same", **asked in both orders** | the last 2 turns + both replies |
   | **Citation support** | a noul for each cited passage: "does this passage support what the reply says it supports?" (the live post-turn citation check, A7) | the passage + the cited sentence |
   | **Sentence faithfulness** (deep turns) | code splits the reply into sentences; a noul for each factual sentence against the kept passages | the passages + one sentence |
+  | **Reply rules** (doc 04 P12) | 4 nouls: no assistant voice · no flattery (on a 100-reply sample) · replies in the user's language (non-English lines only) · pushes back (planted wrong claims only) | the last user line + the reply |
+  | **Draft quality** (doc 04 P12) | 2 nouls: fits the seed · the relationship fits the You card | the seed, the You card + the draft |
   | **Face and words agree** | a choice from the 7 emotions, given only the reply text (the live post-turn emotion check) | the reply |
   | **Debate quality** | the rubric (task 8) | — |
   | **Safety** | a red-team set (task 11) | — |

@@ -184,13 +184,19 @@ The user is <You card name>. About them: <You card line>. To you, they are: <rel
 **Decision:** the card is at most **1,500 tokens**, counted with `count_tokens` (UTF-8 bytes / 3). Most text fields
 have no length limit in the contract (`backstory`, the summaries, `quirks`, `catchphrases`, `expertise`,
 `boundaries`, each example line), so a pasted 5,000-word backstory is possible.
-- Over the limit, cut in this order until it fits:
-  1. `backstory`, at the last sentence end that fits, plus "…";
-  2. `goals`, the same way;
-  3. **a hard cut of the whole card** at the last line that fits, plus "…" (the guarantee; a P12 code check counts how
-     often it fires).
-- **Sentence end** is defined once and shared: the regex `[.!?。！？](?=\s|$)`, skipping a closing quote, and never
-  after a known title (`Dr.`, `Mr.`, `Ms.`, `Mrs.`, `Prof.`, `St.`). "…" is not a sentence end.
+- **Step 1, per-field caps (always applied):** each free-text field is capped on its own, so one huge field can't
+  push the voice out of the card: `backstory` 600 tokens; `personality.summary`, `speakingStyle.summary` and `goals`
+  200 each; each list item (trait, quirk, catchphrase, expertise, boundary, example line) 60. A capped field is cut at
+  its last sentence end that fits, plus "…" (a list item with no sentence end is cut at the last space, or at the
+  character for CJK).
+- **Step 2, only if the card is still over 1,500:** drop list items from the end of the longest lists first
+  (expertise, then boundaries, then quirks), never the speaking-style summary, catchphrase or example lines, which
+  carry the voice. A P12 code check counts how often step 2 fires.
+- **Sentence end** is defined once and shared by Python and TS:
+  `[.!?]["'”’)]*(?=[ \t\n]|$)|[。！？]["'”’）]*` (CJK ends need no space after them; a closing quote or bracket stays
+  with its sentence; only space, tab and newline count as whitespace, so Python and JS agree). A match is rejected when
+  it ends a known abbreviation: `Dr.`, `Mr.`, `Ms.`, `Mrs.`, `Prof.`, `St.`, `Jr.`, `Sr.`, `vs.`, `e.g.`, `i.e.`.
+  "…" is not a sentence end.
 - `count_tokens` gets a **TypeScript port** (`frontend/src/domain/tokens.ts`) so the twin (P10) cuts at exactly the
   same place. The shared fixtures include cut cases in ASCII and CJK.
 - The preview (P10) shows the cut and the `count_tokens` figure, so the user sees what the model gets.
@@ -249,8 +255,12 @@ session block, P5, not repeated here):
 - **Watch:** "Speak only as yourself. Never write lines for {others} or {user}." (C6 also stops on the user's name.)
   The short-message rule stays (it applies only if the user steps in). The language rule becomes "Use the language
   {user} writes in if they have written; otherwise the premise's; if you can't tell, English."
-- **A name at the start of any line, not only the first, is stripped:** with line-break bubbles a "Mei: …" on a
-  second line would otherwise render as its own bubble. The C6 name-prefix buffer runs at every line start (§6).
+- **A name at the start of any line, not only the first, is stripped on the `agent` path:** with line-break bubbles
+  a "Mei: …" on a second line would otherwise render as its own bubble. The C6 name-prefix buffer runs at every line
+  start there. The `naive` path keeps doc 03's first-line buffer, so the yardstick is unchanged (P1). The shared
+  tag-parser fixtures gain a `speaker` field and a `perLine` flag, and the TS reference parser in
+  `frontend/src/engine/tagParser.fixtures.test.ts` gains both (this also closes the same gap in doc 03 C6, whose
+  name-prefix cases need the speaker's name too).
 - **Debate:** the short-message and question rules are dropped (task 8 owns the debate style).
 - **Emoji line:** formality `formal` → "Don't use emoji." Otherwise → "Use emoji only if it fits how you talk, and at
   most one per message."
@@ -315,8 +325,9 @@ should almost never hit, and a stale face for one turn is harmless.
 **Decision:**
 - **The first-chat rule:** a new 1:1 session uses the **stored greeting word for word** when
   - `profile.greeting` is not empty, **and**
-  - there is no other `one_on_one` session with `is_seed = false` and `continued_from IS NULL` in which **this
-    character has a message**.
+  - there is no other `one_on_one` session with `is_seed = false` and `continued_from IS NULL` that has a message
+    with `messages.author_character_id` = this character (asleep notes only point at the character through
+    `target_character_id`, so they don't count).
 
   So seed recordings and "Continue live" forks (which copy seed messages, `sessions/fork.py`) don't count, and neither
   does a session where the greeting never ran (asleep, cap refusal, closed before the greeting delay). A deleted
@@ -328,9 +339,19 @@ should almost never hit, and a stale face for one turn is harmless.
     already uses);
   - skips the output guardrail (the user approved this text in the wizard) and the memory writer (a greeting holds
     nothing to remember);
-  - writes a trace with **no `model` section** (it is optional in `TurnTrace`) and `prompt_version = None`, so Insight
-    never claims a call that didn't happen.
-  - The mock client does the same for its first chat (demo parity), with no simulated cost.
+  - writes a trace with **no `model` section** (it is optional in `TurnTrace`), `emotion = {chosen: "happy", source:
+    "default"}`, `engine = "verbatim"` and `prompt_version = None`, so Insight never claims a call that didn't happen.
+    Message usage is omitted and no `energy` event is sent (both already optional; `finish` skips the event when
+    nothing was spent).
+  - The mock client does the same for its first chat (demo parity), with no simulated cost; its dataset already has
+    each session's messages, `isSeed` and `continuedFrom`, so it runs the same query.
+- **Where the time goes:** the generated greeting used to warm DeepSeek's prompt cache for the first reply. Now the
+  first user reply pays the cold prefix (about 600–900 tokens, P2), so some of the saved 1–2 s moves to that reply.
+  The latency suite (doc 02 B8) measures the first reply of a new chat separately.
+- **Tests that assume a billed, generated greeting** change with it (they move to a second 1:1 session, where the
+  greeting is generated, or are rewritten): `tests/sessions/test_naive.py` (the ledger row, cost, `emotionSource`,
+  energy and "the greeting set the prefix" cases), `test_energy_caps.py` ("cap reached by the greeting") and
+  `test_core.py` ("the greeting has already spent more than this cap").
 - **Later sessions** generate the greeting: the `agent` compiler's greeting cue gains "Don't reuse your usual
   greeting: '<stored greeting>'." The scripted profile keeps its simulated, billed greeting (D-81) for later sessions.
   Task 9 can add "last time we talked about …".
@@ -410,7 +431,7 @@ faster. A generated greeting afterwards avoids the same line every time.
   - cost: 20 drafts ≈ $0.02, plus 40 Jev requests ≈ $0.003.
 - **Reply-rule checks** on doc 02's layer-3 conversations (no extra DeepSeek calls):
   - **code, on every reply, $0:** action rate (`*…*`), stray tag or name prefix, bubbles over the mode's target, emoji
-    over one, question-ending rate, the hard-cut rate (P4), and the P8 repetition rates (free runs only);
+    over one, question-ending rate, the P4 step-2 rate, and the P8 repetition rates (free runs only);
   - **Jev, on a 100-reply sample** to keep the cost down: no assistant voice, no flattery (about 200 requests);
   - **Jev, only on targeted lines:** replies in the user's language (on the non-English user lines) and pushes back
     (on planted "user says something wrong" lines). B2's transcripts gain these lines: at least 10 Malay or Chinese
@@ -420,13 +441,13 @@ faster. A generated greeting afterwards avoids the same line every time.
 - **Each new Jev question is validated before it is trusted** (B4): 30 real and 30 planted items per question (four
   reply questions, two drafter questions), a one-time ≈ $0.03.
 - **B7's estimate** rises by about $0.05 per full run (drafter suite + reply checks + the three 1:1 free runs).
-- **Targets:** actions and stray tags under 2 %; question-ending under 50 %; hard cuts under 1 %; the P8 targets. A
+- **Targets:** actions and stray tags under 2 %; question-ending under 50 %; P4 step 2 on under 1 % of cards; the P8 targets. A
   miss is a prompt fix, tuned on the dev items and confirmed on the test items.
 
 ## 5. Checks before this is locked
 
 1. **Prompt size, offline, $0.** Compile the six seed characters in all four modes; record the token count of each
-   system message. Expect about 600–900; anything over 1,500 for the card is a P4 bug.
+   system message. Expect about 600–900; any card that needs P4 step 2 is a finding.
 2. **First layer-3 run** (doc 02 B7, needs the user's OK when it runs): the P12 targets. No separate paid check is
    added for this task.
 
@@ -435,9 +456,10 @@ faster. A generated greeting afterwards avoids the same line every time.
 | Change | Where | Kind |
 |---|---|---|
 | The `agent` persona compiler (P1–P6), `prompt_version = "agent-1"`; the card limit (P4) | new `ai/agent/persona.py` (next to the agent engine) | backend |
-| No tag instruction on the `agent` path; Jev failure keeps the previous face; parser only strips stray tags and name prefixes, **at every line start** (P6, P7) | the agent reply engine, the turn plan's emotion fallback, `ai/naive/tag_parser.py` + `backend/tests/fixtures/tag_parser/` (extends doc 03 C6's buffer) | backend |
+| No tag instruction on the `agent` path; Jev failure keeps the previous face; parser only strips stray tags and name prefixes, **at every line start on the agent path** (P6, P7) | the agent reply engine, the turn plan's emotion fallback, `ai/naive/tag_parser.py` (a `per_line` option, off for naive); `backend/tests/fixtures/tag_parser/` gains `speaker` and `perLine`; the TS reference parser in `frontend/src/engine/tagParser.fixtures.test.ts` | backend + frontend |
 | The repeat hint behind a config switch, off (P8) | `frontend/scripts/seed-build/runtime.config.ts` → `seed/runtime.json`; `domain/runtime_config.py` | config |
-| `LineHint.verbatim`; the first-chat query; the verbatim runtime path (no planner, engine, gateway, guardrail or memory writer; no `model` trace; `prompt_version` None) (P9) | `ai/contexts.py`, `sessions/modes/one_on_one.py`, **`sessions/turn.py`**; the mock client's first chat (`frontend/src/mock/engines/oneOnOne.ts`) | backend + frontend |
+| `LineHint.verbatim`; the first-chat query; the verbatim runtime path (no planner, engine, gateway, guardrail or memory writer; no `model` trace; emotion source `default`; engine `verbatim`; `prompt_version` None) (P9) | `ai/contexts.py`, `sessions/modes/one_on_one.py`, **`sessions/turn.py`**; the mock client's first chat (`frontend/src/mock/engines/oneOnOne.ts`) | backend + frontend |
+| Tests that assume a billed greeting (P9); tests that build `ParticipantView` directly (`character_role` gets a default) | `tests/sessions/test_naive.py`, `test_energy_caps.py`, `test_core.py`; `test_naive_prompt.py`, `test_turn_retrieval.py`, `test_ports.py` | tests |
 | The `agent` greeting cue with "don't reuse your usual greeting" (P9) | `ai/agent/persona.py` (the naive `turn_cue` is unchanged) | backend |
 | `appearanceSummary` reaches the compiler (P3); `ParticipantView.character_role` (P5) | `ai/contexts.py` (`CharacterView`, `ParticipantView`), `sessions/context.py` | backend |
 | TS twin + `count_tokens` port + shared fixtures with cut cases; Profile step uses them; remove the mock and the scripted fake preview (P4, P10) | `frontend/src/domain/personaPrompt.ts`, `frontend/src/domain/tokens.ts`, `ProfileStep.tsx`, `backend/tests/fixtures/persona_prompt/` | frontend + backend |
