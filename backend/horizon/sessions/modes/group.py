@@ -25,6 +25,7 @@ from horizon.sessions.modes.common import (
     user_message,
 )
 from horizon.sessions.prefetch import Prefetch
+from horizon.sessions.retrieve import start_query
 from horizon.sessions.turn import TurnSpec
 
 if TYPE_CHECKING:
@@ -116,8 +117,10 @@ async def _route(actor: SessionActor, text: str, mentions: list[str]) -> tuple[R
 
 
 async def send(actor: SessionActor, text: str, mentions: list[str]) -> None:
-    await actor.emit(message_event(user_message(actor, text)))
+    msg = user_message(actor, text)
+    await actor.emit(message_event(msg))
     members = {p["characterId"] for p in actor.session["participants"]}
+    start_query(actor, text, str(msg["id"]), sorted(members))  # M5 design D12: in parallel with routing
     mentions = [m for m in mentions if m in members]
 
     async def job() -> None:

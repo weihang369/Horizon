@@ -34,7 +34,7 @@ seed/   read-only fixtures + seed assets (imported on first run; seed assets ser
 
 - SQLite allows one writer, and actors, SSE queues and job workers are in-memory. More workers would need Redis, which breaks NFR-10. The load is one human; LLM streaming is network-bound.
 - **CPU-heavy work stays off the event loop:**
-  - Docling runs in **one spawned `multiprocessing.Process` per conversion**. It has a timeout (10 min) and is cancelled on source delete or job cancel. A `ProcessPoolExecutor` can't kill a hung conversion, so we don't use one.
+  - Docling runs in **one subprocess per conversion** (`python -m horizon.ai.docling_worker`, started with `subprocess.Popen` and waited on in a thread, so it works under any event loop on Windows). It has a timeout (10 min, `convertTimeoutMs`), runs offline at below-normal priority, counts PDF pages before converting, exits when its parent is gone, and is killed on source delete, shutdown or factory reset. A `ProcessPoolExecutor` can't kill a hung conversion, so we don't use one (M5 design D4).
   - Pillow encodes run in `asyncio.to_thread`.
 
 ## 3. Database access (SQLite + async)
@@ -73,7 +73,11 @@ seed/   read-only fixtures + seed assets (imported on first run; seed assets ser
   2. **Allocate the `messageId`.**
   3. Check the energy gate (doc 04 §4).
   4. Reserve the budget.
-  5. Start the query embedding concurrently, filling `QueryBundle` (from M5).
+  5. **Retrieve** (M5, `sessions/retrieve.py`; D-92). The runtime, not the engine, builds a scoped index for the speaker's world and character and asks the memory and knowledge retrievers for hits, which it freezes into the `TurnContext`.
+     - The query text is the turn's prompt, else the latest message, else the debate motion or watch premise.
+     - **Query embedding (D-97).** On `send` (1:1 and group only) the actor spawns **one** query embedding for the user message, in parallel with routing and the thinking delay. It runs only when the knowledge retriever uses vectors, a key is set and a possible responder has a source indexed in the active space. Debate, watch and greeting turns never embed.
+     - A reply waits for that vector at most `retrieval.queryEmbedWaitMs` (400 ms, on the runtime clock); past that it retrieves by keyword alone. The late call is still billed and recorded. A cap refusal or provider error also means keyword-only, with no `error` event.
+     - The `query_embed` call is listed on the **first** responder's `trace.calls`, like the route decision.
   6. Run `TurnEngine` and map its `TurnEvent`s (doc 05 §2) onto contract events.
   7. Merge `TracePatch`es and emit the **full** `insight`.
   8. Queue post-turn work: reactions (via the actor), memory ops (per-character queue) and the guardrail output check.
@@ -92,6 +96,13 @@ One session may **stream** at a time. A command that would start generation else
 - **Semaphores:** image 2, music 1, llm 4 (prefetch included), embedding 2, docling 1.
 - **One non-terminal job per character** (it equals `activeJobId`).
 - **Restart recovery** follows doc 02 §3.5: no `provider_called_at` → requeue; called but no result → `failed` (retryable). **A provider is never paid twice without a user Retry.**
+
+### 4.4b Ingestion worker (M5)
+- One task per knowledge source (`services/knowledge/worker.py`), started through `rt.spawn`; the source row is the
+  durable record. Conversion holds `docling_slots` (1), embedding `embed_slots` (2).
+- Delete, character and world deletes, reset demo and factory reset stop the affected tasks first (a conversion
+  process is killed; an embedding call already sent finishes and is recorded, D-86).
+- Restart recovery and the in-flight batch rule: doc 02 §3.8.
 
 ### 4.5 Gateway
 Doc [04](04-gateway-budget-energy.md). Every paid call does preflight (caps, **reservations**) → request → ledger (actual or estimate with correction) → energy drain (only `purpose == 'reply'`) → events.
@@ -152,7 +163,7 @@ package.json (root)   "setup" | "dev" | "demo"  (concurrently, kill-on-exit)
 
 - **`npm run setup`:**
   1. `uv sync` (core) and `npm ci` (frontend). **Demo mode works after this step** (NFR-10, ≤ 5 min).
-  2. `uv sync --group docling` and `uv run horizon models fetch` (CPU torch + Docling models into `data/models/`, then `HF_HUB_OFFLINE=1`). This step can be skipped; until it's done, the Knowledge drop zone is disabled with a clear message.
+  2. `npm run setup:docling` (`uv sync --group docling`: CPU torch + Docling), then `uv run --project backend horizon models fetch` (the Docling models into `data/models/`, then `HF_HUB_OFFLINE=1`; the fetch writes `data/models/.horizon-models.json` last, and `/health` reports `ready` only once it exists). This step can be skipped: Markdown, text and pasted text never need it, and a PDF or DOCX added before it ends `failed` with these steps; Retry converts the kept original afterwards (D-96).
 - **`npm run dev`:**
   - `concurrently --kill-others` runs `uv run horizon serve --reload --reload-dir backend/horizon` (port 8000) and Vite (port 5173).
   - Vite proxies `/api` and `/assets/gen` to port 8000, without buffering. It still serves `/assets/placeholder/**` from `seed/assets`.

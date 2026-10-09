@@ -31,7 +31,8 @@ TurnEvent = (
         # The actor re-emits a contract `emotion` event each time.
   | Token(delta: str)                     # control tags already stripped by the engine
   | CitationMap(entries: list[{n, chunkId, sourceId, title, locator?, quote, score?}])
-        # any time; the actor keeps only the n's that appear in the final content (interrupted replies too)
+        # with or after the first visible event (any event starts the message, and a refusal must leave none);
+        # the actor keeps only the n's that appear in the final content (interrupted replies too)
         # and resolves them into `turn.end.citations` + `message_citations`
   | TracePatch(sections: dict)            # deep-merged by the actor
 )
@@ -57,12 +58,12 @@ TurnEvent = (
 | `DebateHost` | `narrate(ctx) → AsyncIterator[TurnEvent]`; `verdict(ctx) → Verdict` | Fixed phases + canned lines; verdict `none` | DeepSeek narration; structured verdict | OQ-AI-05 |
 | `WatchDirector` | `next_beat(ctx) → {speakerId, direction?, end_p?}`; `summarise(session, ctx)` | Round-robin; canned summary | Jev speaker choice; DeepSeek summary | OQ-AI-06 |
 | `Summariser` | `rolling(ctx, upto_seq) → str`, stored in `session_summaries` | Last N lines | DeepSeek at block boundaries (§5) | OQ-AI-02 |
-| `MemoryWriter` | `after_turn(ctx, perspective_character_id) → list[MemoryOp]` | `[]` | `[]` | OQ-AI-01 |
-| `MemoryRetriever` | `recall(ctx, query: QueryBundle, k) → [MemoryHit{item, score}]` | Most recent k | FTS5 only | OQ-AI-01 |
-| `DocumentConverter` | `convert(path, mime) → ConvertedDoc{markdown_with_page_markers, pages}` | Plain-text read | **Docling (CPU, spawned process)** | D-62 |
+| `MemoryWriter` | `after_turn(ctx, perspective_character_id, message_id) → list[MemoryOp]` (port `memory_writer`) | `[]` | `[]` (scripted in both profiles) | OQ-AI-01 |
+| `MemoryRetriever` | `recall(index: ScopedIndex, query: QueryBundle, k) → [MemoryHit{id, kind, text, source_session_id, score}]`; current (not superseded) items only | Most recent k | FTS5 only | OQ-AI-01 |
+| `DocumentConverter` | `convert(path, mime) → ConvertedDoc{markdown_with_page_markers, pages}` | Plain-text read; placeholder passages for PDF/DOCX (the mock's rule) after 0.8 s on the runtime clock, so in-flight states are testable | **Docling (CPU, spawned process)**. Not chosen by the profile or the key: real conversion by default, scripted by default in test mode, `HORIZON_AI_CONVERTER` overrides (D-96) | D-62 |
 | `KnowledgeIndexer` | `chunk(doc) → [Section{text, heading_path, pages, children[{text, locator, heading, offsets}]}]` + `tokenizer_id` | Heading split + fixed windows | Same (sizes are AI-stage tunables) | OQ-AI-03 |
-| `KnowledgeRetriever` | `retrieve(ctx, query: QueryBundle, k) → [Hit{chunk, section, score, rank_sources}]` | FTS5 only | FTS5 + vector + RRF | OQ-AI-03 (MMR, Jev rerank) |
-| `Embedder` | `embed(texts, kind: "query"\|"document", space: EmbeddingSpace, ctx) → vectors` (LRU keyed by `(space.id, sha256(text))`) | Hash → unit vector | **Qwen3 Embedding 8B**; query instruction from the space; truncate + renormalise | D-64 |
+| `KnowledgeRetriever` | `retrieve(index: ScopedIndex, query: QueryBundle, k) → [KnowledgeHit{chunk_id, source_id, title, type, locator, text, section_text, score}]`; `uses_vectors` gates the query embedding | FTS5 top k | FTS5 20 ∪ vector KNN 20, RRF (k = 60), score in [0, 1] | OQ-AI-03 (MMR, Jev rerank) |
+| `Embedder` | `embed(texts, kind: "query"\|"document", space: EmbeddingSpace, ctx, hooks?) → Embedded{vectors, cached}` (LRU keyed by `(space.id, kind, sha256(text))`; per-batch hooks store vectors in the ledger row's transaction) | Hash → unit vector, billed as simulated spend (D-81) | **Qwen3 Embedding 8B** with the active space's model and dimensions (D-95); query instruction from the space; truncate + renormalise | D-64 |
 | `Guardrail` | `check_input(text, ctx)` / `check_output(text, ctx) → [Check{name, verdict, p}]` | Pass | **Jev noul**, fail-open with a flag | OQ-AI-08 |
 
 ```python
@@ -71,10 +72,16 @@ MemoryOp = Insert(draft) | Supersede(old_ids: list[str], draft) | Reinforce(id, 
 # drafts carry kind, text, importance, source_* ids incl. source_variant_id, source_mode, about_character_id.
 
 QueryBundle = { text: str, vectors: dict[space_id, list[float]] }
-# Built ONCE per triggering message: the actor starts the query embedding as soon as `send` arrives, in parallel
-# with routing. It is reused by memory recall, knowledge retrieval and every responder in a group turn.
-# The field exists from M3; the vectors are filled in from M5.
+# Built ONCE per triggering user message (D-97): the actor starts the query embedding as soon as `send` arrives, in
+# parallel with routing, and only when it can pay off (a vector retriever, a key, a responder with vectors). It is
+# reused by every responder of that message; a reply waits for it at most `retrieval.queryEmbedWaitMs`.
+
+ScopedIndex  # services/knowledge/index.py: read-only, built by the RUNTIME per turn for the speaker's world and
+# character. Every keyword and vector query binds the character (the vec0 partition key) and re-checks world and
+# character on the join back (NFR-23). Retrievers are policy only: which candidates, how to fuse them.
 ```
+
+**Retrieval runs in the runtime (D-92).** Before a turn's engine runs, the runtime builds the `ScopedIndex`, calls the configured `MemoryRetriever` and `KnowledgeRetriever` (k from `retrieval.knowledgeK` / `retrieval.memoryK`, 5 and 3) and freezes the hits into `TurnContext.knowledge` / `.memory` (with `.query`, the text used). Engines receive plain data and never query storage, so a context still round-trips through JSON and an evaluation harness can replay a turn with exactly the passages it saw.
 
 **Guardrail block after streaming** (backend rule): `turn.end` with `status:"error"` and `content_refused`. The content and its persisted `token` events are scrubbed (the Forget path, by `message_id`), and the reply is excluded from memory.
 
@@ -119,6 +126,7 @@ class Decider:
 class AiStateHooks(Protocol):            # implemented by the AI layer; called from the ai_purge_queue outbox worker
     async def on_forget(self, memory_item_ids: list[str], character_id: str, message_ids: list[str]) -> None: ...
     async def on_delete(self, scope: Literal["message", "session", "character", "world"], ids: list[str]) -> None: ...
+# A Forget's queue row carries {memoryItemIds, characterId, messageIds} (scope 'memory') and goes to on_forget (M5).
 ```
 
 - **Delivery.** Lifecycle services commit, then write an `ai_purge_queue` row. The worker calls the hooks **at least once**, with retries at startup, so hook implementations must be idempotent.
@@ -129,8 +137,7 @@ class AiStateHooks(Protocol):            # implemented by the AI layer; called f
   - the session, participants (with energy state), recent messages (active variants only), the latest `session_summaries` and the You card;
   - the mode config and state;
   - the `world_id`/`character_id` scope;
-  - the `QueryBundle`;
-  - **pre-bound** retrievers that can't leave that scope (NFR-23);
+  - **the retrieved hits** (`knowledge`, `memory`, `query`), already bound to that scope by the runtime (NFR-23, D-92) instead of pre-bound retrievers;
   - `call_ctx(purpose)`.
 - **A post-turn queue per character** for memory ops; reactions go through the session actor.
 - **Storage:** memory (+ `MemoryStore.apply`), knowledge sections and chunks, embedding spaces (+ dual-write while building), `session_summaries`, traces with version columns, `message_citations`, the ledger with `purpose`.
@@ -139,7 +146,14 @@ class AiStateHooks(Protocol):            # implemented by the AI layer; called f
 
 ## 5. Naive real `TurnEngine` (backend deliverable, M3)
 
-- **Prompt order (NFR-35):** static persona and system prompt (+ You card) → `session_summaries` (rolling) → history → dynamic blocks (none in the naive engine).
+- **Prompt order (NFR-35):** static persona and system prompt (+ You card) → `session_summaries` (rolling) → history → dynamic blocks.
+- **Prompt v2 (M5, D-93; `PROMPT_VERSION = "naive-2"`).** When the runtime retrieved anything, **one** system message goes after the history (dynamic last, so the cached prefix is untouched):
+  - "Passages you can use…" with `[n] Title, locator: section text`, one per section (child hits of the same section share a number), each ≤ 1 200 chars;
+  - "Things you remember about this world…" with up to 3 memories;
+  - one line: cite a passage with its `[n]` only when you rely on it.
+
+  The engine yields a `CitationMap` for every numbered passage; the runtime keeps only the markers the reply wrote. After the stream it sets `trace.knowledge.retrieved` (`cited` from its own output), `trace.memory.recalled` (which writes the Forget refs) and `context.used.memory/knowledge`. **With nothing retrieved the request is byte-identical to v1.**
+- **Scripted citations (D15).** The scripted engine ports the mock's `liveCitations` with its own RNG stream (`{seed}:{turn}:cite`): about 55 % of replies with hits cite 1–2 passages, one more is retrieved but uncited, and replies without hits are unchanged. It never uses memory hits (parity with the mock).
 - **Cache-friendly history window.** The window grows until it is full, then **drops the oldest half in one step**, with the summary refreshed at that block boundary. A one-message sliding window would change the prefix every turn and miss the cache.
 - **Inline emotion tag** (OQ-AI-07 A): the model is asked to start with `<e:label>`. The parser:
   - buffers up to 32 characters or until `>`, and handles a tag split across chunks;

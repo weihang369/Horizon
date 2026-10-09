@@ -5,6 +5,8 @@ One character turn:
 2. the energy gate (below `estReplyPoints` for the period: the caller's asleep/skip path, no model call);
 3. the `messageId` (or `variantId`) is allocated before any model call;
 4. the preamble: `turn.next`, then `turn.thinking` after `thinkingMs`;
+4b. (M5) retrieval in the speaker's scope (`sessions/retrieve.py`): it waits at most `retrieval.queryEmbedWaitMs` for
+   the user message's query embedding (started at `send`), then freezes the hits into the `TurnContext`;
 5. the engine runs under an `llm_slots` slot; the budget is reserved inside the gateway preflight. `turn.start` is
    emitted lazily at the engine's first event, so a refusal (cap, key, credits) leaves no message;
 6. TurnEvents map to session events: `Emotion` → `emotion`, `Token` → the coalescer → `token`, `CitationMap` kept for
@@ -35,6 +37,7 @@ from horizon.sessions.actor import SessionActor, TurnInfo
 from horizon.sessions.coalesce import Coalescer
 from horizon.sessions.context import character_view, characters, energy_of, maintain_window, session_context
 from horizon.sessions.prefetch import Prefetch
+from horizon.sessions.retrieve import retrieve
 from horizon.sessions.writer import TraceMeta
 
 if TYPE_CHECKING:
@@ -152,10 +155,13 @@ class TurnRunner:
             sctx = await session_context(rt, actor)
             caps = rt.runtime_cfg.runtime.reply_max_tokens
             cfg = sctx.config or {}
+            got = await retrieve(rt, actor, sctx, spec.speaker, spec.prompt)   # M5 design D10: the speaker's scope
+            spec.calls.extend(got.calls)
             ctx = TurnContext(session=sctx, speaker=character_view(row), message_id=mid, variant_id=vid, prompt=spec.prompt,
                               line=spec.line, turn_index=actor.mode.turn,
                               max_tokens=caps.for_mode(sctx.mode, str(cfg.get("turnLength")) if sctx.mode == "debate" else None),
-                              direction_note=spec.direction_note, debate=spec.debate)
+                              direction_note=spec.direction_note, debate=spec.debate, knowledge=got.knowledge,
+                              memory=got.memory, query=got.query)
             actor.mode.turn += 1
             info.ctx = ctx
             return await self._stream(actor, spec, info, ctx, t0, started_iso)
@@ -361,6 +367,8 @@ class TurnRunner:
             actor.current = None
         if status == "complete" and spec.reactions and ctx is not None and actor.session["emotionMode"] != "user":
             self._reactions(actor, info, ctx)
+        if status == "complete" and not scrub and ctx is not None:
+            self._remember(actor, info, ctx)
 
     def _scrubber(self, actor: SessionActor, info: TurnInfo) -> Any:
         """D13: the blocked reply's text leaves the stored token events and the message (same transaction)."""
@@ -388,8 +396,46 @@ class TurnRunner:
                 row = mp.message_row(msg)
                 await tx.conn.execute(update(t.messages).where(t.messages.c.id == info.message_id).values(
                     content=row["content"], variants=row["variants"]))
+            await self._forget_derived(tx.conn, actor, info.message_id)
 
         return scrub
+
+    async def _forget_derived(self, conn: Any, actor: SessionActor, message_id: str) -> None:
+        """A blocked reply leaves no memory (session-runtime "A blocked reply is scrubbed", closes M3 OQ-8): any memory
+        whose source is that message is forgotten, in the scrub's transaction, the way a user Forget does it."""
+        from sqlalchemy import select
+
+        from horizon.db import tables as t
+        from horizon.services.memory.forget import chain_of, forget_chain
+
+        M = t.memory_items.c
+        derived = (await conn.execute(select(M.id, M.character_id, M.world_id).where(M.source_message_id == message_id))).all()
+        done: set[str] = set()
+        for mem_id, character_id, world_id in derived:
+            if mem_id in done:
+                continue
+            items = (await conn.execute(select(M.id, M.superseded_by).where(M.character_id == character_id))).all()
+            chain = chain_of(str(mem_id), [(str(a), b) for a, b in items])
+            done |= chain
+            await forget_chain(self.rt, conn, character_id=str(character_id), world_id=str(world_id), chain=chain)
+
+    def _remember(self, actor: SessionActor, info: TurnInfo, ctx: TurnContext) -> None:
+        """The post-turn memory queue (M5 design D17): after a complete, unblocked reply, the memory writer proposes ops
+        from the speaker's perspective and `MemoryStore.apply` writes them (serialised per character). A failure is
+        logged and never touches the session. Interrupted, failed and blocked replies never get here."""
+        rt = self.rt
+        writer = rt.ai.memory_writer(self.key_set())
+        mid = info.message_id
+
+        async def job() -> None:
+            try:
+                ops = await writer.after_turn(ctx, info.character_id, mid)
+                if ops:
+                    await rt.memory.apply(info.character_id, ctx.session.world.id, ops)
+            except Exception:
+                log.exception("the memory writer failed after message %s (ignored)", mid)
+
+        actor.background("memory", job())
 
     def _reactions(self, actor: SessionActor, info: TurnInfo, ctx: TurnContext) -> None:
         rt = self.rt

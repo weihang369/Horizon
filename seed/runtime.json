@@ -50,7 +50,12 @@
       },
       "idleReleaseMs": 600000,
       "prefetchMax": 2,
-      "llmConcurrency": 4
+      "llmConcurrency": 4,
+      "retrieval": {
+        "knowledgeK": 5,
+        "memoryK": 3,
+        "queryEmbedWaitMs": 400
+      }
     }
   }
 }

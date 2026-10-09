@@ -59,6 +59,24 @@ class Database:
             for channel, event in tx.events:
                 self._publish(channel, event)
 
+    async def checkpoint_truncate(self, *, attempts: int = 5, delay_s: float = 0.1) -> bool:
+        """`PRAGMA wal_checkpoint(TRUNCATE)` outside any transaction, on the writer connection (M5 design D16): copy every
+        WAL frame home and truncate the WAL to 0 bytes, so a forgotten memory's old pages leave the file. A reader holding
+        an old snapshot makes it busy; it is retried, and False means a later checkpoint will finish the job."""
+        self._check_open()
+        for i in range(attempts):
+            async with self.write_lock, self.writer.connect() as conn:
+                raw = await conn.get_raw_connection()
+                driver: Any = raw.driver_connection
+                cur = await driver.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+                row = await cur.fetchone()
+                await cur.close()
+            if row is not None and int(row[0]) == 0:
+                return True
+            if i < attempts - 1:
+                await asyncio.sleep(delay_s)
+        return False
+
     @asynccontextmanager
     async def read(self) -> AsyncIterator[AsyncConnection]:
         self._check_open()

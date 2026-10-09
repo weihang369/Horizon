@@ -1,7 +1,8 @@
 """Frozen, scoped contexts for the AI ports (doc 05 §2, §4; ai-ports "Ports see frozen, scoped context").
 
 A port receives an immutable, JSON-serialisable snapshot: the session, its participants with their energy, recent
-messages (active variants only), the latest rolling summary, mode config and state, and the world and character scope.
+messages (active variants only), the latest rolling summary, mode config and state, the world and character scope, and
+(M5) the knowledge passages and memories the runtime already retrieved for the speaker.
 It reaches the provider only through the gateway, with calls built by `call_ctx(purpose)`, which binds the session,
 world, speaker and message, so a port can't mislabel spend (D-42: only `reply` drains). Ports never touch rows.
 """
@@ -102,6 +103,27 @@ class DebateMeta(Frozen):
     motion: str = ""
 
 
+class KnowledgeHit(Frozen):
+    """A retrieved passage (a child chunk) with what an engine needs to use and cite it (M5 design D10)."""
+
+    chunk_id: str
+    source_id: str
+    title: str
+    type: str                       # text | file | url (Citation.type)
+    locator: str | None = None
+    text: str                       # the child: what is cited and quoted
+    section_text: str               # its parent section: what an LLM reads
+    score: float                    # 0..1
+
+
+class MemoryHit(Frozen):
+    id: str
+    kind: str
+    text: str
+    source_session_id: str | None = None
+    score: float | None = None
+
+
 class TurnContext(Frozen):
     session: SessionContext
     speaker: CharacterView
@@ -113,6 +135,9 @@ class TurnContext(Frozen):
     max_tokens: int = 350
     direction_note: str | None = None
     debate: DebateMeta | None = None
+    knowledge: list[KnowledgeHit] = []   # M5: retrieved by the runtime in the speaker's scope (design D10)
+    memory: list[MemoryHit] = []
+    query: str | None = None             # the text retrieval used
 
     def call_ctx(self, purpose: str) -> CallContext:
         return self.session.call_ctx(purpose, character_id=self.speaker.id, message_id=self.message_id)

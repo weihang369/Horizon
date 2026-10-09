@@ -29,7 +29,8 @@ def test_placeholder_is_deterministic_per_task() -> None:
 
 
 def test_naive_ports_and_overrides() -> None:
-    assert NAIVE_PORTS == {"turn", "router", "drafter", "image", "song"}
+    assert NAIVE_PORTS == {"turn", "router", "drafter", "image", "song",   # M5 adds these (knowledge-memory-storage)
+                           "embedder", "knowledge_retriever", "memory_retriever", "converter"}
     spec = ProfileSpec.from_env({"HORIZON_AI_PROFILE": "naive", "HORIZON_AI_IMAGE": "scripted"})
     assert spec.choose("image", key_set=True) == "scripted"
     assert spec.choose("drafter", key_set=True) == "naive"

@@ -25,7 +25,9 @@ DEFAULT_PORT = 8000
 # Process variables this module reads. An empty value counts as unset (`.env.example` ships blanks).
 AI_VARS = ("HORIZON_AI_PROFILE", "HORIZON_AI_TURN", "HORIZON_AI_ROUTER", "HORIZON_AI_REACTIONS", "HORIZON_AI_HOST",
            "HORIZON_AI_DIRECTOR", "HORIZON_AI_SUMMARISER", "HORIZON_AI_GUARDRAIL",  # M3 (doc 05 §1)
-           "HORIZON_AI_DRAFTER", "HORIZON_AI_IMAGE", "HORIZON_AI_SONG")  # M4 (generation-jobs design D9)
+           "HORIZON_AI_DRAFTER", "HORIZON_AI_IMAGE", "HORIZON_AI_SONG",  # M4 (generation-jobs design D9)
+           "HORIZON_AI_EMBEDDER", "HORIZON_AI_KNOWLEDGE_RETRIEVER", "HORIZON_AI_MEMORY_RETRIEVER",  # M5 (design D17)
+           "HORIZON_AI_MEMORY_WRITER", "HORIZON_AI_CONVERTER")
 KNOWN_VARS = (
     "HORIZON_ROOT", "HORIZON_DATA_DIR", "HORIZON_SEED_DIR", "HORIZON_TZ", "HORIZON_TEST", "HORIZON_PORT",
     "HORIZON_LOG_LEVEL", "HORIZON_STATIC_DIR", "OPENROUTER_API_KEY", *AI_VARS,
@@ -75,6 +77,18 @@ class Config:
     @property
     def assets_dir(self) -> Path:
         return self.data_dir / "assets"
+
+    @property
+    def knowledge_dir(self) -> Path:
+        return self.data_dir / "knowledge"
+
+    @property
+    def tmp_dir(self) -> Path:
+        return self.data_dir / "tmp"
+
+    @property
+    def models_dir(self) -> Path:
+        return self.data_dir / "models"
 
     @property
     def settings_local_path(self) -> Path:

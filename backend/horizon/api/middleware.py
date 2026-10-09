@@ -91,7 +91,7 @@ class Idempotency:
         limit = body_limit(path)
         declared = next((v.decode() for k, v in scope["headers"] if k == b"content-length"), "")
         if limit is not None and declared.isdigit() and int(declared) > limit:
-            await _send_error(send, too_large())
+            await _send_error(send, too_large(path))
             return
         body = b""
         more = True
@@ -100,7 +100,7 @@ class Idempotency:
             body += msg.get("body", b"")
             more = bool(msg.get("more_body", False))
             if limit is not None and len(body) > limit:
-                await _send_error(send, too_large())
+                await _send_error(send, too_large(path))
                 return
         sha = hashlib.sha256(body).hexdigest()
 

@@ -498,8 +498,13 @@ export class MockClient implements HorizonClient {
     setKey: (key) => this.command(() => {
       const k = key?.trim() ?? "";
       const status: AppSettings["openRouterKeyStatus"] = !k ? "missing" : k.startsWith("sk-or-bad") || !k.startsWith("sk-or-") ? "invalid" : "set";
+      const was = this.db.settings.openRouterKeyStatus;
       this.db.settings = { ...this.db.settings, openRouterKeyStatus: status, demoMode: status !== "set" };
       this.changed("settings");
+      // M5: as on the backend, a key that becomes set re-embeds the user's keyword-only sources in the background.
+      if (status === "set" && was !== "set") {
+        for (const s of knowledgeEngine.reembedUserSources(this.knowledgeHost())) this.changed("knowledge", s.id, s.worldId);
+      }
       return this.settingsView();
     }),
     testConnection: () => this.live(() => ({ ok: true as const, latencyMs: 412, creditsUsd: 4.21 }), { costs: false }),
@@ -752,8 +757,9 @@ export class MockClient implements HorizonClient {
     memory: (id) => this.query(() => Object.values(this.db.memory).filter((m) => m.characterId === id).sort((a, b) => b.createdAt.localeCompare(a.createdAt))),
     forgetMemory: (memoryItemId) => this.command(() => {
       const m = this.db.memory[memoryItemId];
+      if (!m) throw notFound("Memory");   // the backend's DELETE /memory/{id} is 404 for an unknown id
       delete this.db.memory[memoryItemId];
-      if (m) this.changed("memory", m.characterId, m.worldId);
+      this.changed("memory", m.characterId, m.worldId);
     }),
     knowledge: (id) => this.query(() => Object.values(this.db.knowledge).filter((k) => k.characterId === id)),
     // D-59: a source and its indexed passages, in order (seed/knowledge/chunks).

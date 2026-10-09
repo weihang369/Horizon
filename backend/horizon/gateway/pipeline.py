@@ -537,6 +537,42 @@ class Gateway:
         return await self.paid(ctx, cost_usd, send, model=model, summary={"kind": ctx.category, "scripted": True},
                                before_send=before_send, after_response=after_response, commit_with=commit_with)
 
+    async def embed_batch(self, texts: Sequence[str], ctx: CallContext, *, model: str, dimensions: int | None = None,
+                          before_send: BeforeSend | None = None,
+                          after_response: Callable[[list[list[float]]], Awaitable[None]] | None = None,
+                          commit_with: CommitWith | None = None) -> list[list[float]]:
+        """One embedding request (≤ `embed_batch` texts) as one paid call with the D-84 hooks: the ingestion worker marks
+        the batch sent, then stores its vectors in the ledger row's transaction (knowledge-memory-storage design D2)."""
+        est = estimate_embedding(self.prices, sum(count_tokens(x) for x in texts))
+
+        async def send() -> tuple[list[list[float]], Billing]:
+            r = await self.embeddings.embed_batch(texts, model=model, dimensions=dimensions)
+            return r.vectors, Billing(r.generation_id, r.usage, r.provider, model)
+
+        return await self.paid(ctx, est, send, model=model, summary={"kind": "embedding", "texts": len(texts)},
+                               before_send=before_send, after_response=after_response, commit_with=commit_with)
+
+    async def simulated_embedding_batch(self, texts: Sequence[str], ctx: CallContext, *, model: str, dimensions: int,
+                                        before_send: BeforeSend | None = None,
+                                        after_response: Callable[[list[list[float]]], Awaitable[None]] | None = None,
+                                        commit_with: CommitWith | None = None) -> list[list[float]]:
+        """The scripted embedder's batch (provider-gateway "Scripted embedding source", D-81): the same pipeline and
+        hooks, one row priced from the table with `provider: "scripted"`, deterministic unit vectors, no network."""
+        if not texts or len(texts) > self.cfg.embed_batch:
+            raise ValueError(f"an embedding request takes 1..{self.cfg.embed_batch} texts")
+        tokens = sum(count_tokens(x) for x in texts)
+        cost = estimate_embedding(self.prices, tokens)
+
+        async def send() -> tuple[list[list[float]], Billing]:
+            from horizon.gateway.fake import unit_vector
+
+            return ([unit_vector(x, dimensions) for x in texts],
+                    Billing(None, Usage(tokens_in=tokens, cost_usd=cost), SCRIPTED_PROVIDER, model))
+
+        return await self.paid(ctx, cost, send, model=model,
+                               summary={"kind": "embedding", "texts": len(texts), "scripted": True},
+                               before_send=before_send, after_response=after_response, commit_with=commit_with)
+
     async def embed(self, texts: Sequence[str], ctx: CallContext, *, model: str, dimensions: int | None = None) -> list[list[float]]:
         """Batches of `embed_batch` texts; each batch is one paid call and one ledger row. Vectors keep input order."""
         out: list[list[float]] = []

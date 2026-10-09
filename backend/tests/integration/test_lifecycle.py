@@ -268,4 +268,6 @@ async def test_usage_summary_has_every_category(api: Api) -> None:
 
 async def test_health(api: Api) -> None:
     h = await api.json("/api/v1/health")
-    assert h == {"ok": True, "version": h["version"], "schemaVersion": 1, "db": "ok", "vec": "ok", "docling": "not_installed"}
+    assert h == {"ok": True, "version": h["version"], "schemaVersion": 1, "db": "ok", "vec": "ok", "docling": h["docling"]}
+    # A test's data dir never holds fetched models: Docling is absent, or installed (`setup:docling`) without them.
+    assert h["docling"] in ("not_installed", "models_missing")

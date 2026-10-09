@@ -24,6 +24,7 @@ import json
 import logging
 import os
 import shutil
+import sqlite3
 import stat
 import time
 from collections.abc import AsyncIterator, Coroutine
@@ -42,7 +43,7 @@ from horizon.ai.scripted.ports import AiDeps
 from horizon.config import Config
 from horizon.contract import mappers as mp
 from horizon.contract.validate import ContractSchema, default_schema
-from horizon.db import spaces
+from horizon.db import fts, spaces
 from horizon.db import tables as t
 from horizon.db.migrate import upgrade_head
 from horizon.db.uow import Database
@@ -120,6 +121,7 @@ class Runtime:
         self.gate = Gate()
         self._db: Database | None = None
         self.space_id: str | None = None
+        self.fts_secure_delete = True   # migration 0002 on SQLite >= 3.44; else Forget optimizes (design D16)
         self.seed_settings: dict[str, Any] = {}
         self._seed: seeding.SeedData | None = None
         self.started = False
@@ -138,7 +140,7 @@ class Runtime:
         # M3 (session-runtime design D1): the pacing table, LLM slots, AI ports, the live sessions and the purge worker.
         self.runtime_cfg: RuntimeConfig = load_runtime_config(cfg.seed_dir)
         self.llm_slots = Slots(self.runtime_cfg.runtime.llm_concurrency)
-        self.profile = ProfileSpec.from_env(cfg.ai_env)
+        self.profile = ProfileSpec.from_env(cfg.ai_env, test_mode=cfg.test_mode)
         self.hooks: AiStateHooks = NoOpHooks()
         self._ledger: LedgerWriter | None = None
         self._sessions: Any = None
@@ -152,6 +154,12 @@ class Runtime:
         self._jobs: Any = None
         self.palettes: dict[str, tuple[str, str, str]] = load_palettes(cfg.seed_dir)
         self.prompt_compiler = ImagePromptCompiler(load_style_presets(cfg.seed_dir))
+        # M5 (knowledge-memory-storage design D1): the ingestion worker and its slots (doc 01 §4.4).
+        self.docling_slots = Slots(1)
+        self.embed_slots = Slots(2)
+        self._ingest: Any = None
+        self._memory: Any = None
+        self._key_status = "missing"
 
     # ── accessors ──
     @property
@@ -210,6 +218,20 @@ class Runtime:
             raise RuntimeError("runtime not started")
         return self._jobs
 
+    @property
+    def memory(self) -> Any:
+        """The MemoryStore (`horizon.services.memory.store`)."""
+        if self._memory is None:
+            raise RuntimeError("runtime not started")
+        return self._memory
+
+    @property
+    def ingest(self) -> Any:
+        """The IngestionWorker (`horizon.services.knowledge.worker`)."""
+        if self._ingest is None:
+            raise RuntimeError("runtime not started")
+        return self._ingest
+
     def palette_ids(self) -> list[str]:
         return list(self.palettes)
 
@@ -253,6 +275,13 @@ class Runtime:
 
     def _settings_changed(self) -> None:
         self.publish(GLOBAL, {"type": "entity.changed", "kind": "settings"})
+        status = self._keys.status() if self._keys is not None else "missing"
+        became_set = status == "set" and self._key_status != "set"
+        self._key_status = status
+        if became_set and self._ingest is not None and self.started:
+            from horizon.services.knowledge.recovery import reembed_user_sources
+
+            self.spawn("knowledge:reembed", reembed_user_sources(self))  # D8: user sources, now that a key is set
 
     def _build_m2(self) -> None:
         cfg = self.cfg
@@ -281,7 +310,7 @@ class Runtime:
         deps = AiDeps(gateway=lambda: self.gateway, decider=lambda: self.decider, prices=self.prices,
                       timing=self.runtime_cfg.timing, clock=lambda: self.clock,
                       window_tokens=self.runtime_cfg.runtime.window_tokens, palette_ids=self.palette_ids,
-                      schema=lambda: self.schema)
+                      schema=lambda: self.schema, models_dir=lambda: self.cfg.models_dir)
         self._ai = AiPorts(deps, self.profile)
         self._purge = PurgeWorker(self.db, self.hooks, self.now_iso)
         self._purge.start()
@@ -290,6 +319,26 @@ class Runtime:
         from horizon.services.jobs.scheduler import JobScheduler
 
         self._jobs = JobScheduler(self)
+
+    async def _recover_m5(self) -> None:
+        """M5 startup (design D2, D8): resume sources left indexing, then re-embed user sources if a key is set."""
+        from horizon.services.knowledge.recovery import recover, reembed_user_sources
+
+        self._key_status = self.keys.status()
+        await recover(self)
+        await reembed_user_sources(self)
+
+    def _build_m5(self) -> None:
+        from horizon.services.knowledge.worker import IngestionWorker
+        from horizon.services.memory.store import MemoryStore
+
+        self._ingest = IngestionWorker(self)
+        self._memory = MemoryStore(self)
+
+    async def _stop_m5(self) -> None:
+        if self._ingest is not None and hasattr(self._ingest, "stop"):
+            await self._ingest.stop()
+        self._ingest = None
 
     async def _stop_m4(self) -> None:
         if self._jobs is not None:
@@ -356,8 +405,18 @@ class Runtime:
         async with self.db.write() as tx:
             await spaces.drop_retired(tx.conn)
             self.space_id = await spaces.ensure_active(tx.conn, self.now_iso())
+            self.fts_secure_delete = await fts.secure_delete_active(tx.conn)
+            if not self.fts_secure_delete:
+                log.warning("FTS5 secure-delete is unavailable (SQLite %s); Forget will optimize the index instead",
+                            sqlite3.sqlite_version)
+            space = await spaces.active(tx.conn)
             await tx.conn.execute(t.idempotency_keys.delete().where(
                 (t.idempotency_keys.c.state == "in_flight") | (t.idempotency_keys.c.expires_at < self.now_iso())))
+        configured = str(self.settings_doc().get("models", {}).get("embedding") or "")
+        if configured and configured != space.model:
+            # D-95: the active space decides the model; a different setting only takes effect through a space switch.
+            log.warning("settings models.embedding is %s but the active embedding space %s uses %s; embeddings keep "
+                        "using %s", configured, space.id, space.model, space.model)
         async with self.db.read() as conn:
             empty = not await seeding.has_worlds(conn)
         if empty:
@@ -369,13 +428,16 @@ class Runtime:
         self._build_m2()
         self._build_m3()  # step 7 (drain ai_purge_queue) starts with the purge worker
         self._build_m4()
+        self._build_m5()
         await self.jobs.recover()  # step 6, before the first request is served
+        await self._recover_m5()
         await self.corrector.scan()
         await asyncio.to_thread(sweep, cfg.data_dir, self.referenced_files_sync())
         self.started = True
         log.info("horizon backend ready (data=%s, test_mode=%s)", cfg.data_dir, cfg.test_mode)
 
     async def stop(self) -> None:
+        await self._stop_m5()
         await self._stop_m4()
         await self._stop_m3()
         await self._stop_m2()
@@ -405,6 +467,8 @@ class Runtime:
                 await self._sessions.release(sid)
         if self._jobs is not None:  # M4: user jobs on seed characters are cancelled; overlay jobs are re-adopted below
             await self._jobs.before_reset({c["id"] for c in data.characters}, {j["id"] for j in data.jobs})
+        if self._ingest is not None:  # M5: seed sources are replaced (back to keyword_only, design D11)
+            await self._ingest.cancel_for(source_ids=[k["id"] for k in data.knowledge])
         async with self.db.write() as tx:
             sids = await seeding.apply_seed(tx.conn, data, energy_day=self.energy_day, local_day=self.local_day)
             if sids:
@@ -457,9 +521,7 @@ class Runtime:
             **{k: v for k, v in srow2.items() if k not in ("id", "is_seed")}))
 
     def referenced_files_sync(self) -> set[str]:
-        """Relative paths under `data/assets/` that rows point at (the sweeper keeps these)."""
-        import sqlite3
-
+        """Relative paths under `data/assets/` that rows point at, and `knowledge/…` source folders (the sweeper keeps these)."""
         refs: set[str] = set()
         if not self.cfg.db_path.is_file():
             return refs
@@ -472,6 +534,9 @@ class Runtime:
                 url = (json.loads(cover) if cover else {}).get("url")
                 if url:
                     refs.add(mp.url_to_rel(url) or "")
+            # M5: a knowledge folder is `knowledge/{world}/{character}/{source}`; it is kept while its source exists.
+            for (w, c, sid) in con.execute("SELECT world_id, character_id, id FROM knowledge_sources"):
+                refs.add(f"knowledge/{w}/{c}/{sid}")
         finally:
             con.close()
         return refs
@@ -488,7 +553,8 @@ def load_style_presets(seed_dir: Path) -> list[dict[str, Any]]:
 
 
 def sweep(data_dir: Path, referenced: set[str], *, max_age_s: float = 3600) -> int:
-    """Startup sweeper (doc 02 §2): remove `*.tmp` files and unreferenced generated files older than an hour."""
+    """Startup sweeper (doc 02 §2): remove `*.tmp` files, and unreferenced generated files, knowledge folders and abandoned
+    uploads older than an hour."""
     removed = 0
     now = time.time()
     for root in (data_dir / "assets", data_dir / "knowledge", data_dir / "originals"):
@@ -506,6 +572,20 @@ def sweep(data_dir: Path, referenced: set[str], *, max_age_s: float = 3600) -> i
                 if rel.startswith("gen/") and rel not in referenced and now - p.stat().st_mtime > max_age_s:
                     p.unlink(missing_ok=True)
                     removed += 1
+    # M5 (design D18): source folders whose row is gone, and uploads abandoned in data/tmp, after an hour.
+    knowledge = data_dir / "knowledge"
+    if knowledge.is_dir():
+        for folder in knowledge.glob("*/*/*"):
+            rel = "knowledge/" + folder.relative_to(knowledge).as_posix()
+            if folder.is_dir() and rel not in referenced and now - folder.stat().st_mtime > max_age_s:
+                shutil.rmtree(folder, ignore_errors=True)
+                removed += 1
+    tmp = data_dir / "tmp"
+    if tmp.is_dir():
+        for p in tmp.glob("*.upload"):
+            if now - p.stat().st_mtime > max_age_s:
+                p.unlink(missing_ok=True)
+                removed += 1
     return removed
 
 

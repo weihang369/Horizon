@@ -13,6 +13,8 @@ No key is needed. The idempotency middleware applies the same limit when it buff
 from __future__ import annotations
 
 import asyncio
+from collections.abc import Callable
+from dataclasses import dataclass
 from typing import Any
 
 from fastapi import APIRouter, Request, Response
@@ -36,13 +38,32 @@ ENVELOPE = 64 * 1024
 ACCEPTED = ["image/png", "image/jpeg", "image/webp"]
 
 
+MAX_KNOWLEDGE = 10 * 1024 * 1024    # D-65 (knowledge-memory-storage design D3)
+
+
+def _is_cover(parts: list[str]) -> bool:
+    return len(parts) >= 3 and parts[-1] == "cover" and parts[-3] == "worlds"
+
+
+def _is_knowledge(parts: list[str]) -> bool:
+    return len(parts) >= 3 and parts[-1] == "knowledge" and parts[-3] == "characters"
+
+
 def body_limit(path: str) -> int | None:
     """The most a request body may be on this path (the idempotency middleware buffers keyed POSTs)."""
     parts = path.rstrip("/").split("/")
-    return MAX_COVER + ENVELOPE if len(parts) >= 3 and parts[-1] == "cover" and parts[-3] == "worlds" else None
+    if _is_cover(parts):
+        return MAX_COVER + ENVELOPE
+    if _is_knowledge(parts):
+        return MAX_KNOWLEDGE + ENVELOPE
+    return None
 
 
-def too_large() -> HorizonHTTPError:
+def too_large(path: str | None = None) -> HorizonHTTPError:
+    """413 `validation` naming the limit of `path` (a cover when no path is given)."""
+    if path is not None and _is_knowledge(path.rstrip("/").split("/")):
+        return HorizonHTTPError("validation", "Files can be at most 10 MB.", status=413,
+                                details={"field": "file", "limit": MAX_KNOWLEDGE})
     return HorizonHTTPError("validation", "Covers can be at most 5 MB.", status=413,
                             details={"field": "file", "limit": MAX_COVER})
 
@@ -51,16 +72,26 @@ class _TooLarge(Exception):
     pass
 
 
-async def read_file_part(request: Request, *, limit: int) -> bytes:
+@dataclass(frozen=True)
+class FilePart:
+    filename: str | None
+    content_type: str | None
+
+
+async def stream_file_part(request: Request, *, limit: int, write: Callable[[bytes], object], err: HorizonHTTPError,
+                           what: str = "file") -> FilePart:
+    """Parse a `multipart/form-data` body as it arrives, passing the `file` part's bytes to `write` and counting them
+    (http-api "Cover upload route", "Knowledge upload limit is enforced while reading"): a declared length over the
+    limit is refused before reading, and so is a body that grows past it while streaming. The body is never spooled."""
     declared = request.headers.get("content-length")
     if declared and declared.isdigit() and int(declared) > limit + ENVELOPE:
-        raise too_large()
+        raise err
     ctype, params = parse_options_header(request.headers.get("content-type", ""))
     boundary = params.get(b"boundary")
     if ctype != b"multipart/form-data" or not boundary:
-        raise validation("Send the cover as multipart/form-data with a file part.", {"field": "file"})
-    state: dict[str, Any] = {"field": b"", "value": b"", "name": None, "headers": {}, "file": None}
-    chunks: list[bytes] = []
+        raise validation(f"Send the {what} as multipart/form-data with a file part.", {"field": "file"})
+    state: dict[str, Any] = {"field": b"", "value": b"", "name": None, "headers": {}, "file": None,
+                             "filename": None, "ctype": None}
     size = 0
 
     def on_header_field(data: bytes, start: int, end: int) -> None:
@@ -76,6 +107,11 @@ async def read_file_part(request: Request, *, limit: int) -> bytes:
     def on_headers_finished() -> None:
         _disp, opts = parse_options_header(state["headers"].get(b"content-disposition", b""))
         state["name"] = opts.get(b"name")
+        if state["name"] == b"file":
+            fn = opts.get(b"filename")
+            state["filename"] = fn.decode("utf-8", "replace") if fn else None
+            ct = state["headers"].get(b"content-type")
+            state["ctype"] = ct.decode("latin-1") if ct else None
         state["headers"] = {}
 
     def on_part_data(data: bytes, start: int, end: int) -> None:
@@ -85,7 +121,7 @@ async def read_file_part(request: Request, *, limit: int) -> bytes:
         size += end - start
         if size > limit:
             raise _TooLarge()
-        chunks.append(data[start:end])
+        write(data[start:end])
 
     def on_part_end() -> None:
         if state["name"] == b"file":
@@ -104,11 +140,17 @@ async def read_file_part(request: Request, *, limit: int) -> bytes:
             parser.write(chunk)
         parser.finalize()
     except _TooLarge as e:
-        raise too_large() from e
+        raise err from e
     except ValueError as e:
         raise validation("The upload isn't valid multipart/form-data.", {"field": "file"}) from e
     if not state["file"]:
-        raise validation("Add the image as a `file` part.", {"field": "file"})
+        raise validation(f"Add the {what} as a `file` part.", {"field": "file"})
+    return FilePart(filename=state["filename"], content_type=state["ctype"])
+
+
+async def read_file_part(request: Request, *, limit: int) -> bytes:
+    chunks: list[bytes] = []
+    await stream_file_part(request, limit=limit, write=chunks.append, err=too_large(), what="image")
     return b"".join(chunks)
 
 

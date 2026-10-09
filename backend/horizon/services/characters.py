@@ -269,6 +269,7 @@ async def delete_character(rt: Runtime, character_id: str) -> None:
         name = (row["profile"] or {}).get("name", "This character")
         raise conflict(f"{name} is in the live session. Stop or leave it first.", {"activeSessionId": speaking})
     await rt.jobs.cancel_for_character(character_id)
+    await rt.ingest.cancel_for(character_id=character_id)  # M5 design D18: indexing stops before its rows go
     now = rt.now_iso()
     async with rt.db.write() as tx:
         conn = tx.conn

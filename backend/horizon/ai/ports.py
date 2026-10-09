@@ -171,3 +171,50 @@ class SongGenerator(Protocol):
     def expected_ms(self, duration_ms: float) -> float: ...
     def theme(self, seed: str, brief: Mapping[str, Any], title: str | None) -> dict[str, Any]: ...
     async def generate(self, ctx: CallContext, job: SongJob, hooks: PaidHooks) -> bytes: ...
+
+
+# ── Memory (M5, knowledge-memory-storage design D17; doc 05 §2.2) ──
+@dataclass(frozen=True)
+class MemoryDraft:
+    """A memory to write: what the AI layer decided to remember, from the perspective character's point of view."""
+
+    kind: str                                            # fact | event | preference | about_user
+    text: str
+    importance: float                                    # 0..1
+    source_session_id: str | None = None
+    source_message_id: str | None = None
+    source_variant_id: str | None = None
+    source_mode: str | None = None                       # D-71: one_on_one | group | debate | watch
+    about_character_id: str | None = None
+
+
+@dataclass(frozen=True)
+class Insert:
+    draft: MemoryDraft
+
+
+@dataclass(frozen=True)
+class Supersede:
+    old_ids: list[str]
+    draft: MemoryDraft
+
+
+@dataclass(frozen=True)
+class Reinforce:
+    id: str
+    importance: float
+
+
+@dataclass(frozen=True)
+class Touch:
+    ids: list[str]
+
+
+MemoryOp = Insert | Supersede | Reinforce | Touch
+
+
+class MemoryWriter(Protocol):
+    """After a completed reply: the memory operations from `perspective`'s point of view (applied by the backend's
+    `MemoryStore.apply` in one transaction). Both profiles ship a writer that returns `[]` (memory policy is AI-stage)."""
+
+    async def after_turn(self, ctx: TurnContext, perspective: str, message_id: str) -> list[MemoryOp]: ...

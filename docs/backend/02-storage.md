@@ -45,7 +45,9 @@ data/                                       gitignored (NFR-22)
   originals/{worldId}/{characterId}/{taskId}_a{attempt}.{jpg|png|json|mp3}   raw provider output (written first, see §3.6)
   knowledge/{worldId}/{characterId}/{sourceId}/original.{pdf|docx|md|txt}
   knowledge/{worldId}/{characterId}/{sourceId}/extracted.md     Docling output + <!-- page N --> markers
-  models/                                   Docling / Hugging Face cache (downloaded once; HF_HUB_OFFLINE=1 afterwards)
+  models/                                   Docling / Hugging Face cache (downloaded once by `horizon models fetch`; HF_HUB_OFFLINE=1 afterwards)
+  models/.horizon-models.json               written last by a completed fetch; /health says `ready` only when it exists
+  tmp/{uuid}.upload                         a knowledge upload while it is counted and checked (swept after 1 h)
   logs/horizon.log*
 seed/assets/**                              committed seed art and themes, served read-only at /assets/**
 ```
@@ -232,12 +234,14 @@ memory_vec__{space}  vec0(rid INTEGER PRIMARY KEY, character_id TEXT PARTITION K
                           embedding FLOAT[{dims}] distance_metric=cosine)
 ```
 
-- **Writes go through one backend API.** `MemoryStore.apply(character_id, ops: list[MemoryOp])` applies `Insert | Supersede | Reinforce | Touch` (doc 05 §2) in **one transaction**, covering the row, FTS and vectors. The embeddings are computed *before* the writer lock is taken.
-- **Forget**, in one transaction:
-  1. Delete the item, its whole `superseded_by` chain, their FTS and vector rows, and their `trace_memory_refs`.
-  2. Rewrite the matching `turn_traces.trace` **and** `session_events` `insight` payloads (looked up via `trace_memory_refs.message_id` → `session_events.message_id`), replacing the memory `text` with `"(forgotten)"`.
-  3. Write an `ai_purge_queue` row (`scope:'memory'`) so the AI layer purges summaries and checkpoints (doc 05 §4).
-  4. Emit `entity.changed{kind:"memory"}`.
+- **Writes go through one backend API.** `MemoryStore.apply(character_id, world_id, ops: list[MemoryOp])` applies `Insert | Supersede | Reinforce | Touch` (doc 05 §2) in **one transaction**, covering the row, FTS and vectors. The embeddings are computed *before* the writer lock is taken (with a key only; without one the items are FTS-only). The whole batch is validated first: kinds, text, importance in [0, 1], every referenced ID belonging to this character in this world, and every memory a `Supersede` replaces still being current, so two writers can't both replace one memory. A per-character lock serialises `apply`, and the post-turn queue calls the `MemoryWriter` after each complete, unblocked reply (`[]` in both profiles until the AI stage).
+- **Forget** (`DELETE /memory/{id}`, 404 if unknown; `services/memory/forget.py`), in one transaction:
+  1. Collect the chain: every version the item superseded and every version that superseded it (to a fixpoint).
+  2. Zero their vectors in every non-retired space, then delete the items (FTS and vec rows go by trigger), and their `trace_memory_refs`.
+  3. Rewrite the matching `turn_traces.trace` **and** `session_events` `insight` payloads, replacing the memory's `text` (and any other copy of it in that trace) with `"(forgotten)"`. They are found through `trace_memory_refs` (written by the session writer on every `insight`, by fork for the copied traces and by the seed import) **and** a scan of the world's traces and insight events for the text itself.
+  4. Write an `ai_purge_queue` row `{scope: 'memory', ids: {memoryItemIds, characterId, messageIds}}`, delivered to `AiStateHooks.on_forget` (doc 05 §4).
+  5. After the commit: emit `entity.changed{kind:"memory", id: characterId}`, let each live session holding an affected trace drop the text through its inbox, and run `wal_checkpoint(TRUNCATE)` (retried while a reader holds a snapshot).
+  - **File hygiene:** with the writer's `secure_delete`, FTS5 `secure-delete` (or `optimize` on an older SQLite) and the truncated WAL, the forgotten text is gone from `horizon.db` and its WAL once Forget returns and no read is in progress (`tests/isolation/test_forget_bytes.py`). Message contents are not edited.
 
 ### 3.8 Knowledge (storage; the chunking and retrieval policy is AI-owned)
 
@@ -247,7 +251,8 @@ knowledge_sources  id PK (kno_…), character_id FK→characters (CASCADE), worl
                    bytes NULL, pages NULL, sha256 NULL,
                    status ('queued'|'extracting'|'chunking'|'embedding'|'indexed'|'keyword_only'|'failed'),
                    chunk_count, extractor_version NULL, chunker_version, tokenizer TEXT, embedding_space_id NULL,
-                   has_original BOOLEAN, error J NULL, added_at, indexed_at NULL, is_seed BOOLEAN
+                   has_original BOOLEAN, error J NULL, added_at, indexed_at NULL, is_seed BOOLEAN,
+                   embed_sent_at NULL                                          -- 0002: a batch is in flight (M5 design D2)
                    pUQ(character_id, sha256) WHERE sha256 IS NOT NULL          -- the same document twice → 409
 knowledge_sections id PK (ksec_…), source_id FK→knowledge_sources (CASCADE), character_id, world_id,
                    idx, heading_path TEXT, page_start NULL, page_end NULL, text, token_count, char_start, char_end
@@ -281,6 +286,23 @@ knowledge_vec__{space} vec0(rid INTEGER PRIMARY KEY, character_id TEXT PARTITION
 
   MIME types are PDF, DOCX, Markdown and plain text, checked by **magic bytes**.
 - **Deleting a source** removes its folder and its rows; the triggers (§3.9) clean FTS and vectors. Messages keep their `citations` snapshots, so the chips open the "source removed" state (PRF-10 AC5).
+- **Pipeline (M5, `services/knowledge/`).** One `rt.spawn` task per source, stages gated by `docling_slots` (1) and
+  `embed_slots` (2). The status column is the job record (`queued → extracting → chunking → embedding → indexed |
+  keyword_only | failed`), written by compare-and-set, so a deleted source turns late writes into no-ops.
+  - **Extract:** MD/TXT/pasted text are read as UTF-8; PDF/DOCX go to the converter (Docling in a subprocess, D-96).
+    Without Docling or its models the source ends `failed` with the setup steps; Retry converts the kept original.
+  - **Chunk** (`ai/chunker.py`, `para@1`): children = paragraphs (long ones cut near 900 chars at a sentence end),
+    sections = runs under one heading path (≤ ~1 500 tokens). Locators: `p. N` (PDF page markers), else
+    `§ {nearest heading}`, else `¶ N`. The swap is one transaction; > 3 000 passages per character → `failed`.
+  - **Embed** (key set only): per batch, `before_send` commits `embed_sent_at`; the vectors are written with the
+    ledger row, clearing it. Any embedding failure (cap, provider, malformed) ends `keyword_only`, with no `error`.
+  - **Recovery at startup:** `queued`/`extracting` → from extraction (or embedding without an original);
+    `chunking` → from chunking; `embedding` with no marker → only chunks without vectors; `embedding` with the marker →
+    `keyword_only` until a user Retry (a batch was in flight: never paid twice, D-99).
+  - **Background re-embed** (at startup with a key, and when the key becomes `set`): user-added `keyword_only` sources
+    with passages and no marker. Seed sources are indexed only by their per-source **Index** button (D-91).
+- **Reindex** re-runs from the lowest stale layer: no original → embed only (chunk ids kept); `failed` or no
+  extractor version → extract; chunker or tokenizer changed → chunk; otherwise embed. `conflict` while indexing.
 
 ### 3.9 Embedding spaces, FTS and vec maintenance (D-64)
 
@@ -289,19 +311,37 @@ embedding_spaces  id PK ('qwen3-emb-8b@1024'), model, provider, dims, dtype ('fl
                   query_instruction TEXT, doc_template TEXT, status ('building'|'active'|'retired'), created_at
 ```
 
-- **A `SpaceManager` creates vec tables at runtime; Alembic does not.**
+- **A `SpaceManager` creates vec tables at runtime; Alembic does not.** It creates them for the active space and, during a
+  switch, for the one `building` space; `non_retired()` (active first) lists where every new vector is written.
   - It creates `memory_vec__{space}` and `knowledge_vec__{space}`, **plus their `AFTER DELETE` triggers** on `memory_items` / `knowledge_chunks`.
   - Alembic's `include_object` skips every virtual table and its shadow tables.
   - At startup the SpaceManager makes sure the active space's tables exist. That's the default space on first run, embedded only after a key is set; see doc 04 §3.
 - **FTS sync.** External-content FTS tables are kept in sync by `AFTER INSERT/UPDATE/DELETE` triggers that use the FTS `'delete'` command with the **old** values. An M1 spike confirms that the triggers fire on FK-cascade deletes.
-- **Switching spaces.**
-  1. A reindex job builds the new space (`building`).
-  2. Ingestion meanwhile **writes to both** spaces.
-  3. Before the flip, a final pass embeds any rows still missing.
-  4. In one transaction, the new space becomes `active` and the old one `retired`.
-  5. The retired tables are dropped on the next startup.
+- **Switching spaces** (`services/knowledge/build.py` `build_space(rt, spec)`, M5 design D9). There is **no route or
+  UI**: the AI stage calls the service when it picks the final model; tests use a second space `hash@64`.
+  1. **Register** the space as `building` (its vec tables and triggers), or resume a build of the same space. One build
+     at a time. A key is required.
+  2. **Dual-write.** From then on ingestion batches and `MemoryStore.apply` embed for every non-retired space, one call
+     per space (the models differ).
+  3. **Fill.** Embed what the active space covers and the new one lacks: the chunks of `indexed` sources and the
+     memories that have a vector in the active space, in batches through the embedder; each batch's vectors are
+     written in its ledger row's transaction, and a row deleted while its batch was in flight gets none.
+     Keyword-only sources (seed ones included) are not embedded: indexing them is the user's per-source choice (D-91).
+  4. **Catch up.** Fill again until nothing is missing (at most 3 passes); rows added meanwhile were dual-written.
+  5. **Flip**, in one transaction: the new space becomes `active`, the old one `retired`; sources fully embedded in
+     the new space move their `embedding_space_id` there, the others become `keyword_only`. `rt.space_id` follows,
+     and `entity.changed{knowledge}` goes out for every source whose status changed.
+  6. The retired tables are dropped on the next startup.
+
+  A provider error or a cap stops the build with the space still `building` (resumable). A batch in flight at a crash
+  is paid again by the next build run; the ingestion pipeline's per-source `embed_sent_at` marker isn't used here.
 - **Search is exact flat KNN**, bounded by the character partition. sqlite-vec bit vectors with an exact rescore are the escape hatch if a partition grows huge. There is no ANN index.
 - **Embedding failure** ends ingestion as `keyword_only`, with a background re-embed **only** for user-added sources while a key is set.
+- **File hygiene for Forget (M5 design D16).** The writer connection runs `PRAGMA secure_delete = ON` (deleted and
+  rewritten cells and freed pages are zeroed). Migration `0002` sets FTS5 `secure-delete = 1` on `memory_fts` and
+  `knowledge_fts` (SQLite >= 3.44; startup records whether it is on, and Forget runs an FTS `optimize` when it isn't).
+  Forget zeroes a memory's vectors before deleting them, then runs `wal_checkpoint(TRUNCATE)` so no old WAL frame keeps
+  the text. Readers never write, so they don't need the pragma.
 
 ### 3.10 Isolation (NFR-23)
 
@@ -314,12 +354,12 @@ embedding_spaces  id PK ('qwen3-emb-8b@1024'), model, provider, dims, dtype ('fl
 | Action | What happens |
 |---|---|
 | **Archive / Restore** | Sets or clears `archived_at` |
-| **Delete a character** | **409 while it is in the currently streaming session.** Otherwise:<ol><li>cancel its non-terminal job;</li><li>**tombstone** it (`deleted_at`; keep the name, a minimal profile, the palette and the active neutral portrait);</li><li>delete its other assets and files, songs, memory, knowledge and jobs;</li><li>purge the AI state (`ai_purge_queue`).</li></ol>In sessions, a tombstoned participant is skipped with reason `"archived"` |
-| **Delete a world** | Stops the actors of its sessions, then cascades: sessions (events, messages, traces, summaries), characters (fully), memory and knowledge. Ledger references become NULL. Removes the `assets/gen/{worldId}` and `knowledge/{worldId}` folders, and queues an AI purge (`scope:'world'`) |
+| **Delete a character** | **409 while it is in the currently streaming session.** Otherwise:<ol><li>cancel its non-terminal job and stop the indexing of its sources (M5);</li><li>**tombstone** it (`deleted_at`; keep the name, a minimal profile, the palette and the active neutral portrait);</li><li>delete its other assets and files, songs, memory, knowledge and jobs;</li><li>purge the AI state (`ai_purge_queue`).</li></ol>In sessions, a tombstoned participant is skipped with reason `"archived"` |
+| **Delete a world** | Stops the actors of its sessions and the indexing of its sources, then cascades: sessions (events, messages, traces, summaries), characters (fully), memory and knowledge. Ledger references become NULL. Removes the `assets/gen/{worldId}` and `knowledge/{worldId}` folders, and queues an AI purge (`scope:'world'`) |
 | **Delete a session** | Through its actor (which stops first). Cascades the events, messages, traces and summaries; ledger `session_id` becomes NULL; queues an AI purge |
 | **Forget a memory** | §3.7 |
-| **Guardrail block after streaming** | `turn.end` with `status:"error"`, `content_refused`. The message content **and its persisted `token` events are scrubbed** (the Forget path, by `message_id`), and the message is excluded from memory |
-| **Reset demo data** | **Upserts** seed worlds and characters in place (user forks may reference them). **Deletes and re-inserts seed sessions.** Replaces seed ledger rows (`is_seed`). Seed memory and knowledge are restored, while **user-earned memories on seed characters (`is_seed = 0`) survive**. Queues an AI purge for the seed sessions. Emits a global `mock.reset` so screens re-query |
+| **Guardrail block after streaming** | `turn.end` with `status:"error"`, `content_refused`. The message content **and its persisted `token` events are scrubbed** (the Forget path, by `message_id`), and the message is excluded from memory: the memory writer isn't called for it, and any memory sourced from it is forgotten in the scrub's transaction (M5) |
+| **Reset demo data** | **Upserts** seed worlds and characters in place (user forks may reference them). **Deletes and re-inserts seed sessions.** Replaces seed ledger rows (`is_seed`). Seed memory and knowledge are restored, while **user-earned memories on seed characters (`is_seed = 0`) survive**. Indexing of seed sources is stopped first; re-inserted seed sources are `keyword_only` again (new `rid`s, vectors gone, D-98). Queues an AI purge for the seed sessions. Emits a global `mock.reset` so screens re-query |
 | **Factory reset** | Double-confirmed:<ol><li>stop the actors, the scheduler and any Docling process;</li><li>close the `graph.db` checkpointer;</li><li>dispose the engines and close the log handlers (Windows file locks);</li><li>`rmtree data/` except `models/`, with retries;</li><li>re-run the startup lifespan in-process.</li></ol> |
 
 ## 5. Migrations and seed import

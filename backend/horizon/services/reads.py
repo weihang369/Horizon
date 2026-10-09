@@ -194,19 +194,30 @@ async def knowledge_source(conn: AsyncConnection, source_id: str) -> Wire:
 
 
 async def fts_search(conn: AsyncConnection, *, world_id: str, character_id: str, query: str, limit: int = 20) -> list[Wire]:
-    """Keyword retrieval within one character (BM25). The join back re-binds world and character (NFR-23)."""
+    """Keyword retrieval within one character (BM25). The join back re-binds world and character (NFR-23). `query` is
+    plain user text: it goes through the safe query builder, so FTS syntax in it can't error or change the search."""
+    from horizon.ai.retrieval import fts_query
+
+    q = fts_query(query)
+    if q is None:
+        return []
     rows = (await conn.execute(text(
         "SELECT c.* FROM knowledge_fts f JOIN knowledge_chunks c ON c.rid = f.rowid "
         "WHERE knowledge_fts MATCH :q AND c.world_id = :w AND c.character_id = :c ORDER BY bm25(knowledge_fts) LIMIT :n"),
-        {"q": query, "w": world_id, "c": character_id, "n": limit})).mappings().all()
+        {"q": q, "w": world_id, "c": character_id, "n": limit})).mappings().all()
     return [mp.chunk_wire(r) for r in rows]
 
 
 async def memory_fts_search(conn: AsyncConnection, *, world_id: str, character_id: str, query: str, limit: int = 20) -> list[Wire]:
+    from horizon.ai.retrieval import fts_query
+
+    q = fts_query(query)
+    if q is None:
+        return []
     rows = (await conn.execute(text(
         "SELECT m.* FROM memory_fts f JOIN memory_items m ON m.rid = f.rowid "
         "WHERE memory_fts MATCH :q AND m.world_id = :w AND m.character_id = :c ORDER BY bm25(memory_fts) LIMIT :n"),
-        {"q": query, "w": world_id, "c": character_id, "n": limit})).mappings().all()
+        {"q": q, "w": world_id, "c": character_id, "n": limit})).mappings().all()
     return [mp.memory_wire(r) for r in rows]
 
 

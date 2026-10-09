@@ -16,7 +16,7 @@ from fastapi.openapi.utils import get_openapi
 from fastapi.responses import FileResponse
 
 from horizon import __version__
-from horizon.api import assets, characters, errors, jobs, routes, sessions, streams, uploads
+from horizon.api import assets, characters, errors, jobs, knowledge, routes, sessions, streams, uploads
 from horizon.api.middleware import Idempotency, RequestContext
 from horizon.config import Config, load_config
 from horizon.runtime import Runtime
@@ -44,6 +44,7 @@ def create_app(cfg: Config | None = None, runtime: Runtime | None = None) -> Fas
     app.include_router(jobs.router, prefix=API)
     app.include_router(characters.router, prefix=API)
     app.include_router(uploads.router, prefix=API)
+    app.include_router(knowledge.router, prefix=API)
     app.include_router(streams.router, prefix=API)
     if rt.cfg.test_mode:
         app.include_router(routes.test_router, prefix=API)

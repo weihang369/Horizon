@@ -6,7 +6,6 @@ Routes for later milestones are simply absent (404 `not_found`); the HttpClient 
 
 from __future__ import annotations
 
-import importlib.util
 from datetime import datetime
 from typing import Annotated, Any, Literal
 
@@ -195,6 +194,7 @@ async def update_world(request: Request, world_id: str, body: WorldPatch) -> Res
 @router.delete("/worlds/{world_id}", status_code=204)
 async def delete_world(request: Request, world_id: str) -> Response:
     rt = rt_of(request)
+    await rt.ingest.cancel_for(world_id=world_id)  # M5 design D18: indexing stops before its rows go
     async with rt.db.write() as tx:
         await worlds_svc.delete_world(tx, world_id, now=rt.now_iso())
     worlds_svc.remove_world_files(rt.cfg.data_dir, world_id)
@@ -354,9 +354,10 @@ async def factory_reset(request: Request, body: FactoryResetBody) -> Response:
 
 # ── Health ───────────────────────────────────────────────────────────────────
 def docling_status(models_dir: Any) -> str:
-    if importlib.util.find_spec("docling") is None:
-        return "not_installed"
-    return "ready" if models_dir.is_dir() and any(models_dir.iterdir()) else "models_missing"
+    """`ready` needs Docling installed **and** the completion marker of `horizon models fetch` (M5 design D5)."""
+    from horizon.ai.converter import readiness
+
+    return readiness(models_dir)
 
 
 @router.get("/health")
@@ -373,7 +374,7 @@ async def health(request: Request) -> Response:
         except Exception:  # health reports, never raises
             pass
     body = {"ok": db == "ok" and vec == "ok", "version": __version__, "schemaVersion": SCHEMA_VERSION, "db": db, "vec": vec,
-            "docling": docling_status(rt.cfg.data_dir / "models")}
+            "docling": docling_status(rt.cfg.models_dir)}
     return json_response(rt, body)
 
 
@@ -466,7 +467,8 @@ async def apply_variant(rt: Runtime, variant_id: str) -> None:
 class AiProfileBody(_Model):
     profile: Literal["scripted", "naive"] | None = None
     overrides: dict[Literal["turn", "router", "reactions", "host", "director", "summariser", "guardrail", "drafter",
-                            "image", "song"], Literal["scripted", "naive"]] | None = None
+                            "image", "song", "embedder", "knowledge_retriever", "memory_retriever", "converter"],
+                    Literal["scripted", "naive"]] | None = None
 
 
 @test_router.post("/ai-profile")
@@ -476,7 +478,7 @@ async def test_ai_profile(request: Request, body: AiProfileBody) -> Response:
 
     rt = rt_of(request)
     overrides: dict[str, Literal["scripted", "naive"]] = {str(k): v for k, v in (body.overrides or {}).items()}
-    rt.set_profile(ProfileSpec(profile=body.profile, overrides=overrides))
+    rt.set_profile(ProfileSpec(profile=body.profile, overrides=overrides, test_mode=rt.cfg.test_mode))
     return Response(status_code=204)
 
 

@@ -412,6 +412,7 @@ knowledge_sources = Table(
     Column("chunker_version", Text, nullable=False),
     Column("tokenizer", Text, nullable=False),
     Column("embedding_space_id", Text, nullable=True),
+    Column("embed_sent_at", Text, nullable=True),          # 0002: an embedding batch is in flight (design D2)
     Column("has_original", Boolean, nullable=False),
     Column("error", J, nullable=True),
     Column("added_at", Text, nullable=False),

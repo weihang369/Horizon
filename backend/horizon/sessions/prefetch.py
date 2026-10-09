@@ -57,10 +57,15 @@ class Prefetch:
         sctx = await session_context(rt, actor)
         caps = rt.runtime_cfg.runtime.reply_max_tokens
         cfg = sctx.config or {}
+        from horizon.sessions.retrieve import retrieve
+
+        got = await retrieve(rt, actor, sctx, spec.speaker, spec.prompt)   # M5: retrieved at prefetch time (D10)
+        spec.calls.extend(got.calls)
         ctx = TurnContext(session=sctx, speaker=character_view(row), message_id=None, prompt=spec.prompt, line=spec.line,
                           turn_index=actor.mode.turn,
                           max_tokens=caps.for_mode(sctx.mode, str(cfg.get("turnLength")) if sctx.mode == "debate" else None),
-                          direction_note=spec.direction_note, debate=spec.debate)
+                          direction_note=spec.direction_note, debate=spec.debate, knowledge=got.knowledge,
+                          memory=got.memory, query=got.query)
         actor.mode.turn += 1
         engine = rt.ai.turn(rt.keys.status() == "set")
         pf = cls(actor, spec, ctx, new_id("msg"), engine)

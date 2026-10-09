@@ -25,6 +25,22 @@ test("Knowledge tab: Mei's unreadable document shows the reason and a Retry butt
   await expect(failed.getByRole("button", { name: "↻ Retry" })).toBeVisible();
 });
 
+test("Knowledge tab: Paste text adds a source that indexes and then opens in the Source viewer", async ({ page }) => {
+  await open(page, "/w/wld_seedSunnyHollow/c/chr_seedHana?tab=knowledge");
+  const panel = page.getByRole("tabpanel", { name: "Knowledge" });
+  await panel.getByRole("button", { name: "Paste text", exact: true }).click();
+  const dialog = page.getByRole("dialog", { name: /from pasted text/ });
+  await expect(dialog.getByRole("button", { name: "Add" })).toBeDisabled();
+  await dialog.getByLabel("Title", { exact: true }).fill("Tea notes");
+  await dialog.getByLabel("Text", { exact: true }).fill("Steep for three minutes.\n\nThen pour slowly.");
+  await dialog.getByRole("button", { name: "Add" }).click();
+  await expect(dialog).toBeHidden();
+  const card = panel.getByRole("button", { name: "Open Tea notes" });
+  await expect(card).toBeVisible({ timeout: 10_000 });
+  await card.click();
+  await expect(page.getByRole("dialog", { name: /Tea notes/ })).toBeVisible();
+});
+
 test("Theme tab renders the theme player with a working play/pause control @layout", async ({ page }) => {
   await open(page, "/w/wld_seedMeridian/c/chr_seedAmara");
   await page.getByRole("tab", { name: "Theme" }).click();

@@ -6,6 +6,11 @@ the image generator (M4) and the song generator (Lyria 3 Clip, D-87) have naive 
 scripted in both profiles. The scripted song is the free procedural theme (D-83). The creation port is called
 `drafter`, not `profile`, because `HORIZON_AI_PROFILE` is the selector itself. In test mode, `POST /_test/ai-profile`
 replaces the selection at runtime.
+
+M5 (knowledge-memory-storage design D4, D7, D17): the `embedder` and the memory and knowledge retrievers have naive
+implementations; the `memory_writer` writes nothing in both profiles. The document `converter` does not follow the
+profile or the key (conversion is local and free, D-62): it is the real converter unless overridden, and in test mode
+it defaults to the deterministic scripted one, so CI never starts a conversion process.
 """
 
 from __future__ import annotations
@@ -14,9 +19,13 @@ from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
 from typing import Any, Literal
 
+from horizon.ai.converter import ScriptedConverter
+from horizon.ai.embedder import HashEmbedder
+from horizon.ai.retrieval import ScriptedKnowledgeRetriever, ScriptedMemoryRetriever
 from horizon.ai.scripted.creation import ProceduralSong, ScriptedDrafter, ScriptedImageGenerator
 from horizon.ai.scripted.ports import (
     AiDeps,
+    NoMemoryWriter,
     ScriptedDebateHost,
     ScriptedGuardrail,
     ScriptedReactions,
@@ -27,8 +36,11 @@ from horizon.ai.scripted.ports import (
 )
 
 Impl = Literal["scripted", "naive"]
-PORTS = ("turn", "router", "reactions", "host", "director", "summariser", "guardrail", "drafter", "image", "song")
-NAIVE_PORTS = frozenset({"turn", "router", "drafter", "image", "song"})
+PORTS = ("turn", "router", "reactions", "host", "director", "summariser", "guardrail", "drafter", "image", "song",
+         "embedder", "knowledge_retriever", "memory_retriever", "memory_writer", "converter")
+NAIVE_PORTS = frozenset({"turn", "router", "drafter", "image", "song", "embedder", "knowledge_retriever",
+                         "memory_retriever", "converter"})
+KEYLESS_PORTS = frozenset({"converter"})   # chosen by availability, not by the profile or the key (D-96)
 ENV_PROFILE = "HORIZON_AI_PROFILE"
 
 
@@ -50,17 +62,20 @@ def _impl(value: str | None) -> Impl | None:
 class ProfileSpec:
     profile: Impl | None = None
     overrides: Mapping[str, Impl] = field(default_factory=dict)
+    test_mode: bool = False
 
     @staticmethod
-    def from_env(env: Mapping[str, str]) -> ProfileSpec:
+    def from_env(env: Mapping[str, str], *, test_mode: bool = False) -> ProfileSpec:
         overrides: dict[str, Impl] = {}
         for p in PORTS:
             impl = _impl(env.get(env_name(p)))
             if impl is not None:
                 overrides[p] = impl
-        return ProfileSpec(profile=_impl(env.get(ENV_PROFILE)), overrides=overrides)
+        return ProfileSpec(profile=_impl(env.get(ENV_PROFILE)), overrides=overrides, test_mode=test_mode)
 
     def choose(self, port: str, *, key_set: bool) -> Impl:
+        if port in KEYLESS_PORTS:
+            return self.overrides.get(port) or ("scripted" if self.test_mode else "naive")
         impl: Impl = self.overrides.get(port) or self.profile or ("naive" if key_set else "scripted")
         return impl if impl == "scripted" or port in NAIVE_PORTS else "scripted"
 
@@ -98,14 +113,31 @@ class AiPorts:
             if port == "image":
                 from horizon.ai.naive.creation import NaiveImageGenerator
                 return NaiveImageGenerator(d)
-            from horizon.ai.naive.router import JevRouter
-            return JevRouter(d)
+            if port == "embedder":
+                from horizon.ai.embedder import QwenEmbedder
+                return QwenEmbedder(d)
+            if port == "knowledge_retriever":
+                from horizon.ai.retrieval import NaiveKnowledgeRetriever
+                return NaiveKnowledgeRetriever()
+            if port == "memory_retriever":
+                from horizon.ai.retrieval import NaiveMemoryRetriever
+                return NaiveMemoryRetriever()
+            if port == "converter":
+                from horizon.ai.converter import DoclingConverter
+                return DoclingConverter(d.models_dir(), timeout_s=d.convert_timeout_s)
+            if port == "router":
+                from horizon.ai.naive.router import JevRouter
+                return JevRouter(d)
+            raise KeyError(f"no naive implementation for port {port!r}")
         builders: dict[str, Callable[[], Any]] = {
             "turn": lambda: ScriptedTurnEngine(d), "router": lambda: ScriptedRouter(d),
             "reactions": lambda: ScriptedReactions(d), "host": lambda: ScriptedDebateHost(d),
             "director": lambda: ScriptedWatchDirector(), "summariser": lambda: ScriptedSummariser(d),
             "guardrail": lambda: ScriptedGuardrail(), "drafter": lambda: ScriptedDrafter(d, d.palette_ids),
-            "image": lambda: ScriptedImageGenerator(d), "song": lambda: ProceduralSong()}
+            "image": lambda: ScriptedImageGenerator(d), "song": lambda: ProceduralSong(),
+            "embedder": lambda: HashEmbedder(d), "memory_writer": lambda: NoMemoryWriter(),
+            "converter": lambda: ScriptedConverter(lambda s: d.clock().sleep(s)),
+            "knowledge_retriever": lambda: ScriptedKnowledgeRetriever(), "memory_retriever": lambda: ScriptedMemoryRetriever()}
         return builders[port]()
 
     def turn(self, key_set: bool) -> Any:
@@ -137,6 +169,21 @@ class AiPorts:
 
     def song(self, key_set: bool) -> Any:
         return self._get("song", key_set)
+
+    def embedder(self, key_set: bool) -> Any:
+        return self._get("embedder", key_set)
+
+    def memory_writer(self, key_set: bool) -> Any:
+        return self._get("memory_writer", key_set)
+
+    def converter(self, key_set: bool) -> Any:
+        return self._get("converter", key_set)
+
+    def knowledge_retriever(self, key_set: bool) -> Any:
+        return self._get("knowledge_retriever", key_set)
+
+    def memory_retriever(self, key_set: bool) -> Any:
+        return self._get("memory_retriever", key_set)
 
     def override(self, port: str, impl: Any) -> None:
         """Tests: inject one port's implementation for both profiles (e.g. a blocking guardrail, design D13)."""

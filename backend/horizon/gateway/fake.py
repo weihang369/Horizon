@@ -15,6 +15,8 @@ gateway code with no socket ever opened.
   (WAV-looking bytes). Music requests are also counted under `counts["music"]`.
 - `counts` tallies requests per endpoint, so tests can assert exactly how many provider calls were made, and
   `park_image(n)` holds the n-th images request open on an event (the restart tests' "request in flight").
+- Embeddings (knowledge-memory-storage): `park_embedding(n)` holds the n-th embeddings request the same way, and
+  `embed_dims` forces the returned length (a provider that ignores `dimensions`, or returns short vectors).
 
 The response shapes follow the recorded fixtures in `tests/fixtures/openrouter/` (unverified until the live run).
 """
@@ -109,11 +111,20 @@ class FakeOpenRouter:
         self._parks: dict[int, asyncio.Event] = {}
         self.parked = asyncio.Event()             # set once a parked images request is being held
         self.music_mode = "ok"                    # ok | fail | stall | not_mp3
+        self._embed_parks: dict[int, asyncio.Event] = {}
+        self.embed_parked = asyncio.Event()       # set once a parked embeddings request is being held
+        self.embed_dims: int | None = None        # force the returned vector length (None: honour `dimensions`)
 
     def park_image(self, n: int) -> asyncio.Event:
         """Hold the n-th images request (1-based, counted over this fake's life) until the returned event is set."""
         ev = asyncio.Event()
         self._parks[n] = ev
+        return ev
+
+    def park_embedding(self, n: int) -> asyncio.Event:
+        """Hold the n-th embeddings request (1-based, over this fake's life) until the returned event is set."""
+        ev = asyncio.Event()
+        self._embed_parks[n] = ev
         return ev
 
     def transport(self) -> httpx.MockTransport:
@@ -135,10 +146,13 @@ class FakeOpenRouter:
         park = self._parks.pop(self.counts["images"], None) if route == ("POST", "/v1/images") else None
         if park is not None:
             return self._held(park, request)
+        epark = self._embed_parks.pop(self.counts["embeddings"], None) if route == ("POST", "/v1/embeddings") else None
+        if epark is not None:
+            return self._held(epark, request, flag=self.embed_parked)
         return self._answer(request, route)
 
-    async def _held(self, park: asyncio.Event, request: httpx.Request) -> httpx.Response:
-        self.parked.set()
+    async def _held(self, park: asyncio.Event, request: httpx.Request, *, flag: asyncio.Event | None = None) -> httpx.Response:
+        (flag or self.parked).set()
         await park.wait()
         return self._answer(request, (request.method, request.url.path.removeprefix("/api")))
 
@@ -239,7 +253,7 @@ class FakeOpenRouter:
 
     def _embed(self, body: dict[str, Any]) -> httpx.Response:
         inputs = body.get("input") or []
-        dims = int(body.get("dimensions") or DEFAULT_DIMS)
+        dims = self.embed_dims or int(body.get("dimensions") or DEFAULT_DIMS)
         tokens = sum(_tokens(x) for x in inputs)
         cost = tokens * EMBED_COST_PER_M / 1e6
         gid = self._gen("gen", cost)
