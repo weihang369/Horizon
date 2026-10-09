@@ -2,7 +2,8 @@
 
 Test clock (session-runtime design D2): while frozen, `FrozenClock.sleep` waits for virtual time, and `advance` fires
 due timers in order and settles the work they wake (`domain/vclock.py`). Released, it behaves like the system clock.
-A test-mode `period_override` (the `rush_hour` scenario) pins the pricing period.
+A test-mode `period_override` (the `rush_hour` scenario) pins the pricing period, and a test-mode `spend_bias_usd` (the
+`daily_cap` scenario) is added to today's spend.
 
 Pricing period (R-23, ENG-06): DeepSeek peak runs Mon–Fri 09:00–12:00 and 14:00–18:00 Malaysia time. That is the
 provider's schedule, so it is pinned to `seed/pricing.json` `peak.tz` whatever HORIZON_TZ says (M2 design OQ-G). Day
@@ -76,6 +77,7 @@ class Clock:
 
     calendar: PricingCalendar
     period_override: PricePeriod | None = None   # test mode only (`rush_hour`)
+    spend_bias_usd: float = 0.0   # test mode only (`daily_cap`): added to today's ledger spend (M6 design D5)
     _activity: Activity | None = None
 
     @property

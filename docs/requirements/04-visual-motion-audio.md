@@ -124,8 +124,8 @@ Rules:
 | Audio | Source |
 |---|---|
 | **Character theme songs** | **AI-generated** per character (provider: OQ-AI-11) |
-| System tracks: Horizon main theme, debate **Arena** track, ambient fallback bed | **Free / royalty-free library** (CC0 preferred), with credits in `ASSETS.md` |
-| UI SFX (~20) | **Free CC0 pack** (e.g. Kenney audio packs; verify licence), with credits in `ASSETS.md` |
+| System tracks: Horizon main theme, debate **Arena** track, ambient fallback bed | **Free / royalty-free library** (CC0 preferred), with credits in [`ASSETS.md`](../../ASSETS.md) |
+| UI SFX (~20) | **Free CC0 pack** (e.g. Kenney audio packs; verify licence), with credits in [`ASSETS.md`](../../ASSETS.md) |
 
 ### 7.2 SFX catalogue (each ≤ 600 ms, normalised)
 Hover tick · Confirm slash · Back/cancel · Toggle · Message send · First token received · Name-plate cut-in · Emotion change (×6) · Generation complete chime · Generation failed buzz · VS sting · Round gong · Verdict sting · Summon sting · Toast (per variant) · Pause menu open/close. A subtle per-token stream tick is **off by default**.

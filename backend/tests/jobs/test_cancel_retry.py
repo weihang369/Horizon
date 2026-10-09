@@ -146,4 +146,4 @@ async def test_song_fails_scenario(api: Api) -> None:
 
 async def test_unknown_scenario_still_rejected(api: Api) -> None:
     r = await api.post(f"{API}/_test/scenario", {"id": "network_down"})
-    assert r.status_code == 422 and r.json()["error"]["details"]["availableIn"] == "M6"
+    assert r.status_code == 422 and r.json()["error"]["details"]["clientSide"] is True

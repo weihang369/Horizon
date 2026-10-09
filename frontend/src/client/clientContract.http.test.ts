@@ -1,16 +1,19 @@
 // HorizonClient contract over HTTP: the portable suite against a real test-mode backend (`npm run test:http`).
-// The backend implements milestone M5, so later tests are listed as `[pending Mx]` (client-contract spec). In test mode
+// The backend implements milestone M6, the last one, so nothing is pending (client-contract spec). In test mode
 // the backend's provider is an in-process fake OpenRouter: no network, and `sk-or-bad…` keys get a 401; the AI profile
 // is `scripted`, so live turns are deterministic and billed as simulated spend.
 // Each test starts from a factory reset (fresh seed + _mock overlays) with the clock frozen at the mock harness's START;
 // `advance` moves the backend's virtual clock and returns once the work it woke has settled (session-runtime D2).
-// Owner: SWE.
+// `network_down` is a client-side fault (http-client-parity D2): the client's fetch fails before any request leaves, so
+// the HttpClient's real "server unreachable" path answers `network`. The next scenario or a reset lifts it, as on the
+// mock. Owner: SWE.
 import { EventSource } from "eventsource";
 import { inject } from "vitest";
 import type { ContractHarness } from "./clientContract.portable";
 import { runPortableContract } from "./clientContract.portable";
 import { HttpClient } from "./http/HttpClient";
 import type { EventSourceCtor } from "./http/sse";
+import type { FetchLike } from "./http/transport";
 
 const START = "2026-10-03T03:00:00.000Z";
 const base = inject("horizonBaseUrl");
@@ -24,20 +27,31 @@ async function post(path: string, body: unknown): Promise<Response> {
 async function httpHarness(): Promise<ContractHarness> {
   await post("/admin/factory-reset", { confirm: "DELETE EVERYTHING" });
   await post("/_test/clock", { freezeAt: START });
-  const client = new HttpClient({ baseUrl: base, EventSource: EventSource as unknown as EventSourceCtor });
+  let networkDown = false;
+  const fetchThroughFault: FetchLike = (input, init) =>
+    networkDown ? Promise.reject(new TypeError("fetch failed")) : fetch(input, init);
+  const client = new HttpClient({ baseUrl: base, fetch: fetchThroughFault, EventSource: EventSource as unknown as EventSourceCtor });
   return {
     client,
     advance: async (ms) => {
       await post("/_test/clock", { advanceMs: ms });
     },
     setScenario: async (id) => {
+      networkDown = false;   // scenarios replace each other (design D3)
+      if (id === "network_down") {
+        networkDown = true;
+        return;
+      }
       const r = await post("/_test/scenario", { id });
-      if (r.status === 422) throw new Error(`scenario ${id} is not available on the backend yet`);
+      if (r.status === 422) throw new Error(`scenario ${id} is not available on the backend`);
     },
-    reset: () => client.admin.resetDemo(),
+    reset: () => {
+      networkDown = false;   // the mock's reset returns to the default scenario
+      return client.admin.resetDemo();
+    },
     setKey: async () => { await client.settings.setKey("sk-or-test-0001"); },
     dispose: () => client.dispose(),
   };
 }
 
-runPortableContract("HttpClient", httpHarness, { supports: "M5" });
+runPortableContract("HttpClient", httpHarness, { supports: "M6" });

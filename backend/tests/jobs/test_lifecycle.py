@@ -131,6 +131,7 @@ async def test_tombstone_after_delete(api: Api) -> None:
     assert all(v is None for k, v in t["emotions"].items() if k != "neutral")
     assert await api.json(f"{API}/characters/chr_seedVictor/memory") == []
     assert await api.json(f"{API}/characters/chr_seedVictor/knowledge") == []
+    assert await api.json(f"{API}/characters/chr_seedVictor/song") is None   # a read resolves; the song is gone (M6 G11)
     assert any(e["type"] == "entity.changed" and e["kind"] == "character" and e.get("id") == "chr_seedVictor"
                for e in rec.events)
     purge = await rows(api, "SELECT scope, ids FROM ai_purge_queue WHERE scope = 'character'")

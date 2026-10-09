@@ -121,7 +121,7 @@ async def post_top_up(request: Request, character_id: str, body: PointsBody) -> 
     now = rt.clock.now()
     day = rt.clock.calendar.today(now).isoformat()
     async with rt.energy_locks.lock(character_id), rt.db.write() as tx:
-        spent = await LedgerWriter.spent_on(tx.conn, day)
+        spent = await LedgerWriter.spent_on(tx.conn, day) + rt.clock.spend_bias_usd   # bias: `daily_cap` (test mode)
         wire = await energy_writes.top_up(tx, character_id, body.points, p, energy_writes.TopUpBudget(
             spent_today_usd=spent, daily_cap_usd=rt.caps().daily_cap_usd, local_day=day, at=to_iso(now)))
     return json_response(rt, wire, def_name="Energy")
@@ -389,10 +389,13 @@ SCENARIOS: dict[str, str] = {  # id → description (design D15)
     "image_fail_partial": "The second image task of each job fails on its first attempt (Retry succeeds).",
     "image_fail_all": "Every image task fails, every attempt.",
     "song_fails": "Theme-song tasks fail on their first attempt.",
+    # M6 (http-client-parity design D4, D5).
+    "no_worlds": "Delete every world, user worlds included (World Select empty state); Reset demo data restores the seed.",
+    "daily_cap": "Today's spend equals the daily cap (a bias, no ledger row): generation and top-ups are refused.",
 }
 JOB_FAULTS = {"image_fail_partial": "partial", "image_fail_all": "all", "song_fails": "song"}
-SCENARIO_MILESTONE = {"character_exhausted": "M3", "rush_hour": "M3", "stream_cut": "M3", "image_fail_partial": "M4",
-                      "image_fail_all": "M4", "song_fails": "M4", "network_down": "M6", "no_worlds": "M6"}
+# Simulated by the client harness (a failing fetch), never by the backend (M6 design D2).
+CLIENT_SIDE_SCENARIOS = frozenset({"network_down"})
 
 
 class ClockBody(_Model):
@@ -428,9 +431,13 @@ class ScenarioBody(_Model):
 @test_router.post("/scenario")
 async def test_scenario(request: Request, body: ScenarioBody) -> Response:
     rt = rt_of(request)
+    if body.id in CLIENT_SIDE_SCENARIOS:
+        raise HorizonHTTPError("validation", f"Scenario {body.id!r} is simulated by the client, not the backend.", status=422,
+                               details={"field": "id", "clientSide": True})
     if body.id not in SCENARIOS:
-        raise HorizonHTTPError("validation", f"Scenario {body.id!r} is not available on the backend yet.", status=422,
-                               details={"field": "id", "availableIn": SCENARIO_MILESTONE.get(body.id, "later")})
+        raise HorizonHTTPError("validation", f"Scenario {body.id!r} is not available on the backend.", status=422,
+                               details={"field": "id"})
+    rt.clear_scenario_state()   # scenarios replace each other, as on the MockClient (M6 design D3)
     if body.id == "character_exhausted":
         await rt.reset_demo()
         await apply_variant(rt, "exhausted_takeshi")
@@ -441,6 +448,13 @@ async def test_scenario(request: Request, body: ScenarioBody) -> Response:
         rt.stream_faults.append(24)
     elif body.id in JOB_FAULTS:
         rt.job_faults = JOB_FAULTS[body.id]
+    elif body.id == "no_worlds":
+        await rt.delete_all_worlds()
+    elif body.id == "daily_cap":
+        async with rt.db.read() as conn:
+            spent = await settings_svc.spent_today(conn, rt.clock)
+        rt.clock.spend_bias_usd = max(0.0, rt.caps().daily_cap_usd - spent)
+        rt.publish(GLOBAL, {"type": "entity.changed", "kind": "settings"})
     return Response(status_code=204)
 
 

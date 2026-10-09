@@ -72,7 +72,7 @@ async def test_scenarios_mirror_the_mock_and_keep_user_sessions(api: Api) -> Non
     await _scenario(api, "rush_hour")
     assert (await api.json(f"{API}/settings"))["pricing"]["period"] == "peak"
     r = await api.post(f"{API}/_test/scenario", {"id": "network_down"})
-    assert r.status_code == 422 and r.json()["error"]["details"]["availableIn"] == "M6"
+    assert r.status_code == 422 and r.json()["error"]["details"]["clientSide"] is True
     await api.post(f"{API}/admin/factory-reset", {"confirm": "DELETE EVERYTHING"}, status=204)
     assert (await api.json(f"{API}/settings"))["pricing"]["period"] == "off_peak"  # the override is cleared
 

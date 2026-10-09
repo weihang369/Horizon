@@ -1,21 +1,21 @@
 // Flow F2: the 8-step character wizard through to the Summon reveal (CHR-*, O04, O15).
-import { expect, open, setMockKey, test } from "./fixtures";
+import { expect, genTimeout, open, setKey, test } from "./fixtures";
 
 test("wizard: seed → AI draft → look → portrait → emotions (skipped) → palette → theme → approve → Summon @layout", async ({ page }) => {
-  test.slow(); // eight steps plus two mock generations
+  test.slow(); // eight steps plus two generations (real time on the backend: a portrait takes 20 s)
   await open(page, "/w/wld_seedMeridian", { speed: 4 });
   await page.getByRole("button", { name: "New Character", exact: true }).click();
   await expect(page).toHaveURL(/\/create\/seed$/);
   await expect(page.getByRole("heading", { name: "Who are we summoning?" })).toBeVisible();
 
-  // Without a key the AI draft is gated; set the mock key from the dev switcher.
+  // Without a key the AI draft is gated; set one in Settings.
   await expect(page.getByRole("button", { name: /Draft with AI/ })).toBeDisabled();
-  await setMockKey(page);
+  await setKey(page);
   await page.getByRole("textbox", { name: "Seed line" }).fill("Sarah, a doctor");
   await page.getByRole("button", { name: /Draft with AI/ }).click();
 
   // 02 Profile: the draft fills the form.
-  await expect(page.getByRole("heading", { name: "Make them yours" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Make them yours" })).toBeVisible({ timeout: genTimeout(page) });
   await expect(page.getByRole("textbox", { name: "Name *" })).toHaveValue("Sarah");
   await page.getByRole("button", { name: "Next: Look ▸" }).click();
 
@@ -24,7 +24,7 @@ test("wizard: seed → AI draft → look → portrait → emotions (skipped) →
   const cost = page.getByRole("dialog", { name: "Spend a little?" });
   await expect(cost).toBeVisible();
   await cost.getByRole("button", { name: /^Generate ≈/ }).click();
-  await expect(page.getByRole("heading", { name: "Pick a face" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Pick a face" })).toBeVisible({ timeout: genTimeout(page) });
   await page.getByRole("button", { name: "Lock as base" }).click();
   await page.getByRole("button", { name: "Next: Emotions ▸" }).click();
 

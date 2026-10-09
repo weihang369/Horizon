@@ -6,6 +6,7 @@ import type { ComponentType, CSSProperties } from "react";
 import { openOverlay, toast } from "@/app/layers";
 import { reportError } from "@/app/errors";
 import { client } from "@/client";
+import { putResource, resKeys } from "@/stores/entities";
 import { useCharacter, useJob, useSettings, useWorld } from "@/client/hooks";
 import type { CreationStep } from "@/contract/types";
 import { navigate, setLeaveGuard } from "@/router";
@@ -87,7 +88,10 @@ export function WizardScreen({ route }: { route: WizardRoute }) {
     }
     if (!Object.keys(patch).length) return true;
     try {
-      await client.characters.update(cur.id, patch);
+      // Prime the cache with the answer before any navigation: the gate redirect reads the cached character, and over
+      // HTTP its refresh only arrives later on the global stream (http-client-parity G11).
+      const next = await client.characters.update(cur.id, patch);
+      putResource(resKeys.character(next.id), next);
       wk.markSaved("all");
       if (!opts.quiet) toast({ variant: "success", text: ed ? "Changes saved · they apply to new messages." : "Draft saved." });
       return true;

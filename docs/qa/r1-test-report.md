@@ -17,6 +17,8 @@ For: the UI/UX team (act before the design freeze) and the project owner.
 
 ### How to run
 
+> **Since M6 (`http-client-parity`) the suite runs on both clients.** The projects are now `mock-desktop`, `mock-min` (the `@layout` specs at 1280×720) and `http-desktop`. `http-desktop` runs every spec against a test-mode backend on :8786 through a `--mode http` Vite on :5187, with a factory reset before each test. Mock-only steps became client-aware fixtures (`setKey` through Settings → Connection, `setScenario`, `genTimeout`), and a 4xx the test expects is declared with `expectHttpError`. The commands below describe round 1; today run `npm run e2e` (both clients), `npm run e2e:mock` or `npm run e2e:http`.
+
 ```bash
 cd frontend
 npm install                      # adds @playwright/test (+ playwright, playwright-core)

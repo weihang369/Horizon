@@ -136,6 +136,22 @@
 - E2E passes on both clients.
 - `npm run setup` (step 1) + `npm run dev` reaches demo mode on a fresh clone (Windows + one Unix) within NFR-10's 5 minutes; Docling (step 2) is reported separately.
 
+**As built** (OpenSpec `http-client-parity`; decisions D1–D21 in its design.md)
+- **Portable contract:** the HTTP run declares `supports: "M6"`. 56 portable tests pass on both clients and none is pending. The world-name rules moved from mock-only to the portable suite. The remaining mock-only tests each check mock semantics or dev wiring (key validity learned from a 401, `?speed`, SVG placeholders, the dev reset).
+- **Scenarios:**
+  - `network_down` is a client-side fault: the HTTP harness's `fetch` fails before a request leaves, so the HttpClient's real "server unreachable" path answers `network`. The backend answers that id with `validation` and `details.clientSide`.
+  - The backend adds `no_worlds` and `daily_cap`. Scenarios replace each other, and in test mode reset-demo clears the active one, as on the mock.
+- **NFR-10 reading:** "Prerequisites are Python + Node only" was written before uv was adopted (M1b). It now means **Node 24 + uv**: uv installs Python 3.12 itself, and step 1 still needs no Docker, Redis, external database, GPU, CUDA or PyTorch. The README states exactly that, Windows first.
+- **`.env.example`** lists every variable the config reads (the 16 `HORIZON_AI_*` overrides and `HORIZON_ROOT` as commented lines). `backend/tests/unit/test_env_example.py` fails on an undocumented variable or any key-shaped text.
+- **Fresh-clone timing, Windows (acceptance):** `node scripts/boot-timing.mjs --cold` on 2026-10-09 (Windows 11, Node 24.18, uv 0.11.25; empty npm, uv and Python-install caches, so npm packages, backend packages and Python 3.12.13 were all downloaded): clone 1.4 s, `npm run setup` 10.9 s, `npm run dev` → demo mode 6.5 s, **total 18.8 s** against the 300 s budget (an earlier run: 19.5 s). A slower connection mostly stretches the setup step.
+- **Fresh-clone timing, Linux (CI, the "one Unix" evidence):** CI run 37896983253 on commit 0365c73, 2026-10-09, ubuntu-latest (2 vCPU) with the same cold caches: clone 0.2 s, `npm run setup` 7.8 s, `npm run dev` → demo mode 4.3 s, **total 12.3 s** against the 300 s budget (run 1: 11.6 s). The whole job took 24 min (45 min limit): backend 792 passed in 15 min; frontend 413; contract 56/56 over HTTP; E2E 66 passed, 2 skipped, in 5.5 min. Runs 1–3 found three Linux-only issues before it was green; they are listed in the change's design.md Apply notes.
+- **Final gates on Windows (2026-10-09):**
+  - backend: `ruff` and `mypy` clean; `pytest` 792 passed (10 deselected: `live`, `docling`);
+  - frontend: `typecheck` and `lint` clean; `npm test` 413 passed; `test:http` 56/56, none pending; `seed:check`, `fixtures:check`, `export-schema:check` and `assets:check` (82 assets, 12 rows) clean;
+  - `npm run e2e` on Edge: 66 passed, 2 skipped (the HTTP-only console guards on the mock projects);
+  - `openspec validate --strict`: the change and all 27 main specs valid.
+- **Test backends** (`test:http`, E2E) share one environment recipe (`frontend/scripts/test-backend/env.ts`): a temp `HORIZON_ROOT` with no `.env`, the repo seed, a temp data dir, `scripted` AI, and no inherited `HORIZON_*` or key.
+
 ## Test strategy
 
 | Layer | Tooling | Notes |

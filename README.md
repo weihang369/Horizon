@@ -2,7 +2,7 @@
 
 Horizon is an open-source multi-agent character sandbox. You summon AI personas, give them faces, moods and theme songs, and have them advise you, debate each other, or just live their lives.
 
-> **Status:** UI preview. The frontend is complete and runs on a built-in mock client with seeded demo data. You don't need a backend, an API key or a GPU. The local FastAPI backend is being built milestone by milestone ([docs/backend/](docs/backend/)): today it serves the demo data (browse, profiles, replays) and world create/rename/delete. The LangGraph agents come after.
+> **Status:** the frontend is complete and runs on a built-in mock client with seeded demo data, which is what the live demo serves: no backend, API key or GPU needed. The local FastAPI backend ([docs/backend/](docs/backend/)) now runs the same app end to end: live chat, debates, character creation, knowledge upload and memory, with every paid call metered against your caps. The LangGraph agents come next.
 
 **Live demo:** <https://horizon-seven-mauve.vercel.app> (desktop browser, 1280 × 720 or larger).
 
@@ -24,28 +24,62 @@ Open the URL Vite prints, usually <http://localhost:5173>.
 
 ## Run locally with the backend
 
-**You also need:** [uv](https://docs.astral.sh/uv/). It fetches Python 3.12 for the backend by itself; your system Python is untouched.
+**You need:** Node.js **24** (pinned in [`.nvmrc`](.nvmrc)) and [uv](https://docs.astral.sh/uv/). uv installs Python 3.12 for the backend by itself, so your system Python is untouched. Nothing else: no Docker, database server, GPU or PyTorch.
 
-```bash
+| | Windows (PowerShell) | macOS / Linux |
+|---|---|---|
+| Node.js 24 | `winget install OpenJS.NodeJS.LTS` | your package manager, [nvm](https://github.com/nvm-sh/nvm) or [nodejs.org](https://nodejs.org) |
+| uv | `winget install --id=astral-sh.uv -e` | `curl -LsSf https://astral.sh/uv/install.sh \| sh` |
+
+**Step 1: the demo (about 5 minutes on a fresh clone).**
+
+```powershell
 git clone https://github.com/weihang369/Horizon.git
 cd Horizon
 npm run setup      # npm installs (root + frontend) and `uv sync` for backend/
 npm run dev        # backend on http://127.0.0.1:8000 + the app on http://localhost:5173, talking to it
 ```
 
-Ctrl-C stops both. The backend keeps its data in `data/` at the repo root (gitignored) and seeds it with the demo worlds on first start.
+The commands are the same in a Unix shell. Open <http://localhost:5173>: the two demo worlds load from the backend in demo mode. Ctrl-C stops both processes. The backend keeps its data in `data/` at the repo root (git-ignored) and seeds the demo worlds on first start.
+
+**Your OpenRouter key (optional).** Live chat and creation need a key from [openrouter.ai/keys](https://openrouter.ai/keys). Paste it in **Settings → Connection**: it's stored in `data/secrets.local.json` on this machine only. Alternatively, copy `.env.example` to `.env` and set `OPENROUTER_API_KEY` there; a key in `.env` or the environment wins over the one in Settings. Without a key, everything recorded still plays.
+
+**Step 2: PDF and DOCX knowledge (optional, separate).** Markdown, plain text and pasted text work after step 1. PDF and DOCX uploads (including scanned PDFs, through OCR) need Docling with CPU PyTorch (no GPU) and its conversion models, about 1.4 GB, downloaded once:
+
+```powershell
+npm run setup:docling
+uv run --project backend horizon models fetch
+```
+
+`GET /api/v1/health` reports `docling` as `not_installed`, `models_missing` or `ready`. A PDF or DOCX added before step 2 ends `failed`; **↻ Retry** converts it afterwards.
 
 | Command (repo root) | What it does |
 |---|---|
 | `npm run setup` | Step 1: everything the demo needs |
-| `npm run setup:docling` | Optional step 2: CPU PyTorch + Docling for PDF and DOCX knowledge uploads. Then run `uv run --project backend horizon models fetch` once to download the conversion models into `data/models/` (Markdown, text and pasted text work without either) |
-| `npm run dev` | Backend with auto-reload + Vite in `--mode http` (`VITE_HORIZON_CLIENT=http`, proxied `/api`) |
+| `npm run setup:docling` | Optional step 2: CPU PyTorch + Docling, then `horizon models fetch` (above) |
+| `npm run dev` | Backend with auto-reload + the app on the backend (`VITE_HORIZON_CLIENT=http`, proxied `/api`) |
+| `npm run dev:mock` | The app alone on the mock client, no backend (what the live demo runs) |
 | `npm run demo` | Build the app and serve it and the API on one port, <http://127.0.0.1:8000> |
 | `npm test` | Backend tests (pytest), frontend unit tests, then the client contract against a real test-mode backend |
 
 - **Reset:** Settings → Data → "Reset demo data" restores the shipped demo and keeps your own worlds. `uv run --project backend horizon reset --factory --yes` wipes `data/` (except downloaded models).
-- **What the backend does today:** reads, replays and world CRUD. Live chat, character creation, top-ups and knowledge upload arrive in later milestones; until then the app says "Not available on the local backend yet". The mock (`cd frontend && npm run dev`) still does everything.
-- The backend binds to `127.0.0.1` only. No API key is read yet.
+- **Local only:** the backend binds to `127.0.0.1` and refuses any other address. The key never appears in logs, errors, exports or the ledger.
+- **Tests never spend:** every automated test uses a fake provider and a fake key. Paid live checks are separate (`pytest -m live`) and never run by default.
+
+### Secret hygiene
+
+Your key belongs in Settings, `.env` or `data/`, all of which are git-ignored. As a second line of defence, we recommend [gitleaks](https://github.com/gitleaks/gitleaks) as a **pre-commit hook**. It is optional, and the repository doesn't install it for you.
+
+1. Install it: `winget install gitleaks` (Windows), `brew install gitleaks` (macOS), or a release binary (Linux).
+2. Create `.git/hooks/pre-commit` (no extension; Git for Windows runs it with its bundled shell):
+
+   ```sh
+   #!/bin/sh
+   # Block a commit whose staged changes contain a secret.
+   exec gitleaks git --pre-commit --staged --redact --verbose
+   ```
+
+   On Unix, make it executable: `chmod +x .git/hooks/pre-commit`. Older gitleaks 8.x releases spell the command `gitleaks protect --staged --redact --verbose`; check `gitleaks --help` for your version.
 
 ## A 5-minute tour
 
@@ -86,10 +120,13 @@ Run these inside `frontend/`:
 | `npm run build` | Type-check and build a production bundle into `frontend/dist/` |
 | `npm run preview` | Serve the production build locally |
 | `npm test` | Run the unit and contract tests (Vitest) |
-| `npm run e2e` | Run the Playwright end-to-end suite in Microsoft Edge (starts its own dev server on port 5186) |
+| `npm run e2e` | Run the Playwright end-to-end suite in Microsoft Edge on both clients: the mock (its own dev server on port 5186) and a throwaway test-mode backend (ports 8786 and 5187) |
+| `npm run e2e:mock` | The end-to-end suite on the mock only |
+| `npm run e2e:http` | The end-to-end suite on the backend only (scripted AI, temporary data, never your `data/` or `.env`) |
 | `npm run typecheck` | Run the TypeScript project build with no output |
 | `npm run lint` | Run oxlint |
 | `npm run seed:build` | Regenerate `seed/` from the screenplays and fixtures in `frontend/scripts/seed-build/` |
+| `npm run assets:check` | Fail if a shipped asset has no credit or provenance row in [`ASSETS.md`](ASSETS.md) |
 | `npm run seed:check` | Regenerate in memory and fail if `seed/` is out of date |
 | `npm run budget` | Check bundle sizes after a build: entry ≤ 150 KB gzip, each lazy chunk ≤ 60 KB |
 

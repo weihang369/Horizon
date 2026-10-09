@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import sqlite3
 from pathlib import Path
 
 import pytest
@@ -87,8 +88,12 @@ async def test_writer_deletes_securely_and_readers_do_not_write(tmp_path: Path) 
     db = Database(_migrated(tmp_path), publish=lambda ch, ev: None)
     async with db.write() as tx:
         assert (await tx.conn.execute(text("PRAGMA secure_delete"))).scalar_one() == 1
+    # Readers never delete, so they keep the SQLite build's compile-time default: off in the Windows build, on in some
+    # Linux builds (SQLITE_SECURE_DELETE). What matters is that only the writer forces it (M6 CI, Linux).
+    with sqlite3.connect(":memory:") as raw:
+        build_default = raw.execute("PRAGMA secure_delete").fetchone()[0]
     async with db.read() as conn:
-        assert (await conn.execute(text("PRAGMA secure_delete"))).scalar_one() == 0
+        assert (await conn.execute(text("PRAGMA secure_delete"))).scalar_one() == build_default
     await db.dispose()
 
 

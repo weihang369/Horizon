@@ -148,8 +148,9 @@ async def character_assets(conn: AsyncConnection, character_id: str) -> list[Wir
 
 
 async def character_song(conn: AsyncConnection, character_id: str) -> Wire | None:
-    r = await character_row(conn, character_id, allow_tombstone=False)
-    if not r["theme_song_id"]:
+    """A read, so a tombstone resolves (character-lifecycle): its songs are gone, so it has none (mock parity, M6 G11)."""
+    r = await character_row(conn, character_id)
+    if r["deleted_at"] is not None or not r["theme_song_id"]:
         return None
     song = (await conn.execute(select(t.theme_songs).where(t.theme_songs.c.id == r["theme_song_id"]))).mappings().first()
     return mp.song_wire(song) if song else None

@@ -422,9 +422,7 @@ class Runtime:
         if empty:
             await self.import_seed()
         await self.close_interrupted_streams()
-        self.clock.period_override = None
-        self.stream_faults = []
-        self.job_faults = None
+        self.clear_scenario_state()
         self._build_m2()
         self._build_m3()  # step 7 (drain ai_purge_queue) starts with the purge worker
         self._build_m4()
@@ -460,7 +458,10 @@ class Runtime:
             return await seeding.apply_seed(tx.conn, data, energy_day=self.energy_day, local_day=self.local_day)
 
     async def reset_demo(self) -> None:
-        """POST /admin/reset-demo (doc 02 §4): re-seed seed records in place; user data survives."""
+        """POST /admin/reset-demo (doc 02 §4): re-seed seed records in place; user data survives. In test mode it also
+        clears the active scenario, as the MockClient's reset does (M6 design D3)."""
+        if self.cfg.test_mode:
+            self.clear_scenario_state()
         data = await self.load_seed()
         if self._sessions is not None:  # seed sessions are replay-only, but drop any actor that read their old events
             for sid in [s.session["id"] for s in data.sessions]:
@@ -477,6 +478,36 @@ class Runtime:
             tx.publish(GLOBAL, {"type": "mock.reset"})
         if self._jobs is not None:
             await self._jobs.recover()
+
+    def clear_scenario_state(self) -> None:
+        """Forget every test-scenario fault and override (M6 design D3): scenarios replace each other, as on the mock."""
+        self.clock.period_override = None
+        self.clock.spend_bias_usd = 0.0
+        self.stream_faults = []
+        self.job_faults = None
+
+    async def delete_all_worlds(self) -> None:
+        """The `no_worlds` test scenario (M6 design D4): every world, user worlds included, goes through the world-delete
+        path, as the mock's overlay empties every collection. Settings, the key and ledger rows stay; reset-demo brings
+        the seed worlds back."""
+        from horizon.services import worlds as worlds_svc
+        from horizon.services.jobs.scheduler import ACTIVE
+
+        if self._sessions is not None:
+            for sid in list(self._sessions.actors):
+                await self._sessions.release(sid)
+        async with self.db.read() as conn:
+            jobs = (await conn.execute(select(t.generation_jobs.c.id)
+                                       .where(t.generation_jobs.c.status.in_(ACTIVE)))).scalars().all()
+            world_ids = (await conn.execute(select(t.worlds.c.id))).scalars().all()
+        for job_id in jobs:
+            await self.jobs.cancel(job_id)
+        for world_id in world_ids:
+            await self.ingest.cancel_for(world_id=world_id)
+            async with self.db.write() as tx:
+                await worlds_svc.delete_world(tx, world_id, now=self.now_iso())
+            worlds_svc.remove_world_files(self.cfg.data_dir, world_id)
+        self.publish(GLOBAL, {"type": "mock.reset"})
 
     async def factory_reset(self) -> None:
         """Wipe `data/` except `models/` and start again in-process (Windows-safe)."""
