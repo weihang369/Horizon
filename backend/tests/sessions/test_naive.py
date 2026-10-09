@@ -101,7 +101,9 @@ async def test_prefix_stays_stable_between_drops(api: Api) -> None:
         await command(api, sid, "send", {"text": text})
         await api.drive(12000)
     a, b = chat_bodies(api)[-2:]
-    assert b["messages"][:len(a["messages"])] == a["messages"]
+    # M5 prompt v2: the retrieval block is dynamic and goes last, so it is not part of the cached prefix.
+    stable = [m for m in a["messages"] if not (m["role"] == "system" and m["content"].startswith(("Passages", "Things")))]
+    assert b["messages"][:len(stable)] == stable
 
 
 async def test_window_drops_half_at_once(api: Api) -> None:

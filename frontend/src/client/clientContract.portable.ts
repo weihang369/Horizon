@@ -577,7 +577,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness, opt
       expect(rows[0].model).toBe((await c.settings.get()).models.embedding);
     });
 
-    test("M5", "knowledge: without a key the source ends keyword_only, readable, with no ledger row; reindex with a key upgrades it", async () => {
+    test("M5", "knowledge: without a key the source ends keyword_only, readable, with no ledger row; a key re-embeds it", async () => {
       const { c, tick, h } = await make();
       const src = await c.characters.addKnowledge("chr_seedHana", { type: "text", title: "Tea", text: "Steep for three minutes." });
       await tick(5000);
@@ -585,13 +585,50 @@ export function runPortableContract(label: string, makeHarness: MakeHarness, opt
       expect(got.source.status).toBe("keyword_only");
       expect(got.chunks.map((k) => k.text)).toEqual(["Steep for three minutes."]);
       expect((await c.usage.list()).some((r) => r.category === "embedding")).toBe(false);
+      const ids = got.chunks.map((k) => k.id);
+      // Saving a key embeds the user's keyword-only sources in the background; seed sources wait for their Index.
       await h.setKey();
-      expect((await c.characters.reindexKnowledge(src.id)).status).toBe("indexing");
       await tick(5000);
       got = await c.characters.knowledgeSource(src.id);
       expect(got.source.status).toBe("indexed");
-      expect(got.chunks[0].id).toBeDefined();
+      expect(got.chunks.map((k) => k.id)).toEqual(ids);
       expect((await c.usage.list()).filter((r) => r.category === "embedding").length).toBe(1);
+    });
+
+    test("M5", "knowledge: re-indexing a source that is still indexing rejects with conflict", async () => {
+      const { c, tick } = await make({ key: true });
+      // A PDF converts for a while (Docling on the backend; staged pacing in the mock), so it is still indexing here.
+      const pdf = new File(["%PDF-1.7\n% notes\n"], "notes.pdf", { type: "application/pdf" });
+      const src = await c.characters.addKnowledge("chr_seedHana", { file: pdf });
+      expect(src.status).toBe("indexing");
+      const e = await fail(c.characters.reindexKnowledge(src.id));
+      expect(e.code).toBe("conflict");
+      expect(e.retryable).toBe(false);
+      await tick(5000);
+      expect((await c.characters.knowledgeSource(src.id)).source.status).toBe("indexed");
+      expect((await c.characters.reindexKnowledge(src.id)).status).toBe("indexing");
+      await tick(5000);
+    });
+
+    test("M5", "knowledge: pasted text over 200 KB is refused with validation naming the limit", async () => {
+      const { c } = await make();
+      const before = (await c.characters.knowledge("chr_seedHana")).length;
+      const e = await fail(c.characters.addKnowledge("chr_seedHana", { type: "text", title: "Long", text: "a".repeat(210 * 1024) }));
+      expect(e.code).toBe("validation");
+      expect(e.details?.limit).toBe(204800);
+      expect((await c.characters.knowledge("chr_seedHana")).length).toBe(before);
+    });
+
+    test("M5", "memory: Forget removes the item and announces the change; an unknown id is not_found", async () => {
+      const { c, globals } = await make();
+      const items = await c.characters.memory("chr_seedHana");
+      expect(items.length).toBeGreaterThan(0);
+      const gone = items[0];
+      await c.characters.forgetMemory(gone.id);
+      expect((await c.characters.memory("chr_seedHana")).some((m) => m.id === gone.id)).toBe(false);
+      await eventually(() => globals.some((g) => g.type === "entity.changed" && g.kind === "memory"));
+      expect(await code(c.characters.forgetMemory(gone.id))).toBe("not_found");
+      expect(await code(c.characters.forgetMemory("mem_nope"))).toBe("not_found");
     });
 
     test("M5", "knowledge: deleting a cited source removes it, but old transcripts keep their citations", async () => {

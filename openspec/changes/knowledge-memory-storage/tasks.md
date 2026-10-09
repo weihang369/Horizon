@@ -256,47 +256,47 @@
   - "Slow embedding" (a parked fake request → FTS-only reply; the late row is still recorded);
   - "Cap reached" (no `error` event);
   - existing M3 tests counting rows or `trace.calls` stay green.
-- [ ] 7.5 Port `citations.ts` (`citeKnowledge`, `insertMarkers`, `liveCitations`) into the scripted turn engine (design D15). It uses its own RNG stream `{seed}:{turn}:cite`, inserts markers before streaming, sets `trace.knowledge` and `context.used.knowledge`, and doesn't use memory.
+- [x] 7.5 Port `citations.ts` (`citeKnowledge`, `insertMarkers`, `liveCitations`) into the scripted turn engine (design D15). It uses its own RNG stream `{seed}:{turn}:cite`, inserts markers before streaming, sets `trace.knowledge` and `context.used.knowledge`, and doesn't use memory.
 
   Verify with tests for:
   - the retrieval "Live citations" scenario at the service level;
   - "Unchanged without knowledge" (a snapshot of contents and emotions for a no-knowledge character, recorded before the change);
   - `turn.end.citations` keeping only markers present.
-- [ ] 7.6 Add the naive engine prompt v2 (design D15): `PROMPT_VERSION = "v2"`; when there are hits, one system block after the history (passages numbered with section text ≤ 1 200 chars, deduplicated by section; ≤ 3 memories; the cite-only-when-used line). Yield a `CitationMap` for every numbered passage. After the stream, set `trace.knowledge.retrieved` with `cited` flags, `trace.memory.recalled` and `context.used.memory/knowledge`. With no hits the request is byte-identical to v1.
+- [x] 7.6 Add the naive engine prompt v2 (design D15): `PROMPT_VERSION = "v2"` (`"naive-2"`, following the M3 `"naive-1"` naming); when there are hits, one system block after the history (passages numbered with section text ≤ 1 200 chars, deduplicated by section; ≤ 3 memories; the cite-only-when-used line). Yield a `CitationMap` for every numbered passage. After the stream, set `trace.knowledge.retrieved` with `cited` flags, `trace.memory.recalled` and `context.used.memory/knowledge`. With no hits the request is byte-identical to v1.
 
   Verify with tests for:
   - "Cited passage" (fake chat answers containing `[2]`);
   - "Recalled memory in the trace" (and refs written via 6.2);
   - the no-hits request equals the v1 request.
-- [ ] 7.7 Extend `tests/isolation/` with two near-identical worlds whose characters share knowledge text, memory text and (hash) vectors. Assert that FTS retrieval, vector KNN retrieval and memory recall in world A return only A's rows, through the retrievers and through a full scripted turn. Verify that the suite passes.
-- [ ] 7.8 Update doc 01 §4.2 (the retrieval step and query-bundle timing) and doc 05 §2.2, §4 (hits in the context instead of pre-bound retrievers) and §5 (prompt v2 block). Add decision-log rows **D-92** (retrieval in the runtime, hits in the context), **D-93** (naive prompt v2 knowledge-and-memory block) and **D-97** (query embedding only for user messages to characters with vectors). Verify the docs match the turn order in `sessions/turn.py`.
+- [x] 7.7 Extend `tests/isolation/` with two near-identical worlds whose characters share knowledge text, memory text and (hash) vectors. Assert that FTS retrieval, vector KNN retrieval and memory recall in world A return only A's rows, through the retrievers and through a full scripted turn. Verify that the suite passes.
+- [x] 7.8 Update doc 01 §4.2 (the retrieval step and query-bundle timing) and doc 05 §2.2, §4 (hits in the context instead of pre-bound retrievers) and §5 (prompt v2 block). Add decision-log rows **D-92** (retrieval in the runtime, hits in the context), **D-93** (naive prompt v2 knowledge-and-memory block) and **D-97** (query embedding only for user messages to characters with vectors). Verify the docs match the turn order in `sessions/turn.py`.
 
 ## 8. Embedding space switch
 
-- [ ] 8.1 Implement the `build_space(spec)` service (design D9): batch-embed every chunk and memory missing from the building space with the same hooks, a final catch-up pass, then `flip`. Make ingestion and `MemoryStore.apply` dual-write while a space is building (already routed through `non_retired()` in 4.3 and 6.1; this task adds the build itself).
+- [x] 8.1 Implement the `build_space(spec)` service (design D9): batch-embed every chunk and memory missing from the building space with the same hooks, a final catch-up pass, then `flip`. Make ingestion and `MemoryStore.apply` dual-write while a space is building (already routed through `non_retired()` in 4.3 and 6.1; this task adds the build itself).
 
   Verify with tests using a second test space `hash@64`, covering the embedding-spaces scenarios:
   - "Source added during a build" (vectors in both, still `indexed` after the flip);
   - "Atomic switch" (one active space, KNN answers from the new space only);
   - "Retired tables removed" after a restart.
-- [ ] 8.2 Update doc 02 §3.9 with the build service's steps and its lack of a route or UI. Verify the steps match `build_space`.
+- [x] 8.2 Update doc 02 §3.9 with the build service's steps and its lack of a route or UI. Verify the steps match `build_space`.
 
 ## 9. Clients and the Knowledge tab
 
-- [ ] 9.1 Implement `forgetMemory`, `addKnowledge` (`postForm` with a `file` part, or a JSON `POST`), `deleteKnowledge` and `reindexKnowledge` in `HttpClient.ts`, with `Idempotency-Key` on every `POST`. Drop the `later("M5")` entries, update `http.test.ts`, and set the harness to `supports: "M5"` in `clientContract.http.test.ts`.
+- [x] 9.1 Implement `forgetMemory`, `addKnowledge` (`postForm` with a `file` part, or a JSON `POST`), `deleteKnowledge` and `reindexKnowledge` in `HttpClient.ts`, with `Idempotency-Key` on every `POST`. Drop the `later("M5")` entries, update `http.test.ts`, and set the harness to `supports: "M5"` in `clientContract.http.test.ts`.
 
   Verify:
   - the http-client "Upload a Markdown file over HTTP" scenario;
   - "Forget over HTTP";
   - "Nothing is held back in M5";
   - `npm run typecheck` is clean.
-- [ ] 9.2 MockClient parity: set the pasted-text limit to 204 800 bytes (`details.limit`) in `mock/engines/knowledge.ts` (Forget's `not_found` landed in 6.3). Add M5 portable tests:
+- [x] 9.2 MockClient parity: set the pasted-text limit to 204 800 bytes (`details.limit`) in `mock/engines/knowledge.ts` (Forget's `not_found` landed in 6.3). Add M5 portable tests:
   - Forget removes a memory, announces `memory`, and an unknown ID is `not_found`;
   - a 210 KB paste → `validation` with `details.limit: 204800`;
   - reindex while indexing → `conflict`.
 
   Verify that the portable suite passes on the MockClient with nothing pending.
-- [ ] 9.3 Wire the Knowledge tab (`features/profile/tabs.tsx`, `knowledge.ts`; design D20):
+- [x] 9.3 Wire the Knowledge tab (`features/profile/tabs.tsx`, `knowledge.ts`; design D20):
   - the drop zone and click-to-pick (`.pdf,.docx,.md,.markdown,.txt`), added one at a time, with errors through `reportError`;
   - a "Paste text" dialog (title, textarea, 200 KB counter) on the existing overlay and button primitives;
   - delete with a confirm;
@@ -305,12 +305,12 @@
   - remove the v1.1 toasts; keep the ribbon.
 
   Verify with vitest tests: the Index button is rendered with a key and absent without one, the progress hook keeps the latest stage per source, and the paste dialog rejects an empty title and over-limit text.
-- [ ] 9.4 Run the portable suite on both clients: the MockClient run is complete, and the HTTP run with `supports: "M5"` against a test-mode backend passes every M1b–M5 test (including "live replies cite indexed passages"), with only M6 pending. Verify from both runs' output.
+- [x] 9.4 Run the portable suite on both clients: the MockClient run is complete, and the HTTP run with `supports: "M5"` against a test-mode backend passes every M1b–M5 test (including "live replies cite indexed passages"), with only M6 pending. Verify from both runs' output.
 
 ## 10. Integration checks
 
-- [ ] 10.1 Run every gate: backend `pytest` (default markers), `mypy`, `ruff`; frontend `typecheck`, `vitest`, `seed:check`; `npm run export-schema` with no drift; Playwright E2E on the MockClient. Verify that all are green, and record the counts in the apply summary.
-- [ ] 10.2 Run a real-server smoke on a spare port in test mode and in normal mode without a key. Check:
+- [x] 10.1 Run every gate: backend `pytest` (default markers), `mypy`, `ruff`; frontend `typecheck`, `vitest`, `seed:check`; `npm run export-schema` with no drift; Playwright E2E on the MockClient. Verify that all are green, and record the counts in the apply summary.
+- [x] 10.2 Run a real-server smoke on a spare port in test mode and in normal mode without a key. Check:
   - Markdown and pasted text reach `keyword_only` in normal mode without a key, and `indexed` in test mode with the fake key;
   - a PDF fails actionably with Docling absent (or converts, if 5.4 ran);
   - Index on a seed source;
@@ -319,4 +319,4 @@
   - `/health` reports the docling state.
 
   Verify each step's HTTP status and response.
-- [ ] 10.3 **[Paid; needs the user's explicit approval]** Add `tests/live/test_live_embedding.py` (`live` marker, skipped by default; checks only key presence, never prints it): one real batch of 3 short texts through `QwenEmbedder`. Assert 1 024 dims, unit norm ±1e-3, one `embedding` row with the space model, and cost > 0 and < $0.001. Run it once, only when the user approves. Verify the pass and its recorded cost.
+- [x] 10.3 **[Paid; needs the user's explicit approval]** Add `tests/live/test_live_embedding.py` (`live` marker, skipped by default; checks only key presence, never prints it): one real batch of 3 short texts through `QwenEmbedder`. Assert 1 024 dims, unit norm ±1e-3, one `embedding` row with the space model, and cost > 0 and < $0.001. Run it once, only when the user approves. Verify the pass and its recorded cost.

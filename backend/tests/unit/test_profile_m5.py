@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
-from horizon.ai.profile import KEYLESS_PORTS, NAIVE_PORTS, PORTS, ProfileSpec, env_name
+from horizon.ai.profile import ENV_VARS, KEYLESS_PORTS, NAIVE_PORTS, PORTS, ProfileSpec, env_name
+from horizon.config import AI_VARS, load_config
 
 
 def test_new_ports_are_listed_with_env_overrides() -> None:
@@ -13,6 +16,15 @@ def test_new_ports_are_listed_with_env_overrides() -> None:
     assert env_name("knowledge_retriever") == "HORIZON_AI_KNOWLEDGE_RETRIEVER"
     assert env_name("converter") == "HORIZON_AI_CONVERTER"
     assert "memory_writer" not in NAIVE_PORTS  # writes nothing in both profiles until the AI stage
+
+
+def test_config_passes_every_port_override_through(tmp_path: Path) -> None:
+    # The config reads only the variables it knows: a port missing there would make its override silently do nothing.
+    assert set(AI_VARS) == set(ENV_VARS)
+    cfg = load_config({"HORIZON_ROOT": str(tmp_path), "HORIZON_AI_CONVERTER": "naive", "HORIZON_AI_EMBEDDER": "scripted"})
+    spec = ProfileSpec.from_env(cfg.ai_env)
+    assert spec.choose("converter", key_set=False) == "naive"
+    assert spec.choose("embedder", key_set=True) == "scripted"
 
 
 @pytest.mark.parametrize(("env", "key_set", "expect"), [

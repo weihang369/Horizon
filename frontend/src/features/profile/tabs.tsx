@@ -1,11 +1,11 @@
 // S06 tab panels: Profile · Gallery · Theme · Sessions · Memory · Knowledge (PRF-01..08). Owner: Builder B.
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import { openOverlay, toast } from "@/app/layers";
 import { reportError } from "@/app/errors";
 import { client } from "@/client";
-import { useJob, useKnowledge, useMemory, useNow, useSessions } from "@/client/hooks";
-import type { Character, Emotion, MemoryItem, Session, ThemeSong } from "@/contract/types";
+import { useJob, useKnowledge, useMemory, useNow, useSessions, useSettings } from "@/client/hooks";
+import type { Character, Emotion, KnowledgeSource, MemoryItem, Session, ThemeSong } from "@/contract/types";
 import { EMOTIONS } from "@/contract/types";
 import { emotionMeta } from "@/character";
 import { formatRelative } from "@/domain/format";
@@ -15,8 +15,9 @@ import { cx } from "@/ui/cx";
 import { isRunning, startGeneration, useCharacterJobs, useEstimate } from "@/features/wizard/generate";
 import { useAssetCompareWatcher } from "./compare";
 import { ThemeTrack } from "./ThemeTrack";
-import { formatAdded, isReadable, sortSources, sourceFacts, STATUS_LABEL, STATUS_TONE, TYPE_NAME } from "./knowledge";
-import { typeGlyph } from "@/features/session/citationUtils";
+import { ACCEPT, sortSources } from "./knowledge";
+import { KnowledgeCard } from "./KnowledgeCard";
+import { useKnowledgeProgress } from "./useKnowledgeProgress";
 import s from "./profile.module.css";
 import k from "./knowledge.module.css";
 
@@ -196,37 +197,64 @@ export function MemoryTab({ c, worldId, onChat }: { c: Character; worldId: strin
   );
 }
 
-// ── Knowledge (PRF-08; uploads are a preview, citations are real in the mock) ─
+// ── Knowledge (PRF-08, M5 design D20; the final presentation is AI-stage, so the ribbon stays) ─
 
 export function KnowledgeTab({ c }: { c: Character }) {
   const q = useKnowledge(c.id);
+  const keySet = useSettings().data?.openRouterKeyStatus === "set";
+  const progress = useKnowledgeProgress();
+  const pick = useRef<HTMLInputElement>(null);
   const [over, setOver] = useState(false);
   const first = c.profile.name.split(" ")[0];
   const docs = sortSources(q.data ?? []);
   const cites = docs.reduce((n, d) => n + (d.citedCount ?? 0), 0);
-  const mock = () => toast({ variant: "info", text: "Knowledge uploads arrive with RAG in v1.1. This is a preview." });
-  const retry = () => toast({ variant: "info", text: "Retry ready in v1.1." });
+  // One at a time, so the 20-source and duplicate checks see the previous file; each refusal is reported on its own.
+  const add = async (files: File[]) => {
+    for (const file of files) {
+      try {
+        await client.characters.addKnowledge(c.id, { file });
+      } catch (err) {
+        reportError(err);
+      }
+    }
+  };
+  const reindex = (d: KnowledgeSource) => void client.characters.reindexKnowledge(d.id).catch(reportError);
+  const remove = (d: KnowledgeSource) => openOverlay("O03", {
+    title: `Delete ${d.title}?`,
+    body: "Its passages go; old citations keep their quotes.",
+    confirmLabel: "Delete",
+    onConfirm: () => client.characters.deleteKnowledge(d.id),
+  });
   const drop = (
     <button
       type="button"
       className={cx(k.drop, docs.length > 0 && k.dropSlim, over && k.dropOver)}
       onDragOver={(e) => { e.preventDefault(); setOver(true); }}
       onDragLeave={() => setOver(false)}
-      onDrop={(e) => { e.preventDefault(); setOver(false); mock(); }}
-      onClick={mock}
+      onDrop={(e) => { e.preventDefault(); setOver(false); void add([...e.dataTransfer.files]); }}
+      onClick={() => pick.current?.click()}
     >
       <span className={k.dropGlyph} aria-hidden="true">⇪</span>
       <span className={k.dropText}>
         <b>{docs.length ? `Drop more documents to teach ${first}` : `Drop documents to teach ${first}.`}</b>
-        <span>PDF, DOCX, MD, TXT or pasted text · click to upload</span>
+        <span>PDF, DOCX, MD or TXT · click to pick a file · or paste text</span>
       </span>
     </button>
   );
   return (
     <div className={k.wrap}>
+      <input
+        ref={pick}
+        type="file"
+        accept={ACCEPT}
+        multiple
+        hidden
+        onChange={(e) => { const files = [...(e.target.files ?? [])]; e.target.value = ""; void add(files); }}
+      />
       <div className={k.top}>
         <div className={s.ribbon}>Preview: final design by AI team</div>
         {docs.length > 0 && <p className={k.sum}>{docs.length} {docs.length === 1 ? "source" : "sources"}{cites ? <> · cited <b>{cites}×</b> in conversations</> : null}</p>}
+        <Button size="sm" variant="secondary" className={k.paste} onClick={() => openOverlay("O29", { characterId: c.id, name: first })}>Paste text</Button>
       </div>
       {q.loading ? <Skeleton lines={3} height={64} /> : docs.length === 0 ? (
         <>
@@ -236,44 +264,18 @@ export function KnowledgeTab({ c }: { c: Character }) {
       ) : (
         <>
           <ul className={k.grid}>
-            {docs.map((d, i) => {
-              const facts = sourceFacts(d);
-              const body = (
-                <>
-                  <span className={cx(k.glyph, d.type === "url" && k.glyphLink)} aria-hidden="true">{typeGlyph(d.type, d.title)}</span>
-                  <span className={k.main}>
-                    <span className={k.kind}>{TYPE_NAME[d.type]}</span>
-                    <span className={k.title}>{d.title}</span>
-                    {d.url && <span className={k.url}>{d.url}</span>}
-                    <span className={k.facts}>{[...facts, d.addedAt ? `Added ${formatAdded(d.addedAt)}` : ""].filter(Boolean).join(" · ")}</span>
-                  </span>
-                  <span className={k.foot}>
-                    <Tape tone={STATUS_TONE[d.status]} size="sm">{STATUS_LABEL[d.status]}</Tape>
-                    {(d.citedCount ?? 0) > 0 && <span className={k.cited}>Cited {d.citedCount}×</span>}
-                    {isReadable(d) && <span className={k.open} aria-hidden="true">Read ▸</span>}
-                  </span>
-                </>
-              );
-              return (
-                <li key={d.id} className={cx(k.card, k[`st_${d.status}`])} style={{ "--i": i } as CSSProperties}>
-                  {isReadable(d) ? (
-                    <button type="button" className={k.hit} onClick={() => openOverlay("O28", { sourceId: d.id, characterId: c.id })} aria-label={`Open ${d.title}`}>{body}</button>
-                  ) : (
-                    <div className={k.hit}>
-                      {body}
-                      {d.status === "indexing" && <span className={k.scan} aria-hidden="true" />}
-                      {d.status === "indexing" && <span className={k.err} role="status">Reading and indexing…</span>}
-                      {d.status === "failed" && (
-                        <span className={k.failRow}>
-                          <span className={k.err}>{d.error ?? "Couldn't read this source."}</span>
-                          <Button size="sm" variant="secondary" onClick={retry}>↻ Retry</Button>
-                        </span>
-                      )}
-                    </div>
-                  )}
-                </li>
-              );
-            })}
+            {docs.map((d, i) => (
+              <KnowledgeCard
+                key={d.id}
+                d={d}
+                i={i}
+                keySet={keySet}
+                progress={d.status === "indexing" ? progress[d.id] : undefined}
+                onOpen={() => openOverlay("O28", { sourceId: d.id, characterId: c.id })}
+                onDelete={() => remove(d)}
+                onReindex={() => reindex(d)}
+              />
+            ))}
           </ul>
           {drop}
         </>

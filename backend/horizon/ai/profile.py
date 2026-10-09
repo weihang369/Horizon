@@ -136,8 +136,8 @@ class AiPorts:
             "guardrail": lambda: ScriptedGuardrail(), "drafter": lambda: ScriptedDrafter(d, d.palette_ids),
             "image": lambda: ScriptedImageGenerator(d), "song": lambda: ProceduralSong(),
             "embedder": lambda: HashEmbedder(d), "memory_writer": lambda: NoMemoryWriter(),
-            "converter": lambda: ScriptedConverter(), "knowledge_retriever": lambda: ScriptedKnowledgeRetriever(),
-            "memory_retriever": lambda: ScriptedMemoryRetriever()}
+            "converter": lambda: ScriptedConverter(lambda s: d.clock().sleep(s)),
+            "knowledge_retriever": lambda: ScriptedKnowledgeRetriever(), "memory_retriever": lambda: ScriptedMemoryRetriever()}
         return builders[port]()
 
     def turn(self, key_set: bool) -> Any:

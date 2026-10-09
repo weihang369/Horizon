@@ -3,7 +3,10 @@
 - **Plain text needs no converter.** MD, TXT and pasted text are read as UTF-8 by every implementation; Docling never
   sees them.
 - `ScriptedConverter` (test mode's default): PDF/DOCX become deterministic placeholder passages, the MockClient's rule
-  (`mock/engines/knowledge.ts` `syntheticPassages`), so CI and the portable suite never start a process.
+  (`mock/engines/knowledge.ts` `syntheticPassages`), so CI and the portable suite never start a process. A conversion
+  takes `SCRIPTED_CONVERT_S` on the runtime clock (virtual in test mode, D-82), as a Docling run takes real time: a
+  source stays `extracting` until the clock moves, so in-flight behaviour (reindex → `conflict`, delete while
+  indexing) is deterministic over HTTP, and the MockClient's staged pacing has a backend counterpart.
 - `DoclingConverter` runs `ai/docling_worker.py` in a subprocess (below).
 
 `readiness(models_dir)` is what `/health` reports: `not_installed` (no `docling` module), `models_missing` (no
@@ -20,7 +23,7 @@ import os
 import subprocess
 import sys
 import uuid
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal, Protocol
@@ -28,6 +31,7 @@ from typing import Any, Literal, Protocol
 Readiness = Literal["not_installed", "models_missing", "ready"]
 MODELS_MARKER = ".horizon-models.json"
 MAX_PAGES = 300
+SCRIPTED_CONVERT_S = 0.8
 
 
 @dataclass(frozen=True)
@@ -84,12 +88,17 @@ def placeholder_markdown(title: str, kind: str, size: int) -> tuple[str, int | N
 class ScriptedConverter:
     name = "scripted"
 
+    def __init__(self, sleep: Callable[[float], Awaitable[None]] | None = None) -> None:
+        self.sleep = sleep
+
     def ready(self) -> bool:
         return True
 
     async def convert(self, path: Path, kind: str, *, title: str) -> ConvertedDoc:
         if kind not in ("pdf", "docx"):
             return await read_plain(path)
+        if self.sleep is not None:
+            await self.sleep(SCRIPTED_CONVERT_S)
         size = (await asyncio.to_thread(path.stat)).st_size
         md, pages = placeholder_markdown(title, kind, size)
         return ConvertedDoc(markdown=md, pages=pages, paged=kind == "pdf", extractor="scripted@1")

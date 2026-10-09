@@ -5,6 +5,8 @@ One character turn:
 2. the energy gate (below `estReplyPoints` for the period: the caller's asleep/skip path, no model call);
 3. the `messageId` (or `variantId`) is allocated before any model call;
 4. the preamble: `turn.next`, then `turn.thinking` after `thinkingMs`;
+4b. (M5) retrieval in the speaker's scope (`sessions/retrieve.py`): it waits at most `retrieval.queryEmbedWaitMs` for
+   the user message's query embedding (started at `send`), then freezes the hits into the `TurnContext`;
 5. the engine runs under an `llm_slots` slot; the budget is reserved inside the gateway preflight. `turn.start` is
    emitted lazily at the engine's first event, so a refusal (cap, key, credits) leaves no message;
 6. TurnEvents map to session events: `Emotion` → `emotion`, `Token` → the coalescer → `token`, `CitationMap` kept for

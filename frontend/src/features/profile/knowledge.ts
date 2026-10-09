@@ -1,5 +1,40 @@
 // Knowledge helpers shared by the Knowledge tab (PRF-08) and O28 Source viewer (D-59). Owner: Builder B.
+import type { GlobalEvent, IngestProgress } from "@/client/HorizonClient";
 import type { KnowledgeSource } from "@/contract/types";
+
+/** The file picker's filter: the supported inputs only (knowledge-sources "Supported formats in the UI"). */
+export const ACCEPT = ".pdf,.docx,.md,.markdown,.txt";
+/** D-65: pasted text is capped at 200 KB on both clients (files stay at 10 MB). */
+export const PASTE_MAX_BYTES = 204_800;
+export const pasteBytes = (text: string) => new TextEncoder().encode(text).length;
+/** "12.3 KB / 200 KB": the Paste text dialog's counter (KB = 1 024 bytes, as the limit is). */
+export const pasteCounter = (bytes: number) => `${(bytes / 1024).toFixed(bytes < 10_240 ? 1 : 0)} KB / 200 KB`;
+/** Why the Paste text dialog can't be submitted yet, or null (the clients refuse the same inputs). */
+export function pasteProblem(title: string, text: string): string | null {
+  if (!title.trim()) return "Give the pasted text a title.";
+  if (!text.trim()) return "Paste some text first.";
+  if (pasteBytes(text) > PASTE_MAX_BYTES) return "Pasted text can be at most 200 KB.";
+  return null;
+}
+
+export const STAGE_LABEL: Record<IngestProgress["stage"], string> = {
+  extracting: "Reading", chunking: "Splitting into passages", embedding: "Indexing for search by meaning",
+};
+export type ProgressMap = Readonly<Record<string, IngestProgress>>;
+/**
+ * The latest ingestion stage per source, from `entity.changed { kind: "knowledge", id, progress }` on the global stream.
+ * The final event of a run (no `progress`) clears the source; a demo reset clears everything.
+ */
+export function reduceProgress(state: ProgressMap, e: GlobalEvent): ProgressMap {
+  if (e.type === "mock.reset") return Object.keys(state).length ? {} : state;
+  if (e.type !== "entity.changed" || e.kind !== "knowledge" || !e.id) return state;
+  if (!e.progress) {
+    if (!(e.id in state)) return state;
+    const { [e.id]: _done, ...rest } = state;
+    return rest;
+  }
+  return { ...state, [e.id]: e.progress };
+}
 
 /** Cited sources first (most-cited on top), then newest; failed sources sink below indexing ones. */
 export function sortSources(list: KnowledgeSource[]): KnowledgeSource[] {

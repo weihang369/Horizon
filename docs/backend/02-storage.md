@@ -317,12 +317,24 @@ embedding_spaces  id PK ('qwen3-emb-8b@1024'), model, provider, dims, dtype ('fl
   - Alembic's `include_object` skips every virtual table and its shadow tables.
   - At startup the SpaceManager makes sure the active space's tables exist. That's the default space on first run, embedded only after a key is set; see doc 04 §3.
 - **FTS sync.** External-content FTS tables are kept in sync by `AFTER INSERT/UPDATE/DELETE` triggers that use the FTS `'delete'` command with the **old** values. An M1 spike confirms that the triggers fire on FK-cascade deletes.
-- **Switching spaces.**
-  1. A reindex job builds the new space (`building`).
-  2. Ingestion meanwhile **writes to both** spaces.
-  3. Before the flip, a final pass embeds any rows still missing.
-  4. In one transaction, the new space becomes `active` and the old one `retired`.
-  5. The retired tables are dropped on the next startup.
+- **Switching spaces** (`services/knowledge/build.py` `build_space(rt, spec)`, M5 design D9). There is **no route or
+  UI**: the AI stage calls the service when it picks the final model; tests use a second space `hash@64`.
+  1. **Register** the space as `building` (its vec tables and triggers), or resume a build of the same space. One build
+     at a time. A key is required.
+  2. **Dual-write.** From then on ingestion batches and `MemoryStore.apply` embed for every non-retired space, one call
+     per space (the models differ).
+  3. **Fill.** Embed what the active space covers and the new one lacks: the chunks of `indexed` sources and the
+     memories that have a vector in the active space, in batches through the embedder; each batch's vectors are
+     written in its ledger row's transaction, and a row deleted while its batch was in flight gets none.
+     Keyword-only sources (seed ones included) are not embedded: indexing them is the user's per-source choice (D-91).
+  4. **Catch up.** Fill again until nothing is missing (at most 3 passes); rows added meanwhile were dual-written.
+  5. **Flip**, in one transaction: the new space becomes `active`, the old one `retired`; sources fully embedded in
+     the new space move their `embedding_space_id` there, the others become `keyword_only`. `rt.space_id` follows,
+     and `entity.changed{knowledge}` goes out for every source whose status changed.
+  6. The retired tables are dropped on the next startup.
+
+  A provider error or a cap stops the build with the space still `building` (resumable). A batch in flight at a crash
+  is paid again by the next build run; the ingestion pipeline's per-source `embed_sent_at` marker isn't used here.
 - **Search is exact flat KNN**, bounded by the character partition. sqlite-vec bit vectors with an exact rescore are the escape hatch if a partition grows huge. There is no ANN index.
 - **Embedding failure** ends ingestion as `keyword_only`, with a background re-embed **only** for user-added sources while a key is set.
 - **File hygiene for Forget (M5 design D16).** The writer connection runs `PRAGMA secure_delete = ON` (deleted and

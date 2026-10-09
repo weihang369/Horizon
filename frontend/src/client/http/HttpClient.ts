@@ -1,7 +1,7 @@
 // The HttpClient: HorizonClient over the local backend (doc backend/03 §5, http-client spec). Owner: SWE.
-// Each milestone adds the methods for its own routes. A method whose backend hasn't shipped yet rejects at once,
-// without a request, with a non-retryable `validation` error whose `details.availableIn` names the milestone.
-import { HorizonError } from "../../contract/errors";
+// Each milestone added the methods for its own routes. Until M5 a method whose backend hadn't shipped rejected at once,
+// without a request, with a non-retryable `validation` error naming the milestone (`details.availableIn`); from M5
+// every method has a route, so nothing is held back.
 import type {
   AppSettings, Character, EmotionAsset, Energy, GenerationJob, KnowledgeChunk, KnowledgeSource, MemoryItem, Message, Session,
   SessionEvent, ThemeSong, TurnTrace, UsageRecord, World,
@@ -15,8 +15,6 @@ import type { EventSourceCtor } from "./sse";
 import { Transport } from "./transport";
 import type { FetchLike } from "./transport";
 
-export type Milestone = "M5" | "M6";
-
 export interface HttpClientOptions {
   /** "/api/v1" in the browser (Vite proxies it); an absolute URL in Node tests. */
   baseUrl: string;
@@ -25,12 +23,6 @@ export interface HttpClientOptions {
   EventSource?: EventSourceCtor;
   newKey?: () => string;
 }
-
-const notYet = (m: Milestone): HorizonError =>
-  new HorizonError("validation", "Not available on the local backend yet.", { retryable: false, details: { availableIn: m } });
-
-/** A Promise-returning stub for a method whose milestone hasn't shipped. */
-const later = (m: Milestone) => (): Promise<never> => Promise.reject(notYet(m));
 
 const enc = encodeURIComponent;
 
@@ -98,10 +90,20 @@ export class HttpClient implements HorizonClient {
     acceptAssetVersion: (assetId) => this.t.post<Character>(`/assets/${enc(assetId)}/accept`),
     topUpEnergy: (id, points) => this.t.post<Energy>(`/characters/${enc(id)}/energy/top-up`, { points }),
     setEnergyMax: (id, points) => this.t.put<Energy>(`/characters/${enc(id)}/energy/max`, { points }),
-    forgetMemory: later("M5"),
-    addKnowledge: later("M5"),
-    deleteKnowledge: later("M5"),
-    reindexKnowledge: later("M5"),
+    // M5 (knowledge-memory-storage): knowledge sources and Forget. A file goes as multipart with one `file` part
+    // (the backend checks magic bytes and limits while streaming); pasted text goes as JSON. Every POST carries an
+    // Idempotency-Key (the transport adds it).
+    forgetMemory: (memoryItemId) => this.t.delete(`/memory/${enc(memoryItemId)}`),
+    addKnowledge: (id, input) => {
+      if ("file" in input) {
+        const form = new FormData();
+        form.append("file", input.file, input.file.name || "upload");
+        return this.t.postForm<KnowledgeSource>(`/characters/${enc(id)}/knowledge`, form);
+      }
+      return this.t.post<KnowledgeSource>(`/characters/${enc(id)}/knowledge`, input);
+    },
+    deleteKnowledge: (sourceId) => this.t.delete(`/knowledge/${enc(sourceId)}`),
+    reindexKnowledge: (sourceId) => this.t.post<KnowledgeSource>(`/knowledge/${enc(sourceId)}/reindex`),
   };
 
   jobs: HorizonClient["jobs"] = {

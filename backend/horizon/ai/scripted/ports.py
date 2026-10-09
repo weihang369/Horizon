@@ -17,6 +17,7 @@ from typing import Any
 
 from horizon.ai.contexts import MessageView, RouteContext, SessionContext, TurnContext
 from horizon.ai.ports import (
+    CitationMap,
     Emotion,
     GuardrailResult,
     Reaction,
@@ -26,6 +27,7 @@ from horizon.ai.ports import (
     TurnEvent,
 )
 from horizon.ai.scripted import bank
+from horizon.ai.scripted.citations import live_citations
 from horizon.domain.clock import Clock
 from horizon.domain.pricing import PriceTable, chat_cost, decision_cost, multiplier
 from horizon.domain.runtime_config import Timing
@@ -127,14 +129,16 @@ class ScriptedTurnEngine:
                               phase=d.phase if d else "opening", index=ctx.turn_index,
                               premise=str(cfg.get("premise", "")), note=ctx.direction_note)
 
-    def plan(self, ctx: TurnContext, rng: random.Random, text: str) -> tuple[SimulatedReply, dict[str, int]]:
-        """The stream plan and its input breakdown (system, persona, mode, user, history), as `buildLineScript`."""
+    def plan(self, ctx: TurnContext, rng: random.Random, text: str,
+             knowledge_tokens: int = 0) -> tuple[SimulatedReply, dict[str, int]]:
+        """The stream plan and its input breakdown (system, persona, mode, user, history, and the retrieved passages
+        when the reply cites), as `buildLineScript`."""
         t = self.deps.timing
         prices = self.deps.prices
         tokens = tokenize(text, t.chars_per_token)
         chunks = chunk_tokens(tokens, t.tokens_per_event) or [text]
         used = {"system": 900, "persona": 700 + rng.randint(0, 120), "mode": 580 if ctx.debate else 220,
-                "user": 40 + rng.randint(0, 40), "history": ctx.session.history_tokens}
+                "user": 40 + rng.randint(0, 40), "history": ctx.session.history_tokens, "knowledge": knowledge_tokens}
         tokens_in = sum(used.values())
         hist = used["history"]
         cached = math.floor((used["system"] + used["persona"] + hist * 0.9) * (1 if hist > 0 else 0.8))
@@ -153,7 +157,16 @@ class ScriptedTurnEngine:
     async def run(self, ctx: TurnContext) -> AsyncIterator[TurnEvent]:
         rng = random.Random(f"{ctx.session.seed}:{ctx.turn_index}")
         line = self.line(ctx, rng)
-        spec, used = self.plan(ctx, rng, line.text)
+        text, cited = line.text, None
+        if ctx.knowledge:   # M5 (design D15): its own RNG stream, so a reply without hits is unchanged
+            key = f"{ctx.session.session_id}:{ctx.message_id or ctx.turn_index}"
+            cited = live_citations(key, line.text, ctx.prompt, list(ctx.knowledge),
+                                   random.Random(f"{ctx.session.seed}:{ctx.turn_index}:cite"))
+        knowledge_tokens = 0
+        if cited is not None:
+            text = cited[0]
+            knowledge_tokens = sum(24 + estimate_tokens(r["text"]) for r in cited[2]["retrieved"])
+        spec, used = self.plan(ctx, rng, text, knowledge_tokens)
         et = self.deps.timing.emotion_timing
         r = rng.random()
         timing = "before" if r < et["before"] else "early" if r < et["before"] + et["early"] else "late"
@@ -162,14 +175,23 @@ class ScriptedTurnEngine:
         emitted = False
         sent = 0
         clock = self.deps.clock()
+        # The markers are in the text before streaming, so the tokens carry them. The map goes out just before the
+        # first visible event: any engine event starts the message, and a cap refusal must leave none.
+        pending_map = CitationMap(cited[1]) if cited is not None else None
         stream: Any = self.deps.gateway().simulated_stream(ctx.call_ctx("reply"), spec, clock.sleep)
         try:
             async for chunk in stream:
                 if chunk.content is None:
                     if timing == "before":
                         emitted = True
+                        if pending_map is not None:
+                            yield pending_map
+                            pending_map = None
                         yield Emotion(line.emotion)
                     continue
+                if pending_map is not None:
+                    yield pending_map
+                    pending_map = None
                 yield Token(chunk.content)
                 sent += 1
                 if not emitted and sent >= at_chunk:
@@ -182,10 +204,12 @@ class ScriptedTurnEngine:
         patch: dict[str, Any] = {
             "emotion": {"chosen": line.emotion, "source": "llm", "candidates": emotion_candidates(line.emotion, rng)},
             "context": {"budget": 12000, "cacheHitPct": js_round(100 * spec.tokens_cached / max(1, spec.tokens_in)),
-                        "used": {**used, "memory": 0, "knowledge": 0}},
+                        "used": {**used, "memory": 0}},
             "guardrail": {"checks": [{"name": "sfw", "verdict": "pass", "p": r3(rng.uniform(0.95, 0.995))},
                                      {"name": "advice_scope", "verdict": "pass"}]},
         }
+        if cited is not None:
+            patch["knowledge"] = cited[2]
         prior = [m for m in ctx.session.recent if m.author_type == "character" and m.character_id != ctx.speaker.id]
         if prior:
             last = prior[-1]

@@ -10,7 +10,7 @@ import { embeddingCostUsd, estimateTokens } from "../../domain/cost";
 import type { Dataset } from "../db/dataset";
 import type { Scheduler } from "../time/Scheduler";
 
-export const KNOWLEDGE_LIMITS = { maxBytes: 10 * 1024 * 1024, maxSourcesPerCharacter: 20, maxPages: 300 } as const;
+export const KNOWLEDGE_LIMITS = { maxBytes: 10 * 1024 * 1024, maxTextBytes: 204_800, maxSourcesPerCharacter: 20, maxPages: 300 } as const;
 
 const FILE_KINDS = {
   pdf: { mimes: ["application/pdf"], magic: "%PDF", locator: "p." },
@@ -119,7 +119,8 @@ export async function acceptInput(h: KnowledgeHost, characterId: string, input: 
     if (!title) throw invalid("Give the pasted text a title.", { field: "title" });
     const bytes = new TextEncoder().encode(input.text);
     if (!input.text.trim()) throw invalid("Paste some text first.", { field: "text" });
-    if (bytes.length > KNOWLEDGE_LIMITS.maxBytes) throw invalid("Pasted text can be at most 10 MB.", { field: "text", limit: KNOWLEDGE_LIMITS.maxBytes });
+    // D-65: pasted text is capped at 200 KB (the backend's limit; files stay at 10 MB).
+    if (bytes.length > KNOWLEDGE_LIMITS.maxTextBytes) throw invalid("Pasted text can be at most 200 KB.", { field: "text", limit: KNOWLEDGE_LIMITS.maxTextBytes, bytes: bytes.length });
     accepted = { title: title.slice(0, 200), type: "text", bytes: bytes.length, hash: contentHash(bytes), prepared: { chunks: paragraphs(input.text), locator: "¶" } };
   }
   const hashes = h.db.knowledgeHashes ?? {};
@@ -203,6 +204,18 @@ export function reindex(h: KnowledgeHost, s: KnowledgeSource): KnowledgeSource {
   Object.assign(s, { status: "indexing" });
   runPipeline(h, s.id);
   return s;
+}
+
+/**
+ * A key became set: user-added `keyword_only` sources with passages are embedded in the background (knowledge-sources
+ * "Keyword-only user sources are re-embedded when a key appears"). Seed sources wait for their explicit Index (D-91);
+ * user sources are the ones with a content hash.
+ */
+export function reembedUserSources(h: KnowledgeHost): KnowledgeSource[] {
+  const hashes = h.db.knowledgeHashes ?? {};
+  return Object.values(h.db.knowledge)
+    .filter((s) => s.status === "keyword_only" && (s.chunks ?? 0) > 0 && hashes[s.id] !== undefined)
+    .map((s) => reindex(h, s));
 }
 
 export function removeSource(h: KnowledgeHost, sourceId: string): void {

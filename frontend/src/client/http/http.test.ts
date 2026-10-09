@@ -96,18 +96,29 @@ describe("HttpClient", () => {
     expect(calls.every((x) => x.url.includes("limit=1000"))).toBe(true);
   });
 
-  it("methods without a backend yet reject with validation + availableIn, without a request", async () => {
-    const { c, calls } = make(() => json(200, {}));
-    const notYet: [string, () => Promise<unknown>, string][] = [
-      ["characters.addKnowledge", () => c.characters.addKnowledge("chr_a", { type: "text", title: "t", text: "x" }), "M5"],
-      ["characters.forgetMemory", () => c.characters.forgetMemory("mem_a"), "M5"],
-    ];
-    for (const [name, call, m] of notYet) {
-      const e = (await call().catch((x: unknown) => x)) as HorizonError;
-      expect(e, name).toBeInstanceOf(HorizonError);
-      expect([e.code, e.retryable, e.details?.availableIn], name).toEqual(["validation", false, m]);
-    }
-    expect(calls).toEqual([]);
+  it("nothing is held back in M5: the knowledge and memory methods send their requests", async () => {
+    const src = { id: "kno_a", characterId: "chr_a", title: "notes.md", type: "md", status: "indexing", chunks: 0, addedAt: "2026-10-03T03:00:00.000Z" };
+    const { c, calls } = make((_url, init) => (init?.method === "DELETE" ? new Response(null, { status: 204 }) : json(201, src)));
+    const file = new File(["# Notes\n\nBees."], "notes.md", { type: "text/markdown" });
+    expect(await c.characters.addKnowledge("chr_seedHana", { file })).toEqual(src);
+    expect(await c.characters.addKnowledge("chr_seedHana", { type: "text", title: "t", text: "x" })).toEqual(src);
+    expect(await c.characters.reindexKnowledge("kno_a")).toEqual(src);
+    expect(await c.characters.deleteKnowledge("kno_a")).toBeUndefined();
+    expect(await c.characters.forgetMemory("mem_a")).toBeUndefined();
+    const seen = calls.map((x) => [x.init?.method, x.url.replace(/^.*\/api\/v1/, "")]);
+    expect(seen).toEqual([
+      ["POST", "/characters/chr_seedHana/knowledge"],
+      ["POST", "/characters/chr_seedHana/knowledge"],
+      ["POST", "/knowledge/kno_a/reindex"],
+      ["DELETE", "/knowledge/kno_a"],
+      ["DELETE", "/memory/mem_a"],
+    ]);
+    const headers = (i: number) => new Headers(calls[i].init?.headers);
+    expect(calls[0].init?.body).toBeInstanceOf(FormData);
+    expect(((calls[0].init?.body as FormData).get("file") as File).name).toBe("notes.md");
+    expect(JSON.parse(String(calls[1].init?.body))).toEqual({ type: "text", title: "t", text: "x" });
+    for (const i of [0, 1, 2]) expect(headers(i).get("Idempotency-Key"), String(i)).toBeTruthy();
+    expect(headers(3).get("Idempotency-Key")).toBeNull();
   });
 
   it("M2 settings and energy methods call their routes (no longer pending)", async () => {

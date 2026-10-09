@@ -83,6 +83,8 @@ async def test_seventy_paragraphs_make_three_rows(api: Api) -> None:
 async def test_pdf_placeholders_in_test_mode(api: Api) -> None:
     src = await add_file(api, "Review.pdf", docs_kit.pdf(["Page one.", "Page two."]), "application/pdf")
     await settle(api)
+    assert (await source(api, src["id"]))["source"]["status"] == "indexing"       # converting on the runtime clock
+    await settle(api, 1000)
     got = await source(api, src["id"])
     assert got["source"]["status"] == "keyword_only"
     assert got["chunks"][0]["locator"] == "p. 1" and got["chunks"][0]["text"].startswith("Passage 1 of “Review.pdf”")

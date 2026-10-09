@@ -1,5 +1,5 @@
 // HorizonClient contract over HTTP: the portable suite against a real test-mode backend (`npm run test:http`).
-// The backend implements milestone M4, so later tests are listed as `[pending Mx]` (client-contract spec). In test mode
+// The backend implements milestone M5, so later tests are listed as `[pending Mx]` (client-contract spec). In test mode
 // the backend's provider is an in-process fake OpenRouter: no network, and `sk-or-bad…` keys get a 401; the AI profile
 // is `scripted`, so live turns are deterministic and billed as simulated spend.
 // Each test starts from a factory reset (fresh seed + _mock overlays) with the clock frozen at the mock harness's START;
@@ -40,4 +40,4 @@ async function httpHarness(): Promise<ContractHarness> {
   };
 }
 
-runPortableContract("HttpClient", httpHarness, { supports: "M4" });
+runPortableContract("HttpClient", httpHarness, { supports: "M5" });

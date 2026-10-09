@@ -46,6 +46,8 @@ export interface OverlayProps {
     /** The citation snapshot, shown when the source was deleted after the answer (PRF-10 AC5). */
     cited?: { n: number; title: string; locator?: string; quote: string };
   };
+  /** M5 Paste text (knowledge-sources "Paste text"): `name` is the character's first name for the title. */
+  O29: { characterId: string; name: string };
 }
 
 export type OverlayId = keyof OverlayProps;
@@ -61,6 +63,7 @@ export const OVERLAY_NAMES: Record<OverlayId, string> = {
   O16: "VS splash / Round banner", O17: "Episode end", O18: "Mock State Switcher", O19: "Desktop guard",
   O20: "Keyboard shortcuts", O21: "Budget reached", O22: "Demo-mode tape", O23: "Replay transport",
   O24: "Portrait menu", O25: "Old / New asset", O26: "End debate early", O27: "Energy top-up", O28: "Source viewer",
+  O29: "Paste text",
 };
 
 /** Layer kind per overlay (UXA D1 table; O12 is a dock expansion, O14/O19/O22/O23 are ambient). */
@@ -68,5 +71,5 @@ export const OVERLAY_KINDS: Record<OverlayId, LayerKind> = {
   O01: "modal", O02: "modal", O03: "modal", O04: "modal", O05: "modal", O06: "modal", O07: "popover", O08: "drawer",
   O09: "popover", O10: "drawer", O11: "popover", O12: "dock", O13: "modal", O14: "ambient", O15: "ceremony",
   O16: "ceremony", O17: "ceremony", O18: "drawer", O19: "ambient", O20: "modal", O21: "modal", O22: "ambient",
-  O23: "ambient", O24: "popover", O25: "modal", O26: "modal", O27: "modal", O28: "modal",
+  O23: "ambient", O24: "popover", O25: "modal", O26: "modal", O27: "modal", O28: "modal", O29: "modal",
 };

@@ -42,6 +42,7 @@ export const OVERLAY_COMPONENTS: { [Id in OverlayId]: LazyExoticComponent<Compon
   O26: l(() => import("../features/ensemble/EndDebate").then((m) => ({ default: m.EndDebate }))),
   O27: l(() => import("../features/session/TopUpEnergy").then((m) => ({ default: m.TopUpEnergy }))),
   O28: l(() => import("../features/profile/SourceViewer").then((m) => ({ default: m.SourceViewer }))),
+  O29: l(() => import("../features/profile/PasteText").then((m) => ({ default: m.PasteText }))),
 };
 
 export interface OverlayEntry<Id extends OverlayId> { kind: LayerKind; component: (typeof OVERLAY_COMPONENTS)[Id] }

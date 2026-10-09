@@ -73,7 +73,11 @@ seed/   read-only fixtures + seed assets (imported on first run; seed assets ser
   2. **Allocate the `messageId`.**
   3. Check the energy gate (doc 04 §4).
   4. Reserve the budget.
-  5. Start the query embedding concurrently, filling `QueryBundle` (from M5).
+  5. **Retrieve** (M5, `sessions/retrieve.py`; D-92). The runtime, not the engine, builds a scoped index for the speaker's world and character and asks the memory and knowledge retrievers for hits, which it freezes into the `TurnContext`.
+     - The query text is the turn's prompt, else the latest message, else the debate motion or watch premise.
+     - **Query embedding (D-97).** On `send` (1:1 and group only) the actor spawns **one** query embedding for the user message, in parallel with routing and the thinking delay. It runs only when the knowledge retriever uses vectors, a key is set and a possible responder has a source indexed in the active space. Debate, watch and greeting turns never embed.
+     - A reply waits for that vector at most `retrieval.queryEmbedWaitMs` (400 ms, on the runtime clock); past that it retrieves by keyword alone. The late call is still billed and recorded. A cap refusal or provider error also means keyword-only, with no `error` event.
+     - The `query_embed` call is listed on the **first** responder's `trace.calls`, like the route decision.
   6. Run `TurnEngine` and map its `TurnEvent`s (doc 05 §2) onto contract events.
   7. Merge `TracePatch`es and emit the **full** `insight`.
   8. Queue post-turn work: reactions (via the actor), memory ops (per-character queue) and the guardrail output check.

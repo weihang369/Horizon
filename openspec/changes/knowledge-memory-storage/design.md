@@ -113,6 +113,8 @@ A tombstoned or unknown character is `not_found`. An archived character may stil
 - **What each converter reads.**
   - Both read MD/TXT/pasted text directly; Docling never sees them.
   - `ScriptedConverter` turns PDF/DOCX into deterministic placeholder passages, the same rule as `mock/engines/knowledge.ts`. CI and the portable suite never need Docling.
+
+  *Apply note (9.2):* a scripted PDF/DOCX conversion takes 0.8 s **on the runtime clock** (virtual in test mode, D-82), as a Docling run takes real time. Without it, a test-mode backend finishes a small source before the next HTTP request arrives, so the portable "reindex while indexing → `conflict`" test would race. With it the source stays in flight until the harness advances time, the same as the MockClient's staged pacing. *Rejected:* a `/_test` hook to hold ingestion (a test-only path the mock would have to mirror); pacing every stage (every backend test would need a longer settle).
 - **The subprocess.** `DoclingConverter` runs `python -m horizon.ai.docling_worker --in … --out … --models data/models --max-pages 300`:
   - with `subprocess.Popen`, waited on via `asyncio.to_thread`;
   - environment `HF_HUB_OFFLINE=1`, `TRANSFORMERS_OFFLINE=1`, `OMP_NUM_THREADS=min(4, cpus)`;
@@ -190,6 +192,12 @@ While a space is `building`, every vector write (ingestion batches, `MemoryStore
 4. The next start drops the retired tables.
 
 There is no route or UI. It is exercised by tests with a second test space (`hash@64`), and the AI stage gets the service.
+
+*Apply note (8.1):* "every chunk and memory missing" is narrowed to **what the active space covers**: chunks of
+`indexed` sources and memories with an active-space vector. Embedding keyword-only (seed) sources during a build would
+index them on the user's behalf, against D-91; a build reproduces the old space's coverage in the new model. A batch in
+flight at a crash is re-paid by the next build run (the build is explicit and rare; the per-source `embed_sent_at`
+marker belongs to the ingestion pipeline).
 - *Rejected: building in place* (ALTER the `vec0` dims). `vec0` can't, and a crash would leave a half-converted space.
 
 ### D10. Retrieval runs in the runtime; engines receive hits, not retrievers
