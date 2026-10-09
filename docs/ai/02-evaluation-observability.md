@@ -1,450 +1,654 @@
 # 02: Evaluation and observability
 
-> **Status: agreed with the user, 2026-10-09** (AI stage, task 2 of 13). It resolves OQ-AI-15 and the evaluation half
-> of OQ-AI-08 (task 11 owns the safety half), and it settles two deferred items in doc 05-ai-seams §6: the `ai_calls`
-> table and the evaluation harness.
-> - Decisions are numbered **B1–B11**, each with the alternatives we rejected.
-> - It builds on [01-agent-architecture](01-agent-architecture.md) (A1–A14). "Jev call 1", "Jev call 2", the `agent`
->   profile and the System 1 section in Insight are defined there.
+> **Status: agreed with the user, 2026-10-09** (AI stage, task 2 of 13). **Revised after two independent reviews** (one
+> checked the code, one checked the evaluation method; 44 findings, all addressed).
+> - It resolves OQ-AI-15 and the evaluation half of OQ-AI-08. Task 11 owns the safety half.
+> - It settles two deferred items in doc 05-ai-seams §6: the `ai_calls` table and the evaluation harness.
+> - Decisions are numbered **B1–B12**, each with the alternatives we rejected.
+> - It builds on [01-agent-architecture](01-agent-architecture.md) (A1–A14) and **does not change that architecture**.
+>   It adds the tooling that measures and tunes it. "Jev call 1", "Jev call 2", the `agent` profile and the System 1
+>   section in Insight are defined in doc 01.
 
 ## 1. The question
 
-Doc 01 makes the `agent` profile the default and leaves many numbers open:
-- the confidence floors;
-- the gate thresholds;
-- how many passages Jev call 2 scores;
-- whether the face shows inside NFR-29.
-
-Every later task tunes something. This task decides two things:
-1. **How we measure Horizon's AI**, so that tuning means "the number went up" and not "it felt better".
-2. **How we see what the running app's AI did**, both while developing it and for the user in Insight, without
-   breaking NFR-13 ("no telemetry").
+Doc 01 makes the `agent` profile the default and leaves many numbers open: confidence floors, gate thresholds, how many
+passages Jev call 2 scores, and whether the face shows within NFR-29. Every later task tunes something. This task
+decides:
+1. **how we measure Horizon's AI**, so that tuning means "the number went up" and not "it felt better";
+2. **how we see what the running app's AI did**, while developing it and for the user in Insight, without breaking
+   NFR-13 ("no telemetry").
 
 **The user's decisions:**
-- **"We will use Jev no matter what."** The `agent` profile is the default by the user's decision. The evaluation
-  **tunes** it and never decides whether to keep it. `naive` stays as the yardstick that shows how much the design
-  improves (A12).
-- **No human blind check.** Judging is done by Jev (B4).
-- **I draft every label; the user reviews about 1 in 5** (B2).
-- **LangSmith is supported, but off by default** (B10).
-- **Every real (paid) evaluation run is shown with its estimate and needs the user's OK first** (B6). This is the
-  standing rule for paid calls, applied to evaluation.
+- **"We will use Jev no matter what."** `agent` is the default by the user's decision. The evaluation **tunes** it and
+  never decides whether to keep it. `naive` is the yardstick that shows how much the design improves (A12).
+- **No human blind check.** Jev is the only judge (B4).
+- **I draft every label, and the user reviews a sample** (B2).
+- **LangSmith is supported, off by default** (B11).
+- **Every paid evaluation run shows its estimate and needs the user's OK first** (B7). This is the standing rule for
+  paid calls.
+- **Keep the budget low while keeping the quality** (the user, on this task). Every choice below states its cost.
 
 ## 2. What Horizon already has
 
 From the code:
 
-- **The spend ledger** (`usage_records`) records every paid call: purpose, model, tokens in, cached and out, cost,
-  latency, and the session, character and message it belongs to.
-- **`TurnTrace`** (the `turn_traces` table, shown in the Insight drawer) holds, per reply:
-  - the model and its first-token and total latency;
+- **The spend ledger** (`usage_records`) records every paid call:
+  - its purpose and model;
+  - tokens in, cached and out;
+  - cost and latency;
+  - its session, character and message.
+- **`TurnTrace`** (the `turn_traces` table, shown in Insight) holds:
+  - the model with its first-token and total latency;
   - the emotion and its candidates;
   - the routing candidates;
-  - the recalled memory and the retrieved knowledge;
+  - recalled memory and retrieved knowledge;
   - the context budget and cache-hit %;
   - the guardrail checks;
   - `graph.path`;
-  - `calls[]`: every paid call behind the turn, with any fallback.
-- **Structured JSON logs** (`data/logs/horizon.log`, rotating) carry `request_id`, `session_id` and `message_id`. The
-  OpenRouter key is redacted everywhere (NFR-12).
-- **`gateway.on_call`** is a no-op hook called after every recorded call. It receives a **redacted summary with
-  metadata only** (kind, model, purpose, question ids). It does not receive the prompt or the answer, so the
-  `ai_calls` store needs the hook extended (B9).
-- **Ports take frozen, JSON-serialisable contexts** (`TurnContext`, `SessionContext`). The turn plan is frozen into
-  the `TurnContext` (A6, D-92), so a harness can **replay any turn from JSON**, with exactly the passages and plan it
-  saw.
-- **`HORIZON_DATA_DIR`** points the whole backend (database, logs, files) at another folder. The harness uses it to run
-  on an isolated copy of the seed (B6).
-- **CI** runs `ruff`, `mypy`, `pytest` (the `live` and `docling` markers are excluded) and the frontend tests. It uses
-  no secrets and makes no paid calls.
+  - `calls[]`, where each call has a boolean `fallback`.
+
+  It does **not** hold the time to the face, the quick/deep decision, abstains, or per-question Jev answers. Those
+  arrive with doc 01's System 1 section.
+- **The session event log** (`session_events`) stores every stream event with its time, including `turn.thinking`,
+  `turn.start` and each `token`. So the time to the face and to the first word can be measured from it.
+- **JSON logs** (`data/logs/horizon.log`, rotating) carry `request_id`. They carry `session_id` and `message_id` only
+  when the caller passes them. The OpenRouter key is redacted everywhere (NFR-12).
+- **`gateway.on_call`** is a no-op hook. It is called **only when a ledger row is written**, and it receives:
+  - the `CallContext`;
+  - a redacted metadata summary (kind, model, purpose, question ids);
+  - the outcome (ledger row id, cost, provider).
+
+  It never sees the prompt or the answer, and calls refused at preflight never reach it.
+- **Ports take frozen, JSON-serialisable contexts** (`TurnContext`, `SessionContext`), so a harness can drive any port
+  from a fixture. **No `TurnContext` is stored today.** A live turn can be replayed only if it was captured (B10).
+- **`HORIZON_DATA_DIR`** points the backend at another folder. However:
+  - a key saved through Settings lives in that folder's `secrets.local.json`;
+  - caps come from `seed/settings.json`, overlaid by that folder's `settings.local.json`;
+  - `HORIZON_AI_*` variables in the environment or `.env` override the profile per port.
+
+  B7 deals with all three.
+- **The scripted profile still needs a key.** The gateway's preflight requires one even for simulated calls. Only test
+  mode (`HORIZON_TEST=1`) swaps in the fake provider and accepts a fake key.
+- **Energy drains on replies** (`ceil(cost / $0.0001)` points against a maximum of 1,000), so a long run can put a
+  character to sleep.
+- **CI** runs `ruff`, `mypy` and `pytest` (the `live` and `docling` markers are excluded), plus the frontend tests,
+  with no secrets and no paid calls.
 - **The seed data is small:**
   - two worlds, Meridian Council and Sunny Hollow, with 6 characters;
-  - **37 knowledge chunks** in total: Amara 16, Mei 10, Victor 6, Hana 5;
-  - **5 memories**;
-  - 5 seed sessions, at least one per mode.
+  - **37 knowledge chunks** in total (Amara 16, Mei 10, Victor 6, Hana 5), imported as `keyword_only` with no vectors
+    until someone indexes them;
+  - **5 memories** with no vectors;
+  - 5 seed sessions.
 
-  Retrieval scores on a corpus this small mean nothing: with 5 chunks, "the top 5" is every chunk Hana has. B2 fixes
-  this.
+  Ranking 5–16 chunks per character says almost nothing about retrieval quality: with 5 chunks, "the top 5" is all of
+  Hana's knowledge. B2 fixes this.
 
 ## 3. Background: the course notes, applied
 
 | Idea (notes *6 RAG*, *7.1 Agents*) | What it means for Horizon |
 |---|---|
-| **Measure the parts before the whole (6, evaluation):** retrieval metrics (Recall@k, MRR, nDCG) are separate from answer metrics (faithfulness, answer relevance) | Three layers (B1): System 1 decisions, retrieval, then whole conversations. A bad conversation score can then be traced to the layer that caused it. |
-| **RAGAS metric definitions:** faithfulness, answer relevance, context precision and recall | We use the **definitions**, measured with Jev questions (B4). We don't use the `ragas` library, because it makes its own LLM calls outside our gateway (A8). |
-| **LLM-as-judge needs checking against labels** | The Jev judge is itself checked against labelled examples before we trust it (B4). |
-| **Thresholds and abstaining (6.9):** refuse below a tuned threshold | The confidence floors and gate thresholds are tuned on labelled data, with each one set by the cost of a wrong answer (B5). |
-| **Harness (7.1.9):** built to be taken apart as models change | The harness drives the **ports** directly, so it measures any profile (`scripted`, `naive`, `agent`) and any future model swap. |
-| **Observability (7.1.10):** trace every step of an agent | Every call is already in the ledger and in `TurnTrace.calls[]`. The System 1 section (A12) shows every Jev question. The `ai_calls` capture (B9) keeps the full prompts when debugging. |
+| **Measure the parts before the whole (6, evaluation):** retrieval metrics are separate from answer metrics | Three layers (B1): System 1 decisions, then retrieval, then conversations. A bad conversation score can be traced to the layer that caused it. |
+| **RAGAS metric definitions:** faithfulness, answer relevance, context precision and recall | We use the **definitions**, measured with Jev questions (B4). We don't use the `ragas` library, which makes its own LLM calls outside our gateway (A8). |
+| **LLM-as-judge must be checked against labels** | The Jev judge is checked against labelled examples and planted failures before we trust it (B4). |
+| **Thresholds and abstaining (6.9):** refuse below a tuned threshold | Floors and thresholds are tuned on a held-out split, and are judged with the fallback included (B5). |
+| **Harness (7.1.9):** built to be taken apart as models change | The harness drives the **ports** directly, so it measures any profile and any model swap. |
+| **Observability (7.1.10):** trace every step | The ledger, the trace and `calls[]` already exist. The System 1 section (A12) shows every Jev answer. The capture (B10) keeps the full prompts when debugging. |
 
 ## 4. The design in one picture
 
 ```mermaid
 flowchart LR
     subgraph REPO["evals/ (in git)"]
-        D1["datasets: labelled Jev items"]
-        D2["corpus + retrieval pairs"]
-        D3["conversations: fixed user lines"]
-        BL["baselines: accepted results"]
+        D1["datasets: labelled Jev items<br/>(dev 2/3 · test 1/3)"]
+        D2["corpus + retrieval questions"]
+        D3["frozen transcripts + 4 free-running scripts"]
+        BL["baselines"]
     end
-    QB["Question bank (backend code, versioned):<br/>the same Jev questions live and in the eval"]
-    CLI["horizon eval &lt;suite&gt;<br/>1. plan + estimate<br/>2. user OK<br/>3. run on an isolated seed copy"]
+    QB["Question bank (versioned):<br/>the same Jev questions live and in the eval"]
+    CLI["horizon eval &lt;suite&gt;<br/>plan + estimate → user OK →<br/>isolated seed copy per profile"]
     REPO --> CLI
     QB --> CLI
-    CLI --> L1["Layer 1: System 1 decisions<br/>accuracy · calibration · shuffle stability"]
-    CLI --> L2["Layer 2: retrieval<br/>Recall@5 · MRR · nDCG@5 · abstain"]
-    CLI --> L3["Layer 3: whole conversations<br/>Jev judge · latency · cost · fallbacks"]
-    L1 --> R["report.md in data/evals/&lt;run&gt;/<br/>compared with the baseline"]
+    CLI --> L1["Layer 1: System 1 decisions<br/>policy accuracy · calibration · order bias"]
+    CLI --> L2["Layer 2: retrieval<br/>Recall@pool · Recall@5 · MRR · kept-set P/R · abstain"]
+    CLI --> L3["Layer 3: conversations<br/>same history for both profiles · Jev judge · cost"]
+    CLI --> LT["latency suite<br/>NFR-01 · 02 · 29"]
+    L1 --> R["report.md, compared with the baseline"]
     L2 --> R
     L3 --> R
+    LT --> R
     subgraph APP["Running app (local only)"]
-        T["ledger · TurnTrace + System 1 · logs"]
+        T["ledger · TurnTrace + System 1 · session events · logs"]
         C["ai_calls capture (off by default)"]
     end
-    T --> S["horizon stats: live p50/p90, fallback rate, cost per turn"]
-    C --> CAP["horizon eval capture &lt;messageId&gt; → a replayable case"]
+    T --> S["horizon stats: real p50/p90, fallbacks, cost per turn"]
+    C --> CAP["horizon eval capture → a replayable case"]
 ```
 
 ## 5. Decisions
 
-### B1. Three layers of evaluation, plus latency and cost on every run
+### B1. Three layers of evaluation, plus a latency suite
 
 **Decision:**
 
-| Layer | What it measures | How |
+| Layer | What it measures | Main numbers |
 |---|---|---|
-| **1. System 1 decisions** | Each Jev question on its own: who speaks, needs documents, needs memories, emotion, input safe, talk finished, debate member, passage score, and later memory importance and the rubric | Labelled items → **accuracy**, a **calibration table** (how often Jev is right at each confidence level), and **shuffle stability** (the same item asked with two option orders) |
-| **2. Retrieval** | The deep path without the reply: keyword, vector, RRF, then Jev call 2 | Labelled question → passage pairs → **Recall@5, MRR, nDCG@5** for each stage, plus **abstain accuracy** on questions the documents can't answer |
-| **3. Whole conversations** | Real multi-turn sessions in all four modes, with `agent` and `naive` | Fixed user lines → the Jev judge (B4), **latency** (time to the face and to the first word, p50 and p90), **cost per turn**, **fallback rate**, how often turns go deep, and how often they abstain |
+| **1. System 1 decisions** | Each Jev question alone: who speaks, needs documents, needs memories, emotion, input safe, talk finished, debate member, passage score; later, memory importance and the rubric | **Policy accuracy** (Jev above the floor, the fallback below it), a **calibration table**, and **order bias** (B6) |
+| **2. Retrieval** | The deep path without the reply: keyword search, vector search, RRF, then Jev call 2 and the keep-or-abstain rule | Recall@pool, Recall@5 and MRR, precision and recall of the kept set, and abstain accuracy (B2) |
+| **3. Conversations** | Replies in all four modes, `agent` against `naive`, **from the same history** (B3) | The Jev judge (B4), **cost per turn by purpose**, fallback rate, deep rate, abstain rate |
+| **Latency suite** | NFR-01, NFR-02 and NFR-29, from Malaysia | p50 and p90 with intervals, and a per-stage breakdown (B8) |
 
-- **Latency and cost are reported on every layer that makes calls**, because speed and cost are the headline. This is
-  how task 1's check 3 runs: `horizon eval latency` is layer 3 cut down to 30 quick and 30 deep 1:1 turns.
-- **Every number is reported with its sample size and a 95 % interval** (Wilson for rates). With 40 items, an 80 %
-  accuracy is really "somewhere between about 65 % and 90 %". A change smaller than the interval is reported as noise,
-  not as a win.
+**How each number is reported:**
+- with its sample size, a 95 % interval, and **the trivial baseline** next to it (the majority answer, or the fallback
+  rule alone). A score that doesn't beat the trivial baseline means nothing.
+- **The interval method depends on the data:**
+  - **Wilson** for rates over independent items (layers 1 and 2);
+  - a **bootstrap that resamples whole conversations** for layer 3, because turns in one conversation are related;
+  - an **order-statistic interval** for percentiles such as p90.
 
-**Why:** a bad conversation score alone doesn't say what to fix. Layers 1 and 2 tell us whether the fault lies in a
-decision, in retrieval or in the writing.
+**Comparing with the baseline (the last accepted run):**
+- **Layers 1 and 2:** an exact **McNemar** test on the items whose result flipped between the two runs. Both runs use
+  the same items, so this test is much more sensitive than comparing two intervals.
+- **Layer 3:** a **paired bootstrap** over conversations.
+- **A change is accepted only if:**
+  - no B5 target fails on the **test split**;
+  - nothing regresses significantly;
+  - p50 latency rises by no more than 10 %.
 
 **Rejected:**
-- **only whole conversations:** cheaper to set up, but a failure can't be traced to its cause;
-- **only unit-level Jev tests:** they never show whether the user's experience improved, or what it costs.
+- **only whole conversations:** a failure can't be traced to its cause;
+- **only per-question Jev tests:** they never show whether the experience improved, or what it costs;
+- **comparing two runs by overlapping intervals:** too blunt, and it ignores that the items are the same.
 
-### B2. Test data: the seed worlds, plus a small public-domain corpus for retrieval
+### B2. Test data
 
 **Decision:**
-- **Everything is built on the two seed worlds and their 6 characters**, the same ones the demo shows. No synthetic
-  users: every conversation has **fixed user lines**, so `agent` and `naive` face exactly the same inputs. The
-  characters' replies still differ, so later turns differ; the judge scores each reply in its own context.
+- **Built on the two seed worlds and their 6 characters,** the ones the demo shows. No user played by an AI.
 - **Sizes:**
 
-  | Set | Size |
-  |---|---|
-  | Layer 1, per Jev question | **~40 items**; **~100** for the three that set thresholds: needs documents, passage score, who speaks |
-  | Layer 2, retrieval | **50 answerable** question → passage pairs, and **15 unanswerable** questions on the same topics (the hard negatives for abstain) |
-  | Layer 3, conversations | **20**, each 8–12 turns, across both worlds: 1:1 × 6, group × 5, debate × 4, watch × 5 |
-  | Judge check (B4) | **30** replies with labelled scores |
-
-- **A retrieval corpus for evaluation only.** The seed knowledge (37 chunks) is far too small to rank, so the retrieval
-  suite adds **3–5 public-domain documents** to each seed character that has knowledge, **only in the evaluation's
-  isolated copy**. The demo and the user's data never see them.
-  - The documents are **US federal government works, which are public domain** (for example NIOSH material on shift
-    fatigue for Amara, OPM guidance on alternative work schedules for Mei, the Federal Rules of Evidence for Victor,
-    and USDA recipes for Hana).
-  - They are stored as extracted Markdown under `evals/corpus/`, about 1 MB in total, with
-    `evals/corpus/SOURCES.md` giving each file's source URL and licence.
-  - They are ingested through the normal text path, so the real chunker (task 10) is what gets measured.
-- **Labels:**
-  - I draft every label. Emotion items get **one or two acceptable emotions**, because emotion is subjective.
-  - The user reviews **about 1 in 5**, spread across every set.
-  - If the user disagrees with more than 1 in 10 of the reviewed labels in a set, I relabel the whole set.
-- **Where it lives:** `evals/datasets/*.jsonl`, `evals/conversations/*.yaml`, `evals/corpus/`. All of it is in git,
-  and none of it is user data.
-
-**Rejected:**
-- **simulated users (an LLM playing the user):** the two profiles would see different inputs, so the comparison is
-  noisy, and it doubles the DeepSeek cost;
-- **ranking on the seed knowledge alone:** with 5 or 6 chunks per source, Recall@5 is trivially 100 %;
-- **LLM-written documents as the corpus:** the labels would be checked against text the same kind of model wrote;
-- **web articles or books still in copyright:** the repo is MIT and public.
-
-### B3. One question bank, used live and in the evaluation
-
-**Decision:**
-- Every Jev question is defined **once**, in a versioned question bank in the backend (`horizon/ai/questions/`). Each
-  definition holds:
-  - an id and a version;
-  - the type (choice, noul or score);
-  - the wording;
-  - for a choice: the options, each with `what`, `not_for` and examples;
-  - for a score: the levels;
-  - what `none` means;
-  - the `Decider` purpose and timeout;
-  - the fallback;
-  - the confidence floor or threshold (B5).
-- The live `Decider` and the evaluation both build their requests from the bank, so **the evaluation measures exactly
-  what runs in the app**.
-- **Any change to a question's wording, options or levels bumps its version.** Evaluation results and the System 1
-  section record each question's id and version, so a result never gets compared across different wordings.
-- The bank follows doc 01's rules for writing questions (A3):
-  - one condition per question;
-  - a noul whose high value means yes;
-  - options shuffled with the per-turn seed;
-  - small, relevant state;
-  - no maths or dates for Jev.
-
-**Rejected:** wording kept inside each port's code. The tests would drift away from what runs live, and nothing would
-record which wording produced which result.
-
-### B4. Judges: Jev only, and the judge is checked first
-
-**Decision:**
-- **No human blind check** (the user's decision). **Jev is the only judge**, through questions in the same bank:
-
-  | Metric | Jev question |
-  |---|---|
-  | **Stays in character** | score, 5 levels, state = the persona card + the last few turns + the reply; each level has a written description |
-  | **Agent vs naive** | **pairwise choice**: "reply A", "reply B", "about the same". Asked **in both orders**; it counts as a win only if both orders agree, otherwise it is a tie. This cancels choice's lean toward the first option. |
-  | **Answers the message** (answer relevance) | score, 4 levels |
-  | **Faithfulness** | noul for each cited passage: "does this passage support what the reply says it supports?". This is the same question as the live post-turn citation check (A7, TypeSafe's `citation_check` cookbook). |
-  | **Face and words agree** | choice from the 7 emotions, given only the reply text, compared with the face that was shown. This is the same question as the live post-turn emotion check. |
-  | **Debate quality** | the rubric scores, defined in task 8 |
-  | **Safety** | a red-team set, defined in task 11 |
-
-- **The judge is checked before we trust it.** For "stays in character" and "answers the message", I label 30 replies
-  and the user reviews about 1 in 5 of them. The judge must agree with the labels **within one level on at least 80 %
-  of them**. If it doesn't, the question's wording is fixed and checked again, the same way any Jev question is tuned.
-- **Every judge question is evaluated in layer 1 too,** like any other Jev question.
-
-**Speed and cost:** a judge request is about 1–2 k tokens, roughly $0.00006. Judging a full conversation run costs a
-few cents.
-
-**Rejected:**
-- **DeepSeek as the judge:** it writes the replies, so it would be judging its own writing (self-preference). It is also
-  slower and costs more, and it gives no probabilities;
-- **a stronger outside model as the judge:** it costs more, and it goes against the System 1 focus;
-- **the `ragas` library:** it makes its own LLM calls, outside the gateway, the ledger and the caps (A8).
-
-### B5. How the confidence floors and gate thresholds are set
-
-**Decision:**
-- **Each threshold is set by the cost of acting on a wrong answer** (TypeSafe's confidence-routing pattern). These are
-  starting targets, re-tuned as the data grows:
-
-  | Question | Which mistake hurts | Starting target |
+  | Set | Size | Why this size |
   |---|---|---|
-  | who speaks | a slightly odd speaker; mild | **≥ 80 %** right above the floor |
-  | debate member | same as above | **≥ 80 %** |
-  | emotion | a wrong face; visible but mild | **≥ 80 %** inside the acceptable set |
-  | needs documents | a missed lookup means no citation and a guessed answer; an extra lookup costs time, and Jev call 2 then drops weak passages | **recall ≥ 90 %** on the items that need documents |
-  | needs memories | the same trade-off, and milder | **recall ≥ 85 %** |
-  | knowledge abstain (Jev call 2) | saying "not in my documents" when it is there is very visible | **≤ 5 %** wrong abstains on answerable questions, **≥ 80 %** abstains on unanswerable ones |
-  | talk finished | ending a watch early | **precision ≥ 90 %** |
-  | input safe | task 11 | task 11 |
+  | Layer 1: each **noul that sets a threshold** (needs documents, needs memories, talk finished) | **~120 items, at least 60 of them "yes"** | A recall target is judged on 60+ positives. With 50, 45 right still leaves 79–96 %. |
+  | Layer 1: **passage score** and **who speaks** | **~100 items** | They set floors that every deep or group turn depends on |
+  | Layer 1: every other question | **40 items**, plus another 40 **only when the interval straddles the target** | 40 items catch a gross failure, and we grow a set only where the answer is unclear |
+  | Layer 2: retrieval | **100 answerable questions and 40 unanswerable ones** on the same topics | 50 items can never show "≤ 5 % wrong abstains" (0 of 50 still allows up to 7 %) |
+  | Layer 3: frozen transcripts | **20**, each 8–12 turns, across both worlds: 1:1 × 6, group × 5, debate × 4, watch × 5 | About 200 compared turns |
+  | Layer 3: free-running conversations | **4**, one per mode | What only a live run shows (B3) |
+  | Judge checks (B4) | **60 per judge question** (30 real + 30 planted failures), **30 pairs** for the pairwise judge | Planted failures have known answers, so they cost no labelling |
 
-- **Method:**
-  - For a **choice or score**, the floor is the lowest confidence at which the answers above it meet the target.
-    Below the floor, doc 01's "Jev unsure" fallback applies (A4).
-  - For a **noul**, the threshold is the probability that meets the target.
-- **If no floor meets the target with at least 70 % of answers still above it,** the question is rewritten. Lowering
-  the target is the last resort.
-- **The calibration table is kept in the report:** for each confidence band, how many answers and how many were
-  right. If a confidence of 0.9 is right only 60 % of the time, Jev is overconfident on that question, and the table
-  shows it.
-- **Shuffle stability:** every choice item is asked with two option orders. If Jev agrees with itself less than 85 % of
-  the time, the question is rewritten, because its answer depends on where the options sit.
-- The chosen floors are stored in the question bank (B3), so they are versioned with the wording that produced them.
+- **Every layer 1 and layer 2 set is split once, when it is created: 2/3 dev and 1/3 test.**
+  - Wording, floors and thresholds are tuned **on dev only**.
+  - The test split runs **once, at acceptance**, and its number is the one reported.
+  - This keeps us from tuning to the test, which matters because the same AI drafts the labels, the wording and the
+    thresholds.
+- **Retrieval corpus for evaluation only.** Each seed character with knowledge gets **3–5 extra documents in the
+  evaluation's isolated copy only**. The demo and the user's data never see them.
+  - **Same character, same topic:** extra shift-work material for Amara, not other characters' documents. Retrieval is
+    per character (NFR-23), so other characters' documents could never be distractors.
+  - **Source:** US federal government works, public domain in the US. Examples: NIOSH shift-fatigue material (Amara),
+    OPM alternative-work-schedule guidance (Mei), the Federal Rules of Evidence taken from uscourts.gov or govinfo
+    (Victor), and recipes written by USDA staff (Hana).
+  - **Stored as text only** (no figures, images or logos) in Markdown under `evals/corpus/`, about 1 MB.
+    `evals/corpus/SOURCES.md` lists each file's URL. `evals/corpus/LICENSE` says "US federal government work, public
+    domain in the US, not covered by the repo's MIT licence".
+  - **What it measures:** the corpus measures the **pipeline** (chunker, RRF, rerank, abstain), not the demo's own
+    retrieval. Seed chunks and corpus chunks are reported separately.
+- **Retrieval labels:**
+  - **Labels point at text, not chunk ids.** Each label is a document plus a quoted span. A chunk counts as relevant
+    when it contains at least half of the span. Relevance is recomputed after every re-chunk, so the labels survive
+    task 10 changing the chunker or the embedding model.
+  - **Graded relevance:** 2 = answers it, 1 = partly, 0 = no. This matches Jev call 2's score levels.
+  - **Questions are written like a user's chat message,** sharing at most 30 % of the passage's content words, so they
+    don't flatter keyword search.
+  - **Each unanswerable question is checked before it is accepted:** I run the local keyword and vector search (about
+    $0) and read the top 20 results, to make sure the answer really isn't there.
+- **Other labels:**
+  - **Emotion items** record one or two acceptable emotions, **the previous face**, and whether "keep the previous
+    face" is acceptable. The fallback can then be scored too.
+  - **Who-speaks items** record the set of acceptable speakers.
+- **The user's review:**
+  - The user reviews **at least 15 items per set, at random, or 1 in 5 if that is more**.
+  - **Two or more disagreements → I relabel the whole set.**
+  - The implied label error rate is reported, because noisy labels cap the accuracy we can measure.
+  - Once Jev's answers have been seen, labels change only through the user's review, never by me "fixing" them toward
+    Jev.
+- **No leakage:** a question bank example (`what`, `not_for`, examples) may not appear in, or paraphrase, an evaluation
+  item. A script checks for overlapping phrases.
+- **Where it lives:** `evals/datasets/*.jsonl`, `evals/transcripts/*.yaml`, `evals/corpus/`. All in git; no user data.
 
-**Rejected:** one global confidence floor for every question. A wrong speaker and a wrong abstain don't cost the same.
+**Rejected:**
+- **an AI playing the user:** different inputs per profile, a noisy comparison and twice the DeepSeek cost;
+- **ranking on the seed knowledge alone:** trivially high scores;
+- **LLM-written documents as the corpus:** we would be checking labels against text the same kind of model wrote;
+- **labels tied to chunk ids:** they break exactly when task 10 changes the chunker;
+- **tuning and reporting on the same items:** the result is inflated (the winner's curse).
 
-### B6. The `horizon eval` command
+### B3. Conversations: both profiles answer the same history
 
 **Decision:**
-- **One command, `horizon eval <suite>`,** where the suite is `decisions`, `retrieval`, `conversations`, `latency` or
-  `all`. Options:
-  - `--profile agent | naive | scripted` (`conversations` runs `agent` and `naive` by default);
-  - `--limit N` for a quick partial run;
-  - `--max-usd` for the hard spend cap;
-  - `--yes`.
-- **Every real run follows the same steps:**
-  1. It prints the plan: what will run, how many calls, and **the estimate** (from the gateway's own estimators, with
-     peak-hour pricing applied).
-  2. It warns if DeepSeek peak hours are on (R-23). Off-peak costs half.
-  3. **It asks before spending.** `--yes` skips the prompt. I use it only after the user has approved that run's
-     estimate in chat.
-  4. It runs on an **isolated copy of the seed**: a fresh `HORIZON_DATA_DIR` under `data/evals/<run-id>/`. The user's
-     worlds, ledger and memories are never touched, and every run starts from the same state.
-  5. Every call still goes through the gateway, so it is priced and recorded in the run's own ledger. The run's **daily
-     cap is set to `--max-usd`** (default: the estimate × 1.5), so the existing cap stops a runaway run.
-  6. It writes `report.md` and `results.jsonl` into the run folder. The report compares the results with the
-     **baseline** and flags a change only when it is larger than its interval (B1).
-- **Baselines:** when we accept a run, its summary (the numbers, question versions, model ids and date) is saved to
+- **Frozen transcripts (the main comparison).** Each of the 20 transcripts stores the whole conversation:
+  - the user lines and the earlier character lines;
+  - the rolling summary and the memories at each turn.
+
+  It is generated **once** by `naive`, then reviewed and committed.
+  - At each turn, **both profiles start from the same stored history**. Each runs its own planner, if it has one,
+    writes the next reply, and is judged.
+  - This is **the session state, not the `TurnContext`**: the `agent` profile's `TurnContext` already contains its own
+    plan.
+  - **Bonus:** the shared history gives DeepSeek cache hits on the second profile, which lowers cost.
+- **Four free-running conversations** (one per mode) run live with each profile. They cover what only a live run shows:
+  - watch's "talk finished";
+  - debate phases;
+  - memory across turns;
+  - the fallback rate and cost per turn in real use.
+
+  They are **not** compared pairwise.
+
+**Rejected:**
+- **fixed user lines with live character replies:** from turn 2 on, the two profiles answer different conversations,
+  so a "better reply" can't be told apart from "a different history", and errors compound.
+
+### B4. Judges: Jev only, checked before we trust them
+
+**Decision:**
+- **No human blind check** (the user's decision). Jev judges, using questions in the same bank (B9).
+- **Each judgement is a set of one-condition questions, combined in code** (doc 01 A3 rule 1; TypeSafe's composite
+  scoring):
+
+  | Metric | Jev questions | State |
+  |---|---|---|
+  | **Stays in character** | 4 nouls: speaks in the persona's voice · contradicts no persona fact · never says it is an AI · responds to the last user line | only the relevant persona fields + the last 2 turns + the reply |
+  | **Agent vs naive** | a choice of "reply A", "reply B" or "about the same", **asked in both orders** | the last 2 turns + both replies |
+  | **Citation support** | a noul for each cited passage: "does this passage support what the reply says it supports?" (the live post-turn citation check, A7) | the passage + the cited sentence |
+  | **Sentence faithfulness** (deep turns) | code splits the reply into sentences; a noul for each factual sentence against the kept passages | the passages + one sentence |
+  | **Face and words agree** | a choice from the 7 emotions, given only the reply text (the live post-turn emotion check) | the reply |
+  | **Debate quality** | the rubric (task 8) | — |
+  | **Safety** | a red-team set (task 11) | — |
+
+- **Pairwise numbers:**
+  - **Primary:** the average probability that the agent's reply is better. It is taken from Jev's per-option
+    probabilities, averaged over both orders (which removes the first-option lean), with a bootstrap interval over
+    conversations.
+  - **Secondary:** win, tie and loss counts, where a win counts only if both orders agree, with an exact sign test on
+    the non-ties.
+  - **Judge health:** how often the two orders disagree.
+  - **Length bias:** the average reply length per profile, and the win rate split by which reply was longer. Agent
+    replies that use passages will tend to be longer.
+  - **Honest limits:**
+    - about 200 compared turns can show a 65:35 split, but not a 55:45 one;
+    - Jev is judging a system whose decisions Jev made. That is the same self-preference worry that rules out
+      DeepSeek, which is why the planted failures and the user's review matter.
+- **The judges are checked before we trust them:**
+  - **Each judge noul:** 30 real replies that I label (the user reviews them as in B2), plus **30 planted failures**
+    made by code, whose answers are known:
+    - the reply judged against another character's persona;
+    - a reply to a different user line;
+    - a cut-off reply.
+
+    Pass: **≥ 85 % right on the real items, beating the always-the-commonest-answer baseline, and ≥ 90 % of the planted
+    failures caught.**
+  - **The pairwise judge:** 30 pairs with a known winner (a real reply against a persona-swapped or off-topic one).
+    Pass: **≥ 90 %**.
+  - A judge that fails is reworded and checked again, like any Jev question.
+
+**Speed and cost:** judging the 200 compared turns takes about 2,000 small Jev requests, roughly **$0.13** a run. It is
+the largest Jev item, so judge results are cached (B7).
+
+**Rejected:**
+- **one 5-level "stays in character" score:** it bundles several conditions into one question. Its acceptance bar
+  ("within one level on 80 %") is nearly met by chance: a constant answer of "4" would pass on typical labels;
+- **DeepSeek as the judge:** it would judge its own writing, and it is slower and costs more;
+- **a stronger outside model as the judge:** it costs more and goes against the System 1 focus;
+- **the `ragas` library:** its own LLM calls bypass the gateway, the ledger and the caps (A8).
+
+### B5. How floors and thresholds are set
+
+**Decision:**
+- **A floor is judged with the fallback included.**
+  - Below a choice or score floor, doc 01's "Jev unsure" fallback answers instead (A4): keep the previous face, the
+    least recently spoken of Jev's top 2, and so on.
+  - The floor is the one that **maximises the accuracy of the whole policy** (Jev above, the fallback below). It must
+    beat both "no floor" and "fallback only".
+  - Coverage (the share answered by Jev) is reported.
+- **Floors are chosen only from {0.5, 0.6, 0.7, 0.8, 0.9}.** The choice is cross-validated on the dev split, using
+  cached Jev answers, so it costs nothing. A coarse grid on a small set doesn't overfit the way a fine one does.
+- **Noul thresholds have targets on both sides,** so no threshold can meet its target trivially:
+
+  | Noul | Threshold | Rule |
+  |---|---|---|
+  | needs documents | **`t_gate`** (go deep) | the **highest** threshold with **recall ≥ 90 %**; the deep rate on items that don't need documents is reported next to it |
+  | needs documents | **`t_confident`** (abstaining allowed, A6) | the **lowest** threshold with **precision ≥ 95 %**; always ≥ `t_gate` |
+  | needs memories | `t_gate` | the highest threshold with **recall ≥ 85 %** |
+  | talk finished | `t_end` | the lowest threshold with **precision ≥ 90 %**; its recall is reported, and a recall under 50 % means the question is rewritten |
+  | input safe | — | task 11 |
+
+  A noul has no confidence, so doc 01's "unsure → treat as yes" for the gates is exactly this: `t_gate` is set low
+  enough to reach the recall target. Doc 01 A4 is amended to say so.
+- **Targets for the choice and score questions:**
+
+  | Question | Which mistake hurts | Policy accuracy target |
+  |---|---|---|
+  | who speaks / debate member | an odd speaker; mild | ≥ 80 % inside the acceptable set |
+  | emotion | a wrong face; visible but mild | ≥ 80 % inside the acceptable set |
+  | knowledge abstain (Jev call 2 + the keep rule) | "not in my documents" when it is there is very visible | **≤ 3 wrong abstains in 100 answerable questions** (which rules out a true rate of 8.5 % or more), and **≥ 32 of 40 unanswerable questions abstained** |
+
+- **If no setting meets its target, the question is rewritten.** Lowering the target is the last resort.
+- The chosen values are stored in the question bank (B9), versioned with the wording that produced them.
+
+**Rejected:**
+- **one floor for every question:** a wrong speaker and a wrong abstain don't cost the same;
+- **choosing the floor from the answers above it only:** it ignores whether the fallback is better or worse than Jev
+  below the floor;
+- **a single target per noul:** "recall ≥ 90 %" alone is met by always going deep.
+
+### B6. Order bias and Jev's consistency
+
+**Decision:**
+- Every choice item is asked **in the original order and in the reversed order**. Scoring averages the two. The report
+  shows:
+  - (a) agreement between the two orders **on items above the floor** (pass ≥ 90 %);
+  - (b) how often the first option is picked, against the 1-in-n expected by chance;
+  - (c) the average difference in each option's probability between the two orders.
+
+  Failing (a) or showing a clear first-option lean in (b) means the question is rewritten.
+- **A Jev drift canary:** 20 fixed items (under $0.001) run before every evaluation. Jev is in alpha, so if their
+  answers change, the cached answers and the baselines are marked stale. The report records the exact model id
+  OpenRouter returned. If OpenRouter offers a dated Jev id, the evaluation pins it.
+- **Doc 01 check 4** also asks 20 items 3 times each (under $0.01, under the same approval) to see whether Jev answers
+  the same request the same way.
+
+**Rejected:** "the two orders agree on ≥ 85 % of all items." A question with no order bias but 80 % accuracy agrees
+with itself only about 64 % of the time, so that rule mixes up ordinary noise with bias.
+
+### B7. The `horizon eval` command
+
+**Decision:**
+- **One command:**
+  - `horizon eval <suite>`, where the suite is `decisions`, `retrieval`, `conversations`, `latency`, `smoke` or `all`;
+  - options: `--profile`, `--limit N`, `--max-usd`, `--yes`, `--allow-peak`;
+  - plus **`horizon eval capture <messageId>`** (B10).
+- **Each real run:**
+  1. **Plan and estimate.** It prints what will run, the number of calls, the expected time and **the estimate**:
+     - conversations are estimated from a per-turn token model that grows with the history, using the gateway's
+       `estimate_chat` and `estimate_decision` on synthetic requests;
+     - the judge is a line of its own;
+     - the gateway estimators lean high on purpose, so the real cost usually comes in under the estimate.
+
+     It also prints **today's total evaluation spend** across runs (from `data/evals/spend.jsonl`).
+  2. **Off-peak by default.** If the run would overlap DeepSeek's peak hours (R-23), counting its expected end time, it
+     stops unless `--allow-peak` is given. Peak costs twice as much.
+  3. **It asks before spending.** `--yes` skips the prompt. I use it only after the user approved that run's estimate
+     in chat.
+  4. **It builds an isolated copy of the seed for each profile** under `data/evals/<run-id>/<profile>/`, so profiles
+     never share memories or summaries. In that copy:
+     - **the key is taken from the user's key store** (the environment, then the main `data/secrets.local.json`) and
+       passed in. It is never copied to disk;
+     - **`HORIZON_AI_*`, `HORIZON_TEST` and `HORIZON_DATA_DIR` from the environment and `.env` are ignored.** The
+       profile is exactly the one requested, and the report lists each port's resolved implementation. A paid suite
+       refuses to run in test mode;
+     - the run's `settings.local.json` sets **the daily cap to `--max-usd`** (default: the estimate × 1.5) and
+       **raises the energy maximum**, so no character falls asleep. Any skipped turn is still counted;
+     - **every seed source is re-indexed and the seed memories are embedded** (costed in the plan; under a cent), and
+       the retrieval suite then ingests the corpus.
+  5. **Every call goes through the gateway,** so it is priced and recorded in the run's ledger. The run also **stops
+     itself** once its own total reaches `--max-usd`, even across midnight. **A budget refusal aborts the run and marks
+     it incomplete,** so refusals never show up as wrong answers.
+  6. **Pacing:**
+     - conversations run one at a time (the app streams one session at a time anyway, NFR-31);
+     - Jev requests are capped at **about 20 in flight**, far below the 80 requests/s limit.
+     - Layer 1 accuracy is measured **with the live timeout off**, and the share that would have timed out at the live
+       timeout is reported separately. A slow answer is not a wrong one.
+  7. It writes `report.md` and `results.jsonl` in the run folder, compares the results with the baseline (B1), and
+     appends the spend to `data/evals/spend.jsonl`. The newest 20 run folders are kept. A factory reset deletes
+     `data/evals/` with everything else.
+- **Keeping the cost low without losing quality:**
+  - **DeepSeek replies are cached** by a hash of the request, model and provider. `naive` is the fixed yardstick, so
+    its replies are generated **once** and reused until its prompt or model changes.
+  - **Jev answers are cached the same way.** A changed judge or threshold re-runs only Jev on the cached replies.
+  - The `decisions` suite re-runs **only questions whose version changed**.
+  - **`smoke`** (the default while working) runs the changed suite plus one free-running conversation per mode.
+    **`all` runs only when a task is accepted.**
+- **Baselines:** an accepted run's summary (numbers, question versions, model ids, date) is saved to
   `evals/baselines/<suite>.json` in git. Raw results stay in `data/`, which is gitignored.
-- **Estimated cost of a full run** (`all`, off-peak):
+- **Estimated cost** (off-peak, first run, before caching):
 
   | Suite | Main calls | Estimate |
   |---|---|---|
-  | decisions | ~600 items × 2 orders, ~1 k tokens each, on Jev | ≈ $0.05 |
-  | retrieval | corpus embedding once, 65 queries × ~15 Jev passage scores | ≈ $0.03 |
-  | conversations | 20 × ~10 turns × 2 profiles ≈ 400 DeepSeek replies, plus Jev planning and judging | ≈ $0.27 |
-  | **total** | | **≈ $0.35 (about RM 1.60)**; about $0.50 at DeepSeek peak hours |
+  | decisions | ~1,500 Jev requests (choice items in both orders), ~1 k tokens each | ≈ $0.06 |
+  | retrieval | re-indexing and corpus embedding (< $0.01), then 140 questions × ~15 passage scores | ≈ $0.05 |
+  | conversations | 200 turns × 2 profiles + 4 free runs on DeepSeek, Jev planning, and judging (≈ $0.13) | ≈ $0.35 |
+  | **all** | | **≈ $0.45 (about RM 2)**; ≈ $0.65 at peak; **≈ $0.30 once the `naive` replies are cached** |
+  | latency (rare) | 300 turns, each stopped at the first word (B8) | ≈ $0.08 |
+  | smoke (usual) | the changed suite + 4 free runs | ≈ $0.05–0.15 |
 
-  Over the whole stage, with a dozen or so full runs and many partial ones, that comes to about **$3–6**. The command
-  computes the real estimate every time, and this table is only a guide.
+  - Over the whole stage, that comes to about **$1–3**.
+  - **Every Jev figure assumes Jev bills the state once per request.** If doc 01's check 4 finds it billed once per
+    question, Jev costs grow and the command's estimate follows.
 
 **Rejected:**
-- **running against the user's own database:** the eval would change the user's memories and history, and it couldn't
-  be repeated;
-- **a separate notebook or script per experiment:** results couldn't be compared over time;
-- **runs without asking:** they break the standing rule that every paid call needs approval (and NFR-30's spirit).
+- **running on the user's own data:** it would change their memories and history, and couldn't be repeated;
+- **one shared copy for both profiles:** whichever ran second would see the first one's memories;
+- **runs without asking:** they break the standing rule on paid calls (and NFR-30's spirit);
+- **always running everything:** it costs several times more for the same information.
 
-### B7. What CI runs: the scripted profile only
-
-**Decision:**
-- CI runs `horizon eval all --profile scripted`. It uses the scripted ports and the scripted gateway, makes no network
-  calls and costs nothing.
-- This checks the harness itself, not the AI: datasets load, the question bank builds valid requests, the metric code
-  gives the right numbers on known inputs, and the report renders.
-- The metric functions (Recall@k, MRR, nDCG, Wilson intervals, calibration bins) get ordinary unit tests with
-  hand-worked answers.
-- Real runs happen only on the user's machine, on request.
-
-**Rejected:** real evaluation runs in CI. CI has no secrets (by design), and paid runs need the user's approval.
-
-### B8. Observability in the running app: what already exists, plus a local report
+### B8. Measuring speed: the latency suite and NFR-29
 
 **Decision:**
-- **For the user, Insight is the window.** The `TurnTrace` is already there, plus the **System 1 section** from A12.
-  That section is a contract change, approved separately (§8 of doc 01).
-- **For developing, a new `horizon stats [--days N]` command** reads the user's own `turn_traces` and `usage_records`
-  and prints:
-  - the time to the face and to the first word (p50 and p90) per mode, against NFR-01, 02 and 29;
-  - the quick versus deep rate, and the abstain rate;
-  - the fallback rate and timeout rate for each Jev question;
-  - Jev's own latency;
-  - the cost per turn and the cache-hit %;
-  - Jev's share of the spend.
-  It runs entirely locally, makes no network calls and needs no contract change.
-- **Logs** keep today's shape. The graphs log their node path and any fallback, with `session_id` and `message_id`.
+- **Doc 01's check 3 runs first, as a standalone script, before implementation** (as doc 01 says). It needs no
+  `horizon eval`. Later, **`horizon eval latency`** repeats it as a regression test.
+- **The sample** is enough to pin down a p90. With 30 samples, the 95 % interval for p90 runs from the 22nd sample to
+  the slowest one, so it can't show that NFR-01 is met.
+  - **100 quick and 100 deep 1:1 turns**, for NFR-01. The gate is forced by a fixture, so each kind gets exactly 100.
+  - **50 group turns and 50 debate turns,** for NFR-02 (the next speaker in 3 s at p50), including `turn.next` within
+    500 ms.
+  - With 100 samples, the p90 interval runs from the 84th to the 96th sample.
+- **Cheap:** each reply is **stopped after its first word** through the normal Stop path, so there is almost no output
+  cost. 300 turns cost about $0.08.
+- **Run rules:**
+  - one turn at a time;
+  - the first 5 turns are discarded as warm-up;
+  - runs happen in **two time windows**, recorded as off-peak or peak;
+  - the DeepSeek provider OpenRouter actually used is recorded.
+- **A per-stage breakdown of the deep path:**
+  - Jev call 1;
+  - the embedding wait;
+  - the local search;
+  - **Jev call 2, as the slowest of its parallel requests** (the slowest of about 15 calls behaves like a single
+    call's p95–p99, so this stage needs watching);
+  - DeepSeek's time to first token.
 
-**Why:** most of what a developer needs is already stored, and `horizon stats` turns it into the speed and cost numbers
-that are the app's headline, from real use and with no telemetry.
+  The report also gives the **blended p50 and p90 at the real deep rate** measured by `horizon stats`.
+- **NFR-29 (the face within 800 ms of the first word)** is measured **at the HTTP client**, from the event timestamps of
+  the M6 portable client:
+  - face time minus first-word time;
+  - split by where the emotion came from: Jev, the tag fallback, or the kept face.
 
-**Rejected:** a metrics dashboard in the UI. It would be a contract and UI change, and Insight already covers a single
-turn.
+  On the normal path the face comes first, so the risk sits in the fallbacks and in group mode's second-replier
+  re-plan. The report gives p90 for each source, and a **face-flip rate, which must be 0** (D-46).
+- **Must-pass targets before v1:**
+  - **NFR-01:** first word within 2 s at p50 and 4 s at p90;
+  - **NFR-02:** next speaker within 3 s at p50, with `turn.next` within 500 ms;
+  - **NFR-29:** the face within 800 ms of the first word at p90.
 
-### B9. `ai_calls`: full prompt capture for debugging, off by default
+### B9. One question bank, used live and in the evaluation
 
 **Decision:**
-- **An `ai_calls` table, switched on only by `HORIZON_AI_CAPTURE=1`.** When it is on, it records:
-  - **one row per paid call:** purpose, model, the redacted request (messages, or Jev's state and questions), the
-    response (the reply text, or Jev's full answer), latency, cost, any fallback, the ledger row id, and the session,
-    message, character and world ids;
-  - **one row per turn:** the frozen `TurnContext` and the turn plan, so the turn can be replayed exactly.
+- Every Jev question is defined **once**, in a versioned bank in the backend (`horizon/ai/questions/`). Each entry
+  holds:
+  - the id, version and type;
+  - the wording;
+  - the options (`what`, `not_for`, examples) or the score levels;
+  - **the state template:** which fields are sent, and how the options are written into the request (the `Decider`
+    sends each option as one string);
+  - what `none` means;
+  - the `Decider` purpose, its timeout and its fallback;
+  - the floor or thresholds (B5).
+- The live `Decider` and the evaluation both build requests from the bank, so **the evaluation measures exactly what
+  runs**.
+- **The version bumps on any change to the wording, the options, the levels, the state template or the option
+  format.** Results and the System 1 section record each question's id and version, so a result is never compared
+  across different wordings.
+- The bank follows doc 01's rules for writing questions (A3).
+
+**Rejected:** keeping the wording inside each port's code. Tests would drift from what runs live, and nothing would
+record which wording produced which result.
+
+### B10. `ai_calls`: full prompt capture for debugging, off by default
+
+**Decision:**
+- **Switched on only by `HORIZON_CAPTURE_AI_CALLS=1`.** This name stays out of the `HORIZON_AI_<PORT>` names, which
+  pick port implementations. The app logs one line at start-up while capture is on.
+- **What it records:**
+  - **One row per call that reaches the provider, failures included,** written from the gateway. A row holds:
+    - purpose, model, latency and cost;
+    - the ledger row id, if any;
+    - the session, message, character and world ids;
+    - the redacted request: the messages, or Jev's state and questions;
+    - the response: the reply text, or Jev's full answer.
+
+    The gateway collects the body per call kind, including a streamed reply's text. Embedding vectors, image and audio
+    bytes, and embedding input texts are left out.
+  - **One row per turn,** written by the runtime's turn runner, holding the frozen `TurnContext` and the turn plan
+    (including prefetched turns). The **fallback flags come from the `Decider` and the runtime**, which are the only
+    places that know about them. Rows are linked by `message_id`.
+- **It must not change what it observes:** the capture hook only **queues rows in memory**. A background task writes
+  them in batches, outside the turn, and any rows dropped because the queue was full are counted and logged. Capture
+  never adds writer-lock waits to a Jev call or a reply.
 - **`horizon eval capture <messageId>`** turns a captured turn into a replayable case under `data/evals/cases/`, which
-  is gitignored because it may hold the user's own chat. A case built from a seed-world session can be promoted to
-  `evals/` by hand.
-- **The `on_call` hook is extended** to receive the request and response bodies, and **only when capture is on**, so
-  normal use copies nothing extra. Everything still passes through the shared redaction (NFR-12).
-- **Keeping it small and private:**
-  - rows older than **7 days**, or beyond **20 000** rows, are deleted at start-up and every hour;
-  - **deleting a session, character or world deletes its rows,** through the existing purge outbox (`ai_purge_queue`),
-    idempotently;
-  - **forgetting a memory deletes every `ai_calls` row of that character.** The memory's text may sit inside any later
-    prompt, and searching prompts for it would be unreliable. Losing debug capture is harmless; keeping forgotten text
-    is not (D-70's spirit);
-  - a factory reset deletes the table's contents with everything else;
-  - the app logs one line at start-up when capture is on.
-- It is local, so it doesn't conflict with NFR-13.
+  is gitignored because it may hold the user's own chat. A case from a seed-world session can be promoted to `evals/` by
+  hand.
+- **Privacy and Forget:**
+  - **Retention:** rows older than **7 days**, or beyond **20,000** rows, are deleted at start-up and every hour. The
+    table has indexes on `created_at` and `character_id`.
+  - **Forgetting a memory deletes every `ai_calls` row of that character, and the world's rows that have no character**
+    (for example a group's Jev call 1, which covers several candidates). This happens **inside Forget's own writer
+    transaction, before the WAL is truncated**, so the text leaves the database files as D-94 requires. The memory's
+    text may sit inside any later prompt, and searching prompts for it would be unreliable; losing debug capture is
+    harmless.
+  - **Deleting a session or world** deletes its rows in the same transaction, through foreign keys with `ON DELETE
+    CASCADE`.
+  - **Deleting a character** goes through the existing purge outbox. That needs the **first real `AiStateHooks`
+    implementation**, since today the outbox delivers to a no-op.
+  - **The doc 06 byte-level Forget test is extended to run with capture on.**
+  - A factory reset deletes the rows with everything else.
+- It stays on the machine, so NFR-13 is unaffected.
 
 **Rejected:**
-- **capture always on:** it stores every prompt, which means a lot of disk and a second copy of the user's private chat
-  that Forget has to chase;
-- **no capture at all:** a bad live turn could never be replayed or turned into a regression case;
-- **writing prompts into the JSON logs:** the logs rotate without regard to Forget, and they would grow large.
+- **capture always on:** a second copy of every private chat, which Forget would have to chase;
+- **no capture:** a bad live turn could never be replayed or turned into a test case;
+- **Forget through the purge outbox:** it runs after the Forget transaction and the WAL truncate, so forgotten text
+  would linger in the database files (it breaks D-94);
+- **writing rows inline in the hook:** the hook runs inside the call the `Decider` times, so a write would cause false
+  timeouts and fallbacks;
+- **prompts in the JSON logs:** the logs rotate without regard to Forget.
 
-### B10. LangSmith opt-in, off by default; nothing else leaves the machine
+### B11. LangSmith opt-in, off by default; nothing else leaves the machine
 
 **Decision:**
-- **LangSmith is switched on only by `HORIZON_LANGSMITH=1`** plus the user's own `LANGSMITH_API_KEY`. When on:
-  - the graphs' runs are traced;
-  - the gateway's calls are wrapped as traced steps, so Jev and DeepSeek calls appear with their inputs and outputs.
-- **It is a documented exception to NFR-13,** because it sends chat and document text to LangSmith. The app logs a
-  warning at start-up while it is on, and the README says what is sent.
-- **A guard against accidental tracing.** Unless `HORIZON_LANGSMITH=1`, the backend sets `LANGSMITH_TRACING=false` (and
-  the older `LANGCHAIN_TRACING_V2=false`) at start-up. A tracing variable left over in the user's shell then can't send
-  anything. LangGraph pulls in the `langsmith` package through `langchain-core`, so this guard is needed even though
-  we never call LangSmith ourselves.
-- **The OpenRouter key never reaches LangSmith:** traced inputs are messages and Jev states, never headers, and they
-  pass through the shared redaction.
+- **Switched on only by `HORIZON_LANGSMITH=1` plus the user's `LANGSMITH_API_KEY`.** Both are added to the variables
+  the backend reads from `.env` (`KNOWN_VARS`) and to `.env.example`. The key is passed to the LangSmith client
+  explicitly. When on, the graphs' runs and the gateway's calls appear as traced steps.
+- **A documented exception to NFR-13:** it sends chat and document text to LangSmith. The app logs a warning at start-up
+  while it is on, and the README says what is sent.
+- **The guard against accidental tracing:** LangGraph pulls in the `langsmith` package through `langchain-core`, so a
+  tracing variable left in the user's shell could send data. Unless `HORIZON_LANGSMITH=1`:
+  - **at the very start of every entry point** (`serve`, `eval`, the tests), before anything imports LangChain, the
+    backend sets all four tracing variables to `false`: `LANGSMITH_TRACING_V2`, `LANGCHAIN_TRACING_V2`,
+    `LANGSMITH_TRACING` and `LANGCHAIN_TRACING`;
+  - **every graph also runs inside `tracing_context(enabled=False)`**, which overrides the environment. This is the
+    second lock.
+- **The OpenRouter key never reaches LangSmith:** traced inputs are messages and Jev states, never headers, and they pass
+  through the shared redaction.
 
 **Rejected:**
-- **Langfuse:** self-hosting it needs Docker and Postgres, which breaks NFR-10 (zero-config), and its cloud would be
-  another outbound service;
-- **OpenTelemetry export:** there is no collector to send to, and it breaks NFR-13;
+- **Langfuse:** self-hosting needs Docker and Postgres, which breaks NFR-10, and its cloud would be another outbound
+  service;
+- **OpenTelemetry export:** there is no collector, and it breaks NFR-13;
 - **LangSmith on by default:** it breaks NFR-13.
 
-### B11. The `agent` profile is the default; the evaluation tunes it
+### B12. Observability in the running app, CI, and the default profile
 
 **Decision:**
-- `agent` is the default whenever a key is set (the user's decision, A12). The evaluation never switches it back to
-  `naive`.
-- **A missed target is fixed in the task that owns it,** never by changing the default:
-  - a Jev question is rewritten;
-  - a threshold moves;
-  - the deep path is trimmed.
-- **What we report for agent vs naive on the conversation suite:**
-  - the pairwise win, tie and loss rates;
-  - the in-character score;
-  - faithfulness;
-  - latency (p50 and p90);
-  - cost per turn.
+- **For the user, Insight is the window:** `TurnTrace` plus the **System 1 section** (A12, a contract change approved
+  separately).
+- **For developing, `horizon stats [--days N]`** reads the user's own database and prints:
+  - **time to the face and to the first word**, p50 and p90 per mode, from `session_events` timestamps;
+  - **cost per turn by purpose** (`turn_plan`, `deep_check`, reply, embedding, post-turn checks, summary, memory,
+    reactions), per mode, from the ledger;
+  - the cache-hit %, Jev's share of the spend, and Jev's own latency;
+  - **the quick/deep rate, abstain rate, and per-question fallback and timeout rates.** These need the System 1 section,
+    because today's `calls[].fallback` is a single flag per call and one `turn_plan` call holds many questions.
 
-  This is also the evidence behind the LinkedIn "System 1 decides, System 2 speaks" story.
-- **The targets that must hold before v1** are the existing NFRs:
-  - NFR-01: the first word within 2 s at p50 and 4 s at p90;
-  - NFR-02: the next speaker within 3 s at p50;
-  - NFR-29: the face within 800 ms of the first word at p90.
+  It leaves out seed rows, prefetched turns and replayed turns, whose timings mean nothing. It runs locally, makes no
+  network calls, and needs no contract change of its own.
+- **Logs** keep today's shape. Graphs log their node path and any fallback with `session_id` and `message_id`.
+- **CI** runs **`horizon eval smoke` in test mode**:
+  - the fake provider, the fake `sk-or-test` key and the virtual clock;
+  - `--limit`, so it stays fast;
+  - with no network calls and no cost.
 
-  These are measured from Malaysia. B5's targets are tuning goals.
+  It checks:
+  - **that every Jev request built from the bank passes the wire schema**;
+  - that the datasets load;
+  - that the metric code is right (Recall@k, MRR, nDCG, Wilson, McNemar and the bootstrap have unit tests with
+    hand-worked answers);
+  - that the report renders.
+
+  It never compares with `evals/baselines`. `--profile agent` joins CI with task 5's `TurnPlanner` and its scripted
+  twin.
+- **`agent` is the default** whenever a key is set (A12). A missed target is fixed in the task that owns it, never by
+  switching back to `naive`:
+  - rewrite a question;
+  - move a threshold;
+  - trim the deep path.
+
+  The agent-vs-naive results (B4) are also the evidence for the LinkedIn "System 1 decides, System 2 speaks" story.
+
+**Rejected:**
+- **a metrics dashboard in the UI:** it is a contract and UI change, and Insight already covers a single turn;
+- **real evaluation runs in CI:** CI has no secrets by design, and paid runs need approval.
 
 ## 6. Checks before this is locked
 
 | # | Check | Cost | Pass mark | If it fails |
 |---|---|---|---|---|
-| 1 | Does Jev give the same answer to the same request? Ask 20 items 3 times each. **Run together with doc 01's check 4**, under the same approval. | < $0.01 | — (we measure it) | If answers vary, layer 1 asks each item twice and reports the agreement, and the intervals widen |
-| 2 | Licence check of every corpus document before it is committed | $0 | each file is a US federal work, with its URL in `SOURCES.md` | Swap in another public-domain source |
-| 3 | The user reviews about 1 in 5 of the drafted labels in each set | $0 | ≤ 1 in 10 disagreements per set | Relabel that set |
+| 1 | Does Jev answer the same request the same way? 20 items × 3. Runs with doc 01's check 4, under the same approval. | < $0.01 | — (we measure it) | Ask each layer 1 item twice and report the agreement; the intervals widen |
+| 2 | Licence check of every corpus document before it is committed | $0 | text only; written by federal staff; no "©", "copyright", "reprinted / used with permission", contractor or partner credit (a text search finds these); each recipe checked for an outside credit; URL in `SOURCES.md` | Use another public-domain source |
+| 3 | The user reviews the drafted labels | $0 | fewer than 2 disagreements per set (≥ 15 items reviewed) | Relabel that set |
 
 ## 7. Changes this design needs (each approved separately, at its OpenSpec change)
 
-None of these changes the HTTP contract. The only contract change in evaluation and observability is doc 01's System 1
+None of these changes the HTTP contract. The only contract change for evaluation and observability is doc 01's System 1
 section.
 
 | Change | Kind | Why |
 |---|---|---|
-| The **question bank** module, which the `Decider` builds its requests from | backend | B3 |
-| **`horizon eval`** (the suites, isolated runs, estimate and ask, `--max-usd` as the run's cap, the report and baselines) and **`horizon eval capture`** | backend CLI | B6, B9 |
-| **`horizon stats`** | backend CLI | B8 |
-| The **`evals/` folder**: datasets, conversations, corpus with `SOURCES.md`, baselines | repo | B2, B6 |
-| **`ai_calls`** table (Alembic migration), retention, purge-outbox handling, and the **`on_call` hook carrying request and response bodies when capture is on** | backend | B9 |
-| **LangSmith** switch, start-up guard, and gateway steps wrapped as traced steps when on | backend | B10 |
-| A ledger purpose for judge calls (`eval_judge`); they run only inside isolated evaluation runs | backend | B4 |
-| CI runs `horizon eval all --profile scripted` | CI | B7 |
-| **Docs to amend:** OQ-AI-15 resolved; OQ-AI-08's evaluation half resolved; 05-ai-seams §6 (`ai_calls` and the evaluation harness now designed); an NFR-13 note on the LangSmith exception | docs | all |
+| The **question bank** module, with the `Decider` building its requests from it | backend | B9 |
+| **`horizon eval`**: the suites, isolated copies per profile, key from the user's key store, env overrides ignored, estimate and ask, the run cap and self-stop, the caches, the canary, the report, the baselines, `spend.jsonl` | backend CLI | B7, B6 |
+| **`horizon eval capture`** and **`horizon stats`** | backend CLI | B10, B12 |
+| The latency script for doc 01's check 3 (before implementation), later `horizon eval latency` | backend | B8 |
+| The **`evals/` folder**: datasets with dev/test splits, transcripts, corpus with `SOURCES.md` and `LICENSE`, baselines, the overlap checker | repo | B2, B3 |
+| **`ai_calls`** (Alembic migration, indexes, retention, cascades), the gateway's per-call body capture and queued writer, the runtime's per-turn row, and **the first real `AiStateHooks`** for character deletes | backend | B10 |
+| **Forget also deletes `ai_calls` rows** in its writer transaction; the doc 06 byte-level test runs with capture on | backend | B10 |
+| **LangSmith:** the switch, the start-up guard on every entry point, `tracing_context`, and the traced gateway steps | backend | B11 |
+| `HORIZON_CAPTURE_AI_CALLS`, `HORIZON_LANGSMITH` and `LANGSMITH_API_KEY` in `KNOWN_VARS` and `.env.example` | backend | B10, B11 |
+| `PURPOSE_CATEGORY["eval_judge"] = "decision"`, for the judge's ledger rows (otherwise `call_ctx` raises) | backend | B4 |
+| CI runs `horizon eval smoke` in test mode | CI | B12 |
+| **Docs to amend:** OQ-AI-15 and OQ-AI-08's evaluation half resolved; 05-ai-seams §6 (`ai_calls` and the harness now designed); D-94 (Forget also covers `ai_calls`); an NFR-13 note on LangSmith; doc 01 A4 (a noul's "unsure" is `t_gate`, set by recall) | docs | all |
 
-**Order:** the question bank and `horizon eval` come **first** among the AI-stage changes. Every later change is tuned
-with them.
+**Order:**
+- The question bank and `horizon eval` come **first** among the AI-stage changes, because every later change is tuned
+  with them.
+- Doc 01's checks 3 and 4 run before both, as standalone scripts.
 
 ## 8. Left for later tasks
 
 - The debate rubric and its judge questions (task 8).
 - The memory retrieval set and the memory-importance labels (task 9).
-- The final embedding model and its dimensions. The retrieval suite here is the comparison test that decides it
-  (task 10).
+- The final embedding model and its dimensions. The retrieval suite is the comparison test that decides them (task 10).
+- How many passages Jev call 2 scores, and k. Until task 10 sets k, "@5" is a placeholder (task 10).
 - The red-team set and the input-safe threshold (task 11).
 - `seed/pricing.json` sets OpenRouter's `data_collection` to `"allow"`, which lets providers keep prompts. That is a
-  privacy question for task 11 or task 13, not an evaluation one.
+  privacy question for task 11 or 13.
 
 ## Sources
 
@@ -452,7 +656,10 @@ with them.
   observability), in `private/notes/`.
 - TypeSafe docs:
   - [Confidence-gated routing](https://docs.typesafe.ai/patterns/confidence-routing.md)
+  - [Composite scoring](https://docs.typesafe.ai/llms.txt)
   - [jev-1.13 known weak spots](https://docs.typesafe.ai/model-jaggedness/jev-1.13.md)
   - cookbooks: `citation_check`, `parallel_questions`, `rerank_typesafe`
 - [RAGAS metric definitions](https://docs.ragas.io/en/stable/concepts/metrics/)
-- [LangSmith: tracing environment variables](https://docs.smith.langchain.com/)
+- [LangSmith: tracing configuration](https://docs.smith.langchain.com/)
+- Statistics: Wilson score interval; the exact McNemar and sign tests; order-statistic intervals for percentiles; MT-Bench
+  (pairwise judging in both orders).

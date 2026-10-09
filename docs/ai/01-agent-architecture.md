@@ -234,7 +234,7 @@ probabilities for Insight.
 |---|---|---|
 | who speaks (group / watch) | @mentions, else **least recently spoken** (today's rule) | @mentions, else the least recently spoken **of Jev's top 2** |
 | which debate member | the next member in today's fixed order | the same |
-| needs documents / memories | **no: a quick reply** (no retrieval without Jev to check it) | treat as yes; Jev call 2 then decides |
+| needs documents / memories | **no: a quick reply** (no retrieval without Jev to check it) | treat as yes; Jev call 2 then decides. A noul has no confidence, so "unsure" is built into its threshold `t_gate`, set low enough for recall (02 B5) |
 | emotion | DeepSeek's inline `<e:label>` tag (the naive path, already built) | **keep the previous face**; DeepSeek is told the previous mood |
 | input safe | pass, with a flag in Insight | task 11 decides |
 | talk finished | no (the turn caps still bound watch mode) | no |
@@ -483,14 +483,14 @@ every node, and Forget would get harder.
 
 ## 7. Checks before this is locked
 
-Checks 1 and 2 cost $0 and use the scripted gateway on Windows. **Checks 3 and 4 make real calls costing well under
-$0.10 in total, and need the user's approval before they run.**
+Checks 1 and 2 cost $0 and use the scripted gateway on Windows. **Checks 3 and 4 make real calls costing about $0.10 in
+total, and need the user's approval before they run.**
 
 | # | Check | Pass mark | If it fails |
 |---|---|---|---|
 | 1 | Turn plan graph: its overhead, and whether its runs settle deterministically on the virtual test clock (every task it starts must be visible to `rt.spawn`) | overhead not noticeable (< 50 ms); tests settle with no pending work | Wrap or replace the graph's task handling; the plan falls back to plain code if needed |
 | 2 | Stop or pause during a plan or a reply: nothing left running except the allowed late Jev calls | no leaked task or connection; Stop within NFR-20's 500 ms | Fix the cancellation path before building on it |
-| 3 | Real turns from Malaysia: 30 quick and 30 deep in 1:1, plus group and debate turns. Record the time to the face and to the first word, Jev's latency distribution, how often each timeout fires, and the real response shape of the alpha endpoint | 1:1 first word within NFR-01 (2 s p50, 4 s p90); next speaker within NFR-02 (3 s p50) | Trim the deep path (fewer candidates, a smaller state) and set the `turn_plan` / `deep_check` timeouts from the measured distribution |
+| 3 | Real turns from Malaysia: 100 quick and 100 deep in 1:1 (the gate forced by a fixture), plus 50 group and 50 debate turns, each stopped at its first word (about $0.08; 02 B8). Record the time to the face and to the first word, Jev's latency distribution, how often each timeout fires, and the real response shape of the alpha endpoint | 1:1 first word within NFR-01 (2 s p50, 4 s p90); next speaker within NFR-02 (3 s p50) | Trim the deep path (fewer candidates, a smaller state) and set the `turn_plan` / `deep_check` timeouts from the measured distribution |
 | 4 | Jev billing and limits on the OpenRouter endpoint. Compare `usage.input_tokens` and `usage.cost` for 1 vs 8 questions **and** for a small vs a large state; find the real request size limit | — | If the state is billed per question, update `decision_estimate` (the daily-cap reservation and the cost shown before spending, NFR-08, both depend on it) and shrink Jev call 1's state |
 
 ## 8. Changes this design needs (each approved separately, at its task)
