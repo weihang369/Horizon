@@ -46,8 +46,9 @@ Every ID in the seed SHALL be unique across the whole dataset, including portrai
 ### Requirement: Reset demo data restores seed records only
 Reset SHALL be available as `admin.resetDemo()` on both clients and SHALL do the following:
 - restore every seed world, character, session, memory, knowledge source and seed ledger row to its shipped state, upserting seed records in place;
-- keep user-created worlds, characters, sessions (including forks of seed sessions), memories (including memories a seed character earned in user sessions) and ledger rows;
+- keep user-created worlds, characters, sessions (including forks of seed sessions), memories (including memories a seed character earned in user sessions), knowledge sources and ledger rows;
 - on the backend, cancel any non-terminal job on a seed character, and keep the user-generated asset versions of seed characters as inactive versions (they were paid for);
+- on the backend, stop any indexing of seed sources and return them to `keyword_only`, without vectors, until they are indexed again;
 - leave settings and the API key unchanged;
 - emit `mock.reset` afterwards.
 
@@ -66,6 +67,14 @@ Reset SHALL be available as `admin.resetDemo()` on both clients and SHALL do the
 #### Scenario: Regenerated seed emotion after reset
 - **WHEN** on the backend the user regenerates and accepts a new happy emotion for Hana, then resets demo data
 - **THEN** Hana shows her shipped happy portrait, and `characters.assets` still lists the generated version as inactive
+
+#### Scenario: Indexed seed source after reset
+- **WHEN** on the backend the user indexes one of Amara's seed sources, adds a source of their own to Amara, then resets demo data
+- **THEN** the seed source is `keyword_only` with its shipped passages, and the user's source is unchanged
+
+#### Scenario: Forgotten seed memory comes back
+- **WHEN** the user forgets one of Hana's seed memories, then resets demo data
+- **THEN** Hana's memory list shows that seed memory again
 
 ### Requirement: Seed import is validated
 The backend SHALL validate every seed file against the contract schema before writing anything. If any file is invalid, the import SHALL write nothing and SHALL name the file. Imported seed records SHALL be marked as seed records. Seed knowledge passages and seed memories SHALL be searchable by keyword as soon as the import finishes. `seed/_mock/**` SHALL NOT be imported in normal runs.

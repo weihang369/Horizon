@@ -21,6 +21,8 @@ After a write commits, the backend SHALL publish:
 - `entity.changed { kind: "job", id }` when a job is created or changes;
 - `entity.changed { kind: "session", id, worldId }` when a session is created, forked, renamed, deleted, paused, resumed or ended, or gains a message;
 - `entity.changed { kind: "usage" }` when a ledger row is written;
+- `entity.changed { kind: "knowledge", id, worldId }` when a knowledge source is added, deleted or re-indexed, at each indexing stage (with `progress`), and when it reaches its end status (without `progress`);
+- `entity.changed { kind: "memory", id: characterId, worldId }` when a character's memories are written or forgotten;
 - `mock.reset` after a demo-data reset.
 
 An event SHALL NOT be published for a write that failed.
@@ -48,6 +50,18 @@ An event SHALL NOT be published for a write that failed.
 #### Scenario: Character deleted
 - **WHEN** a global subscriber is connected and `chr_seedVictor` is deleted
 - **THEN** the subscriber receives `entity.changed` with `kind: "character"` and `id: "chr_seedVictor"`
+
+#### Scenario: Source indexed
+- **WHEN** a global subscriber is connected and a source is added to `chr_seedHana`
+- **THEN** the subscriber receives `entity.changed` with `kind: "knowledge"` and the source's ID, then progress events, then one final event without `progress`
+
+#### Scenario: Memory forgotten
+- **WHEN** a global subscriber is connected and one of Hana's memories is forgotten
+- **THEN** the subscriber receives `entity.changed` with `kind: "memory"`, `id: "chr_seedHana"` and Hana's world
+
+#### Scenario: Refused upload is silent
+- **WHEN** a knowledge upload is rejected with `validation`
+- **THEN** no `entity.changed` with `kind: "knowledge"` is published for it
 
 ### Requirement: Slow subscribers are dropped
 Each subscriber SHALL have a bounded queue of 1,000 events. A subscriber whose queue overflows SHALL have its stream closed, and other subscribers SHALL be unaffected.
