@@ -470,7 +470,7 @@ every node, and Forget would get harder.
 |---|---|
 | Infinite loop, cost explosion | **Covered** by the software stage: turn caps, daily budget cap, energy, reservations |
 | Race conditions | **Covered**: one actor per session is the single writer |
-| Invented tool names, wrong argument types, parse failures | **Not applicable:** no tool loop (A10). Malformed Jev answers are caught by validation and fall back (A3 rule 9). Drafter and verdict JSON uses structured output (task 3). |
+| Invented tool names, wrong argument types, parse failures | **Not applicable:** no tool loop (A10). Malformed Jev answers are caught by validation and fall back (A3 rule 9). Drafter (and later memory-extraction) JSON uses DeepSeek's JSON mode, validated, with one retry (doc 03 C7). The verdict is Jev rubric scores plus prose, so it has no JSON. |
 | Prompt injection via retrieved text or user text | **Tasks 10 and 11:** treated as quoted content in the Jev state and the prompt, never as instructions |
 | Weak matches presented as answers | **Covered** by the Jev call 2 scores and the not-found rule (A6) |
 | Abstaining on small talk | **Covered:** a Jev failure means quick; abstain needs a confident gate and a user question; debate and watch never abstain (A6) |
