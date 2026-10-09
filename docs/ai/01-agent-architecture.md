@@ -235,7 +235,7 @@ probabilities for Insight.
 | who speaks (group / watch) | @mentions, else **least recently spoken** (today's rule) | @mentions, else the least recently spoken **of Jev's top 2** |
 | which debate member | the next member in today's fixed order | the same |
 | needs documents / memories | **no: a quick reply** (no retrieval without Jev to check it) | treat as yes; Jev call 2 then decides. A noul has no confidence, so "unsure" is built into its threshold `t_gate`, set low enough for recall (02 B5) |
-| emotion | DeepSeek's inline `<e:label>` tag (the naive path, already built) | **keep the previous face**; DeepSeek is told the previous mood |
+| emotion | **keep the previous face** (amended by doc 04 P7: the `agent` prompt has no emotion tag) | **keep the previous face**; DeepSeek is told the previous mood |
 | input safe | pass, with a flag in Insight | task 11 decides |
 | talk finished | no (the turn caps still bound watch mode) | no |
 
@@ -257,10 +257,10 @@ probabilities for Insight.
 - **Where the mood goes in the prompt:**
   - DeepSeek is told the mood by **one line in the dynamic tail** (after the history), so the cached prefix doesn't
     change from turn to turn (NFR-35);
-  - the existing `<e:label>` instruction stays in the cached prefix;
-  - when Jev's emotion is used, any tag DeepSeek writes is stripped without changing the face, so a reply never changes
-    face mid-sentence (D-46);
-  - the tag is used only when Jev failed.
+  - **amended by doc 04 P7:** the `agent` prompt has **no** `<e:label>` instruction; a Jev failure keeps the previous
+    face, the same as "unsure" (only the `naive` yardstick keeps the tag);
+  - any stray tag DeepSeek still writes is stripped without changing the face, so a reply never changes face
+    mid-sentence (D-46).
 - If Jev is unsure, the previous face stays (A4).
 - MANUAL emotion stays face-only and never changes the reply.
 - Task 6 confirms the approach with the evaluation and words the mood line.
