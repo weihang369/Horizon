@@ -200,7 +200,7 @@ Notation: `[emotion]` = the emotion shown with the message. `{reactions: Name→
 | Fonts (self-hosted OFL) | 5 families | ~1.5 MB | Committed font files |
 | **Total** | | **≈ 24 MB** (budget ≤ 40 MB, no Git LFS) | |
 
-Every AI-generated asset gets a provenance record (model, date, prompt, technique). Every free-library asset gets a credit line. Both go in `ASSETS.md`.
+Every AI-generated asset gets a provenance record (model, date, prompt, technique). Every free-library asset gets a credit line. Both go in [`ASSETS.md`](../../ASSETS.md), which `npm run assets:check` keeps complete.
 
 ## 7. Seed Asset Sprint (approved, D-23 / D-49)
 

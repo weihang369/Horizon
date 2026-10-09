@@ -16,6 +16,7 @@
     "typecheck": "tsc -b",
     "preview": "vite preview",
     "seed:build": "node scripts/seed-build/run.mjs build",
+    "assets:check": "node scripts/assets-check/main.ts",
     "seed:check": "node scripts/seed-build/run.mjs check",
     "fixtures:build": "node scripts/fork-fixtures/run.mjs build",
     "fixtures:check": "node scripts/fork-fixtures/run.mjs check",

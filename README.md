@@ -126,6 +126,7 @@ Run these inside `frontend/`:
 | `npm run typecheck` | Run the TypeScript project build with no output |
 | `npm run lint` | Run oxlint |
 | `npm run seed:build` | Regenerate `seed/` from the screenplays and fixtures in `frontend/scripts/seed-build/` |
+| `npm run assets:check` | Fail if a shipped asset has no credit or provenance row in [`ASSETS.md`](ASSETS.md) |
 | `npm run seed:check` | Regenerate in memory and fail if `seed/` is out of date |
 | `npm run budget` | Check bundle sizes after a build: entry ≤ 150 KB gzip, each lazy chunk ≤ 60 KB |
 

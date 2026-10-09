@@ -111,7 +111,7 @@
 
 ## 6. ASSETS.md and the asset check (D16)
 
-- [ ] 6.1 Write `frontend/scripts/assets-check/` (Node, no network, no dependencies). It:
+- [x] 6.1 Write `frontend/scripts/assets-check/` (Node, no network, no dependencies). It:
   - builds the inventory (files under `seed/assets/**` and `frontend/public/**`, `@fontsource*` dependencies in `frontend/package.json`, track IDs in `seed/system-tracks.json`);
   - parses the table between `<!-- assets:begin -->` and `<!-- assets:end -->` in `ASSETS.md`;
   - enforces the D16 rules, printing each problem with its file or row, and a summary count on success.
@@ -123,7 +123,7 @@
   - a bad SPDX ID fails;
   - a track licence mismatch fails;
   - a complete table passes.
-- [ ] 6.2 Write `ASSETS.md`: human prose (what's a placeholder, D-52, and how real assets will be recorded), then rows for:
+- [x] 6.2 Write `ASSETS.md`: human prose (what's a placeholder, D-52, and how real assets will be recorded), then rows for:
   - the placeholder portraits and themes (`procedural`);
   - `frontend/public` files;
   - each `@fontsource` family (author + `OFL-1.1`, checked against each package's `LICENSE`);
@@ -131,7 +131,7 @@
   - the synthesised SFX (`procedural`, no files, recorded for completeness).
 
   Verify that `npm run assets:check` exits 0 and its count matches the inventory.
-- [ ] 6.3 Point the doc mentions at the file: the `docs/requirements/06` §6 and `04` §7.1 notes that credits live in `ASSETS.md`, and the Settings → About text, which already names it, needs no change. Verify that the frontend gates are green, then commit.
+- [x] 6.3 Point the doc mentions at the file: the `docs/requirements/06` §6 and `04` §7.1 notes that credits live in `ASSETS.md`, and the Settings → About text, which already names it, needs no change. Verify that the frontend gates are green, then commit.
 
 ## 7. Timing script and CI (D18, D19)
 
