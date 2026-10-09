@@ -251,10 +251,12 @@ probabilities for Insight.
 ### A5. AUTO emotion: Jev first, DeepSeek follows
 
 **Decision:**
-- In AUTO mode, the emotion comes from Jev call 1. It is shown **when the reply's gateway preflight succeeds**, as
-  an `emotion` event appended with `turn.start` (amended by doc 06 E2: both reducers ignore `turn.start.emotion`), so
-  a refused reply still leaves no message.
-- In practice the face changes before the first word, because the preflight is local and takes milliseconds.
+- In AUTO mode, the emotion comes from Jev call 1. **Amended by doc 06 E2:** the engine yields it on DeepSeek's
+  first chunk (the gateway's preflight runs inside the stream, so it has passed by then), and the runtime appends
+  `turn.start` and an `emotion` event together, so a refused reply still leaves no message. The agent path never sets
+  `turn.start.emotion`, which the reducers would store as `llm`.
+- The face shows **with the first word**, never after it (the reducers hold an early face until the first token,
+  CHAT-03 AC4), so the gap NFR-29 measures is 0 on this path.
 - **Where the mood goes in the prompt:**
   - DeepSeek is told the mood by **one line in the dynamic tail** (after the history), so the cached prefix doesn't
     change from turn to turn (NFR-35);

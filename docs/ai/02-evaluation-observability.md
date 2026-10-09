@@ -180,8 +180,8 @@ frozen transcripts start from a long committed history.
   |---|---|---|
   | Layer 1: each **noul that sets a threshold** (needs documents, needs memories, talk finished) | **~120 items, at least 60 of them "yes"** | A recall target is judged on 60+ positives. With 50, 45 right still leaves 79–96 %. |
   | Layer 1: **passage score** and **who speaks** | **~100 items** | They set floors that every deep or group turn depends on |
-  | Layer 1: **emotion** (doc 06 E8) | **~100 items**, at least 15 where keeping the previous face is right | The face shows on every turn of every mode |
-  | Layer 1: **listener reactions** (doc 06 E8) | **60 items** (a line, its context, one listener) | A visible but mild mistake; the share of messages that react is also reported |
+  | Layer 1: **emotion** (doc 06 E8) | **~100 items**; 20–30 % where keeping the face is acceptable | The face shows on every turn of every mode; the cap stops "always keep" from carrying the score |
+  | Layer 1: **listener reactions** (doc 06 E8) | **90 items** (30 test; a line, its context, one listener); at most 30 % where `none` is acceptable | A gross-failure check with a trivial baseline to beat; the shown share is reported by the latency suite |
   | Layer 1: every other question | **40 items**, plus another 40 **only when the interval straddles the target** | 40 items catch a gross failure, and we grow a set only where the answer is unclear |
   | Layer 2: retrieval | **100 answerable questions and 40 unanswerable ones** on the same topics | 50 items can never show "≤ 5 % wrong abstains" (0 of 50 still allows up to 7 %) |
   | Layer 3: frozen transcripts | **20**, each 8–12 turns, across both worlds: 1:1 × 6, group × 5, debate × 4, watch × 5; **4 of them start from a long committed history past one drop** (doc 05 X10) | About 200 compared turns; the 4 cover the summary in the prompt |
@@ -281,8 +281,8 @@ frozen transcripts start from a long committed history.
   | **Draft quality** (doc 04 P12) | 2 nouls: fits the seed · the relationship fits the You card | the seed, the You card + the draft |
 | **Summary quality** (doc 05 X10) | 5 nouls: a planted fact is kept · the promise is kept · it says who made the promise · same language as most lines · nothing unsupported | the dropped lines + the summary (one fact or promise per question) |
 | **Recall** (doc 05 X10) | 1 noul: the reply uses the planted fact | the fact + the probe + the reply |
-  | **Face and words agree** | a choice from the 7 emotions, given only the reply text (the post-turn emotion check; evaluation only until the System 1 section, doc 06 E7). Target: the shown face or neutral ≥ 80 %, clashes ≤ 5 % (doc 06 E8) | the reply |
-  | **Names the feeling** (doc 06 E8) | 1 noul: the reply states the character's own feeling outright (a pass is "no"); ≥ 95 % pass on replies with a mood line | the reply |
+  | **Face and words agree** | a choice from the 7 emotions, given only the reply text (the post-turn emotion check; evaluation only until the System 1 section, doc 06 E7). On non-neutral faces only: exact match (compared by doc 06's mood-line on/off run) and clashes ≤ 5 % | the reply |
+  | **Names the feeling** (doc 06 E8) | 1 noul: the reply states the character's own feeling outright (a pass is "no"); ≥ 95 % pass on replies with a mood line; its validation allows at most 1 false alarm on the 30 clean replies | the reply |
   | **Debate quality** | the rubric (task 8) | — |
   | **Safety** | a red-team set (task 11) | — |
 
@@ -350,9 +350,12 @@ the largest Jev item, so judge results are cached (B7).
   | Question | Which mistake hurts | Policy accuracy target |
   |---|---|---|
   | who speaks / debate member | an odd speaker; mild | ≥ 80 % inside the acceptable set |
-  | emotion | a wrong face; visible but mild | ≥ 80 % inside the acceptable set (doc 06 E3's fade applied first) |
-  | listener reaction (doc 06 E5) | a wrong or needless face on a listener; mild | ≥ 80 % inside the acceptable set (`none` may be acceptable) |
+  | emotion | a wrong face; visible but mild | ≥ 80 % inside the acceptable set (doc 06 E3's fade applied first), **and ≥ 15 points above "always keep the current face"** |
+  | listener reaction (doc 06 E5) | a wrong or needless face on a listener; mild | ≥ 80 % inside the acceptable set, **and ≥ 15 points above "always `none`"** |
   | knowledge abstain (Jev call 2 + the keep rule) | "not in my documents" when it is there is very visible | **≤ 3 wrong abstains in 100 answerable questions** (which rules out a true rate of 8.5 % or more), and **≥ 32 of 40 unanswerable questions abstained** |
+
+  Doc 06 E8: the emotion and reaction floors are tuned on **one seeded shuffle per item**, as the live call asks; the
+  second order measures only the first-option lean (B6).
 
 - **If no setting meets its target, the question is rewritten.** Lowering the target is the last resort.
 - The chosen values are stored in the question bank (B9), versioned with the wording that produced them.
@@ -486,7 +489,8 @@ with itself only about 64 % of the time, so that rule mixes up ordinary noise wi
 - **NFR-29 (the face within 800 ms of the first word)** is measured **at the HTTP client**, from the event timestamps of
   the M6 portable client:
   - face time minus first-word time;
-  - split by where the emotion came from: Jev, the tag fallback, or the kept face.
+  - split by where the emotion came from: on the `agent` path `classifier` (Jev's pick) and `default` (kept or
+    faded); `llm` (the tag) only on `naive`. The verbatim greeting is left out (doc 06 E8).
 
   On the normal path the face comes first, so the risk sits in the fallbacks and in group mode's second-replier
   re-plan. The report gives p90 for each source, and a **face-flip rate, which must be 0** (D-46).
