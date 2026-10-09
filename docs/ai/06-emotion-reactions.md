@@ -404,7 +404,7 @@ trusted):
   one-append `turn.start` + `emotion`, the E6 reducer fixtures, and the derived seeds.
 - **Doc 02 B7 cost:** `decisions` ≈ $0.07 (was $0.06: 60 more emotion items and 90 reaction items, both orders);
   `conversations` unchanged at ≈ $0.38 (the new noul is under a cent); **`all` ≈ $0.59** (about RM 2.5); ≈ $0.81 at
-  peak; ≈ $0.42 once `naive` replies are cached (doc 07 G11 later makes these $0.65 / $0.92 / $0.46, and doc 08 V11 $0.78 / $1.14 / $0.54).
+  peak; ≈ $0.42 once `naive` replies are cached (doc 07 G11 later makes these $0.65 / $0.92 / $0.46, and doc 08 V11 $0.80 / $1.18 / $0.55).
 
 ### E9. Speed and cost, in one place
 

@@ -318,7 +318,7 @@ Doc 01 A3 rule 6: Jev gets less accurate as irrelevant content grows, so the sta
 | `latest` | the latest user message, quoted, cut to 600 (first 450 + last 150) | all |
 | `recent` | the last 6 messages before it as `{speaker, text}`, quoted, each cut to 300 | all |
 | `watch` | the premise, the rolling summary when there is one, and the **last 12 lines** instead of 6 (watch has no user line, and with at most 40 turns it rarely reaches a summary) | talk finished?, speaker |
-| `debate` | the motion, the phase and the side chosen by code (doc 01 A14) | which member |
+| `debate` | the motion, the phase and the side chosen by code (doc 01 A14); **the last opposing argument** in full and each candidate's latest argument cut to 60 words (doc 08 V2) | which member |
 
 - **Not included:** full cards, the history window, the summary outside watch, memories, passages.
 - **Quoted text** (user lines, character lines, titles) is marked as quoted content, never instructions (doc 01 A3
@@ -364,7 +364,7 @@ Doc 01 A3 rule 6: Jev gets less accurate as irrelevant content grows, so the sta
 - **Offline, $0:** the byte-identical prefix test (X6), the X7 mapping on fixture turns, the X2 drop, ceiling and
   fork cases on synthetic histories, the X4 multi-line attribution, and the X9 limit and cut order.
 - **Doc 02 B7 cost:** `all` ≈ $0.58 (was $0.50); ≈ $0.80 at peak; ≈ $0.41 once `naive` replies are cached (doc 06
-  E8 later makes these $0.59 / $0.81 / $0.42, and doc 07 G11 $0.65 / $0.92 / $0.46, and doc 08 V11 $0.78 / $1.14 / $0.54). `long` ≈ $0.12, run rarely.
+  E8 later makes these $0.59 / $0.81 / $0.42, and doc 07 G11 $0.65 / $0.92 / $0.46, and doc 08 V11 $0.80 / $1.18 / $0.55). `long` ≈ $0.12, run rarely.
 
 ## 5. Checks before this is locked
 

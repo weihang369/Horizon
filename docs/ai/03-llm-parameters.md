@@ -163,7 +163,7 @@ The table lives in the seed-build source `frontend/scripts/seed-build/runtime.co
 | `reply.chat` | Character reply, 1:1 / group / watch | off | **1.3** | stream | naive today, agent profile |
 | `reply.debate` | Debate argument | off | 1.0 | stream | task 8 (doc 08 V4) |
 | `host` | Debate host lines, `max_tokens` 120, shown whole | off | 1.0 | text | task 8 (doc 08 V6) |
-| `verdict` | Debate verdict prose, `max_tokens` 700 | off | 0.7 | JSON | task 8 (doc 08 V8) |
+| `verdict` | Debate verdict prose, `max_tokens` 1,200 | off | 0.7 | JSON | task 8 (doc 08 V8) |
 | `summary` | Rolling summary | off | 0.7 | text | task 5 (doc 05 X3) |
 | `episode` | Watch's "Summarise" recap, `max_tokens` 400 | off | 0.7 | text | task 7 (doc 07 G10) |
 | `memory` | Memory extraction | off | 0.7 | JSON | task 9 |

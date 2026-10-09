@@ -183,7 +183,7 @@ frozen transcripts start from a long committed history.
   | Layer 1: **who speaks** (doc 07 G11) | **~210 items**: group first slot 60, group second slot 90 (about 65 % with `none` right), watch next speaker 60 (≥ 3 awake characters each) | They set the floors every group and watch turn depends on; each test split has at least 20 items |
   | Layer 1: **emotion** (doc 06 E8) | **~100 items**; 20–30 % where keeping the face is acceptable | The face shows on every turn of every mode; the cap stops "always keep" from carrying the score |
   | Layer 1: **listener reactions** (doc 06 E8) | **90 items** (30 test; a line, its context, one listener); at most 30 % where `none` is acceptable | A gross-failure check with a trivial baseline to beat; the shown share is reported by the latency suite |
-  | Layer 1: **debate member** (doc 08 V11) | **60 items** (20 test): rebuttal and closing slots with 2–3 eligible members | It sets `floor.member`; the test split needs 20 items for the paired test against the fixed order |
+  | Layer 1: **debate member** (doc 08 V11) | **90 items** (30 test): rebuttal and closing slots with 2–3 eligible members, at least half with a single acceptable member | It sets `floor.member`; the lift over the fixed order is tested on the single-answer items, where 80 % is not a free pass |
   | Layer 1: every other question | **40 items**, plus another 40 **only when the interval straddles the target** | 40 items catch a gross failure, and we grow a set only where the answer is unclear |
   | Layer 2: retrieval | **100 answerable questions and 40 unanswerable ones** on the same topics | 50 items can never show "≤ 5 % wrong abstains" (0 of 50 still allows up to 7 %) |
   | Layer 3: frozen transcripts | **20**, each 8–12 turns, across both worlds: 1:1 × 6, group × 5, debate × 4, watch × 5; **4 of them start from a long committed history past one drop** (doc 05 X10) | About 200 compared turns; the 4 cover the summary in the prompt |
@@ -192,7 +192,7 @@ frozen transcripts start from a long committed history.
   | Summary suite (doc 05 X10) | **40 dropped-history inputs**, 3 planted facts and 1 promise each, 20 dev / 20 test; **plus 10 watch episode recaps** (doc 07 G11) | 60 test facts for the 90 % target; the 20-item checks use "at most 1 failure, each read" |
   | Long suite (doc 05 X10) | **3 runs** past two drops, 15 late fact probes | A signal for recall and drift, not a test; reported with intervals |
   | Layer 3: free-running conversations | **4**, one per mode, **plus 3 watch runs of 30 turns and 3 group runs of 12 user messages, `agent` only** (doc 07 G11), **and 2 `agent` debates** (doc 08 V11) | What only a live run shows (B3); the extra runs give the group and watch signals enough turns |
-  | Debate suite (doc 08 V11) | **10 debates × 2** (balanced, planted weak side), each also reordered; 10 verdict proses; 10 host bridges | A gross-failure check on the verdict, each failure read; the planted side gives a known winner |
+  | Debate suite (doc 08 V11) | **12 debates × 2** (balanced, planted weak side), split 4 dev / 8 test by debate, each also with the side blocks swapped; 10 verdict proses; 10 host bridges | A gross-failure check on the verdict, each failure read; the planted side gives a known winner; the margin is tuned on dev only |
   | Judge checks (B4) | **60 per judge question** (30 real + 30 planted failures), **30 pairs** for the pairwise judge | Planted failures have known answers, so they cost no labelling |
 
 - **Every layer 1 and layer 2 set is split once, when it is created: 2/3 dev and 1/3 test.**
@@ -354,7 +354,7 @@ the largest Jev item, so judge results are cached (B7).
 
   | Question | Which mistake hurts | Policy accuracy target |
   |---|---|---|
-  | who speaks / debate member | an odd speaker; mild | ≥ 80 % inside the acceptable set; the debate member also **≥ 15 points above the fixed order**, paired test (doc 08 V11); for who speaks (doc 07 G11): the second slot uses **balanced accuracy** ("always `none`" scores 50 %), and each part must be **≥ 15 points above** its baseline (least recently spoken; round-robin for watch), judged with an exact paired test on the test split |
+  | who speaks / debate member | an odd speaker; mild | ≥ 80 % inside the acceptable set; the debate member also **≥ 15 points above the fixed order on its single-answer items**, paired test (doc 08 V11); for who speaks (doc 07 G11): the second slot uses **balanced accuracy** ("always `none`" scores 50 %), and each part must be **≥ 15 points above** its baseline (least recently spoken; round-robin for watch), judged with an exact paired test on the test split |
   | emotion | a wrong face; visible but mild | ≥ 80 % inside the acceptable set (doc 06 E3's fade applied first), **and ≥ 15 points above "always keep the current face"** |
   | listener reaction (doc 06 E5) | a wrong or needless face on a listener; mild | ≥ 80 % inside the acceptable set, **and ≥ 15 points above "always `none`"** |
   | knowledge abstain (Jev call 2 + the keep rule) | "not in my documents" when it is there is very visible | **≤ 3 wrong abstains in 100 answerable questions** (which rules out a true rate of 8.5 % or more), and **≥ 32 of 40 unanswerable questions abstained** |
@@ -444,13 +444,13 @@ with itself only about 64 % of the time, so that rule mixes up ordinary noise wi
 
   | Suite | Main calls | Estimate |
   |---|---|---|
-  | decisions | ~2,040 Jev requests (choice items in both orders, including doc 06's emotion and reaction sets, doc 07's who-speaks parts and doc 08's debate member set), ~1 k tokens each (debate items ~3 k) | ≈ $0.10 |
+  | decisions | ~2,100 Jev requests (choice items in both orders, including doc 06's emotion and reaction sets, doc 07's who-speaks parts and doc 08's debate member set), ~1 k tokens each (debate items ~3 k) | ≈ $0.10 |
   | retrieval | re-indexing and corpus embedding (< $0.01), then 140 questions × ~15 passage scores | ≈ $0.05 |
   | conversations | 200 turns × 2 profiles + 4 free runs on DeepSeek, Jev planning, and judging (≈ $0.13); doc 04's reply-rule checks and three 1:1 free runs (≈ $0.03); doc 07's 6 `agent` group and watch runs (≈ $0.03); doc 08's 2 `agent` debates (≈ $0.03) | ≈ $0.44 |
   | drafter (doc 04) | 20 drafts + 40 Jev checks | ≈ $0.025 |
   | summary (doc 05, doc 07) | 40 summary calls + 10 episode recaps + about 310 Jev checks | ≈ $0.08 |
-  | debate (doc 08) | 40 Jev verdict-score requests (balanced, planted, reordered), 40 `naive` verdicts, 10 proses, 10 host bridges, their Jev checks | ≈ $0.08 |
-  | **all** | | **≈ $0.78 (about RM 3.4)**; ≈ $1.14 at peak; **≈ $0.54 once the `naive` replies and verdicts are cached** |
+  | debate (doc 08) | 48 Jev rubric requests (balanced, planted, side-swapped), 48 `naive` verdicts, 10 proses, 10 host bridges, their Jev checks; once, ≈ $0.09 to generate the debates and plants | ≈ $0.10 |
+  | **all** | | **≈ $0.80 (about RM 3.5)**; ≈ $1.18 at peak; **≈ $0.55 once the `naive` replies and verdicts are cached** |
   | latency (rare) | 300 turns, each stopped at the first word (B8) | ≈ $0.08 |
   | long (rare, doc 05) | three agent-only runs of about 75 turns or rounds | ≈ $0.12 |
   | smoke (usual) | the changed suite + 4 free runs | ≈ $0.05–0.15 |
