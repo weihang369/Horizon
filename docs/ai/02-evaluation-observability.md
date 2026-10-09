@@ -136,6 +136,12 @@ flowchart LR
 | **2. Retrieval** | The deep path without the reply: keyword search, vector search, RRF, then Jev call 2 and the keep-or-abstain rule | Recall@pool, Recall@5 and MRR, precision and recall of the kept set, and abstain accuracy (B2) |
 | **3. Conversations** | Replies in all four modes, `agent` against `naive`, **from the same history** (B3) | The Jev judge (B4), **cost per turn by purpose**, fallback rate, deep rate, abstain rate |
 | **Latency suite** | NFR-01, NFR-02 and NFR-29, from Malaysia | p50 and p90 with intervals, and a per-stage breakdown (B8) |
+| **Drafter suite** (doc 04 P12) | The profile drafter on 20 seeds (10 dev / 10 test) | Code checks (valid, adult, example lines, plain speech, names) and two Jev checks |
+
+Doc 04 P8 and P12 also add, to layer 3: code checks on every reply for the reply rules, two Jev checks on a 100-reply
+sample, language and push-back checks on targeted transcript lines (B2's transcripts gain non-English user lines and
+planted wrong claims), repetition rates on free runs only, and three `agent`-only 1:1 free runs of 15 turns. Each new
+Jev question is validated as B4 describes before it is trusted.
 
 **How each number is reported:**
 - with its sample size, a 95 % interval, and **the trivial baseline** next to it (the majority answer, or the fallback
@@ -363,7 +369,7 @@ with itself only about 64 % of the time, so that rule mixes up ordinary noise wi
 
 **Decision:**
 - **One command:**
-  - `horizon eval <suite>`, where the suite is `decisions`, `retrieval`, `conversations`, `latency`, `smoke` or `all`;
+  - `horizon eval <suite>`, where the suite is `decisions`, `retrieval`, `conversations`, `drafter` (doc 04), `latency`, `smoke` or `all`;
   - options: `--profile`, `--limit N`, `--max-usd`, `--yes`, `--allow-peak`;
   - plus **`horizon eval capture <messageId>`** (B10).
 - **Each real run:**
@@ -415,8 +421,9 @@ with itself only about 64 % of the time, so that rule mixes up ordinary noise wi
   |---|---|---|
   | decisions | ~1,500 Jev requests (choice items in both orders), ~1 k tokens each | ≈ $0.06 |
   | retrieval | re-indexing and corpus embedding (< $0.01), then 140 questions × ~15 passage scores | ≈ $0.05 |
-  | conversations | 200 turns × 2 profiles + 4 free runs on DeepSeek, Jev planning, and judging (≈ $0.13) | ≈ $0.35 |
-  | **all** | | **≈ $0.45 (about RM 2)**; ≈ $0.65 at peak; **≈ $0.30 once the `naive` replies are cached** |
+  | conversations | 200 turns × 2 profiles + 4 free runs on DeepSeek, Jev planning, and judging (≈ $0.13); doc 04's reply-rule checks and three 1:1 free runs (≈ $0.03) | ≈ $0.38 |
+  | drafter (doc 04) | 20 drafts + 40 Jev checks | ≈ $0.025 |
+  | **all** | | **≈ $0.50 (about RM 2.2)**; ≈ $0.70 at peak; **≈ $0.35 once the `naive` replies are cached** |
   | latency (rare) | 300 turns, each stopped at the first word (B8) | ≈ $0.08 |
   | smoke (usual) | the changed suite + 4 free runs | ≈ $0.05–0.15 |
 

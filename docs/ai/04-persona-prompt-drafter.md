@@ -1,6 +1,7 @@
 # 04: The persona prompt and the profile drafter
 
-> **Status: agreed with the user, 2026-10-09** (AI stage, task 4 of 13).
+> **Status: agreed with the user, 2026-10-09** (AI stage, task 4 of 13). **Revised after an independent review** (it
+> checked the code; 12 findings, all addressed).
 > - It resolves OQ-AI-16 (the prompt template behind `systemPromptPreview`) and writes the prompt wording that doc 03
 >   left open (C4 length targets, C5 one message per line, repetition).
 > - Decisions are numbered **P1–P12**, each with the alternatives we rejected. (P, not D, so they are not confused with
@@ -63,11 +64,20 @@ From the code:
   - it is not told the world, the names already used in it, or the You card;
   - its system prompt has no guidance on names, so drafts drift to stock AI names ("Elara Voss", "Kael").
 - **The 1:1 greeting** ([one_on_one.py](../../backend/horizon/sessions/modes/one_on_one.py)) passes the stored
-  greeting as `LineHint.text`. The scripted engine says it; the naive engine ignores it and pays for a generated
-  greeting on every new chat.
+  greeting as `LineHint.text`.
+  - The scripted engine streams it through `gateway().simulated_stream`
+    ([scripted/ports.py](../../backend/horizon/ai/scripted/ports.py)), which writes a ledger row and settles the
+    reply drain, so even today's scripted greeting is billed (simulated, D-81).
+  - The naive engine ignores the text and pays for a generated greeting on every new chat.
+  - Either way the turn runs the full end of a turn ([sessions/turn.py](../../backend/horizon/sessions/turn.py)): a
+    `model` trace section, the output guardrail and the memory writer.
 - **Worlds have no description** in the contract, only a name and the You card, so the world part of the prompt is
   thin. Adding a description would be a contract change, which is not proposed here.
-- `ParticipantView` already carries each participant's `role`, so a group cast can be described without new data.
+- **`ParticipantView.role` is the participant role** (`speaker` / `debater`, set in
+  [sessions/context.py](../../backend/horizon/sessions/context.py)), not the character's job. The cast's profile roles
+  need a new internal field (P5).
+- **`count_tokens`** ([domain/pricing.py](../../backend/horizon/domain/pricing.py)) is Python only (UTF-8 bytes / 3);
+  the wizard estimates `length / 4`.
 
 ## 3. The design in one picture
 
@@ -79,7 +89,8 @@ system message 1 (fixed for the session, cached)
   # How to reply         <- the rules (P6), last before the history
 system message 2         <- rolling summary (changes only when re-summarised)
 history window           <- own lines = assistant; others = "Name: text"
-dynamic tail (per turn)  <- retrieval block · mood line (doc 01 A5) · deep length line (C4) · repeat hint (P8, off) · cue
+dynamic tail (per turn)  <- retrieval block (with the deep length override, C4) · mood line (doc 01 A5)
+                            · repeat hint (P8, off) · cue
 ```
 
 ## 4. Decisions
@@ -92,7 +103,9 @@ dynamic tail (per turn)  <- retrieval block · mood line (doc 01 A5) · deep len
   session's mode data (cast names and roles, motion, side, premise), the content rating and the length line, and
   returns the system message. No I/O, so it is cheap to test and to run anywhere.
 - The **`naive`** profile keeps its own compiler with only doc 03's changes (`naive-3`). Doc 02 B3 compares `agent`
-  against `naive`; if both used the new prompt, the evaluation could not show what the new prompt is worth.
+  against `naive`; if both used the new prompt, the evaluation could not show what the new prompt is worth. Nothing in
+  this doc touches the naive prompt or engine: the verbatim greeting (P9) is a runtime path in front of every engine,
+  and the "don't reuse your greeting" cue is in the `agent` compiler only.
 - The **scripted** profile has no prompt, but the preview (P10) still uses the `agent` compiler, because that is what
   the app sends once a key is added.
 
@@ -110,8 +123,11 @@ dynamic tail (per turn)  <- retrieval block · mood line (doc 01 A5) · deep len
 
 - All four are fixed for the session, so the prefix stays cached (NFR-35). The rules come last because they are the
   most recent instructions before the history, where they hold best.
-- Per-turn content stays in the **dynamic tail**, in this order: the retrieval block (D-93), the mood line (doc 01 A5,
-  worded in task 6), the deep length line (C4), the repeat hint (P8, off by default), then the turn cue.
+- Per-turn content stays in the **dynamic tail**, in this order: the retrieval block (D-93), which on a deep turn
+  ends with the deep length override (C4: "For this reply only: 2–4 short messages, about 120 words, instead"); the
+  mood line (doc 01 A5, worded in task 6); the repeat hint (P8, off by default); then the turn cue.
+- Nothing in system message 1 may change during a session. The cast's current faces, energy and muted state are
+  **not** in it.
 - Format: short `#` headings and plain lines, written to the character in the second person ("You are …"). It is
   about 600–900 tokens for a seed character (check 1 measures it).
 
@@ -127,7 +143,6 @@ dynamic tail (per turn)  <- retrieval block · mood line (doc 01 A5) · deep len
 ```text
 # Who you are
 You are Dr. Amara Okafor, 38 (she/her), an emergency physician & public-health researcher.
-Your line: "Let's figure out what's actually going on."
 Personality: Calm under pressure, warm, direct and evidence-first. Honest about uncertainty.
 Traits: calm, warm, direct, evidence-first, honest.
 Backstory: Fifteen years in emergency medicine. Started a burnout study after losing two colleagues to it.
@@ -154,8 +169,11 @@ The user is <You card name>. About them: <You card line>. To you, they are: <rel
   match the portrait.
 - **Reworded:** catchphrases are "use rarely, not in every message"; example lines are "style only; don't copy these
   word for word". These are the two fields models overuse most.
-- **Left out:** the greeting (only used to open a chat, P9); the palette, the song brief and the raw appearance
-  attributes (only used for images and music).
+- **Left out:**
+  - the **tagline**: it is profile-card copy, not speech, and often equals the catchphrase (Amara's does), so listing it
+    would show the catchphrase twice with only one "use rarely";
+  - the greeting (only used to open a chat, P9);
+  - the palette, the song brief and the raw appearance attributes (only used for images and music).
 - Empty fields are skipped, as today. With no You card the user is "the user"; with no relationship that clause is
   dropped.
 
@@ -163,11 +181,19 @@ The user is <You card name>. About them: <You card line>. To you, they are: <rel
 
 ### P4. A size limit for the card
 
-**Decision:** the card is at most **1,500 tokens** (counted with the existing `count_tokens`). `backstory` has no
-length limit in the contract, so a pasted 5,000-word backstory is possible.
-- Over the limit, the **backstory is cut first**, at a sentence end, with "…". If it is still over, `goals` is cut
-  the same way. The other fields are short lists in practice.
-- The preview (P10) shows the cut, so the user sees what the model gets.
+**Decision:** the card is at most **1,500 tokens**, counted with `count_tokens` (UTF-8 bytes / 3). Most text fields
+have no length limit in the contract (`backstory`, the summaries, `quirks`, `catchphrases`, `expertise`,
+`boundaries`, each example line), so a pasted 5,000-word backstory is possible.
+- Over the limit, cut in this order until it fits:
+  1. `backstory`, at the last sentence end that fits, plus "…";
+  2. `goals`, the same way;
+  3. **a hard cut of the whole card** at the last line that fits, plus "…" (the guarantee; a P12 code check counts how
+     often it fires).
+- **Sentence end** is defined once and shared: the regex `[.!?。！？](?=\s|$)`, skipping a closing quote, and never
+  after a known title (`Dr.`, `Mr.`, `Ms.`, `Mrs.`, `Prof.`, `St.`). "…" is not a sentence end.
+- `count_tokens` gets a **TypeScript port** (`frontend/src/domain/tokens.ts`) so the twin (P10) cuts at exactly the
+  same place. The shared fixtures include cut cases in ASCII and CJK.
+- The preview (P10) shows the cut and the `count_tokens` figure, so the user sees what the model gets.
 
 **Why:** every token of the card is paid uncached on the first turn of each session and re-read on every turn; a
 very long backstory also drowns the speaking style.
@@ -183,23 +209,30 @@ very long backstory also drowns the speaking style.
 | Mode | The block says | Length line (C4) |
 |---|---|---|
 | 1:1 | "This is a private one-to-one chat with {user}." | "Write 1–3 short messages, each on its own line, about 70 words in all." |
-| Group | "This is a group chat with {user} and: Hana (barista), Rin (…)." Names with roles. | "Write 1–2 short messages, each on its own line, about 50 words in all." |
-| Watch | "{user} is watching this scene, not taking part. Premise: … With you: …" | "Write 1–2 short lines, each on its own line, about 50 words in all." |
+| Group | "This is a group chat with {user} and: Hana (barista), Rin (…)." Names with profile roles. | "Write 1–2 short messages, each on its own line, about 50 words in all." |
+| Watch | "{user} is watching this scene and may step in. Premise: … With you: …" | "Write 1–2 short lines, each on its own line, about 50 words in all." |
 | Debate | The motion, your side, your opponents (task 8 words the rest). | "Write one paragraph, no line breaks, about {80 / 140 / 220} words." |
 
-- The deep 1:1 target (2–4 messages, about 120 words) is per turn, so it goes in the dynamic tail (C4), not here.
+- The length line appears **once**, here; the reply rules (P6) don't repeat it.
+- The deep 1:1 target is per turn, so it is an override in the dynamic tail (P2, C4), not here.
+- **The cast's profile roles** need a new internal field: `ParticipantView` gains `character_role` (the profile's
+  `role`), filled in `sessions/context.py`, which already loads every cast row. The existing `role` is the
+  participant role (`speaker` / `debater`).
+- Watch says "may step in" because `watch.step_in` lets the user post and two characters answer; the cached block
+  must be true either way.
 - Debate arguments and host lines stay one bubble (C5); their prompts beyond this slot are task 8's.
 - `{user}` is the You card's display name, or "the user".
 
 ### P6. The reply rules
 
-**Decision:** the "How to reply" block for 1:1 (the other modes swap the lines marked †):
+**Decision:** the "How to reply" block for 1:1 (the other modes swap the lines marked †; the length line is in the
+session block, P5, not repeated here):
 
 ```text
 # How to reply
 - Talk like a real person texting, never like an assistant: no "happy to help", no headings, lists or menus of options.
-- † Write 1–3 short messages, each on its own line, about 70 words in all.
-- Plain words only: no actions or stage directions such as *smiles*, no tags, and no name in front of your line.
+- Plain words only: no actions or stage directions such as *smiles*, no <e:…> emotion tags, and no name in front of
+  any line. (When you use a passage, its [n] marker is fine.)
 - † Speak only as yourself. Never write lines for {user}.
 - Reply in the language {user} is writing in; mixing languages is fine. If you can't tell, use English.
 - Have your own views. Disagree or push back when {first} would. Don't flatter {user} or praise their messages.
@@ -213,8 +246,11 @@ very long backstory also drowns the speaking style.
 
 - **Group:** "Speak only as yourself. Never write lines for {others} or {user}." This pairs with the C6 stop
   sequences, which catch the slips.
-- **Watch:** "Speak only as yourself; never write lines for {others}." The short-message rule is dropped (the user
-  isn't talking). The language rule becomes "Use the language of the premise; if you can't tell, English."
+- **Watch:** "Speak only as yourself. Never write lines for {others} or {user}." (C6 also stops on the user's name.)
+  The short-message rule stays (it applies only if the user steps in). The language rule becomes "Use the language
+  {user} writes in if they have written; otherwise the premise's; if you can't tell, English."
+- **A name at the start of any line, not only the first, is stripped:** with line-break bubbles a "Mei: …" on a
+  second line would otherwise render as its own bubble. The C6 name-prefix buffer runs at every line start (§6).
 - **Debate:** the short-message and question rules are dropped (task 8 owns the debate style).
 - **Emoji line:** formality `formal` → "Don't use emoji." Otherwise → "Use emoji only if it fits how you talk, and at
   most one per message."
@@ -255,11 +291,15 @@ should almost never hit, and a stale face for one turn is harmless.
 
 **Decision:**
 - **The rule** in P6 ("don't reuse openers, phrases or your catchphrase") plus the card wording in P3.
-- **The metric,** added to doc 02's layer-3 run, computed in code at $0:
+- **The metric,** computed in code at $0:
   - **repeated-opener rate:** the share of replies whose first three words match one of the same speaker's previous
     three replies in that session;
   - **catchphrase rate:** the share of replies containing the catchphrase.
   - Targets: repeated openers under 10 %, catchphrase in under 20 % of replies.
+  - **Measured on free-running conversations only.** On doc 02's frozen transcripts the "previous replies" are stored
+    lines, not the agent's own, so its repetition can't build up there (B3). The doc 02 free runs gain **three 1:1
+    runs of 15 turns with fixed user lines**, `agent` only (single-profile, so B3's pairing concern doesn't apply):
+    about 45 replies plus the existing free runs, ≈ $0.01.
 - **The hint, off by default:** one dynamic-tail line, "Your last replies began: '…', '…', '…'. Start differently.",
   built from the speaker's own last three replies (about 20 tokens). A config switch turns it on if the metric misses
   its target. It goes after the history, so the cached prefix is untouched.
@@ -273,17 +313,27 @@ should almost never hit, and a stale face for one turn is harmless.
 ### P9. Greeting: the approved line first, generated after
 
 **Decision:**
-- A new 1:1 session uses the **stored greeting word for word** when the character has **no other non-seed 1:1
-  session** (`sessions.is_seed = false`, the character a participant). Seed recordings don't count; a deleted session
-  doesn't count.
-  - No model call: $0, no energy, no ledger row, and it appears after the usual greeting delay.
-  - It is passed as `LineHint(kind="greeting", text=…, verbatim=True)`; `verbatim` is a new internal field. The
-    `naive` and `agent` engines say a verbatim line as it is, the way the scripted engine already does, with a trace
-    that records no model call.
-  - The face is `happy`, as the scripted greeting already uses (demo parity), with no Jev call.
-- **Later sessions** generate the greeting as today, with the greeting cue gaining "Don't reuse your usual greeting:
-  '<stored greeting>'." Task 9 can add "last time we talked about …".
-- The scripted profile is unchanged (it always says the stored greeting).
+- **The first-chat rule:** a new 1:1 session uses the **stored greeting word for word** when
+  - `profile.greeting` is not empty, **and**
+  - there is no other `one_on_one` session with `is_seed = false` and `continued_from IS NULL` in which **this
+    character has a message**.
+
+  So seed recordings and "Continue live" forks (which copy seed messages, `sessions/fork.py`) don't count, and neither
+  does a session where the greeting never ran (asleep, cap refusal, closed before the greeting delay). A deleted
+  session doesn't count.
+- **A runtime path, not an engine path.** `one_on_one.greet` passes `LineHint(kind="greeting", text=…,
+  verbatim=True)` (`verbatim` is a new internal field). `sessions/turn.py` then, for **every profile**:
+  - skips the turn planner (no Jev call), the engine and the gateway, so there is no ledger row and no energy drain;
+  - streams the text as the message after the usual greeting delay, with the face `happy` (what the scripted greeting
+    already uses);
+  - skips the output guardrail (the user approved this text in the wizard) and the memory writer (a greeting holds
+    nothing to remember);
+  - writes a trace with **no `model` section** (it is optional in `TurnTrace`) and `prompt_version = None`, so Insight
+    never claims a call that didn't happen.
+  - The mock client does the same for its first chat (demo parity), with no simulated cost.
+- **Later sessions** generate the greeting: the `agent` compiler's greeting cue gains "Don't reuse your usual
+  greeting: '<stored greeting>'." The scripted profile keeps its simulated, billed greeting (D-81) for later sessions.
+  Task 9 can add "last time we talked about …".
 
 **Why:** the user approved this exact line in the wizard, it costs nothing, and the first chat opens about 1–2 s
 faster. A generated greeting afterwards avoids the same line every time.
@@ -299,8 +349,9 @@ faster. A generated greeting afterwards avoids the same line every time.
   **shared fixtures** (`backend/tests/fixtures/persona_prompt/`), the same pattern as the tag parser
   (`tagParser.fixtures.test.ts`), so they produce byte-identical text.
 - The wizard's Profile step replaces the mock `composePrompt` with the twin: the **1:1 variant**, with this world's
-  name and You card. It updates live as the user edits, including the P4 cut, and the "mock template" label goes.
-  The token count stays the ≈ estimate it is today.
+  name and You card (the wizard already has the world) and the character's `appearanceSummary` (it already has the
+  character). It updates live as the user edits, including the P4 cut, and the "mock template" label goes. The token
+  count becomes the ported `count_tokens` (P4), labelled "≈".
 - The backend does not fill `systemPromptPreview`; the scripted drafter's one-line fake is removed. The field stays
   optional in the contract and unused (no contract change).
 
@@ -328,8 +379,18 @@ faster. A generated greeting afterwards avoids the same line every time.
 - **Unchanged from doc 03:** one JSON-mode call, validation, one retry on a parse or validation failure, temperature
   1.0, 2,400 `max_tokens`. A draft gets about 100 tokens longer (≈ $0.0001).
 - `regenerate_field` gets the same name and plain-speech rules for the greeting.
-- The job passes the world's name, the cast's names and the You card to `NaiveDrafter.draft` (an internal change in
-  `services/jobs/worker.py`; the port signature gains one optional `world` argument).
+- The job passes the world's name, the names already used in it and the You card to the drafter (an internal change in
+  `services/jobs/worker.py`). The `ProfileDrafter.draft` port gains one optional `world` argument, and **both**
+  implementations take it: `NaiveDrafter` and `ScriptedDrafter` (`ai/scripted/creation.py`), or the shared call in
+  the worker raises under the scripted profile.
+- **Doc 03 C7's one-example rule:** the example draft in the drafter prompt gains `exampleLines` and
+  `relationshipToUser`.
+- **Scripted and mock drafts** (`ai/scripted/drafts.py`, byte-pinned to `frontend/src/mock/banks/drafts.ts` by
+  `backend/tests/fixtures/drafts/`):
+  - they fill 2–3 `exampleLines` from a small bank and drop the fake `systemPromptPreview`;
+  - the greeting "Hi, I'm {name}. What can I do for you?" is assistant voice, which P6 forbids and P9 would now say
+    word for word; it becomes a plain greeting from the same bank (for example "Oh, hey. I'm {name}.");
+  - the extra random picks shift the shared RNG order, so **every drafts fixture is regenerated** in the same change.
 
 **Rejected:**
 - Validating names in code (stock list or duplicates) and retrying: a retry costs a whole draft, and the user edits
@@ -338,19 +399,29 @@ faster. A generated greeting afterwards avoids the same line every time.
 
 ### P12. Evaluation additions
 
-**Decision:** added to doc 02's harness, all within its budget:
-- **Drafter suite** (layer 1, ≈ $0.02 a run, B7 asks before spending): 20 seeds across the three intents and two
-  worlds.
-  - Code checks: contract-valid, adult, 2–3 example lines, no `*` actions in the greeting or example lines, name not
-    in the stock list or the world.
-  - Jev atomic checks (B4): fits the seed; voice is distinct from the other drafts; the relationship fits the You card.
+**Decision:** these extend doc 02, and doc 02 is updated to match (§6):
+- **A new `drafter` suite** in `horizon eval` (B7's suite list gains it; it is DeepSeek output, so it is not layer 1,
+  which is Jev decisions only):
+  - 20 seeds across the three intents and two worlds, **split 10 dev / 10 test** (B2's rule: tune on dev, report on
+    test);
+  - code checks: contract-valid, adult, 2–3 example lines, no `*` actions in the greeting or example lines, name not
+    in the stock list or the world;
+  - Jev atomic checks (B4): fits the seed; the relationship fits the You card;
+  - cost: 20 drafts ≈ $0.02, plus 40 Jev requests ≈ $0.003.
 - **Reply-rule checks** on doc 02's layer-3 conversations (no extra DeepSeek calls):
-  - code: action rate (`*…*`), stray tag or name prefix, bubbles over the mode's target, emoji over one, question-ending
-    rate, repeated-opener and catchphrase rates (P8);
-  - Jev atomic checks: in character; replies in the user's language; no assistant voice; pushes back when it should
-    (a planted "user says something wrong" line); no flattery.
-- **Targets:** actions and stray tags under 2 %; question-ending under 50 %; the P8 targets. A miss is a prompt fix,
-  re-run on the dev split (B2) before the test split.
+  - **code, on every reply, $0:** action rate (`*…*`), stray tag or name prefix, bubbles over the mode's target, emoji
+    over one, question-ending rate, the hard-cut rate (P4), and the P8 repetition rates (free runs only);
+  - **Jev, on a 100-reply sample** to keep the cost down: no assistant voice, no flattery (about 200 requests);
+  - **Jev, only on targeted lines:** replies in the user's language (on the non-English user lines) and pushes back
+    (on planted "user says something wrong" lines). B2's transcripts gain these lines: at least 10 Malay or Chinese
+    or mixed user lines and 10 planted wrong claims, split dev / test like the rest.
+  - "In character" is **not** added: it is already B4's judge metric.
+  - Cost: about 250 Jev requests ≈ $0.02 a full run.
+- **Each new Jev question is validated before it is trusted** (B4): 30 real and 30 planted items per question (four
+  reply questions, two drafter questions), a one-time ≈ $0.03.
+- **B7's estimate** rises by about $0.05 per full run (drafter suite + reply checks + the three 1:1 free runs).
+- **Targets:** actions and stray tags under 2 %; question-ending under 50 %; hard cuts under 1 %; the P8 targets. A
+  miss is a prompt fix, tuned on the dev items and confirmed on the test items.
 
 ## 5. Checks before this is locked
 
@@ -364,13 +435,16 @@ faster. A generated greeting afterwards avoids the same line every time.
 | Change | Where | Kind |
 |---|---|---|
 | The `agent` persona compiler (P1–P6), `prompt_version = "agent-1"`; the card limit (P4) | new `ai/agent/persona.py` (next to the agent engine) | backend |
-| No tag instruction on the `agent` path; Jev failure keeps the previous face; parser only strips stray tags and name prefixes (P7) | the agent reply engine, the turn plan's emotion fallback | backend |
+| No tag instruction on the `agent` path; Jev failure keeps the previous face; parser only strips stray tags and name prefixes, **at every line start** (P6, P7) | the agent reply engine, the turn plan's emotion fallback, `ai/naive/tag_parser.py` + `backend/tests/fixtures/tag_parser/` (extends doc 03 C6's buffer) | backend |
 | The repeat hint behind a config switch, off (P8) | `frontend/scripts/seed-build/runtime.config.ts` → `seed/runtime.json`; `domain/runtime_config.py` | config |
-| `LineHint.verbatim`; first-chat rule; engines say a verbatim line with no call; greeting cue gains the "don't reuse" line (P9) | `ai/contexts.py`, `sessions/modes/one_on_one.py`, `ai/naive/turn.py`, `ai/naive/prompt.py` (`turn_cue`), the agent engine | backend |
-| `appearanceSummary` reaches the compiler (P3) | `ai/contexts.py` (`CharacterView`), where the context is built | backend |
-| TS twin + shared fixtures; Profile step uses it; remove the mock and the scripted fake preview (P10) | `frontend/src/domain/personaPrompt.ts`, `ProfileStep.tsx`, `backend/tests/fixtures/persona_prompt/`, `ai/scripted/drafts.py`, `frontend/src/mock/banks/drafts.ts` | frontend + backend |
-| Drafter schema, prompt and world context (P11) | `ai/naive/creation.py`, `ai/ports.py` (`ProfileDrafter.draft` gains `world`), `services/jobs/worker.py`; scripted drafter and mock bank fill `exampleLines` for parity | backend + frontend |
-| Eval: drafter suite, reply-rule checks, repetition metrics (P8, P12) | the `horizon eval` harness (doc 02 §7) | backend |
+| `LineHint.verbatim`; the first-chat query; the verbatim runtime path (no planner, engine, gateway, guardrail or memory writer; no `model` trace; `prompt_version` None) (P9) | `ai/contexts.py`, `sessions/modes/one_on_one.py`, **`sessions/turn.py`**; the mock client's first chat (`frontend/src/mock/engines/oneOnOne.ts`) | backend + frontend |
+| The `agent` greeting cue with "don't reuse your usual greeting" (P9) | `ai/agent/persona.py` (the naive `turn_cue` is unchanged) | backend |
+| `appearanceSummary` reaches the compiler (P3); `ParticipantView.character_role` (P5) | `ai/contexts.py` (`CharacterView`, `ParticipantView`), `sessions/context.py` | backend |
+| TS twin + `count_tokens` port + shared fixtures with cut cases; Profile step uses them; remove the mock and the scripted fake preview (P4, P10) | `frontend/src/domain/personaPrompt.ts`, `frontend/src/domain/tokens.ts`, `ProfileStep.tsx`, `backend/tests/fixtures/persona_prompt/` | frontend + backend |
+| Drafter schema, prompt, C7 example and world context; both drafters take `world` (P11) | `ai/naive/creation.py`, `ai/scripted/creation.py`, `ai/ports.py` (`ProfileDrafter.draft`), `services/jobs/worker.py` | backend |
+| Scripted and mock drafts: example lines, plain greeting, no fake preview; regenerate every drafts fixture (P11) | `ai/scripted/drafts.py`, `frontend/src/mock/banks/drafts.ts`, `backend/tests/fixtures/drafts/` | backend + frontend |
+| Eval: `drafter` suite, reply-rule checks, repetition metrics on free runs, three 1:1 free runs, judge validation (P8, P12) | the `horizon eval` harness | backend |
+| Doc 02: B1/B7 suite list gains `drafter`; B2 transcripts gain non-English user lines and planted wrong claims; B4 lists the new judge questions; B7's cost line +≈ $0.05 | `docs/ai/02-evaluation-observability.md` | docs |
 | Doc 01 A5 and its fallback table's emotion row (P7); OQ-AI-16 resolved; CHR-05 AC1 drops "it's a mock in the UI phase" | `docs/ai/01-agent-architecture.md`, `docs/requirements/02, 08` | docs |
 
 **No contract change.** `relationshipToUser`, `exampleLines` and `systemPromptPreview` already exist; `verbatim` and
