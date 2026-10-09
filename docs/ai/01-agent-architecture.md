@@ -235,7 +235,7 @@ probabilities for Insight.
 | who speaks (group / watch) | @mentions, else **least recently spoken** (today's rule) | @mentions, else the least recently spoken **of Jev's top 2** |
 | which debate member | the next member in today's fixed order | the same |
 | needs documents / memories | **no: a quick reply** (no retrieval without Jev to check it) | treat as yes; Jev call 2 then decides. A noul has no confidence, so "unsure" is built into its threshold `t_gate`, set low enough for recall (02 B5) |
-| emotion | **keep the previous face** (amended by doc 04 P7: the `agent` prompt has no emotion tag) | **keep the previous face**; DeepSeek is told the previous mood |
+| emotion | **keep the previous face** (amended by doc 04 P7: the `agent` prompt has no emotion tag); a kept surprised or embarrassed face becomes neutral (doc 06 E3) | the same; DeepSeek's mood line follows the face shown (doc 06 E4) |
 | input safe | pass, with a flag in Insight | task 11 decides |
 | talk finished | no (the turn caps still bound watch mode) | no |
 
@@ -252,7 +252,8 @@ probabilities for Insight.
 
 **Decision:**
 - In AUTO mode, the emotion comes from Jev call 1. It is shown **when the reply's gateway preflight succeeds**, as
-  `turn.start.emotion`, so a refused reply still leaves no message.
+  an `emotion` event appended with `turn.start` (amended by doc 06 E2: both reducers ignore `turn.start.emotion`), so
+  a refused reply still leaves no message.
 - In practice the face changes before the first word, because the preflight is local and takes milliseconds.
 - **Where the mood goes in the prompt:**
   - DeepSeek is told the mood by **one line in the dynamic tail** (after the history), so the cached prefix doesn't
@@ -261,9 +262,10 @@ probabilities for Insight.
     face, the same as "unsure" (only the `naive` yardstick keeps the tag);
   - any stray tag DeepSeek still writes is stripped without changing the face, so a reply never changes face
     mid-sentence (D-46).
-- If Jev is unsure, the previous face stays (A4).
+- If Jev is unsure, the previous face stays (A4); short faces fade to neutral (doc 06 E3).
 - MANUAL emotion stays face-only and never changes the reply.
-- Task 6 confirms the approach with the evaluation and words the mood line.
+- ~~Task 6 confirms the approach with the evaluation and words the mood line.~~ Done in doc 06 (E1–E9): the question
+  and its options (E1), the mood line (E4), and the evaluation (E8).
 
 **Why:** the emotion arrives ahead of the first word, which is well inside NFR-29, and the words and the face always
 agree.
@@ -343,7 +345,7 @@ emotion, and the hits it kept. The reply engine never queries storage (D-92 hold
 | LangGraph graphs | Plain calls (one step) |
 |---|---|
 | **Turn plan graph** (A4, A6): Jev call 1 → quick/deep branch → embed → search → parallel Jev call 2 → keep or drop | **The reply:** one DeepSeek stream (today's engine, extended in A5) |
-| **Post-turn check graph:** emotion check ∥ citation check → merge into Insight | **Listener reactions** (one Jev call) |
+| **Post-turn check graph:** emotion check ∥ citation check → merge into Insight (the live emotion check waits for the System 1 section, doc 06 E7) | **Listener reactions** (one Jev call, doc 06 E5) |
 | **Memory graph** (task 9): extract → Jev importance → compare with old memories → insert / supersede / reinforce / skip | **Rolling summary** (one DeepSeek call) |
 | **Verdict graph** (task 8): Jev rubric scores in parallel → host writes the verdict | **Profile drafter, image, song** |
 
@@ -509,14 +511,14 @@ None of the backend rows changes the HTTP contract unless marked.
 | Debate: Jev picks the member among those who haven't spoken in the phase; openings stay fixed; a new trace marker for "member chosen by Jev" | backend + contract (trace value) | A14 | 8 |
 | `DebateHost.narration()` returns a fixed string, so it can't stream LLM-voiced host prose | backend | A7 | 8 |
 | Watch **"the talk is finished"** needs an outcome: e.g. `ended` with a new paused reason, and whether "Continue +10" still works | backend + **contract** | A4 | 7 |
-| **A "System 1" section in `TurnTrace`, and its Insight UI** | **contract + UI** | A12 | 2 / 6 |
+| **A "System 1" section in `TurnTrace`, and its Insight UI** (task 6 left it unapproved; the live face-and-words check waits for it, doc 06 E7) | **contract + UI** | A12 | approval pending |
 | **Docs to amend:** a new decision-log entry replacing D-97's rule; resolve OQ-AI-07 (Jev first, the tag as fallback); note in D-92 that the planner is a runtime-called port; update the 05-ai-seams §3 purpose table and §2.2 port catalogue | docs | all | 13 |
 
 ## 9. Left for later tasks
 
 - Long-term memory policy: remember everything, or keep only what Jev scores as important (task 9).
 - Gate thresholds and confidence floors, tuned on labelled data (tasks 2, 9, 10).
-- The mood-line wording, and AUTO emotion confirmed by the evaluation (task 6).
+- ~~The mood-line wording, and AUTO emotion confirmed by the evaluation (task 6).~~ Resolved by doc 06 (E4, E8).
 - ~~Exactly which fields go into Jev call 1's state, and its token budget (task 5).~~ Resolved by doc 05 X9.
 - Jev call 2's score levels, the number of candidates, k, and the wording of the not-found line (task 10).
 - What "input not safe" does, and the output guardrail's timeout (task 11).

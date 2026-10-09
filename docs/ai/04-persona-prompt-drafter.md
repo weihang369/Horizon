@@ -125,7 +125,7 @@ dynamic tail (per turn)  <- retrieval block (with the deep length override, C4) 
   most recent instructions before the history, where they hold best.
 - Per-turn content stays in the **dynamic tail**, in this order: the retrieval block (D-93), which on a deep turn
   ends with the deep length override (C4: "For this reply only: 2–4 short messages, about 120 words, instead"); the
-  mood line (doc 01 A5, worded in task 6); the repeat hint (P8, off by default); then the turn cue.
+  mood line (doc 01 A5, worded in doc 06 E4); the repeat hint (P8, off by default); then the turn cue.
 - Nothing in system message 1 may change during a session. The cast's current faces, energy and muted state are
   **not** in it.
 - Format: short `#` headings and plain lines, written to the character in the second person ("You are …"). It is
@@ -474,7 +474,7 @@ the drafter's `world` argument are internal.
 
 ## 7. Left for later tasks
 
-- The mood line's wording and the emotion evaluation (task 6).
+- ~~The mood line's wording and the emotion evaluation (task 6).~~ Resolved by doc 06 (E4, E8).
 - Group and watch turn-taking, including when a character should stay quiet or address another character (task 7).
 - Debate argument, host and verdict prompts (task 8).
 - "Last time we talked about …" greetings and memory in the prompt (task 9).

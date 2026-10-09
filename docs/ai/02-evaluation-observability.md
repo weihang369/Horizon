@@ -180,6 +180,8 @@ frozen transcripts start from a long committed history.
   |---|---|---|
   | Layer 1: each **noul that sets a threshold** (needs documents, needs memories, talk finished) | **~120 items, at least 60 of them "yes"** | A recall target is judged on 60+ positives. With 50, 45 right still leaves 79–96 %. |
   | Layer 1: **passage score** and **who speaks** | **~100 items** | They set floors that every deep or group turn depends on |
+  | Layer 1: **emotion** (doc 06 E8) | **~100 items**, at least 15 where keeping the previous face is right | The face shows on every turn of every mode |
+  | Layer 1: **listener reactions** (doc 06 E8) | **60 items** (a line, its context, one listener) | A visible but mild mistake; the share of messages that react is also reported |
   | Layer 1: every other question | **40 items**, plus another 40 **only when the interval straddles the target** | 40 items catch a gross failure, and we grow a set only where the answer is unclear |
   | Layer 2: retrieval | **100 answerable questions and 40 unanswerable ones** on the same topics | 50 items can never show "≤ 5 % wrong abstains" (0 of 50 still allows up to 7 %) |
   | Layer 3: frozen transcripts | **20**, each 8–12 turns, across both worlds: 1:1 × 6, group × 5, debate × 4, watch × 5; **4 of them start from a long committed history past one drop** (doc 05 X10) | About 200 compared turns; the 4 cover the summary in the prompt |
@@ -279,7 +281,8 @@ frozen transcripts start from a long committed history.
   | **Draft quality** (doc 04 P12) | 2 nouls: fits the seed · the relationship fits the You card | the seed, the You card + the draft |
 | **Summary quality** (doc 05 X10) | 5 nouls: a planted fact is kept · the promise is kept · it says who made the promise · same language as most lines · nothing unsupported | the dropped lines + the summary (one fact or promise per question) |
 | **Recall** (doc 05 X10) | 1 noul: the reply uses the planted fact | the fact + the probe + the reply |
-  | **Face and words agree** | a choice from the 7 emotions, given only the reply text (the live post-turn emotion check) | the reply |
+  | **Face and words agree** | a choice from the 7 emotions, given only the reply text (the post-turn emotion check; evaluation only until the System 1 section, doc 06 E7). Target: the shown face or neutral ≥ 80 %, clashes ≤ 5 % (doc 06 E8) | the reply |
+  | **Names the feeling** (doc 06 E8) | 1 noul: the reply states the character's own feeling outright (a pass is "no"); ≥ 95 % pass on replies with a mood line | the reply |
   | **Debate quality** | the rubric (task 8) | — |
   | **Safety** | a red-team set (task 11) | — |
 
@@ -347,7 +350,8 @@ the largest Jev item, so judge results are cached (B7).
   | Question | Which mistake hurts | Policy accuracy target |
   |---|---|---|
   | who speaks / debate member | an odd speaker; mild | ≥ 80 % inside the acceptable set |
-  | emotion | a wrong face; visible but mild | ≥ 80 % inside the acceptable set |
+  | emotion | a wrong face; visible but mild | ≥ 80 % inside the acceptable set (doc 06 E3's fade applied first) |
+  | listener reaction (doc 06 E5) | a wrong or needless face on a listener; mild | ≥ 80 % inside the acceptable set (`none` may be acceptable) |
   | knowledge abstain (Jev call 2 + the keep rule) | "not in my documents" when it is there is very visible | **≤ 3 wrong abstains in 100 answerable questions** (which rules out a true rate of 8.5 % or more), and **≥ 32 of 40 unanswerable questions abstained** |
 
 - **If no setting meets its target, the question is rewritten.** Lowering the target is the last resort.
@@ -432,12 +436,12 @@ with itself only about 64 % of the time, so that rule mixes up ordinary noise wi
 
   | Suite | Main calls | Estimate |
   |---|---|---|
-  | decisions | ~1,500 Jev requests (choice items in both orders), ~1 k tokens each | ≈ $0.06 |
+  | decisions | ~1,700 Jev requests (choice items in both orders, including doc 06's emotion and reaction sets), ~1 k tokens each | ≈ $0.07 |
   | retrieval | re-indexing and corpus embedding (< $0.01), then 140 questions × ~15 passage scores | ≈ $0.05 |
   | conversations | 200 turns × 2 profiles + 4 free runs on DeepSeek, Jev planning, and judging (≈ $0.13); doc 04's reply-rule checks and three 1:1 free runs (≈ $0.03) | ≈ $0.38 |
   | drafter (doc 04) | 20 drafts + 40 Jev checks | ≈ $0.025 |
   | summary (doc 05) | 40 summary calls + about 280 Jev checks | ≈ $0.06 |
-  | **all** | | **≈ $0.58 (about RM 2.5)**; ≈ $0.80 at peak; **≈ $0.41 once the `naive` replies are cached** |
+  | **all** | | **≈ $0.59 (about RM 2.5)**; ≈ $0.81 at peak; **≈ $0.42 once the `naive` replies are cached** |
   | latency (rare) | 300 turns, each stopped at the first word (B8) | ≈ $0.08 |
   | long (rare, doc 05) | three agent-only runs of about 75 turns or rounds | ≈ $0.12 |
   | smoke (usual) | the changed suite + 4 free runs | ≈ $0.05–0.15 |
