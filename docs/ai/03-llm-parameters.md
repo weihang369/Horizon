@@ -1,6 +1,7 @@
 # 03: LLM parameters
 
-> **Status: agreed with the user, 2026-10-09** (AI stage, task 3 of 13).
+> **Status: agreed with the user, 2026-10-09** (AI stage, task 3 of 13). **Revised after an independent review** (it
+> checked the code and the provider docs; 14 findings, all addressed).
 > - It resolves OQ-AI-13 (main LLM parameters).
 > - Decisions are numbered **C1–C9**, each with the alternatives we rejected.
 > - It builds on [01-agent-architecture](01-agent-architecture.md) (A1–A14) and
@@ -34,8 +35,15 @@ DeepSeek call is configured:
 From the code:
 
 - **`ChatRequest`** ([chat.py](../../backend/horizon/gateway/chat.py)) already carries `temperature`, `reasoning`,
-  `response_format`, `stop`, `logprobs` and `extra`. Only the fields that are set go into the body. So nothing in this
-  task needs a gateway change, except removing the fallback model (C8).
+  `response_format`, `stop`, `logprobs` and `extra`. Only the fields that are set go into the body.
+
+  Small gateway changes are still needed:
+  - remove the fallback model (C8);
+  - keep `finish_reason` and reasoning tokens (C2, C4);
+  - map error finish reasons (C4).
+
+  Today `parse_usage` drops `completion_tokens_details.reasoning_tokens`. The stream raises only on refusals
+  (`REFUSALS`); any other finish reason ends the reply as complete.
 - **Every request** carries the pinned routing block from `seed/pricing.json`:
   - provider order `["DeepSeek"]`;
   - `require_parameters: true`;
@@ -54,8 +62,32 @@ From the code:
   | watch | 220 |
   | debate short / medium / long | 200 / 320 / 480 |
 
-  The prompt only says "reply in character, briefly". The cap is the only real length control, so a reply that hits
-  it stops mid-sentence.
+  The prompt only says "reply in character, briefly, in plain text". The debate cue says "stay under a few sentences".
+  The cap is the only real length control, so a reply that hits it stops mid-sentence.
+
+  The cap is computed **before** the turn is planned (`ReplyCaps.for_mode(mode)` in `sessions/turn.py` and
+  `sessions/prefetch.py`), and `TurnContext.max_tokens` defaults to 350. The naive engine skips content-less chunks,
+  so the final chunk's `finish_reason` is thrown away.
+- **The seed files are generated.** `seed/pricing.json` and `seed/runtime.json` are built by
+  `frontend/scripts/seed-build` from TypeScript sources, and `seed:check` guards them. The sources are:
+  - `frontend/src/mock/pricing.config.ts` (with `fallbackModel`, typed as required in `frontend/src/domain/cost.ts`);
+  - `frontend/scripts/seed-build/runtime.config.ts` (`replyMaxTokens`).
+
+  Tests pin today's values:
+  - `tests/unit/test_runtime_config.py` (350 / 250 / 220);
+  - `tests/sessions/test_naive.py` (`max_tokens == 350`);
+  - `tests/unit/test_chat_client.py` (the `models` fallback list);
+  - `tests/knowledge/test_naive_prompt.py`.
+- **How replies are displayed.**
+  - 1:1 and group render a chat bubble.
+  - Watch renders a **script row** (`variant="script"`, no bubble).
+  - A chat reply longer than `READABLE_CHARS` (600) switches to the **Readable** panel by itself
+    ([MessageRow.tsx](../../frontend/src/features/session/MessageRow.tsx),
+    [sessionContext.ts](../../frontend/src/features/session/sessionContext.ts)).
+  - Seed transcripts and the mock banks are single-block lines.
+- **The emotion tag parser** ([tag_parser.py](../../backend/horizon/ai/naive/tag_parser.py)) releases the start of the
+  stream as soon as it can't be the start of `<e:`. It does **not** buffer a name prefix.
+- **The largest cast is 5 characters** (`sessions/lifecycle.py`: group, watch and debate allow 2–5).
 - **The history** renders other speakers as `user` messages prefixed with their name (`Mei: …`, see
   [window.py](../../backend/horizon/ai/naive/window.py)). So the model sometimes continues with the next speaker's line.
 - **The naive drafter** ([naive/creation.py](../../backend/horizon/ai/naive/creation.py)) uses JSON mode
@@ -63,11 +95,14 @@ From the code:
 - **Host lines, the verdict and the rolling summary** are scripted-only today (doc 01 §8). Their DeepSeek calls arrive
   in tasks 8 and 9, and they use the settings in C1.
 - **Model overrides.** Settings → Models (SET-05) lets the user type a different model slug, saved as
-  `modelOverrides`. **Only the Test button reads them** ([probes.py](../../backend/horizon/services/probes.py)):
-  - replies use the model pinned in `seed/pricing.json`;
-  - the drafter uses `settings.models.chat` (the default, not the override).
-
+  `modelOverrides`. **Only the Test button reads them** ([probes.py](../../backend/horizon/services/probes.py)).
   Today, typing another model there changes nothing a user can see.
+- **There are two sources for the chat model.**
+  - Replies use `prices.chat.model` (`seed/pricing.json`).
+  - The drafter and the probe use `settings.models.chat` (`seed/settings.json`).
+
+  They agree today only because both are generated with the same value.
+- **The chat probe** sends no `reasoning`, so it runs with thinking on.
 
 ## 3. What the provider docs say (checked 2026-10-09)
 
@@ -83,9 +118,22 @@ From the code:
 
   DeepSeek admits it "may occasionally return empty content".
 - **F3. `deepseek/deepseek-v4-flash`, our configured fallback model, is no longer served by DeepSeek.** It has 17
-  third-party endpoints, several of them fp4 or fp8, and only one with implicit caching. During a DeepSeek outage,
-  OpenRouter first tries **V4.1 Flash on other providers** anyway, because `allow_fallbacks` is true. Those are the
-  31 endpoints, filtered by our quantization list and `require_parameters`.
+  third-party endpoints, several of them fp4 or fp8, and only one (Azure) with *implicit* caching.
+
+  During a DeepSeek outage, OpenRouter first tries **V4.1 Flash on other providers** anyway, because
+  `allow_fallbacks` is true.
+  - **The pool is smaller than it looks.** No V4.1 endpoint declares bf16, fp16 or fp32, so our quantization list
+    admits only the 12 endpoints marked `unknown`, DeepSeek included.
+  - `require_parameters` then removes the ones missing a parameter we send. DigitalOcean lacks `stop`, so it can't take
+    replies. Relace lacks `response_format`, so it can't take JSON calls.
+  - "Unknown" means undisclosed precision, not NFR-33's "full precision". That is a gap in the existing D-41 routing,
+    noted here and not changed by this task.
+- **F3b. Repetition penalties.** DeepSeek's own API reference marks `presence_penalty` and `frequency_penalty` as no
+  longer supported, even though OpenRouter still lists them on the DeepSeek endpoint.
+- **F3c. Stop sequences.** DeepSeek accepts up to 16 stop strings.
+- **F3d. Turning reasoning off.** OpenRouter documents `reasoning.effort: "none"` as the way to turn reasoning off.
+  Horizon sends `reasoning: {enabled: false}`, which the M2 live run accepted. Check 1 confirms that no reasoning
+  tokens are produced, and switches to `effort: "none"` if any are.
 - **F4. DeepSeek's recommended temperatures:**
 
   | Use | Temperature |
@@ -104,29 +152,33 @@ From the code:
 
 ### C1. One settings row per call type, in config
 
-**Decision:** a table `runtime.llm.calls` in `seed/runtime.json`, keyed by purpose. It holds `thinking`,
-`temperature`, the output kind and the length target. Code never hard-codes these values. Every DeepSeek call looks up
-its row.
+**Decision:** a table `runtime.llm.calls`, keyed as below. It holds `thinking`, `temperature` and the output kind.
+Code never hard-codes these values. Every DeepSeek call looks up its row.
 
-| Call (purpose) | Thinking | Temperature | Output | Built in |
-|---|---|---|---|---|
-| Character reply, 1:1 / group / watch (`reply`) | off | **1.3** | stream | naive today, agent profile |
-| Debate argument (`reply`, debate mode) | off | 1.0 | stream | task 8 |
-| Debate host lines and verdict prose (`host`, `verdict`) | off | 1.0 | stream | task 8 |
-| Rolling summary (`summary`), memory extraction (`memory`) | off | 0.7 | text / JSON | task 9 |
-| Profile draft, regenerate one field (`profile`) | off | 1.0 | JSON | naive today |
+The table lives in the seed-build source `frontend/scripts/seed-build/runtime.config.ts`, which generates
+`seed/runtime.json`. The length targets are in C4.
+
+| Key | Call | Thinking | Temperature | Output | Built in |
+|---|---|---|---|---|---|
+| `reply.chat` | Character reply, 1:1 / group / watch | off | **1.3** | stream | naive today, agent profile |
+| `reply.debate` | Debate argument | off | 1.0 | stream | task 8 |
+| `host`, `verdict` | Debate host lines and verdict prose | off | 1.0 | stream | task 8 |
+| `summary` | Rolling summary | off | 0.7 | text | task 9 |
+| `memory` | Memory extraction | off | 0.7 | JSON | task 9 |
+| `profile` | Profile draft, regenerate one field | off | 1.0 | JSON | naive today |
+| `probe` | Settings → Test, 1 token | off | none | text | today |
 
 Why these temperatures:
 - **Replies use 1.3**, DeepSeek's value for conversation (F4). The user chose not to A/B test it.
 - **Debate and host use 1.0:** arguments must stay on the motion and answer the other side.
 - **Summary and memory use 0.7, below DeepSeek's 1.0 for analysis:** they must be faithful to what was said, never
   inventive.
-- **JSON calls use 1.0:** this keeps the output valid while the drafter can still be creative.
+- **The profile drafter uses 1.0:** this keeps the JSON valid while the draft can still be creative.
 
 **Parameters we do not send:**
 - `top_p` (fixed when thinking is off, F1);
-- `presence_penalty` and `frequency_penalty` (one cloud host says V4 doesn't support them, and repetition is a prompt
-  problem for task 4);
+- `presence_penalty` and `frequency_penalty` (DeepSeek no longer supports them, F3b; repetition is a prompt problem for
+  task 4);
 - `seed` (DeepSeek doesn't support it);
 - `logprobs` (not needed).
 
@@ -153,8 +205,12 @@ Why not think on deep turns:
 
 If the switch is ever turned on:
 - the reasoning text is **never shown or stored**;
-- only its token count goes into the trace;
+- only its token count is kept, in a new nullable `usage_records.tokens_reasoning` ledger column (internal; no
+  contract change; `parse_usage` reads `completion_tokens_details.reasoning_tokens`);
 - the B8 latency suite must pass again before it ships.
+
+The same column also catches a silent failure: if a call with thinking "off" ever reports reasoning tokens, B7 flags
+it.
 
 The one case where thinking may help is a question that combines several documents ("compare the 2019 and 2023
 policies"). Task 10 may revisit this with eval data.
@@ -185,18 +241,40 @@ the target, so a cut-off is rare.
 | Watch | 1–2 bubbles, ≈ 50 words | 150 | 220 |
 | Debate short / medium / long | ≈ 80 / 140 / 220 words, one bubble | 200 / 320 / 480 | same |
 
-- `replyMaxTokens` gains a `one_on_one_deep` entry. The deep group turn uses the group cap, because group replies stay
-  short.
+- **Where the length lines go (NFR-35).**
+  - The **per-mode** line ("1–3 short messages, one per line") is fixed for the whole session, so it sits in the cached
+    system prompt.
+  - The **per-turn** line (the deep target) changes from turn to turn, so it goes in the **dynamic tail**, inside the
+    retrieval block that deep turns already add after the history, next to A5's mood line. A quick turn adds nothing.
+
+  So the cached prefix never changes when a turn flips between quick and deep.
+- **The cap is chosen after the plan.**
+  - `replyMaxTokens` gains a `one_on_one_deep` entry, and `ReplyCaps.for_mode` gains a `deep` argument.
+  - `sessions/turn.py` and `sessions/prefetch.py` compute the cap once the turn plan (doc 01 A6) says quick or deep.
+  - Debate opening prefetch is never deep, so its cap is known up front.
+  - A deep group turn uses the group cap, because group replies stay short.
 - **The cut-off rate is measured:** the share of replies whose `finish_reason` is `length`. B7 reports it, and the
   target is **under 2 %** per mode. Above that, we raise that mode's safety net.
-- A cut-off reply keeps its streamed text. The trace records `finishReason: "length"`.
+- **Where `finish_reason` is kept.** It goes in a new nullable `usage_records.finish_reason` ledger column, internal
+  with no contract change, which B7 reads.
+  - The naive engine stops discarding the final, content-less chunk.
+  - A cut-off reply keeps its streamed text.
+  - The Insight trace does not show the finish reason in v1. Showing it would be a `TurnTrace` contract change, left
+    for later if wanted.
+- **Error finish reasons.** A stream that ends with `finish_reason` `error`, or DeepSeek's
+  `insufficient_system_resource`, is treated like a mid-stream provider error: the reply ends `interrupted`, keeps its
+  text and can be retried. Today these end as complete.
+
+  Whether OpenRouter passes DeepSeek's value through unchanged is unverified. Check 1 looks.
 - **Why shorter than today:**
   - chat replies read like chat;
   - each reply finishes streaming sooner, which helps the group and watch pacing;
   - the energy reservation shrinks, because `expected_out` is capped by `max_tokens`.
 
   Output tokens dominate the cost once the prefix is cached (OQ-AI-13).
-- The exact prompt wording is task 4's.
+- The exact prompt wording is task 4's. Two lines in today's naive prompt change with it:
+  - "in plain text" stays, and gains "one short message per line";
+  - the debate cue's "stay under a few sentences" becomes the debate word targets.
 
 **Rejected:**
 - `max_tokens` as the only control (today): replies stop mid-sentence, and the model doesn't know its budget.
@@ -216,10 +294,20 @@ the target, so a cut-off is rare.
 UI rules (frontend, see §6):
 - A new bubble opens while streaming, when a line break arrives.
 - Blank lines collapse.
-- No split inside a fenced code block or a Markdown list.
+- No split inside a fenced code block or a Markdown list. The chat prompt asks for plain text, so these are a safety
+  net only.
 - At most **4 bubbles**: any further lines join the 4th.
 - Citation chips sit under the last bubble.
-- The **Readable** panel and the user's own messages are never split.
+- **Watch** has no bubbles. It renders script rows, so each line becomes its **own script line under the one name
+  tape**: same split rules, script styling.
+- **Readable.**
+  - When the user switches Readable on, the reply shows as one unsplit panel, as today.
+  - The **automatic** switch to Readable (a reply over `READABLE_CHARS`, 600 characters) applies in bubble modes only
+    when a **single bubble** is over 600 characters. Otherwise a ≈ 120-word deep reply (≈ 700 characters) would
+    always flip to Readable and never show bubbles.
+- The user's own messages are never split.
+- **Demo parity (doc 01 A12).** The seed transcripts, the mock banks and the scripted engine's lines get line breaks
+  in their 1:1, group and watch replies. Otherwise the free demo would never show bubbles.
 
 Why line breaks and not full stops:
 - **The model groups naturally:** "Haha. Yeah, I know." stays one bubble.
@@ -231,10 +319,11 @@ Why line breaks and not full stops:
 turn (no multi-bubble replies)", and it rejected "up to 3 bubbles per turn". Its reasons were:
 - the contract;
 - NFR-29;
-- one trace per message.
+- one trace per message;
+- the seed transcripts were already fixed.
 
-All three still hold, because the message model doesn't change. Only "no multi-bubble replies" becomes "one message,
-which chat modes may display as up to 4 bubbles". The wording change is listed in §6.
+The first three still hold, because the message model doesn't change. The seed transcripts are updated for demo parity
+(above). Only "no multi-bubble replies" becomes "one message, which chat modes may display as up to 4 bubbles". The wording change is listed in §6.
 
 **Rejected:**
 - Splitting at full stops (above).
@@ -244,11 +333,20 @@ which chat modes may display as up to 4 bubbles". The wording change is listed i
 ### C6. Stop sequences keep the speaker from writing other people's lines
 
 **Decision:**
-- Every reply sends `stop` with `"\n<Name>:"` for every other participant and the user's display name. These are the
-  same prefixes the history uses.
-- If the cast is larger than DeepSeek's limit on stop strings, it keeps the most recent speakers first.
-- The engine also strips a leading `<own name>:` from the reply. The tag parser already buffers the start of the
-  stream.
+- Every reply sends `stop` with the same prefixes the history uses (`window.py`):
+  - `"\n<Name>:"` for every other participant;
+  - `"\n<You name>:"` for the user;
+  - `"\n[<kind>]"` for each non-character line kind the history renders (for example host lines).
+
+  Never a bare `"\n["`: a line may legitimately start with a citation marker `[n]`.
+- **The limit never binds.** The largest cast is 5, so at most 4 other names + the user + a few kinds, well under
+  DeepSeek's 16 (F3c).
+- **Stripping the speaker's own name.** The engine also strips a leading `<own name>:` from the reply, before or after
+  the emotion tag (`Mei: <e:happy>Hi` and `<e:happy>Mei: Hi`).
+  - Today's tag parser can't do this: it releases the head as soon as it can't be `<e:`, and on the tag-fallback path
+    that loses the emotion.
+  - So the parser gains a **short name-prefix buffer**, holding at most the name's length plus 2 characters, and the
+    shared parser fixtures (`backend/tests/fixtures/tag_parser/`) gain these cases.
 - A reply that ends on a stop sequence reports `finish_reason: "stop"`. That is a normal end, not a cut-off.
 
 **Rejected:**
@@ -264,9 +362,18 @@ extraction):
 3. Validate with the Pydantic model.
 4. If the result is empty, unparsable or invalid, **retry once**. The retry appends the validation error to the
    messages; the prefix stays the same, so it is cached.
+   - Retry **only** on that parse or validation failure. Timeouts, transport errors, refusals and budget errors keep
+     their existing handling, so we never pay twice for an unknown outcome (D-84).
 5. If the retry also fails, use the port's existing failure path (the creation job's error and Retry).
 
-Both attempts are billed to the ledger as normal, under the creation cap for creation calls.
+**Billing.** Both attempts are billed and get their own ledger row, under the creation cap for creation calls.
+
+**How this fits the creation job hooks** (`services/jobs/worker.py`). Today validation runs in `after_response`,
+after the call is billed. `before_send` marks `provider_called_at` on each call, and `commit_with` overwrites the
+task's `cost_usd` with the last call's cost. So:
+- the retry runs inside the same task attempt;
+- each call keeps its own ledger row;
+- the task's `cost_usd` becomes the **sum** of both calls.
 
 **Rejected:**
 - Strict `json_schema` / `structured_outputs`: DeepSeek's own endpoint doesn't support it, so `require_parameters`
@@ -280,7 +387,8 @@ Both attempts are billed to the ledger as normal, under the creation cap for cre
 - Remove `gateway.fallbackModel` from `seed/pricing.json`. The chat client stops sending `models: [...]`.
 - Provider fallback stays as it is: `allow_fallbacks: true` with the same quantization list.
 - So during a DeepSeek outage, OpenRouter runs **the same model, V4.1 Flash, on another provider**:
-  - the trace shows the existing provider warning;
+  - the Insight trace's `model.provider` names the provider that actually answered (the `provider_warning` text
+    exists only on non-streamed results today, and `TurnTrace` has no warnings field; no contract change);
   - the ledger records the real (higher, uncached) cost;
   - the budget gate and energy apply as usual.
 - If every V4.1 provider fails, the turn ends with the existing provider error and the user can retry.
@@ -301,12 +409,24 @@ fails it, a developer changes the pinned model in config and re-runs the eval.
   the cache layout.
 - **Settings → Models becomes a read-only "Models in use" panel.** For each role it shows:
   - the model slug and what it is for;
-  - its price from `seed/pricing.json`;
+  - its price;
   - the **Test** button.
 
   A line says: "Tuned for these models. Custom models are planned for v2."
-- Test probes the model the app actually uses, **ignoring any stored override**. That way an old override can't make
-  Test pass on a model chat never uses.
+- **Where the price comes from.** `AppSettings` carries no prices (only `pricing.period` and `nextChangeAt`), and
+  adding them would be a contract change. So the panel reads the price table **bundled with the frontend**: the same
+  `pricing.config.ts` that generates `seed/pricing.json`. Both come from one source, so they can't drift in a build.
+- **One source for the chat model.** The drafter and the probe switch from `settings.models.chat` to
+  `prices.chat.model`, the one the replies use. Startup logs an error if `settings.models.chat` differs from it, so a
+  developer who edits one file but not the other finds out.
+- **Test.**
+  - It probes the model the app actually uses, **ignoring any stored override**, so an old override can't make Test
+    pass on a model chat never uses.
+  - The chat probe sends `reasoning` off (row `probe` in C1).
+  - The places that pin today's override behaviour change with it:
+    - `openspec/specs/openrouter-key/spec.md`;
+    - `backend/tests/integration/test_settings_key.py` (`test_model_probe_echoes_the_override`);
+    - `frontend/src/mock/MockClient.ts`.
 - The `modelOverrides` field **stays in the contract, unused**, so there is no contract change, and v2 can use it.
 - Developers can still change models by editing the seed config. That is not a user feature, and the eval must be
   re-run.
@@ -327,31 +447,47 @@ What v2 needs before overrides can work is written down in [docs/v2/README.md](.
 
 ## 5. Checks before this is locked
 
-1. **Thinking really is off (paid, ≈ $0.01, needs the user's OK).** Send one reply request through the gateway with
-   `reasoning: {enabled: false}`. Expect `reasoning_tokens = 0` in `usage` and no `reasoning` deltas. Repeat with
-   `temperature: 1.3` and `stop`: expect no `require_parameters` routing change (the provider is still `DeepSeek`).
-2. **JSON mode (paid, ≈ $0.02).** 20 profile drafts. Count the empty or invalid results before and after the retry.
-   The target is ≥ 99 % valid after one retry.
-3. **The cut-off rate and bubble count** come from the B7 conversation layer, at no extra cost: the share of
-   `finish_reason = length` per mode, and bubbles per reply against the C4 targets.
-4. **Stop-string limit.** Confirm DeepSeek's maximum number of `stop` strings on the endpoint (check 1's request can
-   send 16).
+1. **Thinking is really off, and error finish reasons come through (paid, ≈ $0.01, needs the user's OK).**
+   - Send one reply request through the gateway with `reasoning: {enabled: false}`, `temperature: 1.3` and the C6
+     `stop` list.
+   - Read the **raw** `usage`. Expect `completion_tokens_details.reasoning_tokens = 0`, no `reasoning` deltas, and the
+     provider still `DeepSeek` (no `require_parameters` reroute).
+   - If any reasoning tokens appear, repeat with `reasoning: {effort: "none"}` (F3d) and use whichever form gives 0.
+   - Note the `finish_reason` values OpenRouter passes through.
+2. **JSON mode (paid, ≈ $0.02, needs the user's OK).** Run 20 profile drafts. Count the empty or invalid results before
+   and after the retry. The target is ≥ 99 % valid after one retry.
+3. **The cut-off rate and bubble count** come from the B7 conversation layer, at no extra cost:
+   - the share of `finish_reason = length` per mode, read from the new ledger column;
+   - bubbles per reply against the C4 targets.
+
+   B7's cached naive replies are invalidated by the prompt-version bump (§6), so the first run after this change pays
+   for fresh naive replies once.
+
+(The stop-string limit is settled: DeepSeek allows 16, and Horizon needs at most about 8, F3c.)
 
 ## 6. Changes this design needs (each approved at its OpenSpec change)
 
 | Change | Where | Kind |
 |---|---|---|
-| The `runtime.llm.calls` table; `replyMaxTokens` new values plus `one_on_one_deep` | `seed/runtime.json`, `domain/runtime_config.py` | config |
-| Replies, drafter and later calls read their row: thinking, temperature, stop | `ai/naive/*`, the agent engines | backend |
-| Length targets and the one-bubble-per-line instruction in the prompt (wording in task 4) | prompt compiler | backend |
-| JSON helper: validate, one retry with the error, then the existing failure path | `ai/naive/creation.py` (later task 9's memory extraction) | backend |
-| Remove `fallbackModel`; send `models` only when configured | `seed/pricing.json`, `gateway/types.py`, `gateway/chat.py` | backend |
-| Test ignores `modelOverrides` | `services/probes.py` | backend |
-| Bubble rendering for 1:1 / group / watch (C5 rules) | `frontend/src/features/session/MessageRow.tsx` and the stream text | frontend |
-| Settings → Models becomes read-only with prices and Test | `frontend/src/features/settings/ModelsTab.tsx` | frontend |
-| `finishReason` in the trace's model block | `TurnTrace` | check at the OpenSpec change whether it fits an existing field; if not, **ask the user** (contract) |
-| Wording: SET-05 read-only in v1; D-46 "may display as up to 4 bubbles"; R-14 mitigation; OQ-AI-13 resolved; doc backend/04 "fallback model" line | `docs/requirements/02, 05, 07, 08, 09`, `docs/backend/04` | docs |
+| The `runtime.llm.calls` table; `replyMaxTokens` new values plus `one_on_one_deep`; then `seed:build` | `frontend/scripts/seed-build/runtime.config.ts` → `seed/runtime.json`; `domain/runtime_config.py` (`ReplyCaps.for_mode(mode, turn_length, deep)`) | config |
+| The cap is chosen after the turn plan | `sessions/turn.py`, `sessions/prefetch.py`; `TurnContext.max_tokens` default | backend |
+| Replies, drafter and probe read their row: thinking, temperature, stop | `ai/naive/turn.py`, `ai/naive/creation.py`, `services/probes.py`, the agent engines | backend |
+| The name-prefix buffer, before and after the emotion tag, plus the shared fixtures | `ai/naive/tag_parser.py`, `backend/tests/fixtures/tag_parser/` | backend |
+| Length targets (per mode in the prefix, per turn in the dynamic tail) and one-message-per-line; the debate cue's wording; **`PROMPT_VERSION` naive-2 → naive-3** | `ai/naive/prompt.py` (wording in task 4) | backend |
+| JSON helper: validate, retry once only on parse or validation failure, then the existing failure path; the task's `cost_usd` = the sum | `ai/naive/creation.py`, `services/jobs/worker.py` (later task 9's memory extraction) | backend |
+| Remove `fallbackModel`; send `models` only when configured | `frontend/src/mock/pricing.config.ts`, `frontend/src/domain/cost.ts` (make it optional) → `seed/pricing.json`; `gateway/types.py`, `gateway/chat.py` | backend + config |
+| Keep `finish_reason` (stop dropping the final chunk); map `error` / `insufficient_system_resource` to interrupted; parse `reasoning_tokens` | `gateway/chat.py`, `gateway/types.py` (`parse_usage`), `ai/naive/turn.py` | backend |
+| Ledger columns `finish_reason` and `tokens_reasoning` (nullable; Alembic migration; internal, not contract) | `db/tables.py`, the gateway pipeline | backend |
+| One chat-model source: drafter and probe use `prices.chat.model`; startup error log on mismatch; Test ignores `modelOverrides` | `services/jobs/worker.py`, `services/probes.py`, `runtime.py`; `openspec/specs/openrouter-key/spec.md`; `tests/integration/test_settings_key.py`; `frontend/src/mock/MockClient.ts` | backend + frontend |
+| Tests that pin today's values: 350 / 250 / 220, `max_tokens == 350`, the `models` fallback list, the naive prompt | `tests/unit/test_runtime_config.py`, `tests/sessions/test_naive.py`, `tests/unit/test_chat_client.py`, `tests/knowledge/test_naive_prompt.py` | tests |
+| Bubble rendering for 1:1 / group (bubbles) and watch (script lines); the auto-Readable rule per bubble | `frontend/src/features/session/MessageRow.tsx`, `sessionContext.ts`, the stream text | frontend |
+| Demo parity: line breaks in seed transcripts, mock banks and scripted lines | `frontend/scripts/seed-build/data`, `frontend/src/mock/banks`, `ai/scripted` | frontend + seed |
+| Settings → Models becomes read-only, with prices from the bundled `pricing.config.ts`, and Test | `frontend/src/features/settings/ModelsTab.tsx` | frontend |
+| Wording changes: SET-05 is read-only in v1; D-46 "may display as up to 4 bubbles"; R-14 mitigation (C8); R-13 "DeepSeek structured-output fallback" becomes "JSON mode + validation"; OQ-AI-13 resolved; doc backend/04's "fallback model" line; D-93 and 05-ai-seams' "byte-identical to v1" note (no longer true after naive-3); `openspec/specs/ai-ports` (naive reply engine) and `http-api` where they state caps, the fallback or the probe override | `docs/requirements/02, 05, 07, 08, 09`, `docs/backend/04, 05`, `openspec/specs/*` | docs |
 | Doc 01's failure-mode table says "structured output"; it becomes "JSON mode + validation + one retry" (C7) | `docs/ai/01-agent-architecture.md` §6 | docs (done with this doc) |
+
+**No contract change.** `finish_reason` and reasoning tokens live in the internal ledger. The provider shows through the
+existing `model.provider`. Prices come from the bundled config. `modelOverrides` stays, unused.
 
 ## 7. Left for later tasks
 
