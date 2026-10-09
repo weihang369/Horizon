@@ -1,6 +1,7 @@
 # 05: Context engineering
 
-> **Status: agreed with the user, 2026-10-09** (AI stage, task 5 of 13).
+> **Status: agreed with the user, 2026-10-09** (AI stage, task 5 of 13). **Revised after an independent review** (it
+> checked the code; 14 findings, all addressed).
 > - It resolves OQ-AI-02 (prompt assembly order, the budget per section, persona drift, the multi-agent view, the
 >   cache-friendly prefix, `TurnTrace.context`) and the item doc 01 left to this task: **what Jev call 1 sees, and
 >   its token budget**.
@@ -73,7 +74,7 @@ dynamic tail                               no
 ```
 
 After `turn.end`: when the window is over its size, one background DeepSeek call folds the oldest part into the
-summary (X3). The next turn sees the new summary and a shorter window: one cache miss per drop, then hits again.
+summary (X3). The next turn sees the new summary and a shorter window: one cache miss per speaker per drop, then hits again.
 
 ## 4. Decisions
 
@@ -89,15 +90,23 @@ summary (X3). The next turn sees the new summary and a shorter window: one cache
   | 1:1 | 1,500 | 600 | 600 | 6,000 | 2,260 | **≈ 11,000** |
   | Group, watch, debate | 1,500 | 600 | 600 | 9,000 | 2,260 | **≈ 14,000** |
 
-  A quick turn uses about 2,200 less (no retrieval block). The window can briefly run over its size until the summary
-  lands (X2), so `used` may exceed `budget`; Insight shows that honestly.
+  A quick turn uses about 2,200 less (no retrieval block). The window can run over its size until the summary lands
+  (X2, up to the ceiling), so `used` may exceed `budget`. Insight's context bar today scales to `budget` and clips the
+  rest ([Data.tsx](../../frontend/src/ui/Data.tsx) `StackedBar`), so it is changed to scale to the larger of the two
+  and mark the overflow (a UI change, not a contract change).
 - **What a turn costs** (1:1, cache warm, about 300 new tokens a turn): new input ≈ $0.00005, cached input ≈ $0.00003,
-  a 350-token reply ≈ $0.0002. The reply dominates; the context is close to free while the cache hits. A full miss
-  (first turn, or after a drop) is ≈ 9,000 × $0.15 / M ≈ $0.0014.
+  a 350-token reply ≈ $0.0002. The reply dominates; the context is close to free while the cache hits.
+- **What a cache miss costs** (all `count_tokens`, which over-counts English, so real costs are lower):
+  - first turn of a session, full 1:1 window: ≈ 9,000 × $0.15 / M ≈ **$0.0014**;
+  - a drop in 1:1: system message 1 stays cached; the summary and the window miss, ≈ 3,600 ≈ **$0.0005**;
+  - a drop in group, watch or debate: **one miss per speaker**, because each speaker has its own system message 1 and
+    its own rendering of the history, ≈ $0.0008 each, up to 5 speakers;
+  - **worst case,** a group speaker at the ceiling (X2, 18,000 of history): ≈ 23,000 ≈ **$0.0035**.
 
 **Why:** OQ-AI-02 suggested about 8K for 1:1 and 12K for multi-agent; that was before prices were known. Cached
 reads cost $0.003 per million, so a bigger window costs almost nothing while the cache hits; it costs on misses and
-in prefill time. The caps above keep a miss under about $0.002 and the prompt far below the model's context limit.
+in prefill time. The caps keep a normal miss under about $0.002 and even the worst case far below the model's
+context limit.
 
 **Rejected:**
 - **a dynamic budgeter that resizes sections every turn** (OQ-AI-02's suggestion): resizing changes the prefix, so
@@ -114,13 +123,25 @@ in prefill time. The caps above keep a miss under about $0.002 and the prompt fa
   tokens instead of by count, so a fork with a very long history (or one huge message) also settles in one step.
   At least the newest two messages are always kept.
 - **When:** after `turn.end` (doc 01 A13), never in turn preparation. The runtime starts one summary task for the
-  session (`rt.spawn`, owned by the session actor and cancelled with it). **Single-flight:** if one is running, no
-  second one starts; the next `turn.end` checks again.
+  session (`rt.spawn`, so virtual time waits for it; owned by the session actor and cancelled with it, including on
+  idle release, session delete and Forget; a cancelled task writes nothing and the next `turn.end` starts again).
+  **Single-flight:** if one is running, no second one starts; the next `turn.end` checks again.
+- **One writer.** Every `rolling` row, the real summary and the cheap fallback alike, is written by this one task,
+  under the actor's write lock. Before writing it re-reads the latest row; if a row with a higher `upto_seq` exists
+  (it shouldn't), it discards its result. So two summaries never race.
 - **Until the summary lands, the window is not cut.** The next turn still sees the full window (a cache hit).
-- **Hard ceiling:** the prompt never renders more than **twice the mode's size** of history. If the summary keeps
-  failing and the window reaches the ceiling, the oldest lines past it are dropped with today's cheap fallback (the
-  last 12 dropped lines appended to the old summary, then cut to the summary cap). A chat never breaks or grows
-  without bound.
+- **Hard ceiling, enforced in `session_context`:** a turn's context never carries more than **twice the mode's size**
+  of history; past that, only the newest twice-the-size is shown. Because it lives in `session_context`, the prefetch
+  path ([sessions/prefetch.py](../../backend/horizon/sessions/prefetch.py), which skips `maintain_window`) is covered
+  too. Nothing is discarded by this; older lines are only hidden until the summary catches up.
+- **Failures are bounded** (X3): at most 2 attempts per boundary. After the second failure the task writes the cheap
+  fallback for that boundary: the old summary with its **oldest** lines removed to make room, then the last 12
+  dropped lines, within the summary cap. The newest content is never the part that is cut. A chat never breaks or
+  grows without bound.
+- **Forks** ([sessions/lifecycle.py](../../backend/horizon/sessions/lifecycle.py) `fork` copies no summaries, and
+  renumbers messages): when a fork's history is over its window size, the summary task is started **when the fork
+  is created**, before the user's first message, and folds the history in chunks (X3). If the user writes first, the
+  ceiling above applies until it lands.
 - In 1:1 the window keeps roughly the last 17–35 exchanges word for word; in group roughly the last 18–37 rounds
   (a user line plus two short replies).
 
@@ -137,8 +158,11 @@ in prefill time. The caps above keep a miss under about $0.002 and the prompt fa
 - **A DeepSeek summariser** (`NaiveSummariser`, `ai/naive/summary.py`) used by **both** the `naive` and `agent`
   profiles. `Summariser.rolling` becomes async (doc 01 §8 already lists this) and takes the session context, the
   previous summary and the dropped lines.
-- **It updates; it doesn't rewrite.** Input: the previous summary plus the dropped lines (`Name: text`, the user by
-  their You-card name). Output: the new summary.
+- **It updates; it doesn't rewrite.** Input: the previous summary plus the dropped lines, **every line prefixed with
+  its speaker's name** (a reply's line breaks become separate `Name: line` lines; the user by their You-card name).
+  Output: the new summary.
+- **Ledger purpose `rolling_summary`** (category `summary`), so it is counted apart from watch's episode summary, which
+  already uses the purpose `summary`.
 - **The prompt** (version `summary-1`):
 
   ```text
@@ -153,7 +177,7 @@ in prefill time. The caps above keep a miss under about $0.002 and the prompt fa
   ```
 
   User message: `Notes so far:` (the previous summary, or "none") then `New lines:` (the dropped lines).
-- **Size:** at most **600** by `count_tokens`; `max_tokens` 600, thinking off (doc 03). A longer result, or one
+- **Size:** at most **600** by `count_tokens`; `max_tokens` 600; doc 03 C1's `summary` settings (thinking off, temperature 0.7). A longer result, or one
   stopped by `finish_reason: length`, is cut at the last sentence end with doc 04's shared sentence regex.
 - **Language:** the chat's own language (the user's decision). An English summary of a Malay chat would pull the
   replies toward English, against doc 04 P6's "mirror the user's language".
@@ -164,12 +188,19 @@ in prefill time. The caps above keep a miss under about $0.002 and the prompt fa
 - **Cost:** one call per drop: about 3,000–4,500 tokens in (uncached) plus up to about 400 out, so **≈ $0.001 per
   drop**, roughly every 15–35 exchanges. Ledger purpose `summary`, **charged to the daily cap, never to a character's
   energy** (OQ-AI-17's rule: only a character's own reply drains its energy).
-- **Failure** (provider error, timeout, budget cap): nothing is written, the window stays as it is (X2), and the next
-  `turn.end` tries again. The ceiling in X2 bounds repeated failures.
-- **Scripted profile:** keeps today's text (the last 12 lines) but becomes async and records one simulated `summary`
-  call per drop (D-81: scripted spend is simulated and billed), so the demo's cost shape matches real use.
+- **Failure:** a provider error, a timeout, the budget cap, a content refusal, or **empty output** (nothing left after
+  trimming). Nothing is written and the window stays as it is (X2). A second attempt for the same boundary is made
+  only after the window has grown by at least 1,000 more; after **2 failed attempts** the cheap fallback is written
+  for that boundary (X2). So a persistent failure costs at most two paid calls per boundary, never one per turn.
+- **Scripted profile:** keeps today's text (the last 12 lines) but becomes async and records one simulated
+  `rolling_summary` call per drop (D-81: scripted spend is simulated and billed), so the demo's cost shape matches
+  real use.
 - **Watch's "Summarise" button** (`Summariser.episode`) is a different summary, designed in task 7; it takes the
-  rolling summary and the window as its input.
+  rolling summary and the window as its input. Until then `NaiveSummariser.episode` delegates to the scripted one.
+- **The `naive` yardstick moves here, deliberately.** The window, the drop rule and the summariser are shared runtime
+  machinery, not the naive prompt; both profiles get the same ones, so the comparison stays fair. The change lands
+  before the first accepted baseline (doc 02 B7), so no baseline straddles it. The naive prompt itself is untouched
+  (doc 04 P1).
 
 **Rejected:**
 - **keeping the last 12 lines (today):** facts from early in the chat are lost, which is exactly what users notice;
@@ -182,7 +213,10 @@ in prefill time. The caps above keep a miss under about $0.002 and the prompt fa
 **Decision:**
 - **Rendering on the `agent` path:** the speaker's own lines are `assistant` messages; everyone else's are `user`
   messages as `Name: text`; system notes, narration and directions stay `[kind] text`.
-  **Consecutive messages with the same role are merged into one**, one line each. So in a group the user's line and
+  **Consecutive messages with the same role are merged into one.** In a merged `user` message **every line carries
+  its speaker's name**: a reply shown as several bubbles (doc 03 C5) becomes several `Name: line` lines, so no line is
+  left unattributed. Own lines (`assistant`) carry no name, which matches doc 04 P6's name stripping. A fixture test
+  covers a multi-line reply from another speaker. So in a group the user's line and
   the replies before this speaker arrive as one `user` message. Fewer role tokens, and no provider sees two `user`
   messages in a row. Appending a line to the last merged message keeps the cached prefix up to it.
 - **One shared rolling summary per session** (the user's decision): it is one room and everyone heard the same
@@ -204,9 +238,10 @@ in prefill time. The caps above keep a miss under about $0.002 and the prompt fa
 - **A voice reminder** exists behind a config switch (`voiceReminder`, **off**), like doc 04 P8's repeat hint. When on,
   one line goes in the dynamic tail: "Stay {name}: {speakingStyle.summary, first sentence}." About 30 tokens, never
   cached.
-- **When it is turned on:** the long-chat runs (X10) compare the B4 "speaks in the persona's voice" pass rate on turns
-  after the second drop with turns before the first drop. If the late rate is lower by more than 5 points and the
-  bootstrap interval of the difference excludes zero, the reminder is switched on and the runs repeated.
+- **When it is turned on:** the long-chat runs (X10) compare, within each run, the B4 "speaks in the persona's voice"
+  pass rate on the turns after the second drop with the turns before the first drop. Three runs are too few for an
+  interval, so the rule is a signal, not a test: **if the late rate is lower by more than 10 points in at least 2 of
+  the 3 runs**, the reminder is switched on and the runs repeated with it.
 
 **Rejected:**
 - **always remind** (offered and declined): untested, and it may make replies stiffer;
@@ -218,12 +253,16 @@ in prefill time. The caps above keep a miss under about $0.002 and the prompt fa
 - **Nothing that changes per turn goes into system message 1 or 2:** no time, energy, faces, mood, muted state,
   turn numbers or retrieval (doc 04 P2 already says this for the card; this makes it a rule for the whole prefix).
   A test compiles the prefix for two consecutive turns of a fixture session and asserts it is byte-identical.
-- **Things that change the prefix, and are accepted:** a drop (once per drop), a profile edit, a You-card edit, a
-  cast change. Each costs one miss.
-- **`cacheHitPct` comes from the provider:** when the reply's usage reports cached tokens, the runtime sets
-  `cacheHitPct = round(100 × tokensCached / tokensIn)` where it builds `model` in the trace
-  ([sessions/turn.py](../../backend/horizon/sessions/turn.py)). The engine's prefix-hash guess is used only when the
-  provider reports nothing. This applies to every profile.
+- **Things that change the prefix, and are accepted:** a drop, a profile edit, a You-card edit, a
+  cast change. Each costs one miss per speaker who talks next (X1 has the costs).
+- **The cache-hit % comes from the provider.** The `naive` and `agent` engines **stop setting `cacheHitPct`**
+  (today's naive guess says 100 whenever its own prefix hash matches). Insight already computes it from
+  `model.tokensCached / model.tokensIn` when `cacheHitPct` is absent
+  ([InsightDrawer.tsx](../../frontend/src/features/insight/InsightDrawer.tsx)). For that to show a real 0, the ledger's
+  `reply_usage` ([services/ledger.py](../../backend/horizon/services/ledger.py)) returns `tokensCached` whenever any row
+  has a non-null value (today it drops a 0), and [sessions/turn.py](../../backend/horizon/sessions/turn.py) copies it
+  with an `is not None` test. No change to the port-ownership rule in `ai/ports.py`: the runtime already owns `model`.
+  The scripted engine keeps its simulated value.
 - DeepSeek caches automatically by prefix, in 64-token blocks, best effort, for hours. No cache-control markers are
   needed.
 
@@ -245,10 +284,12 @@ already exist.
 | `memory` | the memory lines in the retrieval block |
 | `knowledge` | the passages in the retrieval block |
 | `budget` | the mode's planned input (X1) |
-| `cacheHitPct` | from the provider (X6) |
+| `cacheHitPct` | not set; Insight derives it from `model` (X6) |
 
-The naive engine's mapping is fixed the same way where it is a bug (the summary moves from `mode` to `history`); its
-prompt is untouched.
+**The naive engine** keeps its own split where it has no separate sections, and fixes the bugs: the summary moves
+from `mode` to `history`; `user` counts the latest user message; `persona` stays 0 (its one system prompt is counted
+under `system`); `budget` becomes the mode's X1 figure instead of the window size. Its prompt is untouched.
+`AiDeps.window_tokens` (an int today, used as that budget) becomes the per-mode value.
 
 ### X8. A per-message limit in the prompt
 
@@ -275,14 +316,17 @@ Doc 01 A3 rule 6: Jev gets less accurate as irrelevant content grows, so the sta
 | `documents` | per candidate with knowledge: up to 10 source titles (≤ 20 each) | needs documents? |
 | `latest` | the latest user message, quoted, cut to 600 (first 450 + last 150) | all |
 | `recent` | the last 6 messages before it as `{speaker, text}`, quoted, each cut to 300 | all |
-| `watch` | the premise and the rolling summary | talk finished?, speaker |
+| `watch` | the premise, the rolling summary when there is one, and the **last 12 lines** instead of 6 (watch has no user line, and with at most 40 turns it rarely reaches a summary) | talk finished?, speaker |
 | `debate` | the motion, the phase and the side chosen by code (doc 01 A14) | which member |
 
 - **Not included:** full cards, the history window, the summary outside watch, memories, passages.
 - **Quoted text** (user lines, character lines, titles) is marked as quoted content, never instructions (doc 01 A3
   rule 8; task 11 sets the wording).
 - **Numbers become labels in code** (doc 01 A3 rule 7): "2 turns ago", "tired".
-- **Over the limit:** drop the oldest `recent` lines first, then shorten `about`, then drop `documents` titles past 5.
+- **Over the limit, in this order:** drop `documents` titles past 5; shorten `about` to 30; drop the oldest `recent`
+  lines, **keeping at least 3**; cut `latest` to 300. If it is still over (a very large cast), the per-candidate gate
+  questions are dropped for the candidates furthest down the `last_spoke` order, which falls back to a quick reply
+  for them (doc 01 A4).
 - **Cost:** about 800–2,000 tokens × $0.042 / M ≈ **$0.00003–0.00008 per turn**. Doc 01 check 4 still has to measure
   whether a multi-question request bills the state once or per question; if per question, this limit is the lever.
 
@@ -292,26 +336,34 @@ Doc 01 A3 rule 6: Jev gets less accurate as irrelevant content grows, so the sta
 
 ### X10. Evaluation additions
 
-**Decision** (fits doc 02's layers; each new Jev question is validated as B4 describes before it is trusted):
-- **A `summary` suite** (new, like doc 04's `drafter`): 20 fixed dropped-history inputs (10 dev / 10 test; English,
-  Malay, Chinese, mixed), each with 3 planted facts and 1 promise. Checks:
+**Decision** (fits doc 02's layers; every new Jev question is validated as B4 describes before it is trusted):
+- **A `summary` suite** (new, like doc 04's `drafter`): **40** fixed dropped-history inputs (20 dev / 20 test;
+  English, Malay, Chinese, mixed), each with 3 planted facts and 1 promise. Checks, one condition per noul (doc 01 A3
+  rule 1):
   - code: within 600, not empty;
-  - Jev nouls: each planted fact kept (target ≥ 90 %), the promise kept with who made it, same language as most of
-    the lines (≥ 95 %), nothing stated that the lines don't support (≥ 95 %).
-  - ≈ $0.02 per run (20 summary calls + about 100 Jev checks).
-- **Long-chat runs** (layer 3, `agent` only, free running): two 1:1 runs (60 turns in English, 40 in Malay) and one
-  group run of 30 rounds, with **scripted user lines**: facts planted early, questions about them late, after at least
-  two drops. They measure:
-  - recall: the late reply uses the planted fact (Jev noul, target ≥ 80 %);
+  - Jev nouls: each planted fact kept (60 test items, target ≥ 90 %) · the promise kept (≥ 90 %) · the summary says
+    who made it (≥ 90 %) · same language as most of the lines · nothing stated that the lines don't support. For the
+    last two, 20 test items can't show 95 %, so the target is **at most 1 failure in 20, and every failure is read by
+    hand**.
+  - ≈ $0.06 per run (40 summary calls + about 280 Jev checks).
+- **A `long` suite** (new, **rare**, not part of `all`; run when the window, the summary or the prompt layout
+  changes): `agent` only, free running, with **scripted user lines** (no AI plays the user, doc 02 B2). Each run goes
+  on until it has had **two drops plus 20 more turns**: two 1:1 runs of about 75 turns (English, Malay) and one group
+  run of about 75 rounds. Facts are planted in turns 3–10; 5 questions about them come in the last 20 turns. They
+  measure:
+  - recall: the late reply uses the planted fact (Jev noul; 15 probes, so reported with its interval, target ≥ 80 %);
   - voice drift: X5's rule;
-  - the real cache-hit % on turns that aren't the first or a drop (target ≥ 80 % of input cached);
-  - summary calls per 100 turns and their cost.
-  - ≈ $0.06 per run.
-- **Frozen transcripts** (doc 02 B3) keep storing the summary at each turn, now written by the DeepSeek summariser
-  once when the transcript is generated, so both profiles still see the same history.
-- **Offline, $0:** the byte-identical prefix test (X6), the X7 mapping on fixture turns, the X2 drop and ceiling on
-  synthetic histories, and the X9 state limit and cut order.
-- **Doc 02 B7 cost:** all suites ≈ $0.58 (was $0.50); ≈ $0.80 at peak; ≈ $0.43 once `naive` replies are cached.
+  - the real cache-hit % on turns that aren't a session's first or a drop (target ≥ 80 % of input cached);
+  - `rolling_summary` calls per 100 turns and their cost.
+  - ≈ $0.12 per run of the suite.
+- **Frozen transcripts** (doc 02 B3): **4 of the 20 start from a committed long history** that is past one drop, so
+  agent vs naive also covers system message 2. The summary at each turn is written by the DeepSeek summariser once,
+  when the transcript is generated, so both profiles still see the same history.
+- **Judge validation** (doc 02 B4) for the six new nouls (5 summary, 1 recall): 60 items each, ≈ $0.02 once.
+- **Offline, $0:** the byte-identical prefix test (X6), the X7 mapping on fixture turns, the X2 drop, ceiling and
+  fork cases on synthetic histories, the X4 multi-line attribution, and the X9 limit and cut order.
+- **Doc 02 B7 cost:** `all` ≈ $0.58 (was $0.50); ≈ $0.80 at peak; ≈ $0.41 once `naive` replies are cached. `long` ≈
+  $0.12, run rarely.
 
 ## 5. Checks before this is locked
 
@@ -326,14 +378,16 @@ Doc 01 A3 rule 6: Jev gets less accurate as irrelevant content grows, so the sta
 | Change | Where | Kind |
 |---|---|---|
 | `windowTokens` per mode (X2) | `frontend/scripts/seed-build/runtime.config.ts` → `seed/runtime.json`; `domain/runtime_config.py`; `tests/unit/test_runtime_config.py` | config |
-| Drop by tokens to half the size, ceiling at twice the size with the cheap fallback; summary after `turn.end`, single-flight, owned by the actor (X2) | `ai/naive/window.py`, `sessions/context.py` (`maintain_window`), `sessions/turn.py`; `tests/sessions/test_naive.py` (its window test) | backend |
+| Drop by tokens to half the size; the ceiling in `session_context`; summary after `turn.end`, single-flight, one writer, owned by the actor; bounded retries with the cheap fallback; the summary started at fork time (X2, X3) | `ai/naive/window.py`, `sessions/context.py` (`maintain_window`, `session_context`), `sessions/turn.py`, `sessions/lifecycle.py` (`fork`); `tests/sessions/test_naive.py` (its window test) | backend |
 | `NaiveSummariser` (prompt `summary-1`, chunked folding, cap and cut), async `Summariser.rolling`, wired for `naive` and `agent`; scripted summariser async with a simulated `summary` call (X3) | new `ai/naive/summary.py`, `ai/ports.py`, `ai/profile.py`, `ai/scripted/ports.py` | backend |
 | Merged same-role rendering, the summary header and the per-message limit on the `agent` path (X3, X4, X8) | `ai/agent/persona.py` (doc 04's agent compiler) | backend |
 | The voice reminder switch, off (X5) | `runtime.config.ts` → `seed/runtime.json`; `domain/runtime_config.py`; the agent compiler | config + backend |
-| `cacheHitPct` from provider usage; X7 mapping (agent), summary moved to `history` (naive) (X6, X7) | `sessions/turn.py`, the agent engine, `ai/naive/turn.py` | backend |
+| Engines stop setting `cacheHitPct`; the ledger keeps a real 0 for `tokensCached`; the X7 mapping (agent) and the naive fixes; `AiDeps.window_tokens` per mode (X6, X7) | `services/ledger.py` (`reply_usage`), `sessions/turn.py`, the agent engine, `ai/naive/turn.py`, `ai/scripted/ports.py` (`AiDeps`), `runtime.py` | backend |
 | The `turn_plan` state builder with its limit and cut order (X9) | the turn plan graph (doc 01 A4) | backend |
-| Eval: the `summary` suite, the long-chat runs, offline tests (X10) | the `horizon eval` harness, `backend/tests/` | backend |
-| Doc 02: B1 table and suite list gain `summary` and the long-chat runs; B7 cost table | `docs/ai/02-evaluation-observability.md` | docs |
+| Eval: the `summary` and `long` suites, 4 long-history frozen transcripts, judge validation, offline tests (X10) | the `horizon eval` harness, `evals/`, `backend/tests/` | backend |
+| Doc 02: B1 table and suite list gain `summary` and `long`; B2 sizes; B4 judge rows; B7 cost table | `docs/ai/02-evaluation-observability.md` | docs |
+| Doc 03 C1: the `summary` row's design is doc 05 X3, not task 9 | `docs/ai/03-llm-parameters.md` | docs |
+| Insight's context bar scales to the larger of budget and used, and marks the overflow (X1) | `frontend/src/ui/Data.tsx` (`StackedBar`), `InsightDrawer.tsx` | frontend |
 | Doc 01 §9: the Jev call 1 state item is resolved here; OQ-AI-02 resolved | `docs/ai/01-agent-architecture.md`, `docs/requirements/08` | docs |
 
 **No contract change.** `TurnTrace.context` already has every field; the summary, the window and the Jev state are

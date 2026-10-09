@@ -137,15 +137,16 @@ flowchart LR
 | **3. Conversations** | Replies in all four modes, `agent` against `naive`, **from the same history** (B3) | The Jev judge (B4), **cost per turn by purpose**, fallback rate, deep rate, abstain rate |
 | **Latency suite** | NFR-01, NFR-02 and NFR-29, from Malaysia | p50 and p90 with intervals, and a per-stage breakdown (B8) |
 | **Drafter suite** (doc 04 P12) | The profile drafter on 20 seeds (10 dev / 10 test) | Code checks (valid, adult, example lines, plain speech, names) and two Jev checks |
-| **Summary suite** (doc 05 X10) | The rolling summariser on 20 dropped-history inputs (10 dev / 10 test) | Planted facts and the promise kept, same language, nothing unsupported, within the cap |
+| **Summary suite** (doc 05 X10) | The rolling summariser on 40 dropped-history inputs (20 dev / 20 test) | Planted facts and the promise kept, same language, nothing unsupported, within the cap |
 
 Doc 04 P8 and P12 also add, to layer 3: code checks on every reply for the reply rules, two Jev checks on a 100-reply
 sample, language and push-back checks on targeted transcript lines (B2's transcripts gain non-English user lines and
 planted wrong claims), repetition rates on free runs only, and three `agent`-only 1:1 free runs of 15 turns. Each new
 Jev question is validated as B4 describes before it is trusted.
 
-Doc 05 X10 also adds, to layer 3: long-chat runs (`agent` only, two 1:1 and one group, scripted user lines past at
-least two drops) for fact recall, voice drift and the real cache-hit %.
+Doc 05 X10 also adds a rare **`long` suite** (`agent` only, two 1:1 runs and one group run with scripted user lines,
+each past two drops; not part of `all`) for fact recall, voice drift and the real cache-hit %, and makes 4 of the 20
+frozen transcripts start from a long committed history.
 
 **How each number is reported:**
 - with its sample size, a 95 % interval, and **the trivial baseline** next to it (the majority answer, or the fallback
@@ -181,9 +182,11 @@ least two drops) for fact recall, voice drift and the real cache-hit %.
   | Layer 1: **passage score** and **who speaks** | **~100 items** | They set floors that every deep or group turn depends on |
   | Layer 1: every other question | **40 items**, plus another 40 **only when the interval straddles the target** | 40 items catch a gross failure, and we grow a set only where the answer is unclear |
   | Layer 2: retrieval | **100 answerable questions and 40 unanswerable ones** on the same topics | 50 items can never show "≤ 5 % wrong abstains" (0 of 50 still allows up to 7 %) |
-  | Layer 3: frozen transcripts | **20**, each 8–12 turns, across both worlds: 1:1 × 6, group × 5, debate × 4, watch × 5 | About 200 compared turns |
+  | Layer 3: frozen transcripts | **20**, each 8–12 turns, across both worlds: 1:1 × 6, group × 5, debate × 4, watch × 5; **4 of them start from a long committed history past one drop** (doc 05 X10) | About 200 compared turns; the 4 cover the summary in the prompt |
   | Layer 3 targeted lines (doc 04 P12) | **At least 10 Malay, Chinese or mixed user lines and 10 planted wrong claims**, placed in those transcripts, split dev / test | The language and push-back checks would pass trivially without them |
   | Drafter suite (doc 04 P12) | **20 seeds** across the three intents and both worlds, 10 dev / 10 test | Enough to see a systematic drafting fault |
+| Summary suite (doc 05 X10) | **40 dropped-history inputs**, 3 planted facts and 1 promise each, 20 dev / 20 test | 60 test facts for the 90 % target; the 20-item checks use "at most 1 failure, each read" |
+| Long suite (doc 05 X10) | **3 runs** past two drops, 15 late fact probes | A signal for recall and drift, not a test; reported with intervals |
   | Layer 3: free-running conversations | **4**, one per mode | What only a live run shows (B3) |
   | Judge checks (B4) | **60 per judge question** (30 real + 30 planted failures), **30 pairs** for the pairwise judge | Planted failures have known answers, so they cost no labelling |
 
@@ -274,6 +277,8 @@ least two drops) for fact recall, voice drift and the real cache-hit %.
   | **Sentence faithfulness** (deep turns) | code splits the reply into sentences; a noul for each factual sentence against the kept passages | the passages + one sentence |
   | **Reply rules** (doc 04 P12) | 4 nouls: no assistant voice · no flattery (on a 100-reply sample) · replies in the user's language (non-English lines only) · pushes back (planted wrong claims only) | the last user line + the reply |
   | **Draft quality** (doc 04 P12) | 2 nouls: fits the seed · the relationship fits the You card | the seed, the You card + the draft |
+| **Summary quality** (doc 05 X10) | 5 nouls: a planted fact is kept · the promise is kept · it says who made the promise · same language as most lines · nothing unsupported | the dropped lines + the summary (one fact or promise per question) |
+| **Recall** (doc 05 X10) | 1 noul: the reply uses the planted fact | the fact + the probe + the reply |
   | **Face and words agree** | a choice from the 7 emotions, given only the reply text (the live post-turn emotion check) | the reply |
   | **Debate quality** | the rubric (task 8) | — |
   | **Safety** | a red-team set (task 11) | — |
@@ -377,7 +382,7 @@ with itself only about 64 % of the time, so that rule mixes up ordinary noise wi
 
 **Decision:**
 - **One command:**
-  - `horizon eval <suite>`, where the suite is `decisions`, `retrieval`, `conversations`, `drafter` (doc 04), `summary` (doc 05), `latency`, `smoke` or `all`;
+  - `horizon eval <suite>`, where the suite is `decisions`, `retrieval`, `conversations`, `drafter` (doc 04), `summary` and `long` (doc 05), `latency`, `smoke` or `all`;
   - options: `--profile`, `--limit N`, `--max-usd`, `--yes`, `--allow-peak`;
   - plus **`horizon eval capture <messageId>`** (B10).
 - **Each real run:**
@@ -429,11 +434,12 @@ with itself only about 64 % of the time, so that rule mixes up ordinary noise wi
   |---|---|---|
   | decisions | ~1,500 Jev requests (choice items in both orders), ~1 k tokens each | ≈ $0.06 |
   | retrieval | re-indexing and corpus embedding (< $0.01), then 140 questions × ~15 passage scores | ≈ $0.05 |
-  | conversations | 200 turns × 2 profiles + 4 free runs on DeepSeek, Jev planning, and judging (≈ $0.13); doc 04's reply-rule checks and three 1:1 free runs (≈ $0.03); doc 05's long-chat runs (≈ $0.06) | ≈ $0.44 |
+  | conversations | 200 turns × 2 profiles + 4 free runs on DeepSeek, Jev planning, and judging (≈ $0.13); doc 04's reply-rule checks and three 1:1 free runs (≈ $0.03) | ≈ $0.38 |
   | drafter (doc 04) | 20 drafts + 40 Jev checks | ≈ $0.025 |
-  | summary (doc 05) | 20 summary calls + about 100 Jev checks | ≈ $0.02 |
-  | **all** | | **≈ $0.58 (about RM 2.6)**; ≈ $0.80 at peak; **≈ $0.43 once the `naive` replies are cached** |
+  | summary (doc 05) | 40 summary calls + about 280 Jev checks | ≈ $0.06 |
+  | **all** | | **≈ $0.58 (about RM 2.5)**; ≈ $0.80 at peak; **≈ $0.41 once the `naive` replies are cached** |
   | latency (rare) | 300 turns, each stopped at the first word (B8) | ≈ $0.08 |
+  | long (rare, doc 05) | three agent-only runs of about 75 turns or rounds | ≈ $0.12 |
   | smoke (usual) | the changed suite + 4 free runs | ≈ $0.05–0.15 |
 
   - Over the whole stage, that comes to about **$1–3**.
