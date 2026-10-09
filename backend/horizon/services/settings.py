@@ -60,7 +60,7 @@ async def spent_today(conn: AsyncConnection, clock: Clock) -> float:
     today = clock.calendar.today(clock.now()).isoformat()
     total = (await conn.execute(select(func.coalesce(func.sum(t.usage_records.c.cost_usd), 0.0))
                                 .where(t.usage_records.c.local_day == today))).scalar_one()
-    return round(float(total), 6)
+    return round(float(total) + clock.spend_bias_usd, 6)   # the bias is 0 outside the `daily_cap` test scenario
 
 
 async def app_settings(conn: AsyncConnection, *, seed: dict[str, Any], local: dict[str, Any], clock: Clock,

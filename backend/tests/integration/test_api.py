@@ -198,9 +198,16 @@ async def test_clock_freeze_and_advance(api: Api) -> None:
 
 
 async def test_unknown_scenario_is_validation(api: Api) -> None:
-    r = await api.client.post("/api/v1/_test/scenario", json={"id": "network_down"})  # M4 serves the job faults
+    r = await api.client.post("/api/v1/_test/scenario", json={"id": "slow_stream"})  # a mock-only switcher scenario
     assert r.status_code == 422
-    assert r.json()["error"]["details"]["availableIn"] == "M6"
+    assert r.json()["error"]["details"] == {"field": "id"}
+
+
+async def test_network_down_is_client_side(api: Api) -> None:
+    """M6 design D2: the HTTP harness simulates it with a failing fetch; the backend says so and changes nothing."""
+    r = await api.client.post("/api/v1/_test/scenario", json={"id": "network_down"})
+    assert r.status_code == 422
+    assert r.json()["error"]["details"] == {"field": "id", "clientSide": True}
 
 
 # ── 8.1 world CRUD ──

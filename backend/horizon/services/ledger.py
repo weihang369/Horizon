@@ -56,8 +56,8 @@ class LedgerWriter:
         return await cls._sum(conn, U.local_day == local_day)
 
     async def spent_today(self) -> float:
-        async with self.db.read() as conn:
-            return await self._sum(conn, U.local_day == self.today())
+        async with self.db.read() as conn:   # plus the `daily_cap` test scenario's bias (0 otherwise, M6 design D5)
+            return await self._sum(conn, U.local_day == self.today()) + self.clock.spend_bias_usd
 
     async def creation_spent(self, character_id: str) -> float:
         async with self.db.read() as conn:

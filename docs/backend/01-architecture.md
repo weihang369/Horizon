@@ -168,7 +168,9 @@ package.json (root)   "setup" | "dev" | "demo"  (concurrently, kill-on-exit)
   - `concurrently --kill-others` runs `uv run horizon serve --reload --reload-dir backend/horizon` (port 8000) and Vite (port 5173).
   - Vite proxies `/api` and `/assets/gen` to port 8000, without buffering. It still serves `/assets/placeholder/**` from `seed/assets`.
 - **`npm run demo`:** builds the frontend; `horizon serve` serves `frontend/dist` + the API on one port.
-- **Picking the client:** `VITE_HORIZON_CLIENT=mock|http`. It's `http` under `dev`, and **`mock` for the Vercel build** (D-73).
+- **`npm run dev:mock`:** the frontend alone on the MockClient, with no backend (the UI loop).
+- **Picking the client:** `VITE_HORIZON_CLIENT=mock|http`. It's `http` under `dev`, and **`mock` for the Vercel build** (D-73). A config-time guard (`frontend/scripts/build/clientGuard.ts`) fails any other value, an `http` build without `--mode http` (only `npm run demo` builds that way), and any `http` run with `VERCEL=1`.
+- **Proxy target:** Vite proxies to `HORIZON_API_TARGET` (default `http://127.0.0.1:8000`); the E2E HTTP project points it at its own test backend.
 - **Startup lifespan:**
   1. create `data/`;
   2. `alembic upgrade head`;

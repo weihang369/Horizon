@@ -782,6 +782,17 @@ export function runPortableContract(label: string, makeHarness: MakeHarness, opt
       expect([taken.code, taken.details?.field]).toEqual(["conflict", "name"]);
     });
 
+    // Promoted from the mock-only checks in M6 (http-client-parity G6): the backend implements the same name rules.
+    test("M1b", "worlds: a world keeps its own name; a seed world takes its shipped name back, case-insensitively", async () => {
+      const { c } = await make();
+      const w = await c.worlds.create({ name: "  My Street ", cover: COVER });
+      expect((await c.worlds.update(w.id, { name: "My Street" })).name).toBe("My Street");
+      await c.worlds.update("wld_seedMeridian", { name: "Council B" });
+      const taken = await fail(c.worlds.create({ name: "MERIDIAN COUNCIL", cover: COVER }));
+      expect([taken.code, taken.details?.field]).toEqual(["conflict", "name"]);
+      expect((await c.worlds.update("wld_seedMeridian", { name: "Meridian Council" })).name).toBe("Meridian Council");
+    });
+
     test("M1b", "reset: a renamed and a deleted seed world come back; a user world stays", async () => {
       const { c, globals, reset } = await make();
       const mine = await c.worlds.create({ name: "My Street", cover: COVER });

@@ -136,6 +136,13 @@
 - E2E passes on both clients.
 - `npm run setup` (step 1) + `npm run dev` reaches demo mode on a fresh clone (Windows + one Unix) within NFR-10's 5 minutes; Docling (step 2) is reported separately.
 
+**As built** (OpenSpec `http-client-parity`; decisions D1–D21 in its design.md)
+- **Portable contract:** the HTTP run declares `supports: "M6"`. 56 portable tests pass on both clients and none is pending. The world-name rules moved from mock-only to the portable suite. The remaining mock-only tests each check mock semantics or dev wiring (key validity learned from a 401, `?speed`, SVG placeholders, the dev reset).
+- **Scenarios:**
+  - `network_down` is a client-side fault: the HTTP harness's `fetch` fails before a request leaves, so the HttpClient's real "server unreachable" path answers `network`. The backend answers that id with `validation` and `details.clientSide`.
+  - The backend adds `no_worlds` and `daily_cap`. Scenarios replace each other, and in test mode reset-demo clears the active one, as on the mock.
+- **Test backends** (`test:http`, E2E) share one environment recipe (`frontend/scripts/test-backend/env.ts`): a temp `HORIZON_ROOT` with no `.env`, the repo seed, a temp data dir, `scripted` AI, and no inherited `HORIZON_*` or key.
+
 ## Test strategy
 
 | Layer | Tooling | Notes |

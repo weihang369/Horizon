@@ -1,5 +1,5 @@
 // HorizonClient contract on the MockClient: the portable suite through a ManualClock harness, plus mock-only checks.
-// The M1b HttpClient adds its own harness (backend /_test/* routes) and runs the same portable suite. Owner: EE.
+// The HttpClient runs the same portable suite through its own harness (backend /_test/* routes). Owner: EE.
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
@@ -61,13 +61,19 @@ describe("MockClient only", () => {
     expect(src).toMatch(/runPortableContract\("MockClient", \(\) => mockHarness\(\)\);/);
   });
 
+  it("the HTTP run declares M6, the last milestone: nothing is pending there either", () => {
+    const src = readFileSync(path.resolve(__dirname, "clientContract.http.test.ts"), "utf8");
+    expect(src).toMatch(/runPortableContract\("HttpClient", httpHarness, \{ supports: "M6" \}\);/);
+  });
+
+  // Mock-only by design (http-client-parity D1): each checks mock semantics or wiring that the backend does differently.
   it("setKey(sk-or-bad…) is invalid immediately (mock semantics; the backend learns it from a 401)", async () => {
     const { client } = await mockHarness();
     expect((await client.settings.setKey("sk-or-bad-zzz")).openRouterKeyStatus).toBe("invalid");
     expect((await client.settings.setKey("not-a-key")).openRouterKeyStatus).toBe("invalid");
   });
 
-  it("demo speed ×4 compresses mock time", async () => {
+  it("demo speed ×4 compresses mock time (a dev affordance; the backend ignores ?speed)", async () => {
     const h = await mockHarness({ speed: 4 });
     await h.setKey();
     const s = await h.client.sessions.create({ worldId: "wld_seedMeridian", mode: "one_on_one", characterIds: ["chr_seedAmara"] });
@@ -75,7 +81,7 @@ describe("MockClient only", () => {
     expect(chars(await h.client.sessions.messages(s.session.id))[0]?.status).toBe("complete");
   });
 
-  it("wizard portrait candidates are shadow SVG placeholders", async () => {
+  it("wizard portrait candidates are shadow SVG placeholders (the backend sends WebP; bytes are not contract)", async () => {
     const h = await mockHarness();
     await h.setKey();
     const { character } = await h.client.characters.createDraft("wld_seedMeridian", { seedPrompt: "Sarah, a doctor", intent: "expert" });
@@ -86,7 +92,7 @@ describe("MockClient only", () => {
     expect(ch.appearance.candidates.find((x) => x.status === "ready")?.url.startsWith("data:image/svg+xml")).toBe(true);
   });
 
-  it("admin.resetDemo is the dev reset: it resolves, keeps settings and announces mock.reset", async () => {
+  it("admin.resetDemo is the dev reset: it resolves, keeps settings and announces mock.reset (dev API wiring)", async () => {
     const h = await mockHarness();
     await h.setKey();
     const seen: string[] = [];
@@ -94,19 +100,5 @@ describe("MockClient only", () => {
     await h.client.admin.resetDemo();
     expect(seen).toContain("mock.reset");
     expect((await h.client.settings.get()).openRouterKeyStatus).toBe("set");
-  });
-
-  it("world names: trimmed, unique case-insensitively, seed names reserved for their own world", async () => {
-    const { client: c } = await mockHarness();
-    const cover = { kind: "preset" as const, presetId: "cover_night_skyline" };
-    const w = await c.worlds.create({ name: "  My Street ", cover });
-    expect(w.name).toBe("My Street");
-    const dup = await c.worlds.create({ name: "my street", cover }).catch((e: unknown) => e);
-    expect(dup).toMatchObject({ code: "conflict", details: { field: "name" } });
-    expect((await c.worlds.update(w.id, { name: "My Street" })).name).toBe("My Street");
-    await c.worlds.update("wld_seedMeridian", { name: "Council B" });
-    const taken = await c.worlds.create({ name: "MERIDIAN COUNCIL", cover }).catch((e: unknown) => e);
-    expect(taken).toMatchObject({ code: "conflict", details: { field: "name" } });
-    expect((await c.worlds.update("wld_seedMeridian", { name: "Meridian Council" })).name).toBe("Meridian Council");
   });
 });
