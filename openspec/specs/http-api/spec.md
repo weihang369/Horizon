@@ -113,7 +113,7 @@ The key itself SHALL never appear in the response.
 ### Requirement: Test-only control routes
 Routes under `/api/v1/_test/` SHALL exist only when `HORIZON_TEST=1`; otherwise they SHALL return 404.
 - **`POST /_test/clock`:** freezes the server clock at a given instant, or advances it by a given number of milliseconds. While frozen, any wait in the backend SHALL last until the clock is advanced past its deadline. An advance SHALL wake due waits in deadline order, and SHALL respond only after the work they started has settled.
-- **`POST /_test/scenario`:** applies `character_exhausted`, `rush_hour`, `stream_cut`, `image_fail_partial`, `image_fail_all` or `song_fails` as the MockClient does, and rejects a scenario it does not support with `validation`.
+- **`POST /_test/scenario`:** applies `character_exhausted`, `rush_hour`, `stream_cut`, `image_fail_partial`, `image_fail_all`, `song_fails`, `no_worlds` or `daily_cap` as the MockClient does, and rejects a scenario it does not support with `validation`. Applying a scenario SHALL first clear every fault and override a previous scenario set, so scenarios replace each other as they do on the MockClient. `network_down` SHALL be rejected with `validation` and `details.clientSide: true`, because a client simulates it. In test mode, `POST /admin/reset-demo` SHALL also clear the active scenario's faults and overrides.
 - **`POST /_test/ai-profile`:** sets the AI profile (`scripted` or `naive`) for subsequent turns and jobs, optionally with per-port overrides.
 - **`POST /_test/decider-fixtures`:** sets or clears scripted Decider answers keyed by purpose and question.
 
@@ -150,6 +150,30 @@ In test mode, the provider SHALL be the in-process fake (see `provider-gateway`)
 #### Scenario: Decider fixture over HTTP
 - **WHEN** the router is set to `naive`, a fixture answers the `route` question with a given participant, and a group message is sent
 - **THEN** that participant answers first, the routing trace shows the fixture's choice, and no ledger row is written for the route
+
+#### Scenario: No worlds
+- **WHEN** a user world exists and `no_worlds` is applied
+- **THEN** `GET /worlds` returns an empty list, settings and the key are unchanged, the ledger rows are still listed by `GET /usage`, and the global stream carries `mock.reset`
+
+#### Scenario: Seed worlds come back after no worlds
+- **WHEN** `no_worlds` is applied and then `POST /admin/reset-demo` is called
+- **THEN** `GET /worlds` lists the two seed worlds with their shipped names, and the user world does not come back
+
+#### Scenario: Daily cap reached
+- **WHEN** a key is set, `daily_cap` is applied, and a top-up of 500 is requested for Hana
+- **THEN** `GET /settings` reports `spentTodayUsd` equal to the daily cap, the top-up is refused with `daily_budget_exceeded`, and `GET /usage` lists no new ledger row
+
+#### Scenario: Scenarios replace each other
+- **WHEN** `rush_hour` is applied and then `stream_cut` is applied
+- **THEN** `GET /settings` reports the clock's own pricing period again, and the next reply is cut
+
+#### Scenario: Reset clears the scenario
+- **WHEN** `daily_cap` is applied and then `POST /admin/reset-demo` is called in test mode
+- **THEN** `GET /settings` reports `spentTodayUsd` equal to the ledger's own total for today
+
+#### Scenario: Network down is client-side
+- **WHEN** `POST /_test/scenario { "id": "network_down" }` is called
+- **THEN** it rejects with `validation`, `details.clientSide` is `true`, and nothing changes on the backend
 
 ### Requirement: Settings update
 `PATCH /api/v1/settings` with a partial `AppSettings` SHALL deep-merge the editable fields into `data/settings.local.json` and return the full `AppSettings`. The following fields are computed or config-owned and SHALL be ignored when present in the patch: `openRouterKeyStatus`, `demoMode`, `spentTodayUsd`, `pricing`, `models` (except `modelOverrides`), `energy.estReplyPoints`. An editable field with a value of the wrong type or out of range SHALL reject with `validation`, and nothing SHALL be written. A successful update SHALL publish `entity.changed { kind: "settings" }`.
