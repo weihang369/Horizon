@@ -27,7 +27,8 @@ all measured**.
 
 **The user's decisions (2026-10-10):**
 - **The second replier in group Auto is chosen after the first reply**, by Jev, within 400 ms of the first reply's
-  end; when Jev is late, nobody adds a second reply (G2).
+  end; when Jev is late, nobody adds a second reply (G2). **If Jev proves slow, Jev stays:** testing it is one of the
+  project's purposes, so the deadline follows the measured latency and the result is reported (G2).
 - **When a watch scene runs dry, the next speaker is steered somewhere new.** No early end, so no contract change; the
   turn cap still ends the episode (G7).
 - **Watch speakers are Jev's pick, plus a rule that nobody is left out:** never the same speaker twice in a row, and
@@ -166,12 +167,14 @@ first reply streams … turn.end                          else Jev call 1: who s
   `mentioned`; a cancelled send (G5); nobody left to ask.
 - **The second reply's trace:** `routing.question` = the follow-plan question, `routing.candidates` from the follow
   plan, `routing.selected`.
-- **If check 3 shows the deadline is too tight** (more than 10 % of follow plans miss it from Malaysia), I bring it
-  back to the user with the two ways out: a later deadline with an NFR-02 exception for this optional turn, or
-  choosing the second replier up front again.
+- **If check 3 shows Jev is slow from Malaysia, Jev stays** (the user, 2026-10-10: testing Jev is one of the
+  project's purposes, so "if Jev is slow, we accept the fate"). The deadline is then set from the measured Jev
+  latency (its p90), so the second slot still works, and this optional turn gets a recorded NFR-02 exception for
+  `turn.next`. The measured latency is reported as a finding about Jev, not designed around.
 
 **Rejected:**
-- **choosing the second replier up front (today's way):** never late, but blind to the first reply (finding 2);
+- **choosing the second replier up front (today's way):** never late, but blind to the first reply (finding 2); it
+  is not a fallback for a slow Jev either (the user's rule above);
 - **a 400 ms timeout started after the gap or after the context is built:** it adds to the ~440 ms `turn.next` already
   takes and breaks NFR-02;
 - **"unsure → least recently spoken" for this slot:** that fallback exists so that someone answers; here the safe
@@ -454,7 +457,7 @@ Collected for the paid-check step after all 13 tasks (the user's rule), not run 
 
 | # | Check | Pass | If it fails |
 |---|---|---|---|
-| Doc 01 check 3 (extended) | Add **50 follow-plan requests** from the frozen group transcripts, Jev only (≈ $0.004), to the latency run; record the share that misses `turn.end` + 400 ms, with the state assembly included | ≤ 10 % miss the deadline | G2's rule: bring the two options to the user |
+| Doc 01 check 3 (extended) | Add **50 follow-plan requests** from the frozen group transcripts, Jev only (≈ $0.004), to the latency run; record the share that misses `turn.end` + 400 ms, with the state assembly included | ≤ 10 % miss the deadline | G2's rule: keep Jev, set the deadline from the measured p90, record the NFR-02 exception and the finding |
 | Doc 01 check 3 (extended) | Watch at Fast pace (about 0.9 s between turns): time from `turn.end` to the next first word with the plan-ahead | the next first word within NFR-02's 3 s p50 | Fast keeps the plan-ahead, and the doc records the real gap |
 
 ## 6. Changes this design needs (each approved at its OpenSpec change)
