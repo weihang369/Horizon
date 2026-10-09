@@ -517,7 +517,7 @@ None of the backend rows changes the HTTP contract unless marked.
 - Long-term memory policy: remember everything, or keep only what Jev scores as important (task 9).
 - Gate thresholds and confidence floors, tuned on labelled data (tasks 2, 9, 10).
 - The mood-line wording, and AUTO emotion confirmed by the evaluation (task 6).
-- Exactly which fields go into Jev call 1's state, and its token budget (task 5).
+- ~~Exactly which fields go into Jev call 1's state, and its token budget (task 5).~~ Resolved by doc 05 X9.
 - Jev call 2's score levels, the number of candidates, k, and the wording of the not-found line (task 10).
 - What "input not safe" does, and the output guardrail's timeout (task 11).
 - A side whose members are all exhausted (task 8, OQ-AI-17).

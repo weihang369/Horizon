@@ -137,11 +137,15 @@ flowchart LR
 | **3. Conversations** | Replies in all four modes, `agent` against `naive`, **from the same history** (B3) | The Jev judge (B4), **cost per turn by purpose**, fallback rate, deep rate, abstain rate |
 | **Latency suite** | NFR-01, NFR-02 and NFR-29, from Malaysia | p50 and p90 with intervals, and a per-stage breakdown (B8) |
 | **Drafter suite** (doc 04 P12) | The profile drafter on 20 seeds (10 dev / 10 test) | Code checks (valid, adult, example lines, plain speech, names) and two Jev checks |
+| **Summary suite** (doc 05 X10) | The rolling summariser on 20 dropped-history inputs (10 dev / 10 test) | Planted facts and the promise kept, same language, nothing unsupported, within the cap |
 
 Doc 04 P8 and P12 also add, to layer 3: code checks on every reply for the reply rules, two Jev checks on a 100-reply
 sample, language and push-back checks on targeted transcript lines (B2's transcripts gain non-English user lines and
 planted wrong claims), repetition rates on free runs only, and three `agent`-only 1:1 free runs of 15 turns. Each new
 Jev question is validated as B4 describes before it is trusted.
+
+Doc 05 X10 also adds, to layer 3: long-chat runs (`agent` only, two 1:1 and one group, scripted user lines past at
+least two drops) for fact recall, voice drift and the real cache-hit %.
 
 **How each number is reported:**
 - with its sample size, a 95 % interval, and **the trivial baseline** next to it (the majority answer, or the fallback
@@ -373,7 +377,7 @@ with itself only about 64 % of the time, so that rule mixes up ordinary noise wi
 
 **Decision:**
 - **One command:**
-  - `horizon eval <suite>`, where the suite is `decisions`, `retrieval`, `conversations`, `drafter` (doc 04), `latency`, `smoke` or `all`;
+  - `horizon eval <suite>`, where the suite is `decisions`, `retrieval`, `conversations`, `drafter` (doc 04), `summary` (doc 05), `latency`, `smoke` or `all`;
   - options: `--profile`, `--limit N`, `--max-usd`, `--yes`, `--allow-peak`;
   - plus **`horizon eval capture <messageId>`** (B10).
 - **Each real run:**
@@ -425,9 +429,10 @@ with itself only about 64 % of the time, so that rule mixes up ordinary noise wi
   |---|---|---|
   | decisions | ~1,500 Jev requests (choice items in both orders), ~1 k tokens each | ≈ $0.06 |
   | retrieval | re-indexing and corpus embedding (< $0.01), then 140 questions × ~15 passage scores | ≈ $0.05 |
-  | conversations | 200 turns × 2 profiles + 4 free runs on DeepSeek, Jev planning, and judging (≈ $0.13); doc 04's reply-rule checks and three 1:1 free runs (≈ $0.03) | ≈ $0.38 |
+  | conversations | 200 turns × 2 profiles + 4 free runs on DeepSeek, Jev planning, and judging (≈ $0.13); doc 04's reply-rule checks and three 1:1 free runs (≈ $0.03); doc 05's long-chat runs (≈ $0.06) | ≈ $0.44 |
   | drafter (doc 04) | 20 drafts + 40 Jev checks | ≈ $0.025 |
-  | **all** | | **≈ $0.50 (about RM 2.2)**; ≈ $0.70 at peak; **≈ $0.35 once the `naive` replies are cached** |
+  | summary (doc 05) | 20 summary calls + about 100 Jev checks | ≈ $0.02 |
+  | **all** | | **≈ $0.58 (about RM 2.6)**; ≈ $0.80 at peak; **≈ $0.43 once the `naive` replies are cached** |
   | latency (rare) | 300 turns, each stopped at the first word (B8) | ≈ $0.08 |
   | smoke (usual) | the changed suite + 4 free runs | ≈ $0.05–0.15 |
 
