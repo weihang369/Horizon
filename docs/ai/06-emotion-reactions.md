@@ -261,11 +261,12 @@ where the face is decided: the reducer.
 
 **Decision:**
 - Doc 01 A7's post-turn check graph loses its emotion branch **in the live app** until the System 1 Insight section
-  (doc 01 A12, a contract change with its own approval) exists. Today's trace has no field for the result, so a live
+  (doc 01 A12, a contract change) exists. **The user approved that section in principle on 2026-10-09; task 13
+  designs it** once tasks 7–11 have added their Jev questions. Today's trace has no field for the result, so a live
   check would be paid for and not shown.
 - The check itself is unchanged and runs in the evaluation (doc 02 B4's "Face and words agree": Jev reads only the
   reply and picks one of the 7 emotions).
-- **When the System 1 section is approved,** the check goes live as one Jev call after `turn.end` (about $0.00001 a
+- **When the System 1 section is built,** the check goes live as one Jev call after `turn.end` (about $0.00001 a
   turn) and Insight shows "face and words agree: yes / no". It never changes the face (D-46).
 
 **Rejected:** a live check now, writing only to the ledger: a cost with no reader.
@@ -341,7 +342,7 @@ event, field or entry point.
 - Watch's pacing, the talk-finished question and energy-aware turn-taking (task 7).
 - Debate's member choice and the verdict (task 8); E5's debate `side` label is the only debate input here.
 - The quoted-content wording in the emotion and reaction states (task 11).
-- The live face-and-words check, with the System 1 Insight section (doc 01 A12's approval).
+- The live face-and-words check, with the System 1 Insight section (approved in principle; designed at task 13).
 
 ## Sources
 

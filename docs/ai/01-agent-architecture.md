@@ -429,7 +429,7 @@ every node, and Forget would get harder.
   - each graph collects its own node path and writes `graph.path` **once**, so patches from several nodes don't
     overwrite each other.
 - **This is a contract change** (a new `TurnTrace` section and UI), so it gets the user's separate approval before it is
-  built (§8).
+  built (§8). **The user approved it in principle on 2026-10-09; task 13 designs its fields and UI.**
 - **LangSmith:** it can be switched on with an environment flag and is **off by default**. It is a documented exception
   to NFR-13 ("no telemetry"), because when on it sends chat and document text to LangSmith.
 
@@ -511,7 +511,7 @@ None of the backend rows changes the HTTP contract unless marked.
 | Debate: Jev picks the member among those who haven't spoken in the phase; openings stay fixed; a new trace marker for "member chosen by Jev" | backend + contract (trace value) | A14 | 8 |
 | `DebateHost.narration()` returns a fixed string, so it can't stream LLM-voiced host prose | backend | A7 | 8 |
 | Watch **"the talk is finished"** needs an outcome: e.g. `ended` with a new paused reason, and whether "Continue +10" still works | backend + **contract** | A4 | 7 |
-| **A "System 1" section in `TurnTrace`, and its Insight UI** (task 6 left it unapproved; the live face-and-words check waits for it, doc 06 E7) | **contract + UI** | A12 | approval pending |
+| **A "System 1" section in `TurnTrace`, and its Insight UI** (**approved in principle by the user, 2026-10-09**; its fields and UI are designed at task 13, once tasks 7–11 have added their Jev questions; the live face-and-words check turns on with it, doc 06 E7) | **contract + UI** | A12 | 13 |
 | **Docs to amend:** a new decision-log entry replacing D-97's rule; resolve OQ-AI-07 (Jev first, the tag as fallback); note in D-92 that the planner is a runtime-called port; update the 05-ai-seams §3 purpose table and §2.2 port catalogue | docs | all | 13 |
 
 ## 9. Left for later tasks
