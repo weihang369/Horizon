@@ -335,7 +335,7 @@ Doc 04 left "when a character should address another character" to this task.
   budget (finding 5). Exhausted characters were never candidates; tired ones are now treated the same as everyone.
 - **Orchestration never drains energy** (ENG-02): the follow plan, watch's plan-ahead and the episode recap go to the
   daily cap only.
-- A debate side whose members are all exhausted stays task 8's question.
+- A debate side whose members are all exhausted stays task 8's question (resolved by doc 08 V5: the debate pauses).
 
 **Rejected:**
 - **tired characters skip optional extra turns** (the first answer): it breaks ENG-04 AC4, and it saved only about 4
@@ -403,7 +403,8 @@ Doc 04 left "when a character should address another character" to this task.
   once by `naive`, reviewed and committed (≈ $0.02, once).
 - **Cost:** decisions ≈ +220 Jev requests (≈ 1,920 in all, ≈ $0.08); summary suite +10 recaps ≈ +$0.02 (≈ $0.08);
   conversations +6 agent free runs ≈ +$0.03 (≈ $0.41). **`all` ≈ $0.65** (≈ $0.92 at peak, ≈ $0.46 with the
-  `naive` replies cached; the recaps are cached by request hash like every DeepSeek reply).
+  `naive` replies cached; the recaps are cached by request hash like every DeepSeek reply). Doc 08 V11 later makes
+  these $0.78 / $1.14 / $0.54.
 
 **Rejected:**
 - **one accuracy number for both group slots:** the second slot's right answer is often `none`, so a mixed number
@@ -481,8 +482,8 @@ None changes the HTTP contract or a requirement.
 
 ## 7. Left for later tasks
 
-- A debate side whose members are all exhausted (task 8, OQ-AI-17).
-- The debate member choice and its turn cue (task 8, doc 01 A14).
+- ~~A debate side whose members are all exhausted (task 8, OQ-AI-17).~~ Resolved by doc 08 V5.
+- ~~The debate member choice and its turn cue (task 8, doc 01 A14).~~ Resolved by doc 08 V2 and V4.
 - How the "talk finished" probability and the follow plan's candidates show in Insight's System 1 section (task 13).
 - Whether a group may run longer exchanges between characters without the user (beyond 2 replies per message): not
   in v1; MULTI-03 caps Auto at 2, and Next speaker already lets the user ask for more.

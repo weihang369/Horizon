@@ -217,7 +217,7 @@ very long backstory also drowns the speaking style.
 | 1:1 | "This is a private one-to-one chat with {user}." | "Write 1–3 short messages, each on its own line, about 70 words in all." |
 | Group | "This is a group chat with {user} and: Hana (barista), Rin (…)." Names with profile roles. | "Write 1–2 short messages, each on its own line, about 50 words in all." |
 | Watch | "{user} is watching this scene and may step in. Premise: … With you: …" | "Write 1–2 short lines, each on its own line, about 50 words in all." |
-| Debate | The motion, your side, your opponents (task 8 words the rest). | "Write one paragraph, no line breaks, about {80 / 140 / 220} words." |
+| Debate | The motion, your side and teammates, your opponents (worded in doc 08 V4). | "Write one paragraph, no line breaks, about {80 / 140 / 220} words." |
 
 - The length line appears **once**, here; the reply rules (P6) don't repeat it.
 - The deep 1:1 target is per turn, so it is an override in the dynamic tail (P2, C4), not here.
@@ -226,7 +226,7 @@ very long backstory also drowns the speaking style.
   participant role (`speaker` / `debater`).
 - Watch says "may step in" because `watch.step_in` lets the user post and two characters answer; the cached block
   must be true either way.
-- Debate arguments and host lines stay one bubble (C5); their prompts beyond this slot are task 8's.
+- Debate arguments and host lines stay one bubble (C5); their prompts are doc 08's (V4, V6).
 - `{user}` is the You card's display name, or "the user".
 
 ### P6. The reply rules
@@ -261,7 +261,8 @@ session block, P5, not repeated here):
   tag-parser fixtures gain a `speaker` field and a `perLine` flag, and the TS reference parser in
   `frontend/src/engine/tagParser.fixtures.test.ts` gains both (this also closes the same gap in doc 03 C6, whose
   name-prefix cases need the speaker's name too).
-- **Debate:** the short-message and question rules are dropped (task 8 owns the debate style).
+- **Debate:** the short-message, question and "very short" rules are replaced by doc 08 V4's debate rules (the side
+  lock, own reasons without invented statistics, attack arguments not people, the motion's language).
 - **Emoji line:** formality `formal` → "Don't use emoji." Otherwise → "Use emoji only if it fits how you talk, and at
   most one per message."
 - **Content-rating line:** today's two variants stay as a slot. Task 11 writes the safety wording (including what a
@@ -477,6 +478,6 @@ the drafter's `world` argument are internal.
 - ~~The mood line's wording and the emotion evaluation (task 6).~~ Resolved by doc 06 (E4, E8).
 - ~~Group and watch turn-taking, including when a character should stay quiet or address another character (task 7).~~
   Resolved by doc 07 (G1–G7; the turn cue's sentence is G3).
-- Debate argument, host and verdict prompts (task 8).
+- ~~Debate argument, host and verdict prompts (task 8).~~ Resolved by doc 08 V4, V6 and V8.
 - "Last time we talked about …" greetings and memory in the prompt (task 9).
 - The content-rating, advisory and "are you an AI?" wording (task 11).

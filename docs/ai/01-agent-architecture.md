@@ -62,7 +62,7 @@ From the code, not from plans:
 | **Multi-agent (7.1.6):** split into agents only when stages need genuinely different prompts | Each character has its own persona prompt, so Horizon is a genuine multi-agent system. |
 | **Supervisor (7.1.6):** the supervisor is a bottleneck and a single point of failure | Our supervisor is the session actor plus **Jev**, not an LLM. Jev is fast, and a fixed rule takes over if it fails or is unsure. |
 | **Blackboard/swarm (7.1.6):** cost and termination are hard to bound | Watch mode resembles it, so it keeps hard caps (10/20/40 turns, budget, energy). |
-| **Debate pattern (7.1.6, 7.1.11):** agents on one base model converge ("debate collapse") | All characters use DeepSeek, so the defence is strongly different personas (task 8). |
+| **Debate pattern (7.1.6, 7.1.11):** agents on one base model converge ("debate collapse") | All characters use DeepSeek, so the defence is strongly different personas plus a side lock and per-phase cues (doc 08 V4). |
 | **Checkpointer (7.1.4):** gives per-thread memory, crash recovery, human pauses | The event log already gives all three. |
 | **ReAct / tool calling (7.1.2–7.1.3):** each tool round is another model call | A tool loop adds a model round trip before the first word. |
 | **Agentic RAG (6.13), threshold and abstain (6.9):** decide whether and where to look; refuse below a bar | Jev decides before retrieval whether to look, and after retrieval whether the passages really answer the question. |
@@ -351,7 +351,7 @@ emotion, and the hits it kept. The reply engine never queries storage (D-92 hold
 | **Turn plan graph** (A4, A6): Jev call 1 → quick/deep branch → embed → search → parallel Jev call 2 → keep or drop | **The reply:** one DeepSeek stream (today's engine, extended in A5) |
 | **Post-turn check graph:** emotion check ∥ citation check → merge into Insight (the live emotion check waits for the System 1 section, doc 06 E7) | **Listener reactions** (one Jev call, doc 06 E5) |
 | **Memory graph** (task 9): extract → Jev importance → compare with old memories → insert / supersede / reinforce / skip | **Rolling summary** (one DeepSeek call) |
-| **Verdict graph** (task 8): Jev rubric scores in parallel → host writes the verdict | **Profile drafter, image, song** |
+| **Verdict graph** (doc 08 V7–V9): Jev rubric scores in parallel → code picks the stronger case → DeepSeek writes the prose (JSON) | **Profile drafter, image, song** |
 
 **Why the reply itself is not a graph:** it is a single streaming call. Keeping it as today's tested engine leaves the
 streaming, Stop and refusal paths unchanged, and LangGraph does the deciding, which is where its branching and
@@ -467,8 +467,11 @@ every node, and Forget would get harder.
 - **Openings keep today's fixed order,** so the opening prefetch (generated in parallel, revealed at speaking pace,
   NFR-02) and the pre-announced next speaker keep working.
 - **Panel debates:** Jev picks among the panellists who haven't spoken in this phase.
-- The trace marks the side as fixed and the member as chosen by Jev, with the candidates and their probabilities.
-- A side whose members are all exhausted is OQ-AI-17's question, decided in task 8.
+- The trace marks the side as fixed and the member as chosen by Jev, with the candidates and their probabilities,
+  using `routing` fields that exist (`forcedBy: "round_order"`, `reason`), so no contract change (doc 08 V2).
+- **Amended by doc 08 V2, V3, V5:** the member is chosen by a **debate plan** that starts at the previous turn's
+  `turn.end` (deadline 400 ms, replacing the turn gap) and also asks the eligible members' gates and emotion; late or
+  unsure means the next member in fixed order. A side with nobody awake pauses the debate with a top-up prompt.
 
 ## 6. Failure modes (7.1.11) checked against this design
 
@@ -476,12 +479,12 @@ every node, and Forget would get harder.
 |---|---|
 | Infinite loop, cost explosion | **Covered** by the software stage: turn caps, daily budget cap, energy, reservations |
 | Race conditions | **Covered**: one actor per session is the single writer |
-| Invented tool names, wrong argument types, parse failures | **Not applicable:** no tool loop (A10). Malformed Jev answers are caught by validation and fall back (A3 rule 9). Drafter (and later memory-extraction) JSON uses DeepSeek's JSON mode, validated, with one retry (doc 03 C7). The verdict is Jev rubric scores plus prose, so it has no JSON. |
+| Invented tool names, wrong argument types, parse failures | **Not applicable:** no tool loop (A10). Malformed Jev answers are caught by validation and fall back (A3 rule 9). Drafter (and later memory-extraction) JSON uses DeepSeek's JSON mode, validated, with one retry (doc 03 C7). The verdict is Jev rubric scores plus DeepSeek prose in JSON mode, validated, with one retry (doc 08 V8). |
 | Prompt injection via retrieved text or user text | **Tasks 10 and 11:** treated as quoted content in the Jev state and the prompt, never as instructions |
 | Weak matches presented as answers | **Covered** by the Jev call 2 scores and the not-found rule (A6) |
 | Abstaining on small talk | **Covered:** a Jev failure means quick; abstain needs a confident gate and a user question; debate and watch never abstain (A6) |
 | Stacked timeouts on the deep path | **Covered:** the embedding wait is capped at 400 ms; if Jev call 1 failed, the turn is quick; if Jev call 2 is late, RRF top k is used (A6) |
-| Debate collapse | **Task 8** |
+| Debate collapse | **Doc 08 V4, V11:** a side lock and per-phase cues in the prompt; measured by the "keeps its side" and "engages" judges |
 | Lost in the middle | **Task 5**, plus few, strongly scored passages (A6) |
 | Jev outage, slowness or uncertainty | **Covered** by the fallbacks and confidence floors (A4) |
 | Choice bias toward the first option | **Covered** by shuffling every choice's options (A3 rule 4) |
@@ -512,8 +515,8 @@ None of the backend rows changes the HTTP contract unless marked.
 | The reply receives the Jev emotion: show it at preflight, mood line in the dynamic tail, strip the tag | backend | A5 | 6 |
 | `Summariser.rolling` and `ReactionPredictor.predict` become **async**, and both run after `turn.end` | backend | A7, A13 | 5, 6 |
 | The citation check runs on interrupted replies; the post-turn graph runs after `turn.end` | backend | A13 | 6, 10 |
-| Debate: Jev picks the member among those who haven't spoken in the phase; openings stay fixed; a new trace marker for "member chosen by Jev" | backend + contract (trace value) | A14 | 8 |
-| `DebateHost.narration()` returns a fixed string, so it can't stream LLM-voiced host prose | backend | A7 | 8 |
+| Debate: Jev picks the member among those who haven't spoken in the phase; openings stay fixed; the trace uses existing `routing` fields (doc 08 V2), so **no contract change** | backend | A14 | 8 |
+| `DebateHost.narration()` returns a fixed string; it becomes async and calls DeepSeek, shown whole, not streamed (doc 08 V6) | backend | A7 | 8 |
 | ~~Watch **"the talk is finished"** needs an outcome~~ **Withdrawn by doc 07 G7:** a finished thread steers the next line somewhere new; no early end, so no contract change | backend | A4 | 7 |
 | **A "System 1" section in `TurnTrace`, and its Insight UI** (**approved in principle by the user, 2026-10-09**; its fields and UI are designed at task 13, once tasks 7–11 have added their Jev questions; the live face-and-words check turns on with it, doc 06 E7) | **contract + UI** | A12 | 13 |
 | **Docs to amend:** a new decision-log entry replacing D-97's rule; resolve OQ-AI-07 (Jev first, the tag as fallback); note in D-92 that the planner is a runtime-called port; update the 05-ai-seams §3 purpose table and §2.2 port catalogue | docs | all | 13 |
@@ -526,7 +529,8 @@ None of the backend rows changes the HTTP contract unless marked.
 - ~~Exactly which fields go into Jev call 1's state, and its token budget (task 5).~~ Resolved by doc 05 X9.
 - Jev call 2's score levels, the number of candidates, k, and the wording of the not-found line (task 10).
 - What "input not safe" does, and the output guardrail's timeout (task 11).
-- A side whose members are all exhausted (task 8, OQ-AI-17).
+- ~~A side whose members are all exhausted (task 8, OQ-AI-17).~~ Resolved by doc 08 V5: the debate pauses with a top-up
+  prompt.
 
 ## Sources
 

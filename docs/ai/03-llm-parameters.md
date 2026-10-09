@@ -161,8 +161,9 @@ The table lives in the seed-build source `frontend/scripts/seed-build/runtime.co
 | Key | Call | Thinking | Temperature | Output | Built in |
 |---|---|---|---|---|---|
 | `reply.chat` | Character reply, 1:1 / group / watch | off | **1.3** | stream | naive today, agent profile |
-| `reply.debate` | Debate argument | off | 1.0 | stream | task 8 |
-| `host`, `verdict` | Debate host lines and verdict prose | off | 1.0 | stream | task 8 |
+| `reply.debate` | Debate argument | off | 1.0 | stream | task 8 (doc 08 V4) |
+| `host` | Debate host lines, `max_tokens` 120, shown whole | off | 1.0 | text | task 8 (doc 08 V6) |
+| `verdict` | Debate verdict prose, `max_tokens` 700 | off | 0.7 | JSON | task 8 (doc 08 V8) |
 | `summary` | Rolling summary | off | 0.7 | text | task 5 (doc 05 X3) |
 | `episode` | Watch's "Summarise" recap, `max_tokens` 400 | off | 0.7 | text | task 7 (doc 07 G10) |
 | `memory` | Memory extraction | off | 0.7 | JSON | task 9 |
@@ -171,7 +172,8 @@ The table lives in the seed-build source `frontend/scripts/seed-build/runtime.co
 
 Why these temperatures:
 - **Replies use 1.3**, DeepSeek's value for conversation (F4). The user chose not to A/B test it.
-- **Debate and host use 1.0:** arguments must stay on the motion and answer the other side.
+- **Debate and host use 1.0:** arguments must stay on the motion and answer the other side. **The verdict prose uses
+  0.7** (doc 08 V8): like a summary, it must be faithful to what was argued.
 - **Summary and memory use 0.7, below DeepSeek's 1.0 for analysis:** they must be faithful to what was said, never
   inventive.
 - **The profile drafter uses 1.0:** this keeps the JSON valid while the draft can still be creative.
@@ -493,7 +495,7 @@ existing `model.provider`. Prices come from the bundled config. `modelOverrides`
 ## 7. Left for later tasks
 
 - The exact prompt wording for length, bubbles and repetition (task 4).
-- The debate argument and host prompts (task 8).
+- ~~The debate argument and host prompts (task 8).~~ Resolved by doc 08 V4, V6 and V8.
 - The summary and memory-extraction prompts and schemas (task 9).
 - Whether a multi-document deep question should ever think (task 10, with eval data).
 - Custom models (v2, [docs/v2](../v2/README.md)).

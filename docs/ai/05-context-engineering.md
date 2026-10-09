@@ -364,7 +364,7 @@ Doc 01 A3 rule 6: Jev gets less accurate as irrelevant content grows, so the sta
 - **Offline, $0:** the byte-identical prefix test (X6), the X7 mapping on fixture turns, the X2 drop, ceiling and
   fork cases on synthetic histories, the X4 multi-line attribution, and the X9 limit and cut order.
 - **Doc 02 B7 cost:** `all` ≈ $0.58 (was $0.50); ≈ $0.80 at peak; ≈ $0.41 once `naive` replies are cached (doc 06
-  E8 later makes these $0.59 / $0.81 / $0.42, and doc 07 G11 $0.65 / $0.92 / $0.46). `long` ≈ $0.12, run rarely.
+  E8 later makes these $0.59 / $0.81 / $0.42, and doc 07 G11 $0.65 / $0.92 / $0.46, and doc 08 V11 $0.78 / $1.14 / $0.54). `long` ≈ $0.12, run rarely.
 
 ## 5. Checks before this is locked
 
@@ -398,7 +398,7 @@ internal.
 
 - ~~The mood line's wording (task 6).~~ Resolved by doc 06 E4.
 - ~~Watch's episode summary and when the talk is finished (task 7).~~ Resolved by doc 07 (G7, G10).
-- What the debate host and verdict see (task 8).
+- ~~What the debate host and verdict see (task 8).~~ Resolved by doc 08 V6 (host) and V7, V8 (verdict).
 - Long-term memory and per-character points of view across sessions (task 9).
 - The retrieval block's size: k, the passage length and Jev call 2 (task 10).
 - The quoted-content wording in the Jev state and the prompts, and prompt injection through summaries (task 11).
