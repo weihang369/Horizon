@@ -141,6 +141,8 @@
 - **Scenarios:**
   - `network_down` is a client-side fault: the HTTP harness's `fetch` fails before a request leaves, so the HttpClient's real "server unreachable" path answers `network`. The backend answers that id with `validation` and `details.clientSide`.
   - The backend adds `no_worlds` and `daily_cap`. Scenarios replace each other, and in test mode reset-demo clears the active one, as on the mock.
+- **NFR-10 reading:** "Prerequisites are Python + Node only" was written before uv was adopted (M1b). It now means **Node 24 + uv**: uv installs Python 3.12 itself, and step 1 still needs no Docker, Redis, external database, GPU, CUDA or PyTorch. The README states exactly that, Windows first.
+- **`.env.example`** lists every variable the config reads (the 16 `HORIZON_AI_*` overrides and `HORIZON_ROOT` as commented lines). `backend/tests/unit/test_env_example.py` fails on an undocumented variable or any key-shaped text.
 - **Test backends** (`test:http`, E2E) share one environment recipe (`frontend/scripts/test-backend/env.ts`): a temp `HORIZON_ROOT` with no `.env`, the repo seed, a temp data dir, `scripted` AI, and no inherited `HORIZON_*` or key.
 
 ## Test strategy

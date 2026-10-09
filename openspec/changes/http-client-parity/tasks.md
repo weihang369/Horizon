@@ -92,12 +92,12 @@
 
 ## 5. Environment template and README (D15, D17, D20)
 
-- [ ] 5.1 Add every `config.KNOWN_VARS` name to `.env.example`:
+- [x] 5.1 Add every `config.KNOWN_VARS` name to `.env.example`:
   - `HORIZON_ROOT` and the 16 `HORIZON_AI_*` as a commented block, naming the `scripted` and `naive` values;
   - `OPENROUTER_API_KEY=` left empty.
 
   Add `backend/tests/unit/test_env_example.py`, which asserts that every known variable appears, the key is empty, and no `sk-or-[A-Za-z0-9_-]+` token exists. Verify that the test passes, and that it fails when a dummy name is appended to `KNOWN_VARS` in a scratch run.
-- [ ] 5.2 Add `.nvmrc` (`24`) (D20). Verify with `node --version` that it matches the major, and that the README names it.
+- [x] 5.2 Add `.nvmrc` (`24`) (D20). Verify with `node --version` that it matches the major, and that the README names it.
 - [ ] 5.3 Rewrite the README's "Run locally with the backend" section (D15):
   1. prerequisites (Node 24, uv; Windows install commands first, then Unix);
   2. clone → `npm run setup` → `npm run dev` → open the app;
@@ -106,8 +106,8 @@
   5. the commands table (`dev:mock`, `demo`, `test`, `e2e*`).
 
   Remove "What the backend does today…" and "No API key is read yet". Verify by following the section literally on Windows in a scratch clone, up to demo mode.
-- [ ] 5.4 Add the README "Secret hygiene" section: gitleaks as an optional pre-commit hook, the install command for Windows (`winget`) and Unix (`brew`/release binary), and a `.git/hooks/pre-commit` snippet. Check the snippet's CLI form against gitleaks' current release notes. No hook file is committed and no package is added. Verify with `git status` (no hook tracked) and with `package.json`/`pyproject.toml` diffs (no new dependency).
-- [ ] 5.5 Record the NFR-10 reading in `docs/backend/06` §M6: "Python + Node only" means Node + uv (uv installs Python). Verify that `ruff`, `mypy`, `pytest` and the frontend gates are green, then commit.
+- [x] 5.4 Add the README "Secret hygiene" section: gitleaks as an optional pre-commit hook, the install command for Windows (`winget`) and Unix (`brew`/release binary), and a `.git/hooks/pre-commit` snippet. Check the snippet's CLI form against gitleaks' current release notes. No hook file is committed and no package is added. Verify with `git status` (no hook tracked) and with `package.json`/`pyproject.toml` diffs (no new dependency).
+- [x] 5.5 Record the NFR-10 reading in `docs/backend/06` §M6: "Python + Node only" means Node + uv (uv installs Python). Verify that `ruff`, `mypy`, `pytest` and the frontend gates are green, then commit.
 
 ## 6. ASSETS.md and the asset check (D16)
 
