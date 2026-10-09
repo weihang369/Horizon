@@ -192,8 +192,8 @@ def _reap(proc: subprocess.Popen[bytes]) -> None:
 
 
 def download_docling_models(models_dir: Path) -> None:
-    """Docling's own downloader (layout, table structure and OCR models) into `models_dir`. Verified against the
-    installed Docling version when it is set up (task 5.4)."""
+    """Docling's own downloader (layout, table structure and RapidOCR models, about 1.4 GB) into `models_dir`.
+    Verified against Docling 2.133 (task 5.4)."""
     from docling.utils.model_downloader import download_models
 
     download_models(output_dir=models_dir, progress=True)

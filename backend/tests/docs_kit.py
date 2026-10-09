@@ -2,7 +2,8 @@
 
 - `pdf(pages)`: a valid text PDF, one page per string (Helvetica, plain ASCII), readable by any PDF parser.
 - `image_pdf(lines)`: an image-only ("scanned") PDF made with Pillow: no text layer, so only OCR can read it.
-- `docx(paragraphs)`: a minimal WordprocessingML package; `(text, "Heading1")` makes a heading.
+- `docx(paragraphs)`: a minimal WordprocessingML package; `(text, "Heading1")` makes a heading. It carries a
+  `styles.xml` naming the heading styles, as every Word file does (Docling reads heading levels from style names).
 - `xlsx()`: a minimal spreadsheet package (a ZIP without `word/document.xml`).
 """
 
@@ -61,11 +62,26 @@ _CT = ('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
        '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'
        '<Default Extension="xml" ContentType="application/xml"/>'
        '<Override PartName="/word/document.xml" '
-       'ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>')
+       'ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>'
+       '<Override PartName="/word/styles.xml" '
+       'ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>')
 _RELS = ('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
          '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
          '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" '
          'Target="word/document.xml"/></Relationships>')
+
+
+_DOC_RELS = ('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+             '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+             '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" '
+             'Target="styles.xml"/></Relationships>')
+_STYLES = ('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+           '<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+           '<w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/></w:style>'
+           + "".join(f'<w:style w:type="paragraph" w:styleId="Heading{n}"><w:name w:val="heading {n}"/>'
+                     f'<w:basedOn w:val="Normal"/><w:pPr><w:outlineLvl w:val="{n - 1}"/></w:pPr></w:style>'
+                     for n in (1, 2, 3))
+           + '</w:styles>')
 
 
 def docx(paragraphs: list[str | tuple[str, str]]) -> bytes:
@@ -82,6 +98,8 @@ def docx(paragraphs: list[str | tuple[str, str]]) -> bytes:
         z.writestr("[Content_Types].xml", _CT)
         z.writestr("_rels/.rels", _RELS)
         z.writestr("word/document.xml", doc)
+        z.writestr("word/_rels/document.xml.rels", _DOC_RELS)
+        z.writestr("word/styles.xml", _STYLES)
     return buf.getvalue()
 
 

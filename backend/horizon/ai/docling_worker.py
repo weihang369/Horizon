@@ -5,7 +5,9 @@
 Run by `DoclingConverter`, one process per document, offline (`HF_HUB_OFFLINE=1`). It:
 1. counts a PDF's pages first (pypdfium2 ships with Docling) and stops early past `--max-pages`, so a 900-page PDF
    fails in milliseconds instead of after minutes of OCR; a password-protected PDF stops as `encrypted`;
-2. converts with Docling, OCR on, models from `--models`;
+2. converts with Docling, OCR on, models from `--models` (verified against Docling 2.133, task 5.4). A PDF with no
+   text layer at all (a scan) is OCRed page-whole with RapidOCR on torch: Docling's default region OCR returns
+   duplicated fragments on a page that is one big bitmap. PDFs with text keep the default (OCR only on bitmaps);
 3. writes Markdown to `--out`, with `<!-- page N -->` before each page's text (PDF);
 4. prints exactly one JSON line: `{"ok": true, "pages": N}` or `{"ok": false, "reason": …, "error": …}`.
 
@@ -87,14 +89,36 @@ def count_pdf_pages(path: Path) -> int:
         pdf.close()
 
 
+def pdf_has_text(path: Path) -> bool:
+    """Whether any page of the PDF has an extractable text layer (False for a scan)."""
+    import pypdfium2 as pdfium
+
+    pdf = pdfium.PdfDocument(str(path))
+    try:
+        for i in range(len(pdf)):
+            page = pdf[i]
+            textpage = page.get_textpage()
+            try:
+                if textpage.get_text_range().strip():
+                    return True
+            finally:
+                textpage.close()
+                page.close()
+        return False
+    finally:
+        pdf.close()
+
+
 def convert_with_docling(src: Path, models: Path) -> tuple[str, int | None]:
     """Docling 2.x: Markdown per page with markers for PDF; one Markdown body for DOCX."""
     from docling.datamodel.base_models import InputFormat
-    from docling.datamodel.pipeline_options import PdfPipelineOptions
+    from docling.datamodel.pipeline_options import OcrMode, PdfPipelineOptions, RapidOcrOptions
     from docling.document_converter import DocumentConverter, PdfFormatOption
 
     opts = PdfPipelineOptions(artifacts_path=str(models))
     opts.do_ocr = True
+    if src.suffix.lower() == ".pdf" and not pdf_has_text(src):
+        opts.ocr_options = RapidOcrOptions(backend="torch", mode=OcrMode.FULL_PAGE)
     conv = DocumentConverter(format_options={InputFormat.PDF: PdfFormatOption(pipeline_options=opts)})
     doc: Any = conv.convert(str(src)).document
     if src.suffix.lower() != ".pdf":

@@ -174,7 +174,7 @@
   - an interrupted fetch leaves no marker.
 
   Verify with CLI tests (Docling import absent; the download function stubbed to succeed and to fail midway) and with health reporting `ready` only with the marker.
-- [ ] 5.4 **[Needs the user's go-ahead: multi-GB download]** Run `npm run setup:docling` and `horizon models fetch` on this machine. Then:
+- [x] 5.4 **[Needs the user's go-ahead: multi-GB download]** Run `npm run setup:docling` and `horizon models fetch` on this machine. Then:
   - fill in the real convert function in `ai/docling_worker.py`: a pypdfium2 page pre-check, `artifacts_path`, OCR enabled, Markdown with `<!-- page N -->` markers;
   - verify the Docling 2.x API against the installed version;
   - run `uv run pytest -m docling`: a generated 3-page PDF gives locators `p. 1`–`p. 3`; a generated DOCX with headings gives `§` locators; a Pillow-made image-only PDF ("The night shift starts at seven") yields that text; a generated 412-page PDF fails in under 5 s naming 412 and 300; no network request is made during conversion (socket guard).
