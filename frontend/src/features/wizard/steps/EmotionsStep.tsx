@@ -7,6 +7,7 @@ import type { CSSProperties } from "react";
 import { audio } from "@/audio/engine";
 import { openOverlay } from "@/app/layers";
 import { client } from "@/client";
+import { putResource, resKeys } from "@/stores/entities";
 import { useJob, useSettings } from "@/client/hooks";
 import type { Emotion, GenerationJob, GenerationTask } from "@/contract/types";
 import { EMOTIONS } from "@/contract/types";
@@ -136,7 +137,12 @@ export function EmotionsStep() {
   });
   const generateOne = (e: Emotion) => void startGeneration({ characterId: c.id, kind: "emotion_regenerate", emotions: [e] }, `Generate ${emotionMeta[e].label.toLowerCase()}`);
   const skip = async () => {
-    if (!edit) await client.characters.update(c.id, { creationStep: laterStep(c.creationStep, "palette") }).catch(() => {});
+    if (!edit) {
+      // The palette gate reads the cached character; prime it with the answer, since over HTTP the refresh only
+      // arrives later on the global stream (http-client-parity G11).
+      const next = await client.characters.update(c.id, { creationStep: laterStep(c.creationStep, "palette") }).catch(() => null);
+      if (next) putResource(resKeys.character(next.id), next);
+    }
     void goStep("palette", { skipSave: true });
   };
 

@@ -231,7 +231,7 @@ async def test_tombstones_and_archived(api: Api) -> None:
     assert "chr_seedRin" not in {c["id"] for c in roster}
     tomb = await api.json("/api/v1/characters/chr_seedRin")
     assert tomb["deletedAt"] == "2026-10-03T03:00:00.000Z"
-    assert (await api.get("/api/v1/characters/chr_seedRin/song")).status_code == 404
+    assert await api.json("/api/v1/characters/chr_seedRin/song") is None   # reads resolve on a tombstone (M6 G11)
     world = await api.json("/api/v1/worlds/wld_seedSunnyHollow")
     assert world["characterCount"] == 2
 

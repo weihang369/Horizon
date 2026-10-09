@@ -1,12 +1,12 @@
 // "Going live" on a replay (CHAT-*, F3) and the session tools: Backlog (O10), Markdown export, Readable mode.
-import { expect, logEntry, open, seekToEnd, setMockKey, test } from "./fixtures";
+import { expect, logEntry, open, seekToEnd, setKey, test } from "./fixtures";
 
 const HEADACHE = "/w/wld_seedMeridian/s/ses_seedAmaraHeadache?replay=1";
 
-test("live mock: set a key, “Continue live” on a replay, send a message, a streamed reply arrives", async ({ page }) => {
+test("live: set a key, “Continue live” on a replay, send a message, a streamed reply arrives", async ({ page }) => {
   await open(page, HEADACHE);
   await expect(page.getByRole("button", { name: /Continue live.*needs API key/ })).toBeVisible();
-  await setMockKey(page);
+  await setKey(page);
   await page.getByRole("button", { name: /^Continue live/ }).click();
 
   await expect(page.getByRole("heading", { name: "Three-day headache · live", level: 1 })).toBeVisible();

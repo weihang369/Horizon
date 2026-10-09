@@ -86,7 +86,9 @@ Run these inside `frontend/`:
 | `npm run build` | Type-check and build a production bundle into `frontend/dist/` |
 | `npm run preview` | Serve the production build locally |
 | `npm test` | Run the unit and contract tests (Vitest) |
-| `npm run e2e` | Run the Playwright end-to-end suite in Microsoft Edge (starts its own dev server on port 5186) |
+| `npm run e2e` | Run the Playwright end-to-end suite in Microsoft Edge on both clients: the mock (its own dev server on port 5186) and a throwaway test-mode backend (ports 8786 and 5187) |
+| `npm run e2e:mock` | The end-to-end suite on the mock only |
+| `npm run e2e:http` | The end-to-end suite on the backend only (scripted AI, temporary data, never your `data/` or `.env`) |
 | `npm run typecheck` | Run the TypeScript project build with no output |
 | `npm run lint` | Run oxlint |
 | `npm run seed:build` | Regenerate `seed/` from the screenplays and fixtures in `frontend/scripts/seed-build/` |

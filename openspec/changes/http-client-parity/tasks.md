@@ -66,14 +66,14 @@
   - `SIGINT`/`SIGTERM`/`exit` kill the tree (`taskkill /T /F` on Windows, the process group on Unix), then remove the temp dir with retries.
 
   Verify on Windows: start the launcher, Ctrl-C it, and confirm no `horizon`/uv/Python process from it remains (`Get-Process`) and the temp dir is gone.
-- [ ] 4.3 Restructure `playwright.config.ts` (D7):
+- [x] 4.3 Restructure `playwright.config.ts` (D7):
   - projects `mock-desktop`, `mock-min` (`@layout`) and `http-desktop` (`workers: 1`);
   - a custom `client` option;
   - a `webServer` array: mock Vite on 5186, the backend launcher on 8786 waiting for `/api/v1/health`, and `vite --mode http --port 5187 --strictPort` with `HORIZON_API_TARGET=http://127.0.0.1:8786`;
   - `reuseExistingServer: false` for both HTTP servers.
 
   Add the scripts `e2e` (all), `e2e:mock` and `e2e:http`, and keep `e2e:prod` on the mock projects. Verify that `npm run e2e:mock` is green, and that `e2e:http` doesn't start the mock server (if Playwright starts every server, build the array from the selected projects, D7).
-- [ ] 4.4 Extend `e2e/fixtures.ts` (D9, D10, D12):
+- [x] 4.4 Extend `e2e/fixtures.ts` (D9, D10, D12):
   - an auto fixture that factory-resets the backend before each HTTP test;
   - `setKey(page)` through Settings → Connection with `sk-or-test-e2e-0001`, then `goBack()`;
   - `setScenario(page, id)`: the switcher UI on the mock, `request.post` to `/_test/scenario` on HTTP;
@@ -81,14 +81,14 @@
   - `expectHttpError(page, status)` (declared 4xx lines only, never 5xx).
 
   Remove `setMockKey`. Verify with the mock project green and a fixture self-test spec, which shows that an undeclared 404 fails and a declared 402 passes.
-- [ ] 4.5 Move the specs to the fixtures:
+- [x] 4.5 Move the specs to the fixtures:
   - energy: `setKey`, `setScenario("daily_cap")`, `expectHttpError(402)`;
   - wizard: `setKey`, `GEN_TIMEOUT` on the "Pick a face" wait;
   - live-and-session-tools: `setKey`.
 
   The user-visible steps stay identical. Verify `npm run e2e:mock` is green.
-- [ ] 4.6 Run `npm run e2e:http` and close every HTTP-only failure (G11) at its source, in the backend or the seed import, never by loosening a spec. Record each one in design.md's apply notes as a G11 row with its fix. If a fix would need a contract or UI change, stop and ask the user. Verify that `npm run e2e` (all three projects) is green on Windows with Edge, twice in a row.
-- [ ] 4.7 Delete `frontend/scripts/http-contract/acceptance.mjs` (D21) and any reference to it outside the archive. Update the README "Scripts" rows for `e2e`, `e2e:mock` and `e2e:http`, and the "How to run" section of `docs/qa/r1-test-report.md` (a note that the suite now runs on both clients). Verify with `grep` that there are no stale references, then commit.
+- [x] 4.6 Run `npm run e2e:http` and close every HTTP-only failure (G11) at its source, in the backend or the seed import, never by loosening a spec. Record each one in design.md's apply notes as a G11 row with its fix. If a fix would need a contract or UI change, stop and ask the user. Verify that `npm run e2e` (all three projects) is green on Windows with Edge, twice in a row.
+- [x] 4.7 Delete `frontend/scripts/http-contract/acceptance.mjs` (D21) and any reference to it outside the archive. Update the README "Scripts" rows for `e2e`, `e2e:mock` and `e2e:http`, and the "How to run" section of `docs/qa/r1-test-report.md` (a note that the suite now runs on both clients). Verify with `grep` that there are no stale references, then commit.
 
 ## 5. Environment template and README (D15, D17, D20)
 
