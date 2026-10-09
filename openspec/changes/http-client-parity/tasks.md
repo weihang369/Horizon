@@ -98,7 +98,7 @@
 
   Add `backend/tests/unit/test_env_example.py`, which asserts that every known variable appears, the key is empty, and no `sk-or-[A-Za-z0-9_-]+` token exists. Verify that the test passes, and that it fails when a dummy name is appended to `KNOWN_VARS` in a scratch run.
 - [x] 5.2 Add `.nvmrc` (`24`) (D20). Verify with `node --version` that it matches the major, and that the README names it.
-- [ ] 5.3 Rewrite the README's "Run locally with the backend" section (D15):
+- [x] 5.3 Rewrite the README's "Run locally with the backend" section (D15):
   1. prerequisites (Node 24, uv; Windows install commands first, then Unix);
   2. clone → `npm run setup` → `npm run dev` → open the app;
   3. the optional `.env` copy (the key can also be entered in Settings);
@@ -135,7 +135,7 @@
 
 ## 7. Timing script and CI (D18, D19)
 
-- [ ] 7.1 Write `scripts/boot-timing.mjs` (repo root, Node, no dependencies) (D19). It:
+- [x] 7.1 Write `scripts/boot-timing.mjs` (repo root, Node, no dependencies) (D19). It:
   - clones the current commit (`git clone --no-local`) into a temp dir;
   - with `--cold`, points `npm_config_cache`, `UV_CACHE_DIR` and `UV_PYTHON_INSTALL_DIR` at empty temp dirs;
   - runs `npm run setup`, starts `npm run dev`, and polls `http://localhost:5173/` and `/api/v1/worlds` until two seed worlds answer;
@@ -145,7 +145,7 @@
   - removes the clone unless `--keep` is given.
 
   Verify on Windows with `node scripts/boot-timing.mjs --cold`. This is the **Windows fresh-clone acceptance measurement**: record the timings in `docs/backend/06` §M6.
-- [ ] 7.2 Write `.github/workflows/ci.yml` (D18):
+- [x] 7.2 Write `.github/workflows/ci.yml` (D18):
   - push and pull_request on `dev` and `feat/**`;
   - the concurrency group, `permissions: contents: read`, `timeout-minutes: 45`, and no `secrets.*`;
   - checkout, setup-node (`.nvmrc`) and setup-uv;
@@ -161,7 +161,7 @@
   - the YAML parses with a YAML parser already in `node_modules` (e.g. the transitive `yaml` package). If none is present, ask the user before downloading one;
   - every script it names exists in `package.json`;
   - `grep` finds no `secrets.` in it.
-- [ ] 7.3 Before handing over, check the Linux-only failure modes from D18 in the code: `127.0.0.1` in every server URL, process-group kills on Unix in both launchers, and no test relying on the machine time zone (grep for `datetime.now()` and `new Date()` in tests without a fixed clock). Fix anything found, and verify that the gates are still green on Windows. Then commit.
+- [x] 7.3 Before handing over, check the Linux-only failure modes from D18 in the code: `127.0.0.1` in every server URL, process-group kills on Unix in both launchers, and no test relying on the machine time zone (grep for `datetime.now()` and `new Date()` in tests without a fixed clock). Fix anything found, and verify that the gates are still green on Windows. Then commit.
 
 ## 8. Final integration
 

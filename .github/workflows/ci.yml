@@ -1,0 +1,120 @@
+# Horizon CI (continuous-integration spec; http-client-parity D18): one Linux job, the "one Unix" evidence for NFR-10.
+# - No secrets: nothing here reads repository or organisation secrets, no .env is created, and every test uses the
+#   fake provider and fake keys.
+# - Order matters: the timed fresh-clone boot runs first, with its own empty caches, so restored caches can't flatter it.
+# - Docling (setup step 2) and paid live tests never run here.
+name: CI
+
+on:
+  push:
+    branches: [dev, "feat/**"]
+  pull_request:
+    branches: [dev, "feat/**"]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: Gates, E2E on both clients, fresh-clone boot
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Node (from .nvmrc)
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+
+      - name: uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.11.25"
+          enable-cache: false
+
+      # Cold: a clone of this commit, empty npm/uv/Python-install caches, then `npm run setup` + `npm run dev` until the
+      # two seed worlds answer through the app. Fails over 300 s; the timings go to the job summary.
+      - name: Fresh-clone boot to demo mode (cold, budget 300 s)
+        run: node scripts/boot-timing.mjs --cold
+
+      - name: Cache npm downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json', 'frontend/package-lock.json') }}
+
+      - name: Cache uv downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/uv
+          key: uv-${{ runner.os }}-${{ hashFiles('backend/uv.lock') }}
+
+      - name: Setup (step 1)
+        run: npm run setup
+
+      - name: Backend lint and types
+        working-directory: backend
+        run: |
+          uv run ruff check .
+          uv run mypy
+
+      # pytest's addopts already exclude the `live` and `docling` markers.
+      - name: Backend tests
+        working-directory: backend
+        run: uv run pytest -q
+
+      - name: Frontend type check and lint
+        working-directory: frontend
+        run: |
+          npm run typecheck
+          npm run lint
+
+      - name: Frontend unit tests and the mock contract
+        working-directory: frontend
+        run: npm test
+
+      - name: Client contract over HTTP (test-mode backend)
+        working-directory: frontend
+        run: npm run test:http
+
+      - name: Seed, fixtures, schema export and asset credits
+        working-directory: frontend
+        run: |
+          npm run seed:check
+          npm run fixtures:check
+          npm run export-schema:check
+          npm run assets:check
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('frontend/package-lock.json') }}
+
+      - name: Playwright Chromium
+        working-directory: frontend
+        run: npx playwright install --with-deps chromium
+
+      # Both clients: the mock projects and the HttpClient against a throwaway test-mode backend. No Edge on the runner,
+      # so the bundled Chromium (PW_CHANNEL="").
+      - name: E2E on both clients
+        working-directory: frontend
+        env:
+          PW_CHANNEL: ""
+        run: npm run e2e
+
+      - name: Upload Playwright traces and report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-${{ github.run_id }}
+          path: |
+            frontend/test-results
+            frontend/playwright-report
+          retention-days: 7
+          if-no-files-found: ignore

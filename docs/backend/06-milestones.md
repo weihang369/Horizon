@@ -143,6 +143,7 @@
   - The backend adds `no_worlds` and `daily_cap`. Scenarios replace each other, and in test mode reset-demo clears the active one, as on the mock.
 - **NFR-10 reading:** "Prerequisites are Python + Node only" was written before uv was adopted (M1b). It now means **Node 24 + uv**: uv installs Python 3.12 itself, and step 1 still needs no Docker, Redis, external database, GPU, CUDA or PyTorch. The README states exactly that, Windows first.
 - **`.env.example`** lists every variable the config reads (the 16 `HORIZON_AI_*` overrides and `HORIZON_ROOT` as commented lines). `backend/tests/unit/test_env_example.py` fails on an undocumented variable or any key-shaped text.
+- **Fresh-clone timing, Windows (acceptance):** `node scripts/boot-timing.mjs --cold` on 2026-10-09 (Windows 11, Node 24.18, uv 0.11.25; empty npm, uv and Python-install caches, so npm packages, backend packages and Python 3.12.13 were all downloaded): clone 1.4 s, `npm run setup` 10.9 s, `npm run dev` → demo mode 6.5 s, **total 18.8 s** against the 300 s budget (an earlier run: 19.5 s). A slower connection mostly stretches the setup step. The Linux number comes from CI's job summary.
 - **Test backends** (`test:http`, E2E) share one environment recipe (`frontend/scripts/test-backend/env.ts`): a temp `HORIZON_ROOT` with no `.env`, the repo seed, a temp data dir, `scripted` AI, and no inherited `HORIZON_*` or key.
 
 ## Test strategy
