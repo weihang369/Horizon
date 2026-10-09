@@ -195,8 +195,9 @@ context limit.
 - **Scripted profile:** keeps today's text (the last 12 lines) but becomes async and records one simulated
   `rolling_summary` call per drop (D-81: scripted spend is simulated and billed), so the demo's cost shape matches
   real use.
-- **Watch's "Summarise" button** (`Summariser.episode`) is a different summary, designed in task 7; it takes the
-  rolling summary and the window as its input. Until then `NaiveSummariser.episode` delegates to the scripted one.
+- **Watch's "Summarise" button** (`Summariser.episode`) is a different summary, designed in doc 07 G10; it takes the
+  rolling summary and the window as its input. Until it is built, `NaiveSummariser.episode` delegates to the scripted
+  one.
 - **The `naive` yardstick moves here, deliberately.** The window, the drop rule and the summariser are shared runtime
   machinery, not the naive prompt; both profiles get the same ones, so the comparison stays fair. The change lands
   before the first accepted baseline (doc 02 B7), so no baseline straddles it. The naive prompt itself is untouched
@@ -312,7 +313,7 @@ Doc 01 A3 rule 6: Jev gets less accurate as irrelevant content grows, so the sta
 |---|---|---|
 | `mode` | `one_on_one`, `group`, `watch` or `debate` | all |
 | `user_name` | the You-card name | all |
-| `cast` | per candidate: `name`, profile `role`, `about` (the first sentence of `personality.summary`, ≤ 60), `face` (current), `last_spoke` ("2 turns ago" / "not yet", from code), `energy` ("ok" / "tired", from code; exhausted characters are not candidates) | speaker, emotion |
+| `cast` | per candidate: `name`, profile `role`, `about` (the first sentence of `personality.summary`, ≤ 60), `face` (current), `last_spoke` ("2 turns ago" / "not yet", from code); **no `energy`** (doc 07 G9: code applies energy, and exhausted characters are not candidates) | speaker, emotion |
 | `documents` | per candidate with knowledge: up to 10 source titles (≤ 20 each) | needs documents? |
 | `latest` | the latest user message, quoted, cut to 600 (first 450 + last 150) | all |
 | `recent` | the last 6 messages before it as `{speaker, text}`, quoted, each cut to 300 | all |
@@ -396,7 +397,7 @@ internal.
 ## 7. Left for later tasks
 
 - ~~The mood line's wording (task 6).~~ Resolved by doc 06 E4.
-- Watch's episode summary and when the talk is finished (task 7).
+- ~~Watch's episode summary and when the talk is finished (task 7).~~ Resolved by doc 07 (G7, G10).
 - What the debate host and verdict see (task 8).
 - Long-term memory and per-character points of view across sessions (task 9).
 - The retrieval block's size: k, the passage length and Jev call 2 (task 10).

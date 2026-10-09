@@ -210,7 +210,7 @@ probabilities for Insight.
 | Mode | Questions in Jev call 1 |
 |---|---|
 | **1:1** | needs documents? · needs memories? · emotion · input safe? |
-| **Group** | who fills the automatic slot (@mentions answer first; the Everyone button skips the question) · **per candidate:** needs documents? needs memories? emotion · input safe? |
+| **Group** | who answers first, with no `none` when nobody is mentioned (@mentions answer first; Everyone uses the probabilities as its order, doc 07 G1, G4) · **per candidate:** needs documents? needs memories? emotion · input safe? |
 | **Debate** | the backend picks the side; Jev picks which member (A14) · **per eligible member:** the gates and the emotion |
 | **Watch** | who speaks next · is the talk finished? · **per candidate:** the gates and the emotion |
 
@@ -219,9 +219,10 @@ probabilities for Insight.
   speaker**, and code keeps the answers for whoever was chosen.
 - **A gate question is only asked when it can pay off.** "Needs documents?" only for a character with knowledge
   indexed; "needs memories?" only for a character with memories. This keeps the state smaller and the call cheaper.
-- **Second replier in group mode.** When two characters reply, the second one gets a short **re-plan** (its gates and
-  emotion) after the first reply ends, so its mood can react to what was just said. If both go deep, they reuse one
-  query embedding per user message, as D-97 does today.
+- **Second replier in group mode** (amended by doc 07 G2). The second slot is decided **after the first reply ends**,
+  by a short Jev request (the **follow plan**, 400 ms): who, if anyone, speaks up now, plus each candidate's gates and
+  emotion, so the second character can answer the first. Late, failed or unsure means no second reply. If both go
+  deep, they reuse one query embedding per user message, as D-97 does today.
 - **Size check.** The `Decider` checks the whole request (state + all questions) against the real limit of the
   OpenRouter endpoint, as well as state + the longest question. Check 4 finds that limit.
 - **Confidence floors** apply to every choice and score answer. A noul has no confidence, so its probability is used
@@ -512,7 +513,7 @@ None of the backend rows changes the HTTP contract unless marked.
 | The citation check runs on interrupted replies; the post-turn graph runs after `turn.end` | backend | A13 | 6, 10 |
 | Debate: Jev picks the member among those who haven't spoken in the phase; openings stay fixed; a new trace marker for "member chosen by Jev" | backend + contract (trace value) | A14 | 8 |
 | `DebateHost.narration()` returns a fixed string, so it can't stream LLM-voiced host prose | backend | A7 | 8 |
-| Watch **"the talk is finished"** needs an outcome: e.g. `ended` with a new paused reason, and whether "Continue +10" still works | backend + **contract** | A4 | 7 |
+| ~~Watch **"the talk is finished"** needs an outcome~~ **Withdrawn by doc 07 G7:** a finished thread steers the next line somewhere new; no early end, so no contract change | backend | A4 | 7 |
 | **A "System 1" section in `TurnTrace`, and its Insight UI** (**approved in principle by the user, 2026-10-09**; its fields and UI are designed at task 13, once tasks 7–11 have added their Jev questions; the live face-and-words check turns on with it, doc 06 E7) | **contract + UI** | A12 | 13 |
 | **Docs to amend:** a new decision-log entry replacing D-97's rule; resolve OQ-AI-07 (Jev first, the tag as fallback); note in D-92 that the planner is a runtime-called port; update the 05-ai-seams §3 purpose table and §2.2 port catalogue | docs | all | 13 |
 

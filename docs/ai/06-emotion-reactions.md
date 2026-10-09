@@ -132,10 +132,10 @@ DeepSeek streams, told the mood by one
   probability** only for display (`p`, Insight's bars).
 - **The options are always all 7,** even for a Lean-mode character with no portrait for some of them. The UI shows
   neutral plus that emotion's effects and tint (EMO-06), and the mood line (E4) still shapes the words.
-- **Which paths ask again after the first reply:** the group **auto** policy's second replier, when it was not
-  prefetched, gets doc 01 A4's short re-plan (its gates and emotion), so its face can react to the first reply. A
-  **prefetched** reply (Everyone, debate openings, watch's next line) keeps the answers from its own Jev call 1,
-  because it was planned before the line it follows existed.
+- **Which paths ask again after the first reply:** the group **auto** policy's second replier (and Step in's) is
+  chosen by doc 07 G2's follow plan, which also asks its gates and emotion, so its face can react to the first reply.
+  A **prefetched** reply (Everyone, debate openings) keeps the answers from its own Jev call 1, because it was planned
+  before the line it follows existed. Watch never prefetches: its next plan starts at `turn.end` (doc 07 G8).
 - **MANUAL mode still asks it** (it costs almost nothing inside the same request): see E2 for where the answer goes.
 - **Confidence floor:** set by doc 02 B5's grid against E8's target. Below the floor counts as unsure (E3).
 

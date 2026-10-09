@@ -179,7 +179,8 @@ frozen transcripts start from a long committed history.
   | Set | Size | Why this size |
   |---|---|---|
   | Layer 1: each **noul that sets a threshold** (needs documents, needs memories, talk finished) | **~120 items, at least 60 of them "yes"** | A recall target is judged on 60+ positives. With 50, 45 right still leaves 79–96 %. |
-  | Layer 1: **passage score** and **who speaks** | **~100 items** | They set floors that every deep or group turn depends on |
+  | Layer 1: **passage score** | **~100 items** | It sets the floor every deep turn depends on |
+  | Layer 1: **who speaks** (doc 07 G11) | **~130 items**: group first slot 40, group second slot 50 (40–60 % with `none` right), watch next speaker 40 | They set the floors every group and watch turn depends on; the second slot's right answer is often `none` |
   | Layer 1: **emotion** (doc 06 E8) | **~100 items**; 20–30 % where keeping the face is acceptable | The face shows on every turn of every mode; the cap stops "always keep" from carrying the score |
   | Layer 1: **listener reactions** (doc 06 E8) | **90 items** (30 test; a line, its context, one listener); at most 30 % where `none` is acceptable | A gross-failure check with a trivial baseline to beat; the shown share is reported by the latency suite |
   | Layer 1: every other question | **40 items**, plus another 40 **only when the interval straddles the target** | 40 items catch a gross failure, and we grow a set only where the answer is unclear |
@@ -187,8 +188,8 @@ frozen transcripts start from a long committed history.
   | Layer 3: frozen transcripts | **20**, each 8–12 turns, across both worlds: 1:1 × 6, group × 5, debate × 4, watch × 5; **4 of them start from a long committed history past one drop** (doc 05 X10) | About 200 compared turns; the 4 cover the summary in the prompt |
   | Layer 3 targeted lines (doc 04 P12) | **At least 10 Malay, Chinese or mixed user lines and 10 planted wrong claims**, placed in those transcripts, split dev / test | The language and push-back checks would pass trivially without them |
   | Drafter suite (doc 04 P12) | **20 seeds** across the three intents and both worlds, 10 dev / 10 test | Enough to see a systematic drafting fault |
-| Summary suite (doc 05 X10) | **40 dropped-history inputs**, 3 planted facts and 1 promise each, 20 dev / 20 test | 60 test facts for the 90 % target; the 20-item checks use "at most 1 failure, each read" |
-| Long suite (doc 05 X10) | **3 runs** past two drops, 15 late fact probes | A signal for recall and drift, not a test; reported with intervals |
+  | Summary suite (doc 05 X10) | **40 dropped-history inputs**, 3 planted facts and 1 promise each, 20 dev / 20 test; **plus 10 watch episode recaps** (doc 07 G11) | 60 test facts for the 90 % target; the 20-item checks use "at most 1 failure, each read" |
+  | Long suite (doc 05 X10) | **3 runs** past two drops, 15 late fact probes | A signal for recall and drift, not a test; reported with intervals |
   | Layer 3: free-running conversations | **4**, one per mode | What only a live run shows (B3) |
   | Judge checks (B4) | **60 per judge question** (30 real + 30 planted failures), **30 pairs** for the pairwise judge | Planted failures have known answers, so they cost no labelling |
 
@@ -349,7 +350,7 @@ the largest Jev item, so judge results are cached (B7).
 
   | Question | Which mistake hurts | Policy accuracy target |
   |---|---|---|
-  | who speaks / debate member | an odd speaker; mild | ≥ 80 % inside the acceptable set |
+  | who speaks / debate member | an odd speaker; mild | ≥ 80 % inside the acceptable set; for who speaks (doc 07 G11), **≥ 15 points above** least recently spoken (group first slot), the better of "always `none`" and least recently spoken (second slot), and round-robin (watch) |
   | emotion | a wrong face; visible but mild | ≥ 80 % inside the acceptable set (doc 06 E3's fade applied first), **and ≥ 15 points above "always keep the current face"** |
   | listener reaction (doc 06 E5) | a wrong or needless face on a listener; mild | ≥ 80 % inside the acceptable set, **and ≥ 15 points above "always `none`"** |
   | knowledge abstain (Jev call 2 + the keep rule) | "not in my documents" when it is there is very visible | **≤ 3 wrong abstains in 100 answerable questions** (which rules out a true rate of 8.5 % or more), and **≥ 32 of 40 unanswerable questions abstained** |
@@ -439,12 +440,12 @@ with itself only about 64 % of the time, so that rule mixes up ordinary noise wi
 
   | Suite | Main calls | Estimate |
   |---|---|---|
-  | decisions | ~1,700 Jev requests (choice items in both orders, including doc 06's emotion and reaction sets), ~1 k tokens each | ≈ $0.07 |
+  | decisions | ~1,760 Jev requests (choice items in both orders, including doc 06's emotion and reaction sets and doc 07's who-speaks parts), ~1 k tokens each | ≈ $0.07 |
   | retrieval | re-indexing and corpus embedding (< $0.01), then 140 questions × ~15 passage scores | ≈ $0.05 |
   | conversations | 200 turns × 2 profiles + 4 free runs on DeepSeek, Jev planning, and judging (≈ $0.13); doc 04's reply-rule checks and three 1:1 free runs (≈ $0.03) | ≈ $0.38 |
   | drafter (doc 04) | 20 drafts + 40 Jev checks | ≈ $0.025 |
-  | summary (doc 05) | 40 summary calls + about 280 Jev checks | ≈ $0.06 |
-  | **all** | | **≈ $0.59 (about RM 2.5)**; ≈ $0.81 at peak; **≈ $0.42 once the `naive` replies are cached** |
+  | summary (doc 05, doc 07) | 40 summary calls + 10 episode recaps + about 320 Jev checks | ≈ $0.08 |
+  | **all** | | **≈ $0.61 (about RM 2.6)**; ≈ $0.85 at peak; **≈ $0.42 once the `naive` replies are cached** |
   | latency (rare) | 300 turns, each stopped at the first word (B8) | ≈ $0.08 |
   | long (rare, doc 05) | three agent-only runs of about 75 turns or rounds | ≈ $0.12 |
   | smoke (usual) | the changed suite + 4 free runs | ≈ $0.05–0.15 |

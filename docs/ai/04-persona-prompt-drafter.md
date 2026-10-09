@@ -475,7 +475,8 @@ the drafter's `world` argument are internal.
 ## 7. Left for later tasks
 
 - ~~The mood line's wording and the emotion evaluation (task 6).~~ Resolved by doc 06 (E4, E8).
-- Group and watch turn-taking, including when a character should stay quiet or address another character (task 7).
+- ~~Group and watch turn-taking, including when a character should stay quiet or address another character (task 7).~~
+  Resolved by doc 07 (G1–G7; the turn cue's sentence is G3).
 - Debate argument, host and verdict prompts (task 8).
 - "Last time we talked about …" greetings and memory in the prompt (task 9).
 - The content-rating, advisory and "are you an AI?" wording (task 11).

@@ -164,6 +164,7 @@ The table lives in the seed-build source `frontend/scripts/seed-build/runtime.co
 | `reply.debate` | Debate argument | off | 1.0 | stream | task 8 |
 | `host`, `verdict` | Debate host lines and verdict prose | off | 1.0 | stream | task 8 |
 | `summary` | Rolling summary | off | 0.7 | text | task 5 (doc 05 X3) |
+| `episode` | Watch's "Summarise" recap, `max_tokens` 400 | off | 0.7 | text | task 7 (doc 07 G10) |
 | `memory` | Memory extraction | off | 0.7 | JSON | task 9 |
 | `profile` | Profile draft, regenerate one field | off | 1.0 | JSON | naive today |
 | `probe` | Settings → Test, 1 token | off | none | text | today |
