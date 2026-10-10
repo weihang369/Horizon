@@ -53,7 +53,7 @@ World 1──< Session 1──< Participant >──1 Character
 Character 1──< GenerationJob 1──< GenerationTask
 UsageRecord (cost ledger) ──? Session | Character | GenerationJob
 MemoryItem      (AI-owned)               >──1 Character (scoped to its World)
-KnowledgeSource (PLACEHOLDER, v1.1 RAG)  >──1 Character
+KnowledgeSource (RAG in v1, docs/ai/10)  >──1 Character
 ```
 
 ## 3. Enums

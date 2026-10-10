@@ -93,7 +93,7 @@ From the code:
 - **The naive drafter** ([naive/creation.py](../../backend/horizon/ai/naive/creation.py)) uses JSON mode
   (`response_format: json_object`, the schema in the system prompt), reasoning off, `max_tokens` 2,400.
 - **Host lines, the verdict and the rolling summary** are scripted-only today (doc 01 §8). Their DeepSeek calls arrive
-  in tasks 8 and 9, and they use the settings in C1.
+  in tasks 5 and 8, and they use the settings in C1.
 - **Model overrides.** Settings → Models (SET-05) lets the user type a different model slug, saved as
   `modelOverrides`. **Only the Test button reads them** ([probes.py](../../backend/horizon/services/probes.py)).
   Today, typing another model there changes nothing a user can see.
@@ -488,7 +488,7 @@ What v2 needs before overrides can work is written down in [docs/v2/README.md](.
 | Bubble rendering for 1:1 / group (bubbles) and watch (script lines); the auto-Readable rule per bubble | `frontend/src/features/session/MessageRow.tsx`, `sessionContext.ts`, the stream text | frontend |
 | Demo parity: line breaks in seed transcripts, mock banks and scripted lines | `frontend/scripts/seed-build/data`, `frontend/src/mock/banks`, `ai/scripted` | frontend + seed |
 | Settings → Models becomes read-only, with prices from the bundled `pricing.config.ts`, and Test | `frontend/src/features/settings/ModelsTab.tsx` | frontend |
-| Wording changes: SET-05 is read-only in v1; D-46 "may display as up to 4 bubbles"; R-14 mitigation (C8); R-13 "DeepSeek structured-output fallback" becomes "JSON mode + validation"; OQ-AI-13 resolved; doc backend/04's "fallback model" line; D-93 and 05-ai-seams' "byte-identical to v1" note (no longer true after naive-3); `openspec/specs/ai-ports` (naive reply engine) and `http-api` where they state caps, the fallback or the probe override | `docs/requirements/02, 05, 07, 08, 09`, `docs/backend/04, 05`, `openspec/specs/*` | docs |
+| Wording changes: SET-05 is read-only in v1; D-46 "may display as up to 4 bubbles"; R-14 mitigation (C8); R-13 "DeepSeek structured-output fallback" becomes "JSON mode + validation" (applied instead as "a deterministic code fallback per question": Jev failures fall back to code rules, [doc 13](13-wrap-up.md) status note); OQ-AI-13 resolved; doc backend/04's "fallback model" line; D-93 and 05-ai-seams' "byte-identical to v1" note (no longer true after naive-3); `openspec/specs/ai-ports` (naive reply engine) and `http-api` where they state caps, the fallback or the probe override | `docs/requirements/02, 05, 07, 08, 09`, `docs/backend/04, 05`, `openspec/specs/*` | docs |
 | Doc 01's failure-mode table says "structured output"; it becomes "JSON mode + validation + one retry" (C7) | `docs/ai/01-agent-architecture.md` §6 | docs (done with this doc) |
 
 **No contract change.** `finish_reason` and reasoning tokens live in the internal ledger. The provider shows through the
@@ -496,7 +496,7 @@ existing `model.provider`. Prices come from the bundled config. `modelOverrides`
 
 ## 7. Left for later tasks
 
-- The exact prompt wording for length, bubbles and repetition (task 4).
+- ~~The exact prompt wording for length, bubbles and repetition (task 4).~~ Resolved by doc 04 P5, P6, P8.
 - ~~The debate argument and host prompts (task 8).~~ Resolved by doc 08 V4, V6 and V8.
 - ~~The summary and memory-extraction prompts and schemas (task 9).~~ Resolved by doc 05 X3 (summary) and doc 09 M3
   (memory extraction).

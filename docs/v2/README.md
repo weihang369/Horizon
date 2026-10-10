@@ -129,3 +129,23 @@ the style 5/5 with text alone.
 2. A paid test (≈ $0.15): one reference for two new characters, scored by eye (D-88) for face leaks and style match.
 3. If it passes, `referenceImageUrls` filled per preset and sent as extra `input_references` in base and sheet calls
    (Seedream takes up to 14, free).
+
+## 7. An LLM-written context line per knowledge piece
+
+**v1 behaviour:** each piece's vector is built from the piece with its document title and heading path as a header
+(docs/ai/10 K1, K3).
+
+**Why it was deferred:** the header is free; a written context line per piece costs one LLM call per piece at upload.
+
+**What v2 would need:** a retrieval-suite comparison showing the header falls short (Recall@8), then a per-piece
+context line written at ingestion, in a new embedding space.
+
+## 8. An approximate vector index
+
+**v1 behaviour:** exact flat KNN per character partition (D-64), fine within D-65's limits (≤ 3,000 pieces per
+character).
+
+**Why it was deferred:** at v1's sizes an exact search is fast enough and has no recall loss (docs/ai/10 K3).
+
+**What v2 would need:** if D-65's limits rise past about 100k pieces per partition, an IVF or HNSW index, with a recall
+check against the flat search.

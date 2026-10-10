@@ -60,7 +60,7 @@ From the code:
 
   The "Doesn't look like them" button ([EmotionLightbox.tsx](../../frontend/src/features/profile/EmotionLightbox.tsx))
   sends a fixed sentence on `emotion_regenerate`, and `emotion_edit` ignores `input.prompt`, so it never reaches a
-  prompt (today it does what Regenerate does; task 13 lists it).
+  prompt (today it does what Regenerate does; [doc 13](13-wrap-up.md) W3 adds a fixed identity line).
 - **Jobs:** `portrait_candidates` makes 1 candidate (lean) or 2 (standard); `portrait_tweak` makes 1. A refused job
   start already has a path: `JobScheduler.start` raises before anything is stored, and the wizard's
   `startGeneration` shows the error's message in a toast.
@@ -285,7 +285,8 @@ doing only once there are real seed portraits, which is a v2 question.
   like the other safety thresholds (0.1–0.9 grid, Wilson intervals). The "to refuse" items stay in
   `private/evals/safety/`; the harmless ones are committed.
 - **The image-model checks still open from D-61** (Hana v2, Amara's skin tone not lightened, Rin's adult read,
-  Victor's fine detail; ≈ $0.40) run with the **v3** template at the paid-check point, scored by eye on the contact
+  Victor's fine detail; ≈ $0.40) run with the **v3** template **in the v1 endgame** ([doc 13](13-wrap-up.md) W10: the recreated seed
+  characters are the check, and their accepted images are the demo's), scored by eye on the contact
   sheet (D-88). They now also confirm:
   - the edits keep each face's apparent age (no drift older or younger) and identity (S6 ≥ the D-61 run's 5);
   - outfits stay as described (no added skin exposure) with the "fully clothed" line;

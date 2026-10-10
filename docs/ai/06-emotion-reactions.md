@@ -27,8 +27,7 @@ it is measured**.
 - **Short faces fade:** a kept surprised or embarrassed face goes back to neutral; happy, sad, angry and thinking
   stay (E3).
 - **At most 2 listener reactions per message**, the most confident ones whose face actually changes (E5).
-- **The face-and-words check runs in evaluation only** for now; it goes live with the System 1 Insight section,
-  which the user approved in principle and task 13 designs (E7).
+- **The face-and-words check** went live with the System 1 Insight section ([doc 13](13-wrap-up.md) W1, W2; E7).
 
 ## 2. What Horizon already has
 
@@ -108,8 +107,8 @@ DeepSeek streams, told the mood by one
 
   The verbatim first greeting asks nothing (doc 04 P9).
 - **Options: the 7 emotions plus `none`** ("no clear change: keep the current face", doc 01 A3 rule 5). They are
-  shuffled per question (A3 rule 4) with a seed **derived, not stored**: `f"{session seed}:{turn index}:{question}"`,
-  so a turn can be replayed exactly. The System 1 section (task 13) will show it.
+  shuffled per question (A3 rule 4) with a seed **derived per question** from the stored per-turn seed: `f"{session seed}:{turn index}:{question}"`,
+  so a turn can be replayed exactly. The System 1 section stores the per-turn part as `system1.seed` ([doc 13](13-wrap-up.md) W1).
 - **Every option has a `what`, a `not_for` and examples** with the same field names (A3 rule 3). The question bank
   (doc 02 B9) starts from these; the examples are short chat lines and may not appear in any evaluation item
   (doc 02 B2, no leakage):
@@ -185,7 +184,7 @@ DeepSeek streams, told the mood by one
   changes the gateway for a moment the reducers would not show anyway (the face is held until the first token);
 - **setting `turn.start.emotion` and changing both reducers to read a source from it:** a reducer and fixture change
   for nothing the `emotion` event in the same append doesn't already give;
-- **a new `EmotionSource` value for "kept":** a contract change; the System 1 section (task 13) will show the reason
+- **a new `EmotionSource` value for "kept":** a contract change; the System 1 section ([doc 13](13-wrap-up.md) W1) shows the reason
   for every fallback.
 
 ### E3. Kept faces, and short faces fade
@@ -288,7 +287,7 @@ sad or angry face while the topic continues looks right.
   (`timeoutsMs.decision.reaction` = 1500 in `seed/pricing.json`); a late or failed call shows nothing (MULTI-04 AC2
   allows it).
 - **When pending reactions are dropped** (the session's reactions task is named, so it is cancelled without touching
-  the memory jobs that share the background set):
+  other background tasks, such as the face check, [doc 13](13-wrap-up.md) W2):
 
   | Event | What is dropped |
   |---|---|
@@ -305,7 +304,7 @@ sad or angry face while the topic continues looks right.
   listeners ≈ 1,600 tokens × $0.042 / M ≈ **$0.00007 per character message**, more if doc 01's check 4 finds the
   state billed per question. It goes to the ledger and counts toward the daily cap only, never energy (ENG-02 AC2).
   Like the rolling summary (doc 05 X3), it is not part of the message's `usage`, so the session's cost HUD (which sums
-  `turn.end` usage) leaves it out; task 13's pricing review decides whether post-turn spend should show there.
+  `turn.end` usage) leaves it out; [doc 13](13-wrap-up.md) W7 keeps the counter to reply spend, with a tooltip pointing to Settings → Cost.
 - **Other profiles:**
   - `scripted` keeps its random reactions, becomes async, and **records a simulated `reaction` call** at the decision
     price (D-81, as doc 05 X3 does for the summary), so the ledger and the daily cap see the same calls as `agent`;
@@ -345,17 +344,17 @@ guard where the face is decided: the reducer.
 
 **Rejected:** relying on the runtime alone: replay and the mock would still flip faces.
 
-### E7. The face-and-words check: evaluation only, for now
+### E7. The face-and-words check: evaluation only, for now (superseded: live, [doc 13](13-wrap-up.md) W2)
 
 **Decision:**
 - Doc 01 A7's post-turn check graph has **no live emotion branch** until the System 1 Insight section exists (doc 01
-  A12, a contract change). **The user approved that section in principle on 2026-10-09; task 13 designs it** once
+  A12, a contract change). **The user approved that section in principle on 2026-10-09; [doc 13](13-wrap-up.md) W1 designs it,** once
   tasks 7–11 have added their Jev questions. Today's trace has no field for the result, so a live check would be paid
   for and not shown.
 - The check itself runs in the evaluation (doc 02 B4's "Face and words agree": Jev reads only the reply and picks
   one of the 7 emotions).
-- **When the System 1 section is built,** the check goes live as one Jev call after `turn.end` (about $0.00001 a
-  turn) and Insight shows "face and words agree: yes / no". It never changes the face (D-46).
+- **When the System 1 section is built,** the check goes live as one Jev call after `turn.end` (≈ $0.00002 per checked reply,
+  [doc 13](13-wrap-up.md) W2) and Insight shows "face and words agree: yes / no". It never changes the face (D-46).
 
 **Rejected:** a live check now, writing only to the ledger: a cost with no reader.
 
@@ -391,7 +390,7 @@ trusted):
   - **"Face and words agree"** (doc 02 B4's existing choice), measured **only on turns whose face is not neutral**:
     the **exact match** (the words' guess equals the face shown), and **clashes** (happy against sad or angry, either
     way) **≤ 5 %**. Exact match has no fixed target; it is the quantity the on/off run compares.
-- **Mood line on vs off, once** (run with the other paid checks before coding): **up to 100 non-neutral turns** of
+- **Mood line on vs off, once** (moved by [doc 13](13-wrap-up.md) W6 to M15: the "on" arm is the conversations run, only the "off" arm is paid): **up to 100 non-neutral turns** of
   the frozen transcripts are replied to again without the line. Both arms get the two checks above and the pairwise
   judge in both orders. Compared **per conversation with a paired bootstrap** (doc 02 B1). Decided in advance:
   - **keep the line** if exact match rises (its 95 % interval above 0) and the pairwise preference is not worse (its
@@ -418,14 +417,14 @@ trusted):
 | Speaker emotion (E1) | inside Jev call 1, every AUTO or MANUAL turn | ~300 tokens per candidate: ≈ $0.00001 (1:1) to ≈ $0.00007 (5 candidates), more if Jev bills the state per question (doc 01 check 4). Doc 05 X9's $0.00003–0.00008 covers the state only | none extra: same request; the face shows with the first word |
 | Mood line (E4) | every AUTO reply that isn't neutral | ≈ $0.000005 | none |
 | Reactions (E5) | after each character message in group, debate, watch | ≈ $0.00007 with 4 listeners | after `turn.end`; never delays the next speaker |
-| Face-and-words check (E7) | live from M9: after `turn.end`, non-neutral AUTO faces ([doc 13](13-wrap-up.md) W2) | none: after `turn.end` | ≈ $0.00002 per checked reply |
+| Face-and-words check (E7) | live from milestone M9: after `turn.end`, non-neutral AUTO faces ([doc 13](13-wrap-up.md) W2) | ≈ $0.00002 per checked reply | none: after `turn.end` |
 
 ## 5. Checks before this is locked
 
 1. **Offline, $0:** E8's offline tests on the seed characters in all four modes, and the seed equivalence re-run
    (E6).
-2. **With the other paid checks before coding** (the user approves the total then): E8's mood-line on/off run
-   (≈ $0.06), and the layer 1 emotion and reaction sets inside the first `decisions` run.
+2. **Moved by [doc 13](13-wrap-up.md) W6:** the layer 1 emotion and reaction sets run in M9's `decisions` slice; the mood-line
+   on/off run is part of M15's run (only the "off" arm is paid).
 
 ## 6. Changes this design needs (each approved at its OpenSpec change)
 
@@ -440,7 +439,7 @@ trusted):
 | A named, cancellable reactions task; per-speaker drop at `turn.start`; full drop at a user message and in `clear()` (Stop, leave, cap pause, end) and on MANUAL (E5) | `sessions/actor.py` (`background`, `clear`), `sessions/turn.py`, `sessions/commands.py` (`_emotion_mode`) | backend |
 | The mock charges the simulated `reaction` call and applies the same drop rules (E5) | `frontend/src/mock/script/turnScript.ts`, the mock engines | frontend |
 | A reaction never changes the streaming speaker's face; fixtures incl. `ses_seedDinner` seq 25 (E6) | `services/runtime/reducer.py`, `frontend/src/engine/sessionReducer.ts`, the shared reducer fixtures | backend + frontend |
-| Post-turn graph without the live emotion branch until the System 1 section (E7) | the post-turn check graph (doc 01 A7) | backend |
+| ~~Post-turn graph without the live emotion branch until the System 1 section (E7)~~ Superseded: no post-turn graph; the face check is one Jev call in its own task ([doc 13](13-wrap-up.md) W2) | the after-turn work | backend |
 | Eval: emotion set ~100 and reactions set 90 with the keep / `none` cap and baselines, the new noul with its false-alarm rule, the exact-match measure, the on/off run with its decision rule, single-order floor tuning, offline tests (E8) | `evals/`, the `horizon eval` harness, `backend/tests/` | backend |
 | Doc 02: B2 sizes, B4 judge rows, B5 reaction target and single-order tuning, B7 cost, B8 sources | `docs/ai/02-evaluation-observability.md` | docs |
 | Doc 01: A4's emotion fallback row (fade), A5 (first chunk, `emotion` event, face with the first word), A7 (live emotion check waits for the System 1 section); OQ-AI-07 resolved | `docs/ai/01-agent-architecture.md`, `docs/requirements/08` | docs |
@@ -450,8 +449,8 @@ Insight rule is display only.
 
 ## 7. Left for later tasks
 
-- Custom emotions (EMO-07): v2.
-- Watch's pacing, the talk-finished question and energy-aware turn-taking (task 7).
+- Custom emotions (EMO-07): the full product (requirements EMO-07), not v1.
+- ~~Watch's pacing, the talk-finished question and energy-aware turn-taking (task 7).~~ Resolved by doc 07 G6–G9.
 - ~~Debate's member choice and the verdict (task 8)~~ resolved by doc 08 V2 and V7–V9; E5's debate `side` label is the only debate input here.
 - ~~The quoted-content wording in the emotion and reaction states (task 11).~~ Resolved by doc 11 S6 (`quoted_*`
   fields).

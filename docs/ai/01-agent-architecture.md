@@ -225,7 +225,7 @@ probabilities for Insight.
 - **Second replier in group mode** (amended by doc 07 G2). The second slot is decided **after the first reply ends**,
   by a short Jev request (the **follow plan**, 400 ms): who, if anyone, speaks up now, plus each candidate's gates and
   emotion, so the second character can answer the first. Late, failed or unsure means no second reply. If both go
-  deep, they reuse one query embedding per user message, as D-97 does today.
+  deep, they reuse one query embedding per user message (D-100).
 - **Size check.** The `Decider` checks the whole request (state + all questions) against the real limit of the
   OpenRouter endpoint, as well as state + the longest question. Check 4 finds that limit.
 - **Confidence floors** apply to every choice and score answer. A noul has no confidence, so its probability is used
@@ -356,7 +356,7 @@ emotion, and the hits it kept. The reply engine never queries storage (D-92 hold
 | LangGraph graphs | Plain calls (one step) |
 |---|---|
 | **Turn plan graph** (A4, A6): Jev call 1 → quick/deep branch → embed → search → parallel Jev call 2 → keep or drop | **The reply:** one DeepSeek stream (today's engine, extended in A5) |
-| **Post-turn check graph:** emotion check ∥ citation check → merge into Insight. **Not live in v1:** the emotion check waits for the System 1 section (doc 06 E7) and the citation check is evaluation only (doc 10 K10) | **Listener reactions** (one Jev call, doc 06 E5) |
+| **Post-turn check graph:** emotion check ∥ citation check → merge into Insight. **Superseded:** no post-turn graph is left in v1. The face check is one plain Jev call after `turn.end` ([doc 13](13-wrap-up.md) W2), and the citation check is evaluation only (doc 10 K10) | **Listener reactions** (one Jev call, doc 06 E5) |
 | **Memory graph** (doc 09 M1–M5), **at a session pause, not after `turn.end`**: DeepSeek rewrites each present character's list (keep / confirm / rewrite / add) → Jev importance ∥ Jev guard on each rewrite ("keeps every still-true fact?", else keep both) ∥ duplicate check → ops | **Rolling summary** (one DeepSeek call) |
 | **Verdict graph** (doc 08 V7–V9): Jev rubric scores in parallel → code picks the stronger case → DeepSeek writes the prose (JSON) | **Profile drafter, image, song** |
 
@@ -426,7 +426,8 @@ every node, and Forget would get harder.
 **Decision:**
 - **The profile:**
   - `HORIZON_AI_PROFILE = scripted | naive | agent`;
-  - `agent` is the default when a key is set (the user's decision);
+  - `agent` is the default when a key is set (the user's decision). *Amended by [doc 13](13-wrap-up.md) W4: opt-in until M15,
+    while it is built; then the default with a key;*
   - the task 2 evaluation tunes it, and `naive` stays as the yardstick that shows how much the design improves.
 - **A "System 1" section in Insight** shows every Jev question of the turn with its answer and probability:
   - the gates (quick or deep, the scores, abstain or drop);
@@ -441,7 +442,7 @@ every node, and Forget would get harder.
   - each graph collects its own node path and writes `graph.path` **once**, so patches from several nodes don't
     overwrite each other.
 - **This is a contract change** (a new `TurnTrace` section and UI), so it gets the user's separate approval before it is
-  built (§8). **The user approved it in principle on 2026-10-09; task 13 designs its fields and UI.**
+  built (§8). **The user approved it in principle on 2026-10-09; designed in [doc 13](13-wrap-up.md) W1 (rev 1.4, built in M7).**
 - **LangSmith:** it can be switched on with an environment flag and is **off by default**. It is a documented exception
   to NFR-13 ("no telemetry"), because when on it sends chat and document text to LangSmith.
 
@@ -453,7 +454,7 @@ every node, and Forget would get harder.
   - on deep turns, the embedding, the local search and Jev call 2, whose requests run in parallel;
   - DeepSeek's own first-token time.
 - **After `turn.end`, never delaying the next speaker (NFR-02):**
-  - the emotion and citation checks (evaluation only in v1: doc 06 E7, doc 10 K10);
+  - the face check (live, [doc 13](13-wrap-up.md) W2); the citation check is evaluation only (doc 10 K10);
   - listener reactions;
   - the rolling summary.
 
@@ -493,7 +494,7 @@ every node, and Forget would get harder.
 | Abstaining on small talk | **Covered:** a Jev failure means quick; abstain needs a confident gate and a user question; debate and watch never abstain (A6) |
 | Stacked timeouts on the deep path | **Covered:** the embedding wait is capped at 400 ms; if Jev call 1 failed, the turn is quick; if Jev call 2 is late, RRF top k is used (A6) |
 | Debate collapse | **Doc 08 V4, V11:** a side lock and per-phase cues in the prompt; measured by the "keeps its side" and "engages" judges |
-| Lost in the middle | **Task 5**, plus few, strongly scored passages (A6) |
+| Lost in the middle | **Doc 05** X1 and X6, doc 04 P2 (rules last), doc 10 K8, plus few, strongly scored passages (A6) |
 | Jev outage, slowness or uncertainty | **Covered** by the fallbacks and confidence floors (A4) |
 | Choice bias toward the first option | **Covered** by shuffling every choice's options (A3 rule 4) |
 | A refused reply leaving a face change behind | **Covered:** the face is shown only after the reply's preflight (A5) |
@@ -507,7 +508,7 @@ total, and need the user's approval before they run.**
 |---|---|---|---|
 | 1 | Turn plan graph: its overhead, and whether its runs settle deterministically on the virtual test clock (every task it starts must be visible to `rt.spawn`) | overhead not noticeable (< 50 ms); tests settle with no pending work | Wrap or replace the graph's task handling; the plan falls back to plain code if needed |
 | 2 | Stop or pause during a plan or a reply: nothing left running except the allowed late Jev calls | no leaked task or connection; Stop within NFR-20's 500 ms | Fix the cancellation path before building on it |
-| 3 | Real turns from Malaysia: 100 quick and 100 deep in 1:1 (the gate forced by a fixture), plus 50 group and 50 debate turns, each stopped at its first word (about $0.08; 02 B8). Record the time to the face and to the first word, Jev's latency distribution, how often each timeout fires, and the real response shape of the alpha endpoint | 1:1 first word within NFR-01 (2 s p50, 4 s p90); next speaker within NFR-02 (3 s p50) | Trim the deep path (fewer candidates, a smaller state) and set the `turn_plan` / `deep_check` timeouts from the measured distribution |
+| 3 | *(Split by [doc 13](13-wrap-up.md) W6: the Jev and first-word part is A2, before coding; the 1:1 quick-turn timing is in M9; the must-pass run is in M15.)* Real turns from Malaysia: 100 quick and 100 deep in 1:1 (the gate forced by a fixture), plus 50 group and 50 debate turns, each stopped at its first word (about $0.08; 02 B8). Record the time to the face and to the first word, Jev's latency distribution, how often each timeout fires, and the real response shape of the alpha endpoint | 1:1 first word within NFR-01 (2 s p50, 4 s p90); next speaker within NFR-02 (3 s p50) | Trim the deep path (fewer candidates, a smaller state) and set the `turn_plan` / `deep_check` timeouts from the measured distribution |
 | 4 | Jev billing and limits on the OpenRouter endpoint. Compare `usage.input_tokens` and `usage.cost` for 1 vs 8 questions **and** for a small vs a large state; find the real request size limit | — | If the state is billed per question, update `decision_estimate` (the daily-cap reservation and the cost shown before spending, NFR-08, both depend on it) and shrink Jev call 1's state |
 
 ## 8. Changes this design needs (each approved separately, at its task)
@@ -527,13 +528,18 @@ None of the backend rows changes the HTTP contract unless marked.
 | `DebateHost.narration()` returns a fixed string; it becomes async and calls DeepSeek, shown whole, not streamed (doc 08 V6) | backend | A7 | 8 |
 | ~~Watch **"the talk is finished"** needs an outcome~~ **Withdrawn by doc 07 G7:** a finished thread steers the next line somewhere new; no early end, so no contract change | backend | A4 | 7 |
 | **A "System 1" section in `TurnTrace`, and its Insight UI** (**approved in principle by the user, 2026-10-09**; its fields and UI are designed at task 13, once tasks 7–11 have added their Jev questions; the live face-and-words check turns on with it, doc 06 E7). **Designed in [doc 13](13-wrap-up.md) W1 (contract rev 1.4, built in M7) and W2** | **contract + UI** | A12 | 13 |
-| **Docs to amend:** a new decision-log entry replacing D-97's rule; resolve OQ-AI-07 (Jev first, the tag as fallback); note in D-92 that the planner is a runtime-called port; update the 05-ai-seams §3 purpose table and §2.2 port catalogue. **Applied with [doc 13](13-wrap-up.md) (§4; D-97 → D-100)** | docs | all | 13 |
+| **Docs to amend:** a new decision-log entry replacing D-97's rule; resolve OQ-AI-07 (Jev first; a failure keeps the previous face, doc 04 P7); note in D-92 that the planner is a runtime-called port; update the 05-ai-seams §3 purpose table and §2.2 port catalogue. **Applied with [doc 13](13-wrap-up.md) (§4; D-97 → D-100)** | docs | all | 13 |
+
+**Built in** ([doc 13](13-wrap-up.md) W4): the `agent` profile in M7 and the `TurnPlanner` in M9; the entry points in M9 (1:1),
+M10 (group, watch) and M11 (debate); the `Decider` purposes in M7; embedding only on deep turns (D-100) in M12; the
+async `Summariser.rolling` in M8 and `ReactionPredictor` in M9.
 
 ## 9. Left for later tasks
 
 - ~~Long-term memory policy: remember everything, or keep only what Jev scores as important (task 9).~~ Resolved by
   doc 09: written at session pauses, lists rewritten by DeepSeek, guarded and scored by Jev, held in each character's system prompt.
-- Gate thresholds and confidence floors, tuned on labelled data (tasks 2, 9, 10).
+- ~~Gate thresholds and confidence floors, tuned on labelled data (tasks 2, 9, 10).~~ Starting values in [doc 13](13-wrap-up.md) W12;
+  each is tuned in its own change (W4).
 - ~~The mood-line wording, and AUTO emotion confirmed by the evaluation (task 6).~~ Resolved by doc 06 (E4, E8).
 - ~~Exactly which fields go into Jev call 1's state, and its token budget (task 5).~~ Resolved by doc 05 X9.
 - ~~Jev call 2's score levels, the number of candidates, k, and the wording of the not-found line (task 10).~~

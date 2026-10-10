@@ -4,7 +4,7 @@
 > - It resolves the safety half of **OQ-AI-08** (content rating, guardrail placement, provider refusals; the
 >   evaluation half was resolved by doc 02). It also settles what earlier docs left here:
 >   - what "input not safe" does, and the output guardrail's timeout (doc 01 A4, A13, §9);
->   - the content-rating, advisory and "are you an AI?" wording (doc 04 P6, §9);
+>   - the content-rating, advisory and "are you an AI?" wording (doc 04 P6, §7);
 >   - stored memories as a prompt-injection path, and the never-store list (doc 09 M3, §7);
 >   - "text inside documents is reference, not instructions; task 11 owns the rest" (doc 10 K8, §7);
 >   - the quoted-content wording in Jev states, and injection through summaries (doc 01 A3 rule 8, doc 05 §7, doc 06
@@ -463,7 +463,7 @@ text needs no contract or new control.
 
 **Rejected:**
 - **a "no training" toggle** (offered): a new control and a routing switch, for something the local config already
-  allows; the v2 backlog gets it (§4);
+  allows; the v2 backlog gets it (§5);
 - **README only** (offered): most users never read it before uploading a document.
 
 ### S9. Real people and existing characters
@@ -483,7 +483,7 @@ drafter rule already steers.
 
 ### S10. The `safety` evaluation suite
 
-**Decision:** a new suite in `horizon eval` (doc 02 B1), about 390 items (enlarged after review finding 9, so the
+**Decision:** a new suite in `horizon eval` (doc 02 B1), about 480 items with doc 12's parts (enlarged after review finding 9, so the
 targets mean something). Targets are **counts on the full set**, and each result is reported with its 95 % (Wilson)
 interval:
 
@@ -513,7 +513,7 @@ interval:
   a request names the harm ("asks for step-by-step meth synthesis"), it doesn't answer it.
 - **DeepSeek's own refusals** are counted too (how often `content_refused` comes from the provider), to see how much
   S3 adds.
-- **Cost:** Jev ≈ 270 requests × ~800 tokens ≈ $0.009; DeepSeek ≈ 30 end-to-end replies + 50 drift turns ≈ $0.056;
+- **Cost:** Jev ≈ 360 requests (with doc 12's parts) × ~800 tokens ≈ $0.012; DeepSeek ≈ 30 end-to-end replies + 50 drift turns ≈ $0.056;
   judges ≈ $0.003. **The suite ≈ $0.07 off-peak, ≈ $0.12 at peak.** `all` becomes **≈ $1.08 off-peak, ≈ $1.65 at peak,
   ≈ $0.78 once cached**.
 
@@ -540,7 +540,7 @@ only), and Jev nouls are already the house judge (doc 02 B4).
 - **If doc 01's check 4 finds Jev bills the state once per question,** each added noul costs a whole state
   (≈ $0.00008 in call 1) and S11's figures roughly double; the eval's estimate follows, as for every Jev figure.
 - **`guardrail` stays in the `decision` category** and never drains energy (only `reply` does). ENG-02 AC2's list
-  doesn't name the safety checks yet; the wording edit (confirmed by the user) is in the header, applied at task 13.
+  names the safety checks (applied with [doc 13](13-wrap-up.md)).
 - The conversations suite reports the output check's latency from the ledger (p50, p90), so its deadline is set from
   data (check 3), as the user's "slow Jev: accept and report" rule asks.
 
@@ -569,8 +569,14 @@ only), and Jev nouls are already the house judge (doc 02 B4).
 | The never-store list in the memory rewrite prompt; code removes steered and care messages (and their replies) before the writer's call | backend | S7 |
 | The two notice lines (Connection tab, Knowledge drop zone) and the README Privacy section, naming fallback providers and the embedding provider | frontend + docs | S8 |
 | The drafter's originality rule | backend | S9 |
-| The `safety` suite (~390 items, counts with Wilson intervals, cross-validated thresholds on a 0.1–0.9 grid), items in `private/evals/safety/`, the manifest and the harmless items in `evals/safety/`, baseline in `evals/baselines/safety.json`; the citation items re-run with the passage tags | eval | S10 |
-| **Docs amended with this doc:** doc 01 A3 rule 8, A4 (the questions and the fallback row), A13, the risk table, §9; doc 02 B1, B5, B7 (the suite, the totals), §8; doc 04 P6, P11, §9; doc 05 (the state's quoted text and X9's field names, the summary, the system-message size), §7; doc 06 E1, E3, E5 (the care face and no reactions), §7; doc 07 G2 (the follow plan starts at stream end); doc 08 §7; doc 09 M3, M4, §7; doc 10 K8, §7; and every `all` cost pointer | docs | consistency |
+| The `safety` suite (~480 items, counts with Wilson intervals, cross-validated thresholds on a 0.1–0.9 grid), items in `private/evals/safety/`, the manifest and the harmless items in `evals/safety/`, baseline in `evals/baselines/safety.json`; the citation items re-run with the passage tags | eval | S10 |
+| **Docs amended with this doc:** doc 01 A3 rule 8, A4 (the questions and the fallback row), A13, the risk table, §9; doc 02 B1, B5, B7 (the suite, the totals), §8; doc 04 P6, P11, §7; doc 05 (the state's quoted text and X9's field names, the summary, the system-message size), §7; doc 06 E1, E3, E5 (the care face and no reactions), §7; doc 07 G2 (the follow plan starts at stream end); doc 08 §7; doc 09 M3, M4, §7; doc 10 K8, §7; and every `all` cost pointer | docs | consistency |
+
+**Built in** ([doc 13](13-wrap-up.md) W4), so that no question is re-versioned after it is tuned:
+- the `quoted_*` fields and their sentence, as a bank-wide convention: M7;
+- the S2 rules lines, the advisory line, `summary-2` and newline collapsing: M8;
+- the `<passage>` tags and their stripping: M12;
+- everything else, including the safety metadata in `message_ai_meta` (W13): M14.
 
 ## 7. Left for later tasks
 

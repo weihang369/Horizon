@@ -510,12 +510,12 @@ As Alex (and anyone watching a demo), I want a drawer that shows what the AI did
   - **Model:** ID, provider, first-token and total latency, tokens in / **cached** / out, cost, peak/off-peak.
   - **Energy:** ⚡ spent by this reply and remaining (e.g. "−5 ⚡ · 742 / 1000").
   - **Emotion:** chosen label, source, top-3 probabilities as bars.
+  - **System 1** (AI stage, contract rev 1.4): every Jev question of the turn with its answer, probability, threshold and what code did ([docs/ai/13](../ai/13-wrap-up.md) W1).
   - **Routing:** decision question, candidates with probabilities, or "forced by you / mention".
   - **Memory:** long-term items recalled.
   - **In-session recall:** shown separately from memory.
   - **Context:** a token budget bar by section.
   - **Guardrail:** checks with pass/flag.
-  - **System 1** (AI stage, contract rev 1.4): every Jev question of the turn with its answer, probability, threshold and what code did ([docs/ai/13](../ai/13-wrap-up.md) W1).
 - AC3: **Sections without data are hidden, not shown empty.**
 - AC4: Probabilities show a band label, e.g. `0.71 · HIGH`, never false precision. A routing "reason" in prose appears only if the backend provides one.
 - AC5: **Behaviour:**

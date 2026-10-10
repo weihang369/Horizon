@@ -3,7 +3,7 @@
 > **Status: agreed with the user, 2026-10-10** (AI stage, task 8 of 13).
 > - It resolves OQ-AI-05 (debate orchestration) and the last open part of OQ-AI-17 (**a debate side whose members are
 >   all exhausted**). It also settles what earlier docs left here: **the debate member choice** (doc 01 A14), **the
->   debate argument, host and verdict prompts** (doc 03 §8, doc 04 §9), **what the host and the verdict see** (doc 05
+>   debate argument, host and verdict prompts** (doc 03 §7, doc 04 §7), **what the host and the verdict see** (doc 05
 >   §7) and **the debate rubric judge** (doc 02 B4).
 > - Decisions are numbered **V1–V12**, each with the alternatives we rejected. **Revised after an independent review**
 >   (it checked the code; 18 findings, all addressed, none changing a user decision).
@@ -298,8 +298,8 @@ Only with `moderator: auto_host`. With "You" as moderator only the round banners
   The request starts during the turn gap, the pause (1.5 s) and the banner, so a line is usually ready when it is
   needed. **When it isn't ready by its deadline, the fixed sentence of today is used** and the late answer is dropped.
 - **Instruction:** "You are the host of this debate. Write one or two sentences, at most 40 words. Stay neutral: never
-  say or hint who is winning, and never add an argument of your own. {Welcome: introduce the motion and the speakers.
-  | Bridge: name each side's main line in the round just finished, then introduce the next round. | Lead-in: thank the
+  say or hint who is winning, and never add an argument of your own. {Welcome: introduce the motion and the
+  speakers. | Bridge: name each side's main line in the round just finished, then introduce the next round. | Lead-in: thank the
   speakers, then, by verdict mode: the arbiter is weighing the arguments | it's now {user}'s call | here is the
   summary.} Use the motion's language."
 - **Settings:** `runtime.llm.calls.host`: thinking off, temperature **1.0** (doc 03 C1), output **text** (not
@@ -350,7 +350,7 @@ Two-sided debates with verdict by **Arbiter** or **You decide** only.
 
   A criterion the user's config names without a known question gets a generic question built from its label
   ("How strong is the {side} on {label}?") with generic levels.
-- **Bars:** Jev's weighted position *w* (1–5) becomes `value` = (*w* − 1) / 4 × 10, to one decimal (the UI draws
+- **Bars:** Jev's weighted position *w* (1–5) becomes `value` = (*w* − 1) / 4 × 10 ([doc 13](13-wrap-up.md) W11: `unit` × 10), to one decimal (the UI draws
   `value / 10`). `scoresBy: "side"`.
 - **The winner, in code:** each side's mean over the criteria (equal weights); if the difference is under the margin
   **`verdict.margin`** (start **0.5** on the 0–10 scale, tuned in V11), `strongerCase` is `null` ("TOO CLOSE TO CALL",
@@ -452,7 +452,7 @@ than a list of events, so any steering that changes their inputs makes them be r
 
 **Decision** (doc 02 B2, B4, B5, B7 and B8 are amended):
 - **Debate member set (layer 1): 90 items** (30 test), rebuttal and closing slots with 2–3 eligible members, from the
-  frozen debate transcripts and the long-suite runs; **at least half have a single acceptable member** (the last
+  frozen debate transcripts and the debate suite's runs; **at least half have a single acceptable member** (the last
   argument plainly falls in one member's field). Targets (B5): **≥ 80 % inside the acceptable set**; and on the
   single-answer items, **≥ 15 points above the fixed order**, judged with an exact paired test. With 2–3 members and
   broad acceptable sets, 80 % is close to a free pass, so the lift is measured only where one answer is right; the
@@ -538,7 +538,7 @@ Collected for the paid-check step after all 13 tasks (the user's rule), not run 
 
 | # | Check | Pass | If it fails |
 |---|---|---|---|
-| Doc 01 check 3 (extended) | **30 debate-plan requests** from the frozen debate transcripts (Jev only, ≈ $0.003): the share that misses `turn.end` + 400 ms, state assembly included | ≤ 10 % miss | keep Jev, set the deadline from the measured p90, record the NFR-02 exception and the finding (V2) |
+| Doc 01 check 3 (extended) | **30 debate-plan requests** from hand-built states ([doc 13](13-wrap-up.md) W6 A2) (Jev only, ≈ $0.003): the share that misses `turn.end` + 400 ms, state assembly included | ≤ 10 % miss | keep Jev, set the deadline from the measured p90, record the NFR-02 exception and the finding (V2) |
 | Doc 01 check 3 (extended) | **10 host bridges and 5 verdicts** (≈ $0.01): time to the host line, and from the last closing's `turn.end` to the verdict | bridges ready within the pause + 1.5 s on ≥ 8 of 10; the verdict's real wait recorded | bridges: the deadline grows to the measured p90, so a round change waits a little longer (a bridge is never written before the round's last argument, or it would miss it); the verdict: a shorter prose target |
 | Doc 01 check 4 (extended) | Whether an 8-question `rubric` request bills the state once or per question (`usage.cost`), and that a `score` answer's weighted position runs over the levels as 1–5 (V7's bar mapping) | recorded | the cost table follows; the mapping follows the real scale |
 
@@ -555,7 +555,7 @@ None changes the HTTP contract or a requirement.
 | The verdict: `DebateHost.verdict` split into `assess` / `deliver`; Jev purpose `rubric` (one score question per side per criterion, the rubric's levels in the question bank, generic levels for unknown criteria), the state in side blocks with the 24,000-token budget and its worst-case test; `verdict.margin`; DeepSeek JSON prose (`runtime.llm.calls.verdict` at 0.7, `max_tokens` 1,200, an example output, `timeoutsMs.verdict` 30 s); "You decide" rationale as the arbiter's view; a non-blocking `debate.pick`; End starting the work after the current turn and reusing matching work; the failure table; **resume in the verdict phase re-runs the verdict** (today's hang); the `naive` single-call verdict | backend + config | findings 4, 5 | V7, V8, V9, V12 |
 | "Go to verdict now (≈ $x)" (MULTI-07 AC4) is a hard-coded $0.0012 in `EndDebate.tsx`; it becomes an estimate from `pricing.json` and the current price period for the active profile | frontend | the new verdict's cost | V12 |
 | Eval: 90-item debate member set with single-answer items; the debate-quality nouls; the new `debate` suite (12 debates split dev / test, planted and side-swapped versions, prose and host checks, `naive` baseline); 2 more `agent` debate free runs | evals | measure it | V11 |
-| **Docs to amend:** doc 01 A7 (the verdict graph), A14, §6 (debate collapse; the verdict's JSON line), §8 (the trace-marker and host rows), §9; doc 02 B2, B4, B5, B7, B8, §8; doc 03 C1 (`host`, `verdict` rows) and §8; doc 04 P5 and §9; doc 05 X9 (the debate plan's state) and §7; doc 06 §9; doc 07 §7 and the cost pointers in docs 05–07 | docs | consistency | all |
+| **Docs to amend:** doc 01 A7 (the verdict graph), A14, §6 (debate collapse; the verdict's JSON line), §8 (the trace-marker and host rows), §9; doc 02 B2, B4, B5, B7, B8, §8; doc 03 C1 (`host`, `verdict` rows) and §7; doc 04 P5 and §7; doc 05 X9 (the debate plan's state) and §7; doc 06 §7; doc 07 §7 and the cost pointers in docs 05–07 | docs | consistency | all |
 
 ## 7. Left for later tasks
 

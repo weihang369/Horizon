@@ -38,7 +38,7 @@ TurnEvent = (
 )
 ```
 
-- **The actor owns** `messageId`, sequence numbers, persistence, energy, budget, `Message.usage` (from the ledger), timings, and the trace sections `model`, `energy` and `routing`. A `TracePatch` that sets any of those is rejected.
+- **The actor owns** `messageId`, sequence numbers, persistence, energy, budget, `Message.usage` (from the ledger), timings, and the trace sections `model`, `energy` and `routing` (and, from the AI stage, `system1`, written through `append_system1`: docs/ai/13 W1). A `TracePatch` that sets any of those is rejected.
 - **Insight.** The actor merges patches and emits the **full** trace as `insight`. Post-turn hooks (output guardrail, citation faithfulness, emotion validator) also return `TracePatch`es. A later `insight` for the same message replaces the earlier one (rev 1.3 note), which is already reducer behaviour.
 - **`turn_traces.engine`, `engine_version` and `prompt_version`** are set from the engine's declared metadata.
 - **Stop:** the actor cancels the iterator. The engine must hold no resources beyond the gateway stream, which is closed when the iterator is cancelled.
@@ -74,7 +74,7 @@ MemoryOp = Insert(draft) | Supersede(old_ids: list[str], draft) | Reinforce(id, 
 # drafts carry kind, text, importance, source_* ids incl. source_variant_id, source_mode, about_character_id.
 
 QueryBundle = { text: str, vectors: dict[space_id, list[float]] }
-# Built ONCE per triggering user message (D-97): the actor starts the query embedding as soon as `send` arrives, in
+# Built ONCE per triggering user message (D-97 in `naive`/`scripted`; `agent`: D-100): the actor starts the query embedding as soon as `send` arrives, in
 # parallel with routing, and only when it can pay off (a vector retriever, a key, a responder with vectors). It is
 # reused by every responder of that message; a reply waits for it at most `retrieval.queryEmbedWaitMs`.
 

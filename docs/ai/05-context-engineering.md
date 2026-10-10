@@ -191,7 +191,7 @@ context limit.
 - **Large inputs:** the dropped part is folded in chunks of at most 6,000, oldest first, each call updating the notes
   from the previous one, all in the same task. A normal drop is one call; only a fork of a long chat needs more.
 - **Cost:** one call per drop: about 3,000–4,500 tokens in (uncached) plus up to about 400 out, so **≈ $0.001 per
-  drop**, roughly every 15–35 exchanges. Ledger purpose `summary`, **charged to the daily cap, never to a character's
+  drop**, roughly every 15–35 exchanges. Ledger purpose `rolling_summary`, **charged to the daily cap, never to a character's
   energy** (OQ-AI-17's rule: only a character's own reply drains its energy).
 - **Failure:** a provider error, a timeout, the budget cap, a content refusal, or **empty output** (nothing left after
   trimming). Nothing is written and the window stays as it is (X2). A second attempt for the same boundary is made
@@ -390,7 +390,7 @@ Doc 01 A3 rule 6: Jev gets less accurate as irrelevant content grows, so the sta
 |---|---|---|
 | `windowTokens` per mode (X2) | `frontend/scripts/seed-build/runtime.config.ts` → `seed/runtime.json`; `domain/runtime_config.py`; `tests/unit/test_runtime_config.py` | config |
 | Drop by tokens to half the size; the ceiling in `session_context`; summary after `turn.end`, single-flight, one writer, owned by the actor; bounded retries with the cheap fallback; the summary started at fork time (X2, X3) | `ai/naive/window.py`, `sessions/context.py` (`maintain_window`, `session_context`), `sessions/turn.py`, `sessions/lifecycle.py` (`fork`); `tests/sessions/test_naive.py` (its window test) | backend |
-| `NaiveSummariser` (prompt `summary-1`, chunked folding, cap and cut), async `Summariser.rolling`, wired for `naive` and `agent`; scripted summariser async with a simulated `summary` call (X3) | new `ai/naive/summary.py`, `ai/ports.py`, `ai/profile.py`, `ai/scripted/ports.py` | backend |
+| `NaiveSummariser` (prompt `summary-1`, chunked folding, cap and cut), async `Summariser.rolling`, wired for `naive` and `agent`; scripted summariser async with a simulated `rolling_summary` call (X3); `rolling_summary` added to `PURPOSE_CATEGORY` (category `summary`) | new `ai/naive/summary.py`, `ai/ports.py`, `ai/profile.py`, `ai/scripted/ports.py` | backend |
 | Merged same-role rendering, the summary header and the per-message limit on the `agent` path (X3, X4, X8) | `ai/agent/persona.py` (doc 04's agent compiler) | backend |
 | The voice reminder switch, off (X5) | `runtime.config.ts` → `seed/runtime.json`; `domain/runtime_config.py`; the agent compiler | config + backend |
 | Engines stop setting `cacheHitPct`; the ledger keeps a real 0 for `tokensCached`; the X7 mapping (agent) and the naive fixes; `AiDeps.window_tokens` per mode (X6, X7) | `services/ledger.py` (`reply_usage`), `sessions/turn.py`, the agent engine, `ai/naive/turn.py`, `ai/scripted/ports.py` (`AiDeps`), `runtime.py` | backend |

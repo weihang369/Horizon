@@ -4,7 +4,7 @@
 > (it checked the code; 14 findings, all addressed; one of them changed a user decision, see §1).
 > - It resolves OQ-AI-06 (group and watch turn-taking) and OQ-AI-17 (energy-aware orchestration), except a debate side
 >   whose members are all exhausted, which is task 8's. It also settles the items earlier docs left here: **when a
->   character answers another character** (doc 04 §9), **watch's "Summarise" recap** (doc 05 X3) and **what "the talk
+>   character answers another character** (doc 04 §7), **watch's "Summarise" recap** (doc 05 X3) and **what "the talk
 >   is finished" does** (doc 01 §8).
 > - Decisions are numbered **G1–G13**, each with the alternatives we rejected.
 > - It builds on [01-agent-architecture](01-agent-architecture.md) (A1–A14),
@@ -423,7 +423,7 @@ Doc 04 left "when a character should address another character" to this task.
 | Step | When | Latency | Cost |
 |---|---|---|---|
 | Group first slot | inside call 1 (doc 01 A4) | none extra | none extra |
-| Follow plan (G2) | from `turn.end`, deadline + 400 ms, replacing the turn gap | none extra when Jev is in time | ≤ 2,000 tokens × $0.042/M ≈ **$0.00008** per send that has a first reply |
+| Follow plan (G2) | from the stream's end (doc 11 S5), deadline `turn.end` + 400 ms, replacing the turn gap | none extra when Jev is in time | ≤ 2,000 tokens × $0.042/M ≈ **$0.00008** per send that has a first reply |
 | Turn cue sentence (G3) | in the cue | none | ≈ 25 uncached tokens ≈ $0.000004 |
 | Everyone order (G4) | the run's one call 1 | none extra | none extra |
 | Watch plan-ahead (G8) | during the turn gap and the pace | hidden by the wait | the plan it replaces; a redo after a change ≈ $0.00005 |
@@ -461,7 +461,7 @@ Collected for the paid-check step after all 13 tasks (the user's rule), not run 
 
 | # | Check | Pass | If it fails |
 |---|---|---|---|
-| Doc 01 check 3 (extended) | Add **50 follow-plan requests** from the frozen group transcripts, Jev only (≈ $0.004), to the latency run; record the share that misses `turn.end` + 400 ms, with the state assembly included | ≤ 10 % miss the deadline | G2's rule: keep Jev, set the deadline from the measured p90, record the NFR-02 exception and the finding |
+| Doc 01 check 3 (extended) | Add **50 follow-plan requests** from hand-built states ([doc 13](13-wrap-up.md) W6 A2), Jev only (≈ $0.004), to the latency run; record the share that misses `turn.end` + 400 ms, with the state assembly included | ≤ 10 % miss the deadline | G2's rule: keep Jev, set the deadline from the measured p90, record the NFR-02 exception and the finding |
 | Doc 01 check 3 (extended) | Watch at Fast pace (about 0.9 s between turns): time from `turn.end` to the next first word with the plan-ahead | the next first word within NFR-02's 3 s p50 | Fast keeps the plan-ahead, and the doc records the real gap |
 
 ## 6. Changes this design needs (each approved at its OpenSpec change)
@@ -472,7 +472,7 @@ None changes the HTTP contract or a requirement.
 |---|---|---|---|
 | The first-slot question without `none` when nobody is mentioned, and one eligible character answering without Jev, in `naive` and `agent`; all-asleep mentions add nobody | backend | finding 1 | G1 |
 | The **follow plan**: `Decider` purpose `follow_plan`, `timeoutsMs.decision.follow_plan` = 400 as a deadline from `turn.end`, started by the turn runner and replacing `turnGapMs` for that step, ledger purpose; replaces doc 01 A4's second-replier re-plan; `floor.second` in the question bank | backend + config | finding 2 | G2 |
-| The turn cue's optional sentence (second reply, Next speaker, steer), in the `agent` compiler and its TS twin with shared fixtures ("View as prompt") | backend + frontend | doc 04 §9 | G3 |
+| The turn cue's optional sentence (second reply, Next speaker, steer), in the `agent` compiler and its TS twin with shared fixtures ("View as prompt") | backend + frontend | doc 04 §7 | G3 |
 | Next speaker and Step in call the planner; Everyone's single call 1 gives the order and every speaker's gates and emotion; asleep notes kept | backend | today's random picks | G4 |
 | A user message cancels the previous send's replies that have no `turn.next` yet, in the runtime and the mock's group engine, with a parity fixture | backend + mock | finding 3 | G5 |
 | Watch: nudge, then the nobody-left-out guard counted from the message log (`forcedBy: "round_order"`), then the planner without the last speaker; "Auto" opening via the planner (`agent` only) | backend | G6 | G6 |
@@ -481,7 +481,7 @@ None changes the HTTP contract or a requirement.
 | Energy removed from Jev call 1's state (doc 05 X9) | backend | finding 5 | G9 |
 | `Summariser.episode` as one DeepSeek call (`naive`, `agent`), `runtime.llm.calls.episode`, `timeoutsMs.episode` 30 s, ledger purpose `episode_summary`, a system note on failure | backend + config | doc 05 X3 | G10 |
 | Eval: who-speaks set to ~210 items in three parts with balanced accuracy and paired baseline tests; 6 more `agent` free runs; one long committed watch history; 10 episode recaps in `summary` | evals | measure it | G11 |
-| **Docs to amend:** doc 01 A3 rule 5 (where `none` exists), A4 (second-replier re-plan → G2's follow plan; Everyone's order) and §8 (the watch contract row withdrawn); doc 02 B2, B3, B5, B7, B8; doc 03 C1 (the `episode` row); doc 04 §9 (resolved); doc 05 X9 (no `energy`), X3 (the recap designed here) and its cost note; doc 06 E1 (the follow plan; Everyone's single call) and its cost note | docs | consistency | all |
+| **Docs to amend:** doc 01 A3 rule 5 (where `none` exists), A4 (second-replier re-plan → G2's follow plan; Everyone's order) and §8 (the watch contract row withdrawn); doc 02 B2, B3, B5, B7, B8; doc 03 C1 (the `episode` row); doc 04 §7 (resolved); doc 05 X9 (no `energy`), X3 (the recap designed here) and its cost note; doc 06 E1 (the follow plan; Everyone's single call) and its cost note | docs | consistency | all |
 
 ## 7. Left for later tasks
 

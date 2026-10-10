@@ -39,7 +39,7 @@
 >       the user's "no parent–child" (K1).
 >     - **ENG-02 AC2's list of calls that don't drain energy** gains the query rewrite, Jev call 2 and the query
 >       embedding. This matches the code: only purpose `reply` drains.
->   - All of these are applied with the other docs-to-amend at task 13 / OpenSpec, as task 9's were.
+>   - All of these are applied with [doc 13](13-wrap-up.md) (§4).
 
 ## 1. The question
 
@@ -482,7 +482,7 @@ The pipeline was built in M5; this task sets its AI policy.
 - **The set check.** When **no piece is found but 2 or more are usable** (K7), one more `deep_check` request asks a
   noul over those pieces together (≤ k of them, about 1,400 tokens): "Together, do these passages answer the
   message?"
-  - **Yes** means found, with no partly line. This is the two-document question.
+  - **Yes** (p ≥ `t_set`, [doc 13](13-wrap-up.md) W12) means found, with no partly line. This is the two-document question.
   - **No, late or failed** means partly.
   - It costs one more Jev round trip (about 0.3–0.5 s), and only on that branch.
 - **Deadline:** `deepCheckMs`, starting at 700 ms and set from check 2. Documents and recall are counted separately.
@@ -565,7 +565,7 @@ The pipeline was built in M5; this task sets its AI policy.
   - **the quote** (≤ 400 characters, the contract) is chosen deterministically. It is the run of whole sentences,
     within 400 characters, that shares the most words with the query (lower-cased, stop words dropped); when nothing overlaps, it is the
     piece's start. The cited fact is then usually in the hover, even in a 1,500-character piece;
-  - **the score** is Jev's weighted score scaled to 0–1, and absent on a fallback;
+  - **the score** is Jev's weighted score scaled to 0–1 (`unit`, [doc 13](13-wrap-up.md) W11), and absent on a fallback;
   - **markers:** the reply's markers only choose which citations show (`kept_citations`). A number not in the list
     shows as plain text (the contract).
 - **The trace:**
@@ -619,7 +619,7 @@ the conversation's language.
 
   Fallback turns are reported separately.
 - **Doc 01 A7's post-turn check graph has no live branch in v1:**
-  - the emotion check waits for the System 1 section (doc 06 E7);
+  - the face check is live as one plain Jev call ([doc 13](13-wrap-up.md) W2), not a graph;
   - the citation check is evaluation only;
   - listener reactions and the rolling summary still run after `turn.end`.
 - **Later:** task 13 may add the citation check to the System 1 section as a flag. It never removes a chip, because
@@ -677,7 +677,7 @@ the conversation's language.
 | Filters | world + character | world + character | K2 |
 | Search | FTS top k | FTS 20 ∪ KNN 20 → RRF → top 5 | K5 |
 | Check | none | none | Jev call 2 (K6, K7) |
-| Prompt | the scripted citations (mock parity) | `naive-3`: a 1,200-character slice of the section **centred on the hit piece** (D-93's size kept) | K8, K9 |
+| Prompt | the scripted citations (mock parity) | the next `naive` version after doc 03's `naive-3`: a 1,200-character slice of the section **centred on the hit piece** (D-93's size kept) | K8, K9 |
 | Debate and watch | as today | as today | the gate per turn; k = 2; never abstains |
 
 - **Why `naive` changes at all:** a `pack@2` section runs to about 6,000 characters. Today's "first 1,200 characters"
@@ -811,11 +811,15 @@ None changes the HTTP contract. The requirement-level doc edits are in the statu
 | The `deep_check` score question and the set-check noul in the question bank; the missing-request rules; `deep_check` and `query_rewrite` added to `PURPOSE_CATEGORY` | backend | K6, K15 |
 | The keep rule (`t_keep`, `t_found`, cross-validated); the fallback with no citation score and `fallback: true` | backend | K7 |
 | The `agent` tail: the documents block, the partly and not-found lines (not found at the quick length), citations from the kept list with the quote window, `trigger: "gated"`, `knowledge.query` | backend | K8, K9 |
-| No live post-turn check graph in v1 | backend | K10 |
-| `naive-3`: the 1,200-character slice centred on the hit piece | backend | K13 |
+| No live post-turn check graph in v1; the face check is one Jev call ([doc 13](13-wrap-up.md) W2) | backend | K10 |
+| the next `naive` version (after doc 03's `naive-3`): the 1,200-character slice centred on the hit piece | backend | K13 |
 | The Knowledge tab's "Preview" ribbon removed (PRF-08) | frontend | status |
 | Eval: the new item groups, Recall@8, the comparisons (piece size at a fixed budget; header vs none), the noul sets, the unit tests, the "Not-found reply" row; B8's extra deep turns | evals | K14, §5 |
 | **Docs to amend:**<br>• OQ-AI-03 resolved; PRF-08 and the scope table; D-65's parent/child wording; ENG-02 AC2's list;<br>• [05-ai-seams](../backend/05-ai-seams.md) §6 (the redirect and trigram rows withdrawn; the embedding comparison designed);<br>• doc 01 A4, A6, A7, A13, §8, §9; doc 02 B1, B2, B4, B5, B7, B8, §8; doc 03 C1, §7; doc 05 X1, §7; doc 08 §7; doc 09 M9, §7 | docs | all |
+
+**Built in** ([doc 13](13-wrap-up.md) W4): everything here in M12 (`rag`), including the shared pipeline that doc 09 M9's recall
+reuses in M13, `deep_check` in `PURPOSE_CATEGORY`, D-100's embedding at the gate and the rewrite's storage in
+`message_ai_meta` (W13).
 
 ## 7. Left for later tasks
 
@@ -830,8 +834,8 @@ None changes the HTTP contract. The requirement-level doc edits are in the statu
   - the citation check as a flag (K10): not live; evaluation only.
 - **v2 backlog:**
   - CJK keyword search (§3);
-  - an LLM-written context line per piece, if the header falls short (K1);
-  - an approximate index, if D-65's limits rise (K3).
+  - an LLM-written context line per piece, if the header falls short (K1; [v2](../v2/README.md) §7);
+  - an approximate index, if D-65's limits rise (K3; [v2](../v2/README.md) §8).
 
 ## Sources
 

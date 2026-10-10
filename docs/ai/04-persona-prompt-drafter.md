@@ -107,7 +107,7 @@ dynamic tail (per turn)  <- retrieval block (with the deep length override, C4) 
   this doc touches the naive prompt or engine: the verbatim greeting (P9) is a runtime path in front of every engine,
   and the "don't reuse your greeting" cue is in the `agent` compiler only.
 - The **scripted** profile has no prompt, but the preview (P10) still uses the `agent` compiler, because that is what
-  the app sends once a key is added.
+  `agent` sends (the default with a key from M15, [doc 13](13-wrap-up.md) W4).
 
 **Rejected:**
 - Rewriting the naive compiler in place: the yardstick would move, and the eval would measure only the planner.
@@ -310,9 +310,9 @@ should almost never hit, and a stale face for one turn is harmless.
   - **catchphrase rate:** the share of replies containing the catchphrase.
   - Targets: repeated openers under 10 %, catchphrase in under 20 % of replies.
   - **Measured on free-running conversations only.** On doc 02's frozen transcripts the "previous replies" are stored
-    lines, not the agent's own, so its repetition can't build up there (B3). The doc 02 free runs gain **three 1:1
-    runs of 15 turns with fixed user lines**, `agent` only (single-profile, so B3's pairing concern doesn't apply):
-    about 45 replies plus the existing free runs, ≈ $0.01.
+    lines, not the agent's own, so its repetition can't build up there (B3). The repetition measures run on the
+    `long` suite's 1:1 runs (doc 05), so no extra free runs are paid for ([doc 13](13-wrap-up.md) W10; this replaced three 15-turn
+    runs, ≈ $0.01).
 - **The hint, off by default:** one dynamic-tail line, "Your last replies began: '…', '…', '…'. Start differently.",
   built from the speaker's own last three replies (about 20 tokens). A config switch turns it on if the metric misses
   its target. It goes after the history, so the cached prefix is untouched.
@@ -340,8 +340,8 @@ should almost never hit, and a stale face for one turn is harmless.
   - skips the turn planner (no Jev call), the engine and the gateway, so there is no ledger row and no energy drain;
   - streams the text as the message after the usual greeting delay, with the face `happy` (what the scripted greeting
     already uses);
-  - skips the output guardrail (the user approved this text in the wizard) and the memory writer (a greeting holds
-    nothing to remember);
+  - skips the output guardrail (the user approved this text in the wizard). Memory is written at session pauses (doc 09
+    M1), and a greeting holds nothing to remember;
   - writes a trace with **no `model` section** (it is optional in `TurnTrace`), `emotion = {chosen: "happy", source:
     "default"}`, `engine = "verbatim"` and `prompt_version = None`, so Insight never claims a call that didn't happen.
     Message usage is omitted and no `energy` event is sent (both already optional; `finish` skips the event when
@@ -464,7 +464,7 @@ faster. A generated greeting afterwards avoids the same line every time.
 | The `agent` persona compiler (P1–P6), `prompt_version = "agent-1"`; the card limit (P4) | new `ai/agent/persona.py` (next to the agent engine) | backend |
 | No tag instruction on the `agent` path; Jev failure keeps the previous face; parser only strips stray tags and name prefixes, **at every line start on the agent path** (P6, P7) | the agent reply engine, the turn plan's emotion fallback, `ai/naive/tag_parser.py` (a `per_line` option, off for naive); `backend/tests/fixtures/tag_parser/` gains `speaker` and `perLine`; the TS reference parser in `frontend/src/engine/tagParser.fixtures.test.ts` | backend + frontend |
 | The repeat hint behind a config switch, off (P8) | `frontend/scripts/seed-build/runtime.config.ts` → `seed/runtime.json`; `domain/runtime_config.py` | config |
-| `LineHint.verbatim`; the first-chat query; the verbatim runtime path (no planner, engine, gateway, guardrail or memory writer; no `model` trace; emotion source `default`; engine `verbatim`; `prompt_version` None) (P9) | `ai/contexts.py`, `sessions/modes/one_on_one.py`, **`sessions/turn.py`**; the mock client's first chat (`frontend/src/mock/engines/oneOnOne.ts`) | backend + frontend |
+| `LineHint.verbatim`; the first-chat query; the verbatim runtime path (no planner, engine, gateway or guardrail; no `model` trace; emotion source `default`; engine `verbatim`; `prompt_version` None) (P9) | `ai/contexts.py`, `sessions/modes/one_on_one.py`, **`sessions/turn.py`**; the mock client's first chat (`frontend/src/mock/engines/oneOnOne.ts`) | backend + frontend |
 | Tests that assume a billed greeting (P9); tests that build `ParticipantView` directly (`character_role` gets a default) | `tests/sessions/test_naive.py`, `test_energy_caps.py`, `test_core.py`; `test_naive_prompt.py`, `test_turn_retrieval.py`, `test_ports.py` | tests |
 | The `agent` greeting cue with "don't reuse your usual greeting" (P9) | `ai/agent/persona.py` (the naive `turn_cue` is unchanged) | backend |
 | `appearanceSummary` reaches the compiler (P3); `ParticipantView.character_role` (P5) | `ai/contexts.py` (`CharacterView`, `ParticipantView`), `sessions/context.py` | backend |

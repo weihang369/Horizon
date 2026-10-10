@@ -21,7 +21,7 @@
 > - **Three requirement-level doc edits, approved by the user (confirmed 2026-10-10 by explicit choice):** a one-line note on
 >   **NFR-35** (memory frozen for a sitting sits in the cached prefix, M8); dropping `MemoryItem`'s "PROVISIONAL"
 >   label and the Memory tab's "Preview" ribbon (the shape is final); and extending **D-97** so the query is also
->   embedded when the in-session recall gate says yes (M9; doc 01 already plans to replace D-97's rule). Everything
+>   embedded when the in-session recall gate says yes (applied as the new **D-100**, [doc 13](13-wrap-up.md) §4) (M9; doc 01 already plans to replace D-97's rule). Everything
 >   else is backend-only.
 
 ## 1. The question
@@ -173,8 +173,8 @@ list items, never the whole list, and M5's guard is the protection against conte
 - **Below the minimum, nothing moves:** a run needs at least one message the user said **in** the scene (chat, a
   group line, a watch step-in line, a debate Ask or Interject) or at least 4 character lines. Below that, the
   checkpoint stays so the lines add up for the next run; only an ended session advances anyway.
-- **Seed sessions** are replay-only and never run. **An explicitly scripted profile and test mode** run the triggers
-  with a writer that returns nothing and advance the checkpoint with no call. **With no usable key** (missing,
+- **Seed sessions** are replay-only and never run. **An explicitly scripted profile** (and test mode with it; [doc 13](13-wrap-up.md) W14 runs the `agent` writer with canned answers
+  otherwise) runs the triggers with a writer that returns nothing and advance the checkpoint with no call. **With no usable key** (missing,
   invalid, or a profile that falls back to `scripted` only for lack of a key) the run is **deferred**: the checkpoint
   stays, so the sitting is mined once a key works.
 
@@ -300,7 +300,7 @@ character already carries in its prompt, so it costs ~1,000 input tokens per cha
   rewritten line (≤ 5). State (≤ 1,500 tokens): the character's name, role and first personality sentence, the user's
   name, and the lines. Question: "How much will it matter for {name} to remember this in future conversations?"
 - **Five levels:** "not at all, small talk" · "a little" · "somewhat" · "a lot" · "it is central to who they are or what
-  they share". Importance = **(w − 1) / 4** from the weighted position w (doc 01 check 4 confirms w runs 1–5), so the
+  they share". Importance = **(w − 1) / 4** from the weighted position w, i.e. `unit` ([doc 13](13-wrap-up.md) W11; A1 confirms the raw form), so the
   badge runs 0–1 as the contract expects. An added line under **0.25** (`memory.minImportance`) is dropped; a
   rewritten line keeps the **higher** of its old and new importance.
 - **A `confirm`** becomes `Reinforce`: importance + 0.05 (capped at 1) and **`last_recalled_at` = now**, so a fact the
@@ -455,8 +455,7 @@ with no gate to get wrong; past that, M9's overflow search covers the rest.
 - **The search** when the gate says yes:
   1. **Per corpus, BM25** (FTS5 `bm25`) top 10 ∪ **dense KNN** top 10 (the session's partition; the speaker's
      partition with the list's lines excluded). The query embedding follows
-     doc 01 A6: only after the gate says yes, waiting at most 400 ms, then BM25 only; one per user message (D-97,
-     extended to this gate);
+     doc 01 A6: only after the gate says yes, waiting at most 400 ms, then BM25 only; one per user message (D-100);
   2. **RRF** (k = 60) per corpus; overflow memories are then weighted by (0.5 + 0.5 × importance) × recency × mode
      weight (M8's factors), and the two lists are merged, at most 5 from each;
   3. **MMR** (λ = 0.7, cosine between the candidates' stored vectors; both corpora live in the same space) picks 6
@@ -580,7 +579,7 @@ follow B2's rules):
   energy (ENG-02 AC2); all count against the daily cap but never pause sessions (M6).
 - **Growth:** nothing is deleted automatically; the prompt shows the top ~30, the overflow search reaches the rest;
   the Memory tab lists all (unpaginated
-  today, fine into the hundreds; pagination is noted for task 13).
+  today, fine into the hundreds; pagination: [doc 13](13-wrap-up.md) W8).
 
 ## 5. Checks before this is locked
 
@@ -609,9 +608,9 @@ this task's discussion.
 | The memory list in the `agent` system message 1 (ranking, 1,000-token fill, frozen per sitting, refreshed on Forget and on a live commit); `memory.recalled` for the block; "needs memories?" removed from Jev call 1; `memory.*` knobs in `runtime.json` (`halfLifeDays` 30, `recencyFloor` 0.5, `modeWeight`, `blockTokens` 1,000, `minImportance` 0.25, `dupCosine` 0.92, `pieceTokens` 8,000, `maxTries` 3, `maxConcurrent` 2, `leaveGraceMs` 30,000) | backend + config | finding 3 | M8 |
 | Recall from earlier: `message_fts` and `message_vec__{space}` (the SpaceManager's), the batch embedding at window drops; the overflow search over `memory_fts` / `memory_vec` without the list's lines; the "needs something from earlier?" gate in Jev call 1; per corpus BM25 ∪ dense → RRF, merged, → MMR → Jev call 2; the tail blocks, `contextInSession` and scored `memory.recalled`; `Touch` of used overflow memories at the next pause; scrub, delete and fork handling | backend | finding 3 | M9 |
 | The greeting's newest memories and cue | backend | | M10 |
-| The Memory tab's "Preview: final design by AI team" ribbon removed (PRF-07) | frontend | | M11 |
+| The Memory tab's "Preview: final design by AI team" ribbon removed (PRF-07) | frontend | | status |
 | Eval: the importance, guard, "from earlier" gate and relevance sets; the `memory` suite (rewrite, in-session and overflow recall, two sessions with per-port overrides); two B4 judge rows | evals | measure it | M12 |
-| **Docs to amend:** OQ-AI-01 resolved; NFR-35's note; D-97's extension; [05-data-contract](../requirements/05-data-contract.md) `MemoryItem` no longer "PROVISIONAL"; [05-ai-seams](../backend/05-ai-seams.md) §2.2 (`MemoryWriter`, `MemoryRetriever`, `SessionRecall`), §4 (post-turn queue) and §6 (`memory_consolidate` removed, `message_fts` designed); [02-storage](../backend/02-storage.md) §3.7 (writes at pauses) and its job-kind list; doc 01 A4, A7, A9, A13, §9; doc 02 B2, B4, B7, §8; doc 03 C1 and §7; doc 04 P9 and §7; doc 05 X1, X7, X9 and §7 | docs | consistency | all |
+| **Docs to amend:** OQ-AI-01 resolved; NFR-35's note; D-97's extension (applied as D-100); [05-data-contract](../requirements/05-data-contract.md) `MemoryItem` no longer "PROVISIONAL"; [05-ai-seams](../backend/05-ai-seams.md) §2.2 (`MemoryWriter`, `MemoryRetriever`, `SessionRecall`), §4 (post-turn queue) and §6 (`memory_consolidate` removed, `message_fts` designed); [02-storage](../backend/02-storage.md) §3.7 (writes at pauses) and its job-kind list; doc 01 A4, A7, A9, A13, §9; doc 02 B2, B4, B7, §8; doc 03 C1 and §7; doc 04 P9 and §7; doc 05 X1, X7, X9 and §7 | docs | consistency | all |
 
 ## 7. Left for later tasks
 
