@@ -467,8 +467,9 @@ with no gate to get wrong; past that, M9's overflow search covers the rest.
 - **Questions searched:** as doc 01 A6 (1:1 and group: the user's message; debate: the motion plus the last opposing
   argument; watch: the last message).
 - **Shared with doc 10:** one retrieval pipeline serves knowledge and in-session recall (doc 10 K5). Recall uses the
-  same query texts as documents (doc 10 K4: the message as written, or DeepSeek's rewrite when it isn't standalone or
-  isn't in English, plus the original message), so dense search runs once per query text. Keyword search stays
+  same query texts as documents on that turn (doc 10 K4: the message, plus DeepSeek's rewrite when the documents
+  gate made one); a recall-only deep turn never rewrites and searches the message and the message with its two
+  earlier lines. Keyword search stays
   `porter unicode61`, tuned for English (doc 10 K11; CJK keyword search is in the v2 backlog). MMR's λ is tuned on
   M12's recall set and set to 1.0 (off) if it doesn't help.
 
@@ -548,7 +549,7 @@ follow B2's rules):
 - **Cost:** `decisions` grows by ~460 requests to ≈ $0.12; the `memory` suite ≈ **$0.16** (rewrite calls shared by
   both writers and cached; two-session replies ≈ $0.10; Jev checks, guard, recall probes and embeddings the rest).
   `all` becomes **≈ $0.98 off-peak, ≈ $1.48 at peak, ≈ $0.68 once cached** (doc 10 K14 later makes these
-  $1.02 / $1.54 / $0.72).
+  $1.01 / $1.53 / $0.71).
 
 ### M13. Speed and cost in one place
 

@@ -367,7 +367,7 @@ Doc 01 A3 rule 6: Jev gets less accurate as irrelevant content grows, so the sta
 - **Offline, $0:** the byte-identical prefix test (X6), the X7 mapping on fixture turns, the X2 drop, ceiling and
   fork cases on synthetic histories, the X4 multi-line attribution, and the X9 limit and cut order.
 - **Doc 02 B7 cost:** `all` ≈ $0.58 (was $0.50); ≈ $0.80 at peak; ≈ $0.41 once `naive` replies are cached (doc 06
-  E8 later makes these $0.59 / $0.81 / $0.42, and doc 07 G11 $0.65 / $0.92 / $0.46, and doc 08 V11 $0.80 / $1.18 / $0.55, and doc 09 M12 $0.98 / $1.48 / $0.68, and doc 10 K14 $1.02 / $1.54 / $0.72). `long` ≈ $0.12, run rarely.
+  E8 later makes these $0.59 / $0.81 / $0.42, and doc 07 G11 $0.65 / $0.92 / $0.46, and doc 08 V11 $0.80 / $1.18 / $0.55, and doc 09 M12 $0.98 / $1.48 / $0.68, and doc 10 K14 $1.01 / $1.53 / $0.71). `long` ≈ $0.12, run rarely.
 
 ## 5. Checks before this is locked
 

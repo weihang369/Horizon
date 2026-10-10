@@ -458,8 +458,8 @@ with itself only about 64 % of the time, so that rule mixes up ordinary noise wi
   | summary (doc 05, doc 07) | 40 summary calls + 10 episode recaps + about 310 Jev checks | ≈ $0.08 |
   | debate (doc 08) | 48 Jev rubric requests (balanced, planted, side-swapped), 48 `naive` verdicts, 10 proses, 10 host bridges, their Jev checks; once, ≈ $0.09 to generate the debates and plants | ≈ $0.10 |
   | memory (doc 09) | 24 rewrite calls (shared by both writers and cached), 100 recall probes, 20 two-session pairs × 2 writers, their Jev importance, guard and judge requests | ≈ $0.16 |
-  | **all** | | **≈ $1.02 (about RM 4.5)**; ≈ $1.54 at peak; **≈ $0.72 once the `naive` replies and verdicts are cached** |
-  | latency (rare) | 300 turns, each stopped at the first word (B8) | ≈ $0.08 |
+  | **all** | | **≈ $1.01 (about RM 4.4)**; ≈ $1.53 at peak; **≈ $0.71 once the `naive` replies and verdicts are cached** |
+  | latency (rare) | 400 turns, each stopped at the first word (B8, with doc 10's extra 100 deep 1:1 turns) | ≈ $0.11 |
   | long (rare, doc 05) | three agent-only runs of about 75 turns or rounds | ≈ $0.12 |
   | smoke (usual) | the changed suite + 4 free runs | ≈ $0.05–0.15 |
 
@@ -481,6 +481,8 @@ with itself only about 64 % of the time, so that rule mixes up ordinary noise wi
 - **The sample** is enough to pin down a p90. With 30 samples, the 95 % interval for p90 runs from the 22nd sample to
   the slowest one, so it can't show that NFR-01 is met.
   - **100 quick and 100 deep 1:1 turns**, for NFR-01. The gate is forced by a fixture, so each kind gets exactly 100.
+  - **Doc 10 check 2:** the deep 1:1 turns run as two arms of 100, with and without a query rewrite (forced by
+    fixture); 25 of the group and debate turns are deep, plus 25 deep watch turns; on a fully loaded database.
   - **50 group turns and 50 debate turns,** for NFR-02 (the next speaker in 3 s at p50), including `turn.next` within
     500 ms. The debate turns record whether the debate plan met its deadline (doc 08 V2).
   - With 100 samples, the p90 interval runs from the 84th to the 96th sample.

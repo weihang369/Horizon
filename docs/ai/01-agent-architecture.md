@@ -210,7 +210,7 @@ probabilities for Insight.
 
 | Mode | Questions in Jev call 1 |
 |---|---|
-| **1:1** | needs documents? · needs something from earlier? · emotion · input safe? · standalone? · English? (doc 10 K4: once per message, when a gate is asked) |
+| **1:1** | needs documents? · needs something from earlier? · emotion · input safe? · standalone? · English? (doc 10 K4: once per message, when "needs documents?" is asked) |
 | **Group** | who answers first, with no `none` when nobody is mentioned (@mentions answer first; Everyone uses the probabilities as its order, doc 07 G1, G4) · **per candidate:** needs documents? needs something from earlier? emotion · input safe? · standalone? · English? (doc 10 K4: once per message) |
 | **Debate** | the backend picks the side; Jev picks which member (A14) · **per eligible member:** the gates and the emotion |
 | **Watch** | who speaks next · is the talk finished? · **per candidate:** the gates and the emotion |

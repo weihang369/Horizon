@@ -167,7 +167,7 @@ The table lives in the seed-build source `frontend/scripts/seed-build/runtime.co
 | `summary` | Rolling summary | off | 0.7 | text | task 5 (doc 05 X3) |
 | `episode` | Watch's "Summarise" recap, `max_tokens` 400 | off | 0.7 | text | task 7 (doc 07 G10) |
 | `memory` | Memory rewrite at a session pause, `max_tokens` 300 × characters present + 200 (≤ 3,000) | off | 0.7 | JSON | task 9 (doc 09 M3) |
-| `query_rewrite` | A deep turn's search query, written with the speaker's cached prompt when the message isn't standalone or isn't in English, `max_tokens` 60 | off | 0.7 | text | task 10 (doc 10 K4) |
+| `query_rewrite` | A deep turn's search query, written with the speaker's cached prompt when the message isn't standalone or isn't in English, `max_tokens` 60; precise output, stored and reused on regenerate | off | 0.0 | text | task 10 (doc 10 K4) |
 | `profile` | Profile draft, regenerate one field | off | 1.0 | JSON | naive today |
 | `probe` | Settings → Test, 1 token | off | none | text | today |
 
