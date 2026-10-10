@@ -62,3 +62,28 @@ through the SWE side, and per-character Forget already keeps the "Forget means g
    confirmation that names the characters affected.
 3. **One transaction** running today's Forget (vectors zeroed, traces scrubbed, WAL truncated, D-94) for every copy,
    with each live session refreshing its memory list (doc 09 M8).
+
+## 3. Keyword search for Chinese, Japanese and Korean
+
+**Deferred by:** [docs/ai/10-rag.md](../ai/10-rag.md) K11 (task 10, the user's choice "focus on English",
+2026-10-10).
+
+**v1 behaviour:**
+- `knowledge_fts`, `memory_fts` and `message_fts` use `porter unicode61`. It treats a run of CJK characters as one
+  token, so BM25 can't match a Chinese, Japanese or Korean word inside a sentence.
+- Such text is found by the dense (vector) half.
+- A non-English question is rewritten into an English query (doc 10 K4), so English documents are still matched by
+  keyword.
+
+**Why it was deferred:** the demo's documents and most chats are in English, and the vector half plus the rewrite
+cover the rest well enough for v1.
+
+**What v2 would need:**
+1. **Bigram indexing in our own code** (the Lucene / Elasticsearch CJK method).
+   - Every CJK run becomes overlapping 2-character tokens in a derived search column ("咖啡因" → "咖啡 啡因"), and the
+     query is split the same way.
+   - It needs no new dependency, and 2-character words match.
+   - SQLite's trigram tokenizer was rejected, because it can't match 2-character words.
+2. **An FTS rebuild** of the three tables, with a new `tokenizer` value so that reindex re-runs from that layer.
+3. **Evaluation:** Chinese and Japanese questions over Chinese documents in the retrieval suite, run with and without
+   bigrams.

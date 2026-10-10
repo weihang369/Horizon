@@ -109,7 +109,7 @@ flowchart LR
     REPO --> CLI
     QB --> CLI
     CLI --> L1["Layer 1: System 1 decisions<br/>policy accuracy · calibration · order bias"]
-    CLI --> L2["Layer 2: retrieval<br/>Recall@pool · Recall@5 · MRR · kept-set P/R · abstain"]
+    CLI --> L2["Layer 2: retrieval<br/>Recall@pool · Recall@8 · MRR · kept-set P/R · abstain"]
     CLI --> L3["Layer 3: conversations<br/>same history for both profiles · Jev judge · cost"]
     CLI --> LT["latency suite<br/>NFR-01 · 02 · 29"]
     L1 --> R["report.md, compared with the baseline"]
@@ -133,7 +133,7 @@ flowchart LR
 | Layer | What it measures | Main numbers |
 |---|---|---|
 | **1. System 1 decisions** | Each Jev question alone: who speaks, needs documents, needs something from earlier, emotion, input safe, talk finished, debate member, passage score; later, memory importance and the rubric | **Policy accuracy** (Jev above the floor, the fallback below it), a **calibration table**, and **order bias** (B6) |
-| **2. Retrieval** | The deep path without the reply: keyword search, vector search, RRF, then Jev call 2 and the keep-or-abstain rule | Recall@pool, Recall@5 and MRR, precision and recall of the kept set, and abstain accuracy (B2) |
+| **2. Retrieval** | The deep path without the reply: keyword search, vector search, RRF, then Jev call 2 and the keep-or-abstain rule | Recall@pool, Recall@8 (doc 10 K14) and MRR, precision and recall of the kept set, and abstain accuracy (B2) |
 | **3. Conversations** | Replies in all four modes, `agent` against `naive`, **from the same history** (B3) | The Jev judge (B4), **cost per turn by purpose**, fallback rate, deep rate, abstain rate |
 | **Latency suite** | NFR-01, NFR-02 and NFR-29, from Malaysia | p50 and p90 with intervals, and a per-stage breakdown (B8) |
 | **Drafter suite** (doc 04 P12) | The profile drafter on 20 seeds (10 dev / 10 test) | Code checks (valid, adult, example lines, plain speech, names) and two Jev checks |
@@ -185,7 +185,7 @@ frozen transcripts start from a long committed history.
   | Layer 1: **listener reactions** (doc 06 E8) | **90 items** (30 test; a line, its context, one listener); at most 30 % where `none` is acceptable | A gross-failure check with a trivial baseline to beat; the shown share is reported by the latency suite |
   | Layer 1: **debate member** (doc 08 V11) | **90 items** (30 test): rebuttal and closing slots with 2–3 eligible members, at least half with a single acceptable member | It sets `floor.member`; the lift over the fixed order is tested on the single-answer items, where 80 % is not a free pass |
   | Layer 1: every other question | **40 items**, plus another 40 **only when the interval straddles the target** | 40 items catch a gross failure, and we grow a set only where the answer is unclear |
-  | Layer 2: retrieval | **100 answerable questions and 40 unanswerable ones** on the same topics | 50 items can never show "≤ 5 % wrong abstains" (0 of 50 still allows up to 7 %) |
+  | Layer 2: retrieval | **100 answerable questions and 40 unanswerable ones** on the same topics, plus doc 10 K14's 30 follow-ups, 15 non-English and 20 named-document questions | 50 items can never show "≤ 5 % wrong abstains" (0 of 50 still allows up to 7 %) |
   | Layer 3: frozen transcripts | **20**, each 8–12 turns, across both worlds: 1:1 × 6, group × 5, debate × 4, watch × 5; **4 of them start from a long committed history past one drop** (doc 05 X10) | About 200 compared turns; the 4 cover the summary in the prompt |
   | Layer 3 targeted lines (doc 04 P12) | **At least 10 Malay, Chinese or mixed user lines and 10 planted wrong claims**, placed in those transcripts, split dev / test | The language and push-back checks would pass trivially without them |
   | Drafter suite (doc 04 P12) | **20 seeds** across the three intents and both worlds, 10 dev / 10 test | Enough to see a systematic drafting fault |
@@ -282,8 +282,9 @@ frozen transcripts start from a long committed history.
   |---|---|---|
   | **Stays in character** | 4 nouls: speaks in the persona's voice · contradicts no persona fact · never says it is an AI · responds to the last user line | only the relevant persona fields + the last 2 turns + the reply |
   | **Agent vs naive** | a choice of "reply A", "reply B" or "about the same", **asked in both orders** | the last 2 turns + both replies |
-  | **Citation support** | a noul for each cited passage: "does this passage support what the reply says it supports?" (the live post-turn citation check, A7) | the passage + the cited sentence |
+  | **Citation support** | a noul for each cited passage: "does this passage support what the reply says it supports?" (evaluation only in v1, doc 10 K10; ≥ 95 %) | the passage + the cited sentence |
   | **Sentence faithfulness** (deep turns) | code splits the reply into sentences; a noul for each factual sentence against the kept passages | the passages + one sentence |
+  | **Not-found reply** (doc 10 K14) | 2 nouls: tells the user the documents don't cover the question (or which part) · anything beyond them is framed as the character's own view, with no `[n]`; ≥ 90 % each | the question + the reply |
   | **Reply rules** (doc 04 P12) | 4 nouls: no assistant voice · no flattery (on a 100-reply sample) · replies in the user's language (non-English lines only) · pushes back (planted wrong claims only) | the last user line + the reply |
   | **Draft quality** (doc 04 P12) | 2 nouls: fits the seed · the relationship fits the You card | the seed, the You card + the draft |
 | **Summary quality** (doc 05 X10) | 5 nouls: a planted fact is kept · the promise is kept · it says who made the promise · same language as most lines · nothing unsupported | the dropped lines + the summary (one fact or promise per question) |
@@ -349,6 +350,8 @@ the largest Jev item, so judge results are cached (B7).
   | needs documents | **`t_gate`** (go deep) | the **highest** threshold with **recall ≥ 90 %**; the deep rate on items that don't need documents is reported next to it |
   | needs documents | **`t_confident`** (abstaining allowed, A6) | the **lowest** threshold with **precision ≥ 95 %**; always ≥ `t_gate` |
   | needs something from earlier (doc 09 M9) | `t_gate` | the highest threshold with **recall ≥ 85 %** |
+  | standalone (doc 10 K4) | `t_standalone` | the highest threshold that sends **≥ 90 % of follow-ups** to the rewrite; the share of standalone messages rewritten is reported |
+  | English (doc 10 K4) | 0.5 | **≥ 95 %** accuracy on 40 messages in 4 languages |
   | talk finished | `t_end` | the lowest threshold with **precision ≥ 90 %**; its recall is reported, and a recall under 50 % means the question is rewritten |
   | input safe | — | task 11 |
 
@@ -448,14 +451,14 @@ with itself only about 64 % of the time, so that rule mixes up ordinary noise wi
 
   | Suite | Main calls | Estimate |
   |---|---|---|
-  | decisions | ~2,560 Jev requests (choice items in both orders, including doc 06's emotion and reaction sets, doc 07's who-speaks parts, doc 08's debate member set and doc 09's memory sets), ~1 k tokens each (debate items ~3 k) | ≈ $0.12 |
-  | retrieval | re-indexing and corpus embedding (< $0.01), then 140 questions × ~15 passage scores | ≈ $0.05 |
+  | decisions | ~2,700 Jev requests (choice items in both orders, including doc 06's emotion and reaction sets, doc 07's who-speaks parts, doc 08's debate member set, doc 09's memory sets and doc 10's standalone and English sets), ~1 k tokens each (debate items ~3 k) | ≈ $0.12 |
+  | retrieval (doc 10 K14) | re-indexing and corpus embedding (< $0.01), 205 questions × 8 piece scores, the space and piece comparisons (≈ $0.015), 45 rewrites, 50 end-to-end not-found and partly replies (≈ $0.02) | ≈ $0.08 |
   | conversations | 200 turns × 2 profiles + 4 free runs on DeepSeek, Jev planning, and judging (≈ $0.13); doc 04's reply-rule checks and three 1:1 free runs (≈ $0.03); doc 07's 6 `agent` group and watch runs (≈ $0.03); doc 08's 2 `agent` debates (≈ $0.03) | ≈ $0.44 |
   | drafter (doc 04) | 20 drafts + 40 Jev checks | ≈ $0.025 |
   | summary (doc 05, doc 07) | 40 summary calls + 10 episode recaps + about 310 Jev checks | ≈ $0.08 |
   | debate (doc 08) | 48 Jev rubric requests (balanced, planted, side-swapped), 48 `naive` verdicts, 10 proses, 10 host bridges, their Jev checks; once, ≈ $0.09 to generate the debates and plants | ≈ $0.10 |
   | memory (doc 09) | 24 rewrite calls (shared by both writers and cached), 100 recall probes, 20 two-session pairs × 2 writers, their Jev importance, guard and judge requests | ≈ $0.16 |
-  | **all** | | **≈ $0.98 (about RM 4.3)**; ≈ $1.48 at peak; **≈ $0.68 once the `naive` replies and verdicts are cached** |
+  | **all** | | **≈ $1.02 (about RM 4.5)**; ≈ $1.54 at peak; **≈ $0.72 once the `naive` replies and verdicts are cached** |
   | latency (rare) | 300 turns, each stopped at the first word (B8) | ≈ $0.08 |
   | long (rare, doc 05) | three agent-only runs of about 75 turns or rounds | ≈ $0.12 |
   | smoke (usual) | the changed suite + 4 free runs | ≈ $0.05–0.15 |
@@ -685,8 +688,10 @@ section.
 
 - ~~The debate rubric and its judge questions (task 8).~~ Resolved by doc 08 V7 and V11.
 - ~~The memory retrieval set and the memory-importance labels (task 9).~~ Resolved by doc 09 M12.
-- The final embedding model and its dimensions. The retrieval suite is the comparison test that decides them (task 10).
-- How many passages Jev call 2 scores, and k. Until task 10 sets k, "@5" is a placeholder (task 10).
+- ~~The final embedding model and its dimensions (task 10).~~ Resolved by doc 10 K3: the retrieval suite's comparison
+  test decides between Qwen3-Embedding-8B at 1,024 and 2,048 and bge-m3.
+- ~~How many passages Jev call 2 scores, and k (task 10).~~ Resolved by doc 10 K5 and K7: 8 candidates, k = 3 in 1:1
+  and 2 elsewhere; the metric is Recall@8.
 - The red-team set and the input-safe threshold (task 11).
 - `seed/pricing.json` sets OpenRouter's `data_collection` to `"allow"`, which lets providers keep prompts. That is a
   privacy question for task 11 or 13.

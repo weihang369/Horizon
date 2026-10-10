@@ -167,6 +167,7 @@ The table lives in the seed-build source `frontend/scripts/seed-build/runtime.co
 | `summary` | Rolling summary | off | 0.7 | text | task 5 (doc 05 X3) |
 | `episode` | Watch's "Summarise" recap, `max_tokens` 400 | off | 0.7 | text | task 7 (doc 07 G10) |
 | `memory` | Memory rewrite at a session pause, `max_tokens` 300 × characters present + 200 (≤ 3,000) | off | 0.7 | JSON | task 9 (doc 09 M3) |
+| `query_rewrite` | A deep turn's search query, written with the speaker's cached prompt when the message isn't standalone or isn't in English, `max_tokens` 60 | off | 0.7 | text | task 10 (doc 10 K4) |
 | `profile` | Profile draft, regenerate one field | off | 1.0 | JSON | naive today |
 | `probe` | Settings → Test, 1 token | off | none | text | today |
 
@@ -216,7 +217,8 @@ The same column also catches a silent failure: if a call with thinking "off" eve
 it.
 
 The one case where thinking may help is a question that combines several documents ("compare the 2019 and 2023
-policies"). Task 10 may revisit this with eval data.
+policies"). Task 10 may revisit this with eval data. Doc 10 K14: it stays off unless sentence faithfulness on the two-passage
+questions falls below 90 %.
 
 **Rejected:**
 - Thinking on for deep turns: it breaks NFR-01 for a gain Jev already gives.
@@ -498,7 +500,8 @@ existing `model.provider`. Prices come from the bundled config. `modelOverrides`
 - ~~The debate argument and host prompts (task 8).~~ Resolved by doc 08 V4, V6 and V8.
 - ~~The summary and memory-extraction prompts and schemas (task 9).~~ Resolved by doc 05 X3 (summary) and doc 09 M3
   (memory extraction).
-- Whether a multi-document deep question should ever think (task 10, with eval data).
+- ~~Whether a multi-document deep question should ever think (task 10, with eval data).~~ Resolved by doc 10 K14:
+  off, revisited only on eval data.
 - Custom models (v2, [docs/v2](../v2/README.md)).
 
 ## Sources

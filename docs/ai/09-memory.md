@@ -466,9 +466,11 @@ with no gate to get wrong; past that, M9's overflow search covers the rest.
   never touched), so a fact that turns out to matter again re-enters the prompt list.
 - **Questions searched:** as doc 01 A6 (1:1 and group: the user's message; debate: the motion plus the last opposing
   argument; watch: the last message).
-- **Shared with task 10:** one retrieval pipeline serves knowledge and in-session recall; task 10 sets its parameters
-  for knowledge and decides the CJK tokeniser (`porter unicode61` handles Chinese and Japanese poorly; the dense half
-  covers them until then). MMR's λ is tuned on M12's recall set and set to 1.0 (off) if it doesn't help.
+- **Shared with doc 10:** one retrieval pipeline serves knowledge and in-session recall (doc 10 K5). Recall uses the
+  same query texts as documents (doc 10 K4: the message as written, or DeepSeek's rewrite when it isn't standalone or
+  isn't in English, plus the original message), so dense search runs once per query text. Keyword search stays
+  `porter unicode61`, tuned for English (doc 10 K11; CJK keyword search is in the v2 backlog). MMR's λ is tuned on
+  M12's recall set and set to 1.0 (off) if it doesn't help.
 
 **Why:** the summary keeps the gist and drops details (7.1.8's context collapse), and the prompt list holds only the
 top ~30 memories; this search brings the exact line or the older memory back ("what did I say the cake was called?",
@@ -545,7 +547,8 @@ follow B2's rules):
   character" check is a unit test (code makes it impossible).
 - **Cost:** `decisions` grows by ~460 requests to ≈ $0.12; the `memory` suite ≈ **$0.16** (rewrite calls shared by
   both writers and cached; two-session replies ≈ $0.10; Jev checks, guard, recall probes and embeddings the rest).
-  `all` becomes **≈ $0.98 off-peak, ≈ $1.48 at peak, ≈ $0.68 once cached.**
+  `all` becomes **≈ $0.98 off-peak, ≈ $1.48 at peak, ≈ $0.68 once cached** (doc 10 K14 later makes these
+  $1.02 / $1.54 / $0.72).
 
 ### M13. Speed and cost in one place
 
@@ -604,8 +607,9 @@ this task's discussion.
 
 ## 7. Left for later tasks
 
-- **Task 10:** the final embedding model and dimensions (memory and message vectors follow the active space, and
-  `dupCosine` is retuned with it); the CJK tokeniser for FTS; the shared retrieval parameters.
+- ~~**Task 10:** the final embedding model and dimensions; the CJK tokeniser for FTS; the shared retrieval
+  parameters.~~ Resolved by doc 10: K3 (the comparison test; `dupCosine` retuned for the winning space), K11
+  (`porter unicode61` stays, CJK to the v2 backlog), K4 and K5 (query and pipeline).
 - **Task 11:** stored memory text now sits in **every** future system prompt, which makes it a stored
   prompt-injection path ("notes, not instructions" is only a start); sensitive categories beyond M3's never-store list
   (health facts stay, by the user's decision); a user trying to plant memories in a character. (`about_user` facts

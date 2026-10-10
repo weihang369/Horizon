@@ -210,8 +210,8 @@ probabilities for Insight.
 
 | Mode | Questions in Jev call 1 |
 |---|---|
-| **1:1** | needs documents? · needs something from earlier? · emotion · input safe? |
-| **Group** | who answers first, with no `none` when nobody is mentioned (@mentions answer first; Everyone uses the probabilities as its order, doc 07 G1, G4) · **per candidate:** needs documents? needs something from earlier? emotion · input safe? |
+| **1:1** | needs documents? · needs something from earlier? · emotion · input safe? · standalone? · English? (doc 10 K4: once per message, when a gate is asked) |
+| **Group** | who answers first, with no `none` when nobody is mentioned (@mentions answer first; Everyone uses the probabilities as its order, doc 07 G1, G4) · **per candidate:** needs documents? needs something from earlier? emotion · input safe? · standalone? · English? (doc 10 K4: once per message) |
 | **Debate** | the backend picks the side; Jev picks which member (A14) · **per eligible member:** the gates and the emotion |
 | **Watch** | who speaks next · is the talk finished? · **per candidate:** the gates and the emotion |
 
@@ -295,14 +295,16 @@ emotion, and the hits it kept. The reply engine never queries storage (D-92 hold
   3. **Jev call 2 (`Decider` purpose `deep_check`).** One small request per candidate passage, all sent in parallel.
      Each state holds just the question and one passage, which is TypeSafe's rerank cookbook pattern; no request sees
      another, so no irrelevant passages dilute the state. Each request asks one **score**, "how well does this passage
-     answer the question?", whose top level is "answers it directly".
+     answer the question?", whose top level is "answers it directly". Doc 10 K6 sets three levels (answers it · partly · doesn't help) over 8
+     candidates.
   4. **Code decides** from the scores: keep the top k, or, if none reaches "answers it", treat the knowledge as not
-     found.
+     found. Doc 10 K7: found / partly / not found; k = 3 in 1:1, 2 elsewhere.
   5. DeepSeek, with the kept passages placed **last**, which keeps the cached prefix intact.
 - **What "not found" does depends on the mode:**
   - **1:1 and group, when the user asked something the gate was confident needs documents:** the character says, in
     character, that it isn't in their documents, and no citation is shown (6.9: refuse below a tuned threshold; 6.14:
-    "weak matches presented as answers" is a common trap).
+    "weak matches presented as answers" is a common trap). Doc 10 K9: they may then add their own view, without
+    `[n]`.
   - **Otherwise** (small talk that was unsure, any debate or watch turn): the passages are simply dropped and it becomes
     a quick reply. Debate and watch never abstain, because nobody asked them a question.
 - **Fallbacks on the deep path:**
@@ -311,13 +313,14 @@ emotion, and the hits it kept. The reply engine never queries storage (D-92 hold
 - **In-session recall and knowledge have separate gates.** Knowledge is the conservative one (a stricter threshold and
   the not-found rule) and cites a passage **only when the reply uses it** (D-93). Recalled lines and memories never
   cite. The top long-term memories are in the system prompt (doc 09 M8); the rest are searched with the older lines
-  (doc 09 M9). The thresholds are set in doc 09 M12 and task 10.
+  (doc 09 M9). The thresholds are set in doc 09 M12 and doc 10 K7.
 - **All four modes may go deep; Jev decides per turn.** The question searched for is:
   - 1:1 and group: the user's message;
   - debate: the motion plus the last opposing argument;
   - watch: the last message.
 
-  The exact wording is set in tasks 5 and 10.
+  Doc 10 K4 sets the query: in 1:1 and group, DeepSeek rewrites the message with the character's prompt when it
+  isn't standalone or isn't in English; doc 10 K2 adds Python metadata filters.
 
 **Speed and cost (rough estimates from Malaysia; check 3 measures the real numbers):**
 
@@ -331,7 +334,7 @@ emotion, and the hits it kept. The reply engine never queries storage (D-92 hold
 - The face shows before the words on both, which makes the wait feel shorter.
 - If check 3 shows deep turns missing NFR-01, we trim the deep path (fewer candidates, a shorter `turn_plan` timeout).
 - Embedding only on deep turns saves the embedding cost on every quick turn.
-- Jev call 2 costs roughly one small request per candidate (for example 15 × ~500 tokens ≈ $0.0003).
+- Jev call 2 costs roughly one small request per candidate (for example 15 × ~500 tokens ≈ $0.0003). Doc 10 K5: 8 × ~550 ≈ $0.00018.
 
 **Rejected:**
 - always deep, which costs more and is slower on small talk;
@@ -352,7 +355,7 @@ emotion, and the hits it kept. The reply engine never queries storage (D-92 hold
 | LangGraph graphs | Plain calls (one step) |
 |---|---|
 | **Turn plan graph** (A4, A6): Jev call 1 → quick/deep branch → embed → search → parallel Jev call 2 → keep or drop | **The reply:** one DeepSeek stream (today's engine, extended in A5) |
-| **Post-turn check graph:** emotion check ∥ citation check → merge into Insight (the live emotion check waits for the System 1 section, doc 06 E7) | **Listener reactions** (one Jev call, doc 06 E5) |
+| **Post-turn check graph:** emotion check ∥ citation check → merge into Insight. **Not live in v1:** the emotion check waits for the System 1 section (doc 06 E7) and the citation check is evaluation only (doc 10 K10) | **Listener reactions** (one Jev call, doc 06 E5) |
 | **Memory graph** (doc 09 M1–M5), **at a session pause, not after `turn.end`**: DeepSeek rewrites each present character's list (keep / confirm / rewrite / add) → Jev importance ∥ Jev guard on each rewrite ("keeps every still-true fact?", else keep both) ∥ duplicate check → ops | **Rolling summary** (one DeepSeek call) |
 | **Verdict graph** (doc 08 V7–V9): Jev rubric scores in parallel → code picks the stronger case → DeepSeek writes the prose (JSON) | **Profile drafter, image, song** |
 
@@ -449,15 +452,15 @@ every node, and Forget would get harder.
   - on deep turns, the embedding, the local search and Jev call 2, whose requests run in parallel;
   - DeepSeek's own first-token time.
 - **After `turn.end`, never delaying the next speaker (NFR-02):**
-  - the emotion and citation checks;
+  - the emotion and citation checks (evaluation only in v1: doc 06 E7, doc 10 K10);
   - listener reactions;
   - the rolling summary.
 
   Memory writing is later still, at a session pause (doc 09 M1). The summary moves out of the turn preparation, where it sits today. The window is kept until the new summary lands.
 - **The output guardrail** stays where it is today, just before `turn.end`, because a blocked reply must be refused
   before it ends. It gets a tight timeout and fails open with a flag. Task 11 designs it.
-- **Interrupted replies also get the citation check** (new behaviour; today an interrupted reply skips the after-reply
-  work).
+- ~~**Interrupted replies also get the citation check**~~ Withdrawn by doc 10 K10: the citation check is evaluation
+  only in v1.
 - **Deep-only work runs only when Jev call 1 says deep.** A little speed is traded for not paying on quick turns.
 
 ### A14. Debate: fair sides, Jev picks the member
@@ -514,10 +517,10 @@ None of the backend rows changes the HTTP contract unless marked.
 | A **`TurnPlanner` port** (the turn plan graph), the `agent` profile value, and a scripted twin with fixtures so the mock parity tests still pass | backend | A4, A6, A12 | 5 |
 | **Every turn entry point calls the planner:** 1:1 send, regenerate, group auto, Everyone, nudge (random today), watch turns and step-in (random today), debate turns and Ask, the opening prefetch | backend | A4 | 5–8 |
 | **New `Decider` purposes** `turn_plan` and `deep_check`, with config timeouts and ledger purposes; the `Decider` also checks the total request size | backend | A4, A6 | 5 |
-| **Embed only on deep turns**, replacing D-97's embedding at send; keep the 400 ms wait; debate and watch turns may embed | backend | A6 | 10 |
+| **Embed only on deep turns**, replacing D-97's embedding at send; keep the 400 ms wait; debate and watch turns may embed; doc 10 K4 adds the rewrite when needed | backend | A6 | 10 |
 | The reply receives the Jev emotion: show it at preflight, mood line in the dynamic tail, strip the tag | backend | A5 | 6 |
 | `Summariser.rolling` and `ReactionPredictor.predict` become **async**, and both run after `turn.end` | backend | A7, A13 | 5, 6 |
-| The citation check runs on interrupted replies; the post-turn graph runs after `turn.end` | backend | A13 | 6, 10 |
+| ~~The citation check runs on interrupted replies~~ (withdrawn by doc 10 K10: evaluation only in v1); the after-reply work runs after `turn.end` | backend | A13 | 6, 10 |
 | Debate: Jev picks the member among those who haven't spoken in the phase; openings stay fixed; the trace uses existing `routing` fields (doc 08 V2), so **no contract change** | backend | A14 | 8 |
 | `DebateHost.narration()` returns a fixed string; it becomes async and calls DeepSeek, shown whole, not streamed (doc 08 V6) | backend | A7 | 8 |
 | ~~Watch **"the talk is finished"** needs an outcome~~ **Withdrawn by doc 07 G7:** a finished thread steers the next line somewhere new; no early end, so no contract change | backend | A4 | 7 |
@@ -531,7 +534,8 @@ None of the backend rows changes the HTTP contract unless marked.
 - Gate thresholds and confidence floors, tuned on labelled data (tasks 2, 9, 10).
 - ~~The mood-line wording, and AUTO emotion confirmed by the evaluation (task 6).~~ Resolved by doc 06 (E4, E8).
 - ~~Exactly which fields go into Jev call 1's state, and its token budget (task 5).~~ Resolved by doc 05 X9.
-- Jev call 2's score levels, the number of candidates, k, and the wording of the not-found line (task 10).
+- ~~Jev call 2's score levels, the number of candidates, k, and the wording of the not-found line (task 10).~~
+  Resolved by doc 10 K5–K9.
 - What "input not safe" does, and the output guardrail's timeout (task 11).
 - ~~A side whose members are all exhausted (task 8, OQ-AI-17).~~ Resolved by doc 08 V5: the debate pauses with a top-up
   prompt.

@@ -70,7 +70,7 @@ system message 1
 system message 2: summary of older talk    yes, until a drop   600   (X3)
 history window, word for word              yes, except newest  6,000 1:1 · 9,000 group/watch/debate (X2)
 dynamic tail                               no
-  retrieval block (deep turns only)                          ≈ 2,200 (task 10 sets k)
+  retrieval block (deep turns only; doc 10 K8)               ≤ 1,400
   earlier lines + older memories (doc 09 M9; gate says yes) ≤ 400
   mood line · repeat hint (off) · voice reminder (off) · cue  ≈ 60
 ```
@@ -84,16 +84,16 @@ summary (X3). The next turn sees the new summary and a shorter window: one cache
 
 **Decision:**
 - The order is doc 04 P2's. The sizes are the table above. Each cap is enforced where the section is built: the card
-  by doc 04 P4, the summary by X3, the window by X2, the retrieval block by task 10, each message by X8.
+  by doc 04 P4, the summary by X3, the window by X2, the retrieval block by doc 10 K8, each message by X8.
 - **The planned input per mode** (`TurnTrace.context.budget`, X7) is the sum of the caps:
 
   | Mode | Card | Fixed blocks | Summary | Window | Tail | **Budget** |
   |---|---|---|---|---|---|---|
-  | 1:1 | 1,500 | 1,600 | 600 | 6,000 | 2,660 | **≈ 12,400** |
-  | Group, watch, debate | 1,500 | 1,600 | 600 | 9,000 | 2,660 | **≈ 15,400** |
+  | 1:1 | 1,500 | 1,600 | 600 | 6,000 | 1,860 | **≈ 11,600** |
+  | Group, watch, debate | 1,500 | 1,600 | 600 | 9,000 | 1,860 | **≈ 14,600** |
 
   The fixed blocks include doc 09 M8's memory list (≤ 1,000, cached for the sitting); the tail includes doc 09 M9's
-  recall from earlier (≤ 400). A quick turn uses about 2,600 less (no retrieval block, no recall). The window can run over its size until the summary lands
+  recall from earlier (≤ 400). A quick turn uses about 1,800 less (no retrieval block, no recall). The window can run over its size until the summary lands
   (X2, up to the ceiling), so `used` may exceed `budget`. Insight's context bar today scales to `budget` and clips the
   rest ([Data.tsx](../../frontend/src/ui/Data.tsx) `StackedBar`), so it is changed to scale to the larger of the two
   and mark the overflow (a UI change, not a contract change).
@@ -367,7 +367,7 @@ Doc 01 A3 rule 6: Jev gets less accurate as irrelevant content grows, so the sta
 - **Offline, $0:** the byte-identical prefix test (X6), the X7 mapping on fixture turns, the X2 drop, ceiling and
   fork cases on synthetic histories, the X4 multi-line attribution, and the X9 limit and cut order.
 - **Doc 02 B7 cost:** `all` ≈ $0.58 (was $0.50); ≈ $0.80 at peak; ≈ $0.41 once `naive` replies are cached (doc 06
-  E8 later makes these $0.59 / $0.81 / $0.42, and doc 07 G11 $0.65 / $0.92 / $0.46, and doc 08 V11 $0.80 / $1.18 / $0.55, and doc 09 M12 $0.98 / $1.48 / $0.68). `long` ≈ $0.12, run rarely.
+  E8 later makes these $0.59 / $0.81 / $0.42, and doc 07 G11 $0.65 / $0.92 / $0.46, and doc 08 V11 $0.80 / $1.18 / $0.55, and doc 09 M12 $0.98 / $1.48 / $0.68, and doc 10 K14 $1.02 / $1.54 / $0.72). `long` ≈ $0.12, run rarely.
 
 ## 5. Checks before this is locked
 
@@ -403,7 +403,8 @@ internal.
 - ~~Watch's episode summary and when the talk is finished (task 7).~~ Resolved by doc 07 (G7, G10).
 - ~~What the debate host and verdict see (task 8).~~ Resolved by doc 08 V6 (host) and V7, V8 (verdict).
 - ~~Long-term memory and per-character points of view across sessions (task 9).~~ Resolved by doc 09.
-- The retrieval block's size: k, the passage length and Jev call 2 (task 10).
+- ~~The retrieval block's size: k, the passage length and Jev call 2 (task 10).~~ Resolved by doc 10 K1, K7, K8:
+  ≤ 1,400 tokens.
 - The quoted-content wording in the Jev state and the prompts, and prompt injection through summaries (task 11).
 
 ## Sources
