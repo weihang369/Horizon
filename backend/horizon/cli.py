@@ -147,6 +147,9 @@ def main(argv: list[str] | None = None) -> int:
     msub = m.add_subparsers(dest="models_cmd", required=True)
     fetch = msub.add_parser("fetch", help="download the Docling models into data/models/ (once; after npm run setup:docling)")
     fetch.set_defaults(fn=_models_fetch)
+    from horizon.evals.cli import register as register_eval
+
+    register_eval(sub)
     args = p.parse_args(argv)
     return int(args.fn(args))
 

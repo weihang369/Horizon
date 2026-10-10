@@ -298,7 +298,8 @@ class Runtime:
                                 on_estimate_row=lambda row_id: self.corrector.enqueue(row_id))
         self._corrector = CostCorrector(self.db, self.clock, self._gateway.meta.generation, self.energy_locks,
                                         self.energy_params)
-        self._decider = Decider(self._gateway.decide, self._gateway.cfg.timeouts, self.decider_fixtures)
+        self._decider = Decider(self._gateway.decide, self._gateway.cfg.timeouts, self.decider_fixtures,
+                                clock=self.clock, spawn=self.spawn)
 
     def _build_m3(self) -> None:
         from horizon.sessions.manager import LiveSessionManager

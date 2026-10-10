@@ -15,8 +15,9 @@ Category = Literal["chat", "decision", "image", "music", "profile", "summary", "
 # The ledger category a purpose lands in when the caller doesn't name one.
 PURPOSE_CATEGORY: dict[str, Category] = {
     "reply": "chat", "host": "chat", "verdict": "chat",
-    "route": "decision", "gate": "decision", "rerank": "decision", "guardrail": "decision", "reaction": "decision",
-    "emotion": "decision", "importance": "decision", "rubric": "decision", "watch_end": "decision",
+    # Decision purposes (docs/ai/13 W5): each later change adds the purposes it first calls (W4).
+    "route": "decision", "guardrail": "decision", "reaction": "decision", "importance": "decision",
+    "rubric": "decision", "eval_judge": "decision",
     "query_embed": "embedding", "embed_doc": "embedding",
     "summary": "summary", "memory": "memory", "profile": "profile", "song": "music",
 }

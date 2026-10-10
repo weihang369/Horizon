@@ -70,9 +70,13 @@
         "meta": 10000,
         "decision": {
           "route": 400,
-          "gate": 500,
-          "rerank": 600,
-          "emotion": 300,
+          "turn_plan": 700,
+          "follow_plan": 400,
+          "debate_plan": 500,
+          "guardrail": 700,
+          "guardrail_prompt": 1500,
+          "reaction": 1500,
+          "face_check": 1500,
           "default": 3000
         }
       }

@@ -488,7 +488,10 @@ class Gateway:
             self.book.release(hold)
 
     async def decide(self, state: Any, questions: Mapping[str, Mapping[str, Any]], ctx: CallContext, *,
-                     estimate: float | None = None, model: str | None = None) -> DecisionsResponse:
+                     estimate: float | None = None, model: str | None = None,
+                     finish: Callable[[], str | None] | None = None) -> DecisionsResponse:
+        """One Jev request through the pipeline. `finish()` (the Decider's `DecisionCall.outcome`) is read when the row
+        is recorded, so the ledger says whether the answer was on time, late or cancelled (ai-foundation design D6)."""
         est = self.decision_estimate(state, questions) if estimate is None else estimate
         m = model or self.decision_model
 

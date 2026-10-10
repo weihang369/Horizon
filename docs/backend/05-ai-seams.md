@@ -94,32 +94,41 @@ ScopedIndex  # services/knowledge/index.py: read-only, built by the RUNTIME per 
 
 ```python
 class Decider:
-    async def ask(self, state: dict, questions: dict[str, Question], ctx: CallContext, *,
-                  purpose: str, timeout_ms: int | None = None,           # default from config per purpose
-                  fallback: Callable[[], Awaitable[Answers]] | None = None) -> DecisionResult
+    def start(self, state: dict, questions: dict[str, Question], ctx: CallContext, *,
+              purpose: str, fallback: Callable[[], Awaitable[Answers]] | None = None) -> DecisionCall
+    async def ask(self, state, questions, ctx, *, purpose, timeout_ms=None, fallback=None) -> DecisionResult
+        # == start(...).by(now + timeout); the timeout is the call's, else the bank questions' deadline key, else the purpose's
+
+class DecisionCall:
+    async def by(self, at: datetime) -> DecisionResult   # answers if back by that clock instant, else the fallback (run once)
+    async def final(self) -> DecisionResult               # the real answers whenever they land
+    def cancel(self) -> None                              # readers get DecisionCancelled; the sent request still settles
 # DecisionResult.answers[q] = ChoiceAnswer | NoulAnswer | ScoreAnswer, each with source: "jev" | "fallback" | "fixture"
 ```
 
+*Rewritten in M7 (`ai-foundation`, [docs/ai/13](../ai/13-wrap-up.md) W11, group A).*
+
 - **Calling.**
-  - It calls `typesafe/jev-1.13` (pinned, never `~latest`). **All independent questions about one state go in one call**, because they're answered in parallel.
-  - It checks the 32K budget before sending.
-  - Calls may run concurrently; there is no Decider semaphore below 4.
+  - It calls `typesafe/jev-1.13` (pinned, never `~latest`). **All independent questions about one state go in one call**, because they're answered in parallel. Questions come from the question bank (`horizon/ai/questions/`, docs/ai/02 B9), which declares each one's state fields; a state with an undeclared field, or free text outside a `quoted_*` field, is refused before sending.
+  - **The size check:** state + the longest question ≤ 30,000 tokens (UTF-8 bytes ÷ 3), and at most 64 questions. Over either, nothing is sent, reserved or recorded, and the fallback answers with reason `too_large`. Jev reports an oversized request as HTTP 429, so this must refuse first ([group A](../ai/checks/group-a.md) A1).
+  - Each request runs as an `rt.spawn` task, and deadlines are read on the runtime clock (virtual in tests). Calls may run concurrently; there is no Decider semaphore below 4.
 - **Validation.** Each answer is checked against its declared type and option set. If only some answers are invalid, the fallback runs **just for those questions**.
-- **Failure or timeout:**
-  - use `fallback()` if one was given;
+- **Failure, a missed deadline or a rate limit:**
+  - use `fallback()` if one was given (run once, however many readers);
   - otherwise raise `DecisionUnavailable`, and the caller takes its hold path (R-13).
-  - Late answers are discarded but still recorded in the ledger.
-  - Off the hot path, the fallback may be a DeepSeek structured-output call (category `decision`, never drains energy). **On the hot path the fallback is always deterministic.**
+  - A late answer is still recorded in the ledger (`finish_reason: "late"`) and stays readable through `final()`.
+  - A 429 falls back at once on the hot path; `importance`, `memory_guard` and `rubric` wait max(1 s, Retry-After) up to 5 s and send once more if their deadline allows.
+  - Off the hot path, the fallback may be a DeepSeek call (category `decision`, never drains energy). **On the hot path the fallback is always deterministic.**
 
 *AI stage:* the `agent` profile's purposes, questions, deadlines and fallbacks are the Jev map in [docs/ai/13](../ai/13-wrap-up.md) W5; this table is the backend stage's (`naive` keeps `route`).
 
-| Purpose | Timeout | Deterministic hot-path fallback |
+| Purpose | Deadline | Deterministic hot-path fallback |
 |---|---|---|
 | `route` | 400 ms | @mention, else round-robin over eligible speakers (least recent first); trace marks the fallback, with no `candidates` |
-| `gate` + input `guardrail` (one call) | 500 ms | The gate opens (retrieve); the guardrail fails open with a flag |
-| `rerank` | 600 ms | Skip the rerank and take the RRF top-k; `Citation.score` is omitted |
-| `emotion` (pre-prediction) | 300 ms | Keep the previous face; the inline tag stays primary |
-| `reaction`, `importance`, `rubric`, `watch_end`, … | 3 s | Skip (reactions are optional) / a rule |
+| the `agent` purposes | per question deadline key, `seed/pricing.json` → `timeoutsMs.decision` (docs/ai/13 W12) | docs/ai/13 W5 |
+| `reaction`, `importance`, `rubric`, … | 1.5 s / 3 s | Skip (reactions are optional) / a rule |
+
+*M7 removed `gate`, `rerank`, `emotion` and `watch_end`: nothing called them, and the `agent` purposes replace them (W5).*
 
 - **Traces and the ledger.** Probabilities flow into `TurnTrace` (`emotion.candidates`, `routing.candidates`, `guardrail.checks[].p`, `knowledge.retrieved[].score` = rerank p). Every call appears in `TurnTrace.calls[]` and the ledger (`category: decision`, `purpose`).
 - **Thresholds** are config per purpose, tuned at the AI stage on labelled data. `confidence` measures how peaked the distribution is, not accuracy.
