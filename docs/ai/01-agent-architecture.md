@@ -320,7 +320,8 @@ emotion, and the hits it kept. The reply engine never queries storage (D-92 hold
   - watch: the last message.
 
   Doc 10 K4 sets the query: in 1:1 and group, DeepSeek rewrites the message with the character's prompt when it
-  isn't standalone or isn't in English; doc 10 K2 adds Python metadata filters.
+  isn't standalone or isn't in English. Doc 10 K2: the search is scoped to the world and the speaking character
+  only; nothing is inferred from the message.
 
 **Speed and cost (rough estimates from Malaysia; check 3 measures the real numbers):**
 
