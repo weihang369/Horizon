@@ -576,8 +576,9 @@ only), and Jev nouls are already the house judge (doc 02 B4).
 
 - **Task 12:** the "original character" rule and the adult-appearance clause in the image templates; refused image
   and song prompts. **Resolved by doc 12.**
-- **Task 13:** the `input`, `care` and `output` checks in Insight's System 1 section (they already show in the
-  Guardrail section); OQ-AI-08 marked resolved.
+- ~~**Task 13:** the `input`, `care` and `output` checks in Insight's System 1 section (they already show in the
+  Guardrail section); OQ-AI-08 marked resolved.~~ Resolved by [doc 13](13-wrap-up.md): W1 (`turn_plan` and `guardrail` rows with
+  their thresholds) and §4 (OQ-AI-08).
 - **v2 backlog:** a mature rating with an age gate; a "no training" switch in Settings (S8).
 
 ## Sources

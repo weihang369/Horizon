@@ -623,10 +623,12 @@ this task's discussion.
   prompt-injection path ("notes, not instructions" is only a start); sensitive categories beyond M3's never-store list
   (health facts stay, by the user's decision); a user trying to plant memories in a character. (`about_user` facts
   are copied to every character present, so Forget is per character; "Forget everywhere" is in the v2 backlog §2.)
-- **Task 13:** how pause runs and their Jev decisions show in Insight's System 1 section; Memory tab pagination; a
-  memory whose source session was deleted keeps a dangling "View source".
+- ~~**Task 13:** how pause runs and their Jev decisions show in Insight's System 1 section; Memory tab pagination; a
+  memory whose source session was deleted keeps a dangling "View source".~~ Resolved by [doc 13](13-wrap-up.md): pause runs are
+  not part of a turn, so they show in Settings → Cost and `ai_calls`, not System 1 (W1); pagination and "View
+  source" in W8.
 - Not in v1 (D-71): editing, pinning or adding memories; reflections that merge memories into higher-level ones; facts
-  shared by every character in a world. Added to [docs/v2](../v2/README.md) at task 13 if the user wants them.
+  shared by every character in a world. Not added to [docs/v2](../v2/README.md) unless the user asks ([doc 13](13-wrap-up.md) W9).
 
 ## Sources
 

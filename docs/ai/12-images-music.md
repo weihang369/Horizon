@@ -348,9 +348,10 @@ doing only once there are real seed portraits, which is a v2 question.
 
 ## 6. Left for later tasks
 
-- **Task 13:** the new Jev questions in the Jev map; OQ-AI-09/10/11 marked resolved (09 by D-61, 10 by D-61 + I6,
+- ~~**Task 13:** the new Jev questions in the Jev map; OQ-AI-09/10/11 marked resolved (09 by D-61, 10 by D-61 + I6,
   11 by D-87 + I2–I4 + I8); the "Doesn't look like them" button, which sends a sentence nothing reads (wire it into
-  `emotion_edit` behind I3's check, or drop it). The checks run at job start and in creation jobs, not in sessions, so
+  `emotion_edit` behind I3's check, or drop it).~~ Resolved by [doc 13](13-wrap-up.md): W5 (the map), §4 (the OQs), W3 (the
+  button adds one fixed identity line; the hint's text never enters the prompt, so no I3 check is needed). The checks run at job start and in creation jobs, not in sessions, so
   Insight's System 1 section doesn't show them.
 - **v2 backlog (§6):** style reference images for a cast-wide look.
 - **Launch checklist:** I8's terms.

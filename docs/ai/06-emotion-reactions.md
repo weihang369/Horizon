@@ -418,7 +418,7 @@ trusted):
 | Speaker emotion (E1) | inside Jev call 1, every AUTO or MANUAL turn | ~300 tokens per candidate: ≈ $0.00001 (1:1) to ≈ $0.00007 (5 candidates), more if Jev bills the state per question (doc 01 check 4). Doc 05 X9's $0.00003–0.00008 covers the state only | none extra: same request; the face shows with the first word |
 | Mood line (E4) | every AUTO reply that isn't neutral | ≈ $0.000005 | none |
 | Reactions (E5) | after each character message in group, debate, watch | ≈ $0.00007 with 4 listeners | after `turn.end`; never delays the next speaker |
-| Face-and-words check (E7) | evaluation only, until task 13's System 1 section | — | — |
+| Face-and-words check (E7) | live from M9: after `turn.end`, non-neutral AUTO faces ([doc 13](13-wrap-up.md) W2) | none: after `turn.end` | ≈ $0.00002 per checked reply |
 
 ## 5. Checks before this is locked
 
@@ -455,8 +455,10 @@ Insight rule is display only.
 - ~~Debate's member choice and the verdict (task 8)~~ resolved by doc 08 V2 and V7–V9; E5's debate `side` label is the only debate input here.
 - ~~The quoted-content wording in the emotion and reaction states (task 11).~~ Resolved by doc 11 S6 (`quoted_*`
   fields).
-- The System 1 Insight section, with the live face-and-words check and the derived seeds (task 13).
-- Whether post-turn spend (reactions, the summary) shows in the session's cost HUD (task 13's pricing review).
+- ~~The System 1 Insight section, with the live face-and-words check and the derived seeds (task 13).~~ Resolved by
+  [doc 13](13-wrap-up.md) W1 (the section and `system1.seed`) and W2 (the live check).
+- ~~Whether post-turn spend (reactions, the summary) shows in the session's cost HUD (task 13's pricing review).~~
+  Resolved by [doc 13](13-wrap-up.md) W7: the counter stays reply spend; its tooltip points to Settings → Cost.
 
 ## Sources
 

@@ -526,8 +526,8 @@ None of the backend rows changes the HTTP contract unless marked.
 | Debate: Jev picks the member among those who haven't spoken in the phase; openings stay fixed; the trace uses existing `routing` fields (doc 08 V2), so **no contract change** | backend | A14 | 8 |
 | `DebateHost.narration()` returns a fixed string; it becomes async and calls DeepSeek, shown whole, not streamed (doc 08 V6) | backend | A7 | 8 |
 | ~~Watch **"the talk is finished"** needs an outcome~~ **Withdrawn by doc 07 G7:** a finished thread steers the next line somewhere new; no early end, so no contract change | backend | A4 | 7 |
-| **A "System 1" section in `TurnTrace`, and its Insight UI** (**approved in principle by the user, 2026-10-09**; its fields and UI are designed at task 13, once tasks 7–11 have added their Jev questions; the live face-and-words check turns on with it, doc 06 E7) | **contract + UI** | A12 | 13 |
-| **Docs to amend:** a new decision-log entry replacing D-97's rule; resolve OQ-AI-07 (Jev first, the tag as fallback); note in D-92 that the planner is a runtime-called port; update the 05-ai-seams §3 purpose table and §2.2 port catalogue | docs | all | 13 |
+| **A "System 1" section in `TurnTrace`, and its Insight UI** (**approved in principle by the user, 2026-10-09**; its fields and UI are designed at task 13, once tasks 7–11 have added their Jev questions; the live face-and-words check turns on with it, doc 06 E7). **Designed in [doc 13](13-wrap-up.md) W1 (contract rev 1.4, built in M7) and W2** | **contract + UI** | A12 | 13 |
+| **Docs to amend:** a new decision-log entry replacing D-97's rule; resolve OQ-AI-07 (Jev first, the tag as fallback); note in D-92 that the planner is a runtime-called port; update the 05-ai-seams §3 purpose table and §2.2 port catalogue. **Applied with [doc 13](13-wrap-up.md) (§4; D-97 → D-100)** | docs | all | 13 |
 
 ## 9. Left for later tasks
 

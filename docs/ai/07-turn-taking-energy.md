@@ -296,7 +296,7 @@ Doc 04 left "when a character should address another character" to this task.
 - **`t_end` keeps doc 02 B5's rule** (the lowest threshold with precision ≥ 90 %): a false "yes" means an abrupt
   change of topic, which viewers notice.
 - **In Insight:** the steer sentence shows in the context X-ray's cue (G3). The noul's probability joins the System 1
-  section when task 13 designs it.
+  section ([doc 13](13-wrap-up.md) W1).
 
 **Rejected:**
 - **ending the episode early:** needs a new paused reason (a contract change) and cuts scenes the user set a length
@@ -487,7 +487,9 @@ None changes the HTTP contract or a requirement.
 
 - ~~A debate side whose members are all exhausted (task 8, OQ-AI-17).~~ Resolved by doc 08 V5.
 - ~~The debate member choice and its turn cue (task 8, doc 01 A14).~~ Resolved by doc 08 V2 and V4.
-- How the "talk finished" probability and the follow plan's candidates show in Insight's System 1 section (task 13).
+- ~~How the "talk finished" probability and the follow plan's candidates show in Insight's System 1 section (task
+  13).~~ Resolved by [doc 13](13-wrap-up.md) W1: `turn_plan` and `follow_plan` rows; a follow plan that picked nobody goes on the
+  previous reply's trace.
 - Whether a group may run longer exchanges between characters without the user (beyond 2 replies per message): not
   in v1; MULTI-03 caps Auto at 2, and Next speaker already lets the user ask for more.
 

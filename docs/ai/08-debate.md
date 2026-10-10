@@ -559,8 +559,9 @@ None changes the HTTP contract or a requirement.
 
 ## 7. Left for later tasks
 
-- How the member choice, the verdict's Jev probabilities and the host's fallbacks show in Insight's System 1 section
-  (task 13).
+- ~~How the member choice, the verdict's Jev probabilities and the host's fallbacks show in Insight's System 1
+  section (task 13).~~ Resolved by [doc 13](13-wrap-up.md) W1: the member choice is a `debate_plan` row; the rubric scores stay
+  on the verdict screen; host lines are not character messages, so they have no Insight (INS-01 AC5).
 - ~~Retrieval in debate turns (task 10).~~ Resolved by doc 10 K4 and K7: the motion plus the last opposing argument,
   never rewritten; the gate decides per member; k = 2; never abstains.
 - ~~What a debater says when a motion is unsafe, and checking the motion itself: task 11.~~ Resolved by doc 11 S3:

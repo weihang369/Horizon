@@ -4,6 +4,8 @@
 
 **Loop:** `openspec propose` (from this pack) → review → `openspec apply` → tests green → `openspec archive` → squash merge to `dev`. **One branch per milestone:** `feat/<change-name>` (e.g. `feat/backend-foundation`), cut from `dev` and squash-merged back after its change is archived.
 
+**AI stage:** milestones M7–M15, one OpenSpec change each, are planned in [docs/ai/13](../ai/13-wrap-up.md) W4.
+
 **Each milestone ships the HttpClient methods for its own routes**, so the app runs against the backend from M1b onwards. M6 only closes parity and E2E.
 
 ## M1a: `contract-rev-1-3` (frontend only)

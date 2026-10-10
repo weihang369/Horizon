@@ -197,7 +197,7 @@ generation_tasks id PK (task_…), job_id FK→generation_jobs (CASCADE), ord IN
      - a task with **`provider_called_at` set but no `result_ref` becomes `failed` (retryable)**.
 
      Only an explicit user Retry pays again.
-- **Internal job kinds** reuse these tables and are never exposed as `GenerationJob` on the wire: `knowledge_index`, `knowledge_reindex`, `seed_embed`, and later `memory_consolidate`.
+- **Internal job kinds** reuse these tables and are never exposed as `GenerationJob` on the wire: `knowledge_index`, `knowledge_reindex`, `seed_embed`. (`memory_consolidate` was dropped at the AI stage: nothing is merged or deleted automatically, [docs/ai/09](../ai/09-memory.md) M5.)
 
 ### 3.6 Ledger
 
@@ -234,7 +234,7 @@ memory_vec__{space}  vec0(rid INTEGER PRIMARY KEY, character_id TEXT PARTITION K
                           embedding FLOAT[{dims}] distance_metric=cosine)
 ```
 
-- **Writes go through one backend API.** `MemoryStore.apply(character_id, world_id, ops: list[MemoryOp])` applies `Insert | Supersede | Reinforce | Touch` (doc 05 §2) in **one transaction**, covering the row, FTS and vectors. The embeddings are computed *before* the writer lock is taken (with a key only; without one the items are FTS-only). The whole batch is validated first: kinds, text, importance in [0, 1], every referenced ID belonging to this character in this world, and every memory a `Supersede` replaces still being current, so two writers can't both replace one memory. A per-character lock serialises `apply`, and the post-turn queue calls the `MemoryWriter` after each complete, unblocked reply (`[]` in both profiles until the AI stage).
+- **Writes go through one backend API.** `MemoryStore.apply(character_id, world_id, ops: list[MemoryOp])` applies `Insert | Supersede | Reinforce | Touch` (doc 05 §2) in **one transaction**, covering the row, FTS and vectors. The embeddings are computed *before* the writer lock is taken (with a key only; without one the items are FTS-only). The whole batch is validated first: kinds, text, importance in [0, 1], every referenced ID belonging to this character in this world, and every memory a `Supersede` replaces still being current, so two writers can't both replace one memory. A per-character lock serialises `apply`, and the post-turn queue calls the `MemoryWriter` after each complete, unblocked reply (`[]` in both profiles until the AI stage). *AI stage: memories are written at session pauses, not per reply: one `memory_run` per pause applies every character's ops and the session's checkpoint in one transaction ([docs/ai/09](../ai/09-memory.md) M1, M6).*
 - **Forget** (`DELETE /memory/{id}`, 404 if unknown; `services/memory/forget.py`), in one transaction:
   1. Collect the chain: every version the item superseded and every version that superseded it (to a fixpoint).
   2. Zero their vectors in every non-retired space, then delete the items (FTS and vec rows go by trigger), and their `trace_memory_refs`.

@@ -623,7 +623,8 @@ the conversation's language.
   - the citation check is evaluation only;
   - listener reactions and the rolling summary still run after `turn.end`.
 - **Later:** task 13 may add the citation check to the System 1 section as a flag. It never removes a chip, because
-  that would need `turn.end` to carry corrected text (a contract change).
+  that would need `turn.end` to carry corrected text (a contract change). **[doc 13](13-wrap-up.md) W2 kept it evaluation-only
+  (the user's choice).**
 
 **Why:**
 - Citations can only point at pieces that code put in the block (K8), and Jev scored those pieces as answering or
@@ -823,10 +824,10 @@ None changes the HTTP contract. The requirement-level doc edits are in the statu
   - documents with personal data;
   - content rating;
   - an injected instruction surviving into a rewrite (it can't change the scope, K2, and K4 checks its shape).
-- **Task 13**, the System 1 section:
-  - the standalone and English answers;
-  - the outcome and Jev call 2's scores;
-  - the citation check as a flag (K10).
+- ~~**Task 13**, the System 1 section~~ (resolved by [doc 13](13-wrap-up.md) W1, W2):
+  - the standalone and English answers: `turn_plan` rows;
+  - the outcome and Jev call 2's scores: `deep_check` rows;
+  - the citation check as a flag (K10): not live; evaluation only.
 - **v2 backlog:**
   - CJK keyword search (§3);
   - an LLM-written context line per piece, if the header falls short (K1);
