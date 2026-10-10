@@ -33,7 +33,7 @@
 >     - The v1.1 row of the scope table ([01-vision-and-scope](../requirements/01-vision-and-scope.md)) moves the
 >       Knowledge tab and per-character RAG into v1.
 >     - The Knowledge tab's "Preview: final design by AI team" ribbon is removed.
->   - **Following from the user's decisions, to confirm:**
+>   - **Following from the user's decisions, confirmed by the user (2026-10-10, by explicit choice):**
 >     - **D-65's "parent sections + child chunks (children indexed and cited, parents read by the LLM)"** becomes
 >       "pieces indexed, cited and read by the LLM; sections kept only for the `naive` yardstick". This follows from
 >       the user's "no parent–child" (K1).
