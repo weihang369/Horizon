@@ -118,6 +118,7 @@ dynamic tail (per turn)  <- retrieval block (with the deep length override, C4) 
 **Decision:** system message 1 holds four blocks, in this order:
 1. **Who you are:** the card (P3).
 2. **Your world and the user:** the world name; the You card; the character's `relationshipToUser`.
+   Then, when the character has memories, **What you remember** (doc 09 M8): its memory list, ≤ 1,000 tokens.
 3. **This session:** the mode block (P5), including the mode's length line (C4).
 4. **How to reply:** the rules (P6).
 
@@ -126,7 +127,8 @@ dynamic tail (per turn)  <- retrieval block (with the deep length override, C4) 
 - Per-turn content stays in the **dynamic tail**, in this order: the retrieval block (D-93), which on a deep turn
   ends with the deep length override (C4: "For this reply only: 2–4 short messages, about 120 words, instead"); the
   mood line (doc 01 A5, worded in doc 06 E4); the repeat hint (P8, off by default); then the turn cue.
-- Nothing in system message 1 may change during a session. The cast's current faces, energy and muted state are
+- Nothing in system message 1 may change during a session, except the memory list when the user forgets one of its
+  lines or a pause run commits for that character while the session is live (doc 09 M8; one cache miss each). The cast's current faces, energy and muted state are
   **not** in it.
 - Format: short `#` headings and plain lines, written to the character in the second person ("You are …"). It is
   about 600–900 tokens for a seed character (check 1 measures it).
@@ -355,8 +357,8 @@ should almost never hit, and a stale face for one turn is harmless.
   `test_core.py` ("the greeting has already spent more than this cap").
 - **Later sessions** generate the greeting: the `agent` compiler's greeting cue gains "Don't reuse your usual
   greeting: '<stored greeting>'." The scripted profile keeps its simulated, billed greeting (D-81) for later sessions.
-  Doc 09 M9 adds "last time we talked about …": the core memory block, up to 2 memories from the last session, and
-  one cue sentence.
+  Doc 09 M10 adds "last time we talked about …": the memory list is already in system message 1; the tail adds up to
+  2 of the newest memories from the last 1:1 session, and the cue one sentence.
 
 **Why:** the user approved this exact line in the wizard, it costs nothing, and the first chat opens about 1–2 s
 faster. A generated greeting afterwards avoids the same line every time.
@@ -480,5 +482,5 @@ the drafter's `world` argument are internal.
 - ~~Group and watch turn-taking, including when a character should stay quiet or address another character (task 7).~~
   Resolved by doc 07 (G1–G7; the turn cue's sentence is G3).
 - ~~Debate argument, host and verdict prompts (task 8).~~ Resolved by doc 08 V4, V6 and V8.
-- ~~"Last time we talked about …" greetings and memory in the prompt (task 9).~~ Resolved by doc 09 M8 and M9.
+- ~~"Last time we talked about …" greetings and memory in the prompt (task 9).~~ Resolved by doc 09 M8 and M10.
 - The content-rating, advisory and "are you an AI?" wording (task 11).

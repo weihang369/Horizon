@@ -166,7 +166,7 @@ The table lives in the seed-build source `frontend/scripts/seed-build/runtime.co
 | `verdict` | Debate verdict prose, `max_tokens` 1,200 | off | 0.7 | JSON | task 8 (doc 08 V8) |
 | `summary` | Rolling summary | off | 0.7 | text | task 5 (doc 05 X3) |
 | `episode` | Watch's "Summarise" recap, `max_tokens` 400 | off | 0.7 | text | task 7 (doc 07 G10) |
-| `memory` | Memory extraction at a session pause, `max_tokens` 1,500 | off | 0.7 | JSON | task 9 (doc 09 M3) |
+| `memory` | Memory rewrite at a session pause, `max_tokens` 300 × characters present + 200 (≤ 3,000) | off | 0.7 | JSON | task 9 (doc 09 M3) |
 | `profile` | Profile draft, regenerate one field | off | 1.0 | JSON | naive today |
 | `probe` | Settings → Test, 1 token | off | none | text | today |
 

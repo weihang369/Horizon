@@ -132,7 +132,7 @@ flowchart LR
 
 | Layer | What it measures | Main numbers |
 |---|---|---|
-| **1. System 1 decisions** | Each Jev question alone: who speaks, needs documents, needs memories, emotion, input safe, talk finished, debate member, passage score; later, memory importance and the rubric | **Policy accuracy** (Jev above the floor, the fallback below it), a **calibration table**, and **order bias** (B6) |
+| **1. System 1 decisions** | Each Jev question alone: who speaks, needs documents, needs earlier lines, emotion, input safe, talk finished, debate member, passage score; later, memory importance and the rubric | **Policy accuracy** (Jev above the floor, the fallback below it), a **calibration table**, and **order bias** (B6) |
 | **2. Retrieval** | The deep path without the reply: keyword search, vector search, RRF, then Jev call 2 and the keep-or-abstain rule | Recall@pool, Recall@5 and MRR, precision and recall of the kept set, and abstain accuracy (B2) |
 | **3. Conversations** | Replies in all four modes, `agent` against `naive`, **from the same history** (B3) | The Jev judge (B4), **cost per turn by purpose**, fallback rate, deep rate, abstain rate |
 | **Latency suite** | NFR-01, NFR-02 and NFR-29, from Malaysia | p50 and p90 with intervals, and a per-stage breakdown (B8) |
@@ -178,7 +178,7 @@ frozen transcripts start from a long committed history.
 
   | Set | Size | Why this size |
   |---|---|---|
-  | Layer 1: each **noul that sets a threshold** (needs documents, needs memories (beyond the core block, doc 09 M8), talk finished) | **~120 items, at least 60 of them "yes"** | A recall target is judged on 60+ positives. With 50, 45 right still leaves 79–96 %. |
+  | Layer 1: each **noul that sets a threshold** (needs documents, needs earlier lines (in-session recall, doc 09 M9), talk finished, the memory rewrite guard and in-session relevance (doc 09 M12)) | **~120 items, at least 60 of them "yes"** | A recall target is judged on 60+ positives. With 50, 45 right still leaves 79–96 %. |
   | Layer 1: **passage score** | **~100 items** | It sets the floor every deep turn depends on |
   | Layer 1: **who speaks** (doc 07 G11) | **~210 items**: group first slot 60, group second slot 90 (about 65 % with `none` right), watch next speaker 60 (≥ 3 awake characters each) | They set the floors every group and watch turn depends on; each test split has at least 20 items |
   | Layer 1: **emotion** (doc 06 E8) | **~100 items**; 20–30 % where keeping the face is acceptable | The face shows on every turn of every mode; the cap stops "always keep" from carrying the score |
@@ -193,8 +193,8 @@ frozen transcripts start from a long committed history.
   | Long suite (doc 05 X10) | **3 runs** past two drops, 15 late fact probes | A signal for recall and drift, not a test; reported with intervals |
   | Layer 3: free-running conversations | **4**, one per mode, **plus 3 watch runs of 30 turns and 3 group runs of 12 user messages, `agent` only** (doc 07 G11), **and 2 `agent` debates** (doc 08 V11) | What only a live run shows (B3); the extra runs give the group and watch signals enough turns |
   | Debate suite (doc 08 V11) | **12 debates × 2** (balanced, planted weak side), split 4 dev / 8 test by debate, each also with the side blocks swapped; 10 verdict proses; 10 host bridges | A gross-failure check on the verdict, each failure read; the planted side gives a known winner; the margin is tuned on dev only |
-  | Layer 1: **memory importance, compare and relevance** (doc 09 M11) | **100 candidates** (≥ 30 to drop), **120 pairs** (40 per option), **80 items** (40 relevant) | They set the keep-or-drop cut, the compare floor (a wrong "replaces" hides a true memory) and `t_memory` |
-  | Memory suite (doc 09 M11) | **24 stretches** (1:1 × 8, group × 8, watch × 4, debate × 4), split 12 dev / 12 test, with labelled expected memories, 6 planted secrets and 6 small-talk stretches; **10 two-session pairs** on both profiles | Extraction coverage and faithfulness, no secrets stored, and recall and over-mentioning across a real pause |
+  | Layer 1: **memory importance** (doc 09 M12) | **100 lines** (≥ 30 to drop) | It sets the keep-or-drop cut and the badge |
+  | Memory suite (doc 09 M12) | **24 rewrite stretches** (1:1 × 8, group × 8, watch × 4, debate × 4), split 12 dev / 12 test, each with an existing list holding planted changes and confirmations, plus 6 planted secrets and 6 small-talk stretches; **60 in-session recall probes**; **20 two-session pairs**, both writers with the `agent`'s recall | Rewrite coverage, faithfulness and lost facts; no secrets stored; hybrid recall against its ablations; recall and over-mentioning across a real pause |
   | Judge checks (B4) | **60 per judge question** (30 real + 30 planted failures), **30 pairs** for the pairwise judge | Planted failures have known answers, so they cost no labelling |
 
 - **Every layer 1 and layer 2 set is split once, when it is created: 2/3 dev and 1/3 test.**
@@ -291,8 +291,8 @@ frozen transcripts start from a long committed history.
   | **Face and words agree** | a choice from the 7 emotions, given only the reply text (the post-turn emotion check; evaluation only until the System 1 section, doc 06 E7). On non-neutral faces only: exact match (compared by doc 06's mood-line on/off run) and clashes ≤ 5 % | the reply |
   | **Names the feeling** (doc 06 E8) | 1 noul: the reply states the character's own feeling outright (a pass is "no"); ≥ 95 % pass on replies with a mood line; its validation allows at most 1 false alarm on the 30 clean replies | the reply |
   | **Debate quality** (doc 08 V11) | 2 nouls per argument: keeps its side · engages (answers a specific point the other side made; rebuttals and closings only). Targets for `agent`: keeps its side ≥ 95 %, engages ≥ 80 %, both next to `naive` | the motion, the side, the previous opposing argument + the argument |
-  | **Memory extraction** (doc 09 M11) | 2 nouls: an expected memory is covered by a written one (≥ 80 %) · a written memory is supported by the transcript (≥ 95 %) | the stretch + one memory |
-  | **Over-mention** (doc 09 M11) | 1 noul: the reply drags up a memory that doesn't fit the moment (a pass is "no"); ≤ 10 % on unrelated turns | the memory block + the last user line + the reply |
+  | **Memory rewrite** (doc 09 M12) | 3 nouls: an expected change is covered (≥ 80 %) · a written line is supported by the transcript (≥ 95 %) · a rewrite lost a still-true fact (≤ 5 %) | the stretch (or the old and new line) + one line |
+  | **Over-mention** (doc 09 M12) | 1 noul: the reply drags up a memory that doesn't fit the moment (a pass is "no"); ≤ 10 % on unrelated turns | the memory block + the last user line + the reply |
   | **Safety** | a red-team set (task 11) | — |
 
 - **Pairwise numbers:**
@@ -348,7 +348,7 @@ the largest Jev item, so judge results are cached (B7).
   |---|---|---|
   | needs documents | **`t_gate`** (go deep) | the **highest** threshold with **recall ≥ 90 %**; the deep rate on items that don't need documents is reported next to it |
   | needs documents | **`t_confident`** (abstaining allowed, A6) | the **lowest** threshold with **precision ≥ 95 %**; always ≥ `t_gate` |
-  | needs memories | `t_gate` | the highest threshold with **recall ≥ 85 %** |
+  | needs earlier lines (doc 09 M9) | `t_gate` | the highest threshold with **recall ≥ 85 %** |
   | talk finished | `t_end` | the lowest threshold with **precision ≥ 90 %**; its recall is reported, and a recall under 50 % means the question is rewritten |
   | input safe | — | task 11 |
 
@@ -448,14 +448,14 @@ with itself only about 64 % of the time, so that rule mixes up ordinary noise wi
 
   | Suite | Main calls | Estimate |
   |---|---|---|
-  | decisions | ~2,400 Jev requests (choice items in both orders, including doc 06's emotion and reaction sets, doc 07's who-speaks parts, doc 08's debate member set and doc 09's memory sets), ~1 k tokens each (debate items ~3 k) | ≈ $0.11 |
+  | decisions | ~2,560 Jev requests (choice items in both orders, including doc 06's emotion and reaction sets, doc 07's who-speaks parts, doc 08's debate member set and doc 09's memory sets), ~1 k tokens each (debate items ~3 k) | ≈ $0.12 |
   | retrieval | re-indexing and corpus embedding (< $0.01), then 140 questions × ~15 passage scores | ≈ $0.05 |
   | conversations | 200 turns × 2 profiles + 4 free runs on DeepSeek, Jev planning, and judging (≈ $0.13); doc 04's reply-rule checks and three 1:1 free runs (≈ $0.03); doc 07's 6 `agent` group and watch runs (≈ $0.03); doc 08's 2 `agent` debates (≈ $0.03) | ≈ $0.44 |
   | drafter (doc 04) | 20 drafts + 40 Jev checks | ≈ $0.025 |
   | summary (doc 05, doc 07) | 40 summary calls + 10 episode recaps + about 310 Jev checks | ≈ $0.08 |
   | debate (doc 08) | 48 Jev rubric requests (balanced, planted, side-swapped), 48 `naive` verdicts, 10 proses, 10 host bridges, their Jev checks; once, ≈ $0.09 to generate the debates and plants | ≈ $0.10 |
-  | memory (doc 09) | 24 extractions (shared by both profiles and cached), 10 two-session pairs × 2 profiles, their Jev importance, compare and judge requests | ≈ $0.10 |
-  | **all** | | **≈ $0.91 (about RM 4.0)**; ≈ $1.35 at peak; **≈ $0.62 once the `naive` replies and verdicts are cached** |
+  | memory (doc 09) | 24 rewrite calls (shared by both writers and cached), 60 in-session recall probes, 20 two-session pairs × 2 writers, their Jev importance, guard and judge requests | ≈ $0.15 |
+  | **all** | | **≈ $0.97 (about RM 4.3)**; ≈ $1.47 at peak; **≈ $0.67 once the `naive` replies and verdicts are cached** |
   | latency (rare) | 300 turns, each stopped at the first word (B8) | ≈ $0.08 |
   | long (rare, doc 05) | three agent-only runs of about 75 turns or rounds | ≈ $0.12 |
   | smoke (usual) | the changed suite + 4 free runs | ≈ $0.05–0.15 |
@@ -684,7 +684,7 @@ section.
 ## 8. Left for later tasks
 
 - ~~The debate rubric and its judge questions (task 8).~~ Resolved by doc 08 V7 and V11.
-- ~~The memory retrieval set and the memory-importance labels (task 9).~~ Resolved by doc 09 M11.
+- ~~The memory retrieval set and the memory-importance labels (task 9).~~ Resolved by doc 09 M12.
 - The final embedding model and its dimensions. The retrieval suite is the comparison test that decides them (task 10).
 - How many passages Jev call 2 scores, and k. Until task 10 sets k, "@5" is a placeholder (task 10).
 - The red-team set and the input-safe threshold (task 11).

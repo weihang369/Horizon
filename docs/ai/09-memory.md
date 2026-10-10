@@ -2,12 +2,13 @@
 
 > **Status: agreed with the user, 2026-10-10** (AI stage, task 9 of 13).
 > - It resolves **OQ-AI-01** (memory architecture) as the BA's option B, built in our own code: memories in SQLite
->   with keyword and vector search (already built in M5), written by a LangGraph graph whose decisions are Jev's.
+>   (already built in M5), rewritten at session pauses by a LangGraph graph with DeepSeek writing and Jev guarding.
 >   It also settles what earlier docs left here: **the memory policy** (doc 01 §9), **the memory graph and whether it
->   needs `graph.db`** (doc 01 A7, A9), **the memory-extraction prompt and schema** (doc 03 §7), **"last time we
->   talked about…" greetings and memory in the prompt** (doc 04 §7), **points of view across sessions** (doc 05 §7)
->   and **the memory sets and labels** (doc 02 §8).
-> - Decisions are numbered **M1–M12**, each with the alternatives we rejected.
+>   needs `graph.db`** (doc 01 A7, A9), **the memory prompt and schema** (doc 03 §7), **"last time we talked about…"
+>   greetings and memory in the prompt** (doc 04 §7), **points of view across sessions** (doc 05 §7) and **the memory
+>   sets and labels** (doc 02 §8).
+> - Decisions are numbered **M1–M13**, each with the alternatives we rejected. **Revised after an independent review
+>   and two user decisions made during it** (28 findings, all checked against the code and addressed).
 > - It builds on [01-agent-architecture](01-agent-architecture.md) (A1–A14),
 >   [02-evaluation-observability](02-evaluation-observability.md) (B1–B12),
 >   [03-llm-parameters](03-llm-parameters.md) (C1–C9),
@@ -15,29 +16,40 @@
 >   [05-context-engineering](05-context-engineering.md) (X1–X10),
 >   [06-emotion-reactions](06-emotion-reactions.md) (E1–E9),
 >   [07-turn-taking-energy](07-turn-taking-energy.md) (G1–G13) and [08-debate](08-debate.md) (V1–V12).
-> - **No contract change and no requirement change.** `MemoryItem` keeps its shape and its four kinds; Insight's
->   `memory.recalled` and the ledger's `memory` category already exist. The changes are backend-only (two session
->   columns, a new port signature, the runtime triggers) plus removing the Memory tab's "Preview" ribbon.
+> - **No contract change.** `MemoryItem` keeps its shape and its four kinds; Insight's `memory.recalled` and
+>   `contextInSession` already exist in `TurnTrace`, and so does the ledger's `memory` category.
+> - **Three requirement-level doc edits, approved by the user in this task's discussion:** a one-line note on
+>   **NFR-35** (memory frozen for a sitting sits in the cached prefix, M8); dropping `MemoryItem`'s "PROVISIONAL"
+>   label and the Memory tab's "Preview" ribbon (the shape is final); and extending **D-97** so the query is also
+>   embedded when the in-session recall gate says yes (M9; doc 01 already plans to replace D-97's rule). Everything
+>   else is backend-only.
 
 ## 1. The question
 
-The rolling summary and the history window (doc 05) already carry what was said **inside** one session. Long-term
-memory is what a character carries **into the next one**: that Kai quit coffee, that Hana sold his bouquet to a
-nervous proposer, that Mei lost last week's debate on four-day weeks. Task 9 decides **when memories are written,
-who forms them, how they stay tidy, how they reach a reply, and how all of it is measured**, within D-71 (every mode,
+The rolling summary and the history window (doc 05) carry what was said **inside** one session. Long-term memory is
+what a character carries **into the next one**: that Kai quit coffee, that Hana sold his bouquet to a nervous
+proposer, that Mei lost last week's debate on four-day weeks. Task 9 decides **when memories are written, who forms
+them, how they change over time, how they reach a reply, and how all of it is measured**, within D-71 (every mode,
 each character's own point of view; the user can only view and forget).
 
 **The user's decisions (2026-10-10):**
 - **Memories are written only when a session pauses, not during the chat** (M1). The user's reasoning: inside a
   session the prompt already holds the history, word for word or summarised, so a memory written mid-chat pays for
-  something nobody can use yet. It is about 4× cheaper and sees each sitting whole. Three additions make it safe:
-  a pause also covers 1:1 and group sessions that never "finish"; opening a new session with the same character runs
-  the old one's pending part first; a sweep at start-up catches a crash.
+  something nobody can use yet. It costs about a quarter and sees each sitting whole. Fixes: a pause that also
+  covers 1:1 and group chats that never "finish"; a session opening with the same character runs the other's pending
+  part first; a start-up sweep catches a crash.
 - **Everyone present forms memories, each from their own point of view, in one call** (M3), as D-71 asks.
-- **Recall is a small core block on every reply plus a search when Jev says the reply needs memories** (M8).
-- **Memory stays tidy because Jev compares each new memory with its nearest old ones when it is written** (M5):
-  same → reinforce, replaces → supersede, otherwise insert. No background job, no automatic deletion: only the user
-  forgets.
+- **Memory is a list whose items get rewritten, not a pile of new items** (M3, M5): at each pause DeepSeek sees each
+  character's current memories and the new messages, and keeps, confirms, rewrites or adds lines; Jev scores
+  importance and guards every rewrite so no fact is lost; nothing is ever deleted except by the user. (This replaced
+  the first version's "Jev compares each new memory with its nearest ones", by the user's choice during the review.)
+- **Each character's long-term memories go in their system prompt** (≈ 1,000 tokens, ~30 memories), frozen for a
+  sitting so they are cached (M8).
+- **Search covers only this session's older messages, and it is hybrid:** dense embedding + BM25, fused by RRF, then
+  MMR (M9). (Proposed by the user during the review; it replaced the first version's "top 5 in the tail plus a
+  search over long-term memories".)
+- Standing rule (doc 07 G2): **if Jev proves slow, Jev stays**; deadlines follow the measured latency and the result is
+  reported.
 
 ## 2. What Horizon already has
 
@@ -49,377 +61,488 @@ From the code:
    ([02-storage §3.7](../backend/02-storage.md)). `MemoryStore.apply(character_id, world_id, ops)`
    ([store.py](../../backend/horizon/services/memory/store.py)) applies `Insert | Supersede | Reinforce | Touch` in
    one transaction under a per-character lock, validates the whole batch (a `Supersede` of a memory that is no longer
-   current fails), and embeds new texts before taking the writer lock. Forget
+   current fails) and embeds new texts before taking the writer lock; `Reinforce` sets only `importance`. Forget
    ([forget.py](../../backend/horizon/services/memory/forget.py)) removes the memory's whole supersede chain
    (`chain_of`), zeroes its vectors, scrubs its text from traces and insight events, and truncates the WAL (D-94).
 2. **Nothing is ever remembered today.** The post-turn queue (`_remember` in
    [turn.py](../../backend/horizon/sessions/turn.py)) calls `MemoryWriter.after_turn` after every complete reply, for
-   the **speaker only**, as a task in the **actor's** background set. Both profiles use `NoMemoryWriter`
-   ([scripted/ports.py](../../backend/horizon/ai/scripted/ports.py)), which returns `[]`. The only memories are the 5
-   seed ones ([06-seed-data §5](../requirements/06-seed-data.md)).
+   the **speaker only**, as a task in the actor's background set. Both profiles use `NoMemoryWriter`
+   ([scripted/ports.py](../../backend/horizon/ai/scripted/ports.py)), which returns `[]`; and **with no key**, even
+   `naive` resolves every keyed port to `scripted` ([profile.py](../../backend/horizon/ai/profile.py) `choose`). The only
+   memories are the 5 seed ones ([seed/memory](../../seed/memory)).
 3. **Recall is minimal.** `ScriptedMemoryRetriever` returns the 3 newest memories; `NaiveMemoryRetriever` the top 3
-   FTS matches for the turn's query text ([retrieval.py](../../backend/horizon/ai/retrieval.py)); the naive prompt shows them as
-   "Things you remember about this world…". `ScopedIndex` has `memory_fts` and `memory_recent` but **no vector search
-   over memories**, although `MemoryStore` writes the vectors. Importance, recency and `source_mode` are never used.
-   `Touch` exists but nothing calls it.
-4. **Regenerate ignores memory** (finding). A regenerate streams a new variant into the same message; any memory taken
-   from the old variant would stay. No live bug today, since nothing is written.
-5. **Real "session finished" signals already exist** in [lifecycle.py](../../backend/horizon/sessions/lifecycle.py):
-   - `leave`, which the client sends when it leaves an active session screen
-     ([sessionRuntime.ts](../../frontend/src/client/sessionRuntime.ts)), pausing it with `navigated_away`;
-   - `end`, which sets `status: "ended"`; a debate also ends after its verdict, and watch reaches `turn_cap`;
-   - the actor's **idle release** after 10 minutes of quiet (`idleReleaseMs` 600,000,
-     [actor.py](../../backend/horizon/sessions/actor.py)), which stops the actor **and cancels its background set**.
-     A memory task in that set would be killed by the very pause that should start it.
-6. **Requirements:** D-71 (all modes, own point of view, source mode tagged for down-weighting; view and forget only,
-   no edit, pin or add); CHAT-06 AC1 (only the active variant counts for context and memory); ENG-02 AC2 (memory work never
-   drains energy, it counts against the daily cap only); PRF-07 (the tab shows text, kind, source session, date and an
-   importance badge, with View source and Forget); INS-01 (Insight's Memory section lists long-term items recalled);
-   NFR-23 (no memory crosses worlds); NFR-35 (memory is dynamic and goes last in the prompt).
-7. **The gateway already has** purposes `memory` (ledger category `memory`) and `importance` (`decision`)
-   ([context.py](../../backend/horizon/gateway/context.py)); doc 03 C1 has the `memory` row (thinking off, 0.7, JSON).
+   FTS matches for the turn's query ([retrieval.py](../../backend/horizon/ai/retrieval.py)). Importance, recency and
+   `source_mode` are never used. There is no search over the session's own older messages (`message_fts` is a
+   deferred item, [05-ai-seams §6](../backend/05-ai-seams.md)), although `TurnTrace.contextInSession` and Insight's
+   "In-session recall" section (INS-01) are already in the contract.
+4. **Any character message can be regenerated**, not only the last one: `_regenerate`
+   ([commands.py](../../backend/horizon/sessions/commands.py)) accepts any non-streaming character message, and the UI
+   offers **Continue** and **Regenerate** on any interrupted or failed reply (STATE-03, CHAT-02 AC3); only the ↻
+   button is limited to the last message (CHAT-06).
+5. **Two `seq` counters exist:** `messages.seq` numbers a session's messages; `session_events.seq` numbers every
+   event, tokens included. The rolling summary's `upto_seq` uses the message number
+   ([context.py](../../backend/horizon/sessions/context.py)).
+6. **"The user stopped" signals exist, but none covers every case:**
+   - `leave` ([lifecycle.py](../../backend/horizon/sessions/lifecycle.py)) pauses with `navigated_away`, but the client
+     sends it only for an **active** session ([sessionRuntime.ts](../../frontend/src/client/sessionRuntime.ts)) and the
+     backend ignores it otherwise;
+   - `end` sets `status: "ended"`; a debate ends after its verdict; watch at its turn limit only **pauses** with reason
+     `turn_cap` (Continue +10 can follow);
+   - the actor's idle release (`idleReleaseMs` 600,000, [actor.py](../../backend/horizon/sessions/actor.py)) **never
+     fires while anyone is subscribed** to the session stream, or while a background task runs;
+   - a paused 1:1 or group session **auto-resumes** on the next command
+     ([preconditions.py](../../backend/horizon/sessions/preconditions.py) `live_session`).
+7. **Every recorded gateway call can pause every live session:** `on_spend` and `on_budget`
+   ([manager.py](../../backend/horizon/sessions/manager.py)) call `pause_all_for_cap`; the only opt-out is
+   `_reached(..., sessions=False)`, used for job estimates ([pipeline.py](../../backend/horizon/gateway/pipeline.py)).
+8. **Forks copy messages, events and traces into a new non-seed session**
+   ([lifecycle.py](../../backend/horizon/sessions/lifecycle.py) `fork`); "Continue live" from a seed recording is a
+   fork.
+9. **Some user messages are not lines heard in the scene:** watch's director notes are user messages of kind
+   `direction`, the watch premise is a `direction` note, and debate Ask and Interject are user messages of kinds
+   `steer` and `interject` ([watch.py](../../backend/horizon/sessions/modes/watch.py),
+   [debate.py](../../backend/horizon/sessions/modes/debate.py)).
+10. **Requirements:** D-71 (all modes, own point of view, source mode tagged for down-weighting; view and forget only,
+    no edit, pin or add); CHAT-06 AC1 (only the active variant counts for context and memory); ENG-02 AC2 (memory work
+    never drains energy, it counts against the daily cap only); PRF-07 (the tab shows text, kind, source session, date
+    and an importance badge, with View source and Forget); INS-01 (Insight's Memory section lists long-term items
+    recalled; In-session recall is shown separately); NFR-23 (nothing crosses worlds); NFR-35 (cache-friendly
+    prompts).
+11. **The gateway already has** purposes `memory` (ledger category `memory`) and `importance` (`decision`)
+    ([context.py](../../backend/horizon/gateway/context.py)); doc 03 C1 has the `memory` row (thinking off, 0.7, JSON).
 
-**Course notes, 7.1.8:** long-term memory is facts kept in a database and filtered by user (Mem0, Zep); systems
-write and compress **on a hard-coded rule, not when the model chooses to**; and good systems **edit** memory
-entries rather than rewrite the whole store, so good old entries are not lost (ACE). M1, M5 and M6 follow all three.
+**Course notes, 7.1.8:** long-term memory is facts kept in a store and filtered by user (Mem0, Zep); systems write and
+compress **on a hard-coded rule, not when the model chooses to**; and good systems **edit entries rather than
+rewrite the whole store**, because whole rewrites lose good old entries ("context collapse"; ACE). M3 rewrites single
+list items, never the whole list, and M5's guard is the protection against context collapse.
 
 ## 3. The design in one picture
 
 ```text
- during the chat                     a pause                               the next session
- ───────────────                     ───────                               ────────────────
- replies use:                        leave · end · verdict · watch cap     core block: top 5 memories
-  - core block (top 5)               · 10 min idle · new session with      on every reply (≤ 320 tokens,
-  - search when Jev says             the same character · start-up sweep   in the tail)
-    "needs memories?"                          │                           + search when Jev says
- nothing is written                            ▼                             "needs memories?"
-                                  the memory graph (LangGraph), once,
-                                  over the messages since the checkpoint
-                                  1. DeepSeek JSON: memories for everyone
-                                     present, each from their own view
-                                  2. Jev score: importance (drop the lowest)
-                                  3. nearest 3 old memories → Jev choice:
-                                     same / replaces / both stay true
-                                  4. ops + checkpoint in one transaction
+ during a sitting                          a pause                               the next sitting
+ ────────────────                          ───────                               ────────────────
+ system prompt: "# What you remember"      stream left (30 s) · leave · end ·    the refreshed list in the
+   ≤ 1,000 tokens, frozen for the sitting  debate verdict · watch turn cap ·     system prompt (one cache
+   (cached; refreshed on Forget)           a session opens with the same         miss per sitting)
+ tail: "# Earlier in this conversation"    character · start-up sweep
+   when Jev says "needs earlier lines?":             │
+   BM25 ∪ dense over this session's                  ▼
+   dropped messages → RRF → MMR →          the memory graph (LangGraph), once, over
+   Jev call 2 → ≤ 3 lines                  the messages since the checkpoint
+ nothing is written                        1. DeepSeek JSON: for each character present,
+                                              its current list + the new messages →
+                                              keep · confirm · rewrite · add
+                                           2. Jev: importance of new and rewritten lines;
+                                              guard: "does the rewrite keep every
+                                              still-true fact?" (no → keep both)
+                                           3. ops + checkpoint in one transaction
 ```
 
 ## 4. Decisions
 
-### M1. Memories are written when a session pauses, not after each reply (the user's decision)
+### M1. Memories are written when a session pauses (the user's decision)
 
 **Decision:**
-- **A pause run** handles every message since the session's memory checkpoint (M2). It starts when:
-  1. the user **leaves** the session screen (`leave`, `navigated_away`);
-  2. the session **ends**: the End command, a debate after its verdict, watch at `turn_cap`;
-  3. the actor's **idle release**, after 10 minutes of quiet; this catches a closed browser tab, which sends no
-     `leave`;
-  4. **a session opens with a character who has pending messages in another session** (create, or an actor started
-     for a resume): the other session's run starts at once, so a new chat with Amara two minutes after the last one
-     already knows it (fix 2 below);
-  5. **start-up**: a sweep finds every non-seed session with messages after its checkpoint and queues their runs; a
-     clean shutdown never waits on DeepSeek, it leaves them to this sweep (fix 3).
-- **Nothing is written during the chat**, and the per-reply `_remember` queue is removed.
-- **Runs belong to the runtime, not the actor:** each goes through `rt.spawn` as `memory_run:{sessionId}`, so the
-  idle release that triggers it can't cancel it. At most **2 runs at once** (`memory.maxConcurrent`); one run per
-  session at a time, and a trigger during a run marks the session to run again after it.
-- **The minimum worth a run:** at least one user message, or at least 4 character lines (watch and debate have no
-  user lines). Below that the checkpoint advances with no call.
-- **Seed sessions** are replay-only and never run. **Test mode and the `scripted` profile** run the same triggers with
-  a writer that returns nothing, so no call is made.
+- **A pause run** handles the session's new messages (M2). It starts when:
+  1. **the session stream's last subscriber leaves** and nobody subscribes again within **30 s**
+     (`memory.leaveGraceMs`): navigating away or closing the tab, **in any session status** (active, paused by the
+     user, paused by the cap). This does not depend on `leave`, which the client sends only for active sessions;
+  2. **`leave`**, at once;
+  3. **the session ends** (the End command; a debate after its verdict) **or watch pauses at `turn_cap`**;
+  4. **a reply that was still streaming** at one of these moments **reaches its `turn.end`** (`leave` and `end` keep
+     the current turn, so its message is picked up then);
+  5. **a session opens** (create, or an actor started for a resume) **with a character who has pending messages in
+     another session**: that session's run starts at once, ahead of any queued sweep runs, so a new chat with Amara
+     two minutes after the last one gets her new memories as soon as the run commits (M8);
+  6. **start-up**: after `close_interrupted_streams`, a sweep queues a run for every non-seed session with new or
+     re-read messages; a clean shutdown never waits on DeepSeek, it leaves its runs to this sweep;
+  7. **the idle release**, as a backstop.
+- **Nothing is written during the chat**; the per-reply `_remember` queue is removed.
+- **Runs belong to the runtime, not the actor:** each goes through `rt.spawn` as `memory_run:{sessionId}` (an actor's
+  background task would keep the actor from ever going idle, and deleting the actor would cancel it). At most **2 runs
+  at once** (`memory.maxConcurrent`); one run per session at a time, and a trigger during a run marks the session to
+  run again after it. Runs don't take the 4 shared reply slots (`llmConcurrency`), so a run never delays a reply.
+- **Below the minimum, nothing moves:** a run needs at least one message the user said **in** the scene (chat, a
+  group line, a watch step-in line, a debate Ask or Interject) or at least 4 character lines. Below that, the
+  checkpoint stays so the lines add up for the next run; only an ended session advances anyway.
+- **Seed sessions** are replay-only and never run. **An explicitly scripted profile and test mode** run the triggers
+  with a writer that returns nothing and advance the checkpoint with no call. **With no usable key** (missing,
+  invalid, or a profile that falls back to `scripted` only for lack of a key) the run is **deferred**: the checkpoint
+  stays, so the sitting is mined once a key works.
 
-**Why:** inside a session, memory adds nothing the history and the summary don't already give (the user's point). One
-pass over a whole sitting costs about a quarter of per-exchange writing (M12), sees the full story, and writes fewer,
-more complete memories. Regenerate only works on the last character message, so by a pause every earlier variant is
-final.
+**Why:** inside a session memory adds nothing the history and the summary don't already give (the user's point). One
+pass over a sitting costs about a quarter of writing after each exchange (M13), sees the whole story, and writes
+fewer, more complete lines.
 
-**The three additions, and why each is needed:**
-- **1:1 and group never "finish":** `leave`, `end` and the idle release together cover every way a user stops.
-- **Freshness:** without trigger 4, leaving a chat and opening a new one with the same character would race the run;
-  with `leave` the run has usually started already, and trigger 4 covers two tabs or a lost `leave`.
-- **Durability:** the checkpoint commits with the memories (M6), so a crash loses no work and repeats none.
+**The fixes, and why each is needed:**
+- **1:1 and group never "finish":** stream-left, `leave`, end and watch's turn cap cover every way a user stops; `leave`
+  alone misses paused sessions, and the idle release alone never fires while a tab is open.
+- **Freshness:** trigger 5 covers a new session started before the old one's run (another tab).
+- **Durability:** the checkpoint commits with the memories (M6), so a crash loses no work and repeats none, and the
+  sweep picks up what was pending.
 
 **Rejected:**
 - **after every reply, with or without a Jev gate** (my first recommendation): about 4× the cost for memories nobody
-  can use until the next session, and regenerate must undo them;
-- **only the 10-minute idle release:** a new chat soon after the last one wouldn't know it, and a killed process would
-  lose the sitting;
-- **a separate shorter quiet timer:** a second timer next to the idle release, for little gain once `leave` triggers.
+  can use until the next session;
+- **only the 10-minute idle release:** it never fires while a tab is open;
+- **only `leave`:** it misses paused sessions and closed tabs;
+- **holding runs in the actor's background set:** it keeps the actor from going idle, and deleting the actor
+  cancels the run.
 
-### M2. The pause run: what it reads, the checkpoint and pieces
+### M2. The pause run: checkpoint, re-reads and pieces
 
 **Decision:**
-- **Two new session columns** (backend only, an Alembic migration): `memory_seq` (the event `seq` up to which memory
-  has been taken; 0 for a new session, and for existing sessions at migration time their last `seq`, so old history
-  is not mined in one burst) and `memory_tries`.
-- **The stretch** is every message with `seq` in (`memory_seq`, the last settled message], where "settled" excludes a
-  turn still streaming:
-  - user and character messages, **active variant only**;
-  - **not** system notes, narration or host notes, and **not** interrupted, failed or blocked replies (as today's
-    post-turn rule);
-  - debate: the motion, each debater's side, the phase of each argument and the verdict (when there is one) go in a
-    header; watch: the premise.
+- **Three new session columns** (backend only, an Alembic migration):
+  - **`memory_seq`**: the **message** `seq` (`messages.seq`, the counter the summary uses) up to which memory has been
+    taken. At migration, existing sessions get their `MAX(messages.seq)`, so old history is not mined in one burst. A
+    new session starts at 0. **A fork** (including "Continue live") starts at the copied messages' highest `seq`:
+    copied history is never mined again, so a fork can't bring back a fact the user forgot;
+  - **`memory_reread`**: a list of message IDs to read again (M7);
+  - **`memory_tries`**: failed tries on the current checkpoint (M6).
+- **The stretch** is every message with `seq` in (`memory_seq`, **the first unsettled message − 1**], where unsettled
+  means still streaming, so a user line sent while a character streams never lets the checkpoint pass that reply:
+  - user and character messages, **active variant only**, complete status; never interrupted or failed replies (M7
+    reads them later if they are completed) and never blocked ones;
+  - never system notes, narration, host notes or **watch `direction` messages** (director's notes are not heard in
+    the scene); debate `steer` and `interject` lines are shown as "Moderator (the user)";
+  - a header: for a debate, the motion, each debater's side, each argument's phase and the verdict when there is one;
+    for watch, the premise.
+- **Re-read messages** (`memory_reread`) are read in the same run, each with the two messages before it as context.
 - **Context lines:** the 6 messages before the stretch are included, marked "already processed, context only", so
   "he" and "that" resolve.
 - **Pieces:** a stretch over **8,000 tokens** (`count_tokens`, `memory.pieceTokens`) is split at message boundaries
-  and run piece by piece in order, each piece committing its own checkpoint. A resumed chat that has grown for weeks
-  gets several ordinary runs, never one huge call.
+  and run piece by piece in order, each committing its own checkpoint. A chat resumed for weeks gets several ordinary
+  runs, never one huge call.
 - **Who is present:** the session's participants who are not deleted (muted and asleep characters still hear the
-  room). Each session is one room, so everyone present heard every line.
+  room); each session is one room.
 
 **Rejected:**
-- **extracting from the rolling summary instead of the lines:** cheaper, but the summary drops exactly the small
-  details memory exists for (a cake flavour, a nickname);
-- **mining old sessions at migration:** a surprise bill on upgrade for history the user already lived through.
+- **extracting from the rolling summary** instead of the lines: the summary drops exactly the small details memory
+  exists for (a cake flavour, a nickname);
+- **mining old sessions at migration, or a fork's copied history:** a surprise bill, and it would undo the user's
+  earlier Forgets.
 
-### M3. Extraction: one DeepSeek JSON call for everyone present (the user's decision)
+### M3. The rewrite call: one DeepSeek JSON call for everyone present (the user's decisions)
 
 **Decision:**
 - **One call per piece**, purpose `memory`, `runtime.llm.calls.memory` (doc 03 C1: thinking off, 0.7, JSON mode),
-  **`max_tokens` 1,500**, validated, one retry (doc 03 C7). The instructions are a fixed system message, so repeated
-  runs hit DeepSeek's cache for them.
-- **The input:** the world's name, the You-card name, the mode, the characters present as numbers with name and role,
-  the debate or watch header, the context lines and the numbered new messages as `Name: text`, all marked as quoted
-  content, never instructions (doc 01 A3 rule 8).
-- **The output:**
+  validated, one retry (doc 03 C7). **`max_tokens` = 300 × characters present + 200**, at most 3,000; a
+  `finish_reason` of `length` is **not** a try: the characters are split into two calls instead. The instructions are
+  a fixed system message, so repeated runs hit DeepSeek's cache for them.
+- **The input:** the world's name, the You-card name, the mode; the characters present as numbers with name and role;
+  **for each, its current memory list as `m1…m30`** (the same lines, in the same ranking, as its prompt block, M8; at
+  most 1,000 tokens each); the debate or watch header; the context lines; the numbered new messages as `Name: text`.
+  All of it is marked as quoted content, never instructions (doc 01 A3 rule 8).
+- **The output** lists only what changes:
 
   ```json
-  {"memories": [
-    {"for": 1, "kind": "about_user", "about": "user", "text": "Kai quit coffee last month.", "source": 12, "weight": 4},
-    {"for": 2, "kind": "event", "about": 1, "text": "Amara told Kai his headaches should ease within a week.", "source": 13, "weight": 3}
+  {"changes": [
+    {"for": 1, "op": "rewrite", "target": "m3", "kind": "about_user", "about": "user",
+     "text": "Kai quit coffee last month; he had temple headaches when he cut back.", "source": 12, "weight": 4},
+    {"for": 1, "op": "confirm", "target": "m5", "source": 14},
+    {"for": 2, "op": "add", "kind": "event", "about": 1,
+     "text": "Amara told Kai his headaches should ease within a week.", "source": 13, "weight": 3}
   ]}
   ```
 
-  `for` is the character who remembers; `about` is `"user"`, a character number or `null`; `source` is a new
-  message's number; `weight` (1–5) is a hint used only when Jev fails (M4). Code maps numbers to IDs, so the model
-  never copies an ID.
+  `for` is the character who remembers. **`add`** is a new line; **`rewrite`** is a line changed or extended by the new
+  messages; **`confirm`** is a line the new messages repeat or show to still be true; lines not mentioned are **kept
+  unchanged**. `about` is `"user"`, a character number or `null`; `source` is a new message's number; `weight` (1–5) is
+  a hint used only when Jev fails (M4). Code maps numbers to IDs, so the model never copies an ID.
 - **The rules in the prompt:**
-  - write each memory **from that character's point of view**, about what happened in the room; never what another
-    character privately thought;
-  - one self-contained sentence, **≤ 30 words**, with names instead of pronouns, in **the language most of the new
-    messages use** (doc 05's rule for the summary);
-  - keep what lasts: facts about people (work, family, plans, health, likes), notable events, **promises the
-    character made**, relationships that changed, in a debate the side argued, the strongest opposing point and the
-    outcome;
+  - write **from that character's point of view**, about what happened in the room; never what another character
+    privately thought;
+  - one self-contained line per topic, **≤ 30 words**, with names instead of pronouns, in **the language most of the
+    new messages use** (doc 05's rule for the summary);
+  - **rewrite** only when the new messages change or add to the line, and **keep every part of the old line that is
+    still true**; **never drop a line** (only the user forgets);
+  - keep what lasts: facts about people (work, family, plans, health, likes), notable events, **promises the character
+    made**, relationships that changed; in a debate, the side argued, the strongest opposing point and the outcome;
   - skip greetings, small talk, anything true only in the moment, hypotheticals and role-play asides;
   - **never** store passwords, keys, card, bank or ID numbers, or an exact home address (task 11 may extend the list);
-  - at most **5 memories per character per piece**, one per fact.
+  - at most **5 changes per character per piece** (adds + rewrites; confirms are free).
 - **Kinds** (the existing four): `about_user` (a fact about the user), `preference` (anyone's likes and dislikes),
   `event` (something that happened), `fact` (anything else lasting, including a position argued).
-- **Code checks:** `for` is present; `kind` is one of four; `about` is valid; `source` is a new message; text is not
-  empty and is cut at 40 words; extras past 5 per character drop by lowest `weight`; exact duplicates (case-folded)
-  within the run are merged. The draft carries `source_session_id`, `source_message_id`, `source_variant_id`,
-  `source_mode` and `about_character_id`, as the storage expects.
+- **Code checks:** `for` is present; `op`, `kind` and `about` are valid; `target` exists in that character's list;
+  `source` is one of the new or re-read messages; text non-empty and cut at 40 words; changes past 5 per character
+  drop by lowest `weight`; exact duplicates (case-folded) merge. The draft carries `source_session_id`,
+  `source_message_id`, `source_variant_id`, `source_mode` and `about_character_id`, as the storage expects.
 
-**Why:** one call over the room is cheaper than one per character and keeps everyone's memories consistent with each
-other; D-71 asks for every mode and every point of view.
+**Why:** one call over the room is cheaper than one per character and keeps everyone's memories consistent; D-71 asks
+for every mode and point of view. Showing the current list lets the model **merge** rather than pile up near-duplicates
+(the first version's "replaces" would have hidden the seed's "had temple headaches"), and the list is the one the
+character already carries in its prompt, so it costs ~1,000 input tokens per character.
 
 **Rejected:**
 - **only the speaker remembers:** listeners would forget what they plainly heard;
 - **only facts about the user, copied to everyone:** characters would never remember each other or events;
-- **one call per character:** N times the input for the same transcript.
+- **one call per character:** N times the input for the same transcript;
+- **one memory document per character, rewritten whole each pause** (option B, offered to the user): the Memory tab's
+  items, per-item Forget and sources would go (a contract and requirement change), and each full rewrite can drift or
+  drop facts (7.1.8);
+- **extract, then a Jev compare with the 3 nearest memories** (the first version, superseded by the user's choice):
+  it can't merge detail, and it needs a cosine threshold tied to one embedding model.
 
 ### M4. Importance: a Jev score
 
 **Decision:**
-- **One Jev request per character per piece** (`Decider` purpose `importance`), one **score** question per candidate
-  (≤ 5). State (≤ 1,500 tokens): the character's name, role and first personality sentence, the user's name, and the
-  candidates. Question: "How much will it matter for {name} to remember this in future conversations?"
+- **One Jev request per character per piece** (`Decider` purpose `importance`), one **score** question per added or
+  rewritten line (≤ 5). State (≤ 1,500 tokens): the character's name, role and first personality sentence, the user's
+  name, and the lines. Question: "How much will it matter for {name} to remember this in future conversations?"
 - **Five levels:** "not at all, small talk" · "a little" · "somewhat" · "a lot" · "it is central to who they are or what
-  they share". The importance is **(w − 1) / 4** from the weighted position w, so the badge runs 0–1 as the contract
-  expects; a candidate under **0.25** (`memory.minImportance`) is dropped.
-- **Jev failed:** importance = (weight − 1) / 4 from the extraction hint; no hint, 0.5. Marked in the run's log.
+  they share". Importance = **(w − 1) / 4** from the weighted position w (doc 01 check 4 confirms w runs 1–5), so the
+  badge runs 0–1 as the contract expects. An added line under **0.25** (`memory.minImportance`) is dropped; a
+  rewritten line keeps the **higher** of its old and new importance.
+- **A `confirm`** becomes `Reinforce`: importance + 0.05 (capped at 1) and **`last_recalled_at` = now**, so a fact the
+  user keeps confirming stays fresh in the ranking (`Reinforce` gains that column; a storage change).
+- **Jev failed:** importance = (weight − 1) / 4 from the hint; no hint, 0.5. Marked in the run's log.
 
-**Why:** importance is a bounded judgement on an ordered scale, which is what a Jev score is for (maximise Jev); the
-BA's recommendation was importance-gated memory.
+**Rejected:** DeepSeek's own number (an LLM's self-rated importance clusters in the middle; it stays only as the
+fallback); no importance (the prompt's ranking, M8, and the badge, PRF-07, need it).
 
-**Rejected:**
-- **DeepSeek's own number:** an LLM's self-rated importance clusters in the middle; it stays only as the fallback;
-- **no importance:** the core block (M8) and the badge (PRF-07) need it.
-
-### M5. Keeping memory tidy: Jev compares each new memory with its nearest ones (the user's decision)
-
-**Decision:**
-- **Neighbours:** for each kept candidate, the character's **3 nearest current memories**: vector KNN over the
-  candidate's embedding (`embed_doc`, computed once and reused by the write) with cosine ≥ **0.5**
-  (`memory.neighbourMin`), merged with FTS matches by RRF. No neighbours → **insert** with no Jev call.
-- **One Jev request per candidate** (`Decider` purpose **`memory_compare`**, a new decision purpose), one **choice**
-  per neighbour: "Old memory: … New memory: … How does the new one relate to the old one?" with three options:
-  **says the same thing** · **replaces it, the old one is no longer true** · **both stay true**.
-- **Code decides:**
-  - any confident "same" → **`Reinforce`** that memory to the higher of the two importances; the new text is dropped;
-  - else any confident "replaces" → **`Supersede`** those memories with the new one (the tab shows only the new one,
-    and Forget on it removes the chain, as today);
-  - else → **`Insert`**;
-  - **unsure (below the floor) → keep both** (insert). A wrong "replaces" hides a true memory; a duplicate is visible
-    and the user can forget it.
-- **Jev failed:** cosine ≥ 0.95 or equal case-folded text → reinforce; otherwise insert.
-- **No background job:** `memory_consolidate` stays unused, and **nothing is deleted automatically**. Old, unused
-  memories only sink in ranking (M8).
-- **Example:** Amara's seed memory "Kai cut back on coffee recently" + new "Kai quit coffee last month" → "replaces" →
-  supersede.
-
-**Rejected:**
-- **DeepSeek picks the changes in the extraction call** (Mem0's ADD / UPDATE / DELETE / NOOP): one call fewer, but
-  the decision moves from Jev to the LLM, and the extraction prompt grows with every character's neighbours;
-- **insert only, plus a merge job:** duplicates sit in the Memory tab until the job runs, and the job is a second
-  writer to reason about;
-- **automatic forgetting by age:** D-71 leaves forgetting to the user.
-
-### M6. Writing: one transaction with the checkpoint; failures and retries
+### M5. Guarding rewrites and catching duplicates
 
 **Decision:**
-- **`MemoryStore.apply_run(world_id, ops_by_character, session_id, upto_seq)`**: every character's ops **and**
-  `sessions.memory_seq = upto_seq` in **one transaction**, taking the per-character locks in sorted order (no
-  deadlock with `apply`). Embeddings are computed before the lock, as today, for every non-retired space.
-- **A memory forgotten while the run was thinking** (its `Reinforce` or `Supersede` target is gone): a `Reinforce` of
-  it **drops the candidate** (the user just forgot that fact; writing it back would undo Forget); a `Supersede` of it
-  becomes an `Insert` (the new memory is new information). Re-validated once; any other validation failure fails the
-  piece.
-- **A character deleted, or the session or world deleted, during the run:** that character's ops are dropped, or the
-  run is dropped; delete and both resets cancel running `memory_run` tasks, as they stop indexing today.
-- **Failures:** if the extraction fails after its retry, or the gateway refuses it, nothing is written, the checkpoint
-  stays and `memory_tries` grows; the next trigger retries. **After 3 failed tries on the same checkpoint**
-  (`memory.maxTries`) the piece is skipped (checkpoint advanced, a warning logged), so a poison stretch can't bill
-  forever. **A daily-cap refusal doesn't count as a try**, and a run never triggers the session's cap pause.
-- **Never twice:** a stretch is read once, because the checkpoint commits with its memories. So a forgotten memory
-  comes back only if the user says it again later.
-- **`Touch`:** the run also touches the memories that the **search** (not the core block) recalled in the stretch,
-  read from `trace_memory_refs`, updating `last_recalled_at` and `recall_count`. Core memories are not touched, so the
-  core block can't keep itself on top.
-- After the commit: `entity.changed { kind: "memory", id: characterId }` per character, as today, so an open Memory
-  tab refreshes. Leaving a chat for the profile page shows the new memories a few seconds later.
+- **The guard: one Jev noul per rewrite** (purpose **`memory_guard`**, a new decision purpose). State: the old line,
+  the new line, the source message and the one before it. Question: "Is every part of the old memory that is still
+  true after these messages kept in the new one?"
+  - p ≥ `t_keep` → **`Supersede`(old → new)**; the Memory tab shows only the new line, and Forget on it removes the
+    chain, as today;
+  - below `t_keep`, or Jev failed → **keep the old line and insert the new one beside it**. A near-duplicate is
+    visible and the user can forget it; a lossy rewrite would hide a true fact. This is the "context collapse" guard
+    (7.1.8).
+- **Duplicate check for adds:** an added line equal (case-folded) to a current memory, or with cosine ≥
+  `memory.dupCosine` against one, **reinforces that memory instead**. This catches duplicates of memories ranked below
+  the ~30 the model was shown. `dupCosine` is tuned per embedding space on the evaluation set (start 0.92 for
+  `qwen3-embedding-8b@1024`), since any cosine threshold depends on the model.
+- **No background job:** `memory_consolidate` is removed from the backend docs, and **nothing is deleted
+  automatically**. Old memories only sink in ranking (M8).
 
-**Rejected:**
-- **one transaction per character, then the checkpoint:** a crash between them repeats part of a run;
-- **an internal job row per run** (which I mentioned in chat): the checkpoint already gives durability and retries,
-  and `memory_tries` is the only bookkeeping needed.
+**Rejected:** applying rewrites with no guard (an LLM rewrite can quietly drop half a fact, and nothing would notice);
+a compare step for every add (the model already saw the top of the list; the cheap duplicate check covers the rest).
 
-### M7. Regenerate, blocked replies and Forget
+### M6. Writing: one transaction with the checkpoint; races and failures
 
 **Decision:**
-- **Regenerate after a run** (only the last character message can be regenerated): the memories whose
-  `source_message_id` is that message are **removed through the Forget path for those memories only** (vectors zeroed,
-  refs scrubbed), the memories they superseded become current again, and `memory_seq` moves back to just before that
-  message, so the next pause reads the new variant. Memories sourced from the user's own line before it stay.
-- **A blocked reply** is scrubbed at `turn.end`, before any pause, and the stretch skips blocked messages; today's
-  `_forget_derived` stays as a guard.
-- **The user's Forget** is unchanged (D-70, D-94), plus M6's rules for a run in flight.
+- **`MemoryStore.apply_run(world_id, ops_by_character, session_id, from_seq, upto_seq, reread_done)`**: every
+  character's ops, **a compare-and-set of the checkpoint** (`UPDATE sessions SET memory_seq = :upto WHERE id = :sid
+  AND memory_seq = :from`) and the removal of the re-read IDs it handled, in **one transaction**. It also checks that
+  each draft's `source_variant_id` is still its message's active variant; a mismatch (a regenerate during the run)
+  drops those drafts, and the message is already queued for re-reading (M7). Embeddings are computed before the lock,
+  as today.
+- **Runs on the same character are serialised:** a run takes the **run locks** of all its characters (in sorted
+  order) **before reading their lists** and holds them until it commits, so two runs never rewrite one list from stale
+  copies. One run per character at a time is cheap; runs are rare.
+- **Forget doesn't wait for a run.** If a run's `rewrite` or `confirm` target was forgotten meanwhile, that change is
+  **dropped** (its text came from the forgotten line; writing it back would undo Forget). Adds are unaffected.
+- **Deletes and resets:** a character deleted during a run drops its ops; a session or world deleted drops the run;
+  delete and both resets cancel running `memory_run` tasks, as they stop indexing today.
+- **Failures:** the call fails after its retry → nothing written, the checkpoint stays, `memory_tries` grows, and the
+  next trigger retries. **After 3 failed tries on the same checkpoint** (`memory.maxTries`) the piece is skipped
+  (checkpoint advanced, a warning logged), so a poison stretch can't bill forever. A failed commit keeps the parsed
+  answer and retries the commit once, **without a second call**; a crash between the call and the commit pays once
+  more after restart (accepted: rare, and D-84's never-pay-twice hooks are for jobs).
+- **The daily cap:** the `memory`, `importance` and `memory_guard` purposes **never pause live sessions**: a refusal
+  publishes with `sessions=False`, and crossing the cap through them doesn't call `pause_all_for_cap` (the next reply
+  meets the cap itself). A refusal doesn't count as a try; the run waits for the next trigger.
+- After the commit: `entity.changed { kind: "memory", id: characterId }` per character, as today; an open Memory tab
+  refreshes a few seconds after the user leaves a chat.
 
-**Rejected:** forgetting the whole chain on regenerate (as a block does): it would destroy older memories from other
-sessions that were only superseded.
+**Rejected:** one transaction per character, then the checkpoint (a crash between them repeats part of a run); an
+internal job row per run (which I mentioned in chat: the checkpoint gives durability, and `memory_tries` is the only
+bookkeeping needed).
 
-### M8. Recall: a core block on every reply, plus a search when Jev asks (the user's decision)
+### M7. Regenerate, Continue, blocked replies and Forget
 
 **Decision:**
-- **The core block:** the speaker's top **5** current memories (`memory.coreK`) by **importance × recency**,
-  `about_user` and `preference` first on ties. It is read by the runtime at turn start (one indexed query, D-92: the
-  engine never queries storage) and goes in **the dynamic tail** on every turn, quick or deep, in every mode:
+- **When an already-read message changes** (Regenerate or Continue on any character message with `seq` ≤
+  `memory_seq`, including interrupted or failed replies completed later), the command, **before it streams**:
+  1. undoes the memories whose `source_message_id` is that message **and that are still current**: removed through
+     the Forget path for those memories only (vectors zeroed, refs scrubbed), and the lines they superseded become
+     current again;
+  2. adds the message to `memory_reread`.
+
+  The checkpoint **doesn't move**, so no later message is read twice. Memories sourced from the user's own line
+  before it stay.
+- **A regenerate during a run** is caught by M6's variant check.
+- **A blocked reply** is scrubbed at `turn.end` and never read; today's `_forget_derived` changes from forgetting the
+  whole chain to M7's undo, so a blocked new variant can't destroy older memories that were only superseded.
+- **The user's Forget** is unchanged (D-70, D-94), plus M6's rule for a run in flight.
+
+**Rejected:** moving the checkpoint back (every later message would be read again: twice the cost, duplicates);
+forgetting the whole chain (destroys older memories from other sessions).
+
+### M8. The memory list in the system prompt (the user's decision)
+
+**Decision:**
+- **Each character's system message 1** (doc 04 P2) gains a block after "Your world and the user":
 
   ```text
-  # What you remember (bring one up only when it fits the moment; never list them)
-  - Kai quit coffee last month.
+  # What you remember (notes from earlier conversations; bring one up only when it fits the moment; never list them)
+  - Kai quit coffee last month; he had temple headaches when he cut back.
   - Kai's favourite cake is yuzu.
   ```
 
-  Each line ≤ 30 words; the block, with any searched memories, **≤ 320 tokens**. With no memories, no block.
-- **The search**, when Jev call 1's "needs memories?" says yes (doc 01 A4):
-  - the gate is asked **only when the character has more than 5 current memories**, since otherwise the core block
-    already holds them all;
-  - keyword (FTS) top 10 ∪ vector KNN top 10 over the speaker's current memories, **excluding the core ones**, with
-    the turn's shared query embedding (D-97); RRF (k = 60) normalised to r ∈ [0, 1];
-  - **rank = r × (0.5 + 0.5 × importance) × recency × mode weight**; the top 6 go to Jev call 2 as **memory
-    candidates**, each with the noul "Would {name} naturally draw on this memory in replying to this?", in parallel
-    with any passage scores; keep up to **3** (`retrieval.memoryK`) at p ≥ `t_memory`;
-  - Jev call 2 failed or late: keep the top 2 by rank, marked as a fallback.
-- **Recency** = max(0.5, 0.5^(days / 30)) from the later of `created_at` and `last_recalled_at`
-  (`memory.halfLifeDays` 30, `memory.recencyFloor` 0.5): old facts sink but never vanish. **Mode weight** (D-71's
-  down-weighting): 1:1 and group 1.0, debate 0.85, watch 0.7 (`memory.modeWeight`).
-- **The trace:** core and searched memories both go in `TurnTrace.memory.recalled` (searched ones with their score,
-  core ones without), so Insight shows them and Forget finds them through `trace_memory_refs`, as today. `context.used
-  .memory` counts the whole block (doc 05 X7).
-- **Memory never cites** (doc 01 A6). Jev call 1 failed → no search, but the core block still shows.
+- **What goes in:** the character's current memories, ranked by **importance × recency × mode weight**, added until
+  **1,000 tokens** (≈ 30 lines; each line cut at 40 words). No memories → no block.
+  - **Recency** = max(0.5, 0.5^(days / 30)) from the later of `created_at` and `last_recalled_at`
+    (`memory.halfLifeDays` 30, `memory.recencyFloor` 0.5): old facts sink but never vanish.
+  - **Mode weight** (D-71's down-weighting, applied here too): 1:1 and group 1.0, debate 0.85, watch 0.7
+    (`memory.modeWeight`), so watch fiction can't crowd out what the user said.
+  - The ranking is computed in code over the character's current memories (one query; a few milliseconds even at a
+    few thousand rows).
+- **Frozen for the sitting:** the runtime reads the block when the actor first builds that character's prompt (D-92:
+  the engine never queries storage) and keeps it, so it is part of the cached prefix. It is refreshed only when the
+  user **forgets** one of its lines (D-70; the live session drops the text through its inbox, as today) or when a
+  **pause run commits** memories for that character while this session is live (trigger 5, two tabs). Each refresh
+  is one cache miss (≈ $0.00015–0.0003).
+- **NFR-35:** the requirement names memory among the "dynamic blocks last". A list frozen for a sitting serves its
+  purpose (cache hits), so a one-line note is added there (approved by the user in this discussion).
+- **The trace:** every reply's `TurnTrace.memory.recalled` lists the block's lines (no score), so Insight shows what
+  the model was given and Forget finds the text through `trace_memory_refs`, as today. `context.used.memory` counts
+  the block.
+- **Memory never cites** (doc 01 A6). **No search and no Jev gate for long-term memory:** the "needs memories?"
+  question leaves Jev call 1, replaced by M9's.
 
-**Why:** with search alone, "hi again!" or small talk would never draw on memory, and that is exactly when a
-character feels like it remembers. The tail is uncached, but 320 tokens cost about $0.00005 a reply (M12).
+**Why:** memories change only at pauses (M1), so during a sitting they are as static as the persona card and cost
+$0.003/M once cached. ~30 lines covers almost every character's whole memory, so a user's returning "hi again!" meets
+a character who knows them, with no gate to get wrong.
 
 **Rejected:**
-- **search only** (doc 01 as written): a returning user is greeted by a stranger unless they mention the topic;
-- **search on every reply, no gate:** irrelevant memories in most prompts, and more over-mentioning;
-- **the core block in the cached system message 1:** it would save about $0.00005 a reply, but it changes after every
-  pause run, every Forget and every early flush, and NFR-35 puts memory in the dynamic tail.
+- **top 5 in the reply's tail plus a gated long-term search** (the first version): tail tokens are never cached; it
+  needs vector search, which most turns lack (D-97); and its gate couldn't judge "beyond the core block" because Jev
+  never sees it;
+- **2,000 tokens:** more to juggle and more over-mentioning for little gain; **500 tokens:** heavy users lose
+  memories sooner.
 
-### M9. The greeting: "last time…"
+### M9. In-session recall: hybrid search over this session's older messages (the user's decision)
 
 **Decision:**
-- A later 1:1 chat's generated greeting (doc 04 P9) gets the core block **plus up to 2 of the newest memories from the
-  last session with the user**, and its cue gains one sentence: "If something from last time fits, you may mention it
-  in a short phrase."
-- **If a pause run for this character is still running** (trigger 4, or a `leave` seconds ago), the greeting waits for
-  it **at most 4 s** (`memory.greetWaitMs`, set by check 2), then goes ahead with what is stored.
-- The first chat still uses the stored greeting word for word (P9); it has no memories to mention.
+- **The corpus:** this session's user and character messages (active variant, complete; no notes or directions) that
+  have **left the history window**, i.e. `seq` ≤ the latest rolling summary's `upto_seq`. Lines still in the window
+  are already in the prompt.
+- **Indexing, at each window drop** (doc 05 X2, alongside the summary): the newly dropped messages are embedded in
+  **one batch** (`embed_doc`, the active space) into **`message_vec__{space}`** (vec0, partition key `session_id`,
+  created by the SpaceManager like the others), and **`message_fts`** (FTS5 over `messages`, BM25) gets them by
+  trigger. Sessions that never drop pay nothing. A fork copies the rows; a regenerate of a dropped message re-embeds
+  it; a blocked-reply scrub and a session delete remove both, vectors zeroed first (as D-94 does for memory).
+- **The gate:** in Jev call 1, per candidate, the noul "Does replying need something said earlier in this
+  conversation that isn't in the recent lines shown?", asked only when the session has dropped messages. It replaces
+  "needs memories?"; its threshold is `t_gate`, set for recall (doc 02 B5). Jev can judge it from the state it already
+  has (the latest message and the recent lines, doc 05 X9).
+- **The search** when the gate says yes:
+  1. **BM25** (FTS5 `bm25`) top 10 ∪ **dense KNN** top 10 over the session's partition. The query embedding follows
+     doc 01 A6: only after the gate says yes, waiting at most 400 ms, then BM25 only; one per user message (D-97,
+     extended to this gate);
+  2. **RRF** (k = 60);
+  3. **MMR** (λ = 0.7, cosine between the candidates' stored vectors) picks 6 varied candidates from the fused top 10,
+     because lines in one session repeat a lot;
+  4. **Jev call 2** (`deep_check`): a noul per candidate, "Does this earlier line help reply to the latest message?";
+     keep up to **3** with p ≥ `t_recall`. Late or failed: the top 2 by RRF, marked as a fallback.
+- **In the prompt:** the dynamic tail gets "# Earlier in this conversation" with each hit and the message before it,
+  quoted as `Name: text`, each ≤ 60 words, the block ≤ **400 tokens**. **In the trace:** `TurnTrace.contextInSession`
+  lists `{text, messageId}` per hit (Insight's "In-session recall", INS-01); `context.used.history` counts it.
+- **Questions searched:** as doc 01 A6 (1:1 and group: the user's message; debate: the motion plus the last opposing
+  argument; watch: the last message).
+- **Shared with task 10:** one retrieval pipeline serves knowledge and in-session recall; task 10 sets its parameters
+  for knowledge and decides the CJK tokeniser (`porter unicode61` handles Chinese and Japanese poorly; the dense half
+  covers them until then). MMR's λ is tuned on M12's recall set and set to 1.0 (off) if it doesn't help.
 
-**Rejected:** a "last session summary" block: a second, larger thing to keep in sync, when the newest memories carry
-the same thread.
+**Why:** the summary keeps the gist and drops details (7.1.8's context collapse); this search brings the exact line
+back ("what did I say the cake was called?") only when Jev says the reply needs it. BM25 finds exact names and
+numbers, dense embedding finds rephrasings and other languages, RRF fuses them without calibrating scores, and MMR
+stops three echoes of one line from filling the slots.
 
-### M10. Profiles
+**Rejected:** BM25 only (misses rephrasings and mixed-language chats); dense only (misses exact names and numbers);
+embedding every message as it is sent (most never leave the window; paid for and never searched).
+
+### M10. The greeting: "last time…"
+
+**Decision:**
+- A later 1:1 chat's generated greeting (doc 04 P9) already has the memory list in its system prompt; its tail adds
+  **up to 2 of the newest memories from the last 1:1 session with the user**, and its cue gains one sentence: "If
+  something from last time fits, you may mention it in a short phrase."
+- **No waiting:** if the last sitting's run hasn't committed yet (trigger 5), the greeting goes ahead with what is
+  stored; the block refreshes when the run commits (M8), so later replies see it.
+- **The first 1:1 chat** keeps the stored greeting word for word (P9) even when the character already has memories
+  (from a group, debate or watch session, or the seed); memories show from the first generated reply on.
+
+**Rejected:** waiting up to 4 s for a pending run (the first version): a run takes 5–10 s, so the wait would rarely
+help and always cost time.
+
+### M11. Profiles
 
 | | `scripted` (the mock's twin) | `naive` (the yardstick) | `agent` |
 |---|---|---|---|
 | Triggers, checkpoint, `apply_run`, M7's rules | shared runtime | shared runtime | shared runtime |
-| Writer | returns nothing; no call, no cost (the mock never writes memories) | **the same extraction call (M3)**, insert only, importance from the hint, exact-duplicate skip | the memory graph (M3–M5) |
-| Recall | the 3 newest (unchanged) | FTS top 3 on the query (unchanged) | core block + gated search (M8) |
+| Writer | nothing; no call, no cost (the mock never writes memories) | **the same rewrite call (M3)**, applied without Jev: importance from the hint, rewrites applied without a guard, exact-duplicate skip | the memory graph (M3–M5) |
+| Recall | the 3 newest in the tail (unchanged) | FTS top 3 in the tail (unchanged) | the list in the system prompt (M8) + in-session hybrid recall (M9) |
 
-- **The port changes:** `MemoryWriter.after_turn(ctx, perspective_character_id, message_id) → list[MemoryOp]`
-  becomes `on_stretch(stretch) → dict[character_id, list[MemoryOp]]` (internal, [05-ai-seams §2.2](../backend/05-ai-seams.md)).
-- **The `agent` writer is a LangGraph graph** (doc 01 A7): extract → per character, importance ∥ neighbour search →
-  compare → ops. **No checkpointer:** the session checkpoint lives in SQL, so `graph.db` stays unused (this closes A9's
-  open point).
-- `naive` shares M3's call so the evaluation measures exactly what Jev's importance and compare steps add.
+- **The ports** (internal, [05-ai-seams §2.2](../backend/05-ai-seams.md)): `MemoryWriter.after_turn(ctx,
+  perspective_character_id, message_id) → list[MemoryOp]` becomes `on_stretch(stretch) → dict[character_id,
+  list[MemoryOp]]`; the `agent` recall is the runtime's block read plus a new `SessionRecall` port.
+- **The `agent` writer is a LangGraph graph** (doc 01 A7): rewrite call → per character, importance ∥ guard ∥
+  duplicate check → ops. **No checkpointer:** the session checkpoint lives in SQL, so `graph.db` stays unused (this
+  closes A9's open point).
+- **Isolated comparisons:** to compare the writers, the evaluation runs both with the `agent`'s recall (the existing
+  per-port overrides), so a difference comes from the writer alone.
 
-### M11. Evaluation additions
+### M12. Evaluation additions
 
-**Decision** (fits doc 02's layers; every new Jev question is validated as B4 describes before it is trusted):
+**Decision** (fits doc 02's layers; every new Jev question is validated as B4 describes before it is trusted; sizes
+follow B2's rules):
 - **Layer 1:**
-  - **memory importance:** 100 candidates labelled 1–5 (≥ 30 that should be dropped); targets: keep-or-drop balanced
-    accuracy ≥ 85 %, within one level ≥ 80 %;
-  - **memory compare:** 120 pairs (40 same, 40 replaces, 40 both true); targets: "replaces" precision **≥ 90 %** (a
-    wrong one hides a true memory), "same" precision ≥ 85 %; the floor comes from B5's grid;
-  - **memory relevance** (M8's noul): 80 items, 40 relevant; `t_memory` = the lowest threshold with precision ≥ 85 %;
-  - the existing **needs memories?** set (B2, ~120 items) is relabelled to mean "needs a memory **beyond the core
-    block**".
+  - **importance:** 100 lines labelled 1–5 (≥ 30 that should be dropped); targets: keep-or-drop balanced accuracy
+    ≥ 85 %, within one level ≥ 80 %;
+  - **rewrite guard** (sets `t_keep`): **~120 rewrites, at least 60 of them lossy**; `t_keep` = the lowest threshold
+    that lets **≤ 5 %** of lossy rewrites through;
+  - **in-session gate:** the existing ~120-item "needs memories?" set is rebuilt as "needs earlier lines?" (≥ 60 yes,
+    from long frozen sessions);
+  - **in-session relevance** (sets `t_recall`): **~120 items, ≥ 60 relevant**; `t_recall` = the lowest threshold with
+    precision ≥ 85 %.
 - **New `memory` suite:**
-  - **extraction:** 24 stretches (1:1 × 8, group × 8, watch × 4, debate × 4), split 12 dev / 12 test, each with
-    labelled expected memories per character, plus 6 planted secrets and 6 small-talk-only stretches. Targets:
-    expected memories covered ≥ 80 % (Jev noul per expected memory); every written memory supported by the transcript
-    ≥ 95 % (noul); memories for an absent character **0** (code); planted secrets stored **0** (code + noul);
-    small-talk stretches ≤ 1 memory each;
-  - **two sessions:** 10 pairs on both profiles. Session 1 plants 3 facts and pauses; session 2 has 2 probes that need
-    them and 2 unrelated turns. Targets for `agent`: the probe reply uses the fact correctly ≥ 80 % (doc 05's recall
-    noul); **over-mentioning** ≤ 10 % of unrelated turns (a noul: "the reply drags up a memory that doesn't fit");
-    duplicates left in the tab ≤ `naive`'s.
-- **B4 judge rows:** "Memory extraction" (covered · supported) and "Over-mention".
-- **Cost:** the `memory` suite ≈ **$0.10** (extraction shared by both profiles and cached; two-session replies; Jev
-  checks); `decisions` grows by ~300 requests to ≈ $0.11. `all` becomes **≈ $0.91 off-peak, ≈ $1.35 at peak,
-  ≈ $0.62 once `naive` is cached.**
+  - **rewrite:** 24 stretches (1:1 × 8, group × 8 with 2 of 5 characters, watch × 4, debate × 4; at least 2 in Malay,
+    Chinese or mixed), split 12 dev / 12 test, each with an existing memory list (10–20 lines) holding planted facts
+    the stretch changes and planted facts it confirms, plus 6 planted secrets and 6 small-talk-only stretches. Targets:
+    expected changes covered ≥ 80 % (noul per expected change); every written line supported by the transcript ≥ 95 %
+    (noul); changed facts rewritten rather than duplicated ≥ 80 %; still-true facts lost after the guard ≤ 5 % ("lost a
+    fact" noul); untouched lines left unrewritten ≥ 90 %; secrets stored **0**; small-talk stretches ≤ 1 line each.
+    With ~70 test items these are gross-failure checks: Wilson intervals reported, every failure read;
+  - **in-session recall:** 60 probes over long frozen sessions (doc 05's summary and long inputs) needing a line that
+    has left the window; target hit@3 ≥ 80 %, reported next to BM25 only, dense only and MMR off, so the hybrid earns
+    its place.
+- **Layer 3, two sessions:** **20 pairs** (40 probes, 40 unrelated turns): session 1 plants facts and pauses, session 2
+  probes them. Both writers run with the `agent`'s recall (M11). Targets for `agent`: the probe reply uses the fact
+  correctly ≥ 80 % (doc 05's recall noul); **over-mentioning** ≤ 10 % of unrelated turns; both with intervals.
+  Duplicates left in the tab are counted for both writers as a signal.
+- **B4 judge rows:** "Memory rewrite" (covered · supported · lost a fact) and "Over-mention". The "memory for an absent
+  character" check is a unit test (code makes it impossible).
+- **Cost:** `decisions` grows by ~460 requests to ≈ $0.12; the `memory` suite ≈ **$0.15** (rewrite calls shared by
+  both writers and cached; two-session replies ≈ $0.10; Jev checks, guard and in-session embeddings the rest). `all`
+  becomes **≈ $0.97 off-peak, ≈ $1.47 at peak, ≈ $0.67 once cached.**
 
-### M12. Speed and cost in one place
+### M13. Speed and cost in one place
 
-- **Nothing on the reply path waits for memory writing.** Recall adds one indexed read for the core block (< 5 ms);
-  the search rides the deep path (shared query embedding, Jev call 2 in parallel with passages).
-- **A pause run** takes about 5–10 s (extraction 3–8 s, Jev ~1 s, embedding ~0.5 s); check 2 measures it.
+- **Nothing on the reply path waits for memory writing.** The memory list is read once per sitting; in-session recall
+  rides the deep path (shared query embedding; Jev call 2 in parallel with any passages).
+- **A pause run** takes about 5–10 s (rewrite call 3–8 s, Jev ~1 s, embedding ~0.5 s), at most 2 at a time, ≤ 10 Jev
+  requests in flight each, trigger-5 runs first; check 2 measures it.
 - **Cost of writing, per sitting** (off-peak; peak doubles the DeepSeek part):
 
-  | Sitting | Extraction | Jev (importance + compare) | Total |
+  | Sitting | Rewrite call | Jev (importance + guard) | Total |
   |---|---|---|---|
-  | 1:1, 20 exchanges (~3,500 tokens in, ~400 out) | ≈ $0.0008 | ≈ $0.0002 | **≈ $0.001** (≈ $0.0018 at peak) |
-  | Group of 4, 30 messages | ≈ $0.0015 | ≈ $0.0005 | ≈ $0.002 |
-  | Debate, standard format | ≈ $0.0012 | ≈ $0.0003 | ≈ $0.0015 |
+  | 1:1, 20 exchanges (~3,500 tokens of messages + ~1,000 of list in; ~400 out) | ≈ $0.001 | ≈ $0.0002 | **≈ $0.0012** (≈ $0.0022 at peak) |
+  | Group of 4, 30 messages (~4,000 of lists) | ≈ $0.0016 | ≈ $0.0005 | ≈ $0.002 |
+  | Debate, standard format | ≈ $0.0015 | ≈ $0.0004 | ≈ $0.002 |
 
   Writing after each exchange would have cost about $0.004 for the same 1:1 sitting.
-- **Cost of recall, per reply:** the block ≈ 320 uncached tokens ≈ **$0.00005**; on a deep turn, ≤ 6 memory nouls in
-  Jev call 2 ≈ $0.00005.
-- **Ledger and caps:** the extraction is `memory`, the Jev calls `decision`, the embeddings `embedding`; none drains
-  energy (ENG-02 AC2); all count against the daily cap.
+- **Cost of recall:** the memory list ≈ 1,000 cached tokens ≈ $0.000003 a reply, ≈ $0.00015 per sitting start or
+  refresh. In-session recall: ≈ $0.00003 to embed each window drop; on a gate-yes turn, Jev call 2's 6 nouls at
+  ~500 tokens ≈ **$0.00013**, plus the query embedding (≈ $0.000001).
+- **Ledger and caps:** the rewrite call is `memory`, the Jev calls `decision`, the embeddings `embedding`; none drains
+  energy (ENG-02 AC2); all count against the daily cap but never pause sessions (M6).
+- **Growth:** nothing is deleted automatically; the prompt shows the top ~30; the Memory tab lists all (unpaginated
+  today, fine into the hundreds; pagination is noted for task 13).
 
 ## 5. Checks before this is locked
 
@@ -427,57 +550,70 @@ Collected for the paid-check step after all 13 tasks (the user's rule), not run 
 
 | # | Check | Pass | If it fails |
 |---|---|---|---|
-| 1 | **5 real extraction calls** (1:1, group, watch, debate, one 8,000-token piece; ≈ $0.01): valid JSON, output size, the perspective and language rules | all valid; output well under `max_tokens` | tighten the prompt; raise `max_tokens` or lower the per-character cap |
-| 2 | **10 pause runs end to end**: time from the trigger to the commit | p90 recorded | `memory.greetWaitMs` = min(the p90, 4 s); slower runs simply land after the greeting |
-| 3 | Doc 01 check 4 (extended): Jev `importance` and `memory_compare` on 20 items each; billing per request or per question; the score's weighted position runs 1–5 | recorded | the cost table and M4's mapping follow the real scale |
+| 1 | **6 real rewrite calls** (1:1, a group of 5, watch, debate, a Chinese or mixed chat, one 8,000-token piece) with planted lists (≈ $0.01): valid JSON, output size against `max_tokens`, the perspective, language and "keep what's still true" rules | all valid; output well under the cap | tighten the prompt; adjust the `max_tokens` formula |
+| 2 | **10 pause runs end to end**: time from the trigger to the commit | p90 recorded | it sets expectations only; nothing waits on a run (M10) |
+| 3 | Doc 01 check 4 (extended): Jev `importance` and `memory_guard` on 20 items each; billing per request or per question; the score's weighted position runs 1–5 | recorded | the cost table and M4's mapping follow the real scale |
+| 4 | Doc 01 check 3 (extended): **10 in-session recall turns**: time from the gate's "yes" to the kept lines (query embedding, hybrid search, MMR, Jev call 2) | within doc 01's deep-path budget | keep Jev; the deadline follows the measured p90, and the result is reported (doc 07 G2) |
 
 ## 6. Changes this design needs (each approved at its OpenSpec change)
 
-None changes the HTTP contract or a requirement.
+None changes the HTTP contract. The three requirement-level doc edits in the status note were approved by the user in
+this task's discussion.
 
 | Change | Kind | Why | Decision |
 |---|---|---|---|
-| Pause triggers (`leave`, `end`, debate end, watch `turn_cap`, idle release, session open with a shared character, start-up sweep); runtime-level `memory_run` tasks via `rt.spawn`, ≤ 2 at once, one per session; cancelled by deletes and resets; the per-reply `_remember` removed | backend | finding 5 | M1 |
-| `sessions.memory_seq` and `memory_tries` (Alembic migration; existing sessions start at their last `seq`); the stretch builder with context lines and 8,000-token pieces | backend | | M2 |
-| `MemoryWriter.on_stretch`; `naive`'s single extraction call; the `agent` memory graph (LangGraph, no checkpointer); the extraction prompt and schema; `runtime.llm.calls.memory` `max_tokens` 1,500 | backend + config | finding 2 | M3, M10 |
-| Jev purposes `importance` (exists) and **`memory_compare`** (added to `PURPOSE_CATEGORY` as a decision); their questions and floors in the question bank | backend | | M4, M5 |
-| `MemoryStore.apply_run` (all characters + checkpoint in one transaction, sorted locks, the Forget-race rules, `Touch` of searched memories) | backend | | M6 |
-| Regenerate undo (remove the message's memories, restore what they superseded, move the checkpoint back) | backend | finding 4 | M7 |
-| `ScopedIndex.memory_knn`; the core-block read and the ranking; memory candidates in Jev call 2; "needs memories?" only past `coreK`; the memory lines in the `agent` tail; the greeting's extra memories, cue and wait; `memory.*` knobs in `runtime.json` (`coreK` 5, `halfLifeDays` 30, `recencyFloor` 0.5, `modeWeight`, `minImportance` 0.25, `neighbourMin` 0.5, `pieceTokens` 8,000, `maxTries` 3, `maxConcurrent` 2, `greetWaitMs` 4,000) | backend + config | finding 3 | M8, M9 |
-| The Memory tab's "Preview: final design by AI team" ribbon removed (PRF-07; the shape is final) | frontend | | M10 |
-| Eval: the importance, compare and relevance sets; the relabelled needs-memories set; the `memory` suite; two B4 judge rows | evals | measure it | M11 |
-| **Docs to amend:** OQ-AI-01 resolved; [05-ai-seams](../backend/05-ai-seams.md) §2.2 (`MemoryWriter`, `MemoryRetriever`) and §4 (the post-turn queue); [02-storage](../backend/02-storage.md) §3.7 (writes at pauses) and the contract's `MemoryItem` "PROVISIONAL" note; doc 01 A4, A7, A9, §9; doc 02 B2, B4, B7, §8; doc 03 C1 and §7; doc 04 §7; doc 05 X1 and §7 | docs | consistency | all |
+| Pause triggers: last stream subscriber gone 30 s (any status), `leave`, `end`, debate end, watch `turn_cap`, the kept turn's `turn.end`, a session opening with a shared character (ahead in the queue), start-up sweep after `close_interrupted_streams`, idle release; runtime-level `memory_run` tasks via `rt.spawn`, ≤ 2 at once, one per session, outside `llmConcurrency`, cancelled by deletes and resets; deferred without a usable key; the per-reply `_remember` removed | backend | findings 2, 6 | M1 |
+| `sessions.memory_seq` (message `seq`; existing sessions start at their max; forks at the copied max), `memory_reread`, `memory_tries` (Alembic migration); the stretch builder (settled bound, kinds and labels, context lines, 8,000-token pieces) | backend | findings 5, 8, 9 | M2 |
+| `MemoryWriter.on_stretch`; the rewrite prompt and schema; `naive`'s unguarded call; the `agent` memory graph (LangGraph, no checkpointer); `runtime.llm.calls.memory` with the scaled `max_tokens` and the split on `length` | backend + config | finding 2 | M3, M11 |
+| Jev purposes `importance` (exists) and **`memory_guard`** (added to `PURPOSE_CATEGORY` as a decision); their questions and floors in the question bank; `Reinforce` also sets `last_recalled_at`; the duplicate check with `memory.dupCosine` per space | backend | | M4, M5 |
+| `MemoryStore.apply_run` (all characters + the compare-and-set checkpoint + the re-read list in one transaction; the variant check; per-character run locks; the Forget-race rule); memory purposes never pause sessions at the cap (gateway: `sessions=False`, no `pause_all_for_cap`) | backend | finding 7 | M6 |
+| The regenerate and continue undo + `memory_reread` at the command; `_forget_derived` uses the undo instead of the whole chain | backend | finding 4 | M7 |
+| The memory list in the `agent` system message 1 (ranking, 1,000-token fill, frozen per sitting, refreshed on Forget and on a live commit); `memory.recalled` for the block; "needs memories?" removed from Jev call 1; `memory.*` knobs in `runtime.json` (`halfLifeDays` 30, `recencyFloor` 0.5, `modeWeight`, `blockTokens` 1,000, `minImportance` 0.25, `dupCosine` 0.92, `pieceTokens` 8,000, `maxTries` 3, `maxConcurrent` 2, `leaveGraceMs` 30,000) | backend + config | finding 3 | M8 |
+| In-session recall: `message_fts` and `message_vec__{space}` (the SpaceManager's), the batch embedding at window drops, the gate in Jev call 1, BM25 ∪ dense → RRF → MMR → Jev call 2, the tail block, `contextInSession`; scrub, delete and fork handling | backend | finding 3 | M9 |
+| The greeting's newest memories and cue | backend | | M10 |
+| The Memory tab's "Preview: final design by AI team" ribbon removed (PRF-07) | frontend | | M11 |
+| Eval: the importance, guard, in-session gate and relevance sets; the `memory` suite (rewrite, in-session recall, two sessions with per-port overrides); two B4 judge rows | evals | measure it | M12 |
+| **Docs to amend:** OQ-AI-01 resolved; NFR-35's note; D-97's extension; [05-data-contract](../requirements/05-data-contract.md) `MemoryItem` no longer "PROVISIONAL"; [05-ai-seams](../backend/05-ai-seams.md) §2.2 (`MemoryWriter`, `MemoryRetriever`, `SessionRecall`), §4 (post-turn queue) and §6 (`memory_consolidate` removed, `message_fts` designed); [02-storage](../backend/02-storage.md) §3.7 (writes at pauses) and its job-kind list; doc 01 A4, A7, A9, A13, §9; doc 02 B2, B4, B7, §8; doc 03 C1 and §7; doc 04 P9 and §7; doc 05 X1, X7, X9 and §7 | docs | consistency | all |
 
 ## 7. Left for later tasks
 
-- The final embedding model and dimensions (task 10); memory vectors follow the active space like knowledge.
-- Prompt injection inside quoted transcripts, sensitive categories beyond M3's never-store list, and a user trying
-  to plant memories in a character (task 11).
-- How the pause runs and their Jev decisions show in Insight's System 1 section (task 13).
+- **Task 10:** the final embedding model and dimensions (memory and message vectors follow the active space, and
+  `dupCosine` is retuned with it); the CJK tokeniser for FTS; the shared retrieval parameters.
+- **Task 11:** stored memory text now sits in **every** future system prompt, which makes it a stored
+  prompt-injection path ("notes, not instructions" is only a start); sensitive categories beyond M3's never-store list
+  (M3 keeps health facts on purpose); `about_user` facts are copied to every character present, so Forget is per
+  character; a user trying to plant memories in a character.
+- **Task 13:** how pause runs and their Jev decisions show in Insight's System 1 section; Memory tab pagination; a
+  memory whose source session was deleted keeps a dangling "View source".
 - Not in v1 (D-71): editing, pinning or adding memories; reflections that merge memories into higher-level ones; facts
   shared by every character in a world. Added to [docs/v2](../v2/README.md) at task 13 if the user wants them.
 
 ## Sources
 
-- Horizon requirements: D-70, D-71, D-94 ([09-decision-log](../requirements/09-decision-log.md)); PRF-07, INS-01, ENG-02
-  AC2, CHAT-06 AC1 ([02-functional-requirements](../requirements/02-functional-requirements.md));
-  NFR-23, NFR-35 ([07-nfr-risk-cost](../requirements/07-nfr-risk-cost.md)); OQ-AI-01
-  ([08-open-questions-handoff](../requirements/08-open-questions-handoff.md)); `MemoryItem`
-  ([05-data-contract](../requirements/05-data-contract.md)).
+- Horizon requirements: D-70, D-71, D-94, D-97 ([09-decision-log](../requirements/09-decision-log.md)); PRF-07,
+  INS-01, ENG-02 AC2, CHAT-02 AC3, CHAT-06 AC1, STATE-03
+  ([02-functional-requirements](../requirements/02-functional-requirements.md)); NFR-23, NFR-35
+  ([07-nfr-risk-cost](../requirements/07-nfr-risk-cost.md)); OQ-AI-01
+  ([08-open-questions-handoff](../requirements/08-open-questions-handoff.md)); `MemoryItem` and
+  `TurnTrace.contextInSession` ([05-data-contract](../requirements/05-data-contract.md)).
 - Code: [turn.py](../../backend/horizon/sessions/turn.py) (`_remember`, `_forget_derived`),
-  [lifecycle.py](../../backend/horizon/sessions/lifecycle.py) (`leave`, `end`),
-  [actor.py](../../backend/horizon/sessions/actor.py) (idle release), [store.py](../../backend/horizon/services/memory/store.py),
+  [commands.py](../../backend/horizon/sessions/commands.py) (`_regenerate`),
+  [lifecycle.py](../../backend/horizon/sessions/lifecycle.py) (`leave`, `end`, `fork`),
+  [actor.py](../../backend/horizon/sessions/actor.py) (`is_idle`), [manager.py](../../backend/horizon/sessions/manager.py)
+  (`pause_all_for_cap`), [preconditions.py](../../backend/horizon/sessions/preconditions.py),
+  [context.py](../../backend/horizon/sessions/context.py), [store.py](../../backend/horizon/services/memory/store.py),
   [forget.py](../../backend/horizon/services/memory/forget.py), [retrieval.py](../../backend/horizon/ai/retrieval.py),
-  [index.py](../../backend/horizon/services/knowledge/index.py), [scripted/ports.py](../../backend/horizon/ai/scripted/ports.py),
-  [context.py](../../backend/horizon/gateway/context.py), [tabs.tsx](../../frontend/src/features/profile/tabs.tsx),
-  [sessionRuntime.ts](../../frontend/src/client/sessionRuntime.ts), [runtime.json](../../seed/runtime.json).
+  [profile.py](../../backend/horizon/ai/profile.py), [scripted/ports.py](../../backend/horizon/ai/scripted/ports.py),
+  [pipeline.py](../../backend/horizon/gateway/pipeline.py), [context.py](../../backend/horizon/gateway/context.py),
+  [sessionRuntime.ts](../../frontend/src/client/sessionRuntime.ts), [tabs.tsx](../../frontend/src/features/profile/tabs.tsx),
+  [seed/memory](../../seed/memory), [runtime.json](../../seed/runtime.json), [pricing.json](../../seed/pricing.json).
 - Course notes: 7.1 Agents §7.1.8 (four kinds of memory; long-term facts in a store filtered by user; compress on a
-  hard-coded rule; edit entries, don't rewrite).
+  hard-coded rule; edit entries, don't rewrite the whole store).
 - Chhikara et al., [Mem0: Building Production-Ready AI Agents with Scalable Long-Term Memory](https://arxiv.org/abs/2504.19413)
-  (extract, then compare with similar memories: add, update, delete or nothing).
-- Park et al., [Generative Agents](https://arxiv.org/abs/2304.03442) (recall by relevance × importance × recency).
-- Packer et al., [MemGPT](https://arxiv.org/abs/2310.08560) (a small core memory always in context, plus searched
-  archival memory).
+  (extract, then reconcile with existing memories).
+- Park et al., [Generative Agents](https://arxiv.org/abs/2304.03442) (ranking by importance × recency).
+- Packer et al., [MemGPT](https://arxiv.org/abs/2310.08560) (memory kept in context versus searched).
+- Cormack et al., *Reciprocal Rank Fusion* (SIGIR 2009); Carbonell & Goldstein, *MMR* (SIGIR 1998).
 - [LangGraph: memory concepts](https://langchain-ai.github.io/langgraph/concepts/memory/) (writing memories in the
-  background rather than on the hot path).
+  background).
 - [TypeSafe: confidence-gated routing](https://docs.typesafe.ai/patterns/confidence-routing.md).

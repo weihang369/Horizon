@@ -64,13 +64,14 @@ per character.
 system message 1
   # Who you are (card)                     yes, per session  1,500   (doc 04 P4)
   # Your world and the user                yes               ┐
+  # What you remember (doc 09 M8)          yes, per sitting  │ + ≤ 1,000 (memory list, when there is one)
   # This session (mode block, length)      yes               ├ ≈ 600 (measured by doc 04 check 1)
   # How to reply (rules)                   yes               ┘
 system message 2: summary of older talk    yes, until a drop   600   (X3)
 history window, word for word              yes, except newest  6,000 1:1 · 9,000 group/watch/debate (X2)
 dynamic tail                               no
   retrieval block (deep turns only)                          ≈ 2,200 (task 10 sets k)
-  memory block (core + searched, doc 09 M8; when it has any) ≤ 320
+  earlier in this conversation (doc 09 M9; gate says yes)    ≤ 400
   mood line · repeat hint (off) · voice reminder (off) · cue  ≈ 60
 ```
 
@@ -88,11 +89,11 @@ summary (X3). The next turn sees the new summary and a shorter window: one cache
 
   | Mode | Card | Fixed blocks | Summary | Window | Tail | **Budget** |
   |---|---|---|---|---|---|---|
-  | 1:1 | 1,500 | 600 | 600 | 6,000 | 2,580 | **≈ 11,300** |
-  | Group, watch, debate | 1,500 | 600 | 600 | 9,000 | 2,580 | **≈ 14,300** |
+  | 1:1 | 1,500 | 1,600 | 600 | 6,000 | 2,660 | **≈ 12,400** |
+  | Group, watch, debate | 1,500 | 1,600 | 600 | 9,000 | 2,660 | **≈ 15,400** |
 
-  The tail includes doc 09 M8's memory block (≤ 320, on every turn when the character has memories).
-  A quick turn uses about 2,200 less (no retrieval block). The window can run over its size until the summary lands
+  The fixed blocks include doc 09 M8's memory list (≤ 1,000, cached for the sitting); the tail includes doc 09 M9's
+  in-session recall (≤ 400). A quick turn uses about 2,600 less (no retrieval block, no recall). The window can run over its size until the summary lands
   (X2, up to the ceiling), so `used` may exceed `budget`. Insight's context bar today scales to `budget` and clips the
   rest ([Data.tsx](../../frontend/src/ui/Data.tsx) `StackedBar`), so it is changed to scale to the larger of the two
   and mark the overflow (a UI change, not a contract change).
@@ -284,7 +285,7 @@ already exist.
 | `mode` | the session block (block 3) plus the tail's mood line, cue, and any repeat hint or voice reminder |
 | `history` | the summary plus the history window, **without** the latest user message |
 | `user` | the latest user message (0 when the turn has none, as in watch) |
-| `memory` | the memory block: the core memories and any searched ones (doc 09 M8) |
+| `memory` | the memory list in system message 1 (doc 09 M8) |
 | `knowledge` | the passages in the retrieval block |
 | `budget` | the mode's planned input (X1) |
 | `cacheHitPct` | not set; Insight derives it from `model` (X6) |
@@ -366,7 +367,7 @@ Doc 01 A3 rule 6: Jev gets less accurate as irrelevant content grows, so the sta
 - **Offline, $0:** the byte-identical prefix test (X6), the X7 mapping on fixture turns, the X2 drop, ceiling and
   fork cases on synthetic histories, the X4 multi-line attribution, and the X9 limit and cut order.
 - **Doc 02 B7 cost:** `all` ≈ $0.58 (was $0.50); ≈ $0.80 at peak; ≈ $0.41 once `naive` replies are cached (doc 06
-  E8 later makes these $0.59 / $0.81 / $0.42, and doc 07 G11 $0.65 / $0.92 / $0.46, and doc 08 V11 $0.80 / $1.18 / $0.55, and doc 09 M11 $0.91 / $1.35 / $0.62). `long` ≈ $0.12, run rarely.
+  E8 later makes these $0.59 / $0.81 / $0.42, and doc 07 G11 $0.65 / $0.92 / $0.46, and doc 08 V11 $0.80 / $1.18 / $0.55, and doc 09 M12 $0.97 / $1.47 / $0.67). `long` ≈ $0.12, run rarely.
 
 ## 5. Checks before this is locked
 
