@@ -114,3 +114,18 @@ without DeepSeek's first-party cache price), against the speed-and-cost headline
 1. A Settings switch that sets `data_collection: "deny"` for chat, with the price difference shown first (NFR-08).
 2. The ledger's `provider` column already shows where each call went; Insight shows it per reply.
 3. A latency and cost check on the third-party route before it is offered.
+
+## 6. Style reference images for a cast-wide look
+
+**v1 behaviour:** the art style is locked by the style preset's prompt fragment in every base and sheet prompt;
+`StylePreset.referenceImageUrls` stays empty, and the locked base is the only reference for emotion edits (doc 12 I6).
+
+**Why it was deferred:** a reference portrait in a base call can leak its face into a new character (against the
+original-character rule and identity), and the real seed portraits don't exist yet (D-52). The D-61 run already scored
+the style 5/5 with text alone.
+
+**What v2 would need:**
+1. Real seed portraits to reference, or style-only images with no face.
+2. A paid test (≈ $0.15): one reference for two new characters, scored by eye (D-88) for face leaks and style match.
+3. If it passes, `referenceImageUrls` filled per preset and sent as extra `input_references` in base and sheet calls
+   (Seedream takes up to 14, free).
