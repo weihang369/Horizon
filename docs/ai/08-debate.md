@@ -493,7 +493,7 @@ than a list of events, so any steering that changes their inputs makes them be r
 - **Cost (off-peak, first run):** decisions +180 Jev requests of ~3,000 tokens ≈ +$0.023 (≈ $0.10); the new `debate`
   suite ≈ $0.10 (Jev ≈ $0.012, the 48 `naive` baseline verdicts ≈ $0.063, prose, host lines and checks ≈ $0.02);
   conversations +2 free runs ≈ +$0.03 (≈ $0.44). **`all` ≈ $0.80** (≈ $1.18 at peak; ≈ $0.55 with the `naive`
-  replies and verdicts cached; doc 09 M12 later makes these $0.98 / $1.48 / $0.68, and doc 10 K14 $1.01 / $1.53 / $0.71). **Once:** generating the 8 debates and the 12 planted rewrites ≈ $0.09. If Jev bills
+  replies and verdicts cached; doc 09 M12 later makes these $0.98 / $1.48 / $0.68, and doc 10 K14 $1.01 / $1.53 / $0.71, and doc 11 S10 $1.04 / $1.58 / $0.74). **Once:** generating the 8 debates and the 12 planted rewrites ≈ $0.09. If Jev bills
   the state per question (doc 01 check 4), the suite's Jev part grows to about $0.10.
 
 **Rejected:**
@@ -563,7 +563,8 @@ None changes the HTTP contract or a requirement.
   (task 13).
 - ~~Retrieval in debate turns (task 10).~~ Resolved by doc 10 K4 and K7: the motion plus the last opposing argument,
   never rewritten; the gate decides per member; k = 2; never abstains.
-- What a debater says when a motion is unsafe, and checking the motion itself: task 11.
+- ~~What a debater says when a motion is unsafe, and checking the motion itself: task 11.~~ Resolved by doc 11 S3:
+  the motion is checked once at creation (`content_refused`), and a moderator line by the next `debate_plan`.
 - Not in v1: cross-examination, a cast character as chair, AI-written motion suggestions (MULTI-05).
 
 ## Sources

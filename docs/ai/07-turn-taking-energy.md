@@ -147,6 +147,9 @@ first reply streams … turn.end                          else Jev call 1: who s
     question");
   - **per candidate:** the gates and the emotion (doc 06 E1's question, worded for this turn kind). This replaces
     doc 01 A4's "re-plan for the second replier": it is the same request, now also choosing who.
+- **Amended by doc 11 S5:** the follow plan now **starts when the first reply's stream ends**, in parallel with the
+  output check, instead of after `turn.end`; a block cancels it. A steered or care turn (doc 11 S3, S4) has no follow
+  plan.
 - **A deadline, not a timeout:** purpose `follow_plan`, deadline **`turn.end` + 400 ms**
   (`timeoutsMs.decision.follow_plan` = 400, measured from `turn.end`). The deadline **replaces** the 400 ms turn gap
   for this step instead of adding to it, so `turn.next` comes at most about 400 ms after `turn.end`, inside NFR-02's
@@ -404,7 +407,7 @@ Doc 04 left "when a character should address another character" to this task.
 - **Cost:** decisions ≈ +220 Jev requests (≈ 1,920 in all, ≈ $0.08); summary suite +10 recaps ≈ +$0.02 (≈ $0.08);
   conversations +6 agent free runs ≈ +$0.03 (≈ $0.41). **`all` ≈ $0.65** (≈ $0.92 at peak, ≈ $0.46 with the
   `naive` replies cached; the recaps are cached by request hash like every DeepSeek reply). Doc 08 V11 later makes
-  these $0.80 / $1.18 / $0.55, and doc 09 M12 $0.98 / $1.48 / $0.68, and doc 10 K14 $1.01 / $1.53 / $0.71.
+  these $0.80 / $1.18 / $0.55, and doc 09 M12 $0.98 / $1.48 / $0.68, and doc 10 K14 $1.01 / $1.53 / $0.71, and doc 11 S10 $1.04 / $1.58 / $0.74.
 
 **Rejected:**
 - **one accuracy number for both group slots:** the second slot's right answer is often `none`, so a mixed number

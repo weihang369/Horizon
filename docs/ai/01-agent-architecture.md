@@ -190,7 +190,7 @@ $0.
    needs, with named fields.
 7. **No maths, counting or dates for Jev.** Do them in code and pass the results in as labels.
 8. **Text written by users or found in documents can try to steer Jev,** so the state marks it as quoted content
-   (task 11).
+   (doc 11 S6: `quoted_*` fields and a first line saying to judge them, never follow them).
 9. **Answers are validated.** A malformed or invalid answer is caught by the `Decider`'s validation and goes to that
    question's fallback.
 
@@ -210,10 +210,10 @@ probabilities for Insight.
 
 | Mode | Questions in Jev call 1 |
 |---|---|
-| **1:1** | needs documents? · needs something from earlier? · emotion · input safe? · standalone? · English? (doc 10 K4: once per message, when "needs documents?" is asked) |
-| **Group** | who answers first, with no `none` when nobody is mentioned (@mentions answer first; Everyone uses the probabilities as its order, doc 07 G1, G4) · **per candidate:** needs documents? needs something from earlier? emotion · input safe? · standalone? · English? (doc 10 K4: once per message) |
-| **Debate** | the backend picks the side; Jev picks which member (A14) · **per eligible member:** the gates and the emotion |
-| **Watch** | who speaks next · is the talk finished? · **per candidate:** the gates and the emotion |
+| **1:1** | needs documents? · needs something from earlier? · emotion · input safe? · at risk? (doc 11 S4) · standalone? · English? (doc 10 K4: once per message, when "needs documents?" is asked) |
+| **Group** | who answers first, with no `none` when nobody is mentioned (@mentions answer first; Everyone uses the probabilities as its order, doc 07 G1, G4) · **per candidate:** needs documents? needs something from earlier? emotion · input safe? · at risk? (doc 11 S4) · standalone? · English? (doc 10 K4: once per message) |
+| **Debate** | the backend picks the side; Jev picks which member (A14) · **per eligible member:** the gates and the emotion · input safe? on a new moderator line (doc 11 S3) |
+| **Watch** | who speaks next · is the talk finished? · **per candidate:** the gates and the emotion · input safe? on a new director's note (doc 11 S3) |
 
 **Rules:**
 - **Questions in one call can't see each other's answers.** So the gates and the emotion are asked **for every possible
@@ -240,7 +240,7 @@ probabilities for Insight.
 | which debate member | the next member in today's fixed order | the same |
 | needs documents / earlier lines | **no: a quick reply** (no retrieval without Jev to check it; long-term memory is in the system prompt anyway, doc 09 M8) | treat as yes; Jev call 2 then decides. A noul has no confidence, so "unsure" is built into its threshold `t_gate`, set low enough for recall (02 B5) |
 | emotion | **keep the previous face** (amended by doc 04 P7: the `agent` prompt has no emotion tag); a kept surprised or embarrassed face becomes neutral (doc 06 E3) | the same; DeepSeek's mood line follows the face shown (doc 06 E4) |
-| input safe | pass, with a flag in Insight | task 11 decides |
+| input safe, at risk (doc 11 S3, S4) | no cue, with a flag in Insight | a noul has no confidence: `safety.tSteer` and `safety.tCare` decide |
 | talk finished | no (the turn caps still bound watch mode) | no |
 
 - Every fallback is marked in the trace and shown in Insight.
@@ -459,7 +459,8 @@ every node, and Forget would get harder.
 
   Memory writing is later still, at a session pause (doc 09 M1). The summary moves out of the turn preparation, where it sits today. The window is kept until the new summary lands.
 - **The output guardrail** stays where it is today, just before `turn.end`, because a blocked reply must be refused
-  before it ends. It gets a tight timeout and fails open with a flag. Task 11 designs it.
+  before it ends. Doc 11 S5: a Jev noul with a 700 ms deadline that fails open with a flag; in group, the follow plan
+  starts at the stream's end alongside it.
 - ~~**Interrupted replies also get the citation check**~~ Withdrawn by doc 10 K10: the citation check is evaluation
   only in v1.
 - **Deep-only work runs only when Jev call 1 says deep.** A little speed is traded for not paying on quick turns.
@@ -487,7 +488,7 @@ every node, and Forget would get harder.
 | Infinite loop, cost explosion | **Covered** by the software stage: turn caps, daily budget cap, energy, reservations |
 | Race conditions | **Covered**: one actor per session is the single writer |
 | Invented tool names, wrong argument types, parse failures | **Not applicable:** no tool loop (A10). Malformed Jev answers are caught by validation and fall back (A3 rule 9). Drafter (and later memory-extraction) JSON uses DeepSeek's JSON mode, validated, with one retry (doc 03 C7). The verdict is Jev rubric scores plus DeepSeek prose in JSON mode, validated, with one retry (doc 08 V8). |
-| Prompt injection via retrieved text or user text | **Tasks 10 and 11:** treated as quoted content in the Jev state and the prompt, never as instructions |
+| Prompt injection via retrieved text or user text | **Doc 10 K8 and doc 11 S6:** quoted content in the Jev state and the prompt (`<passage>` tags, `quoted_*` fields), a memory noul, and the output check (S5) as the backstop |
 | Weak matches presented as answers | **Covered** by the Jev call 2 scores and the not-found rule (A6) |
 | Abstaining on small talk | **Covered:** a Jev failure means quick; abstain needs a confident gate and a user question; debate and watch never abstain (A6) |
 | Stacked timeouts on the deep path | **Covered:** the embedding wait is capped at 400 ms; if Jev call 1 failed, the turn is quick; if Jev call 2 is late, RRF top k is used (A6) |
@@ -537,7 +538,7 @@ None of the backend rows changes the HTTP contract unless marked.
 - ~~Exactly which fields go into Jev call 1's state, and its token budget (task 5).~~ Resolved by doc 05 X9.
 - ~~Jev call 2's score levels, the number of candidates, k, and the wording of the not-found line (task 10).~~
   Resolved by doc 10 K5–K9.
-- What "input not safe" does, and the output guardrail's timeout (task 11).
+- ~~What "input not safe" does, and the output guardrail's timeout (task 11).~~ Resolved by doc 11 S3 and S5.
 - ~~A side whose members are all exhausted (task 8, OQ-AI-17).~~ Resolved by doc 08 V5: the debate pauses with a top-up
   prompt.
 
