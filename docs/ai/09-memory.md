@@ -18,7 +18,7 @@
 >   [07-turn-taking-energy](07-turn-taking-energy.md) (G1–G13) and [08-debate](08-debate.md) (V1–V12).
 > - **No contract change.** `MemoryItem` keeps its shape and its four kinds; Insight's `memory.recalled` and
 >   `contextInSession` already exist in `TurnTrace`, and so does the ledger's `memory` category.
-> - **Three requirement-level doc edits, approved by the user in this task's discussion:** a one-line note on
+> - **Three requirement-level doc edits, approved by the user (confirmed 2026-10-10 by explicit choice):** a one-line note on
 >   **NFR-35** (memory frozen for a sitting sits in the cached prefix, M8); dropping `MemoryItem`'s "PROVISIONAL"
 >   label and the Memory tab's "Preview" ribbon (the shape is final); and extending **D-97** so the query is also
 >   embedded when the in-session recall gate says yes (M9; doc 01 already plans to replace D-97's rule). Everything
@@ -48,6 +48,10 @@ each character's own point of view; the user can only view and forget).
 - **Search covers only this session's older messages, and it is hybrid:** dense embedding + BM25, fused by RRF, then
   MMR (M9). (Proposed by the user during the review; it replaced the first version's "top 5 in the tail plus a
   search over long-term memories".)
+- **Health details are kept** like any other lasting fact (a doctor character remembering your headaches is the
+  point), and every line can be forgotten (M3).
+- **Forget stays per character in v1** (D-71); "Forget this from every character" goes to the
+  [v2 backlog](../v2/README.md) §2.
 - Standing rule (doc 07 G2): **if Jev proves slow, Jev stays**; deadlines follow the measured latency and the result is
   reported.
 
@@ -256,7 +260,7 @@ fewer, more complete lines.
     new messages use** (doc 05's rule for the summary);
   - **rewrite** only when the new messages change or add to the line, and **keep every part of the old line that is
     still true**; **never drop a line** (only the user forgets);
-  - keep what lasts: facts about people (work, family, plans, health, likes), notable events, **promises the character
+  - keep what lasts: facts about people (work, family, plans, health (the user's decision), likes), notable events, **promises the character
     made**, relationships that changed; in a debate, the side argued, the strongest opposing point and the outcome;
   - skip greetings, small talk, anything true only in the moment, hypotheticals and role-play asides;
   - **never** store passwords, keys, card, bank or ID numbers, or an exact home address (task 11 may extend the list);
@@ -581,8 +585,8 @@ this task's discussion.
   `dupCosine` is retuned with it); the CJK tokeniser for FTS; the shared retrieval parameters.
 - **Task 11:** stored memory text now sits in **every** future system prompt, which makes it a stored
   prompt-injection path ("notes, not instructions" is only a start); sensitive categories beyond M3's never-store list
-  (M3 keeps health facts on purpose); `about_user` facts are copied to every character present, so Forget is per
-  character; a user trying to plant memories in a character.
+  (health facts stay, by the user's decision); a user trying to plant memories in a character. (`about_user` facts
+  are copied to every character present, so Forget is per character; "Forget everywhere" is in the v2 backlog §2.)
 - **Task 13:** how pause runs and their Jev decisions show in Insight's System 1 section; Memory tab pagination; a
   memory whose source session was deleted keeps a dangling "View source".
 - Not in v1 (D-71): editing, pinning or adding memories; reflections that merge memories into higher-level ones; facts

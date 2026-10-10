@@ -42,3 +42,23 @@ Before v1.0, a model override changed only what the Test button probed.
    default before they switch.
 8. **UI.** Make the Models tab editable again (SET-05). Show the "Unverified model" warning, the per-reply cost
    estimate, and a Reset to defaults button.
+
+## 2. "Forget everywhere" for a memory about the user
+
+**Deferred by:** [docs/ai/09-memory.md](../ai/09-memory.md) (task 9, the user's choice, 2026-10-10).
+
+**v1 behaviour:** every character present forms memories from their own point of view (D-71), so a fact about the
+user ("Kai quit coffee") can live in several characters' lists. The Memory tab's Forget removes it from **one**
+character; the user repeats Forget on each character's tab. D-71 limits v1 to view and forget.
+
+**Why it was deferred:** a cross-character Forget is a new contract command and a new UI action, which go back
+through the SWE side, and per-character Forget already keeps the "Forget means gone" promise for each list.
+
+**What v2 would need:**
+1. **Finding the copies:** memories written by the same pause run share `source_message_id`; later rewrites keep the
+   chain through `superseded_by`. A match by source message, plus a Jev noul "is this the same fact?" for rewritten
+   lines in other characters' lists, finds them.
+2. **A contract command** (for example `forgetMemoryEverywhere(memoryItemId)`) returning the forgotten IDs, and a
+   confirmation that names the characters affected.
+3. **One transaction** running today's Forget (vectors zeroed, traces scrubbed, WAL truncated, D-94) for every copy,
+   with each live session refreshing its memory list (doc 09 M8).
