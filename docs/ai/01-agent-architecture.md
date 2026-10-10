@@ -105,7 +105,7 @@ flowchart TD
     F --> R
     R["Frozen plan + hits in TurnContext"] --> DS["System 2: DeepSeek streams the reply,<br/>with the mood line and any passages in the dynamic tail"]
     DS --> SHOW["Face (after the reply's preflight), then the words"]
-    DS --> AFTER["After turn.end (the user never waits):<br/>post-turn checks · memory graph · listener reactions · rolling summary"]
+    DS --> AFTER["After turn.end (the user never waits):<br/>post-turn checks · listener reactions · rolling summary<br/>(the memory graph runs later, at a session pause: doc 09 M1)"]
 ```
 
 ## 5. Decisions
@@ -219,7 +219,8 @@ probabilities for Insight.
 - **Questions in one call can't see each other's answers.** So the gates and the emotion are asked **for every possible
   speaker**, and code keeps the answers for whoever was chosen.
 - **A gate question is only asked when it can pay off.** "Needs documents?" only for a character with knowledge
-  indexed; "needs memories?" only for a character with memories. This keeps the state smaller and the call cheaper.
+  indexed; "needs memories?" only for a character with **more than 5 current memories** (doc 09 M8: the core block on
+  every reply already holds up to 5). This keeps the state smaller and the call cheaper.
 - **Second replier in group mode** (amended by doc 07 G2). The second slot is decided **after the first reply ends**,
   by a short Jev request (the **follow plan**, 400 ms): who, if anyone, speaks up now, plus each candidate's gates and
   emotion, so the second character can answer the first. Late, failed or unsure means no second reply. If both go
@@ -236,7 +237,7 @@ probabilities for Insight.
 |---|---|---|
 | who speaks (group / watch) | @mentions, else **least recently spoken** (today's rule) | @mentions, else the least recently spoken **of Jev's top 2** |
 | which debate member | the next member in today's fixed order | the same |
-| needs documents / memories | **no: a quick reply** (no retrieval without Jev to check it) | treat as yes; Jev call 2 then decides. A noul has no confidence, so "unsure" is built into its threshold `t_gate`, set low enough for recall (02 B5) |
+| needs documents / memories | **no: a quick reply** (no retrieval without Jev to check it; the memory core block still shows, doc 09 M8) | treat as yes; Jev call 2 then decides. A noul has no confidence, so "unsure" is built into its threshold `t_gate`, set low enough for recall (02 B5) |
 | emotion | **keep the previous face** (amended by doc 04 P7: the `agent` prompt has no emotion tag); a kept surprised or embarrassed face becomes neutral (doc 06 E3) | the same; DeepSeek's mood line follows the face shown (doc 06 E4) |
 | input safe | pass, with a flag in Insight | task 11 decides |
 | talk finished | no (the turn caps still bound watch mode) | no |
@@ -350,7 +351,7 @@ emotion, and the hits it kept. The reply engine never queries storage (D-92 hold
 |---|---|
 | **Turn plan graph** (A4, A6): Jev call 1 → quick/deep branch → embed → search → parallel Jev call 2 → keep or drop | **The reply:** one DeepSeek stream (today's engine, extended in A5) |
 | **Post-turn check graph:** emotion check ∥ citation check → merge into Insight (the live emotion check waits for the System 1 section, doc 06 E7) | **Listener reactions** (one Jev call, doc 06 E5) |
-| **Memory graph** (task 9): extract → Jev importance → compare with old memories → insert / supersede / reinforce / skip | **Rolling summary** (one DeepSeek call) |
+| **Memory graph** (doc 09 M1–M5), **at a session pause, not after `turn.end`**: DeepSeek extracts for everyone present → Jev importance (drop the lowest) → nearest old memories → Jev compare → insert / supersede / reinforce | **Rolling summary** (one DeepSeek call) |
 | **Verdict graph** (doc 08 V7–V9): Jev rubric scores in parallel → code picks the stronger case → DeepSeek writes the prose (JSON) | **Profile drafter, image, song** |
 
 **Why the reply itself is not a graph:** it is a single streaming call. Keeping it as today's tested engine leaves the
@@ -380,7 +381,8 @@ parallelism pay off.
 
 **Decision:**
 - Each graph run starts from frozen inputs and returns a result.
-- `data/graph.db` stays reserved. Task 9 decides whether the memory consolidation job needs it.
+- `data/graph.db` stays reserved. Doc 09 M10: the memory graph doesn't need it either (its checkpoint is a session
+  column in SQL), and there is no consolidation job.
 
 **Why:**
 - the event log already gives what a checkpointer gives (7.1.4);
@@ -446,11 +448,10 @@ every node, and Forget would get harder.
   - DeepSeek's own first-token time.
 - **After `turn.end`, never delaying the next speaker (NFR-02):**
   - the emotion and citation checks;
-  - memory writing;
   - listener reactions;
   - the rolling summary.
 
-  The summary moves out of the turn preparation, where it sits today. The window is kept until the new summary lands.
+  Memory writing is later still, at a session pause (doc 09 M1). The summary moves out of the turn preparation, where it sits today. The window is kept until the new summary lands.
 - **The output guardrail** stays where it is today, just before `turn.end`, because a blocked reply must be refused
   before it ends. It gets a tight timeout and fails open with a flag. Task 11 designs it.
 - **Interrupted replies also get the citation check** (new behaviour; today an interrupted reply skips the after-reply
@@ -523,7 +524,8 @@ None of the backend rows changes the HTTP contract unless marked.
 
 ## 9. Left for later tasks
 
-- Long-term memory policy: remember everything, or keep only what Jev scores as important (task 9).
+- ~~Long-term memory policy: remember everything, or keep only what Jev scores as important (task 9).~~ Resolved by
+  doc 09: written at session pauses, kept by Jev importance, tidied by Jev compare.
 - Gate thresholds and confidence floors, tuned on labelled data (tasks 2, 9, 10).
 - ~~The mood-line wording, and AUTO emotion confirmed by the evaluation (task 6).~~ Resolved by doc 06 (E4, E8).
 - ~~Exactly which fields go into Jev call 1's state, and its token budget (task 5).~~ Resolved by doc 05 X9.

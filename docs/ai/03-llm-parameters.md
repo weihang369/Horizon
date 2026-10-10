@@ -166,7 +166,7 @@ The table lives in the seed-build source `frontend/scripts/seed-build/runtime.co
 | `verdict` | Debate verdict prose, `max_tokens` 1,200 | off | 0.7 | JSON | task 8 (doc 08 V8) |
 | `summary` | Rolling summary | off | 0.7 | text | task 5 (doc 05 X3) |
 | `episode` | Watch's "Summarise" recap, `max_tokens` 400 | off | 0.7 | text | task 7 (doc 07 G10) |
-| `memory` | Memory extraction | off | 0.7 | JSON | task 9 |
+| `memory` | Memory extraction at a session pause, `max_tokens` 1,500 | off | 0.7 | JSON | task 9 (doc 09 M3) |
 | `profile` | Profile draft, regenerate one field | off | 1.0 | JSON | naive today |
 | `probe` | Settings → Test, 1 token | off | none | text | today |
 
@@ -496,7 +496,8 @@ existing `model.provider`. Prices come from the bundled config. `modelOverrides`
 
 - The exact prompt wording for length, bubbles and repetition (task 4).
 - ~~The debate argument and host prompts (task 8).~~ Resolved by doc 08 V4, V6 and V8.
-- The summary and memory-extraction prompts and schemas (task 9).
+- ~~The summary and memory-extraction prompts and schemas (task 9).~~ Resolved by doc 05 X3 (summary) and doc 09 M3
+  (memory extraction).
 - Whether a multi-document deep question should ever think (task 10, with eval data).
 - Custom models (v2, [docs/v2](../v2/README.md)).
 

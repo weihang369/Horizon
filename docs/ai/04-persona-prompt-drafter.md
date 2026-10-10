@@ -355,7 +355,8 @@ should almost never hit, and a stale face for one turn is harmless.
   `test_core.py` ("the greeting has already spent more than this cap").
 - **Later sessions** generate the greeting: the `agent` compiler's greeting cue gains "Don't reuse your usual
   greeting: '<stored greeting>'." The scripted profile keeps its simulated, billed greeting (D-81) for later sessions.
-  Task 9 can add "last time we talked about …".
+  Doc 09 M9 adds "last time we talked about …": the core memory block, up to 2 memories from the last session, and
+  one cue sentence.
 
 **Why:** the user approved this exact line in the wizard, it costs nothing, and the first chat opens about 1–2 s
 faster. A generated greeting afterwards avoids the same line every time.
@@ -479,5 +480,5 @@ the drafter's `world` argument are internal.
 - ~~Group and watch turn-taking, including when a character should stay quiet or address another character (task 7).~~
   Resolved by doc 07 (G1–G7; the turn cue's sentence is G3).
 - ~~Debate argument, host and verdict prompts (task 8).~~ Resolved by doc 08 V4, V6 and V8.
-- "Last time we talked about …" greetings and memory in the prompt (task 9).
+- ~~"Last time we talked about …" greetings and memory in the prompt (task 9).~~ Resolved by doc 09 M8 and M9.
 - The content-rating, advisory and "are you an AI?" wording (task 11).

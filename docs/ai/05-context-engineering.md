@@ -70,6 +70,7 @@ system message 2: summary of older talk    yes, until a drop   600   (X3)
 history window, word for word              yes, except newest  6,000 1:1 · 9,000 group/watch/debate (X2)
 dynamic tail                               no
   retrieval block (deep turns only)                          ≈ 2,200 (task 10 sets k)
+  memory block (core + searched, doc 09 M8; when it has any) ≤ 320
   mood line · repeat hint (off) · voice reminder (off) · cue  ≈ 60
 ```
 
@@ -87,9 +88,10 @@ summary (X3). The next turn sees the new summary and a shorter window: one cache
 
   | Mode | Card | Fixed blocks | Summary | Window | Tail | **Budget** |
   |---|---|---|---|---|---|---|
-  | 1:1 | 1,500 | 600 | 600 | 6,000 | 2,260 | **≈ 11,000** |
-  | Group, watch, debate | 1,500 | 600 | 600 | 9,000 | 2,260 | **≈ 14,000** |
+  | 1:1 | 1,500 | 600 | 600 | 6,000 | 2,580 | **≈ 11,300** |
+  | Group, watch, debate | 1,500 | 600 | 600 | 9,000 | 2,580 | **≈ 14,300** |
 
+  The tail includes doc 09 M8's memory block (≤ 320, on every turn when the character has memories).
   A quick turn uses about 2,200 less (no retrieval block). The window can run over its size until the summary lands
   (X2, up to the ceiling), so `used` may exceed `budget`. Insight's context bar today scales to `budget` and clips the
   rest ([Data.tsx](../../frontend/src/ui/Data.tsx) `StackedBar`), so it is changed to scale to the larger of the two
@@ -223,7 +225,7 @@ context limit.
 - **One shared rolling summary per session** (the user's decision): it is one room and everyone heard the same
   things. It names who said what, so each character can tell its own promises from others'.
 - `session_summaries.kind = 'perspective'` stays unused. A character's own point of view across sessions belongs to
-  long-term memory (task 9).
+  long-term memory (doc 09 M3).
 - The `naive` renderer is unchanged (it stays the yardstick, doc 04 P1).
 
 **Rejected:**
@@ -282,7 +284,7 @@ already exist.
 | `mode` | the session block (block 3) plus the tail's mood line, cue, and any repeat hint or voice reminder |
 | `history` | the summary plus the history window, **without** the latest user message |
 | `user` | the latest user message (0 when the turn has none, as in watch) |
-| `memory` | the memory lines in the retrieval block |
+| `memory` | the memory block: the core memories and any searched ones (doc 09 M8) |
 | `knowledge` | the passages in the retrieval block |
 | `budget` | the mode's planned input (X1) |
 | `cacheHitPct` | not set; Insight derives it from `model` (X6) |
@@ -364,7 +366,7 @@ Doc 01 A3 rule 6: Jev gets less accurate as irrelevant content grows, so the sta
 - **Offline, $0:** the byte-identical prefix test (X6), the X7 mapping on fixture turns, the X2 drop, ceiling and
   fork cases on synthetic histories, the X4 multi-line attribution, and the X9 limit and cut order.
 - **Doc 02 B7 cost:** `all` ≈ $0.58 (was $0.50); ≈ $0.80 at peak; ≈ $0.41 once `naive` replies are cached (doc 06
-  E8 later makes these $0.59 / $0.81 / $0.42, and doc 07 G11 $0.65 / $0.92 / $0.46, and doc 08 V11 $0.80 / $1.18 / $0.55). `long` ≈ $0.12, run rarely.
+  E8 later makes these $0.59 / $0.81 / $0.42, and doc 07 G11 $0.65 / $0.92 / $0.46, and doc 08 V11 $0.80 / $1.18 / $0.55, and doc 09 M11 $0.91 / $1.35 / $0.62). `long` ≈ $0.12, run rarely.
 
 ## 5. Checks before this is locked
 
@@ -399,7 +401,7 @@ internal.
 - ~~The mood line's wording (task 6).~~ Resolved by doc 06 E4.
 - ~~Watch's episode summary and when the talk is finished (task 7).~~ Resolved by doc 07 (G7, G10).
 - ~~What the debate host and verdict see (task 8).~~ Resolved by doc 08 V6 (host) and V7, V8 (verdict).
-- Long-term memory and per-character points of view across sessions (task 9).
+- ~~Long-term memory and per-character points of view across sessions (task 9).~~ Resolved by doc 09.
 - The retrieval block's size: k, the passage length and Jev call 2 (task 10).
 - The quoted-content wording in the Jev state and the prompts, and prompt injection through summaries (task 11).
 
