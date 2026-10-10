@@ -59,8 +59,9 @@ The pipeline was built in M5; this task sets its AI policy.
   too small are merged. There is **no parent–child**: Jev filters the pieces, so each piece is sized to stand on its
   own (K1).
 - **Metadata filters are applied by Python, not by an LLM** (K2):
-  - the world and character always;
-  - a document the user names;
+  - the world and character, always, as a hard filter;
+  - a document the user names, as a **boost**; a hard filter only when the user says so explicitly ("only in…",
+    "according to…", a quoted title). This was chosen after the user asked whether filtering degrades results;
   - a page or section the user names, as a boost.
 - **Citations are deterministic Python,** built from the kept list the search returns, never from what the model
   types (K8).
@@ -166,11 +167,11 @@ The pipeline was built in M5; this task sets its AI policy.
  pack@2: structure first (headings,             has vectors) · if not standalone or not English (Jev
    pages, blocks), then recursive:              call 1) → DeepSeek rewrites it with THIS speaker's prompt
    too large → split at sentences,              (≤ 1.5 s; then BM25 + embed the rewrite too)
-   too small → merge; ≈ 300 tokens            2. Python filter from the user's own words: world +
-   (≤ 400); no overlap; no parent–child          character always · a document named WITH a document word
-   │                                             (filter; retry unfiltered if nothing usable) · a named
- per piece: world, character, source,            page or section (a boost list)
-   title, heading path, page, locator         3. lists → dense fused first → RRF with BM25 + named place
+   too small → merge; ≈ 300 tokens            2. Python, from the user's own words: world + character
+   (≤ 400); no overlap; no parent–child          (hard filter, always) · a named document (a boost list;
+   │                                             a hard filter only if explicit) · a named page or
+ per piece: world, character, source,            section (a boost list)
+   title, heading path, page, locator         3. lists → dense fused first → RRF with BM25 + boosts
  FTS5 (piece, heading)                           → MMR (λ 0.7) → 8 pieces
  vec0 (exact, flat, per character;            4. Jev call 2: 8 score requests in parallel
    `source_id` metadata column);                 answers it · partly · doesn't help
@@ -246,7 +247,7 @@ The pipeline was built in M5; this task sets its AI policy.
 - **an LLM-written context line per piece:** about $0.02 and minutes per 300-page PDF. K3's free header gets much of
   the gain.
 
-### K2. Metadata and filters: Python reads the user's words (the user's decision)
+### K2. Metadata, boosts and filters: Python reads the user's words (the user's decisions)
 
 **Decision:**
 - **Metadata per piece:**
@@ -255,13 +256,14 @@ The pipeline was built in M5; this task sets its AI policy.
   - **No `page` column in vec0:** sqlite-vec 0.1.9 rejects NULL metadata, and most pieces have no page. The page is a
     boost (below), not a vector filter.
   - `sqlite-vec` is pinned to `>=0.1.9`.
-- **Filters,** all built by code from whitelisted fields:
+- **What code does with a named document or place,** using only whitelisted fields:
 
-  | Filter | When | How |
+  | Signal | When | How |
   |---|---|---|
-  | **world + character** | always | the vec0 partition and the `ScopedIndex` checks (NFR-23) |
-  | **a named document** | K2's matcher names one or more of the speaker's sources | BM25 and KNN search only those sources |
-  | **a named page or section** | "page 4", "p. 4", "pp. 3–5", "pages 3 to 5"; "section / chapter / part X" matched to `heading_path` (for seeds, the locator text, e.g. `§ 3.1`) | one more ranked list for RRF: the pieces at that place, in document order (a boost) |
+  | **world + character** | always | a hard filter: the vec0 partition and the `ScopedIndex` checks (NFR-23) |
+  | **a named document** | K2's matcher names one or more of the speaker's sources | **a boost.** One more ranked list for RRF holds that source's own top 20: BM25 and KNN restricted to it, fused. Its pieces rise, but other documents still compete |
+  | **a named document, said explicitly** | the title in quotes, or "only in / just in / only from / according to" followed by a named source | **a hard filter:** BM25 and KNN search only those sources |
+  | **a named page or section** | "page 4", "p. 4", "pp. 3–5", "pages 3 to 5"; "section / chapter / part X" matched to `heading_path` (for seeds, the locator text, e.g. `§ 3.1`) | a boost: one more ranked list, the pieces at that place in document order |
 
 - **The matcher** reads the **current message only:** the user's own words, never the rewrite.
   - **Distinctive words.** A title's distinctive words are what remains after removing:
@@ -278,36 +280,48 @@ The pipeline was built in M5; this task sets its AI policy.
       summary, summaries), or the title in quotes.
   - **Only `indexed` and `keyword_only` sources with pieces can be named.**
 - **Safety nets:**
-  - **Retry unfiltered on nothing usable.** If the filtered search ends with no usable piece after Jev call 2, the
-    unfiltered search runs once. A wrong filter can't produce a false "not in my notes".
-  - **The rewrite never sets a filter** (course notes 6.9: filter injection).
-- **An older space without the `source_id` column** filters after the search instead: KNN with k = 200, then the
+  - **A hard filter that ends with no usable piece** after Jev call 2 runs the search once more without it, so a filter
+    can never cause a false "not in my notes".
+  - **A boost can't hide anything,** so a false match costs at most a slot or two in the 8 candidates.
+  - **The rewrite never names a document** (course notes 6.9: filter injection).
+- **An older space without the `source_id` column** restricts after the search instead: KNN with k = 200, then the
   existing join to `knowledge_chunks` keeps the named sources.
-- **The trace:** the filter isn't shown yet; task 13's System 1 section can add it.
+- **The trace:** the boost or filter isn't shown yet; task 13's System 1 section can add it.
 
 **Examples** (Amara's sources):
 - **Distinctive words:**
   - "Meridian Shift Fatigue Review 2025.pdf" → {meridian, shift, fatigu, review};
   - "ED triage guidelines.pdf" → {ed, triag, guidelin}.
-- **"What do the triage guidelines say about chest pain?"** → triage + guidelines (2 words; "guidelines" is also an
-  anchor) → only the ED triage guidelines.
-- **"What's on page 4 of the fatigue review?"** → fatigue + review, with "review" as the anchor → the fatigue review;
-  its page-4 pieces join RRF as a boost list.
-- **"How much worse is fatigue after long shift blocks?"** → fatigue + shift, but no anchor → **no filter.** Both
-  documents are searched.
-- **"Does fatigue on long shifts change triage?"** → no anchor → no filter, so the triage guidelines are still found.
+- **"What do the triage guidelines say about chest pain?"** → triage + guidelines → the guidelines are **boosted**.
+  They come out on top, and the fatigue review can still contribute if it is relevant.
+- **"According to the triage guidelines, when does chest pain jump the queue?"** → explicit → **only** the
+  guidelines are searched.
+- **"What's on page 4 of the fatigue review?"** → the fatigue review boosted, and its page-4 pieces boosted as well.
+- **"Can you review my shift plan? I'm worried about fatigue."** → "review" is a verb here, but the matcher can't
+  tell, so the fatigue review is boosted. Nothing is hidden, so the triage guidelines still compete.
+- **"What does the fatigue review say, and does it match the triage rules?"** → the fatigue review is boosted; the
+  triage guidelines are still searched and can fill the other slots.
+- **"How much worse is fatigue after long shift blocks?"** → no anchor → no boost, an ordinary search.
 
 **Why:**
-- With many characters, each with up to 20 documents, the partition keeps a search inside one character.
-- A named document narrows it further. Course notes 6.9: filtering "removes whole classes of wrong answer".
-- In code it is deterministic, free, unit-testable and can't be injected.
-- The anchor rule stops everyday topic words from silently narrowing the search.
+- With many characters, each with up to 20 documents, the hard partition keeps every search inside one character.
+  That is where filtering matters for scale.
+- Within one character's ≤ 20 documents, hybrid search and Jev already tell them apart well. A named document
+  mostly needs to **rise**, not to exclude the rest.
+- A boost gives most of the gain of a filter, and a false match can't hide the right piece. A hard filter is kept for
+  when the user clearly asks for one document only.
+- Doing it in code is deterministic, free, unit-testable and can't be injected. It adds no time: matching takes
+  microseconds against at most 20 titles.
 
 **Rejected:**
 - **an LLM self-query filter:** an extra call, a filter language, an injection surface, and the user's choice against
   it;
-- **2 title words without an anchor** (the first version): "fatigue" and "shift" are Amara's everyday topics, so it
-  would have narrowed half her questions to one document;
+- **a hard filter on every match** (the version before this one):
+  - "review" as a verb, or a question spanning two documents, could hide the right piece;
+  - the unfiltered retry ran only when *nothing* usable was found, so a partly relevant piece in the wrong document
+    kept the right one hidden. The user chose the boost after asking whether filtering degrades results;
+- **boost only, never filter:** it loses "only in this document" questions;
+- **2 title words without an anchor:** "fatigue" and "shift" are Amara's everyday topics;
 - **a page as a hard filter:** the answer may be on the next page;
 - **`page` as a vec0 metadata column:** NULL is rejected.
 
@@ -460,13 +474,13 @@ The pipeline was built in M5; this task sets its AI policy.
 ### K5. The search: one pipeline for documents and recall
 
 **Decision:** for documents:
-1. **Ranked lists,** each restricted by K2's filter:
+1. **Ranked lists,** within the character (and within the named sources when K2's filter is explicit):
    - BM25 top **20**;
    - dense KNN top **20** per query text;
-   - the named-place list, when there is one.
+   - K2's boost lists, when there are any: the named document's own top 20, and the named place.
 2. **Fusion in two steps,** so the balance doesn't change with the number of query texts:
    - the dense lists are fused first (RRF, k = 60) into one dense list;
-   - then RRF over BM25, dense and the named place.
+   - then RRF over BM25, dense and the boost lists.
 
    The fused scores are **min–max normalised within the pool** to [0, 1]. Today's `min(1, rrf / (2/61))` clamps many
    pieces to 1.
@@ -531,7 +545,7 @@ The pipeline was built in M5; this task sets its AI policy.
 - **found:** some piece has `p_answers ≥ t_found`, or the set check (K6) said yes. Keep the usable pieces, best first
   (Jev's weighted score, ties by fused order), at most **k**;
 - **partly:** not found, but some pieces are usable. Keep up to k, and add K9's partly line;
-- **not found:** no usable piece, with every request back (K6). After a named-document filter, the unfiltered search
+- **not found:** no usable piece, with every request back (K6). After an explicit document filter, the unfiltered search
   runs once first (K2);
 - **k = 3 in 1:1, and 2 in group, watch and debate.**
   - Group and watch replies are about 50 words (doc 03 C4), so two passages are plenty.
@@ -731,15 +745,16 @@ the conversation's language.
   - **MMR λ** (K5);
   - **the query instruction,** also on doc 09 M12's recall set (K3);
   - **rewrite vs no rewrite,** on the follow-ups and non-English questions;
-  - **filters on vs off.**
-- **The matcher is run over all 205 questions** (free). Target: a **false-filter rate ≤ 2 %** on questions that name
-  no document, and ≥ 90 % of the naming questions filtered.
+  - **boost on vs off,** on the naming questions; on the other 185, Recall@8 must not drop by more than 1 point.
+- **The matcher is run over all 205 questions** (free). Target: a **false-match rate ≤ 5 %** on questions that name
+  no document (a false match only boosts), **≤ 1 % false hard filters**, and ≥ 90 % of the naming questions
+  matched.
 - **Layer 1:**
   - **the standalone noul:** 100 messages (50 follow-ups). `t_standalone` is the highest threshold sending ≥ 90 % of
     follow-ups to the rewrite;
   - **the English noul:** 40 messages in 4 languages, ≥ 95 %.
 - **Unit tests (free):**
-  - 40 messages with their expected filters;
+  - 40 messages with their expected boosts and filters (explicit and not);
   - the Porter stemmer against FTS5's tokens;
   - the rewrite's output checks;
   - the quote-window choice.
@@ -825,7 +840,7 @@ None changes the HTTP contract. The requirement-level doc edits are in the statu
 | Change | Kind | Decision |
 |---|---|---|
 | The `pack@2` chunker: headings carried forward; `pp. N–M`; recursive cuts; tables and lists keep line breaks; repeated header rows; the docstring invariant; one `CHUNKER_VERSION` imported by `sources.py`; the mock's `paragraphs()` twin and the shared portable test; `knowledge_chunks.page` (Alembic, backfilled from `p. N` locators) | backend + frontend | K1 |
-| The matcher (vendored original Porter, distinctive words, the anchor rule, only sources with pieces); the page and section parser; the named-place list; the unfiltered retry; `ScopedIndex` takes filters (FTS `source_id IN`, vec0 metadata or the k = 200 post-filter on older spaces); `sqlite-vec>=0.1.9` | backend | K2 |
+| The matcher (vendored original Porter, distinctive words, the anchor rule, the explicit-phrase rule, only sources with pieces); the page and section parser; the boost lists (the named document's own top 20, the named place); the explicit filter and its unfiltered retry; `ScopedIndex` restricts by source (FTS `source_id IN`, vec0 metadata, or the k = 200 post-filter on older spaces); `sqlite-vec>=0.1.9` | backend | K2 |
 | `SpaceSpec.doc_template` and a schema version, persisted; per-space DDL (the `source_id` column for the new space); writers (pipeline, build, dual-write) insert their space's columns; a knowledge kind in the embedder; the LRU keyed on the request text; the title without its extension and the heading path left out when it equals the locator; the new default space and query instruction; `horizon space build` (cost estimate, asks first; fills pieces, memories and message vectors, copying same-model vectors); `dupCosine` retuned | backend | K3 |
 | The **standalone** and **English** nouls (question bank, `t_standalone`); `query_rewrite` (DeepSeek, this speaker's cached prefix, temperature 0.0, `rewriteMs`, output checks, stored per message and speaker, cancelled with the turn) and its doc 03 C1 row; parallel start at the gate (BM25, message embedding, rewrite); the embedding skipped when there are no vectors and recall said no; `QueryBundle` holds the query texts and vectors; per-speaker rewrites in group; `fts_query` gains stop words and rarity order (≤ 24 terms when rewritten) | backend + config | K4 |
 | The shared pipeline (two-step RRF, min–max normalisation, MMR with the Jaccard fallback) for documents and doc 09 M9's recall; `ScopedIndex` reads stored vectors; `retrieval.agent` knobs in `runtime.json`: `pool` 20, `candidates` 8, `blockTokens` 1,400, `mmrLambda` 0.7, `k` {1:1 3, group 2, watch 2, debate 2}, `pieceTarget` 300, `pieceMax` 400, `rewriteMs` 1,500, `deepCheckMs` 700; `naive` and `scripted` keep `knowledgeK` 5 | backend + config | K5 |
@@ -844,9 +859,9 @@ None changes the HTTP contract. The requirement-level doc edits are in the statu
   - text inside documents that tries to instruct the character (K8's line is only a start);
   - documents with personal data;
   - content rating;
-  - an injected instruction surviving into a rewrite (it can't set a filter, K2, and K4 checks its shape).
+  - an injected instruction surviving into a rewrite (it can't name a document, K2, and K4 checks its shape).
 - **Task 13**, the System 1 section:
-  - the filters applied;
+  - the boosts and filters applied;
   - the standalone and English answers;
   - the outcome and Jev call 2's scores;
   - the citation check as a flag (K10).
