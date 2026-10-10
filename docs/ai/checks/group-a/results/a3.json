@@ -1,0 +1,201 @@
+{
+ "ran_at": "2026-10-10 18:34 MYT (Sat)",
+ "thinking": {
+  "off_natural": {
+   "provider": "DeepSeek",
+   "model": "deepseek/deepseek-v4.1-flash",
+   "finish_reason": "stop",
+   "native_finish_reason": "stop",
+   "usage": {
+    "prompt_tokens": 511,
+    "completion_tokens": 102,
+    "total_tokens": 613,
+    "cost": 0.000100218,
+    "is_byok": false,
+    "prompt_tokens_details": {
+     "cached_tokens": 256,
+     "cache_write_tokens": 0,
+     "audio_tokens": 0,
+     "video_tokens": 0
+    },
+    "cost_details": {
+     "upstream_inference_cost": 0.000100218,
+     "upstream_inference_prompt_cost": 3.9018e-05,
+     "upstream_inference_completions_cost": 6.12e-05
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 0,
+     "image_tokens": 0,
+     "audio_tokens": 0
+    }
+   },
+   "has_reasoning_field": false,
+   "content_head": "Yes, and I take these seriously. Get same-day care, not a chat with me, if you see:\n\n- The worst headache of your life, "
+  },
+  "off_length": {
+   "provider": "DeepSeek",
+   "model": "deepseek/deepseek-v4.1-flash",
+   "finish_reason": "length",
+   "native_finish_reason": "length",
+   "usage": {
+    "prompt_tokens": 511,
+    "completion_tokens": 8,
+    "total_tokens": 519,
+    "cost": 4.3818e-05,
+    "is_byok": false,
+    "prompt_tokens_details": {
+     "cached_tokens": 256,
+     "cache_write_tokens": 0,
+     "audio_tokens": 0,
+     "video_tokens": 0
+    },
+    "cost_details": {
+     "upstream_inference_cost": 4.3818e-05,
+     "upstream_inference_prompt_cost": 3.9018e-05,
+     "upstream_inference_completions_cost": 4.8e-06
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 0,
+     "image_tokens": 0,
+     "audio_tokens": 0
+    }
+   },
+   "has_reasoning_field": false,
+   "content_head": "Yes. Same-day emergency care if any"
+  },
+  "off_stop": {
+   "provider": "DeepSeek",
+   "model": "deepseek/deepseek-v4.1-flash",
+   "finish_reason": "stop",
+   "native_finish_reason": "stop",
+   "usage": {
+    "prompt_tokens": 388,
+    "completion_tokens": 32,
+    "total_tokens": 420,
+    "cost": 5.8584e-05,
+    "is_byok": false,
+    "prompt_tokens_details": {
+     "cached_tokens": 128,
+     "cache_write_tokens": 0,
+     "audio_tokens": 0,
+     "video_tokens": 0
+    },
+    "cost_details": {
+     "upstream_inference_cost": 5.8584e-05,
+     "upstream_inference_prompt_cost": 3.9384e-05,
+     "upstream_inference_completions_cost": 1.92e-05
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 0,
+     "image_tokens": 0,
+     "audio_tokens": 0
+    }
+   },
+   "has_reasoning_field": false,
+   "content_head": "Takeshi: Pineapple on pizza is like putting gravel in a train's gearbox. Wrong on the rails, wrong in the box."
+  },
+  "default_control": {
+   "provider": "DeepSeek",
+   "model": "deepseek/deepseek-v4.1-flash",
+   "finish_reason": "stop",
+   "native_finish_reason": "stop",
+   "usage": {
+    "prompt_tokens": 536,
+    "completion_tokens": 155,
+    "total_tokens": 691,
+    "cost": 0.0001734,
+    "is_byok": false,
+    "prompt_tokens_details": {
+     "cached_tokens": 0,
+     "cache_write_tokens": 0,
+     "audio_tokens": 0,
+     "video_tokens": 0
+    },
+    "cost_details": {
+     "upstream_inference_cost": 0.0001734,
+     "upstream_inference_prompt_cost": 8.04e-05,
+     "upstream_inference_completions_cost": 9.3e-05
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 20,
+     "image_tokens": 0,
+     "audio_tokens": 0
+    }
+   },
+   "has_reasoning_field": true,
+   "content_head": "Yes, and these are the ones that mean urgent care, not a chat with me:\n\n- Sudden, worst-ever headache that peaked in sec"
+  },
+  "off_stream": {
+   "provider": "DeepSeek",
+   "finish": "stop",
+   "reasoning_chunks": 0,
+   "first_ms": 638.6,
+   "usage": {
+    "prompt_tokens": 511,
+    "completion_tokens": 104,
+    "total_tokens": 615,
+    "cost": 0.000101418,
+    "is_byok": false,
+    "prompt_tokens_details": {
+     "cached_tokens": 256,
+     "cache_write_tokens": 0,
+     "audio_tokens": 0,
+     "video_tokens": 0
+    },
+    "cost_details": {
+     "upstream_inference_cost": 0.000101418,
+     "upstream_inference_prompt_cost": 3.9018e-05,
+     "upstream_inference_completions_cost": 6.24e-05
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 0,
+     "image_tokens": 0,
+     "audio_tokens": 0
+    }
+   }
+  }
+ },
+ "json_mode": {
+  "n": 20,
+  "valid_first_try": 19,
+  "valid_after_retry": 19,
+  "empty": 0,
+  "providers": [
+   "DeepSeek"
+  ],
+  "finish": [
+   "stop"
+  ],
+  "failures": [
+   {
+    "seed": "A competitive baker in her sixties",
+    "attempts": [
+     "The drafter returned something that isn't JSON.",
+     "The drafter returned something that isn't JSON."
+    ]
+   }
+  ],
+  "ms": {
+   "n": 21,
+   "p50": 5664.6,
+   "p90": 6965.5,
+   "p99": 9641.9,
+   "max": 9641.9,
+   "mean": 6068.6
+  },
+  "completion_tokens": {
+   "n": 21,
+   "p50": 1139,
+   "p90": 1307,
+   "p99": 1604,
+   "max": 1604,
+   "mean": 1178.9
+  }
+ },
+ "spend": {
+  "key_usage_delta": 0.004288,
+  "harness_total_all_runs": 0.053796,
+  "calls": 26,
+  "store_hits": 0
+ }
+}

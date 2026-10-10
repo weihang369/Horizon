@@ -32,7 +32,7 @@ from horizon.gateway.errors import ProviderError
 from horizon.gateway.types import GatewayConfig
 
 HERE = Path(__file__).resolve().parent
-OUT = HERE / "data"
+OUT = HERE / "results"
 CACHE = REPO_ROOT / "data" / "cache"
 SPEND = CACHE / "_spend" / "group-a.jsonl"
 CAP_USD = 0.30

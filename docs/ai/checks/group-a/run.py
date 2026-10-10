@@ -6,7 +6,7 @@ Run from `backend/` (the user approved ≈ $0.16 with a hard cap of $0.30 across
     uv run python ../docs/ai/checks/group-a/run.py a2
     uv run python ../docs/ai/checks/group-a/run.py a3
 
-Summaries go to `docs/ai/checks/group-a/data/` (committed: seed text and model outputs only). Raw requests and
+Summaries go to `docs/ai/checks/group-a/results/` (committed: seed text and model outputs only). Raw requests and
 responses go to the W10 store, `data/cache/` (gitignored).
 """
 

@@ -1,0 +1,1330 @@
+{
+ "ran_at": "2026-10-10 18:28 MYT (Sat)",
+ "repeatability": {
+  "choice_flips": 0,
+  "max_noul_spread": 0.03,
+  "max_score_spread": 0.06,
+  "rows": [
+   {
+    "item": "emotion-0",
+    "q": "emotion:chr_seedAmara",
+    "choices": [
+     "neutral",
+     "neutral",
+     "neutral"
+    ],
+    "max_dp": 0.06,
+    "confidence": [
+     0.56,
+     0.6,
+     0.63
+    ]
+   },
+   {
+    "item": "emotion-1",
+    "q": "emotion:chr_seedAmara",
+    "choices": [
+     "thinking",
+     "thinking",
+     "thinking"
+    ],
+    "max_dp": 0.06,
+    "confidence": [
+     0.71,
+     0.78,
+     0.72
+    ]
+   },
+   {
+    "item": "emotion-2",
+    "q": "emotion:chr_seedAmara",
+    "choices": [
+     "neutral",
+     "neutral",
+     "neutral"
+    ],
+    "max_dp": 0.06,
+    "confidence": [
+     0.56,
+     0.49,
+     0.57
+    ]
+   },
+   {
+    "item": "emotion-3",
+    "q": "emotion:chr_seedHana",
+    "choices": [
+     "happy",
+     "happy",
+     "happy"
+    ],
+    "max_dp": 0.04,
+    "confidence": [
+     0.88,
+     0.84,
+     0.88
+    ]
+   },
+   {
+    "item": "emotion-4",
+    "q": "emotion:chr_seedHana",
+    "choices": [
+     "embarrassed",
+     "embarrassed",
+     "embarrassed"
+    ],
+    "max_dp": 0.03,
+    "confidence": [
+     0.69,
+     0.72,
+     0.72
+    ]
+   },
+   {
+    "item": "message-1",
+    "q": "standalone",
+    "p": [
+     0.05,
+     0.05,
+     0.05
+    ],
+    "spread": 0.0
+   },
+   {
+    "item": "message-1",
+    "q": "english",
+    "p": [
+     0.99,
+     0.99,
+     0.99
+    ],
+    "spread": 0.0
+   },
+   {
+    "item": "message-4",
+    "q": "standalone",
+    "p": [
+     0.94,
+     0.94,
+     0.95
+    ],
+    "spread": 0.01
+   },
+   {
+    "item": "message-4",
+    "q": "english",
+    "p": [
+     0.01,
+     0.01,
+     0.01
+    ],
+    "spread": 0.0
+   },
+   {
+    "item": "message-6",
+    "q": "standalone",
+    "p": [
+     0.92,
+     0.91,
+     0.91
+    ],
+    "spread": 0.01
+   },
+   {
+    "item": "message-6",
+    "q": "english",
+    "p": [
+     0.01,
+     0.01,
+     0.01
+    ],
+    "spread": 0.0
+   },
+   {
+    "item": "message-12",
+    "q": "standalone",
+    "p": [
+     0.08,
+     0.08,
+     0.08
+    ],
+    "spread": 0.0
+   },
+   {
+    "item": "message-12",
+    "q": "english",
+    "p": [
+     0.95,
+     0.95,
+     0.95
+    ],
+    "spread": 0.0
+   },
+   {
+    "item": "message-18",
+    "q": "standalone",
+    "p": [
+     0.16,
+     0.14,
+     0.15
+    ],
+    "spread": 0.02
+   },
+   {
+    "item": "message-18",
+    "q": "english",
+    "p": [
+     0.98,
+     0.98,
+     0.98
+    ],
+    "spread": 0.0
+   },
+   {
+    "item": "docs-0",
+    "q": "docs:chr_seedAmara",
+    "p": [
+     0.88,
+     0.88,
+     0.88
+    ],
+    "spread": 0.0
+   },
+   {
+    "item": "docs-1",
+    "q": "docs:chr_seedAmara",
+    "p": [
+     0.75,
+     0.76,
+     0.73
+    ],
+    "spread": 0.03
+   },
+   {
+    "item": "docs-2",
+    "q": "docs:chr_seedAmara",
+    "p": [
+     0.19,
+     0.2,
+     0.19
+    ],
+    "spread": 0.01
+   },
+   {
+    "item": "docs-3",
+    "q": "docs:chr_seedAmara",
+    "p": [
+     0.04,
+     0.04,
+     0.04
+    ],
+    "spread": 0.0
+   },
+   {
+    "item": "piece-0",
+    "q": "piece:kch_amaraTri06",
+    "score": [
+     0.18,
+     0.12,
+     0.16
+    ],
+    "spread": 0.06
+   },
+   {
+    "item": "piece-1",
+    "q": "piece:kch_amaraFat02",
+    "score": [
+     1.98,
+     1.98,
+     1.98
+    ],
+    "spread": 0.0
+   },
+   {
+    "item": "piece-2",
+    "q": "piece:kch_amaraFat01",
+    "score": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "spread": 0.0
+   },
+   {
+    "item": "unsafe-0",
+    "q": "unsafe",
+    "p": [
+     0.01,
+     0.01,
+     0.01
+    ],
+    "spread": 0.0
+   },
+   {
+    "item": "at_risk-1",
+    "q": "at_risk",
+    "p": [
+     0.95,
+     0.95,
+     0.95
+    ],
+    "spread": 0.0
+   },
+   {
+    "item": "at_risk-2",
+    "q": "at_risk",
+    "p": [
+     0.96,
+     0.97,
+     0.96
+    ],
+    "spread": 0.01
+   }
+  ],
+  "errors": 0
+ },
+ "canary_fingerprint": "0a41283d55423927ebec57ac943823dc538697b4f1913d0ea25e5eab40c62241",
+ "billing": {
+  "S1": {
+   "questions": 1,
+   "input_tokens": 664,
+   "cost": 2.7888e-05,
+   "ms": 407.4,
+   "error": null
+  },
+  "S8": {
+   "questions": 8,
+   "input_tokens": 1419,
+   "cost": 5.9598e-05,
+   "ms": 424.7,
+   "error": null
+  },
+  "L1": {
+   "questions": 1,
+   "input_tokens": 5073,
+   "cost": 0.000213066,
+   "ms": 446.7,
+   "error": null
+  },
+  "L8": {
+   "questions": 8,
+   "input_tokens": 5828,
+   "cost": 0.000244776,
+   "ms": 446.5,
+   "error": null
+  },
+  "T8": {
+   "questions": 8,
+   "input_tokens": 1092,
+   "cost": 4.5864e-05,
+   "ms": 405.9,
+   "error": null
+  },
+  "analysis": {
+   "extra_7_questions_small": 755,
+   "extra_7_questions_large": 755,
+   "large_minus_small_state": 4409,
+   "state_billed_once": true,
+   "usd_per_input_token": 4.2e-08
+  }
+ },
+ "twenty": {
+  "questions": 20,
+  "usage": {
+   "input_tokens": 3495,
+   "output_tokens": 709,
+   "cost": 0.00014679
+  },
+  "ms": 418.0,
+  "error": null,
+  "answers": {
+   "at_risk": {
+    "noul": 0.01
+   },
+   "docs:chr_seedAmara": {
+    "noul": 0.03
+   },
+   "docs:chr_seedHana": {
+    "noul": 0.05
+   },
+   "docs:chr_seedMei": {
+    "noul": 0.03
+   },
+   "earlier:chr_seedAmara": {
+    "noul": 0.1
+   },
+   "earlier:chr_seedHana": {
+    "noul": 0.12
+   },
+   "earlier:chr_seedMei": {
+    "noul": 0.12
+   },
+   "earlier:chr_seedRin": {
+    "noul": 0.13
+   },
+   "earlier:chr_seedTakeshi": {
+    "noul": 0.11
+   },
+   "emotion:chr_seedAmara": {
+    "choice": "neutral"
+   },
+   "emotion:chr_seedHana": {
+    "choice": "happy"
+   },
+   "emotion:chr_seedMei": {
+    "choice": "thinking"
+   },
+   "emotion:chr_seedRin": {
+    "choice": "neutral"
+   },
+   "emotion:chr_seedTakeshi": {
+    "choice": "thinking"
+   },
+   "english": {
+    "noul": 0.99
+   },
+   "intensity": {
+    "score": 0.34
+   },
+   "standalone": {
+    "noul": 0.88
+   },
+   "unsafe": {
+    "noul": 0.01
+   },
+   "urgency": {
+    "score": 1.36
+   },
+   "who": {
+    "choice": "Rin"
+   }
+  },
+  "who": {
+   "type": "choice",
+   "choice": "Rin",
+   "probabilities": {
+    "Hana": 0.31,
+    "Takeshi": 0.07,
+    "Rin": 0.61,
+    "Amara": 0,
+    "Mei": 0.01
+   },
+   "confidence": 0.51
+  }
+ },
+ "size_limit": {
+  "chars_per_token": 1.92,
+  "probes": [
+   {
+    "target_tokens": 16000,
+    "input_tokens": 6744,
+    "ok": true,
+    "error": null,
+    "ms": 451.7
+   },
+   {
+    "target_tokens": 31000,
+    "input_tokens": 12762,
+    "ok": true,
+    "error": null,
+    "ms": 497.4
+   },
+   {
+    "target_tokens": 33000,
+    "input_tokens": 13549,
+    "ok": true,
+    "error": null,
+    "ms": 505.6
+   },
+   {
+    "target_tokens": 40000,
+    "input_tokens": 16356,
+    "ok": true,
+    "error": null,
+    "ms": 566.9
+   },
+   {
+    "target_tokens": 70000,
+    "input_tokens": null,
+    "ok": false,
+    "error": {
+     "code": "rate_limited",
+     "status": 429,
+     "message": "OpenRouter is rate-limiting requests. Try again shortly."
+    },
+    "ms": 428.6
+   }
+  ]
+ },
+ "rubric": {
+  "usage": {
+   "input_tokens": 1614,
+   "output_tokens": 184,
+   "cost": 6.7788e-05
+  },
+  "ms": 419.4,
+  "error": null,
+  "answers": {
+   "rubric:opposition:clarity": {
+    "score": 3.44
+   },
+   "rubric:opposition:evidence": {
+    "score": 2.9
+   },
+   "rubric:opposition:persuasion": {
+    "score": 2.87
+   },
+   "rubric:opposition:rebuttal": {
+    "score": 3.01
+   },
+   "rubric:proposition:clarity": {
+    "score": 2.99
+   },
+   "rubric:proposition:evidence": {
+    "score": 1.62
+   },
+   "rubric:proposition:persuasion": {
+    "score": 2.63
+   },
+   "rubric:proposition:rebuttal": {
+    "score": 2.63
+   }
+  }
+ },
+ "importance": {
+  "questions": 40,
+  "usage": null,
+  "ms": 397.1,
+  "error": {
+   "code": "rate_limited",
+   "status": 429,
+   "message": "OpenRouter is rate-limiting requests. Try again shortly."
+  },
+  "rows": [],
+  "instruction_caught_at_0_5": 0,
+  "instruction_false_alarms_at_0_5": 0
+ },
+ "memory_guard": {
+  "usage": {
+   "input_tokens": 2658,
+   "output_tokens": 384,
+   "cost": 0.000111636
+  },
+  "ms": 414.0,
+  "error": null,
+  "rows": [
+   {
+    "old": "Kai is allergic to lilies",
+    "new": "Kai is allergic to lilies and to spring pollen",
+    "want": true,
+    "p": 0.98
+   },
+   {
+    "old": "Kai's sister Yuki visits in December",
+    "new": "Kai's sister is visiting",
+    "want": false,
+    "p": 0.15
+   },
+   {
+    "old": "Kai works in IT at a bank",
+    "new": "Kai works in IT; in October he moved from the bank to a game studio",
+    "want": true,
+    "p": 0.48
+   },
+   {
+    "old": "Kai likes yuzu cake and green tea",
+    "new": "Kai likes yuzu cake",
+    "want": false,
+    "p": 0.2
+   },
+   {
+    "old": "Kai runs every Saturday morning",
+    "new": "Kai runs every Saturday morning, now with Rin",
+    "want": true,
+    "p": 0.97
+   },
+   {
+    "old": "Kai and Hana's anniversary is 14 March",
+    "new": "Kai and Hana's anniversary is in spring",
+    "want": false,
+    "p": 0.38
+   },
+   {
+    "old": "Kai's mother had surgery on Tuesday",
+    "new": "Kai's mother had surgery on Tuesday and is recovering well",
+    "want": true,
+    "p": 0.98
+   },
+   {
+    "old": "Kai dislikes coriander and mushrooms",
+    "new": "Kai dislikes mushrooms",
+    "want": false,
+    "p": 0.19
+   },
+   {
+    "old": "Kai is training for a 10k",
+    "new": "Kai finished his first 10k in 58 minutes",
+    "want": true,
+    "p": 0.41
+   },
+   {
+    "old": "Kai's grandfather passed away last year",
+    "new": "Kai's grandfather passed away last year; Kai finds it hard to talk about",
+    "want": true,
+    "p": 0.98
+   },
+   {
+    "old": "Kai has a cat named Mochi",
+    "new": "Kai has a cat",
+    "want": false,
+    "p": 0.31
+   },
+   {
+    "old": "Kai's favourite colour is green",
+    "new": "Kai's favourite colour is green, especially sage",
+    "want": true,
+    "p": 0.98
+   },
+   {
+    "old": "Kai fixed Takeshi's laptop",
+    "new": "Kai fixed Takeshi's laptop and his phone",
+    "want": true,
+    "p": 0.96
+   },
+   {
+    "old": "Kai's birthday is 2 August",
+    "new": "Kai's birthday is in summer",
+    "want": false,
+    "p": 0.32
+   },
+   {
+    "old": "Kai is learning Japanese with an app",
+    "new": "Kai is learning Japanese with an app and a tutor on Thursdays",
+    "want": true,
+    "p": 0.97
+   },
+   {
+    "old": "Kai's boss Daniel is strict",
+    "new": "Kai's boss is strict",
+    "want": false,
+    "p": 0.43
+   },
+   {
+    "old": "Kai gets migraines when he skips meals",
+    "new": "Kai gets migraines when he skips meals or sleeps badly",
+    "want": true,
+    "p": 0.97
+   },
+   {
+    "old": "Kai and Hana met at the flower market",
+    "new": "Kai and Hana met years ago",
+    "want": false,
+    "p": 0.27
+   },
+   {
+    "old": "Kai drinks oat milk",
+    "new": "Kai drinks oat milk, never dairy",
+    "want": true,
+    "p": 0.97
+   },
+   {
+    "old": "Kai's best friend is Jun from university",
+    "new": "Kai's best friend is Jun",
+    "want": false,
+    "p": 0.25
+   }
+  ],
+  "right_at_0_5": 18
+ },
+ "deep_check": {
+  "questions": 25,
+  "usage": {
+   "input_tokens": 3637,
+   "output_tokens": 498,
+   "cost": 0.000152754
+  },
+  "ms": 427.7,
+  "error": null,
+  "pieces": [
+   {
+    "id": "kch_amaraFat01",
+    "source": "kno_seedAmara1",
+    "score": 0.05,
+    "probs": {
+     "0": 0.96,
+     "1": 0.04,
+     "2": 0
+    }
+   },
+   {
+    "id": "kch_amaraFat02",
+    "source": "kno_seedAmara1",
+    "score": 1.93,
+    "probs": {
+     "0": 0,
+     "1": 0.07,
+     "2": 0.93
+    }
+   },
+   {
+    "id": "kch_amaraFat03",
+    "source": "kno_seedAmara1",
+    "score": 0.89,
+    "probs": {
+     "0": 0.17,
+     "1": 0.77,
+     "2": 0.06
+    }
+   },
+   {
+    "id": "kch_amaraFat04",
+    "source": "kno_seedAmara1",
+    "score": 1.06,
+    "probs": {
+     "0": 0.1,
+     "1": 0.74,
+     "2": 0.16
+    }
+   },
+   {
+    "id": "kch_amaraFat05",
+    "source": "kno_seedAmara1",
+    "score": 1.08,
+    "probs": {
+     "0": 0.09,
+     "1": 0.74,
+     "2": 0.17
+    }
+   },
+   {
+    "id": "kch_amaraFat06",
+    "source": "kno_seedAmara1",
+    "score": 1.13,
+    "probs": {
+     "0": 0.1,
+     "1": 0.68,
+     "2": 0.22
+    }
+   },
+   {
+    "id": "kch_amaraFat07",
+    "source": "kno_seedAmara1",
+    "score": 0.46,
+    "probs": {
+     "0": 0.55,
+     "1": 0.43,
+     "2": 0.02
+    }
+   },
+   {
+    "id": "kch_amaraFat08",
+    "source": "kno_seedAmara1",
+    "score": 0.65,
+    "probs": {
+     "0": 0.37,
+     "1": 0.61,
+     "2": 0.02
+    }
+   },
+   {
+    "id": "kch_amaraFat09",
+    "source": "kno_seedAmara1",
+    "score": 1.13,
+    "probs": {
+     "0": 0.07,
+     "1": 0.73,
+     "2": 0.2
+    }
+   },
+   {
+    "id": "kch_amaraFat10",
+    "source": "kno_seedAmara1",
+    "score": 1.13,
+    "probs": {
+     "0": 0.1,
+     "1": 0.67,
+     "2": 0.23
+    }
+   },
+   {
+    "id": "kch_amaraTri01",
+    "source": "kno_seedAmara2",
+    "score": 0.0,
+    "probs": {
+     "0": 1,
+     "1": 0,
+     "2": 0
+    }
+   },
+   {
+    "id": "kch_amaraTri02",
+    "source": "kno_seedAmara2",
+    "score": 0.0,
+    "probs": {
+     "0": 1,
+     "1": 0,
+     "2": 0
+    }
+   },
+   {
+    "id": "kch_amaraTri03",
+    "source": "kno_seedAmara2",
+    "score": 0.0,
+    "probs": {
+     "0": 1,
+     "1": 0,
+     "2": 0
+    }
+   },
+   {
+    "id": "kch_amaraTri04",
+    "source": "kno_seedAmara2",
+    "score": 0.0,
+    "probs": {
+     "0": 1,
+     "1": 0,
+     "2": 0
+    }
+   },
+   {
+    "id": "kch_amaraTri05",
+    "source": "kno_seedAmara2",
+    "score": 0.0,
+    "probs": {
+     "0": 1,
+     "1": 0,
+     "2": 0
+    }
+   },
+   {
+    "id": "kch_amaraTri06",
+    "source": "kno_seedAmara2",
+    "score": 0.0,
+    "probs": {
+     "0": 1,
+     "1": 0,
+     "2": 0
+    }
+   },
+   {
+    "id": "kch_hanaRecipe01",
+    "source": "kno_seedHana1",
+    "score": 0.0,
+    "probs": {
+     "0": 1,
+     "1": 0,
+     "2": 0
+    }
+   },
+   {
+    "id": "kch_hanaRecipe02",
+    "source": "kno_seedHana1",
+    "score": 0.0,
+    "probs": {
+     "0": 1,
+     "1": 0,
+     "2": 0
+    }
+   },
+   {
+    "id": "kch_hanaRecipe03",
+    "source": "kno_seedHana1",
+    "score": 0.0,
+    "probs": {
+     "0": 1,
+     "1": 0,
+     "2": 0
+    }
+   },
+   {
+    "id": "kch_hanaRecipe04",
+    "source": "kno_seedHana1",
+    "score": 0.0,
+    "probs": {
+     "0": 1,
+     "1": 0,
+     "2": 0
+    }
+   }
+  ],
+  "sets": {
+   "set:0": {
+    "noul": 0.88
+   },
+   "set:1": {
+    "noul": 0.57
+   },
+   "set:2": {
+    "noul": 0.46
+   },
+   "set:3": {
+    "noul": 0.35
+   },
+   "set:4": {
+    "noul": 0.03
+   }
+  }
+ },
+ "standalone_english": {
+  "rows": [
+   {
+    "msg": "What did your fatigue review find about long shifts?",
+    "want_standalone": true,
+    "p_standalone": 0.62,
+    "want_english": true,
+    "p_english": 0.99,
+    "ms": 391.7
+   },
+   {
+    "msg": "What about the second one?",
+    "want_standalone": false,
+    "p_standalone": 0.05,
+    "want_english": true,
+    "p_english": 0.99,
+    "ms": 407.4
+   },
+   {
+    "msg": "And for nurses?",
+    "want_standalone": false,
+    "p_standalone": 0.3,
+    "want_english": true,
+    "p_english": 0.99,
+    "ms": 406.2
+   },
+   {
+    "msg": "How does triage grade urgency?",
+    "want_standalone": true,
+    "p_standalone": 0.88,
+    "want_english": true,
+    "p_english": 0.99,
+    "ms": 431.2
+   },
+   {
+    "msg": "Kepala saya sakit sejak semalam, apa patut saya buat?",
+    "want_standalone": true,
+    "p_standalone": 0.94,
+    "want_english": false,
+    "p_english": 0.01,
+    "ms": 452.0
+   },
+   {
+    "msg": "Is that normal?",
+    "want_standalone": false,
+    "p_standalone": 0.1,
+    "want_english": true,
+    "p_english": 0.99,
+    "ms": 406.4
+   },
+   {
+    "msg": "今天好累啊。",
+    "want_standalone": true,
+    "p_standalone": 0.92,
+    "want_english": false,
+    "p_english": 0.01,
+    "ms": 440.2
+   },
+   {
+    "msg": "Why?",
+    "want_standalone": false,
+    "p_standalone": 0.14,
+    "want_english": true,
+    "p_english": 0.98,
+    "ms": 406.8
+   },
+   {
+    "msg": "Can you say that again more simply?",
+    "want_standalone": false,
+    "p_standalone": 0.08,
+    "want_english": true,
+    "p_english": 0.99,
+    "ms": 397.9
+   },
+   {
+    "msg": "How long do cut sunflowers last in a vase?",
+    "want_standalone": true,
+    "p_standalone": 0.92,
+    "want_english": true,
+    "p_english": 0.99,
+    "ms": 413.1
+   },
+   {
+    "msg": "¿Y cuánto cuesta eso?",
+    "want_standalone": false,
+    "p_standalone": 0.08,
+    "want_english": false,
+    "p_english": 0.01,
+    "ms": 408.5
+   },
+   {
+    "msg": "Does a four-day week reduce productivity?",
+    "want_standalone": true,
+    "p_standalone": 0.92,
+    "want_english": true,
+    "p_english": 0.99,
+    "ms": 411.3
+   },
+   {
+    "msg": "ok and the other option",
+    "want_standalone": false,
+    "p_standalone": 0.07,
+    "want_english": true,
+    "p_english": 0.94,
+    "ms": 421.9
+   },
+   {
+    "msg": "Bolehkah saya minum kopi kalau sakit kepala?",
+    "want_standalone": true,
+    "p_standalone": 0.92,
+    "want_english": false,
+    "p_english": 0.01,
+    "ms": 398.6
+   },
+   {
+    "msg": "Tell me more about it.",
+    "want_standalone": false,
+    "p_standalone": 0.07,
+    "want_english": true,
+    "p_english": 0.99,
+    "ms": 427.4
+   },
+   {
+    "msg": "What's the capital of France?",
+    "want_standalone": true,
+    "p_standalone": 0.91,
+    "want_english": true,
+    "p_english": 0.99,
+    "ms": 394.7
+   },
+   {
+    "msg": "She said what?!",
+    "want_standalone": false,
+    "p_standalone": 0.1,
+    "want_english": true,
+    "p_english": 0.98,
+    "ms": 443.1
+   },
+   {
+    "msg": "Est-ce que la semaine de quatre jours est légale en France ?",
+    "want_standalone": true,
+    "p_standalone": 0.95,
+    "want_english": false,
+    "p_english": 0.01,
+    "ms": 405.0
+   },
+   {
+    "msg": "lol same",
+    "want_standalone": false,
+    "p_standalone": 0.15,
+    "want_english": true,
+    "p_english": 0.98,
+    "ms": 391.8
+   },
+   {
+    "msg": "What's the best way to keep tulips from drooping?",
+    "want_standalone": true,
+    "p_standalone": 0.93,
+    "want_english": true,
+    "p_english": 0.99,
+    "ms": 430.2
+   }
+  ],
+  "standalone_right_at_0_5": 20,
+  "english_right_at_0_5": 20,
+  "n": 20
+ },
+ "score_form": [
+  {
+   "q": "intensity",
+   "levels": 5,
+   "score": 0.34,
+   "sum_k_p": 0.35,
+   "sum_k_p_over_n_minus_1": 0.0875,
+   "prob_keys": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "legend": {
+    "0": "flat",
+    "1": "mild",
+    "2": "noticeable",
+    "3": "strong",
+    "4": "overwhelming"
+   },
+   "confidence": 0.71
+  },
+  {
+   "q": "urgency",
+   "levels": 3,
+   "score": 1.36,
+   "sum_k_p": 1.36,
+   "sum_k_p_over_n_minus_1": 0.68,
+   "prob_keys": [
+    0,
+    1,
+    2
+   ],
+   "legend": {
+    "0": "no hurry",
+    "1": "soon",
+    "2": "right now"
+   },
+   "confidence": 0.22
+  },
+  {
+   "q": "rubric:proposition:evidence",
+   "levels": 5,
+   "score": 1.62,
+   "sum_k_p": 1.63,
+   "sum_k_p_over_n_minus_1": 0.4075,
+   "prob_keys": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "legend": {
+    "0": "very weak",
+    "1": "weak",
+    "2": "adequate",
+    "3": "strong",
+    "4": "very strong"
+   },
+   "confidence": 0.61
+  },
+  {
+   "q": "rubric:proposition:rebuttal",
+   "levels": 5,
+   "score": 2.63,
+   "sum_k_p": 2.62,
+   "sum_k_p_over_n_minus_1": 0.655,
+   "prob_keys": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "legend": {
+    "0": "very weak",
+    "1": "weak",
+    "2": "adequate",
+    "3": "strong",
+    "4": "very strong"
+   },
+   "confidence": 0.67
+  },
+  {
+   "q": "rubric:proposition:clarity",
+   "levels": 5,
+   "score": 2.99,
+   "sum_k_p": 2.99,
+   "sum_k_p_over_n_minus_1": 0.7475,
+   "prob_keys": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "legend": {
+    "0": "very weak",
+    "1": "weak",
+    "2": "adequate",
+    "3": "strong",
+    "4": "very strong"
+   },
+   "confidence": 0.81
+  },
+  {
+   "q": "rubric:proposition:persuasion",
+   "levels": 5,
+   "score": 2.63,
+   "sum_k_p": 2.62,
+   "sum_k_p_over_n_minus_1": 0.655,
+   "prob_keys": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "legend": {
+    "0": "very weak",
+    "1": "weak",
+    "2": "adequate",
+    "3": "strong",
+    "4": "very strong"
+   },
+   "confidence": 0.67
+  },
+  {
+   "q": "rubric:opposition:evidence",
+   "levels": 5,
+   "score": 2.9,
+   "sum_k_p": 2.89,
+   "sum_k_p_over_n_minus_1": 0.7225,
+   "prob_keys": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "legend": {
+    "0": "very weak",
+    "1": "weak",
+    "2": "adequate",
+    "3": "strong",
+    "4": "very strong"
+   },
+   "confidence": 0.81
+  },
+  {
+   "q": "rubric:opposition:rebuttal",
+   "levels": 5,
+   "score": 3.01,
+   "sum_k_p": 3.01,
+   "sum_k_p_over_n_minus_1": 0.7525,
+   "prob_keys": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "legend": {
+    "0": "very weak",
+    "1": "weak",
+    "2": "adequate",
+    "3": "strong",
+    "4": "very strong"
+   },
+   "confidence": 0.82
+  },
+  {
+   "q": "rubric:opposition:clarity",
+   "levels": 5,
+   "score": 3.44,
+   "sum_k_p": 3.45,
+   "sum_k_p_over_n_minus_1": 0.8625,
+   "prob_keys": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "legend": {
+    "0": "very weak",
+    "1": "weak",
+    "2": "adequate",
+    "3": "strong",
+    "4": "very strong"
+   },
+   "confidence": 0.61
+  },
+  {
+   "q": "rubric:opposition:persuasion",
+   "levels": 5,
+   "score": 2.87,
+   "sum_k_p": 2.88,
+   "sum_k_p_over_n_minus_1": 0.72,
+   "prob_keys": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "legend": {
+    "0": "very weak",
+    "1": "weak",
+    "2": "adequate",
+    "3": "strong",
+    "4": "very strong"
+   },
+   "confidence": 0.8
+  },
+  {
+   "q": "piece:kch_amaraFat01",
+   "levels": 3,
+   "score": 0.05,
+   "sum_k_p": 0.04,
+   "sum_k_p_over_n_minus_1": 0.02,
+   "prob_keys": [
+    0,
+    1,
+    2
+   ],
+   "legend": {
+    "0": "doesn't help with the question",
+    "1": "partly answers it",
+    "2": "answers it"
+   },
+   "confidence": 0.94
+  },
+  {
+   "q": "piece:kch_amaraFat02",
+   "levels": 3,
+   "score": 1.93,
+   "sum_k_p": 1.93,
+   "sum_k_p_over_n_minus_1": 0.965,
+   "prob_keys": [
+    0,
+    1,
+    2
+   ],
+   "legend": {
+    "0": "doesn't help with the question",
+    "1": "partly answers it",
+    "2": "answers it"
+   },
+   "confidence": 0.9
+  },
+  {
+   "q": "piece:kch_amaraFat03",
+   "levels": 3,
+   "score": 0.89,
+   "sum_k_p": 0.89,
+   "sum_k_p_over_n_minus_1": 0.445,
+   "prob_keys": [
+    0,
+    1,
+    2
+   ],
+   "legend": {
+    "0": "doesn't help with the question",
+    "1": "partly answers it",
+    "2": "answers it"
+   },
+   "confidence": 0.66
+  }
+ ],
+ "spend": {
+  "key_usage_delta": 0.004598,
+  "harness_total_all_runs": 0.00486,
+  "calls": 93,
+  "store_hits": 0
+ },
+ "response_shape": {
+  "answers": [
+   "emotion:chr_seedAmara"
+  ],
+  "usage": [
+   "cost",
+   "input_tokens",
+   "output_tokens"
+  ],
+  "top": [
+   "answers",
+   "id",
+   "model",
+   "provider",
+   "usage"
+  ]
+ }
+}

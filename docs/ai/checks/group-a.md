@@ -10,10 +10,10 @@ The checks [doc 13](../13-wrap-up.md) W6 runs before M7. They were run on `feat/
 - **Pay once (W10):** every request and response is in `data/cache/` in the W10 format. Re-running A1 or A3 is free,
   except the repeatability, latency and retry calls.
 - **Committed outputs, reused by M7:**
-  - [canary.json](group-a/data/canary.json): B6's drift canary and its baseline;
-  - [drafts.json](group-a/data/drafts.json): 20 real profile drafts, used as W14's canned drafter responses;
-  - the run summaries [a1](group-a/data/a1.json), [a1b](group-a/data/a1b.json), [a2](group-a/data/a2.json) and
-    [a3](group-a/data/a3.json).
+  - [canary.json](group-a/results/canary.json): B6's drift canary and its baseline;
+  - [drafts.json](group-a/results/drafts.json): 20 real profile drafts, used as W14's canned drafter responses;
+  - the run summaries [a1](group-a/results/a1.json), [a1b](group-a/results/a1b.json), [a2](group-a/results/a2.json) and
+    [a3](group-a/results/a3.json).
 
 All the inputs are seed text or lines written for the check. No user data was sent.
 

@@ -1,0 +1,255 @@
+{
+ "ran_at": "2026-10-10 18:30 MYT (Sat)",
+ "jev": {
+  "turn_plan_1to1": {
+   "latency_ms": {
+    "n": 60,
+    "p50": 419.1,
+    "p90": 456.6,
+    "p99": 494.5,
+    "max": 1132.9,
+    "mean": 437.8
+   },
+   "input_tokens": {
+    "n": 60,
+    "p50": 1236,
+    "p90": 1353,
+    "p99": 1402,
+    "max": 1408,
+    "mean": 1243.1
+   },
+   "questions": {
+    "n": 60,
+    "p50": 7,
+    "p90": 7,
+    "p99": 7,
+    "max": 7,
+    "mean": 7.0
+   },
+   "errors": [],
+   "current_deadline_ms": 1000,
+   "over_deadline": 1
+  },
+  "turn_plan_group5": {
+   "latency_ms": {
+    "n": 40,
+    "p50": 431.1,
+    "p90": 453.8,
+    "p99": 498.1,
+    "max": 498.1,
+    "mean": 434.7
+   },
+   "input_tokens": {
+    "n": 40,
+    "p50": 3319,
+    "p90": 3398,
+    "p99": 3418,
+    "max": 3418,
+    "mean": 3329.8
+   },
+   "questions": {
+    "n": 40,
+    "p50": 18,
+    "p90": 18,
+    "p99": 18,
+    "max": 18,
+    "mean": 18.0
+   },
+   "errors": [],
+   "current_deadline_ms": 1000,
+   "over_deadline": 0
+  },
+  "follow_plan": {
+   "latency_ms": {
+    "n": 50,
+    "p50": 419.5,
+    "p90": 445.9,
+    "p99": 688.4,
+    "max": 688.4,
+    "mean": 427.6
+   },
+   "input_tokens": {
+    "n": 50,
+    "p50": 1400,
+    "p90": 1459,
+    "p99": 1487,
+    "max": 1487,
+    "mean": 1418.0
+   },
+   "questions": {
+    "n": 50,
+    "p50": 6,
+    "p90": 6,
+    "p99": 6,
+    "max": 6,
+    "mean": 5.9
+   },
+   "errors": [],
+   "current_deadline_ms": 400,
+   "over_deadline": 49
+  },
+  "debate_plan": {
+   "latency_ms": {
+    "n": 30,
+    "p50": 414.5,
+    "p90": 444.0,
+    "p99": 497.5,
+    "max": 497.5,
+    "mean": 422.4
+   },
+   "input_tokens": {
+    "n": 30,
+    "p50": 2338,
+    "p90": 2412,
+    "p99": 2427,
+    "max": 2427,
+    "mean": 2327.7
+   },
+   "questions": {
+    "n": 30,
+    "p50": 10,
+    "p90": 11,
+    "p99": 11,
+    "max": 11,
+    "mean": 10.5
+   },
+   "errors": [],
+   "current_deadline_ms": 400,
+   "over_deadline": 30
+  },
+  "guardrail_output": {
+   "latency_ms": {
+    "n": 40,
+    "p50": 408.9,
+    "p90": 461.0,
+    "p99": 564.3,
+    "max": 564.3,
+    "mean": 423.5
+   },
+   "input_tokens": {
+    "n": 40,
+    "p50": 376,
+    "p90": 411,
+    "p99": 451,
+    "max": 451,
+    "mean": 387.0
+   },
+   "questions": {
+    "n": 40,
+    "p50": 1,
+    "p90": 1,
+    "p99": 1,
+    "max": 1,
+    "mean": 1.0
+   },
+   "errors": [],
+   "current_deadline_ms": 700,
+   "over_deadline": 0
+  },
+  "deep_check_8": {
+   "latency_ms": {
+    "n": 40,
+    "p50": 418.2,
+    "p90": 463.2,
+    "p99": 518.0,
+    "max": 518.0,
+    "mean": 426.5
+   },
+   "input_tokens": {
+    "n": 40,
+    "p50": 1422,
+    "p90": 1444,
+    "p99": 1454,
+    "max": 1454,
+    "mean": 1418.3
+   },
+   "questions": {
+    "n": 40,
+    "p50": 8,
+    "p90": 8,
+    "p99": 8,
+    "max": 8,
+    "mean": 8.0
+   },
+   "errors": [],
+   "current_deadline_ms": 700,
+   "over_deadline": 0
+  }
+ },
+ "deepseek_first_word": {
+  "1to1": {
+   "first_word_ms": {
+    "n": 40,
+    "p50": 555.3,
+    "p90": 710.2,
+    "p99": 803.3,
+    "max": 803.3,
+    "mean": 560.2
+   },
+   "total_ms": {
+    "n": 40,
+    "p50": 772.6,
+    "p90": 947.7,
+    "p99": 1161.3,
+    "max": 1161.3,
+    "mean": 783.8
+   },
+   "providers": {
+    "DeepSeek": 40
+   },
+   "reasoning_chunks": 0,
+   "errors": []
+  },
+  "group": {
+   "first_word_ms": {
+    "n": 27,
+    "p50": 594.5,
+    "p90": 764.2,
+    "p99": 876.7,
+    "max": 876.7,
+    "mean": 587.4
+   },
+   "total_ms": {
+    "n": 30,
+    "p50": 773.9,
+    "p90": 941.9,
+    "p99": 1176.7,
+    "max": 1176.7,
+    "mean": 774.6
+   },
+   "providers": {
+    "DeepSeek": 30
+   },
+   "reasoning_chunks": 0,
+   "errors": []
+  },
+  "debate": {
+   "first_word_ms": {
+    "n": 25,
+    "p50": 520.4,
+    "p90": 740.1,
+    "p99": 1062.1,
+    "max": 1062.1,
+    "mean": 528.2
+   },
+   "total_ms": {
+    "n": 30,
+    "p50": 648.2,
+    "p90": 876.2,
+    "p99": 1198.9,
+    "max": 1198.9,
+    "mean": 679.4
+   },
+   "providers": {
+    "DeepSeek": 30
+   },
+   "reasoning_chunks": 0,
+   "errors": []
+  }
+ },
+ "spend": {
+  "key_usage_delta": 0.026896,
+  "harness_total_all_runs": 0.034946,
+  "calls": 362
+ }
+}
