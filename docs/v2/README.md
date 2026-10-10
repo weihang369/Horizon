@@ -87,3 +87,30 @@ cover the rest well enough for v1.
 2. **An FTS rebuild** of the three tables, with a new `tokenizer` value so that reindex re-runs from that layer.
 3. **Evaluation:** Chinese and Japanese questions over Chinese documents in the retrieval suite, run with and without
    bigrams.
+
+## 4. A mature content rating
+
+**v1 behaviour:** `contentRating` is the literal `"sfw"` (NFR-27). The prompt rules, the input steer and the output
+check all use doc 11 S1's SFW definition.
+
+**Why it was deferred:** a second rating needs a contract value, an age gate and a second set of tuned thresholds, and
+the v1 launch is a public demo.
+
+**What v2 would need:**
+1. A contract value (`"mature"`) and a settings control behind an adult confirmation.
+2. A second rules wording for the prompt (doc 11 S2) and the Jev checks (S3, S5), with its own thresholds.
+3. A mature half of the `safety` suite (doc 11 S10), so the SFW thresholds don't drift.
+
+## 5. A "no training" switch for chat
+
+**v1 behaviour:** chat routing allows data collection (D-80), so DeepSeek's own endpoint stays eligible. Users are told
+by a notice in Settings → Connection and in the Knowledge tab, and in the README (doc 11 S8). The README explains how
+to set `deny` in the local config.
+
+**Why it was deferred:** it is a new control, and `deny` routes chat to third-party hosts (≈ 1.2–2× the price, and
+without DeepSeek's first-party cache price), against the speed-and-cost headline.
+
+**What v2 would need:**
+1. A Settings switch that sets `data_collection: "deny"` for chat, with the price difference shown first (NFR-08).
+2. The ledger's `provider` column already shows where each call went; Insight shows it per reply.
+3. A latency and cost check on the third-party route before it is offered.
