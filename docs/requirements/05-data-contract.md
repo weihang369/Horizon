@@ -52,8 +52,8 @@ World 1──< Session 1──< Participant >──1 Character
                    1──< SessionEvent   (append-only; powers Replay + demo mode + the MockClient)
 Character 1──< GenerationJob 1──< GenerationTask
 UsageRecord (cost ledger) ──? Session | Character | GenerationJob
-MemoryItem      (PROVISIONAL, AI-owned)  >──1 Character (scoped to its World)
-KnowledgeSource (PLACEHOLDER, v1.1 RAG)  >──1 Character
+MemoryItem      (AI-owned)               >──1 Character (scoped to its World)
+KnowledgeSource (RAG in v1, docs/ai/10)  >──1 Character
 ```
 
 ## 3. Enums
@@ -408,7 +408,7 @@ GenerationTask {
 ### UsageRecord (cost ledger)
 `{ id, at, category: "chat" | "decision" | "image" | "music" | "profile" | "summary" | "memory" | "embedding" /*rev 1.3*/ | "energy_topup", model?, provider?, pricePeriod?, sessionId?, characterId?, jobId?, tokensIn?, tokensCached?, tokensOut?, costUsd, estimatedCostUsd?, energyPoints?, latencyMs? }`. `costUsd` comes from the provider-reported cost (`usage.cost`) when available. An `energy_topup` row has `costUsd: 0` and `energyPoints` set: a top-up authorises spend, and the replies it funds are recorded as `chat` (D-76).
 
-### MemoryItem (**PROVISIONAL**: lets the UI mock the Memory tab; the AI team owns the final shape, OQ-AI-01)
+### MemoryItem (final: the AI stage kept this shape, [docs/ai/09](../ai/09-memory.md); OQ-AI-01 resolved)
 `{ id, characterId, worldId, kind: "fact" | "event" | "preference" | "about_user", text, importance: number /*0..1*/, sourceSessionId?, sourceMessageId?, createdAt }`
 
 ### KnowledgeSource (D-59; rev 1.3 per D-65)

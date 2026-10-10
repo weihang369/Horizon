@@ -66,8 +66,8 @@ These are the moments that define Horizon. UI/UX should treat them as the "hero 
 | Phase | UI/UX (hardcoded) | SWE (FastAPI + SQLite/FS) | AI (LangGraph) |
 |---|---|---|---|
 | **Spikes** (parallel with UI/UX) | none | Contract review of doc 05; SSE replay harness | **Seed Asset Sprint** = image-consistency spike (≤ US$5); music provider and licence check; DeepSeek V4.1 Flash persona test + routing/caching test (first-party endpoint, record cached tokens); Jev smoke test; **memory design spike** |
-| **MVP** | All screens in doc 03, every state, MockClient + State Switcher, Insight drawer, demo mode, Replay | CRUD, job runner, asset storage, SSE streams, event log, cost ledger + caps, seed import/reset, key handling | Profile generation with HITL, portraits + 7 emotions, theme song, 1:1 chat with memory, emotion tagging, group / debate / watch, baseline guardrails |
-| **v1.1** | Richer memory/context inspector, Knowledge (RAG) tab, debate Extended format (cross-exam), character-as-chair | World export/import, evaluation run storage | Per-character RAG, debate rubric scoring via Jev, memory importance scoring, evaluation harness, optional full-length songs |
+| **MVP** | All screens in doc 03, every state, MockClient + State Switcher, Insight drawer, demo mode, Replay; **Knowledge (RAG) tab** (AI stage) | CRUD, job runner, asset storage, SSE streams, event log, cost ledger + caps, seed import/reset, key handling | Profile generation with HITL, portraits + 7 emotions, theme song, 1:1 chat with memory, emotion tagging, group / debate / watch, baseline guardrails; **from the AI stage: per-character RAG, debate rubric scoring via Jev, memory importance scoring, evaluation harness and its run storage** ([docs/ai](../ai/13-wrap-up.md)) |
+| **v1.1** | Richer memory/context inspector, debate Extended format (cross-exam), character-as-chair | World export/import | Optional full-length songs |
 | **Later** | Custom emotions, more palettes, graph trace view | Optional Docker | Character-initiated messages, task-based model routing |
 
 ## 5. Success criteria (first public release)

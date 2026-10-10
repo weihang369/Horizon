@@ -11,7 +11,7 @@ How the AI *thinks* is decided at the AI stage. The rule here is that **swapping
 
 ## 1. Selection
 
-`HORIZON_AI_PROFILE = scripted | naive` (default `naive` when a key is set, `scripted` otherwise), with per-port overrides: `HORIZON_AI_TURN`, `HORIZON_AI_ROUTER`, `HORIZON_AI_REACTIONS`, `HORIZON_AI_HOST`, `HORIZON_AI_DIRECTOR`, `HORIZON_AI_SUMMARISER`, `HORIZON_AI_GUARDRAIL`, and from M4 `HORIZON_AI_DRAFTER`, `HORIZON_AI_IMAGE`, `HORIZON_AI_SONG` (e.g. `HORIZON_AI_TURN=scripted`). The turn engine, the router (M3), the profile drafter and the image generator (M4) have naive implementations; every other port is scripted in both profiles. The creation port is named `drafter` because `HORIZON_AI_PROFILE` is the selector itself. Tests and the HTTP contract run use `scripted`; `/_test/ai-profile { profile, overrides? }` changes the selection at runtime (e.g. the Jev router with the scripted turn engine).
+`HORIZON_AI_PROFILE = scripted | naive | agent` (default `naive` when a key is set, `scripted` otherwise; `agent`, the AI stage's profile, becomes the default with a key at M15, [docs/ai/13](../ai/13-wrap-up.md) W4), with per-port overrides: `HORIZON_AI_TURN`, `HORIZON_AI_ROUTER`, `HORIZON_AI_REACTIONS`, `HORIZON_AI_HOST`, `HORIZON_AI_DIRECTOR`, `HORIZON_AI_SUMMARISER`, `HORIZON_AI_GUARDRAIL`, and from M4 `HORIZON_AI_DRAFTER`, `HORIZON_AI_IMAGE`, `HORIZON_AI_SONG` (e.g. `HORIZON_AI_TURN=scripted`). The turn engine, the router (M3), the profile drafter and the image generator (M4) have naive implementations; every other port is scripted in both profiles. The creation port is named `drafter` because `HORIZON_AI_PROFILE` is the selector itself. Tests and the HTTP contract run use `scripted`; `/_test/ai-profile { profile, overrides? }` changes the selection at runtime (e.g. the Jev router with the scripted turn engine).
 
 **Scripted spend is simulated and billed (D-81).** Scripted ports never open a connection, but their calls (replies, route decisions, verdicts, summaries) run through the same gateway pipeline as real ones: preflight with caps and reservations, one ledger row priced from `seed/pricing.json` (`provider: "scripted"`), the reply drain and the budget events. Energy, caps and Insight therefore behave exactly as on the MockClient. Picking `scripted` with a real key spends simulated amounts against the real daily cap; the default with a key is `naive`.
 
@@ -38,12 +38,14 @@ TurnEvent = (
 )
 ```
 
-- **The actor owns** `messageId`, sequence numbers, persistence, energy, budget, `Message.usage` (from the ledger), timings, and the trace sections `model`, `energy` and `routing`. A `TracePatch` that sets any of those is rejected.
+- **The actor owns** `messageId`, sequence numbers, persistence, energy, budget, `Message.usage` (from the ledger), timings, and the trace sections `model`, `energy` and `routing` (and, from the AI stage, `system1`, written through `append_system1`: docs/ai/13 W1). A `TracePatch` that sets any of those is rejected.
 - **Insight.** The actor merges patches and emits the **full** trace as `insight`. Post-turn hooks (output guardrail, citation faithfulness, emotion validator) also return `TracePatch`es. A later `insight` for the same message replaces the earlier one (rev 1.3 note), which is already reducer behaviour.
 - **`turn_traces.engine`, `engine_version` and `prompt_version`** are set from the engine's declared metadata.
 - **Stop:** the actor cancels the iterator. The engine must hold no resources beyond the gateway stream, which is closed when the iterator is cancelled.
 
 ### 2.2 Port catalogue
+
+*AI stage:* the last column's OQ references are resolved in [docs/ai](../ai/13-wrap-up.md): `TurnEngine` and the new `TurnPlanner` (01 A4–A6), `Router`/`WatchDirector` (07), `DebateHost` (08), `ReactionPredictor` (06 E5), `Summariser` (05 X3, 07 G10), `MemoryWriter` (`on_stretch` at session pauses), `MemoryRetriever` and the new `SessionRecall` (09 M1–M9), `KnowledgeIndexer`/`KnowledgeRetriever` (10 K1–K7), `Guardrail` (+ `check_prompt`, 11 S3–S5, 12 I3–I4), `ImagePromptCompiler` (12 I1, 13 W3).
 
 | Port | Signature (abridged) | Scripted | Naive real (backend stage) | AI stage |
 |---|---|---|---|---|
@@ -72,9 +74,10 @@ MemoryOp = Insert(draft) | Supersede(old_ids: list[str], draft) | Reinforce(id, 
 # drafts carry kind, text, importance, source_* ids incl. source_variant_id, source_mode, about_character_id.
 
 QueryBundle = { text: str, vectors: dict[space_id, list[float]] }
-# Built ONCE per triggering user message (D-97): the actor starts the query embedding as soon as `send` arrives, in
+# Built ONCE per triggering user message. naive/scripted (D-97): the actor starts the query embedding as soon as `send` arrives, in
 # parallel with routing, and only when it can pay off (a vector retriever, a key, a responder with vectors). It is
 # reused by every responder of that message; a reply waits for it at most `retrieval.queryEmbedWaitMs`.
+# agent (D-100): started at the gate, only when Jev call 1 asks for search; waited for at most 400 ms (docs/ai/10 K4).
 
 ScopedIndex  # services/knowledge/index.py: read-only, built by the RUNTIME per turn for the speaker's world and
 # character. Every keyword and vector query binds the character (the vec0 partition key) and re-checks world and
@@ -108,6 +111,8 @@ class Decider:
   - Late answers are discarded but still recorded in the ledger.
   - Off the hot path, the fallback may be a DeepSeek structured-output call (category `decision`, never drains energy). **On the hot path the fallback is always deterministic.**
 
+*AI stage:* the `agent` profile's purposes, questions, deadlines and fallbacks are the Jev map in [docs/ai/13](../ai/13-wrap-up.md) W5; this table is the backend stage's (`naive` keeps `route`).
+
 | Purpose | Timeout | Deterministic hot-path fallback |
 |---|---|---|
 | `route` | 400 ms | @mention, else round-robin over eligible speakers (least recent first); trace marks the fallback, with no `candidates` |
@@ -139,7 +144,7 @@ class AiStateHooks(Protocol):            # implemented by the AI layer; called f
   - the `world_id`/`character_id` scope;
   - **the retrieved hits** (`knowledge`, `memory`, `query`), already bound to that scope by the runtime (NFR-23, D-92) instead of pre-bound retrievers;
   - `call_ctx(purpose)`.
-- **A post-turn queue per character** for memory ops; reactions go through the session actor.
+- **A post-turn queue per character** for memory ops; reactions go through the session actor. *AI stage: memory is written at session pauses by `memory_run` tasks instead ([docs/ai/09](../ai/09-memory.md) M1).*
 - **Storage:** memory (+ `MemoryStore.apply`), knowledge sections and chunks, embedding spaces (+ dual-write while building), `session_summaries`, traces with version columns, `message_citations`, the ledger with `purpose`.
 - **`data/graph.db`**, reserved for LangGraph checkpoints, which are closed and deleted correctly by Factory reset.
 - **Caps, reservations and energy** enforced around every call; `gateway.on_call` is the hook for evaluation logging.
@@ -152,7 +157,7 @@ class AiStateHooks(Protocol):            # implemented by the AI layer; called f
   - "Things you remember about this world…" with up to 3 memories;
   - one line: cite a passage with its `[n]` only when you rely on it.
 
-  The engine yields a `CitationMap` for every numbered passage; the runtime keeps only the markers the reply wrote. After the stream it sets `trace.knowledge.retrieved` (`cited` from its own output), `trace.memory.recalled` (which writes the Forget refs) and `context.used.memory/knowledge`. **With nothing retrieved the request is byte-identical to v1.**
+  The engine yields a `CitationMap` for every numbered passage; the runtime keeps only the markers the reply wrote. After the stream it sets `trace.knowledge.retrieved` (`cited` from its own output), `trace.memory.recalled` (which writes the Forget refs) and `context.used.memory/knowledge`. **With nothing retrieved the request is byte-identical to v1** (until `naive-3`, [docs/ai/03](../ai/03-llm-parameters.md), [docs/ai/10](../ai/10-rag.md) K13).
 - **Scripted citations (D15).** The scripted engine ports the mock's `liveCitations` with its own RNG stream (`{seed}:{turn}:cite`): about 55 % of replies with hits cite 1–2 passages, one more is retrieved but uncited, and replies without hits are unchanged. It never uses memory hits (parity with the mock).
 - **Cache-friendly history window.** The window grows until it is full, then **drops the oldest half in one step**, with the summary refreshed at that block boundary. A one-message sliding window would change the prefix every turn and miss the cache.
 - **Inline emotion tag** (OQ-AI-07 A): the model is asked to start with `<e:label>`. The parser:
@@ -168,9 +173,9 @@ class AiStateHooks(Protocol):            # implemented by the AI layer; called f
 
 | Item | Why it can wait |
 |---|---|
-| `ai_calls` evaluation table (request/response per call, retention, scrubbed by Forget) | Additive; attaches to `gateway.on_call` |
-| `memory_consolidate` job | The job kind is TEXT |
-| `message_fts` (in-session keyword recall) | Additive virtual table |
-| `knowledge_chunk_redirects` | Only needed once content is re-chunked |
-| Trigram FTS tokenizer for CJK text | An FTS rebuild |
-| Prompt layout and budgets, memory policy, chunk sizes, MMR, rerank thresholds, **the embedding comparison test** (final model and dimensions), emotion validation, debate rubric, guardrail policy, LangGraph graphs, evaluation harness | AI design (OQ-AI-01…17) |
+| `ai_calls` evaluation table (request/response per call, retention, scrubbed by Forget) | Additive; attaches to `gateway.on_call`. **Designed:** [docs/ai/02](../ai/02-evaluation-observability.md) B10 |
+| `memory_consolidate` job | The job kind is TEXT. **Withdrawn:** nothing is merged automatically ([docs/ai/09](../ai/09-memory.md) M5) |
+| `message_fts` (in-session keyword recall) | Additive virtual table. **Designed:** [docs/ai/09](../ai/09-memory.md) M9 |
+| `knowledge_chunk_redirects` | Only needed once content is re-chunked. **Withdrawn** ([docs/ai/10](../ai/10-rag.md)) |
+| Trigram FTS tokenizer for CJK text | An FTS rebuild. **Withdrawn:** `porter unicode61` stays; CJK search is in the [v2 backlog](../v2/README.md) §3 ([docs/ai/10](../ai/10-rag.md) K11) |
+| Prompt layout and budgets, memory policy, chunk sizes, MMR, rerank thresholds, **the embedding comparison test** (final model and dimensions), emotion validation, debate rubric, guardrail policy, LangGraph graphs, evaluation harness | AI design (OQ-AI-01…17). **Designed:** [docs/ai/01–13](../ai/13-wrap-up.md); the embedding comparison test is [docs/ai/10](../ai/10-rag.md) K3 |

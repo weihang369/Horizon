@@ -49,13 +49,13 @@
   - Fallback goes only to **full-precision** providers (no fp4/fp8).
   - A data-collection policy is set: `allow` for the main LLM, so the DeepSeek first-party endpoint stays eligible (D-80).
   - The ledger records `provider` and `pricePeriod`.
-- **NFR-35 (cache-friendly prompts):** Prompt layout puts static content first (style/persona), then history, with dynamic blocks (memory, retrieval) **last**, to maximise cache hits. The cache-hit % appears in Insight.
+- **NFR-35 (cache-friendly prompts):** Prompt layout puts static content first (style/persona), then history, with dynamic blocks (memory, retrieval) **last**, to maximise cache hits. The cache-hit % appears in Insight. *Note (AI stage): each character's memory list is frozen for a sitting and sits in the cached system prompt, refreshed only by a Forget or a live commit ([docs/ai/09](../ai/09-memory.md) M8).*
 
 ### Setup, key handling, privacy
 - **NFR-10 (zero-config):** clone → install → copy `.env.example` → **one command** starts backend and frontend. Prerequisites are **Python + Node only**: no Docker, Redis, external DB, GPU, CUDA or PyTorch. Demo mode is reachable within **≤ 5 min**, and the first live chat within ≤ 10 min.
 - **NFR-11 (demo mode):** Without a key, seed worlds, characters, assets and recorded sessions are browsable and replayable. Generation and live chat are disabled with a clear call to action.
 - **NFR-12 (key storage):** The OpenRouter key lives **only on the backend** (`.env` or a git-ignored local settings file). The frontend only ever sees `missing/set/invalid`. The key never appears in logs, errors, the ledger or exports.
-- **NFR-13 (network exposure):** The backend binds to `127.0.0.1`. The only outbound calls go to OpenRouter. **No telemetry. No runtime font or CDN calls** (fonts are self-hosted).
+- **NFR-13 (network exposure):** The backend binds to `127.0.0.1`. The only outbound calls go to OpenRouter. **No telemetry. No runtime font or CDN calls** (fonts are self-hosted). *One documented exception: LangSmith tracing, off by default and switched on only by `HORIZON_LANGSMITH=1` plus the user's own key; it then sends chat and document text to LangSmith ([docs/ai/02](../ai/02-evaluation-observability.md) B11).*
 - **NFR-14 (configurable models):** Model IDs, routing preferences and the pricing table live in config. Local overrides are git-ignored. `~latest` aliases are never used in committed config.
 
 ### Accessibility & UX safety
@@ -103,8 +103,8 @@ Likelihood (L) and Impact (I) are rated H / M / L.
 | R-10 | Browser autoplay blocks music | H | L | Title-screen gesture unlocks audio; "Enable audio" chip | UI |
 | R-11 | Repo bloat | M | M | Asset budgets, WebP/Opus, no LFS, runtime data git-ignored | SWE |
 | R-12 | API key leak | M | H | Backend-only key, `.env.example`, localhost bind, never logged, pre-commit secret scan | SWE |
-| R-13 | Jev is immature (alpha endpoint, varying probabilities, price unconfirmed in the models API) | M | M | `Decider` interface with a DeepSeek structured-output fallback; probability bands; confirm price via `usage.cost` | AI |
-| R-14 | DeepSeek V4.1 Flash is very new (2026-09-10); persona quality unproven | M | M | Persona-adherence evaluation; reasoning off for chat; `deepseek/deepseek-v4-flash` as fallback | AI |
+| R-13 | Jev is immature (alpha endpoint, varying probabilities, price unconfirmed in the models API) | M | M | `Decider` interface with a deterministic code fallback per question ([docs/ai/01](../ai/01-agent-architecture.md) A4); probability bands; confirm price and billing via `usage.cost` ([docs/ai/13](../ai/13-wrap-up.md) W6, A1) | AI |
+| R-14 | DeepSeek V4.1 Flash is very new (2026-09-10); persona quality unproven | M | M | Persona-adherence evaluation ([docs/ai/02](../ai/02-evaluation-observability.md) B1, B4); reasoning off for chat; no fallback model: if V4.1 ever fails the eval, a developer changes the pinned model and re-runs it ([docs/ai/03](../ai/03-llm-parameters.md) C8) | AI |
 | R-15 | Mock and backend drift apart | H | M | Doc 05 is the contract; shared fixtures under `seed/`; schema validation | UI, SWE |
 | R-16 | Scope creep | H | M | Phasing (doc 01 §4.3), constrained mode definitions, MoSCoW | Lead BA |
 | R-17 | Animation performance / photosensitivity | M | M | transform/opacity only, flash cap, reduced motion, no hover floods | UI |

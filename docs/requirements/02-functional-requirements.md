@@ -148,7 +148,7 @@ As Jun, I want to type one line like "Sarah, a doctor", so the AI does the heavy
 - AC3: Edited fields show an "edited" dot, and regenerating an edited field asks for confirmation.
 
 **CHR-05: Prompt preview** · Should
-- AC1: The "View as prompt" toggle shows a read-only monospace `systemPromptPreview` with a token count. *(The template is the AI team's; it's a mock in the UI phase.)*
+- AC1: The "View as prompt" toggle shows a read-only monospace `systemPromptPreview` with a token count. *(The template is the AI team's `agent` compiler, [docs/ai/04](../ai/04-persona-prompt-drafter.md).)*
 
 **CHR-06: Create-a-Character appearance ("LOOK")** · Must
 As Jun, I want Sims-style pickers for appearance, so I can shape the look without writing prompts.
@@ -242,10 +242,11 @@ As Jun, I want Sims-style pickers for appearance, so I can shape the look withou
 - AC2: The Archived filter offers **Restore** and **"Delete permanently"** (typed confirmation). On permanent delete, the character's **1:1 sessions are deleted** (their count is shown in the confirmation), and their messages in multi-character sessions are kept under a grey silhouette with "(deleted character)".
 - AC3: Resuming a multi-character session whose cast includes an **archived** character shows that character greyed out with "Archived", and they are skipped in turn-taking. A 1:1 session with an archived character is read-only, with a "Restore to chat" button.
 
-**PRF-07: Memory tab** · Should *(the mock carries a "Preview: final design by AI team" ribbon)*
+**PRF-07: Memory tab** · Should *(final design: [docs/ai/09](../ai/09-memory.md); no Preview ribbon)*
 - AC1: A list of memory items (text, kind, source session, date, importance badge) with View source and Forget.
+- AC2: The newest 50 show first, with "Show more". View source is hidden when its session no longer exists ([docs/ai/13](../ai/13-wrap-up.md) W8).
 
-**PRF-08: Knowledge tab** · Could *(mock; RAG is v1.1; same ribbon)*. A drop zone and a document list with status.
+**PRF-08: Knowledge tab** · Could *(RAG ships in v1: [docs/ai/10](../ai/10-rag.md); no Preview ribbon)*. A drop zone and a document list with status.
 - AC2 (D-59): Each indexed source shows its pages/passages and how often it has been cited; opening it shows the O28 Source viewer.
 
 **PRF-10: Knowledge citations** · Should *(D-59; UI built in the hardcoded stage, retrieval is OQ-AI-03)*
@@ -453,7 +454,7 @@ As any user, I want to see each character's energy at a glance, so I know how mu
 
 **ENG-02: What drains energy** · Must
 - AC1: **Only the character's own talking** drains their energy: their replies in 1:1, group, debate and watch. The drain equals the actual cost in ⚡ (1 ⚡ = US$0.0001), rounded up.
-- AC2: These **do not** drain energy (they count only against the daily cap): routing, listener reactions, host lines, verdicts, memory, profile drafting, images and the theme song.
+- AC2: These **do not** drain energy (they count only against the daily cap): routing, listener reactions, host lines, verdicts, memory, profile drafting, images and the theme song; and, from the AI stage, the query rewrite, Jev call 2, the query embedding, the safety checks and the face check ([docs/ai](../ai/13-wrap-up.md)).
 - AC3: In multi-character sessions, **each speaker pays for their own lines**. A family dinner chat drains Hana, Takeshi and Rin separately.
 
 **ENG-03: Regeneration** · Must
@@ -489,7 +490,7 @@ As any user, I want to see each character's energy at a glance, so I know how mu
 **SET-02: Audio** · Must. Master, Music and SFX sliders; global mute; "Duck music under stings".
 **SET-03: Chat defaults** · Must. Default emotion mode, group responder policy, debate auto-advance, Readable Mode default, speaker cut-ins on/off.
 **SET-04: Display** · Must. Reduced motion, VFX intensity (Off/Subtle/Full), **flash intensity (Off/Low/Full)**, parallax, text size (S/M/L).
-**SET-05: Models (Advanced)** · Should. Editable model IDs for: Main chat model · Decision model (System One) · Image model · Music model. Each has a "Test" button and an "Unverified model" warning; Reset to defaults is available. Overrides are saved locally, never to committed config.
+**SET-05: Models (Advanced)** · Should. **Read-only in v1** ([docs/ai/03](../ai/03-llm-parameters.md) C9): a "Models in use" panel showing, for each role (main chat · decision (System One) · image · music · embedding), the model slug, what it is for, its price and a "Test" button, with the line "Tuned for these models. Custom models are planned for v2." Editable model IDs are in the [v2 backlog](../v2/README.md) §1.
 **SET-06: Generation mode** (Cost tab) · Must. **Lean (default)**: 1 candidate, 4 emotions, the rest on demand. **Standard**: 2 candidates, all emotions at creation. "Auto-generate missing emotions" defaults to off.
 **SET-07: Cost controls** · Should. Cost estimates on/off, confirm-before-generate on/off, cost HUD on/off.
 **SET-08: Budget & energy** (Cost tab) · Must. Daily cap (default US$1.00), per-character creation cap (US$0.60), warn at % (80), and **default character energy** (1000 ⚡/day). There is **no per-session cap**: energy replaces it (D-42).
@@ -510,6 +511,7 @@ As Alex (and anyone watching a demo), I want a drawer that shows what the AI did
   - **Energy:** ⚡ spent by this reply and remaining (e.g. "−5 ⚡ · 742 / 1000").
   - **Emotion:** chosen label, source, top-3 probabilities as bars.
   - **Routing:** decision question, candidates with probabilities, or "forced by you / mention".
+  - **System 1** (AI stage, contract rev 1.4): every Jev question of the turn with its answer, probability, threshold and what code did; the drawer shows it after Routing and Emotion ([docs/ai/13](../ai/13-wrap-up.md) W1).
   - **Memory:** long-term items recalled.
   - **In-session recall:** shown separately from memory.
   - **Context:** a token budget bar by section.
