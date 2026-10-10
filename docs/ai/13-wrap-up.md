@@ -8,7 +8,8 @@
 >   - the leftovers from docs 06 and 09–12;
 >   - **the build plan:** nine OpenSpec changes, M7–M15;
 >   - **the paid checks**, in two groups.
-> - Decisions are numbered **W1–W9**, each with the alternatives we rejected.
+> - Decisions are numbered **W1–W10**, each with the alternatives we rejected. W10 records the user's rule given at
+>   the end of the task: **pay once, reuse everywhere** (checks, evaluation and the demo share every paid output).
 > - **The user's four choices** (all four were the recommendation):
 >   - System 1 is **one generic list** of questions;
 >   - the **face-and-words check goes live**, while citations stay evaluation-only;
@@ -189,7 +190,8 @@ System 1 · Jev
   - any text sent through the API is ignored the same way.
 - **No UI or contract change.** The button and its hint already exist ([EmotionLightbox.tsx](../../frontend/src/features/profile/EmotionLightbox.tsx)).
 - **Compiler v3** (doc 12 I1) carries it, with a golden fixture.
-- **Checked by eye** in doc 12's v3 image check: two more edits (Hana and Rin), ≈ $0.04 (§3, group A).
+- **Checked by eye** where the v3 images are made: the endgame's in-app creation of the seed characters (W10). One
+  identity edit there costs ≈ $0.018, and its image is kept if it passes.
 
 **Rejected:**
 - **Dropping the button:** it would remove a working path.
@@ -293,16 +295,15 @@ The user's rule: paid checks run after the design is done and before coding, wit
 checks can't run before coding, because they need code that doesn't exist yet: the harness, the turn planner or the
 `safety` suite. So:
 
-**Group A: before M7, as plain scripts through the existing gateway (≈ $0.59 in all).** These are the ones that could
-change the architecture.
+**Group A: before M7, as plain scripts through the existing gateway (≈ $0.15 in all).** These are the ones that could
+change the architecture. Every request and response is saved (W10).
 
 | # | Check | From | Cost |
 |---|---|---|---|
 | A1 | **Jev billing and limits:** 1 vs 8 questions, small vs large state, the request size limit. Also: the 8-question `rubric`, `importance` and `memory_guard` on 20 items each, `deep_check` on 20 pieces with 5 set checks, the standalone and English nouls on 20 messages, the score scale (1–5), and repeatability (20 items × 3) | doc 01 check 4; doc 02 check 1; doc 08; doc 09 check 3; doc 10 check 5 | ≈ $0.03 |
 | A2 | **Latency from Malaysia:** Jev with hand-built call-1 states (1:1, group, debate), 50 follow-plan and 30 debate-plan requests, and DeepSeek to the first word. This sets every Jev deadline. Also records the alpha endpoint's real response shape | doc 01 check 3; docs 07, 08 | ≈ $0.09 |
 | A3 | **Thinking really off; JSON mode on 20 drafts** | doc 03 checks 1, 2 | ≈ $0.03 |
-| A4 | **v3 image checks by eye** (Hana v2, Amara's skin tone, Rin reads adult, Victor's detail, age drift, outfits), plus W3's two identity edits. Also note how Seedream signals moderation | doc 12 checks 1, 4; W3 | ≈ $0.44 |
-| A5 | **$0 reads:** Lyria's primary terms; findahelpline.com lists Malaysia, the UK and the US | doc 12 check 3; doc 11 check 4 | $0 |
+| A4 | **$0 reads:** Lyria's primary terms; findahelpline.com lists Malaysia, the UK and the US | doc 12 check 3; doc 11 check 4 | $0 |
 
 **Group B: inside the change that builds the code (each asked for when it comes).**
 
@@ -315,6 +316,7 @@ change the architecture.
 | M13 | `horizon eval retrieval` with the comparisons, 10 rewrites, the extended deep-turn latency suite (doc 10 checks 1–3) | ≈ $0.08 + the latency run |
 | M14 | the `safety` suite incl. doc 12's parts; group timing with the follow plan at stream end (doc 11 checks 1–3) | ≈ $0.07 |
 | M15 | the first full `horizon eval all`, before `agent` becomes the default (W4) | ≈ $1.08 off-peak |
+| v1 endgame | **doc 12's v3 image check (was A4):** the first seed characters recreated in the app (Hana, Amara, Rin, Victor) are judged by eye for identity, skin tone, adult read, detail, age drift and outfits; W3's identity edit is tried once; how Seedream signals moderation is noted (doc 12 checks 1, 4) | none extra: these are the demo's own images (W10) |
 
 **Rejected:**
 - **Everything before coding:** half the checks would need throwaway code that duplicates M7–M14.
@@ -371,9 +373,47 @@ change the architecture.
 Editing, pinning or adding memories, reflections, and world-shared facts (D-71) stay out of v1. They are **not**
 written into the v2 backlog unless the user asks; doc 09 §7 made that the user's call.
 
+### W10. Pay once, reuse everywhere (the user's rule)
+
+The user's rule, given at the end of this task: when a paid output is useful for both a check or the evaluation and
+the demo, save it and reuse it. Never pay for the same result twice.
+
+- **One store of paid outputs for the tooling, `data/cache/`** (gitignored). It is shared by the group A scripts,
+  `horizon eval` and the seed and space tools. Each entry is keyed by a hash of the full request (model, provider,
+  parameters, body) and holds the response and its `usage`. Doc 02 B7's reply and Jev caches move here from the run
+  folders, so pruning old runs (B7 keeps 20) never deletes them.
+  - **The live app never reads it for replies, Jev answers, images or songs.** A user who presses Regenerate expects
+    something new. **Embeddings are the exception:** an embedding is the same output for the same text, so the seed
+    indexing, `horizon space build`, the eval copies and the retrieval suite read and write them here. This replaces
+    B7's re-embedding of the seed and the corpus in every run, and a re-index after Reset demo (D-98) costs nothing.
+  - **Only seed-world and corpus text enters it.** The user's own chats, memories and documents never do, so Forget
+    (D-70, D-94) has nothing to chase. A factory reset deletes it.
+- **Group A's responses are saved with their requests.** A1's Jev answers are reused by the `decisions` suite wherever
+  M7's bank sends a byte-identical request. Latency measurements are the one kind of call never served from a store,
+  because a cached answer has no latency.
+- **The v3 image check moves into the v1 endgame** (W6, was group A's A4, ≈ $0.44). The endgame already recreates every
+  seed character in the app, with real portraits and emotions replacing the D-52 placeholders. So:
+  - Hana, Amara, Rin and Victor are made first;
+  - the user judges their images by eye (D-88), and the accepted ones **are** the demo's images;
+  - a failing v3 line is fixed (doc 12 §4) before the remaining characters are made, and only the rejected images are
+    paid for again.
+- **The demo's recorded sessions feed the evaluation, not the other way round.** The endgame records the real demo
+  sessions in the app. That needs the planned tool that turns recorded sessions into seed files (the endgame plan's SWE
+  gap). `horizon eval import <sessionId>` lets the judge score those sessions as free runs, so free runs on the seed
+  characters after the endgame cost only the judge's Jev calls, with no new replies.
+- **Themes:** Lyria is called once per seed character in the endgame, after the terms are read (A4). The accepted MP3s
+  are committed as seed assets and never regenerated.
+
+**Rejected:**
+- **A cache in the live app for replies and images:** Regenerate and Retry would return the same output.
+- **User text in the store:** it would be a copy of private chats outside Forget's reach (the same reason as doc 02
+  B10).
+- **Keeping the v3 image check before coding:** about $0.44 for images of characters the endgame recreates with the same
+  compiler. It risks only a late template fix, and that costs the rejected images only.
+
 ## 3. Checks before this is locked
 
-W6 holds every paid check. This doc adds only W3's two images (inside A4). The offline checks:
+W6 holds every paid check. The offline checks:
 1. The rev 1.4 schema validates the scripted and mock `system1` rows (`export-schema:check`, `fixtures:check`).
 2. A trace with more than 64 rows is cut by the runtime before it is sent: the `not_used` rows go first.
 
@@ -405,7 +445,7 @@ W6 holds every paid check. This doc adds only W3's two images (inside A4). The o
 
 - **The OpenSpec loop**, M7 to M15, after `design/ai-stage` is squash-merged into dev (the user is asked before any
   push).
-- **Group A's paid checks** (W6), with the user's OK on ≈ $0.59.
+- **Group A's paid checks** (W6), with the user's OK on ≈ $0.15.
 - **The v1 endgame:** real-API end-to-end tests, the real demo in two worlds with real System 1 rows, then the squash
   of dev into main as v1.
 

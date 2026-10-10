@@ -436,7 +436,8 @@ with itself only about 64 % of the time, so that rule mixes up ordinary noise wi
      - the run's `settings.local.json` sets **the daily cap to `--max-usd`** (default: the estimate × 1.5) and
        **raises the energy maximum**, so no character falls asleep. Any skipped turn is still counted;
      - **every seed source is re-indexed and the seed memories are embedded** (costed in the plan; under a cent), and
-       the retrieval suite then ingests the corpus.
+       the retrieval suite then ingests the corpus. *Doc 13 W10: the vectors come from the shared store in
+       `data/cache/`, so only text never embedded before is paid for.*
   5. **Every call goes through the gateway,** so it is priced and recorded in the run's ledger. The run also **stops
      itself** once its own total reaches `--max-usd`, even across midnight. **A budget refusal aborts the run and marks
      it incomplete,** so refusals never show up as wrong answers.
@@ -449,7 +450,8 @@ with itself only about 64 % of the time, so that rule mixes up ordinary noise wi
      appends the spend to `data/evals/spend.jsonl`. The newest 20 run folders are kept. A factory reset deletes
      `data/evals/` with everything else.
 - **Keeping the cost low without losing quality:**
-  - **DeepSeek replies are cached** by a hash of the request, model and provider. `naive` is the fixed yardstick, so
+  - **DeepSeek replies are cached** by a hash of the request, model and provider, in the shared store `data/cache/`
+    (doc 13 W10), which survives the pruning of run folders. `naive` is the fixed yardstick, so
     its replies are generated **once** and reused until its prompt or model changes.
   - **Jev answers are cached the same way.** A changed judge or threshold re-runs only Jev on the cached replies.
   - The `decisions` suite re-runs **only questions whose version changed**.
