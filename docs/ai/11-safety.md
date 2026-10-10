@@ -28,7 +28,7 @@
 >   - the `Guardrail` port ([ai/ports.py](../../backend/horizon/ai/ports.py)) and its call just before `turn.end`
 >     ([sessions/turn.py](../../backend/horizon/sessions/turn.py)).
 > - **No new UI entry point.** Two lines of fixed text are added to existing screens (S8).
-> - **One requirement-level wording edit, for the user to confirm:** ENG-02 AC2's list of calls that don't drain
+> - **One requirement-level wording edit, confirmed by the user (2026-10-10, by explicit choice):** ENG-02 AC2's list of calls that don't drain
 >   energy gains "safety checks" (the code already never drains for them; doc 10 added three entries to the same
 >   list). NFR-27 (adults only, SFW) and NFR-28 (the advisory tape) stand as written.
 
@@ -435,7 +435,8 @@ prompt's list still covers such statements made elsewhere (review finding 8).
 
 **Why:** a character that casually brings up "last month you said you wanted to die" in a light chat could do real
 harm, and the conversation itself (S4) is the right place for care, not a memory. A declined request isn't a fact
-about the user worth keeping. Health details stay, by the user's decision in doc 09; self-harm is the one exception.
+about the user worth keeping. Health details stay, by the user's decision in doc 09; self-harm is the one exception,
+confirmed by the user (2026-10-10, by explicit choice).
 
 **Rejected:** redacting personal data from documents at upload: they are the user's own documents in their own app,
 and redaction would remove what they asked about.
@@ -534,7 +535,7 @@ only), and Jev nouls are already the house judge (doc 02 B4).
 - **If doc 01's check 4 finds Jev bills the state once per question,** each added noul costs a whole state
   (≈ $0.00008 in call 1) and S11's figures roughly double; the eval's estimate follows, as for every Jev figure.
 - **`guardrail` stays in the `decision` category** and never drains energy (only `reply` does). ENG-02 AC2's list
-  doesn't name the safety checks yet; the wording edit is in the header.
+  doesn't name the safety checks yet; the wording edit (confirmed by the user) is in the header, applied at task 13.
 - The conversations suite reports the output check's latency from the ledger (p50, p90), so its deadline is set from
   data (check 3), as the user's "slow Jev: accept and report" rule asks.
 
