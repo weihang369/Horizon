@@ -268,7 +268,8 @@ sad or angry face while the topic continues looks right.
   may predate a mute or an energy change): present, not muted, with enough energy for a reply, not the speaker. 1:1
   has none, so no call is made.
 - **The state** (doc 01 A3 rule 6, small and named):
-  - `line`: the speaker's name and the reply, quoted, cut to 600 (first 450 + last 150);
+  - `line`: the speaker's name and the reply, quoted, cut to 600 (first 450 + last 150). *All quoted fields take
+    the bank-wide `quoted_` names from M7 (doc 11 S6, [doc 13](13-wrap-up.md) W4), here `quoted_line` and `quoted_before`;*
   - `before`: the line before it (often the user's), quoted, cut to 300;
   - `listeners[]`: `name`, `about` (≤ 60, as in doc 05 X9), current `face`; in debate also `side` ("same side as
     the speaker" / "the other side");
@@ -390,7 +391,7 @@ trusted):
   - **"Face and words agree"** (doc 02 B4's existing choice), measured **only on turns whose face is not neutral**:
     the **exact match** (the words' guess equals the face shown), and **clashes** (happy against sad or angry, either
     way) **≤ 5 %**. Exact match has no fixed target; it is the quantity the on/off run compares.
-- **Mood line on vs off, once** (moved by [doc 13](13-wrap-up.md) W6 to M15: the "on" arm is the conversations run, only the "off" arm is paid): **up to 100 non-neutral turns** of
+- **Mood line on vs off, once** (in M9, [doc 13](13-wrap-up.md) W6, so the line is settled before the other suites are tuned): **up to 100 non-neutral turns** of
   the frozen transcripts are replied to again without the line. Both arms get the two checks above and the pairwise
   judge in both orders. Compared **per conversation with a paired bootstrap** (doc 02 B1). Decided in advance:
   - **keep the line** if exact match rises (its 95 % interval above 0) and the pairwise preference is not worse (its
@@ -423,8 +424,8 @@ trusted):
 
 1. **Offline, $0:** E8's offline tests on the seed characters in all four modes, and the seed equivalence re-run
    (E6).
-2. **Moved by [doc 13](13-wrap-up.md) W6:** the layer 1 emotion and reaction sets run in M9's `decisions` slice; the mood-line
-   on/off run is part of M15's run (only the "off" arm is paid).
+2. **In M9** ([doc 13](13-wrap-up.md) W6): the layer 1 emotion and reaction sets in its `decisions` slice, and E8's mood-line
+   on/off run (≈ $0.06).
 
 ## 6. Changes this design needs (each approved at its OpenSpec change)
 

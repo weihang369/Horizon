@@ -531,7 +531,7 @@ None of the backend rows changes the HTTP contract unless marked.
 | **Docs to amend:** a new decision-log entry replacing D-97's rule; resolve OQ-AI-07 (Jev first; a failure keeps the previous face, doc 04 P7); note in D-92 that the planner is a runtime-called port; update the 05-ai-seams §3 purpose table and §2.2 port catalogue. **Applied with [doc 13](13-wrap-up.md) (§4; D-97 → D-100)** | docs | all | 13 |
 
 **Built in** ([doc 13](13-wrap-up.md) W4): the `agent` profile in M7 and the `TurnPlanner` in M9; the entry points in M9 (1:1),
-M10 (group, watch) and M11 (debate); the `Decider` purposes in M7; embedding only on deep turns (D-100) in M12; the
+M10 (group, watch) and M11 (debate); the `Decider` changes in M7 (each new purpose is added by the change that first calls it, doc 13 W4); embedding only on deep turns (D-100) in M12; the
 async `Summariser.rolling` in M8 and `ReactionPredictor` in M9.
 
 ## 9. Left for later tasks

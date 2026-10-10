@@ -167,7 +167,7 @@ for. The wizard's existing `startGeneration` shows the message in a toast.
   (not the contract): `agent` asks Jev; `naive` passes with no checks (the yardstick, as doc 11 S5's `naive`
   guardrail); scripted passes with no call. Tests reach the refusal path by overriding the port.
 - **Purpose `guardrail`** (the `decision` category, never drains energy), with the character's ID and no job ID (no
-  job exists yet). **Deadline 1,500 ms, passed explicitly** (`timeout_ms`), as the motion check's: the `guardrail`
+  job exists yet). **Deadline 1,500 ms**, from the key `timeoutsMs.decision.guardrail_prompt` ([doc 13](13-wrap-up.md) W11), as the motion check's: the `guardrail`
   default becomes 700 ms in doc 11 S5.
 - **Any noul p ≥ its threshold** → `content_refused`, with a message naming what to change and where:
   - tweak: "Tweaks can't make a portrait look like a real person or an existing character, or add nudity, gore,
@@ -340,7 +340,7 @@ doing only once there are real seed portraits, which is a v2 question.
 |---|---|---|
 | Compiler v3: the original-character and "fully clothed" lines in `base` and `sheet`, "childlike or teenage features" in the sheet's Avoid line, the apparent-age line in `emotion_edit` and `tweak`; TESTING.md, the golden fixtures (plus a sheet fixture) and a name-never-appears test | backend + docs + tests | I1, I2 |
 | `song_prompt` without the title, with the original-piece line; `tests/jobs/test_song.py` | backend + tests | I2 |
-| `Guardrail.check_prompt(ctx, kind, text)`: `agent` asks Jev (four image nouls in one request, one song noul) with `safety.tImage{Likeness,Nudity,Gore,Young}` and `safety.tSong`, `timeout_ms=1500`, an in-memory cache of Jev answers by SHA-256; `naive` and scripted pass | backend + config | I3, I4 |
+| `Guardrail.check_prompt(ctx, kind, text)`: `agent` asks Jev (four image nouls in one request, one song noul) with `safety.tImage{Likeness,Nudity,Gore,Young}` and `safety.tSong`, `timeoutsMs.decision.guardrail_prompt` (1,500), an in-memory cache of Jev answers by SHA-256; `naive` and scripted pass | backend + config | I3, I4 |
 | `JobScheduler.start`: for `portrait_candidates`, `portrait_tweak` and the sheet, compile the text, call `check_prompt` after the key, base and active-job checks and before the hold is reserved or anything is stored, and raise `content_refused` with I3's messages | backend | I3 |
 | `call_song`: `check_prompt` on the brief it sends, before `before_send`; refused → `SongFallback("brief_refused")`; `commit_song` picks the note by reason (`brief_refused`, `content_refused`, other) | backend | I4 |
 | The `safety` suite's image-text and song-brief parts | eval | I7 |

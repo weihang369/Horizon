@@ -199,7 +199,7 @@ referral without knowing the user's country (S4).
   - its own noul and threshold, **`safety.tMotion`**, tuned on ~30 motion and premise items (S10), because a hard
     refusal at creation is a different decision from a soft cue in chat, and hard-topic motions ("Decriminalise all
     drugs") are allowed;
-  - purpose `guardrail`, deadline 1,500 ms (nothing is streaming yet);
+  - purpose `guardrail`, deadline 1,500 ms from `timeoutsMs.decision.guardrail_prompt` ([doc 13](13-wrap-up.md) W11; nothing is streaming yet);
   - p ≥ `tMotion` → `content_refused` with the message "The motion (or premise) was declined by the safety check. Try
     different wording.", which the setup screen shows as an error toast (`reportError`); the typed text stays;
   - **skipped when an existing session in the same world has exactly the same motion or premise text** (it passed
@@ -483,7 +483,7 @@ drafter rule already steers.
 
 ### S10. The `safety` evaluation suite
 
-**Decision:** a new suite in `horizon eval` (doc 02 B1), about 480 items with doc 12's parts (enlarged after review finding 9, so the
+**Decision:** a new suite in `horizon eval` (doc 02 B1), about 470 items with doc 12's parts (drift turns counted) (enlarged after review finding 9, so the
 targets mean something). Targets are **counts on the full set**, and each result is reported with its 95 % (Wilson)
 interval:
 
@@ -513,7 +513,7 @@ interval:
   a request names the harm ("asks for step-by-step meth synthesis"), it doesn't answer it.
 - **DeepSeek's own refusals** are counted too (how often `content_refused` comes from the provider), to see how much
   S3 adds.
-- **Cost:** Jev ≈ 360 requests (with doc 12's parts) × ~800 tokens ≈ $0.012; DeepSeek ≈ 30 end-to-end replies + 50 drift turns ≈ $0.056;
+- **Cost:** Jev ≈ 400 requests (270 + doc 12's 130) × ~800 tokens ≈ $0.013; DeepSeek ≈ 30 end-to-end replies + 50 drift turns ≈ $0.056;
   judges ≈ $0.003. **The suite ≈ $0.07 off-peak, ≈ $0.12 at peak.** `all` becomes **≈ $1.08 off-peak, ≈ $1.65 at peak,
   ≈ $0.78 once cached**.
 
@@ -559,7 +559,7 @@ only), and Jev nouls are already the house judge (doc 02 B4).
 |---|---|---|
 | The `agent` compiler's rules lines (content, honesty, care, documents and notes), the advisory line, and no mature variant; the TS twin and shared fixtures | backend + frontend | S1, S2 |
 | Jev call 1 / `debate_plan` / watch plan: the input noul (read with the conversation) on new user lines, the care noul in 1:1 and group; the steer and care cue sentences (before G3's); the per-message `safety` metadata on the user message (internal, not the contract), reused on regenerate; the reply list cut to one speaker and prefetches discarded on steer or care; the care face forced on every path and listener reactions suppressed; the 2-message stay read from the flags | backend | S3, S4 |
-| The motion/premise check in session creation (`lifecycle.create`, debate and watch): its own noul and `safety.tMotion`, purpose `guardrail`, 1,500 ms, `content_refused`, skipped when the same text is already a session's motion or premise in the world | backend + config | S3 |
+| The motion/premise check in session creation (`lifecycle.create`, debate and watch): its own noul and `safety.tMotion`, purpose `guardrail`, 1,500 ms (`guardrail_prompt`), `content_refused`, skipped when the same text is already a session's motion or premise in the world | backend + config | S3 |
 | The `agent` `Guardrail`: the Jev noul with `care` and quoted fields, state ≤ 1,500 (the user line cut first), `timeoutsMs.decision.guardrail` = 700 in `seed/pricing.json` and `frontend/src/mock/pricing.config.ts`, flag and block thresholds, fallback flag; the follow plan started at stream end and cancelled by a block (doc 07 G2); prefetches checked before release and discarded on a block; interrupted replies checked after the fact; host lines and verdict prose checked before they show, with their existing fallbacks | backend + config | S5 |
 | `turn.py`: guardrail checks merged by name (not replaced by `deep_merge`); the `input` and `care` results carried on every reply's turn spec; the trace (`insight`) emitted for blocked replies too | backend | S3, S4, S5 |
 | The session reducer clears a message's or variant's `content` and the StreamingText buffer on an `error` with `content_refused` and a `messageId`; a reducer test | frontend | S5 |
@@ -569,12 +569,12 @@ only), and Jev nouls are already the house judge (doc 02 B4).
 | The never-store list in the memory rewrite prompt; code removes steered and care messages (and their replies) before the writer's call | backend | S7 |
 | The two notice lines (Connection tab, Knowledge drop zone) and the README Privacy section, naming fallback providers and the embedding provider | frontend + docs | S8 |
 | The drafter's originality rule | backend | S9 |
-| The `safety` suite (~480 items, counts with Wilson intervals, cross-validated thresholds on a 0.1–0.9 grid), items in `private/evals/safety/`, the manifest and the harmless items in `evals/safety/`, baseline in `evals/baselines/safety.json`; the citation items re-run with the passage tags | eval | S10 |
+| The `safety` suite (~470 items, counts with Wilson intervals, cross-validated thresholds on a 0.1–0.9 grid), items in `private/evals/safety/`, the manifest and the harmless items in `evals/safety/`, baseline in `evals/baselines/safety.json`; the citation items re-run with the passage tags | eval | S10 |
 | **Docs amended with this doc:** doc 01 A3 rule 8, A4 (the questions and the fallback row), A13, the risk table, §9; doc 02 B1, B5, B7 (the suite, the totals), §8; doc 04 P6, P11, §7; doc 05 (the state's quoted text and X9's field names, the summary, the system-message size), §7; doc 06 E1, E3, E5 (the care face and no reactions), §7; doc 07 G2 (the follow plan starts at stream end); doc 08 §7; doc 09 M3, M4, §7; doc 10 K8, §7; and every `all` cost pointer | docs | consistency |
 
 **Built in** ([doc 13](13-wrap-up.md) W4), so that no question is re-versioned after it is tuned:
 - the `quoted_*` fields and their sentence, as a bank-wide convention: M7;
-- the S2 rules lines, the advisory line, `summary-2` and newline collapsing: M8;
+- the S2 rules lines, the advisory line, no mature variant, `summary-2` and newline collapsing: M8;
 - the `<passage>` tags and their stripping: M12;
 - everything else, including the safety metadata in `message_ai_meta` (W13): M14.
 

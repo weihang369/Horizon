@@ -166,7 +166,7 @@ context limit.
   its speaker's name** (a reply's line breaks become separate `Name: line` lines; the user by their You-card name).
   Output: the new summary.
 - **Ledger purpose `rolling_summary`** (category `summary`), so it is counted apart from watch's episode summary, which
-  already uses the purpose `summary`.
+  uses its own purpose `episode_summary` (doc 07 G10; added to `PURPOSE_CATEGORY` in M10).
 - **The prompt** (version `summary-1`):
 
   ```text

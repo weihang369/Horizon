@@ -155,7 +155,7 @@
 - *Note:* V4.1 Flash exposes `logprobs`/`top_logprobs` on some endpoints, which is a possible zero-cost source of emotion-tag probabilities for the Insight bars. Verify it on the pinned first-party endpoint.
 
 **OQ-AI-08: Content rating, safety & evaluation** *(stakeholder: "evaluation → AI team")*
-- **Resolved (AI stage, [docs/ai/02](../ai/02-evaluation-observability.md), [docs/ai/11](../ai/11-safety.md)):** SFW only; Jev input, care, output and motion checks; the evaluation harness and its suites, including a ~480-item safety suite, ship in v1.
+- **Resolved (AI stage, [docs/ai/02](../ai/02-evaluation-observability.md), [docs/ai/11](../ai/11-safety.md)):** SFW only; Jev input, care, output and motion checks; the evaluation harness and its suites, including a ~470-item safety suite, ship in v1.
 - Rating levels; guardrail placement (input, output, image prompts); provider refusals (`content_refused`); evaluation plan (persona adherence, emotion accuracy, debate quality, regression set).
 - *Constraints (BA floor):* adults only (NFR-27); interim default SFW; image prompts always templated, never raw user text alone; no named IP or real-person likeness.
 - **Recommendation:** MVP SFW only; Jev boolean guardrails with a DeepSeek fallback; write a ~30-conversation regression set during the MVP; evaluation harness in v1.1.

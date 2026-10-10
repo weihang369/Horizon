@@ -19,7 +19,8 @@
 >   - **one rule, at the end:** **pay once, reuse everywhere** (W10). Checks, evaluation and the demo share every
 >     paid output.
 > - **Revised after a three-reviewer panel:** this doc and its edits; consistency across docs 01–13; readiness to
->   build and redundant spend. 80 findings, all checked against the code and addressed. The main ones:
+>   build and redundant spend. 80 findings, all checked against the code and addressed; then a verification pass
+>   found 20 more (the same treatment). The main ones:
 >   - memory's in-session recall needs RAG's retrieval pipeline, so **RAG (M12) now comes before memory (M13)**;
 >   - the safety conventions that change every Jev state and the cached prompt (`quoted_*` fields, rules lines, passage
 >     tags) move **into the first change each touches**. Leaving them to M14 would have re-versioned every question and
@@ -120,9 +121,17 @@ TurnTrace {
   5. emits the full trace as an `insight` event, keeping the stored `TraceMeta` (engine, engine and prompt versions,
      `created_at`).
 
-  It runs **in the actor's inbox, after any Forget scrub already queued**, so a trace scrubbed by Forget is never
-  written back. The writer's `_project` keeps the engine columns when an `insight` arrives without new meta. This is a
-  backend change in M7.
+  **Three guards:**
+  - **The target is still streaming** (it is `actor.current` and not closed, e.g. a debate plan's `final()` landing
+    during the reply it started): the rows are merged into that reply's in-progress trace (`info.trace["system1"]`)
+    and nothing is emitted. At `turn.end`, `finish()` merges with the same key instead of overwriting.
+  - **Forget:** the append's writer transaction drops any `memory.recalled` entry, and any `system1` row whose `about`
+    is a `mem_…` that no longer exists in `memory_items`. So an append queued in the gap between Forget's commit and
+    its actor scrub can't write forgotten text back (`trace_memory_refs` has no foreign key to rely on).
+  - **The writer:** when an `insight` arrives without new meta, `_project` keeps the engine columns and `created_at`
+    (today its upsert overwrites them).
+
+  These are backend changes in M7.
 - **Sources of rows:**
   - the turn plan;
   - Jev call 2 (retrieval runs in the runtime, D-92);
@@ -182,8 +191,8 @@ The frontend resolves a piece's ID to its title through `knowledge.retrieved`, a
 - `agent` fills every row.
 - `naive` fills the one Jev question it asks: the router's `route` choice.
 - **`scripted` and the MockClient give fixed rows from one shared fixture file** (`system1.fixture.json`, generated
-  with the bank's labels by seed-build and guarded by `seed:check`). It does not need the turn planner, so M7 can ship
-  it.
+  from the bank's labels by seed-build and guarded by `seed:check`). It needs no turn planner. M7's fixture holds the
+  rows its bank has (`route`); each later change regenerates it as it adds bank entries.
 - The seed sessions' recorded traces are left as they are, so **the public demo shows the section only in new mock
   chats, not in the seed replays.** The real demo sessions (v1 endgame) carry real rows.
 
@@ -229,7 +238,8 @@ The frontend resolves a piece's ID to its title through `knowledge.retrieved`, a
 - **Spend:** about 400–700 tokens, so ≈ $0.00002 per checked reply. It is ledger category `decision`, counts toward the
   daily cap and never drains energy. ENG-02 AC2's list names it (§4).
 - **The evaluation reuses it (W10).** B4's "face and words agree" reads the `face_check` row from each `agent` turn's
-  trace, and asks Jev only about `naive` replies.
+  trace, and asks Jev only about `naive` replies, and about any `agent` turn whose row is missing (late or cleared).
+  The report counts those, so the sample isn't biased.
 - **Other profiles:**
   - `scripted` records a simulated `face_check` call (D-81) and writes the fixture row;
   - the mock does the same in `turnScript.ts`;
@@ -280,10 +290,19 @@ Each change:
 | **M9** | `turn-plan-emotion` | **The 1:1 turn:**<br>• doc 01's `TurnPlanner` with Jev call 1 in 1:1. **Its first tasks are doc 01's offline checks 1 and 2** (graph overhead and settling on the virtual clock; Stop during a plan), which decide whether LangGraph stays;<br>• doc 06 (emotion, mood line, reactions);<br>• the face check (W2). | ai-ports, session-runtime, session-event-sourcing, decider, provider-gateway, client-contract |
 | **M10** | `group-watch` | Doc 07: the follow plan, Next speaker and Step in, the watch guard, steer and plan-ahead, the episode recap. | session-modes, ai-ports, session-runtime, provider-gateway |
 | **M11** | `debate` | Doc 08: the debate plan, the asleep-side pause, host lines, the rubric verdict. | session-modes, ai-ports, provider-gateway, http-api |
-| **M12** | `rag` | Doc 10:<br>• `pack@2` and the header-prefixed space;<br>• **the shared retrieval pipeline** (two-step RRF, MMR, `ScopedIndex` reading stored vectors) and `QueryBundle`;<br>• **D-100's query embedding at the gate**;<br>• the rewrite, `deep_check` (Jev call 2), citations, `<passage>` tags and their stripping;<br>• the embedding comparison test. | knowledge-sources, retrieval, embedding-spaces, local-backend, ai-ports, provider-gateway, demo-data, client-contract |
+| **M12** | `rag` | Doc 10:<br>• `pack@2` and the header-prefixed space;<br>• **the shared retrieval pipeline** (two-step RRF, MMR, `ScopedIndex` reading stored vectors) and `QueryBundle`;<br>• **D-100's query embedding at the gate**;<br>• the rewrite, `deep_check` (Jev call 2), citations, `<passage>` tags and their stripping;<br>• the embedding comparison test. | knowledge-sources, retrieval, embedding-spaces, local-backend, ai-ports, provider-gateway, demo-data, client-contract, **session-event-sourcing** (W13's exemption), **data-storage** (`message_ai_meta`) |
 | **M13** | `memory` | Doc 09:<br>• pause runs, the rewrite graph, importance and guard;<br>• the memory list in the prompt;<br>• recall from earlier, on M12's pipeline;<br>• Memory tab pagination and "View source" (W8). | long-term-memory, ai-ports, retrieval, data-storage, embedding-spaces, session-runtime, event-streams, session-lifecycle, http-api, client-contract |
 | **M14** | `safety` | **Doc 11's checks**, in every mode at once:<br>• the input, care, output and motion nouls, the cues, one voice;<br>• the per-message safety metadata (W13), the reducer clear;<br>• the never-store list, the notice, the `safety` suite.<br>Plus doc 12's I3 and I4 checks. | session-runtime, session-event-sourcing, session-modes, session-lifecycle, ai-ports, generation-jobs, generated-assets, long-term-memory, provider-gateway, http-api |
 | **M15** | `images-music` | The rest of doc 12 (compiler v3, the song prompt, `ASSETS.md`) and W3.<br>**Then `agent` becomes the default with a key** (doc 01 A12). | ai-ports, generation-jobs, asset-credits |
+
+**Purposes:** M7 changes the `Decider` itself. **Each new purpose is added to `PURPOSE_CATEGORY` by the change that
+first calls it:**
+- M8: `rolling_summary`;
+- M9: `turn_plan`, `face_check`;
+- M10: `follow_plan`, `episode_summary`;
+- M11: `debate_plan`;
+- M12: `deep_check`, `query_rewrite`;
+- M13: `memory_guard`.
 
 **Change-table rows that span two changes** take this owner:
 - doc 01 §8: see its "Built in" note;
@@ -296,13 +315,13 @@ Each change:
 
 | After | Routing in group / watch / debate | Gates asked | Retrieval | Memory | Safety |
 |---|---|---|---|---|---|
-| M7–M8 | `naive`'s (the turn engine is `naive`'s) | — | `naive`'s (D-97) | none (writer `[]`) | none |
-| M9 | `naive`'s; 1:1 uses the planner | emotion, input and care questions only. **"Needs documents?" and "needs something from earlier?" are not asked**, so every 1:1 turn is quick | none in `agent` 1:1 | none | none |
-| M10 | the planner for group and watch | same | none | none | none |
-| M11 | + the debate plan | same | none | none | none |
-| M12 | same | + needs documents?, standalone?, English? | doc 10, D-100 | none | passage tags |
+| M7–M8 | `naive`'s (the turn engine is `naive`'s) | — | `naive`'s (D-97) | none (writer `[]`) | M7: `quoted_*` states; M8: + the S2 rules lines, advisory, no mature variant, `summary-2` |
+| M9 | `naive`'s; 1:1 uses the planner | emotion only. **"Needs documents?" and "needs something from earlier?" are not asked**, so every 1:1 turn is quick | none in `agent` 1:1 | none | the same |
+| M10 | the planner for group and watch | same (+ "is the talk finished?" in watch) | none | none | the same |
+| M11 | + the debate plan | same | none | none | the same |
+| M12 | same | + needs documents?, standalone?, English? | doc 10, D-100 | none | + passage tags |
 | M13 | same | + needs something from earlier? | same | doc 09 | same |
-| M14 | same | same | same | same | doc 11, doc 12 I3–I4 |
+| M14 | same | + unsafe request?, at risk? | same | same | doc 11's checks, doc 12 I3–I4 |
 | M15 | same | same | same | same | same; **`agent` is the default with a key** |
 
 **The default switch at M15** follows doc 02 B12: the evaluation measures `agent` but never decides whether to keep it.
@@ -403,42 +422,51 @@ The user's rule: paid checks run after the design is done and before coding, wit
 can't, because they need code that doesn't exist yet: the harness, the planner, the suites. So there are two groups.
 **Every run saves its requests and responses (W10).**
 
-**Group A: before M7, as plain scripts through the existing gateway (≈ $0.15 in all).** These are the checks that
+**Group A: before M7, as plain scripts through the existing gateway (≈ $0.16 in all).** These are the checks that
 could change the architecture. Their inputs are hand-built from the seed sessions (doc 06 seed transcripts), since the
 eval datasets arrive in M7.
 
 | # | Check | From | Cost |
 |---|---|---|---|
 | A1 | **Jev billing, limits and scale:**<br>• 1 vs 8 questions, small vs large state;<br>• **a 20-question mixed request** (choice, noul and score), group call 1's real size;<br>• the request size limit;<br>• the 8-question `rubric`;<br>• `importance` and `memory_guard` on 20 items each;<br>• `deep_check` on 20 pieces with 5 set checks;<br>• the standalone and English nouls on 20 messages;<br>• **how a score comes back** (W11's scale);<br>• **repeatability:** 20 items × 3, never served from the store. These 20 become B6's drift canary, so A1 is its baseline. | doc 01 check 4; doc 02 check 1; docs 08, 09, 10 | ≈ $0.03 |
-| A2 | **Latency from Malaysia:**<br>• Jev with hand-built call-1 states (1:1, group of 5, debate), including the 20-question request;<br>• 50 follow-plan and 30 debate-plan states;<br>• DeepSeek to the first word.<br>It sets every Jev deadline's starting value (W12) and records the alpha endpoint's real response shape | doc 01 check 3 (its Jev and first-word part); docs 07, 08 | ≈ $0.09 |
+| A2 | **Latency from Malaysia:**<br>• Jev with hand-built call-1 states (1:1, group of 5, debate), including the 20-question request;<br>• 50 follow-plan and 30 debate-plan states;<br>• hand-built `guardrail` (output check) and `deep_check` (8 pieces) states;<br>• DeepSeek to the first word.<br>It sets the starting value of the Jev deadlines it times (W12), and records the alpha endpoint's real response shape. The rewrite (a DeepSeek call) is timed in M12 | doc 01 check 3 (its Jev and first-word part); docs 07, 08, 10, 11 | ≈ $0.10 |
 | A3 | **Thinking really off; JSON mode on 20 drafts.** The drafts are saved as the offline fake's canned drafter responses (W14) | doc 03 checks 1, 2 | ≈ $0.03 |
 | A4 | **$0 reads:** Lyria's primary terms; findahelpline.com lists Malaysia, the UK and the US | doc 12 check 3; doc 11 check 4 | $0 |
 
 **Group B: inside the change that builds the code, each asked for when it comes.**
-- Each suite runs **once, when its change is accepted**.
-- M15's `horizon eval all` then pays only for what changed since. The store (W10) serves every unchanged request.
-- So the B7 total (≈ $1.08) is spread across the stage, not paid again at the end.
-- `smoke` runs (≈ $0.05–0.15) use the `agent` arm only, while work is in progress.
+- **Suites whose requests later changes don't touch** run once, when their change is accepted: `drafter`,
+  `summary`, `debate`, `retrieval`, `memory`, `safety`, and the `decisions` slices.
+- **The `conversations` suite runs once, at M15.** Its `agent` replies change with every change that adds to the
+  prompt or Jev call 1: M12's passages, M13's memory list, M14's nouls. Running it earlier would buy it again. In
+  M9–M14, conversation behaviour is checked by `smoke` (`agent` arm only, a few free runs).
+- **The `naive` arms are paid once, at M15**, after the last `naive` change has landed. This covers the `naive`
+  verdicts and the `naive` memory writer.
+- M15's `all` serves every unchanged request from the store (W10).
+- **A `smoke` allowance** of about $0.10 per change covers the runs made while work is in progress.
 
 | Change | Runs | Cost |
 |---|---|---|
 | M7 | the canary; the corpus licence check and the label-review process (doc 02 checks 2, 3; labels are then reviewed per change) | < $0.001 |
-| M8 | `drafter`; `summary` (rolling part) | ≈ $0.07 |
-| M9 | the `decisions` slice for emotion and reactions; 1:1 conversations (`agent` arm); **the end-to-end 1:1 quick-turn timing against NFR-01** | ≈ $0.08 |
-| M10 | the who-speaks slice; group and watch conversations; the episode recaps; **watch at Fast pace with the plan-ahead** (doc 07) | ≈ $0.08 |
-| M11 | the debate member slice; the `debate` suite. **The 10 timed host bridges and 5 verdicts are saved and used as suite items** (doc 08) | ≈ $0.11 |
-| M12 | `retrieval` with the comparisons; 10 rewrites; the standalone and English slice | ≈ $0.09 |
-| M13 | `memory`. **Its 6 checked rewrite calls are taken from the suite's 24**; 10 pause runs; 10 recall turns (doc 09) | ≈ $0.18 |
-| M14 | `safety` incl. doc 12's parts. Doc 11's check 3 (no second reply after a block) is tested offline instead (W14) | ≈ $0.07 |
-| M15 | `all`: only the changed parts; **the `naive` arms, paid once now that every `naive` change has landed**; the mood-line "off" arm (doc 06 E8; the "on" arm is the conversations run itself); **the one must-pass latency run** (B8, NFR-01/02/29), after safety is in | ≈ $0.45 + latency ≈ $0.11 |
+| M8 | `drafter`; `summary` (rolling part); **`long`** (doc 05: the window and summary land here; doc 04 P8's repetition measures use it); the summary judge validation | ≈ $0.23 |
+| M9 | the `decisions` slice for emotion and reactions; **E8's mood-line on/off run**, so the line is settled before later suites are tuned; the end-to-end 1:1 quick-turn timing against NFR-01 | ≈ $0.10 |
+| M10 | the who-speaks slice; the episode recaps; the committed long watch history (≈ $0.02); **watch at Fast pace with the plan-ahead** (doc 07) | ≈ $0.07 |
+| M11 | the debate member slice; the `debate` suite's `agent` part; its one-off debate and plant generation (≈ $0.09). **The 10 timed host bridges and 5 verdicts are saved and used as suite items** (doc 08) | ≈ $0.14 |
+| M12 | `retrieval` with the comparisons; 10 rewrites; the standalone and English slice; **doc 10's check 2** (deep-turn and rewrite timing, which tunes `deepCheckMs` and `rewriteMs`) | ≈ $0.12 |
+| M13 | the `memory` suite's `agent` part and its `decisions` slice. **Its 6 checked rewrite calls are taken from the suite's 24**; 10 pause runs; 10 recall turns (doc 09) | ≈ $0.16 |
+| M14 | `safety` incl. doc 12's parts; **the output check's timing** (doc 11 check 2). Doc 11's check 3 (no second reply after a block) is tested offline instead (W14) | ≈ $0.08 |
+| M15 | **`conversations`** (both profiles, ≈ $0.44); **the `naive` arms** of `debate` and `memory` (≈ $0.10); every other suite from the store; **the one must-pass latency run** (B8, NFR-01/02/29), after safety is in | ≈ $0.55 + latency ≈ $0.11 |
 | v1 endgame | **doc 12's v3 image check (was A4):** the first seed characters recreated in the app (Hana, Amara, Rin, Victor) are judged by eye for identity, skin tone, adult read, detail, age drift and outfits; W3's identity edit is tried once; how Seedream signals moderation is noted (doc 12 checks 1, 4) | none extra: these are the demo's own images (W10) |
 
-The group B total is about **$1.2** over the stage, and **≈ $1.4 with group A**, inside doc 02's "about $1–3".
+The group B runs total about **$1.55**, or **≈ $1.7 with group A**. The `smoke` allowance (≈ $0.9 over nine changes)
+brings the stage to **≈ $2.6**, inside doc 02's "about $1–3". The figures assume Jev bills the state once per request;
+A1 confirms it.
 
 **Rejected:**
 - **Everything before coding:** half the checks would need throwaway code that duplicates M7–M14.
 - **Everything inside the changes:** a Jev billing or latency surprise found in M9 would reshape M7.
 - **A full `all` at M15 on top of each change's runs:** it would pay for every suite twice.
+- **`conversations` at each change:** M12–M14 change every `agent` request it sends, so the earlier runs would be
+  bought again.
 - **`naive` arms before M15:** the `naive` prompt changes in M7, M8, M10, M11, M12 and M13, and each change would buy
   its replies again.
 
@@ -502,8 +530,10 @@ save it and reuse it. Never pay for the same result twice.
   - it holds `{response, usage, savedAt}`.
 
   The group A scripts write this format first, and M7 adopts it.
-- **Who uses it:** a `ResponseStore` that **only `horizon eval` and the group A scripts inject into the gateway**. The
-  live app never constructs one, so Regenerate and Retry always get something new.
+- **Who uses it:** a `ResponseStore` that **only `horizon eval` and the group A scripts inject into the gateway**, for
+  replies and Jev answers. The live app never gets that view, so Regenerate and Retry always get something new. The
+  live app gets an **embeddings-only view, limited to seed rows**, so "Index seed knowledge" after Reset demo reuses
+  the vectors.
 - **Embeddings are the one shared kind,** since an embedding is the same output for the same text. Seed indexing,
   `horizon space build`, the eval copies and the retrieval suite read and write the store, **for seed rows (`is_seed`)
   and corpus pieces only**. The user's documents, memories and messages are embedded without it. So:
@@ -515,7 +545,10 @@ save it and reuse it. Never pay for the same result twice.
     repeatable);
   - **timeout and fallback rates**, which are computed only from uncached calls. The run report counts cache hits;
   - **`horizon eval capture` and `horizon eval import` runs, and the private safety items** (`private/evals/safety/`).
-    These bypass it, because they may hold the user's text.
+    These bypass it, because they may hold the user's text;
+  - **the drift canary** (B6), which must reach Jev every time.
+- **Staleness:** every Jev entry's key includes the canary's fingerprint, i.e. the hash of its last accepted answers.
+  When the canary shows drift (B6), the fingerprint changes and every cached Jev answer is stale at once.
 - **Doc 02 B7's reply and Jev caches move here** from the run folders, so pruning old runs (B7 keeps 20) never deletes
   them. A factory reset deletes the store.
 
@@ -608,12 +641,12 @@ save it and reuse it. Never pay for the same result twice.
 | `safety.tImage*` / `tSong` | bank | 0.5 / 0.6 | M14 |
 | `memory.tInstruction` | bank | 0.7 | M14 |
 | `verdict.margin` | bank | 0.5 (doc 08) | M11 |
-| `turn_plan` deadline | pricing | 1,000 until A2, then A2's p90 | A2 |
-| `follow_plan` / `debate_plan` | pricing | 400 / 400 | A2 |
-| `guardrail` / `guardrail_prompt` | pricing | 700 / 1,500 | A2, M14 |
+| `turn_plan` deadline | pricing | 1,000 until A2, then A2's p90 | A2, M15 |
+| `follow_plan` / `debate_plan` | pricing | 400 / 400 | A2, M10, M11 |
+| `guardrail` / `guardrail_prompt` | pricing | 700 / 1,500 | A2 and M14 / — |
 | `reaction` / `face_check` | pricing | 1,500 / 1,500 | — |
 | `episode` / `verdict` (`timeoutsMs`, not decisions) | pricing | 30,000 / 30,000 (docs 07, 08) | — |
-| `retrieval.agent.deepCheckMs` / `rewriteMs` | runtime | 700 / 1,500 (doc 10) | A2, M12 |
+| `retrieval.agent.deepCheckMs` / `rewriteMs` | runtime | 700 / 1,500 (doc 10) | A2 and M12 / M12 |
 | `debate.hostWelcomeWaitMs` / `hostBannerWaitMs` | runtime | 3,000 / 1,500 (doc 08 V6) | — |
 | `emotion.fade` | runtime | `["surprised", "embarrassed"]` (doc 06 E3) | — |
 | `persona.repeatHint` / `context.voiceReminder` | runtime | off / off (docs 04 P8, 05) | — |
@@ -645,7 +678,9 @@ The noul starting values are chosen by each noul's cost of being wrong:
 ### W14. Offline testing for every change
 
 The project rule stands: tests make no network calls.
-- **Canned real responses.** `FakeOpenRouter` answers chat calls per `ctx.purpose`, with recorded real responses:
+- **Canned real responses.** `FakeOpenRouter` (an httpx mock transport) sees only the HTTP request. So **in test mode
+  the gateway adds an `X-Horizon-Purpose` header**, and the fake answers chat calls per purpose with recorded real
+  responses:
   - group A's saved drafts and replies;
   - then each change's own recorded rewrite, verdict, host, episode and summary outputs.
 
@@ -697,7 +732,7 @@ W6 holds every paid check. The offline checks, in M7:
 
 - **The OpenSpec loop**, M7 to M15, after `design/ai-stage` is squash-merged into dev (the user is asked before any
   push).
-- **Group A's paid checks** (W6), with the user's OK on ≈ $0.15.
+- **Group A's paid checks** (W6), with the user's OK on ≈ $0.16.
 - **The v1 endgame:**
   - real-API end-to-end tests;
   - the real demo in two worlds, with real System 1 rows;

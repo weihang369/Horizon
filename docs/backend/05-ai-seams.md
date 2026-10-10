@@ -74,9 +74,10 @@ MemoryOp = Insert(draft) | Supersede(old_ids: list[str], draft) | Reinforce(id, 
 # drafts carry kind, text, importance, source_* ids incl. source_variant_id, source_mode, about_character_id.
 
 QueryBundle = { text: str, vectors: dict[space_id, list[float]] }
-# Built ONCE per triggering user message (D-97 in `naive`/`scripted`; `agent`: D-100): the actor starts the query embedding as soon as `send` arrives, in
+# Built ONCE per triggering user message. naive/scripted (D-97): the actor starts the query embedding as soon as `send` arrives, in
 # parallel with routing, and only when it can pay off (a vector retriever, a key, a responder with vectors). It is
 # reused by every responder of that message; a reply waits for it at most `retrieval.queryEmbedWaitMs`.
+# agent (D-100): started at the gate, only when Jev call 1 asks for search; waited for at most 400 ms (docs/ai/10 K4).
 
 ScopedIndex  # services/knowledge/index.py: read-only, built by the RUNTIME per turn for the speaker's world and
 # character. Every keyword and vector query binds the character (the vec0 partition key) and re-checks world and

@@ -470,12 +470,12 @@ with itself only about 64 % of the time, so that rule mixes up ordinary noise wi
   |---|---|---|
   | decisions | ~2,700 Jev requests (choice items in both orders, including doc 06's emotion and reaction sets, doc 07's who-speaks parts, doc 08's debate member set, doc 09's memory sets and doc 10's standalone and English sets), ~1 k tokens each (debate items ~3 k) | ≈ $0.12 |
   | retrieval (doc 10 K14) | re-indexing and corpus embedding (< $0.01), 205 questions × 8 piece scores, the space and piece comparisons (≈ $0.015), 45 rewrites, 50 end-to-end not-found and partly replies (≈ $0.02) | ≈ $0.08 |
-  | conversations | 200 turns × 2 profiles + 4 free runs on DeepSeek, Jev planning, and judging (≈ $0.13); doc 04's reply-rule checks and three 1:1 free runs (≈ $0.03); doc 07's 6 `agent` group and watch runs (≈ $0.03); doc 08's 2 `agent` debates (≈ $0.03) | ≈ $0.44 |
+  | conversations | 200 turns × 2 profiles + 4 free runs on DeepSeek, Jev planning, and judging (≈ $0.13); doc 04's reply-rule checks (≈ $0.03; P8's repetition uses the `long` runs, [doc 13](13-wrap-up.md) W10); doc 07's 6 `agent` group and watch runs (≈ $0.03); doc 08's 2 `agent` debates (≈ $0.03) | ≈ $0.44 |
   | drafter (doc 04) | 20 drafts + 40 Jev checks | ≈ $0.025 |
   | summary (doc 05, doc 07) | 40 summary calls + 10 episode recaps + about 310 Jev checks | ≈ $0.08 |
   | debate (doc 08) | 48 Jev rubric requests (balanced, planted, side-swapped), 48 `naive` verdicts, 10 proses, 10 host bridges, their Jev checks; once, ≈ $0.09 to generate the debates and plants | ≈ $0.10 |
   | memory (doc 09) | 24 rewrite calls (shared by both writers and cached), 100 recall probes, 20 two-session pairs × 2 writers, their Jev importance, guard and judge requests | ≈ $0.16 |
-  | safety (doc 11 S10) | ~360 Jev requests (with doc 12's parts), ~30 end-to-end replies, five 10-turn drift scenes, judges | ≈ $0.07 |
+  | safety (doc 11 S10) | ~400 Jev requests (with doc 12's parts), ~30 end-to-end replies, five 10-turn drift scenes, judges | ≈ $0.07 |
   | **all** | | **≈ $1.08 (about RM 4.7)**; ≈ $1.65 at peak; **≈ $0.78 once the `naive` replies and verdicts are cached** |
   | latency (rare) | 400 turns, each stopped at the first word (B8, with doc 10's extra 100 deep 1:1 turns) | ≈ $0.11 |
   | long (rare, doc 05) | three agent-only runs of about 75 turns or rounds | ≈ $0.12 |
@@ -494,7 +494,8 @@ with itself only about 64 % of the time, so that rule mixes up ordinary noise wi
 ### B8. Measuring speed: the latency suite and NFR-29
 
 **Decision:**
-- **Doc 01's check 3 runs first, as a standalone script, before implementation** (as doc 01 says). It needs no
+- **Doc 01's check 3 runs first, as a standalone script, before implementation** (as doc 01 says; [doc 13](13-wrap-up.md) W6 splits it:
+  A2 before coding, timing runs in M9, M12 and M14, the must-pass run in M15). It needs no
   `horizon eval`. Later, **`horizon eval latency`** repeats it as a regression test.
 - **The sample** is enough to pin down a p90. With 30 samples, the 95 % interval for p90 runs from the 22nd sample to
   the slowest one, so it can't show that NFR-01 is met.
@@ -689,7 +690,7 @@ section.
 | The **question bank** module, with the `Decider` building its requests from it | backend | B9 |
 | **`horizon eval`**: the suites, isolated copies per profile, key from the user's key store, env overrides ignored, estimate and ask, the run cap and self-stop, the caches, the canary, the report, the baselines, `spend.jsonl` | backend CLI | B7, B6 |
 | **`horizon eval capture`** and **`horizon stats`** | backend CLI | B10, B12 |
-| The latency script for doc 01's check 3 (before implementation), later `horizon eval latency` | backend | B8 |
+| The latency script for doc 01's check 3 (A2, before implementation, [doc 13](13-wrap-up.md) W6), later `horizon eval latency` | backend | B8 |
 | The **`evals/` folder**: datasets with dev/test splits, transcripts, corpus with `SOURCES.md` and `LICENSE`, baselines, the overlap checker | repo | B2, B3 |
 | **`ai_calls`** (Alembic migration, indexes, retention, cascades), the gateway's per-call body capture and queued writer, the runtime's per-turn row, and **the first real `AiStateHooks`** for character deletes | backend | B10 |
 | **Forget also deletes `ai_calls` rows** in its writer transaction; the doc 06 byte-level test runs with capture on | backend | B10 |
