@@ -12,7 +12,7 @@
 > - **Revised after an independent review:** 14 findings, all checked against the code and addressed. The main ones:
 >   Seedream has no negative-prompt field, so "Avoid: nudity…" would put those words in every prompt (now positive
 >   wording); the backend can't tell an edited song brief from a drafted one (every brief sent to Lyria is now
->   checked); the image check moved to **job start**, so a refusal is a toast before anything is stored, with no failed
+>   checked; **the user confirmed this, 2026-10-10**); the image check moved to **job start**, so a refusal is a toast before anything is stored, with no failed
 >   tasks and no Retry change; the sheet's Avoid line lacked the youth exclusion; "a mature face" in every edit could
 >   age faces; one noul with four harms became four atomic nouls; the "Doesn't look like them" note never reaches an
 >   image prompt.
@@ -237,7 +237,8 @@ repeat free.
 blames the provider.
 
 **Rejected:**
-- **Checking only an edited brief** (the first draft, and the wording of the user's choice): the backend can't tell
+- **Checking only an edited brief** (the first draft, and the wording of the user's choice; after the review the user
+  chose "check every brief" over adding an internal "edited" flag): the backend can't tell
   which brief was edited, so in practice the check would run on almost every song or on none. Checking every brief
   costs ≈ $0.00002 per song and keeps the user's intent: no named artist reaches Lyria.
 - **Prompt lines only** (offered): Lyria blocks named singers' voices but may not refuse "in the style of" a band;
