@@ -48,6 +48,9 @@ each character's own point of view; the user can only view and forget).
 - **Search covers only this session's older messages, and it is hybrid:** dense embedding + BM25, fused by RRF, then
   MMR (M9). (Proposed by the user during the review; it replaced the first version's "top 5 in the tail plus a
   search over long-term memories".)
+- **Memories ranked below the prompt's ~30 are searched too** (M9): only for a character who has more memories than
+  fit, the same gate and hybrid search also cover them, and a memory the search uses climbs back into the list. Stored
+  memories have no limit; the ~30 is only what fits in the prompt.
 - **Health details are kept** like any other lasting fact (a doctor character remembering your headaches is the
   point), and every line can be forgotten (M3).
 - **Forget stays per character in v1** (D-71); "Forget this from every character" goes to the
@@ -128,10 +131,11 @@ list items, never the whole list, and M5's guard is the protection against conte
  system prompt: "# What you remember"      stream left (30 s) · leave · end ·    the refreshed list in the
    ≤ 1,000 tokens, frozen for the sitting  debate verdict · watch turn cap ·     system prompt (one cache
    (cached; refreshed on Forget)           a session opens with the same         miss per sitting)
- tail: "# Earlier in this conversation"    character · start-up sweep
-   when Jev says "needs earlier lines?":             │
+ tail: "# Earlier …" when Jev says         character · start-up sweep
+   "needs something from earlier?":                  │
    BM25 ∪ dense over this session's                  ▼
-   dropped messages → RRF → MMR →          the memory graph (LangGraph), once, over
+   dropped lines + memories beyond the     the memory graph (LangGraph), once, over
+   list → RRF → MMR →
    Jev call 2 → ≤ 3 lines                  the messages since the checkpoint
  nothing is written                        1. DeepSeek JSON: for each character present,
                                               its current list + the new messages →
@@ -405,12 +409,14 @@ forgetting the whole chain (destroys older memories from other sessions).
 - **The trace:** every reply's `TurnTrace.memory.recalled` lists the block's lines (no score), so Insight shows what
   the model was given and Forget finds the text through `trace_memory_refs`, as today. `context.used.memory` counts
   the block.
-- **Memory never cites** (doc 01 A6). **No search and no Jev gate for long-term memory:** the "needs memories?"
-  question leaves Jev call 1, replaced by M9's.
+- **Memory never cites** (doc 01 A6). The "needs memories?" question leaves Jev call 1, replaced by M9's "needs
+  something from earlier?", whose search also covers the memories ranked below the list (the **overflow**), so a
+  character with more than ~30 memories loses none of them; it only has to look the older ones up.
 
 **Why:** memories change only at pauses (M1), so during a sitting they are as static as the persona card and cost
-$0.003/M once cached. ~30 lines covers almost every character's whole memory, so a user's returning "hi again!" meets
-a character who knows them, with no gate to get wrong.
+$0.003/M once cached. ~30 lines covers almost every character's whole memory (a typical sitting adds 1–3 lines, so a
+character passes 30 after roughly 10–20 sittings), so a user's returning "hi again!" meets a character who knows them,
+with no gate to get wrong; past that, M9's overflow search covers the rest.
 
 **Rejected:**
 - **top 5 in the reply's tail plus a gated long-term search** (the first version): tail tokens are never cached; it
@@ -419,46 +425,61 @@ a character who knows them, with no gate to get wrong.
 - **2,000 tokens:** more to juggle and more over-mentioning for little gain; **500 tokens:** heavy users lose
   memories sooner.
 
-### M9. In-session recall: hybrid search over this session's older messages (the user's decision)
+### M9. Recall from earlier: hybrid search over this session's older lines and the memory overflow (the user's decisions)
 
 **Decision:**
-- **The corpus:** this session's user and character messages (active variant, complete; no notes or directions) that
-  have **left the history window**, i.e. `seq` ≤ the latest rolling summary's `upto_seq`. Lines still in the window
-  are already in the prompt.
+- **Two corpora, searched together:**
+  - **this session's older lines:** user and character messages (active variant, complete; no notes or directions)
+    that have **left the history window**, i.e. `seq` ≤ the latest rolling summary's `upto_seq`. Lines still in the
+    window are already in the prompt;
+  - **the memory overflow:** the speaker's current memories that did **not** make its prompt list (M8), using the
+    `memory_fts` and `memory_vec__{space}` rows that already exist. Lines in the list are already in the prompt.
 - **Indexing, at each window drop** (doc 05 X2, alongside the summary): the newly dropped messages are embedded in
   **one batch** (`embed_doc`, the active space) into **`message_vec__{space}`** (vec0, partition key `session_id`,
   created by the SpaceManager like the others), and **`message_fts`** (FTS5 over `messages`, BM25) gets them by
   trigger. Sessions that never drop pay nothing. A fork copies the rows; a regenerate of a dropped message re-embeds
   it; a blocked-reply scrub and a session delete remove both, vectors zeroed first (as D-94 does for memory).
-- **The gate:** in Jev call 1, per candidate, the noul "Does replying need something said earlier in this
-  conversation that isn't in the recent lines shown?", asked only when the session has dropped messages. It replaces
-  "needs memories?"; its threshold is `t_gate`, set for recall (doc 02 B5). Jev can judge it from the state it already
-  has (the latest message and the recent lines, doc 05 X9).
+- **The gate:** in Jev call 1, per candidate, the noul **"needs something from earlier?"**: "Does replying need
+  something from earlier, in this conversation or a past one, that isn't in the recent lines shown?", asked only when
+  there is something to search (the session has dropped lines, or the candidate has an overflow). It replaces "needs
+  memories?"; its threshold is `t_gate`, set for recall (doc 02 B5). Jev judges it from the state it already has (the
+  latest message and the recent lines, doc 05 X9): "remember what I told you about my sister?" is a yes whether the
+  answer is in an old line or an old memory.
 - **The search** when the gate says yes:
-  1. **BM25** (FTS5 `bm25`) top 10 ∪ **dense KNN** top 10 over the session's partition. The query embedding follows
+  1. **Per corpus, BM25** (FTS5 `bm25`) top 10 ∪ **dense KNN** top 10 (the session's partition; the speaker's
+     partition with the list's lines excluded). The query embedding follows
      doc 01 A6: only after the gate says yes, waiting at most 400 ms, then BM25 only; one per user message (D-97,
      extended to this gate);
-  2. **RRF** (k = 60);
-  3. **MMR** (λ = 0.7, cosine between the candidates' stored vectors) picks 6 varied candidates from the fused top 10,
-     because lines in one session repeat a lot;
-  4. **Jev call 2** (`deep_check`): a noul per candidate, "Does this earlier line help reply to the latest message?";
-     keep up to **3** with p ≥ `t_recall`. Late or failed: the top 2 by RRF, marked as a fallback.
-- **In the prompt:** the dynamic tail gets "# Earlier in this conversation" with each hit and the message before it,
-  quoted as `Name: text`, each ≤ 60 words, the block ≤ **400 tokens**. **In the trace:** `TurnTrace.contextInSession`
-  lists `{text, messageId}` per hit (Insight's "In-session recall", INS-01); `context.used.history` counts it.
+  2. **RRF** (k = 60) per corpus; overflow memories are then weighted by (0.5 + 0.5 × importance) × recency × mode
+     weight (M8's factors), and the two lists are merged, at most 5 from each;
+  3. **MMR** (λ = 0.7, cosine between the candidates' stored vectors; both corpora live in the same space) picks 6
+     varied candidates from the merged 10, because lines and memories repeat a lot;
+  4. **Jev call 2** (`deep_check`): a noul per candidate, "Does this help reply to the latest message?"; keep up to
+     **3** in all with p ≥ `t_recall`. Late or failed: the top 2 by the merged order, marked as a fallback.
+- **In the prompt**, the dynamic tail, ≤ **400 tokens** together: "# Earlier in this conversation" with each line hit
+  and the message before it, quoted as `Name: text`, each ≤ 60 words; and "# Also from earlier conversations" with
+  each memory hit. **In the trace:** line hits go to `TurnTrace.contextInSession` (`{text, messageId}`, Insight's
+  "In-session recall", INS-01; counted in `context.used.history`); memory hits go to `memory.recalled` **with their
+  score** (Insight's Memory section; counted in `context.used.memory`; Forget finds them as today).
+- **A used overflow memory climbs back:** the next pause run reads the stretch's traces and touches the memories the
+  search kept (`Touch`: `last_recalled_at`, `recall_count`; trace entries with a score, so the list's own lines are
+  never touched), so a fact that turns out to matter again re-enters the prompt list.
 - **Questions searched:** as doc 01 A6 (1:1 and group: the user's message; debate: the motion plus the last opposing
   argument; watch: the last message).
 - **Shared with task 10:** one retrieval pipeline serves knowledge and in-session recall; task 10 sets its parameters
   for knowledge and decides the CJK tokeniser (`porter unicode61` handles Chinese and Japanese poorly; the dense half
   covers them until then). MMR's λ is tuned on M12's recall set and set to 1.0 (off) if it doesn't help.
 
-**Why:** the summary keeps the gist and drops details (7.1.8's context collapse); this search brings the exact line
-back ("what did I say the cake was called?") only when Jev says the reply needs it. BM25 finds exact names and
+**Why:** the summary keeps the gist and drops details (7.1.8's context collapse), and the prompt list holds only the
+top ~30 memories; this search brings the exact line or the older memory back ("what did I say the cake was called?",
+"what's my sister's name again?") only when Jev says the reply needs it. BM25 finds exact names and
 numbers, dense embedding finds rephrasings and other languages, RRF fuses them without calibrating scores, and MMR
 stops three echoes of one line from filling the slots.
 
 **Rejected:** BM25 only (misses rephrasings and mixed-language chats); dense only (misses exact names and numbers);
-embedding every message as it is sent (most never leave the window; paid for and never searched).
+embedding every message as it is sent (most never leave the window; paid for and never searched); no overflow search
+(offered: a memory below the cut would stay invisible until a confirmation lifted it); a 2,000-token list instead
+(pushes the problem back, with more over-mentioning).
 
 ### M10. The greeting: "last time…"
 
@@ -500,9 +521,9 @@ follow B2's rules):
     ≥ 85 %, within one level ≥ 80 %;
   - **rewrite guard** (sets `t_keep`): **~120 rewrites, at least 60 of them lossy**; `t_keep` = the lowest threshold
     that lets **≤ 5 %** of lossy rewrites through;
-  - **in-session gate:** the existing ~120-item "needs memories?" set is rebuilt as "needs earlier lines?" (≥ 60 yes,
-    from long frozen sessions);
-  - **in-session relevance** (sets `t_recall`): **~120 items, ≥ 60 relevant**; `t_recall` = the lowest threshold with
+  - **"needs something from earlier?" gate:** the existing ~120-item "needs memories?" set is rebuilt (≥ 60 yes, from
+    long frozen sessions and from characters with an overflow);
+  - **recall relevance** (sets `t_recall`; line and memory candidates): **~120 items, ≥ 60 relevant**; `t_recall` = the lowest threshold with
     precision ≥ 85 %.
 - **New `memory` suite:**
   - **rewrite:** 24 stretches (1:1 × 8, group × 8 with 2 of 5 characters, watch × 4, debate × 4; at least 2 in Malay,
@@ -513,17 +534,18 @@ follow B2's rules):
     fact" noul); untouched lines left unrewritten ≥ 90 %; secrets stored **0**; small-talk stretches ≤ 1 line each.
     With ~70 test items these are gross-failure checks: Wilson intervals reported, every failure read;
   - **in-session recall:** 60 probes over long frozen sessions (doc 05's summary and long inputs) needing a line that
-    has left the window; target hit@3 ≥ 80 %, reported next to BM25 only, dense only and MMR off, so the hybrid earns
-    its place.
+    has left the window, **plus 40 overflow probes** (characters with 40–60 memories, the needed one ranked below the
+    list); target hit@3 ≥ 80 % on each, reported next to BM25 only, dense only and MMR off, so the hybrid earns its
+    place.
 - **Layer 3, two sessions:** **20 pairs** (40 probes, 40 unrelated turns): session 1 plants facts and pauses, session 2
   probes them. Both writers run with the `agent`'s recall (M11). Targets for `agent`: the probe reply uses the fact
   correctly ≥ 80 % (doc 05's recall noul); **over-mentioning** ≤ 10 % of unrelated turns; both with intervals.
   Duplicates left in the tab are counted for both writers as a signal.
 - **B4 judge rows:** "Memory rewrite" (covered · supported · lost a fact) and "Over-mention". The "memory for an absent
   character" check is a unit test (code makes it impossible).
-- **Cost:** `decisions` grows by ~460 requests to ≈ $0.12; the `memory` suite ≈ **$0.15** (rewrite calls shared by
-  both writers and cached; two-session replies ≈ $0.10; Jev checks, guard and in-session embeddings the rest). `all`
-  becomes **≈ $0.97 off-peak, ≈ $1.47 at peak, ≈ $0.67 once cached.**
+- **Cost:** `decisions` grows by ~460 requests to ≈ $0.12; the `memory` suite ≈ **$0.16** (rewrite calls shared by
+  both writers and cached; two-session replies ≈ $0.10; Jev checks, guard, recall probes and embeddings the rest).
+  `all` becomes **≈ $0.98 off-peak, ≈ $1.48 at peak, ≈ $0.68 once cached.**
 
 ### M13. Speed and cost in one place
 
@@ -541,11 +563,12 @@ follow B2's rules):
 
   Writing after each exchange would have cost about $0.004 for the same 1:1 sitting.
 - **Cost of recall:** the memory list ≈ 1,000 cached tokens ≈ $0.000003 a reply, ≈ $0.00015 per sitting start or
-  refresh. In-session recall: ≈ $0.00003 to embed each window drop; on a gate-yes turn, Jev call 2's 6 nouls at
+  refresh. Recall from earlier: ≈ $0.00003 to embed each window drop (memories already have vectors); on a gate-yes turn, Jev call 2's 6 nouls at
   ~500 tokens ≈ **$0.00013**, plus the query embedding (≈ $0.000001).
 - **Ledger and caps:** the rewrite call is `memory`, the Jev calls `decision`, the embeddings `embedding`; none drains
   energy (ENG-02 AC2); all count against the daily cap but never pause sessions (M6).
-- **Growth:** nothing is deleted automatically; the prompt shows the top ~30; the Memory tab lists all (unpaginated
+- **Growth:** nothing is deleted automatically; the prompt shows the top ~30, the overflow search reaches the rest;
+  the Memory tab lists all (unpaginated
   today, fine into the hundreds; pagination is noted for task 13).
 
 ## 5. Checks before this is locked
@@ -573,10 +596,10 @@ this task's discussion.
 | `MemoryStore.apply_run` (all characters + the compare-and-set checkpoint + the re-read list in one transaction; the variant check; per-character run locks; the Forget-race rule); memory purposes never pause sessions at the cap (gateway: `sessions=False`, no `pause_all_for_cap`) | backend | finding 7 | M6 |
 | The regenerate and continue undo + `memory_reread` at the command; `_forget_derived` uses the undo instead of the whole chain | backend | finding 4 | M7 |
 | The memory list in the `agent` system message 1 (ranking, 1,000-token fill, frozen per sitting, refreshed on Forget and on a live commit); `memory.recalled` for the block; "needs memories?" removed from Jev call 1; `memory.*` knobs in `runtime.json` (`halfLifeDays` 30, `recencyFloor` 0.5, `modeWeight`, `blockTokens` 1,000, `minImportance` 0.25, `dupCosine` 0.92, `pieceTokens` 8,000, `maxTries` 3, `maxConcurrent` 2, `leaveGraceMs` 30,000) | backend + config | finding 3 | M8 |
-| In-session recall: `message_fts` and `message_vec__{space}` (the SpaceManager's), the batch embedding at window drops, the gate in Jev call 1, BM25 ∪ dense → RRF → MMR → Jev call 2, the tail block, `contextInSession`; scrub, delete and fork handling | backend | finding 3 | M9 |
+| Recall from earlier: `message_fts` and `message_vec__{space}` (the SpaceManager's), the batch embedding at window drops; the overflow search over `memory_fts` / `memory_vec` without the list's lines; the "needs something from earlier?" gate in Jev call 1; per corpus BM25 ∪ dense → RRF, merged, → MMR → Jev call 2; the tail blocks, `contextInSession` and scored `memory.recalled`; `Touch` of used overflow memories at the next pause; scrub, delete and fork handling | backend | finding 3 | M9 |
 | The greeting's newest memories and cue | backend | | M10 |
 | The Memory tab's "Preview: final design by AI team" ribbon removed (PRF-07) | frontend | | M11 |
-| Eval: the importance, guard, in-session gate and relevance sets; the `memory` suite (rewrite, in-session recall, two sessions with per-port overrides); two B4 judge rows | evals | measure it | M12 |
+| Eval: the importance, guard, "from earlier" gate and relevance sets; the `memory` suite (rewrite, in-session and overflow recall, two sessions with per-port overrides); two B4 judge rows | evals | measure it | M12 |
 | **Docs to amend:** OQ-AI-01 resolved; NFR-35's note; D-97's extension; [05-data-contract](../requirements/05-data-contract.md) `MemoryItem` no longer "PROVISIONAL"; [05-ai-seams](../backend/05-ai-seams.md) §2.2 (`MemoryWriter`, `MemoryRetriever`, `SessionRecall`), §4 (post-turn queue) and §6 (`memory_consolidate` removed, `message_fts` designed); [02-storage](../backend/02-storage.md) §3.7 (writes at pauses) and its job-kind list; doc 01 A4, A7, A9, A13, §9; doc 02 B2, B4, B7, §8; doc 03 C1 and §7; doc 04 P9 and §7; doc 05 X1, X7, X9 and §7 | docs | consistency | all |
 
 ## 7. Left for later tasks

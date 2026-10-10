@@ -132,7 +132,7 @@ flowchart LR
 
 | Layer | What it measures | Main numbers |
 |---|---|---|
-| **1. System 1 decisions** | Each Jev question alone: who speaks, needs documents, needs earlier lines, emotion, input safe, talk finished, debate member, passage score; later, memory importance and the rubric | **Policy accuracy** (Jev above the floor, the fallback below it), a **calibration table**, and **order bias** (B6) |
+| **1. System 1 decisions** | Each Jev question alone: who speaks, needs documents, needs something from earlier, emotion, input safe, talk finished, debate member, passage score; later, memory importance and the rubric | **Policy accuracy** (Jev above the floor, the fallback below it), a **calibration table**, and **order bias** (B6) |
 | **2. Retrieval** | The deep path without the reply: keyword search, vector search, RRF, then Jev call 2 and the keep-or-abstain rule | Recall@pool, Recall@5 and MRR, precision and recall of the kept set, and abstain accuracy (B2) |
 | **3. Conversations** | Replies in all four modes, `agent` against `naive`, **from the same history** (B3) | The Jev judge (B4), **cost per turn by purpose**, fallback rate, deep rate, abstain rate |
 | **Latency suite** | NFR-01, NFR-02 and NFR-29, from Malaysia | p50 and p90 with intervals, and a per-stage breakdown (B8) |
@@ -178,7 +178,7 @@ frozen transcripts start from a long committed history.
 
   | Set | Size | Why this size |
   |---|---|---|
-  | Layer 1: each **noul that sets a threshold** (needs documents, needs earlier lines (in-session recall, doc 09 M9), talk finished, the memory rewrite guard and in-session relevance (doc 09 M12)) | **~120 items, at least 60 of them "yes"** | A recall target is judged on 60+ positives. With 50, 45 right still leaves 79–96 %. |
+  | Layer 1: each **noul that sets a threshold** (needs documents, needs something from earlier (doc 09 M9), talk finished, the memory rewrite guard and in-session relevance (doc 09 M12)) | **~120 items, at least 60 of them "yes"** | A recall target is judged on 60+ positives. With 50, 45 right still leaves 79–96 %. |
   | Layer 1: **passage score** | **~100 items** | It sets the floor every deep turn depends on |
   | Layer 1: **who speaks** (doc 07 G11) | **~210 items**: group first slot 60, group second slot 90 (about 65 % with `none` right), watch next speaker 60 (≥ 3 awake characters each) | They set the floors every group and watch turn depends on; each test split has at least 20 items |
   | Layer 1: **emotion** (doc 06 E8) | **~100 items**; 20–30 % where keeping the face is acceptable | The face shows on every turn of every mode; the cap stops "always keep" from carrying the score |
@@ -194,7 +194,7 @@ frozen transcripts start from a long committed history.
   | Layer 3: free-running conversations | **4**, one per mode, **plus 3 watch runs of 30 turns and 3 group runs of 12 user messages, `agent` only** (doc 07 G11), **and 2 `agent` debates** (doc 08 V11) | What only a live run shows (B3); the extra runs give the group and watch signals enough turns |
   | Debate suite (doc 08 V11) | **12 debates × 2** (balanced, planted weak side), split 4 dev / 8 test by debate, each also with the side blocks swapped; 10 verdict proses; 10 host bridges | A gross-failure check on the verdict, each failure read; the planted side gives a known winner; the margin is tuned on dev only |
   | Layer 1: **memory importance** (doc 09 M12) | **100 lines** (≥ 30 to drop) | It sets the keep-or-drop cut and the badge |
-  | Memory suite (doc 09 M12) | **24 rewrite stretches** (1:1 × 8, group × 8, watch × 4, debate × 4), split 12 dev / 12 test, each with an existing list holding planted changes and confirmations, plus 6 planted secrets and 6 small-talk stretches; **60 in-session recall probes**; **20 two-session pairs**, both writers with the `agent`'s recall | Rewrite coverage, faithfulness and lost facts; no secrets stored; hybrid recall against its ablations; recall and over-mentioning across a real pause |
+  | Memory suite (doc 09 M12) | **24 rewrite stretches** (1:1 × 8, group × 8, watch × 4, debate × 4), split 12 dev / 12 test, each with an existing list holding planted changes and confirmations, plus 6 planted secrets and 6 small-talk stretches; **60 in-session and 40 overflow recall probes**; **20 two-session pairs**, both writers with the `agent`'s recall | Rewrite coverage, faithfulness and lost facts; no secrets stored; hybrid recall against its ablations; recall and over-mentioning across a real pause |
   | Judge checks (B4) | **60 per judge question** (30 real + 30 planted failures), **30 pairs** for the pairwise judge | Planted failures have known answers, so they cost no labelling |
 
 - **Every layer 1 and layer 2 set is split once, when it is created: 2/3 dev and 1/3 test.**
@@ -348,7 +348,7 @@ the largest Jev item, so judge results are cached (B7).
   |---|---|---|
   | needs documents | **`t_gate`** (go deep) | the **highest** threshold with **recall ≥ 90 %**; the deep rate on items that don't need documents is reported next to it |
   | needs documents | **`t_confident`** (abstaining allowed, A6) | the **lowest** threshold with **precision ≥ 95 %**; always ≥ `t_gate` |
-  | needs earlier lines (doc 09 M9) | `t_gate` | the highest threshold with **recall ≥ 85 %** |
+  | needs something from earlier (doc 09 M9) | `t_gate` | the highest threshold with **recall ≥ 85 %** |
   | talk finished | `t_end` | the lowest threshold with **precision ≥ 90 %**; its recall is reported, and a recall under 50 % means the question is rewritten |
   | input safe | — | task 11 |
 
@@ -454,8 +454,8 @@ with itself only about 64 % of the time, so that rule mixes up ordinary noise wi
   | drafter (doc 04) | 20 drafts + 40 Jev checks | ≈ $0.025 |
   | summary (doc 05, doc 07) | 40 summary calls + 10 episode recaps + about 310 Jev checks | ≈ $0.08 |
   | debate (doc 08) | 48 Jev rubric requests (balanced, planted, side-swapped), 48 `naive` verdicts, 10 proses, 10 host bridges, their Jev checks; once, ≈ $0.09 to generate the debates and plants | ≈ $0.10 |
-  | memory (doc 09) | 24 rewrite calls (shared by both writers and cached), 60 in-session recall probes, 20 two-session pairs × 2 writers, their Jev importance, guard and judge requests | ≈ $0.15 |
-  | **all** | | **≈ $0.97 (about RM 4.3)**; ≈ $1.47 at peak; **≈ $0.67 once the `naive` replies and verdicts are cached** |
+  | memory (doc 09) | 24 rewrite calls (shared by both writers and cached), 100 recall probes, 20 two-session pairs × 2 writers, their Jev importance, guard and judge requests | ≈ $0.16 |
+  | **all** | | **≈ $0.98 (about RM 4.3)**; ≈ $1.48 at peak; **≈ $0.68 once the `naive` replies and verdicts are cached** |
   | latency (rare) | 300 turns, each stopped at the first word (B8) | ≈ $0.08 |
   | long (rare, doc 05) | three agent-only runs of about 75 turns or rounds | ≈ $0.12 |
   | smoke (usual) | the changed suite + 4 free runs | ≈ $0.05–0.15 |

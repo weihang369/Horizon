@@ -493,7 +493,7 @@ than a list of events, so any steering that changes their inputs makes them be r
 - **Cost (off-peak, first run):** decisions +180 Jev requests of ~3,000 tokens ≈ +$0.023 (≈ $0.10); the new `debate`
   suite ≈ $0.10 (Jev ≈ $0.012, the 48 `naive` baseline verdicts ≈ $0.063, prose, host lines and checks ≈ $0.02);
   conversations +2 free runs ≈ +$0.03 (≈ $0.44). **`all` ≈ $0.80** (≈ $1.18 at peak; ≈ $0.55 with the `naive`
-  replies and verdicts cached; doc 09 M12 later makes these $0.97 / $1.47 / $0.67). **Once:** generating the 8 debates and the 12 planted rewrites ≈ $0.09. If Jev bills
+  replies and verdicts cached; doc 09 M12 later makes these $0.98 / $1.48 / $0.68). **Once:** generating the 8 debates and the 12 planted rewrites ≈ $0.09. If Jev bills
   the state per question (doc 01 check 4), the suite's Jev part grows to about $0.10.
 
 **Rejected:**

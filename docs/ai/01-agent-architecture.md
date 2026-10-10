@@ -94,7 +94,7 @@ flowchart TD
     end
     A --> P1
     subgraph PLAN["Turn plan graph (LangGraph, System 1), called by the runtime"]
-        P1["Jev call 1: one request, every question in parallel<br/>who speaks · per candidate: needs documents? needs earlier lines? emotion?<br/>input safe? · watch: is the talk finished?"]
+        P1["Jev call 1: one request, every question in parallel<br/>who speaks · per candidate: needs documents? needs something from earlier? emotion?<br/>input safe? · watch: is the talk finished?"]
         P1 --> G{"quick or deep?"}
         G -->|deep| E["embed the question (≤ 400 ms wait)<br/>→ keyword + vector search in the speaker's scope"]
         E --> J2["Jev call 2: one small request per passage, all in parallel<br/>score: how well does it answer?"]
@@ -168,7 +168,7 @@ $0.
 | Type | Returns | Use for | Examples |
 |---|---|---|---|
 | **choice** | the pick, a probability per option, a confidence | one of a list of names | who speaks, which emotion, which debate member |
-| **noul** | the probability of "yes" | a single yes/no condition | needs documents? needs earlier lines? input safe? talk finished? |
+| **noul** | the probability of "yes" | a single yes/no condition | needs documents? needs something from earlier? input safe? talk finished? |
 | **score** (2–10 ordered levels) | a weighted position, a probability per level, a confidence | a degree on an ordered scale | how well a passage answers, memory importance, debate rubric |
 
 - **Emotion is a choice, not a score:** the 7 emotions are names with no order.
@@ -210,8 +210,8 @@ probabilities for Insight.
 
 | Mode | Questions in Jev call 1 |
 |---|---|
-| **1:1** | needs documents? · needs earlier lines? · emotion · input safe? |
-| **Group** | who answers first, with no `none` when nobody is mentioned (@mentions answer first; Everyone uses the probabilities as its order, doc 07 G1, G4) · **per candidate:** needs documents? needs earlier lines? emotion · input safe? |
+| **1:1** | needs documents? · needs something from earlier? · emotion · input safe? |
+| **Group** | who answers first, with no `none` when nobody is mentioned (@mentions answer first; Everyone uses the probabilities as its order, doc 07 G1, G4) · **per candidate:** needs documents? needs something from earlier? emotion · input safe? |
 | **Debate** | the backend picks the side; Jev picks which member (A14) · **per eligible member:** the gates and the emotion |
 | **Watch** | who speaks next · is the talk finished? · **per candidate:** the gates and the emotion |
 
@@ -219,9 +219,9 @@ probabilities for Insight.
 - **Questions in one call can't see each other's answers.** So the gates and the emotion are asked **for every possible
   speaker**, and code keeps the answers for whoever was chosen.
 - **A gate question is only asked when it can pay off.** "Needs documents?" only for a character with knowledge
-  indexed; "needs earlier lines?" (in-session recall, doc 09 M9) only when the session has messages that have left
-  the history window. Long-term memory needs no gate: it sits in the system prompt (doc 09 M8). This keeps the state
-  smaller and the call cheaper.
+  indexed; "needs something from earlier?" (doc 09 M9) only when there is something to search: the session has
+  messages that left the history window, or the character has memories beyond its prompt list (doc 09 M8). This keeps
+  the state smaller and the call cheaper.
 - **Second replier in group mode** (amended by doc 07 G2). The second slot is decided **after the first reply ends**,
   by a short Jev request (the **follow plan**, 400 ms): who, if anyone, speaks up now, plus each candidate's gates and
   emotion, so the second character can answer the first. Late, failed or unsure means no second reply. If both go
@@ -291,7 +291,7 @@ emotion, and the hits it kept. The reply engine never queries storage (D-92 hold
 - **Deep reply:**
   1. **Embed the question, and only now.** Never before the gate says yes. The plan waits at most
      `retrieval.queryEmbedWaitMs` (400 ms), then falls back to keyword-only search.
-  2. **Search:** keyword + vector over knowledge and/or this session's older messages (doc 09 M9), fused with RRF.
+  2. **Search:** keyword + vector over knowledge and/or this session's older lines and the memories beyond the prompt list (doc 09 M9), fused with RRF.
   3. **Jev call 2 (`Decider` purpose `deep_check`).** One small request per candidate passage, all sent in parallel.
      Each state holds just the question and one passage, which is TypeSafe's rerank cookbook pattern; no request sees
      another, so no irrelevant passages dilute the state. Each request asks one **score**, "how well does this passage
@@ -310,8 +310,8 @@ emotion, and the hits it kept. The reply engine never queries storage (D-92 hold
   - if Jev call 2 fails or is late, keep the RRF top k with no score, cite as normal, and mark the fallback.
 - **In-session recall and knowledge have separate gates.** Knowledge is the conservative one (a stricter threshold and
   the not-found rule) and cites a passage **only when the reply uses it** (D-93). Recalled lines and memories never
-  cite. Long-term memory has no gate or search: it is in the system prompt (doc 09 M8). The thresholds are set in
-  doc 09 M12 and task 10.
+  cite. The top long-term memories are in the system prompt (doc 09 M8); the rest are searched with the older lines
+  (doc 09 M9). The thresholds are set in doc 09 M12 and task 10.
 - **All four modes may go deep; Jev decides per turn.** The question searched for is:
   - 1:1 and group: the user's message;
   - debate: the motion plus the last opposing argument;
