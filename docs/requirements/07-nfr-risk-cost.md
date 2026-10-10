@@ -22,7 +22,7 @@
 
 ### Performance
 - **NFR-01 (first token):** In 1:1 chat, the first token appears within **2.0 s p50 / 4.0 s p90** of send. The "typing" state appears within **100 ms**.
-- **NFR-02 (multi-agent pacing):** `turn.next` arrives within **500 ms** of the previous `turn.end`. The next speaker's first token arrives within **3 s p50**. The UI is never idle for more than 500 ms without an activity indicator. Openings generated in parallel are **revealed sequentially at speaking pace**.
+- **NFR-02 (multi-agent pacing):** `turn.next` arrives within **500 ms** of the previous `turn.end` (*exception: in a debate, up to about 500 ms plus assembly, because the Jev member choice from Malaysia needs a 500 ms deadline; docs/ai/08 V2, [group A](../ai/checks/group-a.md)*). The next speaker's first token arrives within **3 s p50**. The UI is never idle for more than 500 ms without an activity indicator. Openings generated in parallel are **revealed sequentially at speaking pace**.
 - **NFR-03 (animation):** Idle animation, crossfades and VFX hold **60 fps**. Animate only `transform` and `opacity`. No main-thread task exceeds 50 ms while idle.
 - **NFR-04 (emotion switch):** A sprite change **starts within 100 ms** of the `emotion` event and **completes within 300 ms**. All participants' sprites are preloaded on session open.
 - **NFR-05 (asset budgets):** Sprites ≤ 250 KB (WebP/AVIF, ~768–1024 px tall). Theme loops ≤ 750 KB. ≤ 3 MB per character. The app shell is interactive within 3 s locally.

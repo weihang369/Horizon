@@ -551,7 +551,7 @@ only), and Jev nouls are already the house judge (doc 02 B4).
 | 1 | The safety suite (S10), cross-validated over the full set | S10's counts | reword the nouls and the cues before moving thresholds; more than 3/60 false steers comes back to the user |
 | 2 | The output check's latency, inside check 3 | p90 ≤ 700 ms | raise the deadline from the data and report it (the reply stays readable meanwhile) |
 | 3 | Group timing with the follow plan started at stream end | no second reply started after a block | fix the cancel path |
-| 4 | findahelpline.com is live and lists Malaysia, the UK and the US | it answers and lists them | use another country-neutral directory, or the eval-checked wording without a link |
+| 4 | findahelpline.com is live and lists Malaysia, the UK and the US. **Done 2026-10-10 ([group A](checks/group-a.md) A4): live; Malaysia 15 lines (e.g. Befrienders KL), UK (Samaritans 116 123), US (988)** | it answers and lists them | use another country-neutral directory, or the eval-checked wording without a link |
 
 ## 6. Changes this design needs (each approved at its OpenSpec change)
 

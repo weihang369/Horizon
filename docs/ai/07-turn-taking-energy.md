@@ -173,7 +173,10 @@ first reply streams … turn.end                          else Jev call 1: who s
 - **If check 3 shows Jev is slow from Malaysia, Jev stays** (the user, 2026-10-10: testing Jev is one of the
   project's purposes, so "if Jev is slow, we accept the fate"). The deadline is then set from the measured Jev
   latency (its p90), so the second slot still works, and this optional turn gets a recorded NFR-02 exception for
-  `turn.next`. The measured latency is reported as a finding about Jev, not designed around.
+  `turn.next`. The measured latency is reported as a finding about Jev, not designed around. *[Group
+  A](checks/group-a.md) A2: the follow plan took ≈ 420 ms p50 / 446 p90 / 688 p99. Since it starts at the stream's
+  end, alongside the output check, the 400 ms deadline after `turn.end` leaves it about 800 ms, so the deadline stays
+  400 and no exception is needed.*
 
 **Rejected:**
 - **choosing the second replier up front (today's way):** never late, but blind to the first reply (finding 2); it

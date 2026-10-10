@@ -144,9 +144,11 @@ Start ─ host welcome (DeepSeek, written during the 1.6 s start delay; fixed li
   There is **no `none`**: the slot must be filled. The state holds the motion, the phase, the side, **the last
   opposing argument** in full (with uneven sides the argument just before may be a teammate's, so it is not used), and
   each candidate's latest argument cut to 60 words, so Jev can see who already covered a point (doc 05 X9 amended).
-- **A deadline, not a timeout:** `timeoutsMs.decision.debate_plan` = **400**, measured from `turn.end`. It **replaces
-  the 400 ms turn gap** for this step (as doc 07 G2 does), so `turn.next` still comes about 400 ms after `turn.end`,
-  inside NFR-02's 500 ms.
+- **A deadline, not a timeout:** `timeoutsMs.decision.debate_plan` = ~~400~~ **500**, measured from `turn.end`. It
+  **replaces the 400 ms turn gap** for this step (as doc 07 G2 does). *[Group A](checks/group-a.md) A2 measured
+  Jev at ≈ 415 ms p50 / 444 p90 / 498 p99 from Malaysia, so 400 missed every call. Per the user's rule (a slow API is
+  accepted, Jev stays), the deadline is 500 and `turn.next` comes up to about 500 ms after `turn.end`: a recorded
+  NFR-02 exception.*
 - **Fallbacks** (doc 01 A4's row, unchanged):
 
   | Case | Member |
@@ -548,7 +550,7 @@ None changes the HTTP contract or a requirement.
 
 | Change | Kind | Why | Decision |
 |---|---|---|---|
-| The **debate plan**: `Decider` purpose `debate_plan` (**added to the gateway's `PURPOSE_CATEGORY` as a decision**; `call_ctx` refuses unknown purposes), `timeoutsMs.decision.debate_plan` = 400 as a deadline from `turn.end` replacing `turnGapMs` for that step; the member question per phase over the last opposing argument, `floor.member` in the question bank; doc 07 G8's fingerprint and lifecycle; the phase-boundary plan with its target; energy re-checked at turn start; routing trace with `forcedBy: "round_order"`, `reason` and `skipped` | backend + config | A14 | V2, V3 |
+| The **debate plan**: `Decider` purpose `debate_plan` (**added to the gateway's `PURPOSE_CATEGORY` as a decision**; `call_ctx` refuses unknown purposes), `timeoutsMs.decision.debate_plan` = 500 ([group A](checks/group-a.md)) as a deadline from `turn.end` replacing `turnGapMs` for that step; the member question per phase over the last opposing argument, `floor.member` in the question bank; doc 07 G8's fingerprint and lifecycle; the phase-boundary plan with its target; energy re-checked at turn start; routing trace with `forcedBy: "round_order"`, `reason` and `skipped` | backend + config | A14 | V2, V3 |
 | A slot whose side has nobody awake pauses the debate (notes, `energy_exhausted`, reason `user`, slot kept), in the runtime **and the mock's debate engine**, with a parity fixture; missed turns passed to the verdict | backend + mock | finding 1 | V5 |
 | The debate session block, reply rules and per-phase cue in the `agent` compiler and its TS twin with shared fixtures; teammates named as teammates in `naive` | backend + frontend | findings 2, 3 | V4 |
 | `DebateHost.narration()` async with the session context; a DeepSeek host (`runtime.llm.calls.host`, text, `max_tokens` 120, ledger purpose `host`), requested ahead, keyed by (phase, iteration), with deadlines and the fixed sentence as fallback; lines for Extend and Skip; a verdict lead-in worded per verdict mode with three fixed fallbacks (`naive`, `agent`) | backend + config | finding 4 | V6 |

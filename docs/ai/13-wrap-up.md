@@ -391,8 +391,7 @@ Jev's **confidence** against a floor (doc 06 E1).
 | 27 | `memory_guard` | is every still-true part of the old memory kept? (noul, per rewrite) | same | `t_keep` (the guard's own value) | keep both lines | doc 09 M5 |
 | — | `route` | who replies? (choice over the cast; `none` only when someone is mentioned, G1) | `naive` only, the yardstick | its floor | mentions, else round-robin | 05-ai-seams §3, 07 G1 |
 
-**Cost per purpose** (off-peak; Jev input $0.042 / M tokens, output free). Each figure doubles if A1 finds the state
-billed per question.
+**Cost per purpose** (off-peak; Jev input $0.042 / M tokens, output free). *([group A](checks/group-a.md) A1: the state is billed once per request, so these figures stand.)*
 
 | Purpose | Typical cost |
 |---|---|
@@ -422,7 +421,8 @@ The user's rule: paid checks run after the design is done and before coding, wit
 can't, because they need code that doesn't exist yet: the harness, the planner, the suites. So there are two groups.
 **Every run saves its requests and responses (W10).**
 
-**Group A: before M7, as plain scripts through the existing gateway (≈ $0.16 in all).** These are the checks that
+**Group A: before M7, as plain scripts through the existing gateway (≈ $0.16 in all).** *Done 2026-10-10 for
+$0.054; results and the design changes they caused are in [group A](checks/group-a.md).* These are the checks that
 could change the architecture. Their inputs are hand-built from the seed sessions (doc 06 seed transcripts), since the
 eval datasets arrive in M7.
 
@@ -547,7 +547,9 @@ save it and reuse it. Never pay for the same result twice.
   - **`horizon eval capture` and `horizon eval import` runs, and the private safety items** (`private/evals/safety/`).
     These bypass it, because they may hold the user's text;
   - **the drift canary** (B6), which must reach Jev every time.
-- **Staleness:** every Jev entry's key includes the canary's fingerprint, i.e. the hash of its last accepted answers.
+- **Staleness:** every Jev entry's key includes the canary's fingerprint, i.e. the hash of its last accepted answers
+  (the accepted baseline file, never a fresh run: Jev's probabilities wobble by up to 0.06 between identical calls,
+  [group A](checks/group-a.md) A1).
   When the canary shows drift (B6), the fingerprint changes and every cached Jev answer is stale at once.
 - **Doc 02 B7's reply and Jev caches move here** from the run folders, so pruning old runs (B7 keeps 20) never deletes
   them. A factory reset deletes the store.
@@ -608,7 +610,13 @@ save it and reuse it. Never pay for the same result twice.
 - **Per-question deadlines inside one purpose.** The `guardrail` purpose holds the output check (700 ms) and the
   prompt checks (1,500 ms). The prompt checks use `timeoutsMs.decision.guardrail_prompt` (W12) instead of a literal.
 - **Keys:** `{question id}` or `{question id}:{about}` (W5).
-- **The size check** covers state plus all questions (doc 01 A4), up to the limit A1 finds.
+- **The size check** covers state plus all questions (doc 01 A4), up to the limit A1 finds. *[group A](checks/group-a.md) A1: state +
+  longest question ≈ 32k tokens, and **an oversized request comes back as HTTP 429 "Rate limit exceeded"**, the same
+  as a real rate limit. So the check is mandatory: count conservatively (≈ 3 characters a token) and refuse above
+  30k before sending. 64 questions in one request work.*
+- **429s** ([group A](checks/group-a.md) A1: one transient 429 in ≈ 400 calls, with a body and no Retry-After): hot-path purposes
+  treat a 429 as a failure and use their fallback; background purposes (`importance`, `memory_guard`, `rubric`) retry
+  once after 1 s.
 - **Offline:** `park_decision(n)` in the fake lets tests hold a decision past a deadline (W14).
 
 **Rejected:**
@@ -641,12 +649,12 @@ save it and reuse it. Never pay for the same result twice.
 | `safety.tImage*` / `tSong` | bank | 0.5 / 0.6 | M14 |
 | `memory.tInstruction` | bank | 0.7 | M14 |
 | `verdict.margin` | bank | 0.5 (doc 08) | M11 |
-| `turn_plan` deadline | pricing | 1,000 until A2, then A2's p90 | A2, M15 |
-| `follow_plan` / `debate_plan` | pricing | 400 / 400 | A2, M10, M11 |
-| `guardrail` / `guardrail_prompt` | pricing | 700 / 1,500 | A2 and M14 / — |
+| `turn_plan` deadline | pricing | **700** ([group A](checks/group-a.md) A2: p50 ≈ 420, p99 ≈ 500 ms; the user chose p99 over p90, 2026-10-10) | M15 |
+| `follow_plan` / `debate_plan` | pricing | 400 / **500** (A2: the follow plan starts at the stream's end, so 400 after `turn.end` is ample; the debate plan starts at `turn.end`, so 500, with an NFR-02 exception) | M10, M11 |
+| `guardrail` / `guardrail_prompt` | pricing | 700 (A2: p99 ≈ 560) / 1,500 | M14 / — |
 | `reaction` / `face_check` | pricing | 1,500 / 1,500 | — |
 | `episode` / `verdict` (`timeoutsMs`, not decisions) | pricing | 30,000 / 30,000 (docs 07, 08) | — |
-| `retrieval.agent.deepCheckMs` / `rewriteMs` | runtime | 700 / 1,500 (doc 10) | A2 and M12 / M12 |
+| `retrieval.agent.deepCheckMs` / `rewriteMs` | runtime | 700 (A2: p99 ≈ 520) / 1,500 (doc 10) | M12 / M12 |
 | `debate.hostWelcomeWaitMs` / `hostBannerWaitMs` | runtime | 3,000 / 1,500 (doc 08 V6) | — |
 | `emotion.fade` | runtime | `["surprised", "embarrassed"]` (doc 06 E3) | — |
 | `persona.repeatHint` / `context.voiceReminder` | runtime | off / off (docs 04 P8, 05) | — |
@@ -732,7 +740,7 @@ W6 holds every paid check. The offline checks, in M7:
 
 - **The OpenSpec loop**, M7 to M15, after `design/ai-stage` is squash-merged into dev (the user is asked before any
   push).
-- **Group A's paid checks** (W6), with the user's OK on ≈ $0.16.
+- ~~**Group A's paid checks** (W6), with the user's OK on ≈ $0.16.~~ Done 2026-10-10 ($0.054): [group A](checks/group-a.md).
 - **The v1 endgame:**
   - real-API end-to-end tests;
   - the real demo in two worlds, with real System 1 rows;

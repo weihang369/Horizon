@@ -452,7 +452,10 @@ What v2 needs before overrides can work is written down in [docs/v2/README.md](.
 
 ## 5. Checks before this is locked
 
-1. **Thinking is really off, and error finish reasons come through (paid, ≈ $0.01, needs the user's OK).**
+1. **Thinking is really off, and error finish reasons come through (paid, ≈ $0.01, needs the user's OK).** *Done
+   ([group A](checks/group-a.md) A3): `enabled: false` gives 0 reasoning tokens (the default gave 20); `stop` and
+   `length` pass through, with a matching `native_finish_reason`; served by DeepSeek. A group reply began with
+   "Takeshi: …", so C6's own-name strip is needed.*
    - Send one reply request through the gateway with `reasoning: {enabled: false}`, `temperature: 1.3` and the C6
      `stop` list.
    - Read the **raw** `usage`. Expect `completion_tokens_details.reasoning_tokens = 0`, no `reasoning` deltas, and the
@@ -460,7 +463,16 @@ What v2 needs before overrides can work is written down in [docs/v2/README.md](.
    - If any reasoning tokens appear, repeat with `reasoning: {effort: "none"}` (F3d) and use whichever form gives 0.
    - Note the `finish_reason` values OpenRouter passes through.
 2. **JSON mode (paid, ≈ $0.02, needs the user's OK).** Run 20 profile drafts. Count the empty or invalid results before
-   and after the retry. The target is ≥ 99 % valid after one retry.
+   and after the retry. The target is ≥ 99 % valid after one retry. *Done (A3): **19/20**, with the same failure on
+   retry: a nickname in unescaped double quotes (`"Loretta "Rhett" Kowalski"`). **The user's fix (2026-10-10, built
+   in M7):** every JSON prompt says to use single quotes inside text values, and a free local repair pass escapes
+   stray inner quotes before the one paid retry.*
+
+   **Two reply rules from A2's empty streams (built in M7):**
+   - a reply request whose history ends with the speaker's own line always carries a trailing cue (2 of 4 such
+     requests came back empty; 0 of 40 1:1 turns ending on the user's line did);
+   - an empty reply (`finish_reason: stop`, no content) is a retryable failure, retried once before any text is
+     shown.
 3. **The cut-off rate and bubble count** come from the B7 conversation layer, at no extra cost:
    - the share of `finish_reason = length` per mode, read from the new ledger column;
    - bubbles per reply against the C4 targets.
