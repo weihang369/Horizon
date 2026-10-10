@@ -190,6 +190,9 @@ DeepSeek streams, told the mood by one
 
 ### E3. Kept faces, and short faces fade
 
+> **Amended by doc 11 S4:** while the care cue is on, code forces the speaker's face into neutral, sad or thinking on
+> every path (E1's Jev answer, the Jev-failed kept face, this section's kept face); any other face becomes neutral.
+
 **Decision:**
 - **A face is "kept"** when Jev answers `none`, is below the floor, fails or is late (doc 01 A4). The base is the
   current face in AUTO, and the last AI-chosen face in MANUAL (E2).
@@ -254,6 +257,8 @@ sad or angry face while the topic continues looks right.
   evaluation could not see.
 
 ### E5. Listener reactions (group, debate, watch)
+
+> **Amended by doc 11 S4:** no listener reactions on a turn where the care cue is on.
 
 **Decision:**
 - **A `JevReactions` implementation** of `ReactionPredictor` for the `agent` profile. `predict` becomes **async and is
@@ -404,7 +409,7 @@ trusted):
   one-append `turn.start` + `emotion`, the E6 reducer fixtures, and the derived seeds.
 - **Doc 02 B7 cost:** `decisions` ≈ $0.07 (was $0.06: 60 more emotion items and 90 reaction items, both orders);
   `conversations` unchanged at ≈ $0.38 (the new noul is under a cent); **`all` ≈ $0.59** (about RM 2.5); ≈ $0.81 at
-  peak; ≈ $0.42 once `naive` replies are cached (doc 07 G11 later makes these $0.65 / $0.92 / $0.46, and doc 08 V11 $0.80 / $1.18 / $0.55, and doc 09 M12 $0.98 / $1.48 / $0.68, and doc 10 K14 $1.01 / $1.53 / $0.71, and doc 11 S10 $1.04 / $1.58 / $0.74).
+  peak; ≈ $0.42 once `naive` replies are cached (doc 07 G11 later makes these $0.65 / $0.92 / $0.46, and doc 08 V11 $0.80 / $1.18 / $0.55, and doc 09 M12 $0.98 / $1.48 / $0.68, and doc 10 K14 $1.01 / $1.53 / $0.71, and doc 11 S10 $1.08 / $1.65 / $0.78).
 
 ### E9. Speed and cost, in one place
 

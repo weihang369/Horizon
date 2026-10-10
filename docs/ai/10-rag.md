@@ -572,8 +572,10 @@ The pipeline was built in M5; this task sets its AI policy.
   - `knowledge = { query (K4), trigger: "gated", retrieved }`, where `retrieved` holds the 8 pieces with score (the
     fused score on a fallback), `cited` and `n`;
   - `context.used.knowledge` counts the block.
-- **Text inside documents is reference, not instructions.** Doc 11 S6 wraps each passage in `<passage n="…"
-  source="…">` tags (code strips any tag text inside a piece) and adds the standing rule to the prompt (S2).
+- **Text inside documents is reference, not instructions.** Doc 11 S6 wraps each passage, `[n]` header included,
+  in a `<passage>` … `</passage>` pair with no attributes (code strips any tag text from pieces and titles, ignoring
+  case and spaces), and adds the standing rule to the prompt (S2). The `[n]` headers and the citation rule are
+  unchanged.
 
 **Rejected:**
 - **structured output mapped to `[n]`:** it breaks the plain stream (doc 01 A10) and the pending chips;
@@ -729,8 +731,8 @@ the conversation's language.
   - the retrieval suite rises from ≈ $0.05 to **≈ $0.08**: 205 questions × 8 piece scores; the comparisons ≈ $0.015;
     45 rewrites; 50 end-to-end replies ≈ $0.02;
   - `decisions` gains 140 requests (≈ $0.006);
-  - **`all` ≈ $1.01 off-peak, ≈ $1.53 at peak, ≈ $0.71 once cached** (doc 11 S10 later makes these $1.04 / $1.58 /
-    $0.74);
+  - **`all` ≈ $1.01 off-peak, ≈ $1.53 at peak, ≈ $0.71 once cached** (doc 11 S10 later makes these $1.08 / $1.65 /
+    $0.78);
   - the rare `latency` suite grows by 100 deep turns (check 2), to ≈ $0.11.
 
 ### K15. Speed and cost in one place
