@@ -268,7 +268,7 @@
 
 ## 8. Corpus and remaining docs
 
-- [ ] 8.1 **Ask the user** before downloading. Then fetch 3–5 public-domain US federal documents per knowledge-holding seed character (D37), as Markdown text only, into `evals/corpus/<character>/`, about 1 MB in all:
+- [x] 8.1 **Ask the user** before downloading. Then fetch 3–5 public-domain US federal documents per knowledge-holding seed character (D37), as Markdown text only, into `evals/corpus/<character>/`, about 1 MB in all:
   - Amara: NIOSH shift work;
   - Mei: OPM work schedules;
   - Victor: the Federal Rules of Evidence;
