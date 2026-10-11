@@ -158,7 +158,8 @@ async def test_agent_reply_through_the_runtime(api: Api) -> None:
     await command(api, sid, "send", {"text": "Morning, how are you?"})
     await api.drive(12000)
     reply = chars(await messages(api, sid))[-1]
-    assert reply["content"] == "Hey there." and reply["emotionSource"] == "default" and reply["emotion"] == "neutral"
+    assert reply["content"] == "Hey there." and reply["emotionSource"] == "default" and reply["emotion"] == "happy"
+    # (the tag is ignored; the face stays the verbatim greeting's `happy`, P9)
     body = chat_bodies(api)[-1]
     sys1 = body["messages"][0]["content"]
     assert sys1.startswith("# Who you are\nYou are Dr. Amara Okafor") and "Keep everything safe for work" in sys1
