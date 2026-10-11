@@ -114,8 +114,10 @@ The key itself SHALL never appear in the response.
 Routes under `/api/v1/_test/` SHALL exist only when `HORIZON_TEST=1`; otherwise they SHALL return 404.
 - **`POST /_test/clock`:** freezes the server clock at a given instant, or advances it by a given number of milliseconds. While frozen, any wait in the backend SHALL last until the clock is advanced past its deadline. An advance SHALL wake due waits in deadline order, and SHALL respond only after the work they started has settled.
 - **`POST /_test/scenario`:** applies `character_exhausted`, `rush_hour`, `stream_cut`, `image_fail_partial`, `image_fail_all`, `song_fails`, `no_worlds` or `daily_cap` as the MockClient does, and rejects a scenario it does not support with `validation`. Applying a scenario SHALL first clear every fault and override a previous scenario set, so scenarios replace each other as they do on the MockClient. `network_down` SHALL be rejected with `validation` and `details.clientSide: true`, because a client simulates it. In test mode, `POST /admin/reset-demo` SHALL also clear the active scenario's faults and overrides.
-- **`POST /_test/ai-profile`:** sets the AI profile (`scripted` or `naive`) for subsequent turns and jobs, optionally with per-port overrides.
+- **`POST /_test/ai-profile`:** sets the AI profile (`scripted`, `naive` or `agent`) for subsequent turns and jobs, optionally with per-port overrides.
 - **`POST /_test/decider-fixtures`:** sets or clears scripted Decider answers keyed by purpose and question.
+- **`POST /_test/canned`:** selects a committed canned-response set for a purpose, or clears it (see `provider-gateway`). An unknown set SHALL be rejected with `validation`.
+- **`POST /_test/park`:** holds the n-th request to the decisions endpoint until a second call releases it.
 
 In test mode, the provider SHALL be the in-process fake (see `provider-gateway`), so no test-mode request reaches the network.
 
@@ -174,6 +176,14 @@ In test mode, the provider SHALL be the in-process fake (see `provider-gateway`)
 #### Scenario: Network down is client-side
 - **WHEN** `POST /_test/scenario { "id": "network_down" }` is called
 - **THEN** it rejects with `validation`, `details.clientSide` is `true`, and nothing changes on the backend
+
+#### Scenario: Agent profile over HTTP
+- **WHEN** `POST /_test/ai-profile { "profile": "agent" }` is called with a key set
+- **THEN** it succeeds, and the next group reply is routed by the Jev router
+
+#### Scenario: Unknown canned set
+- **WHEN** `POST /_test/canned { "purpose": "profile", "set": "nope" }` is called
+- **THEN** it rejects with `validation`
 
 ### Requirement: Settings update
 `PATCH /api/v1/settings` with a partial `AppSettings` SHALL deep-merge the editable fields into `data/settings.local.json` and return the full `AppSettings`. The following fields are computed or config-owned and SHALL be ignored when present in the patch: `openRouterKeyStatus`, `demoMode`, `spentTodayUsd`, `pricing`, `models` (except `modelOverrides`), `energy.estReplyPoints`. An editable field with a value of the wrong type or out of range SHALL reject with `validation`, and nothing SHALL be written. A successful update SHALL publish `entity.changed { kind: "settings" }`.
