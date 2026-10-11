@@ -503,6 +503,9 @@ What v2 needs before overrides can work is written down in [docs/v2/README.md](.
 | Wording changes: SET-05 is read-only in v1; D-46 "may display as up to 4 bubbles"; R-14 mitigation (C8); R-13 "DeepSeek structured-output fallback" becomes "JSON mode + validation" (applied instead as "a deterministic code fallback per question": Jev failures fall back to code rules, [doc 13](13-wrap-up.md) status note); OQ-AI-13 resolved; doc backend/04's "fallback model" line; D-93 and 05-ai-seams' "byte-identical to v1" note (no longer true after naive-3); `openspec/specs/ai-ports` (naive reply engine) and `http-api` where they state caps, the fallback or the probe override | `docs/requirements/02, 05, 07, 08, 09`, `docs/backend/04, 05`, `openspec/specs/*` | docs |
 | Doc 01's failure-mode table says "structured output"; it becomes "JSON mode + validation + one retry" (C7) | `docs/ai/01-agent-architecture.md` §6 | docs (done with this doc) |
 
+**Built in M7** (OpenSpec change `ai-foundation`): every row above. The agent engines read their rows when they land
+(M8+), and task 9's memory extraction uses the JSON helper at M10.
+
 **No contract change.** `finish_reason` and reasoning tokens live in the internal ledger. The provider shows through the
 existing `model.provider`. Prices come from the bundled config. `modelOverrides` stays, unused.
 

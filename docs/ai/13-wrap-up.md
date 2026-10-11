@@ -713,6 +713,8 @@ W6 holds every paid check. The offline checks, in M7:
 2. A trace with more than 64 rows is cut by the runtime before it is sent, `not_used` rows first.
 3. `append_system1` after a Regenerate, and after a Forget, writes nothing back (W1).
 
+**Done in M7** (OpenSpec change `ai-foundation`): check 1 by `frontend/src/contract/system1.test.ts`, the schema checks in `backend/tests/sessions/test_system1.py` (scripted and naive route rows), `export-schema:check` and `fixtures:check`; check 2 by `test_seventy_rows_cut_to_64_not_used_first`; check 3 by `test_append_after_regenerate_writes_nothing` and `test_append_queued_before_a_forget_commit_restores_nothing`.
+
 ## 4. Docs amended with this doc
 
 **Requirement-level edits approved in tasks 3–12, applied now:**

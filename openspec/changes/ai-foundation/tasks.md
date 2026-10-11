@@ -275,8 +275,8 @@
   - Hana: USDA-staff recipes.
 
   Write `SOURCES.md` (URL, retrieval date) and `LICENSE`, and read each page for an outside credit. Verify that `horizon eval corpus-check` passes (doc 02 check 2), and that no figure, image or logo is committed.
-- [ ] 8.2 Add the `agent` profile's docs: `docs/backend/05-ai-seams.md` §1 (opt-in until M15, resolves to naive per port) and the README's profile section, left as "experimental, opt-in". Verify the links.
-- [ ] 8.3 Mark this change's resolved items in docs/ai with a pointer to it:
+- [x] 8.2 Add the `agent` profile's docs: `docs/backend/05-ai-seams.md` §1 (opt-in until M15, resolves to naive per port) and the README's profile section, left as "experimental, opt-in". Verify the links.
+- [x] 8.3 Mark this change's resolved items in docs/ai with a pointer to it:
   - doc 13 §3 checks 1–3;
   - doc 02 §7's M7 rows;
   - doc 03 §6's rows;

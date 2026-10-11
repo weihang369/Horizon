@@ -702,6 +702,10 @@ section.
 | CI runs `horizon eval smoke` in test mode | CI | B12 |
 | **Docs to amend:** OQ-AI-15 and OQ-AI-08's evaluation half resolved; 05-ai-seams §6 (`ai_calls` and the harness now designed); D-94 (Forget also covers `ai_calls`); an NFR-13 note on LangSmith; doc 01 A4 (a noul's "unsure" is `t_gate`, set by recall) | docs | all |
 
+**Built in M7** (OpenSpec change `ai-foundation`): every row above. The latency script ran as group A's A2
+([checks/group-a.md](checks/group-a.md)); `horizon eval latency` waits for the suite that needs it. See
+[evals/README.md](../../evals/README.md).
+
 **Order:**
 - The question bank and `horizon eval` come **first** among the AI-stage changes, because every later change is tuned
   with them.

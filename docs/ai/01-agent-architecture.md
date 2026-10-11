@@ -427,7 +427,8 @@ every node, and Forget would get harder.
 - **The profile:**
   - `HORIZON_AI_PROFILE = scripted | naive | agent`;
   - `agent` is the default when a key is set (the user's decision). *Amended by [doc 13](13-wrap-up.md) W4: opt-in until M15,
-    while it is built; then the default with a key;*
+    while it is built; then the default with a key. Built as opt-in in M7 (`ai-foundation`): each port resolves to
+    `naive` until its agent implementation lands, and the start-up log lists the resolved ports;*
   - the task 2 evaluation tunes it, and `naive` stays as the yardstick that shows how much the design improves.
 - **A "System 1" section in Insight** shows every Jev question of the turn with its answer and probability:
   - the gates (quick or deep, the scores, abstain or drop);
