@@ -20,11 +20,13 @@ from horizon.api import assets, characters, errors, jobs, knowledge, routes, ses
 from horizon.api.middleware import Idempotency, RequestContext
 from horizon.config import Config, load_config
 from horizon.runtime import Runtime
+from horizon.tracing import guard_env
 
 API = "/api/v1"
 
 
 def create_app(cfg: Config | None = None, runtime: Runtime | None = None) -> FastAPI:
+    guard_env()   # ai-foundation D30: tracing is forced off before anything else runs, unless opted in
     rt = runtime or Runtime(cfg or load_config())
 
     @asynccontextmanager

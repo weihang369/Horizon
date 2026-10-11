@@ -22,8 +22,13 @@ from tests.conftest import Api
 KEY = "sk-or-test-leakcheck-0001"
 
 
-async def test_the_key_appears_nowhere(api: Api, monkeypatch: pytest.MonkeyPatch) -> None:
+@pytest.mark.parametrize("capture", [False, True], ids=["capture-off", "capture-on"])
+async def test_the_key_appears_nowhere(api: Api, monkeypatch: pytest.MonkeyPatch, capture: bool) -> None:
     rt = api.rt
+    if capture:   # ai-foundation 6.6: captured bodies never hold the key either
+        from tests.integration.test_capture import enable_capture
+
+        enable_capture(rt)
     assert rt.fake is not None
     sse: list[str] = []
     bodies: list[str] = []

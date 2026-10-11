@@ -22,6 +22,9 @@ from horizon.config import Config, load_config
 from horizon.domain.clock import FrozenClock, calendar_for
 from horizon.main import create_app
 from horizon.runtime import Runtime
+from horizon.tracing import guard_env
+
+guard_env()   # ai-foundation D30: tracing switches forced off before any test runs (no import reads them)
 
 START = datetime(2026, 10, 3, 3, 0, tzinfo=UTC)
 SEED_DIR = Path(__file__).resolve().parents[2] / "seed"

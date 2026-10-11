@@ -66,6 +66,13 @@ uv run --project backend horizon models fetch
 - **Local only:** the backend binds to `127.0.0.1` and refuses any other address. The key never appears in logs, errors, exports or the ledger.
 - **Tests never spend:** every automated test uses a fake provider and a fake key. Paid live checks are separate (`pytest -m live`) and never run by default.
 
+### Privacy switches
+
+Nothing about your conversations leaves your machine except the model calls to OpenRouter. Two developer switches, both off by default, change that locally or remotely:
+
+- `HORIZON_CAPTURE_AI_CALLS=1` keeps each AI call's redacted prompt and reply in the local database for 7 days, for debugging with `horizon eval capture`. Forget and deletes clear it.
+- `HORIZON_LANGSMITH=1` (plus `LANGSMITH_API_KEY` and `uv sync --group tracing`) **sends** chat and document text to LangSmith for tracing. Leave it off unless you mean to share that text.
+
 ### Secret hygiene
 
 Your key belongs in Settings, `.env` or `data/`, all of which are git-ignored. As a second line of defence, we recommend [gitleaks](https://github.com/gitleaks/gitleaks) as a **pre-commit hook**. It is optional, and the repository doesn't install it for you.

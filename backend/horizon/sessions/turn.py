@@ -375,6 +375,12 @@ class TurnRunner:
         info.closed = True
         if actor.current is info:
             actor.current = None
+        if rt.capture.enabled and ctx is not None:   # ai-foundation D27: the turn row (queued, off the hot path)
+            rt.capture.on_turn(world_id=actor.session.get("worldId"), session_id=actor.sid,
+                               character_id=info.character_id, message_id=mid, request=ctx.model_dump(mode="json"),
+                               response={"plan": None, "status": status,
+                                         "routingFallback": (spec.routing or {}).get("reason") == "fallback",
+                                         "deciderFallback": any(bool(c.get("fallback")) for c in spec.calls)})
         if status == "complete" and spec.reactions and ctx is not None and actor.session["emotionMode"] != "user":
             self._reactions(actor, info, ctx)
         if status == "complete" and not scrub and ctx is not None:

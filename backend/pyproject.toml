@@ -40,6 +40,10 @@ docling = [
   "torch>=2.5",
   "torchvision>=0.20",
 ]
+# Optional (ai-foundation D30): LangSmith tracing, only with HORIZON_LANGSMITH=1. Never synced by `setup`.
+tracing = [
+  "langsmith>=0.3",
+]
 
 [tool.uv]
 default-groups = ["dev"]
@@ -84,6 +88,8 @@ ignore = ["RUF001", "RUF002", "RUF003"]
 [tool.ruff.lint.per-file-ignores]
 "horizon/gateway/**" = ["TID251"]
 "tests/**" = ["TID251"]
+# The smoke suite drives the app in process (httpx.ASGITransport): no outbound HTTP; paid calls still go through the gateway.
+"horizon/evals/suites.py" = ["TID251"]
 
 [tool.mypy]
 python_version = "3.12"

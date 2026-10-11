@@ -31,6 +31,7 @@ AI_VARS = ("HORIZON_AI_PROFILE", "HORIZON_AI_TURN", "HORIZON_AI_ROUTER", "HORIZO
 KNOWN_VARS = (
     "HORIZON_ROOT", "HORIZON_DATA_DIR", "HORIZON_SEED_DIR", "HORIZON_TZ", "HORIZON_TEST", "HORIZON_PORT",
     "HORIZON_LOG_LEVEL", "HORIZON_STATIC_DIR", "OPENROUTER_API_KEY", *AI_VARS,
+    "HORIZON_CAPTURE_AI_CALLS", "HORIZON_LANGSMITH", "LANGSMITH_API_KEY",   # M7: ai-foundation D27, D30
 )
 
 
@@ -61,6 +62,9 @@ class Config:
     openrouter_key: SecretStr | None = None
     extra: dict[str, str] = field(default_factory=dict)
     ai_env: dict[str, str] = field(default_factory=dict)   # HORIZON_AI_PROFILE and the per-port overrides
+    capture_ai_calls: bool = False                         # HORIZON_CAPTURE_AI_CALLS=1 (B10, D27): off by default
+    langsmith: bool = False                                # HORIZON_LANGSMITH=1 (B11, D30): opt-in tracing
+    langsmith_key: SecretStr | None = None                 # LANGSMITH_API_KEY; only read when opted in
 
     def __post_init__(self) -> None:
         if self.test_mode and self.openrouter_key is not None:  # holds for CLI/test overrides too
@@ -124,6 +128,9 @@ def load_config(environ: dict[str, str] | None = None, **overrides: object) -> C
         "static_dir": Path(static).resolve() if static else None,
         "openrouter_key": SecretStr(key) if key and not test_mode else None,
         "ai_env": {k: env[k] for k in AI_VARS if k in env},
+        "capture_ai_calls": env.get("HORIZON_CAPTURE_AI_CALLS", "") in ("1", "true", "yes"),
+        "langsmith": env.get("HORIZON_LANGSMITH", "") in ("1", "true", "yes"),
+        "langsmith_key": SecretStr(env["LANGSMITH_API_KEY"]) if env.get("LANGSMITH_API_KEY") else None,
     }
     values.update(overrides)
     return Config(**values)  # type: ignore[arg-type]

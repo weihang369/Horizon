@@ -55,6 +55,7 @@ from horizon.gateway.music import MusicClient, MusicResult
 from horizon.gateway.redact import redact_obj
 from horizon.gateway.reservations import Hold, ReservationBook
 from horizon.gateway.types import GatewayConfig, Usage
+from horizon.tracing import TRACER
 
 log = logging.getLogger("horizon.gateway")
 T = TypeVar("T")
@@ -173,6 +174,10 @@ class Gateway:
     decision_model: str
     on_estimate_row: Callable[[str], None] = lambda _row_id: None   # the cost corrector's queue
     on_call: OnCall = no_op_hook
+    # M7 (ai-foundation D27): build the redacted request/response bodies for `on_call` only when capture is on, so a
+    # normal run never pays for them. Embedding inputs, vectors, image and audio bytes are never included.
+    capture_bodies: bool = False
+    store: Any = None   # M7 (D31): a `horizon.evals.store.ResponseStore`, attached only by `horizon eval` runs
     # M3: the session manager's view of spend (cap pause on crossing; budget events of a session's call).
     on_spend: Callable[[CallContext, RecordResult], None] = lambda _ctx, _res: None
     on_budget: Callable[[dict[str, Any], CallContext], None] = lambda _ev, _ctx: None
@@ -328,7 +333,8 @@ class Gateway:
         if row.cost_source == "estimate" and row.generation_id:
             self.on_estimate_row(res.row_id)
         await self._hook(ctx, summary, {"ledgerRowId": res.row_id, "costUsd": row.cost_usd, "costSource": row.cost_source,
-                                        "provider": row.provider, "generationId": row.generation_id})
+                                        "provider": row.provider, "generationId": row.generation_id,
+                                        "latencyMs": row.latency_ms, "finishReason": row.finish_reason})
         return res
 
     async def _hook(self, ctx: CallContext, summary: Mapping[str, Any], outcome: Mapping[str, Any]) -> None:
@@ -416,14 +422,23 @@ class Gateway:
                             after_response: Callable[[ChatResult], Awaitable[None]] | None = None,
                             commit_with: CommitWith | None = None) -> ChatResult:
         est = self.chat_estimate(req) if estimate is None else estimate
+        body: dict[str, Any] | None = {"request": {"messages": req.messages}} if self.capture_bodies else None
 
         async def send() -> tuple[ChatResult, Billing]:
             r = await self.chat.complete(req)
             self._check_thinking(req, r.usage)
+            if body is not None:
+                body["response"] = {"text": r.content}
             return r, Billing(r.generation_id, r.usage, r.provider, r.model, r.finish_reason)
 
-        return await self.paid(ctx, est, send, model=req.model, summary={"kind": "chat", "maxTokens": req.max_tokens},
-                               before_send=before_send, after_response=after_response, commit_with=commit_with)
+        summary: dict[str, Any] = {"kind": "chat", "maxTokens": req.max_tokens}
+        if body is not None:
+            summary["body"] = body
+        with TRACER.traced(f"chat:{ctx.purpose}", {"model": req.model, "messages": req.messages}) as out:
+            r = await self.paid(ctx, est, send, model=req.model, summary=summary, before_send=before_send,
+                                after_response=after_response, commit_with=commit_with)
+            out["text"] = r.content
+        return r
 
     async def chat_stream(self, req: ChatRequest, ctx: CallContext, *, estimate: float | None = None,
                           on_recorded: Callable[[str], None] | None = None) -> AsyncIterator[ChatChunk]:
@@ -432,7 +447,14 @@ class Gateway:
         est = self.chat_estimate(req) if estimate is None else estimate
         hold = await self._preflight(ctx, est)
         started = time.monotonic()
-        summ = {"kind": "chat_stream", "maxTokens": req.max_tokens, "model": req.model, "purpose": ctx.purpose}
+        summ: dict[str, Any] = {"kind": "chat_stream", "maxTokens": req.max_tokens, "model": req.model,
+                                "purpose": ctx.purpose}
+        parts: list[str] | None = [] if self.capture_bodies or TRACER.enabled else None
+        if self.capture_bodies:
+            summ["body"] = {"request": {"messages": req.messages}, "response": {"text": ""}}
+        traced = contextlib.ExitStack()
+        trace_out = traced.enter_context(TRACER.traced(f"chat_stream:{ctx.purpose}",
+                                                       {"model": req.model, "messages": req.messages}))
         gid: str | None = None
         usage: Usage | None = None
         provider: str | None = None
@@ -451,6 +473,10 @@ class Gateway:
                     usage = chunk.usage or usage
                     provider = chunk.provider or provider
                     finish_reason = chunk.finish_reason or finish_reason
+                    if parts is not None and chunk.content:
+                        parts.append(chunk.content)
+                        if "body" in summ:
+                            summ["body"]["response"]["text"] = "".join(parts)
                     yield chunk
                 done = True
             except ProviderError as e:
@@ -468,6 +494,9 @@ class Gateway:
             with contextlib.suppress(ValueError):   # a generator can be closed from another context
                 CALL_PURPOSE.reset(label)
             self.book.release(hold)
+            trace_out["text"] = "".join(parts or [])
+            with contextlib.suppress(Exception):
+                traced.close()
 
     # ── the scripted source (session-runtime design D10; provider-gateway "Scripted chat source") ──
     async def simulated_stream(self, ctx: CallContext, spec: SimulatedReply, sleep: Callable[[float], Awaitable[None]], *,
@@ -525,12 +554,22 @@ class Gateway:
         est = self.decision_estimate(state, questions) if estimate is None else estimate
         m = model or self.decision_model
 
+        body: dict[str, Any] | None = ({"request": {"state": state, "questions": dict(questions)}}
+                                       if self.capture_bodies else None)
+
         async def send() -> tuple[DecisionsResponse, Billing]:
             r = await self.decisions.decide(state, questions, model=m)
+            if body is not None:
+                body["response"] = {"answers": dict(r.answers)}
             return r, Billing(r.generation_id, r.usage, None, r.model or m)
 
-        return await self.paid(ctx, est, send, model=m,
-                               summary={"kind": "decision", "questions": sorted(questions)}, finish=finish)
+        summary: dict[str, Any] = {"kind": "decision", "questions": sorted(questions)}
+        if body is not None:
+            summary["body"] = body
+        with TRACER.traced(f"decision:{ctx.purpose}", {"model": m, "state": state, "questions": dict(questions)}) as out:
+            r = await self.paid(ctx, est, send, model=m, summary=summary, finish=finish)
+            out["answers"] = dict(r.answers)
+        return r
 
     async def generate_image(self, ctx: CallContext, *, model: str, prompt: str, kind: str = "portrait",
                              refs: list[str] | None = None, resolution: str | None = None, aspect_ratio: str | None = None,

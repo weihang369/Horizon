@@ -91,6 +91,10 @@ async def _world_sessions(conn: AsyncConnection, world_id: str) -> list[str]:
 async def forget_chain(rt: Runtime, conn: AsyncConnection, *, character_id: str, world_id: str,
                        chain: set[str]) -> tuple[set[str], list[str]]:
     """Steps 2–4 inside the caller's transaction. Returns the message IDs whose traces were scrubbed, and the texts."""
+    # ai-foundation D28: the capture marks go up before the delete (and before the commit), so a queued row of this
+    # character, or of this world with no character, can never be flushed after Forget.
+    rt.capture.mark_forgotten(character_id, world_id)
+    await rt.capture.delete_for_forget(conn, character_id, world_id)
     rows = (await conn.execute(select(M.rid, M.text).where(M.id.in_(chain)))).all()
     rids = [int(r[0]) for r in rows]
     texts = sorted({str(r[1]) for r in rows}, key=len, reverse=True)

@@ -126,6 +126,9 @@ def _models_fetch(_args: argparse.Namespace) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
+    from horizon.tracing import guard_env
+
+    guard_env()   # ai-foundation D30: tracing is forced off before anything else runs, unless opted in
     p = argparse.ArgumentParser(prog="horizon", description="Horizon local backend (loopback only).")
     sub = p.add_subparsers(dest="cmd", required=True)
     s = sub.add_parser("serve", help="run the API server")

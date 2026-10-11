@@ -158,6 +158,12 @@ class AiStateHooks(Protocol):            # implemented by the AI layer; called f
 - **`data/graph.db`**, reserved for LangGraph checkpoints, which are closed and deleted correctly by Factory reset.
 - **Caps, reservations and energy** enforced around every call; `gateway.on_call` is the hook for evaluation logging.
 
+**Built in M7 (`ai-foundation`):**
+- **`ai_calls` capture** (`services/capture.py`, off unless `HORIZON_CAPTURE_AI_CALLS=1`). The gateway builds redacted bodies only when capture is on (chat messages and text, Jev state, questions and answers; never embedding inputs or vectors, image or audio bytes). `on_call` appends to a bounded queue (2,000; overflow counted in the next row's `dropped_before`), and a `rt.spawn` writer flushes every 2 s of clock time or at 200 rows. `TurnRunner.finish()` adds one `turn` row with the frozen `TurnContext` and the routing/Decider fallback flags. Retention: 7 days, then the newest 20,000.
+- **Forget and capture:** Forget marks the queue and deletes the character's rows (and the world's rows with no character) inside its own transaction.
+- **The first real hooks:** `CompositeHooks([CaptureHooks])`. Character and message deletes remove their rows, session and world deletes cascade by FK and repeat harmlessly, and `on_forget` is a no-op for capture.
+- **System 1 rows** (contract rev 1.4): `SessionActor.append_system1(message_id, variant_id, rows, calls)` adds rows after a turn inside the actor, with three guards: Regenerate (an inactive variant's rows are dropped), streaming (rows wait for `finish()`), and Forget (rows and recalled entries about deleted memories are removed inside the writer transaction). An insight with no engine metadata keeps the stored engine columns and `created_at`.
+
 ## 5. Naive real `TurnEngine` (backend deliverable, M3)
 
 - **Prompt order (NFR-35):** static persona and system prompt (+ You card) → `session_summaries` (rolling) → history → dynamic blocks.
@@ -185,7 +191,7 @@ class AiStateHooks(Protocol):            # implemented by the AI layer; called f
 
 | Item | Why it can wait |
 |---|---|
-| `ai_calls` evaluation table (request/response per call, retention, scrubbed by Forget) | Additive; attaches to `gateway.on_call`. **Designed:** [docs/ai/02](../ai/02-evaluation-observability.md) B10 |
+| `ai_calls` evaluation table (request/response per call, retention, scrubbed by Forget) | **Built in M7** (§4): capture, retention, Forget and the delete hooks ([docs/ai/02](../ai/02-evaluation-observability.md) B10) |
 | `memory_consolidate` job | The job kind is TEXT. **Withdrawn:** nothing is merged automatically ([docs/ai/09](../ai/09-memory.md) M5) |
 | `message_fts` (in-session keyword recall) | Additive virtual table. **Designed:** [docs/ai/09](../ai/09-memory.md) M9 |
 | `knowledge_chunk_redirects` | Only needed once content is re-chunked. **Withdrawn** ([docs/ai/10](../ai/10-rag.md)) |

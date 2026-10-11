@@ -189,7 +189,7 @@
 
 ## 6. Capture, purge hooks and tracing
 
-- [ ] 6.1 Add `services/capture.py` (D27):
+- [x] 6.1 Add `services/capture.py` (D27):
   - a bounded deque (2,000);
   - `CallBody` built only when enabled;
   - the flush task via `rt.spawn` every 2 s of clock time or 200 rows;
@@ -202,15 +202,15 @@
   - 2,500 rapid calls → every call completes and the drop count is recorded;
   - retention deletes 8-day-old rows;
   - an embedding row has no texts.
-- [ ] 6.2 Write the turn row from `TurnRunner.finish()`: the frozen `TurnContext` and the routing and Decider fallback flags. Verify with an integration test: the turn row's request round-trips into a `TurnContext`.
-- [ ] 6.3 Handle Forget and capture (D28): set the forget marks, then delete `ai_calls` (the character's rows, and the world's rows with no character) inside Forget's transaction; the flush drops marked rows. Run the existing byte-level Forget test with capture on. Verify with tests: a queued row created before Forget never lands, and the byte-level test passes.
-- [ ] 6.4 Add the first real `AiStateHooks` (D29): `CompositeHooks([CaptureHooks])` wired into `PurgeWorker`. Verify with tests: deleting a character and delivering the hook twice → no rows and both succeed; a message delete removes its rows; the session and world deletes stay idempotent.
-- [ ] 6.5 Add `horizon/tracing.py` (D30): `guard_env()` as the first statement in `cli.main`, `main.create_app` and `tests/conftest.py`; the opt-in check; the start-up warning or error; `no_trace()`; `traceable` around `Gateway.paid` and `chat_stream` when on. Add the optional `tracing` group (`langsmith`) to `pyproject.toml` without installing it. Verify with tests:
+- [x] 6.2 Write the turn row from `TurnRunner.finish()`: the frozen `TurnContext` and the routing and Decider fallback flags. Verify with an integration test: the turn row's request round-trips into a `TurnContext`.
+- [x] 6.3 Handle Forget and capture (D28): set the forget marks, then delete `ai_calls` (the character's rows, and the world's rows with no character) inside Forget's transaction; the flush drops marked rows. Run the existing byte-level Forget test with capture on. Verify with tests: a queued row created before Forget never lands, and the byte-level test passes.
+- [x] 6.4 Add the first real `AiStateHooks` (D29): `CompositeHooks([CaptureHooks])` wired into `PurgeWorker`. Verify with tests: deleting a character and delivering the hook twice → no rows and both succeed; a message delete removes its rows; the session and world deletes stay idempotent.
+- [x] 6.5 Add `horizon/tracing.py` (D30): `guard_env()` as the first statement in `cli.main`, `main.create_app` and `tests/conftest.py`; the opt-in check; the start-up warning or error; `no_trace()`; `traceable` around `Gateway.paid` and `chat_stream` when on. Add the optional `tracing` group (`langsmith`) to `pyproject.toml` without installing it. Verify with tests:
   - a stray `LANGCHAIN_TRACING_V2=true` reads `false` after the guard;
   - opt-in without the package logs an error and runs untraced;
   - with a stub client, traced inputs contain no key or `Authorization`.
-- [ ] 6.6 Add `HORIZON_CAPTURE_AI_CALLS`, `HORIZON_LANGSMITH` and `LANGSMITH_API_KEY` to `KNOWN_VARS` and `.env.example` (with comments), and log a start-up line for capture and tracing. Change the provider-gateway lint exception list (D30) if the lint rule names modules. Verify: a config test reads them from `.env`; the leak sweep in `local-backend` still passes with capture on.
-- [ ] 6.7 Docs:
+- [x] 6.6 Add `HORIZON_CAPTURE_AI_CALLS`, `HORIZON_LANGSMITH` and `LANGSMITH_API_KEY` to `KNOWN_VARS` and `.env.example` (with comments), and log a start-up line for capture and tracing. Change the provider-gateway lint exception list (D30) if the lint rule names modules. Verify: a config test reads them from `.env`; the leak sweep in `local-backend` still passes with capture on.
+- [x] 6.7 Docs:
   - `docs/requirements/07-nfr-risk-cost.md`: the NFR-13 note on LangSmith;
   - `docs/requirements/09-decision-log.md`: D-94 also covers `ai_calls`;
   - `docs/backend/05-ai-seams.md` §4 and §6: `ai_calls` built;

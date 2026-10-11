@@ -36,7 +36,7 @@ from sqlalchemy import select, text
 
 from horizon import logs
 from horizon.ai.decider import Decider, DeciderFixtures
-from horizon.ai.hooks import AiStateHooks, NoOpHooks
+from horizon.ai.hooks import AiStateHooks, CompositeHooks
 from horizon.ai.image_prompt import ImagePromptCompiler
 from horizon.ai.profile import AiPorts, ProfileSpec
 from horizon.ai.scripted.ports import AiDeps
@@ -61,6 +61,7 @@ from horizon.gateway.pipeline import Caps, Gateway
 from horizon.gateway.reservations import ReservationBook
 from horizon.gateway.types import GatewayConfig
 from horizon.services import seed as seeding
+from horizon.services.capture import Capture, CaptureHooks
 from horizon.services.corrector import CostCorrector
 from horizon.services.energy_writes import EnergyLocks, EnergyParams
 from horizon.services.keys import KeyStore
@@ -69,6 +70,8 @@ from horizon.services.purge import PurgeWorker
 from horizon.services.runtime.reducer import apply_event, initial_runtime, ordered_messages
 from horizon.services.settings import deep_merge, local_day, read_local_settings, read_seed_settings
 from horizon.sessions.system1 import fixture_row
+from horizon.tracing import TRACER
+from horizon.tracing import configure as configure_tracing
 
 log = logging.getLogger("horizon.runtime")
 T = TypeVar("T")
@@ -143,7 +146,10 @@ class Runtime:
         self.runtime_cfg: RuntimeConfig = load_runtime_config(cfg.seed_dir)
         self.llm_slots = Slots(self.runtime_cfg.runtime.llm_concurrency)
         self.profile = ProfileSpec.from_env(cfg.ai_env, test_mode=cfg.test_mode)
-        self.hooks: AiStateHooks = NoOpHooks()
+        # M7 (ai-foundation D27–D29): opt-in AI call capture, and the first real AiStateHooks (capture's deletes).
+        self.capture = Capture(lambda: self.db, self.now_iso, enabled=cfg.capture_ai_calls,
+                               sleep=lambda s: self.clock.sleep(s), spawn=lambda n, c: self.spawn(n, c))
+        self.hooks: AiStateHooks = CompositeHooks([CaptureHooks(lambda: self.db)])
         self._ledger: LedgerWriter | None = None
         self._sessions: Any = None
         self._ai: AiPorts | None = None
@@ -298,6 +304,9 @@ class Runtime:
                                 book=self.book, ledger=ledger, caps=self.caps, period=self.clock.pricing_period,
                                 publish=lambda ev: self.publish(GLOBAL, ev), decision_model=str(models["decision"]),
                                 on_estimate_row=lambda row_id: self.corrector.enqueue(row_id))
+        if self.capture.enabled:
+            self._gateway.capture_bodies = True
+            self._gateway.on_call = self.capture.on_call
         self._corrector = CostCorrector(self.db, self.clock, self._gateway.meta.generation, self.energy_locks,
                                         self.energy_params)
         self._decider = Decider(self._gateway.decide, self._gateway.cfg.timeouts, self.decider_fixtures,
@@ -443,10 +452,20 @@ class Runtime:
         await self._recover_m5()
         await self.corrector.scan()
         await asyncio.to_thread(sweep, cfg.data_dir, self.referenced_files_sync())
+        self.capture.start()
+        log.info("AI call capture %s", "ON (HORIZON_CAPTURE_AI_CALLS=1: prompts and replies kept 7 days in ai_calls)"
+                 if self.capture.enabled else "off")
+        configure_tracing({"HORIZON_LANGSMITH": "1" if cfg.langsmith else "",
+                           "LANGSMITH_API_KEY": "set" if cfg.langsmith_key is not None else ""})
+        if cfg.langsmith and cfg.langsmith_key is not None and TRACER.enabled:
+            os.environ["LANGSMITH_API_KEY"] = cfg.langsmith_key.get_secret_value()   # langsmith reads it from env
+            os.environ["LANGSMITH_TRACING"] = "true"
         self.started = True
         log.info("horizon backend ready (data=%s, test_mode=%s)", cfg.data_dir, cfg.test_mode)
 
     async def stop(self) -> None:
+        if self._db is not None:
+            await self.capture.stop()   # the last queued rows are flushed while the database is open
         await self._stop_m5()
         await self._stop_m4()
         await self._stop_m3()
