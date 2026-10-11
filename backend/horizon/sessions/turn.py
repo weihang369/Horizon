@@ -45,6 +45,7 @@ from horizon.sessions.context import (
 )
 from horizon.sessions.prefetch import Prefetch
 from horizon.sessions.retrieve import retrieve
+from horizon.sessions.system1 import section as system1_section
 from horizon.sessions.writer import TraceMeta
 
 if TYPE_CHECKING:
@@ -68,6 +69,7 @@ class TurnSpec:
     skipped: list[dict[str, Any]] | None = None
     routing: dict[str, Any] | None = None
     calls: list[dict[str, Any]] = field(default_factory=list)   # turn-level calls (the route decision, OQ-13)
+    system1: dict[str, Any] | None = None           # rev 1.4: the turn's System 1 section (the route row, D25)
     reactions: bool = True
     debate: DebateMeta | None = None
     direction_note: str | None = None
@@ -359,7 +361,10 @@ class TurnRunner:
                 if spec.skipped:
                     routing["skipped"] = spec.skipped
             full["routing"] = routing
-            full["calls"] = [*spec.calls, *await ledger.calls_for_message(mid, since=since)]
+            full["calls"] = [*spec.calls, *await ledger.calls_for_message(mid, since=since), *info.system1_calls]
+            if spec.system1 or info.system1:   # D24: rows appended mid-stream merge by key, never replace
+                base = dict(spec.system1 or {})
+                full["system1"] = system1_section(base, info.system1, seed=base.get("seed"))
             events.append({"type": "insight", "payload": {"messageId": mid, "trace": full}})
         meta = TraceMeta(engine=getattr(engine, "name", None), engine_version=getattr(engine, "version", None),
                          prompt_version=getattr(engine, "prompt_version", None))

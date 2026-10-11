@@ -167,8 +167,8 @@
   - every rev 1.3 fixture still validates;
   - `export-schema:check` passes.
 - [x] 5.2 Add the rev 1.4 note and the `system1` block to `docs/requirements/05-data-contract.md` (W1's shape, verbatim), and INS-01 AC2 if it isn't already worded. Verify the links.
-- [ ] 5.3 Make `system1` a runtime-owned trace key (`OWNED_TRACE_KEYS`). Change `_project` so an all-`None` `TraceMeta` keeps the engine columns and `created_at` (D24). Verify with tests: an engine patch with `system1` is dropped and `context` kept; a second `insight` without meta keeps `naive`, `2` and the original `created_at`.
-- [ ] 5.4 Add `sessions/system1.py` (`merge_rows`, `cut`) and `SessionActor.append_system1` (D24):
+- [x] 5.3 Make `system1` a runtime-owned trace key (`OWNED_TRACE_KEYS`). Change `_project` so an all-`None` `TraceMeta` keeps the engine columns and `created_at` (D24). Verify with tests: an engine patch with `system1` is dropped and `context` kept; a second `insight` without meta keeps `naive`, `2` and the original `created_at`.
+- [x] 5.4 Add `sessions/system1.py` (`merge_rows`, `cut`) and `SessionActor.append_system1` (D24):
   - the regenerate guard;
   - the streaming guard (`info.system1`, merged by `finish()`);
   - the Forget guard as a writer `extra`.
@@ -178,12 +178,12 @@
   - (3) an append after Regenerate writes nothing;
   - an append queued before a Forget commit writes no `mem_` row and no recalled text;
   - an append during streaming lands in the final `insight` only.
-- [ ] 5.5 Write naive `route` rows (D25) into every reply started by the decision: answer, `p`, confidence, result and action; on a fallback, no `p`. Verify with an integration test: a naive group message answered by two characters → both traces carry the same `route` row; a parked decision past its deadline → a `fallback` row.
-- [ ] 5.6 Add the seed-build generator for `seed/system1.fixture.json`, reading `backend/horizon/ai/questions/*.json`, and add it to `seed:check`. Make the scripted runtime path and `frontend/src/mock/script/turnScript.ts` write `route` rows from the fixture, with `answer` filled from the actual routing. Verify:
+- [x] 5.5 Write naive `route` rows (D25) into every reply started by the decision: answer, `p`, confidence, result and action; on a fallback, no `p`. Verify with an integration test: a naive group message answered by two characters → both traces carry the same `route` row; a parked decision past its deadline → a `fallback` row.
+- [x] 5.6 Add the seed-build generator for `seed/system1.fixture.json`, reading `backend/horizon/ai/questions/*.json`, and add it to `seed:check`. Make the scripted runtime path and `frontend/src/mock/script/turnScript.ts` write `route` rows from the fixture, with `answer` filled from the actual routing. Verify:
   - `seed:check` fails after a label edit without a rebuild;
   - a scripted group turn and a mock group turn both produce a schema-valid row naming the speaker;
   - seed session traces are unchanged.
-- [ ] 5.7 Add the second-`insight` reducer fixture with an appended `system1` row (D40). Verify that both reducers' fixture tests pass.
+- [x] 5.7 Add the second-`insight` reducer fixture with an appended `system1` row (D40). Verify that both reducers' fixture tests pass.
 - [x] 5.8 Add the "System 1 · Jev" section to `InsightDrawer.tsx` (D26): after Emotion, grouped with latency or "fallback", rows with band and comparisons, `not_used` folded, IDs resolved, hidden when empty, absent in Compact. Verify with component tests: no rows → no section; a route row shows the name and `p` with its band; compact → absent; folding.
 - [x] 5.9 Set W7's tooltip on the session cost counter in `SessionScreen.tsx`: "Reply cost only. Planning, checks, summaries and memory count toward the daily cap: see Settings → Cost." Verify with a component test. **Checkpoint.**
 

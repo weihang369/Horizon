@@ -22,6 +22,7 @@ from horizon.ai.ports import RoutingDecision
 from horizon.ai.questions import bank
 from horizon.ai.scripted.ports import AiDeps
 from horizon.db import tables as t
+from horizon.sessions.system1 import route_row
 
 QUESTION = "route"
 QUEUE_P = 0.25
@@ -73,12 +74,18 @@ class JevRouter:
         res: DecisionResult = await decider.ask(self._state(ctx), {QUESTION: q}, call_ctx, purpose="route", fallback=fallback)
         answer = res.answers[QUESTION]
         assert isinstance(answer, ChoiceAnswer)
+        seed = f"{ctx.session.seed}:{ctx.turn_index}"
+        meta = q.meta
         if answer.source == "fallback":
             pick = self.fallback_pick(ctx)
             fb: dict[str, Any] = {"purpose": "route", "model": self.deps.prices.decision.model, "costUsd": 0.0,
                                   "latencyMs": float(decider.timeouts.for_decision("route") * 1000), "fallback": True}
-            return RoutingDecision(speakers=[*forced, *pick] if ctx.policy != "mentioned" else forced, fallback=True,
-                                   call=fb)
+            speakers = [*forced, *pick] if ctx.policy != "mentioned" else forced
+            row = route_row(version=meta.version if meta else 0, label=meta.label if meta else QUESTION,
+                            answer=pick[0] if pick else "none", p=None, confidence=None, fallback=True,
+                            action="least recently spoken answers" if pick else "only the mentioned answer")
+            return RoutingDecision(speakers=speakers, fallback=True, call=fb,
+                                   system1={"seed": seed, "questions": [row]})
         probs = dict(answer.probabilities or {answer.choice: 1.0})
         candidates: list[dict[str, Any]] = sorted(
             ({"characterId": c, "p": round(min(1.0, max(0.0, float(p))), 2)} for c, p in probs.items()
@@ -98,7 +105,12 @@ class JevRouter:
                 if c["characterId"] not in rest and float(c["p"]) > QUEUE_P:
                     rest.append(c["characterId"])
         call = await self._call(res.generation_id) if answer.source == "jev" else None
-        return RoutingDecision(speakers=[*forced, *rest], candidates=candidates, call=call)
+        action = ("nobody else answers" if answer.choice == "none"
+                  else "queued after the mention" if forced else "answers first")
+        row = route_row(version=meta.version if meta else 0, label=meta.label if meta else QUESTION, answer=answer.choice,
+                        p=probs.get(answer.choice), confidence=answer.confidence, fallback=False, action=action)
+        return RoutingDecision(speakers=[*forced, *rest], candidates=candidates, call=call,
+                               system1={"seed": seed, "questions": [row]})
 
     async def _call(self, generation_id: str | None) -> dict[str, Any] | None:
         """The route call's ledger row (no message ID; OQ-13), as a `TurnTrace.calls` entry."""

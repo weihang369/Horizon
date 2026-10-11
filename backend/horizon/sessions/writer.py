@@ -107,15 +107,21 @@ class EventWriter:
         return out
 
     async def append(self, events: Sequence[Mapping[str, Any]], *, traces: Mapping[str, TraceMeta] | None = None,
-                     extra: Extra | None = None) -> list[Wire]:
-        """Store, project and (after commit) publish `events` (`{type, payload}`). Returns the stored SessionEvents."""
+                     extra: Extra | None = None, prepare: Extra | None = None) -> list[Wire]:
+        """Store, project and (after commit) publish `events` (`{type, payload}`). Returns the stored SessionEvents.
+        `prepare(tx, stamped)` runs first inside the transaction and may rewrite the payloads before they are reduced,
+        stored and published (ai-foundation D24: the Forget guard of `append_system1`)."""
         if not events:
             return []
         stamped = self.stamp(events)
         before_parts = copy.deepcopy(self.session["participants"])
-        apply_in_place(self.state, stamped)
+        if prepare is None:
+            apply_in_place(self.state, stamped)
         try:
             async with self.db.write() as tx:
+                if prepare is not None:
+                    await prepare(tx, stamped)
+                    apply_in_place(self.state, stamped)
                 await self._project(tx, stamped, before_parts, traces or {})
                 if extra is not None:
                     await extra(tx, stamped)
@@ -161,8 +167,11 @@ class EventWriter:
                 row = {"message_id": mid, "trace": e["payload"]["trace"], "engine": meta.engine,
                        "engine_version": meta.engine_version, "prompt_version": meta.prompt_version, "created_at": e["at"]}
                 stmt = sqlite_insert(t.turn_traces).values(**row)
+                # ai-foundation D24: an insight with no engine metadata (an `append_system1`) replaces only the trace;
+                # the engine columns and the original `created_at` stay.
+                keep = ("trace",) if meta == TraceMeta() else tuple(k for k in row if k != "message_id")
                 await conn.execute(stmt.on_conflict_do_update(index_elements=["message_id"],
-                                                              set_={k: stmt.excluded[k] for k in row if k != "message_id"}))
+                                                              set_={k: stmt.excluded[k] for k in keep}))
                 await replace_refs(conn, mid, e["payload"]["trace"])  # M5 design D14: Forget finds this trace
             elif e["type"] == "turn.end":
                 mid = e["payload"]["messageId"]

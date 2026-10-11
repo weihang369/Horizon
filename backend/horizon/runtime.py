@@ -68,6 +68,7 @@ from horizon.services.ledger import LedgerWriter
 from horizon.services.purge import PurgeWorker
 from horizon.services.runtime.reducer import apply_event, initial_runtime, ordered_messages
 from horizon.services.settings import deep_merge, local_day, read_local_settings, read_seed_settings
+from horizon.sessions.system1 import fixture_row
 
 log = logging.getLogger("horizon.runtime")
 T = TypeVar("T")
@@ -313,7 +314,8 @@ class Runtime:
                       timing=self.runtime_cfg.timing, clock=lambda: self.clock,
                       window_tokens=self.runtime_cfg.runtime.window_tokens, palette_ids=self.palette_ids,
                       schema=lambda: self.schema, models_dir=lambda: self.cfg.models_dir,
-                      llm=self.runtime_cfg.runtime.llm)
+                      llm=self.runtime_cfg.runtime.llm,
+                      system1_row=lambda qid, answer: fixture_row(self.cfg.seed_dir, qid, answer))
         self._ai = AiPorts(deps, self.profile)
         chat = str(self.settings_doc()["models"].get("chat") or "")
         if chat and chat != self.prices.chat.model:   # docs/ai/03 C9: one chat-model source; tell the developer

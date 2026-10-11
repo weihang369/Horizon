@@ -91,6 +91,7 @@ class AiDeps:
     models_dir: Callable[[], Path] = lambda: Path("data/models")   # M5: the conversion models (D-62)
     convert_timeout_s: float = 600.0                        # M5: a document conversion's limit (design D4)
     llm: Callable[[str], Any] = lambda key: None             # M7: the `runtime.llm.calls` row for a call key (D13)
+    system1_row: Callable[[str, str], dict[str, Any] | None] = lambda qid, answer: None   # M7: the shared fixture (D25)
 
 
 def emotion_candidates(chosen: str, rng: random.Random) -> list[dict[str, Any]]:
@@ -249,7 +250,9 @@ class ScriptedRouter:
             rest = [c["characterId"] for c in candidates]
         elif ctx.policy == "auto":
             rest = [c["characterId"] for c in candidates[:max(0, 2 - len(forced))]]
-        return RoutingDecision(speakers=[*forced, *rest], candidates=candidates, call=call)
+        row = self.deps.system1_row("route", str(candidates[0]["characterId"])) if candidates else None
+        system1 = {"seed": f"{ctx.session.seed}:{ctx.turn_index}", "questions": [row]} if row else None
+        return RoutingDecision(speakers=[*forced, *rest], candidates=candidates, call=call, system1=system1)
 
 
 class ScriptedReactions:
