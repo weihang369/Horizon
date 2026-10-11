@@ -7,9 +7,24 @@ import { createRng } from "../rng";
 const PROFESSIONAL = /doctor|physician|nurse|lawyer|attorney|counsel|economist|therapist|accountant|pharmac|engineer|teacher|professor|scientist|advisor|consultant/i;
 
 const NAMES = ["Sarah", "Kenji", "Lucia", "Omar", "Priya", "Theo", "Aiko", "Marcus", "Noor", "Elias"];
-const pickName = (seed: string) => {
+/** docs/ai/04 P11: plain greetings (the first chat says it word for word, P9) and example lines that teach the voice. */
+const GREETINGS = ["Oh, hey. I'm {name}.", "Hey. {name}. Good to meet you.", "Hi, I'm {name}. Pull up a chair."];
+const EXAMPLE_LINES = [
+  "Honestly? I'd start with the easy part.", "Hm. Give me a second with that.", "That's fair. Still, I'd push back a little.",
+  "Okay, tell me the rest.", "Long day. Worth it, though.", "Wait, say that again?",
+];
+const firstWord = (n: string) => n.trim().split(/\s+/)[0]?.toLowerCase() ?? "";
+/** A name from the seed is kept (the user asked for it); a bank name skips names already used in the world (P11). */
+const pickName = (seed: string, namesInUse: string[] = []) => {
   const m = seed.match(/^\s*([A-Z][a-z]+)(?=[\s,])/);
-  return m ? m[1] : NAMES[createRng(seed).int(0, NAMES.length - 1)];
+  if (m) return m[1];
+  const taken = new Set(namesInUse.map(firstWord));
+  const start = createRng(seed).int(0, NAMES.length - 1);
+  for (let i = 0; i < NAMES.length; i++) {
+    const n = NAMES[(start + i) % NAMES.length];
+    if (!taken.has(n.toLowerCase())) return n;
+  }
+  return NAMES[start];
 };
 
 function roleFrom(seed: string): string {
@@ -27,9 +42,9 @@ export interface DraftResult {
   brief: SongBrief;
 }
 
-export function draftFromSeed(seed: string, intent: Character["intent"]): DraftResult {
+export function draftFromSeed(seed: string, intent: Character["intent"], namesInUse: string[] = []): DraftResult {
   const rng = createRng(`draft:${seed}`);
-  const name = pickName(seed);
+  const name = pickName(seed, namesInUse);
   const role = roleFrom(seed);
   const advisory = intent === "expert" || PROFESSIONAL.test(seed);
   const traits = rng.shuffle(["curious", "patient", "dry-humoured", "warm", "precise", "stubborn", "playful", "loyal", "candid"]).slice(0, 4);
@@ -51,10 +66,9 @@ export function draftFromSeed(seed: string, intent: Character["intent"]): DraftR
     expertise: [role.toLowerCase()],
     goals: "Be useful without pretending to know everything.",
     boundaries: advisory ? ["No definitive diagnoses or legal advice; points to a professional for decisions."] : ["Keeps things friendly and SFW."],
-    greeting: `Hi, I'm ${name}. What can I do for you?`,
+    greeting: "",
     exampleLines: [],
     relationshipToUser: intent === "companion" ? "a close friend" : "",
-    systemPromptPreview: `You are ${name}, ${role.toLowerCase()}. Speak in a ${traits[0]}, ${traits[1]} way.`,
   };
   const attributes: Appearance["attributes"] = {
     body: { ageBand: profile.age < 30 ? "young_adult" : profile.age < 45 ? "adult" : "middle_aged", build: rng.pick(["slim", "average", "athletic"]), height: "average", skinTone: rng.pick(["light", "beige", "olive", "tan", "brown", "deep brown"]) },
@@ -67,12 +81,13 @@ export function draftFromSeed(seed: string, intent: Character["intent"]): DraftR
   };
   const h = attributes.hair;
   const appearanceSummary = `${attributes.body.ageBand.replace("_", " ")} ${role.toLowerCase()}, ${h.length} ${h.color} ${h.style} hair, ${attributes.eyes.color} eyes, ${attributes.outfit.archetype} outfit.`;
-  return {
-    profile, attributes, appearanceSummary,
-    paletteId: rng.pick(PALETTES).id,
-    advisory,
-    brief: { genres: [rng.pick(["lo-fi", "city-pop", "acoustic folk", "piano", "synthwave"])], moods: [rng.pick(["hopeful", "calm", "playful", "confident"])], bpm: rng.int(80, 124), instruments: ["piano", rng.pick(["synth", "guitar", "bells"])], vibe: `${name}'s everyday theme` },
-  };
+  const paletteId = rng.pick(PALETTES).id;
+  const brief: SongBrief = { genres: [rng.pick(["lo-fi", "city-pop", "acoustic folk", "piano", "synthwave"])], moods: [rng.pick(["hopeful", "calm", "playful", "confident"])], bpm: rng.int(80, 124), instruments: ["piano", rng.pick(["synth", "guitar", "bells"])], vibe: `${name}'s everyday theme` };
+  // P11, drawn last so the earlier picks keep their order: a plain greeting and 2–3 example lines that differ from it.
+  profile.greeting = rng.pick(GREETINGS).replace("{name}", name);
+  const n = rng.int(2, 3);
+  profile.exampleLines = rng.shuffle(EXAMPLE_LINES).slice(0, n);
+  return { profile, attributes, appearanceSummary, paletteId, advisory, brief };
 }
 
 /** A regenerated single field (CHR-04 AC2). */

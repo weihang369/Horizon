@@ -23,7 +23,7 @@ from typing import Any
 
 from horizon.ai.jsonrepair import repair_json_quotes
 from horizon.ai.llm import llm_request
-from horizon.ai.ports import ImageJob, PaidHooks, SongJob
+from horizon.ai.ports import DraftWorld, ImageJob, PaidHooks, SongJob
 from horizon.ai.scripted.ports import AiDeps
 from horizon.contract.validate import ContractSchema
 from horizon.gateway.chat import ChatRequest, ChatResult
@@ -49,6 +49,58 @@ SYSTEM = ("You are Horizon's character drafter. From a one-line seed you write O
           "older) as JSON that matches the schema exactly. Keep it grounded and safe for work: no real people, no "
           "minors, no explicit content. Expert characters are advisory: their boundaries say they inform but don't "
           "replace a professional. Write the appearance as plain visual facts an illustrator can draw.")
+# docs/ai/04 P11 (persona-context design D17): names, originality, a concrete life, an audible voice, plain speech.
+STOCK_NAMES = ("Elara", "Kael", "Seraphina", "Lyra", "Aria", "Voss", "Thorne")
+RULES = (
+    "\nRules:"
+    "\n- Give a name that fits the role and the culture of the setting. Never use a name already used in this world, "
+    "and avoid stock AI names (" + ", ".join(STOCK_NAMES) + ")."
+    "\n- Characters are original. If the seed asks for a real person or an existing fictional character, write an "
+    "original character of the same general type, with a new name."
+    "\n- Give a concrete backstory with specific details and one flaw."
+    "\n- Describe the speaking style as habits you could hear (sentence length, words they use), not adjectives."
+    "\n- The greeting is at most 2 short lines. Give 2-3 example lines that show the voice and differ from the greeting."
+    "\n- The greeting and example lines are plain speech only: no *actions* or stage directions."
+    "\n- relationshipToUser: for a companion, who the user is to them, fitting the user described below; for any other "
+    "intent, an empty string."
+)
+# docs/ai/03 C7: the schema and ONE example (never built before M8). Invented names, no seed-world or stock names.
+EXAMPLE_SEED = "a night-shift radio host who misses her hometown"
+EXAMPLE = {
+    "profile": {
+        "name": "Bao Ngoc Tran", "role": "Night-shift radio host", "age": 34, "pronouns": "she/her",
+        "tagline": "On air until the sun comes up.",
+        "personality": {"summary": "Warm and wry, a good listener who hides homesickness behind jokes.",
+                        "traits": ["warm", "wry", "observant", "restless"]},
+        "backstory": ("Grew up above her parents' noodle stall in Hue, moved to the city for a radio job at 23, and has "
+                      "hosted the 1 a.m. call-in show for six years. She still keeps her grandmother's tin radio on "
+                      "the studio desk. Flaw: she says yes to every caller and never to herself."),
+        "speakingStyle": {"summary": "Short sentences, late-night pauses, asks one question then lets you talk.",
+                          "tone": "warm", "formality": "casual",
+                          "quirks": ["names the time before she answers", "uses food words for feelings"],
+                          "catchphrases": ["Still with me?"]},
+        "expertise": ["late-night radio", "listening", "Vietnamese home cooking"],
+        "goals": "Save enough to open a tiny station back home.",
+        "boundaries": ["Keeps things kind and safe for work."],
+        "greeting": "It's 1 a.m. and you're up too. Good.",
+        "exampleLines": ["That sounds like a cold-rice kind of day.", "Two minutes past three. Tell me the rest."],
+        "relationshipToUser": "her favourite regular caller",
+    },
+    "attributes": {
+        "body": {"ageBand": "adult", "build": "slim", "height": "average", "skinTone": "light tan"},
+        "face": {"shape": "oval", "baseline": "soft", "marks": ["small mole under the left eye"]},
+        "eyes": {"shape": "almond", "color": "dark brown", "glasses": "none"},
+        "hair": {"length": "shoulder", "style": "loose with headphones on", "color": "black", "fringe": "side-swept"},
+        "outfit": {"archetype": "casual", "primaryColor": "#2E3A59", "secondaryColor": "#F2C14E"},
+        "accessories": ["studio headphones"], "vibe": ["warm", "night owl"],
+    },
+    "appearanceSummary": ("An adult woman with light tan skin and shoulder-length black hair under studio "
+                          "headphones, dark brown eyes, a navy cardigan with a mustard scarf."),
+    "paletteId": "pal_midnight_ink", "advisory": False,
+    "brief": {"genres": ["lo-fi"], "moods": ["calm"], "bpm": 78, "instruments": ["piano", "vinyl crackle"],
+              "vibe": "a quiet studio at 3 a.m."},
+}
+EXAMPLE_PREFIX = f'\nOne example of a complete answer (seed: "{EXAMPLE_SEED}", intent: companion):\n'
 
 
 def _str(**kw: Any) -> dict[str, Any]:
@@ -74,7 +126,8 @@ def draft_schema(palette_ids: Sequence[str]) -> dict[str, Any]:
         "personality": _obj({"summary": s, "traits": _arr(s, minItems=3, maxItems=8)}), "backstory": s,
         "speakingStyle": _obj({"summary": s, "tone": s, "formality": _str(enum=["casual", "neutral", "formal"]),
                                "quirks": _arr(s), "catchphrases": _arr(s)}),
-        "expertise": _arr(s), "goals": s, "boundaries": _arr(s), "greeting": s})
+        "expertise": _arr(s), "goals": s, "boundaries": _arr(s), "greeting": s,
+        "exampleLines": _arr(s, minItems=2, maxItems=3), "relationshipToUser": s})
     attributes = _obj({
         "body": _obj({"ageBand": _str(enum=["young_adult", "adult", "middle_aged", "senior"]), "build": s, "height": s,
                       "skinTone": s}),
@@ -155,6 +208,8 @@ def parse_draft(content: str, schema: ContractSchema, palette_ids: Sequence[str]
     if missing:
         raise ProviderError("provider_error", f"The draft is missing {', '.join(missing)}.")
     profile = d["profile"]
+    if isinstance(profile, dict) and not str(profile.get("relationshipToUser") or "").strip():
+        profile.pop("relationshipToUser", None)   # P11: empty for non-companions, then omitted
     if not isinstance(profile, dict) or not isinstance(profile.get("age"), int) or profile["age"] < 18:
         raise ProviderError("provider_error", "The draft must describe an adult (18 or older).")
     problems = schema.errors("CharacterProfile", profile)
@@ -169,6 +224,20 @@ def parse_draft(content: str, schema: ContractSchema, palette_ids: Sequence[str]
     if problems:
         raise ProviderError("provider_error", "The draft doesn't match the character format: " + "; ".join(problems[:3]))
     return d
+
+
+def draft_user_message(seed_prompt: str, intent: str, world: DraftWorld | None) -> str:
+    """P11: the seed and intent, then the world's name, the names already used in it and the You card."""
+    lines = [f"Seed: {seed_prompt}", f"Intent: {intent}"]
+    if world is not None:
+        if world.name:
+            lines.append(f"World: {world.name}")
+        lines.append("Names already used here: " + (", ".join(world.names_in_use) if world.names_in_use else "none"))
+        you = world.you or {}
+        if you.get("displayName"):
+            about = f" ({you['about']})" if you.get("about") else ""
+            lines.append(f"The user: {you['displayName']}{about}")
+    return "\n".join(lines)
 
 
 class NaiveDrafter:
@@ -188,7 +257,9 @@ class NaiveDrafter:
         `require_parameters` the pinned provider was always skipped for a fallback (45–99 s, against DeepSeek's 7–8 s,
         in the 2026-10-06 live run). `parse_draft` still checks every answer against the contract. The `profile`
         settings row gives thinking off and temperature 1.0 (docs/ai/03 C1)."""
-        system = SYSTEM + SCHEMA_PREFIX + json.dumps(schema, separators=(",", ":")) + QUOTE_RULE
+        system = SYSTEM + RULES + SCHEMA_PREFIX + json.dumps(schema, separators=(",", ":")) + QUOTE_RULE
+        if "profile" in schema.get("properties", {}):   # a whole draft: the one example (C7); a field rewrite needs none
+            system += EXAMPLE_PREFIX + json.dumps(EXAMPLE, ensure_ascii=False, separators=(",", ":"))
         messages = [{"role": "system", "content": system}, {"role": "user", "content": user}]
         if row is None:   # a bare AiDeps (unit tests): the same settings, spelled out
             return ChatRequest(model=model, max_tokens=max_tokens, temperature=1.0, reasoning={"enabled": False},
@@ -196,9 +267,10 @@ class NaiveDrafter:
         return llm_request(row, model, messages, max_tokens=max_tokens, response_format={"type": "json_object"})
 
     async def draft(self, ctx: CallContext, *, seed_prompt: str, intent: str, cost_usd: float, duration_ms: float,
-                    model: str, hooks: PaidHooks) -> dict[str, Any]:
+                    model: str, hooks: PaidHooks, world: DraftWorld | None = None) -> dict[str, Any]:
         ids = list(self.palette_ids())
-        req = self._request(model, f"Seed: {seed_prompt}\nIntent: {intent}", draft_schema(ids), MAX_TOKENS)
+        req = self._request(model, draft_user_message(seed_prompt, intent, world), draft_schema(ids), MAX_TOKENS,
+                            self.deps.llm("profile"))
         return await complete_json(self.deps.gateway(), req, ctx, lambda c: parse_draft(c, self.schema(), ids), hooks)
 
     async def regenerate_field(self, ctx: CallContext, *, profile: Mapping[str, Any], field: str, attempt: int,
@@ -208,6 +280,9 @@ class NaiveDrafter:
         schema = _obj({field: _str(maxLength=80) if field == "tagline" else _str()})
         user = (f"Character: {json.dumps(dict(profile), ensure_ascii=False)[:4000]}\nRewrite only the field "
                 f"{field!r}, in the same voice, as JSON.")
+        if field == "greeting":   # P11: the same plain-speech and length rules as a whole draft
+            user += (" At most 2 short lines of plain speech: no *actions*, no stage directions, and not an "
+                     "assistant's offer of help.")
         def parse(content: str) -> dict[str, Any]:
             try:
                 value = json.loads(content).get(field)

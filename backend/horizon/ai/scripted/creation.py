@@ -19,7 +19,7 @@ import io
 from collections.abc import Callable, Mapping, Sequence
 from typing import Any
 
-from horizon.ai.ports import ImageJob, PaidHooks, SongJob
+from horizon.ai.ports import DraftWorld, ImageJob, PaidHooks, SongJob
 from horizon.ai.scripted import drafts
 from horizon.ai.scripted.ports import AiDeps
 from horizon.gateway.context import CallContext
@@ -72,10 +72,12 @@ class ScriptedDrafter:
         return duration_ms
 
     async def draft(self, ctx: CallContext, *, seed_prompt: str, intent: str, cost_usd: float, duration_ms: float,
-                    model: str, hooks: PaidHooks) -> dict[str, Any]:
+                    model: str, hooks: PaidHooks, world: DraftWorld | None = None) -> dict[str, Any]:
+        names = world.names_in_use if world is not None else ()
+
         async def produce() -> dict[str, Any]:
             await self.deps.clock().sleep(duration_ms / 1000)
-            return drafts.draft_from_seed(seed_prompt, intent, self.palette_ids())
+            return drafts.draft_from_seed(seed_prompt, intent, self.palette_ids(), names)
 
         return await self.deps.gateway().scripted_generation(
             ctx, cost_usd=cost_usd, model=model, produce=produce, before_send=hooks.before_send,

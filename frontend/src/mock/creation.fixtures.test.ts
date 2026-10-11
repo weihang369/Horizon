@@ -50,8 +50,8 @@ describe("draft bank fixtures (shared with the backend)", () => {
   it("found the seed lines", () => expect(files.length).toBeGreaterThanOrEqual(6));
   for (const f of files) {
     it(f, () => {
-      const fx = read<{ cases: { seed: string; intent: "expert" | "companion" | "other"; draft: unknown }[] }>(`drafts/${f}`);
-      for (const c of fx.cases) expect(plain(draftFromSeed(c.seed, c.intent))).toEqual(c.draft);
+      const fx = read<{ cases: { seed: string; intent: "expert" | "companion" | "other"; namesInUse?: string[]; draft: unknown }[] }>(`drafts/${f}`);
+      for (const c of fx.cases) expect(plain(draftFromSeed(c.seed, c.intent, c.namesInUse ?? []))).toEqual(c.draft);
     });
   }
   it("regenerate_field.json", () => {
