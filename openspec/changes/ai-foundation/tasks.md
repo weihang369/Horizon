@@ -154,11 +154,11 @@
   - no split inside a fenced block or a list;
   - Chinese `。` text with line breaks.
 - [x] 4.2 Render bubbles in `MessageRow.tsx`: 1:1 and group as bubbles, watch as script lines under one name tape, debate, host and user messages unsplit, citation chips under the last bubble. Change `sessionContext.ts` so auto-Readable applies per bubble over 600 characters. Verify with component tests for each mode, the streaming re-split, and the 700-character three-bubble reply staying bubbles.
-- [ ] 4.3 Add line breaks to the 1:1, group and watch character lines in `seed-build/screenplays/seed.ts`, `mock.ts`, `frontend/src/mock/banks/*` and the scripted engine's lines (D22), leaving debate untouched. Run `npm run seed:build` and `npm run fixtures:build`. Verify:
+- [x] 4.3 Add line breaks to the 1:1, group and watch character lines in `seed-build/screenplays/seed.ts`, `mock.ts`, `frontend/src/mock/banks/*` and the scripted engine's lines (D22), leaving debate untouched. Run `npm run seed:build` and `npm run fixtures:build`. Verify:
   - `seed:check`, `fixtures:check` and the replay-equivalence and fork fixture tests pass in both languages;
   - a test asserts no debate message contains `\n`;
   - the Amara 1:1 seed has a multi-line reply.
-- [ ] 4.4 Docs. Change D-46's wording in `docs/requirements/09-decision-log.md` to "one message, which chat modes may display as up to 4 bubbles". Verify the links. **Checkpoint.**
+- [x] 4.4 Docs. Change D-46's wording in `docs/requirements/09-decision-log.md` to "one message, which chat modes may display as up to 4 bubbles". Verify the links. **Checkpoint.**
 
 ## 5. Contract rev 1.4 and System 1
 

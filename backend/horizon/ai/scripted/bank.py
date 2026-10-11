@@ -50,17 +50,17 @@ def chat_lines(profile: dict[str, Any], prompt: str) -> list[Line]:
     quip = str(quips[0]) if quips else "Okay, you got me there."
     topic = _topic(prompt)
     return [
-        Line(f"Good question about {topic}. As {_article(role)} {role}, I'd start with one thing: what would a good "
+        Line(f"Good question about {topic}.\nAs {_article(role)} {role}, I'd start with one thing: what would a good "
              f"outcome look like for you, and what has already been tried?", "thinking"),
-        Line(f"{tagline} With {topic}, the details matter more than the headline, so tell me what changed recently and "
+        Line(f"{tagline}\nWith {topic}, the details matter more than the headline, so tell me what changed recently and "
              f"when you first noticed it.", "neutral"),
         Line(f"Oh, that's interesting. In {field}, things like {topic} almost never go the way people expect, so let's "
              f"slow down and look at the evidence before deciding anything.", "surprised"),
-        Line(f"{quip} Sorry, I had to say it. But seriously, {topic} deserves a proper answer, and I'd rather be honest "
+        Line(f"{quip} Sorry, I had to say it.\nBut seriously, {topic} deserves a proper answer, and I'd rather be honest "
              f"about what I don't know than guess.", "embarrassed"),
-        Line(f"That's genuinely good to hear. Tell me more about {topic}: what worked, what surprised you, and what you "
+        Line(f"That's genuinely good to hear.\nTell me more about {topic}: what worked, what surprised you, and what you "
              f"would do differently next time?", "happy"),
-        Line(f"That sounds hard, and I'm listening. Take your time with {topic}; we can go through it piece by piece, and "
+        Line(f"That sounds hard, and I'm listening.\nTake your time with {topic}; we can go through it piece by piece, and "
              f"nothing has to be decided tonight.", "sad"),
     ]
 
@@ -117,7 +117,7 @@ def scene_lines(profile: dict[str, Any], premise: str) -> list[Line]:
         Line(f"{head}. Of course this would happen today, of all days.", "neutral"),
         Line("Well, nobody told me there'd be a plot twist this afternoon.", "surprised"),
         Line(f"{name} sighs. Fine. Let's see where this one goes.", "thinking"),
-        Line("Okay, that was actually kind of nice. Don't tell anyone I said so.", "happy"),
+        Line("Okay, that was actually kind of nice.\nDon't tell anyone I said so.", "happy"),
         Line(f"You know what, {name} has a better idea. Hear me out for a second.", "thinking"),
     ]
 

@@ -156,7 +156,7 @@
     "type": "token",
     "payload": {
      "messageId": "msg_forkFixture1m1",
-     "delta": "Sushi. And"
+     "delta": "Sushi.\nAnd"
     }
    },
    {
@@ -322,7 +322,7 @@
      "type": "character",
      "characterId": "chr_seedTakeshi"
     },
-    "content": "Sushi. And I'll be honest, I'm only saying that because I've been *fishing* for an invitation.",
+    "content": "Sushi.\nAnd I'll be honest, I'm only saying that because I've been *fishing* for an invitation.",
     "status": "complete",
     "createdAt": "2026-09-30T10:30:01.050Z",
     "emotion": "happy",

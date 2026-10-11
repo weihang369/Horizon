@@ -191,9 +191,9 @@ export const TOO_CLOSE_EXAMS: Screenplay = {
 const rinBeats: Beat[] = [
   { k: "line", who: RIN, emotion: "neutral", text: "oh. it's you. hi. (that was a warm greeting btw)", gapMs: 200 },
   { k: "user", text: "Raid tonight?" },
-  { k: "line", who: RIN, emotion: "happy", text: "obviously. 9pm. if you queue as healer i will personally carry you. once." },
+  { k: "line", who: RIN, emotion: "happy", text: "obviously. 9pm.\nif you queue as healer i will personally carry you. once." },
   { k: "user", text: "Deal. Don't tell Hana I'm skipping dinner." },
-  { k: "line", who: RIN, emotion: "embarrassed", text: "…i'm not a snitch. i'm a *strategic informant*. fine. our secret." },
+  { k: "line", who: RIN, emotion: "embarrassed", text: "…i'm not a snitch. i'm a *strategic informant*.\nfine. our secret." },
   { k: "end", status: "paused", reason: "navigated_away" },
 ];
 export const RIN_RAID: Screenplay = {
