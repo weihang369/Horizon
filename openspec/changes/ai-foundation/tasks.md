@@ -286,13 +286,13 @@
 
 ## 9. Integration and M7's evaluation
 
-- [ ] 9.1 Run a full offline integration pass:
+- [x] 9.1 Run a full offline integration pass:
   - every gate from the constraints block;
   - the E2E suite on both clients (`npm run e2e` or the CI equivalent);
   - `HORIZON_TEST=1 horizon eval smoke`.
 
   Verify that all are green and that `git status` shows only intended files.
-- [ ] 9.2 Run a reviewer pass over the whole diff, per phase, for:
+- [x] 9.2 Run a reviewer pass over the whole diff, per phase, for:
   - contract drift beyond rev 1.4;
   - key leaks;
   - hot-path latency added on our side;
@@ -301,4 +301,4 @@
 
   Fix the findings and re-run 9.1. Verify that the review notes are recorded in the final commit message.
 - [x] 9.3 **Ask the user** to approve the canary (< $0.001, off-peak). Then run `horizon eval canary` with the real key from `.env`. Verify that the report passes or names drift; record the model id and the result in `docs/ai/checks/group-a.md`'s follow-up line (or a new `docs/ai/checks/m7.md`); and keep the spend in `data/evals/spend.jsonl`.
-- [ ] 9.4 Run `openspec validate ai-foundation --strict`, then hand over for archive and the squash merge into `dev` (which needs the user's go-ahead). Verify that validation passes.
+- [x] 9.4 Run `openspec validate ai-foundation --strict`, then hand over for archive and the squash merge into `dev` (which needs the user's go-ahead). Verify that validation passes.
