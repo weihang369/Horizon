@@ -46,11 +46,11 @@
 - [x] 1.5 Add `per_line: bool` to `TagParser` (design D18). Add shared fixtures with `perLine: true`: a second-line prefix, a prefix split across chunks after `\n`, and a lookalike name on a later line. Implement the same in the TS reference parser in `frontend/src/engine/tagParser.fixtures.test.ts`. Verify:
   - the Python and TS fixture tests both pass;
   - the existing `perLine: false` fixtures are unchanged.
-- [ ] 1.6 Refactor `NaiveTurnEngine.run` into the three seams `request()`, `parser()` and `trace_patch()` (design D2), with no behaviour change. Verify:
+- [x] 1.6 Refactor `NaiveTurnEngine.run` into the three seams `request()`, `parser()` and `trace_patch()` (design D2), with no behaviour change. Verify:
   - every naive test passes unchanged;
   - the naive request snapshot test passes byte for byte;
   - `fixtures:check` passes.
-- [ ] 1.7 Phase gates green → commit "M8 phase 1: foundations".
+- [x] 1.7 Phase gates green → commit "M8 phase 1: foundations".
 
 ## 2. The `agent` persona compiler and its TS twin
 
@@ -89,7 +89,7 @@
   - CHR-05 AC1 drops "it's a mock in the UI phase" in `docs/requirements/02`.
 
   Verify by reading each edit.
-- [ ] 2.8 Phase gates green → commit "M8 phase 2: persona compiler and preview".
+- [x] 2.8 Phase gates green → commit "M8 phase 2: persona compiler and preview".
 
 ## 3. The `agent` reply engine
 
@@ -117,7 +117,7 @@
   - `budget` is 11,680 in 1:1 and 14,680 in group;
   - there is no `cacheHitPct`.
 - [x] 3.5 Add the prefix stability test (X6): two consecutive `agent` turns of a fixture group session with no drop. Verify that the second request's messages begin with exactly the first's.
-- [ ] 3.6 Phase gates green → commit "M8 phase 3: agent reply engine".
+- [x] 3.6 Phase gates green → commit "M8 phase 3: agent reply engine".
 
 ## 4. Windows and the rolling summary
 
@@ -161,7 +161,7 @@
   - the ai-ports note in `ai/profile.py`'s docstring.
 
   Verify by reading.
-- [ ] 4.12 Phase gates green → commit "M8 phase 4: windows and rolling summary".
+- [x] 4.12 Phase gates green → commit "M8 phase 4: windows and rolling summary".
 
 ## 5. Cache and context figures
 
@@ -173,7 +173,7 @@
 - [x] 5.3 Make `StackedBar` scale to `max(total, sum)`, with the overflow hatched, a budget marker, and a legend reading "used / budget (+over)" (design D16). Verify:
   - a `Data` component test with used > budget shows every segment and the marker;
   - the KitGallery still renders.
-- [ ] 5.4 Phase gates green → commit "M8 phase 5: true cache and context figures".
+- [x] 5.4 Phase gates green → commit "M8 phase 5: true cache and context figures".
 
 ## 6. The first-chat greeting
 
@@ -212,7 +212,7 @@
 - [x] 7.3 Update the scripted and mock drafts: 2–3 example lines from a shared bank, a plain greeting, no `systemPromptPreview`. Regenerate every `backend/tests/fixtures/drafts/*.json` in the same change. Verify:
   - the Python and TS draft fixture tests pass byte for byte;
   - no greeting contains `*` or "What can I do for you".
-- [ ] 7.4 Phase gates green → commit "M8 phase 7: drafter knows the world".
+- [x] 7.4 Phase gates green → commit "M8 phase 7: drafter knows the world".
 
 ## 8. The turn-plan state builder
 
@@ -232,7 +232,7 @@
   - watch uses 12 recent lines and the summary;
   - the debate fields are present.
 - [x] 8.2 Update the docs: doc 01 §9's Jev-state item and OQ-AI-02 marked resolved (doc 05 X9, built in M8). Verify by reading.
-- [ ] 8.3 Phase gates green → commit "M8 phase 8: turn-plan state".
+- [x] 8.3 Phase gates green → commit "M8 phase 8: turn-plan state".
 
 ## 9. Evaluation, offline
 
@@ -240,7 +240,7 @@
   - `test_bank_lock` passes;
   - every entry compiles to a valid wire question in smoke;
   - a test asserts no live code path asks an `eval_judge` question.
-- [ ] 9.2 **Ask the user to review the 13 labels and wordings** (W4). Apply their edits, bump versions, re-lock. Verify that the user has approved them in chat.
+- [x] 9.2 **Ask the user to review the 13 labels and wordings** (W4). Apply their edits, bump versions, re-lock. Verify that the user has approved them in chat.
 - [x] 9.3 Make `system1.ts` skip `purpose: "eval_judge"` (design D26). Verify that seed-build regenerates the fixture with no judge rows, and that `seed:check` passes.
 - [x] 9.4 Teach `decisions` to score nouls (asked once, `p ≥ t`, calibration on `p`), and add `--set NAME`. Add the B4 judge report, the `evals/baselines/judges.json` record, and "unvalidated" marking for figures from judges without a passing record (design D25, D27). Verify with unit tests:
   - a noul item is scored from one request;
