@@ -220,12 +220,12 @@
 
 ## 7. Response store and the evaluation harness
 
-- [ ] 7.1 Add `horizon/evals/store.py` (D31): group A's `canonical()` and key rule per kind, atomic writes, first write wins, the eval view and the seed view. Verify with tests:
+- [x] 7.1 Add `horizon/evals/store.py` (D31): group A's `canonical()` and key rule per kind, atomic writes, first write wins, the eval view and the seed view. Verify with tests:
   - a key computed for a recorded group A Jev request (fingerprint `None`) equals its group A filename;
   - a hit sends nothing and writes no row;
   - a different fingerprint misses.
-- [ ] 7.2 Wire the seed view: `store_ok=True` only on seed knowledge indexing (`is_seed`) and seed memory embedding (and later corpus pieces); user paths pass nothing. Verify with an integration test using a temp store in test mode: index seed knowledge, Reset demo, index again → the second pass sends no embedding request and writes no embedding row; a user document is never stored.
-- [ ] 7.3 Add `horizon/evals/` runner and CLI (D33):
+- [x] 7.2 Wire the seed view: `store_ok=True` only on seed knowledge indexing (`is_seed`) and seed memory embedding (and later corpus pieces); user paths pass nothing. Verify with an integration test using a temp store in test mode: index seed knowledge, Reset demo, index again → the second pass sends no embedding request and writes no embedding row; a user document is never stored.
+- [x] 7.3 Add `horizon/evals/` runner and CLI (D33):
   - `horizon eval <suite>` with `--profile`, `--limit`, `--max-usd`, `--yes`, `--allow-peak`;
   - plan and estimate; the off-peak check; the y/N prompt;
   - isolated copies under `data/evals/<run-id>/<profile>/`, with env overrides ignored and the key in memory only;
@@ -239,8 +239,8 @@
   - a forced cap gives `incomplete`;
   - the 21st run prunes the oldest;
   - the report lists resolved ports for `--profile agent`.
-- [ ] 7.4 Add `horizon/evals/metrics.py`: Wilson, exact McNemar, bootstrap over groups, order-statistic percentile intervals, Recall@k, MRR, nDCG. Verify with unit tests against hand-worked answers recorded in the test file.
-- [ ] 7.5 Add the canary suite (D32, D34):
+- [x] 7.4 Add `horizon/evals/metrics.py`: Wilson, exact McNemar, bootstrap over groups, order-statistic percentile intervals, Recall@k, MRR, nDCG. Verify with unit tests against hand-worked answers recorded in the test file.
+- [x] 7.5 Add the canary suite (D32, D34):
   - `evals/canary.json` is a byte copy of group A's file;
   - the fingerprint is verified on load;
   - the pass rule;
@@ -249,17 +249,17 @@
   - `--accept`.
 
   Verify with tests using canned fake answers: identical → pass; one choice flipped → drift names the item; a p moved 0.11 → drift; a hand-edited baseline → refused; the copy's bytes equal the source.
-- [ ] 7.6 Add the decisions suite (D34): the dataset loader with schema, building from the bank with the deadline off, policy accuracy, calibration, order bias in both orders, re-run only changed versions. Add `evals/datasets/_smoke/route.jsonl` (6 items, `smoke_only`). Verify with test-mode tests: a second run with no bank change sends nothing; order bias is computed from both orders; smoke-only items are never reported as a measurement.
-- [ ] 7.7 Add the smoke suite (D34): `decisions --limit` over changed versions, one scripted conversation per mode from `evals/smoke/<mode>.json`, the bank wire-schema check, the dataset load, the report render. Verify that `HORIZON_TEST=1 uv run horizon eval smoke --limit 5 --yes` exits 0 with the socket guard on.
-- [ ] 7.8 Add `horizon eval capture <messageId>` and `horizon stats [--days N]` (D36). Verify with tests: capture with rows writes a case file, and without rows exits non-zero; stats on a fresh install says there is no live data; stats on a seeded test database prints p50/p90, cost by purpose and late rates, and leaves the file's bytes unchanged.
-- [ ] 7.9 Add the data checks (D37):
+- [x] 7.6 Add the decisions suite (D34): the dataset loader with schema, building from the bank with the deadline off, policy accuracy, calibration, order bias in both orders, re-run only changed versions. Add `evals/datasets/_smoke/route.jsonl` (6 items, `smoke_only`). Verify with test-mode tests: a second run with no bank change sends nothing; order bias is computed from both orders; smoke-only items are never reported as a measurement.
+- [x] 7.7 Add the smoke suite (D34): `decisions --limit` over changed versions, one scripted conversation per mode from `evals/smoke/<mode>.json`, the bank wire-schema check, the dataset load, the report render. Verify that `HORIZON_TEST=1 uv run horizon eval smoke --limit 5 --yes` exits 0 with the socket guard on.
+- [x] 7.8 Add `horizon eval capture <messageId>` and `horizon stats [--days N]` (D36). Verify with tests: capture with rows writes a case file, and without rows exits non-zero; stats on a fresh install says there is no live data; stats on a seeded test database prints p50/p90, cost by purpose and late rates, and leaves the file's bytes unchanged.
+- [x] 7.9 Add the data checks (D37):
   - the split rule and the "split never changes" check (against `git show HEAD:` for existing items);
   - `horizon eval overlap` (6-word shingles);
   - `horizon eval review <set>` (seeded sample, `evals/reviews/<set>.json`, two disagreements → relabel).
 
   Verify with unit tests for each, including a copied bank example failing overlap.
-- [ ] 7.10 Add the smoke, `eval overlap` and `eval corpus-check` steps to `.github/workflows/ci.yml` (D38). Verify by running the three commands locally with `HORIZON_TEST=1` and no key: each exits 0, and together they take < 1 min.
-- [ ] 7.11 Docs:
+- [x] 7.10 Add the smoke, `eval overlap` and `eval corpus-check` steps to `.github/workflows/ci.yml` (D38). Verify by running the three commands locally with `HORIZON_TEST=1` and no key: each exits 0, and together they take < 1 min.
+- [x] 7.11 Docs:
   - `docs/requirements/08-open-questions-handoff.md`: OQ-AI-15 and OQ-AI-08's evaluation half resolved;
   - `docs/backend/05-ai-seams.md` §6: the harness is built;
   - `evals/README.md` covering the folder layout, the split rule, how to run each command, and the store rules.

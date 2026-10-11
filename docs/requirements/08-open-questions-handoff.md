@@ -155,7 +155,7 @@
 - *Note:* V4.1 Flash exposes `logprobs`/`top_logprobs` on some endpoints, which is a possible zero-cost source of emotion-tag probabilities for the Insight bars. Verify it on the pinned first-party endpoint.
 
 **OQ-AI-08: Content rating, safety & evaluation** *(stakeholder: "evaluation → AI team")*
-- **Resolved (AI stage, [docs/ai/02](../ai/02-evaluation-observability.md), [docs/ai/11](../ai/11-safety.md)):** SFW only; Jev input, care, output and motion checks; the evaluation harness and its suites, including a ~470-item safety suite, ship in v1.
+- **Resolved (AI stage, [docs/ai/02](../ai/02-evaluation-observability.md), [docs/ai/11](../ai/11-safety.md)):** SFW only; Jev input, care, output and motion checks; the evaluation harness and its suites, including a ~470-item safety suite, ship in v1. **The harness was built in M7** (OpenSpec change `ai-foundation`: `horizon eval` with the canary, decisions and smoke suites, the shared response store, the metrics and the data checks; see [evals/README.md](../../evals/README.md)). The safety suite comes with M14.
 - Rating levels; guardrail placement (input, output, image prompts); provider refusals (`content_refused`); evaluation plan (persona adherence, emotion accuracy, debate quality, regression set).
 - *Constraints (BA floor):* adults only (NFR-27); interim default SFW; image prompts always templated, never raw user text alone; no named IP or real-person likeness.
 - **Recommendation:** MVP SFW only; Jev boolean guardrails with a DeepSeek fallback; write a ~30-conversation regression set during the MVP; evaluation harness in v1.1.
@@ -214,7 +214,7 @@ Constraints: 32K state budget, alpha endpoint, varying probabilities. Use bands 
 
 **OQ-AI-15: Observability.**
 - Options: A) Local structured logs + ledger. B) LangSmith (opt-in env flag). C) Self-hosted Langfuse (breaks zero-config).
-- **Resolved (AI stage, [docs/ai/02](../ai/02-evaluation-observability.md) B10, B11):** A by default (the ledger, logs and `ai_calls` capture, off by default), B opt-in; no Langfuse.
+- **Resolved (AI stage, [docs/ai/02](../ai/02-evaluation-observability.md) B10, B11):** A by default (the ledger, logs and `ai_calls` capture, off by default), B opt-in; no Langfuse. **Built in M7** (`ai-foundation`): `HORIZON_CAPTURE_AI_CALLS`, `horizon eval capture`, `horizon stats`, and LangSmith behind `HORIZON_LANGSMITH=1` with every entry point forcing it off otherwise.
 - **Recommendation: A by default, with B opt-in.** `TurnTrace` is the user-facing view of the same data.
 
 **OQ-AI-16: Prompt template for `systemPromptPreview`.** The profile → prompt compiler, including:

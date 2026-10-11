@@ -49,6 +49,7 @@ class Batch:
 class BatchHooks:
     before_send: Callable[[], Awaitable[None]] | None = None
     commit_with: Callable[[AsyncConnection, str, Batch], Awaitable[None]] | None = None
+    store_ok: bool = False   # shipped seed text only (D31): the seed view may serve or keep this batch
 
 
 HooksFor = Callable[[Batch], BatchHooks]
@@ -161,7 +162,8 @@ class QwenEmbedder(_BaseEmbedder):
                     hooks: BatchHooks) -> list[list[float]]:
         after, commit = self._wire(batch, hooks, space.dims)
         await self.deps.gateway().embed_batch(texts, ctx, model=space.model, dimensions=space.dims,
-                                              before_send=hooks.before_send, after_response=after, commit_with=commit)
+                                              before_send=hooks.before_send, after_response=after, commit_with=commit,
+                                              store_ok=hooks.store_ok)
         return batch.vectors
 
 

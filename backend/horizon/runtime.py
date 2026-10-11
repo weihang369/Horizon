@@ -54,6 +54,7 @@ from horizon.domain.pricing import PriceTable, load_price_table
 from horizon.domain.runtime_config import RuntimeConfig, load_runtime_config
 from horizon.domain.timeutil import ms_from_iso, to_iso
 from horizon.domain.vclock import Slots
+from horizon.evals.store import ResponseStore
 from horizon.events.bus import GLOBAL, EventBus, session_channel
 from horizon.gateway.client import HttpCore
 from horizon.gateway.fake import FakeOpenRouter
@@ -304,6 +305,8 @@ class Runtime:
                                 book=self.book, ledger=ledger, caps=self.caps, period=self.clock.pricing_period,
                                 publish=lambda ev: self.publish(GLOBAL, ev), decision_model=str(models["decision"]),
                                 on_estimate_row=lambda row_id: self.corrector.enqueue(row_id))
+        if not cfg.test_mode:   # D31: seed knowledge embeddings are paid once, then reused from data/cache
+            self._gateway.seed_store = ResponseStore.seed_view(cfg.data_dir / "cache")
         if self.capture.enabled:
             self._gateway.capture_bodies = True
             self._gateway.on_call = self.capture.on_call

@@ -57,6 +57,24 @@ from horizon.gateway.reservations import Hold, ReservationBook
 from horizon.gateway.types import GatewayConfig, Usage
 from horizon.tracing import TRACER
 
+
+def chat_key(body: Mapping[str, Any]) -> str:
+    from horizon.evals.store import chat_key as k
+
+    return k(body)
+
+
+def jev_key(model: str, state: Any, questions: Mapping[str, Any], fingerprint: str | None) -> str:
+    from horizon.evals.store import jev_key as k
+
+    return k(model, state, questions, fingerprint)
+
+
+def embeddings_key(body: Mapping[str, Any]) -> str:
+    from horizon.evals.store import embeddings_key as k
+
+    return k(body)
+
 log = logging.getLogger("horizon.gateway")
 T = TypeVar("T")
 
@@ -177,7 +195,8 @@ class Gateway:
     # M7 (ai-foundation D27): build the redacted request/response bodies for `on_call` only when capture is on, so a
     # normal run never pays for them. Embedding inputs, vectors, image and audio bytes are never included.
     capture_bodies: bool = False
-    store: Any = None   # M7 (D31): a `horizon.evals.store.ResponseStore`, attached only by `horizon eval` runs
+    store: Any = None        # M7 (D31): the eval view (chat, Jev, embeddings), attached only by `horizon eval` runs
+    seed_store: Any = None   # M7 (D31): the seed view (embeddings only), used only when a caller passes store_ok
     # M3: the session manager's view of spend (cap pause on crossing; budget events of a session's call).
     on_spend: Callable[[CallContext, RecordResult], None] = lambda _ctx, _res: None
     on_budget: Callable[[dict[str, Any], CallContext], None] = lambda _ev, _ctx: None
@@ -199,6 +218,14 @@ class Gateway:
         self.embeddings = EmbeddingsClient(self.core, provider=self.cfg.embedding_provider, batch_size=self.cfg.embed_batch,
                                            timeout_s=t.embedding)
         self.meta = MetaClient(self.core, t.meta)
+
+    def _store_for(self, kind: str, store_ok: bool = False) -> Any:
+        """W10/D31: which store may serve this call. A hit sends nothing, reserves nothing and writes no ledger row."""
+        if self.store is not None and self.store.serves(kind):
+            return self.store
+        if store_ok and kind == "embeddings" and self.seed_store is not None:
+            return self.seed_store
+        return None
 
     # ── estimates ──
     def chat_estimate(self, req: ChatRequest, *, recent_outs: Sequence[int] = (), warm: bool = False,
@@ -423,9 +450,22 @@ class Gateway:
                             commit_with: CommitWith | None = None) -> ChatResult:
         est = self.chat_estimate(req) if estimate is None else estimate
         body: dict[str, Any] | None = {"request": {"messages": req.messages}} if self.capture_bodies else None
+        store = self._store_for("chat")
+        skey = chat_key(self.chat.body(req, stream=False)) if store is not None else ""
+        if store is not None and (hit := store.get("chat", skey)) is not None:
+            msg = ((hit["response"].get("choices") or [{}])[0].get("message") or {})
+            cached = ChatResult(generation_id="store", content=str(msg.get("content") or ""), finish_reason="stop",
+                                usage=None, provider="store", model=req.model, provider_warning=None, latency_ms=0)
+            if after_response is not None:
+                await after_response(cached)
+            return cached
 
         async def send() -> tuple[ChatResult, Billing]:
             r = await self.chat.complete(req)
+            if store is not None:
+                store.put("chat", skey, {"messages": req.messages},
+                          {"choices": [{"message": {"role": "assistant", "content": r.content}}], "model": r.model},
+                          {"cost": r.usage.cost_usd if r.usage else None})
             self._check_thinking(req, r.usage)
             if body is not None:
                 body["response"] = {"text": r.content}
@@ -445,11 +485,18 @@ class Gateway:
         """Streamed chat through the pipeline. Stopping early (aclose / cancel) records the estimate + generation_id.
         `on_recorded(row_id)` reports the ledger row (a prefetched reply links it to its message on release)."""
         est = self.chat_estimate(req) if estimate is None else estimate
+        store = self._store_for("chat")
+        skey = chat_key(self.chat.body(req, stream=False)) if store is not None else ""
+        if store is not None and (hit := store.get("chat", skey)) is not None:
+            msg = ((hit["response"].get("choices") or [{}])[0].get("message") or {})
+            yield ChatChunk(generation_id="store", content=str(msg.get("content") or ""), provider="store")
+            yield ChatChunk(generation_id="store", finish_reason="stop", provider="store")
+            return
         hold = await self._preflight(ctx, est)
         started = time.monotonic()
         summ: dict[str, Any] = {"kind": "chat_stream", "maxTokens": req.max_tokens, "model": req.model,
                                 "purpose": ctx.purpose}
-        parts: list[str] | None = [] if self.capture_bodies or TRACER.enabled else None
+        parts: list[str] | None = [] if self.capture_bodies or TRACER.enabled or store is not None else None
         if self.capture_bodies:
             summ["body"] = {"request": {"messages": req.messages}, "response": {"text": ""}}
         traced = contextlib.ExitStack()
@@ -489,6 +536,10 @@ class Gateway:
                 raise
             if done:
                 self._check_thinking(req, usage)
+                if store is not None and parts is not None:
+                    store.put("chat", skey, {"messages": req.messages},
+                              {"choices": [{"message": {"role": "assistant", "content": "".join(parts)}}]},
+                              {"cost": usage.cost_usd if usage else None})
                 await self._record(ctx, row(None, Billing(gid, usage, provider, req.model, finish_reason)), summ, on_recorded)
         finally:
             with contextlib.suppress(ValueError):   # a generator can be closed from another context
@@ -553,6 +604,13 @@ class Gateway:
         is recorded, so the ledger says whether the answer was on time, late or cancelled (ai-foundation design D6)."""
         est = self.decision_estimate(state, questions) if estimate is None else estimate
         m = model or self.decision_model
+        store = self._store_for("jev")
+        skey = jev_key(m, state, dict(questions), store.fingerprint) if store is not None else ""
+        if store is not None and (hit := store.get("jev", skey)) is not None:
+            r0 = hit["response"]
+            answers = r0.get("answers", r0.get("results")) or {}
+            return DecisionsResponse(generation_id="store", answers={str(k): v for k, v in answers.items()}, usage=None,
+                                     model=r0.get("model") or m)
 
         body: dict[str, Any] | None = ({"request": {"state": state, "questions": dict(questions)}}
                                        if self.capture_bodies else None)
@@ -561,6 +619,9 @@ class Gateway:
             r = await self.decisions.decide(state, questions, model=m)
             if body is not None:
                 body["response"] = {"answers": dict(r.answers)}
+            if store is not None:
+                store.put("jev", skey, {"state": state, "questions": dict(questions)},
+                          {"answers": dict(r.answers), "model": r.model}, {"cost": r.usage.cost_usd if r.usage else None})
             return r, Billing(r.generation_id, r.usage, None, r.model or m)
 
         summary: dict[str, Any] = {"kind": "decision", "questions": sorted(questions)}
@@ -612,13 +673,34 @@ class Gateway:
     async def embed_batch(self, texts: Sequence[str], ctx: CallContext, *, model: str, dimensions: int | None = None,
                           before_send: BeforeSend | None = None,
                           after_response: Callable[[list[list[float]]], Awaitable[None]] | None = None,
-                          commit_with: CommitWith | None = None) -> list[list[float]]:
+                          commit_with: CommitWith | None = None, store_ok: bool = False) -> list[list[float]]:
         """One embedding request (≤ `embed_batch` texts) as one paid call with the D-84 hooks: the ingestion worker marks
-        the batch sent, then stores its vectors in the ledger row's transaction (knowledge-memory-storage design D2)."""
+        the batch sent, then stores its vectors in the ledger row's transaction (knowledge-memory-storage design D2).
+        `store_ok` (seed knowledge and seed memories only, D31): a stored answer is reused at $0 with no ledger row; the
+        caller's `commit_with` still runs, in its own write transaction, so the vectors are written the same way."""
         est = estimate_embedding(self.prices, sum(count_tokens(x) for x in texts))
+        store = self._store_for("embeddings", store_ok)
+        skey = ""
+        if store is not None:
+            kbody: dict[str, Any] = {"model": model, "input": list(texts),
+                                     "provider": {"order": [self.cfg.embedding_provider], "allow_fallbacks": False}}
+            if dimensions:
+                kbody["dimensions"] = dimensions
+            skey = embeddings_key(kbody)
+            if (hit := store.get("embeddings", skey)) is not None:
+                vectors = [[float(x) for x in v] for v in hit["response"]["vectors"]]
+                if after_response is not None:
+                    await after_response(vectors)
+                if commit_with is not None:
+                    async with self.ledger.db.write() as tx:  # type: ignore[attr-defined]
+                        await commit_with(tx.conn, "")
+                return vectors
 
         async def send() -> tuple[list[list[float]], Billing]:
             r = await self.embeddings.embed_batch(texts, model=model, dimensions=dimensions)
+            if store is not None:
+                store.put("embeddings", skey, {"input": list(texts), "dimensions": dimensions}, {"vectors": r.vectors},
+                          {"cost": r.usage.cost_usd if r.usage else None})
             return r.vectors, Billing(r.generation_id, r.usage, r.provider, model)
 
         return await self.paid(ctx, est, send, model=model, summary={"kind": "embedding", "texts": len(texts)},

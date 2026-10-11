@@ -1,0 +1,15 @@
+{
+ "schemaVersion": 1,
+ "mode": "one_on_one",
+ "note": "Smoke conversation (ai-foundation D34): 3 user lines through an isolated runtime. Never a measurement.",
+ "world": "wld_seedMeridian",
+ "cast": [
+  "chr_seedAmara"
+ ],
+ "config": null,
+ "lines": [
+  "I've had a headache since Monday.",
+  "It's at the temples, mostly in the afternoon.",
+  "Should I cut back on coffee?"
+ ]
+}
