@@ -85,7 +85,8 @@ def _spec(cid: str, i: int, prompt: str, forced: set[str], forced_by: str | None
     return TurnSpec(
         speaker=cid, prompt=prompt, forced_by=(forced_by or "mention") if is_forced else None,
         message={"forcedSpeaker": True} if is_forced else None, skipped=skipped if i == 0 else None,
-        routing=routing, calls=[decision.call] if decision is not None and decision.call else [])
+        routing=routing, calls=[decision.call] if decision is not None and decision.call else [],
+        system1=decision.system1 if decision is not None else None)
 
 
 async def _route(actor: SessionActor, text: str, mentions: list[str]) -> tuple[RoutingDecision, list[Wire]]:

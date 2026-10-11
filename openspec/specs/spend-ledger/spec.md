@@ -7,11 +7,34 @@ The spend ledger is the single record of what Horizon spent. It holds one row pe
 ## Requirements
 
 ### Requirement: One row per paid call
-Every paid call SHALL write exactly one ledger row. The row SHALL carry the contract `category`, the internal `purpose`, the model, the serving provider, the pricing period, the generation ID, the token counts (in, cached, out), `cost_usd`, `estimated_cost_usd`, `latency_ms`, whether it counts toward a creation cap, and the session, character, job and message references. These columns are already in the storage schema.
+Every paid call SHALL write exactly one ledger row. The row SHALL carry:
+- the contract `category` and the internal `purpose`;
+- the model, the serving provider, the pricing period and the generation ID;
+- the token counts (in, cached, out, and reasoning when reported);
+- `cost_usd`, `estimated_cost_usd` and `latency_ms`;
+- whether it counts toward a creation cap;
+- the session, character, job and message references;
+- how the call ended (`finish_reason`).
+
+For a chat call, `finish_reason` SHALL be the provider's finish reason. For a decision call, it SHALL be:
+- `on_time` when the answer arrived before any deadline it was read by;
+- `late` when a deadline had already passed;
+- `cancelled` when the decision was cancelled first;
+- `final` when it was only read in full.
+
+A call served from the response store SHALL write no row.
 
 #### Scenario: Completed chat call
-- **WHEN** a recorded chat completion returns `usage.cost: 0.00042` from provider DeepSeek off-peak
-- **THEN** one row is written with `category: "chat"`, `cost_usd: 0.00042`, `cost_source: "provider"`, `provider: "DeepSeek"`, `price_period: "off_peak"` and a non-null `estimated_cost_usd`
+- **WHEN** a recorded chat completion returns `usage.cost: 0.00042` from provider DeepSeek off-peak with `finish_reason: "stop"`
+- **THEN** one row is written with `category: "chat"`, `cost_usd: 0.00042`, `cost_source: "provider"`, `provider: "DeepSeek"`, `price_period: "off_peak"`, `finish_reason: "stop"` and a non-null `estimated_cost_usd`
+
+#### Scenario: Late decision
+- **WHEN** a decision's 400 ms deadline passes and its answer lands at 650 ms
+- **THEN** its row has `finish_reason: "late"`
+
+#### Scenario: Reasoning tokens
+- **WHEN** a reply's usage reports `completion_tokens_details.reasoning_tokens: 0`
+- **THEN** its row has `tokens_reasoning: 0`
 
 ### Requirement: Estimate rows for calls that may have been charged
 A call that was sent and then cancelled or broken, before the provider reported its cost, SHALL be recorded at its estimate, with `cost_source: "estimate"` and the generation ID if one is known. Examples are a stopped stream, and a decision or embedding request cancelled after sending. A call refused before sending SHALL write no row.

@@ -10,7 +10,7 @@
         "type": "character",
         "characterId": "chr_seedTakeshi"
       },
-      "content": "Rain's perfect. Fish bite more when it's grey. Boots on, kiddo.",
+      "content": "Rain's perfect.\nFish bite more when it's grey. Boots on, kiddo.",
       "status": "complete",
       "createdAt": "2026-09-27T02:40:02Z",
       "emotion": "happy",
@@ -527,7 +527,7 @@
         "type": "character",
         "characterId": "chr_seedRin"
       },
-      "content": "the sky is a bot. fine. one hour. and you're carrying the cooler.",
+      "content": "the sky is a bot.\nfine. one hour. and you're carrying the cooler.",
       "status": "complete",
       "createdAt": "2026-09-27T02:40:22.777Z",
       "emotion": "angry",
@@ -838,7 +838,7 @@
         "type": "character",
         "characterId": "chr_seedTakeshi"
       },
-      "content": "Patch Notes it is. Your mother would've loved that.",
+      "content": "Patch Notes it is.\nYour mother would've loved that.",
       "status": "complete",
       "createdAt": "2026-09-27T02:40:34.217Z",
       "emotion": "happy",

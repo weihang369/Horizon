@@ -22,7 +22,7 @@
         "type": "character",
         "characterId": "chr_seedTakeshi"
       },
-      "content": "Sushi. And I'll be honest, I'm only saying that because I've been *fishing* for an invitation.",
+      "content": "Sushi.\nAnd I'll be honest, I'm only saying that because I've been *fishing* for an invitation.",
       "status": "complete",
       "createdAt": "2026-09-30T10:30:01.050Z",
       "emotion": "happy",
@@ -158,7 +158,7 @@
         "type": "character",
         "characterId": "chr_seedRin"
       },
-      "content": "dad. it's 7pm. the puns should be off-duty. pizza. extra pineapple. fight me.",
+      "content": "dad. it's 7pm. the puns should be off-duty.\npizza. extra pineapple. fight me.",
       "status": "complete",
       "createdAt": "2026-09-30T10:30:03.779Z",
       "emotion": "angry",
@@ -303,7 +303,7 @@
         "type": "character",
         "characterId": "chr_seedHana"
       },
-      "content": "Compromise? That little place by the station does both… sort of. Their \"fusion roll\" has pineapple in it, and Grandma always said a spoon of pineapple keeps sushi rice bright.[1]",
+      "content": "Compromise? That little place by the station does both… sort of.\nTheir \"fusion roll\" has pineapple in it, and Grandma always said a spoon of pineapple keeps sushi rice bright.[1]",
       "status": "complete",
       "createdAt": "2026-09-30T10:30:08.341Z",
       "emotion": "thinking",
@@ -469,7 +469,7 @@
         "type": "character",
         "characterId": "chr_seedRin"
       },
-      "content": "…i would eat it. i'm not happy about it. but i would eat it.",
+      "content": "…i would eat it.\ni'm not happy about it. but i would eat it.",
       "status": "complete",
       "createdAt": "2026-09-30T10:30:13.494Z",
       "emotion": "embarrassed",

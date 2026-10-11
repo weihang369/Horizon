@@ -18,7 +18,7 @@ from sqlalchemy.ext.asyncio import AsyncConnection
 from horizon.ai.contexts import RouteContext, SessionContext, TurnContext
 from horizon.gateway.context import CallContext
 
-OWNED_TRACE_KEYS = frozenset({"model", "energy", "routing", "calls", "messageId"})
+OWNED_TRACE_KEYS = frozenset({"model", "energy", "routing", "calls", "messageId", "system1"})   # system1: rev 1.4, D24
 
 
 # ── TurnEvent ──
@@ -53,6 +53,7 @@ class RoutingDecision:
     question: str = "Who should answer?"
     fallback: bool = False
     call: dict[str, Any] | None = None                   # the paid route call as a TurnTrace.calls entry
+    system1: dict[str, Any] | None = None                # rev 1.4: `{seed, questions: [route row]}`, on every reply (D25)
 
 
 @dataclass(frozen=True)

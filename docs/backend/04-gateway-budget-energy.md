@@ -85,6 +85,9 @@ The fallbacks live in the `Decider` (doc 05 §3).
 - **`cost_source = 'provider'`** when `usage.cost` arrives.
 - **A cancelled or broken call** that may have been charged (a stopped stream, a Jev or embedding request cancelled after it was sent) is recorded with **the estimate** (`cost_source = 'estimate'`) plus its `generation_id`. A background task then looks up `GET /generation?id=` with backoff, corrects the row **once**, and emits `energy` if it drained.
 - `estimated_cost_usd` is always recorded, so the Usage screen shows estimated vs actual (NFR-09). The row also records `price_period`, `provider`, `tokens_cached`, `latency_ms` and `counts_to_creation_cap`.
+- *M7 (`ai-foundation`, [docs/ai/03](../ai/03-llm-parameters.md) C2, C4; [docs/ai/13](../ai/13-wrap-up.md) W11):* two internal columns, not in the contract:
+  - `finish_reason`: how the call ended. For chat, the provider's finish reason (`stop`, `length`, …). For a Jev decision, `on_time`, `late` (a deadline read already fell back), `cancelled` or `final` (read only in full);
+  - `tokens_reasoning`: `completion_tokens_details.reasoning_tokens`, so a call made with thinking off that still thinks is caught.
 - **`Message.usage`** = the ledger rows with `message_id = X AND purpose = 'reply'`, plus the actor's timings.
   - `firstTokenMs` is measured **from the turn's trigger**: receiving `send` for the first responder, the previous `turn.end` for later speakers.
 - **`TurnTrace.calls[]`** (rev 1.3) lists every row for that `message_id`. The `messageId` is allocated **before** the first pre-generation call.

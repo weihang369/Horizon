@@ -37,7 +37,7 @@ def turn_ctx() -> TurnContext:
                                                                    role="speaker", energy={"current": 500, "max": 1000})],
                        recent=[], history_tokens=12)
     return TurnContext(session=s, speaker=CharacterView(id="chr_seedAmara", name="Amara Okafor", profile={"name": "Amara"}),
-                       message_id="msg_x1", prompt="hi", line=LineHint(kind="chat"), turn_index=3)
+                       message_id="msg_x1", prompt="hi", line=LineHint(kind="chat"), turn_index=3, max_tokens=200)
 
 
 def test_contexts_round_trip_through_json_and_are_frozen() -> None:

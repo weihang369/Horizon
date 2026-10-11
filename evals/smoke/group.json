@@ -1,0 +1,17 @@
+{
+ "schemaVersion": 1,
+ "mode": "group",
+ "note": "Smoke conversation (ai-foundation D34): 3 user lines through an isolated runtime. Never a measurement.",
+ "world": "wld_seedSunnyHollow",
+ "cast": [
+  "chr_seedHana",
+  "chr_seedRin",
+  "chr_seedTakeshi"
+ ],
+ "config": null,
+ "lines": [
+  "Dinner's on me tonight. What should we order?",
+  "Rin, would you eat sushi?",
+  "Hana, break the tie?"
+ ]
+}

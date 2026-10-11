@@ -5,14 +5,14 @@ import type { BankLine } from "./types";
 export const SEED_BANKS: Record<string, { chat: BankLine[]; scene: BankLine[] }> = {
   chr_seedAmara: {
     chat: [
-      { text: "Okay. Before I guess: how long has this been going on, and is it getting worse or staying the same?", emotion: "thinking", tags: ["pain", "hurt", "ache", "sick", "headache", "fever"] },
-      { text: "That's a red flag, and I'd rather be honest than reassuring: please get seen in person today. Sudden, severe or 'worst ever' symptoms don't wait.", emotion: "surprised", tags: ["worst", "sudden", "chest", "faint", "numb"] },
-      { text: "Sleep is the boring answer and usually the right one. Can you protect seven hours this week, even badly?", emotion: "neutral", tags: ["sleep", "tired", "insomnia", "night"] },
-      { text: "Honestly? That sounds like burnout talking, not weakness. What's one thing you could drop this week without anyone noticing?", emotion: "sad", tags: ["burnout", "stress", "work", "overwhelmed", "exhausted"] },
+      { text: "Okay. Before I guess:\nhow long has this been going on, and is it getting worse or staying the same?", emotion: "thinking", tags: ["pain", "hurt", "ache", "sick", "headache", "fever"] },
+      { text: "That's a red flag, and I'd rather be honest than reassuring: please get seen in person today.\nSudden, severe or 'worst ever' symptoms don't wait.", emotion: "surprised", tags: ["worst", "sudden", "chest", "faint", "numb"] },
+      { text: "Sleep is the boring answer and usually the right one.\nCan you protect seven hours this week, even badly?", emotion: "neutral", tags: ["sleep", "tired", "insomnia", "night"] },
+      { text: "Honestly? That sounds like burnout talking, not weakness.\nWhat's one thing you could drop this week without anyone noticing?", emotion: "sad", tags: ["burnout", "stress", "work", "overwhelmed", "exhausted"] },
       { text: "Good. That's exactly the kind of change that actually sticks. Small, boring, repeatable.", emotion: "happy", tags: ["better", "thanks", "helped", "good", "great"] },
       { text: "I can't diagnose you through a screen, but I can help you figure out which questions to bring to someone who can.", emotion: "neutral" },
       { text: "Let's figure out what's actually going on. Walk me through a normal day, start to finish.", emotion: "thinking" },
-      { text: "Ha! Fifteen years of night shifts and that's still the best excuse I've heard. Tea's getting cold, though. Keep going.", emotion: "happy" },
+      { text: "Ha! Fifteen years of night shifts and that's still the best excuse I've heard.\nTea's getting cold, though. Keep going.", emotion: "happy" },
     ],
     scene: [
       { text: "Everyone drink some water before we argue about anything else.", emotion: "neutral" },
@@ -51,10 +51,10 @@ export const SEED_BANKS: Record<string, { chat: BankLine[]; scene: BankLine[] }>
   },
   chr_seedHana: {
     chat: [
-      { text: "You're back! Come here, tell me everything. I saved you the last slice. Probably.", emotion: "happy", tags: ["hi", "hello", "hey", "back", "home"] },
-      { text: "Oh no, that sounds awful… Come sit. Do you want tea, or do you want to complain first? Both is allowed!", emotion: "sad", tags: ["bad", "tired", "awful", "sad", "rough", "long day", "work"] },
+      { text: "You're back! Come here, tell me everything.\nI saved you the last slice. Probably.", emotion: "happy", tags: ["hi", "hello", "hey", "back", "home"] },
+      { text: "Oh no, that sounds awful… Come sit.\nDo you want tea, or do you want to complain first? Both is allowed!", emotion: "sad", tags: ["bad", "tired", "awful", "sad", "rough", "long day", "work"] },
       { text: "W-wait, you remembered that?! Stop it, I'm going to turn the colour of my peonies.", emotion: "embarrassed", tags: ["love", "cute", "remember", "beautiful", "pretty", "gift"] },
-      { text: "Okay, so a customer came in today and asked for 'flowers that say sorry but not too sorry'. I gave him tulips. Was that right?!", emotion: "thinking" },
+      { text: "Okay, so a customer came in today and asked for 'flowers that say sorry but not too sorry'.\nI gave him tulips. Was that right?!", emotion: "thinking" },
       { text: "Hehe, you always know how to make my day bloom! Okay, that was terrible. I'm keeping it.", emotion: "happy" },
       { text: "Hey! You said you'd water the basil! It's looking very dramatic right now.", emotion: "angry", tags: ["forgot", "sorry", "oops"] },
       { text: "Wait, what?! Since when?! Tell me everything right now!", emotion: "surprised", tags: ["news", "guess", "surprise", "promoted"] },
@@ -67,10 +67,10 @@ export const SEED_BANKS: Record<string, { chat: BankLine[]; scene: BankLine[] }>
   chr_seedTakeshi: {
     chat: [
       { text: "Right on schedule. Sit down, kid. What's the trouble?", emotion: "neutral", tags: ["hi", "hello", "hey"] },
-      { text: "Every problem looks smaller from a fishing pier. Tomorrow, six a.m. Bring a jacket.", emotion: "thinking", tags: ["problem", "worried", "stress", "help"] },
-      { text: "Back in my day, trains ran on time and so did people. Anyway. Proud of you. Don't make it weird.", emotion: "happy", tags: ["did it", "finished", "passed", "got"] },
+      { text: "Every problem looks smaller from a fishing pier. Tomorrow, six a.m.\nBring a jacket.", emotion: "thinking", tags: ["problem", "worried", "stress", "help"] },
+      { text: "Back in my day, trains ran on time and so did people. Anyway.\nProud of you. Don't make it weird.", emotion: "happy", tags: ["did it", "finished", "passed", "got"] },
       { text: "Hmph. That's not a plan, that's a wish with a timetable missing.", emotion: "angry", tags: ["maybe", "someday", "later"] },
-      { text: "Why don't fish play basketball? Afraid of the net. …I'll see myself out.", emotion: "happy" },
+      { text: "Why don't fish play basketball? Afraid of the net.\n…I'll see myself out.", emotion: "happy" },
       { text: "Heh. Your mother used to say the same thing. Then she'd be right, too.", emotion: "sad" },
     ],
     scene: [
@@ -83,9 +83,9 @@ export const SEED_BANKS: Record<string, { chat: BankLine[]; scene: BankLine[] }>
       { text: "oh. it's you. hi. (that was a warm greeting btw)", emotion: "neutral", tags: ["hi", "hello", "hey"] },
       { text: "not antisocial. in a raid. different thing.", emotion: "angry", tags: ["come", "dinner", "outside", "join", "now"] },
       { text: "ok that's actually kind of cool. don't tell hana i said that.", emotion: "embarrassed", tags: ["cool", "made", "built", "game"] },
-      { text: "lol. no. ...ok maybe. depends if there's food.", emotion: "thinking", tags: ["want", "should", "go", "plan"] },
+      { text: "lol. no.\n...ok maybe. depends if there's food.", emotion: "thinking", tags: ["want", "should", "go", "plan"] },
       { text: "wait. WAIT. you're telling me this NOW?", emotion: "surprised", tags: ["news", "guess", "surprise"] },
-      { text: "gg. genuinely. ...moving on before this gets sincere.", emotion: "happy" },
+      { text: "gg. genuinely.\n...moving on before this gets sincere.", emotion: "happy" },
       { text: "mornings should be patched out of the game tbh.", emotion: "sad" },
     ],
     scene: [

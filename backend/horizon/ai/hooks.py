@@ -20,3 +20,19 @@ class NoOpHooks:
 
     async def on_forget(self, memory_item_ids: Sequence[str], character_id: str, message_ids: Sequence[str]) -> None:
         return None
+
+
+class CompositeHooks:
+    """Delivers each hook to every member in order (ai-foundation D29: capture now; M9+ adds the graph store).
+    Members are idempotent, so a redelivery after a partial failure is safe."""
+
+    def __init__(self, members: Sequence[AiStateHooks]) -> None:
+        self.members = list(members)
+
+    async def on_delete(self, scope: str, ids: Sequence[str]) -> None:
+        for m in self.members:
+            await m.on_delete(scope, ids)
+
+    async def on_forget(self, memory_item_ids: Sequence[str], character_id: str, message_ids: Sequence[str]) -> None:
+        for m in self.members:
+            await m.on_forget(memory_item_ids, character_id, message_ids)

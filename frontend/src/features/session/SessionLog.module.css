@@ -143,6 +143,8 @@
   color: var(--paper-50);
   font-style: italic;
 }
+/* docs/ai/03 C5: one reply, up to 4 bubbles stacked under one name tape. */
+.bubbles { display: flex; flex-direction: column; gap: 4px; align-items: stretch; min-width: 0; }
 .thinkingBubble { padding: 14px 20px; min-width: 76px; }
 .isStreaming { min-height: 46px; }
 
@@ -366,6 +368,7 @@
   text-shadow: 0 2px 0 var(--ink-900);
 }
 .scriptText p { display: inline; }
+.scriptLine { display: block; }
 .scriptRow .reactions { justify-content: center; }
 
 /* D-59: the SOURCES strip under a Watch script line. */

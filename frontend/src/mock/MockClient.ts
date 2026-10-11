@@ -508,7 +508,8 @@ export class MockClient implements HorizonClient {
       return this.settingsView();
     }),
     testConnection: () => this.live(() => ({ ok: true as const, latencyMs: 412, creditsUsd: 4.21 }), { costs: false }),
-    testModel: (role) => this.live(() => ({ ok: true as const, latencyMs: 380 + role.length * 20, model: this.db.settings.modelOverrides?.[role] ?? this.db.settings.models[role] }), { costs: false }),
+    // docs/ai/03 C9: Test probes the model the app uses; a stored override is ignored (v1 is tuned for one model set).
+    testModel: (role) => this.live(() => ({ ok: true as const, latencyMs: 380 + role.length * 20, model: this.db.settings.models[role] }), { costs: false }),
   };
 
   // ── Worlds ────────────────────────────────────────────────────────────────

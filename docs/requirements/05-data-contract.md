@@ -12,6 +12,8 @@
 >
 > **Rev 1.3 addendum (M1b `backend-foundation`):** `HorizonClient.admin.resetDemo()` (both clients; the app's "Reset demo data" buttons call it); world names unique case-insensitively, with the shipped seed world names reserved (`conflict`, `details.field: "name"`); `SessionSnapshot` and `UsageSummary` exported to `schema.json` so the backend validates those bodies too.
 >
+> **Rev 1.4 (M7 `ai-foundation`, [docs/ai/13](../ai/13-wrap-up.md) W1):** one optional field, `TurnTrace.system1`: every Jev question behind the turn, written only by the runtime. Additive: `SCHEMA_VERSION` stays 1, and every rev 1.3 entity and event still validates.
+>
 > §6 is reconciled with the code. The machine-readable form is `backend/horizon/contract/schema.json` (`npm run export-schema` in `frontend/`). Full list: [docs/backend/03 §7](../backend/03-api.md#7-contract-rev-13-additive).
 >
 > **Contract rev. 1.2 (D-59):** citations, `KnowledgeChunk` and knowledge traces.
@@ -375,6 +377,21 @@ TurnTrace {
   graph?:    { path: string[] };                  // LangGraph node path (INS-03, Could)
   calls?:    { purpose: string; model: string; costUsd: number; latencyMs: number; fallback?: boolean }[];
              // rev 1.3: every paid call behind this turn (Jev route/gate/rerank, embeddings, the reply itself)
+  system1?: {                                     // rev 1.4 (docs/ai/13 W1): runtime-only; at most 64 rows
+    seed?: string;                 // "{session seed}:{turn index}"; each question's shuffle seed adds ":{question id}" (doc 06 E1)
+    questions: {
+      purpose: string;             // turn_plan | follow_plan | debate_plan | deep_check | guardrail | face_check | route
+      id: string; version: number; // the question-bank entry (doc 02 B9)
+      label: string;               // short wording from the bank, worded as asked, e.g. "unsafe request?"
+      about?: string;              // an ID only, never text: a character, piece (kch_), message (msg_) or memory (mem_)
+      answer: string;              // the option, the level, "yes" / "no", or a fallback's outcome
+      p?: number;                  // the answer's probability; a noul: always p(yes); absent on a fallback
+      confidence?: number;         // a choice or score: Jev's confidence, which the floor is compared with (06 E1)
+      compared?: { name: string; value: number; threshold: number }[];   // every comparison code made
+      result: "used" | "below_threshold" | "fallback" | "not_used" | "shown_only";
+      action?: string;             // what code did, in a few words: "deep", "kept [1]", "no cue", "rewritten"
+    }[];
+  };
 }
 ```
 

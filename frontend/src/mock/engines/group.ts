@@ -4,6 +4,7 @@ import type { GroupConfig } from "../../contract/types";
 import { decisionCostUsd, ROUTE_DECISION_TOKENS } from "../../domain/cost";
 import type { EngineHost } from "./host";
 import { asleepNote, enqueue, isAsleep, speakThen, userMessage } from "./host";
+import { routeSystem1 } from "../system1";
 
 type Skip = { characterId: string; reason: "exhausted" | "muted" | "archived" };
 
@@ -33,6 +34,8 @@ export function runSpeakers(h: EngineHost, sid: string, speakers: string[], prom
         routing: opts.candidates
           ? { question: "Who should answer?", selected: cid, candidates: opts.candidates, ...(forced ? { forcedBy: opts.forcedBy ?? ("mention" as const) } : {}), ...(opts.skipped?.length ? { skipped: opts.skipped } : {}) }
           : undefined,
+        // rev 1.4: the route row, shared by every reply this routing decision started (the router's top pick).
+        system1: opts.candidates?.length ? routeSystem1(opts.candidates[0].characterId) : undefined,
       }, () => next());
     };
     next();

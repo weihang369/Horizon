@@ -1,0 +1,16 @@
+{
+  "name": "name_after_tag",
+  "doc": "Own name after the tag, split across chunks: stripped",
+  "chunks": [
+    "<e:happy>Me",
+    "i: Hi"
+  ],
+  "previous": "neutral",
+  "speaker": "Mei",
+  "perLine": false,
+  "expected": {
+    "emotion": "happy",
+    "source": "llm",
+    "text": "Hi"
+  }
+}

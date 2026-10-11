@@ -358,6 +358,8 @@ usage_records = Table(
     Column("latency_ms", Integer, nullable=True),
     Column("counts_to_creation_cap", Boolean, nullable=False, server_default=text("0")),
     Column("is_seed", Boolean, nullable=False),
+    Column("finish_reason", Text, nullable=True),        # 0003: chat finish reason, or a decision's on_time/late/…
+    Column("tokens_reasoning", Integer, nullable=True),  # 0003: reasoning tokens (thinking should be off)
     CheckConstraint(
         "category IN ('chat','decision','image','music','profile','summary','memory','embedding','energy_topup')",
         name="ck_usage_records_category"),
@@ -367,6 +369,35 @@ usage_records = Table(
     Index("ix_usage_records_session", "session_id"),
     Index("ix_usage_records_category_at", "category", "at"),
     Index("ix_usage_records_message", "message_id"),
+)
+
+# ── ai_calls: opt-in prompt capture (0003; docs/ai/02 B10; ai-foundation design D27) ──────────────────────────
+ai_calls = Table(
+    "ai_calls", metadata,
+    Column("id", Text, primary_key=True),
+    Column("kind", Text, nullable=False),
+    Column("created_at", Text, nullable=False),
+    Column("purpose", Text, nullable=True),
+    Column("category", Text, nullable=True),
+    Column("model", Text, nullable=True),
+    Column("provider", Text, nullable=True),
+    Column("latency_ms", Integer, nullable=True),
+    Column("cost_usd", Float, nullable=True),
+    Column("finish_reason", Text, nullable=True),
+    Column("error_code", Text, nullable=True),
+    Column("usage_record_id", Text, nullable=True),            # no FK: the ledger is never cascaded
+    Column("world_id", Text, _fk("worlds.id", "CASCADE"), nullable=True),
+    Column("session_id", Text, _fk("sessions.id", "CASCADE"), nullable=True),
+    Column("character_id", Text, nullable=True),               # no FK: tombstoned, purged by the AI state hooks
+    Column("message_id", Text, nullable=True),                 # no FK: a prefetched turn exists before its message
+    Column("request", J, nullable=False),
+    Column("response", J, nullable=True),
+    Column("dropped_before", Integer, nullable=False, server_default=text("0")),
+    CheckConstraint("kind IN ('call','turn')", name="ck_ai_calls_kind"),
+    Index("ix_ai_calls_created_at", "created_at"),
+    Index("ix_ai_calls_character", "character_id"),
+    Index("ix_ai_calls_session", "session_id"),
+    Index("ix_ai_calls_message", "message_id"),
 )
 
 # ── 3.7 Long-term memory ─────────────────────────────────────────────────────

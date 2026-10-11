@@ -130,7 +130,7 @@
     "type": "token",
     "payload": {
      "messageId": "msg_forkFixture1m0",
-     "delta": " What's goin"
+     "delta": "\nWhat's goin"
     }
    },
    {
@@ -411,7 +411,7 @@
     "type": "token",
     "payload": {
      "messageId": "msg_forkFixture1m2",
-     "delta": "sing. Wher"
+     "delta": "sing.\nWher"
     }
    },
    {
@@ -477,7 +477,7 @@
     "type": "token",
     "payload": {
      "messageId": "msg_forkFixture1m2",
-     "delta": " And has anyt"
+     "delta": "\nAnd has anyt"
     }
    },
    {
@@ -778,7 +778,7 @@
     "type": "token",
     "payload": {
      "messageId": "msg_forkFixture1m4",
-     "delta": " Caffeine with"
+     "delta": "\nCaffeine with"
     }
    },
    {
@@ -967,7 +967,7 @@
     "type": "token",
     "payload": {
      "messageId": "msg_forkFixture1m4",
-     "delta": " Taper rath"
+     "delta": "\nTaper rath"
     }
    },
    {
@@ -1399,7 +1399,7 @@
     "type": "token",
     "payload": {
      "messageId": "msg_forkFixture1m6",
-     "delta": " If it's sudd"
+     "delta": "\nIf it's sudd"
     }
    },
    {
@@ -1796,7 +1796,7 @@
      "type": "character",
      "characterId": "chr_seedAmara"
     },
-    "content": "Shift just ended and I've got tea. What's going on?",
+    "content": "Shift just ended and I've got tea.\nWhat's going on?",
     "status": "complete",
     "createdAt": "2026-09-29T21:14:00.700Z",
     "emotion": "happy",
@@ -1909,7 +1909,7 @@
      "type": "character",
      "characterId": "chr_seedAmara"
     },
-    "content": "Three days is long enough that I'd like a bit more detail before guessing. Where is it: behind the eyes, temples, back of the head? And has anything changed lately? Sleep, screen time, how much coffee you usually drink?",
+    "content": "Three days is long enough that I'd like a bit more detail before guessing.\nWhere is it: behind the eyes, temples, back of the head?\nAnd has anything changed lately? Sleep, screen time, how much coffee you usually drink?",
     "status": "complete",
     "createdAt": "2026-09-29T21:14:05.039Z",
     "emotion": "thinking",
@@ -2022,7 +2022,7 @@
      "type": "character",
      "characterId": "chr_seedAmara"
     },
-    "content": "That's a really useful clue. Caffeine withdrawal headaches tend to start a day or so after cutting back and can hang around for several days.[1] They're usually dull and on both sides, like you're describing.[2] Taper rather than stopping cold, keep hydrated, and an over-the-counter painkiller is reasonable if it's safe for you.",
+    "content": "That's a really useful clue.\nCaffeine withdrawal headaches tend to start a day or so after cutting back and can hang around for several days.[1] They're usually dull and on both sides, like you're describing.[2]\nTaper rather than stopping cold, keep hydrated, and an over-the-counter painkiller is reasonable if it's safe for you.",
     "status": "complete",
     "createdAt": "2026-09-29T21:14:10.539Z",
     "emotion": "happy",
@@ -2198,7 +2198,7 @@
      "type": "character",
      "characterId": "chr_seedAmara"
     },
-    "content": "Yes, and this is the honest caveat: I can't examine you. If it's suddenly the worst headache of your life, or it comes with fever, a stiff neck, vision changes, confusion or weakness, that's same-day medical care, not a chat with me.[1]",
+    "content": "Yes, and this is the honest caveat: I can't examine you.\nIf it's suddenly the worst headache of your life, or it comes with fever, a stiff neck, vision changes, confusion or weakness, that's same-day medical care, not a chat with me.[1]",
     "status": "complete",
     "createdAt": "2026-09-29T21:14:16.509Z",
     "emotion": "neutral",

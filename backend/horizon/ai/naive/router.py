@@ -1,10 +1,13 @@
 """The Jev Router (design D12; ai-ports "Jev router"; D-66 maximise Jev for bounded decisions).
 
-One Decider `choice` question over the eligible cast plus `none`, with a compact state (the cast with names, roles and
-when each last spoke, and the last 6 lines). @mentioned participants always answer first. For a group in `auto`, the
-top choice answers, then the next options above p 0.25, at most 2 responders in all. On a timeout (route: 400 ms) or a
-failure, the fallback is deterministic: the mentions, else the least-recently-spoken participant; the trace marks the
-fallback and carries no candidates. The paid route call (its ledger row has no message) is returned for `TurnTrace.calls`.
+One Decider `choice` question from the bank (`route` v2, ai-foundation design D3) over the eligible cast plus `none`,
+with a compact state whose user- and character-written text sits in `quoted_*` fields (doc 11 S6): the cast with
+names, roles and when each last spoke, the last 6 lines and the message. Options are shuffled by the per-turn seed
+(doc 01 A3 rule 4). @mentioned participants always answer first. For a group in `auto`, the top choice answers, then
+the next options above p 0.25, at most 2 responders in all; `route` has no floor (design D12). On a timeout (route:
+400 ms) or a failure, the fallback is deterministic: the mentions, else the least-recently-spoken participant; the
+trace marks the fallback and carries no candidates. The paid route call (its ledger row has no message) is returned
+for `TurnTrace.calls`.
 """
 
 from __future__ import annotations
@@ -16,10 +19,12 @@ from sqlalchemy import select
 from horizon.ai.contexts import RouteContext
 from horizon.ai.decider import Answers, Choice, ChoiceAnswer, DecisionResult
 from horizon.ai.ports import RoutingDecision
+from horizon.ai.questions import bank
 from horizon.ai.scripted.ports import AiDeps
 from horizon.db import tables as t
+from horizon.sessions.system1 import route_row
 
-QUESTION = "speaker"
+QUESTION = "route"
 QUEUE_P = 0.25
 MAX_RESPONDERS = 2
 RECENT_LINES = 6
@@ -34,15 +39,15 @@ class JevRouter:
         cast = [{"id": p.character_id, "name": p.name, "role": p.role, "lastSpoke": ctx.last_spoke.get(p.character_id, 0)}
                 for p in s.participants if p.character_id in ctx.eligible]
         lines = [f"{m.name}: {m.content[:200]}" for m in s.recent[-RECENT_LINES:]]
-        return {"mode": s.mode, "cast": cast, "recent": lines, "message": ctx.text[:500]}
+        return {"mode": s.mode, "quoted_cast": cast, "quoted_recent": lines, "quoted_message": ctx.text[:500]}
 
     def _question(self, ctx: RouteContext) -> Choice:
         names = {p.character_id: p for p in ctx.session.participants}
-        options = {cid: f"{names[cid].name}" + (f" ({names[cid].role})" if cid in names else "")
-                   for cid in ctx.eligible if cid not in ctx.mentions and cid in names}
-        options["none"] = "Nobody else should answer."
-        return Choice(instructions="Who in the cast should answer the user's last message next? Choose none if nobody "
-                                   "else needs to.", options=options)
+        values = [{"key": cid, "name": names[cid].name, "role": names[cid].role}
+                  for cid in ctx.eligible if cid in names]
+        q = bank().question(QUESTION, values=values, exclude=ctx.mentions, seed=f"{ctx.session.seed}:{ctx.turn_index}")
+        assert isinstance(q, Choice)
+        return q
 
     def fallback_pick(self, ctx: RouteContext) -> list[str]:
         """Mentions, else the least-recently-spoken eligible participant (never spoken first, then cast order)."""
@@ -57,7 +62,7 @@ class JevRouter:
     async def route(self, ctx: RouteContext) -> RoutingDecision:
         forced = [m for m in ctx.mentions if any(p.character_id == m for p in ctx.session.participants)]
         q = self._question(ctx)
-        if len(q.options) <= 1:  # nobody to ask about
+        if len(q.options) <= 1:  # nobody to ask about (only `none` left)
             return RoutingDecision(speakers=forced)
 
         async def fallback() -> Answers:
@@ -69,12 +74,18 @@ class JevRouter:
         res: DecisionResult = await decider.ask(self._state(ctx), {QUESTION: q}, call_ctx, purpose="route", fallback=fallback)
         answer = res.answers[QUESTION]
         assert isinstance(answer, ChoiceAnswer)
+        seed = f"{ctx.session.seed}:{ctx.turn_index}"
+        meta = q.meta
         if answer.source == "fallback":
             pick = self.fallback_pick(ctx)
             fb: dict[str, Any] = {"purpose": "route", "model": self.deps.prices.decision.model, "costUsd": 0.0,
                                   "latencyMs": float(decider.timeouts.for_decision("route") * 1000), "fallback": True}
-            return RoutingDecision(speakers=[*forced, *pick] if ctx.policy != "mentioned" else forced, fallback=True,
-                                   call=fb)
+            speakers = [*forced, *pick] if ctx.policy != "mentioned" else forced
+            row = route_row(version=meta.version if meta else 0, label=meta.label if meta else QUESTION,
+                            answer=pick[0] if pick else "none", p=None, confidence=None, fallback=True,
+                            action="least recently spoken answers" if pick else "only the mentioned answer")
+            return RoutingDecision(speakers=speakers, fallback=True, call=fb,
+                                   system1={"seed": seed, "questions": [row]})
         probs = dict(answer.probabilities or {answer.choice: 1.0})
         candidates: list[dict[str, Any]] = sorted(
             ({"characterId": c, "p": round(min(1.0, max(0.0, float(p))), 2)} for c, p in probs.items()
@@ -94,7 +105,12 @@ class JevRouter:
                 if c["characterId"] not in rest and float(c["p"]) > QUEUE_P:
                     rest.append(c["characterId"])
         call = await self._call(res.generation_id) if answer.source == "jev" else None
-        return RoutingDecision(speakers=[*forced, *rest], candidates=candidates, call=call)
+        action = ("nobody else answers" if answer.choice == "none"
+                  else "queued after the mention" if forced else "answers first")
+        row = route_row(version=meta.version if meta else 0, label=meta.label if meta else QUESTION, answer=answer.choice,
+                        p=probs.get(answer.choice), confidence=answer.confidence, fallback=False, action=action)
+        return RoutingDecision(speakers=[*forced, *rest], candidates=candidates, call=call,
+                               system1={"seed": seed, "questions": [row]})
 
     async def _call(self, generation_id: str | None) -> dict[str, Any] | None:
         """The route call's ledger row (no message ID; OQ-13), as a `TurnTrace.calls` entry."""

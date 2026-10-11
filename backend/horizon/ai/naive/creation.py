@@ -3,6 +3,10 @@
 - `NaiveDrafter`: one DeepSeek JSON-mode call (`response_format: json_object`, the schema in the system prompt)
   labelled `profile`, validated against the contract (an age under 18, a missing field or a bad palette fails the task, retryably). The
   draft's `profile` task makes the call; the other three draft tasks apply parts of the stored answer at $0.
+  JSON calls go through `complete_json` (docs/ai/03 C7, §5; ai-foundation design D19): the prompt asks for single
+  quotes inside text values; an answer that doesn't parse or validate gets the free local quote repair, then ONE paid
+  retry with the error appended (the cached prefix unchanged); a second failure is the task's retryable failure. Only
+  parse or validation failures retry: timeouts, transport errors, refusals and budget errors keep their handling.
 - `NaiveImageGenerator`: Seedream 5.0 Flash (D-61) through `generate_image` at 3:4 and 1K, `n: 1`. Edits, blinks and
   tweaks send the locked base original as their only reference image (a data URL).
 - `NaiveSong`: Lyria 3 Clip (D-87) through `generate_music`: one instrumental prompt compiled from the brief, a
@@ -14,8 +18,11 @@ from __future__ import annotations
 
 import json
 from collections.abc import Callable, Mapping, Sequence
+from dataclasses import replace
 from typing import Any
 
+from horizon.ai.jsonrepair import repair_json_quotes
+from horizon.ai.llm import llm_request
 from horizon.ai.ports import ImageJob, PaidHooks, SongJob
 from horizon.ai.scripted.ports import AiDeps
 from horizon.contract.validate import ContractSchema
@@ -34,6 +41,8 @@ DRAFT_LATENCY_MS = 8_000.0   # measured on DeepSeek in the 2026-10-06 live run (
 MAX_TOKENS = 2_400           # a whole draft measured 1,229 tokens: 1,200 cut every draft off mid-JSON
 FIELD_MAX_TOKENS = 1_200     # one rewritten field
 SCHEMA_PREFIX = "\nReturn only a JSON object that matches this JSON Schema (every property is required):\n"
+# group A A3: a nickname in unescaped double quotes broke 1 draft in 20, and its retry made the same mistake.
+QUOTE_RULE = "\nInside JSON text values, use single quotes for any quotation; never use a double quote inside a value."
 FIELDS = ("tagline", "greeting", "backstory", "goals")
 
 SYSTEM = ("You are Horizon's character drafter. From a one-line seed you write ONE original adult character (18 or "
@@ -81,6 +90,59 @@ def draft_schema(palette_ids: Sequence[str]) -> dict[str, Any]:
                  "paletteId": _str(enum=list(palette_ids)), "advisory": {"type": "boolean"}, "brief": brief})
 
 
+class InvalidJson(ProviderError):
+    """A JSON call's answer didn't parse or validate: the one failure `complete_json` retries."""
+
+    def __init__(self, message: str) -> None:
+        super().__init__("provider_error", message)
+
+
+
+async def complete_json[T](gw: Any, req: ChatRequest, ctx: CallContext, parse: Callable[[str], T], hooks: PaidHooks) -> T:
+    """docs/ai/03 C7 with group A's fix: parse → free quote repair → one paid retry (error appended) → failure.
+    Each call is its own ledger row; the first call commits with the task's `commit_with` even when its answer is
+    unusable, so the task's cost is the sum of both calls (the worker adds them up)."""
+    out: dict[str, T] = {}
+    failed: dict[str, str] = {}
+
+    def read(content: str) -> T:
+        try:
+            return parse(content)
+        except ProviderError as first:
+            repaired = repair_json_quotes(content)
+            if repaired == content:
+                raise InvalidJson(first.message) from first
+            try:
+                return parse(repaired)
+            except ProviderError:
+                raise InvalidJson(first.message) from first
+
+    async def after_first(r: ChatResult) -> None:
+        try:
+            out["v"] = read(r.content)
+        except InvalidJson as e:
+            failed["error"] = e.message   # billed; committed with the task, then retried once
+            return
+        if hooks.after_response is not None:
+            await hooks.after_response(out["v"])
+
+    async def after_retry(r: ChatResult) -> None:
+        out["v"] = read(r.content)       # a second failure raises: the row is still recorded
+        if hooks.after_response is not None:
+            await hooks.after_response(out["v"])
+
+    first = await gw.chat_complete(req, ctx, before_send=hooks.before_send, after_response=after_first,
+                                   commit_with=hooks.commit_with)
+    if not failed:
+        return out["v"]
+    retry = replace(req, messages=[*req.messages, {"role": "assistant", "content": first.content},
+                                   {"role": "user", "content": f"That wasn't valid: {failed['error']} Reply again with "
+                                                               "the whole JSON object only."}])
+    await gw.chat_complete(retry, ctx, before_send=hooks.before_send, after_response=after_retry,
+                           commit_with=hooks.commit_with)
+    return out["v"]
+
+
 def parse_draft(content: str, schema: ContractSchema, palette_ids: Sequence[str]) -> dict[str, Any]:
     """The model's JSON → a contract-valid draft, or a retryable `provider_error` (nothing is applied)."""
     try:
@@ -121,29 +183,23 @@ class NaiveDrafter:
         return DRAFT_LATENCY_MS
 
     @staticmethod
-    def _request(model: str, user: str, schema: dict[str, Any], max_tokens: int) -> ChatRequest:
+    def _request(model: str, user: str, schema: dict[str, Any], max_tokens: int, row: Any = None) -> ChatRequest:
         """JSON mode, not strict `json_schema`: DeepSeek's own endpoint has no structured outputs, so under
         `require_parameters` the pinned provider was always skipped for a fallback (45–99 s, against DeepSeek's 7–8 s,
-        in the 2026-10-06 live run). `parse_draft` still checks every answer against the contract."""
-        system = SYSTEM + SCHEMA_PREFIX + json.dumps(schema, separators=(",", ":"))
-        return ChatRequest(model=model, max_tokens=max_tokens, reasoning={"enabled": False},
-                           messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
-                           response_format={"type": "json_object"})
+        in the 2026-10-06 live run). `parse_draft` still checks every answer against the contract. The `profile`
+        settings row gives thinking off and temperature 1.0 (docs/ai/03 C1)."""
+        system = SYSTEM + SCHEMA_PREFIX + json.dumps(schema, separators=(",", ":")) + QUOTE_RULE
+        messages = [{"role": "system", "content": system}, {"role": "user", "content": user}]
+        if row is None:   # a bare AiDeps (unit tests): the same settings, spelled out
+            return ChatRequest(model=model, max_tokens=max_tokens, temperature=1.0, reasoning={"enabled": False},
+                               messages=messages, response_format={"type": "json_object"})
+        return llm_request(row, model, messages, max_tokens=max_tokens, response_format={"type": "json_object"})
 
     async def draft(self, ctx: CallContext, *, seed_prompt: str, intent: str, cost_usd: float, duration_ms: float,
                     model: str, hooks: PaidHooks) -> dict[str, Any]:
         ids = list(self.palette_ids())
         req = self._request(model, f"Seed: {seed_prompt}\nIntent: {intent}", draft_schema(ids), MAX_TOKENS)
-        parsed: dict[str, Any] = {}
-
-        async def after(r: ChatResult) -> None:
-            parsed.update(parse_draft(r.content, self.schema(), ids))  # invalid → the row is still recorded, then raise
-            if hooks.after_response is not None:
-                await hooks.after_response(parsed)
-
-        await self.deps.gateway().chat_complete(req, ctx, before_send=hooks.before_send, after_response=after,
-                                                commit_with=hooks.commit_with)
-        return parsed
+        return await complete_json(self.deps.gateway(), req, ctx, lambda c: parse_draft(c, self.schema(), ids), hooks)
 
     async def regenerate_field(self, ctx: CallContext, *, profile: Mapping[str, Any], field: str, attempt: int,
                                cost_usd: float, duration_ms: float, model: str, hooks: PaidHooks) -> dict[str, Any]:
@@ -152,23 +208,18 @@ class NaiveDrafter:
         schema = _obj({field: _str(maxLength=80) if field == "tagline" else _str()})
         user = (f"Character: {json.dumps(dict(profile), ensure_ascii=False)[:4000]}\nRewrite only the field "
                 f"{field!r}, in the same voice, as JSON.")
-        out: dict[str, Any] = {}
-
-        async def after(r: ChatResult) -> None:
+        def parse(content: str) -> dict[str, Any]:
             try:
-                value = json.loads(r.content).get(field)
+                value = json.loads(content).get(field)
             except (ValueError, AttributeError) as e:
                 raise ProviderError("provider_error", "The drafter returned something that isn't JSON.") from e
             if not isinstance(value, str) or not value.strip():
                 raise ProviderError("provider_error", f"The drafter returned no {field}.")
-            out[field] = value.strip()
-            if hooks.after_response is not None:
-                await hooks.after_response(out)
+            return {field: value.strip()}
 
-        await self.deps.gateway().chat_complete(self._request(model, user, schema, FIELD_MAX_TOKENS), ctx,
-                                                before_send=hooks.before_send, after_response=after,
-                                                commit_with=hooks.commit_with)
-        return out
+        return await complete_json(self.deps.gateway(),
+                                   self._request(model, user, schema, FIELD_MAX_TOKENS, self.deps.llm("profile")), ctx,
+                                   parse, hooks)
 
 
 class NaiveImageGenerator:

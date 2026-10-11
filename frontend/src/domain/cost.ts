@@ -26,12 +26,15 @@ export interface GatewayConfig {
     order: string[]; require_parameters: boolean; allow_fallbacks: boolean;
     quantizations: string[]; data_collection: "allow" | "deny";
   };
-  fallbackModel: string;
   embeddingProvider: string;
   embedBatch: number;
   timeoutsMs: {
     chatFirstToken: number; chatIdle: number; image: number; music: number; embedding: number; meta: number;
-    decision: { route: number; gate: number; rerank: number; emotion: number; default: number };
+    /** Jev deadlines per question deadline key (docs/ai/13 W12; group A A2). Keys a change doesn't call yet are inert. */
+    decision: {
+      route: number; turn_plan: number; follow_plan: number; debate_plan: number; guardrail: number;
+      guardrail_prompt: number; reaction: number; face_check: number; default: number;
+    };
   };
 }
 

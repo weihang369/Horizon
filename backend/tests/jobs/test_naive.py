@@ -11,9 +11,10 @@ from typing import Any
 import httpx
 from PIL import Image
 
-from horizon.ai.naive.creation import draft_schema
+from horizon.ai.naive.creation import QUOTE_RULE, draft_schema
 from horizon.ai.scripted.drafts import draft_from_seed
 from horizon.contract.validate import default_schema
+from horizon.gateway.fake import load_canned
 from horizon.runtime import load_palettes
 from tests.conftest import SEED_DIR, Api
 from tests.jobs.kit import API, cancel_overlay_jobs, character, job, ledger, rows, start
@@ -117,7 +118,7 @@ async def test_naive_draft_missing_field_or_minor_fails(api: Api) -> None:
     minor = valid_draft()
     minor["profile"]["age"] = 16
     for content in (json.dumps(bad), json.dumps(minor), "not json"):
-        fake.queued.append(chat_answer(content))
+        fake.queued.extend([chat_answer(content), chat_answer(content)])   # the one JSON retry fails the same way
         out = await draft(api)
         done = await settle_job(api, out["job"]["id"])
         assert done["status"] == "failed"
@@ -126,8 +127,45 @@ async def test_naive_draft_missing_field_or_minor_fails(api: Api) -> None:
         assert profile_task["error"]["retryable"] is True
         ch = await character(api, out["character"]["id"])
         assert ch["profile"]["role"] == "Drafting…" and ch["creationStep"] == "seed"   # unchanged
-        assert len(await ledger(api, out["job"]["id"])) == 1   # the provider charged; the row is kept
+        assert len(await ledger(api, out["job"]["id"])) == 2   # both calls charged; both rows are kept (C7)
         await api.client.delete(f"{API}/characters/{out['character']['id']}")
+
+
+# ── ai-foundation 3.8: the JSON quote fix and the one paid retry (docs/ai/03 C7; group A A3; design D19) ──
+async def task_cost(api: Api, job_id: str) -> float:
+    (r,) = await rows(api, "SELECT cost_usd FROM generation_tasks WHERE job_id = :j AND type = 'profile'", j=job_id)
+    return float(r["cost_usd"])
+
+
+async def test_quote_slip_is_repaired_without_a_second_call(api: Api) -> None:
+    await naive(api, drafter="naive")
+    fake = api.rt.fake
+    assert fake is not None
+    broken = next(r for r in load_canned("profile-drafts")[1] if not r["valid"])["content"]
+    fake.queued.append(chat_answer(broken))
+    out = await draft(api)
+    done = await settle_job(api, out["job"]["id"])
+    assert done["status"] == "succeeded", done
+    assert "Rhett" in (await character(api, out["character"]["id"]))["profile"]["name"]
+    assert fake.counts["chat"] == 1 and len(await ledger(api, out["job"]["id"])) == 1
+    system = json.loads(next(r for r in reversed(fake.requests) if r.url.path.endswith("/chat/completions")).content)
+    assert QUOTE_RULE.strip() in system["messages"][0]["content"]
+
+
+async def test_unusable_then_valid_retry_is_two_rows_and_the_cost_is_the_sum(api: Api) -> None:
+    await naive(api, drafter="naive")
+    fake = api.rt.fake
+    assert fake is not None
+    fake.queued.extend([chat_answer("{\"profile\": ", cost=0.0004), chat_answer(json.dumps(valid_draft()), cost=0.0003)])
+    out = await draft(api)
+    done = await settle_job(api, out["job"]["id"])
+    assert done["status"] == "succeeded", done
+    rows_ = await ledger(api, out["job"]["id"])
+    assert [r["purpose"] for r in rows_] == ["profile", "profile"]
+    assert abs(await task_cost(api, out["job"]["id"]) - 0.0007) < 1e-9
+    bodies = [json.loads(r.content) for r in fake.requests if r.url.path.endswith("/chat/completions")][-2:]
+    assert bodies[1]["messages"][:2] == bodies[0]["messages"]          # the cached prefix unchanged
+    assert bodies[1]["messages"][-1]["role"] == "user" and "wasn't valid" in bodies[1]["messages"][-1]["content"]
 
 
 # ── 9.2: the naive image generator ──

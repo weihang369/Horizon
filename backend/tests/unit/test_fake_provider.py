@@ -50,7 +50,7 @@ async def test_every_endpoint_answers(no_sockets: None) -> None:
             "who": {"type": "choice", "instructions": "pick", "criteria": {"amara": "A", "none": "nobody"}},
             "gate": {"type": "noul", "instructions": "need?", "criteria": {"true": "yes", "false": "no"}},
             "tone": {"type": "score", "instructions": "how", "criteria": ["low", "mid", "high"]}}}, http_timeout=5)).json()
-        assert dec["answers"]["who"]["choice"] == "amara" and dec["answers"]["gate"] == {"noul": 0.5}
+        assert dec["answers"]["who"]["choice"] == "amara" and dec["answers"]["gate"] == {"type": "noul", "noul": 0.5}
         assert dec["answers"]["tone"]["score"] == 1 and dec["usage"]["output_tokens"] == 0
         emb = (await c.request("POST", "/v1/embeddings", json={"model": "q", "input": ["a", "b"], "dimensions": 8},
                                http_timeout=5)).json()

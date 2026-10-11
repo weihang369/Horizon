@@ -1,9 +1,26 @@
 // Backend runtime knobs (session-runtime design D9), emitted with the mock's timing table into seed/runtime.json, so
 // the backend paces live sessions from the same committed numbers the MockClient uses. The mock never reads this file.
 // Owner: SWE.
+/** One settings row per DeepSeek call type (docs/ai/03 C1, C2): code never hard-codes these. Owner: AI. */
+export interface LlmCallRow {
+  /** off = `reasoning: {enabled: false}` (every call today); low / high only after the latency suite passes again. */
+  thinking: "off" | "low" | "high";
+  /** null = send no temperature (the provider default). */
+  temperature: number | null;
+  output: "stream" | "text" | "json";
+  /** A fixed safety net, for calls whose cap isn't per mode (replies use `replyMaxTokens`). */
+  maxTokens?: number;
+}
+
 export interface RuntimeConfig {
-  /** Per-mode reply caps (`max_tokens`) for the naive turn engine; debate by turn length. */
-  replyMaxTokens: { one_on_one: number; group: number; watch: number; debate: { short: number; medium: number; long: number } };
+  /** Per-mode reply caps (`max_tokens`), a safety net about 1.5–2× the prompt's length target (docs/ai/03 C4);
+   *  `one_on_one_deep` is used once a turn plan says the turn is deep (M9); debate by turn length. */
+  replyMaxTokens: {
+    one_on_one: number; one_on_one_deep: number; group: number; watch: number;
+    debate: { short: number; medium: number; long: number };
+  };
+  /** docs/ai/03 C1: the DeepSeek call settings, by call key. */
+  llm: { calls: Record<string, LlmCallRow> };
   /** History window in tokens; when full, the oldest half is dropped in one step (cache-friendly). */
   windowTokens: number;
   /** Token coalescing: flush at this many characters or this much clock time since the first buffered delta. */
@@ -20,7 +37,23 @@ export interface RuntimeConfig {
 }
 
 export const RUNTIME: RuntimeConfig = {
-  replyMaxTokens: { one_on_one: 350, group: 250, watch: 220, debate: { short: 200, medium: 320, long: 480 } },
+  replyMaxTokens: {
+    one_on_one: 200, one_on_one_deep: 300, group: 150, watch: 150, debate: { short: 200, medium: 320, long: 480 },
+  },
+  llm: {
+    calls: {
+      "reply.chat": { thinking: "off", temperature: 1.3, output: "stream" },
+      "reply.debate": { thinking: "off", temperature: 1.0, output: "stream" },
+      host: { thinking: "off", temperature: 1.0, output: "text", maxTokens: 120 },
+      verdict: { thinking: "off", temperature: 0.7, output: "json", maxTokens: 1200 },
+      summary: { thinking: "off", temperature: 0.7, output: "text" },
+      episode: { thinking: "off", temperature: 0.7, output: "text", maxTokens: 400 },
+      memory: { thinking: "off", temperature: 0.7, output: "json" },
+      query_rewrite: { thinking: "off", temperature: 0.0, output: "text", maxTokens: 60 },
+      profile: { thinking: "off", temperature: 1.0, output: "json", maxTokens: 2400 },
+      probe: { thinking: "off", temperature: null, output: "text", maxTokens: 1 },
+    },
+  },
   windowTokens: 6000,
   coalesce: { maxChars: 48, maxMs: 50 },
   idleReleaseMs: 600_000,

@@ -22,7 +22,7 @@
         "type": "character",
         "characterId": "chr_seedHana"
       },
-      "content": "Welcome back!! I saved you the last slice of yuzu cake. It's on the counter. Probably. Rin was circling it.",
+      "content": "Welcome back!! I saved you the last slice of yuzu cake.\nIt's on the counter. Probably. Rin was circling it.",
       "status": "complete",
       "createdAt": "2026-09-30T19:02:03.150Z",
       "emotion": "happy",
@@ -135,7 +135,7 @@
         "type": "character",
         "characterId": "chr_seedHana"
       },
-      "content": "Oh! A customer ordered fifty sunflowers for a proposal. FIFTY. The whole shop looked like a sunrise.",
+      "content": "Oh! A customer ordered fifty sunflowers for a proposal.\nFIFTY. The whole shop looked like a sunrise.",
       "status": "complete",
       "createdAt": "2026-09-30T19:02:07.772Z",
       "emotion": "happy",
@@ -248,7 +248,7 @@
         "type": "character",
         "characterId": "chr_seedHana"
       },
-      "content": "…also, um. I might have sold the bouquet I was making for *you* to that same customer. He looked so nervous! I'll make you another one. With extra ranunculus. Please don't laugh.",
+      "content": "…also, um. I might have sold the bouquet I was making for *you* to that same customer.\nHe looked so nervous!\nI'll make you another one. With extra ranunculus. Please don't laugh.",
       "status": "complete",
       "createdAt": "2026-09-30T19:02:13.218Z",
       "emotion": "embarrassed",

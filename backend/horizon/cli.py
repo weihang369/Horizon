@@ -126,6 +126,9 @@ def _models_fetch(_args: argparse.Namespace) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
+    from horizon.tracing import guard_env
+
+    guard_env()   # ai-foundation D30: tracing is forced off before anything else runs, unless opted in
     p = argparse.ArgumentParser(prog="horizon", description="Horizon local backend (loopback only).")
     sub = p.add_subparsers(dest="cmd", required=True)
     s = sub.add_parser("serve", help="run the API server")
@@ -147,6 +150,9 @@ def main(argv: list[str] | None = None) -> int:
     msub = m.add_subparsers(dest="models_cmd", required=True)
     fetch = msub.add_parser("fetch", help="download the Docling models into data/models/ (once; after npm run setup:docling)")
     fetch.set_defaults(fn=_models_fetch)
+    from horizon.evals.cli import register as register_eval
+
+    register_eval(sub)
     args = p.parse_args(argv)
     return int(args.fn(args))
 

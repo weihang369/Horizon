@@ -1,0 +1,59 @@
+// O08's "System 1 · Jev" section (docs/ai/13 W1; system1-trace "The Insight section"). Static markup in node.
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { describe, expect, it } from "vitest";
+import type { TurnTrace } from "../../contract/types";
+import { groupSystem1, resolveId, showSystem1, System1Rows } from "./System1Section";
+
+const nameOf = (id: string) => ({ chr_seedHana: "Hana", chr_seedRin: "Rin" } as Record<string, string>)[id] ?? id;
+
+const trace: TurnTrace = {
+  messageId: "msg_a1",
+  calls: [{ purpose: "route", model: "typesafe/jev-1.13", costUsd: 0.00002, latencyMs: 412 }],
+  knowledge: { retrieved: [{ chunkId: "kch_p1", sourceId: "kno_s1", title: "Shift Fatigue Review", locator: "p. 3", text: "…", score: 0.8, cited: true }] },
+  system1: {
+    questions: [
+      { purpose: "route", id: "route", version: 2, label: "who replies?", answer: "chr_seedHana", p: 0.71, confidence: 0.71, result: "used", action: "answers first" },
+      { purpose: "turn_plan", id: "emotion", version: 1, label: "emotion", about: "chr_seedRin", answer: "happy", confidence: 0.5, result: "not_used" },
+      { purpose: "turn_plan", id: "needs_docs", version: 1, label: "needs documents?", about: "chr_seedHana", answer: "yes", p: 0.81,
+        compared: [{ name: "p", value: 0.81, threshold: 0.35 }], result: "used", action: "deep" },
+      { purpose: "deep_check", id: "passage", version: 1, label: "does this passage answer it?", about: "kch_p1", answer: "answers", result: "fallback" },
+    ],
+  },
+};
+
+describe("System 1 section", () => {
+  it("groups by purpose in first-seen order, with the slowest call's latency or fallback", () => {
+    const g = groupSystem1(trace);
+    expect(g.map((x) => x.purpose)).toEqual(["route", "turn_plan", "deep_check"]);
+    expect(g[0].latencyMs).toBe(412);
+    expect(g[2].fallback).toBe(true);
+    expect(g[1].rows).toHaveLength(1);
+    expect(g[1].folded).toHaveLength(1);
+  });
+
+  it("shows the route row with the speaker's name, p and its band, and comparisons", () => {
+    const html = renderToStaticMarkup(createElement(System1Rows, { trace, nameOf }));
+    expect(html).toContain("who replies?");
+    expect(html).toContain("Hana");
+    expect(html).toMatch(/p 0\.71/);
+    expect(html).toContain("HIGH");
+    expect(html).toContain("0.81 ≥ 0.35");
+    expect(html).toContain("→ deep");
+    expect(html).toContain("asked about the others (1)");
+    expect(html).not.toContain("chr_seedHana");
+  });
+
+  it("resolves IDs to names or titles, never text", () => {
+    expect(resolveId("kch_p1", trace, nameOf)).toBe("Shift Fatigue Review (p. 3)");
+    expect(resolveId("mem_x", trace, nameOf)).toBe("a memory");
+    expect(resolveId("chr_seedRin", trace, nameOf)).toBe("Rin");
+  });
+
+  it("is hidden without rows and absent in Compact mode", () => {
+    expect(groupSystem1({ messageId: "msg_a1" })).toEqual([]);
+    expect(showSystem1({ messageId: "msg_a1" }, false)).toBe(false);
+    expect(showSystem1(trace, true)).toBe(false);
+    expect(showSystem1(trace, false)).toBe(true);
+  });
+});

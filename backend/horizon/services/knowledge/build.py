@@ -96,11 +96,11 @@ async def _fill(rt: Runtime, space: SpaceSpec) -> tuple[int, int]:
         old_mem, _ = spaces.vec_tables(active.id)
         mem, kno = spaces.vec_tables(space.id)
         chunk_rows = (await conn.execute(text(
-            f"SELECT c.rid, c.text, c.character_id, c.world_id FROM knowledge_chunks c "
+            f"SELECT c.rid, c.text, c.character_id, c.world_id, s.is_seed FROM knowledge_chunks c "
             f"JOIN knowledge_sources s ON s.id = c.source_id WHERE s.status = 'indexed' "
             f"AND c.rid NOT IN (SELECT rid FROM {kno}) ORDER BY c.character_id, c.rid"))).all()
         memory_rows = (await conn.execute(text(
-            f"SELECT m.rid, m.text, m.character_id, m.world_id FROM memory_items m "
+            f"SELECT m.rid, m.text, m.character_id, m.world_id, m.is_seed FROM memory_items m "
             f"WHERE m.rid IN (SELECT rid FROM {old_mem}) AND m.rid NOT IN (SELECT rid FROM {mem}) "
             f"ORDER BY m.character_id, m.rid"))).all()
     chunks = await _embed_rows(rt, space, kno, "knowledge_chunks", chunk_rows)
@@ -109,20 +109,20 @@ async def _fill(rt: Runtime, space: SpaceSpec) -> tuple[int, int]:
 
 
 async def _embed_rows(rt: Runtime, space: SpaceSpec, table: str, source_table: str, rows: Sequence[Any]) -> int:
-    groups: dict[tuple[str, str], list[tuple[int, str]]] = {}
-    for rid, body, cid, wid in rows:
-        groups.setdefault((str(cid), str(wid)), []).append((int(rid), str(body)))
+    groups: dict[tuple[str, str, bool], list[tuple[int, str]]] = {}
+    for rid, body, cid, wid, is_seed in rows:   # D31: seed text may use the seed store; user text never
+        groups.setdefault((str(cid), str(wid), bool(is_seed)), []).append((int(rid), str(body)))
     embedder = rt.ai.embedder(True)
     written = 0
-    for (cid, wid), items in groups.items():
+    for (cid, wid, seed), items in groups.items():
         rids = [rid for rid, _ in items]
 
-        def hooks(batch: Batch, *, _rids: list[int] = rids, _cid: str = cid) -> BatchHooks:
+        def hooks(batch: Batch, *, _rids: list[int] = rids, _cid: str = cid, _seed: bool = seed) -> BatchHooks:
             async def commit(conn: AsyncConnection, _row_id: str, b: Batch) -> None:
                 nonlocal written
                 written += await _write(conn, table, source_table, _cid, [_rids[i] for i in b.indices], b.vectors)
 
-            return BatchHooks(before_send=None, commit_with=commit)
+            return BatchHooks(before_send=None, commit_with=commit, store_ok=_seed)
 
         ctx = call_ctx("embed_doc", world_id=wid, character_id=cid)
         async with rt.embed_slots.slot():

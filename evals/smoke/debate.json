@@ -1,0 +1,38 @@
+{
+ "schemaVersion": 1,
+ "mode": "debate",
+ "note": "Smoke conversation (ai-foundation D34): 3 user lines through an isolated runtime. Never a measurement.",
+ "world": "wld_seedMeridian",
+ "cast": [
+  "chr_seedAmara",
+  "chr_seedVictor"
+ ],
+ "config": {
+  "motion": "This house would tax sugary drinks",
+  "format": "two_sided",
+  "sides": {
+   "prop": [
+    "chr_seedAmara"
+   ],
+   "opp": [
+    "chr_seedVictor"
+   ]
+  },
+  "roundsPreset": "quick",
+  "phases": [
+   "opening",
+   "closing"
+  ],
+  "turnLength": "short",
+  "moderator": "user",
+  "verdictBy": "arbiter",
+  "rubric": [],
+  "autoAdvance": true,
+  "pauseMs": 1500
+ },
+ "lines": [
+  "Numbers, please.",
+  "What about the poorest households?",
+  "Close it out."
+ ]
+}

@@ -13,6 +13,7 @@ class Usage:
     tokens_out: int | None = None
     tokens_cached: int | None = None
     cost_usd: float | None = None       # the provider's `usage.cost`; None = not reported (estimate + correction)
+    tokens_reasoning: int | None = None  # `completion_tokens_details.reasoning_tokens` (thinking should be off, C2)
 
 
 def _int(v: Any) -> int | None:
@@ -29,11 +30,14 @@ def parse_usage(u: Any) -> Usage | None:
         return None
     details = u.get("prompt_tokens_details")
     cached = details.get("cached_tokens") if isinstance(details, Mapping) else None
+    out_details = u.get("completion_tokens_details")
+    reasoning = out_details.get("reasoning_tokens") if isinstance(out_details, Mapping) else None
     return Usage(
         tokens_in=_int(u.get("prompt_tokens", u.get("input_tokens"))),
         tokens_out=_int(u.get("completion_tokens", u.get("output_tokens"))),
         tokens_cached=_int(cached),
         cost_usd=_float(u.get("cost")),
+        tokens_reasoning=_int(reasoning),
     )
 
 
@@ -56,7 +60,6 @@ class GatewayConfig:
     """`seed/pricing.json` → `gateway` (design D9). Times are seconds here; the file stores milliseconds."""
 
     routing: Mapping[str, Any]
-    fallback_model: str
     embedding_provider: str
     embed_batch: int
     timeouts: Timeouts
@@ -66,7 +69,6 @@ class GatewayConfig:
         t = g["timeoutsMs"]
         return GatewayConfig(
             routing=dict(g["routing"]),
-            fallback_model=str(g["fallbackModel"]),
             embedding_provider=str(g["embeddingProvider"]),
             embed_batch=int(g["embedBatch"]),
             timeouts=Timeouts(

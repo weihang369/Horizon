@@ -1,4 +1,4 @@
-// Zod schemas for every doc 05 shape (contract rev 1.3). types.ts stays canonical:
+// Zod schemas for every doc 05 shape (contract rev 1.4). types.ts stays canonical:
 // each schema is checked against its type with `satisfies z.ZodType<T>`, so the two cannot drift.
 // Objects are strict, so fixture typos fail validation instead of being silently dropped.
 import { z } from "zod";
@@ -6,7 +6,7 @@ import type {
   AppSettings, Appearance, Character, CharacterProfile, Citation, DebateConfig, DebateState, EmotionAsset, EmotionAssetRef,
   Energy, GenerationJob, GenerationTask, GroupConfig, KnowledgeChunk, KnowledgeSource, MemoryItem, Message, MessageAuthor,
   MessageUsage, Palette, Participant, Reaction, Session, SessionEvent, SongBrief, StylePreset, SystemTrack,
-  ThemeSong, TurnCall, TurnTrace, UsageRecord, Verdict, WatchConfig, WatchState, World, YouCard,
+  System1Row, ThemeSong, TurnCall, TurnSystem1, TurnTrace, UsageRecord, Verdict, WatchConfig, WatchState, World, YouCard,
 } from "./types";
 import type { HorizonErrorShape } from "./errors";
 import type { GlobalEvent, JobEvent, SessionSnapshot, UsageSummary } from "../client/HorizonClient";
@@ -282,6 +282,17 @@ const SkipReasonSchema = z.enum(["exhausted", "muted", "archived"]);
 export const TurnCallSchema = so({
   purpose: z.string().min(1), model: z.string(), costUsd: z.number().min(0), latencyMs: z.number().min(0), fallback: z.boolean().optional(),
 }) satisfies z.ZodType<TurnCall>;
+// rev 1.4 (docs/ai/13 W1): the System 1 section, at most 64 rows.
+export const System1RowSchema = so({
+  purpose: z.string().min(1), id: z.string().min(1), version: z.number().int().positive(), label: z.string().min(1),
+  about: z.string().regex(ID_RE).optional(), answer: z.string(), p: unit.optional(), confidence: unit.optional(),
+  compared: z.array(so({ name: z.string().min(1), value: z.number(), threshold: z.number() })).optional(),
+  result: z.enum(["used", "below_threshold", "fallback", "not_used", "shown_only"]),
+  action: z.string().optional(),
+}) satisfies z.ZodType<System1Row>;
+export const TurnSystem1Schema = so({
+  seed: z.string().optional(), questions: z.array(System1RowSchema).max(64),
+}) satisfies z.ZodType<TurnSystem1>;
 export const TurnTraceSchema = so({
   messageId: id("msg"),
   model: so({
@@ -323,6 +334,7 @@ export const TurnTraceSchema = so({
   guardrail: so({ checks: z.array(so({ name: z.string(), verdict: z.enum(["pass", "flag", "block"]), p: unit.optional() })) }).optional(),
   graph: so({ path: z.array(z.string()) }).optional(),
   calls: z.array(TurnCallSchema).optional(), // rev 1.3
+  system1: TurnSystem1Schema.optional(), // rev 1.4
 }) satisfies z.ZodType<TurnTrace>;
 
 export const CitationSchema = so({

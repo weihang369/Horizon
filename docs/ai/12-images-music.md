@@ -331,7 +331,7 @@ doing only once there are real seed portraits, which is a v2 question.
 |---|---|---|---|
 | 1 | The D-61 image checks with the v3 template (I7), by eye. **Moved to the v1 endgame** (doc 13 W10): the seed characters recreated in the app are the check, and their accepted images are the demo's | identity and apparent age kept across edits as in the D-61 run; Amara's skin tone kept; Rin reads adult; outfits as described | reword the v3 lines; the user decides |
 | 2 | The two new suite parts (I7), inside doc 11's check 1 | I7's counts | reword the nouls before moving thresholds; more than 3/60 false refusals comes back to the user |
-| 3 | Lyria's primary terms read (I8) | recorded in `ASSETS.md` | seed themes stay procedural |
+| 3 | Lyria's primary terms read (I8). **Done 2026-10-10 ([group A](checks/group-a.md) A4): Google claims no ownership; no music-specific restriction or attribution duty; SynthID in every clip. Recorded in `ASSETS.md` when M15 commits the first Lyria seed song** | recorded in `ASSETS.md` | seed themes stay procedural |
 | 4 | How Seedream on OpenRouter signals moderation (403 or a 200 with no image), noted from check 1's run or the first refusal seen | recorded in the gateway's docstring | map it to `content_refused` if it isn't |
 
 ## 5. Changes this design needs (each approved at its OpenSpec change)

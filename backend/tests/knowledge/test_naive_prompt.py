@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import json
 from typing import Any
 
 from sqlalchemy import text
@@ -52,8 +53,16 @@ def engine(api: Api) -> NaiveTurnEngine:
     return eng
 
 
-def test_prompt_version_is_v2() -> None:
-    assert PROMPT_VERSION == "naive-2" and NaiveTurnEngine.prompt_version == "naive-2"
+def test_prompt_version_is_v3() -> None:
+    assert PROMPT_VERSION == "naive-3" and NaiveTurnEngine.prompt_version == "naive-3"
+
+
+async def test_no_hits_requests_share_their_prefix_byte_for_byte(api: Api) -> None:
+    """naive-3 keeps the cached prefix stable (design D15): two turns with nothing retrieved start identically."""
+    a, _ = engine(api).request(ctx())
+    b, _ = engine(api).request(ctx())
+    assert json.dumps(a.messages[0], ensure_ascii=False) == json.dumps(b.messages[0], ensure_ascii=False)
+    assert a.messages == b.messages
 
 
 async def test_no_hits_request_is_the_v1_request(api: Api) -> None:
@@ -104,6 +113,11 @@ async def test_cited_passage(api: Api) -> None:
     assert len(cited) == 1 and cited[0]["n"] == 2 and cited[0]["chunkId"] == reply["citations"][0]["chunkId"]
     assert any(not r["cited"] for r in k["retrieved"])
     assert reply["trace"]["context"]["used"]["knowledge"] > 0
+    assert chat_bodies(api)[-1]["max_tokens"] == 200       # design D14: the 1:1 quick cap, chosen after retrieval
+    async with api.rt.db.read() as conn:
+        row = (await conn.execute(text("SELECT engine, engine_version, prompt_version FROM turn_traces "
+                                       "WHERE message_id = :m"), {"m": reply["id"]})).one()
+    assert tuple(row) == ("naive", "3", "naive-3")
 
 
 class TwoMemories:

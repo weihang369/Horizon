@@ -65,6 +65,14 @@ uv run --project backend horizon models fetch
 - **Reset:** Settings → Data → "Reset demo data" restores the shipped demo and keeps your own worlds. `uv run --project backend horizon reset --factory --yes` wipes `data/` (except downloaded models).
 - **Local only:** the backend binds to `127.0.0.1` and refuses any other address. The key never appears in logs, errors, exports or the ledger.
 - **Tests never spend:** every automated test uses a fake provider and a fake key. Paid live checks are separate (`pytest -m live`) and never run by default.
+- **AI profile:** with a key, the app uses the `naive` profile (plain DeepSeek replies, the Jev router); without one, `scripted`. `HORIZON_AI_PROFILE=agent` is **experimental and opt-in**. Until the agent milestones land, each of its ports resolves to the `naive` (or `scripted`) implementation, and the backend's start-up log lists what every port resolved to.
+
+### Privacy switches
+
+Nothing about your conversations leaves your machine except the model calls to OpenRouter. Two developer switches, both off by default, change that locally or remotely:
+
+- `HORIZON_CAPTURE_AI_CALLS=1` keeps each AI call's redacted prompt and reply in the local database for 7 days, for debugging with `horizon eval capture`. Forget and deletes clear it.
+- `HORIZON_LANGSMITH=1` (plus `LANGSMITH_API_KEY` and `uv sync --group tracing`) **sends** chat and document text to LangSmith for tracing. Leave it off unless you mean to share that text.
 
 ### Secret hygiene
 

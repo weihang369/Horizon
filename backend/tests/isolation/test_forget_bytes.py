@@ -9,6 +9,7 @@ present) finds neither the text nor the word. The same runs with FTS5 secure-del
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pytest
@@ -31,7 +32,11 @@ def file_bytes(data_dir: Path) -> dict[str, bytes]:
     return out
 
 
-async def run_forget(api: Api) -> dict[str, bytes]:
+async def run_forget(api: Api, capture: bool = False) -> dict[str, bytes]:
+    if capture:   # ai-foundation D28: with capture on, the text is in neither the table nor the queue after Forget
+        from tests.integration.test_capture import enable_capture
+
+        enable_capture(api.rt)
     await api.set_key()
     mid = await remember(api, SECRET)
     sid, _ = await recall_in_session(api, mid, SECRET)
@@ -40,19 +45,31 @@ async def run_forget(api: Api) -> dict[str, bytes]:
     await api.drive(1)
     before = file_bytes(api.data_dir)
     assert any(WORD.encode() in b for b in before.values())   # the text really was written to the files
+    if capture:
+        assert any(SECRET in json.dumps(r) for r in api.rt.capture.queue) or await _captured(api)
     assert (await api.client.delete(f"{API}/memory/{mid}")).status_code == 204
     await api.drive(1)
+    if capture:
+        assert not any(WORD in json.dumps(r) for r in api.rt.capture.queue)
+        await api.rt.capture.flush()
     await api.rt.db.checkpoint_truncate()                      # no read is in progress now
     return file_bytes(api.data_dir)
 
 
-@pytest.mark.parametrize("fts_secure_delete", [True, False], ids=["fts-secure-delete", "optimize-fallback"])
-async def test_forgotten_text_leaves_the_files(api: Api, fts_secure_delete: bool) -> None:
+async def _captured(api: Api) -> bool:
+    async with api.rt.db.read() as conn:
+        return bool((await conn.execute(text("SELECT COUNT(*) FROM ai_calls WHERE request LIKE :w"),
+                                        {"w": f"%{WORD}%"})).scalar_one())
+
+
+@pytest.mark.parametrize(("fts_secure_delete", "capture"), [(True, False), (False, False), (True, True)],
+                         ids=["fts-secure-delete", "optimize-fallback", "capture-on"])
+async def test_forgotten_text_leaves_the_files(api: Api, fts_secure_delete: bool, capture: bool) -> None:
     if not fts_secure_delete:
         async with api.rt.db.write() as tx:
             await tx.conn.execute(text("INSERT INTO memory_fts(memory_fts, rank) VALUES ('secure-delete', 0)"))
         api.rt.fts_secure_delete = False
-    after = await run_forget(api)
+    after = await run_forget(api, capture)
     assert "horizon.db" in after
     for name, data in after.items():
         assert SECRET.encode() not in data, name

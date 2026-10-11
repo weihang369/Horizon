@@ -312,9 +312,40 @@ export interface TurnTrace {
   graph?: { path: string[] };
   /** rev 1.3: every paid call behind this turn (Jev, embeddings, the reply itself). */
   calls?: TurnCall[];
+  /** rev 1.4 (docs/ai/13 W1): every Jev question behind the turn. Written only by the runtime. */
+  system1?: TurnSystem1;
 }
 
 export interface TurnCall { purpose: string; model: string; costUsd: number; latencyMs: number; fallback?: boolean }
+
+/** rev 1.4 (docs/ai/13 W1): the System 1 section. At most 64 rows. */
+export interface TurnSystem1 {
+  /** "{session seed}:{turn index}"; each question's shuffle seed adds ":{question id}" (doc 06 E1). */
+  seed?: string;
+  questions: System1Row[];
+}
+
+export interface System1Row {
+  /** turn_plan | follow_plan | debate_plan | deep_check | guardrail | face_check | route */
+  purpose: string;
+  /** The question-bank entry (doc 02 B9). */
+  id: string; version: number;
+  /** Short wording from the bank, worded as asked, e.g. "unsafe request?". */
+  label: string;
+  /** An ID only, never text: a character, piece (kch_), message (msg_) or memory (mem_). */
+  about?: string;
+  /** The option, the level, "yes" / "no", or a fallback's outcome. */
+  answer: string;
+  /** The answer's probability; a noul: always p(yes); absent on a fallback. */
+  p?: number;
+  /** A choice or score: Jev's confidence, which the floor is compared with. */
+  confidence?: number;
+  /** Every comparison code made, e.g. { name: "p_answers+p_partly", value: 0.81, threshold: 0.6 }. */
+  compared?: { name: string; value: number; threshold: number }[];
+  result: "used" | "below_threshold" | "fallback" | "not_used" | "shown_only";
+  /** What code did, in a few words: "deep", "kept [1]", "no cue", "rewritten". */
+  action?: string;
+}
 
 // ── Streaming events (doc 05 §6) ────────────────────────────────────────────
 export type StreamEvent =

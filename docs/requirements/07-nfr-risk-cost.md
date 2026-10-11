@@ -22,7 +22,7 @@
 
 ### Performance
 - **NFR-01 (first token):** In 1:1 chat, the first token appears within **2.0 s p50 / 4.0 s p90** of send. The "typing" state appears within **100 ms**.
-- **NFR-02 (multi-agent pacing):** `turn.next` arrives within **500 ms** of the previous `turn.end`. The next speaker's first token arrives within **3 s p50**. The UI is never idle for more than 500 ms without an activity indicator. Openings generated in parallel are **revealed sequentially at speaking pace**.
+- **NFR-02 (multi-agent pacing):** `turn.next` arrives within **500 ms** of the previous `turn.end` (*exception: in a debate, up to about 500 ms plus assembly, because the Jev member choice from Malaysia needs a 500 ms deadline; docs/ai/08 V2, [group A](../ai/checks/group-a.md)*). The next speaker's first token arrives within **3 s p50**. The UI is never idle for more than 500 ms without an activity indicator. Openings generated in parallel are **revealed sequentially at speaking pace**.
 - **NFR-03 (animation):** Idle animation, crossfades and VFX hold **60 fps**. Animate only `transform` and `opacity`. No main-thread task exceeds 50 ms while idle.
 - **NFR-04 (emotion switch):** A sprite change **starts within 100 ms** of the `emotion` event and **completes within 300 ms**. All participants' sprites are preloaded on session open.
 - **NFR-05 (asset budgets):** Sprites ≤ 250 KB (WebP/AVIF, ~768–1024 px tall). Theme loops ≤ 750 KB. ≤ 3 MB per character. The app shell is interactive within 3 s locally.
@@ -55,7 +55,7 @@
 - **NFR-10 (zero-config):** clone → install → copy `.env.example` → **one command** starts backend and frontend. Prerequisites are **Python + Node only**: no Docker, Redis, external DB, GPU, CUDA or PyTorch. Demo mode is reachable within **≤ 5 min**, and the first live chat within ≤ 10 min.
 - **NFR-11 (demo mode):** Without a key, seed worlds, characters, assets and recorded sessions are browsable and replayable. Generation and live chat are disabled with a clear call to action.
 - **NFR-12 (key storage):** The OpenRouter key lives **only on the backend** (`.env` or a git-ignored local settings file). The frontend only ever sees `missing/set/invalid`. The key never appears in logs, errors, the ledger or exports.
-- **NFR-13 (network exposure):** The backend binds to `127.0.0.1`. The only outbound calls go to OpenRouter. **No telemetry. No runtime font or CDN calls** (fonts are self-hosted). *One documented exception: LangSmith tracing, off by default and switched on only by `HORIZON_LANGSMITH=1` plus the user's own key; it then sends chat and document text to LangSmith ([docs/ai/02](../ai/02-evaluation-observability.md) B11).*
+- **NFR-13 (network exposure):** The backend binds to `127.0.0.1`. The only outbound calls go to OpenRouter. **No telemetry. No runtime font or CDN calls** (fonts are self-hosted). *One documented exception: LangSmith tracing, off by default and switched on only by `HORIZON_LANGSMITH=1` plus the user's own key; it then sends chat and document text to LangSmith ([docs/ai/02](../ai/02-evaluation-observability.md) B11). Built in M7 (`horizon/tracing.py`): every entry point forces the tracing switches off first, the package is an optional install (`uv sync --group tracing`), and traced inputs never include headers or the key.*
 - **NFR-14 (configurable models):** Model IDs, routing preferences and the pricing table live in config. Local overrides are git-ignored. `~latest` aliases are never used in committed config.
 
 ### Accessibility & UX safety

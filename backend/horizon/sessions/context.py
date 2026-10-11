@@ -94,3 +94,13 @@ async def session_context(rt: Runtime, actor: SessionActor, *, recent: int | Non
 
 def character_view(row: Any) -> CharacterView:
     return CharacterView(id=row["id"], name=str(row["profile"].get("name", row["id"])), profile=dict(row["profile"]))
+
+
+def reply_cap(rt: Any, sctx: SessionContext, plan: Any = None) -> int:
+    """The reply's `max_tokens`, chosen AFTER retrieval and the turn plan (docs/ai/03 C4; session-runtime "The reply
+    cap is chosen after the plan"; design D14). A plan that made the turn deep raises a 1:1 cap; with no plan (M7:
+    `naive` has no Jev call 1) the turn is quick. Debate takes the session's turn length."""
+    caps = rt.runtime_cfg.runtime.reply_max_tokens
+    cfg = sctx.config or {}
+    deep = bool(getattr(plan, "deep", False))
+    return int(caps.for_mode(sctx.mode, str(cfg.get("turnLength")) if sctx.mode == "debate" else None, deep=deep))

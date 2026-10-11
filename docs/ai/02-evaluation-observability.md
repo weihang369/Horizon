@@ -404,7 +404,9 @@ the largest Jev item, so judge results are cached (B7).
   Failing (a) or showing a clear first-option lean in (b) means the question is rewritten.
 - **A Jev drift canary:** 20 fixed items (under $0.001) run before every evaluation. Jev is in alpha, so if their
   answers change, the cached answers and the baselines are marked stale. The report records the exact model id
-  OpenRouter returned. If OpenRouter offers a dated Jev id, the evaluation pins it.
+  OpenRouter returned. If OpenRouter offers a dated Jev id, the evaluation pins it. *The 20 items and their baseline
+  are [group A](checks/group-a.md)'s `canary.json`. Identical calls never flipped a choice but moved probabilities by
+  up to 0.06, so the canary passes when every choice matches and probabilities move ≤ 0.10 (scores ≤ 0.15).*
 - **Doc 01 check 4** also asks 20 items 3 times each (under $0.01, under the same approval) to see whether Jev answers
   the same request the same way.
 
@@ -676,7 +678,7 @@ record which wording produced which result.
 
 | # | Check | Cost | Pass mark | If it fails |
 |---|---|---|---|---|
-| 1 | Does Jev answer the same request the same way? 20 items × 3. Runs with doc 01's check 4, under the same approval. | < $0.01 | — (we measure it) | Ask each layer 1 item twice and report the agreement; the intervals widen |
+| 1 | Does Jev answer the same request the same way? 20 items × 3. Runs with doc 01's check 4, under the same approval. **Done ([group A](checks/group-a.md) A1): no choice flipped; probabilities moved ≤ 0.06** | < $0.01 | — (we measure it) | Ask each layer 1 item twice and report the agreement; the intervals widen |
 | 2 | Licence check of every corpus document before it is committed | $0 | text only; written by federal staff; no "©", "copyright", "reprinted / used with permission", contractor or partner credit (a text search finds these); each recipe checked for an outside credit; URL in `SOURCES.md` | Use another public-domain source |
 | 3 | The user reviews the drafted labels | $0 | fewer than 2 disagreements per set (≥ 15 items reviewed) | Relabel that set |
 
@@ -699,6 +701,10 @@ section.
 | `PURPOSE_CATEGORY["eval_judge"] = "decision"`, for the judge's ledger rows (otherwise `call_ctx` raises) | backend | B4 |
 | CI runs `horizon eval smoke` in test mode | CI | B12 |
 | **Docs to amend:** OQ-AI-15 and OQ-AI-08's evaluation half resolved; 05-ai-seams §6 (`ai_calls` and the harness now designed); D-94 (Forget also covers `ai_calls`); an NFR-13 note on LangSmith; doc 01 A4 (a noul's "unsure" is `t_gate`, set by recall) | docs | all |
+
+**Built in M7** (OpenSpec change `ai-foundation`): every row above. The latency script ran as group A's A2
+([checks/group-a.md](checks/group-a.md)); `horizon eval latency` waits for the suite that needs it. See
+[evals/README.md](../../evals/README.md).
 
 **Order:**
 - The question bank and `horizon eval` come **first** among the AI-stage changes, because every later change is tuned

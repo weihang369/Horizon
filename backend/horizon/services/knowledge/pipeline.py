@@ -257,7 +257,8 @@ class Pipeline:
                     done += len(b.indices)
                     self.progress("embedding", 0.70 + 0.25 * done / _total, throttle=True)
 
-                return BatchHooks(before_send=before, commit_with=commit)
+                # D31: a shipped seed source's text may be served from (and kept in) the seed store; user text never
+                return BatchHooks(before_send=before, commit_with=commit, store_ok=bool(row["is_seed"]))
 
             out = await embedder.embed([str(r[1]) for r in todo], kind="document", space=space, ctx=ctx, hooks=hooks)
             if out.cached:

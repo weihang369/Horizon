@@ -11,7 +11,7 @@ How the AI *thinks* is decided at the AI stage. The rule here is that **swapping
 
 ## 1. Selection
 
-`HORIZON_AI_PROFILE = scripted | naive | agent` (default `naive` when a key is set, `scripted` otherwise; `agent`, the AI stage's profile, becomes the default with a key at M15, [docs/ai/13](../ai/13-wrap-up.md) W4), with per-port overrides: `HORIZON_AI_TURN`, `HORIZON_AI_ROUTER`, `HORIZON_AI_REACTIONS`, `HORIZON_AI_HOST`, `HORIZON_AI_DIRECTOR`, `HORIZON_AI_SUMMARISER`, `HORIZON_AI_GUARDRAIL`, and from M4 `HORIZON_AI_DRAFTER`, `HORIZON_AI_IMAGE`, `HORIZON_AI_SONG` (e.g. `HORIZON_AI_TURN=scripted`). The turn engine, the router (M3), the profile drafter and the image generator (M4) have naive implementations; every other port is scripted in both profiles. The creation port is named `drafter` because `HORIZON_AI_PROFILE` is the selector itself. Tests and the HTTP contract run use `scripted`; `/_test/ai-profile { profile, overrides? }` changes the selection at runtime (e.g. the Jev router with the scripted turn engine).
+`HORIZON_AI_PROFILE = scripted | naive | agent` (default `naive` when a key is set, `scripted` otherwise; `agent`, the AI stage's profile, becomes the default with a key at M15, [docs/ai/13](../ai/13-wrap-up.md) W4), with per-port overrides: `HORIZON_AI_TURN`, `HORIZON_AI_ROUTER`, `HORIZON_AI_REACTIONS`, `HORIZON_AI_HOST`, `HORIZON_AI_DIRECTOR`, `HORIZON_AI_SUMMARISER`, `HORIZON_AI_GUARDRAIL`, and from M4 `HORIZON_AI_DRAFTER`, `HORIZON_AI_IMAGE`, `HORIZON_AI_SONG` (e.g. `HORIZON_AI_TURN=scripted`). The turn engine, the router (M3), the profile drafter and the image generator (M4) have naive implementations; every other port is scripted in both profiles. The creation port is named `drafter` because `HORIZON_AI_PROFILE` is the selector itself. **`agent` is opt-in until M15** (M7, `ai-foundation` D12): `AGENT_PORTS` is still empty, so with a key every port resolves to its `naive` implementation (else `scripted`), and to `scripted` without a key; a per-port override still wins. The start-up log and every `horizon eval` report list each port's resolved implementation, so the opt-in can't hide what actually runs. Tests and the HTTP contract run use `scripted`; `/_test/ai-profile { profile, overrides? }` changes the selection at runtime (e.g. the Jev router with the scripted turn engine).
 
 **Scripted spend is simulated and billed (D-81).** Scripted ports never open a connection, but their calls (replies, route decisions, verdicts, summaries) run through the same gateway pipeline as real ones: preflight with caps and reservations, one ledger row priced from `seed/pricing.json` (`provider: "scripted"`), the reply drain and the budget events. Energy, caps and Insight therefore behave exactly as on the MockClient. Picking `scripted` with a real key spends simulated amounts against the real daily cap; the default with a key is `naive`.
 
@@ -94,32 +94,41 @@ ScopedIndex  # services/knowledge/index.py: read-only, built by the RUNTIME per 
 
 ```python
 class Decider:
-    async def ask(self, state: dict, questions: dict[str, Question], ctx: CallContext, *,
-                  purpose: str, timeout_ms: int | None = None,           # default from config per purpose
-                  fallback: Callable[[], Awaitable[Answers]] | None = None) -> DecisionResult
+    def start(self, state: dict, questions: dict[str, Question], ctx: CallContext, *,
+              purpose: str, fallback: Callable[[], Awaitable[Answers]] | None = None) -> DecisionCall
+    async def ask(self, state, questions, ctx, *, purpose, timeout_ms=None, fallback=None) -> DecisionResult
+        # == start(...).by(now + timeout); the timeout is the call's, else the bank questions' deadline key, else the purpose's
+
+class DecisionCall:
+    async def by(self, at: datetime) -> DecisionResult   # answers if back by that clock instant, else the fallback (run once)
+    async def final(self) -> DecisionResult               # the real answers whenever they land
+    def cancel(self) -> None                              # readers get DecisionCancelled; the sent request still settles
 # DecisionResult.answers[q] = ChoiceAnswer | NoulAnswer | ScoreAnswer, each with source: "jev" | "fallback" | "fixture"
 ```
 
+*Rewritten in M7 (`ai-foundation`, [docs/ai/13](../ai/13-wrap-up.md) W11, group A).*
+
 - **Calling.**
-  - It calls `typesafe/jev-1.13` (pinned, never `~latest`). **All independent questions about one state go in one call**, because they're answered in parallel.
-  - It checks the 32K budget before sending.
-  - Calls may run concurrently; there is no Decider semaphore below 4.
+  - It calls `typesafe/jev-1.13` (pinned, never `~latest`). **All independent questions about one state go in one call**, because they're answered in parallel. Questions come from the question bank (`horizon/ai/questions/`, docs/ai/02 B9), which declares each one's state fields; a state with an undeclared field, or free text outside a `quoted_*` field, is refused before sending.
+  - **The size check:** state + the longest question ≤ 30,000 tokens (UTF-8 bytes ÷ 3), and at most 64 questions. Over either, nothing is sent, reserved or recorded, and the fallback answers with reason `too_large`. Jev reports an oversized request as HTTP 429, so this must refuse first ([group A](../ai/checks/group-a.md) A1).
+  - Each request runs as an `rt.spawn` task, and deadlines are read on the runtime clock (virtual in tests). Calls may run concurrently; there is no Decider semaphore below 4.
 - **Validation.** Each answer is checked against its declared type and option set. If only some answers are invalid, the fallback runs **just for those questions**.
-- **Failure or timeout:**
-  - use `fallback()` if one was given;
+- **Failure, a missed deadline or a rate limit:**
+  - use `fallback()` if one was given (run once, however many readers);
   - otherwise raise `DecisionUnavailable`, and the caller takes its hold path (R-13).
-  - Late answers are discarded but still recorded in the ledger.
-  - Off the hot path, the fallback may be a DeepSeek structured-output call (category `decision`, never drains energy). **On the hot path the fallback is always deterministic.**
+  - A late answer is still recorded in the ledger (`finish_reason: "late"`) and stays readable through `final()`.
+  - A 429 falls back at once on the hot path; `importance`, `memory_guard` and `rubric` wait max(1 s, Retry-After) up to 5 s and send once more if their deadline allows.
+  - Off the hot path, the fallback may be a DeepSeek call (category `decision`, never drains energy). **On the hot path the fallback is always deterministic.**
 
 *AI stage:* the `agent` profile's purposes, questions, deadlines and fallbacks are the Jev map in [docs/ai/13](../ai/13-wrap-up.md) W5; this table is the backend stage's (`naive` keeps `route`).
 
-| Purpose | Timeout | Deterministic hot-path fallback |
+| Purpose | Deadline | Deterministic hot-path fallback |
 |---|---|---|
 | `route` | 400 ms | @mention, else round-robin over eligible speakers (least recent first); trace marks the fallback, with no `candidates` |
-| `gate` + input `guardrail` (one call) | 500 ms | The gate opens (retrieve); the guardrail fails open with a flag |
-| `rerank` | 600 ms | Skip the rerank and take the RRF top-k; `Citation.score` is omitted |
-| `emotion` (pre-prediction) | 300 ms | Keep the previous face; the inline tag stays primary |
-| `reaction`, `importance`, `rubric`, `watch_end`, … | 3 s | Skip (reactions are optional) / a rule |
+| the `agent` purposes | per question deadline key, `seed/pricing.json` → `timeoutsMs.decision` (docs/ai/13 W12) | docs/ai/13 W5 |
+| `reaction`, `importance`, `rubric`, … | 1.5 s / 3 s | Skip (reactions are optional) / a rule |
+
+*M7 removed `gate`, `rerank`, `emotion` and `watch_end`: nothing called them, and the `agent` purposes replace them (W5).*
 
 - **Traces and the ledger.** Probabilities flow into `TurnTrace` (`emotion.candidates`, `routing.candidates`, `guardrail.checks[].p`, `knowledge.retrieved[].score` = rerank p). Every call appears in `TurnTrace.calls[]` and the ledger (`category: decision`, `purpose`).
 - **Thresholds** are config per purpose, tuned at the AI stage on labelled data. `confidence` measures how peaked the distribution is, not accuracy.
@@ -149,6 +158,12 @@ class AiStateHooks(Protocol):            # implemented by the AI layer; called f
 - **`data/graph.db`**, reserved for LangGraph checkpoints, which are closed and deleted correctly by Factory reset.
 - **Caps, reservations and energy** enforced around every call; `gateway.on_call` is the hook for evaluation logging.
 
+**Built in M7 (`ai-foundation`):**
+- **`ai_calls` capture** (`services/capture.py`, off unless `HORIZON_CAPTURE_AI_CALLS=1`). The gateway builds redacted bodies only when capture is on (chat messages and text, Jev state, questions and answers; never embedding inputs or vectors, image or audio bytes). `on_call` appends to a bounded queue (2,000; overflow counted in the next row's `dropped_before`), and a `rt.spawn` writer flushes every 2 s of clock time or at 200 rows. `TurnRunner.finish()` adds one `turn` row with the frozen `TurnContext` and the routing/Decider fallback flags. Retention: 7 days, then the newest 20,000.
+- **Forget and capture:** Forget marks the queue and deletes the character's rows (and the world's rows with no character) inside its own transaction.
+- **The first real hooks:** `CompositeHooks([CaptureHooks])`. Character and message deletes remove their rows, session and world deletes cascade by FK and repeat harmlessly, and `on_forget` is a no-op for capture.
+- **System 1 rows** (contract rev 1.4): `SessionActor.append_system1(message_id, variant_id, rows, calls)` adds rows after a turn inside the actor, with three guards: Regenerate (an inactive variant's rows are dropped), streaming (rows wait for `finish()`), and Forget (rows and recalled entries about deleted memories are removed inside the writer transaction). An insight with no engine metadata keeps the stored engine columns and `created_at`.
+
 ## 5. Naive real `TurnEngine` (backend deliverable, M3)
 
 - **Prompt order (NFR-35):** static persona and system prompt (+ You card) → `session_summaries` (rolling) → history → dynamic blocks.
@@ -158,6 +173,9 @@ class AiStateHooks(Protocol):            # implemented by the AI layer; called f
   - one line: cite a passage with its `[n]` only when you rely on it.
 
   The engine yields a `CitationMap` for every numbered passage; the runtime keeps only the markers the reply wrote. After the stream it sets `trace.knowledge.retrieved` (`cited` from its own output), `trace.memory.recalled` (which writes the Forget refs) and `context.used.memory/knowledge`. **With nothing retrieved the request is byte-identical to v1** (until `naive-3`, [docs/ai/03](../ai/03-llm-parameters.md), [docs/ai/10](../ai/10-rag.md) K13).
+- **Prompt v3 (M7, `naive-3`, [docs/ai/03](../ai/03-llm-parameters.md) C1–C7).** Each reply takes its `runtime.llm.calls` row (`reply.chat` 1.3 / `reply.debate` 1.0, thinking off) and a shorter cap chosen after the plan; the system prompt ends with the session's length line ("1–3 short messages, each on its own line, about 70 words" in 1:1); `stop` holds `
+<Name>:` for everyone else and `
+[<kind>]`; a leading `<own name>:` is dropped before or after the tag; a history ending on the speaker's own line gets a trailing cue; an empty reply is retried once before anything shows (the face waits for the first word). JSON calls repair stray inner quotes locally before their one paid retry.
 - **Scripted citations (D15).** The scripted engine ports the mock's `liveCitations` with its own RNG stream (`{seed}:{turn}:cite`): about 55 % of replies with hits cite 1–2 passages, one more is retrieved but uncited, and replies without hits are unchanged. It never uses memory hits (parity with the mock).
 - **Cache-friendly history window.** The window grows until it is full, then **drops the oldest half in one step**, with the summary refreshed at that block boundary. A one-message sliding window would change the prefix every turn and miss the cache.
 - **Inline emotion tag** (OQ-AI-07 A): the model is asked to start with `<e:label>`. The parser:
@@ -173,9 +191,9 @@ class AiStateHooks(Protocol):            # implemented by the AI layer; called f
 
 | Item | Why it can wait |
 |---|---|
-| `ai_calls` evaluation table (request/response per call, retention, scrubbed by Forget) | Additive; attaches to `gateway.on_call`. **Designed:** [docs/ai/02](../ai/02-evaluation-observability.md) B10 |
+| `ai_calls` evaluation table (request/response per call, retention, scrubbed by Forget) | **Built in M7** (§4): capture, retention, Forget and the delete hooks ([docs/ai/02](../ai/02-evaluation-observability.md) B10) |
 | `memory_consolidate` job | The job kind is TEXT. **Withdrawn:** nothing is merged automatically ([docs/ai/09](../ai/09-memory.md) M5) |
 | `message_fts` (in-session keyword recall) | Additive virtual table. **Designed:** [docs/ai/09](../ai/09-memory.md) M9 |
 | `knowledge_chunk_redirects` | Only needed once content is re-chunked. **Withdrawn** ([docs/ai/10](../ai/10-rag.md)) |
 | Trigram FTS tokenizer for CJK text | An FTS rebuild. **Withdrawn:** `porter unicode61` stays; CJK search is in the [v2 backlog](../v2/README.md) §3 ([docs/ai/10](../ai/10-rag.md) K11) |
-| Prompt layout and budgets, memory policy, chunk sizes, MMR, rerank thresholds, **the embedding comparison test** (final model and dimensions), emotion validation, debate rubric, guardrail policy, LangGraph graphs, evaluation harness | AI design (OQ-AI-01…17). **Designed:** [docs/ai/01–13](../ai/13-wrap-up.md); the embedding comparison test is [docs/ai/10](../ai/10-rag.md) K3 |
+| Prompt layout and budgets, memory policy, chunk sizes, MMR, rerank thresholds, **the embedding comparison test** (final model and dimensions), emotion validation, debate rubric, guardrail policy, LangGraph graphs, evaluation harness | AI design (OQ-AI-01…17). **Designed:** [docs/ai/01–13](../ai/13-wrap-up.md); the embedding comparison test is [docs/ai/10](../ai/10-rag.md) K3. **The evaluation harness is built (M7):** `horizon/evals/` (runner, canary, decisions and smoke suites, metrics, data checks, stats) and the shared response store (`data/cache/`, the eval view for `horizon eval` runs, the seed view for seed knowledge embeddings); see [evals/README.md](../../evals/README.md) |

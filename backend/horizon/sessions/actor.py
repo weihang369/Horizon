@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
+import copy
 import logging
 from collections.abc import Awaitable, Callable, Mapping, Sequence
 from dataclasses import dataclass, field
@@ -57,6 +58,8 @@ class TurnInfo:
     t0_ms: float = 0.0
     first_token_ms: float | None = None
     trace: dict[str, Any] = field(default_factory=dict)
+    system1: list[dict[str, Any]] = field(default_factory=list)   # rows appended mid-stream (D24), merged at finish
+    system1_calls: list[dict[str, Any]] = field(default_factory=list)
     citations: list[dict[str, Any]] | None = None
     spec: Any = None
     ctx: Any = None
@@ -263,6 +266,50 @@ class SessionActor:
     async def emit_with(self, events: Sequence[Mapping[str, Any]], extra: Any) -> list[Wire]:
         async with self.write_lock:
             return await self.writer.append(list(events), extra=extra)
+
+    # ── System 1 rows after the turn (contract rev 1.4; ai-foundation design D24) ──
+    async def append_system1(self, message_id: str, variant_id: str | None, rows: Sequence[Mapping[str, Any]],
+                             calls: Sequence[Mapping[str, Any]] = ()) -> bool:
+        """Add System 1 rows (and their paid calls) to a message's trace, inside the actor (the one writer).
+        Returns whether anything was (or will be, for a streaming reply) written. The three guards:
+        - **Regenerate:** rows for a variant that is no longer active are dropped;
+        - **streaming:** while the target reply streams, rows wait in its `TurnInfo` and `finish()` merges them;
+        - **Forget:** inside the writer transaction, recalled entries and rows about memories that no longer exist
+          are removed before the trace is stored, so an append queued before a Forget can't write the text back."""
+        from horizon.sessions import system1
+
+        async def run() -> bool:
+            msg = self.state.get("messages", {}).get(message_id)
+            if msg is None:
+                return False
+            active = msg.get("activeVariantId")
+            if (active or f"{message_id}_v1") != (variant_id or f"{message_id}_v1"):
+                log.debug("system1 rows for %s variant %s dropped (active %s)", message_id, variant_id, active)
+                return False
+            cur = self.current
+            if cur is not None and cur.message_id == message_id and not cur.closed:
+                cur.system1 = system1.merge_rows(cur.system1, rows)
+                cur.system1_calls.extend(dict(c) for c in calls)
+                return True
+            trace = copy.deepcopy(msg.get("trace") or {})
+            if not trace:
+                return False
+            trace["system1"] = system1.section(trace.get("system1"), rows)
+            if calls:
+                trace["calls"] = [*(trace.get("calls") or []), *(dict(c) for c in calls)]
+
+            async def guard(tx: Any, stamped: list[Wire]) -> None:
+                for e in stamped:
+                    if e["type"] == "insight":
+                        e["payload"]["trace"] = await system1.forget_guard(tx.conn, e["payload"]["trace"])
+
+            async with self.write_lock:
+                await self.writer.append([{"type": "insight", "payload": {"messageId": message_id, "trace": trace}}],
+                                         traces={message_id: TraceMeta()}, prepare=guard)
+            return True
+
+        result: bool = await self.submit(run)
+        return result
 
     # ── idle release ──
     async def _watch_idle(self) -> None:

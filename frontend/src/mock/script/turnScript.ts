@@ -31,6 +31,8 @@ export interface LineSpec {
   forcedBy?: "user_ask" | "mention" | "nudge" | "round_order";
   skipped?: { characterId: string; reason: "exhausted" | "muted" | "archived" }[];
   routing?: TurnTrace["routing"];
+  /** rev 1.4 (docs/ai/13 W1): System 1 rows. Only live mock turns set it; seed recordings never do. */
+  system1?: TurnTrace["system1"];
   /** Listeners who may react. Explicit `reactions` win over generated ones. */
   listeners?: string[];
   reactions?: ReactionSpec[] | null;
@@ -193,6 +195,7 @@ export function buildLineScript(spec: LineSpec, timing: TimingConfig, pricing: P
       ...(spec.forcedBy ? { forcedBy: spec.forcedBy } : {}),
       ...(spec.skipped?.length ? { skipped: spec.skipped } : {}),
     },
+    ...(spec.system1?.questions.length ? { system1: spec.system1 } : {}),
     ...(spec.memoryRecalled?.length ? { memory: { recalled: spec.memoryRecalled } } : {}),
     ...(spec.contextInSession?.length ? { contextInSession: spec.contextInSession } : {}),
     context: {

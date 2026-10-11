@@ -1,0 +1,17 @@
+{
+  "name": "name_split_before_tag",
+  "doc": "Own name split over three chunks before the tag",
+  "chunks": [
+    "Me",
+    "i",
+    ": <e:sad>Oh no"
+  ],
+  "previous": "neutral",
+  "speaker": "Mei",
+  "perLine": false,
+  "expected": {
+    "emotion": "sad",
+    "source": "llm",
+    "text": "Oh no"
+  }
+}

@@ -35,7 +35,7 @@ def test_provider_message_is_redacted_and_bounded() -> None:
 
 def test_drains_only_for_reply() -> None:
     assert call_ctx("reply", world_id="wld_1", character_id="chr_1").drains
-    for p in ("route", "gate", "rerank", "emotion", "query_embed", "summary", "host", "verdict"):
+    for p in ("route", "guardrail", "reaction", "eval_judge", "query_embed", "summary", "host", "verdict"):
         assert not call_ctx(p).drains, p
 
 

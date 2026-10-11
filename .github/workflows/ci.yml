@@ -68,6 +68,17 @@ jobs:
         working-directory: backend
         run: uv run pytest -q
 
+      # ai-foundation D38: the free eval checks. No secrets, no network (the fake provider in test mode), < 1 min.
+      # Smoke never compares with evals/baselines.
+      - name: Eval smoke, overlap and corpus licence check
+        working-directory: backend
+        env:
+          HORIZON_TEST: "1"
+        run: |
+          uv run horizon eval smoke --limit 5 --yes
+          uv run horizon eval overlap
+          uv run horizon eval corpus-check
+
       - name: Frontend type check and lint
         working-directory: frontend
         run: |

@@ -53,7 +53,7 @@ describe("MockClient only", () => {
   it("every portable test declares its milestone (no bare it())", () => {
     const src = readFileSync(path.resolve(__dirname, "clientContract.portable.ts"), "utf8");
     expect(src).not.toMatch(/^\s+it\(/m);
-    expect(src.match(/^\s+test\("M(1b|[2-6])", /gm)?.length).toBeGreaterThanOrEqual(50);
+    expect(src.match(/^\s+test\("M(1b|[2-7])", /gm)?.length).toBeGreaterThanOrEqual(50);
   });
 
   it("the mock runs every portable test: nothing is pending", () => {
@@ -63,7 +63,7 @@ describe("MockClient only", () => {
 
   it("the HTTP run declares M6, the last milestone: nothing is pending there either", () => {
     const src = readFileSync(path.resolve(__dirname, "clientContract.http.test.ts"), "utf8");
-    expect(src).toMatch(/runPortableContract\("HttpClient", httpHarness, \{ supports: "M6" \}\);/);
+    expect(src).toMatch(/runPortableContract\("HttpClient", httpHarness, \{ supports: "M7" \}\);/);
   });
 
   // Mock-only by design (http-client-parity D1): each checks mock semantics or wiring that the backend does differently.

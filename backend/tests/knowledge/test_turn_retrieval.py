@@ -28,7 +28,7 @@ def test_context_with_hits_round_trips_through_json() -> None:
                                                                    energy={"current": 500, "max": 1000})],
                        recent=[], history_tokens=12)
     ctx = TurnContext(session=s, speaker=CharacterView(id=AMARA, name="Amara Okafor", profile={"name": "Amara"}),
-                      message_id="msg_x1", prompt="burnout?", line=LineHint(kind="chat"), turn_index=1,
+                      message_id="msg_x1", prompt="burnout?", line=LineHint(kind="chat"), turn_index=1, max_tokens=200,
                       knowledge=[KnowledgeHit(chunk_id="kch_1", source_id="kno_1", title="Review", type="pdf",
                                               locator="p. 3", text="Burnout rose.", section_text="Burnout rose. More.",
                                               score=0.9)],

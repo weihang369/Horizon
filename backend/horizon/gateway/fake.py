@@ -17,6 +17,10 @@ gateway code with no socket ever opened.
   `park_image(n)` holds the n-th images request open on an event (the restart tests' "request in flight").
 - Embeddings (knowledge-memory-storage): `park_embedding(n)` holds the n-th embeddings request the same way, and
   `embed_dims` forces the returned length (a provider that ignores `dimensions`, or returns short vectors).
+- ai-foundation (docs/ai/13 W14, design D39): chat requests carry the test-mode `X-Horizon-Purpose` header, and
+  `canned[purpose]` answers that purpose with recorded real responses, in turn (cycling), streamed or complete;
+  `load_canned(set)` reads a committed set from `tests/fixtures/canned/`. `park_decision(n)` holds the n-th decisions
+  request. Jev answers carry `type` and count tokens at UTF-8 bytes / 3, the shape group A recorded.
 
 The response shapes follow the recorded fixtures in `tests/fixtures/openrouter/` (unverified until the live run).
 """
@@ -30,10 +34,13 @@ import io
 import json
 import math
 from collections import Counter
-from collections.abc import Awaitable, Iterable
+from collections.abc import Awaitable, Iterable, Mapping, Sequence
+from pathlib import Path
 from typing import Any
 
 import httpx
+
+from horizon.domain import vclock
 
 CHAT_COST = 0.000002
 DECISION_COST_PER_M = 0.042
@@ -42,6 +49,8 @@ IMAGE_COST = 0.018
 MUSIC_COST = 0.04
 KEEPALIVE = ": OPENROUTER PROCESSING\n\n"
 NOT_MP3 = b"RIFF" + bytes(4) + b"WAVEfmt " + bytes(64)   # a WAV-looking header: not a usable clip
+CANNED_DIR = Path(__file__).resolve().parents[2] / "tests" / "fixtures" / "canned"
+PURPOSE_HEADER = "x-horizon-purpose"
 CREDITS_TOTAL = 5.0
 CREDITS_USED = 0.79
 DEFAULT_DIMS = 1024
@@ -93,6 +102,21 @@ def _tokens(value: Any) -> int:
     return max(1, math.ceil(len(json.dumps(value, ensure_ascii=False).encode("utf-8")) / 4))
 
 
+def _jev_tokens(value: Any) -> int:
+    return max(1, math.ceil(len(json.dumps(value, ensure_ascii=False).encode("utf-8")) / 3))
+
+
+def load_canned(name: str, root: Path = CANNED_DIR) -> tuple[str, list[dict[str, Any]]]:
+    """A committed canned-response set: `(purpose, responses)`. Unknown names raise `KeyError`."""
+    if not name or not name.replace("-", "").replace("_", "").isalnum():
+        raise KeyError(name)
+    p = root / f"{name}.json"
+    if not p.is_file():
+        raise KeyError(name)
+    doc = json.loads(p.read_text(encoding="utf-8"))
+    return str(doc["purpose"]), list(doc["responses"])
+
+
 def unit_vector(text: str, dims: int) -> list[float]:
     raw = [b / 255 - 0.5 for b in hashlib.shake_256(text.encode("utf-8")).digest(dims)]
     norm = math.sqrt(sum(x * x for x in raw)) or 1.0
@@ -114,6 +138,10 @@ class FakeOpenRouter:
         self._embed_parks: dict[int, asyncio.Event] = {}
         self.embed_parked = asyncio.Event()       # set once a parked embeddings request is being held
         self.embed_dims: int | None = None        # force the returned vector length (None: honour `dimensions`)
+        self._decision_parks: dict[int, asyncio.Event] = {}
+        self.decision_parked = asyncio.Event()    # set once a parked decisions request is being held
+        self.canned: dict[str, list[Mapping[str, Any]]] = {}   # purpose -> recorded responses, answered in turn
+        self._canned_i: Counter[str] = Counter()
 
     def park_image(self, n: int) -> asyncio.Event:
         """Hold the n-th images request (1-based, counted over this fake's life) until the returned event is set."""
@@ -126,6 +154,19 @@ class FakeOpenRouter:
         ev = asyncio.Event()
         self._embed_parks[n] = ev
         return ev
+
+    def park_decision(self, n: int) -> asyncio.Event:
+        """Hold the n-th decisions request (1-based, over this fake's life) until the returned event is set."""
+        ev = asyncio.Event()
+        self._decision_parks[n] = ev
+        return ev
+
+    def set_canned(self, purpose: str, responses: Sequence[Mapping[str, Any]] | None) -> None:
+        if responses:
+            self.canned[purpose] = list(responses)
+            self._canned_i[purpose] = 0
+        else:
+            self.canned.pop(purpose, None)
 
     def transport(self) -> httpx.MockTransport:
         return httpx.MockTransport(self.handle)  # type: ignore[arg-type]  # sync answers, or a held (async) one
@@ -149,11 +190,24 @@ class FakeOpenRouter:
         epark = self._embed_parks.pop(self.counts["embeddings"], None) if route == ("POST", "/v1/embeddings") else None
         if epark is not None:
             return self._held(epark, request, flag=self.embed_parked)
+        dpark = self._decision_parks.pop(self.counts["decisions"], None) if route == ("POST", "/alpha/decisions") else None
+        if dpark is not None:
+            return self._held(dpark, request, flag=self.decision_parked, idle=True)
         return self._answer(request, route)
 
-    async def _held(self, park: asyncio.Event, request: httpx.Request, *, flag: asyncio.Event | None = None) -> httpx.Response:
+    async def _held(self, park: asyncio.Event, request: httpx.Request, *, flag: asyncio.Event | None = None,
+                    idle: bool = False) -> httpx.Response:
+        """`idle`: the caller's activity token is given up while held, so virtual time can advance past a deadline
+        (a parked Jev decision); it is taken back when the request is released."""
         (flag or self.parked).set()
-        await park.wait()
+        holder = vclock.current_holder() if idle else None
+        if holder is not None:
+            holder.drop()
+        try:
+            await park.wait()
+        finally:
+            if holder is not None:
+                holder.hold()
         return self._answer(request, (request.method, request.url.path.removeprefix("/api")))
 
     def _answer(self, request: httpx.Request, route: tuple[str, str]) -> httpx.Response:
@@ -177,7 +231,12 @@ class FakeOpenRouter:
                 return httpx.Response(404, json={"error": {"code": 404, "message": "Generation not found"}})
             return httpx.Response(200, json={"data": {"id": gid, "total_cost": self.costs[gid], "provider_name": "DeepSeek"}})
         if route == ("POST", "/v1/chat/completions"):
-            return self._music(body) if "audio" in (body.get("modalities") or []) else self._chat(body)
+            if "audio" in (body.get("modalities") or []):
+                return self._music(body)
+            purpose = request.headers.get(PURPOSE_HEADER)
+            if purpose and self.canned.get(purpose):
+                return self._canned(purpose, body)
+            return self._chat(body)
         if route == ("POST", "/alpha/decisions"):
             return self._decide(body)
         if route == ("POST", "/v1/embeddings"):
@@ -208,6 +267,30 @@ class FakeOpenRouter:
         text = "".join(f"data: {json.dumps(c)}\n\n" for c in chunks) + "data: [DONE]\n\n"
         return httpx.Response(200, headers={"content-type": "text/event-stream"}, content=text.encode("utf-8"))
 
+    def _canned(self, purpose: str, body: dict[str, Any]) -> httpx.Response:
+        """The purpose's next recorded response (cycling), as JSON or as SSE in three pieces."""
+        items = self.canned[purpose]
+        rec = items[self._canned_i[purpose] % len(items)]
+        self._canned_i[purpose] += 1
+        u = dict(rec.get("usage") or {})
+        cost = float(u.get("cost", CHAT_COST))
+        gid = self._gen("gen", cost)
+        usage = {**u, "cost": cost}
+        content = str(rec.get("content", ""))
+        finish = rec.get("finish_reason") or "stop"
+        base = {"id": gid, "model": body.get("model"), "provider": rec.get("provider") or "DeepSeek"}
+        if not body.get("stream"):
+            return httpx.Response(200, json={**base, "object": "chat.completion", "usage": usage, "choices": [
+                {"index": 0, "message": {"role": "assistant", "content": content}, "finish_reason": finish}]})
+        third = max(1, len(content) // 3)
+        pieces = [content[:third], content[third:2 * third], content[2 * third:]] if content else []
+        chunks = [{**base, "object": "chat.completion.chunk", "choices": [{"index": 0, "delta": {"content": x},
+                                                                          "finish_reason": None}]} for x in pieces if x]
+        chunks.append({**base, "object": "chat.completion.chunk",
+                       "choices": [{"index": 0, "delta": {}, "finish_reason": finish}], "usage": usage})
+        text = "".join(f"data: {json.dumps(c)}\n\n" for c in chunks) + "data: [DONE]\n\n"
+        return httpx.Response(200, headers={"content-type": "text/event-stream"}, content=text.encode("utf-8"))
+
     def _music(self, body: dict[str, Any]) -> httpx.Response:
         sse = {"content-type": "text/event-stream"}
         if self.music_mode == "fail":
@@ -235,17 +318,18 @@ class FakeOpenRouter:
             if kind == "choice":
                 opts = list(crit or {})
                 p = 1 / len(opts) if opts else 1.0
-                answers[key] = {"choice": opts[0] if opts else None, "confidence": p,
+                answers[key] = {"type": "choice", "choice": opts[0] if opts else None, "confidence": p,
                                 "probabilities": dict.fromkeys(opts, p)}
             elif kind == "noul":
-                answers[key] = {"noul": 0.5}
+                answers[key] = {"type": "noul", "noul": 0.5}
             elif kind == "score":
                 levels = list(crit or [])
                 mid = (len(levels) - 1) / 2
-                answers[key] = {"score": mid, "confidence": 1.0,
+                answers[key] = {"type": "score", "score": mid, "confidence": 1.0,
                                 "probabilities": {str(i): (1.0 if i == round(mid) else 0.0) for i in range(len(levels))},
                                 "legend": levels}
-        tokens = _tokens(body.get("state")) + max((_tokens(q) for q in (body.get("questions") or {}).values()), default=0)
+        # Jev bills the state once plus each question (group A A1); counted at bytes / 3 like the gateway's estimate.
+        tokens = _jev_tokens(body.get("state")) + sum(_jev_tokens(q) for q in (body.get("questions") or {}).values())
         cost = tokens * DECISION_COST_PER_M / 1e6
         gid = self._gen("dec", cost)
         return httpx.Response(200, json={"id": gid, "model": body.get("model"), "answers": answers,

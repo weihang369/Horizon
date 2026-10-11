@@ -1,12 +1,15 @@
 """The chat client (doc backend/04 §1): `POST /api/v1/chat/completions`, streamed or complete.
 
 - Every request carries the pinned routing block (DeepSeek first, `require_parameters`, full precision,
-  `data_collection: allow`, D-80), `usage.include`, and the fallback model.
+  `data_collection: allow`, D-80) and `usage.include`. No fallback model (docs/ai/03 C8): V4.1 Flash only; an outage
+  falls back to V4.1 Flash on another provider through `allow_fallbacks`.
 - **`generation_id`** comes from the first chunk and rides on every chunk, so a stopped stream can still be corrected.
 - Timeouts: time to first token (20 s) until the first content arrives (OpenRouter's `: PROCESSING` comments don't
   count), then an idle timeout between chunks.
 - A mid-stream error chunk raises `provider_error` with the partial text; a refusal finish reason raises
-  `content_refused` (with the billed cost when reported).
+  `content_refused` (with the billed cost when reported); an `error` or `insufficient_system_resource` finish raises a
+  may-be-charged `provider_error` with the partial text (docs/ai/03 C4). The final content-less chunk is yielded, so
+  callers see the finish reason (and the pipeline records it).
 """
 
 from __future__ import annotations
@@ -26,6 +29,8 @@ from horizon.gateway.types import GatewayConfig, Usage, parse_usage, provider_wa
 
 PATH = "/v1/chat/completions"
 REFUSALS = {"content_filter", "refusal"}
+# docs/ai/03 C4: these end a reply like a mid-stream provider error (interrupted, text kept, retryable), not "complete".
+ERROR_FINISHES = {"error", "insufficient_system_resource"}
 
 
 @dataclass(frozen=True)
@@ -76,8 +81,6 @@ class ChatClient:
     def body(self, req: ChatRequest, *, stream: bool) -> dict[str, Any]:
         b: dict[str, Any] = {"model": req.model, "messages": req.messages, "max_tokens": req.max_tokens, "stream": stream,
                              "provider": dict(self.cfg.routing), "usage": {"include": True}}
-        if req.model != self.cfg.fallback_model:
-            b["models"] = [req.model, self.cfg.fallback_model]
         for k in ("temperature", "reasoning", "response_format", "tools", "tool_choice", "logprobs", "top_logprobs", "stop"):
             v = getattr(req, k)
             if v is not None:
@@ -136,6 +139,10 @@ class ChatClient:
                     raise ProviderError("content_refused", generation_id=gid, partial_text="".join(text),
                                         cost_usd=chunk.usage.cost_usd if chunk.usage else None,
                                         maybe_charged=chunk.usage is None or chunk.usage.cost_usd is None)
+                if chunk.finish_reason in ERROR_FINISHES:
+                    raise ProviderError("provider_error", f"The model stopped early ({chunk.finish_reason}).",
+                                        maybe_charged=True, generation_id=gid, partial_text="".join(text),
+                                        cost_usd=chunk.usage.cost_usd if chunk.usage else None)
                 yield chunk
 
     @staticmethod
@@ -175,6 +182,10 @@ class ChatClient:
         if finish in REFUSALS:
             raise ProviderError("content_refused", generation_id=gid, cost_usd=usage.cost_usd if usage else None,
                                 maybe_charged=usage is None or usage.cost_usd is None)
+        if finish in ERROR_FINISHES:
+            raise ProviderError("provider_error", f"The model stopped early ({finish}).", maybe_charged=True,
+                                generation_id=gid, partial_text=str(msg.get("content") or ""),
+                                cost_usd=usage.cost_usd if usage else None)
         provider = obj.get("provider") if isinstance(obj.get("provider"), str) else None
         return ChatResult(generation_id=gid, content=str(msg.get("content") or ""), finish_reason=finish, usage=usage,
                           provider=provider, model=obj.get("model"), provider_warning=self.warning(provider),

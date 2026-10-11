@@ -122,6 +122,10 @@
 .models { display: grid; gap: 16px; }
 .modelRow { display: grid; grid-template-columns: minmax(0, 1fr) 220px; gap: 16px; align-items: end; }
 .modelSide { display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding-bottom: 22px; }
+/* docs/ai/03 C9: the read-only "Models in use" rows. */
+.modelLabel { font: 700 var(--text-small, 13px)/1.3 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; }
+.modelSlug { display: block; margin-top: 4px; overflow-wrap: anywhere; }
+.modelHint { margin-top: 4px; opacity: 0.75; font-size: var(--text-small, 13px); }
 
 /* Cost */
 .viewSwitch { margin: -6px 0 20px; }

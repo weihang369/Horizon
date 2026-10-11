@@ -24,6 +24,7 @@ import { ledgerFor } from "./ledger";
 import { RUNTIME } from "./runtime.config";
 import { MOCK_SCREENPLAYS } from "./screenplays/mock";
 import { SEED_SCREENPLAYS } from "./screenplays/seed";
+import { system1Fixture } from "./system1";
 
 type Outputs = Map<string, string>;
 
@@ -57,6 +58,8 @@ export async function buildSeed(): Promise<{ outputs: Outputs; warnings: string[
   put("pricing.json", json(PRICING));
   // session-runtime D9: one pacing table for the mock and the backend.
   put("runtime.json", json({ timing: DEFAULT_TIMING, runtime: RUNTIME }));
+  // docs/ai/13 W1: the scripted backend's and the MockClient's System 1 rows, from the question bank's labels.
+  put("system1.fixture.json", json(system1Fixture()));
 
   // ── Characters & songs ──
   for (const d of CHARACTERS) put(`${d.mock ? "_mock/" : ""}characters/${d.character.id}.json`, json(d.character));

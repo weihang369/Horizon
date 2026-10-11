@@ -36,7 +36,7 @@ from sqlalchemy import select, text
 
 from horizon import logs
 from horizon.ai.decider import Decider, DeciderFixtures
-from horizon.ai.hooks import AiStateHooks, NoOpHooks
+from horizon.ai.hooks import AiStateHooks, CompositeHooks
 from horizon.ai.image_prompt import ImagePromptCompiler
 from horizon.ai.profile import AiPorts, ProfileSpec
 from horizon.ai.scripted.ports import AiDeps
@@ -54,6 +54,7 @@ from horizon.domain.pricing import PriceTable, load_price_table
 from horizon.domain.runtime_config import RuntimeConfig, load_runtime_config
 from horizon.domain.timeutil import ms_from_iso, to_iso
 from horizon.domain.vclock import Slots
+from horizon.evals.store import ResponseStore
 from horizon.events.bus import GLOBAL, EventBus, session_channel
 from horizon.gateway.client import HttpCore
 from horizon.gateway.fake import FakeOpenRouter
@@ -61,6 +62,7 @@ from horizon.gateway.pipeline import Caps, Gateway
 from horizon.gateway.reservations import ReservationBook
 from horizon.gateway.types import GatewayConfig
 from horizon.services import seed as seeding
+from horizon.services.capture import Capture, CaptureHooks
 from horizon.services.corrector import CostCorrector
 from horizon.services.energy_writes import EnergyLocks, EnergyParams
 from horizon.services.keys import KeyStore
@@ -68,6 +70,9 @@ from horizon.services.ledger import LedgerWriter
 from horizon.services.purge import PurgeWorker
 from horizon.services.runtime.reducer import apply_event, initial_runtime, ordered_messages
 from horizon.services.settings import deep_merge, local_day, read_local_settings, read_seed_settings
+from horizon.sessions.system1 import fixture_row
+from horizon.tracing import TRACER
+from horizon.tracing import configure as configure_tracing
 
 log = logging.getLogger("horizon.runtime")
 T = TypeVar("T")
@@ -135,13 +140,17 @@ class Runtime:
         self._corrector: CostCorrector | None = None
         self._decider: Decider | None = None
         self.decider_fixtures = DeciderFixtures()
+        self.test_parks: dict[tuple[str, int], asyncio.Event] = {}   # /_test/park (test mode only)
         self.settings_lock = asyncio.Lock()
         self.fake: FakeOpenRouter | None = None
         # M3 (session-runtime design D1): the pacing table, LLM slots, AI ports, the live sessions and the purge worker.
         self.runtime_cfg: RuntimeConfig = load_runtime_config(cfg.seed_dir)
         self.llm_slots = Slots(self.runtime_cfg.runtime.llm_concurrency)
         self.profile = ProfileSpec.from_env(cfg.ai_env, test_mode=cfg.test_mode)
-        self.hooks: AiStateHooks = NoOpHooks()
+        # M7 (ai-foundation D27–D29): opt-in AI call capture, and the first real AiStateHooks (capture's deletes).
+        self.capture = Capture(lambda: self.db, self.now_iso, enabled=cfg.capture_ai_calls,
+                               sleep=lambda s: self.clock.sleep(s), spawn=lambda n, c: self.spawn(n, c))
+        self.hooks: AiStateHooks = CompositeHooks([CaptureHooks(lambda: self.db)])
         self._ledger: LedgerWriter | None = None
         self._sessions: Any = None
         self._ai: AiPorts | None = None
@@ -289,16 +298,22 @@ class Runtime:
         self._keys = KeyStore(cfg.openrouter_key, cfg.data_dir, on_change=self._settings_changed)
         self.fake = (FakeOpenRouter(models=models.values(), image_cost=self.prices.generation["portrait"])
                      if cfg.test_mode else None)
-        core = HttpCore(self._keys, transport=self.fake.transport() if self.fake else None)
+        core = HttpCore(self._keys, transport=self.fake.transport() if self.fake else None, label_purpose=cfg.test_mode)
         ledger = self._ledger = LedgerWriter(self.db, self.clock, self.energy_locks, self.energy_params)
         self.book.clear()
         self._gateway = Gateway(core=core, cfg=GatewayConfig.from_mapping(self.prices.gateway), prices=self.prices,
                                 book=self.book, ledger=ledger, caps=self.caps, period=self.clock.pricing_period,
                                 publish=lambda ev: self.publish(GLOBAL, ev), decision_model=str(models["decision"]),
                                 on_estimate_row=lambda row_id: self.corrector.enqueue(row_id))
+        if not cfg.test_mode:   # D31: seed knowledge embeddings are paid once, then reused from data/cache
+            self._gateway.seed_store = ResponseStore.seed_view(cfg.data_dir / "cache")
+        if self.capture.enabled:
+            self._gateway.capture_bodies = True
+            self._gateway.on_call = self.capture.on_call
         self._corrector = CostCorrector(self.db, self.clock, self._gateway.meta.generation, self.energy_locks,
                                         self.energy_params)
-        self._decider = Decider(self._gateway.decide, self._gateway.cfg.timeouts, self.decider_fixtures)
+        self._decider = Decider(self._gateway.decide, self._gateway.cfg.timeouts, self.decider_fixtures,
+                                clock=self.clock, spawn=self.spawn)
 
     def _build_m3(self) -> None:
         from horizon.sessions.manager import LiveSessionManager
@@ -310,8 +325,17 @@ class Runtime:
         deps = AiDeps(gateway=lambda: self.gateway, decider=lambda: self.decider, prices=self.prices,
                       timing=self.runtime_cfg.timing, clock=lambda: self.clock,
                       window_tokens=self.runtime_cfg.runtime.window_tokens, palette_ids=self.palette_ids,
-                      schema=lambda: self.schema, models_dir=lambda: self.cfg.models_dir)
+                      schema=lambda: self.schema, models_dir=lambda: self.cfg.models_dir,
+                      llm=self.runtime_cfg.runtime.llm,
+                      system1_row=lambda qid, answer: fixture_row(self.cfg.seed_dir, qid, answer))
         self._ai = AiPorts(deps, self.profile)
+        chat = str(self.settings_doc()["models"].get("chat") or "")
+        if chat and chat != self.prices.chat.model:   # docs/ai/03 C9: one chat-model source; tell the developer
+            log.error("seed/settings.json names chat model %s but seed/pricing.json prices %s; replies, the drafter "
+                      "and the probe use %s", chat, self.prices.chat.model, self.prices.chat.model)
+        # ai-foundation design D12: say what each port resolves to, so an opt-in `agent` profile can't hide what runs.
+        log.info("AI profile %s; ports: %s", self.profile.profile or "default",
+                 ", ".join(f"{p}={i}" for p, i in self._ai.resolved(key_set=self.keys.status() == "set").items()))
         self._purge = PurgeWorker(self.db, self.hooks, self.now_iso)
         self._purge.start()
 
@@ -431,10 +455,20 @@ class Runtime:
         await self._recover_m5()
         await self.corrector.scan()
         await asyncio.to_thread(sweep, cfg.data_dir, self.referenced_files_sync())
+        self.capture.start()
+        log.info("AI call capture %s", "ON (HORIZON_CAPTURE_AI_CALLS=1: prompts and replies kept 7 days in ai_calls)"
+                 if self.capture.enabled else "off")
+        configure_tracing({"HORIZON_LANGSMITH": "1" if cfg.langsmith else "",
+                           "LANGSMITH_API_KEY": "set" if cfg.langsmith_key is not None else ""})
+        if cfg.langsmith and cfg.langsmith_key is not None and TRACER.enabled:
+            os.environ["LANGSMITH_API_KEY"] = cfg.langsmith_key.get_secret_value()   # langsmith reads it from env
+            os.environ["LANGSMITH_TRACING"] = "true"
         self.started = True
         log.info("horizon backend ready (data=%s, test_mode=%s)", cfg.data_dir, cfg.test_mode)
 
     async def stop(self) -> None:
+        if self._db is not None:
+            await self.capture.stop()   # the last queued rows are flushed while the database is open
         await self._stop_m5()
         await self._stop_m4()
         await self._stop_m3()

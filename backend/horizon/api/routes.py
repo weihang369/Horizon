@@ -479,10 +479,10 @@ async def apply_variant(rt: Runtime, variant_id: str) -> None:
 
 
 class AiProfileBody(_Model):
-    profile: Literal["scripted", "naive"] | None = None
+    profile: Literal["scripted", "naive", "agent"] | None = None
     overrides: dict[Literal["turn", "router", "reactions", "host", "director", "summariser", "guardrail", "drafter",
                             "image", "song", "embedder", "knowledge_retriever", "memory_retriever", "converter"],
-                    Literal["scripted", "naive"]] | None = None
+                    Literal["scripted", "naive", "agent"]] | None = None
 
 
 @test_router.post("/ai-profile")
@@ -491,8 +491,58 @@ async def test_ai_profile(request: Request, body: AiProfileBody) -> Response:
     from horizon.ai.profile import ProfileSpec
 
     rt = rt_of(request)
-    overrides: dict[str, Literal["scripted", "naive"]] = {str(k): v for k, v in (body.overrides or {}).items()}
+    overrides: dict[str, Literal["scripted", "naive", "agent"]] = {str(k): v for k, v in (body.overrides or {}).items()}
     rt.set_profile(ProfileSpec(profile=body.profile, overrides=overrides, test_mode=rt.cfg.test_mode))
+    return Response(status_code=204)
+
+
+class CannedBody(_Model):
+    purpose: str
+    set: str | None = None
+    clear: bool = False
+
+
+@test_router.post("/canned")
+async def test_canned(request: Request, body: CannedBody) -> Response:
+    """Test mode (docs/ai/13 W14, design D39): answer a purpose's chat calls with a committed canned-response set
+    (`backend/tests/fixtures/canned/<set>.json`), or clear it. An unknown set is `validation`."""
+    from horizon.gateway.fake import load_canned
+
+    rt = rt_of(request)
+    if rt.fake is None:
+        raise validation("Canned responses need the test-mode provider.", {"field": "purpose"})
+    if body.clear or not body.set:
+        rt.fake.set_canned(body.purpose, None)
+        return Response(status_code=204)
+    try:
+        _purpose, responses = load_canned(body.set)
+    except KeyError as e:
+        raise validation(f"No canned set named {body.set!r}.", {"field": "set"}) from e
+    rt.fake.set_canned(body.purpose, responses)
+    return Response(status_code=204)
+
+
+class ParkBody(_Model):
+    endpoint: Literal["decisions"]
+    n: int = Field(ge=1)
+    release: bool = False
+
+
+@test_router.post("/park")
+async def test_park(request: Request, body: ParkBody) -> Response:
+    """Test mode (design D39): hold the n-th decisions request open; a second call with `release: true` lets it go,
+    so deadlines and late answers are testable through the real gateway."""
+    rt = rt_of(request)
+    if rt.fake is None:
+        raise validation("Parking needs the test-mode provider.", {"field": "endpoint"})
+    key = (body.endpoint, body.n)
+    if body.release:
+        ev = rt.test_parks.pop(key, None)
+        if ev is None:
+            raise validation("Nothing is parked there.", {"field": "n"})
+        ev.set()
+    else:
+        rt.test_parks[key] = rt.fake.park_decision(body.n)
     return Response(status_code=204)
 
 

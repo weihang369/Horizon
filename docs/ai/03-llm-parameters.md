@@ -452,7 +452,10 @@ What v2 needs before overrides can work is written down in [docs/v2/README.md](.
 
 ## 5. Checks before this is locked
 
-1. **Thinking is really off, and error finish reasons come through (paid, ≈ $0.01, needs the user's OK).**
+1. **Thinking is really off, and error finish reasons come through (paid, ≈ $0.01, needs the user's OK).** *Done
+   ([group A](checks/group-a.md) A3): `enabled: false` gives 0 reasoning tokens (the default gave 20); `stop` and
+   `length` pass through, with a matching `native_finish_reason`; served by DeepSeek. A group reply began with
+   "Takeshi: …", so C6's own-name strip is needed.*
    - Send one reply request through the gateway with `reasoning: {enabled: false}`, `temperature: 1.3` and the C6
      `stop` list.
    - Read the **raw** `usage`. Expect `completion_tokens_details.reasoning_tokens = 0`, no `reasoning` deltas, and the
@@ -460,7 +463,16 @@ What v2 needs before overrides can work is written down in [docs/v2/README.md](.
    - If any reasoning tokens appear, repeat with `reasoning: {effort: "none"}` (F3d) and use whichever form gives 0.
    - Note the `finish_reason` values OpenRouter passes through.
 2. **JSON mode (paid, ≈ $0.02, needs the user's OK).** Run 20 profile drafts. Count the empty or invalid results before
-   and after the retry. The target is ≥ 99 % valid after one retry.
+   and after the retry. The target is ≥ 99 % valid after one retry. *Done (A3): **19/20**, with the same failure on
+   retry: a nickname in unescaped double quotes (`"Loretta "Rhett" Kowalski"`). **The user's fix (2026-10-10, built
+   in M7):** every JSON prompt says to use single quotes inside text values, and a free local repair pass escapes
+   stray inner quotes before the one paid retry.*
+
+   **Two reply rules from A2's empty streams (built in M7):**
+   - a reply request whose history ends with the speaker's own line always carries a trailing cue (2 of 4 such
+     requests came back empty; 0 of 40 1:1 turns ending on the user's line did);
+   - an empty reply (`finish_reason: stop`, no content) is a retryable failure, retried once before any text is
+     shown.
 3. **The cut-off rate and bubble count** come from the B7 conversation layer, at no extra cost:
    - the share of `finish_reason = length` per mode, read from the new ledger column;
    - bubbles per reply against the C4 targets.
@@ -490,6 +502,9 @@ What v2 needs before overrides can work is written down in [docs/v2/README.md](.
 | Settings → Models becomes read-only, with prices from the bundled `pricing.config.ts`, and Test | `frontend/src/features/settings/ModelsTab.tsx` | frontend |
 | Wording changes: SET-05 is read-only in v1; D-46 "may display as up to 4 bubbles"; R-14 mitigation (C8); R-13 "DeepSeek structured-output fallback" becomes "JSON mode + validation" (applied instead as "a deterministic code fallback per question": Jev failures fall back to code rules, [doc 13](13-wrap-up.md) status note); OQ-AI-13 resolved; doc backend/04's "fallback model" line; D-93 and 05-ai-seams' "byte-identical to v1" note (no longer true after naive-3); `openspec/specs/ai-ports` (naive reply engine) and `http-api` where they state caps, the fallback or the probe override | `docs/requirements/02, 05, 07, 08, 09`, `docs/backend/04, 05`, `openspec/specs/*` | docs |
 | Doc 01's failure-mode table says "structured output"; it becomes "JSON mode + validation + one retry" (C7) | `docs/ai/01-agent-architecture.md` §6 | docs (done with this doc) |
+
+**Built in M7** (OpenSpec change `ai-foundation`): every row above. The agent engines read their rows when they land
+(M8+), and task 9's memory extraction uses the JSON helper at M10.
 
 **No contract change.** `finish_reason` and reasoning tokens live in the internal ledger. The provider shows through the
 existing `model.provider`. Prices come from the bundled config. `modelOverrides` stays, unused.

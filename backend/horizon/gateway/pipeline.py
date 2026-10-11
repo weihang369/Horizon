@@ -21,6 +21,7 @@ runs none of them. If `after_response` or `commit_with` fails after the provider
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import contextvars
 import json
 import logging
@@ -43,7 +44,7 @@ from horizon.domain.pricing import (
     expected_out,
 )
 from horizon.gateway.chat import ChatChunk, ChatClient, ChatRequest, ChatResult
-from horizon.gateway.client import HttpCore
+from horizon.gateway.client import CALL_PURPOSE, HttpCore
 from horizon.gateway.context import CallContext
 from horizon.gateway.decisions import DecisionsClient, DecisionsResponse
 from horizon.gateway.embeddings import EmbeddingsClient, batches
@@ -54,6 +55,25 @@ from horizon.gateway.music import MusicClient, MusicResult
 from horizon.gateway.redact import redact_obj
 from horizon.gateway.reservations import Hold, ReservationBook
 from horizon.gateway.types import GatewayConfig, Usage
+from horizon.tracing import TRACER
+
+
+def chat_key(body: Mapping[str, Any]) -> str:
+    from horizon.evals.store import chat_key as k
+
+    return k(body)
+
+
+def jev_key(model: str, state: Any, questions: Mapping[str, Any], fingerprint: str | None) -> str:
+    from horizon.evals.store import jev_key as k
+
+    return k(model, state, questions, fingerprint)
+
+
+def embeddings_key(body: Mapping[str, Any]) -> str:
+    from horizon.evals.store import embeddings_key as k
+
+    return k(body)
 
 log = logging.getLogger("horizon.gateway")
 T = TypeVar("T")
@@ -111,6 +131,8 @@ class LedgerRow:
     tokens_cached: int | None = None
     tokens_out: int | None = None
     latency_ms: int | None = None
+    finish_reason: str | None = None     # chat: the provider's; a decision: on_time | late | cancelled | final (D6)
+    tokens_reasoning: int | None = None
 
 
 @dataclass(frozen=True)
@@ -147,6 +169,7 @@ class Billing:
     usage: Usage | None
     provider: str | None
     model: str | None
+    finish_reason: str | None = None
 
 
 OnCall = Callable[[CallContext, Mapping[str, Any], Mapping[str, Any]], Awaitable[None] | None]
@@ -169,6 +192,11 @@ class Gateway:
     decision_model: str
     on_estimate_row: Callable[[str], None] = lambda _row_id: None   # the cost corrector's queue
     on_call: OnCall = no_op_hook
+    # M7 (ai-foundation D27): build the redacted request/response bodies for `on_call` only when capture is on, so a
+    # normal run never pays for them. Embedding inputs, vectors, image and audio bytes are never included.
+    capture_bodies: bool = False
+    store: Any = None        # M7 (D31): the eval view (chat, Jev, embeddings), attached only by `horizon eval` runs
+    seed_store: Any = None   # M7 (D31): the seed view (embeddings only), used only when a caller passes store_ok
     # M3: the session manager's view of spend (cap pause on crossing; budget events of a session's call).
     on_spend: Callable[[CallContext, RecordResult], None] = lambda _ctx, _res: None
     on_budget: Callable[[dict[str, Any], CallContext], None] = lambda _ev, _ctx: None
@@ -190,6 +218,14 @@ class Gateway:
         self.embeddings = EmbeddingsClient(self.core, provider=self.cfg.embedding_provider, batch_size=self.cfg.embed_batch,
                                            timeout_s=t.embedding)
         self.meta = MetaClient(self.core, t.meta)
+
+    def _store_for(self, kind: str, store_ok: bool = False) -> Any:
+        """W10/D31: which store may serve this call. A hit sends nothing, reserves nothing and writes no ledger row."""
+        if self.store is not None and self.store.serves(kind):
+            return self.store
+        if store_ok and kind == "embeddings" and self.seed_store is not None:
+            return self.seed_store
+        return None
 
     # ── estimates ──
     def chat_estimate(self, req: ChatRequest, *, recent_outs: Sequence[int] = (), warm: bool = False,
@@ -290,7 +326,15 @@ class Gateway:
             generation_id=(bill.generation_id if bill and bill.generation_id else generation_id),
             session_id=ctx.session_id, character_id=ctx.character_id, job_id=ctx.job_id, message_id=ctx.message_id,
             tokens_in=u.tokens_in if u else None, tokens_cached=u.tokens_cached if u else None,
-            tokens_out=u.tokens_out if u else None, latency_ms=latency_ms)
+            tokens_out=u.tokens_out if u else None, latency_ms=latency_ms,
+            finish_reason=bill.finish_reason if bill else None, tokens_reasoning=u.tokens_reasoning if u else None)
+
+    @staticmethod
+    def _check_thinking(req: ChatRequest, usage: Usage | None) -> None:
+        """llm-parameters "Thinking off behind a switch": a call sent with thinking off that still reports reasoning
+        tokens is a silent failure (the temperatures were ignored and the tokens billed); say so."""
+        if usage and usage.tokens_reasoning and (req.reasoning or {}).get("enabled") is False:
+            log.warning("a %s call sent with reasoning off reported %d reasoning tokens", req.model, usage.tokens_reasoning)
 
     async def _record(self, ctx: CallContext, row: LedgerRow, summary: Mapping[str, Any],
                       on_recorded: Callable[[str], None] | None = None, extra: CommitWith | None = None) -> RecordResult:
@@ -316,7 +360,8 @@ class Gateway:
         if row.cost_source == "estimate" and row.generation_id:
             self.on_estimate_row(res.row_id)
         await self._hook(ctx, summary, {"ledgerRowId": res.row_id, "costUsd": row.cost_usd, "costSource": row.cost_source,
-                                        "provider": row.provider, "generationId": row.generation_id})
+                                        "provider": row.provider, "generationId": row.generation_id,
+                                        "latencyMs": row.latency_ms, "finishReason": row.finish_reason})
         return res
 
     async def _hook(self, ctx: CallContext, summary: Mapping[str, Any], outcome: Mapping[str, Any]) -> None:
@@ -348,8 +393,15 @@ class Gateway:
     async def paid(self, ctx: CallContext, estimate: float, send: Callable[[], Awaitable[tuple[T, Billing]]], *,
                    model: str | None, summary: Mapping[str, Any] | None = None, before_send: BeforeSend | None = None,
                    after_response: Callable[[T], Awaitable[None]] | None = None,
-                   commit_with: CommitWith | None = None) -> T:
+                   commit_with: CommitWith | None = None, finish: Callable[[], str | None] | None = None) -> T:
+        """`finish()` (a decision's outcome, design D6) is read when the row is built and overrides its finish reason."""
         hold = await self._preflight(ctx, estimate)
+        _row = self._row
+
+        def row_of(*a: Any, **kw: Any) -> LedgerRow:
+            r = _row(*a, **kw)
+            return replace(r, finish_reason=finish()) if finish is not None else r
+
         summ = dict(summary or {}, model=model, purpose=ctx.purpose)
         try:
             if before_send is not None:
@@ -359,18 +411,21 @@ class Gateway:
             def ms() -> int:
                 return round((time.monotonic() - started) * 1000)
 
+            token = CALL_PURPOSE.set(ctx.purpose)
             try:
                 value, bill = await send()
             except ProviderError as e:
                 if e.cost_usd is not None or e.maybe_charged:
-                    await self._record_shielded(ctx, self._row(ctx, estimate, cost=e.cost_usd, bill=None, model=model,
+                    await self._record_shielded(ctx, row_of(ctx, estimate, cost=e.cost_usd, bill=None, model=model,
                                                                generation_id=e.generation_id, latency_ms=ms()), summ)
                 raise
             except asyncio.CancelledError:
-                await self._record_shielded(ctx, self._row(ctx, estimate, cost=None, bill=None, model=model,
+                await self._record_shielded(ctx, row_of(ctx, estimate, cost=None, bill=None, model=model,
                                                            generation_id=None, latency_ms=ms()), summ)
                 raise
-            row = self._row(ctx, estimate, cost=None, bill=bill, model=model, generation_id=None, latency_ms=ms())
+            finally:
+                CALL_PURPOSE.reset(token)
+            row = row_of(ctx, estimate, cost=None, bill=bill, model=model, generation_id=None, latency_ms=ms())
             if after_response is not None:
                 try:
                     await after_response(value)
@@ -394,37 +449,81 @@ class Gateway:
                             after_response: Callable[[ChatResult], Awaitable[None]] | None = None,
                             commit_with: CommitWith | None = None) -> ChatResult:
         est = self.chat_estimate(req) if estimate is None else estimate
+        body: dict[str, Any] | None = {"request": {"messages": req.messages}} if self.capture_bodies else None
+        store = self._store_for("chat")
+        skey = chat_key(self.chat.body(req, stream=False)) if store is not None else ""
+        if store is not None and (hit := store.get("chat", skey)) is not None:
+            msg = ((hit["response"].get("choices") or [{}])[0].get("message") or {})
+            cached = ChatResult(generation_id="store", content=str(msg.get("content") or ""), finish_reason="stop",
+                                usage=None, provider="store", model=req.model, provider_warning=None, latency_ms=0)
+            if after_response is not None:
+                await after_response(cached)
+            return cached
 
         async def send() -> tuple[ChatResult, Billing]:
             r = await self.chat.complete(req)
-            return r, Billing(r.generation_id, r.usage, r.provider, r.model)
+            if store is not None:
+                store.put("chat", skey, {"messages": req.messages},
+                          {"choices": [{"message": {"role": "assistant", "content": r.content}}], "model": r.model},
+                          {"cost": r.usage.cost_usd if r.usage else None})
+            self._check_thinking(req, r.usage)
+            if body is not None:
+                body["response"] = {"text": r.content}
+            return r, Billing(r.generation_id, r.usage, r.provider, r.model, r.finish_reason)
 
-        return await self.paid(ctx, est, send, model=req.model, summary={"kind": "chat", "maxTokens": req.max_tokens},
-                               before_send=before_send, after_response=after_response, commit_with=commit_with)
+        summary: dict[str, Any] = {"kind": "chat", "maxTokens": req.max_tokens}
+        if body is not None:
+            summary["body"] = body
+        with TRACER.traced(f"chat:{ctx.purpose}", {"model": req.model, "messages": req.messages}) as out:
+            r = await self.paid(ctx, est, send, model=req.model, summary=summary, before_send=before_send,
+                                after_response=after_response, commit_with=commit_with)
+            out["text"] = r.content
+        return r
 
     async def chat_stream(self, req: ChatRequest, ctx: CallContext, *, estimate: float | None = None,
                           on_recorded: Callable[[str], None] | None = None) -> AsyncIterator[ChatChunk]:
         """Streamed chat through the pipeline. Stopping early (aclose / cancel) records the estimate + generation_id.
         `on_recorded(row_id)` reports the ledger row (a prefetched reply links it to its message on release)."""
         est = self.chat_estimate(req) if estimate is None else estimate
+        store = self._store_for("chat")
+        skey = chat_key(self.chat.body(req, stream=False)) if store is not None else ""
+        if store is not None and (hit := store.get("chat", skey)) is not None:
+            msg = ((hit["response"].get("choices") or [{}])[0].get("message") or {})
+            yield ChatChunk(generation_id="store", content=str(msg.get("content") or ""), provider="store")
+            yield ChatChunk(generation_id="store", finish_reason="stop", provider="store")
+            return
         hold = await self._preflight(ctx, est)
         started = time.monotonic()
-        summ = {"kind": "chat_stream", "maxTokens": req.max_tokens, "model": req.model, "purpose": ctx.purpose}
+        summ: dict[str, Any] = {"kind": "chat_stream", "maxTokens": req.max_tokens, "model": req.model,
+                                "purpose": ctx.purpose}
+        parts: list[str] | None = [] if self.capture_bodies or TRACER.enabled or store is not None else None
+        if self.capture_bodies:
+            summ["body"] = {"request": {"messages": req.messages}, "response": {"text": ""}}
+        traced = contextlib.ExitStack()
+        trace_out = traced.enter_context(TRACER.traced(f"chat_stream:{ctx.purpose}",
+                                                       {"model": req.model, "messages": req.messages}))
         gid: str | None = None
         usage: Usage | None = None
         provider: str | None = None
+        finish_reason: str | None = None
         done = False
 
         def row(cost: float | None, bill: Billing | None) -> LedgerRow:
             return self._row(ctx, est, cost=cost, bill=bill, model=req.model, generation_id=gid,
                              latency_ms=round((time.monotonic() - started) * 1000))
 
+        label = CALL_PURPOSE.set(ctx.purpose)   # labels the request when the stream opens (test mode only)
         try:
             try:
                 async for chunk in self.chat.stream(req):
                     gid = chunk.generation_id
                     usage = chunk.usage or usage
                     provider = chunk.provider or provider
+                    finish_reason = chunk.finish_reason or finish_reason
+                    if parts is not None and chunk.content:
+                        parts.append(chunk.content)
+                        if "body" in summ:
+                            summ["body"]["response"]["text"] = "".join(parts)
                     yield chunk
                 done = True
             except ProviderError as e:
@@ -436,9 +535,19 @@ class Gateway:
                 await self._record_shielded(ctx, row(None, None), summ, on_recorded)
                 raise
             if done:
-                await self._record(ctx, row(None, Billing(gid, usage, provider, req.model)), summ, on_recorded)
+                self._check_thinking(req, usage)
+                if store is not None and parts is not None:
+                    store.put("chat", skey, {"messages": req.messages},
+                              {"choices": [{"message": {"role": "assistant", "content": "".join(parts)}}]},
+                              {"cost": usage.cost_usd if usage else None})
+                await self._record(ctx, row(None, Billing(gid, usage, provider, req.model, finish_reason)), summ, on_recorded)
         finally:
+            with contextlib.suppress(ValueError):   # a generator can be closed from another context
+                CALL_PURPOSE.reset(label)
             self.book.release(hold)
+            trace_out["text"] = "".join(parts or [])
+            with contextlib.suppress(Exception):
+                traced.close()
 
     # ── the scripted source (session-runtime design D10; provider-gateway "Scripted chat source") ──
     async def simulated_stream(self, ctx: CallContext, spec: SimulatedReply, sleep: Callable[[float], Awaitable[None]], *,
@@ -457,7 +566,8 @@ class Gateway:
             r = self._row(ctx, est, cost=spec.cost_usd if final else None, bill=None, model=spec.model, generation_id=None,
                           latency_ms=round((time.monotonic() - started) * 1000))
             return replace(r, provider=SCRIPTED_PROVIDER, tokens_in=spec.tokens_in, tokens_cached=spec.tokens_cached,
-                           tokens_out=spec.tokens_out if final else 0, latency_ms=spec.total_ms if final else r.latency_ms)
+                           tokens_out=spec.tokens_out if final else 0, latency_ms=spec.total_ms if final else r.latency_ms,
+                           finish_reason="stop" if final else None)
 
         try:
             try:
@@ -488,16 +598,39 @@ class Gateway:
             self.book.release(hold)
 
     async def decide(self, state: Any, questions: Mapping[str, Mapping[str, Any]], ctx: CallContext, *,
-                     estimate: float | None = None, model: str | None = None) -> DecisionsResponse:
+                     estimate: float | None = None, model: str | None = None,
+                     finish: Callable[[], str | None] | None = None) -> DecisionsResponse:
+        """One Jev request through the pipeline. `finish()` (the Decider's `DecisionCall.outcome`) is read when the row
+        is recorded, so the ledger says whether the answer was on time, late or cancelled (ai-foundation design D6)."""
         est = self.decision_estimate(state, questions) if estimate is None else estimate
         m = model or self.decision_model
+        store = self._store_for("jev")
+        skey = jev_key(m, state, dict(questions), store.fingerprint) if store is not None else ""
+        if store is not None and (hit := store.get("jev", skey)) is not None:
+            r0 = hit["response"]
+            answers = r0.get("answers", r0.get("results")) or {}
+            return DecisionsResponse(generation_id="store", answers={str(k): v for k, v in answers.items()}, usage=None,
+                                     model=r0.get("model") or m)
+
+        body: dict[str, Any] | None = ({"request": {"state": state, "questions": dict(questions)}}
+                                       if self.capture_bodies else None)
 
         async def send() -> tuple[DecisionsResponse, Billing]:
             r = await self.decisions.decide(state, questions, model=m)
+            if body is not None:
+                body["response"] = {"answers": dict(r.answers)}
+            if store is not None:
+                store.put("jev", skey, {"state": state, "questions": dict(questions)},
+                          {"answers": dict(r.answers), "model": r.model}, {"cost": r.usage.cost_usd if r.usage else None})
             return r, Billing(r.generation_id, r.usage, None, r.model or m)
 
-        return await self.paid(ctx, est, send, model=m,
-                               summary={"kind": "decision", "questions": sorted(questions)})
+        summary: dict[str, Any] = {"kind": "decision", "questions": sorted(questions)}
+        if body is not None:
+            summary["body"] = body
+        with TRACER.traced(f"decision:{ctx.purpose}", {"model": m, "state": state, "questions": dict(questions)}) as out:
+            r = await self.paid(ctx, est, send, model=m, summary=summary, finish=finish)
+            out["answers"] = dict(r.answers)
+        return r
 
     async def generate_image(self, ctx: CallContext, *, model: str, prompt: str, kind: str = "portrait",
                              refs: list[str] | None = None, resolution: str | None = None, aspect_ratio: str | None = None,
@@ -540,13 +673,34 @@ class Gateway:
     async def embed_batch(self, texts: Sequence[str], ctx: CallContext, *, model: str, dimensions: int | None = None,
                           before_send: BeforeSend | None = None,
                           after_response: Callable[[list[list[float]]], Awaitable[None]] | None = None,
-                          commit_with: CommitWith | None = None) -> list[list[float]]:
+                          commit_with: CommitWith | None = None, store_ok: bool = False) -> list[list[float]]:
         """One embedding request (≤ `embed_batch` texts) as one paid call with the D-84 hooks: the ingestion worker marks
-        the batch sent, then stores its vectors in the ledger row's transaction (knowledge-memory-storage design D2)."""
+        the batch sent, then stores its vectors in the ledger row's transaction (knowledge-memory-storage design D2).
+        `store_ok` (seed knowledge and seed memories only, D31): a stored answer is reused at $0 with no ledger row; the
+        caller's `commit_with` still runs, in its own write transaction, so the vectors are written the same way."""
         est = estimate_embedding(self.prices, sum(count_tokens(x) for x in texts))
+        store = self._store_for("embeddings", store_ok)
+        skey = ""
+        if store is not None:
+            kbody: dict[str, Any] = {"model": model, "input": list(texts),
+                                     "provider": {"order": [self.cfg.embedding_provider], "allow_fallbacks": False}}
+            if dimensions:
+                kbody["dimensions"] = dimensions
+            skey = embeddings_key(kbody)
+            if (hit := store.get("embeddings", skey)) is not None:
+                vectors = [[float(x) for x in v] for v in hit["response"]["vectors"]]
+                if after_response is not None:
+                    await after_response(vectors)
+                if commit_with is not None:
+                    async with self.ledger.db.write() as tx:  # type: ignore[attr-defined]
+                        await commit_with(tx.conn, "")
+                return vectors
 
         async def send() -> tuple[list[list[float]], Billing]:
             r = await self.embeddings.embed_batch(texts, model=model, dimensions=dimensions)
+            if store is not None:
+                store.put("embeddings", skey, {"input": list(texts), "dimensions": dimensions}, {"vectors": r.vectors},
+                          {"cost": r.usage.cost_usd if r.usage else None})
             return r.vectors, Billing(r.generation_id, r.usage, r.provider, model)
 
         return await self.paid(ctx, est, send, model=model, summary={"kind": "embedding", "texts": len(texts)},

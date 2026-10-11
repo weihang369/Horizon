@@ -154,12 +154,18 @@ def hooks_for(sched: JobScheduler, run: Run, a: Attempt, task: Mapping[str, Any]
     rt = sched.rt
     stem = assets.original_rel(ch["world_id"], ch["id"], task["id"], int(task["attempt"]), "x")[:-2]
     stored: dict[str, str] = {}
+    calls = [0]   # paid calls in this attempt (a JSON call may make two: docs/ai/03 C7)
 
     async def before_send() -> None:
+        first = calls[0] == 0
+        calls[0] += 1
+
         async def mark() -> None:
             async with rt.db.write() as tx:
-                await tx.conn.execute(update(t.generation_tasks).where(T.id == task["id"]).values(
-                    provider_called_at=rt.now_iso(), target_path=stem))
+                values: dict[str, Any] = {"provider_called_at": rt.now_iso(), "target_path": stem}
+                if first:
+                    values["cost_usd"] = 0.0   # the attempt's cost is the sum of its calls (commit_with adds)
+                await tx.conn.execute(update(t.generation_tasks).where(T.id == task["id"]).values(**values))
         await sched.shielded(f"mark:{task['id']}", mark())
         a.sent = True
 
@@ -177,9 +183,9 @@ def hooks_for(sched: JobScheduler, run: Run, a: Attempt, task: Mapping[str, Any]
 
     async def commit_with(conn: AsyncConnection, row_id: str) -> None:
         u = t.usage_records.c
-        cost = (await conn.execute(select(u.cost_usd).where(u.id == row_id))).scalar()
+        cost = float((await conn.execute(select(u.cost_usd).where(u.id == row_id))).scalar() or 0.0)
         await conn.execute(update(t.generation_tasks).where(T.id == task["id"]).values(
-            result_ref=stored.get("rel"), cost_usd=cost))
+            result_ref=stored.get("rel"), cost_usd=func.coalesce(T.cost_usd, 0.0) + cost))
         total = (await conn.execute(select(func.coalesce(func.sum(u.cost_usd), 0.0)).where(u.job_id == task["job_id"]))).scalar()
         await conn.execute(update(t.generation_jobs).where(J.id == task["job_id"]).values(
             actual_cost_usd=round(float(total or 0.0), 6)))
@@ -203,10 +209,10 @@ async def call(sched: JobScheduler, run: Run, a: Attempt, task: dict[str, Any], 
             if run.kind == "profile_regenerate":
                 await drafter.regenerate_field(ctx, profile=ch["profile"], field=str(run.input.get("targetField") or ""),
                                                attempt=int(task["attempt"]) + int(ch["version"]), cost_usd=spec.est_usd,
-                                               duration_ms=spec.duration_ms, model=str(models["chat"]), hooks=hooks)
+                                               duration_ms=spec.duration_ms, model=rt.prices.chat.model, hooks=hooks)
             else:
                 await drafter.draft(ctx, seed_prompt=ch["seed_prompt"], intent=ch["intent"], cost_usd=spec.est_usd,
-                                    duration_ms=spec.duration_ms, model=str(models["chat"]), hooks=hooks)
+                                    duration_ms=spec.duration_ms, model=rt.prices.chat.model, hooks=hooks)
         return None
     if type_ == "theme_song":
         return await call_song(sched, run, a, task, ch, spec, str(models["music"]))

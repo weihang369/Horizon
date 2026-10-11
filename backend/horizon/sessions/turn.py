@@ -35,9 +35,17 @@ from horizon.domain.timeutil import to_ms
 from horizon.gateway.errors import ProviderError
 from horizon.sessions.actor import SessionActor, TurnInfo
 from horizon.sessions.coalesce import Coalescer
-from horizon.sessions.context import character_view, characters, energy_of, maintain_window, session_context
+from horizon.sessions.context import (
+    character_view,
+    characters,
+    energy_of,
+    maintain_window,
+    reply_cap,
+    session_context,
+)
 from horizon.sessions.prefetch import Prefetch
 from horizon.sessions.retrieve import retrieve
+from horizon.sessions.system1 import section as system1_section
 from horizon.sessions.writer import TraceMeta
 
 if TYPE_CHECKING:
@@ -61,6 +69,7 @@ class TurnSpec:
     skipped: list[dict[str, Any]] | None = None
     routing: dict[str, Any] | None = None
     calls: list[dict[str, Any]] = field(default_factory=list)   # turn-level calls (the route decision, OQ-13)
+    system1: dict[str, Any] | None = None           # rev 1.4: the turn's System 1 section (the route row, D25)
     reactions: bool = True
     debate: DebateMeta | None = None
     direction_note: str | None = None
@@ -153,13 +162,11 @@ class TurnRunner:
                 return await self._stream(actor, spec, info, prefetch.ctx, t0, started_iso, prefetch=prefetch)
             await maintain_window(rt, actor)
             sctx = await session_context(rt, actor)
-            caps = rt.runtime_cfg.runtime.reply_max_tokens
-            cfg = sctx.config or {}
             got = await retrieve(rt, actor, sctx, spec.speaker, spec.prompt)   # M5 design D10: the speaker's scope
             spec.calls.extend(got.calls)
             ctx = TurnContext(session=sctx, speaker=character_view(row), message_id=mid, variant_id=vid, prompt=spec.prompt,
                               line=spec.line, turn_index=actor.mode.turn,
-                              max_tokens=caps.for_mode(sctx.mode, str(cfg.get("turnLength")) if sctx.mode == "debate" else None),
+                              max_tokens=reply_cap(rt, sctx),   # after retrieval and the (M9) plan: design D14
                               direction_note=spec.direction_note, debate=spec.debate, knowledge=got.knowledge,
                               memory=got.memory, query=got.query)
             actor.mode.turn += 1
@@ -354,7 +361,10 @@ class TurnRunner:
                 if spec.skipped:
                     routing["skipped"] = spec.skipped
             full["routing"] = routing
-            full["calls"] = [*spec.calls, *await ledger.calls_for_message(mid, since=since)]
+            full["calls"] = [*spec.calls, *await ledger.calls_for_message(mid, since=since), *info.system1_calls]
+            if spec.system1 or info.system1:   # D24: rows appended mid-stream merge by key, never replace
+                base = dict(spec.system1 or {})
+                full["system1"] = system1_section(base, info.system1, seed=base.get("seed"))
             events.append({"type": "insight", "payload": {"messageId": mid, "trace": full}})
         meta = TraceMeta(engine=getattr(engine, "name", None), engine_version=getattr(engine, "version", None),
                          prompt_version=getattr(engine, "prompt_version", None))
@@ -365,6 +375,12 @@ class TurnRunner:
         info.closed = True
         if actor.current is info:
             actor.current = None
+        if rt.capture.enabled and ctx is not None:   # ai-foundation D27: the turn row (queued, off the hot path)
+            rt.capture.on_turn(world_id=actor.session.get("worldId"), session_id=actor.sid,
+                               character_id=info.character_id, message_id=mid, request=ctx.model_dump(mode="json"),
+                               response={"plan": None, "status": status,
+                                         "routingFallback": (spec.routing or {}).get("reason") == "fallback",
+                                         "deciderFallback": any(bool(c.get("fallback")) for c in spec.calls)})
         if status == "complete" and spec.reactions and ctx is not None and actor.session["emotionMode"] != "user":
             self._reactions(actor, info, ctx)
         if status == "complete" and not scrub and ctx is not None:
