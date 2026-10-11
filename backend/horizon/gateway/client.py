@@ -13,6 +13,7 @@
 from __future__ import annotations
 
 import asyncio
+import contextvars
 from collections.abc import AsyncIterator, Mapping
 from contextlib import asynccontextmanager
 from typing import Any, Protocol
@@ -24,6 +25,10 @@ from horizon.gateway.errors import ProviderError, from_status
 
 BASE_URL = "https://openrouter.ai/api"
 RETRY_PAUSE_S = 0.25
+PURPOSE_HEADER = "X-Horizon-Purpose"
+# The paid call being sent (set by the pipeline around a request). In test mode only, HttpCore labels the request with
+# it, so the fake provider can answer per purpose with recorded responses (docs/ai/13 W14). Never sent to OpenRouter.
+CALL_PURPOSE: contextvars.ContextVar[str | None] = contextvars.ContextVar("horizon_call_purpose", default=None)
 
 
 class KeySource(Protocol):
@@ -34,8 +39,9 @@ class KeySource(Protocol):
 
 class HttpCore:
     def __init__(self, keys: KeySource, *, transport: httpx.AsyncBaseTransport | None = None,
-                 base_url: str = BASE_URL) -> None:
+                 base_url: str = BASE_URL, label_purpose: bool = False) -> None:
         self.keys = keys
+        self.label_purpose = label_purpose   # test mode only (W14): add the X-Horizon-Purpose header
         self._client = httpx.AsyncClient(base_url=base_url, transport=transport,
                                          headers={"X-Title": "Horizon", "HTTP-Referer": "http://127.0.0.1"})
 
@@ -58,6 +64,9 @@ class HttpCore:
                params: Mapping[str, str] | None = None, timeout: float) -> httpx.Request:
         req = self._client.build_request(method, path, json=json, params=params, timeout=httpx.Timeout(timeout))
         req.headers["Authorization"] = f"Bearer {key.get_secret_value()}"
+        purpose = CALL_PURPOSE.get() if self.label_purpose else None
+        if purpose:
+            req.headers[PURPOSE_HEADER] = purpose
         return req
 
     async def _send(self, req: httpx.Request, key: SecretStr, *, stream: bool) -> httpx.Response:

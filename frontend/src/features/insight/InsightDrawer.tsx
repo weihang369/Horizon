@@ -1,5 +1,6 @@
 // O08 Insight drawer (INS-01, doc 04 §8): "see the AI think". A 400 px ink panel (300 compact in Presenter Mode)
-// that reads the selected character message's TurnTrace: Routing → Emotion → Model → Energy → Memory → In-session
+// that reads the selected character message's TurnTrace: Routing → Emotion → System 1 · Jev (rev 1.4, not in
+// compact) → Model → Energy → Memory → In-session
 // recall → Context → Guardrail. Sections without data are not rendered. It pushes the log in S07 (the frame reserves
 // the space) and overlays the right column in S09/S10/S12. ↑↓ in the log, ‹ › here, or a click selects a message.
 import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from "react";
@@ -27,6 +28,7 @@ import { useSlotRuntime } from "../session/slot";
 import { plainText } from "../session/markdown";
 import { TypeGlyph } from "../session/Citations";
 import { openCitation } from "../session/citationUtils";
+import { showSystem1, System1Rows } from "./System1Section";
 
 /** Bars and bands use the same 2-decimal value, so "0.70" never reads "MED" (no false precision, INS-01 AC4). */
 const r2 = (p: number) => Math.round(p * 100) / 100;
@@ -294,6 +296,15 @@ export function InsightDrawer({ sessionId, close }: OverlayComponentProps<"O08">
             </div>
           )}
           {runtime.session.emotionMode === "user" && <p className={s.fine}>MANUAL mode: recorded here, not shown on the portrait.</p>}
+        </Section>,
+      );
+    }
+    // rev 1.4 (docs/ai/13 W1): after Emotion, since it explains Routing and Emotion above it. Hidden without rows
+    // (INS-01 AC3) and left out of Compact mode (AC5).
+    if (showSystem1(trace, compact)) {
+      sections.push(
+        <Section key="system1" n={num(i)} title="System 1 · Jev" i={i++}>
+          <System1Rows trace={trace} nameOf={nameOf} />
         </Section>,
       );
     }

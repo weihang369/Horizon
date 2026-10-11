@@ -53,7 +53,7 @@ describe("MockClient only", () => {
   it("every portable test declares its milestone (no bare it())", () => {
     const src = readFileSync(path.resolve(__dirname, "clientContract.portable.ts"), "utf8");
     expect(src).not.toMatch(/^\s+it\(/m);
-    expect(src.match(/^\s+test\("M(1b|[2-6])", /gm)?.length).toBeGreaterThanOrEqual(50);
+    expect(src.match(/^\s+test\("M(1b|[2-7])", /gm)?.length).toBeGreaterThanOrEqual(50);
   });
 
   it("the mock runs every portable test: nothing is pending", () => {

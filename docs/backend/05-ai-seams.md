@@ -167,6 +167,9 @@ class AiStateHooks(Protocol):            # implemented by the AI layer; called f
   - one line: cite a passage with its `[n]` only when you rely on it.
 
   The engine yields a `CitationMap` for every numbered passage; the runtime keeps only the markers the reply wrote. After the stream it sets `trace.knowledge.retrieved` (`cited` from its own output), `trace.memory.recalled` (which writes the Forget refs) and `context.used.memory/knowledge`. **With nothing retrieved the request is byte-identical to v1** (until `naive-3`, [docs/ai/03](../ai/03-llm-parameters.md), [docs/ai/10](../ai/10-rag.md) K13).
+- **Prompt v3 (M7, `naive-3`, [docs/ai/03](../ai/03-llm-parameters.md) C1–C7).** Each reply takes its `runtime.llm.calls` row (`reply.chat` 1.3 / `reply.debate` 1.0, thinking off) and a shorter cap chosen after the plan; the system prompt ends with the session's length line ("1–3 short messages, each on its own line, about 70 words" in 1:1); `stop` holds `
+<Name>:` for everyone else and `
+[<kind>]`; a leading `<own name>:` is dropped before or after the tag; a history ending on the speaker's own line gets a trailing cue; an empty reply is retried once before anything shows (the face waits for the first word). JSON calls repair stray inner quotes locally before their one paid retry.
 - **Scripted citations (D15).** The scripted engine ports the mock's `liveCitations` with its own RNG stream (`{seed}:{turn}:cite`): about 55 % of replies with hits cite 1–2 passages, one more is retrieved but uncited, and replies without hits are unchanged. It never uses memory hits (parity with the mock).
 - **Cache-friendly history window.** The window grows until it is full, then **drops the oldest half in one step**, with the summary refreshed at that block boundary. A one-message sliding window would change the prefix every turn and miss the cache.
 - **Inline emotion tag** (OQ-AI-07 A): the model is asked to start with `<e:label>`. The parser:

@@ -17,6 +17,7 @@ const server = await createServer({
   appType: "custom",
   server: { middlewareMode: true, hmr: false, ws: false },
   optimizeDeps: { noDiscovery: true, include: [] },
+  resolve: { alias: { "@seed": seedDir } },   // src/mock/system1.ts reads @seed/system1.fixture.json
 });
 let code = 1;
 try {

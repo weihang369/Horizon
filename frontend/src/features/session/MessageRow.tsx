@@ -1,7 +1,10 @@
 // One log row (C): character bubble / Readable panel, user bubble, moderator & host lines, system notes,
 // inline error tapes, stopped / interrupted states, reactions, regenerate variants ‹ 1/2 ›.
 // Streaming text is the smoothed store value (useStreamText, R12); Markdown renders only once the turn ends.
-import { memo, useMemo, useState, type CSSProperties } from "react";
+// docs/ai/03 C5 (reply-display spec): a 1:1 or group character reply shows one bubble per line (≤ 4, bubbles.ts), a
+// watch reply one script line per line; debate arguments, host lines and the user's own messages never split. Display
+// only: still one message, one emotion, one trace.
+import { memo, useMemo, useState, type CSSProperties, type ReactNode } from "react";
 import type { Character, Message } from "../../contract/types";
 import { useStreamText } from "../../client/hooks";
 import { client } from "../../client";
@@ -14,6 +17,7 @@ import { Tooltip } from "../../ui/Data";
 import { cx } from "../../ui/cx";
 import { InfoIcon, KeyIcon, RegenIcon } from "../../ui/icons";
 import { CiteChip, PendingText, SourcesStrip } from "./Citations";
+import { splitBubbles } from "./bubbles";
 import { plainText, renderMarkdown } from "./markdown";
 import { firstName, READABLE_CHARS, useSessionCtx } from "./sessionContext";
 import s from "./SessionLog.module.css";
@@ -41,6 +45,25 @@ function StreamingText({ id, fallback }: { id: string; fallback: string }) {
     <span className={s.streamText}>
       <PendingText text={text} />
       <span className={s.caret} aria-hidden="true" />
+    </span>
+  );
+}
+
+/** A streaming reply split as it arrives: a new bubble (or script line) opens when a line break lands. */
+function StreamingParts({ id, fallback, render }: { id: string; fallback: string; render: (parts: string[]) => ReactNode }) {
+  const live = useStreamText(id);
+  const text = live ?? fallback;
+  const parts = splitBubbles(text);
+  if (parts.length <= 1) return <>{render([text])}</>;
+  return <>{render(parts)}</>;
+}
+
+function StreamingPart({ text, last }: { text: string; last: boolean }) {
+  if (!text) return <TypingDots />;
+  return (
+    <span className={s.streamText}>
+      <PendingText text={text} />
+      {last && <span className={s.caret} aria-hidden="true" />}
     </span>
   );
 }
@@ -161,15 +184,25 @@ function MessageRowImpl({ m, chars, variant, selected, canRegenerate, fresh, onO
   const content = variants && !streaming && shownIdx !== activeIdx ? variants[shownIdx].content : m.content;
   // D-59: citations belong to the active content (a non-active variant shows its markers as plain text).
   const cites = !streaming && content === m.content && m.citations?.length ? m.citations : undefined;
-  const body = useMemo(() => {
+  // C5: character replies outside debate split into bubbles; auto-Readable then needs ONE bubble over READABLE_CHARS.
+  const splittable = m.author.type === "character" && !m.debate;
+  const parts = useMemo(() => {
+    const p = splittable ? splitBubbles(content) : [content];
+    return p.length ? p : [content];
+  }, [splittable, content]);
+  const autoReadable = splittable ? parts.some((p) => p.length > READABLE_CHARS) : content.length > READABLE_CHARS;
+  const readable = m.author.type === "character" && variant === "chat" && !streaming && (!!ctx?.readable || autoReadable);
+  const shownParts = readable ? [content] : parts;
+  const bodies = useMemo(() => {
     if (streaming) return null;
-    if (!cites) return renderMarkdown(content);
-    const byN = new Map(cites.map((c) => [c.n, c]));
-    return renderMarkdown(content, {
-      cites: new Set(byN.keys()),
-      renderCite: (n, key) => <CiteChip key={key} c={byN.get(n)!} paletteId={char?.paletteId} characterId={m.author.characterId} />,
-    });
-  }, [streaming, content, cites, char?.paletteId, m.author.characterId]);
+    const byN = cites ? new Map(cites.map((c) => [c.n, c])) : null;
+    return shownParts.map((part) => byN
+      ? renderMarkdown(part, {
+        cites: new Set(byN.keys()),
+        renderCite: (n, key) => <CiteChip key={key} c={byN.get(n)!} paletteId={char?.paletteId} characterId={m.author.characterId} />,
+      })
+      : renderMarkdown(part));
+  }, [streaming, shownParts, cites, char?.paletteId, m.author.characterId]);
 
   // ── System notes ──
   if (m.kind === "system_note") {
@@ -186,7 +219,6 @@ function MessageRowImpl({ m, chars, variant, selected, canRegenerate, fresh, onO
   const isChar = m.author.type === "character";
   const isUser = m.author.type === "user" && m.kind === "chat";
   const tape = KIND_TAPE[m.kind];
-  const readable = isChar && variant === "chat" && !streaming && (ctx?.readable || content.length > READABLE_CHARS);
   const emo = isChar && m.emotion ? emotionMeta[m.emotion] : null;
   const selectable = isChar && !!ctx?.insightOpen;
 
@@ -218,8 +250,10 @@ function MessageRowImpl({ m, chars, variant, selected, canRegenerate, fresh, onO
           <span className={cx(s.nameTape, !isChar && s.nameTapeInk)}>{tape && !isChar ? tape : name}</span>
         </PaletteScope>
         <span className={s.scriptText} aria-hidden={streaming || undefined}>
-          {streaming ? <StreamingText id={m.id} fallback={m.content} /> : body}
-          {statusTag}
+          {streaming
+            ? <StreamingParts id={m.id} fallback={m.content} render={(ps) => ps.map((p, i) => (
+              <span key={i} className={s.scriptLine}><StreamingPart text={p} last={i === ps.length - 1} /></span>))} />
+            : bodies?.map((b, i) => <span key={i} className={s.scriptLine}>{b}{i === bodies.length - 1 && statusTag}</span>)}
         </span>
         {cites && (
           <PaletteScope paletteId={char?.paletteId} className={s.scriptSources}>
@@ -257,13 +291,31 @@ function MessageRowImpl({ m, chars, variant, selected, canRegenerate, fresh, onO
           )}
           {selected && <span className={s.insightTag}>Insight</span>}
         </div>
-        {(streaming || content || statusTag || !m.error) && <div
-          className={cx(s.bubble, isUser && s.userBubble, readable && s.readable, !isChar && !isUser && s.modBubble, streaming && s.isStreaming)}
-          aria-hidden={streaming || undefined}
-        >
-          {streaming ? <StreamingText id={m.id} fallback={m.content} /> : <div className={s.md}>{body}</div>}
-          {statusTag}
-        </div>}
+        {(streaming || content || statusTag || !m.error) && (() => {
+          const cls = cx(s.bubble, isUser && s.userBubble, readable && s.readable, !isChar && !isUser && s.modBubble, streaming && s.isStreaming);
+          if (streaming && splittable) {
+            return (
+              <div className={s.bubbles} aria-hidden="true">
+                <StreamingParts id={m.id} fallback={m.content} render={(ps) => ps.map((p, i) => (
+                  <div key={i} className={cls} data-bubble={i}><StreamingPart text={p} last={i === ps.length - 1} /></div>))} />
+              </div>
+            );
+          }
+          if (streaming) {
+            return <div className={cls} aria-hidden="true"><StreamingText id={m.id} fallback={m.content} /></div>;
+          }
+          const list = bodies ?? [];
+          return (
+            <div className={s.bubbles}>
+              {list.map((b, i) => (
+                <div key={i} className={cls} data-bubble={list.length > 1 ? i : undefined}>
+                  <div className={s.md}>{b}</div>
+                  {i === list.length - 1 && statusTag}
+                </div>
+              ))}
+            </div>
+          );
+        })()}
         {cites && <SourcesStrip cites={cites} characterId={m.author.characterId} compact={!readable} />}
         {streaming && <span className="sr-only">{name} is typing</span>}
         {m.error && <ErrorActions m={m} char={char} />}

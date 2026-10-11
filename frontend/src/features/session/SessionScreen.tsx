@@ -43,6 +43,10 @@ const PAUSE_COPY: Record<string, string> = {
   navigated_away: "Paused when you left",
 };
 
+/** docs/ai/13 W7: the counter is reply spend only (it matches the energy charge beside it). */
+export const SESSION_COST_TIP =
+  "Reply cost only. Planning, checks, summaries and memory count toward the daily cap: see Settings → Cost.";
+
 export function SessionScreen({ route }: { route: SessionRoute }) {
   const replay = !!route.replay;
   // Gap-trim toggle rebuilds the replay runtime (it reads the pref at start): release, then re-acquire.
@@ -206,7 +210,7 @@ export function SessionScreen({ route }: { route: SessionRoute }) {
           {session.continuedFrom && !replay && <Tape tone="ok" size="sm">Live copy</Tape>}
           <div className={s.tools}>
             {showHud && (
-              <span className={s.hud} title="Session cost · tokens">
+              <span className={s.hud} title={SESSION_COST_TIP}>
                 {formatUsd(session.costUsd)} · {formatTokens(tokens)}
               </span>
             )}

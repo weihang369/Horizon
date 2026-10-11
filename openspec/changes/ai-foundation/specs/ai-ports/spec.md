@@ -17,7 +17,7 @@
 
 #### Scenario: Agent falls back to naive
 - **WHEN** the backend starts with a key and `HORIZON_AI_PROFILE=agent`, and no port has an agent implementation yet
-- **THEN** every port resolves to the implementation `naive` would use, and `/health` lists the resolved implementations
+- **THEN** every port resolves to the implementation `naive` would use, and the start-up log lists the resolved implementations
 
 #### Scenario: Real conversion without a key
 - **WHEN** a normal (non-test) backend has no key and conversion is ready, and a PDF is added

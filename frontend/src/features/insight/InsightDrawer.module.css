@@ -250,3 +250,18 @@
 .kFill { display: block; height: 100%; background: var(--signal-ok); transform-origin: left; transition: transform var(--t-slow) var(--ease-out); }
 .kUnused .kFill { background: var(--paper-300); }
 .kTag { font: 600 10px/1 var(--font-mono); font-style: normal; letter-spacing: 0.04em; color: var(--paper-300); white-space: nowrap; }
+
+/* ── System 1 · Jev (rev 1.4, docs/ai/13 W1) ─────────────────────────── */
+.s1 { display: grid; gap: 10px; }
+.s1Head { margin: 0; font: 700 11px/1.2 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--paper-300); }
+.s1Head span { text-transform: none; letter-spacing: 0; }
+.s1List { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 4px; }
+.s1Row { display: flex; flex-wrap: wrap; gap: 2px 10px; font-size: 12px; line-height: 1.4; }
+.s1Label { flex: 1 1 100%; color: var(--paper-50); }
+.s1About { color: var(--paper-300); }
+.s1Answer b { font-family: var(--font-mono); }
+.s1Prob { margin-left: 6px; font-family: var(--font-mono); }
+.s1Cmp, .s1Action { font-family: var(--font-mono); color: var(--paper-300); }
+.s1Row[data-result="fallback"] .s1Answer b { color: var(--signal-warn); }
+.s1Fold { margin-top: 4px; padding: 0; border: 0; background: none; color: var(--paper-300); font-size: 12px; text-decoration: underline; cursor: pointer; }
+.s1Folded { opacity: 0.75; }

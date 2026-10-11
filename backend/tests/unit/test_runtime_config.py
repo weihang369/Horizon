@@ -19,8 +19,8 @@ def test_every_field_loads() -> None:
     assert t.reaction_delay_ms == (300, 800) and t.reaction_chance == 0.7
     assert t.emotion_timing == {"before": 0.7, "early": 0.25, "late": 0.05} and t.late_emotion_ms == 1200
     assert (t.debate_start_ms, t.watch_start_ms, t.greeting_ms) == (1600, 800, 300)
-    assert r.reply_max_tokens.for_mode("one_on_one") == 350
-    assert r.reply_max_tokens.for_mode("group") == 250 and r.reply_max_tokens.for_mode("watch") == 220
+    assert r.reply_max_tokens.for_mode("one_on_one") == 200 and r.reply_max_tokens.for_mode("one_on_one", deep=True) == 300
+    assert r.reply_max_tokens.for_mode("group") == 150 and r.reply_max_tokens.for_mode("watch") == 150
     assert [r.reply_max_tokens.for_mode("debate", x) for x in ("short", "medium", "long")] == [200, 320, 480]
     assert (r.window_tokens, r.coalesce_max_chars, r.coalesce_max_ms) == (6000, 48, 50)
     assert (r.idle_release_ms, r.prefetch_max, r.llm_concurrency) == (600_000, 2, 4)

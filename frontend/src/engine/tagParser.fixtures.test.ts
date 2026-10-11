@@ -8,6 +8,10 @@ import { EMOTIONS } from "../contract/types";
 
 interface TagCase {
   name: string; doc: string; chunks: string[]; previous: string;
+  /** docs/ai/03 C6: the speaker's own name, stripped from the start of the first line (before or after the tag). */
+  speaker?: string;
+  /** docs/ai/04 P6: strip at every line start (the agent path, M8). The naive path is first line only (false). */
+  perLine?: boolean;
   expected: { emotion: string; source: "llm" | "default"; text: string };
 }
 const DIR = path.resolve(__dirname, "../../../backend/tests/fixtures/tag_parser");
@@ -17,6 +21,19 @@ const cases = readdirSync(DIR).filter((f) => f.endsWith(".json")).sort()
 const MAX_HEAD = 32;
 const TAG = /<e:[^<>]{0,30}>/g;
 const PARTIAL = /<(?:e(?::[^<>]{0,30})?)?$/;
+
+const escapeRe = (x: string) => x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+/** C6 on the whole stream: a leading "<name>:" (any case, spaces around the colon) before or after the tag goes. */
+function parseNamed(chunks: string[], previous: string, speaker?: string): { emotion: string; source: string; text: string } {
+  if (!speaker) return parse(chunks, previous);
+  const prefix = new RegExp(`^\\s*${escapeRe(speaker)}[ \\t]*:[ \\t]*`, "i");
+  const joined = chunks.join("");
+  const before = prefix.exec(joined);
+  const out = parse(before ? [joined.slice(before[0].length)] : chunks, previous);
+  const after = out.source === "llm" ? prefix.exec(out.text) : null;
+  return after ? { ...out, text: out.text.slice(after[0].length) } : out;
+}
 
 /** Reference parser: the rules of doc backend/05 §5, written independently of the Python one. */
 function parse(chunks: string[], previous: string): { emotion: string; source: string; text: string } {
@@ -74,7 +91,7 @@ describe("emotion tag fixtures (shared with the backend's naive engine)", () => 
   });
   for (const c of cases) {
     it(c.name, () => {
-      expect(parse(c.chunks, c.previous)).toEqual(c.expected);
+      expect(parseNamed(c.chunks, c.previous, c.speaker)).toEqual(c.expected);
     });
   }
 });

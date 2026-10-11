@@ -135,6 +135,7 @@ class Runtime:
         self._corrector: CostCorrector | None = None
         self._decider: Decider | None = None
         self.decider_fixtures = DeciderFixtures()
+        self.test_parks: dict[tuple[str, int], asyncio.Event] = {}   # /_test/park (test mode only)
         self.settings_lock = asyncio.Lock()
         self.fake: FakeOpenRouter | None = None
         # M3 (session-runtime design D1): the pacing table, LLM slots, AI ports, the live sessions and the purge worker.
@@ -289,7 +290,7 @@ class Runtime:
         self._keys = KeyStore(cfg.openrouter_key, cfg.data_dir, on_change=self._settings_changed)
         self.fake = (FakeOpenRouter(models=models.values(), image_cost=self.prices.generation["portrait"])
                      if cfg.test_mode else None)
-        core = HttpCore(self._keys, transport=self.fake.transport() if self.fake else None)
+        core = HttpCore(self._keys, transport=self.fake.transport() if self.fake else None, label_purpose=cfg.test_mode)
         ledger = self._ledger = LedgerWriter(self.db, self.clock, self.energy_locks, self.energy_params)
         self.book.clear()
         self._gateway = Gateway(core=core, cfg=GatewayConfig.from_mapping(self.prices.gateway), prices=self.prices,
@@ -311,8 +312,16 @@ class Runtime:
         deps = AiDeps(gateway=lambda: self.gateway, decider=lambda: self.decider, prices=self.prices,
                       timing=self.runtime_cfg.timing, clock=lambda: self.clock,
                       window_tokens=self.runtime_cfg.runtime.window_tokens, palette_ids=self.palette_ids,
-                      schema=lambda: self.schema, models_dir=lambda: self.cfg.models_dir)
+                      schema=lambda: self.schema, models_dir=lambda: self.cfg.models_dir,
+                      llm=self.runtime_cfg.runtime.llm)
         self._ai = AiPorts(deps, self.profile)
+        chat = str(self.settings_doc()["models"].get("chat") or "")
+        if chat and chat != self.prices.chat.model:   # docs/ai/03 C9: one chat-model source; tell the developer
+            log.error("seed/settings.json names chat model %s but seed/pricing.json prices %s; replies, the drafter "
+                      "and the probe use %s", chat, self.prices.chat.model, self.prices.chat.model)
+        # ai-foundation design D12: say what each port resolves to, so an opt-in `agent` profile can't hide what runs.
+        log.info("AI profile %s; ports: %s", self.profile.profile or "default",
+                 ", ".join(f"{p}={i}" for p, i in self._ai.resolved(key_set=self.keys.status() == "set").items()))
         self._purge = PurgeWorker(self.db, self.hooks, self.now_iso)
         self._purge.start()
 

@@ -26,7 +26,6 @@ export interface GatewayConfig {
     order: string[]; require_parameters: boolean; allow_fallbacks: boolean;
     quantizations: string[]; data_collection: "allow" | "deny";
   };
-  fallbackModel: string;
   embeddingProvider: string;
   embedBatch: number;
   timeoutsMs: {

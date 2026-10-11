@@ -150,6 +150,7 @@ export interface SpeakOpts {
   forcedBy?: LineSpec["forcedBy"];
   skipped?: LineSpec["skipped"];
   routing?: TurnTrace["routing"];
+  system1?: TurnTrace["system1"];
   /** Regenerate: stream a new variant into this message. */
   variantOf?: string;
 }
@@ -204,6 +205,7 @@ export function speak(h: EngineHost, sid: string, cid: string, opts: SpeakOpts =
     forcedBy: opts.forcedBy,
     skipped: opts.skipped,
     routing: opts.routing,
+    system1: opts.system1,
     listeners,
     reactions: manual ? null : undefined,
     energyBefore: energy,

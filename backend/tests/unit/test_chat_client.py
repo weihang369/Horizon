@@ -39,7 +39,7 @@ async def test_request_body_pins_routing(chat: ChatClient) -> None:
     assert body["provider"]["data_collection"] == "allow"  # D-80
     assert body["provider"]["quantizations"] == ["bf16", "fp16", "fp32", "unknown"]
     assert body["usage"] == {"include": True}
-    assert body["models"] == ["deepseek/deepseek-v4.1-flash", "deepseek/deepseek-v4-flash"]
+    assert "models" not in body  # no fallback model (docs/ai/03 C8)
     assert body["stream"] is False and "temperature" not in body
 
 
@@ -131,3 +131,23 @@ async def test_error_statuses(chat: ChatClient, fixture: str, code: str) -> None
     assert e.value.code == code and not e.value.maybe_charged
     if code == "rate_limited":
         assert e.value.retry_after == 12
+
+
+# ── ai-foundation 2.3 (docs/ai/03 C4): error finishes and the kept final chunk ──
+@respx.mock
+async def test_insufficient_system_resource_is_a_maybe_charged_provider_error(chat: ChatClient) -> None:
+    respx.post(URL).mock(return_value=response("chat_stream_insufficient"))
+    seen: list[str] = []
+    with pytest.raises(ProviderError) as e:
+        async for ch in chat.stream(REQ):
+            seen.append(ch.content or "")
+    assert e.value.code == "provider_error" and e.value.partial_text == "Well" and e.value.maybe_charged
+    assert e.value.cost_usd == 0.00014 and "".join(seen) == "Well"
+
+
+@respx.mock
+async def test_length_finish_is_yielded_with_reasoning_tokens(chat: ChatClient) -> None:
+    respx.post(URL).mock(return_value=response("chat_stream_length"))
+    chunks = await drain(chat)
+    assert chunks[-1].content is None and chunks[-1].finish_reason == "length"
+    assert chunks[-1].usage is not None and chunks[-1].usage.tokens_reasoning == 0

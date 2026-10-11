@@ -4,7 +4,9 @@
 - `probe_model(role)`: the cheapest probe per role. chat: a 1-token completion; decision: one `noul` Jev question;
   embedding: one word. Those are paid calls through the pipeline (caps preflight, a ledger row with
   `purpose: "probe"`), never draining energy. image and music: a free metadata check only, never a generation.
-The model probed is the role's override if set, else its configured model.
+The model probed is the one the app actually uses (docs/ai/03 C9, ai-foundation design D20): chat and decision from
+the price table, the rest from the settings defaults. A stored override is ignored, so an old override can't make Test
+pass on a model chat never uses. The chat probe sends reasoning off (the `probe` settings row).
 """
 
 from __future__ import annotations
@@ -36,16 +38,21 @@ async def probe_connection(gw: Gateway) -> dict[str, Any]:
     return out
 
 
-def model_for(settings: dict[str, Any], role: Role) -> str:
-    override = (settings.get("modelOverrides") or {}).get(role)
-    return str(override) if isinstance(override, str) and override.strip() else str(settings["models"][role])
+def model_for(settings: dict[str, Any], role: Role, gw: Gateway | None = None) -> str:
+    """The model the app uses for `role`; `modelOverrides` is ignored in v1 (one tuned model set, C9)."""
+    if gw is not None and role == "chat":
+        return gw.prices.chat.model
+    if gw is not None and role == "decision":
+        return gw.prices.decision.model
+    return str(settings["models"][role])
 
 
 async def probe_model(gw: Gateway, settings: dict[str, Any], role: Role) -> dict[str, Any]:
-    model = model_for(settings, role)
+    model = model_for(settings, role, gw)
     started = time.monotonic()
     if role == "chat":
-        req = ChatRequest(model=model, messages=[{"role": "user", "content": "ping"}], max_tokens=1)
+        req = ChatRequest(model=model, messages=[{"role": "user", "content": "ping"}], max_tokens=1,
+                          reasoning={"enabled": False})   # the `probe` row: thinking off, no temperature
         await gw.chat_complete(req, call_ctx(PROBE, category="chat"))
     elif role == "decision":
         q = {"probe": {"type": "noul", "instructions": "Is this message a connection test?",

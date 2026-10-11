@@ -34,7 +34,7 @@ export const PRICING: PricingTable = {
       order: ["DeepSeek"], require_parameters: true, allow_fallbacks: true,
       quantizations: ["bf16", "fp16", "fp32", "unknown"], data_collection: "allow", // D-80
     },
-    fallbackModel: "deepseek/deepseek-v4-flash",
+    // No fallback model (docs/ai/03 C8): V4.1 Flash only; provider fallback stays (`allow_fallbacks`).
     embeddingProvider: "Nebius",
     embedBatch: 32,
     timeoutsMs: {

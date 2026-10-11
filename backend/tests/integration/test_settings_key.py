@@ -217,14 +217,27 @@ async def test_model_probe_without_key(api: Api) -> None:
     assert r.json()["error"]["code"] == "missing_key"
 
 
-async def test_model_probe_echoes_the_override(api: Api) -> None:
+async def test_model_probe_ignores_the_override(api: Api) -> None:
+    """docs/ai/03 C9 (ai-foundation D20): Test probes the model chat actually uses, with thinking off."""
     await put_key(api, KEY)
     await patch(api, {"modelOverrides": {"chat": "deepseek/deepseek-v4-flash"}})
     r = await api.client.post("/api/v1/settings/test-model", json={"role": "chat"})
-    assert r.json()["model"] == "deepseek/deepseek-v4-flash"
+    assert r.json()["model"] == api.rt.prices.chat.model == "deepseek/deepseek-v4.1-flash"
     assert api.rt.fake is not None
-    import json as _json
-    assert _json.loads(api.rt.fake.requests[-1].content)["model"] == "deepseek/deepseek-v4-flash"
+    body = json.loads(api.rt.fake.requests[-1].content)
+    assert body["model"] == "deepseek/deepseek-v4.1-flash" and body["reasoning"] == {"enabled": False}
+    assert "temperature" not in body and body["max_tokens"] == 1
+
+
+async def test_chat_model_mismatch_logs_an_error_and_starts(make_api: Any, tmp_path: Path,
+                                                            caplog: pytest.LogCaptureFixture) -> None:
+    data = tmp_path / "mismatch"
+    data.mkdir()
+    (data / "settings.local.json").write_text(json.dumps({"models": {"chat": "x/other-model"}}), encoding="utf-8")
+    with caplog.at_level("ERROR", logger="horizon"):
+        a: Api = await make_api(data_dir=data)
+        assert (await a.get("/api/v1/health")).status_code == 200   # the backend starts anyway
+    assert any("x/other-model" in r.getMessage() and r.levelname == "ERROR" for r in caplog.records)
 
 
 async def test_model_probe_rejects_unknown_role(api: Api) -> None:

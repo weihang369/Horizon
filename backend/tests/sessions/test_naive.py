@@ -50,7 +50,8 @@ async def test_streamed_reply_with_the_tag_parsed_off(api: Api) -> None:
     assert greeting["content"] == "Hello there, friend." and greeting["emotion"] == "happy"
     assert greeting["emotionSource"] == "llm" and greeting["status"] == "complete"
     body = chat_bodies(api)[-1]
-    assert body["reasoning"] == {"enabled": False} and body["max_tokens"] == 350
+    assert body["reasoning"] == {"enabled": False} and body["max_tokens"] == 200   # docs/ai/03 C4: 1:1 quick
+    assert body["temperature"] == 1.3 and "models" not in body                       # C1 reply.chat; C8
     assert body["messages"][0]["role"] == "system" and "<e:LABEL>" in body["messages"][0]["content"]
     row = next(r for r in await ledger(api) if r["message_id"] == greeting["id"])
     assert row["provider"] == "DeepSeek" and row["cost_usd"] == 0.0003 and row["purpose"] == "reply"

@@ -1,0 +1,15 @@
+{
+  "name": "name_second_line_kept",
+  "doc": "First line only (perLine false): a name on a later line stays",
+  "chunks": [
+    "<e:happy>Hi\nMei: again"
+  ],
+  "previous": "neutral",
+  "speaker": "Mei",
+  "perLine": false,
+  "expected": {
+    "emotion": "happy",
+    "source": "llm",
+    "text": "Hi\nMei: again"
+  }
+}

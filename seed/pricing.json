@@ -58,7 +58,6 @@
         ],
         "data_collection": "allow"
       },
-      "fallbackModel": "deepseek/deepseek-v4-flash",
       "embeddingProvider": "Nebius",
       "embedBatch": 32,
       "timeoutsMs": {

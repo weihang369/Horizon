@@ -132,7 +132,7 @@ class TurnContext(Frozen):
     prompt: str = ""
     line: LineHint = LineHint()
     turn_index: int = 0
-    max_tokens: int = 350
+    max_tokens: int                 # chosen by the runtime after the plan (docs/ai/03 C4; design D14)
     direction_note: str | None = None
     debate: DebateMeta | None = None
     knowledge: list[KnowledgeHit] = []   # M5: retrieved by the runtime in the speaker's scope (design D10)

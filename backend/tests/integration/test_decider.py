@@ -196,3 +196,30 @@ async def test_decision_estimate_counts_the_state_once(api: Api) -> None:
     assert gw.decision_estimate(state, eight) - gw.decision_estimate(state, one) == pytest.approx(7 * per_q * price)
     st = count_tokens(json.dumps(state, ensure_ascii=False))
     assert gw.decision_estimate(state, eight) == pytest.approx((st + 8 * per_q) * price)
+
+
+# ── ai-foundation 2.2 (design D6): how a decision ended is in its ledger row ──
+@respx.mock
+async def test_late_and_cancelled_decisions_are_marked(api: Api) -> None:
+    async def slow(_r: httpx.Request) -> httpx.Response:
+        await asyncio.sleep(0.3)
+        return httpx.Response(200, json=load("decisions_ok")["body"])
+
+    respx.post(URL).mock(side_effect=slow)
+    d, _ = decider(api, route=0.05)
+    r = await d.ask({}, QS, ctx(), purpose="route", fallback=fallback)
+    assert r.failure == "timeout"
+    call = d.start({}, QS, ctx(), purpose="route", fallback=fallback)
+    call.cancel()
+    await d.idle()
+    rows = await ledger(api)
+    assert sorted(r["finish_reason"] for r in rows) == ["cancelled", "late"]
+
+
+@respx.mock
+async def test_on_time_decision_is_marked(api: Api) -> None:
+    respx.post(URL).mock(return_value=httpx.Response(200, json=load("decisions_ok")["body"]))
+    d, _ = decider(api)
+    await d.ask({}, QS, ctx(), purpose="route")
+    (row,) = await ledger(api)
+    assert row["finish_reason"] == "on_time"

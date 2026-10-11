@@ -1,11 +1,16 @@
-"""AI profile selection (doc 05 §1; ai-ports "AI profile selection"; design OQ-3, OQ-14).
+"""AI profile selection (doc 05 §1; ai-ports "AI profile selection"; design OQ-3, OQ-14; ai-foundation design D12).
 
-`HORIZON_AI_PROFILE` (`scripted` | `naive`) selects every port; without it the profile is `naive` when a key is set and
+`HORIZON_AI_PROFILE` (`scripted` | `naive` | `agent`) selects every port; without it the profile is `naive` when a key is set and
 `scripted` otherwise. `HORIZON_AI_<PORT>` overrides one port. The turn engine, the router (M3), the profile drafter,
 the image generator (M4) and the song generator (Lyria 3 Clip, D-87) have naive implementations; every other port is
 scripted in both profiles. The scripted song is the free procedural theme (D-83). The creation port is called
 `drafter`, not `profile`, because `HORIZON_AI_PROFILE` is the selector itself. In test mode, `POST /_test/ai-profile`
 replaces the selection at runtime.
+
+M7 (ai-foundation design D12): `agent`, the AI stage's profile, is opt-in until M15. Each port uses its `agent`
+implementation when one exists (`AGENT_PORTS`, empty in M7), else its naive one, else its scripted one; without a key
+every port is scripted, as for `naive`. So in M7 `agent` resolves exactly as `naive` does, and `resolved()` (shown in
+/health and every eval report) says so instead of letting the name hide what ran.
 
 M5 (knowledge-memory-storage design D4, D7, D17): the `embedder` and the memory and knowledge retrievers have naive
 implementations; the `memory_writer` writes nothing in both profiles. The document `converter` does not follow the
@@ -35,12 +40,13 @@ from horizon.ai.scripted.ports import (
     ScriptedWatchDirector,
 )
 
-Impl = Literal["scripted", "naive"]
+Impl = Literal["scripted", "naive", "agent"]
 PORTS = ("turn", "router", "reactions", "host", "director", "summariser", "guardrail", "drafter", "image", "song",
          "embedder", "knowledge_retriever", "memory_retriever", "memory_writer", "converter")
 NAIVE_PORTS = frozenset({"turn", "router", "drafter", "image", "song", "embedder", "knowledge_retriever",
                          "memory_retriever", "converter"})
 KEYLESS_PORTS = frozenset({"converter"})   # chosen by availability, not by the profile or the key (D-96)
+AGENT_PORTS: frozenset[str] = frozenset()   # ports with an `agent` implementation (each AI-stage change adds its own)
 ENV_PROFILE = "HORIZON_AI_PROFILE"
 
 
@@ -53,7 +59,7 @@ ENV_VARS = (ENV_PROFILE, *(env_name(p) for p in PORTS))
 
 def _impl(value: str | None) -> Impl | None:
     v = (value or "").strip().lower()
-    if v in ("scripted", "naive"):
+    if v in ("scripted", "naive", "agent"):
         return v  # type: ignore[return-value]
     return None
 
@@ -77,6 +83,12 @@ class ProfileSpec:
         if port in KEYLESS_PORTS:
             return self.overrides.get(port) or ("scripted" if self.test_mode else "naive")
         impl: Impl = self.overrides.get(port) or self.profile or ("naive" if key_set else "scripted")
+        if impl == "agent":
+            if not key_set:
+                return "scripted"
+            if port in AGENT_PORTS:
+                return "agent"
+            impl = "naive"
         return impl if impl == "scripted" or port in NAIVE_PORTS else "scripted"
 
 
@@ -91,6 +103,10 @@ class AiPorts:
     def impl(self, port: str, *, key_set: bool) -> Impl:
         return self.spec.choose(port, key_set=key_set)
 
+    def resolved(self, *, key_set: bool) -> dict[str, str]:
+        """Each port's implementation as it would resolve now (/health, eval reports: design D12)."""
+        return {p: self.impl(p, key_set=key_set) for p in PORTS}
+
     def _get(self, port: str, key_set: bool) -> Any:
         impl = self.impl(port, key_set=key_set)
         k = (port, impl)
@@ -100,6 +116,8 @@ class AiPorts:
 
     def _build(self, port: str, impl: Impl) -> Any:
         d = self.deps
+        if impl == "agent":
+            raise KeyError(f"no agent implementation for port {port!r}")
         if impl == "naive":
             if port == "turn":
                 from horizon.ai.naive.turn import NaiveTurnEngine

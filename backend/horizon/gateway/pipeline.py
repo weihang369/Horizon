@@ -21,6 +21,7 @@ runs none of them. If `after_response` or `commit_with` fails after the provider
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import contextvars
 import json
 import logging
@@ -43,7 +44,7 @@ from horizon.domain.pricing import (
     expected_out,
 )
 from horizon.gateway.chat import ChatChunk, ChatClient, ChatRequest, ChatResult
-from horizon.gateway.client import HttpCore
+from horizon.gateway.client import CALL_PURPOSE, HttpCore
 from horizon.gateway.context import CallContext
 from horizon.gateway.decisions import DecisionsClient, DecisionsResponse
 from horizon.gateway.embeddings import EmbeddingsClient, batches
@@ -111,6 +112,8 @@ class LedgerRow:
     tokens_cached: int | None = None
     tokens_out: int | None = None
     latency_ms: int | None = None
+    finish_reason: str | None = None     # chat: the provider's; a decision: on_time | late | cancelled | final (D6)
+    tokens_reasoning: int | None = None
 
 
 @dataclass(frozen=True)
@@ -147,6 +150,7 @@ class Billing:
     usage: Usage | None
     provider: str | None
     model: str | None
+    finish_reason: str | None = None
 
 
 OnCall = Callable[[CallContext, Mapping[str, Any], Mapping[str, Any]], Awaitable[None] | None]
@@ -290,7 +294,15 @@ class Gateway:
             generation_id=(bill.generation_id if bill and bill.generation_id else generation_id),
             session_id=ctx.session_id, character_id=ctx.character_id, job_id=ctx.job_id, message_id=ctx.message_id,
             tokens_in=u.tokens_in if u else None, tokens_cached=u.tokens_cached if u else None,
-            tokens_out=u.tokens_out if u else None, latency_ms=latency_ms)
+            tokens_out=u.tokens_out if u else None, latency_ms=latency_ms,
+            finish_reason=bill.finish_reason if bill else None, tokens_reasoning=u.tokens_reasoning if u else None)
+
+    @staticmethod
+    def _check_thinking(req: ChatRequest, usage: Usage | None) -> None:
+        """llm-parameters "Thinking off behind a switch": a call sent with thinking off that still reports reasoning
+        tokens is a silent failure (the temperatures were ignored and the tokens billed); say so."""
+        if usage and usage.tokens_reasoning and (req.reasoning or {}).get("enabled") is False:
+            log.warning("a %s call sent with reasoning off reported %d reasoning tokens", req.model, usage.tokens_reasoning)
 
     async def _record(self, ctx: CallContext, row: LedgerRow, summary: Mapping[str, Any],
                       on_recorded: Callable[[str], None] | None = None, extra: CommitWith | None = None) -> RecordResult:
@@ -348,8 +360,15 @@ class Gateway:
     async def paid(self, ctx: CallContext, estimate: float, send: Callable[[], Awaitable[tuple[T, Billing]]], *,
                    model: str | None, summary: Mapping[str, Any] | None = None, before_send: BeforeSend | None = None,
                    after_response: Callable[[T], Awaitable[None]] | None = None,
-                   commit_with: CommitWith | None = None) -> T:
+                   commit_with: CommitWith | None = None, finish: Callable[[], str | None] | None = None) -> T:
+        """`finish()` (a decision's outcome, design D6) is read when the row is built and overrides its finish reason."""
         hold = await self._preflight(ctx, estimate)
+        _row = self._row
+
+        def row_of(*a: Any, **kw: Any) -> LedgerRow:
+            r = _row(*a, **kw)
+            return replace(r, finish_reason=finish()) if finish is not None else r
+
         summ = dict(summary or {}, model=model, purpose=ctx.purpose)
         try:
             if before_send is not None:
@@ -359,18 +378,21 @@ class Gateway:
             def ms() -> int:
                 return round((time.monotonic() - started) * 1000)
 
+            token = CALL_PURPOSE.set(ctx.purpose)
             try:
                 value, bill = await send()
             except ProviderError as e:
                 if e.cost_usd is not None or e.maybe_charged:
-                    await self._record_shielded(ctx, self._row(ctx, estimate, cost=e.cost_usd, bill=None, model=model,
+                    await self._record_shielded(ctx, row_of(ctx, estimate, cost=e.cost_usd, bill=None, model=model,
                                                                generation_id=e.generation_id, latency_ms=ms()), summ)
                 raise
             except asyncio.CancelledError:
-                await self._record_shielded(ctx, self._row(ctx, estimate, cost=None, bill=None, model=model,
+                await self._record_shielded(ctx, row_of(ctx, estimate, cost=None, bill=None, model=model,
                                                            generation_id=None, latency_ms=ms()), summ)
                 raise
-            row = self._row(ctx, estimate, cost=None, bill=bill, model=model, generation_id=None, latency_ms=ms())
+            finally:
+                CALL_PURPOSE.reset(token)
+            row = row_of(ctx, estimate, cost=None, bill=bill, model=model, generation_id=None, latency_ms=ms())
             if after_response is not None:
                 try:
                     await after_response(value)
@@ -397,7 +419,8 @@ class Gateway:
 
         async def send() -> tuple[ChatResult, Billing]:
             r = await self.chat.complete(req)
-            return r, Billing(r.generation_id, r.usage, r.provider, r.model)
+            self._check_thinking(req, r.usage)
+            return r, Billing(r.generation_id, r.usage, r.provider, r.model, r.finish_reason)
 
         return await self.paid(ctx, est, send, model=req.model, summary={"kind": "chat", "maxTokens": req.max_tokens},
                                before_send=before_send, after_response=after_response, commit_with=commit_with)
@@ -413,18 +436,21 @@ class Gateway:
         gid: str | None = None
         usage: Usage | None = None
         provider: str | None = None
+        finish_reason: str | None = None
         done = False
 
         def row(cost: float | None, bill: Billing | None) -> LedgerRow:
             return self._row(ctx, est, cost=cost, bill=bill, model=req.model, generation_id=gid,
                              latency_ms=round((time.monotonic() - started) * 1000))
 
+        label = CALL_PURPOSE.set(ctx.purpose)   # labels the request when the stream opens (test mode only)
         try:
             try:
                 async for chunk in self.chat.stream(req):
                     gid = chunk.generation_id
                     usage = chunk.usage or usage
                     provider = chunk.provider or provider
+                    finish_reason = chunk.finish_reason or finish_reason
                     yield chunk
                 done = True
             except ProviderError as e:
@@ -436,8 +462,11 @@ class Gateway:
                 await self._record_shielded(ctx, row(None, None), summ, on_recorded)
                 raise
             if done:
-                await self._record(ctx, row(None, Billing(gid, usage, provider, req.model)), summ, on_recorded)
+                self._check_thinking(req, usage)
+                await self._record(ctx, row(None, Billing(gid, usage, provider, req.model, finish_reason)), summ, on_recorded)
         finally:
+            with contextlib.suppress(ValueError):   # a generator can be closed from another context
+                CALL_PURPOSE.reset(label)
             self.book.release(hold)
 
     # ── the scripted source (session-runtime design D10; provider-gateway "Scripted chat source") ──
@@ -457,7 +486,8 @@ class Gateway:
             r = self._row(ctx, est, cost=spec.cost_usd if final else None, bill=None, model=spec.model, generation_id=None,
                           latency_ms=round((time.monotonic() - started) * 1000))
             return replace(r, provider=SCRIPTED_PROVIDER, tokens_in=spec.tokens_in, tokens_cached=spec.tokens_cached,
-                           tokens_out=spec.tokens_out if final else 0, latency_ms=spec.total_ms if final else r.latency_ms)
+                           tokens_out=spec.tokens_out if final else 0, latency_ms=spec.total_ms if final else r.latency_ms,
+                           finish_reason="stop" if final else None)
 
         try:
             try:
@@ -500,7 +530,7 @@ class Gateway:
             return r, Billing(r.generation_id, r.usage, None, r.model or m)
 
         return await self.paid(ctx, est, send, model=m,
-                               summary={"kind": "decision", "questions": sorted(questions)})
+                               summary={"kind": "decision", "questions": sorted(questions)}, finish=finish)
 
     async def generate_image(self, ctx: CallContext, *, model: str, prompt: str, kind: str = "portrait",
                              refs: list[str] | None = None, resolution: str | None = None, aspect_ratio: str | None = None,

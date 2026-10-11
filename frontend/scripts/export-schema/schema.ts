@@ -5,7 +5,7 @@ import { z } from "zod";
 import * as S from "../../src/contract/schemas";
 import { SCHEMA_VERSION } from "../../src/contract/types";
 
-export const CONTRACT_REV = "1.3";
+export const CONTRACT_REV = "1.4";
 
 /** Every exported `<Name>Schema` that is a zod type becomes `$defs/<Name>`. */
 export function contractSchemas(): [name: string, schema: z.ZodType][] {

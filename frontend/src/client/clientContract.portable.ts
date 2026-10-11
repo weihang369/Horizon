@@ -6,7 +6,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import type { Message, Session, SessionEvent } from "../contract/types";
 import { initialRuntime, orderedMessages, reduceAll } from "../engine/sessionReducer";
 import { HorizonError } from "../contract/errors";
-import { CharacterSchema, GlobalEventSchema, KnowledgeChunkSchema, MessageSchema, SessionEventSchema } from "../contract/schemas";
+import { CharacterSchema, GlobalEventSchema, KnowledgeChunkSchema, MessageSchema, SessionEventSchema, TurnTraceSchema } from "../contract/schemas";
 import type { GlobalEvent, HorizonClient, JobEvent } from "./HorizonClient";
 
 /** Scenario ids every harness must support (the backend mirrors them under /_test/scenario). */
@@ -28,7 +28,7 @@ export interface ContractHarness {
 export type MakeHarness = () => Promise<ContractHarness>;
 
 /** The backend milestone whose routes a test needs (doc backend/06). The mock supports everything ("all"). */
-export type Milestone = "M1b" | "M2" | "M3" | "M4" | "M5" | "M6";
+export type Milestone = "M1b" | "M2" | "M3" | "M4" | "M5" | "M6" | "M7";
 
 /** A valid 16×9 PNG (83 bytes) for the cover upload tests. */
 const TINY_PNG = [
@@ -36,7 +36,7 @@ const TINY_PNG = [
   0, 26, 73, 68, 65, 84, 120, 156, 99, 212, 59, 178, 141, 129, 20, 192, 68, 146, 106, 134, 81, 13, 196, 1, 146, 131, 21, 0, 231,
   232, 1, 186, 121, 203, 221, 186, 0, 0, 0, 0, 73, 69, 78, 68, 174, 66, 96, 130,
 ];
-export const MILESTONES: readonly Milestone[] = ["M1b", "M2", "M3", "M4", "M5", "M6"];
+export const MILESTONES: readonly Milestone[] = ["M1b", "M2", "M3", "M4", "M5", "M6", "M7"];
 export interface PortableOptions {
   /** The latest milestone this client's backend implements. Later tests are listed as `[pending Mx]`, never silently skipped. */
   supports: Milestone | "all";
@@ -459,6 +459,23 @@ export function runPortableContract(label: string, makeHarness: MakeHarness, opt
       const call = reply.trace?.calls?.find((x) => x.purpose === "reply");
       expect(call, "reply call in trace.calls").toBeTruthy();
       expect(call!.costUsd).toBe(reply.usage?.costUsd);
+    });
+
+    test("M7", "group replies carry the System 1 route row (rev 1.4)", async () => {
+      const { c, tick } = await make({ key: true });
+      const s = await c.sessions.create({ worldId: "wld_seedSunnyHollow", mode: "group", characterIds: ["chr_seedHana", "chr_seedTakeshi"] });
+      await c.chat.send(s.session.id, "What should we cook tonight?");
+      await tick(20000);
+      const replies = chars(await c.sessions.messages(s.session.id)).filter((m) => m.trace?.calls?.some((x) => x.purpose === "route"));
+      expect(replies.length).toBeGreaterThan(0);
+      const rows = replies.map((m) => m.trace!.system1?.questions.find((q) => q.id === "route"));
+      for (const [i, row] of rows.entries()) {
+        expect(row, "route row").toBeTruthy();
+        expect(row!.label).toBe("who replies?");
+        expect(["chr_seedHana", "chr_seedTakeshi", "none"]).toContain(row!.answer);
+        TurnTraceSchema.parse(replies[i].trace);
+      }
+      expect(new Set(rows.map((r) => JSON.stringify(r))).size).toBe(1); // one decision, the same row in every reply
     });
 
     test("M3", "group turns add a route call to the trace", async () => {

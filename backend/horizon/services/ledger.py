@@ -88,7 +88,8 @@ class LedgerWriter:
                     job_id=job_id, message_id=row.message_id, tokens_in=row.tokens_in, tokens_cached=row.tokens_cached,
                     tokens_out=row.tokens_out, cost_usd=row.cost_usd, cost_source=row.cost_source,
                     estimated_cost_usd=row.estimated_cost_usd, energy_points=None, latency_ms=row.latency_ms,
-                    counts_to_creation_cap=row.counts_to_creation_cap, is_seed=False))
+                    counts_to_creation_cap=row.counts_to_creation_cap, is_seed=False,
+                    finish_reason=row.finish_reason, tokens_reasoning=row.tokens_reasoning))
                 if drained and await self._exists(tx.conn, drained):
                     await apply_energy(tx, drained, drain_change(row.cost_usd, self.energy_params()), self.energy_params())
                 if extra is not None:

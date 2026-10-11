@@ -38,7 +38,7 @@ def test_migrate_twice_and_no_drift(tmp_path: Path) -> None:
         names = set(conn.execute(text("SELECT name FROM sqlite_master WHERE type='table'")).scalars())
     engine.dispose()
     assert diff == [], diff
-    assert version == "0002"
+    assert version == "0003"
     assert {"memory_fts", "knowledge_fts"} <= names
     assert not any("_vec__" in n for n in names)  # vec tables belong to the SpaceManager
 
@@ -57,6 +57,39 @@ def test_0002_marker_column_and_fts_secure_delete(tmp_path: Path) -> None:
             assert cfg.get("secure-delete") == 1, (fts, cfg)
         triggers = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='trigger'")}
         assert {"knowledge_chunks_ai", "knowledge_chunks_ad", "knowledge_chunks_au"} <= triggers
+    finally:
+        conn.close()
+
+
+def test_0003_ai_foundation_columns_and_table(tmp_path: Path) -> None:
+    """ai-foundation 2.1 (data-storage "AI foundation migration"): an M6 database keeps its ledger rows, the new
+    columns read NULL, `ai_calls` exists empty, and deleting a world cascades to its captured calls."""
+    import sqlite3
+
+    from alembic import command
+
+    from horizon.db.migrate import alembic_config
+
+    db = tmp_path / "m6.db"
+    command.upgrade(alembic_config(db), "0002")
+    conn = sqlite3.connect(db)
+    now = "2026-10-10T03:00:00.000Z"
+    conn.execute("INSERT INTO usage_records(id, at, local_day, category, cost_usd, is_seed) "
+                 "VALUES ('use_a', ?, '2026-10-10', 'chat', 0.001, 0)", (now,))
+    conn.commit()
+    conn.close()
+    upgrade_head(db)
+    conn = sqlite3.connect(db)
+    try:
+        conn.execute("PRAGMA foreign_keys = ON")
+        assert conn.execute("SELECT finish_reason, tokens_reasoning FROM usage_records").fetchall() == [(None, None)]
+        assert conn.execute("SELECT COUNT(*) FROM ai_calls").fetchone() == (0,)
+        conn.execute("INSERT INTO worlds(id, name, cover, you, is_seed, created_at, updated_at, last_active_at) "
+                     "VALUES ('wld_a', 'A', '{}', NULL, 0, ?, ?, ?)", (now, now, now))
+        conn.execute("INSERT INTO ai_calls(id, kind, created_at, world_id, request) "
+                     "VALUES ('aic_a', 'call', ?, 'wld_a', '{}')", (now,))
+        conn.execute("DELETE FROM worlds WHERE id = 'wld_a'")
+        assert conn.execute("SELECT COUNT(*) FROM ai_calls").fetchone() == (0,)   # the world's rows cascade
     finally:
         conn.close()
 

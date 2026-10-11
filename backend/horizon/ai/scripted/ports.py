@@ -90,6 +90,7 @@ class AiDeps:
     schema: Callable[[], Any] = lambda: None                 # M4: the contract schema (the naive drafter validates)
     models_dir: Callable[[], Path] = lambda: Path("data/models")   # M5: the conversion models (D-62)
     convert_timeout_s: float = 600.0                        # M5: a document conversion's limit (design D4)
+    llm: Callable[[str], Any] = lambda key: None             # M7: the `runtime.llm.calls` row for a call key (D13)
 
 
 def emotion_candidates(chosen: str, rng: random.Random) -> list[dict[str, Any]]:

@@ -182,7 +182,7 @@ A test asserts that 8 questions on a 600-token state estimate within 5 % of A1's
 - with `agent`: the port's `agent` implementation if it is in `AGENT_PORTS`, else its naive one if it is in `NAIVE_PORTS`, else the scripted one;
 - with no key, everything is scripted, as today.
 
-The default stays `naive` with a key (A12 is amended to opt-in until M15). `/_test/ai-profile` and `HORIZON_AI_*` accept `agent`. `/health` and every eval report list each port's resolved implementation, so "agent" never hides what actually ran.
+The default stays `naive` with a key (A12 is amended to opt-in until M15). `/_test/ai-profile` and `HORIZON_AI_*` accept `agent`. The start-up log and every eval report list each port's resolved implementation, so "agent" never hides what actually ran. (`/health` keeps its fixed shape.)
 - *Rejected: an `agent` profile that refuses until M9.* M8's compiler and every later change need it selectable, to test it opt-in.
 - *Rejected: making `agent` the default now.* W4 keeps it opt-in so `naive` users never see a half-built profile.
 
@@ -521,7 +521,7 @@ The shared reducer fixtures (`backend/tests/fixtures/reducer/`, run by both lang
 - **[The response store grows without bound]** → `data/cache/` is local and gitignored, and factory reset deletes it. Pruning is out of scope (W10 sets no limit). `horizon stats` reports its size.
 - **[Factory reset deletes group A's raw responses]** → That is W13, as locked. The reusable outputs are committed (`canary.json`, `drafts.json`).
 - **[The corpus download needs the network during apply]** → It is a manual, user-approved step outside tests. CI only runs the licence check on committed files.
-- **[`agent` = naive in M7 could be mistaken for a working agent]** → The resolved port table is in `/health` and every report. The profile stays opt-in and undocumented in the README until M15.
+- **[`agent` = naive in M7 could be mistaken for a working agent]** → The resolved port table is in the start-up log and every eval report. The profile stays opt-in and undocumented in the README until M15.
 
 ## Migration Plan
 

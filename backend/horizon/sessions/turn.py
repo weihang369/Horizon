@@ -35,7 +35,14 @@ from horizon.domain.timeutil import to_ms
 from horizon.gateway.errors import ProviderError
 from horizon.sessions.actor import SessionActor, TurnInfo
 from horizon.sessions.coalesce import Coalescer
-from horizon.sessions.context import character_view, characters, energy_of, maintain_window, session_context
+from horizon.sessions.context import (
+    character_view,
+    characters,
+    energy_of,
+    maintain_window,
+    reply_cap,
+    session_context,
+)
 from horizon.sessions.prefetch import Prefetch
 from horizon.sessions.retrieve import retrieve
 from horizon.sessions.writer import TraceMeta
@@ -153,13 +160,11 @@ class TurnRunner:
                 return await self._stream(actor, spec, info, prefetch.ctx, t0, started_iso, prefetch=prefetch)
             await maintain_window(rt, actor)
             sctx = await session_context(rt, actor)
-            caps = rt.runtime_cfg.runtime.reply_max_tokens
-            cfg = sctx.config or {}
             got = await retrieve(rt, actor, sctx, spec.speaker, spec.prompt)   # M5 design D10: the speaker's scope
             spec.calls.extend(got.calls)
             ctx = TurnContext(session=sctx, speaker=character_view(row), message_id=mid, variant_id=vid, prompt=spec.prompt,
                               line=spec.line, turn_index=actor.mode.turn,
-                              max_tokens=caps.for_mode(sctx.mode, str(cfg.get("turnLength")) if sctx.mode == "debate" else None),
+                              max_tokens=reply_cap(rt, sctx),   # after retrieval and the (M9) plan: design D14
                               direction_note=spec.direction_note, debate=spec.debate, knowledge=got.knowledge,
                               memory=got.memory, query=got.query)
             actor.mode.turn += 1

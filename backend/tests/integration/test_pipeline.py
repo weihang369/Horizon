@@ -138,3 +138,28 @@ async def test_embed_seventy_texts_three_rows(api: Api) -> None:
                           model="qwen/qwen3-embedding-8b")
     assert len(vecs) == 70
     assert [r["category"] for r in await new_rows(api)] == ["embedding"] * 3
+
+
+# ── ai-foundation 2.2: finish_reason and tokens_reasoning reach the ledger (spend-ledger "One row per paid call") ──
+@respx.mock
+async def test_stream_records_finish_reason_and_reasoning_tokens(api: Api) -> None:
+    from tests.gwkit import response
+
+    respx.post(CHAT).mock(return_value=response("chat_stream_length"))
+    gw = build_gateway(api)
+    async for _ in gw.chat_stream(REQ, CTX):
+        pass
+    (row,) = await new_rows(api)
+    assert row["finish_reason"] == "length" and row["tokens_reasoning"] == 0
+
+
+@respx.mock
+async def test_thinking_left_on_is_logged(api: Api, caplog: pytest.LogCaptureFixture) -> None:
+    body = load("chat_ok")["body"]
+    usage = {**body["usage"], "completion_tokens_details": {"reasoning_tokens": 20}}
+    respx.post(CHAT).mock(return_value=httpx.Response(200, json={**body, "usage": usage}))
+    gw = build_gateway(api)
+    await gw.chat_complete(ChatRequest(**{**REQ.__dict__, "reasoning": {"enabled": False}}), CTX)
+    (row,) = await new_rows(api)
+    assert row["tokens_reasoning"] == 20 and row["finish_reason"] == "stop"
+    assert any("reasoning tokens" in r.message for r in caplog.records)

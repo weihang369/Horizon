@@ -21,7 +21,7 @@ def test_found_the_cases() -> None:
 @pytest.mark.parametrize("path", CASES, ids=lambda p: p.stem)
 def test_fixture(path: Path) -> None:
     case = json.loads(path.read_text(encoding="utf-8"))
-    emotion, text = parse_all(case["chunks"], case["previous"])
+    emotion, text = parse_all(case["chunks"], case["previous"], case.get("speaker"))
     assert (emotion.emotion, emotion.source, text) == (case["expected"]["emotion"], case["expected"]["source"],
                                                         case["expected"]["text"])
 

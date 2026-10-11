@@ -199,7 +199,7 @@
 Constraints: 32K state budget, alpha endpoint, varying probabilities. Use bands and wrap every call in a `Decider` with a DeepSeek fallback.
 
 **OQ-AI-13: Main LLM parameters** *(model fixed: `deepseek/deepseek-v4.1-flash`; routing fixed: **DeepSeek first-party endpoint**, `require_parameters: true`, full-precision fallback only (D-41, NFR-33))*
-- **Resolved (AI stage, [docs/ai/03](../ai/03-llm-parameters.md)):** thinking off everywhere; DeepSeek's recommended temperatures; JSON mode + validation + one retry; per-mode length targets and caps; no fallback model.
+- **Resolved (AI stage, [docs/ai/03](../ai/03-llm-parameters.md)):** thinking off everywhere; DeepSeek's recommended temperatures; JSON mode + validation + one retry; per-mode length targets and caps; no fallback model. **Built in M7** (OpenSpec change `ai-foundation`: the `runtime.llm.calls` table, `naive-3`, stop sequences, the JSON quote fix and one retry).
 - Open:
   - reasoning on or off per task;
   - temperature per mode;

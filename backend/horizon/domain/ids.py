@@ -9,7 +9,7 @@ from ulid import ULID
 
 PREFIXES = frozenset({
     "wld", "chr", "emo", "cand", "song", "trk", "pal", "ses", "msg", "evt", "var", "job", "task", "use", "mem",
-    "kno", "kch", "ksec", "cmd",
+    "kno", "kch", "ksec", "cmd", "aic",
 })
 
 

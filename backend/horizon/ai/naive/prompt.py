@@ -6,8 +6,13 @@ session, so the provider's prompt cache keeps hitting between turns.
 
 v2 (knowledge-memory-storage design D15, D-93): when the runtime retrieved passages or memories for the turn, one
 system message goes **after** the history (dynamic content last, NFR-35): the passages numbered `[n]` with their
-section text (<= 1 200 chars, one per section), up to three memories, and the cite-only-when-used line. With nothing
-retrieved the request is byte-identical to v1.
+section text (<= 1 200 chars, one per section), up to three memories, and the cite-only-when-used line.
+
+v3 (`naive-3`, docs/ai/03 C4–C5, ai-foundation design D15): the reply line says "in plain text" without "briefly",
+and the session's length line follows it (doc 04 P5's sentences, so both profiles ask for the same length): 1:1
+"1–3 short messages, each on its own line, about 70 words", group and watch "1–2 …, about 50 words", debate "one
+paragraph, no line breaks, about 80 / 140 / 220 words" by turn length. The line is fixed for the session, so the
+cached prefix never changes turn to turn. The debate cue loses "Stay under a few sentences." (the length line says it).
 """
 
 from __future__ import annotations
@@ -19,7 +24,9 @@ from typing import Any
 from horizon.ai.contexts import KnowledgeHit, MemoryHit, TurnContext
 from horizon.ai.naive.tag_parser import EMOTIONS
 
-PROMPT_VERSION = "naive-2"
+PROMPT_VERSION = "naive-3"
+DEBATE_WORDS = {"short": 80, "medium": 140, "long": 220}
+TRAILING_CUE = "Continue with your next message, in character."
 SECTION_MAX = 1200
 QUOTE_MAX = 400
 MEMORY_MAX = 3
@@ -66,8 +73,21 @@ def system_prompt(ctx: TurnContext) -> str:
     else:
         lines.append("Keep everything safe for work.")
     lines.append(f"Begin every reply with exactly one emotion tag <e:LABEL>, where LABEL is one of: {', '.join(EMOTIONS)}. "
-                 "Never write tags anywhere else. Then reply in character, briefly, in plain text.")
+                 "Never write tags anywhere else. Then reply in character, in plain text.")
+    lines.append(length_line(s.mode, (s.config or {}).get("turnLength")))
     return "\n".join(lines)
+
+
+def length_line(mode: str, turn_length: object = None) -> str:
+    """docs/ai/03 C4 with doc 04 P5's wording: the reply's length target, one line per session (cached)."""
+    if mode == "debate":
+        words = DEBATE_WORDS.get(str(turn_length or "medium"), DEBATE_WORDS["medium"])
+        return f"Write one paragraph, no line breaks, about {words} words."
+    if mode == "group":
+        return "Write 1–2 short messages, each on its own line, about 50 words in all."
+    if mode == "watch":
+        return "Write 1–2 short lines, each on its own line, about 50 words in all."
+    return "Write 1–3 short messages, each on its own line, about 70 words in all."
 
 
 def turn_cue(ctx: TurnContext) -> str | None:
@@ -78,7 +98,7 @@ def turn_cue(ctx: TurnContext) -> str | None:
     if kind == "debate" and ctx.debate is not None:
         d = ctx.debate
         side = {"prop": "the proposition", "opp": "the opposition"}.get(d.side or "", "your own view")
-        return f"Give your {d.phase} statement for {side}, round {d.round}. Stay under a few sentences."
+        return f"Give your {d.phase} statement for {side}, round {d.round}."
     if kind == "answer":
         return f"Answer the moderator's question directly: {ctx.prompt}"
     if kind == "scene":

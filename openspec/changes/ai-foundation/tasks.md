@@ -64,18 +64,18 @@
 
 ## 2. Gateway, ledger and offline tooling
 
-- [ ] 2.1 Write Alembic `0003_ai_foundation` (D27): `usage_records.finish_reason`, `tokens_reasoning`, and `ai_calls` with its indexes and cascades. Mirror it in `db/tables.py`. Verify with a migration test:
+- [x] 2.1 Write Alembic `0003_ai_foundation` (D27): `usage_records.finish_reason`, `tokens_reasoning`, and `ai_calls` with its indexes and cascades. Mirror it in `db/tables.py`. Verify with a migration test:
   - upgrading an M6-shaped database keeps its rows, and the new columns are `NULL`;
   - `ai_calls` exists;
   - a session delete cascades;
   - the migration is forward-only, like `0002`;
   - the no-drift autogenerate check passes.
-- [ ] 2.2 Carry `finish_reason` and `tokens_reasoning` through the pipeline (D18): `Usage.tokens_reasoning` comes from `completion_tokens_details.reasoning_tokens`, then `Billing` → `LedgerRow` → the ledger writer. Decision rows take `finish_reason` from the `DecisionCall` outcome callback (D6). Verify with tests:
+- [x] 2.2 Carry `finish_reason` and `tokens_reasoning` through the pipeline (D18): `Usage.tokens_reasoning` comes from `completion_tokens_details.reasoning_tokens`, then `Billing` → `LedgerRow` → the ledger writer. Decision rows take `finish_reason` from the `DecisionCall` outcome callback (D6). Verify with tests:
   - a recorded stream ending in `length` → the row says `length`;
   - reasoning 0 / 20 is stored;
   - a late decision → `late`; a cancelled one → `cancelled`.
-- [ ] 2.3 Make the chat client keep the final content-less chunk and map the `error` and `insufficient_system_resource` finishes to a may-be-charged `provider_error` with partial text (D18). Verify with recorded-stream tests, and that the runner ends such a reply `interrupted` with its text kept.
-- [ ] 2.4 Remove the fallback model (D20):
+- [x] 2.3 Make the chat client keep the final content-less chunk and map the `error` and `insufficient_system_resource` finishes to a may-be-charged `provider_error` with partial text (D18). Verify with recorded-stream tests, and that the runner ends such a reply `interrupted` with its text kept.
+- [x] 2.4 Remove the fallback model (D20):
   - from `pricing.config.ts`, where `domain/cost.ts` makes it optional;
   - from `GatewayConfig` (tolerating an old file that still has it);
   - from `ChatClient.body`.
@@ -84,33 +84,34 @@
   - `test_chat_client.py` asserts that no `models` field is sent;
   - `seed/pricing.json` has no `fallbackModel`;
   - `seed:check` passes.
-- [ ] 2.5 Add the test-mode purpose header (D39): a contextvar is set by the pipeline around `send()`, and `HttpCore` adds `X-Horizon-Purpose` only in test mode. Verify with unit tests: a test-mode chat request carries it, and a normal-mode core never does.
-- [ ] 2.6 Extend `FakeOpenRouter`:
+- [x] 2.5 Add the test-mode purpose header (D39): a contextvar is set by the pipeline around `send()`, and `HttpCore` adds `X-Horizon-Purpose` only in test mode. Verify with unit tests: a test-mode chat request carries it, and a normal-mode core never does.
+- [x] 2.6 Extend `FakeOpenRouter`:
   - `canned[purpose]`, cycled, in SSE or JSON with real-shaped usage;
   - `park_decision(n)`;
   - Jev answers carry `type`, with tokens counted at bytes ÷ 3.
 
   Create `backend/tests/fixtures/canned/profile-drafts.json` from group A's `drafts.json` (content and usage per draft; the source and date in a header field). Verify with fake unit tests and one integration test: a naive draft job with `profile-drafts` selected validates the first recorded draft.
-- [ ] 2.7 Add the test routes `POST /_test/canned` (unknown set → `validation`) and `POST /_test/park` (decisions). Verify with HTTP tests:
+- [x] 2.7 Add the test routes `POST /_test/canned` (unknown set → `validation`) and `POST /_test/park` (decisions). Verify with HTTP tests:
   - a parked `route` decision past 400 ms gives the fallback at the deadline;
   - the row lands after release, with `finish_reason: "late"`;
   - the routes 404 outside test mode.
-- [ ] 2.8 Docs. In `docs/backend/04-gateway-budget-energy.md`, remove the fallback model line and add `finish_reason` and `tokens_reasoning`. Amend `docs/requirements/07-nfr-risk-cost.md`: R-14's mitigation (C8) and R-13 ("a deterministic code fallback per question"). Verify the links. **Checkpoint.**
+- [x] 2.8 Add the opt-in `agent` profile (D12; found missing from this list during apply): `Impl` gains `agent`; `AGENT_PORTS` is empty, so each port resolves to its naive implementation, else its scripted one, and to scripted without a key; `HORIZON_AI_*` and `/_test/ai-profile` accept it; the start-up log lists each port's resolved implementation. Verify with tests: `agent` resolves exactly as `naive` for every port; a per-port override still wins; `/_test/ai-profile {profile: "agent"}` succeeds.
+- [x] 2.9 Docs. In `docs/backend/04-gateway-budget-energy.md`, remove the fallback model line and add `finish_reason` and `tokens_reasoning`. Amend `docs/requirements/07-nfr-risk-cost.md`: R-14's mitigation (C8) and R-13 ("a deterministic code fallback per question"). Verify the links. **Checkpoint.**
 
 ## 3. LLM parameters
 
-- [ ] 3.1 Add `runtime.llm.calls` (C1's table) and the new `replyMaxTokens` (D14) to `runtime.config.ts`, then run `seed:build`. Parse them in `domain/runtime_config.py`: `LlmCalls` and `ReplyCaps.for_mode(mode, turn_length, deep=False)`. Update `tests/unit/test_runtime_config.py` to the new values. Verify that `seed:check` and the runtime-config tests pass.
-- [ ] 3.2 Add the `llm_request(row, …)` helper (D13), the single builder of `ChatRequest`s for the naive engine, drafter and probe. Verify with unit tests:
+- [x] 3.1 Add `runtime.llm.calls` (C1's table) and the new `replyMaxTokens` (D14) to `runtime.config.ts`, then run `seed:build`. Parse them in `domain/runtime_config.py`: `LlmCalls` and `ReplyCaps.for_mode(mode, turn_length, deep=False)`. Update `tests/unit/test_runtime_config.py` to the new values. Verify that `seed:check` and the runtime-config tests pass.
+- [x] 3.2 Add the `llm_request(row, …)` helper (D13), the single builder of `ChatRequest`s for the naive engine, drafter and probe. Verify with unit tests:
   - `off` → `reasoning: {enabled: false}`;
   - `temperature: null` → field absent;
   - no `top_p` or penalties.
-- [ ] 3.3 Choose the cap after the plan (D14): `reply_cap(rt, sctx, plan)` is called after retrieval in `sessions/turn.py` and in `sessions/prefetch.py`, and `TurnContext.max_tokens` becomes required. Update `tests/sessions/test_naive.py` (350 → 200). Verify that a group request has `max_tokens` 150, a prefetched short-debate opening 200, and a naive 1:1 with passages 200.
-- [ ] 3.4 Write `naive-3` (D15): the tag line, the per-mode length line, and the debate cue without "few sentences". Update `tests/knowledge/test_naive_prompt.py`. Verify:
+- [x] 3.3 Choose the cap after the plan (D14): `reply_cap(rt, sctx, plan)` is called after retrieval in `sessions/turn.py` and in `sessions/prefetch.py`, and `TurnContext.max_tokens` becomes required. Update `tests/sessions/test_naive.py` (350 → 200). Verify that a group request has `max_tokens` 150, a prefetched short-debate opening 200, and a naive 1:1 with passages 200.
+- [x] 3.4 Write `naive-3` (D15): the tag line, the per-mode length line, and the debate cue without "few sentences". Update `tests/knowledge/test_naive_prompt.py`. Verify:
   - the exact wording per mode;
   - with nothing retrieved, two consecutive requests share their prefix byte for byte;
   - `PROMPT_VERSION == "naive-3"` in the stored trace.
-- [ ] 3.5 Add stop sequences (D16), built from `render_history`'s names, deduplicated, never a bare `"\n["`, and asserting ≤ 16. Verify with a unit test for a 5-cast group (the exact list) and one for a session with host lines (`"\n[host line]"`).
-- [ ] 3.6 Add the name-prefix buffer to `TagParser` (D16, first line only), with `speaker`. Add fixtures to `backend/tests/fixtures/tag_parser/` with `speaker` and `perLine: false`:
+- [x] 3.5 Add stop sequences (D16), built from `render_history`'s names, deduplicated, never a bare `"\n["`, and asserting ≤ 16. Verify with a unit test for a 5-cast group (the exact list) and one for a session with host lines (`"\n[host line]"`).
+- [x] 3.6 Add the name-prefix buffer to `TagParser` (D16, first line only), with `speaker`. Add fixtures to `backend/tests/fixtures/tag_parser/` with `speaker` and `perLine: false`:
   - `Mei: <e:happy>Hi`;
   - `<e:happy>Mei: Hi`;
   - split across chunks;
@@ -118,7 +119,7 @@
   - a name that only starts the same.
 
   Update the TS reference parser and `frontend/src/engine/tagParser.fixtures.test.ts`. Verify that both languages pass every fixture.
-- [ ] 3.7 Add the empty-reply rules to `NaiveTurnEngine` (D17):
+- [x] 3.7 Add the empty-reply rules to `NaiveTurnEngine` (D17):
   - the trailing cue when the history ends on the speaker's own line;
   - the `Emotion` is held until the first `Token` or the end;
   - one silent retry (adding the cue);
@@ -128,14 +129,14 @@
   - empty then `<e:happy>Hi` → one message, two `reply` rows;
   - empty twice → `error` event, no message, two rows;
   - the face is emitted once.
-- [ ] 3.8 Add `ai/jsonrepair.py` (`repair_json_quotes`) and `complete_json` (D19). Use them in the naive drafter and field regenerate, with the single-quote line in the prompt. Change the job worker's `commit_with` to add `cost_usd`. Verify with tests:
+- [x] 3.8 Add `ai/jsonrepair.py` (`repair_json_quotes`) and `complete_json` (D19). Use them in the naive drafter and field regenerate, with the single-quote line in the prompt. Change the job worker's `commit_with` to add `cost_usd`. Verify with tests:
   - A3's `"Loretta "Rhett" Kowalski"` repairs to valid JSON with no second call;
   - valid JSON is never altered;
   - an unrepairable answer then a valid retry → two rows and the task cost is the sum;
   - a timeout is never retried.
-- [ ] 3.9 One chat-model source (D20). The drafter and the probe use `prices.chat.model`, and start-up logs an error when `settings.models.chat` differs. `probe_model` ignores overrides and uses the `probe` row. Update `test_settings_key.py` (`test_model_probe_echoes_the_override` → overrides are ignored) and `MockClient.testModel`. Verify with tests: the probe body has `reasoning: {enabled: false}`; an override is ignored; a mismatch logs an error and the backend starts.
-- [ ] 3.10 Make Settings → Models a read-only "Models in use" panel (D20): slug, purpose, price from `pricing.config.ts`, Test, and the v2 line. Remove save and reset. Verify with a component test (no editable field; each role shows a price and Test) and with `npm test`.
-- [ ] 3.11 Docs:
+- [x] 3.9 One chat-model source (D20). The drafter and the probe use `prices.chat.model`, and start-up logs an error when `settings.models.chat` differs. `probe_model` ignores overrides and uses the `probe` row. Update `test_settings_key.py` (`test_model_probe_echoes_the_override` → overrides are ignored) and `MockClient.testModel`. Verify with tests: the probe body has `reasoning: {enabled: false}`; an override is ignored; a mismatch logs an error and the backend starts.
+- [x] 3.10 Make Settings → Models a read-only "Models in use" panel (D20): slug, purpose, price from `pricing.config.ts`, Test, and the v2 line. Remove save and reset. Verify with a component test (no editable field; each role shows a price and Test) and with `npm test`.
+- [x] 3.11 Docs:
   - `docs/requirements/02-functional-requirements.md`: SET-05 is read-only in v1;
   - `docs/requirements/08`: OQ-AI-13 resolved;
   - `docs/requirements/09-decision-log.md`: D-93's "byte-identical" note is now true only until `naive-3`;
@@ -146,13 +147,13 @@
 
 ## 4. Bubbles and demo parity
 
-- [ ] 4.1 Add `splitBubbles(text)` (D21) in `frontend/src/features/session/`. Verify with unit tests:
+- [x] 4.1 Add `splitBubbles(text)` (D21) in `frontend/src/features/session/`. Verify with unit tests:
   - line split;
   - blank lines collapsing;
   - the 4-bubble cap joining into the 4th;
   - no split inside a fenced block or a list;
   - Chinese `。` text with line breaks.
-- [ ] 4.2 Render bubbles in `MessageRow.tsx`: 1:1 and group as bubbles, watch as script lines under one name tape, debate, host and user messages unsplit, citation chips under the last bubble. Change `sessionContext.ts` so auto-Readable applies per bubble over 600 characters. Verify with component tests for each mode, the streaming re-split, and the 700-character three-bubble reply staying bubbles.
+- [x] 4.2 Render bubbles in `MessageRow.tsx`: 1:1 and group as bubbles, watch as script lines under one name tape, debate, host and user messages unsplit, citation chips under the last bubble. Change `sessionContext.ts` so auto-Readable applies per bubble over 600 characters. Verify with component tests for each mode, the streaming re-split, and the 700-character three-bubble reply staying bubbles.
 - [ ] 4.3 Add line breaks to the 1:1, group and watch character lines in `seed-build/screenplays/seed.ts`, `mock.ts`, `frontend/src/mock/banks/*` and the scripted engine's lines (D22), leaving debate untouched. Run `npm run seed:build` and `npm run fixtures:build`. Verify:
   - `seed:check`, `fixtures:check` and the replay-equivalence and fork fixture tests pass in both languages;
   - a test asserts no debate message contains `\n`;
@@ -161,11 +162,11 @@
 
 ## 5. Contract rev 1.4 and System 1
 
-- [ ] 5.1 Add `TurnTrace.system1` to `frontend/src/contract/types.ts` and `schemas.ts` (D23: strict, ≤ 64 rows, unit `p`/`confidence`), then run `npm run export-schema`. Verify:
+- [x] 5.1 Add `TurnTrace.system1` to `frontend/src/contract/types.ts` and `schemas.ts` (D23: strict, ≤ 64 rows, unit `p`/`confidence`), then run `npm run export-schema`. Verify:
   - `clientSchemas.test.ts` accepts a full W1 example and rejects 65 rows;
   - every rev 1.3 fixture still validates;
   - `export-schema:check` passes.
-- [ ] 5.2 Add the rev 1.4 note and the `system1` block to `docs/requirements/05-data-contract.md` (W1's shape, verbatim), and INS-01 AC2 if it isn't already worded. Verify the links.
+- [x] 5.2 Add the rev 1.4 note and the `system1` block to `docs/requirements/05-data-contract.md` (W1's shape, verbatim), and INS-01 AC2 if it isn't already worded. Verify the links.
 - [ ] 5.3 Make `system1` a runtime-owned trace key (`OWNED_TRACE_KEYS`). Change `_project` so an all-`None` `TraceMeta` keeps the engine columns and `created_at` (D24). Verify with tests: an engine patch with `system1` is dropped and `context` kept; a second `insight` without meta keeps `naive`, `2` and the original `created_at`.
 - [ ] 5.4 Add `sessions/system1.py` (`merge_rows`, `cut`) and `SessionActor.append_system1` (D24):
   - the regenerate guard;
@@ -183,8 +184,8 @@
   - a scripted group turn and a mock group turn both produce a schema-valid row naming the speaker;
   - seed session traces are unchanged.
 - [ ] 5.7 Add the second-`insight` reducer fixture with an appended `system1` row (D40). Verify that both reducers' fixture tests pass.
-- [ ] 5.8 Add the "System 1 · Jev" section to `InsightDrawer.tsx` (D26): after Emotion, grouped with latency or "fallback", rows with band and comparisons, `not_used` folded, IDs resolved, hidden when empty, absent in Compact. Verify with component tests: no rows → no section; a route row shows the name and `p` with its band; compact → absent; folding.
-- [ ] 5.9 Set W7's tooltip on the session cost counter in `SessionScreen.tsx`: "Reply cost only. Planning, checks, summaries and memory count toward the daily cap: see Settings → Cost." Verify with a component test. **Checkpoint.**
+- [x] 5.8 Add the "System 1 · Jev" section to `InsightDrawer.tsx` (D26): after Emotion, grouped with latency or "fallback", rows with band and comparisons, `not_used` folded, IDs resolved, hidden when empty, absent in Compact. Verify with component tests: no rows → no section; a route row shows the name and `p` with its band; compact → absent; folding.
+- [x] 5.9 Set W7's tooltip on the session cost counter in `SessionScreen.tsx`: "Reply cost only. Planning, checks, summaries and memory count toward the daily cap: see Settings → Cost." Verify with a component test. **Checkpoint.**
 
 ## 6. Capture, purge hooks and tracing
 
