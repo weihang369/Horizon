@@ -85,7 +85,6 @@ class AiDeps:
     prices: PriceTable
     timing: Timing
     clock: Callable[[], Clock]
-    window_tokens: int = 6000
     palette_ids: Callable[[], Sequence[str]] = lambda: ()    # M4: the shipped palettes (drafts pick from these)
     schema: Callable[[], Any] = lambda: None                 # M4: the contract schema (the naive drafter validates)
     models_dir: Callable[[], Path] = lambda: Path("data/models")   # M5: the conversion models (D-62)
@@ -371,9 +370,19 @@ class ScriptedSummariser:
         return (f'Episode summary: {", ".join(names)} spent the scene on "{cfg.get("premise", "")}". {turns} turns, no one '
                 f"fully got their way, and everyone will remember it differently.")
 
-    def rolling(self, previous: str | None, dropped: list[str]) -> str:
-        lines = ([previous] if previous else []) + dropped
-        return "\n".join(lines[-12:])
+    async def rolling(self, ctx: SessionContext, previous: str | None, lines: Sequence[str]) -> str:
+        """The demo's summary keeps the last 12 lines (docs/ai/05 X3), but bills one simulated `rolling_summary` call
+        per drop, priced from its input and output, so a scripted session's cost shape matches real use (D-81)."""
+        kept = ([previous] if previous else []) + list(lines)
+        text = "\n".join(kept[-12:])
+        prices = self.deps.prices
+        tokens_in = estimate_tokens("\n".join(kept)) + 180
+        tokens_out = estimate_tokens(text)
+        await self.deps.gateway().simulated_call(
+            ctx.call_ctx("rolling_summary"), model=prices.chat.model, tokens_in=tokens_in, tokens_out=tokens_out,
+            cost_usd=chat_cost(prices.chat, tokens_in=tokens_in, tokens_cached=0, tokens_out=tokens_out,
+                               mult=multiplier(prices, ctx.period)), latency_ms=900)
+        return text
 
 
 class ScriptedGuardrail:

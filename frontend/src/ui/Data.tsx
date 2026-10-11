@@ -74,17 +74,28 @@ export interface StackedBarProps {
 
 const kfmt = (n: number) => (n >= 1000 ? `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}K` : String(Math.round(n)));
 
-/** One horizontal stacked bar (context budget: system / persona / memory / knowledge / history / user / mode). */
+/** One horizontal stacked bar (context budget: system / persona / memory / knowledge / history / user / mode).
+ *  docs/ai/05 X1: the window may run past its budget until the summary lands, so the bar scales to the larger of
+ *  the total and the sum, and marks the part past the total (hatched, with a line at the total). */
 export function StackedBar({ segments, total, format = kfmt, label, className }: StackedBarProps) {
   const sum = segments.reduce((a, b) => a + b.value, 0);
-  const cap = Math.max(total ?? sum, 1);
+  const budget = total ?? sum;
+  const cap = Math.max(budget, sum, 1);
+  const over = total !== undefined && sum > total ? sum - total : 0;
   const summary = segments.map((x) => `${x.label} ${format(x.value)}`).join(", ");
+  const overText = over ? `, ${format(over)} over` : "";
   return (
     <div className={cx(s.stack, className)}>
-      <div className={s.stackBar} role="img" aria-label={`${label}: ${summary}; ${format(sum)} of ${format(cap)}`}>
+      <div className={s.stackBar} role="img" aria-label={`${label}: ${summary}; ${format(sum)} of ${format(budget)}${overText}`}>
         {segments.map((x) => (
           <span key={x.key} className={s.seg} style={{ width: `${(x.value / cap) * 100}%`, background: x.color }} />
         ))}
+        {over > 0 && (
+          <>
+            <span className={s.stackOver} style={{ left: `${(budget / cap) * 100}%`, width: `${(over / cap) * 100}%` }} aria-hidden="true" />
+            <span className={s.stackMark} style={{ left: `${(budget / cap) * 100}%` }} aria-hidden="true" />
+          </>
+        )}
       </div>
       <ul className={s.legend} aria-hidden="true">
         {segments.map((x) => (
@@ -94,7 +105,7 @@ export function StackedBar({ segments, total, format = kfmt, label, className }:
           </li>
         ))}
         <li className={s.stackMeta}>
-          {format(sum)} / {format(cap)}
+          {format(sum)} / {format(budget)}{over > 0 ? ` (+${format(over)})` : ""}
         </li>
       </ul>
     </div>

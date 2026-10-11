@@ -1,0 +1,12 @@
+{
+ "source": "synthetic (persona-context task 4.8); replaced by the summary suite's recorded real summaries in task 10.2",
+ "recorded": null,
+ "model": "deepseek/deepseek-v4.1-flash",
+ "note": "SYNTHETIC until M8's paid summary run: shaped like a real rolling summary (short plain lines, who said what, a promise and its maker). The fake provider answers `rolling_summary` chat calls with these, in turn (doc 13 W14).",
+ "purpose": "rolling_summary",
+ "responses": [
+  {"content": "Kai has a headache since Monday, mostly at the temples in the afternoon.\nKai drinks four coffees a day and asked Amara whether to cut back.\nAmara asked about sleep and screen time.\nAmara promised to explain the warning signs that need same-day care.", "finish_reason": "stop", "usage": {"prompt_tokens": 410, "completion_tokens": 62, "cost": 0.0001}},
+  {"content": "Kai works night shifts at a bakery and sleeps until noon.\nKai's sister is getting married in June; Kai is giving the speech.\nHana said she would send Kai a recipe by Friday.", "finish_reason": "stop", "usage": {"prompt_tokens": 380, "completion_tokens": 48, "cost": 0.0001}},
+  {"content": "Kai asked about rotas and sleep after night shifts.\nAmara suggested anchor sleep and a short nap before work.\nKai asked Amara to check back on the coffee question next time.", "finish_reason": "stop", "usage": {"prompt_tokens": 520, "completion_tokens": 44, "cost": 0.0001}}
+ ]
+}

@@ -28,7 +28,7 @@ export interface ContractHarness {
 export type MakeHarness = () => Promise<ContractHarness>;
 
 /** The backend milestone whose routes a test needs (doc backend/06). The mock supports everything ("all"). */
-export type Milestone = "M1b" | "M2" | "M3" | "M4" | "M5" | "M6" | "M7";
+export type Milestone = "M1b" | "M2" | "M3" | "M4" | "M5" | "M6" | "M7" | "M8";
 
 /** A valid 16×9 PNG (83 bytes) for the cover upload tests. */
 const TINY_PNG = [
@@ -36,7 +36,7 @@ const TINY_PNG = [
   0, 26, 73, 68, 65, 84, 120, 156, 99, 212, 59, 178, 141, 129, 20, 192, 68, 146, 106, 134, 81, 13, 196, 1, 146, 131, 21, 0, 231,
   232, 1, 186, 121, 203, 221, 186, 0, 0, 0, 0, 73, 69, 78, 68, 174, 66, 96, 130,
 ];
-export const MILESTONES: readonly Milestone[] = ["M1b", "M2", "M3", "M4", "M5", "M6", "M7"];
+export const MILESTONES: readonly Milestone[] = ["M1b", "M2", "M3", "M4", "M5", "M6", "M7", "M8"];
 export interface PortableOptions {
   /** The latest milestone this client's backend implements. Later tests are listed as `[pending Mx]`, never silently skipped. */
   supports: Milestone | "all";
@@ -274,6 +274,10 @@ export function runPortableContract(label: string, makeHarness: MakeHarness, opt
 
     test("M3", "daily cap: spend reaching the cap pauses the session and blocks further sends (STATE-06)", async () => {
       const { c, tick, globals } = await make({ key: true });
+      // docs/ai/04 P9: the first chat's greeting is free, so use it up; the next chat's greeting is generated and billed
+      const firstChat = await c.sessions.create({ worldId: "wld_seedMeridian", mode: "one_on_one", characterIds: ["chr_seedAmara"] });
+      await tick(6000);
+      await c.sessions.leave(firstChat.session.id);
       await c.settings.update({ budget: { dailyCapUsd: 0.00005 } });
       const s = await c.sessions.create({ worldId: "wld_seedMeridian", mode: "one_on_one", characterIds: ["chr_seedAmara"] });
       await tick(8000);
@@ -459,6 +463,26 @@ export function runPortableContract(label: string, makeHarness: MakeHarness, opt
       const call = reply.trace?.calls?.find((x) => x.purpose === "reply");
       expect(call, "reply call in trace.calls").toBeTruthy();
       expect(call!.costUsd).toBe(reply.usage?.costUsd);
+    });
+
+    // docs/ai/04 P9 (session-lifecycle "New session opening"; demo-data "The MockClient greets like the backend")
+    test("M8", "the first 1:1 chat opens with the approved greeting at no cost; a later chat's greeting is billed", async () => {
+      const { c, tick } = await make({ key: true });
+      const amara = await c.characters.get("chr_seedAmara");
+      const first = await c.sessions.create({ worldId: "wld_seedMeridian", mode: "one_on_one", characterIds: ["chr_seedAmara"] });
+      await tick(6000);
+      const g = chars(await c.sessions.messages(first.session.id))[0];
+      expect(g.content).toBe(amara.profile.greeting);
+      expect(g.status).toBe("complete");
+      expect(g.usage).toBeUndefined();
+      expect(g.trace?.model).toBeUndefined();
+      expect((await c.characters.get("chr_seedAmara")).energy.current).toBe(amara.energy.current);
+      await c.sessions.leave(first.session.id);
+      const second = await c.sessions.create({ worldId: "wld_seedMeridian", mode: "one_on_one", characterIds: ["chr_seedAmara"] });
+      await tick(6000);
+      const g2 = chars(await c.sessions.messages(second.session.id))[0];
+      expect(g2.status).toBe("complete");
+      expect(g2.usage?.costUsd ?? 0).toBeGreaterThan(0);
     });
 
     test("M7", "group replies carry the System 1 route row (rev 1.4)", async () => {

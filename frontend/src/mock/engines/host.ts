@@ -153,6 +153,8 @@ export interface SpeakOpts {
   system1?: TurnTrace["system1"];
   /** Regenerate: stream a new variant into this message. */
   variantOf?: string;
+  /** docs/ai/04 P9: say `line` word for word at no cost (the first chat's approved greeting). */
+  verbatim?: boolean;
 }
 
 export interface SpeakResult { messageId: string; endMs: number; status: Message["status"] }
@@ -190,7 +192,7 @@ export function speak(h: EngineHost, sid: string, cid: string, opts: SpeakOpts =
   const prior = live.state.order.map((id) => live.state.messages[id]).filter((m): m is Message => !!m && m.author.type === "character" && m.author.characterId !== cid);
   const recall = prior.length ? prior[prior.length - 1] : undefined;
   // Separate rng stream: characters without knowledge replay exactly as before.
-  const pool = knowledgePool(h.db, cid);
+  const pool = opts.verbatim ? [] : knowledgePool(h.db, cid);
   const cited = pool.length ? liveCitations(`${sid}:${messageId}`, line.text, opts.prompt ?? "", pool, h.rng(`${sid}:${live.turn}:cite`)) : null;
   const text = cited?.text ?? line.text;
   const spec: LineSpec = {
@@ -199,7 +201,8 @@ export function speak(h: EngineHost, sid: string, cid: string, opts: SpeakOpts =
     characterId: cid,
     text,
     emotion: line.emotion,
-    emotionSource: "llm",
+    emotionSource: opts.verbatim ? "default" : "llm",
+    verbatim: opts.verbatim,
     message: variantOf ? undefined : { kind: "chat", ...opts.message },
     variantId,
     forcedBy: opts.forcedBy,

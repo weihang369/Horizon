@@ -62,6 +62,30 @@ class ReplyCaps:
 
 
 @dataclass(frozen=True)
+class WindowSizes:
+    """docs/ai/05 X2: the history window per mode, in `count_tokens`."""
+
+    one_on_one: int = 6000
+    group: int = 9000
+    watch: int = 9000
+    debate: int = 9000
+
+    def for_mode(self, mode: str) -> int:
+        return int(getattr(self, mode, self.group))
+
+    def as_dict(self) -> dict[str, int]:
+        return {"one_on_one": self.one_on_one, "group": self.group, "watch": self.watch, "debate": self.debate}
+
+    @staticmethod
+    def from_json(v: Any) -> WindowSizes:
+        """An object per mode; an older seed's single int applies to every mode."""
+        if isinstance(v, int | float):
+            n = int(v)
+            return WindowSizes(n, n, n, n)
+        return WindowSizes(**{k: int(v[k]) for k in ("one_on_one", "group", "watch", "debate")})
+
+
+@dataclass(frozen=True)
 class LlmCall:
     """One row of `runtime.llm.calls` (docs/ai/03 C1)."""
 
@@ -88,7 +112,7 @@ class RetrievalKnobs:
 @dataclass(frozen=True)
 class RuntimeKnobs:
     reply_max_tokens: ReplyCaps
-    window_tokens: int
+    window_tokens: WindowSizes
     coalesce_max_chars: int
     coalesce_max_ms: float
     idle_release_ms: float
@@ -135,7 +159,7 @@ class RuntimeConfig:
                                            watch=int(caps["watch"]),
                                            debate={str(k): int(v) for k, v in caps["debate"].items()},
                                            one_on_one_deep=int(caps.get("one_on_one_deep", caps["one_on_one"]))),
-                window_tokens=int(r["windowTokens"]), coalesce_max_chars=int(r["coalesce"]["maxChars"]),
+                window_tokens=WindowSizes.from_json(r["windowTokens"]), coalesce_max_chars=int(r["coalesce"]["maxChars"]),
                 coalesce_max_ms=float(r["coalesce"]["maxMs"]), idle_release_ms=float(r["idleReleaseMs"]),
                 prefetch_max=int(r["prefetchMax"]), llm_concurrency=int(r["llmConcurrency"]),
                 retrieval=RetrievalKnobs(knowledge_k=int(r["retrieval"]["knowledgeK"]),

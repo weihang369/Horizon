@@ -115,3 +115,14 @@ async def test_deleted_character_keeps_the_spend(api: Api) -> None:
 
 def test_module_has_no_network_import() -> None:
     assert not hasattr(energy_writes, "httpx")
+
+
+# ── persona-context 5.1 (spend-ledger "Reply usage keeps a reported zero"; docs/ai/05 X6; design D15) ──
+async def test_reply_usage_keeps_a_reported_zero_and_omits_an_unreported_one(api: Api) -> None:
+    lw = writer(api)
+    await lw.record(row(message_id="msg_z0", tokens_in=900, tokens_cached=0), drain=False)
+    zero = await lw.reply_usage("msg_z0")
+    assert zero is not None and zero["tokensCached"] == 0
+    await lw.record(row(message_id="msg_none", tokens_in=900), drain=False)
+    none = await lw.reply_usage("msg_none")
+    assert none is not None and "tokensCached" not in none

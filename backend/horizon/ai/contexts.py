@@ -96,6 +96,7 @@ class LineHint(Frozen):
     kind: LineKind = "chat"
     text: str | None = None
     emotion: str | None = None
+    verbatim: bool = False          # M8 (docs/ai/04 P9): say `text` word for word, with no model call
 
 
 class DebateMeta(Frozen):

@@ -47,6 +47,8 @@ export interface LineSpec {
   /** Overrides for fixtures that must match the docs exactly (doc 05 §8). */
   usageOverride?: MessageUsage;
   traceOverride?: TurnTrace;
+  /** docs/ai/04 P9: the approved first-chat greeting, word for word: no cost, energy, usage or `model` trace. */
+  verbatim?: boolean;
   /** D-59: passages the reply quotes (`text` carries the `[n]` markers). Sent on turn.end when the reply completes. */
   citations?: Citation[];
   /** D-59: knowledge retrieval for the trace (every fetched passage, cited or not). */
@@ -66,6 +68,7 @@ export interface LineScript {
   spent: number;
   trace: TurnTrace;
   status: Message["status"];
+  verbatim?: boolean;
 }
 
 const r3 = (n: number) => Math.round(n * 1000) / 1000;
@@ -98,9 +101,9 @@ export function buildLineScript(spec: LineSpec, timing: TimingConfig, pricing: P
   const totalMs = spec.usageOverride?.totalMs ?? firstTokenMs + streamMs + 80;
   const baseUsage = { tokensIn, tokensCached, tokensOut: Math.max(1, estimateTokens(spec.text)) };
   const costUsd = chatCostUsd(baseUsage, pricing.chat, spec.period);
-  let usage: MessageUsage = spec.usageOverride ?? {
-    ...baseUsage, costUsd, energySpent: pointsForCost(costUsd), firstTokenMs, totalMs,
-  };
+  let usage: MessageUsage = spec.verbatim
+    ? { tokensIn: 0, tokensOut: 0, costUsd: 0, energySpent: 0, firstTokenMs, totalMs }
+    : spec.usageOverride ?? { ...baseUsage, costUsd, energySpent: pointsForCost(costUsd), firstTokenMs, totalMs };
 
   // ── Timeline ──
   const T_START = spec.skipPreamble ? 0 : 100;
@@ -164,7 +167,7 @@ export function buildLineScript(spec: LineSpec, timing: TimingConfig, pricing: P
   add(endAt, {
     type: "turn.end",
     payload: {
-      messageId, status, ...(status === "interrupted" ? { interruptedBy: "error" as const } : {}), usage,
+      messageId, status, ...(status === "interrupted" ? { interruptedBy: "error" as const } : {}), ...(spec.verbatim ? {} : { usage }),
       ...(spec.variantId ? { variantId: spec.variantId } : {}),
       ...(status === "complete" && spec.citations?.length ? { citations: spec.citations } : {}),
     },
@@ -215,7 +218,9 @@ export function buildLineScript(spec: LineSpec, timing: TimingConfig, pricing: P
       { purpose: "reply", model: pricing.chat.model, costUsd: usage.costUsd, latencyMs: usage.totalMs },
     ],
   };
-  const trace: TurnTrace = spec.knowledge?.retrieved.length && !baseTrace.knowledge
+  const trace: TurnTrace = spec.verbatim
+    ? { messageId, emotion: { chosen: spec.emotion, source: "default" }, routing: { selected: characterId }, calls: [] }
+    : spec.knowledge?.retrieved.length && !baseTrace.knowledge
     ? {
         ...baseTrace,
         knowledge: spec.knowledge,
@@ -243,5 +248,5 @@ export function buildLineScript(spec: LineSpec, timing: TimingConfig, pricing: P
 
   entries.sort((a, b) => a.t - b.t);
   void sentText;
-  return { entries, endMs: Math.round(endAt), usage, energyAfter, spent, trace, status };
+  return { entries, endMs: Math.round(endAt), usage, energyAfter, spent, trace, status , ...(spec.verbatim ? { verbatim: true } : {}) };
 }

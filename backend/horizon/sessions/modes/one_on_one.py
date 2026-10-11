@@ -1,4 +1,9 @@
-"""1:1 (session-modes "1:1 conversation"; port of `mock/engines/oneOnOne.ts`): greet, send, regenerate (D-58)."""
+"""1:1 (session-modes "1:1 conversation"; port of `mock/engines/oneOnOne.ts`): greet, send, regenerate (D-58).
+
+M8 (docs/ai/04 P9; session-lifecycle "New session opening"; persona-context D19, D20): a character's FIRST chat opens
+with its approved greeting, word for word and at no cost (a verbatim line: no model call, ledger row or energy).
+Later chats generate the greeting through the profile's engine (the scripted one still bills its bank greeting).
+"""
 
 from __future__ import annotations
 
@@ -31,10 +36,32 @@ def greet(actor: SessionActor) -> None:
             await asleep_note(actor, cid, skipping=False)
             return
         row = (await characters(actor.rt, [cid]))[cid]
-        line = greeting(row["profile"])
-        await speak_then(actor, TurnSpec(speaker=cid, line=LineHint(kind="greeting", text=line.text, emotion=line.emotion)))
+        stored = str(row["profile"].get("greeting") or "").strip()
+        if stored and await is_first_chat(actor, cid):
+            hint = LineHint(kind="greeting", text=stored, verbatim=True)
+        elif actor.rt.ai.impl("turn", key_set=actor.rt.keys.status() == "set") == "scripted":
+            line = greeting(row["profile"])   # the scripted demo's billed greeting (D-81)
+            hint = LineHint(kind="greeting", text=line.text, emotion=line.emotion)
+        else:
+            hint = LineHint(kind="greeting")   # naive and agent generate it (agent avoids the stored one, P9)
+        await speak_then(actor, TurnSpec(speaker=cid, line=hint))
 
     actor.enqueue(job)
+
+
+async def is_first_chat(actor: SessionActor, character_id: str) -> bool:
+    """P9's rule: no other non-seed, non-fork 1:1 session holds a message this character wrote. Asleep notes point at
+    the character through `target_character_id`, so they don't count; deleted sessions are gone."""
+    from sqlalchemy import and_, exists, select
+
+    from horizon.db import tables as t
+
+    S, M = t.sessions.c, t.messages.c
+    q = select(exists().where(and_(
+        M.session_id == S.id, M.author_character_id == character_id, S.mode == "one_on_one", S.is_seed.is_(False),
+        S.continued_from.is_(None), S.id != actor.sid)))
+    async with actor.rt.db.read() as conn:
+        return not bool((await conn.execute(q)).scalar())
 
 
 async def send(actor: SessionActor, text: str) -> None:

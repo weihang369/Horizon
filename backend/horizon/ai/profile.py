@@ -45,7 +45,7 @@ Impl = Literal["scripted", "naive", "agent"]
 PORTS = ("turn", "router", "reactions", "host", "director", "summariser", "guardrail", "drafter", "image", "song",
          "embedder", "knowledge_retriever", "memory_retriever", "memory_writer", "converter")
 NAIVE_PORTS = frozenset({"turn", "router", "drafter", "image", "song", "embedder", "knowledge_retriever",
-                         "memory_retriever", "converter"})
+                         "memory_retriever", "converter", "summariser"})   # M8: the DeepSeek rolling summary (X3)
 KEYLESS_PORTS = frozenset({"converter"})   # chosen by availability, not by the profile or the key (D-96)
 AGENT_PORTS = frozenset({"turn"})   # ports with an `agent` implementation (each AI-stage change adds its own; M8: turn)
 ENV_PROFILE = "HORIZON_AI_PROFILE"
@@ -150,6 +150,9 @@ class AiPorts:
             if port == "router":
                 from horizon.ai.naive.router import JevRouter
                 return JevRouter(d)
+            if port == "summariser":
+                from horizon.ai.naive.summary import NaiveSummariser
+                return NaiveSummariser(d)
             raise KeyError(f"no naive implementation for port {port!r}")
         builders: dict[str, Callable[[], Any]] = {
             "turn": lambda: ScriptedTurnEngine(d), "router": lambda: ScriptedRouter(d),

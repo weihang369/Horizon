@@ -164,7 +164,7 @@ The table lives in the seed-build source `frontend/scripts/seed-build/runtime.co
 | `reply.debate` | Debate argument | off | 1.0 | stream | task 8 (doc 08 V4) |
 | `host` | Debate host lines, `max_tokens` 120, shown whole | off | 1.0 | text | task 8 (doc 08 V6) |
 | `verdict` | Debate verdict prose, `max_tokens` 1,200 | off | 0.7 | JSON | task 8 (doc 08 V8) |
-| `summary` | Rolling summary | off | 0.7 | text | task 5 (doc 05 X3) |
+| `summary` | Rolling summary (doc 05 X3, prompt `summary-2`), `max_tokens` 600, purpose `rolling_summary` | off | 0.7 | text | M8 (OpenSpec `persona-context`) |
 | `episode` | Watch's "Summarise" recap, `max_tokens` 400 | off | 0.7 | text | task 7 (doc 07 G10) |
 | `memory` | Memory rewrite at a session pause, `max_tokens` 300 × characters present + 200 (≤ 3,000) | off | 0.7 | JSON | task 9 (doc 09 M3) |
 | `query_rewrite` | A deep turn's search query, written with the speaker's cached prompt when the message isn't standalone or isn't in English, `max_tokens` 60; precise output, stored and reused on regenerate | off | 0.0 | text | task 10 (doc 10 K4) |

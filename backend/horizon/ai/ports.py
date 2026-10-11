@@ -9,7 +9,7 @@ router) and drops a patch's attempt to set them, applying the rest.
 
 from __future__ import annotations
 
-from collections.abc import AsyncIterator, Awaitable, Callable, Mapping
+from collections.abc import AsyncIterator, Awaitable, Callable, Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import Any, Protocol
 
@@ -99,7 +99,8 @@ class WatchDirector(Protocol):
 
 class Summariser(Protocol):
     async def episode(self, ctx: SessionContext) -> str: ...
-    def rolling(self, previous: str | None, dropped: list[str]) -> str: ...
+    # M8 (docs/ai/05 X3): async, after `turn.end`; `lines` are the dropped messages as `Name: line` lines
+    async def rolling(self, ctx: SessionContext, previous: str | None, lines: Sequence[str]) -> str: ...
 
 
 class Guardrail(Protocol):

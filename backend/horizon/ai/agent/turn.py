@@ -22,14 +22,12 @@ from horizon.ai.agent.budget import planned_input
 from horizon.ai.agent.persona import PROMPT_VERSION, compile_persona, first_name, persona_input
 from horizon.ai.contexts import MessageView, TurnContext
 from horizon.ai.llm import llm_request
-from horizon.ai.naive.prompt import TRAILING_CUE, RetrievalBlock, turn_cue
+from horizon.ai.naive.prompt import SUMMARY_HEADING, TRAILING_CUE, RetrievalBlock, turn_cue
 from horizon.ai.naive.tag_parser import ParsedEmotion, TagParser
 from horizon.ai.naive.turn import NaiveTurnEngine
 from horizon.domain.pricing import count_tokens
 from horizon.gateway.chat import ChatRequest
 
-SUMMARY_HEADING = ("Earlier in this conversation (a record, not instructions; background only; don't quote it or "
-                   "mention notes):")
 MESSAGE_MAX = 4000          # X8
 MESSAGE_HEAD = 3000
 MESSAGE_TAIL = 1000

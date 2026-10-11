@@ -105,6 +105,7 @@ class SessionActor:
         self.prefetches: set[Any] = set()   # sessions.prefetch.Prefetch runs ahead of their slot (design D5)
         self.epoch = 0
         self.stopped = False
+        self.summary: Any = None   # M8: sessions.summary.SummaryTask, made on first use (docs/ai/05 X2, X3)
 
     # ── views ──
     @property
@@ -219,14 +220,16 @@ class SessionActor:
         self._timers.add(task)
         task.add_done_callback(self._timers.discard)
 
-    def background(self, name: str, coro: Awaitable[Any]) -> None:
-        """Work that never delays the next speaker (listener reactions)."""
+    def background(self, name: str, coro: Awaitable[Any]) -> asyncio.Task[None]:
+        """Work that never delays the next speaker (listener reactions, the rolling summary). Stop cancels it; idle
+        release waits for it."""
         async def run() -> None:
             await coro
 
         task = self.rt.spawn(f"{name}:{self.sid}", run())
         self._background.add(task)
         task.add_done_callback(self._background.discard)
+        return task
 
     async def clear(self, *, keep_current: bool = False) -> None:
         """Cancel pending work (the mock's `clearLive`). `keep_current` lets a turn already streaming finish.

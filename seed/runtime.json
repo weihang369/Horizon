@@ -71,7 +71,8 @@
           "summary": {
             "thinking": "off",
             "temperature": 0.7,
-            "output": "text"
+            "output": "text",
+            "maxTokens": 600
           },
           "episode": {
             "thinking": "off",
@@ -104,7 +105,12 @@
           }
         }
       },
-      "windowTokens": 6000,
+      "windowTokens": {
+        "one_on_one": 6000,
+        "group": 9000,
+        "watch": 9000,
+        "debate": 9000
+      },
       "coalesce": {
         "maxChars": 48,
         "maxMs": 50

@@ -34,25 +34,6 @@ def _views(msgs: list[Any], names: dict[str, Any]) -> list[MessageView]:
                         kind=m["kind"], content=m["content"], emotion=m.get("emotion")) for m in msgs]
 
 
-async def maintain_window(rt: Runtime, actor: SessionActor) -> None:
-    """The history window (design D11): past `windowTokens`, drop the oldest half in one step and store a refreshed
-    rolling summary at that boundary (a session row, written under the actor's write lock)."""
-    from horizon.ai.naive.window import plan_window, summary_lines
-
-    upto, previous = await _latest_summary(rt, actor.sid)
-    msgs = [m for m in ordered_messages(actor.state) if m["status"] != "streaming"]
-    ids = sorted({m["author"].get("characterId") for m in msgs if m["author"].get("characterId")})
-    names = {cid: r["profile"].get("name", cid) for cid, r in (await characters(rt, ids)).items()}
-    plan = plan_window(_views(msgs, names), upto, rt.runtime_cfg.runtime.window_tokens)
-    if plan.upto_seq is None:
-        return
-    text = rt.ai.summariser(rt.keys.status() == "set").rolling(previous, summary_lines(plan.dropped))
-    async with actor.write_lock, rt.db.write() as tx:
-        await tx.conn.execute(t.session_summaries.insert().values(session_id=actor.sid, upto_seq=plan.upto_seq,
-                                                                  kind="rolling", character_id=None, text=text,
-                                                                  created_at=rt.now_iso()))
-
-
 async def characters(rt: Runtime, ids: list[str]) -> dict[str, Any]:
     async with rt.db.read() as conn:
         rows = (await conn.execute(select(t.characters).where(t.characters.c.id.in_(ids)))).mappings().all()
@@ -83,6 +64,10 @@ async def session_context(rt: Runtime, actor: SessionActor, *, recent: int | Non
              for p in s["participants"]]
     msgs = ordered_messages(actor.state)
     views = _views([m for m in msgs if m["seq"] > upto and m["status"] != "streaming"], names)
+    # docs/ai/05 X2 (persona-context D10): never more than twice the mode's window of history, for every caller
+    # (turns, prefetches, the router, host and verdict); older lines are only hidden until the summary lands.
+    from horizon.ai.naive.window import ceiling
+    views = ceiling(views, 2 * rt.runtime_cfg.runtime.window_tokens.for_mode(s["mode"]))
     if recent is not None:
         views = views[-recent:]
     settings = rt.settings_doc()

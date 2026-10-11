@@ -1131,8 +1131,9 @@ export class MockClient implements HorizonClient {
     const tokensOut = Math.round(full.tokensOut * frac);
     const costUsd = msg ? chatCostUsd({ tokensIn: full.tokensIn, tokensCached: full.tokensCached, tokensOut }, this.db.pricing.chat, this.period()) : 0;
     const usage = { ...full, tokensOut, costUsd, energySpent: pointsForCost(costUsd), totalMs: Math.round(live.player.position - cur.startPos) };
-    const events: StreamEvent[] = [{ type: "turn.end", payload: { messageId: cur.messageId, status: "interrupted", interruptedBy: "user", ...(msg ? { usage } : {}) } }];
-    if (msg && usage.energySpent > 0) {
+    const paid = msg && !cur.script.verbatim;   // P9: a verbatim greeting stopped mid-way still costs nothing
+    const events: StreamEvent[] = [{ type: "turn.end", payload: { messageId: cur.messageId, status: "interrupted", interruptedBy: "user", ...(paid ? { usage } : {}) } }];
+    if (paid && usage.energySpent > 0) {
       const c = this.db.characters[cur.characterId];
       if (c) {
         const now = settle(c.energy, this.sched.wallNow(), this.est());

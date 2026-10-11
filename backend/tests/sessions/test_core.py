@@ -142,7 +142,9 @@ async def test_rejections_before_202(api: Api, case: str, status: int, code: str
         assert secret is not None
         api.rt.keys.mark_rejected(secret)
     elif case == "cap":
-        # The greeting has already spent more than this cap.
+        # A reply has already spent more than this cap (the first chat's greeting is free, docs/ai/04 P9).
+        await command(api, sid, "send", {"text": "A first question."})
+        await api.drive(12000)
         r = await api.client.patch(f"{API}/settings", json={"budget": {"dailyCapUsd": 0.0001}})
         assert r.status_code == 200
     elif case == "other_live":

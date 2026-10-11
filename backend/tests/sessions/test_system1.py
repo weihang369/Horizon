@@ -50,7 +50,7 @@ def test_engine_patch_with_system1_is_dropped() -> None:
 async def test_append_keeps_the_engine_metadata_and_creation_time(api: Api) -> None:
     reply = await _naive_turn(api, ["<e:happy>Hello."], "Hi there")
     _, before = await stored(api, reply["id"])
-    assert before[:3] == ("naive", "3", "naive-3")
+    assert before[:3] == ("naive", "3", "naive-4")
     actor = api.rt.sessions.peek(reply["sessionId"])
     assert actor is not None
     call = {"purpose": "face_check", "model": "typesafe/jev-1.13", "costUsd": 1e-05, "latencyMs": 200}

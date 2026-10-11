@@ -150,7 +150,7 @@ class LedgerWriter:
         out: dict[str, Any] = {"tokensIn": sum(int(r["tokens_in"] or 0) for r in rows),
                                "tokensOut": sum(int(r["tokens_out"] or 0) for r in rows),
                                "costUsd": round(sum(float(r["cost_usd"]) for r in rows), 6)}
-        cached = sum(int(r["tokens_cached"] or 0) for r in rows)
-        if cached:
-            out["tokensCached"] = cached
+        # docs/ai/05 X6 (persona-context D15): a reported 0 stays 0, so Insight can show a real cache miss
+        if any(r["tokens_cached"] is not None for r in rows):
+            out["tokensCached"] = sum(int(r["tokens_cached"] or 0) for r in rows)
         return out

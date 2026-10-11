@@ -171,6 +171,8 @@ async def test_agent_reply_through_the_runtime(api: Api) -> None:
     assert pv is not None and tuple(pv) == ("agent-1", "agent")
     ctx_trace = reply["trace"]["context"]
     assert "cacheHitPct" not in ctx_trace and ctx_trace["budget"] == planned_input("one_on_one") == 11680
+    # X6 + D15: the provider reported 0 cached tokens, and both the usage and the trace say so
+    assert reply["usage"]["tokensCached"] == 0 and reply["trace"]["model"]["tokensCached"] == 0
     assert ctx_trace["used"]["user"] == count_tokens("Morning, how are you?")
     assert ctx_trace["used"]["persona"] > 0 and ctx_trace["used"]["system"] > 0
 
