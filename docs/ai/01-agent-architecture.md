@@ -268,6 +268,9 @@ probabilities for Insight.
     face, the same as "unsure" (only the `naive` yardstick keeps the tag);
   - any stray tag DeepSeek still writes is stripped without changing the face, so a reply never changes face
     mid-sentence (D-46).
+  - **Built in M8** (OpenSpec `persona-context`, design D4): the tagless `agent` prompt ships before Jev call 1 does
+    (M9), so until then an `agent` reply keeps the previous face with source `default`; M9 replaces only where the
+    face comes from.
 - If Jev is unsure, the previous face stays (A4); short faces fade to neutral (doc 06 E3).
 - MANUAL emotion stays face-only and never changes the reply.
 - ~~Task 6 confirms the approach with the evaluation and words the mood line.~~ Done in doc 06 (E1–E9): the question

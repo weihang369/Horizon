@@ -13,31 +13,11 @@ import { Section, TagInput } from "../fields";
 import { cancelJob, isRunning, rememberJob, startGeneration } from "../generate";
 import { gateFrom, validateProfile } from "../gates";
 import type { ProfileField } from "../options";
+import { PromptPreview } from "./PromptPreview";
 import s from "./steps.module.css";
 
-/** A mock of the AI team's system prompt template (CHR-05: read-only, template is theirs). */
-function composePrompt(p: CharacterProfile, advisory: boolean): string {
-  const lines = [
-    `You are ${p.title ? `${p.title} ` : ""}${p.name || "{name}"}, ${p.role || "{role}"}, age ${p.age}${p.pronouns ? ` (${p.pronouns})` : ""}.`,
-    p.tagline && `Tagline: "${p.tagline}"`,
-    p.personality.summary && `Personality: ${p.personality.summary}`,
-    p.personality.traits.length ? `Traits: ${p.personality.traits.join(", ")}.` : "",
-    p.backstory && `Backstory: ${p.backstory}`,
-    `Speaking style: ${p.speakingStyle.summary || "natural"} Tone ${p.speakingStyle.tone || "neutral"}, ${p.speakingStyle.formality}.`,
-    p.speakingStyle.quirks.length ? `Quirks: ${p.speakingStyle.quirks.join("; ")}.` : "",
-    p.speakingStyle.catchphrases.length ? `Catchphrases: ${p.speakingStyle.catchphrases.map((c) => `"${c}"`).join(", ")}.` : "",
-    p.expertise.length ? `Expertise: ${p.expertise.join(", ")}.` : "",
-    p.goals && `Goals: ${p.goals}`,
-    p.relationshipToUser && `Relationship to the user: ${p.relationshipToUser}.`,
-    p.boundaries.length ? `Boundaries:\n${p.boundaries.map((b) => `- ${b}`).join("\n")}` : "",
-    advisory ? "This is an AI simulation, not professional advice. Point the user to a qualified professional for real decisions." : "",
-    "Stay in character. Keep replies conversational. All characters are adults.",
-  ];
-  return lines.filter(Boolean).join("\n");
-}
-
 export function ProfileStep() {
-  const { character: c, jobs, work, goStep, facts, edit } = useWizard();
+  const { character: c, jobs, work, goStep, facts, edit, world } = useWizard();
   const draftJob = useJob(jobs.profile_draft).data;
   const drafting = isRunning(draftJob);
   const failed = draftJob?.status === "failed";
@@ -87,8 +67,6 @@ export function ProfileStep() {
 
   const gate = gateFrom("profile", facts);
   const revealing = work.w.revealKey > 0;
-  const promptText = composePrompt(p, work.w.advisory);
-  const tokens = Math.round(promptText.length / 4);
 
   return (
     <>
@@ -121,13 +99,7 @@ export function ProfileStep() {
         )}
 
         {showPrompt ? (
-          <div className={s.prompt}>
-            <div className={s.promptHead}>
-              <span>systemPromptPreview</span>
-              <span className={s.promptMeta}>≈ {tokens} tokens · read-only · mock template</span>
-            </div>
-            <pre className={s.promptBody}>{promptText}</pre>
-          </div>
+          <PromptPreview profile={p} appearanceSummary={work.w.summary} advisory={work.w.advisory} world={world} />
         ) : drafting ? (
           <div className={s.formGrid} aria-hidden="true">
             {[0, 1, 2, 3].map((i) => (
