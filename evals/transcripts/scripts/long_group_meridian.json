@@ -1,0 +1,240 @@
+{
+ "schemaVersion": 1,
+ "id": "long_group_meridian",
+ "mode": "group",
+ "world": "wld_seedMeridian",
+ "cast": [
+  "chr_seedAmara",
+  "chr_seedMei",
+  "chr_seedVictor"
+ ],
+ "language": "en",
+ "policy": "auto",
+ "lines": [
+  {
+   "text": "What did you have for lunch?",
+   "kind": "filler"
+  },
+  {
+   "text": "Long day. How's yours going?",
+   "kind": "filler"
+  },
+  {
+   "text": "I'm Kai, by the way, and I chair the council's budget committee.",
+   "kind": "fact",
+   "fact": "budget committee"
+  },
+  {
+   "text": "Tell me something you've been thinking about.",
+   "kind": "filler"
+  },
+  {
+   "text": "We meet in the old library building on Jalan Hang Kasturi.",
+   "kind": "fact",
+   "fact": "library"
+  },
+  {
+   "text": "I think I need a haircut.",
+   "kind": "filler"
+  },
+  {
+   "text": "Our vote on the four-day week is on the 3rd of November.",
+   "kind": "fact",
+   "fact": "November"
+  },
+  {
+   "text": "I've been reading before bed instead of scrolling.",
+   "kind": "filler"
+  },
+  {
+   "text": "My deputy is called Siti Rahim.",
+   "kind": "fact",
+   "fact": "Siti"
+  },
+  {
+   "text": "I promised the mayor a report by Friday.",
+   "kind": "fact",
+   "fact": "Friday"
+  },
+  {
+   "text": "I think I need a haircut.",
+   "kind": "filler"
+  },
+  {
+   "text": "Long day. How's yours going?",
+   "kind": "filler"
+  },
+  {
+   "text": "Do you ever just stare at the ceiling for an hour?",
+   "kind": "filler"
+  },
+  {
+   "text": "I made coffee too strong this morning.",
+   "kind": "filler"
+  },
+  {
+   "text": "Long day. How's yours going?",
+   "kind": "filler"
+  },
+  {
+   "text": "I watched a documentary about octopuses.",
+   "kind": "filler"
+  },
+  {
+   "text": "Long day. How's yours going?",
+   "kind": "filler"
+  },
+  {
+   "text": "Someone left a plant at my door. No note.",
+   "kind": "filler"
+  },
+  {
+   "text": "My phone battery is dying so fast lately.",
+   "kind": "filler"
+  },
+  {
+   "text": "Is it weird that I like Mondays?",
+   "kind": "filler"
+  },
+  {
+   "text": "Raising the minimum wage always causes mass unemployment, that's settled.",
+   "kind": "wrong_claim"
+  },
+  {
+   "text": "Do you ever just stare at the ceiling for an hour?",
+   "kind": "filler"
+  },
+  {
+   "text": "My neighbour is drilling again.",
+   "kind": "filler"
+  },
+  {
+   "text": "It's been raining nonstop.",
+   "kind": "filler"
+  },
+  {
+   "text": "I saw a cat on the bus today.",
+   "kind": "filler"
+  },
+  {
+   "text": "Someone left a plant at my door. No note.",
+   "kind": "filler"
+  },
+  {
+   "text": "I tried that new noodle place by the station.",
+   "kind": "filler"
+  },
+  {
+   "text": "Long day. How's yours going?",
+   "kind": "filler"
+  },
+  {
+   "text": "The trains were late again.",
+   "kind": "filler"
+  },
+  {
+   "text": "Precedent never binds a court, judges just do what they like.",
+   "kind": "wrong_claim"
+  },
+  {
+   "text": "Tell me something you've been thinking about.",
+   "kind": "filler"
+  },
+  {
+   "text": "Is it weird that I like Mondays?",
+   "kind": "filler"
+  },
+  {
+   "text": "The trains were late again.",
+   "kind": "filler"
+  },
+  {
+   "text": "I tried that new noodle place by the station.",
+   "kind": "filler"
+  },
+  {
+   "text": "Weekend plans? Mine are none.",
+   "kind": "filler"
+  },
+  {
+   "text": "Do you like the rain?",
+   "kind": "filler"
+  },
+  {
+   "text": "My neighbour is drilling again.",
+   "kind": "filler"
+  },
+  {
+   "text": "Tell me about your week.",
+   "kind": "filler"
+  },
+  {
+   "text": "Night shifts don't affect health if you sleep eight hours.",
+   "kind": "wrong_claim"
+  },
+  {
+   "text": "What's the best advice you ever got?",
+   "kind": "filler"
+  },
+  {
+   "text": "Work was quiet, which is suspicious.",
+   "kind": "filler"
+  },
+  {
+   "text": "Work was quiet, which is suspicious.",
+   "kind": "filler"
+  },
+  {
+   "text": "Weekend plans? Mine are none.",
+   "kind": "filler"
+  },
+  {
+   "text": "What's the best advice you ever got?",
+   "kind": "filler"
+  },
+  {
+   "text": "My neighbour is drilling again.",
+   "kind": "filler"
+  },
+  {
+   "text": "The trains were late again.",
+   "kind": "filler"
+  },
+  {
+   "text": "My phone battery is dying so fast lately.",
+   "kind": "filler"
+  },
+  {
+   "text": "Do you like the rain?",
+   "kind": "filler"
+  },
+  {
+   "text": "What would you do on a free Sunday?",
+   "kind": "filler"
+  },
+  {
+   "text": "I watched a documentary about octopuses.",
+   "kind": "filler"
+  },
+  {
+   "text": "Work was quiet, which is suspicious.",
+   "kind": "filler"
+  },
+  {
+   "text": "Tell me something you've been thinking about.",
+   "kind": "filler"
+  },
+  {
+   "text": "I saw a cat on the bus today.",
+   "kind": "filler"
+  },
+  {
+   "text": "What did you have for lunch?",
+   "kind": "filler"
+  },
+  {
+   "text": "I tried that new noodle place by the station.",
+   "kind": "filler"
+  }
+ ]
+}

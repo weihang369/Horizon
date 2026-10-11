@@ -1,0 +1,12 @@
+{
+ "judge_flattery": {
+  "baseline": 0.5,
+  "date": "2026-10-11",
+  "passed": true,
+  "planted": 1.0,
+  "planted_n": 30,
+  "real": 0.9667,
+  "real_n": 30,
+  "version": 1
+ }
+}

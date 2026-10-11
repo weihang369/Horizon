@@ -80,8 +80,8 @@ class SessionContext(Frozen):
     history_tokens: int = 0
 
     def call_ctx(self, purpose: str, *, character_id: str | None = None, message_id: str | None = None) -> CallContext:
-        return call_ctx(purpose, world_id=self.world.id, session_id=self.session_id, character_id=character_id,
-                        message_id=message_id)
+        return call_ctx(purpose, world_id=self.world.id, session_id=self.session_id or None, character_id=character_id,
+                        message_id=message_id)   # "" (an eval's stand-alone context) records no session
 
     def name_of(self, character_id: str) -> str:
         for p in self.participants:

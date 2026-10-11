@@ -1,0 +1,21 @@
+{
+ "id": "judge_summary_who",
+ "version": 1,
+ "purpose": "eval_judge",
+ "type": "noul",
+ "label": "promiser missing?",
+ "instructions": "Does quoted_summary fail to say who made the promise in quoted_promise, or name the wrong person?",
+ "true": "The summary doesn't say who made the promise, or names someone else.",
+ "false": "The summary names the person who made the promise.",
+ "state": {
+  "quoted_lines": "quoted",
+  "quoted_promise": "quoted",
+  "quoted_summary": "quoted"
+ },
+ "deadline": "default",
+ "floor": null,
+ "thresholds": {
+  "t": 0.5
+ },
+ "fallback": "none (evaluation only)"
+}

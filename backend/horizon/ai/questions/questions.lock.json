@@ -1,4 +1,56 @@
 {
+  "judge_assistant_voice": {
+    "sha256": "0425c6274811f9f11f9f4bdb5bc230a55cd4f151de5ab63ae10ed451a6fc9a07",
+    "version": 1
+  },
+  "judge_draft_fit": {
+    "sha256": "9dc324cb433d9ee4c998321656960b07322d977f4fa25ef36451ede1488e7d5a",
+    "version": 1
+  },
+  "judge_flattery": {
+    "sha256": "d655578dd9dfcd1aa8868b7fb2a2010dca6810d33aaf21b1b9f0c831e45d935a",
+    "version": 1
+  },
+  "judge_language": {
+    "sha256": "36d7ff52273365048d225f561b90cc8565ff880ff4f713dc9dc37cc85b6c8fd5",
+    "version": 1
+  },
+  "judge_pushback": {
+    "sha256": "9b6888eb8102fd8a7e832368a6f955f2e135afc213c355289c5f3af0d48121ac",
+    "version": 1
+  },
+  "judge_recall": {
+    "sha256": "3b9cbe0c8d76c0a6bd4ab502aeed5399dfd6a994af7f4793f5bd75cb4ff28dff",
+    "version": 1
+  },
+  "judge_relationship_fit": {
+    "sha256": "5f84005fe222a013f8e46d286b0dfecab1daebdfff8b815477482db39c825b76",
+    "version": 1
+  },
+  "judge_summary_fact": {
+    "sha256": "fc7bcba4e3e93e1ce5afc7b4ecb0f261574a554246ef4c2f2c456e94a2a99130",
+    "version": 1
+  },
+  "judge_summary_language": {
+    "sha256": "62ac7802e4d2dfe3a9321d310c49a7be2d331f15cfa64bb017ec32ce76f61222",
+    "version": 1
+  },
+  "judge_summary_promise": {
+    "sha256": "5237c241a778fae8ba1894403f6bb4f4b88b3bbe213c7610ad97e1190d63d3ad",
+    "version": 1
+  },
+  "judge_summary_unsupported": {
+    "sha256": "004de83325708e3d8f7fe4c95053ab1fb857818c6cd9e6e04dec8bfef9f76d09",
+    "version": 1
+  },
+  "judge_summary_who": {
+    "sha256": "dc5f4894e3fee54a19fffb3bc5ba1d85da0bc07b4a9c271c350add6303b1c66b",
+    "version": 1
+  },
+  "judge_voice": {
+    "sha256": "bbdf71ffa2233397bd7837f838d8f2dc3e69c0756ba6871858a6f623d8b317ee",
+    "version": 1
+  },
   "route": {
     "sha256": "c110d28f6e4c1e25f935efe948237604c431192f90a975fca5cf922ee7e273b9",
     "version": 2

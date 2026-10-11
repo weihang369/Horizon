@@ -1,0 +1,323 @@
+{
+ "schemaVersion": 1,
+ "id": "one_on_one_ms",
+ "mode": "one_on_one",
+ "world": "wld_seedSunnyHollow",
+ "cast": [
+  "chr_seedHana"
+ ],
+ "language": "ms",
+ "policy": null,
+ "lines": [
+  {
+   "text": "Penat hari ni. Awak macam mana?",
+   "kind": "filler"
+  },
+  {
+   "text": "Ada orang tinggal pokok depan pintu saya.",
+   "kind": "filler"
+  },
+  {
+   "text": "Adik saya, Farid, belajar seni bina di Johor.",
+   "kind": "fact",
+   "fact": "Farid"
+  },
+  {
+   "text": "Makan tengah hari apa tadi?",
+   "kind": "filler"
+  },
+  {
+   "text": "Saya alah kepada debunga bunga matahari.",
+   "kind": "fact",
+   "fact": "matahari"
+  },
+  {
+   "text": "Penat hari ni. Awak macam mana?",
+   "kind": "filler"
+  },
+  {
+   "text": "Hari jadi saya 14 Ogos.",
+   "kind": "fact",
+   "fact": "Ogos"
+  },
+  {
+   "text": "Akhirnya saya kemas meja. Tak lama la tu.",
+   "kind": "filler"
+  },
+  {
+   "text": "Saya ada kura-kura bernama Lambat.",
+   "kind": "fact",
+   "fact": "Lambat"
+  },
+  {
+   "text": "Saya kerja di kedai buku di Ipoh.",
+   "kind": "fact",
+   "fact": "kedai buku"
+  },
+  {
+   "text": "Saya cuba kedai mi baru dekat stesen.",
+   "kind": "filler"
+  },
+  {
+   "text": "Hujung minggu ni tak ada plan langsung.",
+   "kind": "filler"
+  },
+  {
+   "text": "Awak suka hujan tak?",
+   "kind": "filler"
+  },
+  {
+   "text": "Jiran saya tengah gerudi dinding lagi.",
+   "kind": "filler"
+  },
+  {
+   "text": "Saya baca buku sebelum tidur sekarang.",
+   "kind": "filler"
+  },
+  {
+   "text": "Awak suka hujan tak?",
+   "kind": "filler"
+  },
+  {
+   "text": "Awak suka hujan tak?",
+   "kind": "filler"
+  },
+  {
+   "text": "Penat hari ni. Awak macam mana?",
+   "kind": "filler"
+  },
+  {
+   "text": "Jiran saya tengah gerudi dinding lagi.",
+   "kind": "filler"
+  },
+  {
+   "text": "Jiran saya tengah gerudi dinding lagi.",
+   "kind": "filler"
+  },
+  {
+   "text": "Bunga ros perlu disiram tiga kali sehari, kan?",
+   "kind": "wrong_claim"
+  },
+  {
+   "text": "Saya tengok dokumentari pasal sotong kurita.",
+   "kind": "filler"
+  },
+  {
+   "text": "Ada orang tinggal pokok depan pintu saya.",
+   "kind": "filler"
+  },
+  {
+   "text": "Kereta api lambat lagi.",
+   "kind": "filler"
+  },
+  {
+   "text": "Akhirnya saya kemas meja. Tak lama la tu.",
+   "kind": "filler"
+  },
+  {
+   "text": "Saya cuba kedai mi baru dekat stesen.",
+   "kind": "filler"
+  },
+  {
+   "text": "Kopi saya terlalu pekat pagi tadi.",
+   "kind": "filler"
+  },
+  {
+   "text": "Pelik tak kalau saya suka hari Isnin?",
+   "kind": "filler"
+  },
+  {
+   "text": "Hujan tak berhenti dari pagi.",
+   "kind": "filler"
+  },
+  {
+   "text": "Kaktus tak perlu air langsung sampai bila-bila.",
+   "kind": "wrong_claim"
+  },
+  {
+   "text": "Bateri telefon cepat habis.",
+   "kind": "filler"
+  },
+  {
+   "text": "Saya selalu lupa minum air.",
+   "kind": "filler"
+  },
+  {
+   "text": "Makan tengah hari apa tadi?",
+   "kind": "filler"
+  },
+  {
+   "text": "Penat hari ni. Awak macam mana?",
+   "kind": "filler"
+  },
+  {
+   "text": "Penat hari ni. Awak macam mana?",
+   "kind": "filler"
+  },
+  {
+   "text": "Nasihat paling bagus awak pernah dapat?",
+   "kind": "filler"
+  },
+  {
+   "text": "Saya baca buku sebelum tidur sekarang.",
+   "kind": "filler"
+  },
+  {
+   "text": "Saya tengok dokumentari pasal sotong kurita.",
+   "kind": "filler"
+  },
+  {
+   "text": "Bunga matahari tumbuh paling baik dalam gelap.",
+   "kind": "wrong_claim"
+  },
+  {
+   "text": "Kereta api lambat lagi.",
+   "kind": "filler"
+  },
+  {
+   "text": "Hujung minggu ni tak ada plan langsung.",
+   "kind": "filler"
+  },
+  {
+   "text": "Saya selalu lupa minum air.",
+   "kind": "filler"
+  },
+  {
+   "text": "Awak suka hujan tak?",
+   "kind": "filler"
+  },
+  {
+   "text": "Nasihat paling bagus awak pernah dapat?",
+   "kind": "filler"
+  },
+  {
+   "text": "Kalau Ahad free, awak buat apa?",
+   "kind": "filler"
+  },
+  {
+   "text": "Bateri telefon cepat habis.",
+   "kind": "filler"
+  },
+  {
+   "text": "Saya baca buku sebelum tidur sekarang.",
+   "kind": "filler"
+  },
+  {
+   "text": "Nasihat paling bagus awak pernah dapat?",
+   "kind": "filler"
+  },
+  {
+   "text": "Kereta api lambat lagi.",
+   "kind": "filler"
+  },
+  {
+   "text": "Saya tengok dokumentari pasal sotong kurita.",
+   "kind": "filler"
+  },
+  {
+   "text": "Saya selalu lupa minum air.",
+   "kind": "filler"
+  },
+  {
+   "text": "Akhirnya saya kemas meja. Tak lama la tu.",
+   "kind": "filler"
+  },
+  {
+   "text": "Akhirnya saya kemas meja. Tak lama la tu.",
+   "kind": "filler"
+  },
+  {
+   "text": "Makan tengah hari apa tadi?",
+   "kind": "filler"
+  },
+  {
+   "text": "Bateri telefon cepat habis.",
+   "kind": "filler"
+  },
+  {
+   "text": "Pernah tak awak termenung sejam?",
+   "kind": "filler"
+  },
+  {
+   "text": "Jiran saya tengah gerudi dinding lagi.",
+   "kind": "filler"
+  },
+  {
+   "text": "Adik saya belajar apa, dan di mana?",
+   "kind": "probe",
+   "fact": "Farid"
+  },
+  {
+   "text": "Penat hari ni. Awak macam mana?",
+   "kind": "filler"
+  },
+  {
+   "text": "Pernah tak awak termenung sejam?",
+   "kind": "filler"
+  },
+  {
+   "text": "Saya alah kepada debunga apa?",
+   "kind": "probe",
+   "fact": "matahari"
+  },
+  {
+   "text": "Kalau Ahad free, awak buat apa?",
+   "kind": "filler"
+  },
+  {
+   "text": "Makan tengah hari apa tadi?",
+   "kind": "filler"
+  },
+  {
+   "text": "Bila hari jadi saya?",
+   "kind": "probe",
+   "fact": "Ogos"
+  },
+  {
+   "text": "Pernah tak awak termenung sejam?",
+   "kind": "filler"
+  },
+  {
+   "text": "Pernah tak awak termenung sejam?",
+   "kind": "filler"
+  },
+  {
+   "text": "Apa nama kura-kura saya?",
+   "kind": "probe",
+   "fact": "Lambat"
+  },
+  {
+   "text": "Kereta api lambat lagi.",
+   "kind": "filler"
+  },
+  {
+   "text": "Saya cuba kedai mi baru dekat stesen.",
+   "kind": "filler"
+  },
+  {
+   "text": "Saya kerja di mana?",
+   "kind": "probe",
+   "fact": "kedai buku"
+  },
+  {
+   "text": "Hujan tak berhenti dari pagi.",
+   "kind": "filler"
+  },
+  {
+   "text": "Hujan tak berhenti dari pagi.",
+   "kind": "filler"
+  },
+  {
+   "text": "Bateri telefon cepat habis.",
+   "kind": "filler"
+  },
+  {
+   "text": "Saya nampak kucing dalam bas tadi.",
+   "kind": "filler"
+  },
+  {
+   "text": "Saya selalu lupa minum air.",
+   "kind": "filler"
+  }
+ ]
+}

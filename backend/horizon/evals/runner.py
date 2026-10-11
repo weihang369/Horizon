@@ -59,6 +59,7 @@ class Options:
     accept: bool = False
     latency: bool = False
     repeat: bool = False
+    set: str | None = None                # decisions: one dataset folder (e.g. `judges`, persona-context D27)
 
 
 @dataclass

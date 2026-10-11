@@ -227,15 +227,21 @@ async def call(sched: JobScheduler, run: Run, a: Attempt, task: dict[str, Any], 
     return None
 
 
-async def draft_world(sched: JobScheduler, ch: Mapping[str, Any]) -> DraftWorld:
+async def draft_world_for(rt: Any, world_id: str, exclude_character_id: str | None) -> DraftWorld:
     """docs/ai/04 P11 (persona-context design D17): the world's name, the names its other characters already use
     (tombstones included: a deleted name still shows in old transcripts) and the You card."""
-    async with sched.rt.db.read() as conn:
-        w = (await conn.execute(select(t.worlds.c.name, t.worlds.c.you).where(t.worlds.c.id == ch["world_id"]))).first()
-        names = (await conn.execute(select(t.characters.c.profile).where(and_(
-            t.characters.c.world_id == ch["world_id"], t.characters.c.id != ch["id"])))).scalars().all()
+    q = select(t.characters.c.profile).where(t.characters.c.world_id == world_id)
+    if exclude_character_id:
+        q = q.where(t.characters.c.id != exclude_character_id)
+    async with rt.db.read() as conn:
+        w = (await conn.execute(select(t.worlds.c.name, t.worlds.c.you).where(t.worlds.c.id == world_id))).first()
+        names = (await conn.execute(q)).scalars().all()
     used = tuple(dict.fromkeys(str((p or {}).get("name") or "").strip() for p in names if (p or {}).get("name")))
     return DraftWorld(name=str(w[0]) if w else "", names_in_use=used, you=(w[1] or None) if w else None)
+
+
+async def draft_world(sched: JobScheduler, ch: Mapping[str, Any]) -> DraftWorld:
+    return await draft_world_for(sched.rt, ch["world_id"], ch["id"])
 
 
 async def call_song(sched: JobScheduler, run: Run, a: Attempt, task: dict[str, Any], ch: dict[str, Any],

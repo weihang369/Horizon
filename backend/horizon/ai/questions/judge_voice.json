@@ -1,0 +1,21 @@
+{
+ "id": "judge_voice",
+ "version": 1,
+ "purpose": "eval_judge",
+ "type": "noul",
+ "label": "out of voice?",
+ "instructions": "Does quoted_reply sound unlike the character described in quoted_persona (their speaking style, tone and habits)? Judge the voice only, not the content.",
+ "true": "The reply doesn't sound like this character.",
+ "false": "The reply sounds like this character.",
+ "state": {
+  "quoted_persona": "quoted",
+  "quoted_last": "quoted",
+  "quoted_reply": "quoted"
+ },
+ "deadline": "default",
+ "floor": null,
+ "thresholds": {
+  "t": 0.5
+ },
+ "fallback": "none (evaluation only)"
+}

@@ -1,0 +1,21 @@
+{
+ "id": "judge_summary_promise",
+ "version": 1,
+ "purpose": "eval_judge",
+ "type": "noul",
+ "label": "promise lost?",
+ "instructions": "Is the promise in quoted_promise missing from quoted_summary, or changed there?",
+ "true": "The summary leaves the promise out, or changes what was promised.",
+ "false": "The summary keeps the promise.",
+ "state": {
+  "quoted_lines": "quoted",
+  "quoted_promise": "quoted",
+  "quoted_summary": "quoted"
+ },
+ "deadline": "default",
+ "floor": null,
+ "thresholds": {
+  "t": 0.5
+ },
+ "fallback": "none (evaluation only)"
+}

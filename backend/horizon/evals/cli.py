@@ -35,7 +35,7 @@ def _suite(args: argparse.Namespace) -> int:
 
     opts = Options(suite=args.eval_cmd, profile=args.profile, limit=args.limit, start=args.start, max_usd=args.max_usd,
                    yes=args.yes,
-                   allow_peak=args.allow_peak, accept=getattr(args, "accept", False))
+                   allow_peak=args.allow_peak, accept=getattr(args, "accept", False), set=getattr(args, "set", None))
     return asyncio.run(Runner(load_config()).run(opts))
 
 
@@ -120,7 +120,11 @@ def register(sub: Any) -> None:
         .set_defaults(fn=_bank_lock)
     for name, helptext in (("canary", "Jev's drift canary (paid, < $0.001)"),
                            ("decisions", "layer-1 decision accuracy (paid)"),
-                           ("smoke", "the free smoke run (HORIZON_TEST=1: the fake provider, $0)")):
+                           ("smoke", "the free smoke run (HORIZON_TEST=1: the fake provider, $0)"),
+                           ("drafter", "the profile drafter on 20 seeds (paid, M8)"),
+                           ("summary", "the rolling summariser on 40 inputs (paid, M8)"),
+                           ("long", "agent-only long conversations past two drops (paid, rare, M8)"),
+                           ("transcript", "generate the long-history frozen transcripts with naive (paid, M8)")):
         s = esub.add_parser(name, help=helptext)
         s.add_argument("--profile", default="naive", choices=["scripted", "naive", "agent"])
         s.add_argument("--limit", type=int, default=None)
@@ -130,6 +134,9 @@ def register(sub: Any) -> None:
         s.add_argument("--allow-peak", action="store_true", dest="allow_peak")
         if name == "canary":
             s.add_argument("--accept", action="store_true", help="accept the new answers as the baseline")
+        if name in ("decisions", "long", "transcript"):
+            s.add_argument("--set", default=None, help="decisions: one dataset folder (`judges`); long, transcript: "
+                                                       "one script id")
         s.set_defaults(fn=_suite)
     esub.add_parser("overlap", help="dataset items must not copy the bank's wording").set_defaults(fn=_overlap)
     rv = esub.add_parser("review", help="sample a dataset for label review")

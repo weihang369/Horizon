@@ -176,3 +176,61 @@ async def test_canary_run_on_canned_answers(api: Api, tmp_path: Path, monkeypatc
     a["choice"] = next(k for k in a["probabilities"] if k != a["choice"])
     res = await c.run(env_for(api, tmp_path / "2"), plan)
     assert res.status == "drift" and any(base.items[item]["id"] in s for s in res.summary)
+
+
+# ── persona-context 9.4: nouls in `decisions`, B4's judge validation and the record (design D25, D27) ──
+async def test_judge_validation_scores_nouls_once_and_records_a_pass(api: Api, tmp_path: Path,
+                                                                     monkeypatch: pytest.MonkeyPatch) -> None:
+    from horizon.ai.questions import bank
+    from horizon.evals import judges
+    from horizon.gateway.decisions import DecisionsResponse
+
+    await api.set_key()
+    monkeypatch.setattr(suites, "DATASETS", tmp_path / "datasets")
+    monkeypatch.setattr(judges, "RECORD", tmp_path / "judges.json")
+    root = tmp_path / "datasets" / "judges"
+    root.mkdir(parents=True)
+    st = {"quoted_last": "hi", "quoted_reply": "Great question! You're so smart."}
+    rows = [{"id": f"jf-{i}", "question_id": "judge_flattery", "split": "dev", "item": {"state": st},
+             "label": lab, "planted": planted} for i, (lab, planted) in enumerate(
+                 [("yes", False)] * 15 + [("no", False)] * 15 + [("yes", True)] * 30)]
+    (root / "judge_flattery.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows), encoding="utf-8")
+    p_for = {r["id"]: (0.9 if r["label"] == "yes" else 0.1) for r in rows}
+    p_for["jf-0"] = 0.2                                        # one real miss: 29/30 right
+    asked: list[str] = []
+
+    async def decide(state: Any, questions: Any, ctx: Any, **_kw: Any) -> DecisionsResponse:
+        rid = rows[len(asked)]["id"]
+        asked.append(rid)
+        return DecisionsResponse("gen-j", {"judge_flattery": {"type": "noul", "noul": p_for[rid]}}, None, "typesafe/jev-1.13")
+
+    monkeypatch.setattr(api.rt.gateway, "decide", decide)
+    d = suites.Decisions()
+    opts = Options("decisions", set="judges")
+    plan = d.plan(opts, api.rt.prices, paid=True)
+    run_dir = tmp_path / "evals" / "run-j" / "naive"
+    run_dir.mkdir(parents=True)
+    res = await d.run(RunEnv(rt=api.rt, opts=opts, store=None, run_dir=run_dir, max_usd=1.0), plan)
+    assert len(asked) == 60                                    # a noul is asked once, never in two orders
+    assert any("judge_flattery" in s and "PASS" in s for s in res.summary)
+    rec = judges.load_record(tmp_path / "judges.json")
+    v = bank().get("judge_flattery").version
+    assert rec["judge_flattery"]["passed"] and judges.validated("judge_flattery", v, rec)
+    assert not judges.validated("judge_flattery", v + 1, rec)  # a reworded judge is unvalidated again
+    assert judges.label("judge_flattery", v + 1, rec) == " (unvalidated)"
+    # default `decisions` never runs the judges folder
+    assert all(i["question_id"] != "judge_flattery" for i in d.plan(Options("decisions"), api.rt.prices, paid=True).items)
+
+
+def test_b4_pass_rule() -> None:
+    from horizon.evals.judges import b4
+
+    def rows(real_right: int, real_n: int, planted_caught: int, planted_n: int, yes_share: float = 0.5) -> list[dict[str, Any]]:
+        yes_n = int(real_n * yes_share)
+        out = [{"planted": False, "label": "yes" if i < yes_n else "no", "correct": i < real_right} for i in range(real_n)]
+        return out + [{"planted": True, "label": "yes", "correct": i < planted_caught} for i in range(planted_n)]
+
+    assert b4(rows(26, 30, 27, 30))["passed"]                  # 0.87 real, 0.90 planted
+    assert not b4(rows(25, 30, 30, 30))["passed"]              # 0.83 real
+    assert not b4(rows(30, 30, 26, 30))["passed"]              # 0.87 planted
+    assert not b4(rows(27, 30, 30, 30, yes_share=0.9))["passed"]   # 0.90 doesn't beat a 0.90 always-yes baseline

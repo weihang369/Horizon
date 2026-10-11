@@ -1,0 +1,21 @@
+{
+ "id": "judge_relationship_fit",
+ "version": 1,
+ "purpose": "eval_judge",
+ "type": "noul",
+ "label": "relationship misfit?",
+ "instructions": "Does the relationship in quoted_relationship not fit the user described in quoted_user, or not fit the character in quoted_draft?",
+ "true": "The relationship doesn't fit the user or the character.",
+ "false": "The relationship fits both.",
+ "state": {
+  "quoted_user": "quoted",
+  "quoted_draft": "quoted",
+  "quoted_relationship": "quoted"
+ },
+ "deadline": "default",
+ "floor": null,
+ "thresholds": {
+  "t": 0.5
+ },
+ "fallback": "none (evaluation only)"
+}

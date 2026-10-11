@@ -31,6 +31,7 @@ export function system1Fixture(dir: string = BANK_DIR): { note: string; rows: Re
   const files = readdirSync(dir).filter((f) => f.endsWith(".json") && !f.startsWith("_") && f !== "questions.lock.json").sort();
   for (const f of files) {
     const e = JSON.parse(readFileSync(path.join(dir, f), "utf8")) as BankEntry;
+    if (e.purpose === "eval_judge") continue;   // persona-context D26: evaluation-only, never asked in a turn (W1)
     const compared: System1FixtureRow["compared"] = [];
     if (e.floor !== undefined && e.floor !== null) compared.push({ name: "confidence", value: P, threshold: e.floor });
     for (const [name, threshold] of Object.entries(e.thresholds ?? {}).sort(([a], [b]) => (a < b ? -1 : 1))) {

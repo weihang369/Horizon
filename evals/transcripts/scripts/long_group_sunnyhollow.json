@@ -1,0 +1,240 @@
+{
+ "schemaVersion": 1,
+ "id": "long_group_sunnyhollow",
+ "mode": "group",
+ "world": "wld_seedSunnyHollow",
+ "cast": [
+  "chr_seedHana",
+  "chr_seedRin",
+  "chr_seedTakeshi"
+ ],
+ "language": "en",
+ "policy": "auto",
+ "lines": [
+  {
+   "text": "Do you ever just stare at the ceiling for an hour?",
+   "kind": "filler"
+  },
+  {
+   "text": "What did you have for lunch?",
+   "kind": "filler"
+  },
+  {
+   "text": "I just moved into the flat above the bakery.",
+   "kind": "fact",
+   "fact": "bakery"
+  },
+  {
+   "text": "Tell me about your week.",
+   "kind": "filler"
+  },
+  {
+   "text": "My grandmother taught me to fish on this river.",
+   "kind": "fact",
+   "fact": "grandmother"
+  },
+  {
+   "text": "I tried that new noodle place by the station.",
+   "kind": "filler"
+  },
+  {
+   "text": "I'm saving for a secondhand motorbike.",
+   "kind": "fact",
+   "fact": "motorbike"
+  },
+  {
+   "text": "Tell me something you've been thinking about.",
+   "kind": "filler"
+  },
+  {
+   "text": "I volunteer at the cat shelter on Saturdays.",
+   "kind": "fact",
+   "fact": "Saturdays"
+  },
+  {
+   "text": "My favourite flower is the moonflower.",
+   "kind": "fact",
+   "fact": "moonflower"
+  },
+  {
+   "text": "Tell me about your week.",
+   "kind": "filler"
+  },
+  {
+   "text": "Someone left a plant at my door. No note.",
+   "kind": "filler"
+  },
+  {
+   "text": "It's been raining nonstop.",
+   "kind": "filler"
+  },
+  {
+   "text": "My phone battery is dying so fast lately.",
+   "kind": "filler"
+  },
+  {
+   "text": "Tell me something you've been thinking about.",
+   "kind": "filler"
+  },
+  {
+   "text": "What's the best advice you ever got?",
+   "kind": "filler"
+  },
+  {
+   "text": "What would you do on a free Sunday?",
+   "kind": "filler"
+  },
+  {
+   "text": "I made coffee too strong this morning.",
+   "kind": "filler"
+  },
+  {
+   "text": "I've been reading before bed instead of scrolling.",
+   "kind": "filler"
+  },
+  {
+   "text": "I watched a documentary about octopuses.",
+   "kind": "filler"
+  },
+  {
+   "text": "Trains run faster when they're empty, it's basic physics.",
+   "kind": "wrong_claim"
+  },
+  {
+   "text": "Someone left a plant at my door. No note.",
+   "kind": "filler"
+  },
+  {
+   "text": "Tell me about your week.",
+   "kind": "filler"
+  },
+  {
+   "text": "I keep forgetting to drink water.",
+   "kind": "filler"
+  },
+  {
+   "text": "My neighbour is drilling again.",
+   "kind": "filler"
+  },
+  {
+   "text": "What did you have for lunch?",
+   "kind": "filler"
+  },
+  {
+   "text": "Long day. How's yours going?",
+   "kind": "filler"
+  },
+  {
+   "text": "Do you like the rain?",
+   "kind": "filler"
+  },
+  {
+   "text": "My phone battery is dying so fast lately.",
+   "kind": "filler"
+  },
+  {
+   "text": "Bees die if they sting anything, even other bees.",
+   "kind": "wrong_claim"
+  },
+  {
+   "text": "I think I need a haircut.",
+   "kind": "filler"
+  },
+  {
+   "text": "The trains were late again.",
+   "kind": "filler"
+  },
+  {
+   "text": "Do you ever just stare at the ceiling for an hour?",
+   "kind": "filler"
+  },
+  {
+   "text": "I tried that new noodle place by the station.",
+   "kind": "filler"
+  },
+  {
+   "text": "I watched a documentary about octopuses.",
+   "kind": "filler"
+  },
+  {
+   "text": "Work was quiet, which is suspicious.",
+   "kind": "filler"
+  },
+  {
+   "text": "I think I need a haircut.",
+   "kind": "filler"
+  },
+  {
+   "text": "What did you have for lunch?",
+   "kind": "filler"
+  },
+  {
+   "text": "You can't overwater a fern, ever.",
+   "kind": "wrong_claim"
+  },
+  {
+   "text": "My neighbour is drilling again.",
+   "kind": "filler"
+  },
+  {
+   "text": "What's the best advice you ever got?",
+   "kind": "filler"
+  },
+  {
+   "text": "Long day. How's yours going?",
+   "kind": "filler"
+  },
+  {
+   "text": "It's been raining nonstop.",
+   "kind": "filler"
+  },
+  {
+   "text": "My neighbour is drilling again.",
+   "kind": "filler"
+  },
+  {
+   "text": "I watched a documentary about octopuses.",
+   "kind": "filler"
+  },
+  {
+   "text": "Is it weird that I like Mondays?",
+   "kind": "filler"
+  },
+  {
+   "text": "I made coffee too strong this morning.",
+   "kind": "filler"
+  },
+  {
+   "text": "Work was quiet, which is suspicious.",
+   "kind": "filler"
+  },
+  {
+   "text": "Do you ever just stare at the ceiling for an hour?",
+   "kind": "filler"
+  },
+  {
+   "text": "Do you ever just stare at the ceiling for an hour?",
+   "kind": "filler"
+  },
+  {
+   "text": "The trains were late again.",
+   "kind": "filler"
+  },
+  {
+   "text": "I finally cleaned my desk. It won't last.",
+   "kind": "filler"
+  },
+  {
+   "text": "Long day. How's yours going?",
+   "kind": "filler"
+  },
+  {
+   "text": "I've been reading before bed instead of scrolling.",
+   "kind": "filler"
+  },
+  {
+   "text": "What's the best advice you ever got?",
+   "kind": "filler"
+  }
+ ]
+}

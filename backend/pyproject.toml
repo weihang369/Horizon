@@ -90,6 +90,7 @@ ignore = ["RUF001", "RUF002", "RUF003"]
 "tests/**" = ["TID251"]
 # The smoke suite drives the app in process (httpx.ASGITransport): no outbound HTTP; paid calls still go through the gateway.
 "horizon/evals/suites.py" = ["TID251"]
+"horizon/evals/content.py" = ["TID251"]   # M8: the long and transcript suites drive the in-process app, as smoke does
 
 [tool.mypy]
 python_version = "3.12"
