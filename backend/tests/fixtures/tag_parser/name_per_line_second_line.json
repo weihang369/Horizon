@@ -1,0 +1,15 @@
+{
+  "name": "name_per_line_second_line",
+  "doc": "Per line (agent): a name at the start of a later line goes",
+  "chunks": [
+    "<e:happy>Hi\nMei: again"
+  ],
+  "previous": "neutral",
+  "speaker": "Mei",
+  "perLine": true,
+  "expected": {
+    "emotion": "happy",
+    "source": "llm",
+    "text": "Hi\nagain"
+  }
+}

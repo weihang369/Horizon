@@ -185,7 +185,7 @@ def test_removed_purposes_and_eval_judge() -> None:
 # ── 1.10: the estimate counts the state once (group A A1: Jev bills the state once per request) ──
 async def test_decision_estimate_counts_the_state_once(api: Api) -> None:
     from horizon.ai.decider import wire_question
-    from horizon.domain.pricing import count_tokens
+    from horizon.domain.pricing import JEV_REQUEST_OVERHEAD_TOKENS, count_tokens
 
     gw = build_gateway(api)
     state = {"quoted_recent": ["word " * 360]}           # ≈ 600 tokens at 3 bytes/token
@@ -195,7 +195,8 @@ async def test_decision_estimate_counts_the_state_once(api: Api) -> None:
     price = gw.prices.decision.input_per_m / 1e6
     assert gw.decision_estimate(state, eight) - gw.decision_estimate(state, one) == pytest.approx(7 * per_q * price)
     st = count_tokens(json.dumps(state, ensure_ascii=False))
-    assert gw.decision_estimate(state, eight) == pytest.approx((st + 8 * per_q) * price)
+    # persona-context D23: plus Jev's own per-request overhead, once (docs/ai/checks/m7.md)
+    assert gw.decision_estimate(state, eight) == pytest.approx((st + 8 * per_q + JEV_REQUEST_OVERHEAD_TOKENS) * price)
 
 
 # ── ai-foundation 2.2 (design D6): how a decision ended is in its ledger row ──

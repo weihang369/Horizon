@@ -24,15 +24,19 @@ const PARTIAL = /<(?:e(?::[^<>]{0,30})?)?$/;
 
 const escapeRe = (x: string) => x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-/** C6 on the whole stream: a leading "<name>:" (any case, spaces around the colon) before or after the tag goes. */
-function parseNamed(chunks: string[], previous: string, speaker?: string): { emotion: string; source: string; text: string } {
+/** C6 on the whole stream: a leading "<name>:" (any case, spaces around the colon) before or after the tag goes.
+ *  Per line (doc 04 P6, the agent path): the same prefix also goes at the start of every later line. */
+function parseNamed(chunks: string[], previous: string, speaker?: string, perLine = false): { emotion: string; source: string; text: string } {
   if (!speaker) return parse(chunks, previous);
   const prefix = new RegExp(`^\\s*${escapeRe(speaker)}[ \\t]*:[ \\t]*`, "i");
   const joined = chunks.join("");
   const before = prefix.exec(joined);
   const out = parse(before ? [joined.slice(before[0].length)] : chunks, previous);
   const after = out.source === "llm" ? prefix.exec(out.text) : null;
-  return after ? { ...out, text: out.text.slice(after[0].length) } : out;
+  const named = after ? { ...out, text: out.text.slice(after[0].length) } : out;
+  if (!perLine) return named;
+  const line = new RegExp(`^[ \\t]*${escapeRe(speaker)}[ \\t]*:[ \\t]*`, "i");
+  return { ...named, text: named.text.split("\n").map((l, i) => (i === 0 ? l : l.replace(line, ""))).join("\n") };
 }
 
 /** Reference parser: the rules of doc backend/05 §5, written independently of the Python one. */
@@ -91,7 +95,7 @@ describe("emotion tag fixtures (shared with the backend's naive engine)", () => 
   });
   for (const c of cases) {
     it(c.name, () => {
-      expect(parseNamed(c.chunks, c.previous, c.speaker)).toEqual(c.expected);
+      expect(parseNamed(c.chunks, c.previous, c.speaker, c.perLine)).toEqual(c.expected);
     });
   }
 });

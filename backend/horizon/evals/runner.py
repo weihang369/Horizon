@@ -34,7 +34,7 @@ from pydantic import SecretStr
 
 from horizon.config import REPO_ROOT, Config
 from horizon.domain.clock import FrozenClock, PricingCalendar, calendar_for
-from horizon.domain.pricing import count_tokens, estimate_decision, load_price_table
+from horizon.domain.pricing import estimate_decision_request, load_price_table
 from horizon.evals.store import ResponseStore
 
 if TYPE_CHECKING:
@@ -272,14 +272,7 @@ class Runner:
         (run_dir / "report.md").write_text("\n".join(lines), encoding="utf-8")
 
 
-# Jev bills its own prompt on top of what we send: 160-275 input tokens per request on the 18 canary requests of
-# 2026-10-11 (docs/ai/checks/m7.md). The eval runner budgets with a margin; the gateway's preflight estimate is a
-# separate, locked decision (group A) and is reported, not changed here.
-JEV_REQUEST_OVERHEAD_TOKENS = 300
-
-
 def decision_estimate(prices: Any, state: Any, questions: dict[str, Any]) -> float:
-    tokens = count_tokens(json.dumps(state, ensure_ascii=False)) + sum(
-        count_tokens(json.dumps(q, ensure_ascii=False)) for q in questions.values())
-    return float(estimate_decision(prices, tokens + JEV_REQUEST_OVERHEAD_TOKENS))
+    """The gateway's formula (budget-caps "Cost estimates per category"; persona-context design D23): one copy."""
+    return float(estimate_decision_request(prices, state, questions))
 

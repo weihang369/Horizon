@@ -11,6 +11,9 @@ The model is asked to begin its reply with `<e:label>`. The parser:
   before or after the tag (case-insensitive, spaces allowed around the colon), holding at most the name's length + 2
   characters, so `Mei: <e:happy>Hi` keeps its emotion and `<e:happy>Mei: Hi` shows `Hi`. A name that only starts the
   same (`Meilin`) is released as text.
+- (doc 04 P6, persona-context design D18) with `per_line=True` (the `agent` engine), the same check runs at the start
+  of EVERY line, after each newline, with the same hold, so a "Mei: …" second bubble never renders. `naive` keeps the
+  first line only.
 
 The same rules pass the shared fixtures in `backend/tests/fixtures/tag_parser/`, which a TS reference parser also runs.
 """
@@ -62,7 +65,8 @@ def name_prefix(text: str, names: Sequence[str]) -> tuple[str, int]:
 
 
 class TagParser:
-    def __init__(self, previous: str = "neutral", speaker: str | Sequence[str] | None = None) -> None:
+    def __init__(self, previous: str = "neutral", speaker: str | Sequence[str] | None = None, *,
+                 per_line: bool = False) -> None:
         self.previous = previous if previous in EMOTIONS else "neutral"
         self.head = ""
         self.decided = False
@@ -72,6 +76,9 @@ class TagParser:
         self.names = [n for n in names if n]
         self.name_done = not self.names   # the first-line name check has concluded
         self.nbuf = ""                    # visible text held while it could still be "<name>:"
+        self.per_line = per_line and bool(self.names)
+        self.line_start = False           # per-line: the next text starts a line after the first
+        self.lbuf = ""                    # per-line: a later line's start, held while it could be "<name>:"
 
     def _decide(self, emotion: str | None) -> list[Parsed]:
         self.decided = True
@@ -138,7 +145,38 @@ class TagParser:
             text = self.nbuf[drop:].lstrip() if state == "match" else self.nbuf
             self.nbuf = ""
             self.name_done = True
+        if self.per_line and self.name_done and text:
+            text = self._later_lines(text)
         return [ParsedText(text)] if text else []
+
+    def _later_lines(self, text: str) -> str:
+        """Per-line mode: drop `<name>:` at the start of each line after the first; hold a line start while it could
+        still become one (at most the name's length + 2 characters, as on the first line)."""
+        pending, out = self.lbuf + text, []
+        self.lbuf = ""
+        while pending:
+            nl = pending.find("\n")
+            if not self.line_start:
+                if nl < 0:
+                    out.append(pending)
+                    break
+                out.append(pending[:nl + 1])
+                pending, self.line_start = pending[nl + 1:], True
+                continue
+            seg = pending if nl < 0 else pending[:nl]
+            state, drop = name_prefix(seg if nl < 0 else seg + "\n", self.names)
+            if state == "maybe" and nl < 0:
+                self.lbuf = pending   # wait for more of this line
+                break
+            if state == "match":
+                seg = seg[drop:].lstrip(" \t")
+            if nl < 0:
+                out.append(seg)
+                pending, self.line_start = "", False
+            else:
+                out.append(seg + "\n")
+                pending = pending[nl + 1:]
+        return "".join(out)
 
     def close(self) -> list[Parsed]:
         """The stream ended: an undecided head is released with the default face; a held partial tag is text."""
@@ -149,16 +187,17 @@ class TagParser:
             text = _TAG.sub("", head)
         else:
             text = ""
-        text = self.nbuf + text + self.carry   # a held "Mei" that never became "Mei:" is text
-        self.nbuf = self.carry = ""
+        text = self.nbuf + text + self.lbuf + self.carry   # a held "Mei" that never became "Mei:" is text
+        self.nbuf = self.lbuf = self.carry = ""
         if text:
             out.append(ParsedText(text))
         return out
 
 
-def parse_all(chunks: list[str], previous: str = "neutral", speaker: str | None = None) -> tuple[ParsedEmotion, str]:
+def parse_all(chunks: list[str], previous: str = "neutral", speaker: str | None = None, *,
+              per_line: bool = False) -> tuple[ParsedEmotion, str]:
     """The fixture form: the emotion and the released text for a whole stream."""
-    p = TagParser(previous, speaker)
+    p = TagParser(previous, speaker, per_line=per_line)
     out: list[Parsed] = []
     for c in chunks:
         out.extend(p.feed(c))

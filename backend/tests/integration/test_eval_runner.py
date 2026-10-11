@@ -124,8 +124,7 @@ def test_a_hand_edited_baseline_is_refused(tmp_path: Path) -> None:
 
 
 def test_start_skips_items_and_the_estimate_counts_jev_overhead() -> None:
-    from horizon.domain.pricing import load_price_table
-    from horizon.evals.runner import JEV_REQUEST_OVERHEAD_TOKENS
+    from horizon.domain.pricing import JEV_REQUEST_OVERHEAD_TOKENS, load_price_table
     from horizon.evals.suites import Canary
 
     prices = load_price_table(EVALS_DIR.parent / "seed")

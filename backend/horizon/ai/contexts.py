@@ -32,6 +32,8 @@ class CharacterView(Frozen):
     id: str
     name: str
     profile: dict[str, Any]
+    appearance_summary: str = ""    # M8 (doc 04 P3): the "Looks" line, so self-descriptions match the portrait
+    advisory: bool = False          # M8 (doc 11 S2): advisory characters get the advisory line
 
     @property
     def first_name(self) -> str:
@@ -42,7 +44,8 @@ class CharacterView(Frozen):
 class ParticipantView(Frozen):
     character_id: str
     name: str
-    role: str
+    role: str                       # the participant role: speaker | debater
+    character_role: str = ""        # M8 (doc 04 P5): the profile's role, e.g. "barista"
     side: str | None = None
     muted: bool = False
     emotion: str = "neutral"        # the face shown now (the naive engine's default when no tag arrives)

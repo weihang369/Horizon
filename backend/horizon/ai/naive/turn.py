@@ -116,7 +116,7 @@ class NaiveTurnEngine:
             if attempt == 2:
                 req, _ = self.request(ctx, block, force_cue=True)
             estimate = gw.chat_estimate(req, warm=warm, prefix_tokens=count_tokens(prefix_text))
-            parser = TagParser(previous, speaker=names)
+            parser = self.parser(ctx, previous, names)
             held: ParsedEmotion | None = None
             stream: Any = gw.chat_stream(req, ctx.call_ctx("reply"), estimate=estimate)
             try:
@@ -155,6 +155,16 @@ class NaiveTurnEngine:
                 break
             if attempt == 2:
                 raise ProviderError("provider_error", EMPTY_REPLY)
+        yield TracePatch(self.trace_patch(ctx, req, prefix, block, "".join(said), chosen, warm=warm))
+
+    # ── seams (persona-context design D2): the agent engine overrides these three, the stream loop is shared ──
+    def parser(self, ctx: TurnContext, previous: str, names: list[str]) -> TagParser:
+        """The tag parser: naive reads the face from the tag and strips the speaker's name on the first line."""
+        return TagParser(previous, speaker=names)
+
+    def trace_patch(self, ctx: TurnContext, req: ChatRequest, prefix: list[dict[str, Any]], block: RetrievalBlock | None,
+                    said: str, chosen: ParsedEmotion | None, *, warm: bool) -> dict[str, Any]:
+        """The engine's TracePatch: the context X-ray, the face it showed, and the passages and memories it was given."""
         block_tokens = count_tokens(block.content) if block is not None else 0
         history = sum(count_tokens(m["content"]) for m in req.messages[len(prefix):]) - block_tokens
         memory_tokens = count_tokens(block.memory_text) if block is not None and block.memory_text else 0
@@ -167,10 +177,10 @@ class NaiveTurnEngine:
         if chosen is not None:
             patch["emotion"] = {"chosen": chosen.emotion, "source": chosen.source}
         if block is not None:
-            knowledge = block.knowledge_trace(ctx.query, "".join(said))
+            knowledge = block.knowledge_trace(ctx.query, said)
             if knowledge is not None:
                 patch["knowledge"] = knowledge
             memory = block.memory_trace()
             if memory is not None:
                 patch["memory"] = memory
-        yield TracePatch(patch)
+        return patch

@@ -76,6 +76,8 @@ async def session_context(rt: Runtime, actor: SessionActor, *, recent: int | Non
     names = {cid: (chars[cid]["profile"].get("name") if cid in chars else cid) for cid in ids}
     parts = [ParticipantView(character_id=p["characterId"], name=str(names.get(p["characterId"]) or p["characterId"]),
                              role=p["role"], side=p.get("side"), muted=bool(p.get("mutedByUser")),
+                             character_role=str(chars[p["characterId"]]["profile"].get("role") or "")
+                             if p["characterId"] in chars else "",
                              emotion=str(p.get("currentEmotion") or "neutral"),
                              energy=energy_of(rt, chars[p["characterId"]]) if p["characterId"] in chars else {})
              for p in s["participants"]]
@@ -93,7 +95,9 @@ async def session_context(rt: Runtime, actor: SessionActor, *, recent: int | Non
 
 
 def character_view(row: Any) -> CharacterView:
-    return CharacterView(id=row["id"], name=str(row["profile"].get("name", row["id"])), profile=dict(row["profile"]))
+    return CharacterView(id=row["id"], name=str(row["profile"].get("name", row["id"])), profile=dict(row["profile"]),
+                         appearance_summary=str((row["appearance"] or {}).get("appearanceSummary") or ""),
+                         advisory=bool(row["advisory"]))
 
 
 def reply_cap(rt: Any, sctx: SessionContext, plan: Any = None) -> int:
