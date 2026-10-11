@@ -265,7 +265,7 @@
   - `HORIZON_TEST=1 uv run horizon eval smoke --limit 5 --yes` exits 0 with no socket opened;
   - `horizon eval conversations` lists the new suites.
 - [x] 9.9 Update the docs: doc 02 B1 (suites), B2 (sizes, the judge sets), B4 (the 13 judges, "yes" is the failure), B7 (the suite list and cost line); `evals/README.md` (layout and commands). Verify by reading, and that every command in the README runs in test mode.
-- [ ] 9.10 Phase gates green → commit "M8 phase 9: evaluation suites offline".
+- [x] 9.10 Phase gates green → commit "M8 phase 9: evaluation suites offline".
 
 ## 10. Paid runs (each asked for separately)
 
