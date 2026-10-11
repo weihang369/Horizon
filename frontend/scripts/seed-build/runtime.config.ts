@@ -34,6 +34,10 @@ export interface RuntimeConfig {
   /** M5 retrieval (knowledge-memory-storage design D12, D13): hits per reply, and how long a reply waits for the
    *  user message's query embedding before using keyword retrieval alone. AI-stage tunables. */
   retrieval: { knowledgeK: number; memoryK: number; queryEmbedWaitMs: number };
+  /** docs/ai/04 P8: the dynamic-tail repeat hint, off until the repetition metric misses its target (doc 13 W12). */
+  persona: { repeatHint: boolean };
+  /** docs/ai/05 X5: the dynamic-tail voice reminder, off until the long suite shows drift (doc 13 W12). */
+  context: { voiceReminder: boolean };
 }
 
 export const RUNTIME: RuntimeConfig = {
@@ -60,4 +64,6 @@ export const RUNTIME: RuntimeConfig = {
   prefetchMax: 2,
   llmConcurrency: 4,
   retrieval: { knowledgeK: 5, memoryK: 3, queryEmbedWaitMs: 400 },
+  persona: { repeatHint: false },
+  context: { voiceReminder: false },
 };

@@ -6,7 +6,7 @@ sessions from one committed table (`seed:check` guards it). Milliseconds stay mi
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -96,6 +96,11 @@ class RuntimeKnobs:
     llm_concurrency: int
     retrieval: RetrievalKnobs
     llm_calls: dict[str, LlmCall]
+    switches: dict[str, bool] = field(default_factory=dict)   # M8: "persona.repeatHint", "context.voiceReminder"
+
+    def switch(self, name: str) -> bool:
+        """A dynamic-tail switch (docs/ai/04 P8, 05 X5; doc 13 W12): off unless the table turns it on."""
+        return bool(self.switches.get(name, False))
 
     def llm(self, key: str) -> LlmCall:
         try:
@@ -140,7 +145,9 @@ class RuntimeConfig:
                                            temperature=None if v.get("temperature") is None else float(v["temperature"]),
                                            output=str(v["output"]),
                                            max_tokens=int(v["maxTokens"]) if v.get("maxTokens") is not None else None)
-                           for k, v in ((r.get("llm") or {}).get("calls") or {}).items()}),
+                           for k, v in ((r.get("llm") or {}).get("calls") or {}).items()},
+                switches={"persona.repeatHint": bool((r.get("persona") or {}).get("repeatHint", False)),
+                          "context.voiceReminder": bool((r.get("context") or {}).get("voiceReminder", False))}),
             jobs=JobTiming(
                 profile_draft_ms=float(t["profileDraftMs"]), field_regenerate_ms=float(t["fieldRegenerateMs"]),
                 portrait_ms=float(t["portraitMs"]), portrait_parallel=int(t["portraitParallel"]),

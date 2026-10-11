@@ -8,9 +8,10 @@ scripted in both profiles. The scripted song is the free procedural theme (D-83)
 replaces the selection at runtime.
 
 M7 (ai-foundation design D12): `agent`, the AI stage's profile, is opt-in until M15. Each port uses its `agent`
-implementation when one exists (`AGENT_PORTS`, empty in M7), else its naive one, else its scripted one; without a key
-every port is scripted, as for `naive`. So in M7 `agent` resolves exactly as `naive` does, and `resolved()` (shown in
-/health and every eval report) says so instead of letting the name hide what ran.
+implementation when one exists (`AGENT_PORTS`), else its naive one, else its scripted one; without a key every port is
+scripted, as for `naive`. `resolved()` (shown in /health and every eval report) says what actually ran.
+M8 (persona-context design D1): `AGENT_PORTS` gains `turn` (the `agent` persona prompt); routing, retrieval, the
+guardrail, reactions and the memory writer stay what `naive` resolves to.
 
 M5 (knowledge-memory-storage design D4, D7, D17): the `embedder` and the memory and knowledge retrievers have naive
 implementations; the `memory_writer` writes nothing in both profiles. The document `converter` does not follow the
@@ -46,7 +47,7 @@ PORTS = ("turn", "router", "reactions", "host", "director", "summariser", "guard
 NAIVE_PORTS = frozenset({"turn", "router", "drafter", "image", "song", "embedder", "knowledge_retriever",
                          "memory_retriever", "converter"})
 KEYLESS_PORTS = frozenset({"converter"})   # chosen by availability, not by the profile or the key (D-96)
-AGENT_PORTS: frozenset[str] = frozenset()   # ports with an `agent` implementation (each AI-stage change adds its own)
+AGENT_PORTS = frozenset({"turn"})   # ports with an `agent` implementation (each AI-stage change adds its own; M8: turn)
 ENV_PROFILE = "HORIZON_AI_PROFILE"
 
 
@@ -117,6 +118,9 @@ class AiPorts:
     def _build(self, port: str, impl: Impl) -> Any:
         d = self.deps
         if impl == "agent":
+            if port == "turn":
+                from horizon.ai.agent.turn import AgentTurnEngine
+                return AgentTurnEngine(d)
             raise KeyError(f"no agent implementation for port {port!r}")
         if impl == "naive":
             if port == "turn":

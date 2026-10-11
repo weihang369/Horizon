@@ -116,6 +116,12 @@
         "knowledgeK": 5,
         "memoryK": 3,
         "queryEmbedWaitMs": 400
+      },
+      "persona": {
+        "repeatHint": false
+      },
+      "context": {
+        "voiceReminder": false
       }
     }
   }

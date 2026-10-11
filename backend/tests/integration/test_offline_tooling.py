@@ -11,7 +11,7 @@ import httpx
 import pytest
 from sqlalchemy import text
 
-from horizon.ai.profile import PORTS, ProfileSpec
+from horizon.ai.profile import AGENT_PORTS, PORTS, ProfileSpec
 from horizon.gateway.client import CALL_PURPOSE, PURPOSE_HEADER, HttpCore
 from horizon.gateway.fake import load_canned
 from tests.conftest import Api
@@ -93,13 +93,15 @@ async def test_parked_route_falls_back_and_is_recorded_late(api: Api) -> None:
     assert [r[0] for r in rows] == ["late"]
 
 
-# ── 2.8: the agent profile resolves to naive, port by port ──
+# ── 2.8: the agent profile resolves to naive, port by port, except its own ports (M8: the turn engine) ──
 def test_agent_resolves_like_naive() -> None:
     agent = ProfileSpec(profile="agent")
     naive_ = ProfileSpec(profile="naive")
     for p in PORTS:
-        assert agent.choose(p, key_set=True) == naive_.choose(p, key_set=True), p
+        want = "agent" if p in AGENT_PORTS else naive_.choose(p, key_set=True)
+        assert agent.choose(p, key_set=True) == want, p
         assert agent.choose(p, key_set=False) == "scripted" or p == "converter", p
+    assert AGENT_PORTS == frozenset({"turn"})
 
 
 def test_agent_from_env() -> None:

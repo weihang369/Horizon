@@ -24,3 +24,4 @@ def test_every_field_loads() -> None:
     assert [r.reply_max_tokens.for_mode("debate", x) for x in ("short", "medium", "long")] == [200, 320, 480]
     assert (r.window_tokens, r.coalesce_max_chars, r.coalesce_max_ms) == (6000, 48, 50)
     assert (r.idle_release_ms, r.prefetch_max, r.llm_concurrency) == (600_000, 2, 4)
+    assert r.switch("persona.repeatHint") is False and r.switch("context.voiceReminder") is False   # M8: both off

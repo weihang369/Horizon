@@ -49,7 +49,7 @@ async def test_smoke_runs_isolated_and_reports_the_agent_ports(tmp_path: Path) -
     report = (run / "agent" / "report.md").read_text(encoding="utf-8")
     assert rc == 0, report
     assert user_db.read_bytes() == b"not touched"          # the user's database is never opened
-    assert "turn=naive" in report and "router=naive" in report   # agent resolves to naive per port in M7
+    assert "turn=agent" in report and "router=naive" in report   # M8: agent's own turn engine, naive routing
     assert "smoke only" in report and "never a measurement" in report
     rows = [json.loads(x) for x in (run / "agent" / "results.jsonl").read_text(encoding="utf-8").splitlines()]
     assert {r["mode"] for r in rows if "mode" in r} == {"one_on_one", "group", "watch", "debate"}
