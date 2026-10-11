@@ -149,3 +149,7 @@ Run sequentially on one connection, as the app does, after 2 warm-up calls.
 | Doc 03 §5 | Checks 1 and 2 done; the JSON quote fix; the empty-reply rules |
 | Doc 07 G2, doc 08 V2 | The measured latency; `debate_plan` 500 with the NFR-02 exception |
 | Docs 01 (checks 3–4), 02 (check 1), 11 (check 4), 12 (check 3) | Marked done, pointing here |
+
+**Follow-up (M7, 2026-10-11):** the canary re-ran through `horizon eval canary`: 20/20 within tolerance on
+`typesafe/jev-1.13-20260917`, $0.000446. It also found a per-request Jev prompt overhead of 160–275 input tokens that
+the decision estimate doesn't count; see [m7.md](m7.md).

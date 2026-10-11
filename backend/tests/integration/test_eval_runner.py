@@ -121,3 +121,16 @@ def test_a_hand_edited_baseline_is_refused(tmp_path: Path) -> None:
     p.write_text(json.dumps(doc), encoding="utf-8")
     with pytest.raises(canary_mod.BaselineError):
         canary_mod.load_baseline(p)
+
+
+def test_start_skips_items_and_the_estimate_counts_jev_overhead() -> None:
+    from horizon.domain.pricing import load_price_table
+    from horizon.evals.runner import JEV_REQUEST_OVERHEAD_TOKENS
+    from horizon.evals.suites import Canary
+
+    prices = load_price_table(EVALS_DIR.parent / "seed")
+    full = Canary().plan(Options("canary"), prices, paid=True)
+    tail = Canary().plan(Options("canary", start=18), prices, paid=True)
+    assert [i["id"] for i in tail.items] == [i["id"] for i in full.items[18:]]
+    # docs/ai/checks/m7.md: 20 canary requests billed $0.000446; the budget must cover that
+    assert JEV_REQUEST_OVERHEAD_TOKENS >= 275 and 0.000446 < full.estimate_usd < 0.001

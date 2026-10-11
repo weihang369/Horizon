@@ -98,7 +98,8 @@ class Canary:
 
     def plan(self, opts: Options, prices: Any, *, paid: bool) -> Plan:
         b = canary_mod.load_baseline(EVALS_DIR / "canary.json")
-        items = b.items[: opts.limit] if opts.limit else b.items
+        items = b.items[opts.start:]
+        items = items[: opts.limit] if opts.limit else items
         est = sum(decision_estimate(prices, i["state"], i["questions"]) for i in items)
         return Plan(items=items, estimate_usd=est, expected_s=len(items) * 3.0, paid=paid)
 
@@ -122,7 +123,7 @@ class Canary:
         res.summary.append(f"## Canary: {len(res.rows) - drift_n}/{len(res.rows)} within tolerance "
                            f"(choices equal, p ±{canary_mod.P_TOL}, scores ±{canary_mod.SCORE_TOL})")
         res.summary += [f"- {r['id']}: " + "; ".join(r["drift"]) for r in res.rows if r["drift"]]
-        if env.opts.accept and res.status == "drift" and len(new_items) == len(plan.items):
+        if env.opts.accept and res.status == "drift" and len(new_items) == len(plan.items) and not env.opts.start:
             fp = canary_mod.accept(EVALS_DIR / "canary.json", new_items, res.model or "",
                                    dt.datetime.now(dt.UTC).isoformat())
             res.summary.append(f"- accepted as the new baseline (fingerprint {fp[:12]}…); every stored Jev answer is "
@@ -143,7 +144,7 @@ class Decisions:
         self.smoke = smoke
 
     def _items(self, opts: Options) -> list[dict[str, Any]]:
-        items = [i for i in all_items() if bool(i.get("smoke_only")) == self.smoke]
+        items = [i for i in all_items() if bool(i.get("smoke_only")) == self.smoke][opts.start:]
         return items[: opts.limit] if opts.limit else items
 
     def plan(self, opts: Options, prices: Any, *, paid: bool) -> Plan:

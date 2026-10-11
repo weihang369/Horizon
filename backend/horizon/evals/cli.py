@@ -33,7 +33,8 @@ def _suite(args: argparse.Namespace) -> int:
     from horizon.config import load_config
     from horizon.evals.runner import Options, Runner
 
-    opts = Options(suite=args.eval_cmd, profile=args.profile, limit=args.limit, max_usd=args.max_usd, yes=args.yes,
+    opts = Options(suite=args.eval_cmd, profile=args.profile, limit=args.limit, start=args.start, max_usd=args.max_usd,
+                   yes=args.yes,
                    allow_peak=args.allow_peak, accept=getattr(args, "accept", False))
     return asyncio.run(Runner(load_config()).run(opts))
 
@@ -123,6 +124,7 @@ def register(sub: Any) -> None:
         s = esub.add_parser(name, help=helptext)
         s.add_argument("--profile", default="naive", choices=["scripted", "naive", "agent"])
         s.add_argument("--limit", type=int, default=None)
+        s.add_argument("--start", type=int, default=0, help="skip the first N items (finish an incomplete run)")
         s.add_argument("--max-usd", type=float, default=None, dest="max_usd")
         s.add_argument("--yes", action="store_true", help="skip the y/N prompt (only after OKing the estimate)")
         s.add_argument("--allow-peak", action="store_true", dest="allow_peak")

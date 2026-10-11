@@ -52,6 +52,7 @@ class Options:
     suite: str
     profile: str = "naive"
     limit: int | None = None
+    start: int = 0                        # skip the first N planned items (finish an incomplete run without re-paying)
     max_usd: float | None = None
     yes: bool = False
     allow_peak: bool = False
@@ -271,8 +272,14 @@ class Runner:
         (run_dir / "report.md").write_text("\n".join(lines), encoding="utf-8")
 
 
+# Jev bills its own prompt on top of what we send: 160-275 input tokens per request on the 18 canary requests of
+# 2026-10-11 (docs/ai/checks/m7.md). The eval runner budgets with a margin; the gateway's preflight estimate is a
+# separate, locked decision (group A) and is reported, not changed here.
+JEV_REQUEST_OVERHEAD_TOKENS = 300
+
+
 def decision_estimate(prices: Any, state: Any, questions: dict[str, Any]) -> float:
     tokens = count_tokens(json.dumps(state, ensure_ascii=False)) + sum(
         count_tokens(json.dumps(q, ensure_ascii=False)) for q in questions.values())
-    return float(estimate_decision(prices, tokens))
+    return float(estimate_decision(prices, tokens + JEV_REQUEST_OVERHEAD_TOKENS))
 

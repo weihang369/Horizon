@@ -300,5 +300,5 @@
   - store injection outside the allowed paths.
 
   Fix the findings and re-run 9.1. Verify that the review notes are recorded in the final commit message.
-- [ ] 9.3 **Ask the user** to approve the canary (< $0.001, off-peak). Then run `horizon eval canary` with the real key from `.env`. Verify that the report passes or names drift; record the model id and the result in `docs/ai/checks/group-a.md`'s follow-up line (or a new `docs/ai/checks/m7.md`); and keep the spend in `data/evals/spend.jsonl`.
+- [x] 9.3 **Ask the user** to approve the canary (< $0.001, off-peak). Then run `horizon eval canary` with the real key from `.env`. Verify that the report passes or names drift; record the model id and the result in `docs/ai/checks/group-a.md`'s follow-up line (or a new `docs/ai/checks/m7.md`); and keep the spend in `data/evals/spend.jsonl`.
 - [ ] 9.4 Run `openspec validate ai-foundation --strict`, then hand over for archive and the squash merge into `dev` (which needs the user's go-ahead). Verify that validation passes.
