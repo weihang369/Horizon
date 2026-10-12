@@ -81,11 +81,11 @@ def test_the_emotion_report_reads_floor_accuracy_baseline_mcnemar_coverage_and_m
     rows += [_row(31, "test", "happy", 0.95, keep, lang="ms")]
     out = report(rows, "emotion")
     assert out[0].startswith("## Emotion: floor 0.6")
-    assert "test accuracy 10/10 = 1.00" in out[1]
-    assert "baseline (always keep) 2/10" in out[2] and "difference +0.80" in out[2] and "8 only the policy right" in out[2]
-    assert "coverage: Jev's answer used on 10/10" in out[3]
+    assert "English test accuracy 9/9 = 1.00" in out[1]                      # English is what's judged
+    assert "baseline (always keep) 1/9" in out[2] and "8 only the policy right" in out[2]
+    assert "coverage: Jev's answer used on 9/9" in out[3]
     assert "merge decided 1/9" in out[4]
-    assert out[5].startswith("- English alone: 9/9")
+    assert out[5].startswith("- other languages: 1/1 test items ran") and "isn't judged" in out[5]
 
 
 def test_the_reaction_report_gives_the_share_shown() -> None:
@@ -95,7 +95,7 @@ def test_the_reaction_report_gives_the_share_shown() -> None:
     rows += [{**_row(10 + i, "test", "surprised", 0.8, lab), "question_id": "reaction"} for i in range(3)]
     rows += [{**_row(20, "test", "none", 0.9, none), "question_id": "reaction"}]
     out = report(rows, "reaction")
-    assert "test accuracy 4/4" in out[1] and "always none) 1/4" in out[2]
+    assert "English test accuracy 4/4" in out[1] and "always none) 1/4" in out[2]
     assert "reaction share: 3/4" in out[-1]
 
 

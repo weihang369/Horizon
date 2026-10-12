@@ -92,8 +92,9 @@ def kind_of(question_id: str) -> str | None:
 
 
 def report(rows: Sequence[Mapping[str, Any]], kind: str, fade: frozenset[str] = FADE) -> list[str]:
-    """B5's floor from dev, then the test split once with it: accuracy (Wilson), the baseline and its paired difference
-    (exact McNemar), coverage, the merge rate (emotion) or the reaction share (reactions), English alone."""
+    """B5's floor from dev, then the test split once with it, on its English items: accuracy (Wilson), the baseline
+    and its paired difference (exact McNemar), coverage, the merge rate (emotion) or the reaction share (reactions).
+    Other languages are a "runs" check only (the user's rule, 2026-10-12)."""
     answer = emotion_answer if kind == "emotion" else reaction_answer
     title = "Emotion" if kind == "emotion" else "Reactions"
     dev = [(answer_of(r), r["label"]) for r in rows if r.get("split") == "dev"]
@@ -110,7 +111,13 @@ def report(rows: Sequence[Mapping[str, Any]], kind: str, fade: frozenset[str] = 
             return emotion_correct(face, lab, fade), emotion_baseline(lab, fade), face
         return reaction_correct(face, lab), reaction_baseline(lab), face
 
-    scored = [(r, *score(r)) for r in test]
+    everything = [(r, *score(r)) for r in test]
+    # The user's rule (2026-10-12): English is evaluated for accuracy; other languages only need to run, right or
+    # wrong isn't judged. So every figure and target below is on the English test items.
+    scored = [x for x in everything if str(x[0].get("lang") or "en") == "en"]
+    others = [x for x in everything if str(x[0].get("lang") or "en") != "en"]
+    if not scored:
+        return [f"## {title}: no English test items"]
     k = sum(ok for _, ok, _, _ in scored)
     n = len(scored)
     base = sum(b for _, _, b, _ in scored)
@@ -120,7 +127,7 @@ def report(rows: Sequence[Mapping[str, Any]], kind: str, fade: frozenset[str] = 
     blo, bhi = wilson(base, n)
     out = [f"## {title}: floor {floor:.1f} (chosen on dev: {sel['accuracy']:.2f}; no floor {sel['no_floor']:.2f}, "
            f"fallback only {sel['fallback_only']:.2f}{'' if sel['beats_both'] else '; DOES NOT beat both'})",
-           f"- test accuracy {k}/{n} = {k / n:.2f} (95% Wilson {lo:.2f}–{hi:.2f}); target ≥ 0.80",
+           f"- English test accuracy {k}/{n} = {k / n:.2f} (95% Wilson {lo:.2f}–{hi:.2f}); target ≥ 0.80",
            f"- baseline ({'always keep' if kind == 'emotion' else 'always none'}) {base}/{n} = {base / n:.2f} "
            f"(Wilson {blo:.2f}–{bhi:.2f}); difference {(k - base) / n:+.2f} (target ≥ +0.15), exact McNemar "
            f"p {mcnemar_exact(only_policy, only_base):.3f} ({only_policy} only the policy right, {only_base} only "
@@ -145,10 +152,8 @@ def report(rows: Sequence[Mapping[str, Any]], kind: str, fade: frozenset[str] = 
     else:
         out.append(f"- reaction share: {shown}/{n} items would show a reaction ({shown / n:.2f}; under ~0.30 is read "
                    "by hand)")
-    en = [(ok, b) for r, ok, b, _ in scored if str(r.get("lang") or "en") == "en"]
-    if en and len(en) < n:
-        ek = sum(ok for ok, _ in en)
-        eb = sum(b for _, b in en)
-        out.append(f"- English alone: {ek}/{len(en)} = {ek / len(en):.2f} (baseline {eb / len(en):.2f}); other "
-                   "languages show the direction only")
+    if others:
+        ran = sum(1 for r, *_ in others if answer_of(r) is not None)
+        out.append(f"- other languages: {ran}/{len(others)} test items ran and returned an answer (only that they run "
+                   "is checked; right or wrong isn't judged)")
     return out
