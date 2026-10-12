@@ -542,7 +542,9 @@ with itself only about 64 % of the time, so that rule mixes up ordinary noise wi
   came before the first word (NFR-29). Jev's `turn_plan` was p50 453 ms, p90 515 ms, with its deadline firing 2/119
   times. Not yet built: warm-up discard, two time windows, deep, group and debate turns, the per-stage breakdown.
   Both runs stopped early on a Stop bug that broke the database writer, fixed after M9 on `fix/stop-db-writer`
-  (m9.md 9.6, "The fix").*
+  (m9.md 9.6, "The fix"). The re-run on the fix ran all 100 turns: first word p50 1208 ms, p90 1416 ms (1209 / 1416
+  without the first 5 as warm-up); the face first on 99/99; `turn_plan` p50 532 ms, with a slow spell of Jev's (up to
+  30 s, deadline fired 31/100) that left the first word unchanged.*
 - **NFR-29 (the face within 800 ms of the first word)** is measured **at the HTTP client**, from the event timestamps of
   the M6 portable client:
   - face time minus first-word time;

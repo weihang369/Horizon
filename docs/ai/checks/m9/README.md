@@ -13,5 +13,6 @@ answer can be re-scored later at no cost. Each row has Jev's choice, its `confid
 | `judges-v1.jsonl`, `judges-v2.jsonl` | `…112229-20a8cf`, `…112449-0f69cc` | 9.4 judge validation |
 | `moodline.jsonl` | `20261012T112608-moodline-6db138` | 9.5 mood line on/off, 34 items |
 | `latency.jsonl` | `…114001-3b782c`, `…121016-fd7be4` | 9.6 per turn: face source, face − first word (ms), Jev `turn_plan` ms and outcome |
+| `latency-100.jsonl` | `…220711-latency-ed947f` | 9.6's re-run to 100 on the Stop fix, per turn: the same, plus send → face and send → first word (ms) and the turn's status |
 
 The raw provider responses stay in the local response store (`data/cache/`, W10), keyed by request.
