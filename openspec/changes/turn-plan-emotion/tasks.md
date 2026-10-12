@@ -286,7 +286,7 @@
 - [x] 9.4 Judge validation for `judge_names_feeling` and `judge_pairwise` (≈ $0.003). A failing judge gets the user's
   choice before any rewording. Verify: the results per question and version are in `evals/baselines/judges.json` and
   m9.md.
-- [ ] 9.5 `moodline`: ask with both options (100 ≈ $0.11, 60 ≈ $0.07), then run the chosen one. Verify: m9.md holds
+- [x] 9.5 `moodline`: ask with both options (100 ≈ $0.11, 60 ≈ $0.07), then run the chosen one. Verify: m9.md holds
   the exact-match difference, the pairwise result, the "names the feeling" pass rate, the clash rate and the verdict.
   Any rewording or dropping goes to the user first.
 - [ ] 9.6 `latency` (≈ $0.03, store bypassed). Verify: m9.md holds the face and first-word p50/p90 against NFR-01,

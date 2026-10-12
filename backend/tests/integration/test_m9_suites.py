@@ -45,7 +45,7 @@ async def test_same_history_in_both_arms(api: Api, tmp_path: Path) -> None:
     assert plan is not None and plan.emotion is not None and plan.emotion.face == "sad"
     on, off = suite.arms(TurnContext(session=sctx, speaker=speaker, message_id=None, prompt=latest, max_tokens=200,
                                      plan=plan))
-    engine = AgentTurnEngine(api.rt.ai.deps)
+    engine = AgentTurnEngine(mood.with_mood_line(api.rt.ai.deps))   # D40: the suite forces the line on for ON
     a, b = engine.request(on)[0].messages, engine.request(off)[0].messages
     mood_line = "Your mood right now: a bit low. Let it show in how you word this reply; don't name the feeling."
     assert a[:-1] == b[:len(a) - 1] and a[-1]["role"] == "system" and a[-1]["content"].startswith(mood_line)

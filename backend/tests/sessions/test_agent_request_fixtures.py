@@ -41,8 +41,11 @@ def cases() -> dict[str, TurnContext]:
     return {"one_on_one": one, "group": group, "greeting": greet}
 
 
-def dump(c: TurnContext) -> dict[str, Any]:
-    req, prefix = engine().request(c)
+MOOD_ON = {"persona.moodLine": True}   # D40: the line is behind a switch, off by default
+
+
+def dump(c: TurnContext, switches: dict[str, bool] | None = None) -> dict[str, Any]:
+    req, prefix = engine(switches).request(c)
     return {"messages": req.messages, "stop": req.stop, "max_tokens": req.max_tokens, "prefix_len": len(prefix)}
 
 
@@ -74,8 +77,14 @@ def test_neutral_and_manual_planned_requests_equal_the_agent1_fixture(name: str,
 
 
 @pytest.mark.parametrize("name", ["one_on_one", "group", "greeting"])
+def test_with_the_line_off_a_planned_happy_turn_sends_agent1(name: str) -> None:
+    """D40: the default sends `agent-1`'s bytes on every turn, whatever the planned face."""
+    assert dump(planned(cases()[name], "happy")) == fixture(name)
+
+
+@pytest.mark.parametrize("name", ["one_on_one", "group", "greeting"])
 def test_happy_differs_only_in_the_tail(name: str) -> None:
-    old, new = fixture(name), dump(planned(cases()[name], "happy"))
+    old, new = fixture(name), dump(planned(cases()[name], "happy"), MOOD_ON)
     assert {k: v for k, v in new.items() if k != "messages"} == {k: v for k, v in old.items() if k != "messages"}
     n = len(old["messages"])
     had_tail = old["messages"][-1]["role"] == "system" and n > old["prefix_len"]
@@ -96,7 +105,7 @@ def test_mood_line_sits_before_the_repeat_hint_voice_reminder_and_cue() -> None:
     c = planned(ctx(recent, mode="group"), "happy")
     c = c.model_copy(update={"speaker": c.speaker.model_copy(update={
         "profile": {**c.speaker.profile, "speakingStyle": {"summary": "Clipped and dry. Never gushes."}}})})
-    req, _ = engine({"persona.repeatHint": True, "context.voiceReminder": True}).request(c)
+    req, _ = engine({"persona.repeatHint": True, "context.voiceReminder": True, **MOOD_ON}).request(c)
     lines = str(req.messages[-1]["content"]).split("\n")
     assert lines[0] == MOOD_HAPPY
     assert lines[1].startswith("Your last replies began:") and lines[2].startswith("Stay Amara:")
@@ -106,5 +115,5 @@ def test_mood_line_sits_before_the_repeat_hint_voice_reminder_and_cue() -> None:
 def test_no_mood_line_without_a_plan_or_under_manual() -> None:
     base = cases()["group"]
     for c in (base, planned(base, "sad", manual=True), planned(base, "neutral")):
-        assert "Your mood right now" not in json.dumps(dump(c), ensure_ascii=False)
-    assert "Your mood right now: a bit low." in json.dumps(dump(planned(base, "sad")), ensure_ascii=False)
+        assert "Your mood right now" not in json.dumps(dump(c, MOOD_ON), ensure_ascii=False)
+    assert "Your mood right now: a bit low." in json.dumps(dump(planned(base, "sad"), MOOD_ON), ensure_ascii=False)

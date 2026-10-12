@@ -103,6 +103,14 @@ def last_two_turns(msgs: Sequence[MessageView], latest: str) -> list[str]:
         + [f"{USER}: {latest}"]
 
 
+def with_mood_line(deps: Any) -> Any:
+    """The run's deps with `persona.moodLine` forced on, so ON carries the line whatever the live switch says (D40)."""
+    import dataclasses
+
+    live = deps.switch
+    return dataclasses.replace(deps, switch=lambda name: True if name == "persona.moodLine" else live(name))
+
+
 # ── the statistics ──
 def blocks(rows: Sequence[dict[str, Any]], key: str) -> list[list[float]]:
     """Blocks of `BLOCK` consecutive items within one transcript (D30)."""
@@ -178,7 +186,7 @@ class Moodline:
         res = Result()
         n = env.opts.limit or DEFAULT_N
         deps = env.rt.ai.deps
-        planner, engine = JevTurnPlanner(deps), AgentTurnEngine(deps)
+        planner, engine = JevTurnPlanner(deps), AgentTurnEngine(with_mood_line(deps))
         rows: list[dict[str, Any]] = []
         for c in plan.items:
             if len(rows) >= n:

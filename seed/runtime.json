@@ -125,7 +125,8 @@
         "queryEmbedWaitMs": 400
       },
       "persona": {
-        "repeatHint": false
+        "repeatHint": false,
+        "moodLine": false
       },
       "context": {
         "voiceReminder": false

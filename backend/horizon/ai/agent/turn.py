@@ -19,7 +19,14 @@ from collections.abc import Sequence
 from typing import Any
 
 from horizon.ai.agent.budget import planned_input
-from horizon.ai.agent.persona import PROMPT_VERSION, compile_persona, first_name, mood_line, persona_input
+from horizon.ai.agent.persona import (
+    PROMPT_VERSION,
+    PROMPT_VERSION_MOOD,
+    compile_persona,
+    first_name,
+    mood_line,
+    persona_input,
+)
 from horizon.ai.contexts import MessageView, TurnContext
 from horizon.ai.language import language_cue
 from horizon.ai.llm import llm_request
@@ -105,7 +112,11 @@ def stop_sequences(ctx: TurnContext, you: str, history: list[dict[str, Any]]) ->
 class AgentTurnEngine(NaiveTurnEngine):
     name = "agent"
     version = "2"   # M9: the face comes from the plan (turn-plan-emotion D14)
-    prompt_version: str | None = PROMPT_VERSION
+
+    @property
+    def prompt_version(self) -> str:  # type: ignore[override]   # dynamic: it follows the live switch (D40)
+        """`agent-1`, or `agent-2` while the mood line is switched on (D16, D40): the label follows the bytes sent."""
+        return PROMPT_VERSION_MOOD if self.deps.switch("persona.moodLine") else PROMPT_VERSION
 
     # ── seam 1: the request ──
     def cue(self, ctx: TurnContext) -> str | None:
@@ -117,7 +128,10 @@ class AgentTurnEngine(NaiveTurnEngine):
         return turn_cue(ctx)
 
     def mood(self, ctx: TurnContext) -> str | None:
-        """E4's mood line for the planned face; none without a plan, for neutral or in MANUAL (D16)."""
+        """E4's mood line for the planned face; none without a plan, for neutral or in MANUAL (D16). Off unless the
+        `persona.moodLine` switch is on: M9's on/off run found no gain and more replies naming the feeling (D40)."""
+        if not self.deps.switch("persona.moodLine"):
+            return None
         face = ctx.plan.emotion if ctx.plan is not None else None
         return mood_line(face.face, face.manual) if face is not None else None
 

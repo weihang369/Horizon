@@ -849,6 +849,16 @@ none" (p 0.001), with 39 % of messages showing a reaction; random reactions scor
 floor 0.2 and stays in `AGENT_PORTS`. The miss is recorded and revisited in M15. **Rejected:** random reactions for
 `agent` until M15; another rewording now (the test split would have been read twice).
 
+### D40. The mood line ships off (the user's choice, 9.5: "I want the best performance")
+
+E8's on/off run (34 non-neutral English turns, every candidate used) showed no gain in exact match (+0.00, 95 %
+−0.17 to +0.09), a pairwise toss-up (0.51, unvalidated) and more replies naming the feeling with the line (5/34
+against 2/34). The pre-set rule said "propose dropping"; the user asked for the best performance, which the data puts
+with the line off. So `persona.moodLine` (runtime.json, default false) gates it; off, the request is `agent-1`'s byte
+for byte and the engine reports `agent-1`; on, `agent-2` as D16 built it. The `moodline` suite forces it on for its ON
+arm. View-as-prompt's note (D17) is removed. **Rejected:** keeping the line until M15 (underpowered but no sign of a
+gain, and a sign of harm); a rewording now.
+
 ### Built notes (phases 5–8)
 
 - **Splits (D27).** Both sets keep the hash rule, which gave `emotion` 72 dev / 28 test and `reactions` 65 / 25 (E8's

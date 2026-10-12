@@ -174,6 +174,7 @@ class RuntimeConfig:
                                            max_tokens=int(v["maxTokens"]) if v.get("maxTokens") is not None else None)
                            for k, v in ((r.get("llm") or {}).get("calls") or {}).items()},
                 switches={"persona.repeatHint": bool((r.get("persona") or {}).get("repeatHint", False)),
+                          "persona.moodLine": bool((r.get("persona") or {}).get("moodLine", False)),   # M9 D40
                           "context.voiceReminder": bool((r.get("context") or {}).get("voiceReminder", False))},
                 emotion_fade=frozenset(str(x) for x in r["emotion"]["fade"])),
             jobs=JobTiming(

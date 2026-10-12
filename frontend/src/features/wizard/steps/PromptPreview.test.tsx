@@ -6,7 +6,7 @@ import amaraJson from "@seed/characters/chr_seedAmara.json";
 import type { Character, CharacterProfile } from "@/contract/types";
 import { compilePersona } from "@/domain/personaPrompt";
 import { countTokens } from "@/domain/tokens";
-import { MOOD_NOTE, PromptPreview } from "./PromptPreview";
+import { PromptPreview } from "./PromptPreview";
 
 const amara = (amaraJson as unknown as { data: Character }).data;
 const world = { name: "Meridian Council", you: { displayName: "Kai", about: "A policy analyst." } };
@@ -34,16 +34,5 @@ describe("PromptPreview", () => {
     expect(after).toMatch(/Backstory: [^\n]*again\.…/);
     const n = (s: string) => Number(/≈ (\d+) tokens/.exec(s)?.[1]);
     expect(n(after)).toBeGreaterThan(n(before));
-  });
-
-  it("adds the mood note below the system message, leaving its text and token count unchanged", () => {
-    const out = decode(html(amara.profile));
-    const want = compilePersona({ profile: amara.profile as unknown as Record<string, unknown>, appearanceSummary: amara.appearance.appearanceSummary, advisory: true,
-      worldName: world.name, you: world.you, mode: "one_on_one" });
-    expect(MOOD_NOTE).toBe("Each AUTO reply also gets one mood line, e.g. “Your mood right now: a bit low. Let it show in how you word this reply; don't name the feeling.”");
-    expect(out).toContain(MOOD_NOTE);
-    expect(out.indexOf(MOOD_NOTE)).toBeGreaterThan(out.indexOf(want.text) + want.text.length - 1);
-    expect(want.text).not.toContain("Your mood right now");
-    expect(out).toContain(`≈ ${countTokens(want.text)} tokens · read-only`);
   });
 });

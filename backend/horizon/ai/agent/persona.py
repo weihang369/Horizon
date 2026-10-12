@@ -25,7 +25,8 @@ from horizon.ai.contexts import TurnContext
 from horizon.ai.naive.prompt import length_line
 from horizon.domain.pricing import count_tokens
 
-PROMPT_VERSION = "agent-2"   # M9: the mood line in the tail (turn-plan-emotion D16)
+PROMPT_VERSION = "agent-1"
+PROMPT_VERSION_MOOD = "agent-2"   # M9 (D16): the same prompt plus the mood line, sent only while `persona.moodLine` is on (D40)
 CARD_MAX = 1500
 FIELD_CAPS = {"backstory": 600, "personality.summary": 200, "speakingStyle.summary": 200, "goals": 200}
 ITEM_CAP = 60

@@ -5,7 +5,7 @@
 // Owner: AI.
 import { countTokens, utf8Bytes } from "./tokens";
 
-export const PROMPT_VERSION = "agent-2"; // M9: the mood line in the tail (turn-plan-emotion D16)
+export const PROMPT_VERSION = "agent-1"; // M9 D40: the mood line (agent-2) is off by default
 export const CARD_MAX = 1500;
 const FIELD_CAPS: Record<string, number> = {
   backstory: 600, "personality.summary": 200, "speakingStyle.summary": 200, goals: 200,
