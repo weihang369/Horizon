@@ -280,7 +280,7 @@
 - [x] 10.4 **Ask the user**: the four long-history transcripts (≈ $0.06, `naive`). After OK, generate them, read each one, and commit them. Verify that the loader accepts all four and each is past one drop.
 - [x] 10.5 Label 30 real items per judge from 10.1–10.4's outputs and group A's drafts. Run `horizon eval review` per set, and **ask the user to review the samples** (about 85 items). Relabel any set with two or more disagreements. Verify that `evals/reviews/` records each review.
 - [ ] 10.6 **Ask the user**: judge validation (≈ $0.03, `decisions --set judges`). After OK, run it. A failing judge is reworded on its items, re-versioned, re-locked, re-reviewed with the user, and re-run. Verify that `evals/baselines/judges.json` shows all 13 judges passing at their current versions.
-- [ ] 10.7 Re-run `drafter`, `summary` and `long`, served from the store, paying only for re-versioned judges. Ask first if anything new will be paid. Verify:
+- [x] 10.7 Re-run `drafter`, `summary` and `long`, served from the store, paying only for re-versioned judges. Ask first if anything new will be paid. Verify:
   - m8.md reports validated figures against P12's and X10's targets;
   - X5's drift signal decides the voice-reminder switch;
   - P8's rates decide the repeat-hint switch;

@@ -1386,5 +1386,100 @@
   "t10-long_one_on_one_ms-037": {
    "label": "no"
   }
+ },
+ "_judge_voice_c": {
+  "t10-long_group_meridian-044": {
+   "label": "no"
+  },
+  "t10-long_group_meridian-079": {
+   "label": "yes",
+   "why": "Mei with none of her dry ranges; a soft withdrawal that reads like Amara"
+  },
+  "t10-long_group_meridian-015": {
+   "label": "no"
+  },
+  "t10-long_group_meridian-068": {
+   "label": "no"
+  },
+  "t10-long_group_meridian-084": {
+   "label": "yes",
+   "why": "a curt close ('I'm not answering in this room anymore'), not Amara's reassurance"
+  },
+  "t10-long_group_meridian-019": {
+   "label": "no"
+  },
+  "t10-long_group_meridian-075": {
+   "label": "yes",
+   "why": "closing the room in clipped lines ('GP, tomorrow'), not Amara's reassurance"
+  },
+  "t10-long_group_meridian-021": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-015": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-025": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-024": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-072": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-073": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-075": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-096": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-030": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-027": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-048": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-066": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-058": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-090": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-050": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-028": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-072": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-050": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-030": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-086": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-057": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-064": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-013": {
+   "label": "no"
+  }
  }
 }
