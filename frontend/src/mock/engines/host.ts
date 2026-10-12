@@ -6,7 +6,7 @@ import type {
   Character, Emotion, Message, Session, StreamEvent, TurnTrace,
 } from "../../contract/types";
 import type { PricingTable } from "../../domain/cost";
-import { estimateTokens } from "../../domain/cost";
+import { decisionCostUsd, estimateTokens, REACTION_DECISION_TOKENS } from "../../domain/cost";
 import { EST_REPLY_POINTS, liveEnergy } from "../../domain/energy";
 import type { PricePeriod } from "../../domain/rushHour";
 import type { ScriptPlayer, TimelineEntry } from "../../engine/ScriptPlayer";
@@ -127,7 +127,50 @@ export function systemNote(h: EngineHost, sid: string, content: string, kind: Me
 }
 
 export function userMessage(h: EngineHost, sid: string, text: string, kind: Message["kind"] = "chat", extra?: Partial<Message>): Message {
+  dropReactions(h.live(sid));   // M9 D20 (E5): a user message drops every pending listener reaction
   return systemNote(h, sid, text, kind, { type: "user" }, extra);
+}
+
+// ── Listener reactions (M9: turn-plan-emotion D20, D21; the backend's sessions/after_turn.py) ─────────────────────
+const REACT_TAG = "react:";
+const FADE = new Set<string>(["surprised", "embarrassed"]);
+
+/** D20: drop pending reactions: all of them, or one listener's (their own turn is starting). */
+export function dropReactions(live: LiveSession, characterId?: string): void {
+  live.player.cancel((e) => !!e.tag?.startsWith(REACT_TAG) && (characterId === undefined || e.tag.endsWith(`:${characterId}`)));
+}
+
+type ReactionEvent = Extract<StreamEvent, { type: "reaction" }>;
+
+/** D20's re-check, run when the reaction is due (the backend runs it under its writer lock). */
+export function reactionStillValid(s: SessionRuntimeState, r: ReactionEvent["payload"]): boolean {
+  const session = s.session;
+  if (session.emotionMode === "user" || session.status !== "active") return false;
+  const part = session.participants.find((p) => p.characterId === r.characterId);
+  if (!part || (r.source === "classifier" && part.mutedByUser)) return false;
+  const streaming = s.streamingId ? s.messages[s.streamingId] : undefined;
+  if (streaming?.author.type === "character" && streaming.author.characterId === r.characterId) return false;
+  const reacted = s.messages[r.messageId];
+  if (reacted && s.order.some((id) => {
+    const m = s.messages[id];
+    return !!m && m.author.type === "character" && m.author.characterId === r.characterId && m.seq > reacted.seq;
+  })) return false;
+  const face = part.currentEmotion ?? "neutral";
+  return r.source === "default" ? FADE.has(face) : face !== r.emotion;
+}
+
+/** Live turns only (the seed build plays scripts as recorded): each reaction becomes a cancellable, re-checked
+ *  callback, and a completed AUTO reply with listeners charges one simulated `reaction` decision at turn.end (D21). */
+function liveReactions(h: EngineHost, sid: string, script: LineScript, messageId: string, charge: boolean): TimelineEntry<StreamEvent>[] {
+  const out = script.entries.map((e): TimelineEntry<StreamEvent> => {
+    if (e.item?.type !== "reaction") return e;
+    const ev = e.item;
+    return { t: e.t, tag: `${REACT_TAG}${messageId}:${ev.payload.characterId}`, run: () => {
+      if (reactionStillValid(h.live(sid).state, ev.payload)) h.emit(sid, ev);
+    } };
+  });
+  if (charge) out.push({ t: script.endMs, tag: messageId, run: () => h.charge(sid, "decision", decisionCostUsd(REACTION_DECISION_TOKENS, h.pricing.decision)) });
+  return out;
 }
 
 function pickEmotionTiming(h: EngineHost, rng: Rng): EmotionTiming {
@@ -221,7 +264,7 @@ export function speak(h: EngineHost, sid: string, cid: string, opts: SpeakOpts =
   };
   const script = buildLineScript(spec, h.timing, h.pricing, rng);
   live.current = { messageId, characterId: cid, script, startPos: live.player.position, text };
-  h.play(sid, script.entries, messageId);
+  h.play(sid, liveReactions(h, sid, script, messageId, script.status === "complete" && !manual && listeners.length > 0), messageId);
   return { messageId, endMs: script.endMs, status: script.status };
 }
 

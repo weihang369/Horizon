@@ -12,7 +12,8 @@ implementation when one exists (`AGENT_PORTS`), else its naive one, else its scr
 scripted, as for `naive`. `resolved()` (shown in /health and every eval report) says what actually ran.
 M8 (persona-context design D1): `AGENT_PORTS` gains `turn` (the `agent` persona prompt); routing, retrieval, the
 guardrail, reactions and the memory writer stay what `naive` resolves to. M9 (turn-plan-emotion D5): `planner` (Jev
-call 1 in 1:1); `naive` gets explicit no-op planner and face check so the scripted stand-ins never bill it.
+call 1 in 1:1) and `reactions` (Jev, design D18, D19); `naive` gets explicit no-op planner and face check so the
+scripted stand-ins never bill it.
 
 M5 (knowledge-memory-storage design D4, D7, D17): the `embedder` and the memory and knowledge retrievers have naive
 implementations; the `memory_writer` writes nothing in both profiles. The document `converter` does not follow the
@@ -50,7 +51,7 @@ NAIVE_PORTS = frozenset({"turn", "router", "drafter", "image", "song", "embedder
                          "memory_retriever", "converter", "summariser",   # M8: the DeepSeek rolling summary (X3)
                          "planner", "face_check"})   # M9 (design D5): naive's own no-ops, never the scripted stand-ins
 KEYLESS_PORTS = frozenset({"converter"})   # chosen by availability, not by the profile or the key (D-96)
-AGENT_PORTS = frozenset({"turn", "planner"})   # ports with an `agent` implementation (each change adds its own: M8 turn, M9 planner)
+AGENT_PORTS = frozenset({"turn", "planner", "reactions"})   # ports with an `agent` implementation (M8 turn; M9 planner, reactions)
 ENV_PROFILE = "HORIZON_AI_PROFILE"
 
 
@@ -133,6 +134,9 @@ class AiPorts:
             if port == "planner":
                 from horizon.ai.agent.planner import JevTurnPlanner
                 return JevTurnPlanner(d)
+            if port == "reactions":
+                from horizon.ai.agent.reactions import JevReactions
+                return JevReactions(d)
             raise KeyError(f"no agent implementation for port {port!r}")
         if impl == "naive":
             if port == "turn":

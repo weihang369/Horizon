@@ -162,39 +162,39 @@
 
 ## 5. After-turn tasks, listener reactions and the reducer guard (D18–D22)
 
-- [ ] 5.1 Give the actor named background tasks (D20): a registry by name, `cancel_background(*names)`, and `clear()`
+- [x] 5.1 Give the actor named background tasks (D20): a registry by name, `cancel_background(*names)`, and `clear()`
   cancelling `reactions` and `face_check`. Verify the session-runtime scenario "Stop cancels reactions and the check"
   (the rolling summary's row is still written).
-- [ ] 5.2 Add `actor.emit_checked(event, check)` under the writer lock (D20). Verify: a unit test where a listener's
+- [x] 5.2 Add `actor.emit_checked(event, check)` under the writer lock (D20). Verify: a unit test where a listener's
   `turn.start` is queued between the check and the append drops the reaction.
-- [ ] 5.3 Make `ReactionPredictor.predict` async with `ReactionRequest` (D18). Move the call into the reactions task
+- [x] 5.3 Make `ReactionPredictor.predict` async with `ReactionRequest` (D18). Move the call into the reactions task
   in a new `sessions/after_turn.py`, with listeners read from the actor's state when the task runs. Verify the
   listener-reactions scenarios "Next speaker not delayed", "No reactions in 1:1" and "Muted after the reply".
-- [ ] 5.4 Make `ScriptedReactions` async with D21's `simulate` flag. Verify:
+- [x] 5.4 Make `ScriptedReactions` async with D21's `simulate` flag. Verify:
   - "Same reactions" (ai-ports);
   - "Naive group with a key" (no row);
   - "Scripted group" (one simulated `reaction` row);
   - existing reaction timing tests.
-- [ ] 5.5 Write the `reaction.json` bank entry (D18) and re-lock. Verify: the bank test loads it, it compiles about a
+- [x] 5.5 Write the `reaction.json` bank entry (D18) and re-lock. Verify: the bank test loads it, it compiles about a
   named listener, and `overlap` passes.
-- [ ] 5.6 Write `JevReactions` (D18): the state, one question per listener, the merge, the keep rule, at most 2, the
+- [x] 5.6 Write `JevReactions` (D18): the state, one question per listener, the merge, the keep rule, at most 2, the
   fades outside the cap, the seeded delays, and the 1.5 s deadline. Add `reactions` to `AGENT_PORTS`. Verify the
   listener-reactions scenarios:
   - "Two listeners", "Cap of two" and "Same face";
   - "Muted listener fades";
   - "Late answer" and "Budget refusal".
-- [ ] 5.7 The drop rules (D20): `on_user_message(actor)` in every mode's send path, MANUAL in `_emotion_mode`, and the
+- [x] 5.7 The drop rules (D20): `on_user_message(actor)` in every mode's send path, MANUAL in `_emotion_mode`, and the
   per-listener locked re-check. Verify the scenarios "The next speaker's reaction", "A user message" and session-modes
   "MANUAL drops reactions".
-- [ ] 5.8 The reducer guard (D22) in `reducer.py` and `sessionReducer.ts`, with the four new shared fixtures including
+- [x] 5.8 The reducer guard (D22) in `reducer.py` and `sessionReducer.ts`, with the four new shared fixtures including
   `seed-dinner-seq25`. Verify:
   - both languages pass every reducer fixture;
   - the session-event-sourcing scenarios "Speaker's face kept against a reaction" and "Seed sessions still reduce";
   - `seed:check`.
-- [ ] 5.9 The MockClient's reactions (D21): `turnScript.ts` charges a simulated `reaction` call and applies the drop
+- [x] 5.9 The MockClient's reactions (D21): `turnScript.ts` charges a simulated `reaction` call and applies the drop
   rules. Verify: the portable suite's spend and cap tests pass on both clients (`npm run test:http`), and the
   demo-data scenario "Mock reactions dropped by a user message".
-- [ ] 5.10 Mark doc 06 §6's reaction, reactions-task, mock and E6 rows built. Verify by reading.
+- [x] 5.10 Mark doc 06 §6's reaction, reactions-task, mock and E6 rows built. Verify by reading.
 
 ## 6. The face check (D23, D24)
 

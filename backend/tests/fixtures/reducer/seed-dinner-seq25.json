@@ -1,0 +1,692 @@
+{
+  "schemaVersion": 1,
+  "name": "seed-dinner-seq25",
+  "description": "The seed case (docs/ai/06 §2 finding 1): ses_seedDinner up to seq 25, a reaction for Rin 10 ms after her own turn.start (seq 24). With E6's guard Rin's face stays what it was until her first token; the seed session's final state is unchanged (her own emotion at seq 26 is angry too).",
+  "session": {
+    "id": "ses_seedDinner",
+    "worldId": "wld_seedSunnyHollow",
+    "title": "Dinner's on me",
+    "titleIsCustom": true,
+    "mode": "group",
+    "participants": [
+      {
+        "characterId": "chr_seedHana",
+        "role": "speaker",
+        "currentEmotion": "happy",
+        "mutedByUser": false
+      },
+      {
+        "characterId": "chr_seedTakeshi",
+        "role": "speaker",
+        "currentEmotion": "happy",
+        "mutedByUser": false
+      },
+      {
+        "characterId": "chr_seedRin",
+        "role": "speaker",
+        "currentEmotion": "embarrassed",
+        "mutedByUser": false
+      }
+    ],
+    "emotionMode": "llm",
+    "musicPolicy": "follow_speaker",
+    "readableMode": false,
+    "config": {
+      "responderPolicy": "auto",
+      "maxAutoResponders": 2
+    },
+    "isSeed": true,
+    "status": "active",
+    "state": null,
+    "costUsd": 0,
+    "messageCount": 0,
+    "createdAt": "2026-09-30T10:30:00Z",
+    "updatedAt": "2026-09-30T10:30:00Z"
+  },
+  "events": [
+    {
+      "id": "evt_seedDinner0001",
+      "sessionId": "ses_seedDinner",
+      "seq": 1,
+      "at": "2026-09-30T10:30:00Z",
+      "type": "session.state",
+      "payload": {
+        "status": "active",
+        "participants": [
+          {
+            "characterId": "chr_seedHana",
+            "role": "speaker",
+            "currentEmotion": "neutral",
+            "mutedByUser": false
+          },
+          {
+            "characterId": "chr_seedTakeshi",
+            "role": "speaker",
+            "currentEmotion": "neutral",
+            "mutedByUser": false
+          },
+          {
+            "characterId": "chr_seedRin",
+            "role": "speaker",
+            "currentEmotion": "neutral",
+            "mutedByUser": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "evt_seedDinner0002",
+      "sessionId": "ses_seedDinner",
+      "seq": 2,
+      "at": "2026-09-30T10:30:00.005Z",
+      "type": "energy",
+      "payload": {
+        "characterId": "chr_seedHana",
+        "current": 921,
+        "max": 1000,
+        "state": "active"
+      }
+    },
+    {
+      "id": "evt_seedDinner0003",
+      "sessionId": "ses_seedDinner",
+      "seq": 3,
+      "at": "2026-09-30T10:30:00.006Z",
+      "type": "energy",
+      "payload": {
+        "characterId": "chr_seedTakeshi",
+        "current": 1001,
+        "max": 1000,
+        "state": "active"
+      }
+    },
+    {
+      "id": "evt_seedDinner0004",
+      "sessionId": "ses_seedDinner",
+      "seq": 4,
+      "at": "2026-09-30T10:30:00.007Z",
+      "type": "energy",
+      "payload": {
+        "characterId": "chr_seedRin",
+        "current": 182,
+        "max": 1000,
+        "state": "tired"
+      }
+    },
+    {
+      "id": "evt_seedDinner0005",
+      "sessionId": "ses_seedDinner",
+      "seq": 5,
+      "at": "2026-09-30T10:30:00.700Z",
+      "type": "message",
+      "payload": {
+        "message": {
+          "id": "msg_seedC01",
+          "sessionId": "ses_seedDinner",
+          "seq": 1,
+          "author": {
+            "type": "user"
+          },
+          "kind": "chat",
+          "content": "Dinner's on me tonight. What should we order?",
+          "status": "complete",
+          "createdAt": "2026-09-30T10:30:00.700Z"
+        }
+      }
+    },
+    {
+      "id": "evt_seedDinner0006",
+      "sessionId": "ses_seedDinner",
+      "seq": 6,
+      "at": "2026-09-30T10:30:00.950Z",
+      "type": "turn.next",
+      "payload": {
+        "nextSpeakerId": "chr_seedTakeshi"
+      }
+    },
+    {
+      "id": "evt_seedDinner0007",
+      "sessionId": "ses_seedDinner",
+      "seq": 7,
+      "at": "2026-09-30T10:30:01.010Z",
+      "type": "turn.thinking",
+      "payload": {
+        "characterId": "chr_seedTakeshi"
+      }
+    },
+    {
+      "id": "evt_seedDinner0008",
+      "sessionId": "ses_seedDinner",
+      "seq": 8,
+      "at": "2026-09-30T10:30:01.050Z",
+      "type": "turn.start",
+      "payload": {
+        "messageId": "msg_seedC02",
+        "author": {
+          "type": "character",
+          "characterId": "chr_seedTakeshi"
+        },
+        "message": {
+          "seq": 2,
+          "kind": "chat"
+        }
+      }
+    },
+    {
+      "id": "evt_seedDinner0009",
+      "sessionId": "ses_seedDinner",
+      "seq": 9,
+      "at": "2026-09-30T10:30:01.090Z",
+      "type": "emotion",
+      "payload": {
+        "messageId": "msg_seedC02",
+        "characterId": "chr_seedTakeshi",
+        "emotion": "happy",
+        "source": "llm"
+      }
+    },
+    {
+      "id": "evt_seedDinner0010",
+      "sessionId": "ses_seedDinner",
+      "seq": 10,
+      "at": "2026-09-30T10:30:02.599Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_seedC02",
+        "delta": "Sushi.\nAnd"
+      }
+    },
+    {
+      "id": "evt_seedDinner0011",
+      "sessionId": "ses_seedDinner",
+      "seq": 11,
+      "at": "2026-09-30T10:30:02.689Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_seedC02",
+        "delta": " I'll be hone"
+      }
+    },
+    {
+      "id": "evt_seedDinner0012",
+      "sessionId": "ses_seedDinner",
+      "seq": 12,
+      "at": "2026-09-30T10:30:02.779Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_seedC02",
+        "delta": "st, I'm only"
+      }
+    },
+    {
+      "id": "evt_seedDinner0013",
+      "sessionId": "ses_seedDinner",
+      "seq": 13,
+      "at": "2026-09-30T10:30:02.869Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_seedC02",
+        "delta": " saying that"
+      }
+    },
+    {
+      "id": "evt_seedDinner0014",
+      "sessionId": "ses_seedDinner",
+      "seq": 14,
+      "at": "2026-09-30T10:30:02.959Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_seedC02",
+        "delta": " because I've"
+      }
+    },
+    {
+      "id": "evt_seedDinner0015",
+      "sessionId": "ses_seedDinner",
+      "seq": 15,
+      "at": "2026-09-30T10:30:03.049Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_seedC02",
+        "delta": " been *fishing"
+      }
+    },
+    {
+      "id": "evt_seedDinner0016",
+      "sessionId": "ses_seedDinner",
+      "seq": 16,
+      "at": "2026-09-30T10:30:03.139Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_seedC02",
+        "delta": "* for an"
+      }
+    },
+    {
+      "id": "evt_seedDinner0017",
+      "sessionId": "ses_seedDinner",
+      "seq": 17,
+      "at": "2026-09-30T10:30:03.229Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_seedC02",
+        "delta": " invitation."
+      }
+    },
+    {
+      "id": "evt_seedDinner0018",
+      "sessionId": "ses_seedDinner",
+      "seq": 18,
+      "at": "2026-09-30T10:30:03.279Z",
+      "type": "turn.end",
+      "payload": {
+        "messageId": "msg_seedC02",
+        "status": "complete",
+        "usage": {
+          "tokensIn": 2009,
+          "tokensCached": 1719,
+          "tokensOut": 24,
+          "costUsd": 6.3e-05,
+          "energySpent": 1,
+          "firstTokenMs": 1649,
+          "totalMs": 2329
+        }
+      }
+    },
+    {
+      "id": "evt_seedDinner0019",
+      "sessionId": "ses_seedDinner",
+      "seq": 19,
+      "at": "2026-09-30T10:30:03.289Z",
+      "type": "energy",
+      "payload": {
+        "characterId": "chr_seedTakeshi",
+        "current": 1000,
+        "max": 1000,
+        "state": "active",
+        "spent": 1
+      }
+    },
+    {
+      "id": "evt_seedDinner0020",
+      "sessionId": "ses_seedDinner",
+      "seq": 20,
+      "at": "2026-09-30T10:30:03.339Z",
+      "type": "insight",
+      "payload": {
+        "messageId": "msg_seedC02",
+        "trace": {
+          "messageId": "msg_seedC02",
+          "model": {
+            "id": "deepseek/deepseek-v4.1-flash",
+            "provider": "DeepSeek",
+            "pricePeriod": "off_peak",
+            "latencyMs": {
+              "firstToken": 1649,
+              "total": 2329
+            },
+            "tokensIn": 2009,
+            "tokensCached": 1719,
+            "tokensOut": 24,
+            "costUsd": 6.3e-05
+          },
+          "energy": {
+            "characterId": "chr_seedTakeshi",
+            "spent": 1,
+            "remaining": 1000,
+            "max": 1000
+          },
+          "emotion": {
+            "chosen": "happy",
+            "source": "llm",
+            "candidates": [
+              {
+                "label": "happy",
+                "p": 0.723
+              },
+              {
+                "label": "sad",
+                "p": 0.156
+              },
+              {
+                "label": "neutral",
+                "p": 0.11
+              }
+            ]
+          },
+          "routing": {
+            "question": "Who should answer?",
+            "selected": "chr_seedTakeshi",
+            "candidates": [
+              {
+                "characterId": "chr_seedTakeshi",
+                "p": 0.62
+              },
+              {
+                "characterId": "chr_seedRin",
+                "p": 0.57
+              },
+              {
+                "characterId": "chr_seedHana",
+                "p": 0.41
+              }
+            ]
+          },
+          "context": {
+            "budget": 12000,
+            "cacheHitPct": 86,
+            "used": {
+              "system": 900,
+              "persona": 810,
+              "memory": 0,
+              "knowledge": 0,
+              "history": 11,
+              "user": 68,
+              "mode": 220
+            }
+          },
+          "guardrail": {
+            "checks": [
+              {
+                "name": "sfw",
+                "verdict": "pass",
+                "p": 0.961
+              },
+              {
+                "name": "advice_scope",
+                "verdict": "pass"
+              }
+            ]
+          },
+          "calls": [
+            {
+              "purpose": "route",
+              "model": "typesafe/jev-1.13",
+              "costUsd": 2.5e-05,
+              "latencyMs": 240
+            },
+            {
+              "purpose": "reply",
+              "model": "deepseek/deepseek-v4.1-flash",
+              "costUsd": 6.3e-05,
+              "latencyMs": 2329
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "evt_seedDinner0021",
+      "sessionId": "ses_seedDinner",
+      "seq": 21,
+      "at": "2026-09-30T10:30:03.634Z",
+      "type": "reaction",
+      "payload": {
+        "messageId": "msg_seedC02",
+        "characterId": "chr_seedHana",
+        "emotion": "happy",
+        "p": 0.6,
+        "source": "classifier"
+      }
+    },
+    {
+      "id": "evt_seedDinner0022",
+      "sessionId": "ses_seedDinner",
+      "seq": 22,
+      "at": "2026-09-30T10:30:03.679Z",
+      "type": "turn.next",
+      "payload": {
+        "nextSpeakerId": "chr_seedRin"
+      }
+    },
+    {
+      "id": "evt_seedDinner0023",
+      "sessionId": "ses_seedDinner",
+      "seq": 23,
+      "at": "2026-09-30T10:30:03.739Z",
+      "type": "turn.thinking",
+      "payload": {
+        "characterId": "chr_seedRin"
+      }
+    },
+    {
+      "id": "evt_seedDinner0024",
+      "sessionId": "ses_seedDinner",
+      "seq": 24,
+      "at": "2026-09-30T10:30:03.779Z",
+      "type": "turn.start",
+      "payload": {
+        "messageId": "msg_seedC03",
+        "author": {
+          "type": "character",
+          "characterId": "chr_seedRin"
+        },
+        "message": {
+          "seq": 3,
+          "kind": "chat"
+        }
+      }
+    },
+    {
+      "id": "evt_seedDinner0025",
+      "sessionId": "ses_seedDinner",
+      "seq": 25,
+      "at": "2026-09-30T10:30:03.789Z",
+      "type": "reaction",
+      "payload": {
+        "messageId": "msg_seedC02",
+        "characterId": "chr_seedRin",
+        "emotion": "angry",
+        "p": 0.76,
+        "source": "classifier"
+      }
+    }
+  ],
+  "expected": {
+    "session": {
+      "id": "ses_seedDinner",
+      "worldId": "wld_seedSunnyHollow",
+      "title": "Dinner's on me",
+      "titleIsCustom": true,
+      "mode": "group",
+      "participants": [
+        {
+          "characterId": "chr_seedHana",
+          "role": "speaker",
+          "currentEmotion": "happy",
+          "mutedByUser": false
+        },
+        {
+          "characterId": "chr_seedTakeshi",
+          "role": "speaker",
+          "currentEmotion": "happy",
+          "mutedByUser": false
+        },
+        {
+          "characterId": "chr_seedRin",
+          "role": "speaker",
+          "currentEmotion": "neutral",
+          "mutedByUser": false
+        }
+      ],
+      "emotionMode": "llm",
+      "musicPolicy": "follow_speaker",
+      "readableMode": false,
+      "config": {
+        "responderPolicy": "auto",
+        "maxAutoResponders": 2
+      },
+      "isSeed": true,
+      "status": "active",
+      "state": null,
+      "costUsd": 6.3e-05,
+      "messageCount": 3,
+      "createdAt": "2026-09-30T10:30:00Z",
+      "updatedAt": "2026-09-30T10:30:03.789Z",
+      "lastMessageAt": "2026-09-30T10:30:03.779Z"
+    },
+    "messages": [
+      {
+        "id": "msg_seedC01",
+        "sessionId": "ses_seedDinner",
+        "seq": 1,
+        "author": {
+          "type": "user"
+        },
+        "kind": "chat",
+        "content": "Dinner's on me tonight. What should we order?",
+        "status": "complete",
+        "createdAt": "2026-09-30T10:30:00.700Z"
+      },
+      {
+        "kind": "chat",
+        "seq": 2,
+        "id": "msg_seedC02",
+        "sessionId": "ses_seedDinner",
+        "author": {
+          "type": "character",
+          "characterId": "chr_seedTakeshi"
+        },
+        "content": "Sushi.\nAnd I'll be honest, I'm only saying that because I've been *fishing* for an invitation.",
+        "status": "complete",
+        "createdAt": "2026-09-30T10:30:01.050Z",
+        "emotion": "happy",
+        "emotionSource": "llm",
+        "usage": {
+          "tokensIn": 2009,
+          "tokensCached": 1719,
+          "tokensOut": 24,
+          "costUsd": 6.3e-05,
+          "energySpent": 1,
+          "firstTokenMs": 1649,
+          "totalMs": 2329
+        },
+        "trace": {
+          "messageId": "msg_seedC02",
+          "model": {
+            "id": "deepseek/deepseek-v4.1-flash",
+            "provider": "DeepSeek",
+            "pricePeriod": "off_peak",
+            "latencyMs": {
+              "firstToken": 1649,
+              "total": 2329
+            },
+            "tokensIn": 2009,
+            "tokensCached": 1719,
+            "tokensOut": 24,
+            "costUsd": 6.3e-05
+          },
+          "energy": {
+            "characterId": "chr_seedTakeshi",
+            "spent": 1,
+            "remaining": 1000,
+            "max": 1000
+          },
+          "emotion": {
+            "chosen": "happy",
+            "source": "llm",
+            "candidates": [
+              {
+                "label": "happy",
+                "p": 0.723
+              },
+              {
+                "label": "sad",
+                "p": 0.156
+              },
+              {
+                "label": "neutral",
+                "p": 0.11
+              }
+            ]
+          },
+          "routing": {
+            "question": "Who should answer?",
+            "selected": "chr_seedTakeshi",
+            "candidates": [
+              {
+                "characterId": "chr_seedTakeshi",
+                "p": 0.62
+              },
+              {
+                "characterId": "chr_seedRin",
+                "p": 0.57
+              },
+              {
+                "characterId": "chr_seedHana",
+                "p": 0.41
+              }
+            ]
+          },
+          "context": {
+            "budget": 12000,
+            "cacheHitPct": 86,
+            "used": {
+              "system": 900,
+              "persona": 810,
+              "memory": 0,
+              "knowledge": 0,
+              "history": 11,
+              "user": 68,
+              "mode": 220
+            }
+          },
+          "guardrail": {
+            "checks": [
+              {
+                "name": "sfw",
+                "verdict": "pass",
+                "p": 0.961
+              },
+              {
+                "name": "advice_scope",
+                "verdict": "pass"
+              }
+            ]
+          },
+          "calls": [
+            {
+              "purpose": "route",
+              "model": "typesafe/jev-1.13",
+              "costUsd": 2.5e-05,
+              "latencyMs": 240
+            },
+            {
+              "purpose": "reply",
+              "model": "deepseek/deepseek-v4.1-flash",
+              "costUsd": 6.3e-05,
+              "latencyMs": 2329
+            }
+          ]
+        },
+        "reactions": [
+          {
+            "characterId": "chr_seedHana",
+            "emotion": "happy",
+            "p": 0.6,
+            "at": "2026-09-30T10:30:03.634Z"
+          },
+          {
+            "characterId": "chr_seedRin",
+            "emotion": "angry",
+            "p": 0.76,
+            "at": "2026-09-30T10:30:03.789Z"
+          }
+        ]
+      },
+      {
+        "kind": "chat",
+        "seq": 3,
+        "id": "msg_seedC03",
+        "sessionId": "ses_seedDinner",
+        "author": {
+          "type": "character",
+          "characterId": "chr_seedRin"
+        },
+        "content": "",
+        "status": "streaming",
+        "createdAt": "2026-09-30T10:30:03.779Z"
+      }
+    ]
+  }
+}

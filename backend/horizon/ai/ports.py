@@ -15,7 +15,7 @@ from typing import Any, Protocol
 
 from sqlalchemy.ext.asyncio import AsyncConnection
 
-from horizon.ai.contexts import PlanRequest, RouteContext, SessionContext, TurnContext, TurnPlan
+from horizon.ai.contexts import PlanRequest, ReactionRequest, RouteContext, SessionContext, TurnContext, TurnPlan
 from horizon.gateway.context import CallContext
 
 OWNED_TRACE_KEYS = frozenset({"model", "energy", "routing", "calls", "messageId", "system1"})   # system1: rev 1.4, D24
@@ -62,6 +62,7 @@ class Reaction:
     emotion: str
     p: float | None
     delay_ms: float
+    source: str = "classifier"                           # "default" for an E3 fade (M9 D18)
 
 
 @dataclass(frozen=True)
@@ -98,8 +99,9 @@ class FaceChecker(Protocol):
 
 
 class ReactionPredictor(Protocol):
-    def predict(self, ctx: SessionContext, message_id: str, speaker_id: str, listeners: list[str],
-                seed: str) -> list[Reaction]: ...
+    """Async, called inside the reactions task after `turn.end`, never in `finish` (M9 D18)."""
+
+    async def predict(self, req: ReactionRequest) -> list[Reaction]: ...
 
 
 class DebateHost(Protocol):

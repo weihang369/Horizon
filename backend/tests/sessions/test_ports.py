@@ -9,7 +9,16 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-from horizon.ai.contexts import CharacterView, LineHint, ParticipantView, SessionContext, TurnContext, WorldView
+from horizon.ai.contexts import (
+    CharacterView,
+    LineHint,
+    ListenerView,
+    ParticipantView,
+    ReactionRequest,
+    SessionContext,
+    TurnContext,
+    WorldView,
+)
 from horizon.ai.profile import ProfileSpec
 from horizon.ai.scripted import bank
 from horizon.ai.scripted.ports import (
@@ -165,10 +174,13 @@ def test_bank_and_ports_are_deterministic() -> None:
 
 
 async def test_reactions_follow_the_timing_table(api: Api) -> None:
-    r = ScriptedReactions(api.rt.ai.deps)
-    out = r.predict(turn_ctx().session, "msg_x1", "chr_a", ["chr_b", "chr_c", "chr_d", "chr_e"], seed="s")
-    assert out == r.predict(turn_ctx().session, "msg_x1", "chr_a", ["chr_b", "chr_c", "chr_d", "chr_e"], seed="s")
-    assert all(300 <= x.delay_ms <= 800 and 0.42 <= (x.p or 0) <= 0.9 for x in out)
+    """M9 D21: async, same seeds, same output; `simulate=False` (naive with a key) records nothing."""
+    r = ScriptedReactions(api.rt.ai.deps, simulate=False)
+    req = ReactionRequest(session=turn_ctx().session, message_id="msg_x1", speaker_id="chr_a", line="Hi.", seed="s",
+                          listeners=[ListenerView(id=c, name=c) for c in ("chr_b", "chr_c", "chr_d", "chr_e")])
+    out = await r.predict(req)
+    assert out == await r.predict(req)
+    assert all(300 <= x.delay_ms <= 800 and 0.42 <= (x.p or 0) <= 0.9 and x.source == "classifier" for x in out)
 
 
 # ── purge ──

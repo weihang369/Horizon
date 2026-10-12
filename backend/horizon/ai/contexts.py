@@ -184,6 +184,30 @@ class PlanRequest(Frozen):
     started_at: datetime                            # the deadline counts from here (the plan starts before turn.next)
 
 
+class ListenerView(Frozen):
+    """A listener as the reactions task reads it from the actor's state when it runs (design D18)."""
+
+    id: str
+    name: str
+    about_source: str = ""                         # personality summary; cut to 60 tokens in the state (X9 helpers)
+    face: str = "neutral"                           # the listener's face now
+    side_label: str | None = None                   # debate: "same side as the speaker" | "the other side"
+    eligible: bool = True                           # unmuted with energy for a reply: asked of Jev; else fade only (E3)
+
+
+class ReactionRequest(Frozen):
+    """What the reactions task gives `ReactionPredictor.predict` (design D18)."""
+
+    session: SessionContext
+    message_id: str
+    speaker_id: str
+    speaker_name: str = ""
+    line: str                                       # the reply text
+    before: str = ""                               # the line before it, as "Name: text"
+    listeners: list[ListenerView] = []
+    seed: str                                       # "{session seed}:{turn index}"
+
+
 class TurnContext(Frozen):
     session: SessionContext
     speaker: CharacterView

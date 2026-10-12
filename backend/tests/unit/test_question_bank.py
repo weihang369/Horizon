@@ -224,3 +224,18 @@ def test_emotion_options_are_shuffled_by_seed() -> None:
     b = list(bank().question("emotion_reply", seed="s1:3", name="Amara").options)    # type: ignore[union-attr]
     c = list(bank().question("emotion_reply", seed="s1:4", name="Amara").options)    # type: ignore[union-attr]
     assert a == b and a != c and set(a) == set(c)
+
+
+# ── M9 task 5.5: the reaction entry (turn-plan-emotion design D18; doc 06 E5) ──
+def test_the_reaction_entry_compiles_about_a_named_listener() -> None:
+    q = bank().question("reaction", seed="s1:3:react:chr_seedRin", name="Rin", about="chr_seedRin")
+    assert isinstance(q, Choice) and set(q.options) == EMOTIONS | {"none"}
+    assert q.instructions.startswith("How does Rin react to quoted_line? Choose none when they show no visible reaction.")
+    assert q.meta is not None and (q.meta.purpose, q.meta.label, q.meta.deadline) == ("reaction", "reaction", "reaction")
+    e = bank().get("reaction")
+    assert e.floor == 0.6 and set(e.state) == {"mode", "quoted_line", "quoted_before", "quoted_listeners"}
+    emotion = bank().get("emotion_reply").options["items"]
+    for k, v in e.options["items"].items():   # E1's wording per emotion; its own examples
+        if k != "none":
+            assert (v["what"], v["not_for"]) == (emotion[k]["what"], emotion[k]["not_for"])
+    assert e.options["items"]["none"]["what"] == "No visible reaction: the line doesn't move them."

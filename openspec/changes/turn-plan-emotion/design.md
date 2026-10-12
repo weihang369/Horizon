@@ -806,6 +806,20 @@ The user can pick `moodline --limit 60` when it is asked.
   ask the emotion. No stopgap call is built.
 - **`judge_voice` stays unvalidated,** with X5 off, until M15's `conversations` run gets a fresh held-out set.
 
+### D35. A refused after-turn decision pauses nothing (the user's choice, 2026-10-12, found in phase 5)
+
+**Found while building 5.6:** the gateway's daily-cap refusal publishes `budget.reached`, and the session manager's
+hook pauses every live session for it. A refused `reaction` request would therefore pause sessions, against the
+listener-reactions requirement "SHALL never pause the session".
+
+**Decision (the user chose it):** for the after-turn purposes `reaction` and `face_check`, the refusal still publishes
+`budget.reached` but does not call the pause hook (`_reached(..., sessions=False)`, as a refused job estimate already
+does). The next reply's own preflight meets the same cap and takes the usual cap-pause path, so the one pause comes
+from a reply, as D7 reasons for Jev call 1. Spend that *crosses* the cap when recorded still pauses as before.
+
+**Rejected:** keeping the pause and narrowing the scenario to "the reactions task emits nothing itself": the user
+would see a pause caused by a background face.
+
 ## Risks / Trade-offs
 
 - **[LangGraph doesn't settle on the virtual clock]** → D2 measures it first and stops with choices. The plan's port

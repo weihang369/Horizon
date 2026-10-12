@@ -76,6 +76,7 @@ def embeddings_key(body: Mapping[str, Any]) -> str:
     return k(body)
 
 log = logging.getLogger("horizon.gateway")
+AFTER_TURN = frozenset({"reaction", "face_check"})   # M9 D35: decisions run after turn.end, off the hot path
 T = TypeVar("T")
 
 
@@ -253,7 +254,9 @@ class Gateway:
             spent = await self.ledger.spent_today()
             if budget.exceeds_daily(spent, reserved, estimate, caps.daily_cap_usd):
                 self._give_back(ctx, moved)
-                self._reached(ctx, "daily", spent, caps.daily_cap_usd)
+                # M9 (turn-plan-emotion D35): a refused after-turn decision pauses nothing; the next reply's own
+                # preflight meets the cap and pauses as usual, so the one pause comes from a reply
+                self._reached(ctx, "daily", spent, caps.daily_cap_usd, sessions=ctx.purpose not in AFTER_TURN)
                 raise ProviderError("daily_budget_exceeded", "Today's spending cap is reached.")
             if ctx.creation and ctx.character_id:
                 creation = await self.ledger.creation_spent(ctx.character_id)

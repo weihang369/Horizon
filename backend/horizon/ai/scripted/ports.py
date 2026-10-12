@@ -15,7 +15,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from horizon.ai.contexts import MessageView, RouteContext, SessionContext, TurnContext
+from horizon.ai.contexts import MessageView, ReactionRequest, RouteContext, SessionContext, TurnContext
 from horizon.ai.ports import (
     CitationMap,
     Emotion,
@@ -34,6 +34,8 @@ from horizon.domain.runtime_config import Timing
 from horizon.gateway.pipeline import Gateway, SimulatedReply
 
 ROUTE_DECISION_TOKENS = 600     # `cost.ts` ROUTE_DECISION_TOKENS
+REACTION_DECISION_TOKENS = 600  # `cost.ts` REACTION_DECISION_TOKENS (M9 D21: the simulated `reaction` call)
+REACTION_LATENCY_MS = 420       # Jev's measured p50 (group A)
 REACTION_EMOTIONS = ("thinking", "happy", "surprised", "neutral", "embarrassed", "sad", "angry")
 LABEL = {"setup": "SETUP", "opening": "OPENING", "rebuttal": "REBUTTAL", "closing": "CLOSING", "verdict": "VERDICT",
          "ended": "ENDED"}
@@ -262,10 +264,20 @@ class ScriptedReactions:
         self.deps = deps
         self.simulate = simulate   # M9 (design D21): False when standing in for `naive` under a key: no fake spend
 
-    def predict(self, ctx: SessionContext, message_id: str, speaker_id: str, listeners: list[str],
-                seed: str) -> list[Reaction]:
+    async def predict(self, req: ReactionRequest) -> list[Reaction]:
+        """The mock's random reactions (same seeds, same output). With `simulate`, one simulated `reaction` decision
+        per message with listeners, at the decision price (E5, D-81); never under `naive` with a key (D21)."""
+        listeners = [lv.id for lv in req.listeners if lv.eligible]
+        if not listeners:
+            return []
+        if self.simulate:
+            prices = self.deps.prices
+            await self.deps.gateway().simulated_call(
+                req.session.call_ctx("reaction", character_id=req.speaker_id, message_id=req.message_id),
+                cost_usd=decision_cost(prices.decision, REACTION_DECISION_TOKENS), model=prices.decision.model,
+                tokens_in=REACTION_DECISION_TOKENS, latency_ms=REACTION_LATENCY_MS)
         t = self.deps.timing
-        rng = random.Random(f"{seed}:react")
+        rng = random.Random(f"{req.seed}:react")
         out = []
         for cid in listeners:
             if rng.random() >= t.reaction_chance:

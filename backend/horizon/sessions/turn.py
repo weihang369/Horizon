@@ -35,6 +35,7 @@ from horizon.domain.ids import new_id
 from horizon.domain.timeutil import to_ms
 from horizon.gateway.errors import ProviderError
 from horizon.sessions.actor import SessionActor, TurnInfo
+from horizon.sessions.after_turn import start_reactions
 from horizon.sessions.coalesce import Coalescer
 from horizon.sessions.context import (
     character_view,
@@ -452,7 +453,7 @@ class TurnRunner:
                                          "routingFallback": (spec.routing or {}).get("reason") == "fallback",
                                          "deciderFallback": any(bool(c.get("fallback")) for c in spec.calls)})
         if status == "complete" and spec.reactions and ctx is not None and actor.session["emotionMode"] != "user":
-            self._reactions(actor, info, ctx)
+            start_reactions(rt, actor, info, ctx, key_set=self.key_set())   # M9 D18-D20: predicted inside the task
         if status == "complete" and not scrub and ctx is not None and not verbatim:
             self._remember(actor, info, ctx)
         if status != "error":   # M8 (docs/ai/05 X2, X3): fold the window after the reply, never before it
@@ -524,33 +525,6 @@ class TurnRunner:
                 log.exception("the memory writer failed after message %s (ignored)", mid)
 
         actor.background("memory", job())
-
-    def _reactions(self, actor: SessionActor, info: TurnInfo, ctx: TurnContext) -> None:
-        rt = self.rt
-        est = rt.est_reply_points()
-        listeners = [p.character_id for p in ctx.session.participants
-                     if p.character_id != info.character_id and not p.muted
-                     and float(p.energy.get("current", 0)) >= est]
-        if not listeners:
-            return
-        reactions = rt.ai.reactions(self.key_set()).predict(ctx.session, info.message_id, info.character_id, listeners,
-                                                            seed=f"{actor.seed}:{ctx.turn_index}")
-        if not reactions:
-            return
-
-        async def play() -> None:
-            start = to_ms(rt.clock.now())
-            for r in sorted(reactions, key=lambda x: x.delay_ms):
-                wait = start + r.delay_ms - to_ms(rt.clock.now())
-                if wait > 0:
-                    await rt.clock.sleep(wait / 1000)
-                payload: Wire = {"messageId": info.message_id, "characterId": r.character_id, "emotion": r.emotion,
-                                 "source": "classifier"}
-                if r.p is not None:
-                    payload["p"] = r.p
-                await actor.emit({"type": "reaction", "payload": payload})
-
-        actor.background("reactions", play())
 
     # ── Stop ──
     async def close_interrupted(self, actor: SessionActor, info: TurnInfo, *, by: str = "user") -> None:

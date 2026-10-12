@@ -64,6 +64,14 @@ def _is_manual(s: State) -> bool:
     return bool(s["session"]["emotionMode"] == "user")
 
 
+def _is_speaking(s: State, character_id: str) -> bool:
+    """E6 (turn-plan-emotion D22): from its `turn.start` to its `turn.end`, a reaction never changes the face of the
+    character whose message is streaming. The reaction is still recorded on its message."""
+    streaming = s.get("streamingId")
+    m = s["messages"].get(streaming) if streaming else None
+    return m is not None and (m.get("author") or {}).get("characterId") == character_id
+
+
 def _set_display(s: State, character_id: str, emotion: str) -> None:
     if s["displayEmotion"].get(character_id) == emotion:
         return
@@ -276,7 +284,7 @@ def _apply(s: State, evt: Event) -> None:
             m = dict(s["messages"][message_id])
             m["reactions"] = [*(m.get("reactions") or []), r]
             s["messages"][message_id] = m
-        if not _is_manual(s):
+        if not _is_manual(s) and not _is_speaking(s, p["characterId"]):
             _set_display(s, p["characterId"], p["emotion"])
         return
 

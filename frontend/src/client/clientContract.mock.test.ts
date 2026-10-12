@@ -3,7 +3,8 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
-import type { Message } from "../contract/types";
+import type { Message, SessionEvent } from "../contract/types";
+import type { LiveSession } from "../mock/engines/host";
 import type { Dataset } from "../mock/db/dataset";
 import { loadSeedDataset } from "../mock/db/loadSeed";
 import { MockClient } from "../mock/MockClient";
@@ -100,5 +101,49 @@ describe("MockClient only", () => {
     await h.client.admin.resetDemo();
     expect(seen).toContain("mock.reset");
     expect((await h.client.settings.get()).openRouterKeyStatus).toBe("set");
+  });
+
+  // M9 (turn-plan-emotion D20, D21; demo-data "Mock reactions dropped by a user message"): the mock's reactions are
+  // re-checked, cancellable callbacks, and each completed AUTO reply with listeners charges one `reaction` decision.
+  it("a user message drops pending mock reactions; the reply charged one simulated reaction decision", async () => {
+    const h = await mockHarness();
+    await h.setKey();
+    const c = h.client;
+    const s = await c.sessions.create({ worldId: "wld_seedSunnyHollow", mode: "group",
+      characterIds: ["chr_seedHana", "chr_seedTakeshi", "chr_seedRin"] });
+    const sid = s.session.id;
+    await h.advance(3000);
+    const events: SessionEvent[] = [];
+    c.sessions.subscribe(sid, { sinceSeq: 0 }, (e) => events.push(e));
+    const live = (h.mock as unknown as { lives: Map<string, LiveSession> }).lives.get(sid)!;
+    const pending = () => {
+      const d = live.player.cancel((e) => !!e.tag?.startsWith("react:"));
+      live.player.insert(d);
+      return d;
+    };
+    let dropped: string | undefined;
+    for (let i = 0; i < 8 && !dropped; i++) {
+      const decisionsBefore = (await c.usage.summary()).byCategory.decision;
+      const seen = events.length;
+      await c.chat.send(sid, `Dinner plans, take ${i}?`, { mentions: ["chr_seedHana"] });
+      let end: SessionEvent | undefined;
+      for (let t = 0; t < 20000 && !end; t += 50) {
+        await h.advance(50);
+        end = events.slice(seen).find((e) => e.type === "turn.end");
+      }
+      expect(end).toBeDefined();
+      await h.advance(50);   // the charge lands at turn.end
+      expect((await c.usage.summary()).byCategory.decision).toBeGreaterThan(decisionsBefore);
+      const mid = (end!.payload as { messageId: string }).messageId;
+      if (pending().some((e) => e.tag!.startsWith(`react:${mid}:`))) {
+        await c.chat.send(sid, "Wait, hold on.", { mentions: ["chr_seedHana"] });
+        await h.advance(6000);
+        expect(events.filter((e) => e.type === "reaction" && (e.payload as { messageId: string }).messageId === mid)).toEqual([]);
+        dropped = mid;
+      } else {
+        await h.advance(8000);
+      }
+    }
+    expect(dropped).toBeDefined();
   });
 });

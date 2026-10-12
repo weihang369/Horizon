@@ -59,6 +59,10 @@
     "sha256": "20c4ea64a1b4a199fd240b79404a348144324628b18219456d5967dae4f18e84",
     "version": 4
   },
+  "reaction": {
+    "sha256": "53dc6b0738d99227df2369fe98f8d9c45e34059caeb02b1d7fc631baaddf9a85",
+    "version": 1
+  },
   "route": {
     "sha256": "c110d28f6e4c1e25f935efe948237604c431192f90a975fca5cf922ee7e273b9",
     "version": 2
