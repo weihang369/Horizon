@@ -112,6 +112,35 @@ def test_empty_relationship_is_omitted() -> None:
     assert "relationshipToUser" not in parse_draft(json.dumps(d), default_schema(), PALETTES)["profile"]
 
 
+def test_a_misnested_draft_one_brace_short_is_repaired_for_free() -> None:
+    """D33 (the paid drafter run's finding): `personality` left open, the rest of the profile and the top-level fields
+    written inside it, the text one `}` short. The free repair closes it and moves each field back."""
+    from horizon.ai.naive.creation import EXAMPLE, close_json, parse_draft
+
+    p = dict(EXAMPLE["profile"])
+    personality = {**p.pop("personality"), **{k: p.pop(k) for k in ("backstory", "speakingStyle", "expertise", "goals",
+                                                                       "boundaries", "greeting", "exampleLines",
+                                                                       "relationshipToUser")}}
+    tops = {k: v for k, v in EXAMPLE.items() if k != "profile"}
+    text = json.dumps({"profile": {**p, "personality": personality, **tops}}, ensure_ascii=False)[:-1]   # one } short
+    assert close_json(text) == text + "}"
+    got = parse_draft(text, default_schema(), PALETTES)
+    assert got == json.loads(json.dumps(EXAMPLE))
+
+
+def test_an_invented_key_still_fails_to_the_paid_retry() -> None:
+    from horizon.ai.naive.creation import EXAMPLE, parse_draft
+
+    d = json.loads(json.dumps(EXAMPLE))
+    d["profile"]["personality"]["traits2"] = ["x"]
+    try:
+        parse_draft(json.dumps(d), default_schema(), PALETTES)
+    except Exception as e:
+        assert "personality" in str(e)
+    else:
+        raise AssertionError("an invented key must not pass")
+
+
 def test_scripted_drafter_skips_a_name_already_used() -> None:
     first = draft_from_seed("an economist", "expert", PALETTES)["profile"]["name"]
     again = draft_from_seed("an economist", "expert", PALETTES, [f"{first} Someone"])["profile"]["name"]

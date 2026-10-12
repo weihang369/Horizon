@@ -58,7 +58,7 @@ async def test_group_stop_list(api: Api) -> None:
     req, _ = engine(api).request(group_ctx())
     assert req.stop == ["\nHana:", "\nRin:", "\nKai:", "\n[narration]"]
     assert "\nMei:" not in (req.stop or []) and "\n[" not in (req.stop or [])
-    assert req.temperature == 1.3 and req.reasoning == {"enabled": False} and req.max_tokens == 150
+    assert req.temperature == 1.0 and req.reasoning == {"enabled": False} and req.max_tokens == 150
 
 
 async def test_debate_uses_the_debate_row(api: Api) -> None:

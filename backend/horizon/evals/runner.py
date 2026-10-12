@@ -60,6 +60,7 @@ class Options:
     latency: bool = False
     repeat: bool = False
     set: str | None = None                # decisions: one dataset folder (e.g. `judges`, persona-context D27)
+    seed_dir: str | None = None           # a seed folder to run against instead of the repo's (a config experiment)
 
 
 @dataclass
@@ -157,7 +158,8 @@ def _user_key(base: Config) -> SecretStr | None:
 
 
 def isolated_config(base: Config, run_dir: Path, opts: Options, *, test_mode: bool) -> Config:
-    return Config(repo_root=base.repo_root, data_dir=run_dir, seed_dir=base.seed_dir, tz=base.tz, test_mode=test_mode,
+    seed_dir = Path(opts.seed_dir).resolve() if opts.seed_dir else base.seed_dir
+    return Config(repo_root=base.repo_root, data_dir=run_dir, seed_dir=seed_dir, tz=base.tz, test_mode=test_mode,
                   port=base.port, log_level=base.log_level, openrouter_key=None if test_mode else _user_key(base),
                   ai_env={"HORIZON_AI_PROFILE": opts.profile})
 
@@ -276,7 +278,9 @@ class Runner:
                  f"- profile: `{opts.profile}`; ports: " + ", ".join(f"{k}={v}" for k, v in sorted(ports.items())),
                  f"- items: {len(plan.items)}; estimate ${plan.estimate_usd:.5f}; spent ${spent:.5f}; cap ${max_usd:.5f}",
                  f"- provider: {'paid' if plan.paid else 'in-process fake ($0)'}; store hits: {hits}",
-                 *( [f"- model: `{model}`"] if model else []), "", *result.summary, ""]
+                 *( [f"- model: `{model}`"] if model else []),
+                 *( [f"- seed folder: `{opts.seed_dir}` (a config experiment)"] if opts.seed_dir else []),
+                 "", *result.summary, ""]
         (run_dir / "report.md").write_text("\n".join(lines), encoding="utf-8")
 
 

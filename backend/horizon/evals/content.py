@@ -78,7 +78,8 @@ class Drafter:
     name = "drafter"
 
     def plan(self, opts: Options, prices: Any, *, paid: bool) -> Plan:
-        seeds = take(jsonl(DRAFTER_SEEDS), opts)
+        # `--set NAME`: evals/drafter/NAME.jsonl instead (B4's extra companion drafts for judge_relationship_fit)
+        seeds = take(jsonl(DRAFTER_SEEDS.with_name(f"{opts.set}.jsonl") if opts.set else DRAFTER_SEEDS), opts)
         draft = estimate_chat(prices, prefix_tokens=2600, warm=False, other_in=80, expected_out_tokens=1400,
                               period="off_peak")
         est = len(seeds) * (draft + 2 * judge_estimate(prices, "judge_draft_fit", {"intent": "x", "quoted_seed": "x" * 60,

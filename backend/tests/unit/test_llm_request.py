@@ -16,7 +16,7 @@ MSGS = [{"role": "user", "content": "hi"}]
 
 def test_the_shipped_table() -> None:
     rt = load_runtime_config(SEED_DIR).runtime
-    expect = {"reply.chat": 1.3, "reply.debate": 1.0, "host": 1.0, "verdict": 0.7, "summary": 0.7, "episode": 0.7,
+    expect = {"reply.chat": 1.0, "reply.debate": 1.0, "host": 1.0, "verdict": 0.7, "summary": 0.7, "episode": 0.7,
               "memory": 0.7, "query_rewrite": 0.0, "profile": 1.0, "probe": None}
     assert {k: v.temperature for k, v in rt.llm_calls.items()} == expect
     assert all(v.thinking == "off" for v in rt.llm_calls.values())
@@ -30,7 +30,7 @@ def test_reply_body_has_no_unsupported_parameters() -> None:
     row = load_runtime_config(SEED_DIR).runtime.llm("reply.chat")
     req = llm_request(row, "deepseek/deepseek-v4.1-flash", MSGS, max_tokens=200, stop=["\nMei:", "\nMei:", "\nKai:"])
     body = ChatClient(None, gateway_config()).body(req, stream=True)  # type: ignore[arg-type]
-    assert body["temperature"] == 1.3 and body["reasoning"] == {"enabled": False}
+    assert body["temperature"] == 1.0 and body["reasoning"] == {"enabled": False}
     assert body["stop"] == ["\nMei:", "\nKai:"] and body["max_tokens"] == 200
     for absent in ("top_p", "presence_penalty", "frequency_penalty", "seed", "logprobs", "models"):
         assert absent not in body

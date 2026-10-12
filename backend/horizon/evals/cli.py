@@ -35,7 +35,8 @@ def _suite(args: argparse.Namespace) -> int:
 
     opts = Options(suite=args.eval_cmd, profile=args.profile, limit=args.limit, start=args.start, max_usd=args.max_usd,
                    yes=args.yes,
-                   allow_peak=args.allow_peak, accept=getattr(args, "accept", False), set=getattr(args, "set", None))
+                   allow_peak=args.allow_peak, accept=getattr(args, "accept", False), set=getattr(args, "set", None),
+                   seed_dir=args.seed_dir)
     return asyncio.run(Runner(load_config()).run(opts))
 
 
@@ -132,11 +133,13 @@ def register(sub: Any) -> None:
         s.add_argument("--max-usd", type=float, default=None, dest="max_usd")
         s.add_argument("--yes", action="store_true", help="skip the y/N prompt (only after OKing the estimate)")
         s.add_argument("--allow-peak", action="store_true", dest="allow_peak")
+        s.add_argument("--seed-dir", default=None, dest="seed_dir",
+                       help="run against another seed folder (a runtime.json experiment); the report names it")
         if name == "canary":
             s.add_argument("--accept", action="store_true", help="accept the new answers as the baseline")
-        if name in ("decisions", "long", "transcript"):
+        if name in ("decisions", "long", "transcript", "drafter"):
             s.add_argument("--set", default=None, help="decisions: one dataset folder (`judges`); long, transcript: "
-                                                       "one script id")
+                                                       "one script id; drafter: a seed file in evals/drafter/")
         s.set_defaults(fn=_suite)
     esub.add_parser("overlap", help="dataset items must not copy the bank's wording").set_defaults(fn=_overlap)
     rv = esub.add_parser("review", help="sample a dataset for label review")

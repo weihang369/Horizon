@@ -49,7 +49,7 @@ from horizon.gateway.chat import ChatRequest
 from horizon.gateway.errors import ProviderError
 
 EMPTY_REPLY = "The model sent an empty reply."
-FALLBACK_ROW = LlmCall(thinking="off", temperature=1.3, output="stream")   # only when no table is wired (unit tests)
+FALLBACK_ROW = LlmCall(thinking="off", temperature=1.0, output="stream")   # only when no table is wired (unit tests)
 
 
 def stop_sequences(ctx: TurnContext, you: str, messages: list[dict[str, Any]]) -> list[str]:

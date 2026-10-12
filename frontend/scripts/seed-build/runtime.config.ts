@@ -47,7 +47,7 @@ export const RUNTIME: RuntimeConfig = {
   },
   llm: {
     calls: {
-      "reply.chat": { thinking: "off", temperature: 1.3, output: "stream" },
+      "reply.chat": { thinking: "off", temperature: 1.0, output: "stream" },   // M8 (persona-context D34, the user): 1.3 collapsed long chats
       "reply.debate": { thinking: "off", temperature: 1.0, output: "stream" },
       host: { thinking: "off", temperature: 1.0, output: "text", maxTokens: 120 },
       verdict: { thinking: "off", temperature: 0.7, output: "json", maxTokens: 1200 },

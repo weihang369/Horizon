@@ -787,6 +787,31 @@ to `docs/ai/checks/m8.md`.
 - **The drafter's invalid-JSON rate is measured, not hidden.** A draft still invalid after C7's one retry is a counted
   failure with its error, so the suite reports it instead of crashing.
 
+### D33. A free structural repair of drafts before C7's paid retry (the user's choice, 2026-10-12)
+
+- **The failure:** in the paid run, 9 of 20 first drafts left `personality` open, wrote the rest of the profile (and
+  sometimes the top-level fields) inside it, and ended one `}` short. C7's paid retry often repeated the same text,
+  so 4 of 10 test drafts ended invalid.
+- **The repair, inside `parse_draft`, $0:** close any unclosed brackets at the end (strings respected), take the first
+  complete object when there are extra closers, then move fields written one level too deep back: the eight profile
+  fields out of `personality`, the five top-level fields out of `profile`, never overwriting a field already in place.
+  The result still goes through the full contract check.
+- **Measured on the 54 stored first attempts:** valid went from 32 to 48. The 6 left carry invented keys (`traits2`,
+  `structure`, `summaryAlt`) or duplicates, which still fail to the paid retry: content is never dropped silently.
+- **Rejected:** a precise retry message (still a paid call each time); dropping unknown keys (it would hide garbage).
+
+### D34. `reply.chat` temperature 1.0, not 1.3 (the user's choice, 2026-10-12)
+
+- **The failure:** the paid `long` and `transcript` runs at 1.3 drifted into word salad by turns 35–80 in `naive` and
+  `agent` alike, and 32–47 % of replies hit the 200-token cap. Cut-off, garbled replies then sat in the history and fed
+  the slide.
+- **The test (≈ $0.023, the user approved it):** the English 1:1 script, 50 turns, at 1.0 and at 0.7 with the 1:1 cap
+  raised to 300. Both had no cut-offs; the longest reply was 84 tokens at 1.0. 1.0 stayed coherent and in character;
+  0.7 fell into a stiff, repeated short refusal.
+- **Decision:** `reply.chat` is 1.0, and C4's caps stay (200 / 150 / 150) because the data never came near them. Doc
+  03 C1 and C3 say so. `reply.debate` and `host` were already 1.0.
+- **Rejected:** raising the caps (not needed); 0.7 (stiff); keeping 1.3 (the collapse).
+
 ## Risks / Trade-offs
 
 - **[Risk] The refactor of `NaiveTurnEngine` (D2) changes naive behaviour unnoticed** → Mitigation: phase 1 does

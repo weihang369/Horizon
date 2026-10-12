@@ -196,14 +196,64 @@ async def complete_json[T](gw: Any, req: ChatRequest, ctx: CallContext, parse: C
     return out["v"]
 
 
+# persona-context D33 (the user's choice after the paid drafter run): DeepSeek often leaves `personality` open, writes
+# the rest of the profile inside it and ends one `}` short. A free structural repair runs before C7's paid retry.
+TOP_KEYS = ("attributes", "appearanceSummary", "paletteId", "advisory", "brief")
+PROFILE_KEYS = ("backstory", "speakingStyle", "expertise", "goals", "boundaries", "greeting", "exampleLines",
+                "relationshipToUser")
+
+
+def close_json(content: str) -> str:
+    """`content` with its unclosed `{` and `[` closed at the end, in order (strings and escapes respected)."""
+    stack: list[str] = []
+    in_str = esc = False
+    for ch in content:
+        if in_str:
+            esc, in_str = (False, True) if esc else (ch == "\\", ch != '"')
+        elif ch == '"':
+            in_str = True
+        elif ch in "{[":
+            stack.append("}" if ch == "{" else "]")
+        elif ch in "}]" and stack and stack[-1] == ch:
+            stack.pop()
+    return content if in_str or not stack else content.rstrip() + "".join(reversed(stack))
+
+
+def hoist_draft(d: dict[str, Any]) -> dict[str, Any]:
+    """Fields written one level too deep go back where the contract wants them (never overwriting one in place)."""
+    profile = d.get("profile")
+    if not isinstance(profile, dict):
+        return d
+    for k in TOP_KEYS:
+        if k not in d and k in profile:
+            d[k] = profile.pop(k)
+    personality = profile.get("personality")
+    if isinstance(personality, dict):
+        for k in PROFILE_KEYS:
+            if k not in profile and k in personality:
+                profile[k] = personality.pop(k)
+    return d
+
+
+def load_draft(content: str) -> Any:
+    """json.loads, then (D33) the closed-brackets text, then the first complete object of a text with extra closers."""
+    for attempt in (content, close_json(content)):
+        try:
+            return json.loads(attempt)
+        except ValueError:
+            pass
+    return json.JSONDecoder().raw_decode(content.strip())[0]
+
+
 def parse_draft(content: str, schema: ContractSchema, palette_ids: Sequence[str]) -> dict[str, Any]:
     """The model's JSON → a contract-valid draft, or a retryable `provider_error` (nothing is applied)."""
     try:
-        d = json.loads(content)
+        d = load_draft(content)
     except ValueError as e:
         raise ProviderError("provider_error", "The drafter returned something that isn't JSON.") from e
     if not isinstance(d, dict):
         raise ProviderError("provider_error", "The drafter returned something that isn't a draft.")
+    d = hoist_draft(d)
     missing = [k for k in ("profile", "attributes", "appearanceSummary", "paletteId", "advisory", "brief") if k not in d]
     if missing:
         raise ProviderError("provider_error", f"The draft is missing {', '.join(missing)}.")
