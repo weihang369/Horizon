@@ -289,12 +289,12 @@
 
 ## 11. Integration and review
 
-- [ ] 11.1 Run every gate on the final commit, plus `npm run e2e` and the three CI eval commands, in a clean worktree (`../Horizon-gate`, the main venv, `PYTHONPATH=.`). Verify that all pass, and record the counts in the commit message.
-- [ ] 11.2 Run a scope and contract review against design.md:
+- [x] 11.1 Run every gate on the final commit, plus `npm run e2e` and the three CI eval commands, in a clean worktree (`../Horizon-gate`, the main venv, `PYTHONPATH=.`). Verify that all pass, and record the counts in the commit message.
+- [x] 11.2 Run a scope and contract review against design.md:
   - no contract or schema diff (`export-schema:check`, `git diff` on `contract/`);
   - no runtime caller of the X9 builder;
   - no `eval_judge` question in live code;
   - nothing from M9–M15.
 
   Verify that the review notes are in the commit message, and that every task above is checked.
-- [ ] 11.3 `openspec validate persona-context --strict` passes → commit "M8 phase 11: review", and tell the user that the change is ready to archive.
+- [x] 11.3 `openspec validate persona-context --strict` passes → commit "M8 phase 11: review", and tell the user that the change is ready to archive.
