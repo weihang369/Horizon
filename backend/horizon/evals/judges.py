@@ -45,14 +45,19 @@ def label(qid: str, version: int, record: Mapping[str, Any] | None = None) -> st
 
 def b4(rows: Iterable[Mapping[str, Any]]) -> dict[str, Any]:
     """B4's rule over one question's scored rows: {correct: bool, planted: bool, label: "yes"|"no"}."""
+    rows = list(rows)
     real = [r for r in rows if not r.get("planted")]
     planted = [r for r in rows if r.get("planted")]
-    yes = sum(1 for r in real if r["label"] == "yes")
-    baseline = max(yes, len(real) - yes) / len(real) if real else 0.0
+    # The always-the-commonest-answer baseline is taken over all 60 items (persona-context D32): real outputs are mostly
+    # fine, so a real-only baseline is often 100 % "no" and no judge could ever beat it.
+    yes = sum(1 for r in rows if r["label"] == "yes")
+    baseline = max(yes, len(rows) - yes) / len(rows) if rows else 0.0
+    overall = sum(1 for r in rows if r["correct"]) / len(rows) if rows else 0.0
     real_acc = sum(1 for r in real if r["correct"]) / len(real) if real else 0.0
     caught = sum(1 for r in planted if r["correct"]) / len(planted) if planted else 0.0
-    passed = bool(real) and bool(planted) and real_acc >= REAL_MIN and real_acc > baseline and caught >= PLANTED_MIN
-    return {"real_n": len(real), "real": round(real_acc, 4), "baseline": round(baseline, 4), "planted_n": len(planted),
+    passed = bool(real) and bool(planted) and real_acc >= REAL_MIN and overall > baseline and caught >= PLANTED_MIN
+    return {"real_n": len(real), "real": round(real_acc, 4), "overall": round(overall, 4), "baseline": round(baseline, 4),
+            "planted_n": len(planted),
             "planted": round(caught, 4), "passed": passed}
 
 

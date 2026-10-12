@@ -233,4 +233,5 @@ def test_b4_pass_rule() -> None:
     assert b4(rows(26, 30, 27, 30))["passed"]                  # 0.87 real, 0.90 planted
     assert not b4(rows(25, 30, 30, 30))["passed"]              # 0.83 real
     assert not b4(rows(30, 30, 26, 30))["passed"]              # 0.87 planted
-    assert not b4(rows(27, 30, 30, 30, yes_share=0.9))["passed"]   # 0.90 doesn't beat a 0.90 always-yes baseline
+    assert not b4(rows(27, 30, 30, 30, yes_share=0.9))["passed"]   # 0.95 overall doesn't beat a 0.95 always-yes baseline
+    assert b4(rows(28, 30, 29, 30, yes_share=0.0))["passed"]   # all-"no" real items are fine: the baseline is over all 60

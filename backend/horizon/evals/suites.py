@@ -234,15 +234,16 @@ class Decisions:
     @staticmethod
     def _judge_report(rows: list[dict[str, Any]], items: list[dict[str, Any]]) -> list[str]:
         """B4 per judge; the record is updated only for a judge whose every item was asked in this run."""
-        out = ["## Judge validation (B4: real ≥ 85 % and above the baseline, planted ≥ 90 %)"]
+        out = ["## Judge validation (B4: real ≥ 85 %, overall above the commonest-answer baseline, planted ≥ 90 %)"]
         results: dict[str, dict[str, Any]] = {}
         versions: dict[str, int] = {}
         for qid in sorted({r["question_id"] for r in rows}):
             got = [r for r in rows if r["question_id"] == qid and "correct" in r]
             want = sum(1 for i in items if i["question_id"] == qid)
             r = judges.b4(got)
-            out.append(f"- {qid} v{bank().get(qid).version}: real {r['real']:.2f} (n {r['real_n']}, baseline "
-                       f"{r['baseline']:.2f}), planted {r['planted']:.2f} (n {r['planted_n']}) → "
+            out.append(f"- {qid} v{bank().get(qid).version}: real {r['real']:.2f} (n {r['real_n']}), overall "
+                       f"{r['overall']:.2f} against the baseline {r['baseline']:.2f}, planted {r['planted']:.2f} "
+                       f"(n {r['planted_n']}) → "
                        f"{'PASS' if r['passed'] else 'FAIL'}" + ("" if len(got) == want else f" (partial: {len(got)}/{want})"))
             if len(got) == want:
                 results[qid], versions[qid] = r, bank().get(qid).version

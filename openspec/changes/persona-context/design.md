@@ -775,6 +775,18 @@ to `docs/ai/checks/m8.md`.
 - **Use:** M15's `conversations` suite answers from these histories. M8 only produces and checks them: the loader and
   the "past one drop" assertion.
 
+### D32. Findings from the paid runs (added during phase 10)
+
+- **B4's baseline is taken over all 60 items, not the 30 real ones.** Doc 02 says a judge must beat "the
+  always-the-commonest-answer baseline" without naming the items. Real outputs are mostly fine, so 30 real items are
+  often all "no", and a real-only baseline of 100 % can never be beaten. Over all 60 (real plus 30 planted "yes"),
+  the baseline is about 50 %, and a judge that always says one answer still fails: always "no" misses the planted
+  bar, always "yes" misses the real one. Rejected: forcing real "yes" items in, which would distort the sample.
+- **A test-mode run never reads or writes the response store.** `horizon eval smoke` had written fake answers into
+  `data/cache`, and a paid run served one as real. Those entries were moved out of the store.
+- **The drafter's invalid-JSON rate is measured, not hidden.** A draft still invalid after C7's one retry is a counted
+  failure with its error, so the suite reports it instead of crashing.
+
 ## Risks / Trade-offs
 
 - **[Risk] The refactor of `NaiveTurnEngine` (D2) changes naive behaviour unnoticed** → Mitigation: phase 1 does

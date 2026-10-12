@@ -37,7 +37,7 @@ It SHALL never compare with the baselines.
 ## ADDED Requirements
 
 ### Requirement: Judges are validated before they count
-Each judge question SHALL have 60 validation items: 30 real outputs labelled by hand, and 30 failures planted by code. A judge SHALL pass when it is at least 85 % right on the real items, beats the always-the-commonest-answer baseline, and catches at least 90 % of the planted failures. The result SHALL be recorded per question and version. Any figure from a judge whose current version has not passed SHALL be reported as "unvalidated", never as a measurement.
+Each judge question SHALL have 60 validation items: 30 real outputs labelled by hand, and 30 failures planted by code. A judge SHALL pass when it is at least 85 % right on the real items, beats the always-the-commonest-answer baseline over all 60 items, and catches at least 90 % of the planted failures. The result SHALL be recorded per question and version. Any figure from a judge whose current version has not passed SHALL be reported as "unvalidated", never as a measurement.
 
 #### Scenario: Unvalidated judge
 - **WHEN** the summary suite runs before `judge_summary_fact`'s current version has passed validation
