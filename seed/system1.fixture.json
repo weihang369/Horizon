@@ -37,6 +37,15 @@
         "result": "used",
         "action": "shown"
       },
+      "face_check": {
+        "purpose": "face_check",
+        "id": "face_check",
+        "version": 1,
+        "label": "face and words agree?",
+        "p": 0.72,
+        "compared": [],
+        "result": "shown_only"
+      },
       "route": {
         "purpose": "route",
         "id": "route",

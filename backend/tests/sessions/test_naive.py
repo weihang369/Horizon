@@ -36,7 +36,9 @@ def chat_bodies(api: Api) -> list[dict[str, Any]]:
 
 async def _naive(api: Api) -> str:
     await api.set_key()
-    r = await api.post(f"{API}/_test/ai-profile", {"profile": "scripted", "overrides": {"turn": "naive"}})
+    # M9: the planner and the face check pinned to naive (no-ops) too, so only the naive engine is under test
+    r = await api.post(f"{API}/_test/ai-profile", {"profile": "scripted", "overrides": {
+        "turn": "naive", "planner": "naive", "face_check": "naive"}})
     assert r.status_code == 204
     await use_first_chat(api)   # P9: the first chat's greeting is verbatim; these tests need a generated one
     sid: str = (await create(api, "one_on_one", ["chr_seedAmara"]))["session"]["id"]

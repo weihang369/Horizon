@@ -17,7 +17,7 @@ export function greet(h: EngineHost, sid: string): void {
     // docs/ai/04 P9: the first chat opens with the approved greeting, word for word, at no cost (as the backend)
     const stored = c.profile.greeting.trim();
     if (stored && isFirstChat(h, sid, cid)) speakThen(h, sid, cid, { line: { text: stored, emotion: "happy" }, verbatim: true }, () => done());
-    else speakThen(h, sid, cid, { line: greetingFor(c) }, () => done());
+    else speakThen(h, sid, cid, { line: greetingFor(c), greeting: true }, () => done());
   }));
 }
 

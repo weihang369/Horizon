@@ -33,6 +33,8 @@ export interface LineSpec {
   routing?: TurnTrace["routing"];
   /** rev 1.4 (docs/ai/13 W1): System 1 rows. Only live mock turns set it; seed recordings never do. */
   system1?: TurnTrace["system1"];
+  /** M9 (turn-plan-emotion D25): paid decisions behind this turn listed before the reply (the 1:1 `turn_plan`). */
+  planCalls?: NonNullable<TurnTrace["calls"]>;
   /** Listeners who may react. Explicit `reactions` win over generated ones. */
   listeners?: string[];
   reactions?: ReactionSpec[] | null;
@@ -215,6 +217,7 @@ export function buildLineScript(spec: LineSpec, timing: TimingConfig, pricing: P
       ...(spec.routing?.candidates?.length
         ? [{ purpose: "route", model: pricing.decision.model, costUsd: decisionCostUsd(ROUTE_DECISION_TOKENS, pricing.decision), latencyMs: 240 }]
         : []),
+      ...(spec.planCalls ?? []),
       { purpose: "reply", model: pricing.chat.model, costUsd: usage.costUsd, latencyMs: usage.totalMs },
     ],
   };

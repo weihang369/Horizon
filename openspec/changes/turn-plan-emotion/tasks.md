@@ -198,12 +198,12 @@
 
 ## 6. The face check (D23, D24)
 
-- [ ] 6.1 Write the `face_check.json` bank entry (D23), with `not_for` and examples written under the overlap rule,
+- [x] 6.1 Write the `face_check.json` bank entry (D23), with `not_for` and examples written under the overlap rule,
   and re-lock. Verify: the bank test loads it, `overlap` passes, and its state declares only `quoted_reply`.
-- [ ] 6.2 Write `JevFaceCheck` (`ai/agent/face_check.py`): the state is the reply's last 600 tokens, and the row
+- [x] 6.2 Write `JevFaceCheck` (`ai/agent/face_check.py`): the state is the reply's last 600 tokens, and the row
   follows W2's format. Add `face_check` to `AGENT_PORTS`. Verify unit tests for `yes`, `clash` (happy against angry,
   and sad against happy) and `no (words read: thinking)`, with `p` as p(face shown).
-- [ ] 6.3 The face-check task in `sessions/after_turn.py` (D24): record `info.auto` and `info.face`, apply the start
+- [x] 6.3 The face-check task in `sessions/after_turn.py` (D24): record `info.auto` and `info.face`, apply the start
   conditions, ask with deadline `face_check`, and call `append_system1`. Verify the face-check spec scenarios:
   - "Non-neutral AUTO reply", "Neutral reply" and "Switched to MANUAL mid-reply";
   - "A long reply", "Agreement" and "Clash";
@@ -211,22 +211,22 @@
   - "Next turn does not cancel" and "Regenerated before the row";
   - system1-trace "Row after the reply";
   - decider "Turn plan and face check".
-- [ ] 6.4 `ScriptedFaceCheck` with `faceCheckMs` (300) in the timing table (`runtime.config.ts` → `seed/runtime.json`
+- [x] 6.4 `ScriptedFaceCheck` with `faceCheckMs` (300) in the timing table (`runtime.config.ts` → `seed/runtime.json`
   → `runtime_config.py`). Verify the face-check scenario "Scripted check".
-- [ ] 6.5 Add `face_check` to ENG-02 AC2's list in the requirements doc (W2). Verify by reading.
+- [x] 6.5 Add `face_check` to ENG-02 AC2's list in the requirements doc (W2). Verify by reading.
 
 ## 7. Scripted and mock parity, the System 1 fixture and Insight (D15, D25)
 
-- [ ] 7.1 Regenerate `seed/system1.fixture.json`. The seed-build generator `system1.ts` emits `emotion_reply`,
+- [x] 7.1 Regenerate `seed/system1.fixture.json`. The seed-build generator `system1.ts` emits `emotion_reply`,
   `emotion_greeting` and `face_check`, and skips `reaction` and every judge. Verify the demo-data scenarios "Emotion
   and face-check rows" and "Judges are not turn rows", and `seed:check`.
-- [ ] 7.2 `ScriptedTurnPlanner` (D25): a simulated `turn_plan` call, plus the fixture row with its answer filled at
+- [x] 7.2 `ScriptedTurnPlanner` (D25): a simulated `turn_plan` call, plus the fixture row with its answer filled at
   `finish` from the face shown. Verify the turn-plan scenarios "Scripted 1:1 turn" and "Naive with a key", and
   system1-trace "Scripted 1:1 rows shown".
-- [ ] 7.3 The MockClient's 1:1 engine charges `turn_plan`, adds the emotion row, and runs the mock face check. Verify
+- [x] 7.3 The MockClient's 1:1 engine charges `turn_plan`, adds the emotion row, and runs the mock face check. Verify
   the demo-data scenario "Mock 1:1 turn" on the MockClient. The portable suite passes on both clients with the same
   spend.
-- [ ] 7.4 Insight's "kept" chip (D15) in `InsightDrawer.tsx`. Verify the speaker-emotion scenario "Kept face in
+- [x] 7.4 Insight's "kept" chip (D15) in `InsightDrawer.tsx`. Verify the speaker-emotion scenario "Kept face in
   Insight" in a component test. A face with no candidates keeps its source label, and system1-trace "No rows" (`naive`
   1:1) still holds.
 - [ ] 7.5 Update the E2E expectations that count simulated 1:1 spend or System 1 rows. Verify:

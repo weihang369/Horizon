@@ -10,6 +10,8 @@ import { loadSeedDataset } from "../mock/db/loadSeed";
 import { MockClient } from "../mock/MockClient";
 import { ManualClock } from "../mock/time/Clock";
 import type { ContractHarness } from "./clientContract.portable";
+import { decisionCostUsd, FACE_CHECK_DECISION_TOKENS, TURN_PLAN_DECISION_TOKENS } from "../domain/cost";
+import { PRICING } from "../mock/pricing.config";
 import { runPortableContract } from "./clientContract.portable";
 
 // Saturday 11:00 MYT: off-peak, so energy maths are the base rate.
@@ -146,4 +148,40 @@ describe("MockClient only", () => {
     }
     expect(dropped).toBeDefined();
   });
+
+  // M9 (turn-plan-emotion D24, D25; demo-data "Mock 1:1 turn"): a 1:1 reply is planned (one `turn_plan` charge and the
+  // emotion row) and, when its face isn't neutral in AUTO, checked after faceCheckMs (a `face_check` charge and row).
+  it("a mock 1:1 turn charges the plan and the face check and shows both rows, the reply cost unchanged", async () => {
+    const h = await mockHarness();
+    await h.setKey();
+    const c = h.client;
+    const s = await c.sessions.create({ worldId: "wld_seedMeridian", mode: "one_on_one", characterIds: ["chr_seedAmara"] });
+    const sid = s.session.id;
+    await h.advance(6000);
+    let reply: Message | undefined;
+    for (let i = 0; i < 10 && !reply; i++) {
+      const before = (await c.usage.summary()).byCategory.decision;
+      await c.chat.send(sid, `Tell me about your week, part ${i}.`);
+      await h.advance(15000);
+      const last = chars((await c.sessions.get(sid)).messages).at(-1)!;
+      const added = (await c.usage.summary()).byCategory.decision - before;
+      const plan = decisionCostUsd(TURN_PLAN_DECISION_TOKENS, PRICING.decision);
+      const check = decisionCostUsd(FACE_CHECK_DECISION_TOKENS, PRICING.decision);
+      if (last.emotion === "neutral") {
+        expect(added).toBeCloseTo(plan, 9);
+        continue;
+      }
+      expect(added).toBeCloseTo(plan + check, 9);
+      reply = last;
+    }
+    expect(reply).toBeDefined();
+    const rows = reply!.trace!.system1!.questions;
+    expect(rows.map((r) => [r.id, r.answer])).toEqual([["emotion_reply", reply!.emotion], ["face_check", "yes"]]);
+    expect(rows[1].result).toBe("shown_only");
+    const calls = reply!.trace!.calls!.map((x) => x.purpose);
+    expect(calls).toEqual(["turn_plan", "reply", "face_check"]);
+    const replyCall = reply!.trace!.calls!.find((x) => x.purpose === "reply")!;
+    expect(replyCall.costUsd).toBe(reply!.usage?.costUsd);                       // the reply's own cost is unchanged
+  });
 });
+

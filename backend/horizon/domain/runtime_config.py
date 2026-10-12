@@ -26,6 +26,7 @@ class Timing:
     debate_start_ms: float
     watch_start_ms: float
     greeting_ms: float
+    face_check_ms: float = 300.0   # M9 (doc 13 W2; turn-plan-emotion D24): the scripted face check's delay
 
 
 @dataclass(frozen=True)
@@ -154,7 +155,8 @@ class RuntimeConfig:
                 reaction_chance=float(t["reactionChance"]),
                 emotion_timing={str(k): float(v) for k, v in t["emotionTiming"].items()},
                 late_emotion_ms=float(t["lateEmotionMs"]), debate_start_ms=float(t["debateStartMs"]),
-                watch_start_ms=float(t["watchStartMs"]), greeting_ms=float(t["greetingMs"])),
+                watch_start_ms=float(t["watchStartMs"]), greeting_ms=float(t["greetingMs"]),
+                face_check_ms=float(t["faceCheckMs"])),
             runtime=RuntimeKnobs(
                 reply_max_tokens=ReplyCaps(one_on_one=int(caps["one_on_one"]), group=int(caps["group"]),
                                            watch=int(caps["watch"]),

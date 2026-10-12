@@ -7,6 +7,10 @@
     "sha256": "affe67de1f8ed1caab864c448655662812a63482f85604b1c8374428c62edb14",
     "version": 1
   },
+  "face_check": {
+    "sha256": "4709bc69e08b6debce18d397c5cd950b137a92eef94543773907f8cec1c8acea",
+    "version": 1
+  },
   "judge_assistant_voice": {
     "sha256": "f90d1e4f2ab2de4dac23ce7207173e905cd090b59f2cf385aa3170f060546c26",
     "version": 2

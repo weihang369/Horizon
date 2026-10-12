@@ -28,6 +28,7 @@ from typing import TYPE_CHECKING, Any
 
 from horizon.ai.contexts import DebateMeta, LineHint, PlanRequest, SessionContext, TurnContext, TurnPlan
 from horizon.ai.ports import OWNED_TRACE_KEYS, CitationMap, Emotion, Token, TracePatch
+from horizon.ai.scripted.ports import PLANNED_FACE
 from horizon.api.errors import DEFAULT_RETRYABLE
 from horizon.domain import vclock
 from horizon.domain.energy import points_for_cost
@@ -35,7 +36,7 @@ from horizon.domain.ids import new_id
 from horizon.domain.timeutil import to_ms
 from horizon.gateway.errors import ProviderError
 from horizon.sessions.actor import SessionActor, TurnInfo
-from horizon.sessions.after_turn import start_reactions
+from horizon.sessions.after_turn import start_face_check, start_reactions
 from horizon.sessions.coalesce import Coalescer
 from horizon.sessions.context import (
     character_view,
@@ -434,6 +435,10 @@ class TurnRunner:
                 full["graph"] = {"path": list(plan.graph_path)}
             if spec.system1 or info.system1:   # D24: rows appended mid-stream merge by key, never replace
                 base = dict(spec.system1 or {})
+                if base.get("questions"):   # M9 D25: the scripted emotion row's answer is the face the reply showed
+                    base["questions"] = [{**q, "answer": info.face or "neutral"}
+                                         if q.get("purpose") == "turn_plan" and q.get("answer") == PLANNED_FACE else q
+                                         for q in base["questions"]]
                 full["system1"] = system1_section(base, info.system1, seed=base.get("seed"))
             events.append({"type": "insight", "payload": {"messageId": mid, "trace": full}})
         meta = TraceMeta(engine=getattr(engine, "name", None), engine_version=getattr(engine, "version", None),
@@ -454,6 +459,8 @@ class TurnRunner:
                                          "deciderFallback": any(bool(c.get("fallback")) for c in spec.calls)})
         if status == "complete" and spec.reactions and ctx is not None and actor.session["emotionMode"] != "user":
             start_reactions(rt, actor, info, ctx, key_set=self.key_set())   # M9 D18-D20: predicted inside the task
+        if status == "complete" and not scrub and ctx is not None and not verbatim:   # M9 D24 (doc 13 W2)
+            start_face_check(rt, actor, info, ctx, key_set=self.key_set())
         if status == "complete" and not scrub and ctx is not None and not verbatim:
             self._remember(actor, info, ctx)
         if status != "error":   # M8 (docs/ai/05 X2, X3): fold the window after the reply, never before it

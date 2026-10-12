@@ -84,6 +84,7 @@ async def test_group_stays_unplanned(api: Api) -> None:
 
 async def test_naive_asks_nothing_new(api: Api) -> None:
     await api.set_key()
+    assert (await api.post(f"{API}/_test/ai-profile", {"profile": "naive"})).status_code == 204
     sid: str = (await create(api, "one_on_one", [AMARA]))["session"]["id"]
     await api.drive(6000)
     reply = await send(api, sid, "Hello there.")

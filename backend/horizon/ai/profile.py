@@ -11,9 +11,9 @@ M7 (ai-foundation design D12): `agent`, the AI stage's profile, is opt-in until 
 implementation when one exists (`AGENT_PORTS`), else its naive one, else its scripted one; without a key every port is
 scripted, as for `naive`. `resolved()` (shown in /health and every eval report) says what actually ran.
 M8 (persona-context design D1): `AGENT_PORTS` gains `turn` (the `agent` persona prompt); routing, retrieval, the
-guardrail, reactions and the memory writer stay what `naive` resolves to. M9 (turn-plan-emotion D5): `planner` (Jev
-call 1 in 1:1) and `reactions` (Jev, design D18, D19); `naive` gets explicit no-op planner and face check so the
-scripted stand-ins never bill it.
+guardrail and the memory writer stay what `naive` resolves to. M9 (turn-plan-emotion D5): `planner` (Jev call 1 in
+1:1), `reactions` (Jev, design D18, D19) and `face_check` (doc 13 W2, D23, D24); `naive` gets explicit no-op planner
+and face check so the scripted stand-ins never bill it.
 
 M5 (knowledge-memory-storage design D4, D7, D17): the `embedder` and the memory and knowledge retrievers have naive
 implementations; the `memory_writer` writes nothing in both profiles. The document `converter` does not follow the
@@ -36,11 +36,13 @@ from horizon.ai.scripted.ports import (
     AiDeps,
     NoMemoryWriter,
     ScriptedDebateHost,
+    ScriptedFaceCheck,
     ScriptedGuardrail,
     ScriptedReactions,
     ScriptedRouter,
     ScriptedSummariser,
     ScriptedTurnEngine,
+    ScriptedTurnPlanner,
     ScriptedWatchDirector,
 )
 
@@ -51,7 +53,7 @@ NAIVE_PORTS = frozenset({"turn", "router", "drafter", "image", "song", "embedder
                          "memory_retriever", "converter", "summariser",   # M8: the DeepSeek rolling summary (X3)
                          "planner", "face_check"})   # M9 (design D5): naive's own no-ops, never the scripted stand-ins
 KEYLESS_PORTS = frozenset({"converter"})   # chosen by availability, not by the profile or the key (D-96)
-AGENT_PORTS = frozenset({"turn", "planner", "reactions"})   # ports with an `agent` implementation (M8 turn; M9 planner, reactions)
+AGENT_PORTS = frozenset({"turn", "planner", "reactions", "face_check"})   # `agent` implementations (M8 turn; M9 the rest)
 ENV_PROFILE = "HORIZON_AI_PROFILE"
 
 
@@ -137,6 +139,9 @@ class AiPorts:
             if port == "reactions":
                 from horizon.ai.agent.reactions import JevReactions
                 return JevReactions(d)
+            if port == "face_check":
+                from horizon.ai.agent.face_check import JevFaceCheck
+                return JevFaceCheck(d)
             raise KeyError(f"no agent implementation for port {port!r}")
         if impl == "naive":
             if port == "turn":
@@ -183,8 +188,9 @@ class AiPorts:
             "embedder": lambda: HashEmbedder(d), "memory_writer": lambda: NoMemoryWriter(),
             "converter": lambda: ScriptedConverter(lambda s: d.clock().sleep(s)),
             "knowledge_retriever": lambda: ScriptedKnowledgeRetriever(), "memory_retriever": lambda: ScriptedMemoryRetriever(),
-            # M9: until phases 6–7 add the scripted planner and face check, the scripted profile plans nothing
-            "planner": lambda: NoPlanner(), "face_check": lambda: NoFaceCheck()}
+            # M9: the fixture's emotion row and a simulated plan call (D25); the face check after faceCheckMs (D24)
+            "planner": lambda: ScriptedTurnPlanner(d, simulate=simulate),
+            "face_check": lambda: ScriptedFaceCheck(d, simulate=simulate)}
         return builders[port]()
 
     def turn(self, key_set: bool) -> Any:

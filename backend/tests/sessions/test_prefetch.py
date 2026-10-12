@@ -35,7 +35,8 @@ async def test_everyone_answer_prefetches_and_releases_like_normal_turns(api: Ap
     assert all(m["status"] == "complete" for m in replies)
     evs = await events(api, sid)
     shapes = [_shape(evs, m["id"]) for m in replies]
-    assert shapes[0] == shapes[1] == shapes[2] == ["turn.start", "token", "turn.end", "insight"]
+    # M9: a non-neutral reply's scripted face check adds one later insight (doc 13 W2)
+    assert all(sh[:4] == ["turn.start", "token", "turn.end", "insight"] and sh[4:] in ([], ["insight"]) for sh in shapes)
     for m in replies:  # each reply has its turn.next / thinking preamble right before it
         start = next(e for e in evs if e["type"] == "turn.start" and e["payload"]["messageId"] == m["id"])
         before = [e["type"] for e in evs if e["seq"] < start["seq"]][-2:]

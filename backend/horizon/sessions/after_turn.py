@@ -6,7 +6,10 @@ design D18–D24; listener-reactions and face-check specs).
   energy change. Each reaction is appended through `actor.emit_checked`, whose check runs under the writer lock, so
   a reaction can never land after its listener's own `turn.start` (D20). The task is dropped (cancelled) by `clear()`,
   a new user message and MANUAL; a failure is logged and never touches the session.
-- **The face check:** see `start_face_check` (phase 6).
+- **The face check (doc 13 W2; D23, D24):** one named task after a completed AUTO reply whose face isn't neutral. It
+  asks which emotion the words show and appends one display-only System 1 row with `append_system1` (which drops it
+  for a regenerated variant). `clear()` cancels it; a user message and the next turn don't. A late, failed or refused
+  check adds nothing and never touches the session.
 """
 
 from __future__ import annotations
@@ -16,6 +19,7 @@ from collections.abc import Mapping
 from typing import TYPE_CHECKING, Any
 
 from horizon.ai.contexts import ListenerView, ReactionRequest, TurnContext
+from horizon.ai.naive.noop import NoFaceCheck
 from horizon.ai.ports import Reaction
 from horizon.domain.timeutil import to_ms
 from horizon.sessions.context import characters, energy_of
@@ -123,3 +127,25 @@ def start_reactions(rt: Runtime, actor: SessionActor, info: TurnInfo, ctx: TurnC
             log.exception("reactions failed after message %s (ignored)", message_id)
 
     actor.background(REACTIONS, job())
+
+
+def start_face_check(rt: Runtime, actor: SessionActor, info: TurnInfo, ctx: TurnContext, *, key_set: bool) -> None:
+    """W2's start conditions past the caller's (complete, not scrubbed, not verbatim): AUTO at `turn.start`, a face that
+    isn't neutral, and a profile that checks at all."""
+    checker = rt.ai.face_check(key_set)
+    face = info.face or "neutral"
+    if isinstance(checker, NoFaceCheck) or not info.auto or face == "neutral" or not info.content.strip():
+        return
+    message_id, variant_id, speaker_id, text = info.message_id, info.variant_id, info.character_id, info.content
+
+    async def job() -> None:
+        try:
+            out = await checker.check(ctx.session, message_id, speaker_id, face, text)
+            if out is None:
+                return
+            row, call = out
+            await actor.append_system1(message_id, variant_id, [row], [call] if call is not None else [])
+        except Exception:
+            log.exception("the face check failed after message %s (ignored)", message_id)
+
+    actor.background(FACE_CHECK, job())

@@ -55,6 +55,12 @@ export const ROUTE_DECISION_TOKENS = 600;
 /** M9 (turn-plan-emotion D21): the simulated `reaction` decision, the backend's REACTION_DECISION_TOKENS. */
 export const REACTION_DECISION_TOKENS = 600;
 
+/** M9 (doc 13 W2; turn-plan-emotion D24): the simulated `face_check` decision, the backend's FACE_CHECK_DECISION_TOKENS. */
+export const FACE_CHECK_DECISION_TOKENS = 600;
+
+/** M9 (turn-plan-emotion D25): the simulated 1:1 `turn_plan` decision (Jev call 1), the backend's TURN_PLAN_DECISION_TOKENS. */
+export const TURN_PLAN_DECISION_TOKENS = 900;
+
 /** Cost of one Jev decision call: input tokens only (no output charge, no peak multiplier). */
 export function decisionCostUsd(tokensIn: number, price: ChatPrice): number {
   return round6((tokensIn * price.inputPerM) / 1e6);

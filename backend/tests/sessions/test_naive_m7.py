@@ -134,7 +134,8 @@ def test_host_line_kinds_become_stops() -> None:
 # ── 3.3: the cap is chosen after the plan, per mode, on the live path ──
 async def _profile_naive(api: Api) -> None:
     await api.set_key()
-    r = await api.post(f"{API}/_test/ai-profile", {"profile": "scripted", "overrides": {"turn": "naive"}})
+    r = await api.post(f"{API}/_test/ai-profile", {"profile": "scripted", "overrides": {   # M9: plan and check off too
+        "turn": "naive", "planner": "naive", "face_check": "naive"}})
     assert r.status_code == 204
 
 

@@ -45,7 +45,7 @@ def test_the_scripted_profile_simulates_even_with_a_key() -> None:
 
 def test_resolved_lists_the_new_ports() -> None:
     got: dict[str, Any] = ports("agent").resolved(key_set=True)
-    assert got["planner"] == "agent" and got["face_check"] == "naive"   # the face check's agent one arrives in phase 6
+    assert got["planner"] == "agent" and got["face_check"] == "agent" and got["reactions"] == "agent"   # M9 phases 3, 5, 6
 
 
 @pytest.mark.parametrize("purpose", ["turn_plan", "face_check", "reaction"])

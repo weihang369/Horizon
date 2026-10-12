@@ -6,6 +6,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from horizon.ai.naive.noop import NoFaceCheck, NoPlanner
 from horizon.events.bus import GLOBAL
 from tests.conftest import Api
 from tests.jobs.kit import cancel_overlay_jobs
@@ -118,6 +119,8 @@ async def test_crossing_the_cap_pauses_then_a_raised_cap_resumes(api: Api) -> No
     assert spent > 0
     # The next reply costs exactly the headroom: its estimate fits, and its row lands on the cap (a crossing).
     api.rt.ai.override("turn", FixedEngine(api, text="Sleep first, then we talk.", cost=0.0001))
+    api.rt.ai.override("planner", NoPlanner())       # M9: only the reply may spend here (the scripted plan would
+    api.rt.ai.override("face_check", NoFaceCheck())  # cross the cap first, and the check after it)
     assert (await api.client.patch(f"{API}/settings", json={"budget": {"dailyCapUsd": spent + 0.0001}})).status_code == 200
     await command(api, sid, "send", {"text": "One more question about sleep."})
     await api.drive(12000)

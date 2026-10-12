@@ -6,7 +6,9 @@ import type {
   Character, Emotion, Message, Session, StreamEvent, TurnTrace,
 } from "../../contract/types";
 import type { PricingTable } from "../../domain/cost";
-import { decisionCostUsd, estimateTokens, REACTION_DECISION_TOKENS } from "../../domain/cost";
+import {
+  decisionCostUsd, estimateTokens, FACE_CHECK_DECISION_TOKENS, REACTION_DECISION_TOKENS, round6, TURN_PLAN_DECISION_TOKENS,
+} from "../../domain/cost";
 import { EST_REPLY_POINTS, liveEnergy } from "../../domain/energy";
 import type { PricePeriod } from "../../domain/rushHour";
 import type { ScriptPlayer, TimelineEntry } from "../../engine/ScriptPlayer";
@@ -16,6 +18,7 @@ import type { BankLine } from "../banks";
 import type { Dataset } from "../db/dataset";
 import type { Rng } from "../rng";
 import { liveCitations } from "../script/citations";
+import { fixtureRow } from "../system1";
 import type { ChunkRef } from "../script/citations";
 import { buildLineScript } from "../script/turnScript";
 import type { EmotionTiming, LineScript, LineSpec } from "../script/turnScript";
@@ -173,6 +176,29 @@ function liveReactions(h: EngineHost, sid: string, script: LineScript, messageId
   return out;
 }
 
+// ── The 1:1 plan row and the face check (M9: turn-plan-emotion D24, D25; doc 13 W2; the scripted backend) ─────────
+/** Jev's measured p50 (group A): the scripted backend's simulated decision latency. */
+const DECISION_LATENCY_MS = 420;
+
+function decisionCall(h: EngineHost, purpose: string, tokens: number): NonNullable<TurnTrace["calls"]>[number] {
+  return { purpose, model: h.pricing.decision.model, costUsd: round6(decisionCostUsd(tokens, h.pricing.decision)), latencyMs: DECISION_LATENCY_MS };
+}
+
+/** After `faceCheckMs`: charge the check and add the fixture row ("yes") with a second insight, unless the message
+ *  moved on to another variant (append_system1's guard). Stop, leave, a cap pause and the end cancel it (clearLive). */
+function faceCheck(h: EngineHost, sid: string, messageId: string, variantId: string | undefined): void {
+  const m = h.live(sid).state.messages[messageId];
+  if (!m?.trace || (m.activeVariantId ?? `${messageId}_v1`) !== (variantId ?? `${messageId}_v1`)) return;
+  h.charge(sid, "decision", decisionCostUsd(FACE_CHECK_DECISION_TOKENS, h.pricing.decision));
+  const rows = (m.trace.system1?.questions ?? []).filter((q) => q.purpose !== "face_check");
+  const trace: TurnTrace = {
+    ...m.trace,
+    system1: { ...m.trace.system1, questions: [...rows, fixtureRow("face_check", "yes")] },
+    calls: [...(m.trace.calls ?? []), decisionCall(h, "face_check", FACE_CHECK_DECISION_TOKENS)],
+  };
+  h.emit(sid, { type: "insight", payload: { messageId, trace } });
+}
+
 function pickEmotionTiming(h: EngineHost, rng: Rng): EmotionTiming {
   const { before, early } = h.timing.emotionTiming;
   const r = rng.next();
@@ -196,6 +222,8 @@ export interface SpeakOpts {
   system1?: TurnTrace["system1"];
   /** Regenerate: stream a new variant into this message. */
   variantOf?: string;
+  /** M9 (D25): a generated 1:1 greeting, planned with `emotion_greeting`. */
+  greeting?: boolean;
   /** docs/ai/04 P9: say `line` word for word at no cost (the first chat's approved greeting). */
   verbatim?: boolean;
 }
@@ -238,6 +266,13 @@ export function speak(h: EngineHost, sid: string, cid: string, opts: SpeakOpts =
   const pool = opts.verbatim ? [] : knowledgePool(h.db, cid);
   const cited = pool.length ? liveCitations(`${sid}:${messageId}`, line.text, opts.prompt ?? "", pool, h.rng(`${sid}:${live.turn}:cite`)) : null;
   const text = cited?.text ?? line.text;
+  // M9 D25: a 1:1 turn (not the verbatim greeting) is planned: one `turn_plan` charge and the emotion row, its answer
+  // the face the reply shows. The face check follows a completed AUTO reply whose face isn't neutral (D24).
+  const planned = session.mode === "one_on_one" && !opts.verbatim;
+  if (planned) h.charge(sid, "decision", decisionCostUsd(TURN_PLAN_DECISION_TOKENS, h.pricing.decision));
+  const planRow = planned
+    ? fixtureRow(opts.greeting ? "emotion_greeting" : "emotion_reply", line.emotion, cid) : undefined;
+  const system1 = planRow ? { questions: [planRow, ...(opts.system1?.questions ?? [])] } : opts.system1;
   const spec: LineSpec = {
     sessionId: sid,
     messageId,
@@ -251,7 +286,8 @@ export function speak(h: EngineHost, sid: string, cid: string, opts: SpeakOpts =
     forcedBy: opts.forcedBy,
     skipped: opts.skipped,
     routing: opts.routing,
-    system1: opts.system1,
+    system1,
+    planCalls: planned ? [decisionCall(h, "turn_plan", TURN_PLAN_DECISION_TOKENS)] : undefined,
     listeners,
     reactions: manual ? null : undefined,
     energyBefore: energy,
@@ -264,7 +300,11 @@ export function speak(h: EngineHost, sid: string, cid: string, opts: SpeakOpts =
   };
   const script = buildLineScript(spec, h.timing, h.pricing, rng);
   live.current = { messageId, characterId: cid, script, startPos: live.player.position, text };
-  h.play(sid, liveReactions(h, sid, script, messageId, script.status === "complete" && !manual && listeners.length > 0), messageId);
+  const entries = liveReactions(h, sid, script, messageId, script.status === "complete" && !manual && listeners.length > 0);
+  if (script.status === "complete" && !manual && !opts.verbatim && line.emotion !== "neutral") {
+    entries.push({ t: script.endMs + h.timing.faceCheckMs, tag: `face:${messageId}`, run: () => faceCheck(h, sid, messageId, variantId) });
+  }
+  h.play(sid, entries, messageId);
   return { messageId, endMs: script.endMs, status: script.status };
 }
 

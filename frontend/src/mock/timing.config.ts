@@ -34,6 +34,8 @@ export interface TimingConfig {
   watchStartMs: number;
   /** Greeting delay on a new 1:1 session. */
   greetingMs: number;
+  /** M9 (doc 13 W2; turn-plan-emotion D24): after turn.end, the scripted face check's row arrives this long after. */
+  faceCheckMs: number;
 }
 
 export const DEFAULT_TIMING: TimingConfig = {
@@ -59,6 +61,7 @@ export const DEFAULT_TIMING: TimingConfig = {
   debateStartMs: 1600,
   watchStartMs: 800,
   greetingMs: 300,
+  faceCheckMs: 300,
 };
 
 export type DemoSpeed = 1 | 2 | 4;
