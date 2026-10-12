@@ -51,6 +51,19 @@ after a run only when this rule was misapplied, and the change is listed in `doc
   teammate's good point reads as happy or neutral.
 - **Modes:** group 40, debate 25, watch 25. **Languages:** English 75, others 15.
 
+## Amendment for the fresh `reactions` set (2026-10-12, written before its items)
+
+The first set's run showed calm debate lines labelled with reactions to keep `none` under its cap (m9.md, 9.2). The
+fresh set (ids `rea2-…`) is written and labelled under these clarifications, before any run:
+
+- **Lines that clearly concern or move the listener** get a reaction: their name with news, praise, a jab, a
+  confession or a correction aimed at them, or news that plainly changes their day.
+- **Truly mild lines** are `none`: logistics, weather, small talk, a thank-you to the chair, a calm argument or a
+  plain fact that isn't about the listener.
+- **Debate:** a calm argument from the other side is `none`; only a pointed line (the listener named, mocked,
+  corrected or conceded to) gets a reaction.
+- The cap stays: at most 27 items accept `none`. The listener's face now is never in the acceptable set.
+
 ## Review
 
 - B2's sample (max(15, ⌈n/5⌉) per set) goes to the user in `evals/reviews/m9-emotion.md` and
