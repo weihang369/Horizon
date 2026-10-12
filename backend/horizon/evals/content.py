@@ -27,6 +27,7 @@ from horizon.evals import judges, reply_checks
 from horizon.evals.metrics import wilson
 from horizon.evals.runner import EVALS_DIR, Options, Plan, Result, RunEnv
 from horizon.gateway.context import call_ctx
+from horizon.gateway.errors import ProviderError
 
 DRAFTER_SEEDS = EVALS_DIR / "drafter" / "seeds.jsonl"
 SUMMARY_ITEMS = EVALS_DIR / "summary" / "items.jsonl"
@@ -89,7 +90,6 @@ class Drafter:
     async def run(self, env: RunEnv, plan: Plan) -> Result:
         from horizon.ai.naive.creation import parse_draft
         from horizon.ai.ports import PaidHooks
-        from horizon.gateway.errors import ProviderError
         from horizon.services.jobs.worker import draft_world_for
 
         res = Result()
@@ -228,6 +228,17 @@ async def wait_idle(env: RunEnv, sid: str) -> None:
     raise TimeoutError(f"session {sid} did not settle within {TURN_TIMEOUT_S:.0f} s")
 
 
+def budget_code(r: Any) -> str | None:
+    """The cap's error code when a 402 response carries one (the run's daily cap, energy or the creation cap)."""
+    if r.status_code != 402:
+        return None
+    try:
+        code = r.json()["error"]["code"]
+    except (ValueError, KeyError, TypeError):
+        return None
+    return code if code in ("daily_budget_exceeded", "creation_budget_exceeded", "energy_exhausted") else None
+
+
 async def drive(env: RunEnv, script: dict[str, Any]) -> tuple[str, list[dict[str, Any]]]:
     """Create the session, post each scripted line, wait for the turn to settle, and record what came back."""
     import httpx
@@ -241,6 +252,9 @@ async def drive(env: RunEnv, script: dict[str, Any]) -> tuple[str, list[dict[str
         r = await c.post(f"{api}/sessions", json={"worldId": script["world"], "mode": script["mode"],
                                                   "characterIds": script["cast"]})
         if r.status_code != 201:
+            code = budget_code(r)
+            if code:   # the run's cap: the runner reports it as incomplete and still records the spend
+                raise ProviderError(code, status=r.status_code)
             raise RuntimeError(f"creating the session failed ({r.status_code}): {r.text[:300]}")
         sid = r.json()["session"]["id"]
         await wait_idle(env, sid)
@@ -248,7 +262,9 @@ async def drive(env: RunEnv, script: dict[str, Any]) -> tuple[str, list[dict[str
         for line in script["lines"]:
             if await env.over_budget():
                 break
-            await c.post(f"{api}/sessions/{sid}/send", json={"text": line["text"]})
+            sent = await c.post(f"{api}/sessions/{sid}/send", json={"text": line["text"]})
+            if budget_code(sent):   # the cap refused this line: stop here rather than record a turn with no reply
+                break
             await wait_idle(env, sid)
             msgs = (await c.get(f"{api}/sessions/{sid}/messages", params={"limit": 1000})).json()["items"]
             new = [m for m in msgs if m["id"] not in seen and m["author"]["type"] == "character"]
@@ -423,7 +439,14 @@ class Transcript:
             if not env.opts.limit:   # smoke never writes a committed file
                 path = TRANSCRIPTS / f"{script['id']}.json"
                 path.write_text(json.dumps(doc, ensure_ascii=False, indent=1) + "\n", encoding="utf-8", newline="\n")
+            short = len(out_turns) < len(script["lines"])
+            if short:
+                res.status = "incomplete"
             res.rows.append({"script": script["id"], "turns": len(out_turns), "drops": len(sums)})
             res.summary.append(f"## Transcript {script['id']}: {len(out_turns)} turns, {len(sums)} drop(s)"
-                               + ("" if sums else " (NOT past a drop yet)"))
+                               + ("" if sums else " (NOT past a drop yet)")
+                               + (f" (stopped at the cap after {len(out_turns)} of {len(script['lines'])} lines)"
+                                  if short else ""))
+            if short:
+                break
         return res

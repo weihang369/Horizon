@@ -837,6 +837,19 @@ to `docs/ai/checks/m8.md`.
   draw, byte-identical, because they were already measured.
 - **Rejected:** appending 40 lines to the old scripts (keeps the loops); deferring the transcripts to M15.
 
+### D37. The tag parser also takes a bare `<label>` (the user's choice, 2026-10-12)
+
+- **The failure:** in 10.4's transcripts DeepSeek V4.1 Flash began 87 of 91 `naive` one-on-one replies with
+  `<neutral>` (the asked-for form is `<e:neutral>`), and the user saw the tag. Across every naive run the valid tag
+  came back only 5–8 % of the time; the earlier runs just omitted it, so the face fell back silently.
+- **Decision:** at the head, a bare `<label>` (one of the 7, any case, split across chunks or not) counts as the tag:
+  it chooses the face on `naive` and is stripped on `agent` (its subclass never lets a tag choose the face). Three
+  shared fixtures (`bare_tag`, `bare_tag_split_and_case`, `bare_lookalike_is_text`) run in both the Python parser and
+  the TS reference. The committed transcripts were re-parsed offline with it (no new call).
+- **Rejected:** also stripping a leading emotion *word* ("Neutral — …", 33 of 100 Meridian replies), since it would eat
+  real openers like "Thinking — maybe…" (M9's emotion choice takes the face off the model); a stronger `naive-6`
+  wording (paid, and this model ignores the format anyway); leaving it to M9 (`naive` stays the default until M15).
+
 ## Risks / Trade-offs
 
 - **[Risk] The refactor of `NaiveTurnEngine` (D2) changes naive behaviour unnoticed** → Mitigation: phase 1 does

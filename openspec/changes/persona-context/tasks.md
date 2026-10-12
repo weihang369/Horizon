@@ -277,8 +277,8 @@
   - every failure on the two 20-item checks is printed for reading;
   - the recorded real summaries replace the synthetic canned set (4.8), and the canned-summary tests still pass.
 - [x] 10.3 **Ask the user**: the `long` run (≈ $0.12, `--profile agent`). After OK, run it. Verify that m8.md has recall, the cache-hit %, summary calls per 100 turns, the reply checks and the repetition rates, with judge figures marked "unvalidated".
-- [ ] 10.4 **Ask the user**: the four long-history transcripts (≈ $0.06, `naive`). After OK, generate them, read each one, and commit them. Verify that the loader accepts all four and each is past one drop.
-- [ ] 10.5 Label 30 real items per judge from 10.1–10.4's outputs and group A's drafts. Run `horizon eval review` per set, and **ask the user to review the samples** (about 85 items). Relabel any set with two or more disagreements. Verify that `evals/reviews/` records each review.
+- [x] 10.4 **Ask the user**: the four long-history transcripts (≈ $0.06, `naive`). After OK, generate them, read each one, and commit them. Verify that the loader accepts all four and each is past one drop.
+- [x] 10.5 Label 30 real items per judge from 10.1–10.4's outputs and group A's drafts. Run `horizon eval review` per set, and **ask the user to review the samples** (about 85 items). Relabel any set with two or more disagreements. Verify that `evals/reviews/` records each review.
 - [ ] 10.6 **Ask the user**: judge validation (≈ $0.03, `decisions --set judges`). After OK, run it. A failing judge is reworded on its items, re-versioned, re-locked, re-reviewed with the user, and re-run. Verify that `evals/baselines/judges.json` shows all 13 judges passing at their current versions.
 - [ ] 10.7 Re-run `drafter`, `summary` and `long`, served from the store, paying only for re-versioned judges. Ask first if anything new will be paid. Verify:
   - m8.md reports validated figures against P12's and X10's targets;

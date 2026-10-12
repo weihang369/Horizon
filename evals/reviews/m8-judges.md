@@ -6,6 +6,11 @@ and 4 random items I labelled **no**, per judge: 75 in all (23 failures, 52 pass
 **How to answer:** reply with the ids you disagree with (for example `V3, L7`), or "all agreed".
 A judge with two or more disagreements gets its set relabelled.
 
+**Outcome (2026-10-12).** The user delegated this review ("I follow your recommendation"), so this is the labeller's
+own second pass, not an independent check. No label changed. Borderline but kept: ASS3, VOI2, VOI4, PUS3, PUS4
+(reasons in each `judges__*.json`). To make up for the missing second reader, 10.6 re-reads every real item a
+judge disagrees with before it counts against the judge, and m8.md lists each one.
+
 ## judge_assistant_voice — assistant voice?
 
 > Does quoted_reply sound like a helpful AI assistant rather than a person texting: offers of help, menus of options, headings or lists, or customer-service phrases?

@@ -53,6 +53,33 @@ async def test_transcript_smoke_writes_nothing(tmp_path: Path) -> None:
     assert sorted(p.name for p in (EVALS_DIR / "transcripts").glob("*.json")) == before
 
 
+async def test_transcript_stops_cleanly_at_the_cap(tmp_path: Path) -> None:
+    """10.4's paid run hit its cap: the run must end as incomplete with its spend recorded, not crash."""
+    before = sorted(p.name for p in (EVALS_DIR / "transcripts").glob("*.json"))
+    r, _ = runner(tmp_path)
+    assert await r.run(Options("transcript", limit=3, set="long_one_on_one_en", yes=True, max_usd=1e-9)) == 1
+    rep = report(tmp_path, "transcript")
+    assert "incomplete" in rep and ("stopped" in rep)
+    assert sorted(p.name for p in (EVALS_DIR / "transcripts").glob("*.json")) == before
+
+
+class _Resp:
+    def __init__(self, status: int, body: Any) -> None:
+        self.status_code, self._body = status, body
+
+    def json(self) -> Any:
+        if isinstance(self._body, Exception):
+            raise self._body
+        return self._body
+
+
+def test_budget_code_reads_only_a_cap_402() -> None:
+    assert content.budget_code(_Resp(402, {"error": {"code": "daily_budget_exceeded"}})) == "daily_budget_exceeded"
+    assert content.budget_code(_Resp(402, {"error": {"code": "something_else"}})) is None
+    assert content.budget_code(_Resp(402, ValueError("not json"))) is None
+    assert content.budget_code(_Resp(202, {"error": {"code": "daily_budget_exceeded"}})) is None
+
+
 def test_transcript_loader_rejects_a_long_one_that_never_dropped(tmp_path: Path) -> None:
     p = tmp_path / "t.json"
     p.write_text(json.dumps({"id": "t", "long": True, "turns": [{"user": "hi", "replies": [], "summary": None}]}))

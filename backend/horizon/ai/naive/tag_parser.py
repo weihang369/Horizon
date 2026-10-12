@@ -5,6 +5,9 @@ The model is asked to begin its reply with `<e:label>`. The parser:
 - accepts only the 7 contract emotions: a valid tag yields `Emotion(label, "llm")`;
 - otherwise (no tag, an invalid label, no `>` within 32 characters, or the stream ending first) yields the previous
   face with source `default`, and releases the buffered text (an invalid but complete tag is dropped, never released);
+- (persona-context D37, the user's choice after 10.4) also accepts a bare `<label>` (one of the 7, any case) at the
+  head the same way: DeepSeek V4.1 Flash wrote `<neutral>` for `<e:neutral>` in 87 of 91 replies of one transcript,
+  and the user saw it;
 - strips stray tags (`<e:…>`) anywhere later, including a tag split across chunks, before tokens are yielded;
 - drops the whitespace between the opening tag and the first visible text;
 - (docs/ai/03 C6, ai-foundation design D16) given the speaker's name(s), drops a leading `<name>:` on the FIRST line,
@@ -28,6 +31,7 @@ EMOTIONS = ("neutral", "happy", "sad", "angry", "surprised", "thinking", "embarr
 MAX_HEAD = 32
 _TAG = re.compile(r"<e:[^<>]{0,30}>")
 _PARTIAL = re.compile(r"<(?:e(?::[^<>]{0,30})?)?$")
+_BARE = tuple(f"<{e}>" for e in EMOTIONS)   # D37: the model's own form of the tag
 
 
 @dataclass(frozen=True)
@@ -110,6 +114,13 @@ class TagParser:
         s = self.head.lstrip()
         if not s:
             return []
+        low = s.casefold()
+        bare = next((b for b in _BARE if low.startswith(b)), None)
+        if bare is not None:
+            self.lead = True
+            return self._release_head(bare[1:-1], s[len(bare):])
+        if any(b.startswith(low) for b in _BARE) and len(self.head) < MAX_HEAD:
+            return []   # could still become a bare tag
         if not ("<e:".startswith(s) or s.startswith("<e:")):
             return self._release_head(None, self.head)
         if s.startswith("<e:") and ">" in s:

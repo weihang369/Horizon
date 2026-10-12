@@ -71,6 +71,11 @@ function parse(chunks: string[], previous: string): { emotion: string; source: s
     head += c;
     const s = head.trimStart();
     if (!s) continue;
+    // D37: a bare "<label>" (one of the 7, any case) at the head counts as the tag
+    const low = s.toLowerCase();
+    const bare = labels.find((l) => low.startsWith(`<${l}>`));
+    if (bare) { lead = true; release(bare, s.slice(bare.length + 2)); continue; }
+    if (labels.some((l) => `<${l}>`.startsWith(low)) && head.length < MAX_HEAD) continue;
     if (!("<e:".startsWith(s) || s.startsWith("<e:"))) { release(null, head); continue; }
     if (s.startsWith("<e:") && s.includes(">")) {
       const end = s.indexOf(">");

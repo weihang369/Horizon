@@ -257,7 +257,7 @@ class Runner:
             try:
                 result: Result = await suite.run(env, plan)
             except ProviderError as e:
-                if e.code in ("daily_budget_exceeded", "creation_budget_exceeded"):
+                if e.code in ("daily_budget_exceeded", "creation_budget_exceeded", "energy_exhausted"):
                     result = Result(status="incomplete", summary=[f"stopped: {e.code} (the run's cap ${max_usd})"])
                 else:
                     raise
