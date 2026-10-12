@@ -57,7 +57,7 @@ def test_floor_chosen_on_dev_from_the_grid_beating_both_extremes() -> None:
     out = choose_floor(rows, "emotion")
     assert out["floor"] in FLOORS and out["floor"] == 0.6                     # ties go to the lower floor
     assert out["accuracy"] == 1.0 and out["no_floor"] == 0.6 and out["fallback_only"] == 0.4
-    assert out["beats_both"] and set(out["grid"]) == set(FLOORS)
+    assert out["beats_both"] and set(out["grid"]) == {0.2, 0.3, 0.4, *FLOORS}   # D36: the emotion grid
 
 
 def test_a_floor_that_cannot_beat_fallback_only_is_flagged() -> None:

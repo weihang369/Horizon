@@ -104,6 +104,18 @@ def reordered(q: Question) -> Question:
     return Choice(q.instructions, dict(reversed(list(q.options.items()))), meta=q.meta)
 
 
+def order_line(flips: int, total: int, items: list[dict[str, Any]]) -> str:
+    """B6's lean report. Not measured for shuffled choice questions (turn-plan-emotion D38, the user's choice): the
+    store key sorts JSON keys, so the reversed request returns the first order's stored answer. The key fix is its
+    own change."""
+    shuffled = sorted({str(i["question_id"]) for i in items
+                       if bank().get(str(i["question_id"])).type == "choice" and bank().get(str(i["question_id"])).shuffle})
+    if shuffled:
+        return (f"- order bias: not measured for shuffled choices ({', '.join(shuffled)}): the store key ignores option "
+                "order, so the reversed request returns the first answer (D38)")
+    return f"- order bias: {flips}/{total} answers changed when the options were reversed"
+
+
 # ── canary ──
 class Canary:
     name = "canary"
@@ -274,7 +286,7 @@ class Decisions:
         elif total:
             lo, hi = wilson(correct, total)
             res.summary += [f"## Decisions: policy accuracy {correct}/{total} (95% Wilson {lo:.2f}–{hi:.2f})",
-                            f"- order bias: {flips}/{total} answers changed when the options were reversed",
+                            order_line(flips, total, plan.items),
                             "- calibration (p bin → accuracy): " + ", ".join(
                                 f"{k / 10:.1f}: {sum(v)}/{len(v)}" for k, v in sorted(bins.items()))]
         elif not n_policy:

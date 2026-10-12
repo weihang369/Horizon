@@ -133,7 +133,7 @@ async def test_greeting_asks_the_greeting_question() -> None:
 async def test_none_keeps_and_below_the_floor_keeps() -> None:
     planner, _, clock = make(jev_answer("none", 0.9))
     assert (await run(planner, clock, request(clock))).emotion.face == "thinking"
-    planner, _, clock = make(jev_answer("angry", 0.41))
+    planner, _, clock = make(jev_answer("angry", 0.15))   # the bank floor is 0.2 since M9 9.3 (D36)
     plan = await run(planner, clock, request(clock))
     assert plan.emotion.face == "thinking" and plan.rows[0]["result"] == "below_threshold"
 

@@ -3,6 +3,8 @@ listener-reactions "Which reactions show", "Listener faces fade")."""
 
 from __future__ import annotations
 
+import json
+
 from horizon.ai.agent.reactions import delay_ms, keep, state
 from horizon.ai.contexts import ListenerView, ReactionRequest, SessionContext, WorldView
 from horizon.ai.decider import ChoiceAnswer
@@ -69,5 +71,5 @@ def test_the_state_quotes_the_line_names_the_listeners_and_skips_the_ineligible(
                           listeners=[lv("a", side="the other side"), lv("m", eligible=False)])
     st = state(req)
     assert st["mode"] == "debate" and st["quoted_line"] == "Hana: Maps lie." and st["quoted_before"] == "Kai: Do maps lie?"
-    assert st["quoted_listeners"] == [{"name": "A", "about": "A retired ferry captain.", "face": "neutral",
-                                       "side": "the other side"}]
+    assert st["quoted_listeners"] == [{"name": "A", "about": "A retired ferry captain.", "side": "the other side"}]
+    assert "face" not in json.dumps(st)   # D37: Jev anchored on the face it was shown

@@ -820,6 +820,27 @@ from a reply, as D7 reasons for Jev call 1. Spend that *crosses* the cap when re
 **Rejected:** keeping the pause and narrowing the scenario to "the reactions task emits nothing itself": the user
 would see a pause caused by a background face.
 
+### D36. The emotion floor grid reaches down to 0.2 (the user's choice, 2026-10-12, found in 9.1)
+
+B5's grid {0.5 … 0.9} only removed right answers: Jev's confidences over 8 options sit low (median 0.58) while its
+picks are mostly right. The emotion grid adds 0.2, 0.3 and 0.4; dev chose 0.2 and the test split read 0.82 (m9.md).
+Both emotion entries are v2 with floor 0.2. **Rejected:** keeping floor 0.5 with test at 0.75 below target; growing
+the set first (E8's +40 follows anyway, in M15).
+
+### D37. The reaction state shows no face (the user's choice, found in 9.2)
+
+With each listener's current face in the state, Jev answered that face in 83 of 90 items, so reactions never
+showed. The state now holds the listener's name, card line and debate side only; code still uses the face for
+"differs" and for the fades. The listener-reactions requirement "One Jev request per message" changes with it.
+**Rejected:** rewording the instructions and keeping the face; keeping random reactions for `agent`.
+
+### D38. Order bias is "not measured" for shuffled choices (the user's choice, found in 9.1)
+
+The response store's key sorts JSON keys, so a choice asked with its options reversed hits the first order's stored
+answer; B6's order-bias line has read 0 for every shuffled choice since M7. The report now says "not measured" for
+them, with the reason. Live calls are unaffected (Jev gets the shuffled order). Fixing the key changes W10's locked
+rule, so it is its own change, with the user's OK. **Rejected:** fixing the key in M9.
+
 ### Built notes (phases 5–8)
 
 - **Splits (D27).** Both sets keep the hash rule, which gave `emotion` 72 dev / 28 test and `reactions` 65 / 25 (E8's

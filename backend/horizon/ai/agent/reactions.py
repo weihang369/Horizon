@@ -2,7 +2,8 @@
 turn-plan-emotion design D18–D21; listener-reactions spec).
 
 - **One request, one question per listener** (`reaction`, keyed `reaction:{listenerId}`): the 7 emotions plus `none`
-  ("no visible reaction"), each listener named, with a seed derived as `"{turn seed}:react:{listenerId}"`.
+  ("no visible reaction"), each listener named, with a seed derived as `"{turn seed}:react:{listenerId}"`. The state
+  names each listener and their card line but not their face (D37).
 - **The keep rule (code, E5):** a pick that isn't `none`, with Jev's confidence at or above the floor (on a neutral
   face, `neutral` and `none` merge first, as for the speaker), whose face differs from the listener's face. At most
   the 2 most confident show. The runtime re-checks "differs" under the writer lock just before each append (D20).
@@ -71,8 +72,9 @@ def state(req: ReactionRequest) -> dict[str, Any]:
     for lv in req.listeners:
         if not lv.eligible:
             continue
-        entry: dict[str, Any] = {"name": lv.name, "about": cut_tokens(first_sentence(lv.about_source), ABOUT_MAX),
-                                 "face": lv.face}
+        # D37 (the user's choice): no face here. With it, Jev answered the face the listener already had in 83 of
+        # 90 items; code still compares with it ("differs") and fades by it
+        entry: dict[str, Any] = {"name": lv.name, "about": cut_tokens(first_sentence(lv.about_source), ABOUT_MAX)}
         if lv.side_label:
             entry["side"] = lv.side_label
         listeners.append(entry)

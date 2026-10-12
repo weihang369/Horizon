@@ -7,7 +7,9 @@ docs/ai/02 B5; turn-plan-emotion design D26; evaluation-harness "Decision suite"
 - **Reaction:** one listener per item. The policy answer is the face that would show, or `none` when nothing shows
   (no cap: a single listener). Correct when it is in the acceptable set. The baseline is "always `none`".
 - **Floors** come from {0.5, 0.6, 0.7, 0.8, 0.9}, chosen on the dev split from each item's one seeded order (B5, E8). A
-  floor must beat both "no floor" and "fallback only"; ties go to the lower floor (more Jev answers used).
+  floor must beat both "no floor" and "fallback only"; ties go to the lower floor (more Jev answers used). The emotion
+  grid also holds 0.2, 0.3 and 0.4 (turn-plan-emotion D36, the user's choice): Jev's 8-option confidences sit low
+  (median 0.58) while its picks are mostly right, so B5's grid only removed right answers.
 """
 
 from __future__ import annotations
@@ -22,6 +24,7 @@ from horizon.ai.decider import ChoiceAnswer
 from horizon.evals.metrics import mcnemar_exact, wilson
 
 FLOORS = (0.5, 0.6, 0.7, 0.8, 0.9)
+GRIDS = {"emotion": (0.2, 0.3, 0.4, *FLOORS), "reaction": FLOORS}   # D36
 FADE = frozenset({"surprised", "embarrassed"})
 
 
@@ -68,9 +71,10 @@ def choose_floor(rows: Sequence[tuple[ChoiceAnswer | None, Mapping[str, Any]]], 
     def acc(floor: float) -> float:
         return accuracy(rows, lambda a, lab: correct(answer(a, lab, floor), lab))
 
-    grid = {f: acc(f) for f in FLOORS}
+    floors = GRIDS.get(kind, FLOORS)
+    grid = {f: acc(f) for f in floors}
     no_floor, fallback_only = acc(0.0), acc(1.01)
-    best = max(FLOORS, key=lambda f: (grid[f], -f))
+    best = max(floors, key=lambda f: (grid[f], -f))
     return {"floor": best, "accuracy": grid[best], "grid": grid, "no_floor": no_floor, "fallback_only": fallback_only,
             "beats_both": grid[best] >= no_floor and grid[best] > fallback_only}
 

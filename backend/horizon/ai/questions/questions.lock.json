@@ -1,11 +1,11 @@
 {
   "emotion_greeting": {
-    "sha256": "8c6f508bb431e914d2a9bf895d52f16222e90a427e2e30c77e463cec8aea54a4",
-    "version": 1
+    "sha256": "4254cbce73e698f114959f899b3d5272165ab7ea6e64ac80f9777dca278a9970",
+    "version": 2
   },
   "emotion_reply": {
-    "sha256": "affe67de1f8ed1caab864c448655662812a63482f85604b1c8374428c62edb14",
-    "version": 1
+    "sha256": "ef1e3ae7a13cfa28c81df0d62999b7d7d8c788143f2d93fdac3d2871c3f9bdea",
+    "version": 2
   },
   "face_check": {
     "sha256": "4709bc69e08b6debce18d397c5cd950b137a92eef94543773907f8cec1c8acea",

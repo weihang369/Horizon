@@ -33,7 +33,8 @@ muted, not the speaker, and have enough energy for a reply. A muted or exhausted
 Under `agent`, the task SHALL send one `reaction` decision request holding one choice question per listener: the 7
 emotions plus `none` ("no visible reaction"), each listener named, with its seed derived as
 `"{turn seed}:react:{listenerId}"`. Its state SHALL hold the line and the line before it as quoted text, each
-listener's name, short description and current face, and the mode.
+listener's name and short description (and debate side), and the mode. It SHALL NOT show the listener's current face:
+Jev anchored on it (design D37); code still uses the face for "differs" and the fades.
 
 #### Scenario: Two listeners
 - **WHEN** Hana's group reply completes with Rin and Kai listening

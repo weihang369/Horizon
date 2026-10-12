@@ -218,7 +218,7 @@ def test_emotion_entries_compile_about_a_named_candidate(qid: str, middle: str) 
     assert isinstance(q, Choice) and set(q.options) == EMOTIONS | {"none"}
     assert q.instructions.startswith(f"Which face fits how Amara {middle}") and q.instructions.endswith(SENTENCE)
     assert q.meta is not None and (q.meta.purpose, q.meta.label, q.meta.deadline) == ("turn_plan", "emotion", "turn_plan")
-    assert bank().get(qid).floor == 0.6
+    assert bank().get(qid).floor == 0.2   # M9 9.3 (D36): chosen on dev from the extended grid
     assert "Not for:" in q.options["happy"] and "For example:" in q.options["none"]
 
 
