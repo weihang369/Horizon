@@ -285,7 +285,7 @@
   - X5's drift signal decides the voice-reminder switch;
   - P8's rates decide the repeat-hint switch;
   - a missed target is reported to the user with options before any prompt change.
-- [ ] 10.8 Write `docs/ai/checks/m8.md`'s summary: the spend per run against the estimates (design D30), the findings, and what M9 inherits. Verify by reading. Phase gates green → commit "M8 phase 10: paid runs and results".
+- [x] 10.8 Write `docs/ai/checks/m8.md`'s summary: the spend per run against the estimates (design D30), the findings, and what M9 inherits. Verify by reading. Phase gates green → commit "M8 phase 10: paid runs and results".
 
 ## 11. Integration and review
 
