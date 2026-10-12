@@ -1,5 +1,5 @@
 {
- "_note": "Hand labels for B4's real items (persona-context 10.5), drafted by Claude from the paid runs' outputs; \"yes\" is the failure. Each entry: item id -> {label, why?}. The user reviews a sample (horizon eval review).",
+ "_note": "Hand labels for B4's real items (persona-context 10.5), drafted by Claude from the paid runs' outputs; \"yes\" is the failure. Each entry: item id -> {label, why?}. The user reviews a sample (horizon eval review). judge_voice (10.6, the user's choice): a fresh set of 30 t10 replies, labelled blind before any judge saw them, by a rule written first: out of voice when the tone contradicts the persona's stated tone (a curt brush-off from a reassuring or warm persona) or the reply has none of the persona's markers and reads like another cast member; content doesn't count, and short alone isn't out of voice.",
  "_sources": {
   "summary": "data/evals/20261012T000256-summary-fe23e4 (the paid summary run; outputs recorded in the store)",
   "drafts": [
@@ -1199,94 +1199,191 @@
   }
  },
  "judge_voice": {
-  "l10-group_meridian-001": {
+  "t10-long_group_meridian-027": {
    "label": "no"
   },
-  "l10-group_meridian-017": {
+  "t10-long_group_meridian-070": {
+   "label": "yes",
+   "why": "Mei drops her dry 'it depends' ranges for a withdrawal speech that reads like Amara"
+  },
+  "t10-long_group_meridian-062": {
    "label": "no"
   },
-  "l10-group_meridian-034": {
+  "t10-long_group_meridian-060": {
+   "label": "yes",
+   "why": "reproach ('you've answered none of mine') and closing down, not Amara's reassurance"
+  },
+  "t10-long_group_meridian-077": {
    "label": "no"
   },
-  "l10-group_meridian-035": {
+  "t10-long_group_meridian-081": {
    "label": "no"
   },
-  "l10-group_meridian-036": {
+  "t10-long_group_meridian-096": {
+   "label": "yes",
+   "why": "'You. Tomorrow.': Victor's clipped cadence, not Amara's reassuring plain language"
+  },
+  "t10-long_group_meridian-014": {
    "label": "no"
   },
-  "l10-group_meridian-043": {
+  "t10-long_group_sunnyhollow-046": {
    "label": "no"
   },
-  "l10-group_meridian-051": {
+  "t10-long_group_sunnyhollow-095": {
    "label": "no"
   },
-  "l10-group_meridian-064": {
+  "t10-long_group_sunnyhollow-098": {
    "label": "no"
   },
-  "l10-group_meridian-066": {
+  "t10-long_group_sunnyhollow-000": {
    "label": "no"
   },
-  "l10-group_meridian-073": {
+  "t10-long_group_sunnyhollow-016": {
    "label": "no"
   },
-  "l10-group_meridian-077": {
+  "t10-long_group_sunnyhollow-093": {
    "label": "no"
   },
-  "l10-group_meridian-079": {
+  "t10-long_group_sunnyhollow-090": {
    "label": "no"
   },
-  "l10-one_on_one_en-000": {
+  "t10-long_group_sunnyhollow-039": {
    "label": "no"
   },
-  "l10-one_on_one_en-003": {
+  "t10-long_one_on_one_en-044": {
    "label": "no"
   },
-  "l10-one_on_one_en-014": {
+  "t10-long_one_on_one_en-035": {
    "label": "no"
   },
-  "l10-one_on_one_en-022": {
+  "t10-long_one_on_one_en-067": {
    "label": "no"
   },
-  "l10-one_on_one_en-028": {
+  "t10-long_one_on_one_en-065": {
    "label": "no"
   },
-  "l10-one_on_one_en-034": {
+  "t10-long_one_on_one_en-033": {
    "label": "no"
   },
-  "l10-one_on_one_en-037": {
+  "t10-long_one_on_one_en-037": {
    "label": "no"
   },
-  "l10-one_on_one_en-042": {
+  "t10-long_one_on_one_en-055": {
    "label": "no"
   },
-  "l10-one_on_one_en-043": {
+  "t10-long_one_on_one_ms-097": {
    "label": "no"
   },
-  "l10-one_on_one_en-045": {
+  "t10-long_one_on_one_ms-091": {
    "label": "no"
   },
-  "l10-one_on_one_en-047": {
+  "t10-long_one_on_one_ms-033": {
    "label": "no"
   },
-  "l10-one_on_one_en-049": {
+  "t10-long_one_on_one_ms-087": {
    "label": "no"
   },
-  "l10-one_on_one_en-054": {
+  "t10-long_one_on_one_ms-099": {
    "label": "no"
   },
-  "l10-one_on_one_en-059": {
+  "t10-long_one_on_one_ms-085": {
    "label": "no"
   },
-  "l10-one_on_one_en-061": {
+  "t10-long_one_on_one_ms-037": {
+   "label": "no"
+  }
+ },
+ "_judge_voice_holdout": {
+  "t10-long_group_meridian-099": {
    "label": "no"
   },
-  "l10-one_on_one_en-065": {
+  "t10-long_group_meridian-088": {
+   "label": "yes",
+   "why": "Mei with none of her dry ranges; 'Message me directly ... Not here' reads like Amara's withdrawal"
+  },
+  "t10-long_group_meridian-013": {
    "label": "no"
   },
-  "l10-one_on_one_en-070": {
+  "t10-long_group_meridian-043": {
    "label": "no"
   },
-  "l10-one_on_one_en-073": {
+  "t10-long_group_meridian-032": {
+   "label": "no"
+  },
+  "t10-long_group_meridian-031": {
+   "label": "no"
+  },
+  "t10-long_group_meridian-057": {
+   "label": "yes",
+   "why": "reproach and 'GP. Tomorrow. Tell me the day.': Victor's clipped cadence, not Amara's reassurance"
+  },
+  "t10-long_group_meridian-051": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-037": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-042": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-013": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-070": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-031": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-055": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-092": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-085": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-040": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-034": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-005": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-018": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-056": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-052": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-019": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-045": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-088": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-074": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-031": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-044": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-070": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-000": {
    "label": "no"
   }
  }
