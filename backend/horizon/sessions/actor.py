@@ -61,6 +61,8 @@ class TurnInfo:
     system1: list[dict[str, Any]] = field(default_factory=list)   # rows appended mid-stream (D24), merged at finish
     system1_calls: list[dict[str, Any]] = field(default_factory=list)
     citations: list[dict[str, Any]] | None = None
+    face: str | None = None        # M9: the last face this turn emitted (the face check reads it)
+    auto: bool = True              # M9: the emotion mode was AUTO at turn.start (doc 13 W2)
     spec: Any = None
     ctx: Any = None
     engine: Any = None
@@ -102,6 +104,7 @@ class SessionActor:
         self._idle: asyncio.Task[None] | None = None
         self._timers: set[asyncio.Task[None]] = set()
         self._background: set[asyncio.Task[Any]] = set()
+        self._named: dict[str, set[asyncio.Task[Any]]] = {}   # M9 D20: the same tasks by name, for cancel_background
         self.prefetches: set[Any] = set()   # sessions.prefetch.Prefetch runs ahead of their slot (design D5)
         self.epoch = 0
         self.stopped = False
@@ -156,6 +159,7 @@ class SessionActor:
                     await x
         self._timers.clear()
         self._background.clear()
+        self._named.clear()
         for env in self.inbox.clear():
             if env.fut is not None and not env.fut.done():
                 env.fut.cancel()
@@ -228,20 +232,42 @@ class SessionActor:
 
         task = self.rt.spawn(f"{name}:{self.sid}", run())
         self._background.add(task)
-        task.add_done_callback(self._background.discard)
+        named = self._named.setdefault(name, set())
+        named.add(task)
+
+        def done(t: asyncio.Task[Any]) -> None:
+            self._background.discard(t)
+            named.discard(t)
+
+        task.add_done_callback(done)
         return task
+
+    def cancel_background(self, *names: str) -> int:
+        """Cancel and forget the named background tasks (M9 D20: reactions, face checks). Returns how many were
+        running. The cancelled tasks finish their own cleanup (a Decider call detaches; nothing is written)."""
+        n = 0
+        for name in names:
+            for task in list(self._named.pop(name, ())):
+                self._background.discard(task)
+                if not task.done():
+                    task.cancel()
+                    n += 1
+        return n
 
     async def clear(self, *, keep_current: bool = False) -> None:
         """Cancel pending work (the mock's `clearLive`). `keep_current` lets a turn already streaming finish.
-        Prefetched turns are discarded either way (D-77: their spend and drain stand)."""
+        Prefetched turns are discarded either way (D-77: their spend and drain stand). Listener reactions and face
+        checks are dropped (M9 D20; E5, W2); the rolling summary and the memory writer keep running."""
         self.turns.clear()
+        self.cancel_background("reactions", "face_check")
         for x in list(self._timers):
             x.cancel()
         self._timers.clear()
         for pf in list(self.prefetches):
             if not pf.released:
                 await pf.discard()
-        if keep_current and self.current is not None and not self.current.closed:
+        # M9 (turn-plan-emotion D8): only a turn that has started streaming is kept; one still planning is cut
+        if keep_current and self.current is not None and not self.current.closed and self.current.started:
             self.mode_epoch_bump()
             return
         self.mode_epoch_bump()
@@ -265,6 +291,14 @@ class SessionActor:
     async def emit(self, *events: Mapping[str, Any], traces: Mapping[str, TraceMeta] | None = None) -> list[Wire]:
         async with self.write_lock:
             return await self.writer.append(list(events), traces=traces)
+
+    async def emit_checked(self, event: Mapping[str, Any], check: Callable[[Wire], bool]) -> list[Wire]:
+        """Append `event` only if `check(state)` passes under the writer lock, just before the append (M9 D20): nothing
+        can land between the check and the write. A failed check appends nothing and returns []."""
+        async with self.write_lock:
+            if not check(self.state):
+                return []
+            return await self.writer.append([event])
 
     async def emit_with(self, events: Sequence[Mapping[str, Any]], extra: Any) -> list[Wire]:
         async with self.write_lock:

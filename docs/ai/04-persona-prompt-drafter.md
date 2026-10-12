@@ -102,6 +102,12 @@ dynamic tail (per turn)  <- retrieval block (with the deep length override, C4) 
   `prompt_version = "agent-1"`. It takes the profile, the appearance summary, the world name and You card, the
   session's mode data (cast names and roles, motion, side, premise), the content rating and the length line, and
   returns the system message. No I/O, so it is cheap to test and to run anywhere.
+- **Versions:** `agent-1` (M8): the compiler and tail as built in M8. `agent-2` (M9, turn-plan-emotion D16): the same
+  system message plus doc 06 E4's mood line in the tail on a planned AUTO non-neutral turn. A neutral, MANUAL or
+  unplanned turn's request is byte-identical to `agent-1`'s (so M8's stored answers still serve); the version moved
+  because non-neutral requests changed, and traces and the ledger must not label M9's replies as M8's.
+  *M9's on/off run found no gain (turn-plan-emotion D40), so the line is behind `persona.moodLine`, default off: the
+  live engine sends `agent-1` and reports it; `agent-2` only while the switch is on.*
 - The **`naive`** profile keeps its own compiler with only doc 03's changes (`naive-3`). Doc 02 B3 compares `agent`
   against `naive`; if both used the new prompt, the evaluation could not show what the new prompt is worth. Nothing in
   this doc touches the naive prompt or engine: the verbatim greeting (P9) is a runtime path in front of every engine,

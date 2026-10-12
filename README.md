@@ -72,7 +72,7 @@ uv run --project backend horizon models fetch
 Nothing about your conversations leaves your machine except the model calls to OpenRouter. Two developer switches, both off by default, change that locally or remotely:
 
 - `HORIZON_CAPTURE_AI_CALLS=1` keeps each AI call's redacted prompt and reply in the local database for 7 days, for debugging with `horizon eval capture`. Forget and deletes clear it.
-- `HORIZON_LANGSMITH=1` (plus `LANGSMITH_API_KEY` and `uv sync --group tracing`) **sends** chat and document text to LangSmith for tracing. Leave it off unless you mean to share that text.
+- `HORIZON_LANGSMITH=1` (plus `LANGSMITH_API_KEY`; the package ships with the backend from M9) **sends** chat and document text to LangSmith for tracing. Leave it off unless you mean to share that text.
 
 ### Secret hygiene
 

@@ -34,8 +34,13 @@ async def test_reply_event_sequence_energy_ledger_and_trace(api: Api) -> None:
             or (e["type"] in ("turn.next", "turn.thinking") and e["seq"] > user_seq)]
     assert mine.index("turn.start") < mine.index("turn.end") < mine.index("insight")
     rows = [r for r in await ledger(api) if r["message_id"] == reply["id"]]
-    assert len(rows) == 1 and rows[0]["purpose"] == "reply" and rows[0]["provider"] == "scripted"
-    assert rows[0]["category"] == "chat" and round(rows[0]["cost_usd"], 6) == reply["usage"]["costUsd"]
+    chat = [r for r in rows if r["category"] == "chat"]
+    assert len(chat) == 1 and chat[0]["purpose"] == "reply" and chat[0]["provider"] == "scripted"
+    assert round(chat[0]["cost_usd"], 6) == reply["usage"]["costUsd"]
+    # M9 (turn-plan-emotion D24, D25): the simulated plan, and the face check when the face isn't neutral
+    checked = reply["emotion"] != "neutral"
+    assert sorted(r["purpose"] for r in rows if r["category"] == "decision") == (
+        ["face_check", "turn_plan"] if checked else ["turn_plan"])
     after = (await api.json(f"{API}/characters/chr_seedAmara"))["energy"]["current"]
     assert after < before
     assert (await api.json(f"{API}/usage/summary"))["byCategory"]["chat"] > 0

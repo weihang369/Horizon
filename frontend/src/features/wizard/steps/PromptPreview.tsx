@@ -1,6 +1,7 @@
 // CHR-05 "View as prompt" (docs/ai/04 P10; persona-prompt "The preview is the real prompt"): the real `agent` system
 // message for a 1:1 chat in this world, compiled by the backend compiler's TS twin, with the backend's token count
-// and a note on anything P4's limit shortened or left out. Owner: AI.
+// and a note on anything P4's limit shortened or left out. Owner: AI. (M9's mood-line note, D17, went with the line's
+// default, D40: replies no longer carry one.)
 import { useMemo } from "react";
 import type { CharacterProfile, World } from "@/contract/types";
 import { CARD_MAX, compilePersona } from "@/domain/personaPrompt";

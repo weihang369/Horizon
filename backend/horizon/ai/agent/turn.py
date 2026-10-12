@@ -6,7 +6,7 @@ citation map and the warm-prefix estimate are shared. What differs:
 - **the request (D6):** system message 1 from the `agent` compiler; the rolling summary under doc 11 S6's heading
   (leading `#`s stripped from its lines); the history with the speaker's own lines as `assistant` and every other
   line as `Name: line`, same-role messages merged (X4), each message clipped at 4,000 tokens (X8); then ONE tail message
-  (the retrieval block, the repeat hint and voice reminder when switched on, the cue);
+  (the retrieval block, M9's mood line, the repeat hint and voice reminder when switched on, the cue);
 - **the parser:** stray tags and a `<name>:` at every line start are stripped (P6), and a tag never sets the face (P7):
   until M9's turn plan, the previous face stays, source `default` (D4);
 - **the trace:** doc 05 X7's context mapping, the per-mode planned input as the budget, and no `cacheHitPct` (X6).
@@ -19,7 +19,14 @@ from collections.abc import Sequence
 from typing import Any
 
 from horizon.ai.agent.budget import planned_input
-from horizon.ai.agent.persona import PROMPT_VERSION, compile_persona, first_name, persona_input
+from horizon.ai.agent.persona import (
+    PROMPT_VERSION,
+    PROMPT_VERSION_MOOD,
+    compile_persona,
+    first_name,
+    mood_line,
+    persona_input,
+)
 from horizon.ai.contexts import MessageView, TurnContext
 from horizon.ai.language import language_cue
 from horizon.ai.llm import llm_request
@@ -37,10 +44,18 @@ _HEADING = re.compile(r"^[ \t]*#+[ \t]*")
 
 
 class AgentTagParser(TagParser):
-    """P7 on the agent path: a tag is stripped like any stray tag but never chooses the face."""
+    """P7 on the agent path: a tag is stripped like any stray tag but never chooses the face. The face is the plan's
+    (M9, turn-plan-emotion D14) or, on an unplanned turn, the previous one with source `default` (M8 D4)."""
+
+    def __init__(self, previous: str = "neutral", speaker: str | Sequence[str] | None = None, *,
+                 per_line: bool = False, planned: tuple[str, str] | None = None) -> None:
+        super().__init__(previous, speaker, per_line=per_line)
+        self.planned = planned
 
     def _decide(self, emotion: str | None) -> list[Any]:
         self.decided = True
+        if self.planned is not None:
+            return [ParsedEmotion(*self.planned)]
         return [ParsedEmotion(self.previous, "default")]
 
 
@@ -96,8 +111,12 @@ def stop_sequences(ctx: TurnContext, you: str, history: list[dict[str, Any]]) ->
 
 class AgentTurnEngine(NaiveTurnEngine):
     name = "agent"
-    version = "1"
-    prompt_version: str | None = PROMPT_VERSION
+    version = "2"   # M9: the face comes from the plan (turn-plan-emotion D14)
+
+    @property
+    def prompt_version(self) -> str:  # type: ignore[override]   # dynamic: it follows the live switch (D40)
+        """`agent-1`, or `agent-2` while the mood line is switched on (D16, D40): the label follows the bytes sent."""
+        return PROMPT_VERSION_MOOD if self.deps.switch("persona.moodLine") else PROMPT_VERSION
 
     # ── seam 1: the request ──
     def cue(self, ctx: TurnContext) -> str | None:
@@ -107,6 +126,14 @@ class AgentTurnEngine(NaiveTurnEngine):
             base = "Open the conversation with a short, warm greeting in character."
             return f"{base} Don't reuse your usual greeting: '{stored}'." if stored else base
         return turn_cue(ctx)
+
+    def mood(self, ctx: TurnContext) -> str | None:
+        """E4's mood line for the planned face; none without a plan, for neutral or in MANUAL (D16). Off unless the
+        `persona.moodLine` switch is on: M9's on/off run found no gain and more replies naming the feeling (D40)."""
+        if not self.deps.switch("persona.moodLine"):
+            return None
+        face = ctx.plan.emotion if ctx.plan is not None else None
+        return mood_line(face.face, face.manual) if face is not None else None
 
     def tail_extras(self, ctx: TurnContext) -> list[str]:
         """P8's repeat hint and X5's voice reminder, each only when its runtime switch is on (both off by default)."""
@@ -136,6 +163,9 @@ class AgentTurnEngine(NaiveTurnEngine):
         tail: list[str] = []
         if block is not None and block.content:
             tail.append(block.content)
+        mood = self.mood(ctx)   # M9 D16: after the retrieval block, before the repeat hint (doc 04 P2, doc 06 E4)
+        if mood:
+            tail.append(mood)
         tail += self.tail_extras(ctx)
         cue = self.cue(ctx)
         if cue:
@@ -154,7 +184,9 @@ class AgentTurnEngine(NaiveTurnEngine):
 
     # ── seam 2: the parser ──
     def parser(self, ctx: TurnContext, previous: str, names: list[str]) -> TagParser:
-        return AgentTagParser(previous, speaker=names, per_line=True)
+        face = ctx.plan.emotion if ctx.plan is not None else None
+        return AgentTagParser(previous, planned=(face.face, face.source) if face is not None else None, speaker=names,
+                              per_line=True)
 
     # ── seam 3: the trace (X7) ──
     def trace_patch(self, ctx: TurnContext, req: ChatRequest, prefix: list[dict[str, Any]], block: RetrievalBlock | None,
@@ -178,6 +210,9 @@ class AgentTurnEngine(NaiveTurnEngine):
                      "knowledge": max(0, block_tokens - memory)}}}
         if chosen is not None:
             patch["emotion"] = {"chosen": chosen.emotion, "source": chosen.source}
+            face = ctx.plan.emotion if ctx.plan is not None else None
+            if face is not None and face.candidates:   # E2: the top 3 by Jev's p (none when Jev failed)
+                patch["emotion"]["candidates"] = [dict(c) for c in face.candidates]
         if block is not None:
             knowledge = block.knowledge_trace(ctx.query, said)
             if knowledge is not None:

@@ -7,6 +7,7 @@ from collections.abc import Awaitable, Callable
 from typing import TYPE_CHECKING, Any
 
 from horizon.api.errors import HorizonHTTPError, not_found
+from horizon.sessions.after_turn import REACTIONS
 from horizon.sessions.modes import debate, group, one_on_one, watch
 from horizon.sessions.modes.common import patch_settings
 from horizon.sessions.preconditions import (
@@ -64,6 +65,8 @@ async def _settings(patch: Wire, a: SessionActor) -> None:
 
 
 async def _emotion_mode(a: SessionActor, b: Wire) -> None:
+    if b["mode"] == "user":   # M9 D20 (E5): MANUAL drops pending listener reactions
+        a.cancel_background(REACTIONS)
     await _settings({"emotionMode": b["mode"]}, a)
 
 

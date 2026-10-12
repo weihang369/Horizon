@@ -39,7 +39,7 @@ async def test_stop_mid_stream_keeps_the_streamed_text_and_the_spend(api: Api) -
     streamed = "".join(e["payload"]["delta"] for e in await events(api, sid)
                        if e["type"] == "token" and e["payload"]["messageId"] == m["id"])
     assert reply["content"] == streamed and 0 < len(streamed)
-    rows = [r for r in await ledger(api) if r["message_id"] == m["id"]]
+    rows = [r for r in await ledger(api) if r["message_id"] == m["id"] and r["category"] == "chat"]  # M9: the reply's row
     assert len(rows) == 1 and rows[0]["cost_source"] == "estimate"
     assert reply["usage"]["costUsd"] == round(rows[0]["cost_usd"], 6)
     assert not api.rt.sessions.peek(sid).generating  # type: ignore[union-attr]
@@ -148,7 +148,7 @@ async def test_stream_cut_scenario(api: Api) -> None:
     assert err["seq"] < end["seq"] and end["payload"]["interruptedBy"] == "error"
     tokens = "".join(e["payload"]["delta"] for e in evs if e["type"] == "token" and e["payload"]["messageId"] == reply["id"])
     assert tokens == reply["content"] and 60 <= len(tokens) <= 140  # about 24 tokens
-    rows = [r for r in await ledger(api) if r["message_id"] == reply["id"]]
+    rows = [r for r in await ledger(api) if r["message_id"] == reply["id"] and r["category"] == "chat"]  # M9: the reply's row
     assert len(rows) == 1 and rows[0]["cost_source"] == "estimate"
     # The fault was one-shot: the next reply completes.
     await command(api, sid, "send", {"text": "Try again."})

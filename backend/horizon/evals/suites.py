@@ -22,10 +22,10 @@ from pathlib import Path
 from typing import Any
 
 from horizon.ai.decider import Choice, ChoiceAnswer, Noul, NoulAnswer, Question, validate, wire_question
-from horizon.ai.questions import bank
+from horizon.ai.questions import NAME, bank
 from horizon.domain.clock import FrozenClock
 from horizon.evals import canary as canary_mod
-from horizon.evals import judges
+from horizon.evals import judges, policies
 from horizon.evals.judges import JUDGES_SET
 from horizon.evals.metrics import wilson
 from horizon.evals.runner import EVALS_DIR, Options, Plan, Result, RunEnv, decision_estimate
@@ -83,11 +83,18 @@ def wire_problems(w: dict[str, Any]) -> list[str]:
     return out
 
 
-def compile_entry(qid: str, values: list[dict[str, Any]] | None = None, seed: str = "smoke") -> Question:
-    """The entry compiled as live; a dynamic choice with no values gets two stub options (the wire check needs ≥ 2)."""
+STUB_NAME = "Amara"   # M9 (design D11): the subject a named entry is compiled about when an item names none (smoke)
+
+
+def compile_entry(qid: str, values: list[dict[str, Any]] | None = None, seed: str = "smoke",
+                  name: str | None = None) -> Question:
+    """The entry compiled as live; a dynamic choice with no values gets two stub options (the wire check needs ≥ 2),
+    and an entry that names its subject gets the item's `name` (or a stub one)."""
     e = bank().get(qid)
     dynamic = e.type == "choice" and e.options.get("kind") != "static"
-    return bank().question(qid, values=values or (STUB_VALUES if dynamic else ()), seed=seed)
+    named = NAME in e.instructions
+    return bank().question(qid, values=values or (STUB_VALUES if dynamic else ()), seed=seed,
+                           name=(name or STUB_NAME) if named else None)
 
 
 def reordered(q: Question) -> Question:
@@ -95,6 +102,18 @@ def reordered(q: Question) -> Question:
     if not isinstance(q, Choice):
         return q
     return Choice(q.instructions, dict(reversed(list(q.options.items()))), meta=q.meta)
+
+
+def order_line(flips: int, total: int, items: list[dict[str, Any]]) -> str:
+    """B6's lean report. Not measured for shuffled choice questions (turn-plan-emotion D38, the user's choice): the
+    store key sorts JSON keys, so the reversed request returns the first order's stored answer. The key fix is its
+    own change."""
+    shuffled = sorted({str(i["question_id"]) for i in items
+                       if bank().get(str(i["question_id"])).type == "choice" and bank().get(str(i["question_id"])).shuffle})
+    if shuffled:
+        return (f"- order bias: not measured for shuffled choices ({', '.join(shuffled)}): the store key ignores option "
+                "order, so the reversed request returns the first answer (D38)")
+    return f"- order bias: {flips}/{total} answers changed when the options were reversed"
 
 
 # ── canary ──
@@ -170,7 +189,7 @@ class Decisions:
         items = self._items(opts)
         est = 0.0
         for i in items:
-            q = compile_entry(i["question_id"], i["item"].get("values"), seed=i["id"])
+            q = compile_entry(i["question_id"], i["item"].get("values"), seed=i["id"], name=i["item"].get("name"))
             asks = 2 if isinstance(q, Choice) else 1   # a noul has no option order to reverse (D27)
             est += asks * decision_estimate(prices, i["item"]["state"], {i["question_id"]: wire_question(q)})
         return Plan(items=items, estimate_usd=est, expected_s=len(items) * 4.0, paid=paid)
@@ -192,9 +211,11 @@ class Decisions:
             if await env.over_budget():
                 res.status = "incomplete"
                 break
-            q = compile_entry(qid, item["item"].get("values"), seed=item["id"])
+            seed = str(item["item"].get("seed") or item["id"])   # M9 D26: the live seeded order, when stored
+            q = compile_entry(qid, item["item"].get("values"), seed=seed, name=item["item"].get("name"))
             row: dict[str, Any] = {"id": item["id"], "question_id": qid, "version": version, "label": item["label"],
-                                   "smoke_only": bool(item.get("smoke_only")), "planted": bool(item.get("planted"))}
+                                   "smoke_only": bool(item.get("smoke_only")), "planted": bool(item.get("planted")),
+                                   "split": item["split"], "lang": item.get("lang", "en")}
             if isinstance(q, Noul):   # D27: asked once; "yes" when p reaches the entry's threshold
                 r = await env.rt.gateway.decide(item["item"]["state"], {qid: wire_question(q)}, call_ctx("eval_judge"))
                 ans = validate(q, r.answers.get(qid))
@@ -209,12 +230,35 @@ class Decisions:
                     row["invalid"] = True
                 res.rows.append(row)
                 continue
+            if qid == judges.PAIRWISE:   # M9 D29: both orders = the two replies swapped (its options never shuffle)
+                probs = []
+                for st in (item["item"]["state"], judges.swapped(item["item"]["state"])):
+                    r = await env.rt.gateway.decide(st, {qid: wire_question(q)}, call_ctx("eval_judge"))
+                    ans = validate(q, r.answers.get(qid))
+                    probs.append(dict(ans.probabilities or {ans.choice: ans.confidence or 0.0})
+                                 if isinstance(ans, ChoiceAnswer) else None)
+                if probs[0] is not None and probs[1] is not None:
+                    side = str(item["label"])
+                    win = judges.prefers(probs[0], probs[1], side)
+                    lose = judges.prefers(probs[0], probs[1], "b" if side == "a" else "a")
+                    row.update(p_win=round(win, 4), p_lose=round(lose, 4), correct=win > lose)
+                    total += 1
+                    correct += win > lose
+                else:
+                    row["invalid"] = True
+                res.rows.append(row)
+                continue
             answers = []
             for order in (q, reordered(q)):
                 r = await env.rt.gateway.decide(item["item"]["state"], {qid: wire_question(order)}, call_ctx("eval_judge"))
                 answers.append(validate(order, r.answers.get(qid)))
             a, b = answers
-            if isinstance(a, ChoiceAnswer) and isinstance(b, ChoiceAnswer):
+            if isinstance(a, ChoiceAnswer) and isinstance(b, ChoiceAnswer) and isinstance(item["label"], dict):
+                # M9 D26: scored by the live code rule at report time (the floor comes from dev); both orders kept
+                row.update(answer=a.choice, answer_reversed=b.choice, confidence=a.confidence,
+                           probabilities=dict(a.probabilities or {}))
+                flips += a.choice != b.choice
+            elif isinstance(a, ChoiceAnswer) and isinstance(b, ChoiceAnswer):
                 row.update(answer=a.choice, answer_reversed=b.choice, confidence=a.confidence)
                 total += 1
                 correct += a.choice == item["label"]
@@ -231,15 +275,21 @@ class Decisions:
             done_path.write_text(json.dumps(measured, indent=1), encoding="utf-8")
         if env.opts.set == JUDGES_SET and not self.smoke:
             res.summary += self._judge_report(res.rows, plan.items)
+        fade = env.rt.runtime_cfg.runtime.emotion_fade
+        for kind in ("emotion", "reaction"):   # M9 D26: the code rule's policies, floors from dev
+            mine = [r for r in res.rows if isinstance(r["label"], dict) and policies.kind_of(r["question_id"]) == kind]
+            if mine and not self.smoke:
+                res.summary += policies.report(mine, kind, fade)
+        n_policy = sum(1 for r in res.rows if isinstance(r["label"], dict) and not r.get("invalid"))
         if self.smoke:
-            res.summary.append(f"## Decisions (smoke only: {total} item(s), never a measurement)")
+            res.summary.append(f"## Decisions (smoke only: {total + n_policy} item(s), never a measurement)")
         elif total:
             lo, hi = wilson(correct, total)
             res.summary += [f"## Decisions: policy accuracy {correct}/{total} (95% Wilson {lo:.2f}–{hi:.2f})",
-                            f"- order bias: {flips}/{total} answers changed when the options were reversed",
+                            order_line(flips, total, plan.items),
                             "- calibration (p bin → accuracy): " + ", ".join(
                                 f"{k / 10:.1f}: {sum(v)}/{len(v)}" for k, v in sorted(bins.items()))]
-        else:
+        elif not n_policy:
             res.summary.append("## Decisions: nothing to measure" + (f" (unchanged: {', '.join(sorted(skipped))})"
                                                                      if skipped else ""))
         return res
@@ -254,11 +304,17 @@ class Decisions:
         for qid in sorted({r["question_id"] for r in rows}):
             got = [r for r in rows if r["question_id"] == qid and "correct" in r]
             want = sum(1 for i in items if i["question_id"] == qid)
-            r = judges.b4(got)
-            out.append(f"- {qid} v{bank().get(qid).version}: real {r['real']:.2f} (n {r['real_n']}), overall "
-                       f"{r['overall']:.2f} against the baseline {r['baseline']:.2f}, planted {r['planted']:.2f} "
-                       f"(n {r['planted_n']}) → "
-                       f"{'PASS' if r['passed'] else 'FAIL'}" + ("" if len(got) == want else f" (partial: {len(got)}/{want})"))
+            r = judges.b4_for(qid, got)
+            partial = "" if len(got) == want else f" (partial: {len(got)}/{want})"
+            verdict = "PASS" if r["passed"] else "FAIL"
+            if qid == judges.PAIRWISE:   # M9 D29: known winners, both orders, ≥ 90 %
+                out.append(f"- {qid} v{bank().get(qid).version}: the known winner preferred on {r['accuracy']:.2f} "
+                           f"of {r['n']} pairs (order-averaged; rule ≥ 0.90) → {verdict}{partial}")
+            else:
+                fa = f", false alarms {r['false_alarms']} (rule ≤ 1)" if "false_alarms" in r else ""
+                out.append(f"- {qid} v{bank().get(qid).version}: real {r['real']:.2f} (n {r['real_n']}), overall "
+                           f"{r['overall']:.2f} against the baseline {r['baseline']:.2f}, planted {r['planted']:.2f} "
+                           f"(n {r['planted_n']}){fa} → {verdict}{partial}")
             if len(got) == want:
                 results[qid], versions[qid] = r, bank().get(qid).version
         if results:
@@ -338,6 +394,7 @@ class Smoke:
             content_lines.append(f"- {suite.name}: {r.status}, {len(r.rows)} row(s)")
             if r.status != "ok":
                 empty.append(suite.name)
+        content_lines += await self.m9(env, plan, empty)
         res.summary += ["## Smoke (never compared with baselines)",
                         f"- bank: {len(bank().entries)} entr(ies), wire problems: {problems or 'none'}",
                         f"- datasets: {n_lines} line(s) load", *d.summary,
@@ -348,10 +405,46 @@ class Smoke:
             res.status = "failed"
         return res
 
+    @staticmethod
+    async def m9(env: RunEnv, plan: Plan, empty: list[str]) -> list[str]:
+        """M9 (turn-plan-emotion 8.10): the first `moodline` item and one `latency` turn under `agent`, so both code
+        paths run in CI at $0. In test mode a Decider fixture gives the item's Jev call 1 a confident face (the fake's
+        1/8 answer is below the floor). The run's own profile is restored afterwards."""
+        from horizon.ai.decider import ChoiceAnswer
+        from horizon.ai.profile import ProfileSpec
+        from horizon.evals.latency import Latency
+        from horizon.evals.moodline import Moodline, candidates
+
+        rt = env.rt
+        out: list[str] = []
+        before = rt.profile
+        rt.set_profile(ProfileSpec(profile="agent", test_mode=rt.cfg.test_mode))
+        try:
+            if rt.cfg.test_mode:
+                first = candidates(per_file=4)[0]
+                rt.decider_fixtures.set("turn_plan", f"emotion_reply:{first['speaker']}",
+                                        ChoiceAnswer("sad", confidence=0.9, probabilities={"sad": 0.9}))
+            for suite, o in ((Moodline(), Options("moodline", limit=1, profile="agent")),
+                             (Latency(), Options("latency", limit=1, profile="agent"))):
+                sub = RunEnv(rt=rt, opts=o, store=env.store if suite.name == "moodline" else None,
+                             run_dir=env.run_dir, max_usd=env.max_usd)
+                r = await suite.run(sub, suite.plan(o, rt.prices, paid=plan.paid))
+                out.append(f"- {suite.name}: {r.status}, {len(r.rows)} row(s)")
+                if r.status != "ok" or (rt.cfg.test_mode and not r.rows):
+                    empty.append(suite.name)
+        finally:
+            rt.set_profile(before)
+            if rt.cfg.test_mode:
+                rt.decider_fixtures.clear()
+        return out
+
 
 def _content() -> dict[str, Any]:
     from horizon.evals.content import Drafter, Long, Summary, Transcript
-    return {"drafter": Drafter(), "summary": Summary(), "long": Long(), "transcript": Transcript()}
+    from horizon.evals.latency import Latency
+    from horizon.evals.moodline import Moodline
+    return {"drafter": Drafter(), "summary": Summary(), "long": Long(), "transcript": Transcript(),
+            "moodline": Moodline(), "latency": Latency()}
 
 
 SUITES: dict[str, Any] = {"canary": Canary(), "decisions": Decisions(), "smoke": Smoke(), **_content()}

@@ -1,0 +1,32 @@
+{
+ "id": "judge_pairwise",
+ "version": 2,
+ "purpose": "eval_judge",
+ "type": "choice",
+ "label": "better reply?",
+ "instructions": "Which reply sounds more like {name}, in their own voice and personality, as the next line in this chat: quoted_reply_a or quoted_reply_b? Judge the voice first, then how well it answers the latest line.",
+ "options": {
+  "kind": "static",
+  "items": {
+   "a": {
+    "what": "Reply A is better."
+   },
+   "b": {
+    "what": "Reply B is better."
+   },
+   "same": {
+    "what": "About the same."
+   }
+  }
+ },
+ "shuffle": false,
+ "state": {
+  "quoted_recent": "quoted",
+  "quoted_reply_a": "quoted",
+  "quoted_reply_b": "quoted"
+ },
+ "deadline": "default",
+ "floor": null,
+ "thresholds": {},
+ "fallback": "none (evaluation only)"
+}

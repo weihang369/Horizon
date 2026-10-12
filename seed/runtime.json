@@ -30,7 +30,8 @@
       "jobTickMs": 250,
       "debateStartMs": 1600,
       "watchStartMs": 800,
-      "greetingMs": 300
+      "greetingMs": 300,
+      "faceCheckMs": 300
     },
     "runtime": {
       "replyMaxTokens": {
@@ -124,10 +125,17 @@
         "queryEmbedWaitMs": 400
       },
       "persona": {
-        "repeatHint": false
+        "repeatHint": false,
+        "moodLine": false
       },
       "context": {
         "voiceReminder": false
+      },
+      "emotion": {
+        "fade": [
+          "surprised",
+          "embarrassed"
+        ]
       }
     }
   }

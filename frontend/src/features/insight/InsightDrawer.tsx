@@ -12,7 +12,7 @@ import { useShortcut } from "../../app/shortcuts";
 import { PortraitCard } from "../../character/PortraitCard";
 import { emotionMeta } from "../../character/emotionMeta";
 import type { Character, Citation, Message, TurnTrace } from "../../contract/types";
-import { formatUsd, probBand } from "../../domain/format";
+import { formatUsd } from "../../domain/format";
 import { useMotionPrefs } from "../../motion/prefs";
 import { entities } from "../../stores/entities";
 import { usePrefs } from "../../stores/prefs";
@@ -28,6 +28,8 @@ import { useSlotRuntime } from "../session/slot";
 import { plainText } from "../session/markdown";
 import { TypeGlyph } from "../session/Citations";
 import { openCitation } from "../session/citationUtils";
+import { EmotionBody } from "./EmotionSection";
+import { emotionChip } from "./emotionView";
 import { showSystem1, System1Rows } from "./System1Section";
 
 /** Bars and bands use the same 2-decimal value, so "0.70" never reads "MED" (no false precision, INS-01 AC4). */
@@ -284,18 +286,9 @@ export function InsightDrawer({ sessionId, close }: OverlayComponentProps<"O08">
       );
     }
     if (e) {
-      const cands = [...(e.candidates ?? [])].sort((a, b) => b.p - a.p).slice(0, 3);
       sections.push(
-        <Section key="emotion" n={num(i)} title="Emotion" i={i++} aside={<span className={s.chip}>{e.source === "llm" ? "AI" : e.source}</span>}>
-          <p className={s.chosen}><span className={s.chosenIcon} aria-hidden="true">{emotionMeta[e.chosen].icon}</span>{emotionMeta[e.chosen].label}{cands[0] && <span className={cx(s.band, s[`band_${probBand(r2(cands[0].p))}`])}>{probBand(r2(cands[0].p))}</span>}</p>
-          {cands.length > 0 && (
-            <div className={s.bars}>
-              {cands.map((x) => (
-                <ProbBar key={x.label} label={<><span className={s.emoIcon} aria-hidden="true">{emotionMeta[x.label].icon}</span>{emotionMeta[x.label].label}</>} p={armed ? r2(x.p) : 0} color={x.label === e.chosen ? undefined : "var(--paper-300)"} />
-              ))}
-            </div>
-          )}
-          {runtime.session.emotionMode === "user" && <p className={s.fine}>MANUAL mode: recorded here, not shown on the portrait.</p>}
+        <Section key="emotion" n={num(i)} title="Emotion" i={i++} aside={<span className={s.chip}>{emotionChip(e)}</span>}>
+          <EmotionBody emotion={e} armed={armed} manual={runtime.session.emotionMode === "user"} />
         </Section>,
       );
     }

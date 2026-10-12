@@ -13,6 +13,9 @@ Every Jev question is one JSON file here, `<id>.json`, loaded once into an immut
   option). A dynamic option fills the entry's template from the caller's values; the version covers the template.
 - **Shuffle** (doc 01 A3 rule 4): options are ordered by SHA-256 of `"{seed}:{key}"`, so a seed always gives the same
   order and `none` is shuffled with the rest.
+- **One subject in the instructions** (M9, turn-plan-emotion design D11): `{name}` in an entry's instructions is filled
+  with the name of the character the question is about. The name follows the `label` rule (short, one line); entries
+  without the placeholder compile exactly as before.
 """
 
 from __future__ import annotations
@@ -32,6 +35,7 @@ CONVENTIONS = HERE / "_conventions.json"
 LOCK = HERE / "questions.lock.json"
 KINDS = ("choice", "noul", "score")
 FIELD_KINDS = frozenset({"quoted", "label", "number", "id", "bool", "list_label"})
+NAME = "{name}"   # the one placeholder an entry's instructions may hold (design D11)
 
 
 def canonical(o: Any) -> str:
@@ -144,11 +148,12 @@ class QuestionBank:
             raise BankError(f"unknown question {qid!r}") from e
 
     def question(self, qid: str, *, values: Sequence[Mapping[str, Any]] = (), exclude: Sequence[str] = (),
-                 seed: str | None = None, about: str | None = None) -> Question:
+                 seed: str | None = None, about: str | None = None, name: str | None = None) -> Question:
         """Compile an entry into the Decider's question. `values` fills a dynamic choice's options (each needs a
-        `key`); `exclude` drops option keys (a mentioned speaker); `seed` orders options when the entry shuffles."""
+        `key`); `exclude` drops option keys (a mentioned speaker); `seed` orders options when the entry shuffles;
+        `name` fills the instructions' `{name}`."""
         e = self.get(qid)
-        instructions = f"{e.instructions.rstrip()} {self.sentence}"
+        instructions = f"{self._named(e, name).rstrip()} {self.sentence}"
         meta = QMeta(id=e.id, version=e.version, label=e.label, purpose=e.purpose, deadline=e.deadline,
                      state=e.state, about=about, label_max=int(self.conventions.get("labelMaxChars", 40)))
         if e.type == "noul":
@@ -173,6 +178,16 @@ class QuestionBank:
                 raise BankError(f"{qid}: a shuffled question needs a seed")
             options = {k: options[k] for k in shuffled(list(options), f"{seed}:{qid}")}
         return Choice(instructions, options, meta=meta)
+
+    def _named(self, e: BankEntry, name: str | None) -> str:
+        if NAME not in e.instructions:
+            return e.instructions
+        limit = int(self.conventions.get("labelMaxChars", 40))
+        if name is None or not name.strip():
+            raise BankError(f"{e.id}: its instructions name a subject; compile it with a name")
+        if len(name) > limit or "\n" in name or "\r" in name:
+            raise BankError(f"{e.id}: a subject's name must be one line of at most {limit} characters")
+        return e.instructions.replace(NAME, name.strip())
 
     # ── the lock ──
     def digest(self, qid: str) -> str:

@@ -101,7 +101,8 @@ def test_agent_resolves_like_naive() -> None:
         want = "agent" if p in AGENT_PORTS else naive_.choose(p, key_set=True)
         assert agent.choose(p, key_set=True) == want, p
         assert agent.choose(p, key_set=False) == "scripted" or p == "converter", p
-    assert AGENT_PORTS == frozenset({"turn"})
+    # M9 (turn-plan-emotion D5, D18, D23) adds the planner, reactions and the face check
+    assert AGENT_PORTS == frozenset({"turn", "planner", "reactions", "face_check"})
 
 
 def test_agent_from_env() -> None:

@@ -26,14 +26,17 @@ from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
-from horizon.ai.contexts import DebateMeta, LineHint, TurnContext
+from horizon.ai.contexts import DebateMeta, LineHint, PlanRequest, SessionContext, TurnContext, TurnPlan
 from horizon.ai.ports import OWNED_TRACE_KEYS, CitationMap, Emotion, Token, TracePatch
+from horizon.ai.scripted.ports import PLANNED_FACE
 from horizon.api.errors import DEFAULT_RETRYABLE
+from horizon.domain import vclock
 from horizon.domain.energy import points_for_cost
 from horizon.domain.ids import new_id
 from horizon.domain.timeutil import to_ms
 from horizon.gateway.errors import ProviderError
 from horizon.sessions.actor import SessionActor, TurnInfo
+from horizon.sessions.after_turn import start_face_check, start_reactions
 from horizon.sessions.coalesce import Coalescer
 from horizon.sessions.context import (
     character_view,
@@ -56,6 +59,7 @@ log = logging.getLogger("horizon.sessions")
 
 Wire = dict[str, Any]
 STATUS_BY_CODE = {"content_refused": "error"}
+REGENERATE_SUFFIX = " (again)"   # regenerate's prompt marker (one_on_one.regenerate); the plan reads the plain line
 _MARKER = re.compile(r"\[(\d+)\]")
 
 
@@ -154,6 +158,9 @@ class TurnRunner:
             nxt["forcedBy"] = spec.forced_by
         if spec.skipped:
             nxt["skipped"] = spec.skipped
+        # M9 (turn-plan-emotion D6): an `agent` 1:1 turn is planned from here, so Jev overlaps the thinking delay
+        planning = (rt.spawn(f"plan:{actor.sid}", self._plan(actor, spec, row, mid))
+                    if prefetch is None and not spec.line.verbatim and actor.mode_name == "one_on_one" else None)
         try:
             await actor.emit({"type": "turn.next", "payload": nxt})
             await rt.clock.sleep(rt.runtime_cfg.timing.thinking_ms / 1000)
@@ -161,11 +168,25 @@ class TurnRunner:
             if prefetch is not None:
                 info.ctx = prefetch.ctx
                 return await self._stream(actor, spec, info, prefetch.ctx, t0, started_iso, prefetch=prefetch)
-            sctx = await session_context(rt, actor)   # M8: no summary work here (docs/ai/05 X2: it runs after turn.end)
+            plan: TurnPlan | None = None
+            if planning is not None:
+                sctx, plan = await vclock.join(planning)   # the worker's token is given up while Jev thinks
+            else:
+                sctx = await session_context(rt, actor)   # M8: no summary work here (docs/ai/05 X2: after turn.end)
             if spec.line.verbatim:   # M8 (docs/ai/04 P9, persona-context D19): no retrieval, no model call
                 ctx = TurnContext(session=sctx, speaker=character_view(row), message_id=mid, variant_id=vid,
                                   prompt=spec.prompt, line=spec.line, turn_index=actor.mode.turn, max_tokens=1)
+            elif plan is not None and plan.branch is not None:   # D9: the plan decided retrieval (M9: always quick)
+                spec.calls.extend(plan.calls)
+                spec.system1 = system1_section(spec.system1, plan.rows, seed=plan.seed)
+                ctx = TurnContext(session=sctx, speaker=character_view(row), message_id=mid, variant_id=vid,
+                                  prompt=spec.prompt, line=spec.line, turn_index=actor.mode.turn,
+                                  max_tokens=reply_cap(rt, sctx, plan), direction_note=spec.direction_note,
+                                  debate=spec.debate, plan=plan)
             else:
+                if plan is not None:   # a planner that leaves retrieval alone (the scripted one): its rows only
+                    spec.calls.extend(plan.calls)
+                    spec.system1 = system1_section(spec.system1, plan.rows, seed=plan.seed)
                 got = await retrieve(rt, actor, sctx, spec.speaker, spec.prompt)   # M5 design D10: the speaker's scope
                 spec.calls.extend(got.calls)
                 ctx = TurnContext(session=sctx, speaker=character_view(row), message_id=mid, variant_id=vid,
@@ -176,9 +197,35 @@ class TurnRunner:
             actor.mode.turn += 1
             info.ctx = ctx
             return await self._stream(actor, spec, info, ctx, t0, started_iso)
+        except asyncio.CancelledError:
+            if not info.started:   # cut before turn.start (clear() during the plan or the preamble): nothing to close
+                info.closed = True
+            raise
         finally:
+            if planning is not None and not planning.done():   # D8: Stop during the plan leaves nothing running
+                planning.cancel()
             if actor.current is info and info.closed:
                 actor.current = None
+
+    async def _plan(self, actor: SessionActor, spec: TurnSpec, row: Any, mid: str) -> tuple[SessionContext, TurnPlan | None]:
+        """The turn's context and its plan (D6): started before `turn.next`, so the deadline counts from here. The
+        base face is the current face in AUTO, and the speaker's last AI-chosen face under MANUAL (docs/ai/06 E2)."""
+        rt = self.rt
+        started = rt.clock.now()
+        sctx = await session_context(rt, actor)
+        planner = rt.ai.planner(self.key_set())
+        manual = actor.session.get("emotionMode") == "user"
+        if manual:
+            mine = [m for m in actor.state["messages"].values()
+                    if m["author"].get("characterId") == spec.speaker and m.get("emotion")]
+            base = str(max(mine, key=lambda m: m["seq"])["emotion"]) if mine else "neutral"
+        else:
+            base = next((p.emotion for p in sctx.participants if p.character_id == spec.speaker), "neutral")
+        req = PlanRequest(session=sctx, speaker_id=spec.speaker, cast=[character_view(row)], message_id=mid,
+                          kind="greeting" if spec.line.kind == "greeting" else "reply",
+                          latest=spec.prompt.removesuffix(REGENERATE_SUFFIX), turn_index=actor.mode.turn,
+                          base_face=base, manual=manual, started_at=started)
+        return sctx, await planner.plan(req)
 
     async def _stream(self, actor: SessionActor, spec: TurnSpec, info: TurnInfo, ctx: TurnContext, t0: float,
                       started_iso: str, *, prefetch: Prefetch | None = None) -> TurnOutcome:
@@ -231,7 +278,11 @@ class TurnRunner:
                 try:
                     async for ev in agen:
                         if not info.started:
-                            await self._start(actor, spec, info)
+                            if isinstance(ev, Emotion):   # D14: turn.start and the face in one write
+                                await self._start(actor, spec, info, emotion=self._emotion_event(info, ev))
+                                continue
+                            if not isinstance(ev, CitationMap | TracePatch):   # no wire event of their own
+                                await self._start(actor, spec, info)
                         if isinstance(ev, Token):
                             if first_token_ms is None:
                                 first_token_ms = to_ms(clock.now()) - t0
@@ -250,9 +301,7 @@ class TurnRunner:
                         elif isinstance(ev, Emotion):
                             await settle_timer()
                             await flush()
-                            await actor.emit({"type": "emotion", "payload": {
-                                "messageId": info.message_id, "characterId": info.character_id, "emotion": ev.emotion,
-                                "source": ev.source}})
+                            await actor.emit(self._emotion_event(info, ev))
                         elif isinstance(ev, CitationMap):
                             citations = info.citations = list(ev.citations)
                         elif isinstance(ev, TracePatch):
@@ -286,14 +335,23 @@ class TurnRunner:
                           first_token_ms=first_token_ms, t0=t0, started_iso=started_iso, engine=engine)
         return TurnOutcome(info.message_id, status)
 
-    async def _start(self, actor: SessionActor, spec: TurnSpec, info: TurnInfo) -> None:
+    @staticmethod
+    def _emotion_event(info: TurnInfo, ev: Emotion) -> Wire:
+        info.face = ev.emotion
+        return {"type": "emotion", "payload": {"messageId": info.message_id, "characterId": info.character_id,
+                                               "emotion": ev.emotion, "source": ev.source}}
+
+    async def _start(self, actor: SessionActor, spec: TurnSpec, info: TurnInfo, *, emotion: Wire | None = None) -> None:
+        """`turn.start`, and with it the first face when the engine's first event is one (docs/ai/06 E2; D14): one
+        `actor.emit`, so nothing (a pending reaction) lands between them."""
         payload: Wire = {"messageId": info.message_id, "author": {"type": "character", "characterId": info.character_id}}
         if info.variant_id:
             payload["variantId"] = info.variant_id
         elif spec.message:
             payload["message"] = spec.message
         info.started = True
-        await actor.emit({"type": "turn.start", "payload": payload})
+        info.auto = actor.session.get("emotionMode") != "user"   # the face check reads the mode at turn.start (W2)
+        await actor.emit({"type": "turn.start", "payload": payload}, *([emotion] if emotion is not None else []))
 
     # ── the end of a turn ──
     async def finish(self, actor: SessionActor, info: TurnInfo, spec: TurnSpec, ctx: TurnContext | None, *, status: str,
@@ -372,8 +430,15 @@ class TurnRunner:
                     routing["skipped"] = spec.skipped
             full["routing"] = routing
             full["calls"] = [*spec.calls, *await ledger.calls_for_message(mid, since=since), *info.system1_calls]
+            plan = ctx.plan if ctx is not None else None
+            if plan is not None and plan.graph_path:   # A12: the plan graph's node path, written once (D3)
+                full["graph"] = {"path": list(plan.graph_path)}
             if spec.system1 or info.system1:   # D24: rows appended mid-stream merge by key, never replace
                 base = dict(spec.system1 or {})
+                if base.get("questions"):   # M9 D25: the scripted emotion row's answer is the face the reply showed
+                    base["questions"] = [{**q, "answer": info.face or "neutral"}
+                                         if q.get("purpose") == "turn_plan" and q.get("answer") == PLANNED_FACE else q
+                                         for q in base["questions"]]
                 full["system1"] = system1_section(base, info.system1, seed=base.get("seed"))
             events.append({"type": "insight", "payload": {"messageId": mid, "trace": full}})
         meta = TraceMeta(engine=getattr(engine, "name", None), engine_version=getattr(engine, "version", None),
@@ -388,11 +453,14 @@ class TurnRunner:
         if rt.capture.enabled and ctx is not None and not verbatim:   # ai-foundation D27: the turn row (queued)
             rt.capture.on_turn(world_id=actor.session.get("worldId"), session_id=actor.sid,
                                character_id=info.character_id, message_id=mid, request=ctx.model_dump(mode="json"),
-                               response={"plan": None, "status": status,
+                               response={"plan": ctx.plan.model_dump(mode="json") if ctx.plan is not None else None,
+                                         "status": status,
                                          "routingFallback": (spec.routing or {}).get("reason") == "fallback",
                                          "deciderFallback": any(bool(c.get("fallback")) for c in spec.calls)})
         if status == "complete" and spec.reactions and ctx is not None and actor.session["emotionMode"] != "user":
-            self._reactions(actor, info, ctx)
+            start_reactions(rt, actor, info, ctx, key_set=self.key_set())   # M9 D18-D20: predicted inside the task
+        if status == "complete" and not scrub and ctx is not None and not verbatim:   # M9 D24 (doc 13 W2)
+            start_face_check(rt, actor, info, ctx, key_set=self.key_set())
         if status == "complete" and not scrub and ctx is not None and not verbatim:
             self._remember(actor, info, ctx)
         if status != "error":   # M8 (docs/ai/05 X2, X3): fold the window after the reply, never before it
@@ -464,33 +532,6 @@ class TurnRunner:
                 log.exception("the memory writer failed after message %s (ignored)", mid)
 
         actor.background("memory", job())
-
-    def _reactions(self, actor: SessionActor, info: TurnInfo, ctx: TurnContext) -> None:
-        rt = self.rt
-        est = rt.est_reply_points()
-        listeners = [p.character_id for p in ctx.session.participants
-                     if p.character_id != info.character_id and not p.muted
-                     and float(p.energy.get("current", 0)) >= est]
-        if not listeners:
-            return
-        reactions = rt.ai.reactions(self.key_set()).predict(ctx.session, info.message_id, info.character_id, listeners,
-                                                            seed=f"{actor.seed}:{ctx.turn_index}")
-        if not reactions:
-            return
-
-        async def play() -> None:
-            start = to_ms(rt.clock.now())
-            for r in sorted(reactions, key=lambda x: x.delay_ms):
-                wait = start + r.delay_ms - to_ms(rt.clock.now())
-                if wait > 0:
-                    await rt.clock.sleep(wait / 1000)
-                payload: Wire = {"messageId": info.message_id, "characterId": r.character_id, "emotion": r.emotion,
-                                 "source": "classifier"}
-                if r.p is not None:
-                    payload["p"] = r.p
-                await actor.emit({"type": "reaction", "payload": payload})
-
-        actor.background("reactions", play())
 
     # ── Stop ──
     async def close_interrupted(self, actor: SessionActor, info: TurnInfo, *, by: str = "user") -> None:

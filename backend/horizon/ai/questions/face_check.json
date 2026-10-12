@@ -1,0 +1,56 @@
+{
+  "id": "face_check",
+  "version": 1,
+  "purpose": "face_check",
+  "type": "choice",
+  "label": "face and words agree?",
+  "instructions": "Which emotion do the words of quoted_reply show? Judge only the words, not what you guess the speaker's face is.",
+  "options": {
+    "kind": "static",
+    "items": {
+      "neutral": {
+        "what": "Calm, matter-of-fact words with no strong feeling.",
+        "not_for": "Words that plainly sound pleased, hurt, annoyed or startled.",
+        "examples": ["The train leaves at nine, so pack tonight.", "Sure, Tuesday is fine."]
+      },
+      "happy": {
+        "what": "Pleased, warm, amused or relieved words.",
+        "not_for": "Plain politeness with nothing glad in it.",
+        "examples": ["Oh, that's wonderful news!", "Ha, you always make me laugh."]
+      },
+      "sad": {
+        "what": "Low, sorry, hurt or missing someone.",
+        "not_for": "Tired or flat words with no sense of loss.",
+        "examples": ["I keep thinking about how it used to be.", "I'm so sorry it ended that way."]
+      },
+      "angry": {
+        "what": "Annoyed, sharp, offended or defensive.",
+        "not_for": "Firm disagreement said calmly.",
+        "examples": ["No. That's not what happened and you know it.", "Don't talk about her like that."]
+      },
+      "surprised": {
+        "what": "Caught off guard: disbelief, sudden questions.",
+        "not_for": "Questions asked out of plain interest.",
+        "examples": ["Wait, what? Since when?", "You did what? Seriously?"]
+      },
+      "thinking": {
+        "what": "Weighing, unsure, working something out.",
+        "not_for": "A confident answer with nothing left open.",
+        "examples": ["Hm. It could go either way, honestly.", "Let me turn that over for a second."]
+      },
+      "embarrassed": {
+        "what": "Flustered, shy, deflecting praise or a slip.",
+        "not_for": "Admitting a mistake calmly.",
+        "examples": ["Oh stop, it was nothing, really.", "Ugh, please forget I said that."]
+      }
+    }
+  },
+  "shuffle": true,
+  "state": {
+    "quoted_reply": "quoted"
+  },
+  "deadline": "face_check",
+  "floor": null,
+  "thresholds": {},
+  "fallback": "no_row"
+}

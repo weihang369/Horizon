@@ -329,7 +329,8 @@ class Runtime:
                       llm=self.runtime_cfg.runtime.llm,
                       system1_row=lambda qid, answer: fixture_row(self.cfg.seed_dir, qid, answer),
                       switch=lambda name: self.runtime_cfg.runtime.switch(name),
-                      windows=lambda: self.runtime_cfg.runtime.window_tokens.as_dict())
+                      windows=lambda: self.runtime_cfg.runtime.window_tokens.as_dict(),
+                      emotion_fade=lambda: self.runtime_cfg.runtime.emotion_fade)
         self._ai = AiPorts(deps, self.profile)
         chat = str(self.settings_doc()["models"].get("chat") or "")
         if chat and chat != self.prices.chat.model:   # docs/ai/03 C9: one chat-model source; tell the developer

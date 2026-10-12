@@ -1,4 +1,16 @@
 {
+  "emotion_greeting": {
+    "sha256": "4254cbce73e698f114959f899b3d5272165ab7ea6e64ac80f9777dca278a9970",
+    "version": 2
+  },
+  "emotion_reply": {
+    "sha256": "ef1e3ae7a13cfa28c81df0d62999b7d7d8c788143f2d93fdac3d2871c3f9bdea",
+    "version": 2
+  },
+  "face_check": {
+    "sha256": "4709bc69e08b6debce18d397c5cd950b137a92eef94543773907f8cec1c8acea",
+    "version": 1
+  },
   "judge_assistant_voice": {
     "sha256": "f90d1e4f2ab2de4dac23ce7207173e905cd090b59f2cf385aa3170f060546c26",
     "version": 2
@@ -14,6 +26,14 @@
   "judge_language": {
     "sha256": "36d7ff52273365048d225f561b90cc8565ff880ff4f713dc9dc37cc85b6c8fd5",
     "version": 1
+  },
+  "judge_names_feeling": {
+    "sha256": "fd52b737302f103c274876ad0173527ca39194c6f2172da1b4b1922164f6cb6b",
+    "version": 2
+  },
+  "judge_pairwise": {
+    "sha256": "edca205d7276e97b6d8a094479ea21726478e84ac75debffe64a5c84e2e46bbe",
+    "version": 2
   },
   "judge_pushback": {
     "sha256": "9b6888eb8102fd8a7e832368a6f955f2e135afc213c355289c5f3af0d48121ac",
@@ -50,6 +70,10 @@
   "judge_voice": {
     "sha256": "20c4ea64a1b4a199fd240b79404a348144324628b18219456d5967dae4f18e84",
     "version": 4
+  },
+  "reaction": {
+    "sha256": "c08fc6c998448b69195d93c8782e9e676acd6ab2fe53eecc684156e86dff9850",
+    "version": 2
   },
   "route": {
     "sha256": "c110d28f6e4c1e25f935efe948237604c431192f90a975fca5cf922ee7e273b9",

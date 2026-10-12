@@ -1,0 +1,25 @@
+{
+ "set": "reactions",
+ "seed": 9,
+ "sample": [
+  "rea-001",
+  "rea-006",
+  "rea-011",
+  "rea-018",
+  "rea-022",
+  "rea-024",
+  "rea-035",
+  "rea-043",
+  "rea-044",
+  "rea-048",
+  "rea-049",
+  "rea-060",
+  "rea-065",
+  "rea-071",
+  "rea-078",
+  "rea-079",
+  "rea-087",
+  "rea-090"
+ ],
+ "disagree": []
+}

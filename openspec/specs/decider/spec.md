@@ -60,11 +60,15 @@ The Decider SHALL accept scripted answers keyed by purpose and question. When a 
 - **THEN** the answer is `chr_seedAmara` with source `fixture`, no request is sent, and no ledger row is written
 
 ### Requirement: Decision calls are decision spend
-Every decision call SHALL be recorded in the ledger with `category: "decision"` and the caller's purpose. It SHALL NOT drain any character's energy.
+Every decision call SHALL be recorded in the ledger with `category: "decision"` and the caller's purpose. It SHALL NOT drain any character's energy. The decision purposes SHALL include `turn_plan`, `reaction` and `face_check`.
 
 #### Scenario: Route decision
 - **WHEN** a `route` decision completes for a session
 - **THEN** a `decision` row with `purpose: "route"` exists, and no character's energy changes
+
+#### Scenario: Turn plan and face check
+- **WHEN** an `agent` 1:1 reply with a non-neutral face completes and its face check answers
+- **THEN** one `decision` row with `purpose: "turn_plan"` and one with `purpose: "face_check"` exist, and the character's energy changed only by the reply's drain
 
 ### Requirement: Cancelling a decision detaches its readers
 Cancelling a started decision (Stop, leaving, a cap pause or the end of a session) SHALL make its pending readers fail with a cancellation, without running the fallback. The request already sent SHALL complete and be recorded at the provider's cost. Only shutdown and factory reset SHALL abort requests in flight, which are then recorded at their estimate.

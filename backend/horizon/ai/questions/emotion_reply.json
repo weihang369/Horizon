@@ -1,0 +1,66 @@
+{
+  "id": "emotion_reply",
+  "version": 2,
+  "purpose": "turn_plan",
+  "type": "choice",
+  "label": "emotion",
+  "instructions": "Which face fits how {name} feels on reading quoted_latest? Choose none when nothing in it changes how they feel.",
+  "options": {
+    "kind": "static",
+    "items": {
+      "neutral": {
+        "what": "Calm, at rest; a plain exchange with nothing to feel strongly about.",
+        "not_for": "A line that clearly pleases, hurts or startles them.",
+        "examples": ["What time does the shop open?", "I'll be there at six."]
+      },
+      "happy": {
+        "what": "Pleased, amused, warm, relieved, proud.",
+        "not_for": "Polite agreement with nothing to be glad about.",
+        "examples": ["I passed my exam, first try!", "We saved you the last slice."]
+      },
+      "sad": {
+        "what": "Hurt, disappointed, sorry, missing someone, low.",
+        "not_for": "Mild disagreement; being tired.",
+        "examples": ["Our old dog died this morning.", "I'm moving away next month."]
+      },
+      "angry": {
+        "what": "Annoyed, offended, frustrated, defensive.",
+        "not_for": "Firm disagreement said calmly.",
+        "examples": ["I read your diary while you were out.", "Honestly, your idea was stupid."]
+      },
+      "surprised": {
+        "what": "Caught off guard by news, a twist or an unexpected question.",
+        "not_for": "Something they already knew or expected.",
+        "examples": ["I'm engaged!", "Guess who's standing outside your door."]
+      },
+      "thinking": {
+        "what": "Weighing a hard question, unsure, working something out.",
+        "not_for": "An ordinary question with an easy answer.",
+        "examples": ["Should I take the job or stay?", "What would you change about the plan?"]
+      },
+      "embarrassed": {
+        "what": "Flustered, shy, caught out, praised more than they can take.",
+        "not_for": "Being wrong in a calm, matter-of-fact way.",
+        "examples": ["Everyone saw you trip on stage.", "You're honestly the best person I know."]
+      },
+      "none": {
+        "what": "No clear change: keep the current face.",
+        "not_for": "A line that clearly calls for one of the faces above.",
+        "examples": ["Ok.", "And then?"]
+      }
+    }
+  },
+  "shuffle": true,
+  "state": {
+    "mode": "label",
+    "quoted_user": "quoted",
+    "quoted_cast": "quoted",
+    "quoted_documents": "quoted",
+    "quoted_latest": "quoted",
+    "quoted_recent": "quoted"
+  },
+  "deadline": "turn_plan",
+  "floor": 0.2,
+  "thresholds": {},
+  "fallback": "keep_then_fade"
+}

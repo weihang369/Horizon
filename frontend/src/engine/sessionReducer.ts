@@ -75,6 +75,10 @@ export function initialRuntime(session: Session, messages: Message[] = []): Sess
 }
 
 const isManual = (s: SessionRuntimeState) => s.session.emotionMode === "user";
+// E6 (turn-plan-emotion D22): from its turn.start to its turn.end, a reaction never changes the face of the character
+// whose message is streaming. The reaction is still recorded on its message.
+const isSpeaking = (s: SessionRuntimeState, characterId: string) =>
+  s.streamingId !== undefined && s.messages[s.streamingId]?.author.characterId === characterId;
 
 function setDisplay(s: SessionRuntimeState, characterId: string, emotion: Emotion): SessionRuntimeState {
   if (s.displayEmotion[characterId] === emotion) return s;
@@ -270,7 +274,7 @@ export function applyEvent(state: SessionRuntimeState, evt: SessionEvent): Sessi
         ...m,
         reactions: [...(m.reactions ?? []), p === undefined ? { characterId, emotion, at: evt.at } : { characterId, emotion, p, at: evt.at }],
       }));
-      if (!isManual(s)) s = setDisplay(s, characterId, emotion);
+      if (!isManual(s) && !isSpeaking(s, characterId)) s = setDisplay(s, characterId, emotion);
       return s;
     }
 

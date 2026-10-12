@@ -89,7 +89,8 @@ async def test_block_goes_after_the_history_one_passage_per_section(api: Api) ->
 
 async def _naive_turn(api: Api, answer: list[str], prompt: str) -> dict[str, Any]:
     await api.set_key()
-    r = await api.post(f"{API}/_test/ai-profile", {"profile": "scripted", "overrides": {"turn": "naive"}})
+    r = await api.post(f"{API}/_test/ai-profile", {"profile": "scripted", "overrides": {   # M9: plan and check off too
+        "turn": "naive", "planner": "naive", "face_check": "naive"}})
     assert r.status_code == 204
     sid = (await create(api, "one_on_one", [AMARA]))["session"]["id"]
     await api.drive(6000)

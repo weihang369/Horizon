@@ -481,7 +481,8 @@ async def apply_variant(rt: Runtime, variant_id: str) -> None:
 class AiProfileBody(_Model):
     profile: Literal["scripted", "naive", "agent"] | None = None
     overrides: dict[Literal["turn", "router", "reactions", "host", "director", "summariser", "guardrail", "drafter",
-                            "image", "song", "embedder", "knowledge_retriever", "memory_retriever", "converter"],
+                            "image", "song", "embedder", "knowledge_retriever", "memory_retriever", "converter",
+                            "planner", "face_check"],   # M9 (turn-plan-emotion D5)
                     Literal["scripted", "naive", "agent"]] | None = None
 
 

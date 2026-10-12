@@ -91,7 +91,7 @@ async def test_delete_a_streaming_session(api: Api) -> None:
     assert (await api.client.delete(f"{API}/sessions/{sid}")).status_code == 204
     r = await api.client.get(f"{API}/sessions/{sid}")
     assert r.status_code == 404 and r.json()["error"]["code"] == "not_found"
-    rows = [x for x in await ledger(api) if x["message_id"] == streaming["id"]]
+    rows = [x for x in await ledger(api) if x["message_id"] == streaming["id"] and x["category"] == "chat"]  # M9: the reply's row
     assert len(rows) == 1 and rows[0]["cost_usd"] > 0  # the spend remains
     async with api.rt.db.read() as conn:
         purge = (await conn.execute(t.ai_purge_queue.select().where(t.ai_purge_queue.c.scope == "session"))).mappings().all()

@@ -34,7 +34,7 @@ import * as debateEngine from "./engines/debate";
 import { DEFAULT_RUBRIC } from "./engines/debate";
 import * as groupEngine from "./engines/group";
 import type { EngineHost, LiveSession } from "./engines/host";
-import { clearLive, systemNote } from "./engines/host";
+import { clearLive, dropReactions, systemNote } from "./engines/host";
 import { estimateJob, JobRunner } from "./engines/jobs";
 import type { JobHost } from "./engines/jobs";
 import type { KnowledgeHost, Prepared } from "./engines/knowledge";
@@ -1093,7 +1093,10 @@ export class MockClient implements HorizonClient {
       this.liveOf(sid);
       this.host.emit(sid, { type: "emotion", payload: { characterId: cid, emotion, source: "user" } });
     }),
-    setEmotionMode: (sid, mode) => this.command(() => this.patchSession(sid, { emotionMode: mode })),
+    setEmotionMode: (sid, mode) => this.command(() => {
+      if (mode === "user") dropReactions(this.liveOf(sid));   // M9 D20 (E5): MANUAL drops pending reactions
+      return this.patchSession(sid, { emotionMode: mode });
+    }),
     setResponderPolicy: (sid, policy) => this.command(() => {
       const s = this.liveOf(sid).state.session;
       this.patchSession(sid, { config: { ...(s.config as GroupConfig), responderPolicy: policy } });

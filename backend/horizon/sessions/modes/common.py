@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Any
 
 from horizon.ai.scripted.bank import first_name
 from horizon.domain.ids import new_id
+from horizon.sessions.after_turn import on_user_message
 from horizon.sessions.context import characters
 from horizon.sessions.turn import TurnOutcome, TurnRunner, TurnSpec
 
@@ -35,6 +36,9 @@ def note(actor: SessionActor, content: str, kind: str = "system_note", author: W
 
 
 def user_message(actor: SessionActor, text: str, kind: str = "chat", **extra: Any) -> Wire:
+    """Every mode's send path builds its user line here, just before emitting it: pending listener reactions are
+    dropped (M9 D20, E5)."""
+    on_user_message(actor)
     return note(actor, text, kind, {"type": "user"}, **extra)
 
 

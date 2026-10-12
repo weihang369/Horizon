@@ -143,7 +143,15 @@ async def test_append_during_streaming_lands_in_the_final_insight_only(api: Api)
     assert insights(await events(api, sid), info.message_id) == []      # nothing emitted mid-stream
     await api.drive(20000)
     evs = insights(await events(api, sid), info.message_id)
-    assert len(evs) == 1 and evs[0]["payload"]["trace"]["system1"]["questions"] == [FACE]
+    # the finish insight carries the row (beside M9's scripted emotion row); a later one can only be the face check's
+    assert FACE in evs[0]["payload"]["trace"]["system1"]["questions"]
+    assert all(q["purpose"] == "face_check" for e in evs[1:] for q in e["payload"]["trace"]["system1"]["questions"]
+               if q not in evs[0]["payload"]["trace"]["system1"]["questions"])
+
+
+def route_rows(m: dict[str, Any]) -> list[dict[str, Any]]:
+    """The route rows only: M9's scripted face check can add its own row after a non-neutral reply."""
+    return [q for q in m["trace"]["system1"]["questions"] if q["purpose"] == "route"]
 
 
 # ── 5.5: naive route rows ──
@@ -163,7 +171,7 @@ async def test_one_decision_two_replies_share_the_route_row(api: Api) -> None:
     await api.drive(40000)
     replies = chars(await messages(api, sid))
     assert len(replies) >= 2
-    rows = [m["trace"]["system1"]["questions"] for m in replies]
+    rows = [route_rows(m) for m in replies]
     assert all(r == rows[0] for r in rows) and len(rows[0]) == 1
     (r,) = rows[0]
     assert r["purpose"] == "route" and r["id"] == "route" and r["version"] == 2 and r["label"] == "who replies?"
@@ -178,7 +186,7 @@ async def test_parked_route_gives_a_fallback_row(api: Api) -> None:
     await command(api, sid, "send", {"text": "Who's cooking?"})
     await api.drive(30000)
     reply = chars(await messages(api, sid))[0]
-    (r,) = reply["trace"]["system1"]["questions"]
+    (r,) = route_rows(reply)
     assert r["result"] == "fallback" and "p" not in r and r["answer"] == reply["author"]["characterId"]
     check_schema(reply["trace"])
     assert (await api.post(f"{API}/_test/park", {"endpoint": "decisions", "n": 1, "release": True})).status_code == 204
@@ -203,7 +211,7 @@ async def test_scripted_group_turn_has_a_fixture_route_row(api: Api) -> None:
     assert replies
     fixture = json.loads((api.rt.cfg.seed_dir / "system1.fixture.json").read_text(encoding="utf-8"))["data"]["rows"]["route"]
     for m in replies:
-        (row_,) = m["trace"]["system1"]["questions"]
+        (row_,) = route_rows(m)
         assert {k: row_[k] for k in fixture} == fixture
         assert row_["answer"] == m["trace"]["routing"]["candidates"][0]["characterId"]
         check_schema(m["trace"])

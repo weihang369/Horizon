@@ -26,6 +26,7 @@ class Timing:
     debate_start_ms: float
     watch_start_ms: float
     greeting_ms: float
+    face_check_ms: float = 300.0   # M9 (doc 13 W2; turn-plan-emotion D24): the scripted face check's delay
 
 
 @dataclass(frozen=True)
@@ -121,6 +122,7 @@ class RuntimeKnobs:
     retrieval: RetrievalKnobs
     llm_calls: dict[str, LlmCall]
     switches: dict[str, bool] = field(default_factory=dict)   # M8: "persona.repeatHint", "context.voiceReminder"
+    emotion_fade: frozenset[str] = frozenset({"surprised", "embarrassed"})   # M9 (docs/ai/06 E3; design D13)
 
     def switch(self, name: str) -> bool:
         """A dynamic-tail switch (docs/ai/04 P8, 05 X5; doc 13 W12): off unless the table turns it on."""
@@ -153,7 +155,8 @@ class RuntimeConfig:
                 reaction_chance=float(t["reactionChance"]),
                 emotion_timing={str(k): float(v) for k, v in t["emotionTiming"].items()},
                 late_emotion_ms=float(t["lateEmotionMs"]), debate_start_ms=float(t["debateStartMs"]),
-                watch_start_ms=float(t["watchStartMs"]), greeting_ms=float(t["greetingMs"])),
+                watch_start_ms=float(t["watchStartMs"]), greeting_ms=float(t["greetingMs"]),
+                face_check_ms=float(t["faceCheckMs"])),
             runtime=RuntimeKnobs(
                 reply_max_tokens=ReplyCaps(one_on_one=int(caps["one_on_one"]), group=int(caps["group"]),
                                            watch=int(caps["watch"]),
@@ -171,7 +174,9 @@ class RuntimeConfig:
                                            max_tokens=int(v["maxTokens"]) if v.get("maxTokens") is not None else None)
                            for k, v in ((r.get("llm") or {}).get("calls") or {}).items()},
                 switches={"persona.repeatHint": bool((r.get("persona") or {}).get("repeatHint", False)),
-                          "context.voiceReminder": bool((r.get("context") or {}).get("voiceReminder", False))}),
+                          "persona.moodLine": bool((r.get("persona") or {}).get("moodLine", False)),   # M9 D40
+                          "context.voiceReminder": bool((r.get("context") or {}).get("voiceReminder", False))},
+                emotion_fade=frozenset(str(x) for x in r["emotion"]["fade"])),
             jobs=JobTiming(
                 profile_draft_ms=float(t["profileDraftMs"]), field_regenerate_ms=float(t["fieldRegenerateMs"]),
                 portrait_ms=float(t["portraitMs"]), portrait_parallel=int(t["portraitParallel"]),

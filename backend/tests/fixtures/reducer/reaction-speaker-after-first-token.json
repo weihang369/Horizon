@@ -1,0 +1,300 @@
+{
+  "schemaVersion": 1,
+  "name": "reaction-speaker-after-first-token",
+  "description": "E6 (D22): after the first token the speaker's face is the planned one; a reaction for the speaker is recorded but leaves that face, through to turn.end.",
+  "session": {
+    "id": "ses_fx",
+    "worldId": "wld_fx",
+    "title": "Fixture",
+    "titleIsCustom": false,
+    "mode": "group",
+    "status": "active",
+    "participants": [
+      {
+        "characterId": "chr_a",
+        "role": "speaker",
+        "currentEmotion": "neutral",
+        "mutedByUser": false
+      },
+      {
+        "characterId": "chr_b",
+        "role": "speaker",
+        "currentEmotion": "neutral",
+        "mutedByUser": false
+      },
+      {
+        "characterId": "chr_c",
+        "role": "speaker",
+        "currentEmotion": "neutral",
+        "mutedByUser": false
+      }
+    ],
+    "emotionMode": "llm",
+    "musicPolicy": "character_theme",
+    "readableMode": false,
+    "config": {
+      "responderPolicy": "auto",
+      "maxAutoResponders": 2
+    },
+    "state": null,
+    "isSeed": false,
+    "costUsd": 0,
+    "messageCount": 0,
+    "createdAt": "2026-10-01T10:00:00Z",
+    "updatedAt": "2026-10-01T10:00:00Z"
+  },
+  "events": [
+    {
+      "id": "evt_fx1",
+      "sessionId": "ses_fx",
+      "seq": 1,
+      "at": "2026-10-01T10:00:00.250Z",
+      "type": "turn.next",
+      "payload": {
+        "nextSpeakerId": "chr_b"
+      }
+    },
+    {
+      "id": "evt_fx2",
+      "sessionId": "ses_fx",
+      "seq": 2,
+      "at": "2026-10-01T10:00:00.500Z",
+      "type": "turn.start",
+      "payload": {
+        "messageId": "msg_fx1",
+        "author": {
+          "type": "character",
+          "characterId": "chr_b"
+        }
+      }
+    },
+    {
+      "id": "evt_fx3",
+      "sessionId": "ses_fx",
+      "seq": 3,
+      "at": "2026-10-01T10:00:00.750Z",
+      "type": "emotion",
+      "payload": {
+        "messageId": "msg_fx1",
+        "characterId": "chr_b",
+        "emotion": "happy",
+        "source": "classifier"
+      }
+    },
+    {
+      "id": "evt_fx4",
+      "sessionId": "ses_fx",
+      "seq": 4,
+      "at": "2026-10-01T10:00:01.000Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_fx1",
+        "delta": "We won the grant!"
+      }
+    },
+    {
+      "id": "evt_fx5",
+      "sessionId": "ses_fx",
+      "seq": 5,
+      "at": "2026-10-01T10:00:01.250Z",
+      "type": "turn.end",
+      "payload": {
+        "messageId": "msg_fx1",
+        "status": "complete",
+        "usage": {
+          "tokensIn": 100,
+          "tokensCached": 0,
+          "tokensOut": 5,
+          "costUsd": 1e-05,
+          "energySpent": 1,
+          "firstTokenMs": 400,
+          "totalMs": 600
+        }
+      }
+    },
+    {
+      "id": "evt_fx6",
+      "sessionId": "ses_fx",
+      "seq": 6,
+      "at": "2026-10-01T10:00:01.500Z",
+      "type": "turn.next",
+      "payload": {
+        "nextSpeakerId": "chr_a"
+      }
+    },
+    {
+      "id": "evt_fx7",
+      "sessionId": "ses_fx",
+      "seq": 7,
+      "at": "2026-10-01T10:00:01.750Z",
+      "type": "turn.start",
+      "payload": {
+        "messageId": "msg_fx2",
+        "author": {
+          "type": "character",
+          "characterId": "chr_a"
+        }
+      }
+    },
+    {
+      "id": "evt_fx8",
+      "sessionId": "ses_fx",
+      "seq": 8,
+      "at": "2026-10-01T10:00:02.000Z",
+      "type": "emotion",
+      "payload": {
+        "messageId": "msg_fx2",
+        "characterId": "chr_a",
+        "emotion": "happy",
+        "source": "classifier"
+      }
+    },
+    {
+      "id": "evt_fx9",
+      "sessionId": "ses_fx",
+      "seq": 9,
+      "at": "2026-10-01T10:00:02.250Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_fx2",
+        "delta": "Finally."
+      }
+    },
+    {
+      "id": "evt_fx10",
+      "sessionId": "ses_fx",
+      "seq": 10,
+      "at": "2026-10-01T10:00:02.500Z",
+      "type": "reaction",
+      "payload": {
+        "messageId": "msg_fx1",
+        "characterId": "chr_a",
+        "emotion": "angry",
+        "p": 0.8,
+        "source": "classifier"
+      }
+    },
+    {
+      "id": "evt_fx11",
+      "sessionId": "ses_fx",
+      "seq": 11,
+      "at": "2026-10-01T10:00:02.750Z",
+      "type": "turn.end",
+      "payload": {
+        "messageId": "msg_fx2",
+        "status": "complete",
+        "usage": {
+          "tokensIn": 100,
+          "tokensCached": 0,
+          "tokensOut": 5,
+          "costUsd": 1e-05,
+          "energySpent": 1,
+          "firstTokenMs": 400,
+          "totalMs": 600
+        }
+      }
+    }
+  ],
+  "expected": {
+    "session": {
+      "id": "ses_fx",
+      "worldId": "wld_fx",
+      "title": "Fixture",
+      "titleIsCustom": false,
+      "mode": "group",
+      "status": "active",
+      "participants": [
+        {
+          "characterId": "chr_a",
+          "role": "speaker",
+          "currentEmotion": "happy",
+          "mutedByUser": false
+        },
+        {
+          "characterId": "chr_b",
+          "role": "speaker",
+          "currentEmotion": "happy",
+          "mutedByUser": false
+        },
+        {
+          "characterId": "chr_c",
+          "role": "speaker",
+          "currentEmotion": "neutral",
+          "mutedByUser": false
+        }
+      ],
+      "emotionMode": "llm",
+      "musicPolicy": "character_theme",
+      "readableMode": false,
+      "config": {
+        "responderPolicy": "auto",
+        "maxAutoResponders": 2
+      },
+      "state": null,
+      "isSeed": false,
+      "costUsd": 2e-05,
+      "messageCount": 2,
+      "createdAt": "2026-10-01T10:00:00Z",
+      "updatedAt": "2026-10-01T10:00:02.750Z",
+      "lastMessageAt": "2026-10-01T10:00:01.750Z"
+    },
+    "messages": [
+      {
+        "kind": "chat",
+        "id": "msg_fx1",
+        "sessionId": "ses_fx",
+        "seq": 1,
+        "author": {
+          "type": "character",
+          "characterId": "chr_b"
+        },
+        "content": "We won the grant!",
+        "status": "complete",
+        "createdAt": "2026-10-01T10:00:00.500Z",
+        "emotion": "happy",
+        "emotionSource": "classifier",
+        "usage": {
+          "tokensIn": 100,
+          "tokensCached": 0,
+          "tokensOut": 5,
+          "costUsd": 1e-05,
+          "energySpent": 1,
+          "firstTokenMs": 400,
+          "totalMs": 600
+        },
+        "reactions": [
+          {
+            "characterId": "chr_a",
+            "emotion": "angry",
+            "p": 0.8,
+            "at": "2026-10-01T10:00:02.500Z"
+          }
+        ]
+      },
+      {
+        "kind": "chat",
+        "id": "msg_fx2",
+        "sessionId": "ses_fx",
+        "seq": 2,
+        "author": {
+          "type": "character",
+          "characterId": "chr_a"
+        },
+        "content": "Finally.",
+        "status": "complete",
+        "createdAt": "2026-10-01T10:00:01.750Z",
+        "emotion": "happy",
+        "emotionSource": "classifier",
+        "usage": {
+          "tokensIn": 100,
+          "tokensCached": 0,
+          "tokensOut": 5,
+          "costUsd": 1e-05,
+          "energySpent": 1,
+          "firstTokenMs": 400,
+          "totalMs": 600
+        }
+      }
+    ]
+  }
+}
