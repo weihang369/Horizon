@@ -39,14 +39,14 @@ The creation wizard's "View as prompt" SHALL show the `agent` system message for
 - **WHEN** the Profile step's prompt view is open
 - **THEN** it does not say "mock template"
 
-#### Scenario: Mood note
-- **WHEN** the Profile step's prompt view is open
-- **THEN** below the system message it shows the mood-line note, and the system message's text and token count are unchanged by it
-
 ## ADDED Requirements
 
 ### Requirement: The mood line
-A planned `agent` reply whose face is not `neutral`, in AUTO mode, SHALL carry one tail line: "Your mood right now: {phrase}. Let it show in how you word this reply; don't name the feeling." The phrase SHALL come from one table shared by Python and TypeScript. There SHALL be no line for `neutral`, in MANUAL mode, or on an unplanned turn.
+While the runtime switch `persona.moodLine` is on, a planned `agent` reply whose face is not `neutral`, in AUTO mode, SHALL carry one tail line: "Your mood right now: {phrase}. Let it show in how you word this reply; don't name the feeling." The phrase SHALL come from one table shared by Python and TypeScript. There SHALL be no line for `neutral`, in MANUAL mode, or on an unplanned turn. The switch SHALL default to off (design D40: E8's on/off run found no gain), and with it off the engine SHALL send and report `agent-1`; with it on, `agent-2`.
+
+#### Scenario: Off by default
+- **WHEN** a planned 1:1 turn with face `happy` is built with the default runtime config
+- **THEN** its request equals the committed `agent-1` fixture byte for byte, and the engine reports `agent-1`
 
 #### Scenario: Phrase per face
 - **WHEN** the shared mood-line fixtures are run in Python and TypeScript
