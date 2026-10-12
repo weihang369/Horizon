@@ -35,6 +35,8 @@ POLL_MS = 50
 FIRST_TOKEN_LIMIT_S = 30.0
 NFR_P50_MS, NFR_P90_MS = 2000.0, 4000.0
 API = "/api/v1"
+TURN_WATCHDOG_S = 90.0
+STACKS = "stacks.txt"
 
 
 def lines(n: int) -> list[str]:
@@ -111,7 +113,13 @@ class Latency:
                         break
                     sessions[cid] = r.json()["session"]["id"]
                     await wait_idle(env, sessions[cid])
-                row = await self.one(env, c, sessions[cid], cid, turn["text"])
+                try:
+                    row = await self.guarded(env, self.one(env, c, sessions[cid], cid, turn["text"]))
+                except TimeoutError:
+                    res.status = "incomplete"
+                    res.summary.append(f"## Latency: a turn did not settle within {TURN_WATCHDOG_S:.0f} s; every task's "
+                                       f"stack is in {STACKS} in the run folder")
+                    break
                 if row is None:
                     res.status = "incomplete"
                     break
@@ -151,6 +159,24 @@ class Latency:
                 "to_token_ms": None if token is None else float(ms_from_iso(token["at"])) - sent_ms,
                 "source": None if emotion is None else emotion["payload"].get("source"),
                 "status": msg["status"] if msg else None}
+
+    @staticmethod
+    async def guarded(env: RunEnv, work: Any) -> Any:
+        """A paid run must never hang: past the watchdog, write every task's stack to the run folder and give up."""
+        if isinstance(env.rt.clock, FrozenClock):   # virtual time: the test drives the clock itself
+            return await work
+        try:
+            return await asyncio.wait_for(work, TURN_WATCHDOG_S)
+        except TimeoutError:
+            import io
+
+            buf = io.StringIO()
+            for t in asyncio.all_tasks():
+                buf.write(f"\n=== {t.get_name()}\n")
+                t.print_stack(limit=12, file=buf)
+            env.run_dir.mkdir(parents=True, exist_ok=True)
+            (env.run_dir / STACKS).write_text(buf.getvalue(), encoding="utf-8")
+            raise
 
     @staticmethod
     async def events(env: RunEnv, sid: str, since: int = 0) -> list[dict[str, Any]]:

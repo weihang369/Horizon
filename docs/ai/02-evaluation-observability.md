@@ -346,6 +346,11 @@ the largest Jev item, so judge results are cached (B7).
   - Coverage (the share answered by Jev) is reported.
 - **Floors are chosen only from {0.5, 0.6, 0.7, 0.8, 0.9}.** The choice is cross-validated on the dev split, using
   cached Jev answers, so it costs nothing. A coarse grid on a small set doesn't overfit the way a fine one does.
+  - *Built in M9 (turn-plan-emotion D36, D39; docs/ai/checks/m9.md): for the 8-option emotion and reaction choices
+    this grid only removed right answers (Jev's confidences there sit low, median 0.58, while its picks are mostly
+    right), so their grid also holds 0.2, 0.3 and 0.4. Dev chose **0.2** for both: `emotion_reply` and
+    `emotion_greeting` v2 (English test 21/25 = 0.84), `reaction` v2 (English test 17/30 = 0.57, below the 0.80
+    target, recorded). Targets are read on English items; other languages only need to run (the user's rule).*
 - **Noul thresholds have targets on both sides,** so no threshold can meet its target trivially:
 
   | Noul | Threshold | Rule |
@@ -531,6 +536,12 @@ with itself only about 64 % of the time, so that rule mixes up ordinary noise wi
   - DeepSeek's time to first token.
 
   The report also gives the **blended p50 and p90 at the real deep rate** measured by `horizon stats`.
+- *Built in M9 (turn-plan-emotion D31; docs/ai/checks/m9.md 9.6): `horizon eval latency`, 1:1 quick turns only,
+  driven through the API with the store bypassed. 118 English turns, pooled from two partial runs. Send → first word
+  was **p50 1216 ms, p90 1427 ms**, meeting NFR-01. Send → face was p50 1153 ms, p90 1370 ms, and the face always
+  came before the first word (NFR-29). Jev's `turn_plan` was p50 453 ms, p90 515 ms, with its deadline firing 2/119
+  times. Not yet built: warm-up discard, two time windows, deep, group and debate turns, the per-stage breakdown.
+  Both runs stopped early on a Stop bug that breaks the database writer (open; see m9.md).*
 - **NFR-29 (the face within 800 ms of the first word)** is measured **at the HTTP client**, from the event timestamps of
   the M6 portable client:
   - face time minus first-word time;

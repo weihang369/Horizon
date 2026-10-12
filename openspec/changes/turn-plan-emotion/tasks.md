@@ -289,9 +289,9 @@
 - [x] 9.5 `moodline`: ask with both options (100 ≈ $0.11, 60 ≈ $0.07), then run the chosen one. Verify: m9.md holds
   the exact-match difference, the pairwise result, the "names the feeling" pass rate, the clash rate and the verdict.
   Any rewording or dropping goes to the user first.
-- [ ] 9.6 `latency` (≈ $0.03, store bypassed). Verify: m9.md holds the face and first-word p50/p90 against NFR-01,
+- [x] 9.6 `latency` (≈ $0.03, store bypassed). Verify: m9.md holds the face and first-word p50/p90 against NFR-01,
   Jev's distribution and the deadline-fired rate.
-- [ ] 9.7 Update doc 02 B5 (the floors found) and B8 (the 1:1 timing figures), and record the spend table against
+- [x] 9.7 Update doc 02 B5 (the floors found) and B8 (the 1:1 timing figures), and record the spend table against
   D32. Verify by reading; the spend log matches `spend.jsonl`.
 
 ## 10. Integration and close

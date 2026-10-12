@@ -4,8 +4,12 @@ first word"). The fake provider answers; Decider fixtures give Jev call 1 a conf
 
 from __future__ import annotations
 
+import asyncio
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any
+
+import pytest
 
 from horizon.ai.agent.turn import AgentTurnEngine
 from horizon.evals import latency as lat
@@ -107,6 +111,15 @@ async def test_stopped_at_the_first_word_and_the_report_renders(api: Api, tmp_pa
     assert all(r["to_token_ms"] is not None and r["to_face_ms"] is not None for r in res.rows)
     text = "\n".join(res.summary)
     assert "send → first word (token event) (n 2): p50" in text and "p90" in text and "stopped at the first word: 2/2" in text
+
+
+async def test_a_turn_past_the_watchdog_dumps_every_stack_and_gives_up(tmp_path: Path, monkeypatch: Any) -> None:
+    """A paid run must never hang (9.6's first run did): past the watchdog the stacks go to the run folder."""
+    monkeypatch.setattr(lat, "TURN_WATCHDOG_S", 0.05)
+    e: Any = SimpleNamespace(rt=SimpleNamespace(clock=object()), run_dir=tmp_path / "run")   # a real clock: not frozen
+    with pytest.raises(TimeoutError):
+        await lat.Latency.guarded(e, asyncio.Event().wait())
+    assert "===" in (tmp_path / "run" / lat.STACKS).read_text(encoding="utf-8")
 
 
 def test_an_unknown_suite_lists_the_known_ones(capsys: Any) -> None:
