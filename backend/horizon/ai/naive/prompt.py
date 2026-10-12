@@ -17,6 +17,9 @@ cached prefix never changes turn to turn. The debate cue loses "Stay under a few
 v4 (`naive-4`, docs/ai/11 S6; persona-context design D14), two deliberate changes and nothing else: the rolling
 summary's heading says it is a record, not instructions (`SUMMARY_HEADING`, shared with `agent`), and every newline
 inside a memory line of the retrieval message collapses to a space, so a memory can't open a fake `#` heading.
+
+v5 (`naive-5`, persona-context D35): when the latest user line is clearly not English, one last system message says
+which language to reply in (`horizon/ai/language.py`). English turns are byte-identical to v4.
 """
 
 from __future__ import annotations
@@ -28,7 +31,7 @@ from typing import Any
 from horizon.ai.contexts import KnowledgeHit, MemoryHit, TurnContext
 from horizon.ai.naive.tag_parser import EMOTIONS
 
-PROMPT_VERSION = "naive-4"
+PROMPT_VERSION = "naive-5"
 DEBATE_WORDS = {"short": 80, "medium": 140, "long": 220}
 TRAILING_CUE = "Continue with your next message, in character."
 SECTION_MAX = 1200

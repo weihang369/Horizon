@@ -133,6 +133,27 @@ def test_render_merged_keeps_notes_as_kind_lines() -> None:
     assert out == [{"role": "user", "content": "Kai: hi\n[system note] Hana joined"}]
 
 
+# ── D35: the reply language cue ──
+def test_language_detection_is_cautious() -> None:
+    from horizon.ai.language import detect_language
+
+    assert detect_language("Hujan tak berhenti dari pagi, saya penat.") == "Malay"
+    assert detect_language("我今天很累，下了一整天的雨。") == "Chinese"
+    assert detect_language("今日はとても疲れた") == "Japanese"
+    assert detect_language("It rained all day, I'm tired.") is None
+    assert detect_language("Morning! Selamat pagi.") is None            # one Malay word in English: no cue
+    assert detect_language("ok") is None
+
+
+def test_a_malay_line_ends_the_request_with_the_cue_and_english_has_none() -> None:
+    eng = engine()
+    malay, _ = eng.request(ctx([mv(1, "user", "Hujan tak berhenti dari pagi, saya penat.")], mode="one_on_one",
+                               others=False))
+    assert str(malay.messages[-1]["content"]).endswith("Kai wrote in Malay. Reply in Malay.")
+    english, _ = eng.request(ctx([mv(1, "user", "It rained all day.")], mode="one_on_one", others=False))
+    assert "Reply in" not in json.dumps(english.messages[-1])
+
+
 # ── 3.3–3.5: through the runtime ──
 async def _agent(api: Api, mode: str = "one_on_one", cast: list[str] | None = None) -> str:
     await api.set_key()
@@ -192,3 +213,12 @@ async def test_group_budget_and_prefix_is_stable_between_turns(api: Api) -> None
     a_hist = a[:-1] if a[-1]["role"] == "system" and len(a) > 1 else a
     assert b[:len(a_hist) - 1] == a_hist[:-1]
     assert b[len(a_hist) - 1]["content"].startswith(a_hist[-1]["content"])
+
+
+def test_naive_gets_the_same_cue_as_its_last_message() -> None:
+    from horizon.ai.naive.turn import NaiveTurnEngine
+
+    eng = NaiveTurnEngine(Deps(None))  # type: ignore[arg-type]
+    req, _ = eng.request(ctx([mv(1, "user", "Saya selalu lupa minum air, macam mana ni?")], mode="one_on_one",
+                             others=False))
+    assert req.messages[-1] == {"role": "system", "content": "Kai wrote in Malay. Reply in Malay."}

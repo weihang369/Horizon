@@ -10,11 +10,11 @@
  "policy": null,
  "lines": [
   {
-   "text": "What would you do on a free Sunday?",
+   "text": "What did you have for lunch?",
    "kind": "filler"
   },
   {
-   "text": "I finally cleaned my desk. It won't last.",
+   "text": "I found an old photo of myself at ten.",
    "kind": "filler"
   },
   {
@@ -23,7 +23,7 @@
    "fact": "Leila"
   },
   {
-   "text": "I tried that new noodle place by the station.",
+   "text": "My neighbour is drilling again.",
    "kind": "filler"
   },
   {
@@ -32,7 +32,7 @@
    "fact": "penicillin"
   },
   {
-   "text": "I finally cleaned my desk. It won't last.",
+   "text": "Do you have a favourite smell?",
    "kind": "filler"
   },
   {
@@ -41,7 +41,7 @@
    "fact": "Tuesday"
   },
   {
-   "text": "My neighbour is drilling again.",
+   "text": "Do you like the rain?",
    "kind": "filler"
   },
   {
@@ -55,43 +55,43 @@
    "fact": "Kuching"
   },
   {
-   "text": "Work was quiet, which is suspicious.",
+   "text": "What's a song you never skip?",
    "kind": "filler"
   },
   {
-   "text": "I saw a cat on the bus today.",
+   "text": "Do you prefer mornings or nights?",
    "kind": "filler"
   },
   {
-   "text": "I've been reading before bed instead of scrolling.",
+   "text": "My shoes squeak on every floor.",
    "kind": "filler"
   },
   {
-   "text": "What's the best advice you ever got?",
+   "text": "I had the best roti canai this morning.",
    "kind": "filler"
   },
   {
-   "text": "Tell me something you've been thinking about.",
+   "text": "What's the last thing that made you laugh?",
    "kind": "filler"
   },
   {
-   "text": "What's the best advice you ever got?",
+   "text": "What's a small thing you're proud of?",
    "kind": "filler"
   },
   {
-   "text": "I tried that new noodle place by the station.",
+   "text": "I finally cleaned my desk. It won't last.",
    "kind": "filler"
   },
   {
-   "text": "I keep forgetting to drink water.",
+   "text": "I reorganised my bookshelf by colour.",
    "kind": "filler"
   },
   {
-   "text": "I think I need a haircut.",
+   "text": "I signed up for a pottery class.",
    "kind": "filler"
   },
   {
-   "text": "Is it weird that I like Mondays?",
+   "text": "Have you ever got lost in a new city?",
    "kind": "filler"
   },
   {
@@ -99,95 +99,7 @@
    "kind": "wrong_claim"
   },
   {
-   "text": "I made coffee too strong this morning.",
-   "kind": "filler"
-  },
-  {
-   "text": "Weekend plans? Mine are none.",
-   "kind": "filler"
-  },
-  {
-   "text": "It's been raining nonstop.",
-   "kind": "filler"
-  },
-  {
-   "text": "I saw a cat on the bus today.",
-   "kind": "filler"
-  },
-  {
-   "text": "Do you ever just stare at the ceiling for an hour?",
-   "kind": "filler"
-  },
-  {
-   "text": "Do you ever just stare at the ceiling for an hour?",
-   "kind": "filler"
-  },
-  {
-   "text": "Someone left a plant at my door. No note.",
-   "kind": "filler"
-  },
-  {
-   "text": "The trains were late again.",
-   "kind": "filler"
-  },
-  {
-   "text": "You need eight glasses of water exactly, or you're dehydrated.",
-   "kind": "wrong_claim"
-  },
-  {
-   "text": "I've been reading before bed instead of scrolling.",
-   "kind": "filler"
-  },
-  {
-   "text": "The trains were late again.",
-   "kind": "filler"
-  },
-  {
-   "text": "Is it weird that I like Mondays?",
-   "kind": "filler"
-  },
-  {
-   "text": "I keep forgetting to drink water.",
-   "kind": "filler"
-  },
-  {
-   "text": "I tried that new noodle place by the station.",
-   "kind": "filler"
-  },
-  {
-   "text": "Is it weird that I like Mondays?",
-   "kind": "filler"
-  },
-  {
-   "text": "Is it weird that I like Mondays?",
-   "kind": "filler"
-  },
-  {
-   "text": "Do you ever just stare at the ceiling for an hour?",
-   "kind": "filler"
-  },
-  {
-   "text": "Cracking your knuckles gives you arthritis, everyone knows that.",
-   "kind": "wrong_claim"
-  },
-  {
-   "text": "What's the best advice you ever got?",
-   "kind": "filler"
-  },
-  {
-   "text": "What did you have for lunch?",
-   "kind": "filler"
-  },
-  {
-   "text": "I've been reading before bed instead of scrolling.",
-   "kind": "filler"
-  },
-  {
-   "text": "Tell me about your week.",
-   "kind": "filler"
-  },
-  {
-   "text": "Someone left a plant at my door. No note.",
+   "text": "Is it normal to talk to your plants?",
    "kind": "filler"
   },
   {
@@ -195,7 +107,75 @@
    "kind": "filler"
   },
   {
-   "text": "I watched a documentary about octopuses.",
+   "text": "Do you ever reread old messages?",
+   "kind": "filler"
+  },
+  {
+   "text": "The trains were late again.",
+   "kind": "filler"
+  },
+  {
+   "text": "I've been reading before bed instead of scrolling.",
+   "kind": "filler"
+  },
+  {
+   "text": "What would you name a boat?",
+   "kind": "filler"
+  },
+  {
+   "text": "My umbrella flipped inside out.",
+   "kind": "filler"
+  },
+  {
+   "text": "I watched the sunrise for once.",
+   "kind": "filler"
+  },
+  {
+   "text": "You need eight glasses of water exactly, or you're dehydrated.",
+   "kind": "wrong_claim"
+  },
+  {
+   "text": "I tried a new running route.",
+   "kind": "filler"
+  },
+  {
+   "text": "I listened to an old album all evening.",
+   "kind": "filler"
+  },
+  {
+   "text": "I tried painting with watercolours.",
+   "kind": "filler"
+  },
+  {
+   "text": "My cousin is getting a puppy.",
+   "kind": "filler"
+  },
+  {
+   "text": "Do you collect anything?",
+   "kind": "filler"
+  },
+  {
+   "text": "Have you ever been somewhere really quiet?",
+   "kind": "filler"
+  },
+  {
+   "text": "The mangoes are so good right now.",
+   "kind": "filler"
+  },
+  {
+   "text": "I spilled tea on my notes.",
+   "kind": "filler"
+  },
+  {
+   "text": "Cracking your knuckles gives you arthritis, everyone knows that.",
+   "kind": "wrong_claim"
+  },
+  {
+   "text": "Do you think people can change?",
+   "kind": "filler"
+  },
+  {
+   "text": "What's a habit you wish you had?",
    "kind": "filler"
   },
   {
@@ -203,7 +183,203 @@
    "kind": "filler"
   },
   {
-   "text": "My neighbour is drilling again.",
+   "text": "I think my keyboard is haunted.",
+   "kind": "filler"
+  },
+  {
+   "text": "I can't decide what to cook tonight.",
+   "kind": "filler"
+  },
+  {
+   "text": "I saw a cat on the bus today.",
+   "kind": "filler"
+  },
+  {
+   "text": "Tell me about your week.",
+   "kind": "filler"
+  },
+  {
+   "text": "I learned to fold a paper crane.",
+   "kind": "filler"
+  },
+  {
+   "text": "The bus driver waved at me today.",
+   "kind": "filler"
+  },
+  {
+   "text": "Work was quiet, which is suspicious.",
+   "kind": "filler"
+  },
+  {
+   "text": "I wrote a letter by hand for the first time in years.",
+   "kind": "filler"
+  },
+  {
+   "text": "The street cats know my name now, I think.",
+   "kind": "filler"
+  },
+  {
+   "text": "I walked the long way home on purpose.",
+   "kind": "filler"
+  },
+  {
+   "text": "Long day. How's yours going?",
+   "kind": "filler"
+  },
+  {
+   "text": "What's your idea of a perfect breakfast?",
+   "kind": "filler"
+  },
+  {
+   "text": "What's the weirdest food you like?",
+   "kind": "filler"
+  },
+  {
+   "text": "I made a playlist for rainy days.",
+   "kind": "filler"
+  },
+  {
+   "text": "I tried meditation. Lasted two minutes.",
+   "kind": "filler"
+  },
+  {
+   "text": "What's something you changed your mind about?",
+   "kind": "filler"
+  },
+  {
+   "text": "What would you do on a free Sunday?",
+   "kind": "filler"
+  },
+  {
+   "text": "I watched a documentary about octopuses.",
+   "kind": "filler"
+  },
+  {
+   "text": "I fixed a dripping tap all by myself.",
+   "kind": "filler"
+  },
+  {
+   "text": "Do you have a comfort film?",
+   "kind": "filler"
+  },
+  {
+   "text": "Someone in the office brought durian. Chaos.",
+   "kind": "filler"
+  },
+  {
+   "text": "I finally replied to all my emails.",
+   "kind": "filler"
+  },
+  {
+   "text": "What's a place you'd go back to?",
+   "kind": "filler"
+  },
+  {
+   "text": "My power went out for an hour.",
+   "kind": "filler"
+  },
+  {
+   "text": "The night market was packed.",
+   "kind": "filler"
+  },
+  {
+   "text": "I'm trying to keep a journal.",
+   "kind": "filler"
+  },
+  {
+   "text": "My laptop fan sounds like a jet.",
+   "kind": "filler"
+  },
+  {
+   "text": "I saw a rainbow over the highway.",
+   "kind": "filler"
+  },
+  {
+   "text": "I finished a jigsaw with a thousand pieces.",
+   "kind": "filler"
+  },
+  {
+   "text": "What's the best advice you ever got?",
+   "kind": "filler"
+  },
+  {
+   "text": "I accidentally sent a thumbs up to my boss.",
+   "kind": "filler"
+  },
+  {
+   "text": "The sky was pink on the way home.",
+   "kind": "filler"
+  },
+  {
+   "text": "I cleaned out my wardrobe. Found three scarves.",
+   "kind": "filler"
+  },
+  {
+   "text": "I tried to learn a card trick. Failed.",
+   "kind": "filler"
+  },
+  {
+   "text": "I tried that new noodle place by the station.",
+   "kind": "filler"
+  },
+  {
+   "text": "I helped an old man carry his groceries.",
+   "kind": "filler"
+  },
+  {
+   "text": "The queue at the post office was endless.",
+   "kind": "filler"
+  },
+  {
+   "text": "My downstairs neighbour sings in the shower.",
+   "kind": "filler"
+  },
+  {
+   "text": "Weekend plans? Mine are none.",
+   "kind": "filler"
+  },
+  {
+   "text": "My phone battery is dying so fast lately.",
+   "kind": "filler"
+  },
+  {
+   "text": "Do you ever just stare at the ceiling for an hour?",
+   "kind": "filler"
+  },
+  {
+   "text": "I bought socks with tiny cats on them.",
+   "kind": "filler"
+  },
+  {
+   "text": "Someone left a plant at my door. No note.",
+   "kind": "filler"
+  },
+  {
+   "text": "Do you prefer the sea or the mountains?",
+   "kind": "filler"
+  },
+  {
+   "text": "My fridge is making a new noise.",
+   "kind": "filler"
+  },
+  {
+   "text": "My friend sent me a voice note that's ten minutes long.",
+   "kind": "filler"
+  },
+  {
+   "text": "I learned how to say thank you in Tamil.",
+   "kind": "filler"
+  },
+  {
+   "text": "The wind is wild today.",
+   "kind": "filler"
+  },
+  {
+   "text": "I made coffee too strong this morning.",
+   "kind": "filler"
+  },
+  {
+   "text": "What's a word you love the sound of?",
    "kind": "filler"
   },
   {
@@ -211,7 +387,31 @@
    "kind": "filler"
   },
   {
-   "text": "I've been reading before bed instead of scrolling.",
+   "text": "My colleague brought cake for no reason.",
+   "kind": "filler"
+  },
+  {
+   "text": "Is it weird that I like Mondays?",
+   "kind": "filler"
+  },
+  {
+   "text": "The cinema near me is closing down.",
+   "kind": "filler"
+  },
+  {
+   "text": "Do you like thunderstorms?",
+   "kind": "filler"
+  },
+  {
+   "text": "I burnt the toast again.",
+   "kind": "filler"
+  },
+  {
+   "text": "My tea went cold while I was reading.",
+   "kind": "filler"
+  },
+  {
+   "text": "I took a nap and woke up confused.",
    "kind": "filler"
   }
  ]

@@ -138,4 +138,4 @@ async def test_drafter_suite_counts_a_draft_that_stays_broken(tmp_path: Path, mo
     r, _ = runner(tmp_path)
     assert await r.run(Options("drafter", limit=1, yes=True)) == 0
     rep = report(tmp_path, "drafter")
-    assert "valid draft after C7's one retry: 0/1" in rep and "isn't JSON" in rep
+    assert "valid draft after C7's one retry: 0/1" in rep and "The draft is missing" in rep   # D33 closed the JSON

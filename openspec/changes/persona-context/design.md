@@ -812,6 +812,31 @@ to `docs/ai/checks/m8.md`.
   03 C1 and C3 say so. `reply.debate` and `host` were already 1.0.
 - **Rejected:** raising the caps (not needed); 0.7 (stiff); keeping 1.3 (the collapse).
 
+### D35. A per-turn reply-language cue (the user's choice, 2026-10-12)
+
+- **The failure:** with the language rule only in the cached system prompt, Malay user lines got English replies
+  (`agent` 2 of 75 in Malay at 1.0, `naive` 0 of 50). The persona, example lines, greeting and earlier replies are all
+  English, and the rule lost.
+- **Decision:** `horizon/ai/language.py` detects a clearly non-English latest user line (a non-Latin script, or a clear
+  share of common Malay words) and both engines end the request with "Kai wrote in Malay. Reply in Malay." (`agent`:
+  the tail's last line; `naive`: one last system message, prompt `naive-5`). Unsure lines get no cue; English
+  requests are byte-identical. `agent-1` is unchanged because the persona compiler is unchanged.
+- **The user's scope (2026-10-12):** English is the focus. For other languages the only bar is replying in that
+  language; their quality is v2.
+- **Rejected:** a stronger static rule (the static rule already lost to an English context); Jev detection now (M9's
+  turn plan can take it over).
+- **Measured:** the Malay 1:1 script at 1.0 with the cue: 68 of 75 replies in Malay (was 2), recall 5/5, $0.0055.
+
+### D36. Transcript scripts: 100 turns, no repeated filler (the user's choice, 2026-10-12)
+
+- **The failure:** at 1.0, 50–55-turn transcripts never reached a summary drop (D31 needs one). And `build.py` drew
+  fillers from 24 lines with replacement, so each repeated about twice; characters answered the "loop" ("you've asked
+  twice", "Goodnight, Kai") instead of the line, which would make poor M15 histories.
+- **Decision:** the four transcript scripts are 100 turns (measured growth: 51–89 tokens a turn, so each passes a
+  drop), drawn without replacement from 100 distinct lines per language. The three `long` scripts keep their 24-line
+  draw, byte-identical, because they were already measured.
+- **Rejected:** appending 40 lines to the old scripts (keeps the loops); deferring the transcripts to M15.
+
 ## Risks / Trade-offs
 
 - **[Risk] The refactor of `NaiveTurnEngine` (D2) changes naive behaviour unnoticed** → Mitigation: phase 1 does

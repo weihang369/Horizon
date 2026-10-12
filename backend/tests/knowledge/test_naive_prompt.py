@@ -54,7 +54,7 @@ def engine(api: Api) -> NaiveTurnEngine:
 
 
 def test_prompt_version_is_v4() -> None:
-    assert PROMPT_VERSION == "naive-4" and NaiveTurnEngine.prompt_version == "naive-4"
+    assert PROMPT_VERSION == "naive-5" and NaiveTurnEngine.prompt_version == "naive-5"
 
 
 async def test_no_hits_requests_share_their_prefix_byte_for_byte(api: Api) -> None:
@@ -117,7 +117,7 @@ async def test_cited_passage(api: Api) -> None:
     async with api.rt.db.read() as conn:
         row = (await conn.execute(text("SELECT engine, engine_version, prompt_version FROM turn_traces "
                                        "WHERE message_id = :m"), {"m": reply["id"]})).one()
-    assert tuple(row) == ("naive", "3", "naive-4")
+    assert tuple(row) == ("naive", "3", "naive-5")
 
 
 class TwoMemories:

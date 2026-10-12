@@ -21,6 +21,7 @@ from typing import Any
 from horizon.ai.agent.budget import planned_input
 from horizon.ai.agent.persona import PROMPT_VERSION, compile_persona, first_name, persona_input
 from horizon.ai.contexts import MessageView, TurnContext
+from horizon.ai.language import language_cue
 from horizon.ai.llm import llm_request
 from horizon.ai.naive.prompt import SUMMARY_HEADING, TRAILING_CUE, RetrievalBlock, turn_cue
 from horizon.ai.naive.tag_parser import ParsedEmotion, TagParser
@@ -141,6 +142,9 @@ class AgentTurnEngine(NaiveTurnEngine):
             tail.append(cue)
         elif force_cue or (history and history[-1]["role"] == "assistant"):
             tail.append(TRAILING_CUE)   # group A A2: a history that ends on the speaker's own line needs a cue
+        lang = language_cue(ctx)   # D35: a clearly non-English user line; the tail's last line
+        if lang:
+            tail.append(lang)
         messages = [*prefix, *history]
         if tail:
             messages.append({"role": "system", "content": "\n".join(tail)})

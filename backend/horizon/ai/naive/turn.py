@@ -29,6 +29,7 @@ from typing import Any
 
 from horizon.ai.agent.budget import planned_input
 from horizon.ai.contexts import TurnContext
+from horizon.ai.language import language_cue
 from horizon.ai.llm import llm_request
 from horizon.ai.naive.prompt import (
     PROMPT_VERSION,
@@ -101,6 +102,9 @@ class NaiveTurnEngine:
         elif force_cue or (history and history[-1]["role"] == "assistant"):
             # group A A2: a history that ends on the speaker's own line came back empty 2 times in 4 without a cue
             messages.append({"role": "system", "content": TRAILING_CUE})
+        lang = language_cue(ctx)   # naive-5 (persona-context D35): a clearly non-English user line, last of all
+        if lang:
+            messages.append({"role": "system", "content": lang})
         req = llm_request(self._row(ctx), self.deps.prices.chat.model, messages, max_tokens=ctx.max_tokens,
                           stop=stop_sequences(ctx, you, history))
         return req, prefix

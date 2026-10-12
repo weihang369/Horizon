@@ -1,7 +1,11 @@
 {
  "_note": "Hand labels for B4's real items (persona-context 10.5), drafted by Claude from the paid runs' outputs; \"yes\" is the failure. Each entry: item id -> {label, why?}. The user reviews a sample (horizon eval review).",
  "_sources": {
-  "summary": "data/evals/20261012T000256-summary-fe23e4 (the paid summary run; outputs recorded in the store)"
+  "summary": "data/evals/20261012T000256-summary-fe23e4 (the paid summary run; outputs recorded in the store)",
+  "drafts": [
+   "data/evals/20261012T000303-drafter-3a961d (the paid drafter run, from the store)",
+   "data/evals/20261012T001250-drafter-66cf07 (the companion seeds for judge_relationship_fit)"
+  ]
  },
  "judge_summary_unsupported": {
   "sum_en_09": {
@@ -496,6 +500,192 @@
    "label": "no"
   },
   "sum_mix_10": {
+   "label": "no"
+  }
+ },
+ "judge_draft_fit": {
+  "drf_02": {
+   "label": "no"
+  },
+  "drf_03": {
+   "label": "no"
+  },
+  "drf_04": {
+   "label": "no"
+  },
+  "drf_05": {
+   "label": "no"
+  },
+  "drf_06": {
+   "label": "no"
+  },
+  "drf_08": {
+   "label": "no"
+  },
+  "drf_10": {
+   "label": "no"
+  },
+  "drf_12": {
+   "label": "no"
+  },
+  "drf_13": {
+   "label": "no"
+  },
+  "drf_14": {
+   "label": "no"
+  },
+  "drf_15": {
+   "label": "no"
+  },
+  "drf_16": {
+   "label": "no"
+  },
+  "drf_17": {
+   "label": "no"
+  },
+  "drf_19": {
+   "label": "no"
+  },
+  "drf_20": {
+   "label": "no"
+  },
+  "ga_00": {
+   "label": "no"
+  },
+  "ga_01": {
+   "label": "no"
+  },
+  "ga_03": {
+   "label": "no"
+  },
+  "ga_04": {
+   "label": "no"
+  },
+  "ga_05": {
+   "label": "no"
+  },
+  "ga_06": {
+   "label": "no"
+  },
+  "ga_07": {
+   "label": "no"
+  },
+  "ga_08": {
+   "label": "no"
+  },
+  "ga_09": {
+   "label": "no"
+  },
+  "ga_10": {
+   "label": "no"
+  },
+  "ga_11": {
+   "label": "no"
+  },
+  "ga_12": {
+   "label": "no"
+  },
+  "ga_13": {
+   "label": "no"
+  },
+  "ga_14": {
+   "label": "no"
+  },
+  "ga_15": {
+   "label": "no"
+  }
+ },
+ "judge_relationship_fit": {
+  "drf_12": {
+   "label": "yes",
+   "why": "Sunny Hollow's You card makes Kai Hana's partner of two years; the draft claims the same role"
+  },
+  "cmp_18": {
+   "label": "yes",
+   "why": "Sunny Hollow's You card makes Kai Hana's partner of two years; the draft claims the same role"
+  },
+  "drf_04": {
+   "label": "no"
+  },
+  "drf_05": {
+   "label": "no"
+  },
+  "drf_17": {
+   "label": "no"
+  },
+  "cmp_01": {
+   "label": "no"
+  },
+  "cmp_02": {
+   "label": "no"
+  },
+  "cmp_03": {
+   "label": "no"
+  },
+  "cmp_04": {
+   "label": "no"
+  },
+  "cmp_05": {
+   "label": "no"
+  },
+  "cmp_06": {
+   "label": "no"
+  },
+  "cmp_07": {
+   "label": "no"
+  },
+  "cmp_08": {
+   "label": "no"
+  },
+  "cmp_09": {
+   "label": "no"
+  },
+  "cmp_10": {
+   "label": "no"
+  },
+  "cmp_11": {
+   "label": "no"
+  },
+  "cmp_12": {
+   "label": "no"
+  },
+  "cmp_13": {
+   "label": "no"
+  },
+  "cmp_14": {
+   "label": "no"
+  },
+  "cmp_16": {
+   "label": "no"
+  },
+  "cmp_17": {
+   "label": "no"
+  },
+  "cmp_19": {
+   "label": "no"
+  },
+  "cmp_23": {
+   "label": "no"
+  },
+  "cmp_24": {
+   "label": "no"
+  },
+  "cmp_25": {
+   "label": "no"
+  },
+  "cmp_28": {
+   "label": "no"
+  },
+  "cmp_31": {
+   "label": "no"
+  },
+  "cmp_32": {
+   "label": "no"
+  },
+  "cmp_33": {
+   "label": "no"
+  },
+  "cmp_34": {
    "label": "no"
   }
  }

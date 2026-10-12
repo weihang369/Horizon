@@ -10,11 +10,11 @@
  "policy": null,
  "lines": [
   {
-   "text": "Saya selalu lupa minum air.",
+   "text": "Awak kumpul apa-apa tak?",
    "kind": "filler"
   },
   {
-   "text": "Kereta api lambat lagi.",
+   "text": "Panggung wayang dekat rumah saya nak tutup.",
    "kind": "filler"
   },
   {
@@ -23,7 +23,7 @@
    "fact": "Farid"
   },
   {
-   "text": "Rasanya saya kena potong rambut.",
+   "text": "Saya cuba meditasi. Tahan dua minit je.",
    "kind": "filler"
   },
   {
@@ -32,7 +32,7 @@
    "fact": "matahari"
   },
   {
-   "text": "Akhirnya saya kemas meja. Tak lama la tu.",
+   "text": "Awak ada bau kegemaran tak?",
    "kind": "filler"
   },
   {
@@ -41,7 +41,7 @@
    "fact": "Ogos"
   },
   {
-   "text": "Saya selalu lupa minum air.",
+   "text": "Saya buat playlist untuk hari hujan.",
    "kind": "filler"
   },
   {
@@ -55,23 +55,27 @@
    "fact": "kedai buku"
   },
   {
-   "text": "Awak suka hujan tak?",
+   "text": "Saya asyik hilang kunci.",
    "kind": "filler"
   },
   {
-   "text": "Saya nampak kucing dalam bas tadi.",
+   "text": "Saya beli stokin corak kucing kecil.",
    "kind": "filler"
   },
   {
-   "text": "Bateri telefon cepat habis.",
+   "text": "Ada burung merpati masuk kafe tadi.",
+   "kind": "filler"
+  },
+  {
+   "text": "Rasanya papan kekunci saya berhantu.",
+   "kind": "filler"
+  },
+  {
+   "text": "Kereta api lambat lagi.",
    "kind": "filler"
   },
   {
    "text": "Nasihat paling bagus awak pernah dapat?",
-   "kind": "filler"
-  },
-  {
-   "text": "Pernah tak awak termenung sejam?",
    "kind": "filler"
   },
   {
@@ -79,115 +83,11 @@
    "kind": "filler"
   },
   {
-   "text": "Penat hari ni. Awak macam mana?",
+   "text": "Lif rumah saya rosak.",
    "kind": "filler"
   },
   {
-   "text": "Akhirnya saya kemas meja. Tak lama la tu.",
-   "kind": "filler"
-  },
-  {
-   "text": "Makan tengah hari apa tadi?",
-   "kind": "filler"
-  },
-  {
-   "text": "Cerita la minggu awak.",
-   "kind": "filler"
-  },
-  {
-   "text": "Bunga ros perlu disiram tiga kali sehari, kan?",
-   "kind": "wrong_claim"
-  },
-  {
-   "text": "Jiran saya tengah gerudi dinding lagi.",
-   "kind": "filler"
-  },
-  {
-   "text": "Bateri telefon cepat habis.",
-   "kind": "filler"
-  },
-  {
-   "text": "Bateri telefon cepat habis.",
-   "kind": "filler"
-  },
-  {
-   "text": "Jiran saya tengah gerudi dinding lagi.",
-   "kind": "filler"
-  },
-  {
-   "text": "Pernah tak awak termenung sejam?",
-   "kind": "filler"
-  },
-  {
-   "text": "Saya cuba kedai mi baru dekat stesen.",
-   "kind": "filler"
-  },
-  {
-   "text": "Saya selalu lupa minum air.",
-   "kind": "filler"
-  },
-  {
-   "text": "Pelik tak kalau saya suka hari Isnin?",
-   "kind": "filler"
-  },
-  {
-   "text": "Kaktus tak perlu air langsung sampai bila-bila.",
-   "kind": "wrong_claim"
-  },
-  {
-   "text": "Nasihat paling bagus awak pernah dapat?",
-   "kind": "filler"
-  },
-  {
-   "text": "Awak suka hujan tak?",
-   "kind": "filler"
-  },
-  {
-   "text": "Akhirnya saya kemas meja. Tak lama la tu.",
-   "kind": "filler"
-  },
-  {
-   "text": "Kopi saya terlalu pekat pagi tadi.",
-   "kind": "filler"
-  },
-  {
-   "text": "Saya tengok dokumentari pasal sotong kurita.",
-   "kind": "filler"
-  },
-  {
-   "text": "Penat hari ni. Awak macam mana?",
-   "kind": "filler"
-  },
-  {
-   "text": "Kalau Ahad free, awak buat apa?",
-   "kind": "filler"
-  },
-  {
-   "text": "Penat hari ni. Awak macam mana?",
-   "kind": "filler"
-  },
-  {
-   "text": "Bunga matahari tumbuh paling baik dalam gelap.",
-   "kind": "wrong_claim"
-  },
-  {
-   "text": "Penat hari ni. Awak macam mana?",
-   "kind": "filler"
-  },
-  {
-   "text": "Kopi saya terlalu pekat pagi tadi.",
-   "kind": "filler"
-  },
-  {
-   "text": "Saya baca buku sebelum tidur sekarang.",
-   "kind": "filler"
-  },
-  {
-   "text": "Ada orang tinggal pokok depan pintu saya.",
-   "kind": "filler"
-  },
-  {
-   "text": "Kerja senyap hari ni, pelik.",
+   "text": "Awak buat apa bila tak boleh tidur?",
    "kind": "filler"
   },
   {
@@ -195,11 +95,239 @@
    "kind": "filler"
   },
   {
-   "text": "Ada orang tinggal pokok depan pintu saya.",
+   "text": "Bunga ros perlu disiram tiga kali sehari, kan?",
+   "kind": "wrong_claim"
+  },
+  {
+   "text": "Elektrik rumah saya terputus sejam.",
+   "kind": "filler"
+  },
+  {
+   "text": "Sepupu saya nak bela anak anjing.",
+   "kind": "filler"
+  },
+  {
+   "text": "Saya baca buku sebelum tidur sekarang.",
+   "kind": "filler"
+  },
+  {
+   "text": "Kerja senyap hari ni, pelik.",
+   "kind": "filler"
+  },
+  {
+   "text": "Perkataan apa yang awak suka bunyinya?",
+   "kind": "filler"
+  },
+  {
+   "text": "Kalau ada bot, awak nak namakan apa?",
+   "kind": "filler"
+  },
+  {
+   "text": "Pernah tak awak pergi tempat yang betul-betul sunyi?",
+   "kind": "filler"
+  },
+  {
+   "text": "Tempat mana awak nak pergi lagi?",
+   "kind": "filler"
+  },
+  {
+   "text": "Kaktus tak perlu air langsung sampai bila-bila.",
+   "kind": "wrong_claim"
+  },
+  {
+   "text": "Awak suka teka-teki tak?",
+   "kind": "filler"
+  },
+  {
+   "text": "Pernah tak awak termenung sejam?",
+   "kind": "filler"
+  },
+  {
+   "text": "Akhirnya saya balas semua emel.",
+   "kind": "filler"
+  },
+  {
+   "text": "Peti sejuk saya keluar bunyi baru.",
+   "kind": "filler"
+  },
+  {
+   "text": "Penat hari ni. Awak macam mana?",
+   "kind": "filler"
+  },
+  {
+   "text": "Saya siapkan jigsaw seribu keping.",
+   "kind": "filler"
+  },
+  {
+   "text": "Saya cuba tulis jurnal.",
+   "kind": "filler"
+  },
+  {
+   "text": "Orang ofis bawa durian. Huru-hara.",
+   "kind": "filler"
+  },
+  {
+   "text": "Bunga matahari tumbuh paling baik dalam gelap.",
+   "kind": "wrong_claim"
+  },
+  {
+   "text": "Saya baiki paip bocor sendiri.",
+   "kind": "filler"
+  },
+  {
+   "text": "Awak ada filem yang buat awak tenang?",
+   "kind": "filler"
+  },
+  {
+   "text": "Pasar malam penuh sesak.",
+   "kind": "filler"
+  },
+  {
+   "text": "Perpustakaan ada bilik bacaan baru.",
+   "kind": "filler"
+  },
+  {
+   "text": "Awak suka hujan tak?",
+   "kind": "filler"
+  },
+  {
+   "text": "Saya cuba laluan larian baru.",
+   "kind": "filler"
+  },
+  {
+   "text": "Saya tengok dokumentari pasal sotong kurita.",
+   "kind": "filler"
+  },
+  {
+   "text": "Saya tengok matahari terbit kali ni.",
+   "kind": "filler"
+  },
+  {
+   "text": "Saya tolong pakcik angkat barang dapur.",
+   "kind": "filler"
+  },
+  {
+   "text": "Roti canai pagi tadi sedap gila.",
+   "kind": "filler"
+  },
+  {
+   "text": "Awak suka laut atau gunung?",
+   "kind": "filler"
+  },
+  {
+   "text": "Saya nampak pelangi atas lebuh raya.",
+   "kind": "filler"
+  },
+  {
+   "text": "Langit warna merah jambu masa balik tadi.",
+   "kind": "filler"
+  },
+  {
+   "text": "Saya belajar lipat burung kertas.",
+   "kind": "filler"
+  },
+  {
+   "text": "Kopi saya terlalu pekat pagi tadi.",
+   "kind": "filler"
+  },
+  {
+   "text": "Saya kemas almari. Jumpa tiga helai selendang.",
+   "kind": "filler"
+  },
+  {
+   "text": "Saya tulis surat tangan buat kali pertama dalam bertahun-tahun.",
+   "kind": "filler"
+  },
+  {
+   "text": "Benda kecil apa yang awak bangga?",
+   "kind": "filler"
+  },
+  {
+   "text": "Bateri telefon cepat habis.",
+   "kind": "filler"
+  },
+  {
+   "text": "Teh saya sejuk sebab asyik membaca.",
+   "kind": "filler"
+  },
+  {
+   "text": "Hujung minggu ni tak ada plan langsung.",
+   "kind": "filler"
+  },
+  {
+   "text": "Saya dengar album lama sepanjang petang.",
+   "kind": "filler"
+  },
+  {
+   "text": "Saya daftar kelas tembikar.",
+   "kind": "filler"
+  },
+  {
+   "text": "Teh tertumpah atas nota saya.",
+   "kind": "filler"
+  },
+  {
+   "text": "Awak suka ribut petir tak?",
+   "kind": "filler"
+  },
+  {
+   "text": "Pelik tak kalau saya suka hari Isnin?",
+   "kind": "filler"
+  },
+  {
+   "text": "Saya jumpa gambar lama masa umur sepuluh tahun.",
    "kind": "filler"
   },
   {
    "text": "Ada orang tinggal pokok depan pintu saya.",
+   "kind": "filler"
+  },
+  {
+   "text": "Jiran bawah saya menyanyi dalam bilik air.",
+   "kind": "filler"
+  },
+  {
+   "text": "Payung saya terbalik kena angin.",
+   "kind": "filler"
+  },
+  {
+   "text": "Makan tengah hari apa tadi?",
+   "kind": "filler"
+  },
+  {
+   "text": "Saya tidur sekejap, bangun terus keliru.",
+   "kind": "filler"
+  },
+  {
+   "text": "Awak suka pagi atau malam?",
+   "kind": "filler"
+  },
+  {
+   "text": "Kawan saya hantar voice note sepuluh minit.",
+   "kind": "filler"
+  },
+  {
+   "text": "Saya susun rak buku ikut warna.",
+   "kind": "filler"
+  },
+  {
+   "text": "Kalau Ahad free, awak buat apa?",
+   "kind": "filler"
+  },
+  {
+   "text": "Rakan sekerja bawa kek tanpa sebab.",
+   "kind": "filler"
+  },
+  {
+   "text": "Saya cuba belajar silap mata kad. Gagal.",
+   "kind": "filler"
+  },
+  {
+   "text": "Saya belajar cakap terima kasih dalam bahasa Tamil.",
+   "kind": "filler"
+  },
+  {
+   "text": "Saya jalan jauh balik rumah sengaja.",
    "kind": "filler"
   },
   {
@@ -207,11 +335,83 @@
    "kind": "filler"
   },
   {
+   "text": "Saya tak tahu nak masak apa malam ni.",
+   "kind": "filler"
+  },
+  {
+   "text": "Lagu apa yang awak tak pernah skip?",
+   "kind": "filler"
+  },
+  {
    "text": "Saya nampak kucing dalam bas tadi.",
    "kind": "filler"
   },
   {
-   "text": "Nasihat paling bagus awak pernah dapat?",
+   "text": "Pernah sesat kat bandar baru?",
+   "kind": "filler"
+  },
+  {
+   "text": "Sarapan paling sempurna bagi awak apa?",
+   "kind": "filler"
+  },
+  {
+   "text": "Tabiat apa yang awak harap awak ada?",
+   "kind": "filler"
+  },
+  {
+   "text": "Saya selalu lupa minum air.",
+   "kind": "filler"
+  },
+  {
+   "text": "Pokok saya akhirnya keluar daun baru.",
+   "kind": "filler"
+  },
+  {
+   "text": "Barisan kat pejabat pos panjang gila.",
+   "kind": "filler"
+  },
+  {
+   "text": "Kasut saya berbunyi kat semua lantai.",
+   "kind": "filler"
+  },
+  {
+   "text": "Makanan pelik apa yang awak suka?",
+   "kind": "filler"
+  },
+  {
+   "text": "Kipas laptop saya bunyi macam jet.",
+   "kind": "filler"
+  },
+  {
+   "text": "Normal ke cakap dengan pokok?",
+   "kind": "filler"
+  },
+  {
+   "text": "Awak rasa orang boleh berubah tak?",
+   "kind": "filler"
+  },
+  {
+   "text": "Awak pernah baca balik mesej lama tak?",
+   "kind": "filler"
+  },
+  {
+   "text": "Pemandu bas lambai saya tadi.",
+   "kind": "filler"
+  },
+  {
+   "text": "Jiran saya tengah gerudi dinding lagi.",
+   "kind": "filler"
+  },
+  {
+   "text": "Akhirnya saya kemas meja. Tak lama la tu.",
+   "kind": "filler"
+  },
+  {
+   "text": "Apa benda last yang buat awak gelak?",
+   "kind": "filler"
+  },
+  {
+   "text": "Angin kuat gila hari ni.",
    "kind": "filler"
   }
  ]
