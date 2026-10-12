@@ -7,7 +7,7 @@ Makes a session's event log the single source of truth: messages and session sta
 ## Requirements
 
 ### Requirement: One reducer in two languages
-The backend SHALL derive messages, participant state and session state from session events using the same rules as the frontend reducer. For every case in `backend/tests/fixtures/reducer/`, both the TypeScript and the Python reducer SHALL produce exactly the case's expected session and messages.
+The backend SHALL derive messages, participant state and session state from session events using the same rules as the frontend reducer. For every case in `backend/tests/fixtures/reducer/`, both the TypeScript and the Python reducer SHALL produce exactly the case's expected session and messages. The cases SHALL include a reaction for the character who is streaming, before and after its first token, and the seed case `ses_seedDinner` seq 25.
 
 #### Scenario: Shared fixture run
 - **WHEN** the Python tests run the reducer fixtures
@@ -16,6 +16,14 @@ The backend SHALL derive messages, participant state and session state from sess
 #### Scenario: Divergence is caught
 - **WHEN** one reducer's handling of a later `insight` is changed to keep the first trace
 - **THEN** the `insight-replacement` case fails in that language
+
+#### Scenario: Speaker's face kept against a reaction
+- **WHEN** both reducers run the case where a reaction for Rin arrives 10 ms after Rin's own `turn.start`
+- **THEN** both keep Rin's face unchanged, and both record the reaction on the message it reacts to
+
+#### Scenario: Seed sessions still reduce
+- **WHEN** every seed session is re-reduced after the speaker-face rule
+- **THEN** each reduces to its shipped messages
 
 ### Requirement: Seed sessions reduce to their shipped messages
 Reducing each seed session's `events.json` SHALL yield exactly its `messages.json`, in both languages. The backend SHALL refuse to import a seed whose reduction differs, and SHALL name the session in the error.
