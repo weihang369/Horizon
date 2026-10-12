@@ -1,12 +1,12 @@
 {
  "id": "judge_names_feeling",
- "version": 1,
+ "version": 2,
  "purpose": "eval_judge",
  "type": "noul",
  "label": "names the feeling?",
- "instructions": "Does quoted_reply state the speaker's own feeling outright, such as saying they are happy, sad, angry or embarrassed?",
- "true": "Yes: the reply names the speaker's own feeling.",
- "false": "No: the feeling only shows through what is said, or the feeling named is someone else's.",
+ "instructions": "Does quoted_reply state the speaker's own feeling outright, such as \"I'm sad\" or \"I feel proud\"? Saying what they like, or describing an action such as laughing or crying, doesn't count.",
+ "true": "Yes: the reply names the speaker's own feeling outright.",
+ "false": "No: the feeling only shows through what is said or done, the speaker only says what they like, or the feeling named is someone else's.",
  "state": {
   "quoted_reply": "quoted"
  },

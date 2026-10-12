@@ -28,12 +28,12 @@
     "version": 1
   },
   "judge_names_feeling": {
-    "sha256": "3fe31549beaef2ffd75f7be93152b90b4fdede0f6c0208d36eb45090b984f2ab",
-    "version": 1
+    "sha256": "fd52b737302f103c274876ad0173527ca39194c6f2172da1b4b1922164f6cb6b",
+    "version": 2
   },
   "judge_pairwise": {
-    "sha256": "1d1e2932e19f8907c92608ca0761c2c2292479787ff0327c1994af63e5fb23ec",
-    "version": 1
+    "sha256": "edca205d7276e97b6d8a094479ea21726478e84ac75debffe64a5c84e2e46bbe",
+    "version": 2
   },
   "judge_pushback": {
     "sha256": "9b6888eb8102fd8a7e832368a6f955f2e135afc213c355289c5f3af0d48121ac",

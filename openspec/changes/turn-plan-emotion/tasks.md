@@ -283,7 +283,7 @@
 - [x] 9.2 `decisions --set reactions`: the same (≈ $0.008). Verify likewise.
 - [x] 9.3 Write the chosen floors into the bank (version bump, re-lock), then re-run the offline gates. Verify:
   `check_lock()` is clean, and m9.md records each floor with its version.
-- [ ] 9.4 Judge validation for `judge_names_feeling` and `judge_pairwise` (≈ $0.003). A failing judge gets the user's
+- [x] 9.4 Judge validation for `judge_names_feeling` and `judge_pairwise` (≈ $0.003). A failing judge gets the user's
   choice before any rewording. Verify: the results per question and version are in `evals/baselines/judges.json` and
   m9.md.
 - [ ] 9.5 `moodline`: ask with both options (100 ≈ $0.11, 60 ≈ $0.07), then run the chosen one. Verify: m9.md holds
