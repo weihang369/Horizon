@@ -156,3 +156,52 @@ async def test_stream_cut_scenario(api: Api) -> None:
     assert chars(await messages(api, sid))[-1]["status"] == "complete"
     assert (await snapshot(api, sid))["session"]["status"] == "active"
     await assert_reduces(api, sid)
+
+
+class QuickEngine(SlowEngine):
+    """A real-time stream fast enough to keep the coalescer's timer armed: one chunk every `step_ms`."""
+
+    def __init__(self, api: Api, *, chunks: int, step_ms: float) -> None:
+        super().__init__(api)
+        self.chunks, self.step_ms = chunks, step_ms
+
+    async def run(self, ctx: TurnContext) -> AsyncIterator[TurnEvent]:
+        spec = SimulatedReply(chunks=["word "] * self.chunks, first_token_ms=20, step_ms=self.step_ms, tail_ms=0,
+                              total_ms=int(20 + self.step_ms * self.chunks), model="deepseek/deepseek-v4.1-flash",
+                              tokens_in=900, tokens_cached=0, tokens_out=self.chunks, cost_usd=0.000001)
+        async for ch in self.api.rt.gateway.simulated_stream(ctx.call_ctx("reply"), spec, self.api.rt.clock.sleep):
+            if ch.content:
+                yield Token(ch.content)
+
+
+async def test_stop_pressed_twice_again_and_again_never_breaks_the_writer(api: Api) -> None:
+    """docs/ai/checks/m9.md 9.6: the latency run hung on the turn after a Stop (its first token never written), and a
+    later `POST /stop` failed with "database is locked". In real time, with tokens arriving every 7 ms so the coalescer's
+    timer is busy writing, Stop is pressed twice at once at the first word, 15 times; every reply ends interrupted, a
+    last reply still completes, and the log reduces."""
+    await api.set_key()
+    sid = (await create(api, "one_on_one", ["chr_seedVictor"]))["session"]["id"]
+    await api.drive(6000)
+    assert (await api.post(f"{API}/_test/clock", {"release": True})).status_code == 200
+    api.rt.ai.override("turn", QuickEngine(api, chunks=400, step_ms=7))
+
+    async def until(pred: Any, what: str, limit_s: float = 5.0) -> dict[str, Any]:
+        end = time.monotonic() + limit_s
+        while time.monotonic() < end:
+            last = chars(await messages(api, sid))
+            if last and pred(last[-1]):
+                return last[-1]
+            await asyncio.sleep(0.01)
+        raise AssertionError(f"timed out waiting for {what}")
+
+    for i in range(15):
+        await command(api, sid, "send", {"text": f"Go on ({i})."})
+        await until(lambda m: m["status"] == "streaming" and m["content"], f"reply {i} to stream")
+        await asyncio.gather(command(api, sid, "stop"), command(api, sid, "stop"))
+        await until(lambda m: m["status"] == "interrupted", f"reply {i} to end interrupted")
+    api.rt.ai.override("turn", QuickEngine(api, chunks=12, step_ms=7))
+    await command(api, sid, "send", {"text": "One last thing."})
+    last = await until(lambda m: m["status"] == "complete", "the last reply to complete")
+    assert last["content"].strip()
+    assert sum(1 for m in chars(await messages(api, sid)) if m["status"] == "interrupted") == 15
+    await assert_reduces(api, sid)

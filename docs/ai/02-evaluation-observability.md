@@ -541,7 +541,8 @@ with itself only about 64 % of the time, so that rule mixes up ordinary noise wi
   was **p50 1216 ms, p90 1427 ms**, meeting NFR-01. Send → face was p50 1153 ms, p90 1370 ms, and the face always
   came before the first word (NFR-29). Jev's `turn_plan` was p50 453 ms, p90 515 ms, with its deadline firing 2/119
   times. Not yet built: warm-up discard, two time windows, deep, group and debate turns, the per-stage breakdown.
-  Both runs stopped early on a Stop bug that breaks the database writer (open; see m9.md).*
+  Both runs stopped early on a Stop bug that broke the database writer, fixed after M9 on `fix/stop-db-writer`
+  (m9.md 9.6, "The fix").*
 - **NFR-29 (the face within 800 ms of the first word)** is measured **at the HTTP client**, from the event timestamps of
   the M6 portable client:
   - face time minus first-word time;

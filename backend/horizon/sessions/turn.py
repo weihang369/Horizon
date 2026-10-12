@@ -267,8 +267,11 @@ class TurnRunner:
             nonlocal timer
             if timer is not None and not timer.done():
                 timer.cancel()
-                with contextlib.suppress(asyncio.CancelledError):
-                    await timer
+                # not `await timer`: a Stop cancelling this turn would pass its cancel on to the timer, a second one
+                # landing in the timer's token write (docs/ai/checks/m9.md 9.6)
+                await asyncio.wait((timer,))
+                if not timer.cancelled() and (failed := timer.exception()) is not None:
+                    raise failed   # as `await timer` did: a failed token write fails the turn
             timer = None
 
         slot: Any = rt.llm_slots.slot() if prefetch is None and not verbatim else contextlib.nullcontext()
@@ -318,7 +321,7 @@ class TurnRunner:
                 return TurnOutcome(None, "refused")
             err = e
         except asyncio.CancelledError:
-            if timer is not None:
+            if timer is not None and not timer.cancelling():   # settle_timer may have cancelled it already
                 timer.cancel()
             raise
         await settle_timer()

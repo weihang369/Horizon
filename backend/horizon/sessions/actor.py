@@ -281,8 +281,9 @@ class SessionActor:
         worker = self._worker
         if worker is not None and not worker.done() and worker is not asyncio.current_task():
             worker.cancel()
-            with contextlib.suppress(asyncio.CancelledError, Exception):
-                await worker
+            # not `await worker`: a cancel of this command (actor.stop()) would reach the worker a second time, in the
+            # middle of the write its first cancel is rolling back (docs/ai/checks/m9.md 9.6)
+            await asyncio.wait((worker,))
         self.busy = False
         if not self.stopped:
             self._worker = self.rt.spawn(f"turns:{self.sid}", self._run_turns())
