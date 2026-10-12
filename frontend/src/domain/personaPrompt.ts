@@ -5,7 +5,7 @@
 // Owner: AI.
 import { countTokens, utf8Bytes } from "./tokens";
 
-export const PROMPT_VERSION = "agent-1";
+export const PROMPT_VERSION = "agent-2"; // M9: the mood line in the tail (turn-plan-emotion D16)
 export const CARD_MAX = 1500;
 const FIELD_CAPS: Record<string, number> = {
   backstory: 600, "personality.summary": 200, "speakingStyle.summary": 200, goals: 200,
@@ -316,4 +316,21 @@ export function compilePersona(inp: PersonaInput): PersonaPrompt {
     tokens: { card: countTokens(cardText), world: countTokens(world), session: countTokens(session), rules: countTokens(rules), total: countTokens(text) },
     cut,
   };
+}
+
+// docs/ai/06 E4 (turn-plan-emotion D16): one line in the dynamic tail, never in system message 1. The twin of
+// persona.py's mood_line(); both pass backend/tests/fixtures/mood_line/cases.json.
+export const MOOD_PHRASES: Record<string, string> = {
+  happy: "in a good mood",
+  sad: "a bit low",
+  angry: "a bit annoyed",
+  surprised: "caught off guard",
+  thinking: "thoughtful, turning something over",
+  embarrassed: "a little embarrassed",
+};
+
+export function moodLine(face: string, manual = false): string | null {
+  const phrase = manual || !Object.hasOwn(MOOD_PHRASES, face) ? null : MOOD_PHRASES[face];
+  return phrase == null ? null
+    : `Your mood right now: ${phrase}. Let it show in how you word this reply; don't name the feeling.`;
 }

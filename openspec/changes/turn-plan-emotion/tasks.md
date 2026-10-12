@@ -148,16 +148,16 @@
 - [x] 4.1 **Before any engine change,** record an `agent-1` request fixture for a planned-shape 1:1 turn and a group
   turn: `backend/tests/fixtures/persona_prompt/request_agent1_*.json`. Verify: the fixture test passes on the current
   engine.
-- [ ] 4.2 Add `MOOD_PHRASES` and `mood_line()` to `persona.py`, and `moodLine()` to `personaPrompt.ts`, with shared
-  `mood_line.json` fixtures. Verify: the persona-prompt scenario "Phrase per face" passes in both languages.
-- [ ] 4.3 Put the mood line in the agent tail in D16's order, and bump `PROMPT_VERSION` to `agent-2`. Verify:
+- [x] 4.2 Add `MOOD_PHRASES` and `mood_line()` to `persona.py`, and `moodLine()` to `personaPrompt.ts`, with shared
+  `mood_line/cases.json` fixtures. Verify: the persona-prompt scenario "Phrase per face" passes in both languages.
+- [x] 4.3 Put the mood line in the agent tail in D16's order, and bump `PROMPT_VERSION` to `agent-2`. Verify:
   - the "Prefix unchanged" scenario: the `neutral` request equals 4.1's fixture byte for byte, and the `happy` one
     differs only in the tail;
   - the "Mood line before the cue" scenario;
   - no line under MANUAL or without a plan.
-- [ ] 4.4 Add the "View as prompt" note (D17) under the system message in `PromptPreview.tsx`, from `moodLine("sad")`.
+- [x] 4.4 Add the "View as prompt" note (D17) under the system message in `PromptPreview.tsx`, from `moodLine("sad")`.
   Verify the "Mood note" scenario in `PromptPreview.test.tsx`: the text and token count are unchanged.
-- [ ] 4.5 Mark doc 06 §6's mood-line row built (D16, D17), and note the `agent-2` version and why in doc 04 P1's
+- [x] 4.5 Mark doc 06 §6's mood-line row built (D16, D17), and note the `agent-2` version and why in doc 04 P1's
   version list. Verify by reading.
 
 ## 5. After-turn tasks, listener reactions and the reducer guard (D18–D22)

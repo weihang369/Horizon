@@ -6,7 +6,7 @@ citation map and the warm-prefix estimate are shared. What differs:
 - **the request (D6):** system message 1 from the `agent` compiler; the rolling summary under doc 11 S6's heading
   (leading `#`s stripped from its lines); the history with the speaker's own lines as `assistant` and every other
   line as `Name: line`, same-role messages merged (X4), each message clipped at 4,000 tokens (X8); then ONE tail message
-  (the retrieval block, the repeat hint and voice reminder when switched on, the cue);
+  (the retrieval block, M9's mood line, the repeat hint and voice reminder when switched on, the cue);
 - **the parser:** stray tags and a `<name>:` at every line start are stripped (P6), and a tag never sets the face (P7):
   until M9's turn plan, the previous face stays, source `default` (D4);
 - **the trace:** doc 05 X7's context mapping, the per-mode planned input as the budget, and no `cacheHitPct` (X6).
@@ -19,7 +19,7 @@ from collections.abc import Sequence
 from typing import Any
 
 from horizon.ai.agent.budget import planned_input
-from horizon.ai.agent.persona import PROMPT_VERSION, compile_persona, first_name, persona_input
+from horizon.ai.agent.persona import PROMPT_VERSION, compile_persona, first_name, mood_line, persona_input
 from horizon.ai.contexts import MessageView, TurnContext
 from horizon.ai.language import language_cue
 from horizon.ai.llm import llm_request
@@ -116,6 +116,11 @@ class AgentTurnEngine(NaiveTurnEngine):
             return f"{base} Don't reuse your usual greeting: '{stored}'." if stored else base
         return turn_cue(ctx)
 
+    def mood(self, ctx: TurnContext) -> str | None:
+        """E4's mood line for the planned face; none without a plan, for neutral or in MANUAL (D16)."""
+        face = ctx.plan.emotion if ctx.plan is not None else None
+        return mood_line(face.face, face.manual) if face is not None else None
+
     def tail_extras(self, ctx: TurnContext) -> list[str]:
         """P8's repeat hint and X5's voice reminder, each only when its runtime switch is on (both off by default)."""
         out: list[str] = []
@@ -144,6 +149,9 @@ class AgentTurnEngine(NaiveTurnEngine):
         tail: list[str] = []
         if block is not None and block.content:
             tail.append(block.content)
+        mood = self.mood(ctx)   # M9 D16: after the retrieval block, before the repeat hint (doc 04 P2, doc 06 E4)
+        if mood:
+            tail.append(mood)
         tail += self.tail_extras(ctx)
         cue = self.cue(ctx)
         if cue:

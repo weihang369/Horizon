@@ -25,7 +25,7 @@ from horizon.ai.contexts import TurnContext
 from horizon.ai.naive.prompt import length_line
 from horizon.domain.pricing import count_tokens
 
-PROMPT_VERSION = "agent-1"
+PROMPT_VERSION = "agent-2"   # M9: the mood line in the tail (turn-plan-emotion D16)
 CARD_MAX = 1500
 FIELD_CAPS = {"backstory": 600, "personality.summary": 200, "speakingStyle.summary": 200, "goals": 200}
 ITEM_CAP = 60
@@ -388,3 +388,22 @@ def compile_persona(inp: PersonaInput) -> PersonaPrompt:
     tokens = {"card": count_tokens(card), "world": count_tokens(world), "session": count_tokens(session),
               "rules": count_tokens(rules), "total": count_tokens(text)}
     return PersonaPrompt(text=text, tokens=tokens, cut=cut)
+
+
+# docs/ai/06 E4 (turn-plan-emotion D16): one line in the dynamic tail, never in system message 1. Milder than the labels
+# on purpose; no line for neutral (or any other face) and none in MANUAL (D-07).
+MOOD_PHRASES = {
+    "happy": "in a good mood",
+    "sad": "a bit low",
+    "angry": "a bit annoyed",
+    "surprised": "caught off guard",
+    "thinking": "thoughtful, turning something over",
+    "embarrassed": "a little embarrassed",
+}
+
+
+def mood_line(face: str, manual: bool = False) -> str | None:
+    phrase = None if manual else MOOD_PHRASES.get(face)
+    if phrase is None:
+        return None
+    return f"Your mood right now: {phrase}. Let it show in how you word this reply; don't name the feeling."

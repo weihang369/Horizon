@@ -415,7 +415,8 @@ decide_face(answer | None, outcome, base, fade_set, floor, manual) -> PlannedFac
 - **Where:** `persona.py` gains `MOOD_PHRASES` and `mood_line(face, manual) -> str | None`, with the TS twin
   `moodLine()` in `personaPrompt.ts`.
 - **The line:** E4's exact sentence and table. `None` for `neutral` and for MANUAL.
-- **Shared fixtures:** `backend/tests/fixtures/persona_prompt/mood_line.json`.
+- **Shared fixtures:** `backend/tests/fixtures/mood_line/cases.json` (built note: not under `persona_prompt/`, whose
+  runners in both languages read every `.json` there as a persona case).
 - **The tail order** (P2 and E4): retrieval block → mood line → repeat hint → voice reminder → cue → language cue
   (D35). In M9 the retrieval block is always absent on planned turns (D9).
 - **The version.** M8's design and E4 call the line part of `agent-1`, but `agent-1` shipped without it. The

@@ -3,7 +3,7 @@
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { compilePersona, cutTo, type PersonaInput, type PersonaPrompt } from "./personaPrompt";
+import { compilePersona, cutTo, moodLine, PROMPT_VERSION, type PersonaInput, type PersonaPrompt } from "./personaPrompt";
 import { countTokens } from "./tokens";
 
 interface Fixture { name: string; doc: string; input: PersonaInput; expected: PersonaPrompt }
@@ -32,5 +32,20 @@ describe("countTokens and cutTo", () => {
   it("skips an abbreviation", () => {
     expect(cutTo("She trained early. Then she met Dr. Kim and stayed for years and years and years.", 12))
       .toEqual(["She trained early.…", true]);
+  });
+});
+
+// docs/ai/06 E4 (turn-plan-emotion D16; persona-prompt "Phrase per face"): the same cases as persona.py's mood_line().
+interface MoodCase { face: string; manual: boolean; line: string | null }
+const MOOD = JSON.parse(readFileSync(path.resolve(__dirname, "../../../backend/tests/fixtures/mood_line/cases.json"), "utf8")) as { cases: MoodCase[] };
+
+describe("moodLine (shared with persona.py's mood_line)", () => {
+  for (const c of MOOD.cases) {
+    it(`${c.face} ${c.manual ? "manual" : "auto"}`, () => {
+      expect(moodLine(c.face, c.manual)).toBe(c.line);
+    });
+  }
+  it("names the agent-2 prompt", () => {
+    expect(PROMPT_VERSION).toBe("agent-2");
   });
 });

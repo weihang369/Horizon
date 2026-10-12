@@ -58,3 +58,53 @@ def test_unplanned_requests_equal_the_agent1_fixture(name: str) -> None:
         (FIX / f"request_agent1_{name}.json").write_text(json.dumps(got, indent=2, ensure_ascii=False) + "\n",
                                                           encoding="utf-8")
     assert got == fixture(name)
+
+
+# ── 4.3: agent-2 ──
+MOOD_HAPPY = "Your mood right now: in a good mood. Let it show in how you word this reply; don't name the feeling."
+
+
+@pytest.mark.parametrize("name", ["one_on_one", "group", "greeting"])
+@pytest.mark.parametrize("manual", [False, True])
+def test_neutral_and_manual_planned_requests_equal_the_agent1_fixture(name: str, manual: bool) -> None:
+    """"Prefix unchanged": a neutral or a MANUAL turn sends `agent-1`'s request byte for byte, so M8's stored answers
+    still serve."""
+    assert dump(planned(cases()[name], "neutral", manual=manual)) == fixture(name)
+    assert dump(planned(cases()[name], "happy", manual=True)) == fixture(name)
+
+
+@pytest.mark.parametrize("name", ["one_on_one", "group", "greeting"])
+def test_happy_differs_only_in_the_tail(name: str) -> None:
+    old, new = fixture(name), dump(planned(cases()[name], "happy"))
+    assert {k: v for k, v in new.items() if k != "messages"} == {k: v for k, v in old.items() if k != "messages"}
+    n = len(old["messages"])
+    had_tail = old["messages"][-1]["role"] == "system" and n > old["prefix_len"]
+    keep = n - 1 if had_tail else n
+    assert new["messages"][:keep] == old["messages"][:keep]
+    tail = new["messages"][-1]
+    assert tail["role"] == "system" and len(new["messages"]) == keep + 1
+    old_tail = old["messages"][-1]["content"] if had_tail else None
+    assert tail["content"] == (f"{MOOD_HAPPY}\n{old_tail}" if old_tail else MOOD_HAPPY)
+
+
+def test_mood_line_sits_before_the_repeat_hint_voice_reminder_and_cue() -> None:
+    """"Mood line before the cue": D16's order, block → mood → repeat hint → voice reminder → cue → language cue."""
+    from tests.sessions.test_agent_turn import mv as m
+    recent = [m(1, "user", "Morning all", name="user"),
+              m(2, "character", "Well, honestly that depends.", "chr_a", "Amara Okafor"),
+              m(3, "character", "Hi!", "chr_h", "Hana Morisaki")]
+    c = planned(ctx(recent, mode="group"), "happy")
+    c = c.model_copy(update={"speaker": c.speaker.model_copy(update={
+        "profile": {**c.speaker.profile, "speakingStyle": {"summary": "Clipped and dry. Never gushes."}}})})
+    req, _ = engine({"persona.repeatHint": True, "context.voiceReminder": True}).request(c)
+    lines = str(req.messages[-1]["content"]).split("\n")
+    assert lines[0] == MOOD_HAPPY
+    assert lines[1].startswith("Your last replies began:") and lines[2].startswith("Stay Amara:")
+    assert lines.index(MOOD_HAPPY) < len(lines) - 1   # the cue comes after it
+
+
+def test_no_mood_line_without_a_plan_or_under_manual() -> None:
+    base = cases()["group"]
+    for c in (base, planned(base, "sad", manual=True), planned(base, "neutral")):
+        assert "Your mood right now" not in json.dumps(dump(c), ensure_ascii=False)
+    assert "Your mood right now: a bit low." in json.dumps(dump(planned(base, "sad")), ensure_ascii=False)
