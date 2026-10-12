@@ -154,14 +154,17 @@ def test_judges_are_one_condition_nouls_worded_so_yes_is_the_failure() -> None:
     from horizon.ai.questions import bank
 
     judges = [e for e in bank().entries.values() if e.purpose == "eval_judge"]
-    assert len(judges) == 13
+    assert len(judges) == 15   # M9 (turn-plan-emotion D28, D29): names the feeling, and the pairwise choice judge
     for e in judges:
+        assert e.label.endswith("?") and e.deadline == "default"
+        assert all(k.startswith("quoted_") for k, v in e.state.items() if v == "quoted")
+        w = wire_question(bank().question(e.id, name="Amara") if e.id == "judge_pairwise" else bank().question(e.id))
+        assert w["instructions"].endswith(bank().sentence)
+        if e.id == "judge_pairwise":
+            continue
         # D24: t 0.5, except where D38 tuned it on a dev set and checked it on a held-out one
         t = {"judge_voice": 0.6}.get(e.id, 0.5)
-        assert e.type == "noul" and e.label.endswith("?") and e.thresholds == {"t": t} and e.deadline == "default"
-        assert all(k.startswith("quoted_") for k, v in e.state.items() if v == "quoted")
-        w = wire_question(bank().question(e.id))
-        assert w["instructions"].endswith(bank().sentence)
+        assert e.type == "noul" and e.thresholds == {"t": t}
     # never asked live: no runtime module outside the eval harness names a judge
     root = Path(__file__).resolve().parents[2] / "horizon"
     for f in root.rglob("*.py"):
@@ -239,3 +242,26 @@ def test_the_reaction_entry_compiles_about_a_named_listener() -> None:
         if k != "none":
             assert (v["what"], v["not_for"]) == (emotion[k]["what"], emotion[k]["not_for"])
     assert e.options["items"]["none"]["what"] == "No visible reaction: the line doesn't move them."
+
+
+# ── M9 task 8.6: the pairwise judge and the shared face check (turn-plan-emotion D28, D29) ──
+def test_pairwise_judge_is_an_ordered_choice() -> None:
+    e = bank().get("judge_pairwise")
+    assert (e.purpose, e.type, e.shuffle) == ("eval_judge", "choice", False)
+    q = bank().question("judge_pairwise", seed="any", name="Amara")
+    assert isinstance(q, Choice) and list(q.options) == ["a", "b", "same"]   # the harness controls the order
+    assert set(e.state) == {"quoted_recent", "quoted_reply_a", "quoted_reply_b"}
+
+
+def test_names_the_feeling_is_a_noul_on_the_reply_only() -> None:
+    e = bank().get("judge_names_feeling")
+    assert (e.type, e.label, set(e.state), e.thresholds) == ("noul", "names the feeling?", {"quoted_reply"}, {"t": 0.5})
+
+
+def test_the_evaluation_asks_the_live_face_check_entry() -> None:
+    """"Shared face check": one entry, one id and version, for the live check and the evaluation (W2, W10)."""
+    from horizon.ai.agent.face_check import QUESTION
+    from horizon.evals.suites import compile_entry
+
+    q = compile_entry(QUESTION, seed="eval")
+    assert q.meta is not None and (q.meta.id, q.meta.version) == ("face_check", bank().get("face_check").version)

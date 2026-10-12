@@ -820,6 +820,25 @@ from a reply, as D7 reasons for Jev call 1. Spend that *crosses* the cap when re
 **Rejected:** keeping the pause and narrowing the scenario to "the reactions task emits nothing itself": the user
 would see a pause caused by a background face.
 
+### Built notes (phases 5–8)
+
+- **Splits (D27).** Both sets keep the hash rule, which gave `emotion` 72 dev / 28 test and `reactions` 65 / 25 (E8's
+  60 / 30 is the expected ratio, not a quota; choosing item ids to hit it would game the rule).
+- **`reactions` labels.** Exactly 27 items accept `none` (the cap). The listener's face now is never in its own
+  acceptable set (a same-face reaction doesn't show); the builder asserts it.
+- **Previous faces (`emotion`).** The table gives each one; for keep-false items marked neutral the builder rotates the
+  face over the other six (skipping acceptable ones) until 34 of 100 start neutral, as the labelling rule says.
+- **Judge sets (D28, D29).** The real items come from the committed frozen transcripts (the M8 paid runs' raw folders
+  are not kept). The code search's hits include the leaked "Sad —" labels on some `naive` replies; 8 real "yes" items
+  are used. The pairwise judge's both orders swap the two replies (its options never shuffle).
+- **`moodline` (D30)** calls the live planner and engine in process, and gives each transcript a session row written
+  with `create`'s helpers but never opened (the ledger names a session; no actor, greeting or turn runs). History
+  numbers messages from 1 in order, and keeps the lines after the turn's `summary_upto`.
+- **`latency` (D31)** reads each session's events from the run's database while it polls, and is in the runner's
+  store-bypass list.
+- **`smoke`** runs one `moodline` item and one `latency` turn under `agent`; in test mode a Decider fixture gives the
+  item's Jev call 1 a confident face.
+
 ## Risks / Trade-offs
 
 - **[LangGraph doesn't settle on the virtual clock]** → D2 measures it first and stops with choices. The plan's port

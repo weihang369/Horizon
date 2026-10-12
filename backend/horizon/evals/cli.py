@@ -125,7 +125,9 @@ def register(sub: Any) -> None:
                            ("drafter", "the profile drafter on 20 seeds (paid, M8)"),
                            ("summary", "the rolling summariser on 40 inputs (paid, M8)"),
                            ("long", "agent-only long conversations past two drops (paid, rare, M8)"),
-                           ("transcript", "generate the long-history frozen transcripts with naive (paid, M8)")):
+                           ("transcript", "generate the long-history frozen transcripts with naive (paid, M8)"),
+                           ("moodline", "the mood line on vs off over non-neutral transcript turns (paid, once, M9)"),
+                           ("latency", "agent 1:1 time to the face and the first word, store bypassed (paid, M9)")):
         s = esub.add_parser(name, help=helptext)
         s.add_argument("--profile", default="naive", choices=["scripted", "naive", "agent"])
         s.add_argument("--limit", type=int, default=None)

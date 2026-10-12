@@ -70,3 +70,47 @@ def update_record(results: Mapping[str, Mapping[str, Any]], versions: Mapping[st
         rec[qid] = {"version": versions[qid], **r, "date": today}
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(rec, indent=1, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
+
+
+# ── M9 (turn-plan-emotion D28, D29) ──
+NAMES_FEELING = "judge_names_feeling"
+MAX_FALSE_ALARMS = {NAMES_FEELING: 1}   # E8: a judge that flags clean replies would make the ≥ 95 % target meaningless
+PAIRWISE = "judge_pairwise"
+PAIRWISE_MIN = 0.90
+
+
+def false_alarms(rows: Iterable[Mapping[str, Any]]) -> int:
+    """Real items labelled clean ("no") that the judge called "yes"."""
+    return sum(1 for r in rows if not r.get("planted") and r["label"] == "no" and r.get("answer") == "yes")
+
+
+def b4_for(qid: str, rows: Iterable[Mapping[str, Any]]) -> dict[str, Any]:
+    """B4, plus E8's false-alarm cap where it applies; the pairwise judge has its own rule."""
+    rows = list(rows)
+    if qid == PAIRWISE:
+        return pairwise_result(rows)
+    r = b4(rows)
+    cap = MAX_FALSE_ALARMS.get(qid)
+    if cap is not None:
+        fa = false_alarms(rows)
+        r = {**r, "false_alarms": fa, "passed": bool(r["passed"]) and fa <= cap}
+    return r
+
+
+def swapped(state: Mapping[str, Any]) -> dict[str, Any]:
+    """The pairwise judge's second order: the two replies trade places (its options are never shuffled)."""
+    return {**state, "quoted_reply_a": state["quoted_reply_b"], "quoted_reply_b": state["quoted_reply_a"]}
+
+
+def prefers(first: Mapping[str, float], second: Mapping[str, float], side: str) -> float:
+    """The order-averaged probability that the reply first shown as `side` is the better one (B4's primary number)."""
+    other = "b" if side == "a" else "a"
+    return (float(first.get(side, 0.0)) + float(second.get(other, 0.0))) / 2
+
+
+def pairwise_result(rows: Iterable[Mapping[str, Any]]) -> dict[str, Any]:
+    """Right when the order-averaged probability favours the known winner; passes at ≥ 90 % (D29)."""
+    rows = [r for r in rows if "correct" in r]
+    right = sum(1 for r in rows if r["correct"])
+    acc = right / len(rows) if rows else 0.0
+    return {"n": len(rows), "accuracy": round(acc, 4), "passed": bool(rows) and acc >= PAIRWISE_MIN}

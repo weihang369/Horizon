@@ -229,44 +229,44 @@
 - [x] 7.4 Insight's "kept" chip (D15) in `InsightDrawer.tsx`. Verify the speaker-emotion scenario "Kept face in
   Insight" in a component test. A face with no candidates keeps its source label, and system1-trace "No rows" (`naive`
   1:1) still holds.
-- [ ] 7.5 Update the E2E expectations that count simulated 1:1 spend or System 1 rows. Verify:
+- [x] 7.5 Update the E2E expectations that count simulated 1:1 spend or System 1 rows. Verify:
   `npm run e2e` passes on the mock and HTTP projects.
 
 ## 8. Evaluation tooling, offline (D26–D31)
 
-- [ ] 8.1 Write `evals/policies.py` (D26): the emotion and reaction policies on `decide_face` and the keep rule, their
+- [x] 8.1 Write `evals/policies.py` (D26): the emotion and reaction policies on `decide_face` and the keep rule, their
   baselines, and floor selection on dev from the seeded order. Verify the evaluation-harness scenarios "Emotion item
   with a kept face" and "Floor chosen on dev" on fixture answers.
-- [ ] 8.2 Extend the `decisions` report (D26): the baseline difference with McNemar, coverage, the merge rate, and the
+- [x] 8.2 Extend the `decisions` report (D26): the baseline difference with McNemar, coverage, the merge rate, and the
   reaction share. Verify a report test on fixture answers.
-- [ ] 8.3 Write the labelling rule in `evals/reviews/m9-labels.md` (D27) **before** any item is labelled. Verify the
+- [x] 8.3 Write the labelling rule in `evals/reviews/m9-labels.md` (D27) **before** any item is labelled. Verify the
   file is committed first: its commit precedes the dataset commit.
-- [ ] 8.4 Build `evals/datasets/emotion/` (100 items) with a builder that takes contexts from the transcripts and the
+- [x] 8.4 Build `evals/datasets/emotion/` (100 items) with a builder that takes contexts from the transcripts and the
   long scripts plus written lines, labelled blind (D27). Verify:
   - `smoke` loads it;
   - the split rule test;
   - `overlap` passes;
   - the keep cap is 20–30;
   - the spread matches D27's table.
-- [ ] 8.5 Build `evals/datasets/reactions/` (90 items), the same way (D27). Verify the same checks, with at most 27
+- [x] 8.5 Build `evals/datasets/reactions/` (90 items), the same way (D27). Verify the same checks, with at most 27
   `none`-acceptable items.
-- [ ] 8.6 Write the judge entries (D28, D29): `judge_names_feeling` (noul) and `judge_pairwise` (choice, no shuffle),
+- [x] 8.6 Write the judge entries (D28, D29): `judge_names_feeling` (noul) and `judge_pairwise` (choice, no shuffle),
   and re-lock. Verify the question-bank scenarios "Pairwise judge" and "Shared face check", and that "Never live"
   still holds.
-- [ ] 8.7 Build the validation sets (D28, D29): `judge_names_feeling.jsonl` (30 real with the found "yes" lines, 30
+- [x] 8.7 Build the validation sets (D28, D29): `judge_names_feeling.jsonl` (30 real with the found "yes" lines, 30
   planted) and `judge_pairwise.jsonl` (30 known-winner pairs from the `CLASH` map and mismatched lines). Extend B4
   scoring with the false-alarm rule and the pairwise both-orders rule. Verify the "Too many false alarms" scenario
   and a pairwise scoring test.
-- [ ] 8.8 Write the `moodline` suite (D30): item selection by plan, both arms, the three checks, the block bootstrap
+- [x] 8.8 Write the `moodline` suite (D30): item selection by plan, both arms, the three checks, the block bootstrap
   (seeded, 2,000 resamples) and E8's verdict text. Verify, offline on fixture answers and canned replies:
   - "Same history in both arms";
   - "Replay from the store";
   - "Verdict is advice";
   - a bootstrap unit test on a known split.
-- [ ] 8.9 Write the `latency` suite (D31): API-driven sends, Stop at the first token, store bypass, and the
+- [x] 8.9 Write the `latency` suite (D31): API-driven sends, Stop at the first token, store bypass, and the
   order-statistic intervals. Verify on the fake provider: "Never from the store" and "Stopped at the first word";
   the report renders the p50 and p90 rows.
-- [ ] 8.10 Widen `smoke` and the suite list (evaluation-harness "Suites and options" and "Smoke runs in test mode"):
+- [x] 8.10 Widen `smoke` and the suite list (evaluation-harness "Suites and options" and "Smoke runs in test mode"):
   one planned `agent` 1:1 turn, the first `moodline` item, and one `latency` turn. Verify: the CI smoke command exits
   zero with no socket.
 - [ ] 8.11 Prepare B2's review sample of both decision sets and both judge sets in `evals/reviews/m9-*.md`, and ask

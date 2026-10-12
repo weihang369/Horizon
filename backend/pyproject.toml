@@ -94,6 +94,7 @@ ignore = ["RUF001", "RUF002", "RUF003"]
 # The smoke suite drives the app in process (httpx.ASGITransport): no outbound HTTP; paid calls still go through the gateway.
 "horizon/evals/suites.py" = ["TID251"]
 "horizon/evals/content.py" = ["TID251"]   # M8: the long and transcript suites drive the in-process app, as smoke does
+"horizon/evals/latency.py" = ["TID251"]   # M9 (D31): the latency suite drives the in-process app the same way
 
 [tool.mypy]
 python_version = "3.12"
