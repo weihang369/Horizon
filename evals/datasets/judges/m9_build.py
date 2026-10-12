@@ -8,7 +8,8 @@
   seeded sample were set aside: a pride word in Malay, a leaked "Neutral:" label, a heart-bleeding simile and "tired").
   30 planted: other clean replies with one first-person feeling sentence inserted by code, in varied forms and places.
 - **pairwise (30):** known-winner pairs. Each pairs a real reply with either the same user line answered by the other
-  world's character (M8's `CLASH` map: persona swapped) or the same speaker's reply to a different line (off topic).
+  world's character (M8's `CLASH` map: persona swapped) or the same speaker's reply to a line about 37 turns away
+  (off topic; group turns rotate speakers, so the builder looks ahead for that speaker's next reply).
   The real reply is A or B by turns; the harness asks both orders by swapping the replies.
 """
 
@@ -143,8 +144,10 @@ def pairwise() -> list[dict[str, Any]]:
         rows.append((f, i, cid, reply(wf, wi, wc), "persona"))
     offs = [(f, i, t["replies"][0]["speaker"]) for f in FILES for i, t in enumerate(turns(f)) if i > 0]
     for f, i, cid in rng.sample(offs, 15):
-        j = (i + 37) % len(turns(f))
-        other = next((r["text"] for r in turns(f)[j]["replies"] if r["speaker"] == cid), turns(f)[j]["replies"][0]["text"])
+        n_turns = len(turns(f))
+        # the same speaker's reply to a line about 37 turns away (group turns rotate speakers: look ahead for theirs)
+        other = next(r["text"] for k in range(37, 37 + n_turns) for r in turns(f)[(i + k) % n_turns]["replies"]
+                     if r["speaker"] == cid and (i + k) % n_turns != i)
         rows.append((f, i, cid, other, "off_topic"))
     out = []
     for n, (f, i, cid, wrong, kind) in enumerate(rows, 1):

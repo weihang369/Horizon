@@ -1,0 +1,27 @@
+{
+ "set": "emotion",
+ "seed": 9,
+ "sample": [
+  "emo-001",
+  "emo-006",
+  "emo-011",
+  "emo-018",
+  "emo-022",
+  "emo-024",
+  "emo-035",
+  "emo-043",
+  "emo-044",
+  "emo-048",
+  "emo-049",
+  "emo-060",
+  "emo-065",
+  "emo-071",
+  "emo-078",
+  "emo-079",
+  "emo-087",
+  "emo-090",
+  "emo-091",
+  "emo-094"
+ ],
+ "disagree": []
+}

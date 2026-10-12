@@ -269,7 +269,7 @@
 - [x] 8.10 Widen `smoke` and the suite list (evaluation-harness "Suites and options" and "Smoke runs in test mode"):
   one planned `agent` 1:1 turn, the first `moodline` item, and one `latency` turn. Verify: the CI smoke command exits
   zero with no socket.
-- [ ] 8.11 Prepare B2's review sample of both decision sets and both judge sets in `evals/reviews/m9-*.md`, and ask
+- [x] 8.11 Prepare B2's review sample of both decision sets and both judge sets in `evals/reviews/m9-*.md`, and ask
   the user to review them (or delegate, as in M8). Verify: the review is recorded, with disagreements, before phase
   9.
 - [ ] 8.12 Amend doc 02: B2's emotion and reaction rows (D27), B4's pairwise entry and the "names the feeling" mix
