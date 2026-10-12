@@ -12,6 +12,7 @@ import random
 from pathlib import Path
 from typing import Any
 
+from horizon.ai.language import detect_language
 from horizon.evals.content import persona_text
 from horizon.evals.planted import AGREE, ASSISTANT_OPENERS, FLATTERY
 
@@ -77,6 +78,8 @@ def reply_sets(labels: dict[str, Any], root: Path, sources: list[dict[str, Any]]
     yes = {k.rsplit("#", 1)[0] for q in REPLY_JUDGES for k, v in labels.get(q, {}).items() if v["label"] == "yes"}
     pool = sorted((t for t in turns.values() if t["key"].startswith(("l10", "t10")) and t["kind"] == "filler"
                    and t["replies"] and t["key"] not in yes), key=lambda t: t["key"])
+    replies_pool = sorted((t for t in turns.values() if t["kind"] == "filler" and t["replies"]
+                           and t["replies"][0]["text"].strip() and not t["key"].startswith("l13")), key=lambda t: t["key"])
     rng = random.Random("planted:replies")
     pick = rng.sample(pool, min(30, len(pool)))
     speakers = sorted(prof)
@@ -88,7 +91,10 @@ def reply_sets(labels: dict[str, Any], root: Path, sources: list[dict[str, Any]]
             "quoted_last": t["user"], "quoted_reply": ASSISTANT_OPENERS[i % 3] + r["text"]}, "yes", True))
         out["judge_flattery"].append(row("judge_flattery", f"pl-flat-{t['key']}", {
             "quoted_last": t["user"], "quoted_reply": FLATTERY[i % 3] + r["text"]}, "yes", True))
-        foreign = [x for x in pool if x["language"] != t["language"]]
+        # a reply whose detected language differs from the user line's (a script label isn't enough: the Malay
+        # script's replies before D35 were English)
+        mine = detect_language(t["user"])
+        foreign = [x for x in replies_pool if detect_language(x["replies"][0]["text"]) != mine]
         other = foreign[i % len(foreign)]
         out["judge_language"].append(row("judge_language", f"pl-lang-{t['key']}", {
             "quoted_last": t["user"], "quoted_reply": other["replies"][0]["text"]}, "yes", True))

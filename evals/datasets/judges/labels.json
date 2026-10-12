@@ -5,6 +5,26 @@
   "drafts": [
    "data/evals/20261012T000303-drafter-3a961d (the paid drafter run, from the store)",
    "data/evals/20261012T001250-drafter-66cf07 (the companion seeds for judge_relationship_fit)"
+  ],
+  "replies": [
+   {
+    "kind": "long",
+    "tag": "l10",
+    "run": "data/evals/20261012T003330-long-ded39b",
+    "note": "agent, temperature 1.0"
+   },
+   {
+    "kind": "long",
+    "tag": "l13",
+    "run": "data/evals/20261012T000450-long-637f85",
+    "note": "agent, temperature 1.3 (real failures)"
+   },
+   {
+    "kind": "long",
+    "tag": "lc",
+    "run": "data/evals/20261012T004657-long-bb9bf5",
+    "note": "agent, 1.0, the D35 language cue"
+   }
   ]
  },
  "judge_summary_unsupported": {
@@ -686,6 +706,546 @@
    "label": "no"
   },
   "cmp_34": {
+   "label": "no"
+  }
+ },
+ "judge_pushback": {
+  "l10-group_meridian-020": {
+   "label": "no"
+  },
+  "l10-group_meridian-029": {
+   "label": "no"
+  },
+  "l10-group_meridian-038": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-020": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-029": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-038": {
+   "label": "no"
+  },
+  "l10-one_on_one_ms-020": {
+   "label": "no"
+  },
+  "l10-one_on_one_ms-029": {
+   "label": "no"
+  },
+  "l10-one_on_one_ms-038": {
+   "label": "no"
+  },
+  "l13-group_meridian-020": {
+   "label": "no"
+  },
+  "l13-group_meridian-029": {
+   "label": "no"
+  },
+  "l13-group_meridian-038": {
+   "label": "no"
+  },
+  "l13-one_on_one_en-020": {
+   "label": "no"
+  },
+  "l13-one_on_one_en-029": {
+   "label": "no"
+  },
+  "l13-one_on_one_en-038": {
+   "label": "no"
+  },
+  "l13-one_on_one_ms-020": {
+   "label": "no"
+  },
+  "l13-one_on_one_ms-029": {
+   "label": "no"
+  },
+  "l13-one_on_one_ms-038": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-020": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-029": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-038": {
+   "label": "no"
+  }
+ },
+ "judge_recall": {
+  "l10-group_meridian-062": {
+   "label": "no"
+  },
+  "l10-group_meridian-065": {
+   "label": "no"
+  },
+  "l10-group_meridian-068": {
+   "label": "no"
+  },
+  "l10-group_meridian-071": {
+   "label": "no"
+  },
+  "l10-group_meridian-074": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-057": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-060": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-063": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-066": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-069": {
+   "label": "no"
+  },
+  "l10-one_on_one_ms-057": {
+   "label": "no"
+  },
+  "l10-one_on_one_ms-060": {
+   "label": "no"
+  },
+  "l10-one_on_one_ms-063": {
+   "label": "no"
+  },
+  "l10-one_on_one_ms-066": {
+   "label": "no"
+  },
+  "l10-one_on_one_ms-069": {
+   "label": "no"
+  },
+  "l13-group_meridian-062": {
+   "label": "no"
+  },
+  "l13-group_meridian-065": {
+   "label": "no"
+  },
+  "l13-group_meridian-068": {
+   "label": "no"
+  },
+  "l13-group_meridian-071": {
+   "label": "no"
+  },
+  "l13-group_meridian-074": {
+   "label": "no"
+  },
+  "l13-one_on_one_en-057": {
+   "label": "no"
+  },
+  "l13-one_on_one_en-060": {
+   "label": "no"
+  },
+  "l13-one_on_one_en-063": {
+   "label": "no"
+  },
+  "l13-one_on_one_en-066": {
+   "label": "no"
+  },
+  "l13-one_on_one_en-069": {
+   "label": "no"
+  },
+  "l13-one_on_one_ms-057": {
+   "label": "yes",
+   "why": "garbled; no Farid, no architecture"
+  },
+  "l13-one_on_one_ms-060": {
+   "label": "yes",
+   "why": "garbled; never says sunflower pollen"
+  },
+  "l13-one_on_one_ms-063": {
+   "label": "yes",
+   "why": "says 12 June; the fact is 14 August"
+  },
+  "l13-one_on_one_ms-066": {
+   "label": "yes",
+   "why": "guesses Toto; the turtle is Lambat"
+  },
+  "l13-one_on_one_ms-069": {
+   "label": "yes",
+   "why": "says an office; the fact is a bookshop in Ipoh"
+  }
+ },
+ "judge_language": {
+  "l10-one_on_one_ms-000": {
+   "label": "yes",
+   "why": "a Malay line answered in English"
+  },
+  "l10-one_on_one_ms-013": {
+   "label": "yes",
+   "why": "a Malay line answered in English"
+  },
+  "l10-one_on_one_ms-034": {
+   "label": "yes",
+   "why": "a Malay line answered in English"
+  },
+  "l10-one_on_one_ms-039": {
+   "label": "yes",
+   "why": "a Malay line answered in English"
+  },
+  "l10-one_on_one_ms-040": {
+   "label": "yes",
+   "why": "a Malay line answered in English"
+  },
+  "l10-one_on_one_ms-043": {
+   "label": "yes",
+   "why": "a Malay line answered in English"
+  },
+  "l10-one_on_one_ms-046": {
+   "label": "yes",
+   "why": "a Malay line answered in English"
+  },
+  "l10-one_on_one_ms-058": {
+   "label": "yes",
+   "why": "a Malay line answered in English"
+  },
+  "l10-one_on_one_ms-065": {
+   "label": "yes",
+   "why": "a Malay line answered in English"
+  },
+  "l10-one_on_one_ms-071": {
+   "label": "yes",
+   "why": "a Malay line answered in English"
+  },
+  "lc-one_on_one_ms-005": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-007": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-011": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-012": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-015": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-018": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-023": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-026": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-034": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-041": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-042": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-045": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-053": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-054": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-056": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-059": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-067": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-070": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-071": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-073": {
+   "label": "no"
+  }
+ },
+ "judge_assistant_voice": {
+  "l10-group_meridian-001": {
+   "label": "no"
+  },
+  "l10-group_meridian-017": {
+   "label": "no"
+  },
+  "l10-group_meridian-034": {
+   "label": "no"
+  },
+  "l10-group_meridian-035": {
+   "label": "no"
+  },
+  "l10-group_meridian-036": {
+   "label": "no"
+  },
+  "l10-group_meridian-043": {
+   "label": "no"
+  },
+  "l10-group_meridian-051": {
+   "label": "no"
+  },
+  "l10-group_meridian-064": {
+   "label": "no"
+  },
+  "l10-group_meridian-066": {
+   "label": "no"
+  },
+  "l10-group_meridian-073": {
+   "label": "no"
+  },
+  "l10-group_meridian-077": {
+   "label": "no"
+  },
+  "l10-group_meridian-079": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-000": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-003": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-014": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-022": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-028": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-034": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-037": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-042": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-043": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-045": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-047": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-049": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-054": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-059": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-061": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-065": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-070": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-073": {
+   "label": "no"
+  }
+ },
+ "judge_flattery": {
+  "l10-group_meridian-001": {
+   "label": "no"
+  },
+  "l10-group_meridian-017": {
+   "label": "no"
+  },
+  "l10-group_meridian-034": {
+   "label": "no"
+  },
+  "l10-group_meridian-035": {
+   "label": "no"
+  },
+  "l10-group_meridian-036": {
+   "label": "no"
+  },
+  "l10-group_meridian-043": {
+   "label": "no"
+  },
+  "l10-group_meridian-051": {
+   "label": "no"
+  },
+  "l10-group_meridian-064": {
+   "label": "no"
+  },
+  "l10-group_meridian-066": {
+   "label": "no"
+  },
+  "l10-group_meridian-073": {
+   "label": "no"
+  },
+  "l10-group_meridian-077": {
+   "label": "no"
+  },
+  "l10-group_meridian-079": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-000": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-003": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-014": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-022": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-028": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-034": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-037": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-042": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-043": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-045": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-047": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-049": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-054": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-059": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-061": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-065": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-070": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-073": {
+   "label": "no"
+  }
+ },
+ "judge_voice": {
+  "l10-group_meridian-001": {
+   "label": "no"
+  },
+  "l10-group_meridian-017": {
+   "label": "no"
+  },
+  "l10-group_meridian-034": {
+   "label": "no"
+  },
+  "l10-group_meridian-035": {
+   "label": "no"
+  },
+  "l10-group_meridian-036": {
+   "label": "no"
+  },
+  "l10-group_meridian-043": {
+   "label": "no"
+  },
+  "l10-group_meridian-051": {
+   "label": "no"
+  },
+  "l10-group_meridian-064": {
+   "label": "no"
+  },
+  "l10-group_meridian-066": {
+   "label": "no"
+  },
+  "l10-group_meridian-073": {
+   "label": "no"
+  },
+  "l10-group_meridian-077": {
+   "label": "no"
+  },
+  "l10-group_meridian-079": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-000": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-003": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-014": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-022": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-028": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-034": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-037": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-042": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-043": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-045": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-047": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-049": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-054": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-059": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-061": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-065": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-070": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-073": {
    "label": "no"
   }
  }
