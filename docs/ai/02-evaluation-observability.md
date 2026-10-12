@@ -182,8 +182,8 @@ frozen transcripts start from a long committed history.
   | Layer 1: each **noul that sets a threshold** (needs documents, needs something from earlier (doc 09 M9), talk finished, the memory rewrite guard and in-session relevance (doc 09 M12)) | **~120 items, at least 60 of them "yes"** | A recall target is judged on 60+ positives. With 50, 45 right still leaves 79–96 %. |
   | Layer 1: **passage score** | **~100 items** | It sets the floor every deep turn depends on |
   | Layer 1: **who speaks** (doc 07 G11) | **~210 items**: group first slot 60, group second slot 90 (about 65 % with `none` right), watch next speaker 60 (≥ 3 awake characters each) | They set the floors every group and watch turn depends on; each test split has at least 20 items |
-  | Layer 1: **emotion** (doc 06 E8) | **~100 items**; 20–30 % where keeping the face is acceptable | The face shows on every turn of every mode; the cap stops "always keep" from carrying the score |
-  | Layer 1: **listener reactions** (doc 06 E8) | **90 items** (30 test; a line, its context, one listener); at most 30 % where `none` is acceptable | A gross-failure check with a trivial baseline to beat; the shown share is reported by the latency suite |
+  | Layer 1: **emotion** (doc 06 E8) | **~100 items**; 20–30 % where keeping the face is acceptable. *Built in M9 (turn-plan-emotion D27): 100 items, 1:1 replies 55, group replies 30, greetings 15; English 80, Malay 10, Chinese 5, mixed 5; 29 keep-ok; 72 dev / 28 test by the hash rule; English is reported alone too, other languages show direction only* | The face shows on every turn of every mode; the cap stops "always keep" from carrying the score |
+  | Layer 1: **listener reactions** (doc 06 E8) | **90 items** (30 test; a line, its context, one listener); at most 30 % where `none` is acceptable. *Built in M9 (D27): group 40, debate 25, watch 25; English 75; 27 `none`-acceptable; 65 dev / 25 test by the hash rule* | A gross-failure check with a trivial baseline to beat; the shown share is reported by the latency suite |
   | Layer 1: **debate member** (doc 08 V11) | **90 items** (30 test): rebuttal and closing slots with 2–3 eligible members, at least half with a single acceptable member | It sets `floor.member`; the lift over the fixed order is tested on the single-answer items, where 80 % is not a free pass |
   | Layer 1: every other question | **40 items**, plus another 40 **only when the interval straddles the target** | 40 items catch a gross failure, and we grow a set only where the answer is unclear |
   | Layer 2: retrieval | **100 answerable questions and 40 unanswerable ones** on the same topics, plus doc 10 K14's 30 follow-ups, 15 non-English and 20 named-document questions | 50 items can never show "≤ 5 % wrong abstains" (0 of 50 still allows up to 7 %) |
@@ -291,7 +291,7 @@ frozen transcripts start from a long committed history.
   | **Summary quality** (doc 05 X10) | 5 nouls: a planted fact is kept · the promise is kept · it says who made the promise · same language as most lines · nothing unsupported | the dropped lines + the summary (one fact or promise per question) |
   | **Recall** (doc 05 X10) | 1 noul: the reply uses the planted fact | the fact + the probe + the reply |
   | **Face and words agree** | a choice from the 7 emotions, given only the reply text (the face check, live since [doc 13](13-wrap-up.md) W2: on `agent` turns the harness reads its row from the trace and asks Jev only about `naive` replies). On non-neutral faces only: exact match (compared by doc 06's mood-line on/off run) and clashes ≤ 5 % | the reply |
-  | **Names the feeling** (doc 06 E8) | 1 noul: the reply states the character's own feeling outright (a pass is "no"); ≥ 95 % pass on replies with a mood line; its validation allows at most 1 false alarm on the 30 clean replies | the reply |
+  | **Names the feeling** (doc 06 E8) | 1 noul: the reply states the character's own feeling outright (a pass is "no"); ≥ 95 % pass on replies with a mood line; its validation allows at most 1 false alarm on the real clean replies. *Built in M9 (D28): `judge_names_feeling`; its 30 real items mix 8 found "yes" lines with 22 clean ones (all-clean real items would make the commonest-answer baseline unbeatable), plus 30 planted* | the reply |
   | **Debate quality** (doc 08 V11) | 2 nouls per argument: keeps its side · engages (answers a specific point the other side made; rebuttals and closings only). Targets for `agent`: keeps its side ≥ 95 %, engages ≥ 80 %, both next to `naive` | the motion, the side, the previous opposing argument + the argument |
   | **Memory rewrite** (doc 09 M12) | 3 nouls: an expected change is covered (≥ 80 %) · a written line is supported by the transcript (≥ 95 %) · a rewrite lost a still-true fact (≤ 5 %) | the stretch (or the old and new line) + one line |
   | **Over-mention** (doc 09 M12) | 1 noul: the reply drags up a memory that doesn't fit the moment (a pass is "no"); ≤ 10 % on unrelated turns | the memory block + the last user line + the reply |
@@ -320,7 +320,9 @@ frozen transcripts start from a long committed history.
     Pass: **≥ 85 % right on the real items, beating the always-the-commonest-answer baseline, and ≥ 90 % of the planted
     failures caught.**
   - **The pairwise judge:** 30 pairs with a known winner (a real reply against a persona-swapped or off-topic one).
-    Pass: **≥ 90 %**.
+    Pass: **≥ 90 %**. *Built in M9 (D29): `judge_pairwise`, a choice ("a", "b", "same") that is never shuffled; the
+    harness asks both orders by swapping the replies, and a pair counts as right when the order-averaged probability
+    favours the known winner.*
   - A judge that fails is reworded and checked again, like any Jev question.
 
 **Speed and cost:** judging the 200 compared turns takes about 2,000 small Jev requests, roughly **$0.13** a run. It is
@@ -419,6 +421,11 @@ with itself only about 64 % of the time, so that rule mixes up ordinary noise wi
 - **One command:**
   - `horizon eval <suite>`, where the suite is `decisions`, `retrieval`, `conversations`, `drafter` (doc 04), `summary` and `long` (doc 05), `debate` (doc 08), `memory` (doc 09), `safety` (doc 11), `latency`, `smoke` or `all`;
   - options: `--profile`, `--limit N`, `--max-usd`, `--yes`, `--allow-peak`;
+  - *Built in M9 (`turn-plan-emotion` D26, D30, D31): `moodline` (the mood line on vs off over non-neutral turns of
+    the English frozen transcripts: exact match, pairwise and names-the-feeling, with a block bootstrap and E8's
+    verdict as advice) and `latency` (`agent` 1:1 time to the face and to the first word, Stop at the first word, the
+    store bypassed). `decisions` scores the emotion and reaction sets with the live code rule and reports the floor
+    chosen on dev, the baseline difference (exact McNemar), coverage, the merge rate and the reaction share.*
   - *Built in M8 (`persona-context`): `drafter`, `summary`, `long` and `transcript` (the long-history frozen transcripts, generated by `naive`), `--set` (a dataset folder for `decisions`, a script for `long` and `transcript`), nouls in `decisions`, and B4's judge validation (`decisions --set judges`, recorded in `evals/baselines/judges.json`; a judge's figures read "unvalidated" until its current version passes). The 13 judges are `eval_judge` bank entries whose "yes" is the failure. The reply-rule code checks are `horizon/evals/reply_checks.py`.*
   - plus **`horizon eval capture <messageId>`** (B10) and **`horizon eval import <sessionId>`** ([doc 13](13-wrap-up.md) W10, built
     in the v1 endgame), which scores a recorded session as a free run without new replies.

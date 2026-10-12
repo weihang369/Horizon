@@ -13,7 +13,8 @@ The evaluation harness's committed data. The code is `backend/horizon/evals/`. T
 | `drafter/seeds.jsonl` | The `drafter` suite's 20 seeds (10 dev / 10 test, M8). |
 | `summary/items.jsonl` | The `summary` suite's 40 dropped-history inputs, built by `summary/build.py` (20/20, M8). |
 | `long/*.json` | The `long` suite's three scripts, built by `long/build.py` (M8). |
-| `datasets/judges/` | B4's 60 validation items per judge (30 real, hand-labelled; 30 planted by code). |
+| `datasets/judges/` | B4's 60 validation items per judge (30 real, hand-labelled; 30 planted by code); `m9_build.py` builds M9's names-the-feeling set and the pairwise judge's 30 known-winner pairs. |
+| `datasets/emotion/`, `datasets/reactions/` | M9's speaker-emotion (100) and listener-reaction (90) sets, each with its `build.py`; labelled under `reviews/m9-labels.md`. |
 | `corpus/` | Public-domain US federal documents as Markdown, with `SOURCES.md` (URL, retrieval date) and `LICENSE`. |
 | `baselines/` | Accepted metric baselines. Smoke never compares with them. |
 | `reviews/<set>.json` | Label-review samples and the disagreements found. |
@@ -43,6 +44,9 @@ Run these from `backend/`.
 | `uv run horizon eval long --profile agent [--set <script>]` | paid (≈ $0.12) | Rare: recall, voice drift, the real cache-hit %, summary calls. |
 | `uv run horizon eval transcript [--set <script>]` | paid (≈ $0.06) | Generates the long-history frozen transcripts with `naive`. |
 | `uv run horizon eval decisions --set judges` | paid (≈ $0.03) | B4's judge validation. |
+| `uv run horizon eval decisions --set emotion` / `--set reactions` | paid | M9: the emotion and reaction policies, scored by the live code rule; the floor is chosen on dev, the test split is read once. |
+| `uv run horizon eval moodline [--limit N]` | paid, once | M9: the mood line on vs off over up to 100 non-neutral transcript turns; E8's verdict is advice and changes nothing. |
+| `uv run horizon eval latency --profile agent [--limit N]` | paid | M9: `agent` 1:1 time to the face and the first word (p50, p90), Stop at the first word, the store bypassed. |
 
 Every paid run follows the same steps:
 

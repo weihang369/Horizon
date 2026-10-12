@@ -272,7 +272,7 @@
 - [x] 8.11 Prepare B2's review sample of both decision sets and both judge sets in `evals/reviews/m9-*.md`, and ask
   the user to review them (or delegate, as in M8). Verify: the review is recorded, with disagreements, before phase
   9.
-- [ ] 8.12 Amend doc 02: B2's emotion and reaction rows (D27), B4's pairwise entry and the "names the feeling" mix
+- [x] 8.12 Amend doc 02: B2's emotion and reaction rows (D27), B4's pairwise entry and the "names the feeling" mix
   (D28, D29), and B7's `moodline` and `latency` commands. Update `evals/README.md`'s command table. Verify by reading.
 
 ## 9. Paid runs (each asked for, off-peak, through the store except latency; D32)
