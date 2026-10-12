@@ -47,7 +47,7 @@ Each judge question SHALL have 60 validation items: 30 real outputs labelled by 
 - every dataset, suite input file and transcript loads;
 - one scripted conversation per mode completes, with the reply checks computed;
 - one drafter seed, one summary item and the first lines of each long script run through their suites;
-- one planned `agent` 1:1 turn completes with its emotion row, face-check row and mood line, from fixture answers;
+- one planned `agent` 1:1 turn completes with its emotion row, from fixture answers (the mood line is off by default, D40; the moodline item forces it on for its ON arm);
 - the first item of the mood-line on/off run and one latency turn run through their suites;
 - the report renders.
 
