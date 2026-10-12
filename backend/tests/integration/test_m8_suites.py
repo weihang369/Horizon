@@ -23,7 +23,8 @@ async def test_drafter_suite_on_one_seed(tmp_path: Path) -> None:
     r, _ = runner(tmp_path)
     assert await r.run(Options("drafter", limit=2, yes=True)) == 0
     rep = report(tmp_path, "drafter")
-    assert "## Drafter (2 draft(s)" in rep and "adult: " in rep and "(unvalidated)" in rep
+    # "(unvalidated)" or not depends on evals/baselines/judges.json (10.6 validates judge_draft_fit), not on this run
+    assert "## Drafter (2 draft(s)" in rep and "adult: " in rep and "fits the seed:" in rep
 
 
 async def test_summary_suite_on_one_item(tmp_path: Path) -> None:
@@ -38,6 +39,30 @@ async def test_long_suite_drives_the_first_lines(tmp_path: Path) -> None:
     assert await r.run(Options("long", profile="agent", limit=3, set="one_on_one_en", yes=True)) == 0
     rep = report(tmp_path, "long", "agent")
     assert "## Long: one_on_one_en (3 user lines" in rep and "reply checks:" in rep
+
+
+def test_actor_busy_counts_the_inbox_timers_and_background() -> None:
+    """10.7: the driver must not send the next line while a command, a timer or background work is pending."""
+    from types import SimpleNamespace as NS
+
+    def actor(**kw: Any) -> Any:
+        base = {"busy": False, "turns": [], "inbox": [], "_timers": set(), "_background": set(), "current": None,
+                "summary": None}
+        return NS(**{**base, **kw})
+
+    assert not content.actor_busy(actor())
+    assert content.actor_busy(actor(inbox=["send"]))
+    assert content.actor_busy(actor(_timers={object()}))
+    assert content.actor_busy(actor(_background={object()}))
+    assert content.actor_busy(actor(current=NS(closed=False)))
+    assert content.actor_busy(actor(summary=NS(running=True)))
+
+
+async def test_long_stopped_by_the_cap_is_incomplete(tmp_path: Path) -> None:
+    """10.7: a run the cap stopped between lines reported "ok" on 44 of 75 lines."""
+    r, _ = runner(tmp_path)
+    assert await r.run(Options("long", profile="agent", limit=3, set="one_on_one_en", yes=True, max_usd=1e-9)) == 1
+    assert "incomplete" in report(tmp_path, "long", "agent")
 
 
 async def test_long_refuses_any_profile_but_agent(tmp_path: Path) -> None:

@@ -210,15 +210,22 @@ class Summary:
 
 
 # ── driving a scripted conversation (long, transcript) ──
+def actor_busy(actor: Any) -> bool:
+    """Whether a session still has work that can produce a reply. Beyond the turn queue it checks what the actor's
+    own idle test checks: a command still in the inbox, a timer, background work. 10.7's group replay sent two
+    scripted lines before the first reply, so every later request missed the store."""
+    return bool(actor.busy or len(actor.turns) > 0 or len(actor.inbox) > 0 or actor._timers or actor._background
+                or (actor.current is not None and not actor.current.closed)
+                or (actor.summary is not None and actor.summary.running))
+
+
 async def wait_idle(env: RunEnv, sid: str) -> None:
     """D29: until no turn is queued or streaming and the summary task is idle (virtual time in test mode)."""
     clock = env.rt.clock
     waited = 0.0
     while waited < TURN_TIMEOUT_S:
         actor = env.rt.sessions.peek(sid)
-        busy = actor is not None and (actor.busy or len(actor.turns) > 0 or (actor.current is not None and not
-                                      actor.current.closed) or (actor.summary is not None and actor.summary.running))
-        if actor is not None and not busy and waited > 0:
+        if actor is not None and not actor_busy(actor) and waited > 0:
             return
         if isinstance(clock, FrozenClock):
             await clock.advance(500)
@@ -385,8 +392,12 @@ class Long:
             hit = cache_hit(reply_ledger, sums)
             res.rows.append({"script": script["id"], "session": sid, "turns": turns, "summaries": sums,
                              "checks": checks.summary(), "recall": recall, "voice": voice, "cache_hit": hit})
+            short = len(turns) < len(script["lines"])
+            if short:   # the run's cap stopped the driver between lines: never report a partial script as ok
+                res.status = "incomplete"
             res.summary += [
-                f"## Long: {script['id']} ({len(turns)} user lines, {len(replies)} replies, {len(sums)} drop(s))",
+                f"## Long: {script['id']} ({len(turns)} user lines, {len(replies)} replies, {len(sums)} drop(s))"
+                + (f" (stopped at the cap after {len(turns)} of {len(script['lines'])} lines)" if short else ""),
                 rate_line("recall", "judge_recall", recall, target="≥ 80 %"),
                 f"- voice in persona before the first drop {ok(voice['early'])[0]}/{ok(voice['early'])[1]}, after the "
                 f"second {ok(voice['late'])[0]}/{ok(voice['late'])[1]}{judges.label('judge_voice', bank().get('judge_voice').version)}",

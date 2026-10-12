@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import asyncio
 import datetime as dt
+import hashlib
 import json
 from collections.abc import Iterator
 from pathlib import Path
@@ -141,6 +142,18 @@ def measured_path(env: RunEnv) -> Path:
     return env.run_dir.parents[1] / "decisions-measured.json"
 
 
+def measured_marks(items: list[dict[str, Any]]) -> dict[str, str]:
+    """What "already measured" means per question: its bank version AND its items. A relabelled or rebuilt set
+    (persona-context 10.6) is measured again even when the question's wording didn't change; the store still serves
+    every unchanged item, so only the changed ones cost anything."""
+    by: dict[str, list[str]] = {}
+    for it in items:
+        by.setdefault(str(it["question_id"]), []).append(json.dumps(it, sort_keys=True, ensure_ascii=False))
+    return {qid: f"v{bank().get(qid).version}:"
+            + hashlib.sha256("\n".join(sorted(rows)).encode("utf-8")).hexdigest()[:16]
+            for qid, rows in by.items()}
+
+
 class Decisions:
     name = "decisions"
 
@@ -165,14 +178,15 @@ class Decisions:
     async def run(self, env: RunEnv, plan: Plan) -> Result:
         res = Result()
         done_path = measured_path(env)
-        measured: dict[str, int] = json.loads(done_path.read_text(encoding="utf-8")) if done_path.is_file() else {}
+        measured: dict[str, Any] = json.loads(done_path.read_text(encoding="utf-8")) if done_path.is_file() else {}
         correct = total = flips = 0
         bins: dict[int, list[int]] = {}
         skipped: set[str] = set()
+        mark = measured_marks(plan.items)
         for item in plan.items:
             qid = str(item["question_id"])
             version = bank().get(qid).version
-            if not self.smoke and measured.get(qid) == version:
+            if not self.smoke and measured.get(qid) == mark[qid]:
                 skipped.add(qid)
                 continue
             if await env.over_budget():
@@ -212,7 +226,7 @@ class Decisions:
             res.rows.append(row)
         if not self.smoke:
             for qid in {r["question_id"] for r in res.rows}:
-                measured[qid] = bank().get(qid).version
+                measured[qid] = mark[qid]
             done_path.parent.mkdir(parents=True, exist_ok=True)
             done_path.write_text(json.dumps(measured, indent=1), encoding="utf-8")
         if env.opts.set == JUDGES_SET and not self.smoke:

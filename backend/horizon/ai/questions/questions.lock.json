@@ -1,7 +1,7 @@
 {
   "judge_assistant_voice": {
-    "sha256": "0425c6274811f9f11f9f4bdb5bc230a55cd4f151de5ab63ae10ed451a6fc9a07",
-    "version": 1
+    "sha256": "f90d1e4f2ab2de4dac23ce7207173e905cd090b59f2cf385aa3170f060546c26",
+    "version": 2
   },
   "judge_draft_fit": {
     "sha256": "9dc324cb433d9ee4c998321656960b07322d977f4fa25ef36451ede1488e7d5a",
@@ -48,8 +48,8 @@
     "version": 1
   },
   "judge_voice": {
-    "sha256": "bbdf71ffa2233397bd7837f838d8f2dc3e69c0756ba6871858a6f623d8b317ee",
-    "version": 1
+    "sha256": "20c4ea64a1b4a199fd240b79404a348144324628b18219456d5967dae4f18e84",
+    "version": 4
   },
   "route": {
     "sha256": "c110d28f6e4c1e25f935efe948237604c431192f90a975fca5cf922ee7e273b9",

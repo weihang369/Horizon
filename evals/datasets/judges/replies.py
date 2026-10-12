@@ -16,6 +16,7 @@ from horizon.ai.language import detect_language
 from horizon.evals.content import persona_text
 from horizon.evals.planted import AGREE, ASSISTANT_OPENERS, FLATTERY
 
+SCRIPT_LANGUAGE = {"en": None, "ms": "Malay"}   # detect_language's names (None is English)
 REPLY_JUDGES = ("judge_assistant_voice", "judge_flattery", "judge_language", "judge_pushback", "judge_voice",
                 "judge_recall")
 
@@ -26,6 +27,11 @@ def profiles(root: Path) -> dict[str, dict[str, Any]]:
         d = json.loads(p.read_text(encoding="utf-8"))["data"]
         out[d["id"]] = d["profile"]
     return out
+
+
+def worlds(root: Path) -> dict[str, str]:
+    return {d["id"]: d["worldId"] for d in (json.loads(p.read_text(encoding="utf-8"))["data"]
+                                           for p in sorted((root / "seed" / "characters").glob("*.json")))}
 
 
 def turns_of(root: Path, src: dict[str, Any]) -> list[dict[str, Any]]:
@@ -83,6 +89,7 @@ def reply_sets(labels: dict[str, Any], root: Path, sources: list[dict[str, Any]]
     rng = random.Random("planted:replies")
     pick = rng.sample(pool, min(30, len(pool)))
     speakers = sorted(prof)
+    world = worlds(root)
     probes = sorted((t for t in turns.values() if t["kind"] == "probe" and t["fact_text"]), key=lambda t: t["key"])
     claims = sorted((t for t in turns.values() if t["kind"] == "wrong_claim"), key=lambda t: t["key"])
     for i, t in enumerate(pick):
@@ -91,9 +98,10 @@ def reply_sets(labels: dict[str, Any], root: Path, sources: list[dict[str, Any]]
             "quoted_last": t["user"], "quoted_reply": ASSISTANT_OPENERS[i % 3] + r["text"]}, "yes", True))
         out["judge_flattery"].append(row("judge_flattery", f"pl-flat-{t['key']}", {
             "quoted_last": t["user"], "quoted_reply": FLATTERY[i % 3] + r["text"]}, "yes", True))
-        # a reply whose detected language differs from the user line's (a script label isn't enough: the Malay
-        # script's replies before D35 were English)
-        mine = detect_language(t["user"])
+        # a reply whose detected language differs from the user line's. The user line's language is the script's
+        # (always right); the reply's is detected, since the Malay script's replies before D35 were English.
+        # (Detecting the user line too missed short Malay lines and planted Malay against Malay: 10.6's first run.)
+        mine = SCRIPT_LANGUAGE[t["language"]]
         foreign = [x for x in replies_pool if detect_language(x["replies"][0]["text"]) != mine]
         other = foreign[i % len(foreign)]
         out["judge_language"].append(row("judge_language", f"pl-lang-{t['key']}", {
@@ -101,7 +109,9 @@ def reply_sets(labels: dict[str, Any], root: Path, sources: list[dict[str, Any]]
         claim = claims[i % len(claims)]
         out["judge_pushback"].append(row("judge_pushback", f"pl-push-{t['key']}", {
             "quoted_last": claim["user"], "quoted_reply": AGREE[i % 3]}, "yes", True))
-        wrong = [s for s in speakers if s != r["speaker"]]
+        # another world's persona (10.6, the user's choice): inside one world the voices converge in a long chat,
+        # so a same-world swap need not clash (Mei's withdrawal reads like Amara's); across worlds it always does
+        wrong = [s for s in speakers if world[s] != world[r["speaker"]]]
         out["judge_voice"].append(row("judge_voice", f"pl-voice-{t['key']}", {
             "quoted_persona": persona_text(prof[wrong[i % len(wrong)]]), "quoted_last": t["user"],
             "quoted_reply": r["text"]}, "yes", True))

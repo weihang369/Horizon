@@ -608,7 +608,8 @@ stay as they are.
 ### D24. Thirteen `eval_judge` questions in the bank
 
 One file each in `ai/questions/`: `purpose: "eval_judge"`, `type: "noul"`, `deadline: "default"`, threshold
-`{"t": 0.5}`, every text field `quoted_*`, and the convention sentence appended. Each asks one condition (doc 01 A3
+`{"t": 0.5}` (D38: `judge_voice` v4 uses 0.6, tuned on its dev set), every text field `quoted_*`, and the convention
+sentence appended. Each asks one condition (doc 01 A3
 rule 1). Labels are worded as asked, where "yes" is the risk (W1).
 
 | id | Asks | Label |
@@ -849,6 +850,27 @@ to `docs/ai/checks/m8.md`.
 - **Rejected:** also stripping a leading emotion *word* ("Neutral — …", 33 of 100 Meridian replies), since it would eat
   real openers like "Thinking — maybe…" (M9's emotion choice takes the face off the model); a stronger `naive-6`
   wording (paid, and this model ignores the format anyway); leaving it to M9 (`naive` stays the default until M15).
+
+### D38. Judge validation: fix the data before the judge, and a held-out check for any tuning (the user's choices, 10.6)
+
+- **The first run** passed 9 of 13. Re-reading every item a judge got wrong showed four different causes, so each got
+  its own fix:
+  - `judge_language`: my planted builder detected the *user line's* language and missed short Malay lines, planting
+    Malay against Malay. The user line now takes the script's language. No judge change.
+  - `judge_relationship_fit`: the planted "misfits" (a stranger, a boss who fired them) were odd but possible. They
+    now contradict the You card itself (an adult who works: "their eight-year-old son", "their pupil in Year 2").
+  - `judge_assistant_voice`: genuinely weak (missed "Certainly! Let me break this down for you:"). v2 asks about any
+    part of the reply, even its first line, and names the openers.
+  - `judge_voice`: my real labels were too lenient. They were replaced by a fresh set of 30 transcript replies,
+    labelled blind under a rule written first (dev). v2/v3 reworded it and planted swaps now cross worlds (in a long
+    chat one world's voices converge); v4 sets `t = 0.6`, tuned on dev. A second fresh set, labelled and committed
+    (3bbdd16) before v2 answered anything, measured v4 once: real 0.93, planted 0.87 → **fail; unvalidated**, as
+    agreed. It was not tuned further on the held-out set.
+- **The runner re-measures a rebuilt set.** "Already measured" was the bank version alone, so a relabelled set was
+  skipped; it is now the version plus a hash of the question's items (`measured_marks`). The store still serves every
+  unchanged item.
+- **Rejected:** rewording judges whose data was wrong; relabelling after seeing the judge's answers (biased);
+  a threshold tuned and reported on the same items.
 
 ## Risks / Trade-offs
 

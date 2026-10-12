@@ -156,7 +156,9 @@ def test_judges_are_one_condition_nouls_worded_so_yes_is_the_failure() -> None:
     judges = [e for e in bank().entries.values() if e.purpose == "eval_judge"]
     assert len(judges) == 13
     for e in judges:
-        assert e.type == "noul" and e.label.endswith("?") and e.thresholds == {"t": 0.5} and e.deadline == "default"
+        # D24: t 0.5, except where D38 tuned it on a dev set and checked it on a held-out one
+        t = {"judge_voice": 0.6}.get(e.id, 0.5)
+        assert e.type == "noul" and e.label.endswith("?") and e.thresholds == {"t": t} and e.deadline == "default"
         assert all(k.startswith("quoted_") for k, v in e.state.items() if v == "quoted")
         w = wire_question(bank().question(e.id))
         assert w["instructions"].endswith(bank().sentence)

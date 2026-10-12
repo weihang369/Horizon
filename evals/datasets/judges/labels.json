@@ -1199,6 +1199,100 @@
   }
  },
  "judge_voice": {
+  "t10-long_group_meridian-099": {
+   "label": "no"
+  },
+  "t10-long_group_meridian-088": {
+   "label": "yes",
+   "why": "Mei with none of her dry ranges; 'Message me directly ... Not here' reads like Amara's withdrawal"
+  },
+  "t10-long_group_meridian-013": {
+   "label": "no"
+  },
+  "t10-long_group_meridian-043": {
+   "label": "no"
+  },
+  "t10-long_group_meridian-032": {
+   "label": "no"
+  },
+  "t10-long_group_meridian-031": {
+   "label": "no"
+  },
+  "t10-long_group_meridian-057": {
+   "label": "yes",
+   "why": "reproach and 'GP. Tomorrow. Tell me the day.': Victor's clipped cadence, not Amara's reassurance"
+  },
+  "t10-long_group_meridian-051": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-037": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-042": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-013": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-070": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-031": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-055": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-092": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-085": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-040": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-034": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-005": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-018": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-056": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-052": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-019": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-045": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-088": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-074": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-031": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-044": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-070": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-000": {
+   "label": "no"
+  }
+ },
+ "_judge_voice_dev": {
   "t10-long_group_meridian-027": {
    "label": "no"
   },
@@ -1290,100 +1384,6 @@
    "label": "no"
   },
   "t10-long_one_on_one_ms-037": {
-   "label": "no"
-  }
- },
- "_judge_voice_holdout": {
-  "t10-long_group_meridian-099": {
-   "label": "no"
-  },
-  "t10-long_group_meridian-088": {
-   "label": "yes",
-   "why": "Mei with none of her dry ranges; 'Message me directly ... Not here' reads like Amara's withdrawal"
-  },
-  "t10-long_group_meridian-013": {
-   "label": "no"
-  },
-  "t10-long_group_meridian-043": {
-   "label": "no"
-  },
-  "t10-long_group_meridian-032": {
-   "label": "no"
-  },
-  "t10-long_group_meridian-031": {
-   "label": "no"
-  },
-  "t10-long_group_meridian-057": {
-   "label": "yes",
-   "why": "reproach and 'GP. Tomorrow. Tell me the day.': Victor's clipped cadence, not Amara's reassurance"
-  },
-  "t10-long_group_meridian-051": {
-   "label": "no"
-  },
-  "t10-long_group_sunnyhollow-037": {
-   "label": "no"
-  },
-  "t10-long_group_sunnyhollow-042": {
-   "label": "no"
-  },
-  "t10-long_group_sunnyhollow-013": {
-   "label": "no"
-  },
-  "t10-long_group_sunnyhollow-070": {
-   "label": "no"
-  },
-  "t10-long_group_sunnyhollow-031": {
-   "label": "no"
-  },
-  "t10-long_group_sunnyhollow-055": {
-   "label": "no"
-  },
-  "t10-long_group_sunnyhollow-092": {
-   "label": "no"
-  },
-  "t10-long_group_sunnyhollow-085": {
-   "label": "no"
-  },
-  "t10-long_one_on_one_en-040": {
-   "label": "no"
-  },
-  "t10-long_one_on_one_en-034": {
-   "label": "no"
-  },
-  "t10-long_one_on_one_en-005": {
-   "label": "no"
-  },
-  "t10-long_one_on_one_en-018": {
-   "label": "no"
-  },
-  "t10-long_one_on_one_en-056": {
-   "label": "no"
-  },
-  "t10-long_one_on_one_en-052": {
-   "label": "no"
-  },
-  "t10-long_one_on_one_en-019": {
-   "label": "no"
-  },
-  "t10-long_one_on_one_ms-045": {
-   "label": "no"
-  },
-  "t10-long_one_on_one_ms-088": {
-   "label": "no"
-  },
-  "t10-long_one_on_one_ms-074": {
-   "label": "no"
-  },
-  "t10-long_one_on_one_ms-031": {
-   "label": "no"
-  },
-  "t10-long_one_on_one_ms-044": {
-   "label": "no"
-  },
-  "t10-long_one_on_one_ms-070": {
-   "label": "no"
-  },
-  "t10-long_one_on_one_ms-000": {
    "label": "no"
   }
  }

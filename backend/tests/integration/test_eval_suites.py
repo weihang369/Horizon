@@ -58,6 +58,9 @@ async def test_decisions_asks_both_orders_and_skips_unchanged_versions(api: Api,
     again = await d.run(env, d.plan(Options("decisions"), api.rt.prices, paid=True))
     assert fake.counts["decisions"] == 6 and again.rows == []   # no bank change: nothing sent
     assert any("unchanged: route" in s for s in again.summary)
+    dataset(tmp_path / "datasets", n=4)   # a rebuilt set, same bank version (persona-context 10.6): measured again
+    third = await d.run(env, d.plan(Options("decisions"), api.rt.prices, paid=True))
+    assert len(third.rows) == 4 and fake.counts["decisions"] == 14
 
 
 async def test_smoke_items_are_never_a_measurement(api: Api, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
