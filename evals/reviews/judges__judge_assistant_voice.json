@@ -1,0 +1,22 @@
+{
+ "set": "judges/judge_assistant_voice",
+ "sample": [
+  {
+   "short": "ASS1",
+   "id": "judge_assistant_voice-real-l10-group_meridian-035"
+  },
+  {
+   "short": "ASS2",
+   "id": "judge_assistant_voice-real-l10-one_on_one_en-000"
+  },
+  {
+   "short": "ASS3",
+   "id": "judge_assistant_voice-real-l10-one_on_one_en-034"
+  },
+  {
+   "short": "ASS4",
+   "id": "judge_assistant_voice-real-l10-one_on_one_en-045"
+  }
+ ],
+ "disagree": []
+}

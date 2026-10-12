@@ -1,0 +1,30 @@
+{
+ "set": "judges/judge_relationship_fit",
+ "sample": [
+  {
+   "short": "REL1",
+   "id": "judge_relationship_fit-real-cmp_18"
+  },
+  {
+   "short": "REL2",
+   "id": "judge_relationship_fit-real-drf_12"
+  },
+  {
+   "short": "REL3",
+   "id": "judge_relationship_fit-real-cmp_01"
+  },
+  {
+   "short": "REL4",
+   "id": "judge_relationship_fit-real-cmp_02"
+  },
+  {
+   "short": "REL5",
+   "id": "judge_relationship_fit-real-cmp_03"
+  },
+  {
+   "short": "REL6",
+   "id": "judge_relationship_fit-real-cmp_33"
+  }
+ ],
+ "disagree": []
+}

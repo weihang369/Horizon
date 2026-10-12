@@ -1,0 +1,62 @@
+{
+ "set": "judges/judge_language",
+ "sample": [
+  {
+   "short": "LAN1",
+   "id": "judge_language-real-l10-one_on_one_ms-000"
+  },
+  {
+   "short": "LAN2",
+   "id": "judge_language-real-l10-one_on_one_ms-013"
+  },
+  {
+   "short": "LAN3",
+   "id": "judge_language-real-l10-one_on_one_ms-034"
+  },
+  {
+   "short": "LAN4",
+   "id": "judge_language-real-l10-one_on_one_ms-039"
+  },
+  {
+   "short": "LAN5",
+   "id": "judge_language-real-l10-one_on_one_ms-040"
+  },
+  {
+   "short": "LAN6",
+   "id": "judge_language-real-l10-one_on_one_ms-043"
+  },
+  {
+   "short": "LAN7",
+   "id": "judge_language-real-l10-one_on_one_ms-046"
+  },
+  {
+   "short": "LAN8",
+   "id": "judge_language-real-l10-one_on_one_ms-058"
+  },
+  {
+   "short": "LAN9",
+   "id": "judge_language-real-l10-one_on_one_ms-065"
+  },
+  {
+   "short": "LAN10",
+   "id": "judge_language-real-l10-one_on_one_ms-071"
+  },
+  {
+   "short": "LAN11",
+   "id": "judge_language-real-lc-one_on_one_ms-007"
+  },
+  {
+   "short": "LAN12",
+   "id": "judge_language-real-lc-one_on_one_ms-015"
+  },
+  {
+   "short": "LAN13",
+   "id": "judge_language-real-lc-one_on_one_ms-041"
+  },
+  {
+   "short": "LAN14",
+   "id": "judge_language-real-lc-one_on_one_ms-070"
+  }
+ ],
+ "disagree": []
+}

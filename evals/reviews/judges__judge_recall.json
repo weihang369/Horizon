@@ -1,0 +1,42 @@
+{
+ "set": "judges/judge_recall",
+ "sample": [
+  {
+   "short": "REC1",
+   "id": "judge_recall-real-l13-one_on_one_ms-057"
+  },
+  {
+   "short": "REC2",
+   "id": "judge_recall-real-l13-one_on_one_ms-060"
+  },
+  {
+   "short": "REC3",
+   "id": "judge_recall-real-l13-one_on_one_ms-063"
+  },
+  {
+   "short": "REC4",
+   "id": "judge_recall-real-l13-one_on_one_ms-066"
+  },
+  {
+   "short": "REC5",
+   "id": "judge_recall-real-l13-one_on_one_ms-069"
+  },
+  {
+   "short": "REC6",
+   "id": "judge_recall-real-l10-group_meridian-065"
+  },
+  {
+   "short": "REC7",
+   "id": "judge_recall-real-l10-one_on_one_en-057"
+  },
+  {
+   "short": "REC8",
+   "id": "judge_recall-real-l10-one_on_one_ms-063"
+  },
+  {
+   "short": "REC9",
+   "id": "judge_recall-real-l13-one_on_one_en-057"
+  }
+ ],
+ "disagree": []
+}

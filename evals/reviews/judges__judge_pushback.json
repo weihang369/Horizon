@@ -1,0 +1,22 @@
+{
+ "set": "judges/judge_pushback",
+ "sample": [
+  {
+   "short": "PUS1",
+   "id": "judge_pushback-real-l10-one_on_one_en-020"
+  },
+  {
+   "short": "PUS2",
+   "id": "judge_pushback-real-l10-one_on_one_ms-038"
+  },
+  {
+   "short": "PUS3",
+   "id": "judge_pushback-real-l13-group_meridian-020"
+  },
+  {
+   "short": "PUS4",
+   "id": "judge_pushback-real-l13-one_on_one_en-029"
+  }
+ ],
+ "disagree": []
+}
