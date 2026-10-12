@@ -1,12 +1,329 @@
 {
- "source": "synthetic (persona-context task 4.8); replaced by the summary suite's recorded real summaries in task 10.2",
- "recorded": null,
+ "source": "recorded: the summary suite's paid run (persona-context task 10.2), one real `rolling_summary` answer per item of evals/summary/items.jsonl, in file order",
+ "recorded": "2026-10-11",
  "model": "deepseek/deepseek-v4.1-flash",
- "note": "SYNTHETIC until M8's paid summary run: shaped like a real rolling summary (short plain lines, who said what, a promise and its maker). The fake provider answers `rolling_summary` chat calls with these, in turn (doc 13 W14).",
+ "note": "Real DeepSeek rolling summaries (naive summary-2, M8). The fake provider answers `rolling_summary` chat calls with these, in turn (doc 13 W14). Replaced the synthetic set of task 4.8.",
  "purpose": "rolling_summary",
  "responses": [
-  {"content": "Kai has a headache since Monday, mostly at the temples in the afternoon.\nKai drinks four coffees a day and asked Amara whether to cut back.\nAmara asked about sleep and screen time.\nAmara promised to explain the warning signs that need same-day care.", "finish_reason": "stop", "usage": {"prompt_tokens": 410, "completion_tokens": 62, "cost": 0.0001}},
-  {"content": "Kai works night shifts at a bakery and sleeps until noon.\nKai's sister is getting married in June; Kai is giving the speech.\nHana said she would send Kai a recipe by Friday.", "finish_reason": "stop", "usage": {"prompt_tokens": 380, "completion_tokens": 48, "cost": 0.0001}},
-  {"content": "Kai asked about rotas and sleep after night shifts.\nAmara suggested anchor sleep and a short nap before work.\nKai asked Amara to check back on the coffee question next time.", "finish_reason": "stop", "usage": {"prompt_tokens": 520, "completion_tokens": 44, "cost": 0.0001}}
+  {
+   "item": "sum_en_01",
+   "content": "Kai: started cello lessons last month; neighbours hate it. Saving monthly for a secondhand motorbike. Grandmother turns ninety next week. Mei will bring a book she mentioned next time they talk. Mei and Victor both said they'd have done the same.",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 8.88e-05
+   }
+  },
+  {
+   "item": "sum_en_02",
+   "content": "- Kai works night shifts at a bakery, sleeps till noon.\n- Kai is saving every month for a secondhand motorbike.\n- Kai has a cat named Biscuit, who knocked Kai's phone off the table again.\n- Kai said it rained all day there.\n- Takeshi said he'd have done the same, and will check the train times tomorrow.\n- Hana noted that.\n- Kai said \"same as always\", \"long week\", \"not much, honestly\".",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 0.00011715
+   }
+  },
+  {
+   "item": "sum_en_03",
+   "content": "- Kai: rained all day where Kai is.\n- Kai is saving every month for a secondhand motorbike.\n- Kai is training for a 10k in October, four runs a week.\n- Kai's grandmother turns ninety next week.\n- Mei said next time they talk she'll bring the book she mentioned.\n- Mei and Victor responded to Kai's news; Victor said \"Noted.\"",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 0.00010635
+   }
+  },
+  {
+   "item": "sum_en_04",
+   "content": "Kai works night shifts at a bakery and sleeps till noon. Kai started cello lessons last month; neighbours hate it. Kai is training for a 10k in October, four runs a week. Rin promised to send Kai a recipe by Friday. Takeshi repeatedly asked Kai to tell more. Hana and Rin commented it sounds like a lot.",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 0.00010065
+   }
+  },
+  {
+   "item": "sum_en_05",
+   "content": "- Kai: rained all day where Kai is.\n- Kai has a cat named Biscuit, who knocked Kai's phone off the table again.\n- Kai moved from Penang last year.\n- Kai can't stand coriander; it tastes like soap to Kai.\n- Kai had a long week.\n- Kai asked Rin if Rin had eaten yet.\n- Rin said next time they talk, Rin will bring the book Rin mentioned.\n- Takeshi: \"Noted.\"\n- Hana: \"I'd have done the same.\"",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 0.00012225
+   }
+  },
+  {
+   "item": "sum_en_06",
+   "content": "- Kai: long week. \n- Kai is saving every month for a secondhand motorbike. \n- Kai is allergic to peanuts (warned about satay). \n- Kai's sister is getting married in June; Kai is giving a speech. \n- Takeshi promised to send Kai the recipe by Friday. \n- Takeshi said \"I'd have done the same\"; \"Oh, that sounds like a lot\"; \"Tell me more about that.\" \n- Hana said \"Noted\" several times.",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 0.0001221
+   }
+  },
+  {
+   "item": "sum_en_07",
+   "content": "- Kai has a cat named Biscuit, who knocked Kai's phone off the table again.\n- Kai started cello lessons last month; Kai says the neighbours hate it.\n- Kai's sister is getting married in June, and Kai is giving a speech.\n- Victor promised to send Kai the recipe by Friday.",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 9.33e-05
+   }
+  },
+  {
+   "item": "sum_en_08",
+   "content": "- Kai has a cat named Biscuit, who knocks Kai's phone off the table.\n- Kai is saving every month for a secondhand motorbike.\n- Kai is training for a 10k in October, running four times a week.\n- Takeshi promised to send Kai the recipe by Friday.\n- Takeshi said he'd have done the same (about the motorbike saving).\n- Takeshi asked Kai to tell him more.\n- Hana, Rin and Takeshi commented that things sounded like a lot.\n- Kai asked how the other person's day was.",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 0.00013065
+   }
+  },
+  {
+   "item": "sum_en_09",
+   "content": "- Kai is allergic to peanuts, so Takeshi noted to be careful with the satay.\n- Kai can't stand coriander; it tastes like soap to them.\n- Kai is training for a 10k in October, running four times a week.\n- Takeshi said he'd check the train times tomorrow.\n- Kai said it rained all day where they are.\n- Kai said it's been a long week.",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 0.0001101
+   }
+  },
+  {
+   "item": "sum_en_10",
+   "content": "- Kai works night shifts at a bakery, sleeps till noon.\n- Kai moved from Penang last year.\n- Kai can't stand coriander; it tastes like soap.\n- Hana promised to send Kai the recipe by Friday.\n- People mentioned: Hana, Rin, Takeshi.",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 9.21e-05
+   }
+  },
+  {
+   "item": "sum_ms_01",
+   "content": "Kai: tak banyak sangat. Victor minta cerita lagi. Kai kata betul cakap Victor.\nKai: kakaknya nak kahwin bulan Jun; Kai kena beri ucapan.\nKai: simpan duit tiap bulan untuk beli motosikal. Amara kata banyak juga.\nKai: baru mula belajar biola bulan lepas.\nAmara: lain kali dia bawa buku yang dia sebut tadi.\nMei: dia pun akan buat sama.\nKai tanya hari Mei macam mana.",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 0.0001266
+   }
+  },
+  {
+   "item": "sum_ms_02",
+   "content": "Kai bertanya khabar kepada Takeshi.\nKai sedang berlatih untuk larian 10 km pada bulan Oktober.\nKai mula belajar biola bulan lalu.\nKai tidak boleh makan daun ketumbar.\nHana berkata dia akan bawa buku yang dia sebut.\nHujan sepanjang hari di tempat Kai.",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 0.00010065
+   }
+  },
+  {
+   "item": "sum_ms_03",
+   "content": "- Kai baru pindah dari Pulau Pinang tahun lepas.\n- Nenek Kai genap sembilan puluh tahun minggu depan.\n- Kai simpan duit tiap bulan untuk beli motosikal.\n- Amara kata dia pun akan buat sama.\n- Victor akan semak jadual kereta api esok.\n- Kai kata minggu yang panjang.",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 0.0001059
+   }
+  },
+  {
+   "item": "sum_ms_04",
+   "content": "Kai: \"Macam biasa je.\"\nMei: \"Wah, banyak juga tu.\"\nKai: baru mula belajar biola bulan lepas.\nMei: \"Baik, saya ingat.\" / \"Ceritalah lagi.\"\nKai: \"Betul cakap awak.\"\nAmara: \"Saya pun akan buat sama.\"\nKai: kakaknya nak kahwin bulan Jun; Kai kena beri ucapan.\nMei: \"Ceritalah lagi.\"\nAmara: \"Saya pun akan buat sama.\"\nKai: \"Selamat pagi! Minggu yang panjang.\"\nAmara: \"Wah, banyak juga tu.\"\nKai: memang tak boleh makan daun ketumbar.\nMei: \"Ceritalah lagi.\"\nKai: \"Tak banyak sangat.\"\nMei: akan semak jadual kereta api esok.\nKai: \"Tak banyak sangat.\"\nAmara: \"Ceritalah lagi.\"",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 0.00017895
+   }
+  },
+  {
+   "item": "sum_ms_05",
+   "content": "- Kai: \"Selamat pagi! Minggu yang panjang.\"\n- Kai pindah dari Pulau Pinang tahun lepas.\n- Kai simpan duit tiap bulan untuk beli motosikal.\n- Kucing Kai bernama Biskut; Biskut jatuhkan telefon Kai lagi.\n- Hana kata lain kali dia bawa buku yang dia sebut tadi.\n- Takeshi, Hana dan Rin ada dalam perbualan ini.",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 0.00011805
+   }
+  },
+  {
+   "item": "sum_ms_06",
+   "content": "- Kai: hujan sepanjang hari di tempatnya.\n- Kai mula belajar biola bulan lepas.\n- Kai ada kucing bernama Biskut, yang selalu menjatuhkan telefon Kai.\n- Kai pindah dari Pulau Pinang tahun lepas.\n- Amara berjanji hantar resipi sebelum Jumaat.\n- Victor, Amara dan Mei kata mereka akan buat sama; Amara kata dia ingat.",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 0.00011475
+   }
+  },
+  {
+   "item": "sum_ms_07",
+   "content": "- Kai's grandmother turns ninety next week.\n- Kai moved from Pulau Pinang last year.\n- Kai started learning violin last month.\n- Amara said she remembers, and will bring the book she mentioned.\n- Kai calls it a long week.",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 8.955e-05
+   }
+  },
+  {
+   "item": "sum_ms_08",
+   "content": "- Kai: hujan sepanjang hari di tempatnya.\n- Kai menyimpan duit tiap bulan untuk beli motosikal.\n- Kai kerja syif malam di kedai roti, tidur sampai tengah hari.\n- Nenek Kai genap 90 tahun minggu depan.\n- Mei kata lain kali dia bawa buku yang dia sebut tadi.",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 0.00010845
+   }
+  },
+  {
+   "item": "sum_ms_09",
+   "content": "Kai: perkara biasa sahaja. Baru pindah dari Pulau Pinang tahun lepas. Tak boleh makan daun ketumbar. Sedang berlatih untuk larian 10 km bulan Oktober.\nTakeshi, Hana: akan buat sama.\nRin: akan ingat.\nHana: kata banyak juga; akan semak jadual kereta api esok.\nKai tanya sudah makan?",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 0.0001128
+   }
+  },
+  {
+   "item": "sum_ms_10",
+   "content": "- Kai asked if Mei had eaten.\n- Kai can't eat coriander leaves; Mei said she'll remember.\n- Kai said it's been raining all day where Kai is.\n- Kai works night shifts at a bakery, so sleeps until noon.\n- Kai is training for a 10 km run in October.\n- Mei said she'll do the same (about the run).\n- Amara said that's a lot.\n- Mei promised to send the recipe before Friday.\n- Victor said that's a lot.",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 0.000123
+   }
+  },
+  {
+   "item": "sum_zh_01",
+   "content": "Kai: 这里下了一整天的雨。\nKai 受不了香菜，觉得像肥皂。\nKai 在为十月的十公里跑训练，一周跑四次。\nKai 的奶奶下周满九十岁。\nKai 说这周好长。\nAmara 答应当周五前把食谱发给 Kai。\nAmara 和 Victor 多次说“哇，听起来事情不少”。\nMei 和 Victor 让 Kai 多说一点。",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 0.00011295
+   }
+  },
+  {
+   "item": "sum_zh_02",
+   "content": "- Kai 的猫叫饼干，饼干把 Kai 的手机推到地上。\n- Kai 在面包店上夜班，睡到中午。\n- Kai 去年才从槟城搬过来。\n- Hana 说下次聊天把那本书带来。\n- Kai 问 Takeshi 今天怎么样、吃饭了吗，Takeshi 只回“记住了”。\n- Rin 说“多说一点”。\n- Hana 和 Takeshi 都说过“记住了”。",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 0.00011115
+   }
+  },
+  {
+   "item": "sum_zh_03",
+   "content": "Kai: 这周好长，其实没什么。每月存钱买二手摩托车。受不了香菜，像肥皂。对花生过敏，沙爹要小心。\nHana: 记住了。周五前把食谱发给Kai，说好了。",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 8.475e-05
+   }
+  },
+  {
+   "item": "sum_zh_04",
+   "content": "- Kai 提到奶奶下周满九十岁。\n- Kai 说去年才从槟城搬过来。\n- Kai 在面包店上夜班，所以睡到中午。\n- Takeshi 承诺周五前把食谱发给 Kai，说好了。\n- Hana 说记住了。\n- Kai 说这周好长。",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 9.63e-05
+   }
+  },
+  {
+   "item": "sum_zh_05",
+   "content": "Kai说这周好长。Kai去年才从槟城搬过来。Kai上个月开始学大提琴，邻居都受不了。Kai在面包店上夜班，所以睡到中午。Kai说这里下了一整天的雨。Victor说下次聊天他会把那本书带来。Victor说了“记住了”“多说一点”“哇，听起来事情不少”。Amara说“记住了”。",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 0.00010455
+   }
+  },
+  {
+   "item": "sum_zh_06",
+   "content": "- Kai对花生过敏，提醒沙爹小心。\n- Kai上个月开始学大提琴，邻居都受不了。\n- Kai的奶奶下周满九十岁。\n- Mei说下次聊天会带那本书来。\n- Mei多次说“记住了”。\n- Amara说换她也会这样做。\n- Kai这周觉得好长。",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 9.315e-05
+   }
+  },
+  {
+   "item": "sum_zh_07",
+   "content": "- Kai 说这周好长。\n- Kai 去年才从槟城搬过来。\n- Kai 对花生过敏，提醒沙爹小心。\n- Kai 的姐姐六月结婚，Kai 要致辞。\n- Takeshi 说下次聊天把那本书带来。\n- Takeshi 说记住了。\n- Hana 说记住了。\n- Rin、Takeshi、Hana 都让 Kai 多说一点。",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 0.00010755
+   }
+  },
+  {
+   "item": "sum_zh_08",
+   "content": "Kai 上个月开始学大提琴，邻居受不了。\nKai 的猫叫饼干，把 Kai 的手机推到地上。\nKai 在为十月的十公里跑训练，一周跑四次。\nKai 说“老样子”“其实没什么”“这周好长”。\nVictor 说下次聊天把“那本书”带来（给 Kai）。\n在场的人：Victor、Amara、Mei。",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 0.0001062
+   }
+  },
+  {
+   "item": "sum_zh_09",
+   "content": "Kai 去年从槟城搬来。上个月开始学大提琴，邻居受不了。Kai 对花生过敏，说沙爹要小心。Kai 问过 Takeshi 今天怎么样。Rin 说明天查火车时刻表。",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 8.895e-05
+   }
+  },
+  {
+   "item": "sum_zh_10",
+   "content": "- Kai说这周好长。\n- Kai的姐姐六月结婚，Kai要致辞。\n- Kai每个月存钱，想买一辆二手摩托车。\n- Kai的猫叫饼干，它又把Kai的手机推到地上。\n- Amara说明天查火车时刻表。",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 8.775e-05
+   }
+  },
+  {
+   "item": "sum_mix_01",
+   "content": "- Kai ada alahan kacang; Mei ingat.\n- Kai berlatih untuk larian 10 km bulan Oktober.\n- Kai kerja syif malam di kedai roti, tidur sampai tengah hari.\n- Mei akan bawa buku yang dia sebut pada perbualan akan datang; Victor kata \"Noted.\"\n- Victor kata dia pun akan buat sama.\n- Kai kata hujan sepanjang hari di tempatnya.",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 0.00011625
+   }
+  },
+  {
+   "item": "sum_mix_02",
+   "content": "Kai: kakaknya kahwin bulan Jun, Kai kena beri ucapan. Kai berlatih untuk larian 10 km bulan Oktober. Kai tak boleh makan daun ketumbar. Kai kata hidupnya macam biasa je.\n\nHana kata lain kali dia akan bawa buku yang dia sebut. Takeshi kata dia pun akan buat sama.",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 0.0001023
+   }
+  },
+  {
+   "item": "sum_mix_03",
+   "content": "Kai: hujan sepanjang hari di tempatnya. Kai simpan duit tiap bulan untuk beli motosikal. Kai kerja syif malam di kedai roti, tidur sampai tengah hari. Kai tak boleh makan daun ketumbar. Amara kata dia akan hantar resepi kepada Kai menjelang Jumaat (janji). Victor dan Amara kata mereka akan buat sama. Amara ingat Kai tak makan daun ketumbar. Kai tanya Mei macam mana harinya.",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 0.0001227
+   }
+  },
+  {
+   "item": "sum_mix_04",
+   "content": "- Kai baru pindah dari Pulau Pinang tahun lepas.\n- Kakak Kai nak kahwin bulan Jun; Kai kena beri ucapan.\n- Kai alah kacang; Kai minta hati-hati dengan sate.\n- Amara kata lain kali dia akan bawa buku yang dia sebut.\n- Mei, Victor dan Amara bertanya lagi kepada Kai.\n- Kai ucap selamat pagi dan kata minggu yang panjang.",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 0.00011595
+   }
+  },
+  {
+   "item": "sum_mix_05",
+   "content": "- Kai menyimpan duit tiap bulan untuk beli motosikal.\n- Kai kerja syif malam kat kedai roti, jadi tidur sampai tengah hari.\n- Kai alah kacang; dia minta hati-hati dengan sate.\n- Amara berkata dia akan buat sama.\n- Amara minta tinggalkan perkara itu kepadanya; dia akan semak waktu tren esok.\n- Victor dan Mei kata \"banyak juga tu\"; Kai jawab \"tak banyak sangat\" / \"macam biasa je\".",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 0.00012765
+   }
+  },
+  {
+   "item": "sum_mix_06",
+   "content": "Kai kata kakaknya nak kahwin bulan Jun dan Kai kena beri ucapan. Kai alah kacang, jadi Kai minta hati-hati dengan sate. Kai kerja syif malam di kedai roti, tidur sampai tengah hari. Kai tanya Amara macam mana harinya. Amara kata lain kali dia akan bawa buku yang dia sebut. Victor, Amara dan Mei kata mereka pun akan buat sama.",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 0.00011835
+   }
+  },
+  {
+   "item": "sum_mix_07",
+   "content": "- Kai bertanya \"Hari awak macam mana?\" (dua kali); Hana minta cerita lagi.\n- Kai berlatih untuk larian 10 km bulan Oktober.\n- Kai kerja syif malam kat kedai roti, jadi tidur sampai tengah hari.\n- Kai kata minggu yang panjang; Nenek Kai genap 90 tahun minggu depan.\n- Takeshi minta cerita lagi, kata \"Baik, saya ingat\", dan \"Saya pun akan buat sama\".\n- Takeshi: \"Leave it with me, I'll check the train times tomorrow.\"\n- Hana dan Rin kata \"Wah, banyak juga tu.\"",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 0.000147
+   }
+  },
+  {
+   "item": "sum_mix_08",
+   "content": "- Kai tak boleh makan daun ketumbar; Mei ingat.\n- Kai berlatih untuk larian 10 km bulan Oktober.\n- Kai baru pindah dari Pulau Pinang tahun lepas.\n- Hujan sepanjang hari di tempat Kai.\n- Victor kata dia akan buat perkara sama.\n- Mei berjanji hantar resipi kepada Kai menjelang Jumaat.\n- Kai tanya Mei macam mana harinya; Kai tanya sama ada Mei dah makan.",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 0.00011925
+   }
+  },
+  {
+   "item": "sum_mix_09",
+   "content": "Kai: bertanya \"Hari awak macam mana?\"; baru mula belajar biola bulan lepas; baru pindah dari Pulau Pinang tahun lepas; neneknya genap 90 tahun minggu depan.\nAmara: kata \"Oh, that sounds like a lot.\"\nVictor: minta Kai cerita lagi; berjanji hantar resipi kepada Kai menjelang Jumaat.\nMei: kata \"I'd have done the same.\"",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 0.0001161
+   }
+  },
+  {
+   "item": "sum_mix_10",
+   "content": "- Kai: hujan sepanjang hari di tempat Kai.\n- Kai menyimpan duit tiap bulan untuk beli motosikal; Victor kata dia pun akan buat sama.\n- Nenek Kai genap 90 tahun minggu depan.\n- Kai baru mula belajar biola bulan lepas.\n- Victor akan check train times esok.\n- Amara kata dia akan ingat.",
+   "finish_reason": "stop",
+   "usage": {
+    "cost": 0.00010845
+   }
+  }
  ]
 }

@@ -88,6 +88,7 @@ class Drafter:
     async def run(self, env: RunEnv, plan: Plan) -> Result:
         from horizon.ai.naive.creation import parse_draft
         from horizon.ai.ports import PaidHooks
+        from horizon.gateway.errors import ProviderError
         from horizon.services.jobs.worker import draft_world_for
 
         res = Result()
@@ -102,16 +103,21 @@ class Drafter:
                 res.status = "incomplete"
                 break
             world = await draft_world_for(rt, s["world"], None)
-            d = await drafter.draft(call_ctx("profile", world_id=s["world"]), seed_prompt=s["seed"], intent=s["intent"],
-                                    cost_usd=0.001, duration_ms=8000, model=rt.prices.chat.model, hooks=PaidHooks(),
-                                    world=world)
+            try:
+                d = await drafter.draft(call_ctx("profile", world_id=s["world"]), seed_prompt=s["seed"],
+                                        intent=s["intent"], cost_usd=0.001, duration_ms=8000, model=rt.prices.chat.model,
+                                        hooks=PaidHooks(), world=world)
+                parse_draft(json.dumps(d), rt.schema, rt.palette_ids())   # contract-valid (raises if not)
+            except ProviderError as e:   # a failed draft is a measurement (C7's retry included), not a crash
+                res.rows.append({"id": s["id"], "split": s["split"], "intent": s["intent"], "seed": s["seed"],
+                                 "valid": False, "error": e.message})
+                continue
             p = d["profile"]
-            parse_draft(json.dumps(d), rt.schema, rt.palette_ids())   # contract-valid (raises if not)
             spoken = " ".join([str(p.get("greeting", "")), *map(str, p.get("exampleLines") or [])])
             first = str(p.get("name", "")).split(" ")[0].casefold()
             taken = {n.split(" ")[0].casefold() for n in world.names_in_use}
             row: dict[str, Any] = {
-                "id": s["id"], "split": s["split"], "intent": s["intent"], "seed": s["seed"], "draft": d,
+                "id": s["id"], "split": s["split"], "intent": s["intent"], "seed": s["seed"], "draft": d, "valid": True,
                 "adult": int(p.get("age", 0)) >= 18, "example_lines": 2 <= len(p.get("exampleLines") or []) <= 3,
                 "plain_speech": "*" not in spoken, "fresh_name": first not in STOCK_NAMES and first not in taken}
             row["fit_p"] = await judge(env, "judge_draft_fit", {
@@ -121,8 +127,11 @@ class Drafter:
                     "quoted_user": json.dumps(world.you or {}, ensure_ascii=False), "quoted_draft": json.dumps(
                         p, ensure_ascii=False)[:3000], "quoted_relationship": str(p.get("relationshipToUser", ""))})
             res.rows.append(row)
-        test = [r for r in res.rows if r["split"] == "test"] or res.rows
-        res.summary += [f"## Drafter ({len(res.rows)} draft(s); figures on the test split, {len(test)})"]
+        every = [r for r in res.rows if r["split"] == "test"] or res.rows
+        test = [r for r in every if r["valid"]]
+        res.summary += [f"## Drafter ({len(res.rows)} draft(s); figures on the test split, {len(every)})",
+                        f"- valid draft after C7's one retry: {len(test)}/{len(every)}"]
+        res.summary += [f"  - {r['id']}: {r['error']}" for r in every if not r["valid"]]
         for k in ("adult", "example_lines", "plain_speech", "fresh_name"):
             res.summary.append(f"- {k}: {sum(1 for r in test if r[k])}/{len(test)}")
         res.summary.append(rate_line("fits the seed", "judge_draft_fit",

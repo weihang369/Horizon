@@ -86,6 +86,13 @@ def test_the_store_is_never_attached_to_bypassed_runs(tmp_path: Path, suite: str
     assert (store_for(Options(suite, **flags), tmp_path, None) is not None) is stored
 
 
+def test_a_test_mode_run_never_touches_the_store(tmp_path: Path) -> None:
+    """persona-context 10.2: `smoke` (the in-process fake) had written fake answers into the real store, and a paid
+    run then served one as real."""
+    assert store_for(Options("smoke"), tmp_path, None, test_mode=True) is None
+    assert store_for(Options("decisions"), tmp_path, None, test_mode=True) is None
+
+
 # ── 7.5: the canary on canned answers ──
 def test_canary_copy_is_byte_identical_to_group_a() -> None:
     src = EVALS_DIR.parent / "docs/ai/checks/group-a/results/canary.json"

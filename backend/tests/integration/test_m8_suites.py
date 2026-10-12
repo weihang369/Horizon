@@ -126,3 +126,16 @@ def test_planted_reply_and_draft_failures() -> None:
     for v in [*out.values(), *d.values()]:
         for x in v[:1]:
             assert set(x["item"]["state"]) <= set(bank().get(x["question_id"]).state), x["question_id"]
+
+
+async def test_drafter_suite_counts_a_draft_that_stays_broken(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The paid run's first finding: a draft one `}` short, repeated word for word by C7's retry, is a measured
+    failure in the report, not a crash that loses the run."""
+    from horizon.gateway import fake
+
+    broken = {"seed": "x", "intent": "expert", "valid": True, "content": '{"profile":{"name":"A"', "finish_reason": "stop"}
+    monkeypatch.setattr(fake, "load_canned", lambda name: ("profile", [broken]))
+    r, _ = runner(tmp_path)
+    assert await r.run(Options("drafter", limit=1, yes=True)) == 0
+    rep = report(tmp_path, "drafter")
+    assert "valid draft after C7's one retry: 0/1" in rep and "isn't JSON" in rep
