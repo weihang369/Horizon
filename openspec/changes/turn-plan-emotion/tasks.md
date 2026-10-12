@@ -296,8 +296,8 @@
 
 ## 10. Integration and close
 
-- [ ] 10.1 Run every gate on a clean tree, plus `npm run e2e`. Verify: all pass, and the counts are recorded in
+- [x] 10.1 Run every gate on a clean tree, plus `npm run e2e`. Verify: all pass, and the counts are recorded in
   m9.md.
-- [ ] 10.2 Run `openspec validate turn-plan-emotion --strict`. Verify: it reports valid.
-- [ ] 10.3 Write m9.md's summary: what M9 found, the spend against D32, and what M10 inherits (group emotion via the
+- [x] 10.2 Run `openspec validate turn-plan-emotion --strict`. Verify: it reports valid.
+- [x] 10.3 Write m9.md's summary: what M9 found, the spend against D32, and what M10 inherits (group emotion via the
   follow plan, the floors to reuse, the latency baseline). Verify by reading.
