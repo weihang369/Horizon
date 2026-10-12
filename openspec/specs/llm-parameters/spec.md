@@ -22,11 +22,15 @@ Every DeepSeek call SHALL take its thinking setting, temperature and output kind
 | `profile` | off | 1.0 | JSON |
 | `probe` | off | none | text |
 
-`top_p`, penalties, `seed` and `logprobs` SHALL NOT be sent.
+The `summary` row SHALL cap output at 600 tokens. `top_p`, penalties, `seed` and `logprobs` SHALL NOT be sent.
 
 #### Scenario: Chat reply parameters
 - **WHEN** a naive 1:1 reply request is sent
 - **THEN** its body has `temperature: 1.3` and `reasoning: {enabled: false}`, and no `top_p`, `presence_penalty` or `frequency_penalty`
+
+#### Scenario: Rolling summary parameters
+- **WHEN** a rolling summary request is sent
+- **THEN** its body has `temperature: 0.7`, `max_tokens: 600` and `reasoning: {enabled: false}`
 
 ### Requirement: Thinking off behind a switch
 A row with thinking `off` SHALL send `reasoning: {enabled: false}`, and `low` or `high` SHALL send that effort. Reasoning text SHALL never be shown or stored. A call made with thinking off that reports reasoning tokens SHALL be logged as a warning.
