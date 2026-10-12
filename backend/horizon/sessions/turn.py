@@ -39,13 +39,14 @@ from horizon.sessions.context import (
     character_view,
     characters,
     energy_of,
-    maintain_window,
     reply_cap,
     session_context,
 )
 from horizon.sessions.prefetch import Prefetch
 from horizon.sessions.retrieve import retrieve
+from horizon.sessions.summary import check_summary
 from horizon.sessions.system1 import section as system1_section
+from horizon.sessions.verbatim import VerbatimEngine
 from horizon.sessions.writer import TraceMeta
 
 if TYPE_CHECKING:
@@ -160,15 +161,18 @@ class TurnRunner:
             if prefetch is not None:
                 info.ctx = prefetch.ctx
                 return await self._stream(actor, spec, info, prefetch.ctx, t0, started_iso, prefetch=prefetch)
-            await maintain_window(rt, actor)
-            sctx = await session_context(rt, actor)
-            got = await retrieve(rt, actor, sctx, spec.speaker, spec.prompt)   # M5 design D10: the speaker's scope
-            spec.calls.extend(got.calls)
-            ctx = TurnContext(session=sctx, speaker=character_view(row), message_id=mid, variant_id=vid, prompt=spec.prompt,
-                              line=spec.line, turn_index=actor.mode.turn,
-                              max_tokens=reply_cap(rt, sctx),   # after retrieval and the (M9) plan: design D14
-                              direction_note=spec.direction_note, debate=spec.debate, knowledge=got.knowledge,
-                              memory=got.memory, query=got.query)
+            sctx = await session_context(rt, actor)   # M8: no summary work here (docs/ai/05 X2: it runs after turn.end)
+            if spec.line.verbatim:   # M8 (docs/ai/04 P9, persona-context D19): no retrieval, no model call
+                ctx = TurnContext(session=sctx, speaker=character_view(row), message_id=mid, variant_id=vid,
+                                  prompt=spec.prompt, line=spec.line, turn_index=actor.mode.turn, max_tokens=1)
+            else:
+                got = await retrieve(rt, actor, sctx, spec.speaker, spec.prompt)   # M5 design D10: the speaker's scope
+                spec.calls.extend(got.calls)
+                ctx = TurnContext(session=sctx, speaker=character_view(row), message_id=mid, variant_id=vid,
+                                  prompt=spec.prompt, line=spec.line, turn_index=actor.mode.turn,
+                                  max_tokens=reply_cap(rt, sctx),   # after retrieval and the (M9) plan: design D14
+                                  direction_note=spec.direction_note, debate=spec.debate, knowledge=got.knowledge,
+                                  memory=got.memory, query=got.query)
             actor.mode.turn += 1
             info.ctx = ctx
             return await self._stream(actor, spec, info, ctx, t0, started_iso)
@@ -181,7 +185,10 @@ class TurnRunner:
         rt = self.rt
         knobs = rt.runtime_cfg.runtime
         clock = rt.clock
-        engine = info.engine = prefetch.engine if prefetch is not None else rt.ai.turn(self.key_set())
+        verbatim = prefetch is None and ctx.line.verbatim
+        engine = info.engine = (prefetch.engine if prefetch is not None
+                                else VerbatimEngine(rt.runtime_cfg.timing, lambda: rt.clock) if verbatim
+                                else rt.ai.turn(self.key_set()))
         co = Coalescer(knobs.coalesce_max_chars, knobs.coalesce_max_ms, lambda: float(to_ms(clock.now())))
         timer: asyncio.Task[None] | None = None
         trace: dict[str, Any] = {}
@@ -217,7 +224,7 @@ class TurnRunner:
                     await timer
             timer = None
 
-        slot: Any = rt.llm_slots.slot() if prefetch is None else contextlib.nullcontext()
+        slot: Any = rt.llm_slots.slot() if prefetch is None and not verbatim else contextlib.nullcontext()
         try:
             async with slot:
                 agen: Any = prefetch.replay() if prefetch is not None else engine.run(ctx)
@@ -298,7 +305,8 @@ class TurnRunner:
         mid = info.message_id
         total_ms = to_ms(rt.clock.now()) - t0
         scrub = False
-        if status == "complete" and ctx is not None:
+        verbatim = getattr(engine, "name", None) == VerbatimEngine.name   # P9: the approved line, no model call
+        if status == "complete" and ctx is not None and not verbatim:
             check = await rt.ai.guardrail(self.key_set()).check(ctx, info.content)
             if check.checks:
                 trace = deep_merge(trace, {"guardrail": {"checks": check.checks}})
@@ -321,7 +329,7 @@ class TurnRunner:
         wire_usage: Wire | None = None
         if usage is not None:
             wire_usage = {"tokensIn": int(usage["tokensIn"]), **({"tokensCached": int(usage["tokensCached"])}
-                                                                  if usage.get("tokensCached") else {}),
+                                                                  if usage.get("tokensCached") is not None else {}),
                           "tokensOut": int(usage["tokensOut"]), "costUsd": float(usage["costUsd"]), "energySpent": spent,
                           "firstTokenMs": float(first_token_ms if first_token_ms is not None else total_ms),
                           "totalMs": float(total_ms)}
@@ -342,16 +350,18 @@ class TurnRunner:
         if status != "error":
             full = {"messageId": mid, **trace}
             prices = rt.prices
-            full["model"] = {
-                "id": (row or {}).get("model") or prices.chat.model, "provider": (row or {}).get("provider") or "",
-                "pricePeriod": (row or {}).get("price_period") or rt.clock.pricing_period(),
-                "latencyMs": {"firstToken": float(first_token_ms if first_token_ms is not None else total_ms),
-                              "total": float(total_ms)},
-                "tokensIn": int((usage or {}).get("tokensIn", 0)), "tokensOut": int((usage or {}).get("tokensOut", 0)),
-                "costUsd": float((usage or {}).get("costUsd", 0.0))}
-            if usage and usage.get("tokensCached"):
-                full["model"]["tokensCached"] = int(usage["tokensCached"])
-            if energy is not None:
+            if not verbatim:   # P9: a verbatim line made no model call, so Insight claims none
+                full["model"] = {
+                    "id": (row or {}).get("model") or prices.chat.model, "provider": (row or {}).get("provider") or "",
+                    "pricePeriod": (row or {}).get("price_period") or rt.clock.pricing_period(),
+                    "latencyMs": {"firstToken": float(first_token_ms if first_token_ms is not None else total_ms),
+                                  "total": float(total_ms)},
+                    "tokensIn": int((usage or {}).get("tokensIn", 0)),
+                    "tokensOut": int((usage or {}).get("tokensOut", 0)),
+                    "costUsd": float((usage or {}).get("costUsd", 0.0))}
+                if usage and usage.get("tokensCached") is not None:
+                    full["model"]["tokensCached"] = int(usage["tokensCached"])
+            if energy is not None and not verbatim:
                 full["energy"] = {"characterId": info.character_id, "spent": spent, "remaining": energy["current"],
                                   "max": energy["max"]}
             routing: Wire = dict(spec.routing) if spec.routing else {"selected": info.character_id}
@@ -375,7 +385,7 @@ class TurnRunner:
         info.closed = True
         if actor.current is info:
             actor.current = None
-        if rt.capture.enabled and ctx is not None:   # ai-foundation D27: the turn row (queued, off the hot path)
+        if rt.capture.enabled and ctx is not None and not verbatim:   # ai-foundation D27: the turn row (queued)
             rt.capture.on_turn(world_id=actor.session.get("worldId"), session_id=actor.sid,
                                character_id=info.character_id, message_id=mid, request=ctx.model_dump(mode="json"),
                                response={"plan": None, "status": status,
@@ -383,8 +393,10 @@ class TurnRunner:
                                          "deciderFallback": any(bool(c.get("fallback")) for c in spec.calls)})
         if status == "complete" and spec.reactions and ctx is not None and actor.session["emotionMode"] != "user":
             self._reactions(actor, info, ctx)
-        if status == "complete" and not scrub and ctx is not None:
+        if status == "complete" and not scrub and ctx is not None and not verbatim:
             self._remember(actor, info, ctx)
+        if status != "error":   # M8 (docs/ai/05 X2, X3): fold the window after the reply, never before it
+            check_summary(actor)
 
     def _scrubber(self, actor: SessionActor, info: TurnInfo) -> Any:
         """D13: the blocked reply's text leaves the stored token events and the message (same transaction)."""

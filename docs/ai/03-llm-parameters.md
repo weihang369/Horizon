@@ -160,11 +160,11 @@ The table lives in the seed-build source `frontend/scripts/seed-build/runtime.co
 
 | Key | Call | Thinking | Temperature | Output | Built in |
 |---|---|---|---|---|---|
-| `reply.chat` | Character reply, 1:1 / group / watch | off | **1.3** | stream | naive today, agent profile |
+| `reply.chat` | Character reply, 1:1 / group / watch | off | **1.0** (was 1.3; M8) | stream | naive today, agent profile |
 | `reply.debate` | Debate argument | off | 1.0 | stream | task 8 (doc 08 V4) |
 | `host` | Debate host lines, `max_tokens` 120, shown whole | off | 1.0 | text | task 8 (doc 08 V6) |
 | `verdict` | Debate verdict prose, `max_tokens` 1,200 | off | 0.7 | JSON | task 8 (doc 08 V8) |
-| `summary` | Rolling summary | off | 0.7 | text | task 5 (doc 05 X3) |
+| `summary` | Rolling summary (doc 05 X3, prompt `summary-2`), `max_tokens` 600, purpose `rolling_summary` | off | 0.7 | text | M8 (OpenSpec `persona-context`) |
 | `episode` | Watch's "Summarise" recap, `max_tokens` 400 | off | 0.7 | text | task 7 (doc 07 G10) |
 | `memory` | Memory rewrite at a session pause, `max_tokens` 300 × characters present + 200 (≤ 3,000) | off | 0.7 | JSON | task 9 (doc 09 M3) |
 | `query_rewrite` | A deep turn's search query, written with the speaker's cached prompt when the message isn't standalone or isn't in English, `max_tokens` 60; precise output, stored and reused on regenerate | off | 0.0 | text | task 10 (doc 10 K4) |
@@ -172,7 +172,10 @@ The table lives in the seed-build source `frontend/scripts/seed-build/runtime.co
 | `probe` | Settings → Test, 1 token | off | none | text | today |
 
 Why these temperatures:
-- **Replies use 1.3**, DeepSeek's value for conversation (F4). The user chose not to A/B test it.
+- **Replies use 1.0** (changed from 1.3 in M8, `persona-context` D34, the user's choice on 2026-10-12). 1.3 is
+  DeepSeek's value for conversation (F4), but M8's paid long runs showed it collapsing long chats into word salad in
+  both `naive` and `agent`, with 32–47 % of replies cut off at `max_tokens`. On the same 50-turn script, 1.0 stayed
+  coherent with no cut-offs (longest reply 84 tokens), and 0.7 turned stiff and repetitive (`docs/ai/checks/m8.md`).
 - **Debate and host use 1.0:** arguments must stay on the motion and answer the other side. **The verdict prose uses
   0.7** (doc 08 V8): like a summary, it must be faithful to what was argued.
 - **Summary and memory use 0.7, below DeepSeek's 1.0 for analysis:** they must be faithful to what was said, never
@@ -228,7 +231,8 @@ questions falls below 90 %.
 ### C3. Temperatures follow DeepSeek's guidance, with no A/B test
 
 **Decision:** the values in C1 ship as they are. The ≈ $0.10 temperature comparison proposed in discussion is dropped,
-by the user's decision. B7 can still vary a row later if a quality problem shows up.
+by the user's decision. B7 can still vary a row later if a quality problem shows up. *(M8: one did; `reply.chat` is
+now 1.0, see C1.)*
 
 **Rejected:** a 1.0 vs 1.3 eval run. DeepSeek publishes these values after its own testing, and the user wants the
 budget low.

@@ -1,0 +1,1105 @@
+{
+ "schemaVersion": 1,
+ "id": "long_one_on_one_en",
+ "mode": "one_on_one",
+ "world": "wld_seedMeridian",
+ "cast": [
+  "chr_seedAmara"
+ ],
+ "long": true,
+ "language": "en",
+ "turns": [
+  {
+   "user": "What did you have for lunch?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Honestly, I don't remember — which is its own data point about how the shift went.\n\nProbably a granola bar at 3pm. Let's figure out what's actually going on with"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "I found an old photo of myself at ten.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Ten years old. That's a tender age to look back at.\n\nWhat came up for you seeing it? Curious whether it landed as warm, or as something heavier."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "My sister Leila is a nurse in Ipoh.",
+   "kind": "fact",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "That connects some dots for me. Emergency and nursing families carry the same load, just from different angles.\n\nIs she doing okay? And how are you doing with it — with her being"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "My neighbour is drilling again.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "You've got a headache building from it, or just venting?\n\nIf it's the noise alone, that's one thing. If your head is actually hurting, tell me where and what"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "I'm allergic to penicillin, found out the hard way.",
+   "kind": "fact",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Noted — that matters every time you're prescribed anything.\n\nHow did you find out? Rash, or was it worse — swelling, trouble breathing? Those two are very different conversations, and one's an ER visit."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Do you have a favourite smell?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Rain on hot pavement. Instant calm.\n\nYou? And I'll gently say — my penicillin question is still open, Kai. Rough reaction or the dangerous kind matters for your record."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "I run every Tuesday and Thursday at 6 a.m.",
+   "kind": "fact",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Nice rhythm — early, consistent, before the day gets its hands on you.\n\nWhat's the honest reason, though? Training, head-clearing, or habit? I ask because people who run at 6am are usually managing something."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Do you like the rain?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "I do. Real rain, not the drizzle that just makes the roads slick.\n\nYou're dodging my question, which I notice — gently. What's the running for, Kai? And the penicillin reaction: rash or breathing?"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "My dog is called Pepper, a grey whippet.",
+   "kind": "fact",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Pepper. Good name for a whippet — all angles and speed.\n\nTwo things still open, and I'll keep asking because they matter: the penicillin reaction, rash or worse? And what did the photo of ten-year-old you bring up?"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "I'm moving to Kuching in March for work.",
+   "kind": "fact",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Big move. New city, new clinic, new everything — that's a lot of change stacking up at once.\n\nHow are you feeling about it? And I'll ask plainly now: penicillin reaction — rash only, or any swelling or breathing trouble? It goes in your file wherever you land."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "What's a song you never skip?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "\"Fast Car.\" Tracy Chapman. Never skip it.\n\nKai. Third time gently, then I'll stop: the penicillin reaction — rash, or swelling and breathing? You can answer in one word. It travels with you to Kuching."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Do you prefer mornings or nights?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Mornings here. Nights belong to the department.\n\nI'll stop asking about penicillin — but only because you've heard me clearly. Do keep it in your own notes, Kai. Rash versus airway is a real difference, and no one in Kuching will know it unless you say so."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "My shoes squeak on every floor.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "That's the sound of every hospital corridor. I'd recognise it from a mile away.\n\nHow are you doing with all of it, though — the move, the sister, the photo? That's a lot of unfinished sentences for one conversation."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "I had the best roti canai this morning.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Good. Roti canai done right is a genuine pleasure — flaky, hot, the dal just right.\n\nYou'll get it fresh in Kuching too, different style maybe. Are you sleeping okay lately? And the temple headaches — still happening since you cut the coffee?"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "What's the last thing that made you laugh?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "One of the residents put googly eyes on our triage board. Banned within ten minutes. I laughed for twenty.\n\nYou're good at redirecting, Kai. I'll allow it — but if a headache wakes you from sleep, that's same-day review, not a chat with me."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "What's a small thing you're proud of?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Keeping two colleagues in this job who nearly left. Small on paper. Not small at all.\n\nYours? And I'll hold the line on one red flag — headache that's sudden and severe, or comes with weakness or confusion. That's 999, not a conversation."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "I finally cleaned my desk. It won't last.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "It never does. But the day after a clean desk feels different — you notice the space.\n\nSame for bodies, honestly. Small resets hold longer than we expect. How are you actually"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "I reorganised my bookshelf by colour.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "By colour. Bold. My shelf is chaos — reference books, thrillers, one cookbook I've never opened.\n\nThat's the second reorganisation this week, though. Noticing. When people tidy hard, it's often about something else. Anything you're getting ready to leave behind, Kai?"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "I signed up for a pottery class.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "That's a good sign. New city, new hands-on thing that isn't work.\n\nI'll say it once and mean it kindly: you keep handing me small nice things and I keep waiting on the two that aren't small. The photo, and the penicillin reaction. Both can wait until you're ready."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Have you ever got lost in a new city?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Barcelona, first day. Ended up four kilometres from my hotel with a dead phone. Best wrong turn I've taken.\n\nKuching will do that to you for a month. Take a day, walk without a map, let yourself be a bit lost. What worries you most about the move?"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Antibiotics cure the flu, right? I always take some.",
+   "kind": "wrong_claim",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "No — and I'm glad you said that out loud. Flu is viral. Antibiotics do nothing for it except breed resistance and give you side effects.\n\nTake them only when a clinician prescribes them, for a bacterial infection, and finish as directed. Never save leftovers. That's the actual rule.\n\nWhat made you think"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Is it normal to talk to your plants?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Completely. I talk to my monstera. It has opinions.\n\nKai, though — you said you always take antibiotics for flu. Where are you getting them? That's the part I want to understand. Self-supplied, leftovers, or a pharmacy counter somewhere?"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Tell me something you've been thinking about.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Whether we're measuring burnout properly. A survey says one thing; a colleague quietly handing in her badge says another.\n\nThat's my thing. Yours: where do the antibiotics come from, Kai? I'll"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Do you ever reread old messages?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Sometimes. Mostly to check I didn't say something sharp when I was tired.\n\nKai, I'll name it plainly now: you've steered me off the antibiotics question three times. That's not a small thing. Where do they come from?"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "The trains were late again.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "They always are in February. I build twenty minutes of slack into everything.\n\nKai. Antibiotics. Where from? Not to judge — to help. If it's leftovers in a drawer or a counter that"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "I've been reading before bed instead of scrolling.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Genuinely good. Screens before bed steal more sleep than people credit, and sleep is the first thing that frays when everything else is changing.\n\nYou'll need that habit in Kuching. Now — is the antibiotic thing a leftover-drawer situation, or a counter somewhere? One word is enough."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "What would you name a boat?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "\"Second Opinion.\" Fast, slightly smug.\n\nKai — last ask, then I let it go. The antibiotics. Leftovers, or somewhere you buy without a prescription? If it's the second one, I'm not going to lecture. I just want you to have the real risk on paper before"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "My umbrella flipped inside out.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Every umbrella in that wind. You just have to walk home wet and laugh about it.\n\nOkay, Kai. I've asked four times and you've answered none, so I'll stop pushing. But hear this once: taking antibiotics you haven't been prescribed for flu is a real risk — resistant infection later, gut trouble, and masking something that needs looking at. If you want to talk it through properly, I'm here. Not as a lecture. As me."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "I watched the sunrise for once.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "That's worth doing more than once. Quiet, before everyone needs something.\n\nYou've had a gentle morning. Hold onto it. And if you ever do want to open that antibiotics drawer with me, no judgement waiting on the other side. Just a doctor who'd rather know."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "You need eight glasses of water exactly, or you're dehydrated.",
+   "kind": "wrong_claim",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "That's a myth, actually. Needs vary — size, climate, activity, what you eat. Thirst is a decent guide for most healthy people.\n\nKuching is hot and humid, so you'll drink more there. Pale-yellow urine is a better check than counting glasses.\n\nNow — sleep before the"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "I tried a new running route.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Nice. New routes wake up parts of the brain that habit dulls.\n\nYou're doing a lot of good small things lately, Kai. I notice it. The bigger thing, though — I'll let the antibiotics question rest tonight. Just remember it's open whenever you want it."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "I listened to an old album all evening.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Which one? I have a soft spot for anything from the nineties — it hits different now.\n\nLong evening, music, no screens. That's decent medicine on its own. Are you sleeping any"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "I tried painting with watercolours.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Watercolours are unforgiving — you can't undo them. Good discipline for anyone who likes control.\n\nYou've tried three new things this week. That's not a coincidence this close to a move. What's underneath it, Kai?"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "My cousin is getting a puppy.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "A whippet cousin, or something fluffier? Whole different household either way.\n\nYou've got a lot of small joys stacked up tonight. I like hearing them. If something bigger is sitting underneath, it can wait — but"
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "Do you collect anything?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Bad pens. Unintentionally. I steal one from every ward and never give them back.\n\nKai — it's late where you are, I think. Are you sleeping okay? You've been circling all evening, and I'd rather ask than assume."
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "Have you ever been somewhere really quiet?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Once. A Highland bothy, no signal, no road noise. Quiet like pressure on the ears.\n\nTook me two days to stop reaching for my phone. Then it was the best sleep of the year.\n\nIs that what you're looking for with the move, Kai? Some quiet? Or is the quiet worrying you?"
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "The mangoes are so good right now.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Season is short. Eat them while they're perfect.\n\nYou keep giving me mangoes and sunrises, Kai, and I keep holding the door open on two heavier things. That's fine. But I'll say it once more, plainly: if the antibiotics come from a counter without a prescription, that's worth telling your new GP in Kuching. They can"
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "I spilled tea on my notes.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Every clinician's rite of passage. Mine was a full mug over a discharge summary.\n\nIt's late. Go to bed, Kai. The notes survive, the tea doesn't, and tomorrow you'll need the sleep more than the tidiness. I"
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "Cracking your knuckles gives you arthritis, everyone knows that.",
+   "kind": "wrong_claim",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "That one's a myth. Studies looked at it directly — knuckle-crackers got no more arthritis than anyone else. The noise is gas, not damage.\n\nYour joints are fine. Your sleep might not be, though. It's late"
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "Do you think people can change?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Yes. Slowly, and usually with help. I've watched people change careers at fifty and people quit drinking at sixty.\n\nBut it rarely happens alone, and rarely overnight. What's prompting"
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "What's a habit you wish you had?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Flossing, honestly. And answering questions directly the first time instead of circling.\n\nWhich is my cue, Kai — you've been circling all night. I'm not annoyed. I'm just wondering what's under it. If you're"
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "I think I need a haircut.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Get one before Kuching. Fresh start, less to negotiate with the heat.\n\nYou've been up a long time, Kai. Goodnight from me. If anything feels wrong in your body — chest, head, breathing — that's not a chat, that's same-day care. Otherwise, rest. Talk"
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "I think my keyboard is haunted.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Then it's typing in a language you can't read. Very inconvenient haunting.\n\nSleep, Kai. Genuinely. We can be haunted by keyboards tomorrow."
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "I can't decide what to cook tonight.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Something with whatever's about to go off in the fridge. That's my rule.\n\nIt's late for cooking decisions. Are you eating okay generally? Between the move and everything else, that's usually the first thing that slips."
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "I saw a cat on the bus today.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "A cat. On a bus. That's the whole story and it's a good one.\n\nYou've gone properly quiet and light tonight, Kai. I'll take it — after the week you've described, light is useful."
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "Tell me about your week.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Long. Two back-to-back nights, a flu surge, and a resident I'm worried about — sleeping four hours, near-miss on a drug dose. We talked.\n\nThat's why I keep asking about your sleep and your antibiotics, Kai. Not because I'm nosy. Because I've watched what happens when people carry things quietly."
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "I learned to fold a paper crane.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "A thousand of them and you get a wish — or at least that's the version I grew up with.\n\nYou folded one, though. Which is fine. You don't have to fold a thousand, Kai. One is a start."
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "The bus driver waved at me today.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Small kindnesses land hard when you're low. That one stayed with you for a reason.\n\nSomething's eating at you, Kai. You've talked about mangos and cats and cranes for hours. If you'd rather sit with the real thing, I"
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "Work was quiet, which is suspicious.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Suspicious is right. Quiet shifts end at 7pm with three ambulances.\n\nKai — I'm going to say it once more, then let you be. The antibiotics. Not the flu. The drawer. If that's what it is, you're not in trouble, and I'd rather know than not."
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "I wrote a letter by hand for the first time in years.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Handwriting slows thinking down. You notice what you actually mean.\n\nTo whom, if you'll say? You've been doing things that look like saying goodbye all week, Kai. That's not a criticism."
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "The street cats know my name now, I think.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "They don't know your name. They know your hands. Same thing, functionally.\n\nYou'll get new street cats in Kuching. And they'll be just as transactional…\n\nKai, I'll ask it straight, once: are you sleeping tonight,"
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "I walked the long way home on purpose.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Deliberate detours are usually about not wanting to arrive somewhere yet.\n\nWhat's waiting at home, Kai? Not the flat — the quiet, the photo, the thing under the mangoes."
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "Long day. How's yours going?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Ended twenty minutes ago. Tea in hand, shoes off, still unwinding.\n\nAnd you've been feeding me small things all night, Kai, which I've enjoyed — but I've noticed you haven't once said how you actually are. So I'll ask plainly: long day how?"
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "What's your idea of a perfect breakfast?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Strong coffee, eggs, a window with light coming through. Nothing to rush toward.\n\nYours in Kuching will have roti and kaya, probably, and it'll be better than mine.\n\nKai — I'll stop nudging. Just one thing, then I'll let the breakfast conversation stand: if you're carrying the antibiotics thing, tell your new GP. That's all I'd want."
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "What's the weirdest food you like?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Pickled herring at 2am after a night shift. It's indefensible and I stand by it.\n\nKai, I'm going to close the loop gently, because you've been generous with small talk all night and I don't want to end on a question you'll dodge again. The antibiotics — leftovers, or a counter somewhere? Either answer is fine. I just want it said."
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "I made a playlist for rainy days.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Send me nothing, but I hope it has one sad song and one loud one. Rainy days need both.\n\nYou've been lovely tonight, Kai. Go to bed with that playlist on. Anything red-flag — chest, breathing, a sudden severe headache — you know where to go. Otherwise: sleep"
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "I tried meditation. Lasted two minutes.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Two minutes is a real two minutes. Most people don't get past the cushion.\n\nSit in it longer and it gets easier. Same as anything. You've been doing a lot of firsts lately, Kai — classes, painting, cranes…\n\nHow are you actually, though?"
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "What's something you changed your mind about?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "That burnout is a personal failing. I spent years thinking it was about resilience. Then I lost two colleagues and read the literature properly.\n\nIt's structural. Rosters, staffing, the things people can't fix alone. That changed how I practise.\n\nNow — how are you actually, Kai?"
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "What would you do on a free Sunday?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Market, long walk, cook something that takes two hours. Phone on silent the whole day.\n\nThat's the pitch, Kai. You've circled a dozen gentle questions tonight, and I've answered every one. Can I have one back? How"
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "I watched a documentary about octopuses.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "They're alarmingly smart. I've been told they recognise individual humans, which should be illegal.\n\nKai — I'm going to be direct, and I mean it kindly. You've been quiet and lovely all night, and you haven't once told me how you are. I'm not letting you off the hook. One honest sentence. Then I"
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "I fixed a dripping tap all by myself.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Good. Small competence, real confidence. Nothing wrong with that kind of win.\n\nKai. You've now fixed a tap, folded a crane, painted, meditated, and read before bed — all in one night. That's a lot of doing. Underneath it, what's actually going on? I'll"
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "Do you have a comfort film?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Spirited Away. Every time. Rain, train, no stakes that hurt.\n\nKai, I'm going to say the thing plainly now, because we've been at this for hours and I think you know I've noticed: you haven't told me a single real thing about how you're doing. That's allowed. But I'd rather you just said so than kept feeding me comfort films."
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "Someone in the office brought durian. Chaos.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Durian in a shared office is a war crime with a smell. God, I'd have loved to see it.\n\nKai. That's the tone we've had all night — and I'll match it, because I like you. But one true sentence, please. Not about durian. About you. How's your sleep, honestly?"
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "I finally replied to all my emails.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Inbox zero is a lie we tell ourselves, but it feels great for a day.\n\nKai — I'll take the hint. You don't have to tell me anything tonight. But the pattern's loud: the tidying, the firsts, the small talk, hours of it. That's what people do when something's sitting underneath.\n\nI'm here when you want to say it. Not pushing further."
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "What's a place you'd go back to?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Barcelona. I got hopelessly lost there on day one — dead phone, four kilometres from the hotel, no map, no language. Best wrong turn of my life.\n\nYou'd like it, I think. Places where getting lost is fine.\n\nKai — is that what the move feels like? Getting lost on purpose? Or"
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "My power went out for an hour.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "An hour of dark does strange things to thinking. No screens, no noise, just you and the ceiling.\n\nYou've told me about candles-level small things all night, Kai, and I've enjoyed every one. But it's late. If you're going to sit in the dark, sit in it with the thing that's actually bothering you. I'll still be here."
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "The night market was packed.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Crowds are good cover. Easy to be alone in a full street.\n\nKai — I'll say what I've been circling toward: you've been talking to me for hours without once telling me anything that costs you. That's fine. I don't need it. But I'd notice."
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "I'm trying to keep a journal.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Good. Writing it down is half the work — the other half is rereading it in a month and wincing.\n\nKai, I'll ask once more and then let it rest: what would the first honest page of that journal say? No need to answer me. Just — write that one."
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "My laptop fan sounds like a jet.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Compressed air, or a new fan. It's not haunted, it's dusty.\n\nKai. It's very late. You've been up with me for hours. Either tell me how you are, or go to bed. Both are good options. I'd take either."
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "I saw a rainbow over the highway.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Rainbows over roads are the best ones. Nobody plans them.\n\nKai — I'll say the thing I've been holding, gently: you've been giving me beautiful small things for hours and hiding behind every one of them. I think you know that. I don't need the rest tonight. But sleep, and if it's ever heavy — chest, breathing, head — that's same-day care. Not me."
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "I finished a jigsaw with a thousand pieces.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "A thousand pieces is a real commitment. Edge-first, presumably, or you're an animal.\n\nKai, go to bed. Genuinely. You've done a thousand small things tonight and I've enjoyed all of them, but it's late and I think"
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "What's the best advice you ever got?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "\"Ask the next question.\" From an old consultant. He meant never stop at the first answer — yours or the patient's.\n\nWhich is my whole job, and also why I've been circling you all night, Kai. You keep giving me first answers. I keep waiting for the second.\n\nIt's late. Go to bed. I mean that kindly."
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "I accidentally sent a thumbs up to my boss.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Terrifying. Universal. You'll survive it — everyone has done some version of this.\n\nKai. Bed, I think. You've been softening the whole night and I've noticed, and I care, and I'm not going to push harder than this. Sleep well."
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "The sky was pink on the way home.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Pink skies are worth stopping for. You did, presumably.\n\nYou've been collecting small beautiful things all night, Kai. I hope you're collecting them because they're good — and not because the rest is hard to say.\n\nEither way: I'm glad you wrote. Goodnight."
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "I cleaned out my wardrobe. Found three scarves.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Three scarves is two more than anyone needs or can justify. You'll keep all three, obviously.\n\nKai — the tidying, the clearing, the lists, the firsts. That's not nothing. It's what people do when something's shifting. If you'd rather not say what, that's your call. But I've enjoyed tonight, and I'd sleep better knowing you did too."
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "I tried to learn a card trick. Failed.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Good. Fail publicly, it builds character. I can't shuffle to save my life, so you're ahead of me.\n\nKai — bedtime. I'm serious and kind about it. Talk tomorrow if you want. Just not at whatever hour this is."
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "I tried that new noodle place by the station.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Station noodles are always the right call. Cheap, fast, honest.\n\nKai, it's been a lovely, rambling night, and I've enjoyed your small things. But you've not once told me anything real, and I've stopped expecting it tonight. So: sleep. Talk properly when you're ready. I'll be here."
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "I helped an old man carry his groceries.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "That's a good deed, not a distraction. I'll allow it.\n\nKai — I'm calling it, kindly. It's late, you've been up a long time, and you've been generous with small stories all night. Go to sleep. If you ever want to say the real thing, you know where I am."
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "The queue at the post office was endless.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Post office queues are a form of purgatory. I've stood in worse.\n\nKai. Bedtime. Genuinely. You've circled long enough, and I don't need the answer tonight — but your sleep does."
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "My downstairs neighbour sings in the shower.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Badly, I assume. That's the best kind. Free concert, no ticket.\n\nKai — that's a lovely note to end on. Sleep. And tomorrow, if you want, tell me how you actually are. Not the neighbour, not the noodles. You."
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "Weekend plans? Mine are none.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "None is a plan. Sleep in, walk Pepper, cook something slow. That's a full weekend.\n\nAnd you, Kai — a weekend with nothing on is usually when the thing you've been outrunning catches up. That's not a bad thing. Just don't do it alone with the lights off."
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "My phone battery is dying so fast lately.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Old battery, or old apps. Both drain you quietly.\n\nKai — same could be said of you this week. It's late and you've been running hot. Plug the phone in and do the"
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "Do you ever just stare at the ceiling for an hour?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Yes. More than I'd like. Usually after a shift I can't put down, or when the roster's got someone I'm worried about on nights again.\n\nIt's not a failure of anything. Sometimes the head needs processing time.\n\nWhat's on your ceiling tonight, Kai? You've been staring a while, I think."
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "I bought socks with tiny cats on them.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Correct purchase. No notes. Wear them on a hard day.\n\nKai — you're deflecting beautifully and I've enjoyed every minute. It's late, and I'm not going to sit here pretending I don't see it. Bed. Growl at me tomorrow if you want."
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "Someone left a plant at my door. No note.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "A plant with no note is either a secret admirer or a neighbour with surplus. Both are good outcomes.\n\nKai — that's genuinely a nice thing, and I mean this gently: you've given me a whole night of nice things. Give yourself sleep now"
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "Do you prefer the sea or the mountains?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Sea. Something about the noise being constant and meaningless. Mountains want something from you.\n\nKai — I'll stop asking. You've made your call for tonight, and that's allowed. Sea or mountains is a fine place to leave it. Sleep"
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "My fridge is making a new noise.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Compressor probably. Or it's judging your takeaway containers. Either way it'll outlast us both.\n\nKai — you've got one real problem tonight and it isn't the fridge. You've been up for hours and you know it. Bed. I'll be here tomorrow."
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "My friend sent me a voice note that's ten minutes long.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Ten minutes means they needed to say something and put it off, then said it all. Listen to it properly. Those are the ones people remember.\n\nKai — goodnight. Truly. And listen to your friend's real thing the way you"
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "I learned how to say thank you in Tamil.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Nandri. Useful in Kuching, less useful in Ipoh, but keep it.\n\nKai — I've had a lovely rambling night with you. But you've said thank you, and mangoes, and cranes, and not once how you are. That's your choice. Sleep on it. I'm around when you want"
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "The wind is wild today.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Hold onto your hat. Whippets in high wind are a category of comedy.\n\nKai — I'm going to stop here for the night. You've been generous with small talk and I've genuinely enjoyed it, but it's late and I'd rather you slept than kept circling. Tomorrow, if you want the real conversation, I'm here."
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  },
+  {
+   "user": "I made coffee too strong this morning.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Overbrewed coffee is a personality trait, not a mistake. Drink it and move on.\n\nKai — you cut back on coffee, I remember. If the headaches are back, that's worth noticing. And if it's late where you are, that's worth noticing too. Sleep."
+    }
+   ],
+   "summary_upto": 67,
+   "summary": "**Kai — facts**\n- Found an old photo of self at ten; didn't say what it brought up.\n- Sister Leila is a nurse in Ipoh.\n- Allergic to penicillin, found out \"the hard way\"; didn't say rash vs. swelling/breathing.\n- Runs every Tuesday and Thursday at 6 a.m.\n- Dog: Pepper, a grey whippet.\n- Moving to Kuching in March for work.\n- Shoes squeak on every floor.\n- Had the best roti canai this morning.\n- Cleaned desk; reorganised bookshelf by colour.\n- Signed up for a pottery class.\n- Tried a new running route; listened to an old album all evening; tried watercolours.\n- Watched the sunrise \"for once.\"\n- Reading before bed instead of scrolling.\n- Says they \"always take some\" antibiotics for flu; won't say where they get them.\n- Says you need exactly eight glasses of water or you're dehydrated.\n\n**Amara — facts**\n- Shift ended; probably ate a granola bar at 3pm.\n- Favourite smell: rain on hot pavement.\n- Never skips \"Fast Car\" (Tracy Chapman).\n- Prefers mornings; nights belong to the department.\n- Got lost in Barcelona first day, dead phone, 4km from hotel.\n- Laugh: resident put googly eyes on triage board.\n- Proud of keeping two colleagues who nearly left.\n- Talks to her monstera; bookshelf is chaos.\n- Worries burnout isn't measured properly.\n\n**Open**\n- Penicillin reaction type — Amara asked 4 times; Kai never answered. Amara dropped it.\n- What the photo of ten-year-old Kai brought up — unanswered.\n- Where Kai's antibiotics come from — unanswered; Amara said it stays open.\n- Amara asked what worries Kai most about the move; how Kai feels about it — unanswered."
+  }
+ ]
+}

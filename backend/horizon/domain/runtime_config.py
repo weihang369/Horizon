@@ -6,7 +6,7 @@ sessions from one committed table (`seed:check` guards it). Milliseconds stay mi
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -62,6 +62,30 @@ class ReplyCaps:
 
 
 @dataclass(frozen=True)
+class WindowSizes:
+    """docs/ai/05 X2: the history window per mode, in `count_tokens`."""
+
+    one_on_one: int = 6000
+    group: int = 9000
+    watch: int = 9000
+    debate: int = 9000
+
+    def for_mode(self, mode: str) -> int:
+        return int(getattr(self, mode, self.group))
+
+    def as_dict(self) -> dict[str, int]:
+        return {"one_on_one": self.one_on_one, "group": self.group, "watch": self.watch, "debate": self.debate}
+
+    @staticmethod
+    def from_json(v: Any) -> WindowSizes:
+        """An object per mode; an older seed's single int applies to every mode."""
+        if isinstance(v, int | float):
+            n = int(v)
+            return WindowSizes(n, n, n, n)
+        return WindowSizes(**{k: int(v[k]) for k in ("one_on_one", "group", "watch", "debate")})
+
+
+@dataclass(frozen=True)
 class LlmCall:
     """One row of `runtime.llm.calls` (docs/ai/03 C1)."""
 
@@ -88,7 +112,7 @@ class RetrievalKnobs:
 @dataclass(frozen=True)
 class RuntimeKnobs:
     reply_max_tokens: ReplyCaps
-    window_tokens: int
+    window_tokens: WindowSizes
     coalesce_max_chars: int
     coalesce_max_ms: float
     idle_release_ms: float
@@ -96,6 +120,11 @@ class RuntimeKnobs:
     llm_concurrency: int
     retrieval: RetrievalKnobs
     llm_calls: dict[str, LlmCall]
+    switches: dict[str, bool] = field(default_factory=dict)   # M8: "persona.repeatHint", "context.voiceReminder"
+
+    def switch(self, name: str) -> bool:
+        """A dynamic-tail switch (docs/ai/04 P8, 05 X5; doc 13 W12): off unless the table turns it on."""
+        return bool(self.switches.get(name, False))
 
     def llm(self, key: str) -> LlmCall:
         try:
@@ -130,7 +159,7 @@ class RuntimeConfig:
                                            watch=int(caps["watch"]),
                                            debate={str(k): int(v) for k, v in caps["debate"].items()},
                                            one_on_one_deep=int(caps.get("one_on_one_deep", caps["one_on_one"]))),
-                window_tokens=int(r["windowTokens"]), coalesce_max_chars=int(r["coalesce"]["maxChars"]),
+                window_tokens=WindowSizes.from_json(r["windowTokens"]), coalesce_max_chars=int(r["coalesce"]["maxChars"]),
                 coalesce_max_ms=float(r["coalesce"]["maxMs"]), idle_release_ms=float(r["idleReleaseMs"]),
                 prefetch_max=int(r["prefetchMax"]), llm_concurrency=int(r["llmConcurrency"]),
                 retrieval=RetrievalKnobs(knowledge_k=int(r["retrieval"]["knowledgeK"]),
@@ -140,7 +169,9 @@ class RuntimeConfig:
                                            temperature=None if v.get("temperature") is None else float(v["temperature"]),
                                            output=str(v["output"]),
                                            max_tokens=int(v["maxTokens"]) if v.get("maxTokens") is not None else None)
-                           for k, v in ((r.get("llm") or {}).get("calls") or {}).items()}),
+                           for k, v in ((r.get("llm") or {}).get("calls") or {}).items()},
+                switches={"persona.repeatHint": bool((r.get("persona") or {}).get("repeatHint", False)),
+                          "context.voiceReminder": bool((r.get("context") or {}).get("voiceReminder", False))}),
             jobs=JobTiming(
                 profile_draft_ms=float(t["profileDraftMs"]), field_regenerate_ms=float(t["fieldRegenerateMs"]),
                 portrait_ms=float(t["portraitMs"]), portrait_parallel=int(t["portraitParallel"]),

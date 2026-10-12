@@ -115,6 +115,19 @@ def estimate_decision(t: PriceTable, tokens: int) -> float:
     return tokens * t.decision.input_per_m / 1e6
 
 
+# Jev bills its own instructions on top of what we send: 160-275 input tokens per request on the 18 canary requests
+# of 2026-10-11 (docs/ai/checks/m7.md). Every decision estimate, live and eval, adds this once per request
+# (persona-context design D23).
+JEV_REQUEST_OVERHEAD_TOKENS = 300
+
+
+def estimate_decision_request(t: PriceTable, state: Any, questions: Mapping[str, Any]) -> float:
+    """One decision request: the state once (group A A1), each question's own tokens, and Jev's per-request overhead."""
+    tokens = count_tokens(json.dumps(state, ensure_ascii=False)) + sum(
+        count_tokens(json.dumps(q, ensure_ascii=False)) for q in questions.values())
+    return estimate_decision(t, tokens + JEV_REQUEST_OVERHEAD_TOKENS)
+
+
 def estimate_image(t: PriceTable, kind: str = "portrait") -> float:
     return t.generation[kind]
 

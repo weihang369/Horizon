@@ -224,3 +224,20 @@ async def test_purge_failure_backs_off_and_retries(api: Api) -> None:
         await asyncio.sleep(0.02)
     await worker.stop()
     assert len(calls) >= 3 and slept[:2] == [1.0, 5.0]
+
+
+# ── persona-context 1.3 (design D18): the profile role beside the participant role; the card's extra fields ──
+async def test_context_carries_profile_role_appearance_and_advisory(api: Api) -> None:
+    from horizon.sessions.context import character_view, characters, session_context
+
+    await api.set_key()
+    s = await create(api, "group", ["chr_seedHana", "chr_seedRin"], world="wld_seedSunnyHollow")
+    actor = await api.rt.sessions.get(s["session"]["id"])
+    ctx = await session_context(api.rt, actor)
+    hana = next(p for p in ctx.participants if p.character_id == "chr_seedHana")
+    assert (hana.role, hana.character_role) == ("speaker", "Florist, runs a small shop")
+    assert SessionContext.model_validate_json(ctx.model_dump_json()) == ctx
+    rows = await characters(api.rt, ["chr_seedAmara", "chr_seedHana"])
+    amara, h = character_view(rows["chr_seedAmara"]), character_view(rows["chr_seedHana"])
+    assert amara.advisory is True and h.advisory is False
+    assert amara.appearance_summary.startswith("An adult woman with deep brown skin")

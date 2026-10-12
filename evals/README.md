@@ -9,7 +9,11 @@ The evaluation harness's committed data. The code is `backend/horizon/evals/`. T
 | `canary.json` | Jev's drift canary: 20 requests and their accepted answers. Its `fingerprint` salts every stored Jev answer. Until the first accepted drift it is a byte copy of `docs/ai/checks/group-a/results/canary.json`. |
 | `datasets/<set>.jsonl` | Labelled decision items: one line `{id, question_id, split, item, label, review?}`. `datasets/_smoke/` items are `smoke_only` and never reported as a measurement. |
 | `smoke/<mode>.json` | One scripted conversation per mode (three user lines) for `horizon eval smoke`. |
-| `transcripts/` | Multi-turn conversations for later suites (M9+). |
+| `transcripts/` | Frozen transcripts (B3). `scripts/` holds the user lines the four long-history ones are generated from (M8, `horizon eval transcript`). |
+| `drafter/seeds.jsonl` | The `drafter` suite's 20 seeds (10 dev / 10 test, M8). |
+| `summary/items.jsonl` | The `summary` suite's 40 dropped-history inputs, built by `summary/build.py` (20/20, M8). |
+| `long/*.json` | The `long` suite's three scripts, built by `long/build.py` (M8). |
+| `datasets/judges/` | B4's 60 validation items per judge (30 real, hand-labelled; 30 planted by code). |
 | `corpus/` | Public-domain US federal documents as Markdown, with `SOURCES.md` (URL, retrieval date) and `LICENSE`. |
 | `baselines/` | Accepted metric baselines. Smoke never compares with them. |
 | `reviews/<set>.json` | Label-review samples and the disagreements found. |
@@ -35,6 +39,10 @@ Run these from `backend/`.
 | `uv run horizon eval capture <messageId>` | $0 | Writes the captured AI calls of one message to `data/evals/cases/` (needs `HORIZON_CAPTURE_AI_CALLS=1` when the message ran). |
 | `uv run horizon stats [--days N]` | $0 | Shows live latency, cost by purpose, cache hits, Jev's share, late and fallback rates. It opens the database read-only. |
 | `uv run horizon eval bank-lock` | $0 | Records the bank's versions after you bump an edited question. |
+| `uv run horizon eval drafter` / `summary` | paid (≈ $0.025 / $0.06) | M8's drafter and summariser suites; judged figures say "unvalidated" until the judge passes. |
+| `uv run horizon eval long --profile agent [--set <script>]` | paid (≈ $0.12) | Rare: recall, voice drift, the real cache-hit %, summary calls. |
+| `uv run horizon eval transcript [--set <script>]` | paid (≈ $0.06) | Generates the long-history frozen transcripts with `naive`. |
+| `uv run horizon eval decisions --set judges` | paid (≈ $0.03) | B4's judge validation. |
 
 Every paid run follows the same steps:
 

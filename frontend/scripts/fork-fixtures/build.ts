@@ -134,7 +134,11 @@ function draftFixtures(): Map<string, string> {
   ];
   const intents = ["expert", "companion", "other"] as const;
   seeds.forEach((seed, i) => {
-    const cases = intents.map((intent) => ({ seed, intent, draft: draftFromSeed(seed, intent) }));
+    const cases: { seed: string; intent: string; namesInUse?: string[]; draft: unknown }[] =
+      intents.map((intent) => ({ seed, intent, draft: draftFromSeed(seed, intent) }));
+    // docs/ai/04 P11: a bank name already used in the world is skipped (a name from the seed is kept).
+    const taken = [`${draftFromSeed(seed, "other").profile.name} Already-Here`, "Kenji Watanabe"];
+    cases.push({ seed, intent: "other", namesInUse: taken, draft: draftFromSeed(seed, "other", taken) });
     out.set(`drafts/seed_${i + 1}.json`, json({ seed, cases }));
   });
   const base = draftFromSeed("Sarah, a doctor", "expert").profile as CharacterProfile;

@@ -144,3 +144,29 @@ def test_route_fits_the_wire_schema() -> None:
     w = wire_question(bank().question("route", values=CAST, seed="s:0"))
     assert w["type"] == "choice" and isinstance(w["criteria"], dict) and all(isinstance(v, str) for v in w["criteria"].values())
     assert DecisionsClient.__init__  # the client sends `{model, state, questions: {key: wire}}` unchanged
+
+
+# ── persona-context 9.1 (question-bank "Evaluation judges live in the same bank"; design D24) ──
+def test_judges_are_one_condition_nouls_worded_so_yes_is_the_failure() -> None:
+    from pathlib import Path
+
+    from horizon.ai.decider import wire_question
+    from horizon.ai.questions import bank
+
+    judges = [e for e in bank().entries.values() if e.purpose == "eval_judge"]
+    assert len(judges) == 13
+    for e in judges:
+        # D24: t 0.5, except where D38 tuned it on a dev set and checked it on a held-out one
+        t = {"judge_voice": 0.6}.get(e.id, 0.5)
+        assert e.type == "noul" and e.label.endswith("?") and e.thresholds == {"t": t} and e.deadline == "default"
+        assert all(k.startswith("quoted_") for k, v in e.state.items() if v == "quoted")
+        w = wire_question(bank().question(e.id))
+        assert w["instructions"].endswith(bank().sentence)
+    # never asked live: no runtime module outside the eval harness names a judge
+    root = Path(__file__).resolve().parents[2] / "horizon"
+    for f in root.rglob("*.py"):
+        if "evals" in f.parts or "questions" in f.parts:
+            continue
+        text = f.read_text(encoding="utf-8")
+        assert "eval_judge" not in text.replace('"eval_judge": "decision"', ""), f
+        assert not any(e.id in text for e in judges), f

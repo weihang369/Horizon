@@ -311,4 +311,7 @@ async def fork(rt: Runtime, sid: str, at_seq: int | None) -> Wire:
             await actor.emit({"type": "session.state", "payload": payload})
 
         await actor.submit(open_fork)
+        # docs/ai/05 X2 (persona-context D12): forks copy no summaries, so one over its window folds it now
+        from horizon.sessions.summary import check_summary
+        check_summary(actor)
     return await snapshot(rt, new_sid)

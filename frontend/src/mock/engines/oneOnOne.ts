@@ -14,8 +14,18 @@ export function greet(h: EngineHost, sid: string): void {
       done();
       return;
     }
-    speakThen(h, sid, cid, { line: greetingFor(c) }, () => done());
+    // docs/ai/04 P9: the first chat opens with the approved greeting, word for word, at no cost (as the backend)
+    const stored = c.profile.greeting.trim();
+    if (stored && isFirstChat(h, sid, cid)) speakThen(h, sid, cid, { line: { text: stored, emotion: "happy" }, verbatim: true }, () => done());
+    else speakThen(h, sid, cid, { line: greetingFor(c) }, () => done());
   }));
+}
+
+/** P9's rule over the dataset: no other non-seed, non-fork 1:1 session holds a message this character wrote. */
+export function isFirstChat(h: EngineHost, sid: string, cid: string): boolean {
+  return !Object.values(h.db.sessions).some((rec) => rec.session.id !== sid && rec.session.mode === "one_on_one"
+    && !rec.session.isSeed && !rec.session.continuedFrom
+    && rec.messages.some((m) => m.author.type === "character" && m.author.characterId === cid));
 }
 
 export function send(h: EngineHost, sid: string, text: string): void {

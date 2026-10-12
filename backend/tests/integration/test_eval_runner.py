@@ -49,7 +49,7 @@ async def test_smoke_runs_isolated_and_reports_the_agent_ports(tmp_path: Path) -
     report = (run / "agent" / "report.md").read_text(encoding="utf-8")
     assert rc == 0, report
     assert user_db.read_bytes() == b"not touched"          # the user's database is never opened
-    assert "turn=naive" in report and "router=naive" in report   # agent resolves to naive per port in M7
+    assert "turn=agent" in report and "router=naive" in report   # M8: agent's own turn engine, naive routing
     assert "smoke only" in report and "never a measurement" in report
     rows = [json.loads(x) for x in (run / "agent" / "results.jsonl").read_text(encoding="utf-8").splitlines()]
     assert {r["mode"] for r in rows if "mode" in r} == {"one_on_one", "group", "watch", "debate"}
@@ -84,6 +84,13 @@ def test_peak_check() -> None:
 def test_the_store_is_never_attached_to_bypassed_runs(tmp_path: Path, suite: str, flags: dict[str, bool],
                                                       stored: bool) -> None:
     assert (store_for(Options(suite, **flags), tmp_path, None) is not None) is stored
+
+
+def test_a_test_mode_run_never_touches_the_store(tmp_path: Path) -> None:
+    """persona-context 10.2: `smoke` (the in-process fake) had written fake answers into the real store, and a paid
+    run then served one as real."""
+    assert store_for(Options("smoke"), tmp_path, None, test_mode=True) is None
+    assert store_for(Options("decisions"), tmp_path, None, test_mode=True) is None
 
 
 # ── 7.5: the canary on canned answers ──
@@ -124,8 +131,7 @@ def test_a_hand_edited_baseline_is_refused(tmp_path: Path) -> None:
 
 
 def test_start_skips_items_and_the_estimate_counts_jev_overhead() -> None:
-    from horizon.domain.pricing import load_price_table
-    from horizon.evals.runner import JEV_REQUEST_OVERHEAD_TOKENS
+    from horizon.domain.pricing import JEV_REQUEST_OVERHEAD_TOKENS, load_price_table
     from horizon.evals.suites import Canary
 
     prices = load_price_table(EVALS_DIR.parent / "seed")
@@ -134,3 +140,12 @@ def test_start_skips_items_and_the_estimate_counts_jev_overhead() -> None:
     assert [i["id"] for i in tail.items] == [i["id"] for i in full.items[18:]]
     # docs/ai/checks/m7.md: 20 canary requests billed $0.000446; the budget must cover that
     assert JEV_REQUEST_OVERHEAD_TOKENS >= 275 and 0.000446 < full.estimate_usd < 0.001
+
+
+def test_a_dataset_source_run_is_never_pruned(tmp_path: Path) -> None:
+    """10.6: three runs the judge sets are built from were pruned; a `.keep` file now protects a source run."""
+    for i in range(21):
+        (tmp_path / f"20261003T0300{i:02d}-smoke-x").mkdir()
+    (tmp_path / "20261003T030000-smoke-x" / ".keep").write_text("source", encoding="utf-8")
+    assert prune_runs(tmp_path) == []   # the oldest is kept, and only 20 others remain unmarked
+    assert (tmp_path / "20261003T030000-smoke-x").is_dir()

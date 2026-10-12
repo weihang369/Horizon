@@ -33,7 +33,7 @@ from sqlalchemy.engine import RowMapping
 from sqlalchemy.ext.asyncio import AsyncConnection
 
 from horizon.ai.image_prompt import CompiledPrompt, ImagePromptCompiler
-from horizon.ai.ports import ImageJob, PaidHooks, SongJob
+from horizon.ai.ports import DraftWorld, ImageJob, PaidHooks, SongJob
 from horizon.api.errors import DEFAULT_RETRYABLE
 from horizon.db import tables as t
 from horizon.events.bus import GLOBAL
@@ -212,7 +212,8 @@ async def call(sched: JobScheduler, run: Run, a: Attempt, task: dict[str, Any], 
                                                duration_ms=spec.duration_ms, model=rt.prices.chat.model, hooks=hooks)
             else:
                 await drafter.draft(ctx, seed_prompt=ch["seed_prompt"], intent=ch["intent"], cost_usd=spec.est_usd,
-                                    duration_ms=spec.duration_ms, model=rt.prices.chat.model, hooks=hooks)
+                                    duration_ms=spec.duration_ms, model=rt.prices.chat.model, hooks=hooks,
+                                    world=await draft_world(sched, ch))
         return None
     if type_ == "theme_song":
         return await call_song(sched, run, a, task, ch, spec, str(models["music"]))
@@ -224,6 +225,23 @@ async def call(sched: JobScheduler, run: Run, a: Attempt, task: dict[str, Any], 
     async with Slot(rt.image_slots if image.name == "naive" else None):
         await image.generate(task_ctx(sched, run, ch, type_), job, hooks)
     return None
+
+
+async def draft_world_for(rt: Any, world_id: str, exclude_character_id: str | None) -> DraftWorld:
+    """docs/ai/04 P11 (persona-context design D17): the world's name, the names its other characters already use
+    (tombstones included: a deleted name still shows in old transcripts) and the You card."""
+    q = select(t.characters.c.profile).where(t.characters.c.world_id == world_id)
+    if exclude_character_id:
+        q = q.where(t.characters.c.id != exclude_character_id)
+    async with rt.db.read() as conn:
+        w = (await conn.execute(select(t.worlds.c.name, t.worlds.c.you).where(t.worlds.c.id == world_id))).first()
+        names = (await conn.execute(q)).scalars().all()
+    used = tuple(dict.fromkeys(str((p or {}).get("name") or "").strip() for p in names if (p or {}).get("name")))
+    return DraftWorld(name=str(w[0]) if w else "", names_in_use=used, you=(w[1] or None) if w else None)
+
+
+async def draft_world(sched: JobScheduler, ch: Mapping[str, Any]) -> DraftWorld:
+    return await draft_world_for(sched.rt, ch["world_id"], ch["id"])
 
 
 async def call_song(sched: JobScheduler, run: Run, a: Attempt, task: dict[str, Any], ch: dict[str, Any],
@@ -455,7 +473,9 @@ async def _neutral_rel(conn: AsyncConnection, character_id: str) -> str | None:
 async def _draft_brief(sched: JobScheduler, ch: Mapping[str, Any]) -> dict[str, Any]:
     from horizon.ai.scripted.drafts import draft_from_seed
 
-    brief: dict[str, Any] = draft_from_seed(ch["seed_prompt"], ch["intent"], sched.rt.palette_ids())["brief"]
+    world = await draft_world(sched, ch)
+    brief: dict[str, Any] = draft_from_seed(ch["seed_prompt"], ch["intent"], sched.rt.palette_ids(),
+                                            world.names_in_use)["brief"]
     return brief
 
 

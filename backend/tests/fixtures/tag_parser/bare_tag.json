@@ -1,0 +1,13 @@
+{
+  "name": "bare_tag",
+  "doc": "D37: the model's own form <neutral> chooses the face and never shows",
+  "chunks": [
+    "<neutral>Bad pens. Unintentionally."
+  ],
+  "previous": "happy",
+  "expected": {
+    "emotion": "neutral",
+    "source": "llm",
+    "text": "Bad pens. Unintentionally."
+  }
+}

@@ -1,0 +1,23 @@
+{
+ "set": "judges/judge_draft_fit",
+ "sample": [
+  {
+   "short": "DRA1",
+   "id": "judge_draft_fit-real-drf_02"
+  },
+  {
+   "short": "DRA2",
+   "id": "judge_draft_fit-real-drf_03"
+  },
+  {
+   "short": "DRA3",
+   "id": "judge_draft_fit-real-ga_06"
+  },
+  {
+   "short": "DRA4",
+   "id": "judge_draft_fit-real-ga_13"
+  }
+ ],
+ "disagree": [],
+ "reviewer": "Claude, second pass (the user delegated the review on 2026-10-12)"
+}

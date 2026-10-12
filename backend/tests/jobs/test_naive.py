@@ -83,6 +83,79 @@ async def test_naive_draft_is_schema_valid(api: Api) -> None:
     assert json.dumps(draft_schema(list(load_palettes(SEED_DIR))), separators=(",", ":")) in body["messages"][0]["content"]
     assert body["provider"]["order"] == ["DeepSeek"] and body["reasoning"] == {"enabled": False}
     assert body["max_tokens"] == 2400
+    # persona-context 7.1 (docs/ai/04 P11): the drafter knows the world, the names already used and the You card
+    user = body["messages"][1]["content"]
+    assert "World: Meridian Council" in user and "The user: Kai" in user
+    for name in ("Amara Okafor", "Mei Tanaka-Ruiz", "Victor Hale"):
+        assert name in user.split("Names already used here: ", 1)[1].split("\n", 1)[0]
+    # 7.2: the rules, the schema, the quote rule and the one example, in a fixed order (a stable cached prefix)
+    system = body["messages"][0]["content"]
+    order = [system.index(x) for x in ("Rules:", "Return only a JSON object", QUOTE_RULE, "One example of a complete")]
+    assert order == sorted(order) and "Elara" in system
+
+
+def test_the_example_draft_validates_and_teaches_the_new_fields() -> None:
+    from horizon.ai.naive.creation import EXAMPLE, parse_draft
+
+    got = parse_draft(json.dumps(EXAMPLE), default_schema(), PALETTES)
+    assert 2 <= len(got["profile"]["exampleLines"]) <= 3 and got["profile"]["relationshipToUser"]
+    assert "*" not in got["profile"]["greeting"] + "".join(got["profile"]["exampleLines"])
+    taken = {"Amara", "Mei", "Victor", "Hana", "Rin", "Takeshi", "Elara", "Kael", "Seraphina", "Lyra", "Aria"}
+    assert EXAMPLE["profile"]["name"].split()[0] not in taken
+
+
+def test_empty_relationship_is_omitted() -> None:
+    from horizon.ai.naive.creation import parse_draft
+
+    d = valid_draft()
+    d["profile"]["relationshipToUser"] = "  "
+    assert "relationshipToUser" not in parse_draft(json.dumps(d), default_schema(), PALETTES)["profile"]
+
+
+def test_a_misnested_draft_one_brace_short_is_repaired_for_free() -> None:
+    """D33 (the paid drafter run's finding): `personality` left open, the rest of the profile and the top-level fields
+    written inside it, the text one `}` short. The free repair closes it and moves each field back."""
+    from horizon.ai.naive.creation import EXAMPLE, close_json, parse_draft
+
+    p = dict(EXAMPLE["profile"])
+    personality = {**p.pop("personality"), **{k: p.pop(k) for k in ("backstory", "speakingStyle", "expertise", "goals",
+                                                                       "boundaries", "greeting", "exampleLines",
+                                                                       "relationshipToUser")}}
+    tops = {k: v for k, v in EXAMPLE.items() if k != "profile"}
+    text = json.dumps({"profile": {**p, "personality": personality, **tops}}, ensure_ascii=False)[:-1]   # one } short
+    assert close_json(text) == text + "}"
+    got = parse_draft(text, default_schema(), PALETTES)
+    assert got == json.loads(json.dumps(EXAMPLE))
+
+
+def test_an_invented_key_still_fails_to_the_paid_retry() -> None:
+    from horizon.ai.naive.creation import EXAMPLE, parse_draft
+
+    d = json.loads(json.dumps(EXAMPLE))
+    d["profile"]["personality"]["traits2"] = ["x"]
+    try:
+        parse_draft(json.dumps(d), default_schema(), PALETTES)
+    except Exception as e:
+        assert "personality" in str(e)
+    else:
+        raise AssertionError("an invented key must not pass")
+
+
+def test_scripted_drafter_skips_a_name_already_used() -> None:
+    first = draft_from_seed("an economist", "expert", PALETTES)["profile"]["name"]
+    again = draft_from_seed("an economist", "expert", PALETTES, [f"{first} Someone"])["profile"]["name"]
+    assert again != first
+    assert draft_from_seed("Sarah, a doctor", "expert", PALETTES, ["Sarah Lee"])["profile"]["name"] == "Sarah"
+
+
+def test_canned_group_a_drafts_still_validate() -> None:
+    from horizon.ai.naive.creation import parse_draft
+
+    _purpose, drafts = load_canned("profile-drafts")
+    valid = [r for r in drafts if r.get("valid")]
+    assert len(valid) >= 19   # group A A3: 19 of 20 parsed first time (the 20th is the quote slip)
+    for rec in valid:
+        parse_draft(rec["content"], default_schema(), PALETTES)
 
 
 def test_draft_schema_restates_every_contract_limit() -> None:

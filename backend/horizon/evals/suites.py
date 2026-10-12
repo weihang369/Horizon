@@ -15,15 +15,18 @@ from __future__ import annotations
 
 import asyncio
 import datetime as dt
+import hashlib
 import json
 from collections.abc import Iterator
 from pathlib import Path
 from typing import Any
 
-from horizon.ai.decider import Choice, ChoiceAnswer, Question, validate, wire_question
+from horizon.ai.decider import Choice, ChoiceAnswer, Noul, NoulAnswer, Question, validate, wire_question
 from horizon.ai.questions import bank
 from horizon.domain.clock import FrozenClock
 from horizon.evals import canary as canary_mod
+from horizon.evals import judges
+from horizon.evals.judges import JUDGES_SET
 from horizon.evals.metrics import wilson
 from horizon.evals.runner import EVALS_DIR, Options, Plan, Result, RunEnv, decision_estimate
 from horizon.gateway.context import call_ctx
@@ -57,8 +60,10 @@ def load_dataset(path: Path) -> list[dict[str, Any]]:
     return out
 
 
-def all_items(root: Path | None = None) -> Iterator[dict[str, Any]]:
+def all_items(root: Path | None = None, *, judges: bool = True) -> Iterator[dict[str, Any]]:
     for p in dataset_files(root):
+        if not judges and JUDGES_SET in p.relative_to(root or DATASETS).parts:
+            continue
         yield from load_dataset(p)
 
 
@@ -137,6 +142,18 @@ def measured_path(env: RunEnv) -> Path:
     return env.run_dir.parents[1] / "decisions-measured.json"
 
 
+def measured_marks(items: list[dict[str, Any]]) -> dict[str, str]:
+    """What "already measured" means per question: its bank version AND its items. A relabelled or rebuilt set
+    (persona-context 10.6) is measured again even when the question's wording didn't change; the store still serves
+    every unchanged item, so only the changed ones cost anything."""
+    by: dict[str, list[str]] = {}
+    for it in items:
+        by.setdefault(str(it["question_id"]), []).append(json.dumps(it, sort_keys=True, ensure_ascii=False))
+    return {qid: f"v{bank().get(qid).version}:"
+            + hashlib.sha256("\n".join(sorted(rows)).encode("utf-8")).hexdigest()[:16]
+            for qid, rows in by.items()}
+
+
 class Decisions:
     name = "decisions"
 
@@ -144,7 +161,9 @@ class Decisions:
         self.smoke = smoke
 
     def _items(self, opts: Options) -> list[dict[str, Any]]:
-        items = [i for i in all_items() if bool(i.get("smoke_only")) == self.smoke][opts.start:]
+        """Layer-1 items; `--set NAME` runs one dataset folder instead (the judges' B4 validation is `--set judges`)."""
+        source = all_items(DATASETS / opts.set) if opts.set else all_items(judges=False)
+        items = [i for i in source if bool(i.get("smoke_only")) == self.smoke][opts.start:]
         return items[: opts.limit] if opts.limit else items
 
     def plan(self, opts: Options, prices: Any, *, paid: bool) -> Plan:
@@ -152,33 +171,49 @@ class Decisions:
         est = 0.0
         for i in items:
             q = compile_entry(i["question_id"], i["item"].get("values"), seed=i["id"])
-            est += 2 * decision_estimate(prices, i["item"]["state"], {i["question_id"]: wire_question(q)})
+            asks = 2 if isinstance(q, Choice) else 1   # a noul has no option order to reverse (D27)
+            est += asks * decision_estimate(prices, i["item"]["state"], {i["question_id"]: wire_question(q)})
         return Plan(items=items, estimate_usd=est, expected_s=len(items) * 4.0, paid=paid)
 
     async def run(self, env: RunEnv, plan: Plan) -> Result:
         res = Result()
         done_path = measured_path(env)
-        measured: dict[str, int] = json.loads(done_path.read_text(encoding="utf-8")) if done_path.is_file() else {}
+        measured: dict[str, Any] = json.loads(done_path.read_text(encoding="utf-8")) if done_path.is_file() else {}
         correct = total = flips = 0
         bins: dict[int, list[int]] = {}
         skipped: set[str] = set()
+        mark = measured_marks(plan.items)
         for item in plan.items:
             qid = str(item["question_id"])
             version = bank().get(qid).version
-            if not self.smoke and measured.get(qid) == version:
+            if not self.smoke and measured.get(qid) == mark[qid]:
                 skipped.add(qid)
                 continue
             if await env.over_budget():
                 res.status = "incomplete"
                 break
             q = compile_entry(qid, item["item"].get("values"), seed=item["id"])
+            row: dict[str, Any] = {"id": item["id"], "question_id": qid, "version": version, "label": item["label"],
+                                   "smoke_only": bool(item.get("smoke_only")), "planted": bool(item.get("planted"))}
+            if isinstance(q, Noul):   # D27: asked once; "yes" when p reaches the entry's threshold
+                r = await env.rt.gateway.decide(item["item"]["state"], {qid: wire_question(q)}, call_ctx("eval_judge"))
+                ans = validate(q, r.answers.get(qid))
+                if isinstance(ans, NoulAnswer):
+                    t = float(bank().get(qid).thresholds.get("t", 0.5))
+                    said = "yes" if ans.p >= t else "no"
+                    row.update(answer=said, p=ans.p, correct=said == item["label"])
+                    total += 1
+                    correct += said == item["label"]
+                    bins.setdefault(min(9, int(ans.p * 10)), []).append(int(said == "yes"))
+                else:
+                    row["invalid"] = True
+                res.rows.append(row)
+                continue
             answers = []
             for order in (q, reordered(q)):
                 r = await env.rt.gateway.decide(item["item"]["state"], {qid: wire_question(order)}, call_ctx("eval_judge"))
                 answers.append(validate(order, r.answers.get(qid)))
             a, b = answers
-            row: dict[str, Any] = {"id": item["id"], "question_id": qid, "version": version, "label": item["label"],
-                                   "smoke_only": bool(item.get("smoke_only"))}
             if isinstance(a, ChoiceAnswer) and isinstance(b, ChoiceAnswer):
                 row.update(answer=a.choice, answer_reversed=b.choice, confidence=a.confidence)
                 total += 1
@@ -191,9 +226,11 @@ class Decisions:
             res.rows.append(row)
         if not self.smoke:
             for qid in {r["question_id"] for r in res.rows}:
-                measured[qid] = bank().get(qid).version
+                measured[qid] = mark[qid]
             done_path.parent.mkdir(parents=True, exist_ok=True)
             done_path.write_text(json.dumps(measured, indent=1), encoding="utf-8")
+        if env.opts.set == JUDGES_SET and not self.smoke:
+            res.summary += self._judge_report(res.rows, plan.items)
         if self.smoke:
             res.summary.append(f"## Decisions (smoke only: {total} item(s), never a measurement)")
         elif total:
@@ -206,6 +243,27 @@ class Decisions:
             res.summary.append("## Decisions: nothing to measure" + (f" (unchanged: {', '.join(sorted(skipped))})"
                                                                      if skipped else ""))
         return res
+
+
+    @staticmethod
+    def _judge_report(rows: list[dict[str, Any]], items: list[dict[str, Any]]) -> list[str]:
+        """B4 per judge; the record is updated only for a judge whose every item was asked in this run."""
+        out = ["## Judge validation (B4: real ≥ 85 %, overall above the commonest-answer baseline, planted ≥ 90 %)"]
+        results: dict[str, dict[str, Any]] = {}
+        versions: dict[str, int] = {}
+        for qid in sorted({r["question_id"] for r in rows}):
+            got = [r for r in rows if r["question_id"] == qid and "correct" in r]
+            want = sum(1 for i in items if i["question_id"] == qid)
+            r = judges.b4(got)
+            out.append(f"- {qid} v{bank().get(qid).version}: real {r['real']:.2f} (n {r['real_n']}), overall "
+                       f"{r['overall']:.2f} against the baseline {r['baseline']:.2f}, planted {r['planted']:.2f} "
+                       f"(n {r['planted_n']}) → "
+                       f"{'PASS' if r['passed'] else 'FAIL'}" + ("" if len(got) == want else f" (partial: {len(got)}/{want})"))
+            if len(got) == want:
+                results[qid], versions[qid] = r, bank().get(qid).version
+        if results:
+            judges.update_record(results, versions)
+        return out
 
 
 # ── smoke ──
@@ -241,8 +299,12 @@ async def conversation(env: RunEnv, mode: str) -> dict[str, Any]:
         msgs = (await c.get(f"{api}/sessions/{sid}/messages", params={"limit": 1000})).json()["items"]
         await c.post(f"{api}/sessions/{sid}/end")
     replies = [m for m in msgs if m["author"]["type"] == "character"]
+    from horizon.evals.reply_checks import Reply, check_replies  # M8 (D28): the reply-rule code checks, $0
+
+    checks = check_replies([Reply(speaker=str(m["author"].get("characterId")), mode=mode, text=m["content"])
+                            for m in replies], free_running=True)
     return {"mode": mode, "session": sid, "replies": len(replies),
-            "complete": sum(1 for m in replies if m["status"] == "complete")}
+            "complete": sum(1 for m in replies if m["status"] == "complete"), "checks": checks.summary()}
 
 
 class Smoke:
@@ -265,13 +327,31 @@ class Smoke:
         convs = [await conversation(env, m) for m in MODES]
         res.rows += convs
         empty = [c["mode"] for c in convs if c["replies"] == 0]
+        # M8 (persona-context 9.8): one drafter seed, one summary item and the first lines of each long script, so
+        # every content suite's code path runs in CI at $0 (the judged figures are never measurements here)
+        from horizon.evals.content import Drafter, Long, Summary
+        content_lines: list[str] = []
+        for suite, o in ((Drafter(), Options("drafter", limit=1)), (Summary(), Options("summary", limit=1)),
+                         (Long(), Options("long", limit=3))):
+            sub = RunEnv(rt=env.rt, opts=o, store=env.store, run_dir=env.run_dir, max_usd=env.max_usd)
+            r = await suite.run(sub, suite.plan(o, env.rt.prices, paid=plan.paid))
+            content_lines.append(f"- {suite.name}: {r.status}, {len(r.rows)} row(s)")
+            if r.status != "ok":
+                empty.append(suite.name)
         res.summary += ["## Smoke (never compared with baselines)",
                         f"- bank: {len(bank().entries)} entr(ies), wire problems: {problems or 'none'}",
                         f"- datasets: {n_lines} line(s) load", *d.summary,
-                        "- conversations: " + ", ".join(f"{c['mode']} {c['complete']}/{c['replies']}" for c in convs)]
+                        "- conversations: " + ", ".join(f"{c['mode']} {c['complete']}/{c['replies']}" for c in convs),
+                        "- reply checks: " + ", ".join(f"{c['mode']} {json.dumps(c['checks'])}" for c in convs),
+                        "- content suites:", *content_lines]
         if problems or empty or any(r.get("invalid") for r in d.rows):
             res.status = "failed"
         return res
 
 
-SUITES: dict[str, Any] = {"canary": Canary(), "decisions": Decisions(), "smoke": Smoke()}
+def _content() -> dict[str, Any]:
+    from horizon.evals.content import Drafter, Long, Summary, Transcript
+    return {"drafter": Drafter(), "summary": Summary(), "long": Long(), "transcript": Transcript()}
+
+
+SUITES: dict[str, Any] = {"canary": Canary(), "decisions": Decisions(), "smoke": Smoke(), **_content()}

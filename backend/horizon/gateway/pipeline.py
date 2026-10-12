@@ -38,7 +38,7 @@ from horizon.domain.pricing import (
     PriceTable,
     count_tokens,
     estimate_chat,
-    estimate_decision,
+    estimate_decision_request,
     estimate_embedding,
     estimate_image,
     expected_out,
@@ -235,9 +235,7 @@ class Gateway:
                              expected_out_tokens=expected_out(req.max_tokens, recent_outs), period=self.period())
 
     def decision_estimate(self, state: Any, questions: Mapping[str, Any]) -> float:
-        tokens = count_tokens(json.dumps(state, ensure_ascii=False)) + sum(
-            count_tokens(json.dumps(q, ensure_ascii=False)) for q in questions.values())
-        return estimate_decision(self.prices, tokens)
+        return estimate_decision_request(self.prices, state, questions)
 
     # ── 1. preflight ──
     async def _preflight(self, ctx: CallContext, estimate: float) -> Hold:

@@ -1,0 +1,21 @@
+{
+ "id": "judge_draft_fit",
+ "version": 1,
+ "purpose": "eval_judge",
+ "type": "noul",
+ "label": "misses the seed?",
+ "instructions": "Does the character in quoted_draft fail to match what quoted_seed asked for (the role, the kind of person, the intent)? Small inventions beyond the seed are fine.",
+ "true": "The draft doesn't match the seed.",
+ "false": "The draft matches the seed.",
+ "state": {
+  "intent": "label",
+  "quoted_seed": "quoted",
+  "quoted_draft": "quoted"
+ },
+ "deadline": "default",
+ "floor": null,
+ "thresholds": {
+  "t": 0.5
+ },
+ "fallback": "none (evaluation only)"
+}

@@ -1,0 +1,20 @@
+{"id": "drf_01", "split": "test", "world": "wld_seedMeridian", "intent": "expert", "seed": "a pharmacist who explains drug interactions in plain words"}
+{"id": "drf_02", "split": "dev", "world": "wld_seedMeridian", "intent": "expert", "seed": "an urban planner obsessed with bus routes"}
+{"id": "drf_03", "split": "test", "world": "wld_seedMeridian", "intent": "expert", "seed": "a tax accountant for small hawker stalls"}
+{"id": "drf_04", "split": "dev", "world": "wld_seedMeridian", "intent": "companion", "seed": "an old university friend who became a night nurse"}
+{"id": "drf_05", "split": "test", "world": "wld_seedMeridian", "intent": "companion", "seed": "a sharp-tongued older cousin who runs a print shop"}
+{"id": "drf_06", "split": "dev", "world": "wld_seedMeridian", "intent": "other", "seed": "a retired judge who now writes crossword puzzles"}
+{"id": "drf_07", "split": "test", "world": "wld_seedMeridian", "intent": "other", "seed": "a council archivist who knows every old scandal"}
+{"id": "drf_08", "split": "dev", "world": "wld_seedMeridian", "intent": "expert", "seed": "a sleep researcher, like a famous TV doctor"}
+{"id": "drf_09", "split": "test", "world": "wld_seedMeridian", "intent": "companion", "seed": "Sherlock Holmes but he lives next door"}
+{"id": "drf_10", "split": "dev", "world": "wld_seedMeridian", "intent": "other", "seed": "a data journalist who fact-checks everything at dinner"}
+{"id": "drf_11", "split": "test", "world": "wld_seedSunnyHollow", "intent": "companion", "seed": "a cheerful baker who opens at 5 a.m."}
+{"id": "drf_12", "split": "dev", "world": "wld_seedSunnyHollow", "intent": "companion", "seed": "a shy librarian who reads tarot for fun"}
+{"id": "drf_13", "split": "test", "world": "wld_seedSunnyHollow", "intent": "other", "seed": "a fisherman who tells tall tales about the river"}
+{"id": "drf_14", "split": "dev", "world": "wld_seedSunnyHollow", "intent": "other", "seed": "a teenage-looking but 24-year-old indie game streamer"}
+{"id": "drf_15", "split": "test", "world": "wld_seedSunnyHollow", "intent": "expert", "seed": "a vet who specialises in very old dogs"}
+{"id": "drf_16", "split": "dev", "world": "wld_seedSunnyHollow", "intent": "expert", "seed": "a beekeeper and honey chemist"}
+{"id": "drf_17", "split": "test", "world": "wld_seedSunnyHollow", "intent": "companion", "seed": "seorang tukang jahit yang suka bergosip"}
+{"id": "drf_18", "split": "dev", "world": "wld_seedSunnyHollow", "intent": "other", "seed": "一个开二手书店的退休老师"}
+{"id": "drf_19", "split": "test", "world": "wld_seedSunnyHollow", "intent": "other", "seed": "a florist, just like Hana"}
+{"id": "drf_20", "split": "dev", "world": "wld_seedSunnyHollow", "intent": "expert", "seed": "a physiotherapist for weekend footballers"}

@@ -22,5 +22,15 @@ def test_every_field_loads() -> None:
     assert r.reply_max_tokens.for_mode("one_on_one") == 200 and r.reply_max_tokens.for_mode("one_on_one", deep=True) == 300
     assert r.reply_max_tokens.for_mode("group") == 150 and r.reply_max_tokens.for_mode("watch") == 150
     assert [r.reply_max_tokens.for_mode("debate", x) for x in ("short", "medium", "long")] == [200, 320, 480]
-    assert (r.window_tokens, r.coalesce_max_chars, r.coalesce_max_ms) == (6000, 48, 50)
+    assert (r.coalesce_max_chars, r.coalesce_max_ms) == (48, 50)
+    # docs/ai/05 X2 (persona-context 4.1): windows per mode
+    assert r.window_tokens.as_dict() == {"one_on_one": 6000, "group": 9000, "watch": 9000, "debate": 9000}
+    assert r.llm("summary").max_tokens == 600
     assert (r.idle_release_ms, r.prefetch_max, r.llm_concurrency) == (600_000, 2, 4)
+    assert r.switch("persona.repeatHint") is False and r.switch("context.voiceReminder") is False   # M8: both off
+
+
+def test_an_old_single_window_still_loads() -> None:
+    from horizon.domain.runtime_config import WindowSizes
+
+    assert WindowSizes.from_json(7000).as_dict() == {"one_on_one": 7000, "group": 7000, "watch": 7000, "debate": 7000}

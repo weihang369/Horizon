@@ -18,7 +18,9 @@
 .forced { margin-left: 4px; }
 
 .stack { display: grid; gap: 8px; }
-.stackBar { display: flex; height: 14px; background: var(--ink-500); overflow: hidden; clip-path: polygon(3px 0, 100% 0, calc(100% - 3px) 100%, 0 100%); }
+.stackBar { position: relative; display: flex; height: 14px; background: var(--ink-500); overflow: hidden; clip-path: polygon(3px 0, 100% 0, calc(100% - 3px) 100%, 0 100%); }
+.stackOver { position: absolute; top: 0; bottom: 0; background: repeating-linear-gradient(135deg, transparent 0 3px, var(--ink-900) 3px 5px); pointer-events: none; }
+.stackMark { position: absolute; top: -2px; bottom: -2px; width: 2px; margin-left: -1px; background: var(--paper-50); pointer-events: none; }
 .seg { height: 100%; flex: none; box-shadow: inset -1px 0 0 var(--ink-900); }
 .legend { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 0; padding: 0; list-style: none; font-size: 12px; color: var(--paper-300); }
 .legend li { display: inline-flex; align-items: center; gap: 6px; }

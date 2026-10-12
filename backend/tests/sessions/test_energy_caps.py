@@ -9,7 +9,7 @@ from typing import Any
 from horizon.events.bus import GLOBAL
 from tests.conftest import Api
 from tests.jobs.kit import cancel_overlay_jobs
-from tests.sessions.kit import API, assert_reduces, chars, command, create, events, messages, snapshot
+from tests.sessions.kit import API, assert_reduces, chars, command, create, events, messages, snapshot, use_first_chat
 from tests.sessions.test_turns import FixedEngine
 
 
@@ -77,8 +77,23 @@ async def test_scenarios_mirror_the_mock_and_keep_user_sessions(api: Api) -> Non
     assert (await api.json(f"{API}/settings"))["pricing"]["period"] == "off_peak"  # the override is cleared
 
 
+async def test_first_chat_greeting_costs_nothing(api: Api) -> None:
+    """session-runtime "Daily cap pauses live sessions": a first chat's approved greeting is free (docs/ai/04 P9)."""
+    await api.set_key()
+    await cancel_overlay_jobs(api)  # M4: the test-mode overlay job would spend in the background
+    assert (await api.client.patch(f"{API}/settings", json={"budget": {"dailyCapUsd": 0.00005}})).status_code == 200
+    sub = api.rt.bus.subscribe(GLOBAL)
+    sid = (await create(api, "one_on_one", ["chr_seedAmara"]))["session"]["id"]
+    await api.drive(8000)
+    assert not any(g["type"] == "budget.reached" for g in _drain(sub))
+    snap = await snapshot(api, sid)
+    assert snap["session"]["status"] == "active" and chars(snap["messages"])[0]["status"] == "complete"
+    assert (await api.json(f"{API}/settings"))["spentTodayUsd"] == 0
+
+
 async def test_cap_reached_by_the_greeting(api: Api) -> None:
     await api.set_key()
+    await use_first_chat(api)   # P9: only a later chat's greeting is generated and billed
     assert (await api.client.patch(f"{API}/settings", json={"budget": {"dailyCapUsd": 0.00005}})).status_code == 200
     sub = api.rt.bus.subscribe(GLOBAL)
     sid = (await create(api, "one_on_one", ["chr_seedAmara"]))["session"]["id"]
@@ -96,6 +111,7 @@ async def test_cap_reached_by_the_greeting(api: Api) -> None:
 async def test_crossing_the_cap_pauses_then_a_raised_cap_resumes(api: Api) -> None:
     await api.set_key()
     await cancel_overlay_jobs(api)  # M4: the test-mode overlay job would spend in the background
+    await use_first_chat(api)       # P9: this session's greeting is then generated and billed
     sid = (await create(api, "one_on_one", ["chr_seedAmara"]))["session"]["id"]
     await api.drive(6000)
     spent = (await api.json(f"{API}/settings"))["spentTodayUsd"]

@@ -27,9 +27,19 @@ import json
 from collections.abc import AsyncIterator
 from typing import Any
 
+from horizon.ai.agent.budget import planned_input
 from horizon.ai.contexts import TurnContext
+from horizon.ai.language import language_cue
 from horizon.ai.llm import llm_request
-from horizon.ai.naive.prompt import PROMPT_VERSION, TRAILING_CUE, RetrievalBlock, retrieval_block, system_prompt, turn_cue
+from horizon.ai.naive.prompt import (
+    PROMPT_VERSION,
+    SUMMARY_HEADING,
+    TRAILING_CUE,
+    RetrievalBlock,
+    retrieval_block,
+    system_prompt,
+    turn_cue,
+)
 from horizon.ai.naive.tag_parser import ParsedEmotion, TagParser
 from horizon.ai.naive.window import render_history
 from horizon.ai.ports import CitationMap, Emotion, Token, TracePatch, TurnEvent
@@ -40,7 +50,7 @@ from horizon.gateway.chat import ChatRequest
 from horizon.gateway.errors import ProviderError
 
 EMPTY_REPLY = "The model sent an empty reply."
-FALLBACK_ROW = LlmCall(thinking="off", temperature=1.3, output="stream")   # only when no table is wired (unit tests)
+FALLBACK_ROW = LlmCall(thinking="off", temperature=1.0, output="stream")   # only when no table is wired (unit tests)
 
 
 def stop_sequences(ctx: TurnContext, you: str, messages: list[dict[str, Any]]) -> list[str]:
@@ -80,7 +90,7 @@ class NaiveTurnEngine:
         s = ctx.session
         prefix: list[dict[str, Any]] = [{"role": "system", "content": system_prompt(ctx)}]
         if s.summary:
-            prefix.append({"role": "system", "content": f"Earlier in this conversation (summary):\n{s.summary}"})
+            prefix.append({"role": "system", "content": f"{SUMMARY_HEADING}\n{s.summary}"})   # naive-4: S6
         you = str((s.world.you or {}).get("displayName") or "User")
         history = render_history(s.recent, ctx.speaker.id, you)
         messages = [*prefix, *history]
@@ -92,6 +102,9 @@ class NaiveTurnEngine:
         elif force_cue or (history and history[-1]["role"] == "assistant"):
             # group A A2: a history that ends on the speaker's own line came back empty 2 times in 4 without a cue
             messages.append({"role": "system", "content": TRAILING_CUE})
+        lang = language_cue(ctx)   # naive-5 (persona-context D35): a clearly non-English user line, last of all
+        if lang:
+            messages.append({"role": "system", "content": lang})
         req = llm_request(self._row(ctx), self.deps.prices.chat.model, messages, max_tokens=ctx.max_tokens,
                           stop=stop_sequences(ctx, you, history))
         return req, prefix
@@ -116,7 +129,7 @@ class NaiveTurnEngine:
             if attempt == 2:
                 req, _ = self.request(ctx, block, force_cue=True)
             estimate = gw.chat_estimate(req, warm=warm, prefix_tokens=count_tokens(prefix_text))
-            parser = TagParser(previous, speaker=names)
+            parser = self.parser(ctx, previous, names)
             held: ParsedEmotion | None = None
             stream: Any = gw.chat_stream(req, ctx.call_ctx("reply"), estimate=estimate)
             try:
@@ -155,22 +168,43 @@ class NaiveTurnEngine:
                 break
             if attempt == 2:
                 raise ProviderError("provider_error", EMPTY_REPLY)
+        yield TracePatch(self.trace_patch(ctx, req, prefix, block, "".join(said), chosen, warm=warm))
+
+    # ── seams (persona-context design D2): the agent engine overrides these three, the stream loop is shared ──
+    def parser(self, ctx: TurnContext, previous: str, names: list[str]) -> TagParser:
+        """The tag parser: naive reads the face from the tag and strips the speaker's name on the first line."""
+        return TagParser(previous, speaker=names)
+
+    def trace_patch(self, ctx: TurnContext, req: ChatRequest, prefix: list[dict[str, Any]], block: RetrievalBlock | None,
+                    said: str, chosen: ParsedEmotion | None, *, warm: bool) -> dict[str, Any]:
+        """The engine's TracePatch: the context X-ray, the face it showed, and the passages and memories it was given."""
+        # docs/ai/05 X6, X7 (persona-context D15, D16): no cacheHitPct (Insight derives it from the provider's cached
+        # tokens); the summary counts as history, `user` is the latest user message, the budget is the mode's planned
+        # input. The one naive system prompt stays under `system` (persona 0); `mode` is the turn's cue.
+        tail = req.messages[len(prefix):]
+        block_msg = next((m for m in tail if block is not None and m["role"] == "system" and m["content"] == block.content),
+                         None)
+        cue_msg = tail[-1] if tail and tail[-1]["role"] == "system" and tail[-1] is not block_msg else None
+        history_msgs = [m for m in tail if m is not block_msg and m is not cue_msg]
+        latest = next((m.content for m in reversed(ctx.session.recent) if m.author_type == "user"), "")
+        user = count_tokens(latest) if latest else 0
+        summary = count_tokens(prefix[1]["content"]) if len(prefix) > 1 else 0
+        history = summary + max(0, sum(count_tokens(m["content"]) for m in history_msgs) - user)
         block_tokens = count_tokens(block.content) if block is not None else 0
-        history = sum(count_tokens(m["content"]) for m in req.messages[len(prefix):]) - block_tokens
         memory_tokens = count_tokens(block.memory_text) if block is not None and block.memory_text else 0
         patch: dict[str, Any] = {
-            "context": {"budget": self.deps.window_tokens, "cacheHitPct": 100 if warm else 0,
+            "context": {"budget": planned_input(ctx.session.mode, self.deps.windows()),
                         "used": {"system": count_tokens(prefix[0]["content"]), "persona": 0, "memory": memory_tokens,
-                                 "knowledge": block_tokens - memory_tokens, "history": history, "user": 0,
-                                 "mode": count_tokens(prefix[1]["content"]) if len(prefix) > 1 else 0}},
+                                 "knowledge": block_tokens - memory_tokens, "history": history, "user": user,
+                                 "mode": count_tokens(cue_msg["content"]) if cue_msg is not None else 0}},
         }
         if chosen is not None:
             patch["emotion"] = {"chosen": chosen.emotion, "source": chosen.source}
         if block is not None:
-            knowledge = block.knowledge_trace(ctx.query, "".join(said))
+            knowledge = block.knowledge_trace(ctx.query, said)
             if knowledge is not None:
                 patch["knowledge"] = knowledge
             memory = block.memory_trace()
             if memory is not None:
                 patch["memory"] = memory
-        yield TracePatch(patch)
+        return patch

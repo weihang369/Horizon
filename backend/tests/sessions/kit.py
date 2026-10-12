@@ -71,3 +71,13 @@ async def ledger(api: Api) -> list[dict[str, Any]]:
         rows = (await conn.execute(sa.select(t.usage_records).where(t.usage_records.c.is_seed.is_(False))
                                    .order_by(t.usage_records.c.at, t.usage_records.c.id))).mappings().all()
     return [dict(r) for r in rows]
+
+
+async def use_first_chat(api: Api, cid: str = "chr_seedAmara", world: str = "wld_seedMeridian") -> str:
+    """docs/ai/04 P9 (persona-context D20): a character's FIRST 1:1 chat opens with its stored greeting at no cost.
+    Tests about a generated, billed greeting open that first chat here (and leave it), then create their own."""
+    sid: str = (await create(api, "one_on_one", [cid], world=world))["session"]["id"]
+    await api.drive(6000)
+    r = await api.post(f"{API}/sessions/{sid}/leave", {})
+    assert r.status_code == 204, r.text
+    return sid

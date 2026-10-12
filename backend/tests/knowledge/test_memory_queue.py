@@ -62,7 +62,8 @@ async def test_a_writer_sees_complete_replies_and_its_memories_land(api: Api) ->
     w = RememberEverything()
     api.rt.ai.override("memory_writer", w)
     sid = await one_reply(api)
-    replies = [m["id"] for m in chars(await messages(api, sid)) if m["status"] == "complete"]
+    # P9 (persona-context D19): the first chat's verbatim greeting never reaches the memory writer
+    replies = [m["id"] for m in chars(await messages(api, sid)) if m["status"] == "complete"][1:]
     assert w.calls == replies
     async with api.rt.db.read() as conn:
         sources = set((await conn.execute(text("SELECT source_message_id FROM memory_items WHERE character_id = :c AND "

@@ -17,6 +17,11 @@ PROFESSIONAL = re.compile(r"doctor|physician|nurse|lawyer|attorney|counsel|econo
 MEDICAL = re.compile(r"doctor|nurse|physician", re.I)
 NAMES = ("Sarah", "Kenji", "Lucia", "Omar", "Priya", "Theo", "Aiko", "Marcus", "Noor", "Elias")
 TRAITS = ("curious", "patient", "dry-humoured", "warm", "precise", "stubborn", "playful", "loyal", "candid")
+# docs/ai/04 P11: plain greetings (the first chat says it word for word, P9) and example lines that teach the voice.
+GREETINGS = ("Oh, hey. I'm {name}.", "Hey. {name}. Good to meet you.", "Hi, I'm {name}. Pull up a chair.")
+EXAMPLE_LINES = ("Honestly? I'd start with the easy part.", "Hm. Give me a second with that.",
+                 "That's fair. Still, I'd push back a little.", "Okay, tell me the rest.", "Long day. Worth it, though.",
+                 "Wait, say that again?")
 
 Draft = dict[str, Any]
 
@@ -25,9 +30,23 @@ def _upper_first(s: str) -> str:
     return s[:1].upper() + s[1:]
 
 
-def pick_name(seed: str) -> str:
+def _first_word(name: str) -> str:
+    words = name.strip().split()
+    return words[0].lower() if words else ""
+
+
+def pick_name(seed: str, names_in_use: Sequence[str] = ()) -> str:
+    """A name from the seed is kept (the user asked for it); a bank name skips names already used in the world (P11)."""
     m = re.match(r"\s*([A-Z][a-z]+)(?=[\s,])", seed)
-    return m.group(1) if m else NAMES[JsRng(seed).int(0, len(NAMES) - 1)]
+    if m:
+        return m.group(1)
+    taken = {_first_word(n) for n in names_in_use}
+    start = JsRng(seed).int(0, len(NAMES) - 1)
+    for i in range(len(NAMES)):
+        n = NAMES[(start + i) % len(NAMES)]
+        if n.lower() not in taken:
+            return n
+    return NAMES[start]
 
 
 def role_from(seed: str) -> str:
@@ -38,9 +57,9 @@ def role_from(seed: str) -> str:
     return js_slice(re.sub(r"^[A-Za-z0-9_]", lambda x: x.group(0).upper(), raw), 60)
 
 
-def draft_from_seed(seed: str, intent: str, palette_ids: Sequence[str]) -> Draft:
+def draft_from_seed(seed: str, intent: str, palette_ids: Sequence[str], names_in_use: Sequence[str] = ()) -> Draft:
     rng = JsRng(f"draft:{seed}")
-    name = pick_name(seed)
+    name = pick_name(seed, names_in_use)
     role = role_from(seed)
     advisory = intent == "expert" or bool(PROFESSIONAL.search(seed))
     traits = rng.shuffle(TRAITS)[:4]
@@ -67,10 +86,9 @@ def draft_from_seed(seed: str, intent: str, palette_ids: Sequence[str]) -> Draft
         "goals": "Be useful without pretending to know everything.",
         "boundaries": ["No definitive diagnoses or legal advice; points to a professional for decisions."] if advisory
         else ["Keeps things friendly and SFW."],
-        "greeting": f"Hi, I'm {name}. What can I do for you?",
+        "greeting": "",
         "exampleLines": [],
         "relationshipToUser": "a close friend" if intent == "companion" else "",
-        "systemPromptPreview": f"You are {name}, {role.lower()}. Speak in a {traits[0]}, {traits[1]} way.",
     }
     age_band = "young_adult" if age < 30 else "adult" if age < 45 else "middle_aged"
     body = {"ageBand": age_band, "build": rng.pick(["slim", "average", "athletic"]), "height": "average",
@@ -96,6 +114,10 @@ def draft_from_seed(seed: str, intent: str, palette_ids: Sequence[str]) -> Draft
     brief = {"genres": [rng.pick(["lo-fi", "city-pop", "acoustic folk", "piano", "synthwave"])],
              "moods": [rng.pick(["hopeful", "calm", "playful", "confident"])], "bpm": rng.int(80, 124),
              "instruments": ["piano", rng.pick(["synth", "guitar", "bells"])], "vibe": f"{name}'s everyday theme"}
+    # P11, drawn last so the earlier picks keep their order: a plain greeting and 2-3 example lines that differ from it.
+    profile["greeting"] = rng.pick(list(GREETINGS)).replace("{name}", name)
+    n = rng.int(2, 3)
+    profile["exampleLines"] = rng.shuffle(EXAMPLE_LINES)[:n]
     return {"profile": profile, "attributes": attributes, "appearanceSummary": summary_text, "paletteId": palette_id,
             "advisory": advisory, "brief": brief}
 

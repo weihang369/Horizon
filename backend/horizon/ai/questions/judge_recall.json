@@ -1,0 +1,21 @@
+{
+ "id": "judge_recall",
+ "version": 1,
+ "purpose": "eval_judge",
+ "type": "noul",
+ "label": "fact not used?",
+ "instructions": "quoted_probe asks about the fact in quoted_fact. Does quoted_reply fail to use that fact correctly?",
+ "true": "The reply doesn't give the fact, or gets it wrong.",
+ "false": "The reply uses the fact correctly.",
+ "state": {
+  "quoted_fact": "quoted",
+  "quoted_probe": "quoted",
+  "quoted_reply": "quoted"
+ },
+ "deadline": "default",
+ "floor": null,
+ "thresholds": {
+  "t": 0.5
+ },
+ "fallback": "none (evaluation only)"
+}

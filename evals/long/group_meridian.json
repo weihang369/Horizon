@@ -1,0 +1,345 @@
+{
+ "schemaVersion": 1,
+ "id": "group_meridian",
+ "mode": "group",
+ "world": "wld_seedMeridian",
+ "cast": [
+  "chr_seedAmara",
+  "chr_seedMei",
+  "chr_seedVictor"
+ ],
+ "language": "en",
+ "policy": "auto",
+ "lines": [
+  {
+   "text": "It's been raining nonstop.",
+   "kind": "filler"
+  },
+  {
+   "text": "I tried that new noodle place by the station.",
+   "kind": "filler"
+  },
+  {
+   "text": "I'm Kai, by the way, and I chair the council's budget committee.",
+   "kind": "fact",
+   "fact": "budget committee"
+  },
+  {
+   "text": "Someone left a plant at my door. No note.",
+   "kind": "filler"
+  },
+  {
+   "text": "We meet in the old library building on Jalan Hang Kasturi.",
+   "kind": "fact",
+   "fact": "library"
+  },
+  {
+   "text": "My neighbour is drilling again.",
+   "kind": "filler"
+  },
+  {
+   "text": "Our vote on the four-day week is on the 3rd of November.",
+   "kind": "fact",
+   "fact": "November"
+  },
+  {
+   "text": "I finally cleaned my desk. It won't last.",
+   "kind": "filler"
+  },
+  {
+   "text": "My deputy is called Siti Rahim.",
+   "kind": "fact",
+   "fact": "Siti"
+  },
+  {
+   "text": "I promised the mayor a report by Friday.",
+   "kind": "fact",
+   "fact": "Friday"
+  },
+  {
+   "text": "Tell me something you've been thinking about.",
+   "kind": "filler"
+  },
+  {
+   "text": "Long day. How's yours going?",
+   "kind": "filler"
+  },
+  {
+   "text": "My phone battery is dying so fast lately.",
+   "kind": "filler"
+  },
+  {
+   "text": "The trains were late again.",
+   "kind": "filler"
+  },
+  {
+   "text": "What would you do on a free Sunday?",
+   "kind": "filler"
+  },
+  {
+   "text": "I keep forgetting to drink water.",
+   "kind": "filler"
+  },
+  {
+   "text": "Tell me something you've been thinking about.",
+   "kind": "filler"
+  },
+  {
+   "text": "I think I need a haircut.",
+   "kind": "filler"
+  },
+  {
+   "text": "I keep forgetting to drink water.",
+   "kind": "filler"
+  },
+  {
+   "text": "Work was quiet, which is suspicious.",
+   "kind": "filler"
+  },
+  {
+   "text": "Raising the minimum wage always causes mass unemployment, that's settled.",
+   "kind": "wrong_claim"
+  },
+  {
+   "text": "I made coffee too strong this morning.",
+   "kind": "filler"
+  },
+  {
+   "text": "My neighbour is drilling again.",
+   "kind": "filler"
+  },
+  {
+   "text": "What did you have for lunch?",
+   "kind": "filler"
+  },
+  {
+   "text": "Someone left a plant at my door. No note.",
+   "kind": "filler"
+  },
+  {
+   "text": "Is it weird that I like Mondays?",
+   "kind": "filler"
+  },
+  {
+   "text": "Tell me about your week.",
+   "kind": "filler"
+  },
+  {
+   "text": "Is it weird that I like Mondays?",
+   "kind": "filler"
+  },
+  {
+   "text": "What did you have for lunch?",
+   "kind": "filler"
+  },
+  {
+   "text": "Precedent never binds a court, judges just do what they like.",
+   "kind": "wrong_claim"
+  },
+  {
+   "text": "I've been reading before bed instead of scrolling.",
+   "kind": "filler"
+  },
+  {
+   "text": "I finally cleaned my desk. It won't last.",
+   "kind": "filler"
+  },
+  {
+   "text": "Do you like the rain?",
+   "kind": "filler"
+  },
+  {
+   "text": "Work was quiet, which is suspicious.",
+   "kind": "filler"
+  },
+  {
+   "text": "I finally cleaned my desk. It won't last.",
+   "kind": "filler"
+  },
+  {
+   "text": "Do you ever just stare at the ceiling for an hour?",
+   "kind": "filler"
+  },
+  {
+   "text": "Do you ever just stare at the ceiling for an hour?",
+   "kind": "filler"
+  },
+  {
+   "text": "Weekend plans? Mine are none.",
+   "kind": "filler"
+  },
+  {
+   "text": "Night shifts don't affect health if you sleep eight hours.",
+   "kind": "wrong_claim"
+  },
+  {
+   "text": "What would you do on a free Sunday?",
+   "kind": "filler"
+  },
+  {
+   "text": "Someone left a plant at my door. No note.",
+   "kind": "filler"
+  },
+  {
+   "text": "It's been raining nonstop.",
+   "kind": "filler"
+  },
+  {
+   "text": "My neighbour is drilling again.",
+   "kind": "filler"
+  },
+  {
+   "text": "My neighbour is drilling again.",
+   "kind": "filler"
+  },
+  {
+   "text": "I finally cleaned my desk. It won't last.",
+   "kind": "filler"
+  },
+  {
+   "text": "Do you like the rain?",
+   "kind": "filler"
+  },
+  {
+   "text": "Work was quiet, which is suspicious.",
+   "kind": "filler"
+  },
+  {
+   "text": "I keep forgetting to drink water.",
+   "kind": "filler"
+  },
+  {
+   "text": "Long day. How's yours going?",
+   "kind": "filler"
+  },
+  {
+   "text": "Do you like the rain?",
+   "kind": "filler"
+  },
+  {
+   "text": "Weekend plans? Mine are none.",
+   "kind": "filler"
+  },
+  {
+   "text": "I tried that new noodle place by the station.",
+   "kind": "filler"
+  },
+  {
+   "text": "Do you ever just stare at the ceiling for an hour?",
+   "kind": "filler"
+  },
+  {
+   "text": "My neighbour is drilling again.",
+   "kind": "filler"
+  },
+  {
+   "text": "What did you have for lunch?",
+   "kind": "filler"
+  },
+  {
+   "text": "My neighbour is drilling again.",
+   "kind": "filler"
+  },
+  {
+   "text": "I've been reading before bed instead of scrolling.",
+   "kind": "filler"
+  },
+  {
+   "text": "The trains were late again.",
+   "kind": "filler"
+  },
+  {
+   "text": "Weekend plans? Mine are none.",
+   "kind": "filler"
+  },
+  {
+   "text": "Weekend plans? Mine are none.",
+   "kind": "filler"
+  },
+  {
+   "text": "I finally cleaned my desk. It won't last.",
+   "kind": "filler"
+  },
+  {
+   "text": "I watched a documentary about octopuses.",
+   "kind": "filler"
+  },
+  {
+   "text": "What committee do I chair?",
+   "kind": "probe",
+   "fact": "budget committee"
+  },
+  {
+   "text": "The trains were late again.",
+   "kind": "filler"
+  },
+  {
+   "text": "I think I need a haircut.",
+   "kind": "filler"
+  },
+  {
+   "text": "Where does the council meet?",
+   "kind": "probe",
+   "fact": "library"
+  },
+  {
+   "text": "Weekend plans? Mine are none.",
+   "kind": "filler"
+  },
+  {
+   "text": "I think I need a haircut.",
+   "kind": "filler"
+  },
+  {
+   "text": "When is our vote?",
+   "kind": "probe",
+   "fact": "November"
+  },
+  {
+   "text": "I've been reading before bed instead of scrolling.",
+   "kind": "filler"
+  },
+  {
+   "text": "I watched a documentary about octopuses.",
+   "kind": "filler"
+  },
+  {
+   "text": "What's my deputy's name?",
+   "kind": "probe",
+   "fact": "Siti"
+  },
+  {
+   "text": "I watched a documentary about octopuses.",
+   "kind": "filler"
+  },
+  {
+   "text": "Someone left a plant at my door. No note.",
+   "kind": "filler"
+  },
+  {
+   "text": "When is my report due to the mayor?",
+   "kind": "probe",
+   "fact": "Friday"
+  },
+  {
+   "text": "Tell me about your week.",
+   "kind": "filler"
+  },
+  {
+   "text": "I've been reading before bed instead of scrolling.",
+   "kind": "filler"
+  },
+  {
+   "text": "My phone battery is dying so fast lately.",
+   "kind": "filler"
+  },
+  {
+   "text": "My phone battery is dying so fast lately.",
+   "kind": "filler"
+  },
+  {
+   "text": "I watched a documentary about octopuses.",
+   "kind": "filler"
+  }
+ ]
+}

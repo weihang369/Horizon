@@ -34,7 +34,7 @@ from pydantic import SecretStr
 
 from horizon.config import REPO_ROOT, Config
 from horizon.domain.clock import FrozenClock, PricingCalendar, calendar_for
-from horizon.domain.pricing import count_tokens, estimate_decision, load_price_table
+from horizon.domain.pricing import estimate_decision_request, load_price_table
 from horizon.evals.store import ResponseStore
 
 if TYPE_CHECKING:
@@ -59,6 +59,8 @@ class Options:
     accept: bool = False
     latency: bool = False
     repeat: bool = False
+    set: str | None = None                # decisions: one dataset folder (e.g. `judges`, persona-context D27)
+    seed_dir: str | None = None           # a seed folder to run against instead of the repo's (a config experiment)
 
 
 @dataclass
@@ -98,9 +100,11 @@ class RunEnv:
         return await self.spent() >= self.max_usd
 
 
-def store_for(opts: Options, data_dir: Path, fingerprint: str | None) -> ResponseStore | None:
-    """D35: the runner, not the caller, decides; these runs never read or write the store."""
-    if opts.suite in BYPASS_SUITES or opts.latency or opts.repeat:
+def store_for(opts: Options, data_dir: Path, fingerprint: str | None, *, test_mode: bool = False) -> ResponseStore | None:
+    """D35: the runner, not the caller, decides; these runs never read or write the store. A test-mode run (the
+    in-process fake) never touches it either: a fake answer saved there would later be served to a paid run as real
+    (persona-context 10.2 found `smoke` had done exactly that)."""
+    if test_mode or opts.suite in BYPASS_SUITES or opts.latency or opts.repeat:
         return None
     return ResponseStore.eval_view(data_dir / "cache", fingerprint)
 
@@ -127,7 +131,9 @@ def spent_today(data_dir: Path, cal: PricingCalendar, now: datetime) -> float:
 def prune_runs(runs_dir: Path, keep: int = KEEP_RUNS) -> list[str]:
     if not runs_dir.is_dir():
         return []
-    runs = sorted(p for p in runs_dir.iterdir() if p.is_dir() and p.name[:1].isdigit())
+    # a run holding a `.keep` file is a dataset's source (evals/datasets/judges/labels.json `_sources`): never pruned.
+    # 10.6 lost three source runs to this pruning before the marker existed.
+    runs = sorted(p for p in runs_dir.iterdir() if p.is_dir() and p.name[:1].isdigit() and not (p / ".keep").exists())
     gone = runs[:-keep] if len(runs) > keep else []
     for p in gone:
         shutil.rmtree(p, ignore_errors=True)
@@ -154,7 +160,8 @@ def _user_key(base: Config) -> SecretStr | None:
 
 
 def isolated_config(base: Config, run_dir: Path, opts: Options, *, test_mode: bool) -> Config:
-    return Config(repo_root=base.repo_root, data_dir=run_dir, seed_dir=base.seed_dir, tz=base.tz, test_mode=test_mode,
+    seed_dir = Path(opts.seed_dir).resolve() if opts.seed_dir else base.seed_dir
+    return Config(repo_root=base.repo_root, data_dir=run_dir, seed_dir=seed_dir, tz=base.tz, test_mode=test_mode,
                   port=base.port, log_level=base.log_level, openrouter_key=None if test_mode else _user_key(base),
                   ai_env={"HORIZON_AI_PROFILE": opts.profile})
 
@@ -166,6 +173,7 @@ class Runner:
     stdin: Callable[[str], str] = input
     out: Callable[[str], None] = print
     now: Callable[[], datetime] = lambda: datetime.now(UTC)
+    store_hits: int = 0   # the last run's store hits, for its report
 
     @property
     def data_dir(self) -> Path:
@@ -200,7 +208,10 @@ class Runner:
             self.out("horizon: no OpenRouter key (OPENROUTER_API_KEY in the repo's .env)")
             return 2
         if not opts.yes:
-            ans = self.stdin("Run it? [y/N] ").strip().lower()
+            try:
+                ans = self.stdin("Run it? [y/N] ").strip().lower()
+            except EOFError:   # no terminal (CI, a pipe): the answer is no
+                ans = ""
             if ans not in ("y", "yes"):
                 self.out("horizon: cancelled; nothing was sent")
                 return 1
@@ -239,7 +250,7 @@ class Runner:
         fingerprint = None
         if (EVALS_DIR / "canary.json").is_file():
             fingerprint = json.loads((EVALS_DIR / "canary.json").read_text(encoding="utf-8")).get("fingerprint")
-        store = store_for(opts, self.data_dir, fingerprint)
+        store = store_for(opts, self.data_dir, fingerprint, test_mode=test_mode)
         rt.gateway.store = store
         env = RunEnv(rt=rt, opts=opts, store=store, run_dir=run_dir, max_usd=max_usd)
         try:
@@ -248,11 +259,12 @@ class Runner:
             try:
                 result: Result = await suite.run(env, plan)
             except ProviderError as e:
-                if e.code in ("daily_budget_exceeded", "creation_budget_exceeded"):
+                if e.code in ("daily_budget_exceeded", "creation_budget_exceeded", "energy_exhausted"):
                     result = Result(status="incomplete", summary=[f"stopped: {e.code} (the run's cap ${max_usd})"])
                 else:
                     raise
             spent = await env.spent()
+            self.store_hits = store.hits if store is not None else 0
             ports = rt.ai.resolved(key_set=rt.keys.status() == "set")
             return result, ports, spent, result.model
         finally:
@@ -263,23 +275,18 @@ class Runner:
         with (run_dir / "results.jsonl").open("w", encoding="utf-8") as f:
             for r in result.rows:
                 f.write(json.dumps(r, ensure_ascii=False) + "\n")
-        hits = sum(1 for r in result.rows if r.get("cached"))
+        hits = max(sum(1 for r in result.rows if r.get("cached")), self.store_hits)
         lines = [f"# eval {opts.suite} · {result.status}", "",
                  f"- profile: `{opts.profile}`; ports: " + ", ".join(f"{k}={v}" for k, v in sorted(ports.items())),
                  f"- items: {len(plan.items)}; estimate ${plan.estimate_usd:.5f}; spent ${spent:.5f}; cap ${max_usd:.5f}",
                  f"- provider: {'paid' if plan.paid else 'in-process fake ($0)'}; store hits: {hits}",
-                 *( [f"- model: `{model}`"] if model else []), "", *result.summary, ""]
+                 *( [f"- model: `{model}`"] if model else []),
+                 *( [f"- seed folder: `{opts.seed_dir}` (a config experiment)"] if opts.seed_dir else []),
+                 "", *result.summary, ""]
         (run_dir / "report.md").write_text("\n".join(lines), encoding="utf-8")
 
 
-# Jev bills its own prompt on top of what we send: 160-275 input tokens per request on the 18 canary requests of
-# 2026-10-11 (docs/ai/checks/m7.md). The eval runner budgets with a margin; the gateway's preflight estimate is a
-# separate, locked decision (group A) and is reported, not changed here.
-JEV_REQUEST_OVERHEAD_TOKENS = 300
-
-
 def decision_estimate(prices: Any, state: Any, questions: dict[str, Any]) -> float:
-    tokens = count_tokens(json.dumps(state, ensure_ascii=False)) + sum(
-        count_tokens(json.dumps(q, ensure_ascii=False)) for q in questions.values())
-    return float(estimate_decision(prices, tokens + JEV_REQUEST_OVERHEAD_TOKENS))
+    """The gateway's formula (budget-caps "Cost estimates per category"; persona-context design D23): one copy."""
+    return float(estimate_decision_request(prices, state, questions))
 

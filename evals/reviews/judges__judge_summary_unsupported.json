@@ -1,0 +1,39 @@
+{
+ "set": "judges/judge_summary_unsupported",
+ "sample": [
+  {
+   "short": "SUM1",
+   "id": "judge_summary_unsupported-real-sum_en_09"
+  },
+  {
+   "short": "SUM2",
+   "id": "judge_summary_unsupported-real-sum_mix_04"
+  },
+  {
+   "short": "SUM3",
+   "id": "judge_summary_unsupported-real-sum_ms_06"
+  },
+  {
+   "short": "SUM4",
+   "id": "judge_summary_unsupported-real-sum_zh_07"
+  },
+  {
+   "short": "SUM5",
+   "id": "judge_summary_unsupported-real-sum_ms_03"
+  },
+  {
+   "short": "SUM6",
+   "id": "judge_summary_unsupported-real-sum_ms_05"
+  },
+  {
+   "short": "SUM7",
+   "id": "judge_summary_unsupported-real-sum_ms_08"
+  },
+  {
+   "short": "SUM8",
+   "id": "judge_summary_unsupported-real-sum_zh_03"
+  }
+ ],
+ "disagree": [],
+ "reviewer": "Claude, second pass (the user delegated the review on 2026-10-12)"
+}

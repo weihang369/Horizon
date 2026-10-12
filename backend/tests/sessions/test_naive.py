@@ -10,8 +10,9 @@ from typing import Any
 import httpx
 
 from horizon.db import tables as t
+from horizon.domain.runtime_config import WindowSizes
 from tests.conftest import Api
-from tests.sessions.kit import API, assert_reduces, chars, command, create, events, ledger, messages
+from tests.sessions.kit import API, assert_reduces, chars, command, create, events, ledger, messages, use_first_chat
 
 
 def sse(chunks: list[str], *, error_after: int | None = None, gid: str = "gen-naive-0001") -> httpx.Response:
@@ -37,6 +38,7 @@ async def _naive(api: Api) -> str:
     await api.set_key()
     r = await api.post(f"{API}/_test/ai-profile", {"profile": "scripted", "overrides": {"turn": "naive"}})
     assert r.status_code == 204
+    await use_first_chat(api)   # P9: the first chat's greeting is verbatim; these tests need a generated one
     sid: str = (await create(api, "one_on_one", ["chr_seedAmara"]))["session"]["id"]
     await api.drive(6000)
     return sid
@@ -51,7 +53,7 @@ async def test_streamed_reply_with_the_tag_parsed_off(api: Api) -> None:
     assert greeting["emotionSource"] == "llm" and greeting["status"] == "complete"
     body = chat_bodies(api)[-1]
     assert body["reasoning"] == {"enabled": False} and body["max_tokens"] == 200   # docs/ai/03 C4: 1:1 quick
-    assert body["temperature"] == 1.3 and "models" not in body                       # C1 reply.chat; C8
+    assert body["temperature"] == 1.0 and "models" not in body                       # C1 reply.chat (D34); C8
     assert body["messages"][0]["role"] == "system" and "<e:LABEL>" in body["messages"][0]["content"]
     row = next(r for r in await ledger(api) if r["message_id"] == greeting["id"])
     assert row["provider"] == "DeepSeek" and row["cost_usd"] == 0.0003 and row["purpose"] == "reply"
@@ -110,7 +112,8 @@ async def test_prefix_stays_stable_between_drops(api: Api) -> None:
 async def test_window_drops_half_at_once(api: Api) -> None:
     sid = await _naive(api)
     rt = api.rt
-    rt.runtime_cfg = dataclasses.replace(rt.runtime_cfg, runtime=dataclasses.replace(rt.runtime_cfg.runtime, window_tokens=40))
+    rt.runtime_cfg = dataclasses.replace(rt.runtime_cfg, runtime=dataclasses.replace(
+        rt.runtime_cfg.runtime, window_tokens=WindowSizes(40, 40, 40, 40)))
     for i in range(6):
         await command(api, sid, "send", {"text": f"Question number {i}: what about sleep, rotas and coffee?"})
         await api.drive(12000)

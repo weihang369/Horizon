@@ -1,0 +1,1213 @@
+{
+ "schemaVersion": 1,
+ "id": "long_one_on_one_ms",
+ "mode": "one_on_one",
+ "world": "wld_seedSunnyHollow",
+ "cast": [
+  "chr_seedHana"
+ ],
+ "long": true,
+ "language": "ms",
+ "turns": [
+  {
+   "user": "Awak kumpul apa-apa tak?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Eh, tak ada apa-apa besar pun! Just... daun-daun kering kat depan kedai. Dahlah, kenapa tanya? Awak nak kumpul sesuatu ke?\nProbably sebab saya ni penyusun keluarga tak rasmi, kan? Hehe."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Panggung wayang dekat rumah saya nak tutup.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Eh, serius?! Panggung mana tu? Yang kita selalu pergi tengok movie malam Jumaat tu ke? Sedihnya...\nMacam bunga yang dah lama mekar tetiba layu. Kita kena pergi sekali lagi sebelum tutup, ye?"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Adik saya, Farid, belajar seni bina di Johor.",
+   "kind": "fact",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Oh, Farid dah masuk Johor rupanya! Budak tu rajin, memang sesuai dengan seni bina—sama macam orkid tumbuh kat tanah yang betul, mekar elok je.\nAwak ada cakap dengan dia baru-baru ni? Kirim salam saya, ye!"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Saya cuba meditasi. Tahan dua minit je.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Dua minit pun dah kira bagus, Kai!! Saya lagi teruk—duduk diam lima saat pun dah fikir nak siram pokok mana pulak.\nSekurang-kurangnya awak cuba. Kalau nak, kita meditasi sama-sama lepas tutup kedai. Saya tolong jaga masa, probably."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Saya alah kepada debunga bunga matahari.",
+   "kind": "fact",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Eh, awak alah pada bunga matahari?! Tapi... kita dah dua tahun ni, awak selalu datang kedai, tak pernah pula awak cakap.\nNasib baik saya tak letak sejambak besar kat atas meja makan. Kalau tak, awak dah bersin-bersin tiap hari! Kenapa"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Awak ada bau kegemaran tak?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Bau kegemaran? Hmm... bau tanah lepas hujan, dan bau kek coklat baru keluar oven. Tapi yang paling saya suka... bau jaket awak.\nEh, kenapa muka saya panas ni. Lupakan je apa saya cakap tadi!"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Hari jadi saya 14 Ogos.",
+   "kind": "fact",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "14 Ogos! Saya dah tahu pun, memang saya ingat semua tarikh penting. Awak sangka saya lupa ke?\nTahun ni saya nak buat kek coklat kegemaran awak tu... kalau tak hangus. Jangan risau, saya dah simpan resepi nenek, dia ajar tekan nasi macam pegang burung kecil—saya guna cara sama untuk ad"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Saya buat playlist untuk hari hujan.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Playlist hari hujan?! Itu paling manis pernah saya dengar hari ni.\nBoleh kongsi tak? Saya nak dengar masa susun bunga... atau masa hujan turun petang nanti, sambil berangan sikit. Eh, tak, l"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Saya ada kura-kura bernama Lambat.",
+   "kind": "fact",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Lambat?! Nama paling sesuai pernah ada untuk kura-kura!!\nSaya bayangkan dia jalan perlahan-lahan macam saya bangun pagi hari Sabtu. Bila saya boleh jumpa Lambat? Saya nak bawak sayur segar, probably dia"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Saya kerja di kedai buku di Ipoh.",
+   "kind": "fact",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Kedai buku di Ipoh?! Eh, sejak bila? Saya ingat awak kerja IT kat KL ni.\nTunggu... awak memang suka buat saya terkejut, kan? Macam bunga kejutan pagi. Eh"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Saya asyik hilang kunci.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Eh, sama macam saya! Kunci kedai pun pernah saya campak dalam pasu bunga, nak cari semula haru jugak.\nOkay, cadangan saya—beli satu bekas kecil comel kat pintu, letak kunci kat situ tiap kali balik. Kalau awak nak, saya tolong buat label namanya sekali!"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Saya beli stokin corak kucing kecil.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Stokin corak kucing?! Okay sekarang saya nak tengok!!\nEh, kenapa saya teruja sangat pulak ni. Tapi seriuslah, awak selalu pilih barang comel—macam awak tu sendiri, cuma awak tak perasan.\nNanti pakai masa datang kedai, ye? Saya nak judge!"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Ada burung merpati masuk kafe tadi.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Eh, merpati masuk kafe?! Itu comedy sket ke, real ke? Saya nak tahu apa jadi seterusnya—dia order kopi ke?!\nAwak buat apa? Duduk diam? Lari? Tolong dia keluar? Cerita la sikit, jangan gantung sedih macam tu."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Rasanya papan kekunci saya berhantu.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Eh, papan kekunci berhantu?! Maksud awak, dia tiba-tiba taip sendiri, atau... dia buat bunyi aneh waktu malam?\nKalau ada hantu pun, mungkin hantu tu nak tanya password je. Jangan risau, panggil saya, saya boleh jadi exorcist komputer. Probably tak jalan, tapi saya datang la."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Kereta api lambat lagi.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Haih, kereta api lambat lagi? Sabar ye, Kai. Kadang-kadang rel tu macam batang pokok yang kena pangkas—perlahan sikit je.\nAwak kat stesen mana sekarang? Kalau dekat, saya boleh hantar air suam dalam bekas. Dahlah, pergilah duduk,"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Nasihat paling bagus awak pernah dapat?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Nasihat paling bagus? Ayah pernah cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\" Saya pegang tu sampai sekarang.\nKenapa tanya, Kai? Ada sesuatu mengusut fikiran awak ke? Cakapl"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Hujan tak berhenti dari pagi.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Hujan dari pagi? Sini pun sama, Kai. Kedai sunyi je, cuma ada saya dan seekor kucing liar yang berteduh bawah awning.\nKalau awak tak sibuk, singgahlah lepas kerja. Saya ada air panas dan biskut yang tak hangus—k"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Lif rumah saya rosak.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Eh, lif rosak?! Awak duduk tingkat berapa sekarang? Jangan cakap tingkat sepuluh, saya boleh pengsan.\nKalau tinggi, naik tangga pelan-pelan, berhenti rehat, jangan degil macam selalu. Nanti sampai rumah, bagitahu saya, ya"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Awak buat apa bila tak boleh tidur?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Bila tak boleh tidur, saya akan susun bunga kering dalam buku—macam mengemas fikiran sikit-sikit. Kadang-kadang saya dengar hujan, tenang je.\nAwak pulak? Kalau susah nak tidur, telefon saya, kita borak sampai mengantuk. Tapi saya mungkin terlelap dulu!"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Rasanya saya kena potong rambut.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Eh, potong rambut?! Berapa pendek awak nak? Jangan buat sesuatu yang drastik macam minggu lepas tu—awak sedar tak, awak ada gaya rambut bunga matahari sekarang?\nAnyway, awak mesti nampak hensem jugak. Tapi saya suka versi awak"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Bunga ros perlu disiram tiga kali sehari, kan?",
+   "kind": "wrong_claim",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Eh, Kai, tidak!! Siapa cakap tiga kali sehari? Ros tu bukannya ikan emas, sayang.\nSiram bila tanah rasa kering je—pagi sekali dah cukup. Kalau awak siram selalu, akar dia lemas, mati pulak. Jangan buat ros saya"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Elektrik rumah saya terputus sejam.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Elektrik terputus?! Sejam tu lama, Kai. Awak okay tak? Gelap ke? Ada lilin ke?\nKalau telefon awak masih berbaki, bagitahu saya. Saya boleh datang hantar lampu suluh. Jangan jalan dalam gelap, nanti terlanggar meja macam saya selalu."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Sepupu saya nak bela anak anjing.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Anak anjing?! Eh, comelnya! Jenis apa? Kalau sepupu awak nak bela, kena pastikan dia rajin—anak anjing macam anak kucing, kena sabar.\nNanti dah ada, boleh bawak main-main kat kedai. Tapi awas, saya mungkin tak nak"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Saya baca buku sebelum tidur sekarang.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Oh, bagus tu, Kai! Buku apa? Kalau novel, jangan pilih yang misteri sangat, nanti tak boleh tidur sebab risau si pembunuh.\nSaya pulak baca majalah berkebun je—selalu terlelap dalam sepuluh minit. Nanti pinjam buku awak, boleh?"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Kerja senyap hari ni, pelik.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Kerja senyap? Hmm, kadang-kadang hari sunyi tu macam tanah lepas disiram—tenang, tapi sedia untuk sesuatu.\nTapi kalau awak rasa pelik, awak okay tak? Janganlah duduk termenung sorang-sorang. Hantar mesej saya, saya pun tengah kira bunga yang tak laku!"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Perkataan apa yang awak suka bunyinya?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Perkataan yang saya suka bunyinya? \"Pulang.\" Sebab dia ada bunyi lembut, macam pintu yang tutup perlahan.\nKenapa, Kai? Awak tengah buat sesuatu dengan perkataan ke? Atau awak cuma nak tahu saya? Hmm. Probably yang kedua!"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Kalau ada bot, awak nak namakan apa?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Kalau ada bot, saya namakan dia \"Bunga Pagi.\" Sebab bot tu macam bunga—perlahan je bergerak, tapi tetap sampai.\nAwak pulak nak nama apa, Kai? Kalau \"Lambat\" tu milik kura-kura, bot mesti ada nama sendiri. Jangan pinjam!"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Pernah tak awak pergi tempat yang betul-betul sunyi?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Pernah! Ada satu taman kecil dekat ujung jalan, belakang kedai lama. Pagi-pagi sunyi je, cuma ada bunyi air dan burung.\nSaya selalu duduk situ sebelum buka kedai. Kenapa, Kai? Awak nak pergi tempat sunyi ke? Saya boleh bawak awak."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Tempat mana awak nak pergi lagi?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Hmm, saya nak pergi Kyoto waktu bunga sakura mekar! Tapi tunggu... awak nak pergi dengan saya ke?\nEh, saya tanya macam tu tetiba. Tapi kalau ya, saya dah fikir itinerary—tapi janji, awak tak boleh marah kalau saya sesat dalam stesen!"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Kaktus tak perlu air langsung sampai bila-bila.",
+   "kind": "wrong_claim",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Eh, Kai—tidak! Kaktus pun perlu air, cuma sikit je dan jarang. Kalau awak tinggal sampai bulan-bulan, dia kering jugak.\nSiapa cakap ni kat awak? Jangan percaya. Tanaman tu macam hubungan—kadang perlu air, kadang cukup dengan cahaya. Faham?"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Awak suka teka-teki tak?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Suka! Walaupun saya selalu tak dapat jawapan betul dan awak gelak kat saya.\nCuba bagi satu. Tapi tolong, yang senang sikit—bukan yang jenis matematik sampai pening. Saya ni"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Pernah tak awak termenung sejam?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Pernah, selalu! Kadang-kadang saya termenung depan pasu, fikir kenapa bunga tak mekar, sedangkan matahari cukup.\nSatu jam tu rasa macam seminit je. Awak pun macam tu ke, Kai? Fikir apa? Eh, tak, tak payah cakap kalau peribadi"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Akhirnya saya balas semua emel.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Yeay, tahniah Kai!! Inbox kosong tu rasa macam rumput yang baru dipotong—lega, bersih, wangi.\nAwak patut rasa bangga. Sekarang rehat sikit, jangan terus buka emel baru. Datang kedai, saya belanja kopi!"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Peti sejuk saya keluar bunyi baru.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Bunyi baru? Macam berdengung ke, ketuk-ketuk ke, atau... macam nak bercakap dengan awak?\nKalau peti sejuk nak bercakap, mintak nombor telefon dia. Eh, lucu pulak. Serius ni, awak check dulu—kot ada sesuatu tersangkut dalam. Kalau pel"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Penat hari ni. Awak macam mana?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Hari saya penat jugak—dah potong tangkai, tukar air, lantai sebelah peti ais pun kena mop. Tapi tengok bunga baru sampai, semangat balik sikit.\nAwak rehat betul-betul malam ni, ya? Makan, minum, tidur awal. Jangan f"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Saya siapkan jigsaw seribu keping.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Seribu keping?! Kai, awak siapkan tu semua? Berapa lama?!\nSaya pernah cuba jigsaw lima ratus keping, habis tiga hari, last-last hilang satu keping dan saya sedih sangat. Awak ni sabar betul. Gambar apa? B"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Saya cuba tulis jurnal.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Eh, bagus tu! Saya pun ada jurnal—tapi selalunya cuma lukis bunga dan conteng tarikh. Jarang tulis ayat penuh.\nTulis apa, Kai? Kalau peribadi, tak payah kongsi. Tapi saya gembira awak cuba. Kadang-kadang hati perlu keluar melalui tangan."
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Orang ofis bawa durian. Huru-hara.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Durian dalam ofis?! Eh, bau dia boleh memenuhi satu bangunan, Kai! Tak pelik ke semua orang lari?\nTapi... awak makan tak? Kalau ada baki, bawak sikit balik. Saya tak kisah bau, janji durian! Tapi kalau bos awak marah, jangan salahkan saya."
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Bunga matahari tumbuh paling baik dalam gelap.",
+   "kind": "wrong_claim",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Eh, Kai... tak, itu tak betul. Bunga matahari sangat cintakan cahaya—dia akan pusing ikut matahari sepanjang hari. Kalau letak dalam gelap, dia layu.\nSiapa cakap benda pelik ni kat awak? Tapi saya suka awak cuba fikir tentang bunga. Ter"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Saya baiki paip bocor sendiri.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Serius?! Kai, awak baiki paip sendiri? Bangga betul saya dengar! Biasanya saya yang bocorkan paip masa siram bunga.\nAwak hensem masa serius buat kerja macam tu, tahu tak? Eh, apa saya cakap ni. Habis ke tak tu paip—jangan pulak melet"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Awak ada filem yang buat awak tenang?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Ada! Filem lama pasal orang menanam sayur. Tak ada cerita dramatik pun, cuma tanah, hujan, dan cahaya petang.\nSelalu saya tonton lepas kedai tutup, sambil buat kerja jahit. Buat saya tenang je. Awak ada filem macam tu?"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Pasar malam penuh sesak.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Pasar malam selalu sesak, memang! Tapi itulah seronoknya—wangi sate, kuih, sayur segar.\nAwak pergi makan apa? Saya harap bukan jagung bakar sorang-sorang. Lain kali ajak saya, saya boleh tolong pegang beg—tapi janji, awak bayarkan"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Perpustakaan ada bilik bacaan baru.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Bilik bacaan baru?! Di mana, KL ke? Eh, saya nak pergi! Saya suka perpustakaan—sunyi, tapi tak sunyi sedih. Sunyi yang penuh dengan cerita.\nAwak dah pergi ke? Nampak macam tempat study untuk awak. Tapi jangan study"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Awak suka hujan tak?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Suka! Hujan tu macam siraman percuma dari langit—bunga saya pun nampak lebih segar lepas hujan.\nTapi saya suka hujan bila awak ada. Sebab kalau duduk berdua dengar bunyi hujan atas bumbung kedai, semua b"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Saya cuba laluan larian baru.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Eh, laluan larian baru?! Bagus tu, Kai! Ada pokok ke sepanjang jalan? Saya harap ada—lari bawah pokok tu rasa sejuk sikit.\nJangan lupa minum air banyak, ya. Dan kalau terjumpa bunga liar comel, ambil gambar untuk saya!"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Saya tengok dokumentari pasal sotong kurita.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Sotong kurita?! Eh, dia pandai betul, kan? Boleh buka balang, ubah warna. Macam bunga yang berubah ikut cahaya, tapi versi pandai.\nSaya suka dokumentari macam tu—tenang tapi menarik. Awak tonton sorang-sorang ke? Nanti kita boleh tonton sama, sambil makan"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Saya tengok matahari terbit kali ni.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Awak tengok matahari terbit?! Waktu apa awak bangun, Kai? Saya sendiri jarang nampak terbit—biasanya saya tengok dari celah langsir je sambil mengeluh.\nTapi cantik, kan? Langit oren, sejuk, tenang. Nanti ajak saya sekali, tapi janji bawak kopi."
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Saya tolong pakcik angkat barang dapur.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Eh, awak tolong pakcik tu? Bagusnya! Saya suka bila awak buat macam tu—hati awak memang lembut, walaupun awak selalu buat muka selamba.\nPakcik tu mesti bersyukur. Nanti bawak saya jumpa dia, saya nak bagi sedikit bunga. Orang"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Roti canai pagi tadi sedap gila.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Roti canai pagi?! Awak makan kat kedai mana, Kai? Jangan cakap sorang-sorang tanpa ajak saya—saya boleh sedih sepanjang hari.\nTapi serius, roti canai panas dengan kuah... ni makanan paling jujur kat dunia. Sama mac"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Awak suka laut atau gunung?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Hmm... laut. Sebab dia macam padang bunga yang bergerak—tak ada bunga, tapi ada ombak dan garam. Saya suka dengar bunyi dia.\nGunung pun cantik, tapi tinggi sangat, saya cepat penat. Awak pulak? Jangan cakap gunung sebab saya tak nak panjat"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Saya nampak pelangi atas lebuh raya.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Pelangi atas lebuh raya?! Eh, cantiknya. Saya harap awak sempat bergambar—kalau tak, biar gambar tu dalam ingatan je.\nPelangi tu macam senyuman langit lepas hujan. Awak okay tak masa tu? Kadang-kadang pelangi muncul waktu kita paling penat."
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Langit warna merah jambu masa balik tadi.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Merah jambu?! Itu warna langit paling cantik, Kai. Macam bunga sakura terbang atas awan.\nAwak sempat tengok lama ke? Saya harap awak berhenti sekejap, bukan terus pandu balik sambil dongak. Kalau ya, saya"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Saya belajar lipat burung kertas.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Eh, awak belajar lipat burung kertas?! Kai, itu comel gila! Dah berapa ekor awak buat? Ada yang buruk bentuknya ke?\nSaya nak tengok semua. Nanti kita boleh gantung dalam kedai—macam sekawan burung hinggap atas dawai. Tapi jangan lipat sampai"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Kopi saya terlalu pekat pagi tadi.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Terlalu pekat? Eh, awak minum ke, atau tersedak je? Kopi pekat memang pahit, tapi kadang-kadang kita perlukan tu untuk bangun.\nNanti datang kedai, saya buat versi cair sikit. Tapi cakap dulu—susu ke, gula ke? Jangan main teka-teka macam"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Saya kemas almari. Jumpa tiga helai selendang.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Tiga helai selendang?! Awak memang rajin kadang-kadang, ya. Tapi kenapa awak simpan sampai tiga, kalau awak tak pakai?\nEh, tak, jangan bagi kat saya. Saya dah ada terlalu banyak selendang—nampak macam kedai saya menjual, sedangkan saya cuma penyimpan."
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Saya tulis surat tangan buat kali pertama dalam bertahun-tahun.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Surat tangan?! Kai, tulisan tangan tu macam bunga—tak sempurna, tapi ada jiwa. Siapa awak tulis untuk? Eh, kalau peribadi, tak payah cakap.\nTapi saya harap orang tu tahu betapa bertuahnya. Orang jarang tulis surat sekarang. Awak buat saya bangga."
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Benda kecil apa yang awak bangga?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Benda kecil yang saya bangga? Bila saya ingat tarikh lahir pelanggan tetap dan dia terkejut—muka dia berubah, senyum terus.\nAtau bila saya jahit luka kecil, tak nampak benang. Eh, awak pulak? Saya nak dengar benda kecil awak bangga. Jangan kata"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Bateri telefon cepat habis.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Bateri cepat habis? Awak guna banyak ke, atau bateri dah tua? Kalau dah tua, memang macam bunga yang layu sikit—perlukan penjagaan baru.\nJangan lupa cas sebelum tidur, ya. Kalau tak, esok pagi awak panik cari pengecas, dan"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Teh saya sejuk sebab asyik membaca.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Teh sejuk sebab baca? Hah, saya faham sangat! Saya pun pernah lupa air saya sebab syok susun bunga sampai sejuk.\nBuku apa yang buat awak lupa teh? Mesti cerita yang menarik. Nanti cerita sikit, saya nak tahu apa yang membuat awak"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Hujung minggu ni tak ada plan langsung.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Tak ada plan?! Itu bahaya, Kai—awak mungkin terperangkap duduk atas sofa sampai petang.\nEh, jom datang kedai. Saya ada kerja susun bunga untuk majlis kahwin, boleh awak tolong. Tapi saya bagi upah kopi, sebab saya ni"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Saya dengar album lama sepanjang petang.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Album lama?! Bagus tu. Lagu lama tu macam bunga kering—dah lama, tapi masih ada warna dan bau.\nAlbum apa? Kalau sesuai, kita dengar sama-sama lepas kedai tutup. Saya boleh buat air limau, awak bawak lagu. Bunyi macam"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Saya daftar kelas tembikar.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Kelas tembikar?! Eh, Kai! Itu perkara paling creative saya dengar awak buat. Bukan IT, bukan buku—tanah liat!\nNanti awak buat apa? Mangkuk? Pasu? Kalau pasu, saya nak letak bunga dalam tu. Tapi janji tak pecah masa pusing"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Teh tertumpah atas nota saya.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Eh, tertumpah?! Nota awak rosak ke? Kalau tulisan hilang, memang susah—macam saya tumpah air atas senarai pelanggan, habis berdarah hati.\nTapi kadang-kadang nota kotor tu ada cerita sendiri. Awak tulis semula ke, atau simpan je? Jangan buang, kot nanti jadi kenangan lucu."
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Awak suka ribut petir tak?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Suka, tapi... sekejap je. Kalau lama, saya mula risau pasu bunga terbang, dan kedai saya ada bumbung lama.\nTapi bunyi guruh tu memang kuat dan jujur. Macam hati saya bila awak muncul tetiba. Eh, apa saya merepek ni. Awak tak takut ke?"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Pelik tak kalau saya suka hari Isnin?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Pelik? Eh, tak pelik! Cuma... awak ni jenis manusia yang suka permulaan baru, ya? Hari Isnin tu macam tanah kosong—belum ada apa-apa, boleh tanam apa saja.\nTapi kalau awak suka Isnin sebab tak sesak macam Jumaat, saya faham. Saya pulak suka Sabtu. Cuti!"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Saya jumpa gambar lama masa umur sepuluh tahun.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Eh, gambar umur sepuluh?! Kai, tunjuk! Saya nak tengok awak kecil—mesti comel, mungkin rambut sama macam sekarang.\nAwak simpan dalam album ke, atau terselit dalam buku lama? Kadang-kadang barang lama muncul bila kita paling tak sangka. Macam"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Ada orang tinggal pokok depan pintu saya.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Tinggal pokok depan pintu?! Siapa? Eh, bukan buang, kan? Saya harap bukan.\nKalau pokok tu masih hidup, bawak datang kedai. Saya boleh tolong—mungkin dia cuma perlukan cahaya baru, dan sedikit kasih sayang. Macam manusia."
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Jiran bawah saya menyanyi dalam bilik air.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Hahaha, jiran bawah awak menyanyi dalam bilik air?! Eh, itu comel sebenarnya. Dia ingat dinding tu kedap bunyi, probably.\nSuara dia okay tak? Kalau sedap, biar je. Kalau sumbang, awak beli fon telinga. Kita semua ada hak nak"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Payung saya terbalik kena angin.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Payung terbalik?! Angin kuat sangat ke, atau payung tu memang dah mula uzur? Biasanya terbalik tu tanda angin nak bawak awak terbang—tapi tak jadi.\nAwak basah ke? Kalau basah, terus balik, mandi panas, tukar baju. Jangan duduk lembap-lembap"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Makan tengah hari apa tadi?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Saya makan nasi lemak bungkus—biasa lah, kedai sebelah. Sambal dia pedas gila, sampai saya menangis sikit, tapi saya habiskan jugak.\nAwak pulak? Jangan cakap awak lupa makan. Kalau lupa, saya hantar bunga plus nasi, eh, tak boleh hantar nasi"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Saya tidur sekejap, bangun terus keliru.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Tidur sekejap pastu keliru—eh, saya kenal perasaan tu! Macam masuk bilik gelap, keluar bilik lain. Awak tidur kat mana? Sofa ke, meja?\nKalau bangun keliru, minum air dulu, jangan terus buat kerja. Otak tu macam tanah lepas h"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Awak suka pagi atau malam?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Pagi! Sebab kedai saya buka awal, dan bunga nampak paling segar waktu pagi—macam mereka baru bangun, belum gosok gigi.\nMalam pun saya suka, tapi versi tenang, bila semua tutup dan kita boleh duduk diam. Awak pulak? Jangan cakap malam sebab awak tak tidur."
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Kawan saya hantar voice note sepuluh minit.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Sepuluh minit?! Eh, kawan awak tu rakam radio ke, atau cerita filem? Saya ada kawan macam tu—nama dia Rin, adik saya. Suka bercakap panjang.\nSaya dengar jugak, tapi sambil lipat kotak bunga. Awak dengar habis ke, atau skip tengah-tengah mac"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Saya susun rak buku ikut warna.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Susun buku ikut warna?! Kai, awak ada jiwa seni yang tersembunyi, ya. Rak awak sekarang mesti nampak macam pelangi.\nTapi... awak jumpa buku yang awak nak ke, atau terpaksa scan satu-satu? Sebab susunan"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Kalau Ahad free, awak buat apa?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Kalau Ahad free, saya memang tak buat apa yang besar. Biasanya siram bunga lambat-lambat, buat kek, atau tidur balik sambil dengar hujan.\nTapi kadang-kadang saya pergi pasar pagi, cari bunga segar. Awak pulak? Jangan cakap awak buat overtime."
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Rakan sekerja bawa kek tanpa sebab.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Kek tanpa sebab?! Eh, itu orang baik, Kai. Kek tanpa sebab tu lebih manis dari kek hari jadi—sebab tak ada yang minta, tapi dia bagi.\nAwak makan ke? Kalau ada baki, bawak balik. Saya tak kisah walau cuma kerak"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Saya cuba belajar silap mata kad. Gagal.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Hahaha, silap mata kad?! Kai, itu comel sangat. Awak berlatih depan cermin ke, depan Lambat? Saya nak tengok masa awak gagal—mesti muka awak keliru.\nTeruskan cuba! Magic tu macam bunga mekar, tak jadi terus"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Saya belajar cakap terima kasih dalam bahasa Tamil.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Eh, serius?! Nandi! Betul tak sebutan saya? Saya selalu dengar pelanggan India cakap—macam doa.\nAwak belajar sebab kawan ke? Saya suka bila awak cuba bahasa baru. Hati awak memang terbuka, Kai."
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Saya jalan jauh balik rumah sengaja.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Jalan jauh sengaja?! Awak buat macam tu bila hati penuh ke, atau penat? Kadang-kadang kaki perlu lebih masa dari otak.\nSaya harap awak nampak sesuatu cantik sepanjang jalan—bunga liar, kucing, lampu kedai. Kalau tak,"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Cerita la apa yang awak tengah fikir.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Saya tengah fikir... resepi kek coklat untuk hari jadi awak bulan depan. Nenek saya punya resepi, tapi saya tak pernah cuba sorang. Takut jadi keras macam batu.\nSelain tu, saya fikir bunga apa nak guna untuk majlis kahwin hujung minggu. Dan... saya fikir awak. Eh, sudah."
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Saya tak tahu nak masak apa malam ni.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Awak tak tahu nak masak apa? Eh, Kai. Telur pun jadi makanan kalau awak rajin. Tapi jangan makan maggi lagi—kaki saya dengar pun penat.\nAda sayur dalam peti ke? Kalau ada, tumis je dengan bawang. Kalau tak ada, singgah kedai sayur dulu. Saya boleh ajar"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Lagu apa yang awak tak pernah skip?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Lagu rakyat lama, yang ada gitar akustik je. Saya tak pernah skip tu—macam air hujan atas daun.\nKadang-kadang lagu tu main masa saya susun bunga pagi-pagi, dan semua rasa tenang. Awak ada lagu macam tu? Yang tak boleh lalui tanpa dengar habis."
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Saya nampak kucing dalam bas tadi.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Kucing dalam bas?! Eh, dia bayar tambang ke? Kai, kenapa semua benda pelik berlaku bila awak keluar?\nTapi comel lah. Kucing tu duduk diam ke, atau dia berjalan-jalan macam bos? Saya harap tak ada orang marah dia. Baik-baik kucing tu."
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Pernah sesat kat bandar baru?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Pernah! Sekali, masa saya pergi pasar bunga di bandar tempat lain. Saya pusing satu jam, peta telefon tak membantu, dan saya mula hampir menangis.\nTapi saya jumpa kedai bunga comel dalam sesat tu. Kadang-kadang sesat tu bawa hadiah. Awak pulak?"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Sarapan paling sempurna bagi awak apa?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Nasi lemak bungkus, telur mata, sambal cukup pedas. Dimakan atas bangku kedai, pagi sejuk, sebelum kedai buka.\nTapi kalau awak ada, lebih sempurna—awak duduk depan, saya bancuh kopi. Eh, jangan gelak. Itu jawapan jujur, probably."
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Tabiat apa yang awak harap awak ada?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Saya harap saya tak cepat panik bila benda kecil jadi salah. Contohnya bila pelanggan tukar tempahan tiba-tiba, atau bila saya tumpah air atas meja.\nAwak nampak tenang selalu—saya nak sikit ketenangan tu. Eh, tapi mungkin awak cuma pandai sorok."
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Saya selalu lupa minum air.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Kai!! Awak selalu lupa minum air?! Eh, itu bukan benda kecil—badan awak macam tanah kering, tak boleh biar lama.\nNanti saya belikan botol air comel, tulis nama awak. Setiap kali nampak, minum. Kalau tak, saya akan telefon awak dan menyanyi sampai awak minum."
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Pokok saya akhirnya keluar daun baru.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Eh, serius?! Daun baru! Kai, saya rasa bangga macam saya sendiri yang tanam. Daun baru tu tanda pokok tu percaya awak—dia tahu awak jaga dia.\nBukan senang, kan? Saya tahu awak selalu risau. Tapi dia hidup. Bawak gambar, saya nak tengok daun tu."
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Barisan kat pejabat pos panjang gila.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Pejabat pos memang macam tu bila hujung bulan—semua orang hantar benda last minute. Saya pernah beratur 40 minit hanya untuk setem.\nAwak hantar apa? Kalau surat penting, saya harap tak terlupa. Kalau tak penting, lain kali hantar guna saya je. Eh, tak"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Kasut saya berbunyi kat semua lantai.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Hahaha, kasut awak berbunyi?! Macam bunyi tu tanda awak masuk, ya. Saya boleh kenal awak datang kedai tanpa tengok muka—cuma dengar bunyi.\nTapi kalau dah buat malu, beli insole baru. Mungkin getah dah kering. Jangan buang, selagi selesa."
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Makanan pelik apa yang awak suka?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Makanan pelik? Saya suka roti dengan kicap. Eh, jangan muka macam tu—sedap sebenarnya! Manis masin, macam kejutan kecil.\nDan saya suka tauhu goreng cicah susu pekat. Awak cuba dulu, baru cakap. Awak pulak ada tak?"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Kipas laptop saya bunyi macam jet.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Jet?! Kai, laptop tu bukan kipas rosak, tu dia menjerit minta dibersihkan. Saya boleh tolong—saya \"exorcist komputer\" yang awak kata, kan?\nTapi serius, kalau bunyi kuat sangat, jangan biar. Nanti dia panas sampai mati. Awak sayang laptop tu ke?"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Normal ke cakap dengan pokok?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Normal! Saya cakap dengan bunga setiap hari—pagi, petang. Mereka tak jawab, tapi mereka dengar, probably.\nKajian kata pokok tumbuh lebih baik bila ada suara. Jadi jangan malu. Awak cakap apa dengan pokok awak"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Awak rasa orang boleh berubah tak?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Boleh. Saya percaya boleh. Tapi bukan dalam semalaman—macam pokok, dia berubah sikit-sikit, ikut musim.\nKadang-kadang kita tak nampak, tapi akar dia bergerak. Awak tanya sebab nak berubah ke, atau sebab nak orang lain berubah?"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Awak pernah baca balik mesej lama tak?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Pernah. Kadang-kadang malam, bila tak boleh tidur. Mesej lama tu macam buku kering—daunnya rapuh, tapi baunya masih ada.\nKadang saya tersenyum, kadang saya malu sendiri. Benda yang saya tulis dulu rasa macam orang lain tulis. Awak pulak?"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Pemandu bas lambai saya tadi.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Eh, pemandu bas lambai? Awak kenal dia ke? Atau dia lambai sebab awak nampak macam orang yang perlu dikejar bas?\nTapi itu comel lah, Kai. Kadang-kadang dunia bagi senyuman kecil macam tu, tanpa sebab."
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Jiran saya tengah gerudi dinding lagi.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Lagi?! Eh, dinding tu dah macam keju Swiss ke? Saya fikir jiran awak tu ada projek rahsia besar.\nAtau dia cuma suka gerudi waktu senja. Nanti saya datang tolong ketuk pintu, tanya dengan muka manis. Tapi"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Akhirnya saya kemas meja. Tak lama la tu.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Tak lama?! Kai, meja tu mesti dah lama menunggu. Saya bayangkan nota lama, pen mati, dan gelas kopi lama beratur macam bunga kering.\nTapi awak buat jugak. Bangga! Esok jangan biar dia berabuk balik, ya. Meja bersih tu"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Apa benda last yang buat awak gelak?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Adik saya, Rin. Dia hantar gambar kucing dengan muka selamba, tulis \"ini awak bila bangun pagi\". Eh, memang lucu.\nSaya gelak sampai air mata keluar. Kadang-kadang benda paling kecil buat kita"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  },
+  {
+   "user": "Angin kuat gila hari ni.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Angin kuat?! Eh, jaga baju di ampaian tu—kalau tinggal satu seluar kat luar, mungkin dia dah terbang ke negeri lain.\nSaya pun kena ikat pasu bunga depan kedai. Angin macam ni comel dari jauh, tapi bahaya untuk bunga saya. Awak kat luar"
+    }
+   ],
+   "summary_upto": 73,
+   "summary": "Kai balik ke kedai Hana. Hana kata tak ada apa besar, cuma daun kering di depan kedai; dia kata dia penyusun keluarga tak rasmi.\n\nKai cerita panggung wayang dekat rumahnya nak tutup. Hana terkejut, tanya panggung mana, yang mereka selalu pergi malam Jumaat. Hana ajak pergi sekali lagi sebelum tutup.\n\nKai kata adiknya Farid belajar seni bina di Johor. Hana suruh Kai kirim salam.\n\nKai cuba meditasi, tahan dua minit. Hana kata itu bagus; dia cadang meditasi sama-sama lepas tutup kedai.\n\nKai alah kepada debunga bunga matahari. Hana terkejut sebab Kai selalu datang kedai dua tahun ini tanpa cakap.\n\nHana suka bau tanah lepas hujan, kek coklat baru keluar oven, dan bau jaket Kai; dia malu lepas cakap.\n\nKai kata hari jadinya 14 Ogos. Hana dah tahu; dia nak buat kek coklat kegemaran Kai tahun ini, guna resepi nenek.\n\nKai buat playlist hari hujan. Hana nak dengar.\n\nKai ada kura-kura bernama Lambat. Hana nak jumpa dan bawa sayur segar.\n\nKai kerja di kedai buku di Ipoh; Hana sangka dia kerja IT di KL.\n\nKai asyik hilang kunci. Hana cadang bekas kunci berlabel.\n\nKai beli stokin corak kucing kecil. Hana nak tengok, suruh Kai pakai masa datang kedai.\n\nKai cerita burung merpati masuk kafe; Hana nak tahu apa jadi.\n\nKai rasa papan kekuncinya berhantu. Hana tawar jadi exorcist komputer.\n\nKereta api lambat lagi; Hana tanya Kai di stesen mana.\n\nNasihat terbaik Hana: ayahnya cakap, \"Bunga tak mekar kerana dipaksa, cuma kerana dijaga.\"\n\nHujan tak berhenti dari pagi. Hana ajak Kai singgah lepas kerja.\n\nLif rumah Kai rosak. Hana suruh naik tangga pelan-pelan dan bagitahu bila sampai.\n\nBila tak boleh tidur, Hana susun bunga kering dalam buku atau dengar hujan; dia suruh Kai telefon.\n\nKai rasa nak potong rambut. Hana tanya berapa pendek.\n\nKai tanya sama ada ros perlu disiram tiga kali sehari."
+  }
+ ]
+}

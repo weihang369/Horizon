@@ -1,0 +1,20 @@
+{
+ "id": "judge_summary_language",
+ "version": 1,
+ "purpose": "eval_judge",
+ "type": "noul",
+ "label": "wrong language?",
+ "instructions": "Is quoted_summary written in a different language from the one most of quoted_lines use? Names and quoted words kept as they were don't count.",
+ "true": "The summary is mostly in another language than most of the lines.",
+ "false": "The summary is in the language most of the lines use.",
+ "state": {
+  "quoted_lines": "quoted",
+  "quoted_summary": "quoted"
+ },
+ "deadline": "default",
+ "floor": null,
+ "thresholds": {
+  "t": 0.5
+ },
+ "fallback": "none (evaluation only)"
+}

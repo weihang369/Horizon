@@ -32,6 +32,8 @@ class CharacterView(Frozen):
     id: str
     name: str
     profile: dict[str, Any]
+    appearance_summary: str = ""    # M8 (doc 04 P3): the "Looks" line, so self-descriptions match the portrait
+    advisory: bool = False          # M8 (doc 11 S2): advisory characters get the advisory line
 
     @property
     def first_name(self) -> str:
@@ -42,7 +44,8 @@ class CharacterView(Frozen):
 class ParticipantView(Frozen):
     character_id: str
     name: str
-    role: str
+    role: str                       # the participant role: speaker | debater
+    character_role: str = ""        # M8 (doc 04 P5): the profile's role, e.g. "barista"
     side: str | None = None
     muted: bool = False
     emotion: str = "neutral"        # the face shown now (the naive engine's default when no tag arrives)
@@ -77,8 +80,8 @@ class SessionContext(Frozen):
     history_tokens: int = 0
 
     def call_ctx(self, purpose: str, *, character_id: str | None = None, message_id: str | None = None) -> CallContext:
-        return call_ctx(purpose, world_id=self.world.id, session_id=self.session_id, character_id=character_id,
-                        message_id=message_id)
+        return call_ctx(purpose, world_id=self.world.id, session_id=self.session_id or None, character_id=character_id,
+                        message_id=message_id)   # "" (an eval's stand-alone context) records no session
 
     def name_of(self, character_id: str) -> str:
         for p in self.participants:
@@ -93,6 +96,7 @@ class LineHint(Frozen):
     kind: LineKind = "chat"
     text: str | None = None
     emotion: str | None = None
+    verbatim: bool = False          # M8 (docs/ai/04 P9): say `text` word for word, with no model call
 
 
 class DebateMeta(Frozen):

@@ -9,7 +9,7 @@ router) and drops a patch's attempt to set them, applying the rest.
 
 from __future__ import annotations
 
-from collections.abc import AsyncIterator, Awaitable, Callable, Mapping
+from collections.abc import AsyncIterator, Awaitable, Callable, Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import Any, Protocol
 
@@ -99,7 +99,8 @@ class WatchDirector(Protocol):
 
 class Summariser(Protocol):
     async def episode(self, ctx: SessionContext) -> str: ...
-    def rolling(self, previous: str | None, dropped: list[str]) -> str: ...
+    # M8 (docs/ai/05 X3): async, after `turn.end`; `lines` are the dropped messages as `Name: line` lines
+    async def rolling(self, ctx: SessionContext, previous: str | None, lines: Sequence[str]) -> str: ...
 
 
 class Guardrail(Protocol):
@@ -134,12 +135,22 @@ class ImageJob:
     aspect_ratio: str = "3:4"
 
 
+@dataclass(frozen=True)
+class DraftWorld:
+    """What the drafter knows of the world (docs/ai/04 P11; persona-context design D17): its name, the names its
+    characters already use (tombstones included) and the You card, so a companion's relationship fits the user."""
+
+    name: str
+    names_in_use: tuple[str, ...] = ()
+    you: Mapping[str, Any] | None = None
+
+
 class ProfileDrafter(Protocol):
     shared_call: bool   # True: one call (the `profile` task) feeds the other draft parts at $0
 
     def expected_ms(self, duration_ms: float) -> float: ...
     async def draft(self, ctx: CallContext, *, seed_prompt: str, intent: str, cost_usd: float, duration_ms: float,
-                    model: str, hooks: PaidHooks) -> dict[str, Any]: ...
+                    model: str, hooks: PaidHooks, world: DraftWorld | None = None) -> dict[str, Any]: ...
     async def regenerate_field(self, ctx: CallContext, *, profile: Mapping[str, Any], field: str, attempt: int,
                                cost_usd: float, duration_ms: float, model: str, hooks: PaidHooks) -> dict[str, Any]: ...
 

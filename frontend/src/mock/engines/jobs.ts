@@ -312,12 +312,14 @@ export class JobRunner {
     const c = h.db.characters[job.characterId];
     if (!c) return;
     const now = h.iso();
+    // docs/ai/04 P11: the drafter never reuses a name already in the world (tombstones included), as the backend does.
+    const inUse = Object.values(h.db.characters).filter((x) => x.worldId === c.worldId && x.id !== c.id).map((x) => x.profile.name);
     switch (t.type) {
       case "profile": {
         if (job.kind === "profile_regenerate" && input.targetField) {
           Object.assign(c.profile, regenerateField(c.profile, input.targetField, t.attempt + c.version));
         } else {
-          const d = draftFromSeed(c.seedPrompt, c.intent);
+          const d = draftFromSeed(c.seedPrompt, c.intent, inUse);
           c.profile = d.profile;
           c.advisory = d.advisory;
           c.creationStep = "profile";
@@ -325,15 +327,15 @@ export class JobRunner {
         break;
       }
       case "appearance_summary": {
-        const d = draftFromSeed(c.seedPrompt, c.intent);
+        const d = draftFromSeed(c.seedPrompt, c.intent, inUse);
         c.appearance = { ...c.appearance, attributes: d.attributes, appearanceSummary: d.appearanceSummary };
         break;
       }
       case "palette_pick":
-        c.paletteId = draftFromSeed(c.seedPrompt, c.intent).paletteId;
+        c.paletteId = draftFromSeed(c.seedPrompt, c.intent, inUse).paletteId;
         break;
       case "song_brief": {
-        const d = draftFromSeed(c.seedPrompt, c.intent);
+        const d = draftFromSeed(c.seedPrompt, c.intent, inUse);
         const id = c.themeSongId ?? h.newId("song");
         h.db.songs[id] = {
           id, characterId: c.id, status: "pending", brief: d.brief, instrumental: true,
@@ -374,7 +376,7 @@ export class JobRunner {
       case "theme_song": {
         const id = c.themeSongId ?? h.newId("song");
         const prev = h.db.songs[id];
-        const brief = input.brief ?? prev?.brief ?? draftFromSeed(c.seedPrompt, c.intent).brief;
+        const brief = input.brief ?? prev?.brief ?? draftFromSeed(c.seedPrompt, c.intent, inUse).brief;
         const spec = themeSpecFromBrief(c.id, brief, `${c.profile.name.split(" ")[0]}'s Theme`);
         const song: ThemeSong = {
           id, characterId: c.id, status: "ready",

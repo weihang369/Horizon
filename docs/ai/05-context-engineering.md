@@ -338,6 +338,9 @@ Doc 01 A3 rule 6: Jev gets less accurate as irrelevant content grows, so the sta
   lines, **keeping at least 3**; cut `latest` to 300. If it is still over (a very large cast), the per-candidate gate
   questions are dropped for the candidates furthest down the `last_spoke` order, which falls back to a quick reply
   for them (doc 01 A4).
+- **Built in M8** (OpenSpec `persona-context`, design D22): `backend/horizon/ai/agent/plan_state.py`
+  (`build_turn_plan_state`, `eligible_candidates`), with the S6 names above, `quoted_summary` for watch, and
+  `dropped_gates` for the last step. It has no runtime caller until M9's `TurnPlanner`.
 - **Cost:** about 800–2,000 tokens × $0.042 / M ≈ **$0.00003–0.00008 per turn**. Doc 01 check 4 still has to measure
   whether a multi-question request bills the state once or per question; if per question, this limit is the lever.
 

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pytest
@@ -22,6 +23,14 @@ def test_table_loads_from_seed() -> None:
 
 def test_decision_estimate() -> None:
     assert pr.estimate_decision(T, 10_000) == pytest.approx(0.00042)
+
+
+def test_decision_request_adds_the_per_request_overhead() -> None:
+    # budget-caps "Decision estimate": 10,000 tokens of state and questions -> 10,300 billed (persona-context D23)
+    state = {"quoted_x": "a" * 3000}
+    tokens = pr.count_tokens(json.dumps(state, ensure_ascii=False))
+    assert pr.estimate_decision_request(T, state, {}) == pytest.approx((tokens + 300) * 0.042 / 1e6)
+    assert pr.estimate_decision(T, 10_300) == pytest.approx(0.0004326)
 
 
 def test_peak_doubles_chat() -> None:

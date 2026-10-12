@@ -59,7 +59,7 @@ def test_rng_matches_known_values() -> None:
 def test_draft_bank_byte_for_byte(path: str) -> None:
     fx = load(f"drafts/{path}")
     for case in fx["cases"]:
-        got = drafts.draft_from_seed(case["seed"], case["intent"], PALETTES)
+        got = drafts.draft_from_seed(case["seed"], case["intent"], PALETTES, case.get("namesInUse") or ())
         assert dump(got) == dump(case["draft"]), (case["seed"], case["intent"])
 
 

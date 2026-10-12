@@ -1,0 +1,323 @@
+{
+ "schemaVersion": 1,
+ "id": "one_on_one_en",
+ "mode": "one_on_one",
+ "world": "wld_seedMeridian",
+ "cast": [
+  "chr_seedAmara"
+ ],
+ "language": "en",
+ "policy": null,
+ "lines": [
+  {
+   "text": "I've been reading before bed instead of scrolling.",
+   "kind": "filler"
+  },
+  {
+   "text": "Someone left a plant at my door. No note.",
+   "kind": "filler"
+  },
+  {
+   "text": "My sister Leila is a nurse in Ipoh.",
+   "kind": "fact",
+   "fact": "Leila"
+  },
+  {
+   "text": "Do you like the rain?",
+   "kind": "filler"
+  },
+  {
+   "text": "I'm allergic to penicillin, found out the hard way.",
+   "kind": "fact",
+   "fact": "penicillin"
+  },
+  {
+   "text": "It's been raining nonstop.",
+   "kind": "filler"
+  },
+  {
+   "text": "I run every Tuesday and Thursday at 6 a.m.",
+   "kind": "fact",
+   "fact": "Tuesday"
+  },
+  {
+   "text": "Tell me about your week.",
+   "kind": "filler"
+  },
+  {
+   "text": "My dog is called Pepper, a grey whippet.",
+   "kind": "fact",
+   "fact": "Pepper"
+  },
+  {
+   "text": "I'm moving to Kuching in March for work.",
+   "kind": "fact",
+   "fact": "Kuching"
+  },
+  {
+   "text": "Tell me about your week.",
+   "kind": "filler"
+  },
+  {
+   "text": "I saw a cat on the bus today.",
+   "kind": "filler"
+  },
+  {
+   "text": "Do you like the rain?",
+   "kind": "filler"
+  },
+  {
+   "text": "I tried that new noodle place by the station.",
+   "kind": "filler"
+  },
+  {
+   "text": "Tell me about your week.",
+   "kind": "filler"
+  },
+  {
+   "text": "I keep forgetting to drink water.",
+   "kind": "filler"
+  },
+  {
+   "text": "I finally cleaned my desk. It won't last.",
+   "kind": "filler"
+  },
+  {
+   "text": "I made coffee too strong this morning.",
+   "kind": "filler"
+  },
+  {
+   "text": "I made coffee too strong this morning.",
+   "kind": "filler"
+  },
+  {
+   "text": "Tell me something you've been thinking about.",
+   "kind": "filler"
+  },
+  {
+   "text": "Antibiotics cure the flu, right? I always take some.",
+   "kind": "wrong_claim"
+  },
+  {
+   "text": "What did you have for lunch?",
+   "kind": "filler"
+  },
+  {
+   "text": "Long day. How's yours going?",
+   "kind": "filler"
+  },
+  {
+   "text": "Is it weird that I like Mondays?",
+   "kind": "filler"
+  },
+  {
+   "text": "Is it weird that I like Mondays?",
+   "kind": "filler"
+  },
+  {
+   "text": "My neighbour is drilling again.",
+   "kind": "filler"
+  },
+  {
+   "text": "I saw a cat on the bus today.",
+   "kind": "filler"
+  },
+  {
+   "text": "The trains were late again.",
+   "kind": "filler"
+  },
+  {
+   "text": "I finally cleaned my desk. It won't last.",
+   "kind": "filler"
+  },
+  {
+   "text": "You need eight glasses of water exactly, or you're dehydrated.",
+   "kind": "wrong_claim"
+  },
+  {
+   "text": "What did you have for lunch?",
+   "kind": "filler"
+  },
+  {
+   "text": "What would you do on a free Sunday?",
+   "kind": "filler"
+  },
+  {
+   "text": "The trains were late again.",
+   "kind": "filler"
+  },
+  {
+   "text": "What would you do on a free Sunday?",
+   "kind": "filler"
+  },
+  {
+   "text": "Long day. How's yours going?",
+   "kind": "filler"
+  },
+  {
+   "text": "My phone battery is dying so fast lately.",
+   "kind": "filler"
+  },
+  {
+   "text": "I watched a documentary about octopuses.",
+   "kind": "filler"
+  },
+  {
+   "text": "I made coffee too strong this morning.",
+   "kind": "filler"
+  },
+  {
+   "text": "Cracking your knuckles gives you arthritis, everyone knows that.",
+   "kind": "wrong_claim"
+  },
+  {
+   "text": "The trains were late again.",
+   "kind": "filler"
+  },
+  {
+   "text": "I tried that new noodle place by the station.",
+   "kind": "filler"
+  },
+  {
+   "text": "Tell me about your week.",
+   "kind": "filler"
+  },
+  {
+   "text": "Do you like the rain?",
+   "kind": "filler"
+  },
+  {
+   "text": "It's been raining nonstop.",
+   "kind": "filler"
+  },
+  {
+   "text": "I've been reading before bed instead of scrolling.",
+   "kind": "filler"
+  },
+  {
+   "text": "I saw a cat on the bus today.",
+   "kind": "filler"
+  },
+  {
+   "text": "What's the best advice you ever got?",
+   "kind": "filler"
+  },
+  {
+   "text": "I think I need a haircut.",
+   "kind": "filler"
+  },
+  {
+   "text": "It's been raining nonstop.",
+   "kind": "filler"
+  },
+  {
+   "text": "Do you ever just stare at the ceiling for an hour?",
+   "kind": "filler"
+  },
+  {
+   "text": "I saw a cat on the bus today.",
+   "kind": "filler"
+  },
+  {
+   "text": "I keep forgetting to drink water.",
+   "kind": "filler"
+  },
+  {
+   "text": "Weekend plans? Mine are none.",
+   "kind": "filler"
+  },
+  {
+   "text": "I watched a documentary about octopuses.",
+   "kind": "filler"
+  },
+  {
+   "text": "I finally cleaned my desk. It won't last.",
+   "kind": "filler"
+  },
+  {
+   "text": "What's the best advice you ever got?",
+   "kind": "filler"
+  },
+  {
+   "text": "The trains were late again.",
+   "kind": "filler"
+  },
+  {
+   "text": "What does my sister do again, and where?",
+   "kind": "probe",
+   "fact": "Leila"
+  },
+  {
+   "text": "Tell me something you've been thinking about.",
+   "kind": "filler"
+  },
+  {
+   "text": "My neighbour is drilling again.",
+   "kind": "filler"
+  },
+  {
+   "text": "Which medicine am I allergic to?",
+   "kind": "probe",
+   "fact": "penicillin"
+  },
+  {
+   "text": "Tell me about your week.",
+   "kind": "filler"
+  },
+  {
+   "text": "The trains were late again.",
+   "kind": "filler"
+  },
+  {
+   "text": "Which days do I go running?",
+   "kind": "probe",
+   "fact": "Tuesday"
+  },
+  {
+   "text": "What's the best advice you ever got?",
+   "kind": "filler"
+  },
+  {
+   "text": "I keep forgetting to drink water.",
+   "kind": "filler"
+  },
+  {
+   "text": "What's my dog's name?",
+   "kind": "probe",
+   "fact": "Pepper"
+  },
+  {
+   "text": "I've been reading before bed instead of scrolling.",
+   "kind": "filler"
+  },
+  {
+   "text": "I tried that new noodle place by the station.",
+   "kind": "filler"
+  },
+  {
+   "text": "Where am I moving to, and when?",
+   "kind": "probe",
+   "fact": "Kuching"
+  },
+  {
+   "text": "What's the best advice you ever got?",
+   "kind": "filler"
+  },
+  {
+   "text": "Weekend plans? Mine are none.",
+   "kind": "filler"
+  },
+  {
+   "text": "It's been raining nonstop.",
+   "kind": "filler"
+  },
+  {
+   "text": "I keep forgetting to drink water.",
+   "kind": "filler"
+  },
+  {
+   "text": "I finally cleaned my desk. It won't last.",
+   "kind": "filler"
+  }
+ ]
+}

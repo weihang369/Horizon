@@ -36,14 +36,16 @@ class JevRouter:
 
     def _state(self, ctx: RouteContext) -> dict[str, Any]:
         s = ctx.session
-        cast = [{"id": p.character_id, "name": p.name, "role": p.role, "lastSpoke": ctx.last_spoke.get(p.character_id, 0)}
+        cast = [{"id": p.character_id, "name": p.name, "role": p.character_role or p.role,
+                 "lastSpoke": ctx.last_spoke.get(p.character_id, 0)}
                 for p in s.participants if p.character_id in ctx.eligible]
         lines = [f"{m.name}: {m.content[:200]}" for m in s.recent[-RECENT_LINES:]]
         return {"mode": s.mode, "quoted_cast": cast, "quoted_recent": lines, "quoted_message": ctx.text[:500]}
 
     def _question(self, ctx: RouteContext) -> Choice:
         names = {p.character_id: p for p in ctx.session.participants}
-        values = [{"key": cid, "name": names[cid].name, "role": names[cid].role}
+        # persona-context D18: the profile role ("florist"), not the participant role ("speaker")
+        values = [{"key": cid, "name": names[cid].name, "role": names[cid].character_role or names[cid].role}
                   for cid in ctx.eligible if cid in names]
         q = bank().question(QUESTION, values=values, exclude=ctx.mentions, seed=f"{ctx.session.seed}:{ctx.turn_index}")
         assert isinstance(q, Choice)

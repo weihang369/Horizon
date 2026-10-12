@@ -1,0 +1,21 @@
+{
+ "id": "judge_summary_fact",
+ "version": 1,
+ "purpose": "eval_judge",
+ "type": "noul",
+ "label": "fact lost?",
+ "instructions": "Is the fact in quoted_fact missing from quoted_summary, or changed there? quoted_lines are the chat lines the summary was written from.",
+ "true": "The summary leaves the fact out, or states it differently from the lines.",
+ "false": "The summary keeps the fact as the lines state it.",
+ "state": {
+  "quoted_lines": "quoted",
+  "quoted_fact": "quoted",
+  "quoted_summary": "quoted"
+ },
+ "deadline": "default",
+ "floor": null,
+ "thresholds": {
+  "t": 0.5
+ },
+ "fallback": "none (evaluation only)"
+}

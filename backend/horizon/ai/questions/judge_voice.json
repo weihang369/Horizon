@@ -1,0 +1,21 @@
+{
+ "id": "judge_voice",
+ "version": 4,
+ "purpose": "eval_judge",
+ "type": "noul",
+ "label": "out of voice?",
+ "instructions": "Does quoted_reply clearly clash with the speaking style or tone described in quoted_persona: a different register, the opposite tone, or another person's habits? A reply that doesn't use every listed quirk is still in voice. Judge the voice only, not the content.",
+ "true": "The reply clearly clashes with this character's style or tone.",
+ "false": "The reply could be this character, even if it doesn't use every quirk.",
+ "state": {
+  "quoted_persona": "quoted",
+  "quoted_last": "quoted",
+  "quoted_reply": "quoted"
+ },
+ "deadline": "default",
+ "floor": null,
+ "thresholds": {
+  "t": 0.6
+ },
+ "fallback": "none (evaluation only)"
+}
