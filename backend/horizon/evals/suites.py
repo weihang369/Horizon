@@ -22,7 +22,7 @@ from pathlib import Path
 from typing import Any
 
 from horizon.ai.decider import Choice, ChoiceAnswer, Noul, NoulAnswer, Question, validate, wire_question
-from horizon.ai.questions import bank
+from horizon.ai.questions import NAME, bank
 from horizon.domain.clock import FrozenClock
 from horizon.evals import canary as canary_mod
 from horizon.evals import judges
@@ -83,11 +83,18 @@ def wire_problems(w: dict[str, Any]) -> list[str]:
     return out
 
 
-def compile_entry(qid: str, values: list[dict[str, Any]] | None = None, seed: str = "smoke") -> Question:
-    """The entry compiled as live; a dynamic choice with no values gets two stub options (the wire check needs ≥ 2)."""
+STUB_NAME = "Amara"   # M9 (design D11): the subject a named entry is compiled about when an item names none (smoke)
+
+
+def compile_entry(qid: str, values: list[dict[str, Any]] | None = None, seed: str = "smoke",
+                  name: str | None = None) -> Question:
+    """The entry compiled as live; a dynamic choice with no values gets two stub options (the wire check needs ≥ 2),
+    and an entry that names its subject gets the item's `name` (or a stub one)."""
     e = bank().get(qid)
     dynamic = e.type == "choice" and e.options.get("kind") != "static"
-    return bank().question(qid, values=values or (STUB_VALUES if dynamic else ()), seed=seed)
+    named = NAME in e.instructions
+    return bank().question(qid, values=values or (STUB_VALUES if dynamic else ()), seed=seed,
+                           name=(name or STUB_NAME) if named else None)
 
 
 def reordered(q: Question) -> Question:
@@ -170,7 +177,7 @@ class Decisions:
         items = self._items(opts)
         est = 0.0
         for i in items:
-            q = compile_entry(i["question_id"], i["item"].get("values"), seed=i["id"])
+            q = compile_entry(i["question_id"], i["item"].get("values"), seed=i["id"], name=i["item"].get("name"))
             asks = 2 if isinstance(q, Choice) else 1   # a noul has no option order to reverse (D27)
             est += asks * decision_estimate(prices, i["item"]["state"], {i["question_id"]: wire_question(q)})
         return Plan(items=items, estimate_usd=est, expected_s=len(items) * 4.0, paid=paid)
@@ -192,7 +199,7 @@ class Decisions:
             if await env.over_budget():
                 res.status = "incomplete"
                 break
-            q = compile_entry(qid, item["item"].get("values"), seed=item["id"])
+            q = compile_entry(qid, item["item"].get("values"), seed=item["id"], name=item["item"].get("name"))
             row: dict[str, Any] = {"id": item["id"], "question_id": qid, "version": version, "label": item["label"],
                                    "smoke_only": bool(item.get("smoke_only")), "planted": bool(item.get("planted"))}
             if isinstance(q, Noul):   # D27: asked once; "yes" when p reaches the entry's threshold

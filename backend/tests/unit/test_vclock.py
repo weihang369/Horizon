@@ -169,3 +169,49 @@ async def test_slots_hand_off_while_the_holder_sleeps() -> None:
     await c.advance(1000)
     assert order == ["a+", "a-", "b+", "b-"]
     assert slots.peak == 1 and slots.in_use == 0
+
+
+# ── M9 (turn-plan-emotion D6): a task waiting on another runtime task gives its token up ──
+async def test_join_lets_the_clock_settle_while_the_joined_task_sleeps() -> None:
+    from horizon.domain.vclock import join
+
+    c = clock()
+    order: list[str] = []
+
+    async def plan() -> str:
+        await c.sleep(0.7)
+        return "planned"
+
+    async def turn() -> None:
+        planning = c.activity.spawn("plan", plan())
+        order.append(await join(planning))
+
+    task = c.activity.spawn("turn", turn())
+    await c.settle()                     # would raise SettleTimeout if `turn` kept its token while joining
+    assert order == []
+    await c.advance(700)
+    await task
+    assert order == ["planned"] and c.activity.busy == {}
+
+
+async def test_a_cancelled_joiner_keeps_the_count_balanced() -> None:
+    from horizon.domain.vclock import join
+
+    c = clock()
+
+    async def plan() -> None:
+        await c.sleep(5)
+
+    async def turn() -> None:
+        planning = c.activity.spawn("plan", plan())
+        try:
+            await join(planning)
+        finally:
+            planning.cancel()
+
+    task = c.activity.spawn("turn", turn())
+    await c.settle()
+    task.cancel()
+    await asyncio.gather(task, return_exceptions=True)
+    await c.settle()
+    assert c.activity.busy == {}

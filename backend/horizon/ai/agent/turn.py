@@ -37,10 +37,18 @@ _HEADING = re.compile(r"^[ \t]*#+[ \t]*")
 
 
 class AgentTagParser(TagParser):
-    """P7 on the agent path: a tag is stripped like any stray tag but never chooses the face."""
+    """P7 on the agent path: a tag is stripped like any stray tag but never chooses the face. The face is the plan's
+    (M9, turn-plan-emotion D14) or, on an unplanned turn, the previous one with source `default` (M8 D4)."""
+
+    def __init__(self, previous: str = "neutral", speaker: str | Sequence[str] | None = None, *,
+                 per_line: bool = False, planned: tuple[str, str] | None = None) -> None:
+        super().__init__(previous, speaker, per_line=per_line)
+        self.planned = planned
 
     def _decide(self, emotion: str | None) -> list[Any]:
         self.decided = True
+        if self.planned is not None:
+            return [ParsedEmotion(*self.planned)]
         return [ParsedEmotion(self.previous, "default")]
 
 
@@ -96,7 +104,7 @@ def stop_sequences(ctx: TurnContext, you: str, history: list[dict[str, Any]]) ->
 
 class AgentTurnEngine(NaiveTurnEngine):
     name = "agent"
-    version = "1"
+    version = "2"   # M9: the face comes from the plan (turn-plan-emotion D14)
     prompt_version: str | None = PROMPT_VERSION
 
     # ── seam 1: the request ──
@@ -154,7 +162,9 @@ class AgentTurnEngine(NaiveTurnEngine):
 
     # ── seam 2: the parser ──
     def parser(self, ctx: TurnContext, previous: str, names: list[str]) -> TagParser:
-        return AgentTagParser(previous, speaker=names, per_line=True)
+        face = ctx.plan.emotion if ctx.plan is not None else None
+        return AgentTagParser(previous, planned=(face.face, face.source) if face is not None else None, speaker=names,
+                              per_line=True)
 
     # ── seam 3: the trace (X7) ──
     def trace_patch(self, ctx: TurnContext, req: ChatRequest, prefix: list[dict[str, Any]], block: RetrievalBlock | None,
@@ -178,6 +188,9 @@ class AgentTurnEngine(NaiveTurnEngine):
                      "knowledge": max(0, block_tokens - memory)}}}
         if chosen is not None:
             patch["emotion"] = {"chosen": chosen.emotion, "source": chosen.source}
+            face = ctx.plan.emotion if ctx.plan is not None else None
+            if face is not None and face.candidates:   # E2: the top 3 by Jev's p (none when Jev failed)
+                patch["emotion"]["candidates"] = [dict(c) for c in face.candidates]
         if block is not None:
             knowledge = block.knowledge_trace(ctx.query, said)
             if knowledge is not None:

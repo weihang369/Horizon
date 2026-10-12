@@ -175,6 +175,9 @@ async def test_agent_profile_resolves_its_own_turn_engine(api: Api) -> None:
 async def test_agent_reply_through_the_runtime(api: Api) -> None:
     sid = await _agent(api)
     assert api.rt.fake is not None
+    # M9: the plan asks Jev first; a fixture answers it, so the queued response reaches the reply
+    await api.post(f"{API}/_test/decider-fixtures", {"set": [{"purpose": "turn_plan", "question": "emotion_reply:chr_seedAmara",
+                                                             "answer": {"choice": "none", "confidence": 0.9}}]})
     api.rt.fake.queued.append(sse(["<e:happy>Hey", " there."]))
     await command(api, sid, "send", {"text": "Morning, how are you?"})
     await api.drive(12000)

@@ -39,6 +39,8 @@ export interface RuntimeConfig {
   persona: { repeatHint: boolean };
   /** docs/ai/05 X5: the dynamic-tail voice reminder, off until the long suite shows drift (doc 13 W12). */
   context: { voiceReminder: boolean };
+  /** docs/ai/06 E3 (doc 13 W12): a kept face in this set becomes neutral, for the speaker and for listeners. */
+  emotion: { fade: string[] };
 }
 
 export const RUNTIME: RuntimeConfig = {
@@ -67,4 +69,5 @@ export const RUNTIME: RuntimeConfig = {
   retrieval: { knowledgeK: 5, memoryK: 3, queryEmbedWaitMs: 400 },
   persona: { repeatHint: false },
   context: { voiceReminder: false },
+  emotion: { fade: ["surprised", "embarrassed"] },   // M9 (turn-plan-emotion D13): moments, not moods
 };

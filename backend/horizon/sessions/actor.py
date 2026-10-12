@@ -61,6 +61,8 @@ class TurnInfo:
     system1: list[dict[str, Any]] = field(default_factory=list)   # rows appended mid-stream (D24), merged at finish
     system1_calls: list[dict[str, Any]] = field(default_factory=list)
     citations: list[dict[str, Any]] | None = None
+    face: str | None = None        # M9: the last face this turn emitted (the face check reads it)
+    auto: bool = True              # M9: the emotion mode was AUTO at turn.start (doc 13 W2)
     spec: Any = None
     ctx: Any = None
     engine: Any = None
@@ -241,7 +243,8 @@ class SessionActor:
         for pf in list(self.prefetches):
             if not pf.released:
                 await pf.discard()
-        if keep_current and self.current is not None and not self.current.closed:
+        # M9 (turn-plan-emotion D8): only a turn that has started streaming is kept; one still planning is cut
+        if keep_current and self.current is not None and not self.current.closed and self.current.started:
             self.mode_epoch_bump()
             return
         self.mode_epoch_bump()

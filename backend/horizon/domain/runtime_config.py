@@ -121,6 +121,7 @@ class RuntimeKnobs:
     retrieval: RetrievalKnobs
     llm_calls: dict[str, LlmCall]
     switches: dict[str, bool] = field(default_factory=dict)   # M8: "persona.repeatHint", "context.voiceReminder"
+    emotion_fade: frozenset[str] = frozenset({"surprised", "embarrassed"})   # M9 (docs/ai/06 E3; design D13)
 
     def switch(self, name: str) -> bool:
         """A dynamic-tail switch (docs/ai/04 P8, 05 X5; doc 13 W12): off unless the table turns it on."""
@@ -171,7 +172,8 @@ class RuntimeConfig:
                                            max_tokens=int(v["maxTokens"]) if v.get("maxTokens") is not None else None)
                            for k, v in ((r.get("llm") or {}).get("calls") or {}).items()},
                 switches={"persona.repeatHint": bool((r.get("persona") or {}).get("repeatHint", False)),
-                          "context.voiceReminder": bool((r.get("context") or {}).get("voiceReminder", False))}),
+                          "context.voiceReminder": bool((r.get("context") or {}).get("voiceReminder", False))},
+                emotion_fade=frozenset(str(x) for x in r["emotion"]["fade"])),
             jobs=JobTiming(
                 profile_draft_ms=float(t["profileDraftMs"]), field_regenerate_ms=float(t["fieldRegenerateMs"]),
                 portrait_ms=float(t["portraitMs"]), portrait_parallel=int(t["portraitParallel"]),

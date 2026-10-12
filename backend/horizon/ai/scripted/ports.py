@@ -93,6 +93,7 @@ class AiDeps:
     system1_row: Callable[[str, str], dict[str, Any] | None] = lambda qid, answer: None   # M7: the shared fixture (D25)
     switch: Callable[[str], bool] = lambda name: False        # M8: a runtime.json dynamic-tail switch (P8, X5)
     windows: Callable[[], Mapping[str, int]] = lambda: {}    # M8: windowTokens per mode (X2); {} = X2's defaults
+    emotion_fade: Callable[[], frozenset[str]] = lambda: frozenset({"surprised", "embarrassed"})   # M9: E3's set
 
 
 def emotion_candidates(chosen: str, rng: random.Random) -> list[dict[str, Any]]:
@@ -257,8 +258,9 @@ class ScriptedRouter:
 
 
 class ScriptedReactions:
-    def __init__(self, deps: AiDeps) -> None:
+    def __init__(self, deps: AiDeps, *, simulate: bool = True) -> None:
         self.deps = deps
+        self.simulate = simulate   # M9 (design D21): False when standing in for `naive` under a key: no fake spend
 
     def predict(self, ctx: SessionContext, message_id: str, speaker_id: str, listeners: list[str],
                 seed: str) -> list[Reaction]:

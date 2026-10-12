@@ -14,7 +14,7 @@ from horizon.ai.scripted.bank import greeting
 from horizon.sessions.context import characters
 from horizon.sessions.modes.common import asleep_note, is_asleep, last_user_text, message_event, speak_then, user_message
 from horizon.sessions.retrieve import start_query
-from horizon.sessions.turn import TurnSpec
+from horizon.sessions.turn import REGENERATE_SUFFIX, TurnSpec
 
 if TYPE_CHECKING:
     from horizon.sessions.actor import SessionActor
@@ -92,6 +92,6 @@ def regenerate(actor: SessionActor, message_id: str) -> None:
         if await is_asleep(actor, cid):
             await asleep_note(actor, cid, skipping=False)
             return
-        await speak_then(actor, TurnSpec(speaker=cid, prompt=f"{prompt} (again)", variant_of=message_id))
+        await speak_then(actor, TurnSpec(speaker=cid, prompt=f"{prompt}{REGENERATE_SUFFIX}", variant_of=message_id))
 
     actor.enqueue(job)

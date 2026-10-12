@@ -128,6 +128,12 @@
       },
       "context": {
         "voiceReminder": false
+      },
+      "emotion": {
+        "fade": [
+          "surprised",
+          "embarrassed"
+        ]
       }
     }
   }

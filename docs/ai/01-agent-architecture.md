@@ -239,7 +239,7 @@ probabilities for Insight.
 | who speaks (group / watch) | @mentions, else **least recently spoken** (today's rule) | @mentions, else the least recently spoken **of Jev's top 2** |
 | which debate member | the next member in today's fixed order | the same |
 | needs documents / earlier lines | **no: a quick reply** (no retrieval without Jev to check it; long-term memory is in the system prompt anyway, doc 09 M8) | treat as yes; Jev call 2 then decides. A noul has no confidence, so "unsure" is built into its threshold `t_gate`, set low enough for recall (02 B5) |
-| emotion | **keep the previous face** (amended by doc 04 P7: the `agent` prompt has no emotion tag); a kept surprised or embarrassed face becomes neutral (doc 06 E3) | the same; DeepSeek's mood line follows the face shown (doc 06 E4) |
+| emotion | **keep the previous face** (amended by doc 04 P7: the `agent` prompt has no emotion tag); a kept surprised or embarrassed face becomes neutral (doc 06 E3) — built in M9 (`turn-plan-emotion` D13) | the same; DeepSeek's mood line follows the face shown (doc 06 E4) |
 | input safe, at risk (doc 11 S3, S4) | no cue, with a flag in Insight | a noul has no confidence: `safety.tSteer` and `safety.tCare` decide |
 | talk finished | no (the turn caps still bound watch mode) | no |
 
@@ -271,6 +271,8 @@ probabilities for Insight.
   - **Built in M8** (OpenSpec `persona-context`, design D4): the tagless `agent` prompt ships before Jev call 1 does
     (M9), so until then an `agent` reply keeps the previous face with source `default`; M9 replaces only where the
     face comes from.
+  - **Built in M9** (OpenSpec `turn-plan-emotion`, design D6, D14): Jev call 1 picks the face in `agent` 1:1; group,
+    watch and debate keep M8's held face until M10/M11 (the user's choice, D34).
 - If Jev is unsure, the previous face stays (A4); short faces fade to neutral (doc 06 E3).
 - MANUAL emotion stays face-only and never changes the reply.
 - ~~Task 6 confirms the approach with the evaluation and words the mood line.~~ Done in doc 06 (E1–E9): the question
@@ -362,6 +364,11 @@ emotion, and the hits it kept. The reply engine never queries storage (D-92 hold
 | **Post-turn check graph:** emotion check ∥ citation check → merge into Insight. **Superseded:** no post-turn graph is left in v1. The face check is one plain Jev call after `turn.end` ([doc 13](13-wrap-up.md) W2), and the citation check is evaluation only (doc 10 K10) | **Listener reactions** (one Jev call, doc 06 E5) |
 | **Memory graph** (doc 09 M1–M5), **at a session pause, not after `turn.end`**: DeepSeek rewrites each present character's list (keep / confirm / rewrite / add) → Jev importance ∥ Jev guard on each rewrite ("keeps every still-true fact?", else keep both) ∥ duplicate check → ops | **Rolling summary** (one DeepSeek call) |
 | **Verdict graph** (doc 08 V7–V9): Jev rubric scores in parallel → code picks the stronger case → DeepSeek writes the prose (JSON) | **Profile drafter, image, song** |
+
+**Built in M9** (OpenSpec `turn-plan-emotion`, design D3): the turn plan graph has its final shape, `state → ask →
+decide → route`, with `route` always `quick` until M12 adds the deep branch. In M9 it is one Jev call, which by this
+section's own rule would be plain code. It is a graph from the start so that check 1 measures the real structure
+and M12 extends it instead of rewriting it.
 
 **Why the reply itself is not a graph:** it is a single streaming call. Keeping it as today's tested engine leaves the
 streaming, Stop and refusal paths unchanged, and LangGraph does the deciding, which is where its branching and
@@ -510,8 +517,8 @@ total, and need the user's approval before they run.**
 
 | # | Check | Pass mark | If it fails |
 |---|---|---|---|
-| 1 | Turn plan graph: its overhead, and whether its runs settle deterministically on the virtual test clock (every task it starts must be visible to `rt.spawn`) | overhead not noticeable (< 50 ms); tests settle with no pending work | Wrap or replace the graph's task handling; the plan falls back to plain code if needed |
-| 2 | Stop or pause during a plan or a reply: nothing left running except the allowed late Jev calls | no leaked task or connection; Stop within NFR-20's 500 ms | Fix the cancellation path before building on it |
+| 1 | **Done in M9 ([m9](checks/m9.md)): pass, overhead ≈ 2 ms p95, 100 runs × 2 settle.** Turn plan graph: its overhead, and whether its runs settle deterministically on the virtual test clock (every task it starts must be visible to `rt.spawn`) | overhead not noticeable (< 50 ms); tests settle with no pending work | Wrap or replace the graph's task handling; the plan falls back to plain code if needed |
+| 2 | **Done in M9 ([m9](checks/m9.md)): pass; the runtime cases are re-run in the wired planner.** Stop or pause during a plan or a reply: nothing left running except the allowed late Jev calls | no leaked task or connection; Stop within NFR-20's 500 ms | Fix the cancellation path before building on it |
 | 3 | *(Split by [doc 13](13-wrap-up.md) W6: the Jev and first-word part is A2, before coding (**done: Jev ≈ 420 ms p50 / 500 p99, DeepSeek first word ≈ 555 / 710 ms p50 / p90, [group A](checks/group-a.md)**); the 1:1 quick-turn timing is in M9; the must-pass run is in M15.)* Real turns from Malaysia: 100 quick and 100 deep in 1:1 (the gate forced by a fixture), plus 50 group and 50 debate turns, each stopped at its first word (about $0.08; 02 B8). Record the time to the face and to the first word, Jev's latency distribution, how often each timeout fires, and the real response shape of the alpha endpoint | 1:1 first word within NFR-01 (2 s p50, 4 s p90); next speaker within NFR-02 (3 s p50) | Trim the deep path (fewer candidates, a smaller state) and set the `turn_plan` / `deep_check` timeouts from the measured distribution |
 | 4 | **Done ([group A](checks/group-a.md) A1): the state is billed once; the limit is ≈ 32k tokens and overflow returns a 429.** Jev billing and limits on the OpenRouter endpoint. Compare `usage.input_tokens` and `usage.cost` for 1 vs 8 questions **and** for a small vs a large state; find the real request size limit | — | If the state is billed per question, update `decision_estimate` (the daily-cap reservation and the cost shown before spending, NFR-08, both depend on it) and shrink Jev call 1's state |
 
@@ -521,11 +528,11 @@ None of the backend rows changes the HTTP contract unless marked.
 
 | Change | Kind | Why | Task |
 |---|---|---|---|
-| A **`TurnPlanner` port** (the turn plan graph), the `agent` profile value, and a scripted twin with fixtures so the mock parity tests still pass | backend | A4, A6, A12 | 5 |
-| **Every turn entry point calls the planner:** 1:1 send, regenerate, group auto, Everyone, nudge (random today), watch turns and step-in (random today), debate turns and Ask, the opening prefetch | backend | A4 | 5–8 |
+| A **`TurnPlanner` port** (the turn plan graph), the `agent` profile value, and a scripted twin with fixtures so the mock parity tests still pass. **Built in M9** (`turn-plan-emotion` D3–D5): the port, the graph and `TurnContext.plan`; the scripted twin lands with the System 1 fixture rows | backend | A4, A6, A12 | 5 |
+| **Every turn entry point calls the planner:** 1:1 send, regenerate, group auto, Everyone, nudge (random today), watch turns and step-in (random today), debate turns and Ask, the opening prefetch. **1:1 built in M9** (send, regenerate, a generated greeting; D6) | backend | A4 | 5–8 |
 | **New `Decider` purposes** `turn_plan` and `deep_check`, with config timeouts and ledger purposes; the `Decider` also checks the total request size | backend | A4, A6 | 5 |
 | **Embed only on deep turns**, replacing D-97's embedding at send; keep the 400 ms wait; debate and watch turns may embed; doc 10 K4 adds the rewrite when needed | backend | A6 | 10 |
-| The reply receives the Jev emotion: show it at preflight, mood line in the dynamic tail, strip the tag | backend | A5 | 6 |
+| The reply receives the Jev emotion: show it at preflight, mood line in the dynamic tail, strip the tag. **Built in M9** for `agent` 1:1 (the face on the first chunk, `turn.start` and `emotion` in one write, D14) | backend | A5 | 6 |
 | `Summariser.rolling` and `ReactionPredictor.predict` become **async**, and both run after `turn.end` | backend | A7, A13 | 5, 6 |
 | ~~The citation check runs on interrupted replies~~ (withdrawn by doc 10 K10: evaluation only in v1); the after-reply work runs after `turn.end` | backend | A13 | 6, 10 |
 | Debate: Jev picks the member among those who haven't spoken in the phase; openings stay fixed; the trace uses existing `routing` fields (doc 08 V2), so **no contract change** | backend | A14 | 8 |

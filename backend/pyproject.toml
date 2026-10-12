@@ -19,6 +19,7 @@ dependencies = [
   "tzdata>=2024.2",
   "pillow>=12.3.0",
   "python-multipart>=0.0.32",
+  "langgraph==1.2.12",
 ]
 
 [project.scripts]
@@ -47,6 +48,8 @@ tracing = [
 
 [tool.uv]
 default-groups = ["dev"]
+# M9 (turn-plan-emotion D1): langgraph's own dependencies stay at releases at least two weeks old when it was added.
+exclude-newer-package = { jsonpatch = "2026-09-28T00:00:00Z", jsonpointer = "2026-09-28T00:00:00Z", langchain-core = "2026-09-28T00:00:00Z", langgraph-sdk = "2026-09-28T00:00:00Z", tenacity = "2026-09-28T00:00:00Z" }
 
 [tool.uv.sources]
 torch = [{ index = "pytorch-cpu", marker = "sys_platform != 'darwin'" }]

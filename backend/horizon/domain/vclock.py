@@ -289,3 +289,28 @@ async def wait_at_most(clock: Any, task: asyncio.Future[Any], seconds: float) ->
         task.remove_done_callback(wake)
         t.cancel()
     return task.done()
+
+
+async def join[R](task: asyncio.Task[R]) -> R:
+    """Await another runtime task with the caller's token given up (M9, turn-plan-emotion D6).
+
+    A turn waiting on its own plan task must not keep its token: the plan waits on a clock timer (the Jev deadline), and
+    a caller still holding its token would stop the clock from ever settling. The token is taken back just before the
+    caller resumes, and only while it is still waiting (a cancelled caller already took it back in `wait_handoff`)."""
+    if task.done():
+        return task.result()
+    fut: asyncio.Future[None] = asyncio.get_running_loop().create_future()
+    holder = current_holder()
+
+    def wake(_t: Any = None) -> None:
+        if not fut.done():
+            if holder is not None:
+                holder.hold()
+            fut.set_result(None)
+
+    task.add_done_callback(wake)
+    try:
+        await wait_handoff(fut, holder)
+    finally:
+        task.remove_done_callback(wake)
+    return task.result()

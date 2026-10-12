@@ -9,6 +9,7 @@ world, speaker and message, so a port can't mislabel spend (D-42: only `reply` d
 
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict
@@ -128,6 +129,61 @@ class MemoryHit(Frozen):
     score: float | None = None
 
 
+# ── The turn plan (M9, turn-plan-emotion design D4; turn-plan spec) ──
+PlanKind = Literal["reply", "greeting"]
+FaceOutcome = Literal["jev", "none", "below_floor", "fallback", "late"]
+
+
+class PlannedFace(Frozen):
+    """What the plan decided for the speaker's face (doc 06 E1–E3; design D12, D13)."""
+
+    face: str                                       # the face sent
+    source: Literal["classifier", "default"]
+    base: str                                       # the face kept on "none", unsure or a fallback
+    outcome: FaceOutcome
+    pick: str | None = None                         # Jev's pick, after the neutral + none merge
+    p: float | None = None                          # Jev's probability for the face sent (None on a fallback)
+    confidence: float | None = None
+    compared: list[dict[str, Any]] = []             # [{name, value, threshold}] as in the System 1 row
+    candidates: list[dict[str, Any]] = []           # TurnTrace.emotion.candidates: the top 3 [{label, p}]
+    faded: bool = False
+    manual: bool = False
+
+
+class TurnPlan(Frozen):
+    """The frozen result of the turn plan (A9: a turn replays from JSON with no Jev call)."""
+
+    seed: str                                       # "{session seed}:{turn index}" (TurnTrace.system1.seed)
+    kind: PlanKind = "reply"
+    branch: Literal["quick", "deep"] | None = None  # None: this planner doesn't decide retrieval (the scripted one)
+    emotion: PlannedFace | None = None              # None: the reply picks its own face (the scripted planner)
+    rows: list[dict[str, Any]] = []                 # System 1 rows, `not_used` ones included
+    calls: list[dict[str, Any]] = []                # the turn_plan call as a TurnTrace.calls entry
+    graph_path: list[str] = []
+    state_tokens: int = 0
+    dropped_gates: list[str] = []
+
+    @property
+    def deep(self) -> bool:
+        """The reply cap reads this (`reply_cap`): M12's deep turns get the deep cap."""
+        return self.branch == "deep"
+
+
+class PlanRequest(Frozen):
+    """What the runtime gives the planner (design D4, D6)."""
+
+    session: SessionContext
+    speaker_id: str
+    cast: list[CharacterView] = []                 # the candidates' profiles (the X9 `about` line)
+    message_id: str | None = None                   # the reply's message: the turn_plan ledger row links to it
+    kind: PlanKind = "reply"
+    latest: str = ""                                # the user's text, without regenerate's " (again)"
+    turn_index: int = 0
+    base_face: str = "neutral"                      # AUTO: the face now; MANUAL: the last AI-chosen face (E2)
+    manual: bool = False
+    started_at: datetime                            # the deadline counts from here (the plan starts before turn.next)
+
+
 class TurnContext(Frozen):
     session: SessionContext
     speaker: CharacterView
@@ -142,6 +198,7 @@ class TurnContext(Frozen):
     knowledge: list[KnowledgeHit] = []   # M5: retrieved by the runtime in the speaker's scope (design D10)
     memory: list[MemoryHit] = []
     query: str | None = None             # the text retrieval used
+    plan: TurnPlan | None = None          # M9: the frozen turn plan (design D4); None when the turn wasn't planned
 
     def call_ctx(self, purpose: str) -> CallContext:
         return self.session.call_ctx(purpose, character_id=self.speaker.id, message_id=self.message_id)

@@ -34,3 +34,7 @@ def test_an_old_single_window_still_loads() -> None:
     from horizon.domain.runtime_config import WindowSizes
 
     assert WindowSizes.from_json(7000).as_dict() == {"one_on_one": 7000, "group": 7000, "watch": 7000, "debate": 7000}
+
+
+def test_the_emotion_fade_set_loads() -> None:   # M9 (turn-plan-emotion task 2.6; docs/ai/06 E3, doc 13 W12)
+    assert load_runtime_config(SEED).runtime.emotion_fade == frozenset({"surprised", "embarrassed"})

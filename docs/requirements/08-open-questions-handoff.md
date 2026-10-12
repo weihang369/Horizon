@@ -144,7 +144,7 @@
 - **Recommendation:** Jev "who would naturally respond?" with the top 1–2 above a probability band. Interrupts cut the stream immediately and keep the partial text.
 
 **OQ-AI-07: Emotion source for AUTO mode**
-- **Resolved (AI stage, [docs/ai/01](../ai/01-agent-architecture.md) A5, [docs/ai/06](../ai/06-emotion-reactions.md)):** C. Jev picks the face before the reply, shown with the first word; a failure keeps the previous face. The inline tag (A) stays only in the `naive` yardstick.
+- **Resolved (AI stage, [docs/ai/01](../ai/01-agent-architecture.md) A5, [docs/ai/06](../ai/06-emotion-reactions.md)):** C. Jev picks the face before the reply, shown with the first word; a failure keeps the previous face. The inline tag (A) stays only in the `naive` yardstick. **Built in M9** (OpenSpec `turn-plan-emotion`): `agent` 1:1 asks Jev the emotion in its turn plan (Jev call 1, 700 ms deadline, floor 0.6); `none`, an unsure pick or a failed call keeps the face, and a kept surprised or embarrassed face fades to neutral. Group, watch and debate keep the previous face until M10/M11.
 - Options:
   - A) Inline tag from the main LLM at the start of the stream (stripped server-side).
   - B) Jev post-classification.

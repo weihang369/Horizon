@@ -15,7 +15,7 @@ from typing import Any, Protocol
 
 from sqlalchemy.ext.asyncio import AsyncConnection
 
-from horizon.ai.contexts import RouteContext, SessionContext, TurnContext
+from horizon.ai.contexts import PlanRequest, RouteContext, SessionContext, TurnContext, TurnPlan
 from horizon.gateway.context import CallContext
 
 OWNED_TRACE_KEYS = frozenset({"model", "energy", "routing", "calls", "messageId", "system1"})   # system1: rev 1.4, D24
@@ -80,6 +80,21 @@ class TurnEngine(Protocol):
 
 class Router(Protocol):
     async def route(self, ctx: RouteContext) -> RoutingDecision: ...
+
+
+class TurnPlanner(Protocol):
+    """M9 (docs/ai/01 A4; turn-plan-emotion design D4): plans a turn before its reply. Returns None when the profile
+    has no planner (`naive`). It never raises, except CancelledError: a failed or late Jev call is a fallback plan."""
+
+    async def plan(self, req: PlanRequest) -> TurnPlan | None: ...
+
+
+class FaceChecker(Protocol):
+    """M9 (doc 13 W2; design D23, D24): after `turn.end`, which emotion the reply's words show. Returns the System 1
+    row and its call entry, or None (no check for this profile, or the call was late or failed)."""
+
+    async def check(self, ctx: SessionContext, message_id: str, speaker_id: str, face: str,
+                    text: str) -> tuple[dict[str, Any], dict[str, Any] | None] | None: ...
 
 
 class ReactionPredictor(Protocol):
