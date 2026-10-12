@@ -277,11 +277,11 @@
 
 ## 9. Paid runs (each asked for, off-peak, through the store except latency; D32)
 
-- [ ] 9.1 `decisions --set emotion`: ask with its estimate (≈ $0.009), run it, choose the floor on dev, and report the
+- [x] 9.1 `decisions --set emotion`: ask with its estimate (≈ $0.009), run it, choose the floor on dev, and report the
   test split once. If no floor meets E8's target, stop and give the user choices (reword, or grow the set by 40).
   Verify: the report and the chosen floor are in m9.md.
-- [ ] 9.2 `decisions --set reactions`: the same (≈ $0.008). Verify likewise.
-- [ ] 9.3 Write the chosen floors into the bank (version bump, re-lock), then re-run the offline gates. Verify:
+- [x] 9.2 `decisions --set reactions`: the same (≈ $0.008). Verify likewise.
+- [x] 9.3 Write the chosen floors into the bank (version bump, re-lock), then re-run the offline gates. Verify:
   `check_lock()` is clean, and m9.md records each floor with its version.
 - [ ] 9.4 Judge validation for `judge_names_feeling` and `judge_pairwise` (≈ $0.003). A failing judge gets the user's
   choice before any rewording. Verify: the results per question and version are in `evals/baselines/judges.json` and

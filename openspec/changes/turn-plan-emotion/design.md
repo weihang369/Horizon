@@ -841,6 +841,14 @@ answer; B6's order-bias line has read 0 for every shuffled choice since M7. The 
 them, with the reason. Live calls are unaffected (Jev gets the shuffled order). Fixing the key changes W10's locked
 rule, so it is its own change, with the user's OK. **Rejected:** fixing the key in M9.
 
+### D39. Jev reactions ship at floor 0.2, below E8's accuracy target (the user's choice, 9.2)
+
+On a fresh 90-item set labelled blind (the first set's calm debate lines were labelled with reactions to meet the
+`none` cap), the extended grid picked floor 0.2 on dev and the test split read 0.61 against 0.80, +0.31 over "always
+none" (p 0.001), with 39 % of messages showing a reaction; random reactions score about 0.24. `reaction` is v2 with
+floor 0.2 and stays in `AGENT_PORTS`. The miss is recorded and revisited in M15. **Rejected:** random reactions for
+`agent` until M15; another rewording now (the test split would have been read twice).
+
 ### Built notes (phases 5–8)
 
 - **Splits (D27).** Both sets keep the hash rule, which gave `emotion` 72 dev / 28 test and `reactions` 65 / 25 (E8's

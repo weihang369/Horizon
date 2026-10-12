@@ -236,7 +236,7 @@ def test_the_reaction_entry_compiles_about_a_named_listener() -> None:
     assert q.instructions.startswith("How does Rin react to quoted_line? Choose none when they show no visible reaction.")
     assert q.meta is not None and (q.meta.purpose, q.meta.label, q.meta.deadline) == ("reaction", "reaction", "reaction")
     e = bank().get("reaction")
-    assert e.floor == 0.6 and set(e.state) == {"mode", "quoted_line", "quoted_before", "quoted_listeners"}
+    assert e.floor == 0.2 and set(e.state) == {"mode", "quoted_line", "quoted_before", "quoted_listeners"}   # 9.3 (D39)
     emotion = bank().get("emotion_reply").options["items"]
     for k, v in e.options["items"].items():   # E1's wording per emotion; its own examples
         if k != "none":

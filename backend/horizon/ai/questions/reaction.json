@@ -1,6 +1,6 @@
 {
   "id": "reaction",
-  "version": 1,
+  "version": 2,
   "purpose": "reaction",
   "type": "choice",
   "label": "reaction",
@@ -58,7 +58,7 @@
     "quoted_listeners": "quoted"
   },
   "deadline": "reaction",
-  "floor": 0.6,
+  "floor": 0.2,
   "thresholds": {},
   "fallback": "no_reaction"
 }

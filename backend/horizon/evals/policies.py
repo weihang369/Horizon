@@ -24,7 +24,7 @@ from horizon.ai.decider import ChoiceAnswer
 from horizon.evals.metrics import mcnemar_exact, wilson
 
 FLOORS = (0.5, 0.6, 0.7, 0.8, 0.9)
-GRIDS = {"emotion": (0.2, 0.3, 0.4, *FLOORS), "reaction": FLOORS}   # D36
+GRIDS = {"emotion": (0.2, 0.3, 0.4, *FLOORS), "reaction": (0.2, 0.3, 0.4, *FLOORS)}   # D36 (reactions: D39)
 FADE = frozenset({"surprised", "embarrassed"})
 
 
