@@ -16,6 +16,7 @@ from horizon.ai.language import detect_language
 from horizon.evals.content import persona_text
 from horizon.evals.planted import AGREE, ASSISTANT_OPENERS, FLATTERY
 
+CLASH = {"wld_seedMeridian": "chr_seedRin", "wld_seedSunnyHollow": "chr_seedVictor"}
 SCRIPT_LANGUAGE = {"en": None, "ms": "Malay"}   # detect_language's names (None is English)
 REPLY_JUDGES = ("judge_assistant_voice", "judge_flattery", "judge_language", "judge_pushback", "judge_voice",
                 "judge_recall")
@@ -73,10 +74,22 @@ def reply_sets(labels: dict[str, Any], root: Path, sources: list[dict[str, Any]]
     from build import row  # noqa: PLC0415 - the shared row shape
 
     prof = profiles(root)
-    turns = {t["key"]: t for src in sources for t in turns_of(root, src)}
+    # a long run pruned before `.keep` existed (l13, the 1.3 run, can't be replayed): its labelled rows are carried
+    # over from the committed sets unchanged
+    gone = {s["tag"] for s in sources if s["kind"] == "long" and not (root / s["run"]).is_dir()}
+    turns = {t["key"]: t for src in sources if src["tag"] not in gone for t in turns_of(root, src)}
     out: dict[str, list[dict[str, Any]]] = {q: [] for q in REPLY_JUDGES}
     for qid in REPLY_JUDGES:
+        committed = {}
+        if gone:
+            f = root / "evals" / "datasets" / "judges" / f"{qid}.jsonl"
+            committed = {r["id"]: r for r in map(json.loads, f.read_text(encoding="utf-8").splitlines())}
         for key, lab in labels.get(qid, {}).items():
+            if key.split("-", 1)[0] in gone:
+                kept = committed[f"{qid}-real-{key}"]
+                assert kept["label"] == lab["label"], key
+                out[qid].append(kept)
+                continue
             t = turns[key.rsplit("#", 1)[0]]
             reply = t["replies"][int(key.rsplit("#", 1)[1]) if "#" in key else 0]
             out[qid].append(row(qid, f"{qid}-real-{key}", state_for(qid, t, prof, reply), lab["label"], False))
@@ -109,9 +122,10 @@ def reply_sets(labels: dict[str, Any], root: Path, sources: list[dict[str, Any]]
         claim = claims[i % len(claims)]
         out["judge_pushback"].append(row("judge_pushback", f"pl-push-{t['key']}", {
             "quoted_last": claim["user"], "quoted_reply": AGREE[i % 3]}, "yes", True))
-        # another world's persona (10.6, the user's choice): inside one world the voices converge in a long chat,
-        # so a same-world swap need not clash (Mei's withdrawal reads like Amara's); across worlds it always does
-        wrong = [s for s in speakers if world[s] != world[r["speaker"]]]
+        # a persona whose stated, checkable style the reply breaks (10.6, D38): inside one world the voices converge in
+        # a long chat, and even across worlds a warm reply can pass as "reassuring". Meridian replies (capitalised)
+        # go under Rin's "all lowercase"; Sunny Hollow's casual ones under Victor's numbered courtroom style.
+        wrong = [CLASH[world[r["speaker"]]]]
         out["judge_voice"].append(row("judge_voice", f"pl-voice-{t['key']}", {
             "quoted_persona": persona_text(prof[wrong[i % len(wrong)]]), "quoted_last": t["user"],
             "quoted_reply": r["text"]}, "yes", True))

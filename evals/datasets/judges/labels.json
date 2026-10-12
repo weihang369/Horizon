@@ -1,10 +1,10 @@
 {
  "_note": "Hand labels for B4's real items (persona-context 10.5), drafted by Claude from the paid runs' outputs; \"yes\" is the failure. Each entry: item id -> {label, why?}. The user reviews a sample (horizon eval review). judge_voice (10.6, the user's choice): a fresh set of 30 t10 replies, labelled blind before any judge saw them, by a rule written first: out of voice when the tone contradicts the persona's stated tone (a curt brush-off from a reassuring or warm persona) or the reply has none of the persona's markers and reads like another cast member; content doesn't count, and short alone isn't out of voice.",
  "_sources": {
-  "summary": "data/evals/20261012T000256-summary-fe23e4 (the paid summary run; outputs recorded in the store)",
+  "summary": "data/evals/20261012T045213-summary-bb457f (the paid summary run's outputs, re-served from the store on 2026-10-12; the original run dir was pruned)",
   "drafts": [
-   "data/evals/20261012T000303-drafter-3a961d (the paid drafter run, from the store)",
-   "data/evals/20261012T001250-drafter-66cf07 (the companion seeds for judge_relationship_fit)"
+   "data/evals/20261012T045210-drafter-772d8f (the paid drafter run, re-served from the store)",
+   "data/evals/20261012T051240-drafter-5ab047 (the companion seeds, re-served from the store)"
   ],
   "replies": [
    {
@@ -17,7 +17,7 @@
     "kind": "long",
     "tag": "l13",
     "run": "data/evals/20261012T000450-long-637f85",
-    "note": "agent, temperature 1.3 (real failures)"
+    "note": "agent, temperature 1.3 (real failures); run dir pruned, its labelled rows are carried over from the committed sets"
    },
    {
     "kind": "long",
@@ -1199,96 +1199,97 @@
   }
  },
  "judge_voice": {
-  "t10-long_group_meridian-099": {
+  "t10-long_group_meridian-044": {
    "label": "no"
   },
-  "t10-long_group_meridian-088": {
+  "t10-long_group_meridian-079": {
    "label": "yes",
-   "why": "Mei with none of her dry ranges; 'Message me directly ... Not here' reads like Amara's withdrawal"
+   "why": "Mei with none of her dry ranges; a soft withdrawal that reads like Amara"
   },
-  "t10-long_group_meridian-013": {
+  "t10-long_group_meridian-015": {
    "label": "no"
   },
-  "t10-long_group_meridian-043": {
+  "t10-long_group_meridian-068": {
    "label": "no"
   },
-  "t10-long_group_meridian-032": {
-   "label": "no"
-  },
-  "t10-long_group_meridian-031": {
-   "label": "no"
-  },
-  "t10-long_group_meridian-057": {
+  "t10-long_group_meridian-084": {
    "label": "yes",
-   "why": "reproach and 'GP. Tomorrow. Tell me the day.': Victor's clipped cadence, not Amara's reassurance"
+   "why": "a curt close ('I'm not answering in this room anymore'), not Amara's reassurance"
   },
-  "t10-long_group_meridian-051": {
+  "t10-long_group_meridian-019": {
    "label": "no"
   },
-  "t10-long_group_sunnyhollow-037": {
+  "t10-long_group_meridian-075": {
+   "label": "yes",
+   "why": "closing the room in clipped lines ('GP, tomorrow'), not Amara's reassurance"
+  },
+  "t10-long_group_meridian-021": {
    "label": "no"
   },
-  "t10-long_group_sunnyhollow-042": {
+  "t10-long_group_sunnyhollow-015": {
    "label": "no"
   },
-  "t10-long_group_sunnyhollow-013": {
+  "t10-long_group_sunnyhollow-025": {
    "label": "no"
   },
-  "t10-long_group_sunnyhollow-070": {
+  "t10-long_group_sunnyhollow-024": {
    "label": "no"
   },
-  "t10-long_group_sunnyhollow-031": {
+  "t10-long_group_sunnyhollow-072": {
    "label": "no"
   },
-  "t10-long_group_sunnyhollow-055": {
+  "t10-long_group_sunnyhollow-073": {
    "label": "no"
   },
-  "t10-long_group_sunnyhollow-092": {
+  "t10-long_group_sunnyhollow-075": {
    "label": "no"
   },
-  "t10-long_group_sunnyhollow-085": {
+  "t10-long_group_sunnyhollow-096": {
    "label": "no"
   },
-  "t10-long_one_on_one_en-040": {
+  "t10-long_group_sunnyhollow-030": {
    "label": "no"
   },
-  "t10-long_one_on_one_en-034": {
+  "t10-long_one_on_one_en-027": {
    "label": "no"
   },
-  "t10-long_one_on_one_en-005": {
+  "t10-long_one_on_one_en-048": {
    "label": "no"
   },
-  "t10-long_one_on_one_en-018": {
+  "t10-long_one_on_one_en-066": {
    "label": "no"
   },
-  "t10-long_one_on_one_en-056": {
+  "t10-long_one_on_one_en-058": {
    "label": "no"
   },
-  "t10-long_one_on_one_en-052": {
+  "t10-long_one_on_one_en-090": {
    "label": "no"
   },
-  "t10-long_one_on_one_en-019": {
+  "t10-long_one_on_one_en-050": {
    "label": "no"
   },
-  "t10-long_one_on_one_ms-045": {
+  "t10-long_one_on_one_en-028": {
    "label": "no"
   },
-  "t10-long_one_on_one_ms-088": {
+  "t10-long_one_on_one_ms-072": {
    "label": "no"
   },
-  "t10-long_one_on_one_ms-074": {
+  "t10-long_one_on_one_ms-050": {
    "label": "no"
   },
-  "t10-long_one_on_one_ms-031": {
+  "t10-long_one_on_one_ms-030": {
    "label": "no"
   },
-  "t10-long_one_on_one_ms-044": {
+  "t10-long_one_on_one_ms-086": {
    "label": "no"
   },
-  "t10-long_one_on_one_ms-070": {
+  "t10-long_one_on_one_ms-057": {
    "label": "no"
   },
-  "t10-long_one_on_one_ms-000": {
+  "t10-long_one_on_one_ms-064": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-013": {
    "label": "no"
   }
  },
@@ -1387,98 +1388,97 @@
    "label": "no"
   }
  },
- "_judge_voice_c": {
-  "t10-long_group_meridian-044": {
+ "_judge_voice_b": {
+  "t10-long_group_meridian-099": {
    "label": "no"
   },
-  "t10-long_group_meridian-079": {
+  "t10-long_group_meridian-088": {
    "label": "yes",
-   "why": "Mei with none of her dry ranges; a soft withdrawal that reads like Amara"
+   "why": "Mei with none of her dry ranges; 'Message me directly ... Not here' reads like Amara's withdrawal"
   },
-  "t10-long_group_meridian-015": {
+  "t10-long_group_meridian-013": {
    "label": "no"
   },
-  "t10-long_group_meridian-068": {
+  "t10-long_group_meridian-043": {
    "label": "no"
   },
-  "t10-long_group_meridian-084": {
+  "t10-long_group_meridian-032": {
+   "label": "no"
+  },
+  "t10-long_group_meridian-031": {
+   "label": "no"
+  },
+  "t10-long_group_meridian-057": {
    "label": "yes",
-   "why": "a curt close ('I'm not answering in this room anymore'), not Amara's reassurance"
+   "why": "reproach and 'GP. Tomorrow. Tell me the day.': Victor's clipped cadence, not Amara's reassurance"
   },
-  "t10-long_group_meridian-019": {
+  "t10-long_group_meridian-051": {
    "label": "no"
   },
-  "t10-long_group_meridian-075": {
-   "label": "yes",
-   "why": "closing the room in clipped lines ('GP, tomorrow'), not Amara's reassurance"
-  },
-  "t10-long_group_meridian-021": {
+  "t10-long_group_sunnyhollow-037": {
    "label": "no"
   },
-  "t10-long_group_sunnyhollow-015": {
+  "t10-long_group_sunnyhollow-042": {
    "label": "no"
   },
-  "t10-long_group_sunnyhollow-025": {
+  "t10-long_group_sunnyhollow-013": {
    "label": "no"
   },
-  "t10-long_group_sunnyhollow-024": {
+  "t10-long_group_sunnyhollow-070": {
    "label": "no"
   },
-  "t10-long_group_sunnyhollow-072": {
+  "t10-long_group_sunnyhollow-031": {
    "label": "no"
   },
-  "t10-long_group_sunnyhollow-073": {
+  "t10-long_group_sunnyhollow-055": {
    "label": "no"
   },
-  "t10-long_group_sunnyhollow-075": {
+  "t10-long_group_sunnyhollow-092": {
    "label": "no"
   },
-  "t10-long_group_sunnyhollow-096": {
+  "t10-long_group_sunnyhollow-085": {
    "label": "no"
   },
-  "t10-long_group_sunnyhollow-030": {
+  "t10-long_one_on_one_en-040": {
    "label": "no"
   },
-  "t10-long_one_on_one_en-027": {
+  "t10-long_one_on_one_en-034": {
    "label": "no"
   },
-  "t10-long_one_on_one_en-048": {
+  "t10-long_one_on_one_en-005": {
    "label": "no"
   },
-  "t10-long_one_on_one_en-066": {
+  "t10-long_one_on_one_en-018": {
    "label": "no"
   },
-  "t10-long_one_on_one_en-058": {
+  "t10-long_one_on_one_en-056": {
    "label": "no"
   },
-  "t10-long_one_on_one_en-090": {
+  "t10-long_one_on_one_en-052": {
    "label": "no"
   },
-  "t10-long_one_on_one_en-050": {
+  "t10-long_one_on_one_en-019": {
    "label": "no"
   },
-  "t10-long_one_on_one_en-028": {
+  "t10-long_one_on_one_ms-045": {
    "label": "no"
   },
-  "t10-long_one_on_one_ms-072": {
+  "t10-long_one_on_one_ms-088": {
    "label": "no"
   },
-  "t10-long_one_on_one_ms-050": {
+  "t10-long_one_on_one_ms-074": {
    "label": "no"
   },
-  "t10-long_one_on_one_ms-030": {
+  "t10-long_one_on_one_ms-031": {
    "label": "no"
   },
-  "t10-long_one_on_one_ms-086": {
+  "t10-long_one_on_one_ms-044": {
    "label": "no"
   },
-  "t10-long_one_on_one_ms-057": {
+  "t10-long_one_on_one_ms-070": {
    "label": "no"
   },
-  "t10-long_one_on_one_ms-064": {
-   "label": "no"
-  },
-  "t10-long_one_on_one_ms-013": {
+  "t10-long_one_on_one_ms-000": {
    "label": "no"
   }
  }

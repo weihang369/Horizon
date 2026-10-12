@@ -140,3 +140,12 @@ def test_start_skips_items_and_the_estimate_counts_jev_overhead() -> None:
     assert [i["id"] for i in tail.items] == [i["id"] for i in full.items[18:]]
     # docs/ai/checks/m7.md: 20 canary requests billed $0.000446; the budget must cover that
     assert JEV_REQUEST_OVERHEAD_TOKENS >= 275 and 0.000446 < full.estimate_usd < 0.001
+
+
+def test_a_dataset_source_run_is_never_pruned(tmp_path: Path) -> None:
+    """10.6: three runs the judge sets are built from were pruned; a `.keep` file now protects a source run."""
+    for i in range(21):
+        (tmp_path / f"20261003T0300{i:02d}-smoke-x").mkdir()
+    (tmp_path / "20261003T030000-smoke-x" / ".keep").write_text("source", encoding="utf-8")
+    assert prune_runs(tmp_path) == []   # the oldest is kept, and only 20 others remain unmarked
+    assert (tmp_path / "20261003T030000-smoke-x").is_dir()

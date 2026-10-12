@@ -131,7 +131,9 @@ def spent_today(data_dir: Path, cal: PricingCalendar, now: datetime) -> float:
 def prune_runs(runs_dir: Path, keep: int = KEEP_RUNS) -> list[str]:
     if not runs_dir.is_dir():
         return []
-    runs = sorted(p for p in runs_dir.iterdir() if p.is_dir() and p.name[:1].isdigit())
+    # a run holding a `.keep` file is a dataset's source (evals/datasets/judges/labels.json `_sources`): never pruned.
+    # 10.6 lost three source runs to this pruning before the marker existed.
+    runs = sorted(p for p in runs_dir.iterdir() if p.is_dir() and p.name[:1].isdigit() and not (p / ".keep").exists())
     gone = runs[:-keep] if len(runs) > keep else []
     for p in gone:
         shutil.rmtree(p, ignore_errors=True)

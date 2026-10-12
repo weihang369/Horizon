@@ -204,7 +204,10 @@ def main() -> None:
     if "replies" in src:
         from replies import reply_sets  # the reply judges' half, built from the long and transcript runs
         sets |= reply_sets(labels, ROOT, src["replies"])
+    only = set(sys.argv[1:])   # `build.py judge_voice`: rewrite only these sets, so validated ones stay byte-identical
     for qid, rows in sorted(sets.items()):
+        if only and qid not in only:
+            continue
         real = sum(1 for r in rows if not r["planted"])
         planted = sum(1 for r in rows if r["planted"])
         yes = sum(1 for r in rows if not r["planted"] and r["label"] == "yes")

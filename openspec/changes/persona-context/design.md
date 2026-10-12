@@ -866,6 +866,12 @@ to `docs/ai/checks/m8.md`.
     chat one world's voices converge); v4 sets `t = 0.6`, tuned on dev. A second fresh set, labelled and committed
     (3bbdd16) before v2 answered anything, measured v4 once: real 0.93, planted 0.87 → **fail; unvalidated**, as
     agreed. It was not tuned further on the held-out set.
+- **A last try within the user's $0.10** ("if there's really no way to pass, mark it"): planted swaps now break a
+  stated, checkable style (Meridian's capitalised replies under Rin's "all lowercase"; Sunny Hollow's under Victor's
+  courtroom style). v4 unchanged passed on set B (real 0.93, planted 0.93), then a third set C, labelled and committed
+  (df17a06) before any run, measured real 0.83, planted 0.90 → **fail by one item; unvalidated.** Across two clean
+  held-out sets the judge sits on the bar (real 0.83–0.93, planted 0.87–0.93); its misses are firm, nudging replies
+  ("I'll say it once more"), where "reassuring" is a judgement call. Pooling the sets after the fact was rejected.
 - **The runner re-measures a rebuilt set.** "Already measured" was the bank version alone, so a relabelled set was
   skipped; it is now the version plus a hash of the question's items (`measured_marks`). The store still serves every
   unchanged item.
