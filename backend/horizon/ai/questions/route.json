@@ -1,15 +1,15 @@
 {
   "id": "route",
-  "version": 2,
+  "version": 3,
   "purpose": "route",
   "type": "choice",
   "label": "who replies?",
-  "instructions": "Who in the cast should answer quoted_message next? Choose none if nobody else needs to.",
+  "instructions": "Who in the cast should answer quoted_message next?",
   "options": {
     "kind": "dynamic",
     "from": "cast",
     "describe": "{name} ({role})",
-    "none": "Nobody else needs to answer."
+    "none": "Nobody else needs to answer: the mentioned character covers it."
   },
   "shuffle": true,
   "state": {

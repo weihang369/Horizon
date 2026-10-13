@@ -47,25 +47,25 @@
 
 ## 1. The bank: the `none` switch, the label check on options, and the new entries (design D6, D7)
 
-- [ ] 1.1 Add `none: bool = True` to `QuestionBank.question()`, leaving out a dynamic choice's `none` option when
+- [x] 1.1 Add `none: bool = True` to `QuestionBank.question()`, leaving out a dynamic choice's `none` option when
   false. Verify that every existing entry compiles byte-identically without the argument (a golden test over all
   entries), and that `questions.lock.json` is unchanged.
-- [ ] 1.2 Check dynamic option values against the label rule. A value over 40 characters or on two lines is cut with
+- [x] 1.2 Check dynamic option values against the label rule. A value over 40 characters or on two lines is cut with
   M8's `cut_tokens` before compiling. Verify with a 70-character role, and confirm the full role stays only in
   `quoted_cast`.
-- [ ] 1.3 Move `route` to v3 (D6's instructions and `none` text). `JevRouter` passes `none=bool(mentions)`, and the
+- [x] 1.3 Move `route` to v3 (D6's instructions and `none` text). `JevRouter` passes `none=bool(mentions)`, and the
   `len(options) <= 1` branch answers the single eligible character when nobody is mentioned. Verify with tests:
   - no `none` without a mention;
   - one eligible character answers with no request;
   - mentions keep `none`;
   - the naive fallback is unchanged.
-- [ ] 1.4 Write `who_first`, `who_second`, `who_next`, `who_scene`, `talk_finished`, `emotion_line` and
+- [x] 1.4 Write `who_first`, `who_second`, `who_next`, `who_scene`, `talk_finished`, `emotion_line` and
   `emotion_opening` with D7's exact wording, states, floors (0.6), `t_end` 0.8 and fallbacks. Record them with
   `horizon eval bank-lock`. Verify that `check_lock()` is clean and that each compiles (with `{name}` where it has
   one).
-- [ ] 1.5 Write `evals/reviews/m10-entries.md`: each new entry's full compiled text, for the user's wording review
+- [x] 1.5 Write `evals/reviews/m10-entries.md`: each new entry's full compiled text, for the user's wording review
   (proposal "Your time"). Verify that `horizon eval overlap` passes.
-- [ ] 1.6 Regenerate `seed/system1.fixture.json` from the bank (seed-build). Verify that `seed:check` and
+- [x] 1.6 Regenerate `seed/system1.fixture.json` from the bank (seed-build). Verify that `seed:check` and
   `fixtures:check` pass, and the scripted group trace still shows only the `route` row.
 - [ ] 1.7 Gates green; commit "M10 phase 1".
 

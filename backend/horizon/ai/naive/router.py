@@ -1,6 +1,8 @@
 """The Jev Router (design D12; ai-ports "Jev router"; D-66 maximise Jev for bounded decisions).
 
-One Decider `choice` question from the bank (`route` v2, ai-foundation design D3) over the eligible cast plus `none`,
+One Decider `choice` question from the bank (`route` v3, ai-foundation design D3; M10 group-watch D6) over the eligible
+cast, plus `none` only when someone is mentioned (doc 07 G1: with no mention, someone always answers; one eligible
+character answers with no call),
 with a compact state whose user- and character-written text sits in `quoted_*` fields (doc 11 S6): the cast with
 names, roles and when each last spoke, the last 6 lines and the message. Options are shuffled by the per-turn seed
 (doc 01 A3 rule 4). @mentioned participants always answer first. For a group in `auto`, the top choice answers, then
@@ -47,7 +49,9 @@ class JevRouter:
         # persona-context D18: the profile role ("florist"), not the participant role ("speaker")
         values = [{"key": cid, "name": names[cid].name, "role": names[cid].character_role or names[cid].role}
                   for cid in ctx.eligible if cid in names]
-        q = bank().question(QUESTION, values=values, exclude=ctx.mentions, seed=f"{ctx.session.seed}:{ctx.turn_index}")
+        # M10 (doc 07 G1; group-watch D6): `none` only when someone is mentioned, so a message always gets an answer
+        q = bank().question(QUESTION, values=values, exclude=ctx.mentions, seed=f"{ctx.session.seed}:{ctx.turn_index}",
+                            none=bool(ctx.mentions))
         assert isinstance(q, Choice)
         return q
 
@@ -64,8 +68,11 @@ class JevRouter:
     async def route(self, ctx: RouteContext) -> RoutingDecision:
         forced = [m for m in ctx.mentions if any(p.character_id == m for p in ctx.session.participants)]
         q = self._question(ctx)
-        if len(q.options) <= 1:  # nobody to ask about (only `none` left)
-            return RoutingDecision(speakers=forced)
+        if len(q.options) <= 1:  # one option or none: nothing to ask
+            alone = [k for k in q.options if k != "none"]
+            if forced or ctx.policy == "mentioned" or not alone:
+                return RoutingDecision(speakers=forced)
+            return RoutingDecision(speakers=alone)   # G1: one eligible character answers, with no call
 
         async def fallback() -> Answers:
             pick = self.fallback_pick(ctx)

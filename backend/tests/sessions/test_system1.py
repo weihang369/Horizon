@@ -174,7 +174,7 @@ async def test_one_decision_two_replies_share_the_route_row(api: Api) -> None:
     rows = [route_rows(m) for m in replies]
     assert all(r == rows[0] for r in rows) and len(rows[0]) == 1
     (r,) = rows[0]
-    assert r["purpose"] == "route" and r["id"] == "route" and r["version"] == 2 and r["label"] == "who replies?"
+    assert r["purpose"] == "route" and r["id"] == "route" and r["version"] == 3 and r["label"] == "who replies?"
     assert r["result"] == "used" and 0 <= r["p"] <= 1 and r["answer"] in {*(m["author"]["characterId"] for m in replies), "none"}
     for m in replies:
         check_schema(m["trace"])
@@ -215,3 +215,6 @@ async def test_scripted_group_turn_has_a_fixture_route_row(api: Api) -> None:
         assert {k: row_[k] for k in fixture} == fixture
         assert row_["answer"] == m["trace"]["routing"]["candidates"][0]["characterId"]
         check_schema(m["trace"])
+        # M10 (group-watch task 1.6, D21): scripted group has no planner, so the new entries' rows never show
+        ids = {q["id"] for q in m["trace"]["system1"]["questions"]}
+        assert not ids & {"who_first", "who_second", "who_next", "who_scene", "talk_finished", "emotion_line"}

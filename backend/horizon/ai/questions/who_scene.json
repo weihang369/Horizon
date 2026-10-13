@@ -1,0 +1,28 @@
+{
+  "id": "who_scene",
+  "version": 1,
+  "purpose": "turn_plan",
+  "type": "choice",
+  "label": "who speaks next?",
+  "instructions": "In this scene, who would naturally speak next?",
+  "options": {
+    "kind": "dynamic",
+    "from": "cast",
+    "describe": "{name} ({role}). Not for: when the last line is plainly meant for someone else, by name or by topic."
+  },
+  "shuffle": true,
+  "state": {
+    "mode": "label",
+    "quoted_user": "quoted",
+    "quoted_cast": "quoted",
+    "quoted_documents": "quoted",
+    "quoted_latest": "quoted",
+    "quoted_recent": "quoted",
+    "quoted_premise": "quoted",
+    "quoted_summary": "quoted"
+  },
+  "deadline": "turn_plan",
+  "floor": 0.6,
+  "thresholds": {},
+  "fallback": "least_recent_then_top2"
+}

@@ -24,7 +24,12 @@ export interface System1FixtureRow {
 
 /** The scripted value every fixture row shows: a fixed, believable probability (never presented as measured). */
 const P = 0.72;
-const ACTION: Record<string, string> = { route: "answers first", emotion_reply: "shown", emotion_greeting: "shown" };   // M9: turn-plan-emotion D13
+const ACTION: Record<string, string> = {
+  route: "answers first", emotion_reply: "shown", emotion_greeting: "shown",   // M9: turn-plan-emotion D13
+  // M10 (group-watch D22): who speaks, the steer and the watch faces
+  who_first: "answers first", who_second: "speaks second", who_next: "speaks next", who_scene: "speaks next",
+  talk_finished: "no steer", emotion_line: "shown", emotion_opening: "shown",
+};
 
 export function system1Fixture(dir: string = BANK_DIR): { note: string; rows: Record<string, System1FixtureRow> } {
   const rows: Record<string, System1FixtureRow> = {};

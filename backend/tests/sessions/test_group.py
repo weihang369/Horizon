@@ -163,3 +163,42 @@ async def test_decider_fixture_over_http(api: Api) -> None:
     assert replies[0]["trace"]["routing"]["selected"] == "chr_seedMei"
     assert [r for r in await ledger(api) if r["purpose"] == "route"] == []
     assert (await api.post(f"{API}/_test/decider-fixtures", {"clear": True})).status_code == 204
+
+
+# ── M10 (doc 07 G1; group-watch task 1.3, design D6): someone always answers ──
+def _route_requests(api: Api) -> list[dict[str, Any]]:
+    assert api.rt.fake is not None
+    return [json.loads(r.content) for r in api.rt.fake.requests if r.url.path.endswith("/alpha/decisions")]
+
+
+async def test_route_offers_no_none_without_a_mention(api: Api) -> None:
+    sid = await _group(api)
+    await _naive_router(api)
+    await command(api, sid, "send", {"text": "Anyone around?"})
+    await api.drive(30000)
+    (body,) = _route_requests(api)
+    assert "none" not in body["questions"]["route"]["criteria"]
+    assert "Choose none" not in body["questions"]["route"]["instructions"]
+    assert chars(await messages(api, sid))
+
+
+async def test_route_keeps_none_with_a_mention(api: Api) -> None:
+    sid = await _group(api)
+    await _naive_router(api)
+    await command(api, sid, "send", {"text": "Victor, any thoughts?", "mentions": ["chr_seedVictor"]})
+    await api.drive(30000)
+    (body,) = _route_requests(api)
+    assert "none" in body["questions"]["route"]["criteria"]
+    assert "chr_seedVictor" not in body["questions"]["route"]["criteria"]
+
+
+async def test_one_eligible_character_answers_with_no_route_call(api: Api) -> None:
+    sid = await _group(api)
+    await _naive_router(api)
+    await command(api, sid, "mute", {"characterId": "chr_seedMei", "muted": True})
+    await command(api, sid, "mute", {"characterId": "chr_seedVictor", "muted": True})
+    await command(api, sid, "send", {"text": "Just you and me then."})
+    await api.drive(30000)
+    replies = chars(await messages(api, sid))
+    assert [m["author"]["characterId"] for m in replies] == ["chr_seedAmara"]
+    assert _route_requests(api) == [] and not [r for r in await ledger(api) if r["purpose"] == "route"]
