@@ -947,6 +947,26 @@ send.
 - `smoke` runs one planned group send with a follow plan, one planned watch turn and one recap, from fixture answers
   and canned responses (W14's `X-Horizon-Purpose`: `episode_summary` gets a canned recap).
 
+**Built (phase 9):**
+- the who-speaks and talk-finished scoring lives in `horizon/evals/who_policies.py` (beside M9's `policies.py`,
+  which keeps the emotion and reaction rules), and the decisions suite calls both;
+- a dataset line can carry `"none": false` in its item: the first slot and watch are compiled with no `none`, exactly
+  as the planner asks;
+- the hash split gave the first slot 13 test items of 60 (expected 20). Each builder takes the first id prefix
+  (`whf`, `whf1`, …) whose split reaches the part's minimum; the split depends on the id alone, never on a label or an
+  answer;
+- the watch emotion slice is its own file, `evals/datasets/emotion/emotion_watch.jsonl` (M9's `emotion.jsonl` is
+  unchanged and already measured, so `--set emotion` asks only the slice);
+- `watch-history` writes `evals/watch/<id>.json`: every character line and director's note with the rolling summary
+  current for it. The scripts are in `evals/watch/scripts/`. A refused run (a committed history, no `--force`) stops
+  in the runner before the plan, the prompt or any call;
+- the recaps run inside `summary` (`--set recaps` runs only them); in test mode the fake answers them from the
+  synthetic canned set `episode-recaps` until task 10.6 records real ones;
+- the follow timing uses `F` = 12.3 ms (m10.md, 4.7) and the second-slot items' dev split, rebuilt through the same
+  `FollowRequest` the builder uses, so `S` times the live `follow_state`;
+- `smoke` gains one planned group send with a follow plan, a one-turn watch free run, one follow-timing request and
+  one recap.
+
 ### D24. The paid runs and their estimates
 
 Off-peak only. Each run is asked for separately, with its estimate, when it comes. Everything goes through the store

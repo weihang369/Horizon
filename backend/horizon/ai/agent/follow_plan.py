@@ -139,13 +139,15 @@ class FollowSteps:
     def seed(req: FollowRequest) -> str:
         return f"{req.session.seed}:{req.turn_index}:follow"
 
-    def start(self, planner: Any, req: FollowRequest) -> JevFollowCall:
-        state = follow_state(req)
+    @classmethod
+    def questions(cls, req: FollowRequest) -> tuple[dict[str, Any], dict[str, str]]:
+        """The request's questions (`who_second` and each candidate's face) and the face keys by candidate. Shared
+        with the follow timing check (D9), so it asks exactly what live asks."""
         b = bank()
         names = {p.character_id: p for p in req.session.participants}
         values = [{"key": c, "name": names[c].name if c in names else c,
                    "role": names[c].character_role if c in names else ""} for c in req.candidates]
-        seed = self.seed(req)
+        seed = cls.seed(req)
         qs: dict[str, Any] = {WHO: b.question(WHO, values=values, seed=seed, name=_name(req.first_name))}
         keys: dict[str, str] = {}
         for cid in req.candidates:
@@ -153,6 +155,11 @@ class FollowSteps:
             qs[key] = b.question(FACE, seed=f"{seed}:{cid}", name=_name(names[cid].name if cid in names else cid),
                                  about=cid)
             keys[cid] = key
+        return qs, keys
+
+    def start(self, planner: Any, req: FollowRequest) -> JevFollowCall:
+        state = follow_state(req)
+        qs, keys = self.questions(req)
 
         async def fallback() -> Answers:
             return {k: ChoiceAnswer("none") for k in qs}

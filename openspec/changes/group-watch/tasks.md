@@ -167,7 +167,7 @@
   spec scenario "Step in under agent", and that `naive`/`scripted` keep 2 random replies.
 - [x] 5.7 Storm tests (D2) for a superseding send landing in the user message's append and in the `turn.next` check,
   and for Step in's second reply cut during its follow plan. Verify the writer is free and the log reduces.
-- [ ] 5.8 Gates green; commit "M10 phase 5".
+- [x] 5.8 Gates green; commit "M10 phase 5".
 
 ## 6. Watch: the order, the guard, the steer and the plan-ahead (design D13–D15)
 
@@ -191,7 +191,7 @@
   - Stop during the gap gives `cancelled` and no rows.
 - [x] 6.6 Storm tests (D2) for the plan-ahead cancelled by `clear()` and by a fingerprint change, during its parked
   call and during the turn's `turnsTaken` write. Verify the writer is free and the log reduces.
-- [ ] 6.7 Gates green; commit "M10 phase 6".
+- [x] 6.7 Gates green; commit "M10 phase 6".
 
 ## 7. The cue sentence and the prompt labels (design D10)
 
@@ -207,7 +207,7 @@
   `backend/tests/fixtures/turn_cue/cases.json` read by both suites. Verify both pass byte for byte.
 - [x] 7.4 "View as prompt": the fixed cue note under the preview, built from the twin (the persona-prompt delta),
   replacing the stale mood-line wording in the spec. Verify `PromptPreview.test.tsx` checks the note and its example.
-- [ ] 7.5 Gates green; commit "M10 phase 7".
+- [x] 7.5 Gates green; commit "M10 phase 7".
 
 ## 8. The episode recap (design D19, D20, D21)
 
@@ -228,18 +228,18 @@
 
 - [x] 9.1 Write the labelling rule `evals/reviews/m10-labels.md` (who-speaks sets, `none` items, talk finished, watch
   emotion, language split) and commit it before any label.
-- [ ] 9.2 `horizon eval watch-history` (refuses to overwrite a committed history without `--force`; store on;
+- [x] 9.2 `horizon eval watch-history` (refuses to overwrite a committed history without `--force`; store on;
   `naive`). Verify with a test-mode run on the fake provider that it writes the transcript format the summary suite
   reads, and that it refuses a second run.
-- [ ] 9.3 `evals/datasets/who_speaks/build.py` and its three files from the committed group transcripts, the long
+- [x] 9.3 `evals/datasets/who_speaks/build.py` and its three files from the committed group transcripts, the long
   scripts' group pools and hand-written items (the watch part waits for the histories in 10.1, built in 10.2). Labels
   are written blind, with the language split of D23. Verify that `horizon eval corpus-check`, `overlap` and the
   dataset split rule pass.
-- [ ] 9.4 `evals/datasets/talk_finished/` (about 120, at least 60 yes; goodbye and polite-agreement loops). Verify
+- [x] 9.4 `evals/datasets/talk_finished/` (about 120, at least 60 yes; goodbye and polite-agreement loops). Verify
   the same checks.
-- [ ] 9.5 The 40-item watch slice in `evals/datasets/emotion/` (32 `emotion_line`, 8 `emotion_opening`; D27). Verify
+- [x] 9.5 The 40-item watch slice in `evals/datasets/emotion/` (32 `emotion_line`, 8 `emotion_opening`; D27). Verify
   that its items are built with the live watch state and that the build is deterministic.
-- [ ] 9.6 `evals/policies.py`:
+- [x] 9.6 `evals/policies.py`:
   - the who-speaks policies (the live fallback rule, balanced accuracy, the baselines);
   - the exact paired tests (McNemar; the stratum-weighted sign test as a two-binomial convolution);
   - the floor grid and `floor.second`'s needless-reply bound;
@@ -247,19 +247,19 @@
 
   Verify with unit tests on constructed answers, including "Always none can't pass" and "Needless replies bound the
   floor".
-- [ ] 9.7 The `summary` suite gains the 10 recap items (built from the histories once they exist, 10.2), the
+- [x] 9.7 The `summary` suite gains the 10 recap items (built from the histories once they exist, 10.2), the
   120-word check and the judge nouls. Verify on a test-mode run with canned recaps, including an over-limit failure
   being printed.
-- [ ] 9.8 `horizon eval freerun --mode watch|group` (signals only; timeouts apart from `none`; steered lines
+- [x] 9.8 `horizon eval freerun --mode watch|group` (signals only; timeouts apart from `none`; steered lines
   printed). Verify on the fake provider with fixture answers.
-- [ ] 9.9 `horizon eval latency --part follow` (`S`, `L` and the recorded `F`; the ≤ 10 % rule; spells) and
+- [x] 9.9 `horizon eval latency --part follow` (`S`, `L` and the recorded `F`; the ≤ 10 % rule; spells) and
   `--part watch` (Fast pace; plan-ahead used / redone / fallback; spells; the 90 s watchdog kept), both
   store-bypassed. Verify on the fake provider with parked decisions that the miss arithmetic and the spell grouping
   are right.
-- [ ] 9.10 `smoke` gains one planned group send with a follow plan, one planned watch turn, one recap, one
+- [x] 9.10 `smoke` gains one planned group send with a follow plan, one planned watch turn, one recap, one
   follow-timing request and one free-run turn. Verify that `HORIZON_TEST=1 uv run horizon eval smoke --limit 5 --yes`
   passes with no socket opened.
-- [ ] 9.11 The delegated label review (D27): the B2 sample (max(15, ⌈n/5⌉) per set) checked against the rule and
+- [x] 9.11 The delegated label review (D27): the B2 sample (max(15, ⌈n/5⌉) per set) checked against the rule and
   recorded in `evals/reviews/m10-*.md` before any paid run.
 - [ ] 9.12 Gates green; commit "M10 phase 9".
 
