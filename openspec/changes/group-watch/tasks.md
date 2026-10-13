@@ -121,7 +121,7 @@
   2,000-token cut order) and the graph steps. `start_follow` returns a `FollowCall` whose `by(deadline)` waits on the
   deadline future with `vclock.wait_handoff` and then on the Decider's `by`. Verify with tests: the state shape, the
   cut order, and a pick, `none`, below floor, late, failure and 429 each giving D8's outcome and row.
-- [ ] 4.2 The runner side: a `TurnSpec.follow` hook called when a reply's stream ends without error (before
+- [x] 4.2 The runner side: a `TurnSpec.follow` hook called when a reply's stream ends without error (before
   `finish`). A blocked reply cancels the handle. The mode awaits `by(turn_end + follow_plan)` and emits the second
   reply's `turn.next` at once, with no turn gap. With no pick, it sleeps the rest of the gap. Verify timings on the
   virtual clock:
@@ -133,11 +133,11 @@
   is `late`.
 - [x] 4.5 `PURPOSE_CATEGORY["follow_plan"] = "decision"`. A cap refusal publishes `budget.reached` without the pause
   hook (M9 D35's rule). Verify with a cap test that no `session.paused` comes from the follow plan.
-- [ ] 4.6 Settle test: 100 group sends with parked and released follow answers, two identical runs (D4). Record in
+- [x] 4.6 Settle test: 100 group sends with parked and released follow answers, two identical runs (D4). Record in
   m10.md.
-- [ ] 4.7 Measure `F` (the stream's end to `turn.end`) offline on Windows over 100 scripted group turns, p50 and p90,
+- [x] 4.7 Measure `F` (the stream's end to `turn.end`) offline on Windows over 100 scripted group turns, p50 and p90,
   for D9's timing check. Record in m10.md.
-- [ ] 4.8 Storm tests (D2) for a follow plan cut by Stop during the parked call and during the first reply's
+- [x] 4.8 Storm tests (D2) for a follow plan cut by Stop during the parked call and during the first reply's
   `turn.end` write. Verify the writer is free and the row is `cancelled`.
 - [ ] 4.9 Gates green; commit "M10 phase 4".
 

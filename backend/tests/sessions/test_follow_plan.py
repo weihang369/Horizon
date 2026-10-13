@@ -6,6 +6,8 @@ from __future__ import annotations
 import json
 from typing import Any
 
+import httpx
+
 from horizon.domain.timeutil import ms_from_iso
 from tests.conftest import Api
 from tests.sessions.kit import API, assert_reduces, chars, command, create, events, ledger, messages
@@ -51,6 +53,67 @@ async def test_a_pick_speaks_second_at_once_with_the_follow_plans_face_and_trace
     assert nxt["payload"]["nextSpeakerId"] == VICTOR
     assert ms_from_iso(nxt["at"]) - ms_from_iso(end["at"]) < 400       # no turn gap before a picked second reply
     await assert_reduces(api, sid)
+
+
+def jev_picks_second(api: Api, cid: str) -> None:
+    """The fake answers every choice at 1/n (below every floor); make its follow-plan answer a sure pick instead."""
+    fake = api.rt.fake
+    assert fake is not None
+    plain = fake._decide
+
+    def decide(body: dict[str, Any]) -> httpx.Response:
+        resp = plain(body)
+        if "who_second" not in (body.get("questions") or {}):
+            return resp
+        data = json.loads(resp.content)
+        data["answers"]["who_second"] = {"type": "choice", "choice": cid, "confidence": 0.9,
+                                         "probabilities": {cid: 0.9}}
+        return httpx.Response(200, json=data)
+
+    fake._decide = decide  # type: ignore[method-assign]
+
+
+async def drive_until_turn_end(api: Api, sid: str, step: float = 5, limit: float = 30000) -> dict[str, Any]:
+    spent = 0.0
+    while spent < limit:
+        end = next((e for e in await events(api, sid) if e["type"] == "turn.end"), None)
+        if end is not None:
+            return end
+        await api.drive(step)
+        spent += step
+    raise AssertionError("no turn.end")
+
+
+async def test_a_pick_120ms_after_turn_end_speaks_at_plus_120ms(api: Api) -> None:
+    sid = await agent(api, "group", TRIO)
+    await first_is_amara(api)
+    jev_picks_second(api, VICTOR)
+    assert api.rt.fake is not None
+    release = api.rt.fake.park_decision(api.rt.fake.counts["decisions"] + 2)   # call 1, then the follow plan
+    await command(api, sid, "send", {"text": "I'm moving to Lisbon next month."})
+    end = await drive_until_turn_end(api, sid)
+    t_end = ms_from_iso(end["at"])
+    await api.drive(120 - (ms_from_iso(api.rt.clock.now().isoformat()) - t_end))
+    release.set()
+    await api.drive(20000)
+    nxt = next(e for e in await events(api, sid) if e["type"] == "turn.next" and e["seq"] > end["seq"])
+    assert nxt["payload"]["nextSpeakerId"] == VICTOR
+    assert 120 <= ms_from_iso(nxt["at"]) - t_end < 130
+
+
+async def test_no_pick_starts_the_next_job_at_plus_400ms(api: Api) -> None:
+    """`none` answered at once: the job still holds the rest of the turn gap, so the follow plan never shortens it."""
+    sid = await agent(api, "group", TRIO)
+    await first_is_amara(api)
+    await fixture(api, "who_second", "none", 0.9, purpose="follow_plan")
+    await command(api, sid, "send", {"text": "Ok, thanks."})
+    await api.drive(50)
+    await command(api, sid, "send", {"text": "And another thing."})   # queued behind the first job
+    await api.drive(30000)
+    evs = await events(api, sid)
+    end = next(e for e in evs if e["type"] == "turn.end")
+    nxt = next(e for e in evs if e["type"] == "turn.next" and e["seq"] > end["seq"])
+    assert 400 <= ms_from_iso(nxt["at"]) - ms_from_iso(end["at"]) < 410
 
 
 async def test_none_gives_one_reply_and_writes_its_rows_to_the_first(api: Api) -> None:
