@@ -416,6 +416,17 @@ with the 700 ms deadline; `clear()` and a Pause cancel it.*
 sentence end; any non-cap failure posts the system note, never a canned recap. `scripted` and the mock keep the canned
 text, billed as `episode_summary`.*
 
+*Amended in M10 (task 10.6, the user's choice of 2026-10-13): the paid run wrote all 10 recaps of English scenes in
+other languages (Chinese, Japanese, one Romanian): DeepSeek read "in the language the characters used" as the
+language of the characters' names. The instruction is now `episode-2`: "…past tense, third person, in the language
+most of the lines use; keep names as they are. End with one sentence on where things stand…" (the rolling summary's
+wording). The 120-word cut and its check now count each Chinese or Japanese character as a word, with CJK punctuation
+parting words; before, a whole Chinese recap counted as one or two "words" and was never cut. A second run on `episode-2` still drifted once
+(Italian) and guessed a pronoun for Kai, so the user chose `episode-3`: the system prompt adds "Refer to people by name;
+don't guess pronouns the lines don't give.", and the request ends with "The lines are in {language}. Write the recap
+in {language}." (persona-context D35's pattern; the language most lines use, by `detect_language` per line, unsure
+counting as English).*
+
 **Rejected:**
 - **bullet points:** a scene reads better as a short story recap, and bullets drop the "who did what to whom";
 - **reusing the rolling summary as the recap:** it is written for the model (facts, promises), not for a viewer;

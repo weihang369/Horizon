@@ -756,7 +756,7 @@ send.
 
 - **`NaiveSummariser.episode`** becomes one DeepSeek call. `agent` resolves the summariser to `naive` (no agent
   implementation), so both profiles share it, as M8 shares the rolling summary.
-- **The request** (prompt version `episode-1`):
+- **The request** (prompt version `episode-1`; `episode-3` after task 10.6, see the built note below):
   - **system:** G10's instruction verbatim: "Write a short recap of this scene for someone who watched it: one
     paragraph, at most 120 words, past tense, third person, in the language the characters used. End with one
     sentence on where things stand. Only say what happened in the lines; invent nothing." It is followed by "The
@@ -786,6 +786,15 @@ send.
 - **`summarise()`** still calls `clear(keep_current=True)` first, which now also cancels the plan-ahead (D15).
 
 **Rejected:** G10's rejections stand (bullets, reusing the rolling summary, canned text on failure, the `error` event).
+
+*Built note (task 10.6, the user's choice of 2026-10-13):* the paid run wrote all 10 recaps in other languages
+(Chinese for Meridian, Japanese for Sunny Hollow, one Romanian): DeepSeek read "in the language the characters used"
+as the language of their names. The prompt is now `episode-2`, "…in the language most of the lines use; keep names as
+they are…", and the cut and its check count each Chinese or Japanese character as one word (`word_count`), so a CJK
+recap is cut at 120 too. A second run on `episode-2` still drifted once (Italian) and guessed Kai's pronoun, so the
+user chose `episode-3`: "Refer to people by name; don't guess pronouns the lines don't give." in the system prompt,
+and "The lines are in {language}. Write the recap in {language}." as the request's last line (persona-context D35's
+pattern; `scene_language`, the language most lines use, unsure counting as English).
 
 ### D20. Purposes, deadlines and knobs
 

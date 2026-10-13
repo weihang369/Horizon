@@ -4,7 +4,8 @@ histories", "Episode recaps in the summary suite", "Free runs for group and watc
 - **watch-history:** generates the two committed watch histories with `naive` through the store, once. It refuses to
   overwrite a committed history unless `--force` is given, before any paid call.
 - **recaps (inside `summary`):** 10 episode recaps from the committed histories, each checked in code (≤ 120 words)
-  and by the summary judges (faithful, nothing invented, right language); every failure is printed.
+  and by two summary judges ("nothing invented", which also covers "faithful", and "right language"); every failure
+  is printed.
 - **freerun:** `agent` watch scenes and group sessions with scripted user lines. Signals only, no target: the
   second-reply rate (follow-plan timeouts apart from `none`), the busiest speaker's share, the guard's and the steer's
   firing rates, and every steered line printed for reading.
@@ -235,7 +236,7 @@ def seed_profiles() -> dict[str, Any]:
 
 async def run_recaps(env: RunEnv, items: Sequence[dict[str, Any]], res: Result) -> None:
     """Each recap item through the live summariser, then the code check and the three judges (D23)."""
-    from horizon.ai.naive.summary import NaiveSummariser, episode_lines
+    from horizon.ai.naive.summary import NaiveSummariser, episode_lines, word_count
     from horizon.gateway.errors import ProviderError
 
     summariser = NaiveSummariser(env.rt.ai.deps)
@@ -255,7 +256,7 @@ async def run_recaps(env: RunEnv, items: Sequence[dict[str, Any]], res: Result) 
         except ProviderError as e:
             text, err = "", e.code
         joined = "\n".join(([f"Earlier: {ctx.summary}"] if ctx.summary else []) + episode_lines(ctx))
-        words = len(text.split())
+        words = word_count(text)
         row: dict[str, Any] = {"id": it["id"], "split": it["split"], "history": it["history"], "turn": it["turn"],
                                "recap": text, "words": words, "within_words": 0 < words <= RECAP_WORDS, "error": err,
                                "lines": joined}
@@ -264,8 +265,6 @@ async def run_recaps(env: RunEnv, items: Sequence[dict[str, Any]], res: Result) 
                 "quoted_lines": joined, "quoted_previous": "none", "quoted_summary": text})
             row["language_p"] = await judge(env, "judge_summary_language", {"quoted_lines": joined,
                                                                             "quoted_summary": text})
-            row["who_p"] = await judge(env, "judge_summary_who", {
-                "quoted_lines": joined, "quoted_promise": "the scene's events", "quoted_summary": text})
         rows.append(row)
     res.rows += rows
     res.summary += recap_report(rows)
@@ -275,8 +274,7 @@ def recap_failures(r: dict[str, Any]) -> list[str]:
     out = []
     if not r["within_words"]:
         out.append(f"{r['words']} words" if r["words"] else f"no recap ({r.get('error') or 'empty'})")
-    for k, q in (("unsupported_p", "judge_summary_unsupported"), ("language_p", "judge_summary_language"),
-                 ("who_p", "judge_summary_who")):
+    for k, q in (("unsupported_p", "judge_summary_unsupported"), ("language_p", "judge_summary_language")):
         if failed(r.get(k), q):
             out.append(q)
     return out
@@ -289,12 +287,13 @@ def recap_report(rows: Sequence[dict[str, Any]]) -> list[str]:
     n_bad = sum(1 for _, f in bad if f)
     out = [f"## Episode recaps ({len(rows)}): {n_bad} failure(s) (target ≤ 1)" + (" ✓" if n_bad <= 1 else " ✗"),
            f"- within {RECAP_WORDS} words: {sum(r['within_words'] for r in rows)}/{len(rows)}",
-           rate_line("nothing invented", "judge_summary_unsupported",
+           # D23's "faithful" and "nothing invented" are one validated noul here: X10's `judge_summary_who` needs a
+           # planted promise, which a recap hasn't got, and a wrong "who did what" is a statement the lines don't
+           # support (10.6's finding: fed a stand-in promise it failed every recap)
+           rate_line("faithful, nothing invented", "judge_summary_unsupported",
                      [failed(r.get("unsupported_p"), "judge_summary_unsupported") for r in rows if "unsupported_p" in r]),
            rate_line("right language", "judge_summary_language",
-                     [failed(r.get("language_p"), "judge_summary_language") for r in rows if "language_p" in r]),
-           rate_line("faithful (who did what)", "judge_summary_who",
-                     [failed(r.get("who_p"), "judge_summary_who") for r in rows if "who_p" in r])]
+                     [failed(r.get("language_p"), "judge_summary_language") for r in rows if "language_p" in r])]
     for r, f in bad:   # every failure printed for reading, with its lines
         if f:
             out.append(f"  - READ {r['id']} ({', '.join(f)}):\n    " + (r["recap"] or "(none)").replace("\n", "\n    ")
