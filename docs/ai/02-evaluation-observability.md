@@ -181,7 +181,7 @@ frozen transcripts start from a long committed history.
   |---|---|---|
   | Layer 1: each **noul that sets a threshold** (needs documents, needs something from earlier (doc 09 M9), talk finished, the memory rewrite guard and in-session relevance (doc 09 M12)) | **~120 items, at least 60 of them "yes"**. *Built in M10 for talk finished: 120 watch scenes on six premises (65 yes; English 100, Malay 10, Chinese 6, mixed 4; 39 test)* | A recall target is judged on 60+ positives. With 50, 45 right still leaves 79–96 %. |
   | Layer 1: **passage score** | **~100 items** | It sets the floor every deep turn depends on |
-  | Layer 1: **who speaks** (doc 07 G11) | **~210 items**: group first slot 60, group second slot 90 (about 65 % with `none` right), watch next speaker 60 (≥ 3 awake characters each). *Built in M10 (`group-watch` D23): `who_first` 60 (English 50, Malay 5, Chinese 3, mixed 2; 21 test), `who_second` 90 (58 `none`; English 78; 25 test), each from the frozen group transcripts' context with written lines, labelled blind under `evals/reviews/m10-labels.md`; `who_scene`'s 60 come from the committed watch histories (M10 phase 10)* | They set the floors every group and watch turn depends on; each test split has at least 20 items |
+  | Layer 1: **who speaks** (doc 07 G11) | **~210 items**: group first slot 60, group second slot 90 (about 65 % with `none` right), watch next speaker 60 (≥ 3 awake characters each). *Built in M10 (`group-watch` D23): `who_first` 60 (English 50, Malay 5, Chinese 3, mixed 2; 21 test), `who_second` 90 (58 `none`; English 78; 25 test), each from the frozen group transcripts' context with written lines, labelled blind under `evals/reviews/m10-labels.md`; `who_scene` 100 (60, then grown by 40 under the straddle rule; 35 test) from four committed watch histories (M10 phase 10)* | They set the floors every group and watch turn depends on; each test split has at least 20 items |
   | Layer 1: **emotion** (doc 06 E8) | **~100 items**; 20–30 % where keeping the face is acceptable. *Built in M9 (turn-plan-emotion D27): 100 items, 1:1 replies 55, group replies 30, greetings 15; English 80, Malay 10, Chinese 5, mixed 5; 29 keep-ok; 72 dev / 28 test by the hash rule; English is reported alone too, other languages show direction only* | The face shows on every turn of every mode; the cap stops "always keep" from carrying the score |
   | Layer 1: **listener reactions** (doc 06 E8) | **90 items** (30 test; a line, its context, one listener); at most 30 % where `none` is acceptable. *Built in M9 (D27): group 40, debate 25, watch 25; English 75; 27 `none`-acceptable; 65 dev / 25 test by the hash rule* | A gross-failure check with a trivial baseline to beat; the shown share is reported by the latency suite |
   | Layer 1: **debate member** (doc 08 V11) | **90 items** (30 test): rebuttal and closing slots with 2–3 eligible members, at least half with a single acceptable member | It sets `floor.member`; the lift over the fixed order is tested on the single-answer items, where 80 % is not a free pass |
@@ -353,6 +353,11 @@ the largest Jev item, so judge results are cached (B7).
     right), so their grid also holds 0.2, 0.3 and 0.4. Dev chose **0.2** for both: `emotion_reply` and
     `emotion_greeting` v2 (English test 21/25 = 0.84), `reaction` v2 (English test 17/30 = 0.57, below the 0.80
     target, recorded). Targets are read on English items; other languages only need to run (the user's rule).*
+  - *Found in M10 (group-watch D16, D23, D36; [m10.md](checks/m10.md)): dev chose **0.2** for `who_first` (English
+    test 16/16, pass), `who_scene` (20/35 = 0.57 after growing to 100, fails; `who_next` takes it untested),
+    `emotion_line` and `emotion_opening` (the watch slice 7/13 = 0.54, below target, recorded), and **0.3** for
+    `floor.second` (`who_second`, balanced accuracy 0.86, 7 % needless). `t_end` came out at **0.5** (precision 1.00,
+    recall 0.91 on test). Each is version 2 in the bank.*
 - **Noul thresholds have targets on both sides,** so no threshold can meet its target trivially:
 
   | Noul | Threshold | Rule |
@@ -433,10 +438,12 @@ with itself only about 64 % of the time, so that rule mixes up ordinary noise wi
     verdict as advice) and `latency` (`agent` 1:1 time to the face and to the first word, Stop at the first word, the
     store bypassed). `decisions` scores the emotion and reaction sets with the live code rule and reports the floor
     chosen on dev, the baseline difference (exact McNemar), coverage, the merge rate and the reaction share.*
-  - *Built in M10 (`group-watch` D23): `watch-history` (the two committed watch histories, generated once with
-    `naive`; it refuses to overwrite one without `--force`), `freerun` (`--mode watch|group`, `--runs`, `--turns`,
+  - *Built in M10 (`group-watch` D23): `watch-history` (the committed watch histories, generated once with `naive`:
+    two for the recaps and two more for `who_scene`'s growth, one per `--set <script id>`; it refuses to overwrite one
+    without `--force`), `freerun` (`--mode watch|group`, `--runs`, `--turns`,
     `--messages`), `latency --part follow|watch`, and the recaps in `summary`. `decisions` scores the who-speaks parts
-    (balanced accuracy for the second slot; exact one-sided paired tests) and `talk_finished` (`t_end`).*
+    (balanced accuracy for the second slot; exact one-sided paired tests) and `talk_finished` (`t_end`). M10's 15
+    paid runs cost $0.18 in all ([m10.md](checks/m10.md) 10.10).*
   - *Built in M8 (`persona-context`): `drafter`, `summary`, `long` and `transcript` (the long-history frozen transcripts, generated by `naive`), `--set` (a dataset folder for `decisions`, a script for `long` and `transcript`), nouls in `decisions`, and B4's judge validation (`decisions --set judges`, recorded in `evals/baselines/judges.json`; a judge's figures read "unvalidated" until its current version passes). The 13 judges are `eval_judge` bank entries whose "yes" is the failure. The reply-rule code checks are `horizon/evals/reply_checks.py`.*
   - plus **`horizon eval capture <messageId>`** (B10) and **`horizon eval import <sessionId>`** ([doc 13](13-wrap-up.md) W10, built
     in the v1 endgame), which scores a recorded session as a free run without new replies.
@@ -555,7 +562,10 @@ with itself only about 64 % of the time, so that rule mixes up ordinary noise wi
   dev items: state assembly `S` timed in process, Jev's `L`, and the measured stream-end-to-`turn.end` `F`; a miss is
   `S + L > F + 400`, pass at ≤ 10 %) and `--part watch` (3 scenes × 20 turns at Fast pace: `turn.end` to the next
   `turn.next` and first token against NFR-02, and how the plan made ahead fared). Both bypass the store and report
-  Jev's slow spells (≥ 3 requests over 2 s in a row) apart. The results are in [m10.md](checks/m10.md).*
+  Jev's slow spells (≥ 3 requests over 2 s in a row) apart. Results ([m10.md](checks/m10.md)): the follow plan
+  missed 400 ms on 50/50 (Jev p50 443 / p90 495 ms; `S` p90 0.5 ms), so its deadline is 483 ms by G2's rule; watch at
+  Fast pace met NFR-02 (`turn.end` to the next first token p50 1,711 ms), the plan made ahead used on 54 of 62 turns;
+  no slow spells in either run.*
 - **NFR-29 (the face within 800 ms of the first word)** is measured **at the HTTP client**, from the event timestamps of
   the M6 portable client:
   - face time minus first-word time;

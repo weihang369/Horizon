@@ -636,21 +636,21 @@ save it and reuse it. Never pay for the same result twice.
 
 | Knob | Home | Start | Tuned in |
 |---|---|---|---|
-| who-speaks, emotion, reaction floors; `floor.second`, `floor.member` | bank | 0.6 | M9–M11 |
+| who-speaks, emotion, reaction floors; `floor.second`, `floor.member` | bank | 0.6 (found in M10: `who_first`, `who_scene`, `who_next`, `emotion_line`, `emotion_opening` **0.2**; `floor.second` **0.3**; [m10.md](checks/m10.md)) | M9–M11 |
 | `t_gate` (documents) / `t_confident` | bank | 0.35 / 0.8 | M12 |
 | `t_gate` (earlier lines) | bank | 0.4 | M13 |
 | `t_standalone`; English | bank | 0.5; 0.5 (fixed) | M12 |
 | `t_keep` / `t_found` / `t_set` (doc 10) | bank | 0.6 / 0.6 / 0.5 | M12 |
 | `t_recall` | bank | 0.5 | M13 |
 | `t_keep` (doc 09 guard) | bank | 0.7 | M13 |
-| `t_end` | bank | 0.8 | M10 |
+| `t_end` | bank | 0.8 (found in M10: **0.5**, precision 1.00 / recall 0.91 on test) | M10 |
 | `safety.tSteer` / `tCare` / `tMotion` | bank | 0.7 / 0.3 / 0.7 | M14 |
 | `safety.tFlag` / `tBlock` | bank | 0.5 / 0.9 | M14 |
 | `safety.tImage*` / `tSong` | bank | 0.5 / 0.6 | M14 |
 | `memory.tInstruction` | bank | 0.7 | M14 |
 | `verdict.margin` | bank | 0.5 (doc 08) | M11 |
 | `turn_plan` deadline | pricing | **700** ([group A](checks/group-a.md) A2: p50 ≈ 420, p99 ≈ 500 ms; the user chose p99 over p90, 2026-10-10) | M15 |
-| `follow_plan` / `debate_plan` | pricing | 400 / **500** (A2: the follow plan starts at the stream's end, so 400 after `turn.end` is ample; the debate plan starts at `turn.end`, so 500, with an NFR-02 exception) | M10, M11 |
+| `follow_plan` / `debate_plan` | pricing | 400 / **500** (A2: the follow plan starts at the stream's end, so 400 after `turn.end` is ample; the debate plan starts at `turn.end`, so 500, with an NFR-02 exception). *Found in M10: `follow_plan` **483** (every request missed 400, Jev p90 495 ms; G2's rule and an NFR-02 exception, [m10.md](checks/m10.md) 10.7)* | M10, M11 |
 | `guardrail` / `guardrail_prompt` | pricing | 700 (A2: p99 ≈ 560) / 1,500 | M14 / — |
 | `reaction` / `face_check` | pricing | 1,500 / 1,500 | — |
 | `episode` / `verdict` (`timeoutsMs`, not decisions) | pricing | 30,000 / 30,000 (docs 07, 08) | — |

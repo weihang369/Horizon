@@ -203,7 +203,10 @@ context limit.
 - **Watch's "Summarise" button** (`Summariser.episode`) is a different summary, designed in doc 07 G10; it takes the
   rolling summary and the window as its input. Until it is built, `NaiveSummariser.episode` delegates to the scripted
   one. *Built in M10 (`group-watch` D19): one DeepSeek call with the premise, the cast, the rolling summary and the
-  window; no longer delegated.*
+  window; no longer delegated. The paid run (task 10.6) found DeepSeek writing English scenes' recaps in the
+  language of the characters' names, so the prompt is `episode-3`: the language most lines use, named again in the
+  request's last line (persona-context D35's pattern), and no guessed pronouns; it then met "at most 1 failure in 10"
+  ([m10.md](checks/m10.md)).*
 - **The `naive` yardstick moves here, deliberately.** The window, the drop rule and the summariser are shared runtime
   machinery, not the naive prompt; both profiles get the same ones, so the comparison stays fair. The change lands
   before the first accepted baseline (doc 02 B7), so no baseline straddles it. The naive prompt itself is untouched

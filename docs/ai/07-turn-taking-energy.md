@@ -188,7 +188,11 @@ note and nobody else answers, in every profile and in the mock. Under `agent` th
 late or failed gives no second reply, and the rows go on the first reply's trace (W1). **D9's finding:** with no output
 check before M14, `finish()` reaches `turn.end` a few milliseconds after the stream ends (measured F: p50 12.3 ms, p90
 13.3 ms on Windows, [m10.md](checks/m10.md)), so the follow plan really has about 412 ms, not the ~800 ms A2's note
-assumed. The timing check's result and any G2-rule deadline are in [m10.md](checks/m10.md).*
+assumed. **The timing check (task 10.7) failed:** all 50 follow plans missed `turn.end` + 400 ms, because Jev alone
+took p50 443 ms / p90 495 ms (our state assembly: p90 0.5 ms; no slow spells). By G2's rule Jev stays and
+`timeoutsMs.decision.follow_plan` is now the measured p90 of `S + L − F`, **483 ms**, with a recorded NFR-02 exception
+for the optional `turn.next`. In the group free runs 6 of 36 follow plans were still late at 483 ms (17 %). Measured
+again after M14 (D9); [m10.md](checks/m10.md) 10.7.*
 
 **Rejected:**
 - **choosing the second replier up front (today's way):** never late, but blind to the first reply (finding 2); it
@@ -333,8 +337,12 @@ last speaker; the "Auto" opening asks `who_scene` with `emotion_opening`. Round-
   section ([doc 13](13-wrap-up.md) W1).
 
 *Built in M10 (D14): `talk_finished` is asked on every planned scene turn after the opening; a yes at or above `t_end`
-steers unless one of the last 2 character messages' stored traces steered or a director's note is active. `t_end` is in
-[m10.md](checks/m10.md).*
+steers unless one of the last 2 character messages' stored traces steered or a director's note is active. **`t_end` =
+0.5** (task 10.4: the lowest grid value with dev precision ≥ 0.90; English test precision 1.00, recall 0.91).
+**Finding (10.9):** in the watch free runs the steer fired on 7 of 91 turns, and none of the 7 steered lines took the
+scene somewhere new: 3 were exits, 2 handed the decision to the user, 2 reframed toward a decision. The sentence reads
+to the model as "the talk is over"; the user chose to reword it in M11, measured with the "starts something new?"
+noul. Details in [m10.md](checks/m10.md) 10.9.*
 
 **Rejected:**
 - **ending the episode early:** needs a new paused reason (a contract change) and cuts scenes the user set a length
@@ -361,7 +369,9 @@ steers unless one of the last 2 character messages' stored traces steered or a d
 
 *Built in M10 (D15): the next plan starts right after `turn.end` as `actor.background("plan_ahead")`, waiting for Jev
 until the turn is due, stored with D15's fingerprint. A different fingerprint at turn time discards it and plans again
-with the 700 ms deadline; `clear()` and a Pause cancel it.*
+with the 700 ms deadline; `clear()` and a Pause cancel it. **Measured (task 10.8, 62 Fast-pace turns):** the plan
+made ahead was used on 54 turns, redone on 6 and fell back on 2; `turn.end` to the next first token p50 1,711 ms /
+p90 1,920 ms, inside NFR-02's 3 s.*
 
 **Rejected:**
 - **planning after the pace (today's order):** the gap becomes turn gap + pace + Jev + first token;
@@ -472,8 +482,15 @@ counting as English).*
 *Built in M10 (D23): `who_first` (60) and `who_second` (90, 58 `none`) from the group transcripts and written lines,
 `talk_finished` (120, 65 yes), the 40-item watch emotion slice, and the code for `who_scene` (60, from the committed
 watch histories); balanced accuracy and exact one-sided paired tests in `horizon/evals/who_policies.py`;
-`watch-history`, `freerun`, the recaps in `summary`, and `latency --part follow|watch`. The runs and their results are
-in [m10.md](checks/m10.md).*
+`watch-history`, `freerun`, the recaps in `summary`, and `latency --part follow|watch`. **Found (phase 10,
+[m10.md](checks/m10.md)):** `who_first` floor 0.2, English test 16/16, +0.69 over least recently spoken (pass);
+`who_second` floor 0.3, balanced accuracy 0.86 with 7 % needless second replies, +0.66 (pass); `who_scene` floor 0.2,
+grown to 100 items by this rule (its first test interval straddled 0.80), English test 20/35 = 0.57, +0.09 over
+round-robin, p 0.19 (**fails**: Jev picks whoever has been silent longest on 75 of 100 items, reading `last_spoke` in
+the cast cards as a fairness cue; the user chose to fix it in M11 with fresh items); `who_next` takes 0.2, untested.
+The recaps meet "at most 1 failure" on `episode-3` (G10's note). Free-run signals: the guard fired on 0 % of watch
+turns, the busiest speaker had 25 % (watch) and 55 % (group), second replies came on 11 % of group sends (inside
+10–60 %).*
 
 **Rejected:**
 - **one accuracy number for both group slots:** the second slot's right answer is often `none`, so a mixed number

@@ -71,6 +71,9 @@ async def test_two_listeners_one_request(api: Api) -> None:
 async def test_confident_reactions_show_with_p_inside_the_window(api: Api) -> None:
     sid = await group(api)
     await fixtures(api, (MEI, "happy", 0.9), (VICTOR, "sad", 0.8))
+    # no second reply, so both stay listeners: the fake's 1/3 now clears floor.second (0.3, task 10.3)
+    assert (await api.post(f"{API}/_test/decider-fixtures", {"set": [{"purpose": "follow_plan", "question": "who_second",
+            "answer": {"choice": "none", "confidence": 0.9, "probabilities": {"none": 0.9}}}]})).status_code == 204
     await command(api, sid, "send", {"text": "We won the grant!", "mentions": [AMARA]})
     await api.drive(300)
     evs = await events(api, sid)
