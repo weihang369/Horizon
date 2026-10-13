@@ -490,6 +490,15 @@ unaffected. M14's output check gives back the head start, and the deadline is th
   - a second reply differs only in the tail's cue line;
   - system message 1 and the summary message are identical in all four label cases.
 
+**Built (phase 7):**
+- the recorded requests sit beside M9's in `backend/tests/fixtures/agent_request/`: the group first reply is M9's
+  `request_agent1_group.json` (unchanged, so no new recording was needed), and the scene is the new
+  `request_agent1_scene.json`, recorded before the engine changed;
+- the sentence is its own line in the tail, after naive's cue and the director's note
+  ("Continue the scene in character. Director: …" then a newline, then the sentence): a note with no full stop would
+  otherwise run into it;
+- the label is chosen per turn (`AgentTurnEngine.prompt_version_for(ctx)`), and the runtime stores it in the trace.
+
 **Rejected:**
 - **one label `agent-3` for every request:** a 1:1 request that didn't change would be relabelled, and the ledger's
   `prompt_version` would split M9's 1:1 data from M10's for nothing;
@@ -684,6 +693,15 @@ Per watch turn, under a planner that returns a plan (`agent`), in this order:
   plans afresh.
 - **The guard and the steer cap are computed inside the plan, at plan time,** from the same log the fingerprint covers.
 - **Only the plan runs ahead, never the reply** (G8).
+
+**Built (phase 6):**
+- a plan made ahead waits for Jev until the turn is due, and the turn checks the fingerprint at that same moment. So
+  when the inputs changed, the stored plan has already settled: answered (`on_time`), or timed out at the due time
+  (`late`). The turn discards it and plans again. Its request is recorded `cancelled` only when something cancels it
+  before the due time: `clear()` (Stop, leave, a cap pause, Summarise, the end), or a Pause, which now also drops it so
+  Play plans afresh. The watch-direction scenario says "not used" rather than "cancelled" for this reason;
+- `actor.background` now returns its coroutine's result (it returned None), so the turn can join the stored plan;
+- a chosen opening speaker is forced with no `forcedBy` on `turn.next` (as under `naive`).
 
 **Rejected:**
 - **G8's 700 ms deadline for a plan made ahead:** it throws away time the pace already pays for;

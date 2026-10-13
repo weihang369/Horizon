@@ -113,7 +113,7 @@
   row action is "recorded (MANUAL)" and the shown face is unchanged.
 - [x] 3.6 Storm tests (D2) for a cast plan cancelled during the user message's append and during the parked plan.
   Verify the writer is free, the log reduces, and the row is `cancelled`.
-- [ ] 3.7 Gates green; commit "M10 phase 3".
+- [x] 3.7 Gates green; commit "M10 phase 3".
 
 ## 4. The follow plan (design D4, D8, D9)
 
@@ -139,7 +139,7 @@
   for D9's timing check. Record in m10.md.
 - [x] 4.8 Storm tests (D2) for a follow plan cut by Stop during the parked call and during the first reply's
   `turn.end` write. Verify the writer is free and the row is `cancelled`.
-- [ ] 4.9 Gates green; commit "M10 phase 4".
+- [x] 4.9 Gates green; commit "M10 phase 4".
 
 ## 5. G5's reply epoch, Next speaker, Everyone and Step in (design D11, D12)
 
@@ -171,41 +171,41 @@
 
 ## 6. Watch: the order, the guard, the steer and the plan-ahead (design D13–D15)
 
-- [ ] 6.1 The guard as a pure function over the message log (scene start, round size, `2n`, silent-longest
+- [x] 6.1 The guard as a pure function over the message log (scene start, round size, `2n`, silent-longest
   tie-break, the reason text). Verify with unit tests: never spoken, a woken character, Step in replies counted,
   director's notes not counted, and the release-survives scenario (it reads the stored log).
-- [ ] 6.2 `watch.turn` under `agent`: nudge → guard → `plan_cast(kind="scene")` minus the last speaker, plus the one-
+- [x] 6.2 `watch.turn` under `agent`: nudge → guard → `plan_cast(kind="scene")` minus the last speaker, plus the one-
   and two-awake cases. Verify the spec scenarios "Never twice in a row" (30 turns), "The guard fires" and "Naive stays
   round-robin".
-- [ ] 6.3 The "Auto" opening via `plan_cast(kind="opening")` (`who_scene` + `emotion_opening`, no `talk_finished`).
+- [x] 6.3 The "Auto" opening via `plan_cast(kind="opening")` (`who_scene` + `emotion_opening`, no `talk_finished`).
   Verify the spec scenario "Auto opening", and that a chosen opening speaker is forced.
-- [ ] 6.4 The steer: D14's rule, with the cap read from the last 2 character messages' stored traces and the director's
+- [x] 6.4 The steer: D14's rule, with the cap read from the last 2 character messages' stored traces and the director's
   note check. The row and its actions, and `cue = "steer"` on the per-turn plan. Verify "Steer, then cap" and "No
   steer during a note".
-- [ ] 6.5 The plan-ahead: start conditions, `actor.background("plan_ahead")` with `deadline_at` = the due time, the
+- [x] 6.5 The plan-ahead: start conditions, `actor.background("plan_ahead")` with `deadline_at` = the due time, the
   fingerprint of D15, the redo on mismatch, and `clear()` cancelling `"plan_ahead"`. Verify:
   - one test per fingerprint field (each change forces a redo; no change uses the stored plan with exactly one
     request);
   - "Hidden by the pace" (a 1.2 s answer at Normal pace is used);
   - "None at the limit";
   - Stop during the gap gives `cancelled` and no rows.
-- [ ] 6.6 Storm tests (D2) for the plan-ahead cancelled by `clear()` and by a fingerprint change, during its parked
+- [x] 6.6 Storm tests (D2) for the plan-ahead cancelled by `clear()` and by a fingerprint change, during its parked
   call and during the turn's `turnsTaken` write. Verify the writer is free and the log reduces.
 - [ ] 6.7 Gates green; commit "M10 phase 6".
 
 ## 7. The cue sentence and the prompt labels (design D10)
 
-- [ ] 7.1 Before touching the engine: record an `agent-1` group first-reply request fixture and a watch scene request
+- [x] 7.1 Before touching the engine: record an `agent-1` group first-reply request fixture and a watch scene request
   fixture (`backend/tests/fixtures/plan/agent1_group.json`, `agent1_scene.json`).
-- [ ] 7.2 `TURN_CUE_SENTENCES` in `ai/agent/persona.py`. `AgentTurnEngine.cue()` appends the plan's sentence after
+- [x] 7.2 `TURN_CUE_SENTENCES` in `ai/agent/persona.py`. `AgentTurnEngine.cue()` appends the plan's sentence after
   naive's cue and any director's note. The prompt label follows D10's table. Verify:
   - a first reply equals the `agent-1` fixture byte for byte;
   - a second reply differs only in the tail's cue line and is labelled `agent-3`;
   - system message 1 and the summary message are identical in all four label cases;
   - "After the director's note".
-- [ ] 7.3 The TS twin `turnCueSentence()` in `domain/personaPrompt.ts`, and the shared fixture
+- [x] 7.3 The TS twin `turnCueSentence()` in `domain/personaPrompt.ts`, and the shared fixture
   `backend/tests/fixtures/turn_cue/cases.json` read by both suites. Verify both pass byte for byte.
-- [ ] 7.4 "View as prompt": the fixed cue note under the preview, built from the twin (the persona-prompt delta),
+- [x] 7.4 "View as prompt": the fixed cue note under the preview, built from the twin (the persona-prompt delta),
   replacing the stale mood-line wording in the spec. Verify `PromptPreview.test.tsx` checks the note and its example.
 - [ ] 7.5 Gates green; commit "M10 phase 7".
 

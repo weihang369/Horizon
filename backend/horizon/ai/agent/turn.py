@@ -21,11 +21,14 @@ from typing import Any
 from horizon.ai.agent.budget import planned_input
 from horizon.ai.agent.persona import (
     PROMPT_VERSION,
+    PROMPT_VERSION_CUE,
+    PROMPT_VERSION_CUE_MOOD,
     PROMPT_VERSION_MOOD,
     compile_persona,
     first_name,
     mood_line,
     persona_input,
+    turn_cue_sentence,
 )
 from horizon.ai.contexts import MessageView, TurnContext
 from horizon.ai.language import language_cue
@@ -118,14 +121,30 @@ class AgentTurnEngine(NaiveTurnEngine):
         """`agent-1`, or `agent-2` while the mood line is switched on (D16, D40): the label follows the bytes sent."""
         return PROMPT_VERSION_MOOD if self.deps.switch("persona.moodLine") else PROMPT_VERSION
 
+    def prompt_version_for(self, ctx: TurnContext | None) -> str:
+        """M10 (group-watch D10): the label of the bytes this turn sent. A G3 sentence in the cue makes it `agent-3`
+        (`agent-4` with the mood line on); every other request keeps M9's `agent-1` / `agent-2`."""
+        mood = self.deps.switch("persona.moodLine")
+        if ctx is not None and self.sentence(ctx) is not None:
+            return PROMPT_VERSION_CUE_MOOD if mood else PROMPT_VERSION_CUE
+        return PROMPT_VERSION_MOOD if mood else PROMPT_VERSION
+
     # ── seam 1: the request ──
+    @staticmethod
+    def sentence(ctx: TurnContext) -> str | None:
+        """G3's sentence for this turn (a follow-plan second reply, a group Next speaker, a steered scene), if any."""
+        plan = ctx.plan
+        return turn_cue_sentence(plan.cue, plan.answered) if plan is not None else None
+
     def cue(self, ctx: TurnContext) -> str | None:
-        """D7: naive's cues, except a generated greeting, which avoids the stored one (P9)."""
+        """D7: naive's cues, except a generated greeting, which avoids the stored one (P9). M10 (D10): then G3's
+        sentence on its own line, after the scene cue and any director's note; still the tail, never the prefix."""
         if ctx.line.kind == "greeting":
             stored = str(ctx.speaker.profile.get("greeting") or "").strip()
             base = "Open the conversation with a short, warm greeting in character."
             return f"{base} Don't reuse your usual greeting: '{stored}'." if stored else base
-        return turn_cue(ctx)
+        lines = [x for x in (turn_cue(ctx), self.sentence(ctx)) if x]
+        return "\n".join(lines) if lines else None
 
     def mood(self, ctx: TurnContext) -> str | None:
         """E4's mood line for the planned face; none without a plan, for neutral or in MANUAL (D16). Off unless the

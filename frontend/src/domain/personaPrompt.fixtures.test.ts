@@ -3,7 +3,7 @@
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { compilePersona, cutTo, moodLine, PROMPT_VERSION, type PersonaInput, type PersonaPrompt } from "./personaPrompt";
+import { compilePersona, cutTo, moodLine, PROMPT_VERSION, turnCueSentence, type PersonaInput, type PersonaPrompt } from "./personaPrompt";
 import { countTokens } from "./tokens";
 
 interface Fixture { name: string; doc: string; input: PersonaInput; expected: PersonaPrompt }
@@ -48,4 +48,17 @@ describe("moodLine (shared with persona.py's mood_line)", () => {
   it("names the agent-1 prompt (the mood line is off by default, D40)", () => {
     expect(PROMPT_VERSION).toBe("agent-1");
   });
+});
+
+// Doc 07 G3 (group-watch D10; persona-prompt "Same table in both languages"): the same cases as persona.py's
+// turn_cue_sentence().
+interface CueCase { cue: string | null; answered: string | null; sentence: string | null }
+const CUE = JSON.parse(readFileSync(path.resolve(__dirname, "../../../backend/tests/fixtures/turn_cue/cases.json"), "utf8")) as { cases: CueCase[] };
+
+describe("turnCueSentence (shared with persona.py's turn_cue_sentence)", () => {
+  for (const c of CUE.cases) {
+    it(`${c.cue ?? "none"} ${c.answered ?? ""}`, () => {
+      expect(turnCueSentence(c.cue, c.answered)).toBe(c.sentence);
+    });
+  }
 });

@@ -38,7 +38,12 @@ def cases() -> dict[str, TurnContext]:
     group = ctx([mv(1, "user", "Morning all", name="user"),
                  mv(2, "character", "Hi!\nLong day ahead.", "chr_h", "Hana Morisaki")], mode="group")
     greet = ctx([], mode="one_on_one", others=False, line=LineHint(kind="greeting"))
-    return {"one_on_one": one, "group": group, "greeting": greet}
+    # M10 (group-watch task 7.1): a watch scene turn under a director's note, recorded before the cue sentence existed
+    scene = ctx([mv(1, "character", "The power's out on the whole street.", "chr_h", "Hana Morisaki"),
+                 mv(2, "user", "Rin is hiding something", name="user")], mode="watch",
+                summary="**The inn**\n- A storm has closed the road.", line=LineHint(kind="scene"))
+    scene = scene.model_copy(update={"direction_note": "Rin is hiding something"})
+    return {"one_on_one": one, "group": group, "greeting": greet, "scene": scene}
 
 
 MOOD_ON = {"persona.moodLine": True}   # D40: the line is behind a switch, off by default
@@ -54,7 +59,7 @@ def fixture(name: str) -> dict[str, Any]:
     return data
 
 
-@pytest.mark.parametrize("name", ["one_on_one", "group", "greeting"])
+@pytest.mark.parametrize("name", ["one_on_one", "group", "greeting", "scene"])
 def test_unplanned_requests_equal_the_agent1_fixture(name: str) -> None:
     got = dump(cases()[name])
     if RECORD:
@@ -117,3 +122,63 @@ def test_no_mood_line_without_a_plan_or_under_manual() -> None:
     for c in (base, planned(base, "sad", manual=True), planned(base, "neutral")):
         assert "Your mood right now" not in json.dumps(dump(c, MOOD_ON), ensure_ascii=False)
     assert "Your mood right now: a bit low." in json.dumps(dump(planned(base, "sad"), MOOD_ON), ensure_ascii=False)
+
+
+# ── M10 (group-watch tasks 7.2, 7.3; design D10): G3's sentence and the labels that follow the bytes ──
+TURN_CUE = json.loads((FIX.parent / "turn_cue" / "cases.json").read_text(encoding="utf-8"))["cases"]
+SECOND = "Hana has just answered. Don't repeat them; add your own angle, or answer Hana directly."
+STEER = "This thread has run its course. Take the scene somewhere new that still fits the premise."
+
+
+def cued(base: TurnContext, cue: str | None, answered: str | None = None, face: str = "neutral") -> TurnContext:
+    c = planned(base, face)
+    assert c.plan is not None
+    return c.model_copy(update={"plan": c.plan.model_copy(update={"cue": cue, "answered": answered})})
+
+
+@pytest.mark.parametrize("case", TURN_CUE, ids=lambda c: f"{c['cue']}")
+def test_the_shared_turn_cue_table(case: dict[str, Any]) -> None:
+    from horizon.ai.agent.persona import turn_cue_sentence
+
+    assert turn_cue_sentence(case["cue"], case["answered"]) == case["sentence"]
+
+
+def test_a_first_reply_is_agent1_and_a_second_differs_only_in_the_cue_line() -> None:
+    from tests.sessions.test_agent_turn import engine as make
+
+    old = fixture("group")
+    first = cued(cases()["group"], None)
+    assert dump(first) == old and make().prompt_version_for(first) == "agent-1"
+    second = cued(cases()["group"], "second", "Hana")
+    new = dump(second)
+    assert make().prompt_version_for(second) == "agent-3"
+    assert {k: v for k, v in new.items() if k != "messages"} == {k: v for k, v in old.items() if k != "messages"}
+    n = len(old["messages"])
+    had_tail = old["messages"][-1]["role"] == "system" and n > old["prefix_len"]
+    keep = n - 1 if had_tail else n
+    assert new["messages"][:keep] == old["messages"][:keep]
+    assert new["messages"][keep:] == [{"role": "system", "content": SECOND}]
+
+
+@pytest.mark.parametrize(("mood", "sentence", "label"), [
+    (False, False, "agent-1"), (True, False, "agent-2"), (False, True, "agent-3"), (True, True, "agent-4")])
+def test_the_prefix_is_the_same_in_all_four_label_cases(mood: bool, sentence: bool, label: str) -> None:
+    from tests.sessions.test_agent_turn import engine as make
+
+    switches = MOOD_ON if mood else None
+    base = ctx([mv(1, "user", "Morning all", name="user"), mv(2, "character", "Hi!", "chr_h", "Hana Morisaki")],
+               mode="group", summary="**Kai**\n- Likes tea.")
+    c = cued(base, "second" if sentence else None, "Hana", face="happy")
+    req, prefix = make(switches).request(c)
+    ref, ref_prefix = make().request(cued(base, None))
+    assert prefix == ref_prefix and len(prefix) == 2           # system message 1 and the summary message
+    assert make(switches).prompt_version_for(c) == label
+    assert (SECOND in str(req.messages[-1]["content"])) is sentence
+
+
+def test_the_steer_sentence_follows_the_directors_note() -> None:
+    old = fixture("scene")
+    new = dump(cued(cases()["scene"], "steer"))
+    assert new["messages"][:-1] == old["messages"][:-1]
+    assert new["messages"][-1] == {"role": "system", "content": (
+        "Continue the scene in character. Director: Rin is hiding something\n" + STEER)}

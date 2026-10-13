@@ -222,3 +222,25 @@ async def test_scripted_messages_untouched(api: Api) -> None:
     await send(api, sid, "Two", ms=20000)
     assert all(m["status"] == "complete" for m in chars(await messages(api, sid)))
     await assert_reduces(api, sid)
+
+
+# ── 7.2 (moved here from phase 4): the second reply's cue and label ──
+async def test_a_second_replys_request_names_the_first_replier_and_is_labelled_agent3(api: Api) -> None:
+    import sqlalchemy as sa
+
+    from horizon.db import tables as t
+
+    sid = await agent(api, "group", TRIO)
+    await first_is_amara(api)
+    await fixture(api, "who_second", VICTOR, 0.9, purpose="follow_plan")
+    assert api.rt.fake is not None
+    n = len(api.rt.fake.requests)
+    replies = await send(api, sid, "I'm moving to Lisbon next month.")
+    chats = [json.loads(r.content) for r in api.rt.fake.requests[n:] if r.url.path.endswith("/chat/completions")]
+    tails = [str(b["messages"][-1]["content"]) for b in chats if b["messages"][-1]["role"] == "system"]
+    sentence = "Amara has just answered. Don't repeat them; add your own angle, or answer Amara directly."
+    assert sum(sentence in x for x in tails) == 1
+    async with api.rt.db.read() as conn:
+        labels = dict((await conn.execute(sa.select(t.turn_traces.c.message_id, t.turn_traces.c.prompt_version)
+                                          .where(t.turn_traces.c.message_id.in_([m["id"] for m in replies])))).all())
+    assert [labels[m["id"]] for m in replies] == ["agent-1", "agent-3"]

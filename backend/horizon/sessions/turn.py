@@ -483,8 +483,9 @@ class TurnRunner:
                                          for q in base["questions"]]
                 full["system1"] = system1_section(base, info.system1, seed=base.get("seed"))
             events.append({"type": "insight", "payload": {"messageId": mid, "trace": full}})
+        label = getattr(engine, "prompt_version_for", None)   # M10 D10: the label follows this turn's bytes
         meta = TraceMeta(engine=getattr(engine, "name", None), engine_version=getattr(engine, "version", None),
-                         prompt_version=getattr(engine, "prompt_version", None))
+                         prompt_version=label(info.ctx) if label is not None else getattr(engine, "prompt_version", None))
         if scrub:
             await actor.emit_with(events, self._scrubber(actor, info))
         else:
