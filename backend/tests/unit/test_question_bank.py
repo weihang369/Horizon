@@ -350,7 +350,7 @@ def test_the_second_slot_names_the_first_replier() -> None:
 
 def test_talk_finished_is_a_noul_with_t_end() -> None:
     e = bank().get("talk_finished")
-    assert e.type == "noul" and e.thresholds == {"t_end": 0.8} and e.label == "is the talk finished?"
+    assert e.type == "noul" and e.thresholds == {"t_end": 0.5} and e.label == "is the talk finished?"
     q = bank().question("talk_finished")
     assert isinstance(q, Noul) and q.instructions.startswith("Has the current thread of this scene run its course")
 

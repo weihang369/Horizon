@@ -204,7 +204,7 @@ async def test_steer_then_cap(api: Api, monkeypatch: Any) -> None:
     assert seen[:5] == [None, "steer", None, None, "steer"]
     row = rows(msgs[1], "talk_finished")[0]
     assert (row["answer"], row["p"], row["result"]) == ("yes", 0.9, "used")
-    assert row["compared"] == [{"name": "t_end", "value": 0.9, "threshold": 0.8}]
+    assert row["compared"] == [{"name": "t_end", "value": 0.9, "threshold": 0.5}]   # t_end as measured (10.4)
 
 
 async def test_no_steer_during_a_directors_note(api: Api, monkeypatch: Any) -> None:

@@ -272,7 +272,7 @@
 - [x] 10.3 Ask, then run `decisions --set who_speaks` (≈ $0.013): floors on dev, the test split once, the paired
   tests. Write the floors into the bank (a version bump and a re-lock) and record them in m10.md with the per-item
   results under `docs/ai/checks/m10/`.
-- [ ] 10.4 Ask, then run `decisions --set talk_finished` (≈ $0.006): `t_end`, with recall reported. Write it into the
+- [x] 10.4 Ask, then run `decisions --set talk_finished` (≈ $0.006): `t_end`, with recall reported. Write it into the
   bank and record it as in 10.3.
 - [ ] 10.5 Ask, then run `decisions --set emotion` for the watch slice (≈ $0.002): the `emotion_line` and
   `emotion_opening` floors, recorded as in 10.3.

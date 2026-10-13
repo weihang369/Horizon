@@ -1,6 +1,6 @@
 {
   "id": "talk_finished",
-  "version": 1,
+  "version": 2,
   "purpose": "turn_plan",
   "type": "noul",
   "label": "is the talk finished?",
@@ -20,7 +20,7 @@
   "deadline": "turn_plan",
   "floor": null,
   "thresholds": {
-    "t_end": 0.8
+    "t_end": 0.5
   },
   "fallback": "no_steer"
 }
