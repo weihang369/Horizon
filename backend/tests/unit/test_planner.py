@@ -205,3 +205,37 @@ async def test_a_planner_bug_keeps_the_face_instead_of_failing_the_turn(monkeypa
     planner.graph = __import__("horizon.ai.agent.plan_graph", fromlist=["x"]).build_plan_graph(planner)
     plan = await run(planner, clock, request(clock, base="surprised"), advance_ms=10)
     assert plan.emotion.outcome == "fallback" and plan.emotion.face == "neutral" and plan.branch == "quick"
+
+
+# ── M10 (group-watch task 2.2): the scripted and naive planners plan no group, and never raise ──
+async def test_scripted_planner_swallows_a_cap_refusal(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The port never raises: M10 found the scripted planner's simulated call raising a cap refusal out of the plan
+    task. The reply's own preflight takes the pause (M9 D7)."""
+    from horizon.ai.scripted import ports as scripted
+
+    class Gw:
+        async def simulated_call(self, *a: Any, **kw: Any) -> Any:
+            raise ProviderError("daily_budget_exceeded", "Today's spending cap is reached.")
+
+    class D:
+        prices = type("P", (), {"decision": type("Dp", (), {"model": "typesafe/jev-1.13"})})
+
+        def gateway(self) -> Gw:
+            return Gw()
+
+        def system1_row(self, qid: str, answer: str) -> None:
+            return None
+
+    monkeypatch.setattr(scripted, "decision_cost", lambda *a, **kw: 0.0)
+    clock = FrozenClock(calendar_for("Asia/Kuala_Lumpur"), T0)
+    plan = await scripted.ScriptedTurnPlanner(D(), simulate=True).plan(request(clock))   # type: ignore[arg-type]
+    assert plan is not None and plan.emotion is None
+
+
+async def test_scripted_and_naive_planners_leave_group_and_watch_alone() -> None:
+    from horizon.ai.naive.noop import NoPlanner
+    from horizon.ai.scripted.ports import ScriptedTurnPlanner
+
+    for p in (NoPlanner(), ScriptedTurnPlanner(None)):   # type: ignore[arg-type]
+        assert p.decides_retrieval is False
+        assert await p.plan_cast(None) is None and p.start_follow(None) is None   # type: ignore[arg-type]

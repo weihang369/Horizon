@@ -11,11 +11,23 @@ from __future__ import annotations
 
 from collections.abc import AsyncIterator, Awaitable, Callable, Mapping, Sequence
 from dataclasses import dataclass, field
+from datetime import datetime
 from typing import Any, Protocol
 
 from sqlalchemy.ext.asyncio import AsyncConnection
 
-from horizon.ai.contexts import PlanRequest, ReactionRequest, RouteContext, SessionContext, TurnContext, TurnPlan
+from horizon.ai.contexts import (
+    CastPlan,
+    CastRequest,
+    FollowPlan,
+    FollowRequest,
+    PlanRequest,
+    ReactionRequest,
+    RouteContext,
+    SessionContext,
+    TurnContext,
+    TurnPlan,
+)
 from horizon.gateway.context import CallContext
 
 OWNED_TRACE_KEYS = frozenset({"model", "energy", "routing", "calls", "messageId", "system1"})   # system1: rev 1.4, D24
@@ -83,11 +95,27 @@ class Router(Protocol):
     async def route(self, ctx: RouteContext) -> RoutingDecision: ...
 
 
+class FollowCall(Protocol):
+    """M10 (doc 07 G2; group-watch D3, D8): a follow plan already started at the first reply's stream end. `by` waits
+    until the deadline the runtime knows only at `turn.end`, and never raises except CancelledError."""
+
+    async def by(self, deadline: datetime) -> FollowPlan: ...
+    def cancel(self) -> None: ...
+
+
 class TurnPlanner(Protocol):
     """M9 (docs/ai/01 A4; turn-plan-emotion design D4): plans a turn before its reply. Returns None when the profile
-    has no planner (`naive`). It never raises, except CancelledError: a failed or late Jev call is a fallback plan."""
+    has no planner (`naive`). It never raises, except CancelledError: a failed or late Jev call is a fallback plan.
+
+    M10 (group-watch D3): `plan_cast` plans group and watch turns (who speaks, and every candidate's face) and
+    `start_follow` starts the follow plan. Both return None when the profile has no planner for them, and the mode
+    then keeps its own routing. `decides_retrieval` says whether a planned turn's retrieval follows the plan (D18)."""
+
+    decides_retrieval: bool
 
     async def plan(self, req: PlanRequest) -> TurnPlan | None: ...
+    async def plan_cast(self, req: CastRequest) -> CastPlan | None: ...
+    def start_follow(self, req: FollowRequest) -> FollowCall | None: ...
 
 
 class FaceChecker(Protocol):

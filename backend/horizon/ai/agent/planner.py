@@ -23,7 +23,7 @@ from horizon.ai.agent.emotion import decide_face, emotion_row
 from horizon.ai.agent.persona import first_name
 from horizon.ai.agent.plan_graph import Branch, build_plan_graph, run_plan
 from horizon.ai.agent.plan_state import Candidate, PlanState, PlanStateInput, build_turn_plan_state
-from horizon.ai.contexts import PlanRequest, TurnPlan
+from horizon.ai.contexts import CastPlan, CastRequest, FollowRequest, PlanRequest, TurnPlan
 from horizon.ai.decider import Answers, ChoiceAnswer, DecisionResult
 from horizon.ai.questions import bank
 
@@ -73,9 +73,32 @@ def plan_state_input(req: PlanRequest) -> PlanStateInput:
 
 
 class JevTurnPlanner:
+    decides_retrieval = True   # M10 (group-watch D18): a planned turn's retrieval follows the plan's branch
+
     def __init__(self, deps: Any) -> None:
         self.deps = deps
         self.graph = build_plan_graph(self)
+        from horizon.ai.agent.cast_plan import CastSteps
+
+        self.cast_graph = build_plan_graph(CastSteps(deps))   # M10: group and watch (D3, D4)
+
+    async def plan_cast(self, req: CastRequest) -> CastPlan | None:
+        """M10 (group-watch D3–D7, D11, D13, D14): who speaks and every candidate's face, in one `turn_plan` request.
+        Never raises except CancelledError: a bug costs the faces and Jev's pick, never the reply."""
+        from horizon.ai.agent.cast_plan import fallback_plan
+
+        try:
+            plan, path = await run_plan(self.cast_graph, req)
+        except asyncio.CancelledError:
+            raise
+        except Exception:
+            log.exception("the cast plan failed for %s; falling back", req.session.session_id)
+            return fallback_plan(req, self.deps)
+        out: CastPlan = plan.model_copy(update={"graph_path": path})
+        return out
+
+    def start_follow(self, req: FollowRequest) -> Any:
+        return None   # phase 4 (group-watch D8)
 
     # ── the port ──
     async def plan(self, req: PlanRequest) -> TurnPlan | None:

@@ -16,6 +16,9 @@ from pathlib import Path
 from typing import Any
 
 from horizon.ai.contexts import (
+    CastPlan,
+    CastRequest,
+    FollowRequest,
     MessageView,
     PlanRequest,
     ReactionRequest,
@@ -39,6 +42,7 @@ from horizon.ai.scripted.citations import live_citations
 from horizon.domain.clock import Clock
 from horizon.domain.pricing import PriceTable, chat_cost, decision_cost, multiplier
 from horizon.domain.runtime_config import Timing
+from horizon.gateway.errors import ProviderError
 from horizon.gateway.pipeline import Gateway, SimulatedReply
 
 ROUTE_DECISION_TOKENS = 600     # `cost.ts` ROUTE_DECISION_TOKENS
@@ -304,6 +308,8 @@ class ScriptedTurnPlanner:
     the reply showed ("the answer filled from what happened"). It leaves the face (`emotion` None) and retrieval
     (`branch` None) to the scripted engine and runtime. Its ledger row links to the message, so the trace lists it."""
 
+    decides_retrieval = False
+
     def __init__(self, deps: AiDeps, *, simulate: bool = True) -> None:
         self.deps = deps
         self.simulate = simulate
@@ -312,13 +318,22 @@ class ScriptedTurnPlanner:
         qid = "emotion_greeting" if req.kind == "greeting" else "emotion_reply"
         if self.simulate:
             prices = self.deps.prices
-            await self.deps.gateway().simulated_call(
-                req.session.call_ctx("turn_plan", character_id=req.speaker_id, message_id=req.message_id),
-                cost_usd=decision_cost(prices.decision, TURN_PLAN_DECISION_TOKENS), model=prices.decision.model,
-                tokens_in=TURN_PLAN_DECISION_TOKENS, latency_ms=REACTION_LATENCY_MS)
+            try:
+                await self.deps.gateway().simulated_call(
+                    req.session.call_ctx("turn_plan", character_id=req.speaker_id, message_id=req.message_id),
+                    cost_usd=decision_cost(prices.decision, TURN_PLAN_DECISION_TOKENS), model=prices.decision.model,
+                    tokens_in=TURN_PLAN_DECISION_TOKENS, latency_ms=REACTION_LATENCY_MS)
+            except ProviderError:   # the port never raises (M10 found it raising a cap refusal out of the plan task):
+                pass                # the reply's own preflight meets the same cap and takes the pause (M9 D7)
         row = self.deps.system1_row(qid, PLANNED_FACE)
         return TurnPlan(seed=f"{req.session.seed}:{req.turn_index}", kind=req.kind,
                         rows=[{**row, "about": req.speaker_id}] if row is not None else [])
+
+    async def plan_cast(self, req: CastRequest) -> CastPlan | None:
+        return None   # M10 (group-watch D3, D21): scripted keeps its own picks, as the MockClient does (G13)
+
+    def start_follow(self, req: FollowRequest) -> None:
+        return None
 
 
 class ScriptedFaceCheck:

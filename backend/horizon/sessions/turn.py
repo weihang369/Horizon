@@ -78,6 +78,7 @@ class TurnSpec:
     reactions: bool = True
     debate: DebateMeta | None = None
     direction_note: str | None = None
+    plan: TurnPlan | None = None                    # M10 (group-watch D3): a plan the mode already made for this turn
 
 
 @dataclass

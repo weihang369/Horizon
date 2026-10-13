@@ -202,3 +202,14 @@ async def test_one_eligible_character_answers_with_no_route_call(api: Api) -> No
     replies = chars(await messages(api, sid))
     assert [m["author"]["characterId"] for m in replies] == ["chr_seedAmara"]
     assert _route_requests(api) == [] and not [r for r in await ledger(api) if r["purpose"] == "route"]
+
+
+# ── M10 (group-watch task 2.2; turn-plan "Group and watch plans per profile") ──
+async def test_scripted_and_naive_groups_make_no_cast_or_follow_plan(api: Api) -> None:
+    sid = await _group(api)
+    await command(api, sid, "send", {"text": "Who's cooking tonight?"})                 # scripted: random scores
+    await _naive_router(api)
+    await command(api, sid, "send", {"text": "And who's washing up?"})                   # the Jev router
+    await api.drive(60000)
+    purposes = {r["purpose"] for r in await ledger(api)}
+    assert "route" in purposes and not purposes & {"turn_plan", "follow_plan"}

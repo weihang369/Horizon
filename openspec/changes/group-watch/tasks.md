@@ -71,13 +71,13 @@
 
 ## 2. The cast plan: port, types and graph (design D3, D4, D22)
 
-- [ ] 2.1 Add `CastRequest`, `CastPlan` (with `for_speaker`), `FollowRequest` and `FollowPlan` to `ai/contexts.py`,
+- [x] 2.1 Add `CastRequest`, `CastPlan` (with `for_speaker`), `FollowRequest` and `FollowPlan` to `ai/contexts.py`,
   plus `TurnPlan.cue`, `TurnPlan.answered` and `TurnSpec.plan`. Add `plan_cast`, `start_follow` and
   `decides_retrieval` to the `TurnPlanner` protocol. Verify a JSON round trip test for each type.
-- [ ] 2.2 `NoPlanner` and `ScriptedTurnPlanner`: `plan_cast` and `start_follow` return `None`, and
+- [x] 2.2 `NoPlanner` and `ScriptedTurnPlanner`: `plan_cast` and `start_follow` return `None`, and
   `decides_retrieval = False`. Verify that scripted and naive group sends make no `turn_plan` or `follow_plan` row
   (spec "Group and watch plans per profile").
-- [ ] 2.3 `ai/agent/cast_plan.py`: steps for `plan_cast` on the M9 graph builder:
+- [x] 2.3 `ai/agent/cast_plan.py`: steps for `plan_cast` on the M9 graph builder:
   - `state` uses the X9 builder per D5/D11/D13's kinds;
   - `ask` makes one `turn_plan` request with the who question (unless forced or single) plus one emotion question
     per candidate, plus `talk_finished` for watch turns after the opening;
@@ -87,9 +87,9 @@
 
   Verify with fixture answers per kind: the keys asked, the rows, the `not_used` marks, the fallbacks (late, 429,
   invalid) and that row purposes equal the call's purpose.
-- [ ] 2.4 Pin G9 with a test: no call-1 state (any kind) holds an `energy` key or energy-derived value, and an
+- [x] 2.4 Pin G9 with a test: no call-1 state (any kind) holds an `energy` key or energy-derived value, and an
   exhausted character is never a candidate.
-- [ ] 2.5 Repeat M9's check 1 settle test for `plan_cast`: 100 group plans on the virtual clock with parked and
+- [x] 2.5 Repeat M9's check 1 settle test for `plan_cast`: 100 group plans on the virtual clock with parked and
   released answers, two identical runs. Record the numbers in m10.md.
 - [ ] 2.6 Gates green; commit "M10 phase 2".
 
