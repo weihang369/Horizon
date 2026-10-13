@@ -24,7 +24,7 @@ import { buildLineScript } from "../script/turnScript";
 import type { EmotionTiming, LineScript, LineSpec } from "../script/turnScript";
 import type { TimingConfig } from "../timing.config";
 
-export type Task = (done: () => void) => void;
+export type Task = ((done: () => void) => void) & { epoch?: number };
 
 export interface LiveSession {
   id: string;
@@ -46,6 +46,9 @@ export interface LiveSession {
   debate?: { order: string[]; idx: number; skipToClosing?: boolean; extend?: boolean };
   /** Watch round-robin cursor. */
   watchIdx?: number;
+  /** M10 (doc 07 G5; group-watch D12): bumped by each group send and Step in. A reply task captures it when queued;
+   *  a stale task is skipped, and a stale turn never emits `turn.next`. */
+  replyEpoch?: number;
 }
 
 export interface EngineHost {
@@ -69,11 +72,12 @@ export interface EngineHost {
   /** True when today's spend has reached the daily cap. */
   dailyCapReached(): boolean;
   /** Ledger + daily spend for non-reply AI calls (verdict, summary, routing). Never drains energy (D-42). */
-  charge(sessionId: string, category: "decision" | "summary", costUsd: number): void;
+  charge(sessionId: string, category: "decision" | "summary", costUsd: number, purpose?: string): void;
 }
 
 // ── Queue ────────────────────────────────────────────────────────────────────
-export function enqueue(live: LiveSession, task: Task, front = false): void {
+export function enqueue(live: LiveSession, task: Task, front = false, epoch?: number): void {
+  if (epoch !== undefined) task.epoch = epoch;
   if (front) live.queue.unshift(task);
   else live.queue.push(task);
   pump(live);
@@ -81,7 +85,8 @@ export function enqueue(live: LiveSession, task: Task, front = false): void {
 
 function pump(live: LiveSession): void {
   if (live.busy) return;
-  const next = live.queue.shift();
+  let next = live.queue.shift();
+  while (next && !isCurrent(live, next.epoch)) next = live.queue.shift(); // G5: a stale reply task never runs
   if (!next) return;
   live.busy = true;
   let finished = false;
@@ -92,6 +97,16 @@ function pump(live: LiveSession): void {
     pump(live);
   });
 }
+
+/** G5: a user message (a group send, a Step in) arrives. Stale queued reply tasks are dropped; returns the new epoch. */
+export function supersede(live: LiveSession): number {
+  live.replyEpoch = (live.replyEpoch ?? 0) + 1;
+  live.queue = live.queue.filter((t) => isCurrent(live, t.epoch));
+  return live.replyEpoch;
+}
+
+export const isCurrent = (live: LiveSession, epoch: number | undefined): boolean =>
+  epoch === undefined || epoch === (live.replyEpoch ?? 0);
 
 /** Cancel everything pending for a session (Stop, end, mock reset). */
 export function clearLive(live: LiveSession, opts?: { keepCurrentTurn?: boolean }): void {
@@ -226,6 +241,8 @@ export interface SpeakOpts {
   greeting?: boolean;
   /** docs/ai/04 P9: say `line` word for word at no cost (the first chat's approved greeting). */
   verbatim?: boolean;
+  /** G5: the reply epoch this turn's task captured; the turn announces only while it is current. */
+  epoch?: number;
 }
 
 export interface SpeakResult { messageId: string; endMs: number; status: Message["status"] }
@@ -310,6 +327,10 @@ export function speak(h: EngineHost, sid: string, cid: string, opts: SpeakOpts =
 
 /** Speak, then call `done` once the turn has ended (+ the turn gap). Skipped speakers call done at once. */
 export function speakThen(h: EngineHost, sid: string, cid: string, opts: SpeakOpts, done: (r: SpeakResult | null) => void): void {
+  if (!isCurrent(h.live(sid), opts.epoch)) {
+    done(null); // G5: superseded before it announced, so no turn.next
+    return;
+  }
   const r = speak(h, sid, cid, opts);
   if (!r) {
     done(null);

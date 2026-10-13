@@ -102,7 +102,7 @@ async def test_summarise_is_billed(api: Api) -> None:
     await command(api, sid, "watch/summarise")
     await api.drive(5000)
     assert any(m["kind"] == "summary" and m["content"].startswith("Episode summary") for m in await messages(api, sid))
-    assert any(r["purpose"] == "summary" and r["category"] == "summary" for r in await ledger(api))
+    assert any(r["purpose"] == "episode_summary" and r["category"] == "summary" for r in await ledger(api))
 
 
 async def test_everyone_asleep_pauses_with_a_note(api: Api) -> None:

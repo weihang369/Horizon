@@ -1,0 +1,30 @@
+{
+  "id": "who_second",
+  "version": 2,
+  "purpose": "follow_plan",
+  "type": "choice",
+  "label": "who speaks up now?",
+  "instructions": "{name} has just answered quoted_message from quoted_user with quoted_latest. Would one of these characters naturally speak up now?",
+  "options": {
+    "kind": "dynamic",
+    "from": "cast",
+    "describe": "{name} ({role}). Not for: when they would only repeat or agree with what was just said.",
+    "none": "Nobody: the answer just given covers it. Not for: when someone in the cast was addressed by name or asked a question."
+  },
+  "shuffle": true,
+  "state": {
+    "mode": "label",
+    "quoted_user": "quoted",
+    "quoted_cast": "quoted",
+    "quoted_documents": "quoted",
+    "quoted_latest": "quoted",
+    "quoted_recent": "quoted",
+    "quoted_premise": "quoted",
+    "quoted_summary": "quoted",
+    "quoted_message": "quoted"
+  },
+  "deadline": "follow_plan",
+  "floor": 0.3,
+  "thresholds": {},
+  "fallback": "no_second_reply"
+}

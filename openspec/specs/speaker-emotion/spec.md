@@ -9,8 +9,9 @@ face, with short faces fading. Also covers how the face reaches the screen and t
 ### Requirement: The emotion question
 Each emotion question SHALL offer the 7 emotions and `none` ("no clear change: keep the current face"), each with a
 `what`, a `not_for` and examples, shuffled by a seed derived from the turn's System 1 seed and the question key. A
-reply to the user SHALL use `emotion_reply`; a generated greeting SHALL use `emotion_greeting`. Each question SHALL
-name its candidate.
+reply to the user (1:1, a group's first or second reply, Step in) SHALL use `emotion_reply`; a generated greeting
+SHALL use `emotion_greeting`; a watch turn after the opening and a group Next speaker SHALL use `emotion_line`; a
+watch's first turn SHALL use `emotion_opening`. Each question SHALL name its candidate.
 
 #### Scenario: Same seed, same order
 - **WHEN** the same turn is planned twice with the same session seed and turn index
@@ -19,6 +20,10 @@ name its candidate.
 #### Scenario: A generated greeting
 - **WHEN** an `agent` 1:1 session opens for a character who has chatted before
 - **THEN** its `turn_plan` request asks `emotion_greeting` for that character, and not `emotion_reply`
+
+#### Scenario: A watch turn
+- **WHEN** an `agent` watch plans its fifth turn
+- **THEN** its request asks `emotion_line` for each candidate, and not `emotion_reply`
 
 ### Requirement: The face rule
 The face sent SHALL be Jev's pick when it is not `none` and Jev's confidence reaches the question's floor (0.6 to
@@ -88,3 +93,14 @@ the source, and no confidence band next to the chosen face. A face with no candi
 #### Scenario: Kept face in Insight
 - **WHEN** a reply kept `thinking` while Jev's top candidate was `angry` at 0.41
 - **THEN** the Emotion section shows `thinking` with the chip "kept" and no band, and the bars list `angry` first
+
+### Requirement: Faces in group and watch come from the plan
+Under `agent`, every planned group and watch reply SHALL show its plan's face for its speaker, decided by the same face rule as 1:1 (the floor, keep, fade and the `neutral` + `none` merge). A second reply's face SHALL come from the follow plan, which saw the first reply. Debate replies SHALL keep the speaker's previous face until M11.
+
+#### Scenario: Second replier reacts to the first
+- **WHEN** a follow plan picks Rin and Jev's emotion answer for Rin is `surprised` with enough confidence
+- **THEN** Rin's reply shows `surprised` with source `classifier`
+
+#### Scenario: Everyone's prefetched replies
+- **WHEN** an `agent` Everyone run prefetches its third reply
+- **THEN** that reply's face is the one the run's single plan chose for that speaker

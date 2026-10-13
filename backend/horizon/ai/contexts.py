@@ -150,6 +150,9 @@ class PlannedFace(Frozen):
     manual: bool = False
 
 
+CueKind = Literal["second", "next", "steer"]
+
+
 class TurnPlan(Frozen):
     """The frozen result of the turn plan (A9: a turn replays from JSON with no Jev call)."""
 
@@ -162,6 +165,8 @@ class TurnPlan(Frozen):
     graph_path: list[str] = []
     state_tokens: int = 0
     dropped_gates: list[str] = []
+    cue: CueKind | None = None                      # M10 (doc 07 G3; group-watch D10): the cue's one sentence
+    answered: str | None = None                     # the first replier's name, for cue "second"
 
     @property
     def deep(self) -> bool:
@@ -182,6 +187,135 @@ class PlanRequest(Frozen):
     base_face: str = "neutral"                      # AUTO: the face now; MANUAL: the last AI-chosen face (E2)
     manual: bool = False
     started_at: datetime                            # the deadline counts from here (the plan starts before turn.next)
+
+
+# ── The cast plan and the follow plan (M10: doc 07 G1–G8; group-watch design D3, D8, D22) ──
+CastKind = Literal["group_first", "group_mentioned", "everyone", "next", "step_in", "scene", "opening"]
+WhoSource = Literal["jev", "below_floor", "fallback", "late", "forced", "single"]
+SteerBlock = Literal["recent", "note"]
+
+
+class WhoPick(Frozen):
+    """Who speaks, and why (G1, G4, G6)."""
+
+    pick: str                                       # the character who speaks (Everyone: the top of the order)
+    source: WhoSource
+    question: str | None = None                     # the bank id asked; None when nothing was asked
+    label: str = ""
+    p: float | None = None
+    confidence: float | None = None
+    candidates: list[dict[str, Any]] = []           # routing.candidates: [{characterId, p}], highest first
+    forced_by: Literal["mention", "nudge", "round_order"] | None = None
+    reason: str | None = None                       # routing.reason ("fallback", or the guard's sentence)
+
+
+class TalkFinished(Frozen):
+    """Watch's "is the talk finished?" and what code did with it (G7; D14)."""
+
+    p: float | None                                 # None on a fallback
+    steer: bool
+    action: str
+
+
+class CastRequest(Frozen):
+    """What the runtime gives `plan_cast` (D3): the candidates, who is forced, and what is being answered."""
+
+    session: SessionContext
+    kind: CastKind
+    candidates: list[str]                           # who may be picked or asked about, in cast order
+    forced: list[str] = []                          # speak without a who question (mentions, a nudge, the guard)
+    forced_by: Literal["mention", "nudge", "round_order"] | None = None
+    reason: str | None = None                       # the guard's routing.reason
+    cast: list[CharacterView] = []                  # the candidates' profiles (X9's `about`)
+    latest: str = ""                                # the line being answered: the user's text, or "Name: line"
+    turn_index: int = 0
+    base_faces: dict[str, str] = {}                 # E2's base per candidate (AUTO: the face now; MANUAL: last chosen)
+    manual: bool = False
+    turns_since: dict[str, int | None] = {}         # character lines since each last spoke (None: not yet)
+    steer_block: SteerBlock | None = None           # watch: why a steer can't happen this turn (D14)
+    started_at: datetime
+    deadline_at: datetime | None = None             # None: started_at + the turn_plan deadline; plan-ahead sets it (D15)
+
+
+class CastPlan(Frozen):
+    """The frozen cast plan (D3). `for_speaker` gives each reply its own `TurnPlan` for `TurnContext.plan`."""
+
+    seed: str
+    kind: CastKind
+    order: list[str]                                # who speaks, in order (one, except Everyone)
+    who: WhoPick | None = None                      # None: nobody to pick (e.g. all forced)
+    faces: dict[str, PlannedFace] = {}
+    face_rows: dict[str, dict[str, Any]] = {}       # each candidate's emotion row, as if used
+    shared_rows: list[dict[str, Any]] = []          # the who row and the talk-finished row
+    talk: TalkFinished | None = None
+    calls: list[dict[str, Any]] = []
+    graph_path: list[str] = []
+    state_tokens: int = 0
+
+    @property
+    def steer(self) -> bool:
+        return self.talk is not None and self.talk.steer
+
+    def for_speaker(self, cid: str, *, cue: CueKind | None = None, answered: str | None = None) -> TurnPlan:
+        """The reply's frozen plan: its face, the shared rows plus its own row `used`, and the other candidates' rows
+        `not_used` (W1), except on an Everyone reply, which carries only its own (D22)."""
+        rows = list(self.shared_rows)
+        for other, row in self.face_rows.items():
+            if other == cid:
+                rows.append(row)
+            elif self.kind != "everyone":
+                rows.append({**row, "result": "not_used"})
+        return TurnPlan(seed=self.seed, kind="reply", branch="quick", emotion=self.faces.get(cid), rows=rows,
+                        calls=list(self.calls), graph_path=list(self.graph_path), state_tokens=self.state_tokens,
+                        cue="steer" if self.steer and cue is None else cue, answered=answered)
+
+
+class FollowRequest(Frozen):
+    """What the runtime gives `start_follow` (D8): the first reply, the message it answered, and who may speak up."""
+
+    session: SessionContext
+    first_id: str
+    first_name: str
+    first_message_id: str
+    first_text: str
+    message: str                                    # the user's message both replies answer
+    candidates: list[str]
+    cast: list[CharacterView] = []
+    turn_index: int = 0
+    base_faces: dict[str, str] = {}
+    manual: bool = False
+    turns_since: dict[str, int | None] = {}
+    started_at: datetime                            # the first reply's stream end (doc 11 S5)
+
+
+FollowOutcome = Literal["jev", "none", "below_floor", "late", "fallback", "cancelled"]
+
+
+class FollowPlan(Frozen):
+    """The follow plan's answer (G2): a second speaker or none, and the rows either way."""
+
+    seed: str
+    second: str | None
+    outcome: FollowOutcome
+    who: WhoPick | None = None
+    faces: dict[str, PlannedFace] = {}
+    face_rows: dict[str, dict[str, Any]] = {}
+    shared_rows: list[dict[str, Any]] = []
+    calls: list[dict[str, Any]] = []
+    graph_path: list[str] = []
+    state_tokens: int = 0
+
+    def rows_for_first(self) -> list[dict[str, Any]]:
+        """No second reply: the rows go on the first reply's trace (W1), every emotion row `not_used`."""
+        return [*self.shared_rows, *({**r, "result": "not_used"} for r in self.face_rows.values())]
+
+    def for_speaker(self, cid: str, *, answered: str) -> TurnPlan:
+        rows = list(self.shared_rows)
+        for other, row in self.face_rows.items():
+            rows.append(row if other == cid else {**row, "result": "not_used"})
+        return TurnPlan(seed=self.seed, kind="reply", branch="quick", emotion=self.faces.get(cid), rows=rows,
+                        calls=list(self.calls), graph_path=list(self.graph_path), state_tokens=self.state_tokens,
+                        cue="second", answered=answered)
 
 
 class ListenerView(Frozen):

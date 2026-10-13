@@ -61,6 +61,12 @@ class Options:
     repeat: bool = False
     set: str | None = None                # decisions: one dataset folder (e.g. `judges`, persona-context D27)
     seed_dir: str | None = None           # a seed folder to run against instead of the repo's (a config experiment)
+    force: bool = False                   # M10 watch-history: overwrite a committed history
+    mode: str | None = None               # M10 freerun: watch | group
+    runs: int | None = None               # M10 freerun: how many scenes or sessions
+    turns: int | None = None              # M10 freerun --mode watch: turns per scene
+    messages: int | None = None           # M10 freerun --mode group: user lines per session
+    part: str | None = None               # M10 latency: follow | watch (None: M9's 1:1 part)
 
 
 @dataclass
@@ -191,6 +197,11 @@ class Runner:
             self.out(f"horizon: unknown suite {opts.suite!r} (have: {', '.join(sorted(suites.SUITES))})")
             return 2
         test_mode = self.base.test_mode
+        refusal = getattr(suite, "refuse", None)
+        why = refusal(opts) if refusal is not None else None
+        if why:   # checked before the plan, the prompt and any call (M10 watch-history)
+            self.out(why)
+            return 2
         if opts.suite in PAID_ONLY and test_mode:
             self.out(f"horizon: `{opts.suite}` makes paid calls and refuses to run in test mode")
             return 2

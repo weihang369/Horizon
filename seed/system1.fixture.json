@@ -20,6 +20,40 @@
         "result": "used",
         "action": "shown"
       },
+      "emotion_line": {
+        "purpose": "turn_plan",
+        "id": "emotion_line",
+        "version": 2,
+        "label": "emotion",
+        "p": 0.72,
+        "confidence": 0.72,
+        "compared": [
+          {
+            "name": "confidence",
+            "value": 0.72,
+            "threshold": 0.2
+          }
+        ],
+        "result": "used",
+        "action": "shown"
+      },
+      "emotion_opening": {
+        "purpose": "turn_plan",
+        "id": "emotion_opening",
+        "version": 2,
+        "label": "emotion",
+        "p": 0.72,
+        "confidence": 0.72,
+        "compared": [
+          {
+            "name": "confidence",
+            "value": 0.72,
+            "threshold": 0.2
+          }
+        ],
+        "result": "used",
+        "action": "shown"
+      },
       "emotion_reply": {
         "purpose": "turn_plan",
         "id": "emotion_reply",
@@ -49,13 +83,97 @@
       "route": {
         "purpose": "route",
         "id": "route",
-        "version": 2,
+        "version": 3,
         "label": "who replies?",
         "p": 0.72,
         "confidence": 0.72,
         "compared": [],
         "result": "used",
         "action": "answers first"
+      },
+      "talk_finished": {
+        "purpose": "turn_plan",
+        "id": "talk_finished",
+        "version": 2,
+        "label": "is the talk finished?",
+        "p": 0.72,
+        "compared": [
+          {
+            "name": "t_end",
+            "value": 0.72,
+            "threshold": 0.5
+          }
+        ],
+        "result": "used",
+        "action": "no steer"
+      },
+      "who_first": {
+        "purpose": "turn_plan",
+        "id": "who_first",
+        "version": 2,
+        "label": "who answers first?",
+        "p": 0.72,
+        "confidence": 0.72,
+        "compared": [
+          {
+            "name": "confidence",
+            "value": 0.72,
+            "threshold": 0.2
+          }
+        ],
+        "result": "used",
+        "action": "answers first"
+      },
+      "who_next": {
+        "purpose": "turn_plan",
+        "id": "who_next",
+        "version": 2,
+        "label": "who speaks next?",
+        "p": 0.72,
+        "confidence": 0.72,
+        "compared": [
+          {
+            "name": "confidence",
+            "value": 0.72,
+            "threshold": 0.2
+          }
+        ],
+        "result": "used",
+        "action": "speaks next"
+      },
+      "who_scene": {
+        "purpose": "turn_plan",
+        "id": "who_scene",
+        "version": 2,
+        "label": "who speaks next?",
+        "p": 0.72,
+        "confidence": 0.72,
+        "compared": [
+          {
+            "name": "confidence",
+            "value": 0.72,
+            "threshold": 0.2
+          }
+        ],
+        "result": "used",
+        "action": "speaks next"
+      },
+      "who_second": {
+        "purpose": "follow_plan",
+        "id": "who_second",
+        "version": 2,
+        "label": "who speaks up now?",
+        "p": 0.72,
+        "confidence": 0.72,
+        "compared": [
+          {
+            "name": "confidence",
+            "value": 0.72,
+            "threshold": 0.3
+          }
+        ],
+        "result": "used",
+        "action": "speaks second"
       }
     }
   }

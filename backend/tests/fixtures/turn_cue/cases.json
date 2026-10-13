@@ -1,0 +1,11 @@
+{
+  "note": "Doc 07 G3 (group-watch D10): the turn cue's one sentence, shared by persona.py's turn_cue_sentence() and personaPrompt.ts's turnCueSentence(). null = no sentence.",
+  "cases": [
+    {"cue": "second", "answered": "Hana", "sentence": "Hana has just answered. Don't repeat them; add your own angle, or answer Hana directly."},
+    {"cue": "second", "answered": "Amara", "sentence": "Amara has just answered. Don't repeat them; add your own angle, or answer Amara directly."},
+    {"cue": "next", "answered": null, "sentence": "Nobody asked you directly; say something that moves the talk on. You may answer anyone."},
+    {"cue": "steer", "answered": null, "sentence": "This thread has run its course. Take the scene somewhere new that still fits the premise."},
+    {"cue": null, "answered": null, "sentence": null},
+    {"cue": "unknown", "answered": null, "sentence": null}
+  ]
+}

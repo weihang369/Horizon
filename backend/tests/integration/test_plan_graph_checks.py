@@ -132,3 +132,81 @@ async def test_check2_a_cancelled_run_leaves_nothing(during: str) -> None:
     else:
         assert jev.outcomes == ["on_time"] and 0 < len(streamed) < 100
     print(f"\ncheck 2 ({during}): cancelled, settled, nothing busy; decision outcomes {jev.outcomes}")
+
+
+# ── M10 (group-watch task 2.5; design D4): check 1's settling, repeated for the cast plan ──
+async def _hundred_cast_plans() -> tuple[list[Any], dict[str, int], list[str | None]]:
+    from horizon.ai.agent.planner import JevTurnPlanner
+    from tests.unit.test_cast_plan import CastDeps, choice, faces, request
+    from tests.unit.test_planner import Jev
+
+    clock = FrozenClock(calendar_for("Asia/Kuala_Lumpur"), T0)
+    out: list[Any] = []
+    outcomes: list[str | None] = []
+    for delay in _delays():
+        jev = Jev(clock, {"who_first": choice("chr_b", 0.8, chr_b=0.7, chr_a=0.2, chr_c=0.1), **faces()}, delay)
+        planner = JevTurnPlanner(CastDeps(Decider(jev, TIMEOUTS, clock=clock, spawn=clock.activity.spawn)))
+        task = clock.activity.spawn("plan", planner.plan_cast(request(clock)))
+        await asyncio.sleep(0)
+        await clock.advance(1100)
+        plan = await task
+        assert plan is not None
+        out.append(plan.model_dump(mode="json"))
+        outcomes += jev.outcomes
+    await clock.activity.settle()
+    return out, clock.activity.busy, outcomes
+
+
+async def test_check1_cast_plans_settle_on_the_virtual_clock_and_repeat() -> None:
+    first, busy1, outcomes1 = await _hundred_cast_plans()
+    second, busy2, outcomes2 = await _hundred_cast_plans()
+    assert first == second and outcomes1 == outcomes2 and busy1 == {} and busy2 == {}
+    late = sum(1 for p in first if p["who"]["source"] == "late")
+    print(f"\nM10 cast plan settling: 100 runs × 2 settled; {late} fell back at the deadline; outcomes "
+          f"{ {o: outcomes1.count(o) for o in set(outcomes1)} }")
+    assert late == 30 and outcomes1.count("late") == 30 and outcomes1.count("on_time") == 70
+
+
+# ── M10 (group-watch task 4.6; design D4): check 1's settling, repeated for the follow plan ──
+async def _hundred_follow_plans() -> tuple[list[Any], dict[str, int], list[str | None]]:
+    """Jev answers 0.1 … 1.0 s after the stream's end, and every tenth answer is parked and released only after the
+    deadline (turn.end = stream end + 30 ms, then + 400 ms): runs 5 … 10 of each ten land late."""
+    from datetime import timedelta
+
+    from horizon.ai.agent.planner import JevTurnPlanner
+    from tests.unit.test_cast_plan import CastDeps, choice
+    from tests.unit.test_follow_plan import faces, request
+    from tests.unit.test_planner import Jev
+
+    clock = FrozenClock(calendar_for("Asia/Kuala_Lumpur"), T0)
+    out: list[Any] = []
+    outcomes: list[str | None] = []
+    for i, delay in enumerate(_delays()):
+        parked = i % 10 == 9
+        jev = Jev(clock, {"who_second": choice("chr_c", 0.8, chr_c=0.8, none=0.2), **faces()}, None if parked else delay)
+        planner = JevTurnPlanner(CastDeps(Decider(jev, TIMEOUTS, clock=clock, spawn=clock.activity.spawn)))
+        req = request(clock)
+        handle = planner.start_follow(req)
+        assert handle is not None
+        task = clock.activity.spawn("follow", handle.by(req.started_at + timedelta(milliseconds=430)))
+        await asyncio.sleep(0)
+        await clock.advance(1100)
+        if parked:
+            jev.release.set()
+        plan = await task
+        out.append(plan.model_dump(mode="json"))
+        await clock.activity.settle()
+        outcomes += jev.outcomes
+    await clock.activity.settle()
+    return out, clock.activity.busy, outcomes
+
+
+async def test_check1_follow_plans_settle_on_the_virtual_clock_and_repeat() -> None:
+    first, busy1, outcomes1 = await _hundred_follow_plans()
+    second, busy2, outcomes2 = await _hundred_follow_plans()
+    assert first == second and outcomes1 == outcomes2 and busy1 == {} and busy2 == {}
+    late = sum(1 for p in first if p["outcome"] == "late")
+    picked = sum(1 for p in first if p["second"] is not None)
+    print(f"\nM10 follow plan settling: 100 runs × 2 settled; {picked} picked, {late} late (no second reply); "
+          f"outcomes { {o: outcomes1.count(o) for o in set(outcomes1)} }")
+    assert picked == 40 and late == 60 and outcomes1.count("late") == 60 and outcomes1.count("on_time") == 40

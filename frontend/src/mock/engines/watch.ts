@@ -5,7 +5,7 @@ import { chatCostUsd } from "../../domain/cost";
 import { pickSceneLine } from "../banks";
 import { runSpeakers } from "./group";
 import type { EngineHost, LiveSession } from "./host";
-import { asleepNote, clearLive, enqueue, isAsleep, speakThen, systemNote, userMessage } from "./host";
+import { asleepNote, clearLive, enqueue, isAsleep, speakThen, supersede, systemNote, userMessage } from "./host";
 
 const cfgOf = (live: LiveSession) => live.state.session.config as WatchConfig;
 const stateOf = (live: LiveSession): WatchState =>
@@ -124,9 +124,10 @@ export function direct(h: EngineHost, sid: string, text: string): void {
 export function stepIn(h: EngineHost, sid: string, text: string): void {
   const live = h.live(sid);
   if (!live.held) pause(h, sid);
+  const epoch = supersede(live); // G5: earlier unannounced replies never announce
   h.emit(sid, { type: "message", payload: { message: userMessage(h, sid, text) } });
   const cast = live.state.session.participants.filter((p) => !p.mutedByUser && !isAsleep(h, p.characterId)).map((p) => p.characterId);
-  runSpeakers(h, sid, h.rng(`${sid}:stepin:${live.turn}`).shuffle(cast).slice(0, 2), text);
+  runSpeakers(h, sid, h.rng(`${sid}:stepin:${live.turn}`).shuffle(cast).slice(0, 2), text, { epoch });
 }
 
 export function extendWatch(h: EngineHost, sid: string, turns = 10): void {
@@ -142,7 +143,8 @@ export function summarise(h: EngineHost, sid: string): void {
   clearLive(live, { keepCurrentTurn: true });
   const names = live.state.session.participants.map((p) => h.db.characters[p.characterId]?.profile.name.split(" ")[0]).filter(Boolean);
   enqueue(live, (done) => h.after(sid, 1200, () => {
-    h.charge(sid, "summary", chatCostUsd({ tokensIn: 5200, tokensCached: 3000, tokensOut: 260 }, h.pricing.chat, h.period()));
+    // M10 (group-watch D19, D21): the canned recap's simulated call has the backend's purpose, `episode_summary`
+    h.charge(sid, "summary", chatCostUsd({ tokensIn: 5200, tokensCached: 3000, tokensOut: 260 }, h.pricing.chat, h.period()), "episode_summary");
     h.emit(sid, { type: "message", payload: { message: systemNote(h, sid, `Episode summary: ${names.join(", ")} spent the scene on "${cfgOf(live).premise}". ${stateOf(live).turnsTaken} turns, no one fully got their way, and everyone will remember it differently.`, "summary") } });
     done();
   }));

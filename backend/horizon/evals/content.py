@@ -147,11 +147,19 @@ class Summary:
     name = "summary"
 
     def plan(self, opts: Options, prices: Any, *, paid: bool) -> Plan:
-        items = take(jsonl(SUMMARY_ITEMS), opts)
+        from horizon.evals.watch_suites import recap_items
+
+        items = [] if opts.set == "recaps" else take(jsonl(SUMMARY_ITEMS), opts)
         per = estimate_chat(prices, prefix_tokens=0, warm=False, other_in=900, expected_out_tokens=250,
                             period="off_peak") + 7 * judge_estimate(prices, "judge_summary_fact", {
                                 "quoted_lines": "x" * 2400, "quoted_fact": "x" * 60, "quoted_summary": "x" * 600})
-        return Plan(items=items, estimate_usd=len(items) * per, expected_s=len(items) * 8.0, paid=paid)
+        # M10 (group-watch D23): the 10 episode recaps from the committed watch histories (not in a limited run)
+        recaps = [] if opts.limit or opts.set == "rolling" else recap_items()
+        per_recap = estimate_chat(prices, prefix_tokens=0, warm=False, other_in=6000, expected_out_tokens=200,
+                                  period="off_peak") + 3 * judge_estimate(prices, "judge_summary_unsupported", {
+                                      "quoted_lines": "x" * 9000, "quoted_previous": "none", "quoted_summary": "x" * 700})
+        return Plan(items=[*items, *recaps], estimate_usd=len(items) * per + len(recaps) * per_recap,
+                    expected_s=len(items) * 8.0 + len(recaps) * 12.0, paid=paid)
 
     async def run(self, env: RunEnv, plan: Plan) -> Result:
         from horizon.ai.contexts import SessionContext, WorldView
@@ -164,7 +172,8 @@ class Summary:
             purpose, canned = load_canned("rolling-summaries")
             rt.fake.set_canned(purpose, canned)
         summariser = NaiveSummariser(rt.ai.deps)
-        for it in plan.items:
+        recaps = [it for it in plan.items if str(it.get("id", "")).startswith("recap-")]
+        for it in [it for it in plan.items if it not in recaps]:
             if await env.over_budget():
                 res.status = "incomplete"
                 break
@@ -186,8 +195,19 @@ class Summary:
             row["unsupported_p"] = await judge(env, "judge_summary_unsupported", {
                 "quoted_lines": joined, "quoted_previous": it.get("previous") or "none", "quoted_summary": text})
             res.rows.append(row)
-        test = [r for r in res.rows if r["split"] == "test"] or res.rows
-        res.summary += [f"## Summary ({len(res.rows)} item(s); figures on the test split, {len(test)})",
+        if recaps:   # M10 (D23): the episode recaps, every failure printed
+            from horizon.evals.watch_suites import run_recaps
+
+            if rt.fake is not None:
+                from horizon.gateway.fake import load_canned
+                purpose, canned = load_canned("episode-recaps")
+                rt.fake.set_canned(purpose, canned)
+            await run_recaps(env, recaps, res)
+        rolling = [r for r in res.rows if "within_cap" in r]
+        if not rolling:
+            return res
+        test = [r for r in rolling if r["split"] == "test"] or rolling
+        res.summary += [f"## Summary ({len(rolling)} item(s); figures on the test split, {len(test)})",
                         f"- within 600 tokens: {sum(r['within_cap'] for r in test)}/{len(test)}; not empty: "
                         f"{sum(r['not_empty'] for r in test)}/{len(test)}",
                         rate_line("planted fact kept", "judge_summary_fact",

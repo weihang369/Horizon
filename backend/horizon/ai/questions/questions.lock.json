@@ -3,6 +3,14 @@
     "sha256": "4254cbce73e698f114959f899b3d5272165ab7ea6e64ac80f9777dca278a9970",
     "version": 2
   },
+  "emotion_line": {
+    "sha256": "f4c24112cd1a421d96bf29eaaf320c8aa1b533d8d550f9326f778f4b177e65d7",
+    "version": 2
+  },
+  "emotion_opening": {
+    "sha256": "2179fb21130b7b69514dfae667691ec2fd272c060970ecc7ea8acb293fe75e57",
+    "version": 2
+  },
   "emotion_reply": {
     "sha256": "ef1e3ae7a13cfa28c81df0d62999b7d7d8c788143f2d93fdac3d2871c3f9bdea",
     "version": 2
@@ -76,7 +84,27 @@
     "version": 2
   },
   "route": {
-    "sha256": "c110d28f6e4c1e25f935efe948237604c431192f90a975fca5cf922ee7e273b9",
+    "sha256": "db97fefdc49293af9ff2d56e8f421e7e96473f6c22bbc9e26d231be6ce7abd61",
+    "version": 3
+  },
+  "talk_finished": {
+    "sha256": "e975f6a341c1dc834c60b7c585c8d7ebc4e46a19eb6ebe595524617f23f3b01c",
+    "version": 2
+  },
+  "who_first": {
+    "sha256": "0601f2ba8882bff56e7fc92a92fb6bfb0e3935a9504b16d1a7ddc54e77013182",
+    "version": 2
+  },
+  "who_next": {
+    "sha256": "a06d2fdbe967152aa6b46739c19a36017f22d9d868d2dd1bd50ae66dbcbbb1b8",
+    "version": 2
+  },
+  "who_scene": {
+    "sha256": "00e146bea81b300249579dde15810a19aad91b02003e00f61cc7d3c9c576b14e",
+    "version": 2
+  },
+  "who_second": {
+    "sha256": "274d40c41f03bcdecca246c461ae8983ad88fc2d8eae59c33f11cecf9290e741",
     "version": 2
   }
 }

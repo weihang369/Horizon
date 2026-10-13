@@ -186,6 +186,9 @@ $0.
      speaker and watch have no `none` (doc 07 G1, G4, G6);
    - emotion: keep the current face;
    - debate member: invalid, so the fallback applies.
+
+   *Built in M10 (OpenSpec `group-watch` D6, D7): the bank's `none` switch; `route` v3 (no `none` unless someone is
+   mentioned), `who_first`, `who_next` and `who_scene` are asked with no `none`; `who_second` keeps it.*
 6. **Keep the state small and relevant,** because accuracy drops as irrelevant content grows. Pass only what a question
    needs, with named fields.
 7. **No maths, counting or dates for Jev.** Do them in code and pass the results in as labels.
@@ -226,6 +229,11 @@ probabilities for Insight.
   by a short Jev request (the **follow plan**, 400 ms): who, if anyone, speaks up now, plus each candidate's gates and
   emotion, so the second character can answer the first. Late, failed or unsure means no second reply. If both go
   deep, they reuse one query embedding per user message (D-100).
+  *Built in M10 (`group-watch` D3–D5, D8, D11): group and watch turns get their call 1 from the cast plan
+  (`TurnPlanner.plan_cast`: who speaks plus every candidate's face, one `turn_plan` request) and the second slot from
+  the follow plan (`start_follow`, purpose `follow_plan`), which replaces the second-replier re-plan. Everyone's order
+  is the cast plan's probabilities, and every Everyone reply uses that one call's faces. The gates arrive with M12; until
+  then a planned group or watch turn is quick (no retrieval, D18).*
 - **Size check.** The `Decider` checks the whole request (state + all questions) against the real limit of the
   OpenRouter endpoint, as well as state + the longest question. Check 4 finds that limit.
 - **Confidence floors** apply to every choice and score answer. A noul has no confidence, so its probability is used
@@ -529,7 +537,7 @@ None of the backend rows changes the HTTP contract unless marked.
 | Change | Kind | Why | Task |
 |---|---|---|---|
 | A **`TurnPlanner` port** (the turn plan graph), the `agent` profile value, and a scripted twin with fixtures so the mock parity tests still pass. **Built in M9** (`turn-plan-emotion` D3–D5): the port, the graph and `TurnContext.plan`; the scripted twin lands with the System 1 fixture rows | backend | A4, A6, A12 | 5 |
-| **Every turn entry point calls the planner:** 1:1 send, regenerate, group auto, Everyone, nudge (random today), watch turns and step-in (random today), debate turns and Ask, the opening prefetch. **1:1 built in M9** (send, regenerate, a generated greeting; D6) | backend | A4 | 5–8 |
+| **Every turn entry point calls the planner:** 1:1 send, regenerate, group auto, Everyone, nudge (random today), watch turns and step-in (random today), debate turns and Ask, the opening prefetch. **1:1 built in M9** (send, regenerate, a generated greeting; D6). **Group and watch built in M10** (`group-watch` D5, D11, D13: group Auto, mentions, Everyone and policy `everyone`, Next speaker, watch turns, the Auto opening, Step in and the Everyone prefetch) | backend | A4 | 5–8 |
 | **New `Decider` purposes** `turn_plan` and `deep_check`, with config timeouts and ledger purposes; the `Decider` also checks the total request size | backend | A4, A6 | 5 |
 | **Embed only on deep turns**, replacing D-97's embedding at send; keep the 400 ms wait; debate and watch turns may embed; doc 10 K4 adds the rewrite when needed | backend | A6 | 10 |
 | The reply receives the Jev emotion: show it at preflight, mood line in the dynamic tail, strip the tag. **Built in M9** for `agent` 1:1 (the face on the first chunk, `turn.start` and `emotion` in one write, D14) | backend | A5 | 6 |
@@ -537,7 +545,7 @@ None of the backend rows changes the HTTP contract unless marked.
 | ~~The citation check runs on interrupted replies~~ (withdrawn by doc 10 K10: evaluation only in v1); the after-reply work runs after `turn.end` | backend | A13 | 6, 10 |
 | Debate: Jev picks the member among those who haven't spoken in the phase; openings stay fixed; the trace uses existing `routing` fields (doc 08 V2), so **no contract change** | backend | A14 | 8 |
 | `DebateHost.narration()` returns a fixed string; it becomes async and calls DeepSeek, shown whole, not streamed (doc 08 V6) | backend | A7 | 8 |
-| ~~Watch **"the talk is finished"** needs an outcome~~ **Withdrawn by doc 07 G7:** a finished thread steers the next line somewhere new; no early end, so no contract change | backend | A4 | 7 |
+| ~~Watch **"the talk is finished"** needs an outcome~~ **Withdrawn by doc 07 G7:** a finished thread steers the next line somewhere new; no early end, so no contract change. *Built in M10 (`group-watch` D14): the steer, with no contract change* | backend | A4 | 7 |
 | **A "System 1" section in `TurnTrace`, and its Insight UI** (**approved in principle by the user, 2026-10-09**; its fields and UI are designed at task 13, once tasks 7–11 have added their Jev questions; the live face-and-words check turns on with it, doc 06 E7). **Designed in [doc 13](13-wrap-up.md) W1 (contract rev 1.4, built in M7) and W2** | **contract + UI** | A12 | 13 |
 | **Docs to amend:** a new decision-log entry replacing D-97's rule; resolve OQ-AI-07 (Jev first; a failure keeps the previous face, doc 04 P7); note in D-92 that the planner is a runtime-called port; update the 05-ai-seams §3 purpose table and §2.2 port catalogue. **Applied with [doc 13](13-wrap-up.md) (§4; D-97 → D-100)** | docs | all | 13 |
 

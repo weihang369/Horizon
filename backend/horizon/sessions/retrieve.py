@@ -55,6 +55,8 @@ def start_query(actor: SessionActor, text: str, message_id: str, cast: list[str]
     actor.pending_query = None
     if not text.strip() or rt.keys.status() != "set" or not getattr(rt.ai.knowledge_retriever(True), "uses_vectors", False):
         return
+    if getattr(rt.ai.planner(True), "decides_retrieval", False):
+        return   # M10 (group-watch D18; D-100): the plan decides retrieval, so no embedding before its gate (M12)
     world_id = str(actor.session["worldId"])
 
     async def embed() -> dict[str, list[float]]:

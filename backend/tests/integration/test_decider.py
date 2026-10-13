@@ -153,7 +153,7 @@ async def test_context_must_match_purpose(api: Api) -> None:
 def test_timeouts_from_config() -> None:
     t = gateway_config().timeouts
     assert (t.for_decision("route"), t.for_decision("turn_plan"), t.for_decision("follow_plan"),
-            t.for_decision("debate_plan")) == (0.4, 0.7, 0.4, 0.5)
+            t.for_decision("debate_plan")) == (0.4, 0.7, 0.483, 0.5)   # follow_plan: G2's rule (task 10.7)
     assert (t.for_decision("guardrail"), t.for_decision("guardrail_prompt"), t.for_decision("reaction"),
             t.for_decision("face_check")) == (0.7, 1.5, 1.5, 1.5)
     assert t.for_decision("importance") == 3.0  # the default

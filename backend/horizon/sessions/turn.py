@@ -22,8 +22,9 @@ import asyncio
 import contextlib
 import logging
 import re
-from collections.abc import Mapping
+from collections.abc import Awaitable, Callable, Mapping
 from dataclasses import dataclass, field
+from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
 from horizon.ai.contexts import DebateMeta, LineHint, PlanRequest, SessionContext, TurnContext, TurnPlan
@@ -78,12 +79,21 @@ class TurnSpec:
     reactions: bool = True
     debate: DebateMeta | None = None
     direction_note: str | None = None
+    plan: TurnPlan | None = None                    # M10 (group-watch D3): a plan the mode already made for this turn
+    # M10 (doc 07 G2, doc 11 S5; group-watch D8): called at the stream's end of a reply that streamed without an error;
+    # it starts the follow plan and returns its handle (or None), which the outcome carries back to the mode
+    follow: Callable[[TurnInfo], Awaitable[Any]] | None = None
+    # M10 (doc 07 G5; group-watch D12): the reply epoch the job captured when queued; `turn.next` is written only while
+    # it is current (None: never superseded, e.g. a watch scene turn)
+    epoch: int | None = None
 
 
 @dataclass
 class TurnOutcome:
     message_id: str | None
-    status: str          # complete | interrupted | error | refused | asleep | missing
+    status: str          # complete | interrupted | error | refused | asleep | missing | superseded
+    follow: Any = None   # M10: the follow plan's handle, started at the stream's end (D8)
+    ended_at: datetime | None = None   # when turn.end was appended: the follow plan's deadline counts from here
 
 
 def deep_merge(base: dict[str, Any], patch: Mapping[str, Any]) -> dict[str, Any]:
@@ -159,16 +169,29 @@ class TurnRunner:
         if spec.skipped:
             nxt["skipped"] = spec.skipped
         # M9 (turn-plan-emotion D6): an `agent` 1:1 turn is planned from here, so Jev overlaps the thinking delay
+        # M10 (group-watch D3): a group or watch turn arrives with its plan already made by the mode
         planning = (rt.spawn(f"plan:{actor.sid}", self._plan(actor, spec, row, mid))
-                    if prefetch is None and not spec.line.verbatim and actor.mode_name == "one_on_one" else None)
+                    if prefetch is None and not spec.line.verbatim and actor.mode_name == "one_on_one"
+                    and spec.plan is None else None)
         try:
-            await actor.emit({"type": "turn.next", "payload": nxt})
+            if spec.epoch is None:
+                await actor.emit({"type": "turn.next", "payload": nxt})
+            elif not await actor.emit_checked({"type": "turn.next", "payload": nxt},
+                                              lambda _s: spec.epoch == actor.reply_epoch):
+                info.closed = True   # G5: superseded before it announced; nothing was written
+                if prefetch is not None:
+                    await prefetch.discard()
+                return TurnOutcome(None, "superseded")
             await rt.clock.sleep(rt.runtime_cfg.timing.thinking_ms / 1000)
             await actor.emit({"type": "turn.thinking", "payload": {"characterId": spec.speaker}})
             if prefetch is not None:
                 info.ctx = prefetch.ctx
+                pplan = prefetch.ctx.plan
+                if pplan is not None:   # M10 (D11): a prefetched Everyone reply carries its plan's rows and call
+                    spec.calls.extend(pplan.calls)
+                    spec.system1 = system1_section(spec.system1, pplan.rows, seed=pplan.seed)
                 return await self._stream(actor, spec, info, prefetch.ctx, t0, started_iso, prefetch=prefetch)
-            plan: TurnPlan | None = None
+            plan: TurnPlan | None = spec.plan
             if planning is not None:
                 sctx, plan = await vclock.join(planning)   # the worker's token is given up while Jev thinks
             else:
@@ -334,9 +357,24 @@ class TurnRunner:
         elif not info.started:
             info.closed = True
             return TurnOutcome(None, "refused")
-        await self.finish(actor, info, spec, ctx, status=status, err=err, trace=trace, citations=citations,
-                          first_token_ms=first_token_ms, t0=t0, started_iso=started_iso, engine=engine)
-        return TurnOutcome(info.message_id, status)
+        follow: Any = None
+        if spec.follow is not None and err is None:   # S5: the follow plan starts at the stream's end
+            try:
+                follow = await spec.follow(info)
+            except Exception:
+                log.exception("the follow plan could not start after %s (no second reply)", info.message_id)
+        try:
+            status = await self.finish(actor, info, spec, ctx, status=status, err=err, trace=trace,
+                                       citations=citations, first_token_ms=first_token_ms, t0=t0,
+                                       started_iso=started_iso, engine=engine)
+        except BaseException:
+            if follow is not None:
+                follow.cancel()
+            raise
+        if follow is not None and status != "complete":   # a blocked reply (M14's check) has no follow plan
+            follow.cancel()
+            follow = None
+        return TurnOutcome(info.message_id, status, follow=follow, ended_at=rt.clock.now())
 
     @staticmethod
     def _emotion_event(info: TurnInfo, ev: Emotion) -> Wire:
@@ -360,7 +398,8 @@ class TurnRunner:
     async def finish(self, actor: SessionActor, info: TurnInfo, spec: TurnSpec, ctx: TurnContext | None, *, status: str,
                      err: ProviderError | None, trace: dict[str, Any], citations: list[dict[str, Any]] | None,
                      first_token_ms: float | None, t0: float, started_iso: str, engine: Any = None,
-                     interrupted_by: str | None = None) -> None:
+                     interrupted_by: str | None = None) -> str:
+        """Close the turn; returns its final status (a blocked reply ends `error`)."""
         rt = self.rt
         await rt.gateway.drain_background()   # a cut or stopped stream records its estimate in a shielded task
         mid = info.message_id
@@ -444,8 +483,9 @@ class TurnRunner:
                                          for q in base["questions"]]
                 full["system1"] = system1_section(base, info.system1, seed=base.get("seed"))
             events.append({"type": "insight", "payload": {"messageId": mid, "trace": full}})
+        label = getattr(engine, "prompt_version_for", None)   # M10 D10: the label follows this turn's bytes
         meta = TraceMeta(engine=getattr(engine, "name", None), engine_version=getattr(engine, "version", None),
-                         prompt_version=getattr(engine, "prompt_version", None))
+                         prompt_version=label(info.ctx) if label is not None else getattr(engine, "prompt_version", None))
         if scrub:
             await actor.emit_with(events, self._scrubber(actor, info))
         else:
@@ -468,6 +508,7 @@ class TurnRunner:
             self._remember(actor, info, ctx)
         if status != "error":   # M8 (docs/ai/05 X2, X3): fold the window after the reply, never before it
             check_summary(actor)
+        return status
 
     def _scrubber(self, actor: SessionActor, info: TurnInfo) -> Any:
         """D13: the blocked reply's text leaves the stored token events and the message (same transaction)."""

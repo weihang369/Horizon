@@ -26,6 +26,13 @@ describe("PromptPreview", () => {
     expect(out).toContain("The user is Kai.");
   });
 
+  it("shows the group and watch cue note below the message, with the example from the shared table (D10)", () => {
+    const out = decode(html(amara.profile));
+    const example = "Hana has just answered. Don't repeat them; add your own angle, or answer Hana directly.";
+    expect(out).toContain(`In group and watch, a reply's cue may add one sentence about whom the character is answering, e.g. “${example}”`);
+    expect(out.indexOf("e.g. “Hana")).toBeGreaterThan(out.indexOf("</pre>"));
+  });
+
   it("updates with a long backstory: the cut and the new count", () => {
     const long = Array.from({ length: 400 }, (_, i) => `Night ${i} on the ward changed her mind again.`).join(" ");
     const before = decode(html(amara.profile));

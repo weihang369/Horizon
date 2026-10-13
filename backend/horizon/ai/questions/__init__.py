@@ -122,6 +122,13 @@ def shuffled(keys: Sequence[str], seed: str) -> list[str]:
     return sorted(keys, key=lambda k: hashlib.sha256(f"{seed}:{k}".encode()).hexdigest())
 
 
+def option_label(value: Any, limit: int) -> str:
+    """A value filled into a dynamic option follows the `label` rule (doc 11 S6; group-watch design D7): one line, at
+    most `limit` characters. Longer user-written text belongs in a `quoted_*` state field; here it is cut."""
+    text = " ".join(str(value).split())
+    return text if len(text) <= limit else text[:limit - 1].rstrip() + "…"
+
+
 def static_option(o: Mapping[str, Any]) -> str:
     text = str(o["what"]).strip()
     if o.get("not_for"):
@@ -148,10 +155,12 @@ class QuestionBank:
             raise BankError(f"unknown question {qid!r}") from e
 
     def question(self, qid: str, *, values: Sequence[Mapping[str, Any]] = (), exclude: Sequence[str] = (),
-                 seed: str | None = None, about: str | None = None, name: str | None = None) -> Question:
+                 seed: str | None = None, about: str | None = None, name: str | None = None,
+                 none: bool = True) -> Question:
         """Compile an entry into the Decider's question. `values` fills a dynamic choice's options (each needs a
         `key`); `exclude` drops option keys (a mentioned speaker); `seed` orders options when the entry shuffles;
-        `name` fills the instructions' `{name}`."""
+        `name` fills the instructions' `{name}`; `none=False` leaves out a dynamic choice's `none` option (M10,
+        group-watch design D6: the first slot has no `none` when nobody is mentioned)."""
         e = self.get(qid)
         instructions = f"{self._named(e, name).rstrip()} {self.sentence}"
         meta = QMeta(id=e.id, version=e.version, label=e.label, purpose=e.purpose, deadline=e.deadline,
@@ -166,12 +175,14 @@ class QuestionBank:
             for k, o in opts["items"].items():
                 options[str(k)] = static_option(o)
         else:
+            limit = int(self.conventions.get("labelMaxChars", 40))
             for v in values:
                 key = str(v["key"])
                 if key in exclude:
                     continue
-                options[key] = str(opts["describe"]).format_map({k: ("" if x is None else x) for k, x in v.items()})
-            if opts.get("none"):
+                filled = {k: (x if k == "key" else option_label("" if x is None else x, limit)) for k, x in v.items()}
+                options[key] = str(opts["describe"]).format_map(filled)
+            if opts.get("none") and none:
                 options["none"] = str(opts["none"])
         if e.shuffle:
             if seed is None:

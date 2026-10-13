@@ -82,6 +82,7 @@ class ModeState:
     skip_to_closing: bool = False
     extend: bool = False
     debate_prefetch: dict[int, Any] = field(default_factory=dict)   # opening-round prefetches by order index
+    plan_ahead: tuple[Any, Any] | None = None     # M10 watch (D15): (fingerprint, task) of the next turn's plan
 
 
 class SessionActor:
@@ -107,6 +108,11 @@ class SessionActor:
         self._named: dict[str, set[asyncio.Task[Any]]] = {}   # M9 D20: the same tasks by name, for cancel_background
         self.prefetches: set[Any] = set()   # sessions.prefetch.Prefetch runs ahead of their slot (design D5)
         self.epoch = 0
+        # M10 (doc 07 G5; group-watch D12): a user message cancels the previous message's unannounced replies. Each
+        # group or watch reply job captures `reply_epoch` when queued; `supersede()` bumps it and resolves the future
+        # that cooperative waits (the follow plan's, the turn gap) race.
+        self.reply_epoch = 0
+        self._superseded: asyncio.Future[None] = asyncio.get_running_loop().create_future()
         self.stopped = False
         self.summary: Any = None   # M8: sessions.summary.SummaryTask, made on first use (docs/ai/05 X2, X3)
 
@@ -195,8 +201,42 @@ class SessionActor:
                     env.fut.set_result(result)
 
     # ── the turn queue ──
-    def enqueue(self, job: Job, *, front: bool = False) -> None:
+    def enqueue(self, job: Job, *, front: bool = False, epoch: int | None = None) -> None:
+        """Queue `job`. With `epoch` (G5), the worker skips it if a user message superseded that epoch meanwhile."""
+        if epoch is not None:
+            inner = job
+
+            async def job() -> None:
+                if epoch == self.reply_epoch:
+                    await inner()
+
         self.turns.put(job, front=front)
+
+    # ── G5: the reply epoch (group-watch D12) ──
+    async def supersede(self) -> int:
+        """A user message arrives (a group send, a watch Step in), before it is appended: under the write lock, bump
+        the epoch and resolve the superseded future, so no older reply can announce after this point (its `turn.next`
+        check runs under the same lock). Then discard unreleased prefetches (D-77: their spend and drain stand); queued
+        older jobs are skipped by the worker. Returns the new epoch."""
+        async with self.write_lock:
+            self.reply_epoch += 1
+            old, self._superseded = self._superseded, asyncio.get_running_loop().create_future()
+            old.set_result(None)
+        for pf in list(self.prefetches):
+            if not pf.released:
+                await pf.discard()
+        return self.reply_epoch
+
+    def superseded(self, epoch: int) -> asyncio.Future[None]:
+        """A future that is done once `epoch` has been superseded (at once if it already is)."""
+        if epoch == self.reply_epoch:
+            return self._superseded
+        done: asyncio.Future[None] = asyncio.get_running_loop().create_future()
+        done.set_result(None)
+        return done
+
+    def current_epoch(self, epoch: int | None) -> bool:
+        return epoch is None or epoch == self.reply_epoch
 
     async def _run_turns(self) -> None:
         while True:
@@ -224,11 +264,11 @@ class SessionActor:
         self._timers.add(task)
         task.add_done_callback(self._timers.discard)
 
-    def background(self, name: str, coro: Awaitable[Any]) -> asyncio.Task[None]:
-        """Work that never delays the next speaker (listener reactions, the rolling summary). Stop cancels it; idle
-        release waits for it."""
-        async def run() -> None:
-            await coro
+    def background(self, name: str, coro: Awaitable[Any]) -> asyncio.Task[Any]:
+        """Work that never delays the next speaker (listener reactions, the rolling summary, a watch's plan made
+        ahead). Stop cancels it; idle release waits for it. The task's result is the coroutine's."""
+        async def run() -> Any:
+            return await coro
 
         task = self.rt.spawn(f"{name}:{self.sid}", run())
         self._background.add(task)
@@ -257,9 +297,11 @@ class SessionActor:
     async def clear(self, *, keep_current: bool = False) -> None:
         """Cancel pending work (the mock's `clearLive`). `keep_current` lets a turn already streaming finish.
         Prefetched turns are discarded either way (D-77: their spend and drain stand). Listener reactions and face
-        checks are dropped (M9 D20; E5, W2); the rolling summary and the memory writer keep running."""
+        checks are dropped (M9 D20; E5, W2), and so is a watch's plan made ahead (M10 D15); the rolling summary and the
+        memory writer keep running."""
         self.turns.clear()
-        self.cancel_background("reactions", "face_check")
+        self.cancel_background("reactions", "face_check", "plan_ahead")
+        self.mode.plan_ahead = None
         for x in list(self._timers):
             x.cancel()
         self._timers.clear()

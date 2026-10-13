@@ -488,7 +488,8 @@ the drafter's `world` argument are internal.
 
 - ~~The mood line's wording and the emotion evaluation (task 6).~~ Resolved by doc 06 (E4, E8).
 - ~~Group and watch turn-taking, including when a character should stay quiet or address another character (task 7).~~
-  Resolved by doc 07 (G1–G7; the turn cue's sentence is G3).
+  Resolved by doc 07 (G1–G7; the turn cue's sentence is G3). *Built in M10 (`group-watch` D10): the sentence in the
+  tail's cue line, `agent-3` / `agent-4` labels, the TS twin and the "View as prompt" note.*
 - ~~Debate argument, host and verdict prompts (task 8).~~ Resolved by doc 08 V4, V6 and V8.
 - ~~"Last time we talked about …" greetings and memory in the prompt (task 9).~~ Resolved by doc 09 M8 and M10.
 - ~~The content-rating, advisory and "are you an AI?" wording (task 11).~~ Resolved by doc 11 S2.

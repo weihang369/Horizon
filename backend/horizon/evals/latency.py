@@ -37,6 +37,8 @@ NFR_P50_MS, NFR_P90_MS = 2000.0, 4000.0
 API = "/api/v1"
 TURN_WATCHDOG_S = 90.0
 STACKS = "stacks.txt"
+FOLLOW_N = 50          # M10 (D9): follow requests from the second-slot items' dev split
+WATCH_SCENES, WATCH_TURNS = 3, 20   # M10 (D23): scenes × turns at Fast pace
 
 
 def lines(n: int) -> list[str]:
@@ -79,6 +81,18 @@ class Latency:
     name = "latency"
 
     def plan(self, opts: Options, prices: Any, *, paid: bool) -> Plan:
+        if opts.part == "follow":   # M10 (group-watch D9): 50 follow requests, Jev only
+            n = opts.limit or FOLLOW_N
+            per = decision_estimate(prices, {"quoted_latest": "x" * 4500}, {"q": {"instructions": "x" * 2400}})
+            return Plan(items=[{"part": "follow", "n": n}], estimate_usd=n * per, expected_s=n * 1.5, paid=paid)
+        if opts.part == "watch":    # M10 (D23): 3 scenes × 20 turns at Fast pace under agent
+            scenes, turns_each = (1, opts.limit) if opts.limit else (WATCH_SCENES, WATCH_TURNS)
+            reply = estimate_chat(prices, prefix_tokens=4000, warm=True, other_in=400, expected_out_tokens=120,
+                                  period="off_peak")
+            plan_call = decision_estimate(prices, {"quoted_latest": "x" * 2400}, {"q": {"instructions": "x" * 1200}})
+            n = scenes * turns_each
+            return Plan(items=[{"part": "watch", "scene": k, "turns": turns_each} for k in range(scenes)],
+                        estimate_usd=n * (reply + 1.2 * plan_call), expected_s=n * 6.0, paid=paid)
         turns = plan_turns(opts.limit or DEFAULT_N)[opts.start:]
         first_words = estimate_chat(prices, prefix_tokens=4000, warm=True, other_in=300, expected_out_tokens=8,
                                     period="off_peak")
@@ -95,6 +109,15 @@ class Latency:
         if env.opts.profile != "agent" and not env.opts.limit:
             res.status = "failed"
             res.summary.append("## Latency: runs `agent` only (D31); pass --profile agent")
+            return res
+        if env.opts.part == "follow":
+            from horizon.evals.watch_suites import follow_report, follow_timing
+
+            res.rows = await follow_timing(env, plan.items[0]["n"])
+            res.summary += follow_report(res.rows)
+            return res
+        if env.opts.part == "watch":
+            await self.watch_part(env, plan, res)
             return res
         app = create_app(env.rt.cfg, runtime=env.rt)
         sessions: dict[str, str] = {}
@@ -159,6 +182,54 @@ class Latency:
                 "to_token_ms": None if token is None else float(ms_from_iso(token["at"])) - sent_ms,
                 "source": None if emotion is None else emotion["payload"].get("source"),
                 "status": msg["status"] if msg else None}
+
+    async def watch_part(self, env: RunEnv, plan: Plan, res: Result) -> None:
+        """M10 (D23): turn.end → the next turn.next and first token over scenes at Fast pace, with how the plan made
+        ahead fared; the 90 s per-turn watchdog bounds each scene."""
+        from sqlalchemy import select
+
+        from horizon.db import tables as t
+        from horizon.evals.watch_suites import FREERUN_PREMISES, drive_watch, watch_timing_report
+
+        gaps_next: list[float] = []
+        gaps_token: list[float] = []
+        plans: list[tuple[float, str]] = []
+        turns = fallbacks = 0
+        for item in plan.items:
+            if await env.over_budget():
+                res.status = "incomplete"
+                break
+            world, cast, premise = FREERUN_PREMISES[item["scene"] % len(FREERUN_PREMISES)]
+            script = {"id": f"latency-watch-{item['scene']}", "world": world, "cast": cast, "premise": premise,
+                      "turns": item["turns"], "paceMs": 500}
+            work = drive_watch(env, script)
+            try:
+                _, _, sid, msgs = await (work if isinstance(env.rt.clock, FrozenClock)
+                                         else asyncio.wait_for(work, TURN_WATCHDOG_S * item["turns"]))
+            except TimeoutError:
+                res.status = "incomplete"
+                res.summary.append("## Latency (watch): a scene did not settle within its watchdog")
+                break
+            evs = await self.events(env, sid)
+            ends = [e for e in evs if e["type"] == "turn.end"]
+            for end in ends:
+                nxt = next((e for e in evs if e["type"] == "turn.next" and e["seq"] > end["seq"]), None)
+                tok = next((e for e in evs if e["type"] == "token" and e["seq"] > end["seq"]), None)
+                if nxt is not None:
+                    gaps_next.append(float(ms_from_iso(nxt["at"]) - ms_from_iso(end["at"])))
+                if tok is not None:
+                    gaps_token.append(float(ms_from_iso(tok["at"]) - ms_from_iso(end["at"])))
+            replies = [m for m in msgs if m["author"]["type"] == "character"]
+            turns += len(replies)
+            fallbacks += sum(1 for m in replies for c in ((m.get("trace") or {}).get("calls") or [])
+                             if c.get("purpose") == "turn_plan" and c.get("fallback"))
+            U = t.usage_records.c
+            async with env.rt.db.read() as conn:
+                plans += [(float(r[0] or 0), str(r[1])) for r in (await conn.execute(
+                    select(U.latency_ms, U.finish_reason).where(U.purpose == "turn_plan").where(U.session_id == sid)
+                    .order_by(U.at))).all()]
+            res.rows.append({"scene": item["scene"], "session": sid, "turns": len(replies)})
+        res.summary += watch_timing_report(gaps_next, gaps_token, plans, turns, fallbacks)
 
     @staticmethod
     async def guarded(env: RunEnv, work: Any) -> Any:

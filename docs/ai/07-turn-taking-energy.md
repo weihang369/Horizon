@@ -128,6 +128,11 @@ first reply streams … turn.end                          else Jev call 1: who s
 - **Which profiles:** see G13. `naive` gets the same fix (no `none` with no mention, and a single eligible character
   answers), because silence is a bug, not part of the yardstick's design.
 
+*Built in M10 (OpenSpec `group-watch` D5, D6): `route` v3 asks with no `none` unless someone is mentioned, in `naive`
+and `agent`; one eligible character answers with no call; when every mentioned character is asleep, each gets the asleep
+note and nobody else answers, in every profile and in the mock. Under `agent` the first slot is the cast plan's
+`who_first`, asked with every candidate's face in one `turn_plan` request.*
+
 **Rejected:**
 - **keeping `none` in the first slot:** it allows silence after a user's message (finding 1);
 - **asking a separate "should anyone answer?" noul:** a user message in a group always deserves an answer, so the
@@ -178,6 +183,17 @@ first reply streams … turn.end                          else Jev call 1: who s
   end, alongside the output check, the 400 ms deadline after `turn.end` leaves it about 800 ms, so the deadline stays
   400 and no exception is needed.*
 
+*Built in M10 (D8, D9): the follow plan starts at the first reply's stream end (S5's position) and its deadline is
+`turn.end` + `timeoutsMs.decision.follow_plan`, replacing the turn gap. A pick speaks second at once; `none`, unsure,
+late or failed gives no second reply, and the rows go on the first reply's trace (W1). **D9's finding:** with no output
+check before M14, `finish()` reaches `turn.end` a few milliseconds after the stream ends (measured F: p50 12.3 ms, p90
+13.3 ms on Windows, [m10.md](checks/m10.md)), so the follow plan really has about 412 ms, not the ~800 ms A2's note
+assumed. **The timing check (task 10.7) failed:** all 50 follow plans missed `turn.end` + 400 ms, because Jev alone
+took p50 443 ms / p90 495 ms (our state assembly: p90 0.5 ms; no slow spells). By G2's rule Jev stays and
+`timeoutsMs.decision.follow_plan` is now the measured p90 of `S + L − F`, **483 ms**, with a recorded NFR-02 exception
+for the optional `turn.next`. In the group free runs 6 of 36 follow plans were still late at 483 ms (17 %). Measured
+again after M14 (D9); [m10.md](checks/m10.md) 10.7.*
+
 **Rejected:**
 - **choosing the second replier up front (today's way):** never late, but blind to the first reply (finding 2); it
   is not a fallback for a slow Jev either (the user's rule above);
@@ -207,6 +223,11 @@ Doc 04 left "when a character should address another character" to this task.
 - **It shows in the context X-ray** as part of the cue, so Insight already shows why a character answered someone.
 - **"Them", not "him" or "her":** the sentence never guesses a character's pronouns.
 
+*Built in M10 (D10): `TURN_CUE_SENTENCES` in `ai/agent/persona.py` and its twin `turnCueSentence()`, both checked
+against `backend/tests/fixtures/turn_cue/cases.json`. The sentence is its own line after naive's cue and any director's
+note, outside the cached prefix. A request with the sentence is labelled `agent-3` (`agent-4` with the mood line on);
+every other request keeps `agent-1` / `agent-2`. "View as prompt" shows a fixed note with the second-reply example.*
+
 **Rejected:**
 - **no sentence:** the second replier's most common failure is restating the first reply in other words;
 - **a rule in the cached mode block ("answer other characters when it makes sense"):** it applies to every turn,
@@ -227,6 +248,11 @@ Doc 04 left "when a character should address another character" to this task.
   - Prefetch (up to 2 ahead) is unchanged; it starts once the order is known.
 - **Step in** (watch) follows the group Auto rule, as MULTI-11 already says: G1 for the first reply (someone always
   answers), G2 for an optional second. It replaces today's 2 random characters.
+
+*Built in M10 (D11): under `agent`, Next speaker asks `who_next` (minus the last speaker) with cue `next`; Everyone and
+policy `everyone` make one cast plan whose probabilities set the order (asleep characters at the end, in cast order) and
+whose faces serve every reply, prefetched or not; Step in asks `who_first` with the watch state, then the follow plan.
+`naive` and `scripted` keep their picks.*
 
 **Rejected:**
 - **random Next speaker (today):** it ignores who was addressed or has something to say;
@@ -249,6 +275,11 @@ Doc 04 left "when a character should address another character" to this task.
 - Pending listener reactions are dropped too (doc 06 E5 already does this at a user message).
 - Then routing runs on the new message as usual.
 - **Shared runtime, so every profile** (G13), and the mock's group engine, with a parity fixture.
+
+*Built in M10 (D12): a reply epoch on the session's actor, bumped under the write lock by each group send and Step in;
+`turn.next` is written through `emit_checked` against it, so a turn either announced before the new message or never
+announces. Superseded jobs end at their next boundary (before a speaker, in the follow plan's wait, in the gap), never
+by cancelling the worker. The mock has the same epoch, and a portable contract test checks both clients.*
 
 **Rejected:**
 - **keeping the queue (today):** the second character answers an older message after the user moved on (finding 3);
@@ -277,6 +308,10 @@ Doc 04 left "when a character should address another character" to this task.
 - **Fallbacks as G1** (least recently spoken; unsure → least recent of Jev's top 2), the last speaker still excluded.
 - **Which profiles:** `agent` only (G13). `scripted` and `naive` keep round-robin (`WatchDirector.order`).
 
+*Built in M10 (D13): `sessions/watch_plan.py`: the nudge, then the guard computed from the stored log (the scene starts
+at the premise; `2n` lines; silent longest; `forcedBy: "round_order"` with its reason), then `who_scene` without the
+last speaker; the "Auto" opening asks `who_scene` with `emotion_opening`. Round-robin stays for `naive` and `scripted`.*
+
 **Rejected:**
 - **Jev alone:** a quiet character can vanish from a 20-turn scene;
 - **round-robin with Jev only for gates and emotion:** scenes feel mechanical, and nobody reacts to being addressed;
@@ -301,6 +336,14 @@ Doc 04 left "when a character should address another character" to this task.
 - **In Insight:** the steer sentence shows in the context X-ray's cue (G3). The noul's probability joins the System 1
   section ([doc 13](13-wrap-up.md) W1).
 
+*Built in M10 (D14): `talk_finished` is asked on every planned scene turn after the opening; a yes at or above `t_end`
+steers unless one of the last 2 character messages' stored traces steered or a director's note is active. **`t_end` =
+0.5** (task 10.4: the lowest grid value with dev precision ≥ 0.90; English test precision 1.00, recall 0.91).
+**Finding (10.9):** in the watch free runs the steer fired on 7 of 91 turns, and none of the 7 steered lines took the
+scene somewhere new: 3 were exits, 2 handed the decision to the user, 2 reframed toward a decision. The sentence reads
+to the model as "the talk is over"; the user chose to reword it in M11, measured with the "starts something new?"
+noul. Details in [m10.md](checks/m10.md) 10.9.*
+
 **Rejected:**
 - **ending the episode early:** needs a new paused reason (a contract change) and cuts scenes the user set a length
   for;
@@ -324,6 +367,12 @@ Doc 04 left "when a character should address another character" to this task.
   whenever the user reacts with a director's note, which is exactly when they are paying attention.
 - **Which profiles:** wherever a `TurnPlanner` runs, so `agent` (G13).
 
+*Built in M10 (D15): the next plan starts right after `turn.end` as `actor.background("plan_ahead")`, waiting for Jev
+until the turn is due, stored with D15's fingerprint. A different fingerprint at turn time discards it and plans again
+with the 700 ms deadline; `clear()` and a Pause cancel it. **Measured (task 10.8, 62 Fast-pace turns):** the plan
+made ahead was used on 54 turns, redone on 6 and fell back on 2; `turn.end` to the next first token p50 1,711 ms /
+p90 1,920 ms, inside NFR-02's 3 s.*
+
 **Rejected:**
 - **planning after the pace (today's order):** the gap becomes turn gap + pace + Jev + first token;
 - **a list of invalidating events:** easy to miss one (the review found four missing); the fingerprint can't miss a
@@ -342,6 +391,8 @@ Doc 04 left "when a character should address another character" to this task.
 - **Orchestration never drains energy** (ENG-02): the follow plan, watch's plan-ahead and the episode recap go to the
   daily cap only.
 - A debate side whose members are all exhausted stays task 8's question (resolved by doc 08 V5: the debate pauses).
+
+*Pinned in M10 (D3): no call-1 state holds `energy` (a test checks every state kind); built in M8 (doc 05 X9).*
 
 **Rejected:**
 - **tired characters skip optional extra turns** (the first answer): it breaks ENG-04 AC4, and it saved only about 4
@@ -369,6 +420,22 @@ Doc 04 left "when a character should address another character" to this task.
   session, as today.
 - **Cost:** at most ≈ 10,000 tokens in (mostly uncached, a different prefix) + ≈ 250 out ≈ **$0.0017 off-peak**,
   $0.0034 at peak; a usual 20-turn scene is about a third of that. Only when the user presses the button.
+
+*Built in M10 (D19): `NaiveSummariser.episode` is one non-streamed DeepSeek call (`episode-1`, purpose
+`episode_summary`, the whole call limited to `timeoutsMs.episode` = 30 s on the runtime clock), cut to 120 words at a
+sentence end; any non-cap failure posts the system note, never a canned recap. `scripted` and the mock keep the canned
+text, billed as `episode_summary`.*
+
+*Amended in M10 (task 10.6, the user's choice of 2026-10-13): the paid run wrote all 10 recaps of English scenes in
+other languages (Chinese, Japanese, one Romanian): DeepSeek read "in the language the characters used" as the
+language of the characters' names. The instruction is now `episode-2`: "…past tense, third person, in the language
+most of the lines use; keep names as they are. End with one sentence on where things stand…" (the rolling summary's
+wording). The 120-word cut and its check now count each Chinese or Japanese character as a word, with CJK punctuation
+parting words; before, a whole Chinese recap counted as one or two "words" and was never cut. A second run on `episode-2` still drifted once
+(Italian) and guessed a pronoun for Kai, so the user chose `episode-3`: the system prompt adds "Refer to people by name;
+don't guess pronouns the lines don't give.", and the request ends with "The lines are in {language}. Write the recap
+in {language}." (persona-context D35's pattern; the language most lines use, by `detect_language` per line, unsure
+counting as English).*
 
 **Rejected:**
 - **bullet points:** a scene reads better as a short story recap, and bullets drop the "who did what to whom";
@@ -412,6 +479,19 @@ Doc 04 left "when a character should address another character" to this task.
   `naive` replies cached; the recaps are cached by request hash like every DeepSeek reply). Doc 08 V11 later makes
   these $0.80 / $1.18 / $0.55, and doc 09 M12 $0.98 / $1.48 / $0.68, and doc 10 K14 $1.01 / $1.53 / $0.71, and doc 11 S10 $1.08 / $1.65 / $0.78.
 
+*Built in M10 (D23): `who_first` (60) and `who_second` (90, 58 `none`) from the group transcripts and written lines,
+`talk_finished` (120, 65 yes), the 40-item watch emotion slice, and the code for `who_scene` (60, from the committed
+watch histories); balanced accuracy and exact one-sided paired tests in `horizon/evals/who_policies.py`;
+`watch-history`, `freerun`, the recaps in `summary`, and `latency --part follow|watch`. **Found (phase 10,
+[m10.md](checks/m10.md)):** `who_first` floor 0.2, English test 16/16, +0.69 over least recently spoken (pass);
+`who_second` floor 0.3, balanced accuracy 0.86 with 7 % needless second replies, +0.66 (pass); `who_scene` floor 0.2,
+grown to 100 items by this rule (its first test interval straddled 0.80), English test 20/35 = 0.57, +0.09 over
+round-robin, p 0.19 (**fails**: Jev picks whoever has been silent longest on 75 of 100 items, reading `last_spoke` in
+the cast cards as a fairness cue; the user chose to fix it in M11 with fresh items); `who_next` takes 0.2, untested.
+The recaps meet "at most 1 failure" on `episode-3` (G10's note). Free-run signals: the guard fired on 0 % of watch
+turns, the busiest speaker had 25 % (watch) and 55 % (group), second replies came on 11 % of group sends (inside
+10–60 %).*
+
 **Rejected:**
 - **one accuracy number for both group slots:** the second slot's right answer is often `none`, so a mixed number
   hides "never adds anyone";
@@ -435,6 +515,10 @@ Doc 04 left "when a character should address another character" to this task.
 
 A group send with two replies costs about **$0.0001 more in Jev** than today's single route call; that rounds to
 nothing next to the replies themselves.
+
+*Built in M10 (D20): `follow_plan` (decision) and `episode_summary` (summary) are ledger purposes; `timeoutsMs.episode`
+= 30,000 is new in `seed/pricing.json` and its mirror; G6's 2 rounds and G7's 1-in-3 cap are code constants citing their
+decisions.*
 
 ### G13. Which profile does what
 

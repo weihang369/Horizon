@@ -27,6 +27,16 @@ from horizon.domain.pricing import count_tokens
 
 PROMPT_VERSION = "agent-1"
 PROMPT_VERSION_MOOD = "agent-2"   # M9 (D16): the same prompt plus the mood line, sent only while `persona.moodLine` is on (D40)
+# M10 (group-watch D10): the label follows the bytes sent. A G3 sentence in the cue: agent-3, or agent-4 with the mood line.
+PROMPT_VERSION_CUE = "agent-3"
+PROMPT_VERSION_CUE_MOOD = "agent-4"
+# Doc 07 G3's table, verbatim and English always. The TS twin is `turnCueSentence()` in domain/personaPrompt.ts; both
+# read backend/tests/fixtures/turn_cue/cases.json.
+TURN_CUE_SENTENCES = {
+    "second": "{first} has just answered. Don't repeat them; add your own angle, or answer {first} directly.",
+    "next": "Nobody asked you directly; say something that moves the talk on. You may answer anyone.",
+    "steer": "This thread has run its course. Take the scene somewhere new that still fits the premise.",
+}
 CARD_MAX = 1500
 FIELD_CAPS = {"backstory": 600, "personality.summary": 200, "speakingStyle.summary": 200, "goals": 200}
 ITEM_CAP = 60
@@ -401,6 +411,14 @@ MOOD_PHRASES = {
     "thinking": "thoughtful, turning something over",
     "embarrassed": "a little embarrassed",
 }
+
+
+def turn_cue_sentence(cue: str | None, answered: str | None = None) -> str | None:
+    """G3's one sentence for a turn's cue (D10): `second` names the first replier; None for any other turn."""
+    sentence = TURN_CUE_SENTENCES.get(cue or "")
+    if sentence is None:
+        return None
+    return sentence.format(first=answered or "Someone")
 
 
 def mood_line(face: str, manual: bool = False) -> str | None:

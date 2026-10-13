@@ -1,0 +1,12 @@
+{
+ "id": "meridian_long",
+ "note": "group-watch D23: about 100 turns with three characters, past one rolling-summary drop, so the recaps see a ~10,000-token input and the summary. Generated once with naive through the store (task 10.1).",
+ "world": "wld_seedMeridian",
+ "cast": ["chr_seedAmara", "chr_seedMei", "chr_seedVictor"],
+ "premise": "The night before the council votes on closing the night clinic, Amara, Mei and Victor are snowed in at the town hall with the draft budget and a broken heater.",
+ "language": "en",
+ "turns": 100,
+ "paceMs": 500,
+ "notes": {"35": "A nurse calls Amara: the clinic had its busiest night of the year.",
+           "70": "Victor finds a clause in the old charter that nobody has read in decades."}
+}

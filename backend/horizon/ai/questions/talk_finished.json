@@ -1,0 +1,26 @@
+{
+  "id": "talk_finished",
+  "version": 2,
+  "purpose": "turn_plan",
+  "type": "noul",
+  "label": "is the talk finished?",
+  "instructions": "Has the current thread of this scene run its course, with the characters repeating themselves, going in circles or saying goodbye?",
+  "true": "Yes: the thread has run its course; the lines repeat, go in circles or keep saying goodbye.",
+  "false": "No: the thread is still moving, with new points, questions or events.",
+  "state": {
+    "mode": "label",
+    "quoted_user": "quoted",
+    "quoted_cast": "quoted",
+    "quoted_documents": "quoted",
+    "quoted_latest": "quoted",
+    "quoted_recent": "quoted",
+    "quoted_premise": "quoted",
+    "quoted_summary": "quoted"
+  },
+  "deadline": "turn_plan",
+  "floor": null,
+  "thresholds": {
+    "t_end": 0.5
+  },
+  "fallback": "no_steer"
+}

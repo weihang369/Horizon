@@ -55,15 +55,23 @@ class Prefetch:
         if row is None or row["deleted_at"] is not None:
             return None
         sctx = await session_context(rt, actor)
-        from horizon.sessions.retrieve import retrieve
+        plan = spec.plan
+        if plan is not None and plan.branch is not None:
+            # M10 (group-watch D11, D18): an Everyone reply's plan came from the run's one cast plan; it decided
+            # retrieval, so none runs here (the runner adds the plan's rows and call when the prefetch is released)
+            ctx = TurnContext(session=sctx, speaker=character_view(row), message_id=None, prompt=spec.prompt,
+                              line=spec.line, turn_index=actor.mode.turn, max_tokens=reply_cap(rt, sctx, plan),
+                              direction_note=spec.direction_note, debate=spec.debate, plan=plan)
+        else:
+            from horizon.sessions.retrieve import retrieve
 
-        got = await retrieve(rt, actor, sctx, spec.speaker, spec.prompt)   # M5: retrieved at prefetch time (D10)
-        spec.calls.extend(got.calls)
-        ctx = TurnContext(session=sctx, speaker=character_view(row), message_id=None, prompt=spec.prompt, line=spec.line,
-                          turn_index=actor.mode.turn,
-                          max_tokens=reply_cap(rt, sctx),   # after retrieval, as for a live turn (design D14)
-                          direction_note=spec.direction_note, debate=spec.debate, knowledge=got.knowledge,
-                          memory=got.memory, query=got.query)
+            got = await retrieve(rt, actor, sctx, spec.speaker, spec.prompt)   # M5: retrieved at prefetch time (D10)
+            spec.calls.extend(got.calls)
+            ctx = TurnContext(session=sctx, speaker=character_view(row), message_id=None, prompt=spec.prompt,
+                              line=spec.line, turn_index=actor.mode.turn,
+                              max_tokens=reply_cap(rt, sctx),   # after retrieval, as for a live turn (design D14)
+                              direction_note=spec.direction_note, debate=spec.debate, knowledge=got.knowledge,
+                              memory=got.memory, query=got.query)
         actor.mode.turn += 1
         engine = rt.ai.turn(rt.keys.status() == "set")
         pf = cls(actor, spec, ctx, new_id("msg"), engine)

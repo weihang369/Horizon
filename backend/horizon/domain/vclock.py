@@ -291,6 +291,32 @@ async def wait_at_most(clock: Any, task: asyncio.Future[Any], seconds: float) ->
     return task.done()
 
 
+async def wait_unless(task: asyncio.Future[Any], stop: asyncio.Future[Any]) -> bool:
+    """Wait for `task` until `stop` is done, with the caller's token given up; True if `task` finished (M10, doc 07
+    G5: a superseded reply's waits end at once). Neither future is cancelled here: the caller decides."""
+    if task.done():
+        return True
+    if stop.done():
+        return False
+    fut: asyncio.Future[None] = asyncio.get_running_loop().create_future()
+    holder = current_holder()
+
+    def wake(_t: Any = None) -> None:
+        if not fut.done():
+            if holder is not None:
+                holder.hold()
+            fut.set_result(None)
+
+    task.add_done_callback(wake)
+    stop.add_done_callback(wake)
+    try:
+        await wait_handoff(fut, holder)
+    finally:
+        task.remove_done_callback(wake)
+        stop.remove_done_callback(wake)
+    return task.done()
+
+
 async def to_the_end[R](coro: Coroutine[Any, Any, R], name: str) -> tuple[asyncio.Task[R], bool]:
     """Run `coro` to its end whatever cancels reach the caller meanwhile, any number of them. Returns the finished task
     and whether the caller was cancelled while it ran: the caller re-raises that cancel once its own cleanup is done.

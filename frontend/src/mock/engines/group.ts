@@ -3,7 +3,7 @@
 import type { GroupConfig } from "../../contract/types";
 import { decisionCostUsd, ROUTE_DECISION_TOKENS } from "../../domain/cost";
 import type { EngineHost } from "./host";
-import { asleepNote, enqueue, isAsleep, speakThen, userMessage } from "./host";
+import { asleepNote, enqueue, isAsleep, isCurrent, speakThen, supersede, userMessage } from "./host";
 import { routeSystem1 } from "../system1";
 
 type Skip = { characterId: string; reason: "exhausted" | "muted" | "archived" };
@@ -14,12 +14,13 @@ function policyOf(h: EngineHost, sid: string): GroupConfig["responderPolicy"] {
 }
 
 /** Run a list of speakers sequentially as one queued task. */
-export function runSpeakers(h: EngineHost, sid: string, speakers: string[], prompt: string, opts: { forced?: Set<string>; forcedBy?: "mention" | "nudge"; candidates?: { characterId: string; p: number }[]; skipped?: Skip[] } = {}): void {
+export function runSpeakers(h: EngineHost, sid: string, speakers: string[], prompt: string, opts: { forced?: Set<string>; forcedBy?: "mention" | "nudge"; candidates?: { characterId: string; p: number }[]; skipped?: Skip[]; epoch?: number } = {}): void {
   const live = h.live(sid);
+  const epoch = opts.epoch ?? live.replyEpoch ?? 0;
   enqueue(live, (done) => {
     let i = 0;
     const next = () => {
-      if (i >= speakers.length) return done();
+      if (i >= speakers.length || !isCurrent(live, epoch)) return done(); // G5: superseded, the rest never speak
       const cid = speakers[i++];
       if (isAsleep(h, cid)) {
         asleepNote(h, sid, cid, !opts.forced?.has(cid));
@@ -36,10 +37,11 @@ export function runSpeakers(h: EngineHost, sid: string, speakers: string[], prom
           : undefined,
         // rev 1.4: the route row, shared by every reply this routing decision started (the router's top pick).
         system1: opts.candidates?.length ? routeSystem1(opts.candidates[0].characterId) : undefined,
+        epoch,
       }, () => next());
     };
     next();
-  });
+  }, false, epoch);
 }
 
 function pickResponders(h: EngineHost, sid: string, text: string, mentions: string[]): { speakers: string[]; forced: Set<string>; candidates: { characterId: string; p: number }[]; skipped: Skip[] } {
@@ -71,14 +73,24 @@ function pickResponders(h: EngineHost, sid: string, text: string, mentions: stri
 }
 
 export function send(h: EngineHost, sid: string, text: string, mentions: string[] = []): void {
+  const epoch = supersede(h.live(sid)); // G5: the previous message's unannounced replies never announce
   h.emit(sid, { type: "message", payload: { message: userMessage(h, sid, text) } });
+  // M10 (doc 07 G1; group-watch D5): every mentioned character asleep → each gets the asleep note, nobody else answers
+  const live = mentions.filter((m) => h.db.characters[m] && h.live(sid).state.session.participants.some((p) => p.characterId === m));
+  if (live.length && live.every((m) => isAsleep(h, m))) {
+    enqueue(h.live(sid), (done) => {
+      for (const m of live) asleepNote(h, sid, m, false);
+      done();
+    }, false, epoch);
+    return;
+  }
   const r = pickResponders(h, sid, text, mentions);
   // The Jev routing question (TurnTrace.calls "route") is a paid decision call.
   if (r.candidates.length) h.charge(sid, "decision", decisionCostUsd(ROUTE_DECISION_TOKENS, h.pricing.decision));
   if (!r.speakers.length) {
     if (policyOf(h, sid) === "mentioned") return; // the UI shows "Mention someone with @…"
   }
-  runSpeakers(h, sid, r.speakers, text, r);
+  runSpeakers(h, sid, r.speakers, text, { ...r, epoch });
 }
 
 export function everyoneAnswer(h: EngineHost, sid: string): void {

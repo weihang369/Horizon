@@ -28,7 +28,7 @@ export interface ContractHarness {
 export type MakeHarness = () => Promise<ContractHarness>;
 
 /** The backend milestone whose routes a test needs (doc backend/06). The mock supports everything ("all"). */
-export type Milestone = "M1b" | "M2" | "M3" | "M4" | "M5" | "M6" | "M7" | "M8";
+export type Milestone = "M1b" | "M2" | "M3" | "M4" | "M5" | "M6" | "M7" | "M8" | "M10";
 
 /** A valid 16×9 PNG (83 bytes) for the cover upload tests. */
 const TINY_PNG = [
@@ -36,7 +36,7 @@ const TINY_PNG = [
   0, 26, 73, 68, 65, 84, 120, 156, 99, 212, 59, 178, 141, 129, 20, 192, 68, 146, 106, 134, 81, 13, 196, 1, 146, 131, 21, 0, 231,
   232, 1, 186, 121, 203, 221, 186, 0, 0, 0, 0, 73, 69, 78, 68, 174, 66, 96, 130,
 ];
-export const MILESTONES: readonly Milestone[] = ["M1b", "M2", "M3", "M4", "M5", "M6", "M7", "M8"];
+export const MILESTONES: readonly Milestone[] = ["M1b", "M2", "M3", "M4", "M5", "M6", "M7", "M8", "M10"];
 export interface PortableOptions {
   /** The latest milestone this client's backend implements. Later tests are listed as `[pending Mx]`, never silently skipped. */
   supports: Milestone | "all";
@@ -241,6 +241,63 @@ export function runPortableContract(label: string, makeHarness: MakeHarness, opt
       expect(chars(msgs).every((m) => m.author.characterId !== "chr_seedTakeshi")).toBe(true);
       await c.characters.topUpEnergy("chr_seedTakeshi", 500);
       expect((await c.characters.get("chr_seedTakeshi")).energy.current).toBe(500);
+    });
+
+    test("M10", "group: when every mentioned character is asleep, nobody else answers (doc 07 G1)", async () => {
+      const { c, tick, setScenario } = await make({ key: true });
+      await setScenario("character_exhausted");
+      const s = await c.sessions.create({ worldId: "wld_seedSunnyHollow", mode: "group", characterIds: ["chr_seedHana", "chr_seedTakeshi"] });
+      await tick(6000);
+      const before = chars(await c.sessions.messages(s.session.id)).length;
+      await c.chat.send(s.session.id, "Dad, are you awake?", { mentions: ["chr_seedTakeshi"] });
+      await tick(15000);
+      const msgs = await c.sessions.messages(s.session.id);
+      expect(msgs.filter((m) => m.kind === "system_note" && /Takeshi is asleep/.test(m.content))).toHaveLength(1);
+      expect(chars(msgs)).toHaveLength(before);   // Hana doesn't step in for him
+    });
+
+    test("M10", "group: a message sent in the gap supersedes the unannounced second reply (doc 07 G5)", async () => {
+      const { c, tick } = await make({ key: true });
+      const s = await c.sessions.create({ worldId: "wld_seedSunnyHollow", mode: "group", characterIds: ["chr_seedHana", "chr_seedTakeshi", "chr_seedRin"] });
+      const sid = s.session.id;
+      await tick(6000);
+      const start = (await c.sessions.events(sid)).length;
+      await c.chat.send(sid, "What should we cook tonight?");   // scripted Auto: two replies, one after the other
+      for (let i = 0; i < 200; i++) {
+        await tick(50);
+        const evs = (await c.sessions.events(sid)).slice(start);
+        if (evs.some((e) => e.type === "turn.end")) break;     // the first reply is done; the gap has begun
+      }
+      await c.chat.send(sid, "Actually, never mind. Dessert?");
+      await tick(40000);
+      const evs = (await c.sessions.events(sid)).slice(start);
+      const author = (e: SessionEvent) => (e.type === "message" ? (e.payload as { message: Message }).message.author.type : undefined);
+      const users = evs.filter((e) => author(e) === "user").map((e) => e.seq);
+      expect(users).toHaveLength(2);
+      const nexts = evs.filter((e) => e.type === "turn.next");
+      expect(nexts.filter((e) => e.seq < users[1])).toHaveLength(1);   // "A"'s second reply never announced
+      expect(nexts.filter((e) => e.seq > users[1])).toHaveLength(2);   // "B" is answered
+      const types = evs.filter((e) => e.type === "turn.next" || e.type === "turn.end" || e.type === "message").map((e) =>
+        e.type === "message" ? `message:${author(e)}` : e.type);
+      expect(types).toEqual(["message:user", "turn.next", "turn.end", "message:user", "turn.next", "turn.end", "turn.next", "turn.end"]);
+    });
+
+    test("M10", "watch Summarise (scripted): the canned recap and one summary charge (doc 07 G10)", async () => {
+      const { c, tick } = await make({ key: true });
+      const s = await c.sessions.create({ worldId: "wld_seedSunnyHollow", mode: "watch", characterIds: ["chr_seedHana", "chr_seedTakeshi"],
+        config: { premise: "A quiet evening at the bakery.", maxTurns: 10, paceMs: 500, openingSpeaker: "auto" } });
+      const sid = s.session.id;
+      await tick(8000);
+      await c.watch.pause(sid);
+      await tick(15000);
+      const before = (await c.usage.list()).filter((r) => r.sessionId === sid && r.category === "summary").length;
+      await c.watch.summarise(sid);
+      await tick(5000);
+      const recaps = (await c.sessions.messages(sid)).filter((m) => m.kind === "summary");
+      expect(recaps).toHaveLength(1);
+      expect(recaps[0].content.startsWith("Episode summary:")).toBe(true);
+      const after = (await c.usage.list()).filter((r) => r.sessionId === sid && r.category === "summary").length;
+      expect(after - before).toBe(1);
     });
 
     test("M3", "stream cut: error(network) then turn.end(interrupted)", async () => {

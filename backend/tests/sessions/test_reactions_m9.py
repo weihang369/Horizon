@@ -28,7 +28,9 @@ async def group(api: Api) -> str:
 
 
 async def ask_amara(api: Api, sid: str, text: str = "What do you think?", ms: float = 20000) -> None:
-    await command(api, sid, "send", {"text": text, "mentions": [AMARA]})
+    """Amara answers, then Mei. M10: under `agent` a second speaker after one mention comes from the follow plan, so
+    both are mentioned here to keep the order fixed (no follow plan with two mentions, doc 07 G1)."""
+    await command(api, sid, "send", {"text": text, "mentions": [AMARA, MEI]})
     await api.drive(ms)
 
 
@@ -69,6 +71,9 @@ async def test_two_listeners_one_request(api: Api) -> None:
 async def test_confident_reactions_show_with_p_inside_the_window(api: Api) -> None:
     sid = await group(api)
     await fixtures(api, (MEI, "happy", 0.9), (VICTOR, "sad", 0.8))
+    # no second reply, so both stay listeners: the fake's 1/3 now clears floor.second (0.3, task 10.3)
+    assert (await api.post(f"{API}/_test/decider-fixtures", {"set": [{"purpose": "follow_plan", "question": "who_second",
+            "answer": {"choice": "none", "confidence": 0.9, "probabilities": {"none": 0.9}}}]})).status_code == 204
     await command(api, sid, "send", {"text": "We won the grant!", "mentions": [AMARA]})
     await api.drive(300)
     evs = await events(api, sid)
@@ -109,8 +114,8 @@ async def test_late_answer_and_next_speaker_not_delayed(api: Api) -> None:
     sid = await group(api)
     assert api.rt.fake is not None
     n0 = api.rt.fake.counts["decisions"]
-    release = api.rt.fake.park_decision(n0 + 2)                            # route, then Amara's reaction request
-    await command(api, sid, "send", {"text": "We won the grant!", "mentions": [AMARA]})
+    release = api.rt.fake.park_decision(n0 + 2)                            # the plan, then Amara's reaction request
+    await command(api, sid, "send", {"text": "We won the grant!", "mentions": [AMARA, MEI]})
     await api.drive(3000)
     evs = await events(api, sid)
     ends = [e for e in evs if e["type"] == "turn.end"]

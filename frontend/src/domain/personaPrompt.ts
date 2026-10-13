@@ -318,6 +318,19 @@ export function compilePersona(inp: PersonaInput): PersonaPrompt {
   };
 }
 
+// Doc 07 G3 (group-watch D10): the turn cue's one sentence in group and watch, in the tail's cue line, never in system
+// message 1. The twin of persona.py's TURN_CUE_SENTENCES; both pass backend/tests/fixtures/turn_cue/cases.json.
+export const TURN_CUE_SENTENCES: Record<string, string> = {
+  second: "{first} has just answered. Don't repeat them; add your own angle, or answer {first} directly.",
+  next: "Nobody asked you directly; say something that moves the talk on. You may answer anyone.",
+  steer: "This thread has run its course. Take the scene somewhere new that still fits the premise.",
+};
+
+export function turnCueSentence(cue: string | null, answered?: string | null): string | null {
+  const sentence = cue != null && Object.hasOwn(TURN_CUE_SENTENCES, cue) ? TURN_CUE_SENTENCES[cue] : null;
+  return sentence == null ? null : sentence.replaceAll("{first}", answered || "Someone");
+}
+
 // docs/ai/06 E4 (turn-plan-emotion D16): one line in the dynamic tail, never in system message 1. The twin of
 // persona.py's mood_line(); both pass backend/tests/fixtures/mood_line/cases.json.
 export const MOOD_PHRASES: Record<string, string> = {

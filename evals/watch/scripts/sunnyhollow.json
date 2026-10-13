@@ -1,0 +1,11 @@
+{
+ "id": "sunnyhollow",
+ "note": "group-watch D23: about 40 turns with three characters in a second world and premise, so the recaps see two worlds. Generated once with naive through the store (task 10.1).",
+ "world": "wld_seedSunnyHollow",
+ "cast": ["chr_seedHana", "chr_seedRin", "chr_seedTakeshi"],
+ "premise": "The morning of the town's flower festival, Hana's delivery van breaks down, Rin has a deadline at noon, and Takeshi insists on fixing everything to a timetable.",
+ "language": "en",
+ "turns": 40,
+ "paceMs": 500,
+ "notes": {"20": "The festival committee calls: they need twice as many sunflowers by two o'clock."}
+}

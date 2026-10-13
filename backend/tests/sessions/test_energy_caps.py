@@ -36,8 +36,8 @@ async def test_mentioned_character_asleep(api: Api) -> None:
     msgs = await messages(api, sid)
     assert any(m["kind"] == "system_note" and "Takeshi is asleep" in m["content"] for m in msgs)
     assert any(e["type"] == "error" and e["payload"]["code"] == "energy_exhausted" for e in await events(api, sid))
-    assert all(m["author"].get("characterId") != "chr_seedTakeshi" for m in chars(msgs))
-    assert chars(msgs)  # Hana answered
+    # M10 (doc 07 G1; session-modes "Asleep mention"): the user addressed Takeshi, so nobody else answers
+    assert chars(msgs) == []
     r = await api.post(f"{API}/characters/chr_seedTakeshi/energy/top-up", {"points": 500})
     assert r.status_code == 200
     assert (await api.json(f"{API}/characters/chr_seedTakeshi"))["energy"]["current"] == 500

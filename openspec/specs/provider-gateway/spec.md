@@ -73,6 +73,7 @@ The gateway SHALL apply these default timeouts, all overridable by config:
 | Chat, time to first token | 20 s |
 | Images | 180 s |
 | Embeddings | 30 s |
+| Watch episode recap (whole call) | 30 s |
 | Decision `route` | 400 ms |
 | Decision `turn_plan` | 700 ms |
 | Decision `follow_plan` | 400 ms |
@@ -92,6 +93,10 @@ An exceeded timeout SHALL surface as `timeout`.
 #### Scenario: Removed keys
 - **WHEN** the shipped price table is loaded
 - **THEN** it has no `gate`, `rerank` or `emotion` decision timeout and no `fallbackModel`
+
+#### Scenario: Recap limit
+- **WHEN** the shipped price table is loaded
+- **THEN** `timeoutsMs.episode` is 30000, and the MockClient's mirror holds the same value
 
 ### Requirement: Retry only when nothing was charged
 The gateway SHALL retry a call at most once, and only when nothing can have been charged: a connection failure before any response, or a 429/5xx with no body. A call that may have been charged SHALL NOT be retried automatically. That includes a response lost after it was sent.
@@ -260,3 +265,17 @@ A rolling summary call SHALL carry purpose `rolling_summary` in ledger category 
 #### Scenario: Ledger row
 - **WHEN** a naive session's summary call completes
 - **THEN** its ledger row has `category: "summary"`, `purpose: "rolling_summary"`, the session's ID and no message ID
+
+### Requirement: Follow plans and recaps are labelled at the source
+A follow plan SHALL carry purpose `follow_plan` in ledger category `decision`, and a watch recap SHALL carry purpose `episode_summary` in category `summary`. Both SHALL be labelled by the shared purpose factory, so neither drains energy, and both count toward the daily cap.
+
+#### Scenario: Follow-plan row
+- **WHEN** an `agent` group's follow plan is answered
+- **THEN** its ledger row has `category: "decision"`, `purpose: "follow_plan"` and the session's ID, and the call is listed on the trace of the reply it explains
+
+### Requirement: A refused follow plan pauses nothing
+A daily-cap refusal of a `follow_plan` request SHALL publish the cap event without pausing live sessions, as for the after-turn purposes; the next reply's own preflight takes the pause.
+
+#### Scenario: Cap reached at the follow plan
+- **WHEN** the daily cap is reached exactly when a follow plan is requested
+- **THEN** no second reply is made, no `session.paused` event comes from the follow plan, and the next reply's preflight pauses the session

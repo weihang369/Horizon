@@ -25,7 +25,7 @@ from horizon.ai.decider import Choice, ChoiceAnswer, Noul, NoulAnswer, Question,
 from horizon.ai.questions import NAME, bank
 from horizon.domain.clock import FrozenClock
 from horizon.evals import canary as canary_mod
-from horizon.evals import judges, policies
+from horizon.evals import judges, policies, who_policies
 from horizon.evals.judges import JUDGES_SET
 from horizon.evals.metrics import wilson
 from horizon.evals.runner import EVALS_DIR, Options, Plan, Result, RunEnv, decision_estimate
@@ -87,14 +87,22 @@ STUB_NAME = "Amara"   # M9 (design D11): the subject a named entry is compiled a
 
 
 def compile_entry(qid: str, values: list[dict[str, Any]] | None = None, seed: str = "smoke",
-                  name: str | None = None) -> Question:
+                  name: str | None = None, none: bool = True) -> Question:
     """The entry compiled as live; a dynamic choice with no values gets two stub options (the wire check needs ≥ 2),
-    and an entry that names its subject gets the item's `name` (or a stub one)."""
+    and an entry that names its subject gets the item's `name` (or a stub one). `none=False` (M10): the first slot and
+    watch ask with no `none`, as the planner does."""
     e = bank().get(qid)
     dynamic = e.type == "choice" and e.options.get("kind") != "static"
     named = NAME in e.instructions
     return bank().question(qid, values=values or (STUB_VALUES if dynamic else ()), seed=seed,
-                           name=(name or STUB_NAME) if named else None)
+                           name=(name or STUB_NAME) if named else None, none=none)
+
+
+def item_question(item: dict[str, Any], seed: str | None = None) -> Question:
+    """A dataset line's question, compiled exactly as the live code asks it."""
+    it = item["item"]
+    return compile_entry(item["question_id"], it.get("values"), seed=seed or str(it.get("seed") or item["id"]),
+                         name=it.get("name"), none=bool(it.get("none", True)))
 
 
 def reordered(q: Question) -> Question:
@@ -189,7 +197,7 @@ class Decisions:
         items = self._items(opts)
         est = 0.0
         for i in items:
-            q = compile_entry(i["question_id"], i["item"].get("values"), seed=i["id"], name=i["item"].get("name"))
+            q = item_question(i, seed=i["id"])
             asks = 2 if isinstance(q, Choice) else 1   # a noul has no option order to reverse (D27)
             est += asks * decision_estimate(prices, i["item"]["state"], {i["question_id"]: wire_question(q)})
         return Plan(items=items, estimate_usd=est, expected_s=len(items) * 4.0, paid=paid)
@@ -211,8 +219,7 @@ class Decisions:
             if await env.over_budget():
                 res.status = "incomplete"
                 break
-            seed = str(item["item"].get("seed") or item["id"])   # M9 D26: the live seeded order, when stored
-            q = compile_entry(qid, item["item"].get("values"), seed=seed, name=item["item"].get("name"))
+            q = item_question(item)   # M9 D26: the live seeded order, when stored
             row: dict[str, Any] = {"id": item["id"], "question_id": qid, "version": version, "label": item["label"],
                                    "smoke_only": bool(item.get("smoke_only")), "planted": bool(item.get("planted")),
                                    "split": item["split"], "lang": item.get("lang", "en")}
@@ -220,7 +227,8 @@ class Decisions:
                 r = await env.rt.gateway.decide(item["item"]["state"], {qid: wire_question(q)}, call_ctx("eval_judge"))
                 ans = validate(q, r.answers.get(qid))
                 if isinstance(ans, NoulAnswer):
-                    t = float(bank().get(qid).thresholds.get("t", 0.5))
+                    th = bank().get(qid).thresholds   # M10: talk_finished's threshold is `t_end` (re-chosen on dev)
+                    t = float(th.get("t", th.get("t_end", 0.5)))
                     said = "yes" if ans.p >= t else "no"
                     row.update(answer=said, p=ans.p, correct=said == item["label"])
                     total += 1
@@ -280,6 +288,14 @@ class Decisions:
             mine = [r for r in res.rows if isinstance(r["label"], dict) and policies.kind_of(r["question_id"]) == kind]
             if mine and not self.smoke:
                 res.summary += policies.report(mine, kind, fade)
+        if not self.smoke:   # M10 (group-watch D23): who speaks (three parts) and "is the talk finished?"
+            for part in who_policies.PARTS:
+                mine = [r for r in res.rows if r["question_id"] == part and isinstance(r["label"], dict)]
+                if mine:
+                    res.summary += who_policies.who_report(mine, part)
+            talk = [r for r in res.rows if r["question_id"] == "talk_finished"]
+            if talk:
+                res.summary += who_policies.talk_report(talk)
         n_policy = sum(1 for r in res.rows if isinstance(r["label"], dict) and not r.get("invalid"))
         if self.smoke:
             res.summary.append(f"## Decisions (smoke only: {total + n_policy} item(s), never a measurement)")
@@ -395,6 +411,7 @@ class Smoke:
             if r.status != "ok":
                 empty.append(suite.name)
         content_lines += await self.m9(env, plan, empty)
+        content_lines += await self.m10(env, plan, empty)
         res.summary += ["## Smoke (never compared with baselines)",
                         f"- bank: {len(bank().entries)} entr(ies), wire problems: {problems or 'none'}",
                         f"- datasets: {n_lines} line(s) load", *d.summary,
@@ -439,12 +456,91 @@ class Smoke:
         return out
 
 
+    @staticmethod
+    async def m10(env: RunEnv, plan: Plan, empty: list[str]) -> list[str]:
+        """M10 (group-watch 9.10): under `agent`, one planned group send with a follow plan, one planned watch turn
+        (a one-turn free run), one episode recap and one follow-timing request, all at $0 in CI. In test mode Decider
+        fixtures make the first slot and the follow plan pick someone (the fake's 1/n answer is below every floor)
+        and the recap is a canned answer. The run's own profile is restored afterwards."""
+        from horizon.ai.decider import ChoiceAnswer
+        from horizon.ai.profile import ProfileSpec
+        from horizon.evals.latency import Latency
+        from horizon.evals.watch_suites import FreeRun, recap_context, seed_profiles
+
+        rt = env.rt
+        out: list[str] = []
+        before = rt.profile
+        rt.set_profile(ProfileSpec(profile="agent", test_mode=rt.cfg.test_mode))
+        try:
+            if rt.cfg.test_mode:
+                rt.decider_fixtures.set("turn_plan", "who_first", ChoiceAnswer(
+                    "chr_seedAmara", confidence=0.9, probabilities={"chr_seedAmara": 0.9}))
+                rt.decider_fixtures.set("follow_plan", "who_second", ChoiceAnswer(
+                    "chr_seedVictor", confidence=0.9, probabilities={"chr_seedVictor": 0.9}))
+            g = await planned_group_send(env)
+            out.append(f"- planned group send: {g} repl(ies)" + ("" if g == 2 or not rt.cfg.test_mode
+                                                                 else " (expected 2: a first and a second)"))
+            if g == 0 or (rt.cfg.test_mode and g != 2):
+                empty.append("group follow plan")
+            for suite, o in ((FreeRun(), Options("freerun", limit=1, profile="agent", mode="watch")),
+                             (Latency(), Options("latency", limit=1, profile="agent", part="follow"))):
+                sub = RunEnv(rt=rt, opts=o, store=None, run_dir=env.run_dir, max_usd=env.max_usd)
+                r = await suite.run(sub, suite.plan(o, rt.prices, paid=plan.paid))
+                out.append(f"- {suite.name}{f' --part {o.part}' if o.part else ''}: {r.status}, {len(r.rows)} row(s)")
+                if r.status != "ok" or not r.rows:
+                    empty.append(suite.name)
+            if rt.fake is not None:
+                from horizon.gateway.fake import load_canned
+                purpose, canned = load_canned("episode-recaps")
+                rt.fake.set_canned(purpose, canned)
+            hist = {"world": "wld_seedSunnyHollow", "cast": ["chr_seedHana", "chr_seedRin", "chr_seedTakeshi"],
+                    "premise": "A quiet morning at the flower shop.",
+                    "lines": [{"seq": 2, "kind": "line", "speaker": "chr_seedHana", "text": "Morning! Coffee?",
+                               "summary_upto": None, "summary": None}]}
+            from horizon.ai.naive.summary import NaiveSummariser
+
+            recap = await NaiveSummariser(rt.ai.deps).episode(recap_context(hist, 1, seed_profiles()))
+            out.append(f"- episode recap: {len(recap.split())} word(s)")
+            if not recap.strip():
+                empty.append("recap")
+        finally:
+            rt.set_profile(before)
+            if rt.cfg.test_mode:
+                rt.decider_fixtures.clear()
+        return out
+
+
+async def planned_group_send(env: RunEnv) -> int:
+    """One `agent` group send through the app; the replies it got."""
+    import httpx
+
+    from horizon.main import create_app
+
+    app = create_app(env.rt.cfg, runtime=env.rt)
+    api = "/api/v1"
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://127.0.0.1") as c:
+        r = await c.post(f"{api}/sessions", json={"worldId": "wld_seedMeridian", "mode": "group",
+                                                  "characterIds": ["chr_seedAmara", "chr_seedMei", "chr_seedVictor"]})
+        if r.status_code != 201:
+            return 0
+        sid = r.json()["session"]["id"]
+        await _advance(env, 6000)
+        before = len([m for m in (await c.get(f"{api}/sessions/{sid}/messages")).json()["items"]
+                      if m["author"]["type"] == "character"])
+        await c.post(f"{api}/sessions/{sid}/send", json={"text": "I'm moving to Lisbon next month."})
+        await _advance(env, 30000)
+        msgs = (await c.get(f"{api}/sessions/{sid}/messages", params={"limit": 1000})).json()["items"]
+        await c.post(f"{api}/sessions/{sid}/end")
+    return len([m for m in msgs if m["author"]["type"] == "character"]) - before
+
+
 def _content() -> dict[str, Any]:
     from horizon.evals.content import Drafter, Long, Summary, Transcript
     from horizon.evals.latency import Latency
     from horizon.evals.moodline import Moodline
+    from horizon.evals.watch_suites import FreeRun, WatchHistory
     return {"drafter": Drafter(), "summary": Summary(), "long": Long(), "transcript": Transcript(),
-            "moodline": Moodline(), "latency": Latency()}
+            "moodline": Moodline(), "latency": Latency(), "watch-history": WatchHistory(), "freerun": FreeRun()}
 
 
 SUITES: dict[str, Any] = {"canary": Canary(), "decisions": Decisions(), "smoke": Smoke(), **_content()}

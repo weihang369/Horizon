@@ -9,11 +9,19 @@ from __future__ import annotations
 
 from typing import Any
 
-from horizon.ai.contexts import PlanRequest, SessionContext, TurnPlan
+from horizon.ai.contexts import CastPlan, CastRequest, FollowRequest, PlanRequest, SessionContext, TurnPlan
 
 
 class NoPlanner:
+    decides_retrieval = False
+
     async def plan(self, req: PlanRequest) -> TurnPlan | None:
+        return None
+
+    async def plan_cast(self, req: CastRequest) -> CastPlan | None:
+        return None   # M10 (group-watch D3): naive keeps its router, round-robin and random picks (G13)
+
+    def start_follow(self, req: FollowRequest) -> None:
         return None
 
 
