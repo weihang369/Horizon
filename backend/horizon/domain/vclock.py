@@ -291,6 +291,26 @@ async def wait_at_most(clock: Any, task: asyncio.Future[Any], seconds: float) ->
     return task.done()
 
 
+async def to_the_end[R](coro: Coroutine[Any, Any, R], name: str) -> tuple[asyncio.Task[R], bool]:
+    """Run `coro` to its end whatever cancels reach the caller meanwhile, any number of them. Returns the finished task
+    and whether the caller was cancelled while it ran: the caller re-raises that cancel once its own cleanup is done.
+
+    For steps that must never stop half way: a database transaction's BEGIN, COMMIT or ROLLBACK and the return of its
+    connection, where a second cancel left the one writer connection closed or still holding SQLite's write lock (Stop,
+    docs/ai/checks/m9.md 9.6). `asyncio.shield` alone isn't enough: it returns at the first cancel, and the caller would
+    let go of the writer lock while the rollback still runs. The step runs as its own task, counted against the
+    caller's activity, so a virtual-time advance waits for it."""
+    task = asyncio.get_running_loop().create_task(coro, name=name)
+    track(task, name)
+    cut = False
+    while not task.done():
+        try:
+            await asyncio.wait((task,))
+        except asyncio.CancelledError:
+            cut = True
+    return task, cut
+
+
 async def join[R](task: asyncio.Task[R]) -> R:
     """Await another runtime task with the caller's token given up (M9, turn-plan-emotion D6).
 

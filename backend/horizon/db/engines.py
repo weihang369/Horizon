@@ -10,13 +10,14 @@ transaction opens.
 
 from __future__ import annotations
 
+import asyncio
 import json
 from pathlib import Path
 from typing import Any
 
 import sqlite_vec
 from sqlalchemy import event
-from sqlalchemy.engine import Connection
+from sqlalchemy.engine import Connection, ExceptionContext
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
 PRAGMAS = ("PRAGMA journal_mode=WAL", "PRAGMA synchronous=NORMAL", "PRAGMA foreign_keys=ON", "PRAGMA busy_timeout=5000")
@@ -41,11 +42,23 @@ def _on_connect(dbapi_conn: Any, _record: Any, *, extra: tuple[str, ...] = ()) -
     cur.close()
 
 
+def _keep_on_cancel(ctx: ExceptionContext) -> None:
+    """A cancel (a Stop) landing in a statement leaves an aiosqlite connection sound: the statement still runs to its
+    end on the connection's own thread, and the ROLLBACK queued next runs after it. SQLAlchemy would call that a
+    disconnect and terminate the connection then and there, inside the cancelled task. A second cancel cuts that close
+    short, SQLAlchemy force-stops the connection as well, aiosqlite's thread ends at the first stop, and every later call
+    on the connection (the rollback, the pool's reset) waits forever: the hung turn after a Stop
+    (docs/ai/checks/m9.md 9.6)."""
+    if isinstance(ctx.original_exception, asyncio.CancelledError):
+        ctx.is_disconnect = False
+
+
 def _make(url: str, *, begin_sql: str, pool_size: int, max_overflow: int,
           extra: tuple[str, ...] = ()) -> AsyncEngine:
     engine = create_async_engine(url, pool_size=pool_size, max_overflow=max_overflow, json_serializer=dumps,
                                  json_deserializer=json.loads)
     event.listen(engine.sync_engine, "connect", lambda c, r: _on_connect(c, r, extra=extra))
+    event.listen(engine.sync_engine, "handle_error", _keep_on_cancel)
 
     @event.listens_for(engine.sync_engine, "begin")
     def _begin(conn: Connection) -> None:

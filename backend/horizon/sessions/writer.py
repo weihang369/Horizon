@@ -14,6 +14,7 @@ The caller (the SessionActor) serialises appends; the writer itself is not reent
 
 from __future__ import annotations
 
+import asyncio
 import copy
 from collections.abc import Awaitable, Callable, Mapping, Sequence
 from dataclasses import dataclass
@@ -27,6 +28,7 @@ from horizon.api.errors import not_found
 from horizon.contract import mappers as mp
 from horizon.db import tables as t
 from horizon.db.uow import Database, WriteTx
+from horizon.domain import vclock
 from horizon.domain.ids import new_id
 from horizon.events.bus import GLOBAL, session_channel
 from horizon.services.memory.refs import replace_refs
@@ -130,8 +132,14 @@ class EventWriter:
                 if any(e["type"] in SESSION_CHANGING for e in stamped):
                     tx.publish(GLOBAL, {"type": "entity.changed", "kind": "session", "id": self.session_id,
                                         "worldId": self.session["worldId"]})
-        except BaseException:
-            await self.reload()
+        except BaseException as e:
+            # the events were applied in memory first: a second cancel cutting this reload short would leave them
+            # there, never stored, and every later seq off by their count (docs/ai/checks/m9.md 9.6)
+            done, cut = await vclock.to_the_end(self.reload(), "writer-reload")
+            if (failed := done.exception()) is not None:
+                raise failed from e
+            if cut and not isinstance(e, asyncio.CancelledError):
+                raise asyncio.CancelledError from e
             raise
         return stamped
 
