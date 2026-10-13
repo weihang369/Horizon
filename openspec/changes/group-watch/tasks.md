@@ -285,7 +285,7 @@
 - [x] 10.9 Ask, then run the free runs from the smoke allowance (≈ $0.06). Record the four signals and read the
   steered lines. Anything outside G11's expected ranges (second-reply rate outside 10–60 %, guard above 20 %) goes to
   the user as a choice.
-- [ ] 10.10 Copy each run's per-item results to `docs/ai/checks/m10/` with a README (as M9 did), and add each run's
+- [x] 10.10 Copy each run's per-item results to `docs/ai/checks/m10/` with a README (as M9 did), and add each run's
   spend to m10.md's spend table against D24. Verify that `data/evals/spend.jsonl` matches.
 - [ ] 10.11 Gates green; commit "M10 phase 10".
 
