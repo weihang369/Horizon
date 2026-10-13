@@ -67,7 +67,7 @@
   (proposal "Your time"). Verify that `horizon eval overlap` passes.
 - [x] 1.6 Regenerate `seed/system1.fixture.json` from the bank (seed-build). Verify that `seed:check` and
   `fixtures:check` pass, and the scripted group trace still shows only the `route` row.
-- [ ] 1.7 Gates green; commit "M10 phase 1".
+- [x] 1.7 Gates green; commit "M10 phase 1".
 
 ## 2. The cast plan: port, types and graph (design D3, D4, D22)
 
@@ -91,7 +91,7 @@
   exhausted character is never a candidate.
 - [x] 2.5 Repeat M9's check 1 settle test for `plan_cast`: 100 group plans on the virtual clock with parked and
   released answers, two identical runs. Record the numbers in m10.md.
-- [ ] 2.6 Gates green; commit "M10 phase 2".
+- [x] 2.6 Gates green; commit "M10 phase 2".
 
 ## 3. Group Auto under `agent`, G1 in the shared runtime (design D5, D6, D18, D21)
 
