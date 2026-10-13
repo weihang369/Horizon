@@ -10,13 +10,13 @@ from __future__ import annotations
 
 import asyncio
 import random
-import time
 from pathlib import Path
 from typing import Any
 
 from sqlalchemy import text
 
 from horizon.db.uow import Database
+from tests.helpers.storm import storm as _storm
 
 STORMS = 60
 
@@ -26,17 +26,6 @@ async def _db(tmp_path: Path, publish: Any = None) -> Database:
     async with db.write() as tx:
         await tx.conn.execute(text("CREATE TABLE t (x INTEGER)"))
     return db
-
-
-async def _storm(task: asyncio.Task[Any], *, after_s: float = 0.0) -> None:
-    """Let `task` run for `after_s` seconds, then cancel it on every loop turn until it has ended. (Spinning, not
-    `asyncio.sleep`: on Windows the loop's clock moves in 15.6 ms steps, and a shorter sleep returns at once.)"""
-    end = time.perf_counter() + after_s
-    while time.perf_counter() < end and not task.done():  # noqa: ASYNC110 - spinning on purpose (see above)
-        await asyncio.sleep(0)
-    while not task.done():
-        task.cancel()
-        await asyncio.sleep(0)
 
 
 async def _count(db: Database) -> int:
