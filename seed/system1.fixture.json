@@ -23,7 +23,7 @@
       "emotion_line": {
         "purpose": "turn_plan",
         "id": "emotion_line",
-        "version": 1,
+        "version": 2,
         "label": "emotion",
         "p": 0.72,
         "confidence": 0.72,
@@ -31,7 +31,7 @@
           {
             "name": "confidence",
             "value": 0.72,
-            "threshold": 0.6
+            "threshold": 0.2
           }
         ],
         "result": "used",
@@ -40,7 +40,7 @@
       "emotion_opening": {
         "purpose": "turn_plan",
         "id": "emotion_opening",
-        "version": 1,
+        "version": 2,
         "label": "emotion",
         "p": 0.72,
         "confidence": 0.72,
@@ -48,7 +48,7 @@
           {
             "name": "confidence",
             "value": 0.72,
-            "threshold": 0.6
+            "threshold": 0.2
           }
         ],
         "result": "used",

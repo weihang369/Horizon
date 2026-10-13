@@ -4,12 +4,12 @@
     "version": 2
   },
   "emotion_line": {
-    "sha256": "8fa2f91626601717dbd5314125f75c361aebf67e0f6c702bd763f9954e984c0b",
-    "version": 1
+    "sha256": "f4c24112cd1a421d96bf29eaaf320c8aa1b533d8d550f9326f778f4b177e65d7",
+    "version": 2
   },
   "emotion_opening": {
-    "sha256": "21d96b7c0c9a88d1d0e1e49a3f1d3a494b3f1487b1b1edbbf1927a00e8972ada",
-    "version": 1
+    "sha256": "2179fb21130b7b69514dfae667691ec2fd272c060970ecc7ea8acb293fe75e57",
+    "version": 2
   },
   "emotion_reply": {
     "sha256": "ef1e3ae7a13cfa28c81df0d62999b7d7d8c788143f2d93fdac3d2871c3f9bdea",

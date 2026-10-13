@@ -274,7 +274,7 @@
   results under `docs/ai/checks/m10/`.
 - [x] 10.4 Ask, then run `decisions --set talk_finished` (≈ $0.006): `t_end`, with recall reported. Write it into the
   bank and record it as in 10.3.
-- [ ] 10.5 Ask, then run `decisions --set emotion` for the watch slice (≈ $0.002): the `emotion_line` and
+- [x] 10.5 Ask, then run `decisions --set emotion` for the watch slice (≈ $0.002): the `emotion_line` and
   `emotion_opening` floors, recorded as in 10.3.
 - [ ] 10.6 Ask, then run `summary` for the 10 recaps (≈ $0.012). Record the target result, with every failure quoted.
 - [ ] 10.7 Ask, then run `latency --part follow` (≈ $0.004). Record the miss rate with and without spells.

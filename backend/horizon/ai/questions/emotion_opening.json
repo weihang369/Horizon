@@ -1,6 +1,6 @@
 {
   "id": "emotion_opening",
-  "version": 1,
+  "version": 2,
   "purpose": "turn_plan",
   "type": "choice",
   "label": "emotion",
@@ -86,7 +86,7 @@
     "quoted_summary": "quoted"
   },
   "deadline": "turn_plan",
-  "floor": 0.6,
+  "floor": 0.2,
   "thresholds": {},
   "fallback": "keep_then_fade"
 }
