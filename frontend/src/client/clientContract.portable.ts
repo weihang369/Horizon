@@ -256,6 +256,32 @@ export function runPortableContract(label: string, makeHarness: MakeHarness, opt
       expect(chars(msgs)).toHaveLength(before);   // Hana doesn't step in for him
     });
 
+    test("M10", "group: a message sent in the gap supersedes the unannounced second reply (doc 07 G5)", async () => {
+      const { c, tick } = await make({ key: true });
+      const s = await c.sessions.create({ worldId: "wld_seedSunnyHollow", mode: "group", characterIds: ["chr_seedHana", "chr_seedTakeshi", "chr_seedRin"] });
+      const sid = s.session.id;
+      await tick(6000);
+      const start = (await c.sessions.events(sid)).length;
+      await c.chat.send(sid, "What should we cook tonight?");   // scripted Auto: two replies, one after the other
+      for (let i = 0; i < 200; i++) {
+        await tick(50);
+        const evs = (await c.sessions.events(sid)).slice(start);
+        if (evs.some((e) => e.type === "turn.end")) break;     // the first reply is done; the gap has begun
+      }
+      await c.chat.send(sid, "Actually, never mind. Dessert?");
+      await tick(40000);
+      const evs = (await c.sessions.events(sid)).slice(start);
+      const author = (e: SessionEvent) => (e.type === "message" ? (e.payload as { message: Message }).message.author.type : undefined);
+      const users = evs.filter((e) => author(e) === "user").map((e) => e.seq);
+      expect(users).toHaveLength(2);
+      const nexts = evs.filter((e) => e.type === "turn.next");
+      expect(nexts.filter((e) => e.seq < users[1])).toHaveLength(1);   // "A"'s second reply never announced
+      expect(nexts.filter((e) => e.seq > users[1])).toHaveLength(2);   // "B" is answered
+      const types = evs.filter((e) => e.type === "turn.next" || e.type === "turn.end" || e.type === "message").map((e) =>
+        e.type === "message" ? `message:${author(e)}` : e.type);
+      expect(types).toEqual(["message:user", "turn.next", "turn.end", "message:user", "turn.next", "turn.end", "turn.next", "turn.end"]);
+    });
+
     test("M3", "stream cut: error(network) then turn.end(interrupted)", async () => {
       const { c, tick, setScenario } = await make({ key: true });
       const s = await c.sessions.create({ worldId: "wld_seedMeridian", mode: "one_on_one", characterIds: ["chr_seedVictor"] });

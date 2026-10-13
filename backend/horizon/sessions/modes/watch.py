@@ -13,6 +13,7 @@ from typing import TYPE_CHECKING, Any
 from horizon.ai.contexts import LineHint
 from horizon.gateway.errors import ProviderError
 from horizon.sessions.context import session_context
+from horizon.sessions.follow import answer_then_follow, second_reply
 from horizon.sessions.modes.common import (
     asleep_note,
     is_asleep,
@@ -24,6 +25,7 @@ from horizon.sessions.modes.common import (
     user_message,
 )
 from horizon.sessions.modes.group import run_speakers
+from horizon.sessions.plans import cast_request, plan_cast, plans_cast
 from horizon.sessions.turn import TurnSpec
 
 if TYPE_CHECKING:
@@ -153,18 +155,44 @@ async def direct(actor: SessionActor, text: str) -> None:
 
 
 async def step_in(actor: SessionActor, text: str) -> None:
+    """Step in: pause, post the user's line, then answer it. Under a planner that plans the cast (D11): `who_first`
+    over the awake, unmuted cast and every face in one call, then the follow plan for an optional second reply.
+    Otherwise up to 2 random characters (G13). A Step in supersedes earlier unannounced replies (G5)."""
     if not actor.held:
         await pause(actor)
+    epoch = await actor.supersede()
     await actor.emit(message_event(user_message(actor, text)))
     awake = [p["characterId"] for p in actor.session["participants"]
              if not p.get("mutedByUser") and not await is_asleep(actor, p["characterId"])]
+    if plans_cast(actor):
+        actor.enqueue(lambda: _planned_step_in(actor, text, awake, epoch), epoch=epoch)
+        return
     random.Random(f"{actor.seed}:stepin:{actor.mode.turn}").shuffle(awake)
     chosen = awake[:2]
 
     async def job() -> None:
-        await run_speakers(actor, chosen, text)
+        await run_speakers(actor, chosen, text, reply_epoch=epoch)
 
-    actor.enqueue(job)
+    actor.enqueue(job, epoch=epoch)
+
+
+async def _planned_step_in(actor: SessionActor, text: str, awake: list[str], epoch: int) -> None:
+    if not awake:
+        return
+    plan = await plan_cast(actor, await cast_request(actor, "step_in", awake, latest=text))
+    if plan is None or not plan.order:
+        return
+    who = plan.who
+    routing: Wire | None = None
+    if who is not None and who.question:
+        routing = {"question": who.label, "selected": plan.order[0]}
+        if who.candidates and who.source not in ("fallback", "late"):
+            routing["candidates"] = who.candidates
+        if who.source in ("fallback", "late"):
+            routing["reason"] = "fallback"
+    first = TurnSpec(speaker=plan.order[0], prompt=text, routing=routing, plan=plan.for_speaker(plan.order[0]),
+                     epoch=epoch)
+    await answer_then_follow(actor, first, text, lambda fp, cid, name: second_reply(fp, cid, name, prompt=text))
 
 
 async def extend(actor: SessionActor, turns: int = 10) -> None:

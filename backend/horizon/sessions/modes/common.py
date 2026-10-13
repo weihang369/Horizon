@@ -3,9 +3,11 @@
 
 from __future__ import annotations
 
+import asyncio
 from typing import TYPE_CHECKING, Any
 
 from horizon.ai.scripted.bank import first_name
+from horizon.domain import vclock
 from horizon.domain.ids import new_id
 from horizon.sessions.after_turn import on_user_message
 from horizon.sessions.context import characters
@@ -66,8 +68,27 @@ async def speak_then(actor: SessionActor, spec: TurnSpec, *, prefetch: Any = Non
     """One turn, then the turn gap before the next queued turn (the mock's `speakThen`)."""
     out = await runner(actor).run(actor, spec, prefetch=prefetch)
     if out.status in ("complete", "interrupted", "error"):
-        await actor.rt.clock.sleep(actor.rt.runtime_cfg.timing.turn_gap_ms / 1000)
+        await gap(actor, spec.epoch)
     return out
+
+
+async def gap(actor: SessionActor, epoch: int | None, seconds: float | None = None) -> None:
+    """The turn gap (or what is left of it). A reply job's gap ends at once when a user message supersedes its epoch
+    (doc 07 G5; group-watch D12), so the new message's routing doesn't sit behind an old gap."""
+    rt = actor.rt
+    s = rt.runtime_cfg.timing.turn_gap_ms / 1000 if seconds is None else seconds
+    if epoch is None:
+        await rt.clock.sleep(s)
+        return
+    if not actor.current_epoch(epoch):
+        return
+    task = rt.spawn(f"gap:{actor.sid}", rt.clock.sleep(s))
+    try:
+        if not await vclock.wait_unless(task, actor.superseded(epoch)):
+            task.cancel()
+    except asyncio.CancelledError:
+        task.cancel()
+        raise
 
 
 async def is_asleep(actor: SessionActor, character_id: str) -> bool:

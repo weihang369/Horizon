@@ -529,6 +529,13 @@ unaffected. M14's output check gives back the head start, and the deadline is th
   answering it;
 - **one call 1 per Everyone speaker:** G4 rejects it.
 
+**Built (phase 5):**
+- a prefetched Everyone reply gets its plan's rows and call from the runner when the prefetch is **released**, not when
+  it starts: the slot's `TurnSpec` is a fresh object, so rows written onto the prefetch's own spec were lost;
+- Next speaker's `quoted_latest` is the last line as "Name: line" (or the user's text when the user spoke last);
+- an agent Step in's first reply carries the cast plan's routing (`who answers first?`) on a spec built in `watch.py`,
+  and its second reply comes from the shared `answer_then_follow`.
+
 ### D12. G5: a user message cancels the previous message's unannounced replies
 
 **The mechanism: a reply epoch, checked where `turn.next` is written.**

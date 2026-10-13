@@ -143,29 +143,29 @@
 
 ## 5. G5's reply epoch, Next speaker, Everyone and Step in (design D11, D12)
 
-- [ ] 5.1 `SessionActor.reply_epoch`, `supersede()` (bump plus the superseded event under the write lock, drop stale
+- [x] 5.1 `SessionActor.reply_epoch`, `supersede()` (bump plus the superseded event under the write lock, drop stale
   queued reply jobs, discard unreleased prefetches) and `TurnSpec.epoch`. `turn.next` goes through `emit_checked`
   with the epoch check, and a failed check returns outcome `superseded` with no event. Verify the spec's "Never
   between the check and the write" scenario: 1,000 virtual-clock races.
-- [ ] 5.2 Cooperative ends: `run_speakers` checks the epoch before each speaker, and the follow wait and the gap
+- [x] 5.2 Cooperative ends: `run_speakers` checks the epoch before each speaker, and the follow wait and the gap
   sleep race the superseded event. Verify:
   - "Sent in the gap" (no second reply to A; B answered);
   - "Announced reply finishes";
   - a watch Step in during a scene turn's gap keeps its `turnsTaken` increment.
-- [ ] 5.3 The mock: the epoch on `LiveSession`, the check where `speakThen` emits `turn.next`, and stale tasks
+- [x] 5.3 The mock: the epoch on `LiveSession`, the check where `speakThen` emits `turn.next`, and stale tasks
   skipped. Parity is a portable contract test (milestone `M10`, as in 3.1), run on the MockClient and on the backend.
   Verify both produce the same event types and speakers.
-- [ ] 5.4 Next speaker under `agent`: `plan_cast(kind="next")` with `who_next` minus the last speaker, or the chosen
+- [x] 5.4 Next speaker under `agent`: `plan_cast(kind="next")` with `who_next` minus the last speaker, or the chosen
   character's emotion only, and cue `next`. Verify the spec scenario "Next speaker under agent", and that
   `naive`/`scripted` stay random.
-- [ ] 5.5 Everyone and policy `everyone` under `agent`: one `plan_cast(kind="everyone")`, the order by probability,
+- [x] 5.5 Everyone and policy `everyone` under `agent`: one `plan_cast(kind="everyone")`, the order by probability,
   asleep notes kept, and `Prefetch.start` taking `plan=` and skipping retrieval when the plan has a branch. Verify:
   - the spec scenario "Everyone in Jev's order" (one request);
   - a prefetched reply's face is the plan's;
   - a Jev failure gives cast order with fallback faces.
-- [ ] 5.6 Step in under `agent`: pause, the user's line, `plan_cast(kind="step_in")`, then the follow plan. Verify the
+- [x] 5.6 Step in under `agent`: pause, the user's line, `plan_cast(kind="step_in")`, then the follow plan. Verify the
   spec scenario "Step in under agent", and that `naive`/`scripted` keep 2 random replies.
-- [ ] 5.7 Storm tests (D2) for a superseding send landing in the user message's append and in the `turn.next` check,
+- [x] 5.7 Storm tests (D2) for a superseding send landing in the user message's append and in the `turn.next` check,
   and for Step in's second reply cut during its follow plan. Verify the writer is free and the log reduces.
 - [ ] 5.8 Gates green; commit "M10 phase 5".
 

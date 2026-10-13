@@ -83,12 +83,15 @@ class TurnSpec:
     # M10 (doc 07 G2, doc 11 S5; group-watch D8): called at the stream's end of a reply that streamed without an error;
     # it starts the follow plan and returns its handle (or None), which the outcome carries back to the mode
     follow: Callable[[TurnInfo], Awaitable[Any]] | None = None
+    # M10 (doc 07 G5; group-watch D12): the reply epoch the job captured when queued; `turn.next` is written only while
+    # it is current (None: never superseded, e.g. a watch scene turn)
+    epoch: int | None = None
 
 
 @dataclass
 class TurnOutcome:
     message_id: str | None
-    status: str          # complete | interrupted | error | refused | asleep | missing
+    status: str          # complete | interrupted | error | refused | asleep | missing | superseded
     follow: Any = None   # M10: the follow plan's handle, started at the stream's end (D8)
     ended_at: datetime | None = None   # when turn.end was appended: the follow plan's deadline counts from here
 
@@ -171,11 +174,22 @@ class TurnRunner:
                     if prefetch is None and not spec.line.verbatim and actor.mode_name == "one_on_one"
                     and spec.plan is None else None)
         try:
-            await actor.emit({"type": "turn.next", "payload": nxt})
+            if spec.epoch is None:
+                await actor.emit({"type": "turn.next", "payload": nxt})
+            elif not await actor.emit_checked({"type": "turn.next", "payload": nxt},
+                                              lambda _s: spec.epoch == actor.reply_epoch):
+                info.closed = True   # G5: superseded before it announced; nothing was written
+                if prefetch is not None:
+                    await prefetch.discard()
+                return TurnOutcome(None, "superseded")
             await rt.clock.sleep(rt.runtime_cfg.timing.thinking_ms / 1000)
             await actor.emit({"type": "turn.thinking", "payload": {"characterId": spec.speaker}})
             if prefetch is not None:
                 info.ctx = prefetch.ctx
+                pplan = prefetch.ctx.plan
+                if pplan is not None:   # M10 (D11): a prefetched Everyone reply carries its plan's rows and call
+                    spec.calls.extend(pplan.calls)
+                    spec.system1 = system1_section(spec.system1, pplan.rows, seed=pplan.seed)
                 return await self._stream(actor, spec, info, prefetch.ctx, t0, started_iso, prefetch=prefetch)
             plan: TurnPlan | None = spec.plan
             if planning is not None:

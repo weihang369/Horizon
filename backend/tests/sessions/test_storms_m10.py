@@ -145,3 +145,93 @@ async def test_a_storm_in_the_first_replys_turn_end_write_leaves_the_writer_free
     monkeypatch.setattr(TurnRunner, "finish", finish)
     await assert_writer_free(api.rt.db)
     await _follow_row_cancelled(api, sid, release)
+
+
+# ── M10 phase 5 (task 5.7): G5's supersede ──
+async def test_a_storm_on_a_superseding_send_leaves_the_writer_free(api: Api) -> None:
+    """A send that supersedes a running job (its first reply done, the gap begun) is cancelled on every loop turn while
+    it bumps the epoch and appends the user's message: the writer is free after each storm and the log reduces."""
+    import asyncio
+    import random
+
+    from horizon.sessions.modes import group
+    from tests.sessions.kit import assert_reduces, create, events
+    from tests.sessions.test_supersede import TRIO
+
+    await api.set_key()
+    sid: str = (await create(api, "group", TRIO))["session"]["id"]
+    await api.drive(6000)
+    actor: SessionActor = await api.rt.sessions.get(sid)
+    rng = random.Random(5)
+    for i in range(10):
+        start = len(await events(api, sid))
+        await command(api, sid, "send", {"text": f"Round {i}?"})
+        for _ in range(400):
+            await api.drive(25)
+            if any(e["type"] == "turn.end" for e in (await events(api, sid))[start:]):
+                break
+        task = asyncio.ensure_future(group.send(actor, f"Never mind {i}", []))
+        await storm(task, after_s=rng.uniform(0.0, 0.02))
+        await assert_writer_free(api.rt.db)
+        await api.drive(40000)
+    await assert_writer_free(api.rt.db)
+    await assert_reduces(api, sid)
+
+
+async def test_a_storm_in_the_turn_next_check_leaves_the_writer_free(api: Api, monkeypatch: Any) -> None:
+    """The storm starts as a reply's `turn.next` goes through the epoch check under the write lock."""
+    import asyncio
+
+    from tests.sessions.kit import assert_reduces, create
+    from tests.sessions.test_supersede import TRIO
+
+    await api.set_key()
+    sid: str = (await create(api, "group", TRIO))["session"]["id"]
+    await api.drive(6000)
+    actor: SessionActor = await api.rt.sessions.get(sid)
+    checked = actor.emit_checked
+    storms: list[asyncio.Task[Any]] = []
+
+    async def stormed(event: Any, check: Any) -> Any:
+        task = asyncio.current_task()
+        if event.get("type") == "turn.next" and not storms and task is not None:
+            storms.append(asyncio.ensure_future(storm(task)))
+        return await checked(event, check)
+
+    monkeypatch.setattr(actor, "emit_checked", stormed)
+    await command(api, sid, "send", {"text": "Who's up for a walk?"})
+    for _ in range(400):
+        if storms and storms[0].done():
+            break
+        await api.drive(25)
+    assert storms and storms[0].done()
+    await assert_writer_free(api.rt.db)
+    monkeypatch.setattr(actor, "emit_checked", checked)
+    await command(api, sid, "send", {"text": "Hello again?"})
+    await api.drive(40000)
+    await assert_writer_free(api.rt.db)
+    await assert_reduces(api, sid)
+
+
+async def test_a_storm_on_step_ins_follow_plan_leaves_the_writer_free(api: Api) -> None:
+    from tests.sessions.kit import assert_reduces
+    from tests.sessions.test_follow_plan import drive_until_turn_end
+    from tests.sessions.test_group_g4 import _agent_watch
+    from tests.sessions.test_group_plan import fixture
+    from tests.sessions.test_supersede import VICTOR
+
+    sid = await _agent_watch(api)
+    await fixture(api, "who_first", VICTOR, 0.9, chr_seedVictor=0.9, chr_seedMei=0.05, chr_seedAmara=0.05)
+    assert api.rt.fake is not None
+    release = api.rt.fake.park_decision(api.rt.fake.counts["decisions"] + 2)   # call 1 (faces), then the follow plan
+    await command(api, sid, "watch/step-in", {"text": "Who left the door open?"})
+    await drive_until_turn_end(api, sid)
+    actor: SessionActor = await api.rt.sessions.get(sid)
+    worker = actor._worker
+    assert worker is not None and not worker.done()
+    await storm(worker)
+    await assert_writer_free(api.rt.db)
+    release.set()
+    await api.drive(2000)
+    assert [r for r in await ledger(api) if r["purpose"] == "follow_plan"][-1]["finish_reason"] == "cancelled"
+    await assert_reduces(api, sid)

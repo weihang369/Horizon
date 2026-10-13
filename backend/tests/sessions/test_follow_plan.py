@@ -102,13 +102,14 @@ async def test_a_pick_120ms_after_turn_end_speaks_at_plus_120ms(api: Api) -> Non
 
 
 async def test_no_pick_starts_the_next_job_at_plus_400ms(api: Api) -> None:
-    """`none` answered at once: the job still holds the rest of the turn gap, so the follow plan never shortens it."""
+    """`none` answered at once: the job still holds the rest of the turn gap, so the follow plan never shortens it. (The
+    queued job is a Next speaker: a second send would supersede the first job and end its gap at once, G5.)"""
     sid = await agent(api, "group", TRIO)
     await first_is_amara(api)
     await fixture(api, "who_second", "none", 0.9, purpose="follow_plan")
     await command(api, sid, "send", {"text": "Ok, thanks."})
     await api.drive(50)
-    await command(api, sid, "send", {"text": "And another thing."})   # queued behind the first job
+    await command(api, sid, "next-speaker", {"characterId": MEI})   # queued behind the first job
     await api.drive(30000)
     evs = await events(api, sid)
     end = next(e for e in evs if e["type"] == "turn.end")
