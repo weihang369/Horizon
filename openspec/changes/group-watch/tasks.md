@@ -280,7 +280,7 @@
 - [x] 10.7 Ask, then run `latency --part follow` (≈ $0.004). Record the miss rate with and without spells.
   - If more than 10 % miss: apply G2's rule (D9, D27), setting `timeoutsMs.decision.follow_plan` from the measured
     p90 of `S + L − F` in `seed/pricing.json` and its mirror. Record the NFR-02 exception and the finding.
-- [ ] 10.8 Ask, then run `latency --part watch` (≈ $0.03). Record against NFR-02's 3 s p50, with the plan-ahead
+- [x] 10.8 Ask, then run `latency --part watch` (≈ $0.03). Record against NFR-02's 3 s p50, with the plan-ahead
   used/redone/fallback counts and spells.
 - [ ] 10.9 Ask, then run the free runs from the smoke allowance (≈ $0.06). Record the four signals and read the
   steered lines. Anything outside G11's expected ranges (second-reply rate outside 10–60 %, guard above 20 %) goes to
