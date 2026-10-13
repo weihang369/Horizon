@@ -8,25 +8,27 @@ clock time apart. Each turn raises `turnsTaken` (`watch.state` + `session.state`
 from __future__ import annotations
 
 import random
+from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 
-from horizon.ai.contexts import LineHint
+from horizon.ai.contexts import CastPlan, LineHint
 from horizon.gateway.errors import ProviderError
 from horizon.sessions.context import session_context
 from horizon.sessions.follow import answer_then_follow, second_reply
 from horizon.sessions.modes.common import (
     asleep_note,
+    gap,
     is_asleep,
     message_event,
     note,
     patch_settings,
     runner,
-    speak_then,
     user_message,
 )
 from horizon.sessions.modes.group import run_speakers
 from horizon.sessions.plans import cast_request, plan_cast, plans_cast
 from horizon.sessions.turn import TurnSpec
+from horizon.sessions.watch_plan import PLAN_AHEAD, ScenePick, start_plan_ahead, take_plan
 
 if TYPE_CHECKING:
     from horizon.sessions.actor import SessionActor
@@ -98,7 +100,16 @@ def turn(actor: SessionActor, manual: bool = False) -> None:
             await actor.emit(*watch_state(actor, {"status": "ended", "nextSpeakerId": None}),
                              {"type": "session.paused", "payload": {"reason": "turn_cap"}})
             return
-        cid = await pick_speaker(actor)
+        planned = plans_cast(actor)
+        plan: CastPlan | None = None
+        pick: ScenePick | None = None
+        if planned:   # M10 (D13): a nudge, else the guard, else Jev's pick; the plan may have been made ahead (D15)
+            plan, pick = await take_plan(actor)
+            cid = plan.order[0] if plan is not None and plan.order else None
+            if plan is None:
+                cid = await pick_speaker(actor)
+        else:
+            cid = await pick_speaker(actor)
         if cid is None:
             parts = actor.session["participants"]
             if parts:
@@ -109,16 +120,29 @@ def turn(actor: SessionActor, manual: bool = False) -> None:
             actor.held = True
             return
         m = actor.mode
+        if pick is not None and pick.forced is not None and m.nudge == pick.forced:
+            m.nudge = None   # the nudge is spent by the turn that uses it
         direction = None
         if m.direction is not None and m.direction[1] > 0:
             direction = m.direction[0]
         if m.direction is not None:
             m.direction = (m.direction[0], m.direction[1] - 1)
-        out = await speak_then(actor, TurnSpec(speaker=cid, line=LineHint(kind="scene"), direction_note=direction))
+        spec = TurnSpec(speaker=cid, line=LineHint(kind="scene"), direction_note=direction)
+        if plan is not None and pick is not None:
+            spec.plan = plan.for_speaker(cid)
+            spec.routing = scene_routing(plan, pick, cid)
+            spec.forced_by = pick.forced_by
+        out = await runner(actor).run(actor, spec)
         if out.status not in ("complete", "interrupted", "error"):
             return
         taken = int(state_of(actor)["turnsTaken"]) + 1
         ended = taken >= int(state_of(actor)["turnLimit"])
+        if (planned and not manual and not ended and not actor.held and out.ended_at is not None
+                and actor.session.get("status") == "active"):
+            timing = actor.rt.runtime_cfg.timing
+            due = out.ended_at + timedelta(milliseconds=timing.turn_gap_ms + float(cfg_of(actor).get("paceMs", 1500)))
+            await start_plan_ahead(actor, due)   # G8: the next plan runs during the wait, never the next reply
+        await gap(actor, None)
         await actor.emit(*watch_state(actor, {"turnsTaken": taken, "status": "ended" if ended else state_of(actor)["status"]}))
         if ended:
             await actor.emit({"type": "session.paused", "payload": {"reason": "turn_cap"}})
@@ -137,7 +161,30 @@ async def play(actor: SessionActor) -> None:
 
 async def pause(actor: SessionActor) -> None:
     actor.held = True
+    actor.cancel_background(PLAN_AHEAD)   # D15: Play plans afresh (a pause outlasts any plan made ahead)
+    actor.mode.plan_ahead = None
     await actor.emit(*watch_state(actor, {"status": "paused"}), {"type": "session.paused", "payload": {"reason": "user"}})
+
+
+def scene_routing(plan: CastPlan, pick: ScenePick, cid: str) -> Wire | None:
+    """The trace's routing for a planned scene turn: forced (a nudge, the guard: its reason), or Jev's pick."""
+    if pick.forced is not None:
+        r: Wire = {"selected": cid}
+        if pick.forced_by:
+            r["forcedBy"] = pick.forced_by
+        if pick.reason:
+            r["reason"] = pick.reason
+        return r
+    who = plan.who
+    if who is None or not who.question:
+        return None
+    r = {"question": who.label, "selected": cid}
+    fell = who.source in ("fallback", "late")
+    if who.candidates and not fell:
+        r["candidates"] = who.candidates
+    if fell:
+        r["reason"] = "fallback"
+    return r
 
 
 def step_once(actor: SessionActor) -> None:

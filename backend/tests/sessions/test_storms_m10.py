@@ -235,3 +235,87 @@ async def test_a_storm_on_step_ins_follow_plan_leaves_the_writer_free(api: Api) 
     await api.drive(2000)
     assert [r for r in await ledger(api) if r["purpose"] == "follow_plan"][-1]["finish_reason"] == "cancelled"
     await assert_reduces(api, sid)
+
+
+# ── M10 phase 6 (task 6.6): the watch's plan made ahead ──
+async def _watch_with_a_parked_plan_ahead(api: Api, *extra: int) -> tuple[str, SessionActor, list[Any]]:
+    """An `agent` watch in MANUAL (so every decision is a plan): call 1 opens, call 2 is made ahead (parked), and any
+    `extra` calls after it are parked too."""
+    from tests.sessions.test_watch_plan import _until_turn_end, agent_watch
+
+    sid = await agent_watch(api, manual=True, maxTurns=10, paceMs=1500)
+    assert api.rt.fake is not None
+    n = api.rt.fake.counts["decisions"]
+    releases = [api.rt.fake.park_decision(n + k) for k in (2, *extra)]
+    await _until_turn_end(api, sid, 1)
+    await api.drive(100)
+    return sid, await api.rt.sessions.get(sid), releases
+
+
+async def _settle(api: Api, sid: str, releases: list[Any]) -> list[str]:
+    from tests.sessions.kit import assert_reduces
+
+    await command(api, sid, "stop")
+    await api.drive(2000)
+    for r in releases:
+        r.set()
+    await api.drive(5000)
+    await assert_writer_free(api.rt.db)
+    await assert_reduces(api, sid)
+    return [r["finish_reason"] for r in await ledger(api) if r["purpose"] == "turn_plan"]
+
+
+async def test_a_storm_on_the_plan_made_ahead_while_parked(api: Api) -> None:
+    sid, actor, releases = await _watch_with_a_parked_plan_ahead(api)
+    assert actor.mode.plan_ahead is not None
+    _, task = actor.mode.plan_ahead
+    await storm(task)
+    await assert_writer_free(api.rt.db)
+    finish = await _settle(api, sid, releases)
+    assert finish[-1] == "cancelled"
+
+
+async def test_a_storm_in_the_turn_count_write_after_the_plan_ahead_starts(api: Api, monkeypatch: Any) -> None:
+    import asyncio
+
+    from tests.sessions.test_watch_plan import agent_watch
+
+    sid = await agent_watch(api, manual=True, maxTurns=10, paceMs=1500)
+    actor: SessionActor = await api.rt.sessions.get(sid)
+    emit = actor.emit
+    storms: list[asyncio.Task[Any]] = []
+
+    async def stormed(*events: Any, **k: Any) -> Any:
+        task = asyncio.current_task()
+        if (not storms and task is not None and actor.mode.plan_ahead is not None
+                and any(e.get("type") == "watch.state" and e["payload"].get("turnsTaken") == 1 for e in events)):
+            storms.append(asyncio.ensure_future(storm(task)))
+        return await emit(*events, **k)
+
+    monkeypatch.setattr(actor, "emit", stormed)
+    for _ in range(400):
+        if storms and storms[0].done():
+            break
+        await api.drive(25)
+    assert storms and storms[0].done()
+    monkeypatch.setattr(actor, "emit", emit)
+    await assert_writer_free(api.rt.db)
+    finish = await _settle(api, sid, [])
+    assert "cancelled" in finish or len(finish) == 2      # the plan made ahead: cancelled by Stop, or already answered
+
+
+async def test_a_storm_during_the_redo_after_a_fingerprint_change(api: Api) -> None:
+    sid, actor, releases = await _watch_with_a_parked_plan_ahead(api, 3)
+    await command(api, sid, "watch/direct", {"text": "The lights go out."})
+    assert api.rt.fake is not None
+    for _ in range(400):                                   # until the redo (call 3) is parked
+        if api.rt.fake.counts["decisions"] >= 3:
+            break
+        await api.drive(25)
+    assert api.rt.fake.counts["decisions"] >= 3
+    worker = actor._worker
+    assert worker is not None and not worker.done()
+    await storm(worker)
+    await assert_writer_free(api.rt.db)
+    finish = await _settle(api, sid, releases)
+    assert finish[-1] == "cancelled"                      # the redo, cut while Jev was parked

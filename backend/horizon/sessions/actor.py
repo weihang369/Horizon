@@ -82,6 +82,7 @@ class ModeState:
     skip_to_closing: bool = False
     extend: bool = False
     debate_prefetch: dict[int, Any] = field(default_factory=dict)   # opening-round prefetches by order index
+    plan_ahead: tuple[Any, Any] | None = None     # M10 watch (D15): (fingerprint, task) of the next turn's plan
 
 
 class SessionActor:
@@ -263,11 +264,11 @@ class SessionActor:
         self._timers.add(task)
         task.add_done_callback(self._timers.discard)
 
-    def background(self, name: str, coro: Awaitable[Any]) -> asyncio.Task[None]:
-        """Work that never delays the next speaker (listener reactions, the rolling summary). Stop cancels it; idle
-        release waits for it."""
-        async def run() -> None:
-            await coro
+    def background(self, name: str, coro: Awaitable[Any]) -> asyncio.Task[Any]:
+        """Work that never delays the next speaker (listener reactions, the rolling summary, a watch's plan made
+        ahead). Stop cancels it; idle release waits for it. The task's result is the coroutine's."""
+        async def run() -> Any:
+            return await coro
 
         task = self.rt.spawn(f"{name}:{self.sid}", run())
         self._background.add(task)
@@ -296,9 +297,11 @@ class SessionActor:
     async def clear(self, *, keep_current: bool = False) -> None:
         """Cancel pending work (the mock's `clearLive`). `keep_current` lets a turn already streaming finish.
         Prefetched turns are discarded either way (D-77: their spend and drain stand). Listener reactions and face
-        checks are dropped (M9 D20; E5, W2); the rolling summary and the memory writer keep running."""
+        checks are dropped (M9 D20; E5, W2), and so is a watch's plan made ahead (M10 D15); the rolling summary and the
+        memory writer keep running."""
         self.turns.clear()
-        self.cancel_background("reactions", "face_check")
+        self.cancel_background("reactions", "face_check", "plan_ahead")
+        self.mode.plan_ahead = None
         for x in list(self._timers):
             x.cancel()
         self._timers.clear()

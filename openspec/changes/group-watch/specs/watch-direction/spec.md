@@ -59,11 +59,11 @@ After an `agent` watch turn's `turn.end`, the next turn's plan SHALL start at on
 - **THEN** no further `turn_plan` request is made
 
 ### Requirement: A plan made ahead is redone when its inputs change
-A plan made ahead SHALL be stored with a fingerprint of its inputs: the actor's clear epoch, the reply epoch, the last message's sequence number, the director's note and its turns left, the nudge, the emotion mode, and each participant's awake, muted and face state. At turn time, a different fingerprint SHALL cancel the stored plan (its request recorded `cancelled`) and plan again.
+A plan made ahead SHALL be stored with a fingerprint of its inputs: the actor's clear epoch, the reply epoch, the last message's sequence number, the director's note and its turns left, the nudge, the emotion mode, and each participant's awake, muted and face state. At turn time, a different fingerprint SHALL discard the stored plan (cancelling its request if it is still waiting, recorded `cancelled`) and plan again.
 
 #### Scenario: A director's note in the gap
 - **WHEN** a director's note is posted while the next plan is being made ahead
-- **THEN** that plan is cancelled, a new `turn_plan` request is made for the turn, and the turn uses the new plan
+- **THEN** that plan is not used: a new `turn_plan` request is made for the turn, and the turn uses the new plan
 
 #### Scenario: Unchanged inputs
 - **WHEN** nothing happens between `turn.end` and the next turn
