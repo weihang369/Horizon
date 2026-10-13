@@ -222,7 +222,7 @@
   Verify the "Timeout" scenario and a cap test.
 - [x] 8.4 Scripted and the mock: the simulated call's purpose becomes `episode_summary`, and the canned text is
   unchanged. Verify the backend test and the mock test "Mock recap", plus the portable spend tests in both clients.
-- [ ] 8.5 Gates green; commit "M10 phase 8".
+- [x] 8.5 Gates green; commit "M10 phase 8".
 
 ## 9. Evaluation offline: datasets, policies, suites and smoke (design D16, D23)
 
