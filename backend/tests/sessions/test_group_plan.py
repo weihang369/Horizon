@@ -1,12 +1,15 @@
 """Group Auto under `agent`: the cast plan through the runtime (group-watch tasks 3.2, 3.3, 3.5; design D5, D11, D16,
 D22; session-modes "Group responders", "Group routing is traced"; turn-plan "The cast plan for group and watch";
-system1-trace "Who-speaks rows"). No network: Jev answers come from the fake (the first option, confidence 1/8, so
-below every floor) or from Decider fixtures."""
+system1-trace "Who-speaks rows"). No network: Jev answers come from the fake (the first option at 1/n, which the
+measured floors of 10.3 no longer keep below: `unsure_who` lowers the who-speaks answers to 0.1) or from Decider
+fixtures."""
 
 from __future__ import annotations
 
 import json
 from typing import Any
+
+import httpx
 
 from tests.conftest import Api
 from tests.sessions.kit import API, assert_reduces, chars, command, ledger, messages
@@ -14,6 +17,23 @@ from tests.sessions.test_turn_plan import agent
 
 AMARA, MEI, VICTOR = "chr_seedAmara", "chr_seedMei", "chr_seedVictor"
 TRIO = [AMARA, MEI, VICTOR]
+
+
+def unsure_who(api: Api) -> None:
+    """The fake's who-speaks answers at confidence 0.1, below every measured floor (who_first 0.2, who_second 0.3;
+    task 10.3): the fake's own 1/n (0.33 for three options) now clears them. The requests still go out."""
+    fake = api.rt.fake
+    assert fake is not None
+    plain = fake._decide
+
+    def decide(body: dict[str, Any]) -> httpx.Response:
+        data = json.loads(plain(body).content)
+        for key, ans in data["answers"].items():
+            if key.startswith("who_") and ans.get("type") == "choice":
+                ans["confidence"] = 0.1
+        return httpx.Response(200, json=data)
+
+    fake._decide = decide  # type: ignore[method-assign]
 
 
 def plan_requests(api: Api) -> list[dict[str, Any]]:
@@ -47,6 +67,7 @@ def rows(m: dict[str, Any]) -> list[dict[str, Any]]:
 # ── D5's table ──
 async def test_no_mention_asks_who_answers_first_and_every_face_in_one_request(api: Api) -> None:
     sid = await agent(api, "group", TRIO)
+    unsure_who(api)                                             # the follow plan: no second reply
     await fixture(api, "who_first", MEI, 0.9, chr_seedMei=0.9, chr_seedAmara=0.05, chr_seedVictor=0.05)
     await fixture(api, f"emotion_reply:{MEI}", "happy", 0.9)
     replies = await send(api, sid, "Who's up for a walk later?")
@@ -64,9 +85,10 @@ async def test_no_mention_asks_who_answers_first_and_every_face_in_one_request(a
 
 
 async def test_the_plan_call_is_listed_and_unsure_takes_the_least_recent_of_the_top_two(api: Api) -> None:
-    """The fake answers every choice with its first option at confidence 1/8, below the 0.6 floor: the least recently
-    spoken of Jev's top 2 answers, and the row says so (G1)."""
+    """Jev unsure of who answers first (below the floor): the least recently spoken of Jev's top 2 answers, and the row
+    says so (G1)."""
     sid = await agent(api, "group", TRIO)
+    unsure_who(api)
     replies = await send(api, sid, "Anyone around?")
     body = plan_requests(api)[0]                                # call 1 (the follow plan's request comes after it)
     assert set(body["questions"]) == {"who_first", *(f"emotion_reply:{c}" for c in TRIO)}

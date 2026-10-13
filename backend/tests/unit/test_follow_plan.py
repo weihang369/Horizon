@@ -98,7 +98,7 @@ async def test_none_gives_no_second_reply_and_rows_for_the_first() -> None:
 
 
 async def test_unsure_gives_no_second_reply() -> None:
-    planner, _, clock = make({"who_second": choice(MEI, 0.3), **faces()})
+    planner, _, clock = make({"who_second": choice(MEI, 0.2), **faces()})   # under the measured floor, 0.3
     plan, _ = await follow(planner, clock, request(clock))
     assert plan.second is None and plan.shared_rows[0]["result"] == "below_threshold"
 

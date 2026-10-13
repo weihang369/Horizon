@@ -42,7 +42,7 @@ export const PRICING: PricingTable = {
       episode: 30_000, // M10 (group-watch D19): the watch recap, one non-streamed call
       // Jev deadlines (docs/ai/13 W12, measured by group A A2 from Malaysia: Jev ≈ 420 ms p50 / 500 p99).
       decision: {
-        route: 400, turn_plan: 700, follow_plan: 400, debate_plan: 500, guardrail: 700, guardrail_prompt: 1_500,
+        route: 400, turn_plan: 700, follow_plan: 483, debate_plan: 500, guardrail: 700, guardrail_prompt: 1_500,
         reaction: 1_500, face_check: 1_500, default: 3_000,
       },
     },

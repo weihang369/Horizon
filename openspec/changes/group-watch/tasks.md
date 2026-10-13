@@ -277,7 +277,7 @@
 - [x] 10.5 Ask, then run `decisions --set emotion` for the watch slice (≈ $0.002): the `emotion_line` and
   `emotion_opening` floors, recorded as in 10.3.
 - [x] 10.6 Ask, then run `summary` for the 10 recaps (≈ $0.012). Record the target result, with every failure quoted.
-- [ ] 10.7 Ask, then run `latency --part follow` (≈ $0.004). Record the miss rate with and without spells.
+- [x] 10.7 Ask, then run `latency --part follow` (≈ $0.004). Record the miss rate with and without spells.
   - If more than 10 % miss: apply G2's rule (D9, D27), setting `timeoutsMs.decision.follow_plan` from the measured
     p90 of `S + L − F` in `seed/pricing.json` and its mirror. Record the NFR-02 exception and the finding.
 - [ ] 10.8 Ask, then run `latency --part watch` (≈ $0.03). Record against NFR-02's 3 s p50, with the plan-ahead
