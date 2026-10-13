@@ -68,7 +68,7 @@ async def test_the_plan_call_is_listed_and_unsure_takes_the_least_recent_of_the_
     spoken of Jev's top 2 answers, and the row says so (G1)."""
     sid = await agent(api, "group", TRIO)
     replies = await send(api, sid, "Anyone around?")
-    (body,) = plan_requests(api)
+    body = plan_requests(api)[0]                                # call 1 (the follow plan's request comes after it)
     assert set(body["questions"]) == {"who_first", *(f"emotion_reply:{c}" for c in TRIO)}
     assert "none" not in body["questions"]["who_first"]["criteria"]
     assert len(replies) == 1

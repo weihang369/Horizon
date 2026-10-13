@@ -22,8 +22,9 @@ import asyncio
 import contextlib
 import logging
 import re
-from collections.abc import Mapping
+from collections.abc import Awaitable, Callable, Mapping
 from dataclasses import dataclass, field
+from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
 from horizon.ai.contexts import DebateMeta, LineHint, PlanRequest, SessionContext, TurnContext, TurnPlan
@@ -79,12 +80,17 @@ class TurnSpec:
     debate: DebateMeta | None = None
     direction_note: str | None = None
     plan: TurnPlan | None = None                    # M10 (group-watch D3): a plan the mode already made for this turn
+    # M10 (doc 07 G2, doc 11 S5; group-watch D8): called at the stream's end of a reply that streamed without an error;
+    # it starts the follow plan and returns its handle (or None), which the outcome carries back to the mode
+    follow: Callable[[TurnInfo], Awaitable[Any]] | None = None
 
 
 @dataclass
 class TurnOutcome:
     message_id: str | None
     status: str          # complete | interrupted | error | refused | asleep | missing
+    follow: Any = None   # M10: the follow plan's handle, started at the stream's end (D8)
+    ended_at: datetime | None = None   # when turn.end was appended: the follow plan's deadline counts from here
 
 
 def deep_merge(base: dict[str, Any], patch: Mapping[str, Any]) -> dict[str, Any]:
@@ -337,9 +343,24 @@ class TurnRunner:
         elif not info.started:
             info.closed = True
             return TurnOutcome(None, "refused")
-        await self.finish(actor, info, spec, ctx, status=status, err=err, trace=trace, citations=citations,
-                          first_token_ms=first_token_ms, t0=t0, started_iso=started_iso, engine=engine)
-        return TurnOutcome(info.message_id, status)
+        follow: Any = None
+        if spec.follow is not None and err is None:   # S5: the follow plan starts at the stream's end
+            try:
+                follow = await spec.follow(info)
+            except Exception:
+                log.exception("the follow plan could not start after %s (no second reply)", info.message_id)
+        try:
+            status = await self.finish(actor, info, spec, ctx, status=status, err=err, trace=trace,
+                                       citations=citations, first_token_ms=first_token_ms, t0=t0,
+                                       started_iso=started_iso, engine=engine)
+        except BaseException:
+            if follow is not None:
+                follow.cancel()
+            raise
+        if follow is not None and status != "complete":   # a blocked reply (M14's check) has no follow plan
+            follow.cancel()
+            follow = None
+        return TurnOutcome(info.message_id, status, follow=follow, ended_at=rt.clock.now())
 
     @staticmethod
     def _emotion_event(info: TurnInfo, ev: Emotion) -> Wire:
@@ -363,7 +384,8 @@ class TurnRunner:
     async def finish(self, actor: SessionActor, info: TurnInfo, spec: TurnSpec, ctx: TurnContext | None, *, status: str,
                      err: ProviderError | None, trace: dict[str, Any], citations: list[dict[str, Any]] | None,
                      first_token_ms: float | None, t0: float, started_iso: str, engine: Any = None,
-                     interrupted_by: str | None = None) -> None:
+                     interrupted_by: str | None = None) -> str:
+        """Close the turn; returns its final status (a blocked reply ends `error`)."""
         rt = self.rt
         await rt.gateway.drain_background()   # a cut or stopped stream records its estimate in a shielded task
         mid = info.message_id
@@ -471,6 +493,7 @@ class TurnRunner:
             self._remember(actor, info, ctx)
         if status != "error":   # M8 (docs/ai/05 X2, X3): fold the window after the reply, never before it
             check_summary(actor)
+        return status
 
     def _scrubber(self, actor: SessionActor, info: TurnInfo) -> Any:
         """D13: the blocked reply's text leaves the stored token events and the message (same transaction)."""

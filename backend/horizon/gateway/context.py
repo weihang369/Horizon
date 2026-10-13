@@ -19,6 +19,7 @@ PURPOSE_CATEGORY: dict[str, Category] = {
     "route": "decision", "guardrail": "decision", "reaction": "decision", "importance": "decision",
     "rubric": "decision", "eval_judge": "decision",
     "turn_plan": "decision", "face_check": "decision",   # M9 (turn-plan-emotion design D4, D24)
+    "follow_plan": "decision",                           # M10 (group-watch design D8, D20)
     "query_embed": "embedding", "embed_doc": "embedding",
     "summary": "summary", "rolling_summary": "summary",   # M8 (docs/ai/05 X3): the rolling summary, apart from watch's
     "memory": "memory", "profile": "profile", "song": "music",

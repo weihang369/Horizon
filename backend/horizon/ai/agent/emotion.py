@@ -88,9 +88,11 @@ def _action(f: PlannedFace) -> str:
     return "faded to neutral" if f.faded else "kept"
 
 
-def emotion_row(f: PlannedFace, *, qid: str, version: int, label: str, about: str, used: bool = True) -> dict[str, Any]:
-    """The System 1 row for one candidate (W1, D13). `used` False: asked but didn't speak (`not_used`, M10's case)."""
-    row: dict[str, Any] = {"purpose": "turn_plan", "id": qid, "version": version, "label": label, "about": about}
+def emotion_row(f: PlannedFace, *, qid: str, version: int, label: str, about: str, used: bool = True,
+                purpose: str = "turn_plan") -> dict[str, Any]:
+    """The System 1 row for one candidate (W1, D13). `used` False: asked but didn't speak (`not_used`, M10's case).
+    `purpose` is the asking call's (M10 group-watch D22: an emotion asked by the follow plan is a `follow_plan` row)."""
+    row: dict[str, Any] = {"purpose": purpose, "id": qid, "version": version, "label": label, "about": about}
     if f.outcome in ("fallback", "late"):
         row.update(answer="faded to neutral" if f.faded else f"kept {f.face}", result="fallback", action=_action(f))
         return row if used else {**row, "result": "not_used"}

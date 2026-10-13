@@ -42,7 +42,7 @@ A follow plan SHALL carry purpose `follow_plan` in ledger category `decision`, a
 
 #### Scenario: Follow-plan row
 - **WHEN** an `agent` group's follow plan is answered
-- **THEN** its ledger row has `category: "decision"`, `purpose: "follow_plan"`, the session's ID and the first reply's message ID
+- **THEN** its ledger row has `category: "decision"`, `purpose: "follow_plan"` and the session's ID, and the call is listed on the trace of the reply it explains
 
 ### Requirement: A refused follow plan pauses nothing
 A daily-cap refusal of a `follow_plan` request SHALL publish the cap event without pausing live sessions, as for the after-turn purposes; the next reply's own preflight takes the pause.

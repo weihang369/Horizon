@@ -81,6 +81,10 @@ class JevTurnPlanner:
         from horizon.ai.agent.cast_plan import CastSteps
 
         self.cast_graph = build_plan_graph(CastSteps(deps))   # M10: group and watch (D3, D4)
+        from horizon.ai.agent.follow_plan import FollowSteps
+
+        self._follow = FollowSteps(deps)
+        self.follow_graph = build_plan_graph(self._follow)   # M10: the follow plan (D4, D8)
 
     async def plan_cast(self, req: CastRequest) -> CastPlan | None:
         """M10 (group-watch D3–D7, D11, D13, D14): who speaks and every candidate's face, in one `turn_plan` request.
@@ -98,7 +102,15 @@ class JevTurnPlanner:
         return out
 
     def start_follow(self, req: FollowRequest) -> Any:
-        return None   # phase 4 (group-watch D8)
+        """M10 (doc 07 G2; group-watch D8): start the follow plan at the first reply's stream end. None when nobody is
+        left to ask; a bug here costs the second reply, never the session."""
+        if not req.candidates:
+            return None
+        try:
+            return self._follow.start(self, req)
+        except Exception:
+            log.exception("the follow plan could not start after %s", req.first_id)
+            return None
 
     # ── the port ──
     async def plan(self, req: PlanRequest) -> TurnPlan | None:

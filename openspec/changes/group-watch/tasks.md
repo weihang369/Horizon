@@ -117,7 +117,7 @@
 
 ## 4. The follow plan (design D4, D8, D9)
 
-- [ ] 4.1 `ai/agent/follow_plan.py`: the follow state template of D8 (the builder, then `quoted_message`, with the
+- [x] 4.1 `ai/agent/follow_plan.py`: the follow state template of D8 (the builder, then `quoted_message`, with the
   2,000-token cut order) and the graph steps. `start_follow` returns a `FollowCall` whose `by(deadline)` waits on the
   deadline future with `vclock.wait_handoff` and then on the Decider's `by`. Verify with tests: the state shape, the
   cut order, and a pick, `none`, below floor, late, failure and 429 each giving D8's outcome and row.
@@ -127,11 +127,11 @@
   virtual clock:
   - a pick 120 ms after `turn.end` emits `turn.next` at +120 ms;
   - with no pick, the next job starts at +400 ms.
-- [ ] 4.3 Where it runs and where it doesn't (D8's lists, spec "When the follow plan runs"). Verify each case.
-- [ ] 4.4 No pick: `append_system1(first_id, variant, rows, calls)`, with purpose `follow_plan`, "no second reply"
+- [x] 4.3 Where it runs and where it doesn't (D8's lists, spec "When the follow plan runs"). Verify each case.
+- [x] 4.4 No pick: `append_system1(first_id, variant, rows, calls)`, with purpose `follow_plan`, "no second reply"
   and "(late)". Verify that a late follow plan's row lands on the first reply and that the late answer's ledger row
   is `late`.
-- [ ] 4.5 `PURPOSE_CATEGORY["follow_plan"] = "decision"`. A cap refusal publishes `budget.reached` without the pause
+- [x] 4.5 `PURPOSE_CATEGORY["follow_plan"] = "decision"`. A cap refusal publishes `budget.reached` without the pause
   hook (M9 D35's rule). Verify with a cap test that no `session.paused` comes from the follow plan.
 - [ ] 4.6 Settle test: 100 group sends with parked and released follow answers, two identical runs (D4). Record in
   m10.md.

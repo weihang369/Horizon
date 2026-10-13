@@ -191,6 +191,12 @@ class TurnPlanner(Protocol):                                           # ai/port
   - Phase 4 repeats check 1's settle test (100 group sends, parked and released answers, two identical runs) for the
     follow plan.
 
+- **Built note (phase 4):** simpler than the future above. `start_follow` builds the state and starts the Decider
+  call at once (at the stream's end); `by(deadline)` then runs the graph, whose `ask` step awaits the call already in
+  flight. No task ever blocks on a non-clock future, so the settling risk can't arise. The follow plan's ledger row
+  carries no message ID: it is listed on the trace it explains (second reply, or the first through `append_system1`),
+  so it is never listed twice.
+
 **Rejected:** a plain-code follow plan now, rewritten as a graph in M12.
 
 ### D5. Group Auto under `agent` (G1, G9; doc 01 A3, A4)

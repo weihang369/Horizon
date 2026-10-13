@@ -15,6 +15,7 @@ from horizon.ai.contexts import CastPlan, CueKind, RouteContext
 from horizon.ai.ports import RoutingDecision
 from horizon.gateway.errors import ProviderError
 from horizon.sessions.context import session_context
+from horizon.sessions.follow import answer_then_follow, second_reply
 from horizon.sessions.modes.common import (
     asleep_note,
     is_asleep,
@@ -208,6 +209,9 @@ async def _planned(actor: SessionActor, text: str, mentions: list[str]) -> bool:
                                                          forced_by="mention"))
         if plan is None:
             return False
+        if policy == "auto" and len(mentions) == 1:   # G1: one mention may get a second voice from the follow plan
+            await _with_follow(actor, _planned_spec(mentions[0], 0, text, True, "mention", skipped, plan), text)
+            return True
         await run_speakers(actor, mentions, text, forced=set(mentions), skipped=skipped, cast_plan=plan)
         return True
     if not rest:
@@ -215,8 +219,13 @@ async def _planned(actor: SessionActor, text: str, mentions: list[str]) -> bool:
     plan = await plan_cast(actor, await cast_request(actor, "group_first", rest, latest=text))
     if plan is None:
         return False
-    await run_speakers(actor, plan.order, text, skipped=skipped, cast_plan=plan)
+    await _with_follow(actor, _planned_spec(plan.order[0], 0, text, False, None, skipped, plan), text)
     return True
+
+
+async def _with_follow(actor: SessionActor, first: TurnSpec, text: str) -> None:
+    """The first reply, then the follow plan's optional second (doc 07 G2; group-watch D8)."""
+    await answer_then_follow(actor, first, text, lambda fp, cid, name: second_reply(fp, cid, name, prompt=text))
 
 
 def everyone_answer(actor: SessionActor) -> None:
