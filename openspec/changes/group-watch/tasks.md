@@ -261,7 +261,7 @@
   passes with no socket opened.
 - [x] 9.11 The delegated label review (D27): the B2 sample (max(15, ⌈n/5⌉) per set) checked against the rule and
   recorded in `evals/reviews/m10-*.md` before any paid run.
-- [ ] 9.12 Gates green; commit "M10 phase 9".
+- [x] 9.12 Gates green; commit "M10 phase 9".
 
 ## 10. Paid runs (design D24; each asked for separately, off-peak, with its estimate)
 
