@@ -54,3 +54,9 @@ The sampled ids are in `m10-review.json`.
   under the same reading before any Jev answer to them, numbered 61–100 after the first 60 so no id or split moved.
   46 cuts qualified; the six weakest mention-only ones (Sunny Hollow Market 11, 14, 25, 28, 36, 37) were left out to
   keep B2's 40. The sample of 15 found no disagreement.
+  After the commit, `overlap` flagged four of them (Meridian Inquiry #33, #34, #39, #42): their 12-line window holds
+  Mei's generated "I'll be there at six with the two columns printed", a six-word run of an `emotion_greeting`
+  example. They were replaced in place (ids `wsc1-072`–`075`) by four of the six left-out Sunny Hollow Market cuts
+  (#11, #28, #36, #37), still before any Jev answer, so no id or split moved. `wsc1-075` was in the sample as
+  Meridian Inquiry #42 (agreed); its replacement, Sunny Hollow Market #37 (Hana: "Old man's clapping at Rin's boss
+  fight" → Rin), was re-read under the same rule and agreed.
