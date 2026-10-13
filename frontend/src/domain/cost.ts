@@ -30,6 +30,8 @@ export interface GatewayConfig {
   embedBatch: number;
   timeoutsMs: {
     chatFirstToken: number; chatIdle: number; image: number; music: number; embedding: number; meta: number;
+    /** M10 (group-watch D19): watch's recap, the whole non-streamed call. */
+    episode: number;
     /** Jev deadlines per question deadline key (docs/ai/13 W12; group A A2). Keys a change doesn't call yet are inert. */
     decision: {
       route: number; turn_plan: number; follow_plan: number; debate_plan: number; guardrail: number;

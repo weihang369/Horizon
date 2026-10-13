@@ -67,6 +67,7 @@
         "music": 120000,
         "embedding": 30000,
         "meta": 10000,
+        "episode": 30000,
         "decision": {
           "route": 400,
           "turn_plan": 700,

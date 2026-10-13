@@ -200,7 +200,7 @@ export class MockClient implements HorizonClient {
       after: (sid, ms, fn) => this.liveOf(sid).player.appendRelative([{ t: ms, run: fn, tag: "chain" }]),
       takeStreamFault: () => this.takeStreamFault(),
       dailyCapReached: () => this.dailyCapReached(),
-      charge: (sid, category, costUsd) => this.chargeSession(sid, category, costUsd),
+      charge: (sid, category, costUsd, purpose) => this.chargeSession(sid, category, costUsd, purpose),
     };
     this.ready = this.init(opts, dev?.scenario);
     this.dev = this.makeDev();
@@ -358,10 +358,14 @@ export class MockClient implements HorizonClient {
     this.changed("usage");
   }
 
-  private chargeSession(sid: string, category: "decision" | "summary", costUsd: number): void {
+  private chargeSession(sid: string, category: "decision" | "summary", costUsd: number, purpose?: string): void {
     const model = category === "decision" ? this.db.pricing.decision : this.db.pricing.chat;
     this.ledger({ category, model: model.model, provider: model.provider, pricePeriod: this.period(), sessionId: sid, costUsd: round6(costUsd) });
+    if (purpose) this.chargedPurposes.push({ sessionId: sid, category, purpose });
   }
+
+  /** Test-only: the purposes of the simulated charges that name one (the contract's usage rows carry no purpose). */
+  readonly chargedPurposes: { sessionId: string; category: string; purpose: string }[] = [];
 
   // ── Live sessions (R1) ────────────────────────────────────────────────────
   private liveOf(sid: string): LiveSession {

@@ -7,6 +7,7 @@ clock time apart. Each turn raises `turnsTaken` (`watch.state` + `session.state`
 
 from __future__ import annotations
 
+import logging
 import random
 from datetime import timedelta
 from typing import TYPE_CHECKING, Any
@@ -33,8 +34,11 @@ from horizon.sessions.watch_plan import PLAN_AHEAD, ScenePick, start_plan_ahead,
 if TYPE_CHECKING:
     from horizon.sessions.actor import SessionActor
 
+log = logging.getLogger("horizon.sessions")
+
 Wire = dict[str, Any]
 SUMMARY_DELAY_MS = 1200
+RECAP_FAILED = "The recap couldn't be written this time. Try Summarise again."   # doc 07 G10, verbatim (no fake recap)
 
 
 def cfg_of(actor: SessionActor) -> Wire:
@@ -258,7 +262,14 @@ async def summarise(actor: SessionActor) -> None:
         sctx = await session_context(actor.rt, actor)
         try:
             text = await actor.rt.ai.summariser(runner(actor).key_set()).episode(sctx)
-        except ProviderError:
+        except ProviderError as e:
+            if e.code == "daily_budget_exceeded":
+                return   # the cap pause answers it, as for any capped call
+            await actor.emit(message_event(note(actor, RECAP_FAILED)))
+            return
+        except Exception:
+            log.exception("the recap failed in %s", actor.sid)
+            await actor.emit(message_event(note(actor, RECAP_FAILED)))
             return
         await actor.emit(message_event(note(actor, text, "summary")))
 

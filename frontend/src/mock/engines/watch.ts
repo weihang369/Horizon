@@ -143,7 +143,8 @@ export function summarise(h: EngineHost, sid: string): void {
   clearLive(live, { keepCurrentTurn: true });
   const names = live.state.session.participants.map((p) => h.db.characters[p.characterId]?.profile.name.split(" ")[0]).filter(Boolean);
   enqueue(live, (done) => h.after(sid, 1200, () => {
-    h.charge(sid, "summary", chatCostUsd({ tokensIn: 5200, tokensCached: 3000, tokensOut: 260 }, h.pricing.chat, h.period()));
+    // M10 (group-watch D19, D21): the canned recap's simulated call has the backend's purpose, `episode_summary`
+    h.charge(sid, "summary", chatCostUsd({ tokensIn: 5200, tokensCached: 3000, tokensOut: 260 }, h.pricing.chat, h.period()), "episode_summary");
     h.emit(sid, { type: "message", payload: { message: systemNote(h, sid, `Episode summary: ${names.join(", ")} spent the scene on "${cfgOf(live).premise}". ${stateOf(live).turnsTaken} turns, no one fully got their way, and everyone will remember it differently.`, "summary") } });
     done();
   }));

@@ -211,16 +211,16 @@
 
 ## 8. The episode recap (design D19, D20, D21)
 
-- [ ] 8.1 Add `timeoutsMs.episode` = 30000 to `seed/pricing.json` and `pricing.config.ts`, and
+- [x] 8.1 Add `timeoutsMs.episode` = 30000 to `seed/pricing.json` and `pricing.config.ts`, and
   `PURPOSE_CATEGORY["episode_summary"] = "summary"`. Verify `seed:check` and the provider-gateway scenario "Recap
   limit".
-- [ ] 8.2 `NaiveSummariser.episode`: D19's request (`episode-1`), the `episode` settings row, the 30 s limit, the
+- [x] 8.2 `NaiveSummariser.episode`: D19's request (`episode-1`), the `episode` settings row, the 30 s limit, the
   120-word cut at a sentence end, and empty output treated as a failure. Verify with the fake provider's canned
   `episode_summary` response (`X-Horizon-Purpose`): the ledger row's purpose and category, no energy change, and an
   over-long output cut.
-- [ ] 8.3 `watch.summarise` posts the failure note on any non-cap failure, and a cap refusal takes the existing pause.
+- [x] 8.3 `watch.summarise` posts the failure note on any non-cap failure, and a cap refusal takes the existing pause.
   Verify the "Timeout" scenario and a cap test.
-- [ ] 8.4 Scripted and the mock: the simulated call's purpose becomes `episode_summary`, and the canned text is
+- [x] 8.4 Scripted and the mock: the simulated call's purpose becomes `episode_summary`, and the canned text is
   unchanged. Verify the backend test and the mock test "Mock recap", plus the portable spend tests in both clients.
 - [ ] 8.5 Gates green; commit "M10 phase 8".
 

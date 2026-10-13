@@ -72,7 +72,7 @@ export interface EngineHost {
   /** True when today's spend has reached the daily cap. */
   dailyCapReached(): boolean;
   /** Ledger + daily spend for non-reply AI calls (verdict, summary, routing). Never drains energy (D-42). */
-  charge(sessionId: string, category: "decision" | "summary", costUsd: number): void;
+  charge(sessionId: string, category: "decision" | "summary", costUsd: number, purpose?: string): void;
 }
 
 // ── Queue ────────────────────────────────────────────────────────────────────

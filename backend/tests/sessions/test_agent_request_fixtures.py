@@ -170,7 +170,7 @@ def test_the_prefix_is_the_same_in_all_four_label_cases(mood: bool, sentence: bo
                mode="group", summary="**Kai**\n- Likes tea.")
     c = cued(base, "second" if sentence else None, "Hana", face="happy")
     req, prefix = make(switches).request(c)
-    ref, ref_prefix = make().request(cued(base, None))
+    _, ref_prefix = make().request(cued(base, None))
     assert prefix == ref_prefix and len(prefix) == 2           # system message 1 and the summary message
     assert make(switches).prompt_version_for(c) == label
     assert (SECOND in str(req.messages[-1]["content"])) is sentence

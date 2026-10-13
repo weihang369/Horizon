@@ -447,7 +447,7 @@ class ScriptedSummariser:
     async def episode(self, ctx: SessionContext) -> str:
         prices = self.deps.prices
         await self.deps.gateway().simulated_call(
-            ctx.call_ctx("summary"), model=prices.chat.model, tokens_in=5200, tokens_cached=3000, tokens_out=260,
+            ctx.call_ctx("episode_summary"), model=prices.chat.model, tokens_in=5200, tokens_cached=3000, tokens_out=260,
             cost_usd=chat_cost(prices.chat, tokens_in=5200, tokens_cached=3000, tokens_out=260,
                                mult=multiplier(prices, ctx.period)), latency_ms=1200)
         names = [p.name.split(" ")[0] for p in ctx.participants]

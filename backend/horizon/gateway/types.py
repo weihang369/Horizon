@@ -49,6 +49,7 @@ class Timeouts:
     embedding: float
     meta: float
     music: float = 120.0                 # first-audio deadline for a music stream (D-87); `chat_idle` between chunks
+    episode: float = 30.0                # M10 (group-watch D19): watch's recap, the whole (non-streamed) call
     decision: Mapping[str, float] = field(default_factory=dict)
 
     def for_decision(self, purpose: str) -> float:
@@ -74,6 +75,7 @@ class GatewayConfig:
             timeouts=Timeouts(
                 chat_first_token=t["chatFirstToken"] / 1000, chat_idle=t["chatIdle"] / 1000, image=t["image"] / 1000,
                 embedding=t["embedding"] / 1000, meta=t["meta"] / 1000, music=t["music"] / 1000,
+                episode=t.get("episode", 30000) / 1000,
                 decision={str(k): float(v) / 1000 for k, v in t["decision"].items()},
             ),
         )

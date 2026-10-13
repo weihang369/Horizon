@@ -282,6 +282,24 @@ export function runPortableContract(label: string, makeHarness: MakeHarness, opt
       expect(types).toEqual(["message:user", "turn.next", "turn.end", "message:user", "turn.next", "turn.end", "turn.next", "turn.end"]);
     });
 
+    test("M10", "watch Summarise (scripted): the canned recap and one summary charge (doc 07 G10)", async () => {
+      const { c, tick } = await make({ key: true });
+      const s = await c.sessions.create({ worldId: "wld_seedSunnyHollow", mode: "watch", characterIds: ["chr_seedHana", "chr_seedTakeshi"],
+        config: { premise: "A quiet evening at the bakery.", maxTurns: 10, paceMs: 500, openingSpeaker: "auto" } });
+      const sid = s.session.id;
+      await tick(8000);
+      await c.watch.pause(sid);
+      await tick(15000);
+      const before = (await c.usage.list()).filter((r) => r.sessionId === sid && r.category === "summary").length;
+      await c.watch.summarise(sid);
+      await tick(5000);
+      const recaps = (await c.sessions.messages(sid)).filter((m) => m.kind === "summary");
+      expect(recaps).toHaveLength(1);
+      expect(recaps[0].content.startsWith("Episode summary:")).toBe(true);
+      const after = (await c.usage.list()).filter((r) => r.sessionId === sid && r.category === "summary").length;
+      expect(after - before).toBe(1);
+    });
+
     test("M3", "stream cut: error(network) then turn.end(interrupted)", async () => {
       const { c, tick, setScenario } = await make({ key: true });
       const s = await c.sessions.create({ worldId: "wld_seedMeridian", mode: "one_on_one", characterIds: ["chr_seedVictor"] });

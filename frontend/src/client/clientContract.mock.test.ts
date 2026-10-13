@@ -183,5 +183,20 @@ describe("MockClient only", () => {
     const replyCall = reply!.trace!.calls!.find((x) => x.purpose === "reply")!;
     expect(replyCall.costUsd).toBe(reply!.usage?.costUsd);                       // the reply's own cost is unchanged
   });
+
+  it("Mock recap: the canned recap's charge has purpose episode_summary in category summary (group-watch D19, D21)", async () => {
+    const h = await mockHarness();
+    await h.setKey();
+    const s = await h.mock.sessions.create({ worldId: "wld_seedSunnyHollow", mode: "watch", characterIds: ["chr_seedHana", "chr_seedTakeshi"],
+      config: { premise: "A quiet evening at the bakery.", maxTurns: 10, paceMs: 500, openingSpeaker: "auto" } });
+    await h.advance(8000);
+    await h.mock.watch.pause(s.session.id);
+    await h.advance(15000);
+    await h.mock.watch.summarise(s.session.id);
+    await h.advance(5000);
+    expect(h.mock.chargedPurposes.filter((x) => x.sessionId === s.session.id))
+      .toEqual([{ sessionId: s.session.id, category: "summary", purpose: "episode_summary" }]);
+    expect((await h.mock.sessions.messages(s.session.id)).filter((m) => m.kind === "summary")).toHaveLength(1);
+  });
 });
 
