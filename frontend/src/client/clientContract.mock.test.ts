@@ -66,7 +66,7 @@ describe("MockClient only", () => {
 
   it("the HTTP run declares M6, the last milestone: nothing is pending there either", () => {
     const src = readFileSync(path.resolve(__dirname, "clientContract.http.test.ts"), "utf8");
-    expect(src).toMatch(/runPortableContract\("HttpClient", httpHarness, \{ supports: "M8" \}\);/);
+    expect(src).toMatch(/runPortableContract\("HttpClient", httpHarness, \{ supports: "M10" \}\);/);
   });
 
   // Mock-only by design (http-client-parity D1): each checks mock semantics or wiring that the backend does differently.

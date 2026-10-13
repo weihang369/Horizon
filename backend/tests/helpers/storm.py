@@ -30,11 +30,13 @@ async def storm(task: asyncio.Task[Any], *, after_s: float = 0.0) -> None:
 
 
 async def assert_writer_free(db: Database) -> None:
-    """No connection is left checked out, and a fresh write commits within `FREE_WITHIN_S`."""
+    """A fresh write commits, and every connection is back in its pool, within `FREE_WITHIN_S`. (In a live session the
+    next job may hold a reader for a moment; a leaked connection never comes back, so this times out.)"""
     async with asyncio.timeout(FREE_WITHIN_S):
         async with db.write() as tx:
             await tx.conn.execute(text("SELECT 1"))
-    assert db._checked_out() == 0
+        while db._checked_out():  # noqa: ASYNC110 - the pool has no event to wait on (Database.dispose polls too)
+            await asyncio.sleep(0.01)
 
 
 def park_next_decision(rt: Any) -> asyncio.Event:

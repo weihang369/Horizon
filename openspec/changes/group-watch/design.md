@@ -558,9 +558,10 @@ unaffected. M14's output check gives back the head start, and the deadline is th
   and the composer is blocked while it streams.
 - **The mock** (`mock/engines/group.ts`, `host.ts`): the same epoch on `LiveSession`, the same check where
   `speakThen` emits `turn.next`, and the same skip of stale queued tasks.
-- **The parity fixture** (`backend/tests/fixtures/group_parity/supersede.json`): a scripted group under policy
-  `auto`, "A" sent, then "B" sent in the gap after the first reply of "A". Both the backend scripted run and the mock
-  must produce the same sequence of event types and speakers. "A"'s second reply never appears, and "B" is answered.
+- **The parity test** (built note: a portable contract test, milestone `M10`, rather than a fixture file, so the
+  same test runs on the MockClient and on the backend through `test:http`): a scripted group under policy `auto`, "A"
+  sent, then "B" sent in the gap after the first reply of "A". Both clients must produce the same sequence of event
+  types and speakers. "A"'s second reply never appears, and "B" is answered.
 - **The storms (D2):** a storm on the send that supersedes, landing in the user message's append and in the
   `turn.next` check, leaves the writer free, and the log reduces.
 

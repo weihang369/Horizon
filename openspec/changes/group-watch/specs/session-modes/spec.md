@@ -75,7 +75,7 @@ In group and on Step in, in every profile, a new user message SHALL cancel every
 - **THEN** that reply streams and completes before the new message is answered
 
 #### Scenario: Mock parity
-- **WHEN** the shared supersede fixture runs on the scripted backend and on the MockClient
+- **WHEN** the shared supersede contract test runs on the scripted backend and on the MockClient
 - **THEN** both produce the same sequence of event types and speakers
 
 ### Requirement: Step in follows the group rule under agent

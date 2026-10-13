@@ -72,6 +72,15 @@ function pickResponders(h: EngineHost, sid: string, text: string, mentions: stri
 
 export function send(h: EngineHost, sid: string, text: string, mentions: string[] = []): void {
   h.emit(sid, { type: "message", payload: { message: userMessage(h, sid, text) } });
+  // M10 (doc 07 G1; group-watch D5): every mentioned character asleep → each gets the asleep note, nobody else answers
+  const live = mentions.filter((m) => h.db.characters[m] && h.live(sid).state.session.participants.some((p) => p.characterId === m));
+  if (live.length && live.every((m) => isAsleep(h, m))) {
+    enqueue(h.live(sid), (done) => {
+      for (const m of live) asleepNote(h, sid, m, false);
+      done();
+    });
+    return;
+  }
   const r = pickResponders(h, sid, text, mentions);
   // The Jev routing question (TurnTrace.calls "route") is a paid decision call.
   if (r.candidates.length) h.charge(sid, "decision", decisionCostUsd(ROUTE_DECISION_TOKENS, h.pricing.decision));

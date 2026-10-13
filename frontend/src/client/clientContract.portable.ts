@@ -28,7 +28,7 @@ export interface ContractHarness {
 export type MakeHarness = () => Promise<ContractHarness>;
 
 /** The backend milestone whose routes a test needs (doc backend/06). The mock supports everything ("all"). */
-export type Milestone = "M1b" | "M2" | "M3" | "M4" | "M5" | "M6" | "M7" | "M8";
+export type Milestone = "M1b" | "M2" | "M3" | "M4" | "M5" | "M6" | "M7" | "M8" | "M10";
 
 /** A valid 16×9 PNG (83 bytes) for the cover upload tests. */
 const TINY_PNG = [
@@ -36,7 +36,7 @@ const TINY_PNG = [
   0, 26, 73, 68, 65, 84, 120, 156, 99, 212, 59, 178, 141, 129, 20, 192, 68, 146, 106, 134, 81, 13, 196, 1, 146, 131, 21, 0, 231,
   232, 1, 186, 121, 203, 221, 186, 0, 0, 0, 0, 73, 69, 78, 68, 174, 66, 96, 130,
 ];
-export const MILESTONES: readonly Milestone[] = ["M1b", "M2", "M3", "M4", "M5", "M6", "M7", "M8"];
+export const MILESTONES: readonly Milestone[] = ["M1b", "M2", "M3", "M4", "M5", "M6", "M7", "M8", "M10"];
 export interface PortableOptions {
   /** The latest milestone this client's backend implements. Later tests are listed as `[pending Mx]`, never silently skipped. */
   supports: Milestone | "all";
@@ -241,6 +241,19 @@ export function runPortableContract(label: string, makeHarness: MakeHarness, opt
       expect(chars(msgs).every((m) => m.author.characterId !== "chr_seedTakeshi")).toBe(true);
       await c.characters.topUpEnergy("chr_seedTakeshi", 500);
       expect((await c.characters.get("chr_seedTakeshi")).energy.current).toBe(500);
+    });
+
+    test("M10", "group: when every mentioned character is asleep, nobody else answers (doc 07 G1)", async () => {
+      const { c, tick, setScenario } = await make({ key: true });
+      await setScenario("character_exhausted");
+      const s = await c.sessions.create({ worldId: "wld_seedSunnyHollow", mode: "group", characterIds: ["chr_seedHana", "chr_seedTakeshi"] });
+      await tick(6000);
+      const before = chars(await c.sessions.messages(s.session.id)).length;
+      await c.chat.send(s.session.id, "Dad, are you awake?", { mentions: ["chr_seedTakeshi"] });
+      await tick(15000);
+      const msgs = await c.sessions.messages(s.session.id);
+      expect(msgs.filter((m) => m.kind === "system_note" && /Takeshi is asleep/.test(m.content))).toHaveLength(1);
+      expect(chars(msgs)).toHaveLength(before);   // Hana doesn't step in for him
     });
 
     test("M3", "stream cut: error(network) then turn.end(interrupted)", async () => {

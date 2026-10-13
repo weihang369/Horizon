@@ -160,8 +160,10 @@ class TurnRunner:
         if spec.skipped:
             nxt["skipped"] = spec.skipped
         # M9 (turn-plan-emotion D6): an `agent` 1:1 turn is planned from here, so Jev overlaps the thinking delay
+        # M10 (group-watch D3): a group or watch turn arrives with its plan already made by the mode
         planning = (rt.spawn(f"plan:{actor.sid}", self._plan(actor, spec, row, mid))
-                    if prefetch is None and not spec.line.verbatim and actor.mode_name == "one_on_one" else None)
+                    if prefetch is None and not spec.line.verbatim and actor.mode_name == "one_on_one"
+                    and spec.plan is None else None)
         try:
             await actor.emit({"type": "turn.next", "payload": nxt})
             await rt.clock.sleep(rt.runtime_cfg.timing.thinking_ms / 1000)
@@ -169,7 +171,7 @@ class TurnRunner:
             if prefetch is not None:
                 info.ctx = prefetch.ctx
                 return await self._stream(actor, spec, info, prefetch.ctx, t0, started_iso, prefetch=prefetch)
-            plan: TurnPlan | None = None
+            plan: TurnPlan | None = spec.plan
             if planning is not None:
                 sctx, plan = await vclock.join(planning)   # the worker's token is given up while Jev thinks
             else:

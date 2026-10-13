@@ -27,3 +27,54 @@ async def test_a_storm_while_the_one_on_one_plan_waits_leaves_the_writer_free(ap
     await api.drive(2000)
     assert [r for r in await ledger(api) if r["purpose"] == "turn_plan"][-1]["finish_reason"] == "cancelled"
     assert not [r for r in await ledger(api) if r["purpose"] == "reply"]
+
+
+# ── M10 phase 3 (task 3.6): the group cast plan ──
+async def test_a_storm_while_the_group_cast_plan_waits_leaves_the_writer_free(api: Api) -> None:
+    from tests.sessions.kit import assert_reduces
+
+    sid = await agent(api, "group", ["chr_seedAmara", "chr_seedMei", "chr_seedVictor"])
+    release = park_next_decision(api.rt)
+    await command(api, sid, "send", {"text": "Anyone around?"})
+    await api.drive(200)                                   # the job is planning; Jev is parked
+    actor: SessionActor = await api.rt.sessions.get(sid)
+    worker = actor._worker
+    assert worker is not None and not worker.done()
+    await storm(worker)
+    await assert_writer_free(api.rt.db)
+    release.set()
+    await api.drive(2000)
+    assert [r for r in await ledger(api) if r["purpose"] == "turn_plan"][-1]["finish_reason"] == "cancelled"
+    assert not [r for r in await ledger(api) if r["purpose"] == "reply"]
+    await assert_reduces(api, sid)
+
+
+async def test_a_storm_in_the_user_messages_append_leaves_the_writer_free(api: Api) -> None:
+    """`group.send` itself is cancelled on every loop turn while it appends the user's message (and, if it got that
+    far, while it queues the planned job): the append commits whole or not at all, and the writer is free after each
+    storm. (Run in a task of its own: storming `submit()` would only cancel the caller's future, not the append.)"""
+    import asyncio
+    import random
+
+    from horizon.services.runtime.reducer import ordered_messages
+    from horizon.sessions.modes import group
+    from tests.sessions.kit import assert_reduces
+
+    sid = await agent(api, "group", ["chr_seedAmara", "chr_seedMei", "chr_seedVictor"])
+    actor: SessionActor = await api.rt.sessions.get(sid)
+    rng = random.Random(3)
+    cut = 0
+    for i in range(30):
+        users = sum(1 for m in ordered_messages(actor.state) if m["author"]["type"] == "user")
+        task = asyncio.ensure_future(group.send(actor, f"Ping {i}", []))
+        await storm(task, after_s=rng.uniform(0.0, 0.03))
+        await assert_writer_free(api.rt.db)
+        after = sum(1 for m in ordered_messages(actor.state) if m["author"]["type"] == "user")
+        assert after - users in (0, 1)
+        cut += after == users
+        await actor.clear()
+    print(f"\nstorms on the user message's append: {cut} of 30 cut before it committed")
+    assert 0 < cut < 30   # the storms hit both sides
+    await api.drive(60000)
+    await assert_writer_free(api.rt.db)
+    await assert_reduces(api, sid)

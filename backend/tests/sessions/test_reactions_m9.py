@@ -28,7 +28,9 @@ async def group(api: Api) -> str:
 
 
 async def ask_amara(api: Api, sid: str, text: str = "What do you think?", ms: float = 20000) -> None:
-    await command(api, sid, "send", {"text": text, "mentions": [AMARA]})
+    """Amara answers, then Mei. M10: under `agent` a second speaker after one mention comes from the follow plan, so
+    both are mentioned here to keep the order fixed (no follow plan with two mentions, doc 07 G1)."""
+    await command(api, sid, "send", {"text": text, "mentions": [AMARA, MEI]})
     await api.drive(ms)
 
 
@@ -109,8 +111,8 @@ async def test_late_answer_and_next_speaker_not_delayed(api: Api) -> None:
     sid = await group(api)
     assert api.rt.fake is not None
     n0 = api.rt.fake.counts["decisions"]
-    release = api.rt.fake.park_decision(n0 + 2)                            # route, then Amara's reaction request
-    await command(api, sid, "send", {"text": "We won the grant!", "mentions": [AMARA]})
+    release = api.rt.fake.park_decision(n0 + 2)                            # the plan, then Amara's reaction request
+    await command(api, sid, "send", {"text": "We won the grant!", "mentions": [AMARA, MEI]})
     await api.drive(3000)
     evs = await events(api, sid)
     ends = [e for e in evs if e["type"] == "turn.end"]

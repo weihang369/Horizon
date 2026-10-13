@@ -43,7 +43,7 @@
 - [x] 0.3 Add a `park_decision`-based helper that holds a Decider call open so a storm can land "during a plan".
   Verify it with a test on M9's 1:1 plan: a storm during the parked plan leaves the writer free and the `turn_plan`
   row `cancelled`.
-- [ ] 0.4 Gates green; commit "M10 phase 0".
+- [x] 0.4 Gates green; commit "M10 phase 0".
 
 ## 1. The bank: the `none` switch, the label check on options, and the new entries (design D6, D7)
 
@@ -95,21 +95,23 @@
 
 ## 3. Group Auto under `agent`, G1 in the shared runtime (design D5, D6, D18, D21)
 
-- [ ] 3.1 In `group.send`: when every mentioned character is asleep, post each one's asleep note, then return. Make
-  no router or planner call, in every profile. Make the same change in `mock/engines/group.ts`, with a parity fixture
-  `backend/tests/fixtures/group_parity/asleep_mention.json`. Verify backend and mock tests.
-- [ ] 3.2 The group job calls `plan_cast` first. With a plan, `run_speakers` gets the plan's `order` and passes each
+- [x] 3.1 In `group.send`: when every mentioned character is asleep, post each one's asleep note, then return. Make
+  no router or planner call, in every profile. Make the same change in `mock/engines/group.ts`. Parity is a portable
+  contract test (milestone `M10`, run on the MockClient by `npm test` and on the backend by `npm run test:http`, now
+  `supports: "M10"`), which is stronger than a shared fixture file: the same test runs against both clients. Verify
+  both runs and the backend test.
+- [x] 3.2 The group job calls `plan_cast` first. With a plan, `run_speakers` gets the plan's `order` and passes each
   speaker `TurnSpec.plan = for_speaker(…)`. Without one (`naive`, `scripted`), the router path runs unchanged. Verify
   every row of D5's table with fixture answers, including a single eligible character (emotion asked, no who
   question).
-- [ ] 3.3 `TurnRunner.run` uses `spec.plan` when set: no plan task, the plan's rows and calls, and no retrieval when
+- [x] 3.3 `TurnRunner.run` uses `spec.plan` when set: no plan task, the plan's rows and calls, and no retrieval when
   `branch` is set. Verify a planned group reply's trace (routing question "who answers first?", a `turn_plan` call,
   rows), and that M9's 1:1 path is unchanged (the existing 1:1 tests pass).
-- [ ] 3.4 `start_query` returns at once when the resolved planner's `decides_retrieval` is true (D18). Verify with
+- [x] 3.4 `start_query` returns at once when the resolved planner's `decides_retrieval` is true (D18). Verify with
   tests that `agent` 1:1 and group sends write no `query_embed` row even with vectors, and that `naive` still embeds.
-- [ ] 3.5 MANUAL in group: each candidate's base face is its last AI-chosen face. Verify that a MANUAL group reply's
+- [x] 3.5 MANUAL in group: each candidate's base face is its last AI-chosen face. Verify that a MANUAL group reply's
   row action is "recorded (MANUAL)" and the shown face is unchanged.
-- [ ] 3.6 Storm tests (D2) for a cast plan cancelled during the user message's append and during the parked plan.
+- [x] 3.6 Storm tests (D2) for a cast plan cancelled during the user message's append and during the parked plan.
   Verify the writer is free, the log reduces, and the row is `cancelled`.
 - [ ] 3.7 Gates green; commit "M10 phase 3".
 
@@ -151,8 +153,8 @@
   - "Announced reply finishes";
   - a watch Step in during a scene turn's gap keeps its `turnsTaken` increment.
 - [ ] 5.3 The mock: the epoch on `LiveSession`, the check where `speakThen` emits `turn.next`, and stale tasks
-  skipped. Add the parity fixture `backend/tests/fixtures/group_parity/supersede.json`, run by the backend scripted
-  test and a mock test. Verify both produce the same event types and speakers.
+  skipped. Parity is a portable contract test (milestone `M10`, as in 3.1), run on the MockClient and on the backend.
+  Verify both produce the same event types and speakers.
 - [ ] 5.4 Next speaker under `agent`: `plan_cast(kind="next")` with `who_next` minus the last speaker, or the chosen
   character's emotion only, and cue `next`. Verify the spec scenario "Next speaker under agent", and that
   `naive`/`scripted` stay random.

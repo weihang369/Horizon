@@ -205,7 +205,8 @@ async def test_agent_reply_through_the_runtime(api: Api) -> None:
 async def test_group_budget_and_prefix_is_stable_between_turns(api: Api) -> None:
     sid = await _agent(api, "group", ["chr_seedAmara", "chr_seedMei"])
     for text in ("@Amara what do you think?", "@Amara and now?"):
-        await command(api, sid, "send", {"text": text})
+        # M10: under `agent` the group is planned (Jev picks the speaker), so the mention is explicit
+        await command(api, sid, "send", {"text": text, "mentions": ["chr_seedAmara"]})
         await api.drive(20000)
     replies = chars(await messages(api, sid))
     assert replies[-1]["trace"]["context"]["budget"] == 14680

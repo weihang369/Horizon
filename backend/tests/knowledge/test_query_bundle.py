@@ -127,3 +127,29 @@ async def test_cap_refusing_the_query_embedding_means_keywords_and_no_error_even
     assert reply["status"] == "complete" and reply["content"]
     assert await query_rows(api) == []
     assert not [e for e in (await events(api, sid))[before:] if e["type"] == "error"]
+
+
+# ── M10 (group-watch task 3.4, design D18; session-modes "Agent group and watch retrieve nothing before M12") ──
+async def test_agent_sends_start_no_query_embedding_even_with_vectors(api: Api) -> None:
+    """The plan decides retrieval under `agent`, and no gate is asked before M12, so a sent message embeds nothing,
+    in 1:1 and in group. (M9 D9 said so for 1:1; M10 builds it.)"""
+    await api.set_key()
+    await naive_retrieval(api)
+    await indexed_note(api)
+    assert (await api.post(f"{API}/_test/ai-profile", {"profile": "agent"})).status_code == 204
+    _, replies = await group_send(api, "What happens to burnout on night shifts?")
+    sid = (await create(api, "one_on_one", [AMARA]))["session"]["id"]
+    await api.drive(6000)
+    await command(api, sid, "send", {"text": "What happens to burnout on night shifts?"})
+    await api.drive(20000)
+    assert replies and await query_rows(api) == []
+    assert all("knowledge" not in m["trace"] for m in [*replies, *chars(await messages(api, sid))])
+
+
+async def test_naive_still_embeds_the_query(api: Api) -> None:
+    await api.set_key()
+    await naive_retrieval(api)
+    await indexed_note(api)
+    assert (await api.post(f"{API}/_test/ai-profile", {"profile": "naive"})).status_code == 204
+    await group_send(api, "What happens to burnout on night shifts?")
+    assert len(await query_rows(api)) == 1

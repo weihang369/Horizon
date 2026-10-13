@@ -75,11 +75,25 @@ async def test_a_generated_greeting_asks_the_greeting_question(api: Api) -> None
 
 
 async def test_group_stays_unplanned(api: Api) -> None:
+    """M9's behaviour, now M10's rollback: with the planner overridden to `naive`, an `agent` group is routed by the
+    naive router and nothing is planned (turn-plan "Group stays unplanned in M9")."""
     sid = await agent(api, "group", [AMARA, "chr_seedMei"])
+    r = await api.post(f"{API}/_test/ai-profile", {"profile": "agent", "overrides": {"planner": "naive"}})
+    assert r.status_code == 204
     before = len(await ledger(api))
     await command(api, sid, "send", {"text": "@Amara what do you think?"})
     await api.drive(20000)
-    assert "turn_plan" not in purposes((await ledger(api))[before:])
+    new = purposes((await ledger(api))[before:])
+    assert "turn_plan" not in new and "route" in new
+
+
+async def test_group_is_planned_from_m10(api: Api) -> None:
+    sid = await agent(api, "group", [AMARA, "chr_seedMei"])
+    before = len(await ledger(api))
+    await command(api, sid, "send", {"text": "What do you both think?"})
+    await api.drive(20000)
+    new = purposes((await ledger(api))[before:])
+    assert new[0] == "turn_plan" and "route" not in new
 
 
 async def test_naive_asks_nothing_new(api: Api) -> None:
