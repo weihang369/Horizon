@@ -14,6 +14,7 @@ not an independent reviewer.
 | `emotion/emotion_watch` | 40 | 15 | 1013 | 1 | that item relabelled |
 | `who_speaks/who_scene` (pass 1, task 10.2) | 60 | 15 | 1014 | 2 | the whole set relabelled |
 | `who_speaks/who_scene` (pass 2) | 60 | 15 | 1015 | 1 | that cut replaced |
+| `who_speaks/who_scene` (G11's growth, items 61–100) | 40 | 15 | 1016 | 0 | none |
 
 The sampled ids are in `m10-review.json`.
 
@@ -40,11 +41,16 @@ The sampled ids are in `m10-review.json`.
   name. Pass 1 found two labels that don't hold: Meridian #22 ("someone going quiet when they were chatty" only
   implies Victor) and #72 (Mei asked Victor to read the clause and Amara has the clinic's stake; either could fairly
   answer). Two disagreements trigger B2's relabel, so all 60 cuts were re-read with the reading the rule implies made
-  explicit: a direct address or question outranks a mention, and a cut where both candidates are addressed directly,
-  or neither is, isn't an item. Nine cuts were dropped (Meridian #3, #7, #22, #45, #69, #72, #77; Sunny Hollow #16,
+  explicit: a direct address or question outranks a mention; a cut where both candidates are addressed directly, or
+  both are only mentioned, isn't an item; otherwise the one named, or plainly in their field, is the label. Nine cuts were dropped (Meridian #3, #7, #22, #45, #69, #72, #77; Sunny Hollow #16,
   #36) and nine clear ones added. Pass 2 found one more of the same kind, Meridian #39 (Victor mentions Amara and Mei
   and addresses neither); it was replaced by Sunny Hollow #11 (Rin: "the clipboard always wins, hana"). For
   transparency: the dropped cuts mostly agreed with the round-robin baseline (7 of 9 at pass 1) and the added ones
   mostly didn't, so the baseline's test-split score moved from 16/20 to 11/20 between the passes. The cuts were chosen
   by the rule above without looking at the baseline; the shift says that ambiguous cuts in round-robin histories
   tend to name the next character in order.
+- **`who_scene`'s growth** (task 10.3; G11: the first 60's test interval, 0.43–0.82, straddled 0.80; the user chose
+  to grow). 40 cuts from two new 50-turn naive histories (`meridian_inquiry`, `sunnyhollow_market`), labelled blind
+  under the same reading before any Jev answer to them, numbered 61–100 after the first 60 so no id or split moved.
+  46 cuts qualified; the six weakest mention-only ones (Sunny Hollow Market 11, 14, 25, 28, 36, 37) were left out to
+  keep B2's 40. The sample of 15 found no disagreement.

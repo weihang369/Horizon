@@ -146,5 +146,26 @@
     ]
    }
   ]
+ },
+ "who_speaks/who_scene_growth": {
+  "seed": 1016,
+  "sample": [
+   "wsc1-062",
+   "wsc1-065",
+   "wsc1-071",
+   "wsc1-075",
+   "wsc1-076",
+   "wsc1-077",
+   "wsc1-079",
+   "wsc1-083",
+   "wsc1-084",
+   "wsc1-085",
+   "wsc1-092",
+   "wsc1-095",
+   "wsc1-096",
+   "wsc1-097",
+   "wsc1-099"
+  ],
+  "disagree": []
  }
 }

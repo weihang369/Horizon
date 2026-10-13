@@ -72,7 +72,8 @@ def test_the_builders_are_deterministic_and_use_the_live_state() -> None:
 
 def test_the_watch_part_is_built_from_the_committed_histories() -> None:
     """10.2: `who_scene` is the live cast plan's state at each labelled cut of `evals/watch/*.json`, one acceptable
-    name per item (never the last speaker), all English (the user's choice), at least 20 test items (D23)."""
+    name per item (never the last speaker), all English (the user's choice), at least 20 test items (D23). G11's growth
+    (10.3) adds 40 after the first 60, whose ids and splits never move."""
     import sys
 
     sys.path.insert(0, str(DATASETS / "who_speaks"))
@@ -80,7 +81,8 @@ def test_the_watch_part_is_built_from_the_committed_histories() -> None:
     scene = load("who_scene_build", DATASETS / "who_speaks" / "scene.py")
     rows = scene.build_scene(who.profiles())
     assert rows == suites.load_dataset(DATASETS / "who_speaks" / "who_scene.jsonl")
-    assert len(rows) == 60 and sum(r["split"] == "test" for r in rows) >= 20
+    assert len(rows) == 100 and sum(r["split"] == "test" for r in rows[:60]) >= 20
+    assert {r["source"].split("#")[0] for r in rows[:60]} == {"watch:meridian_long", "watch:sunnyhollow"}
     for r in rows:
         label = r["label"]
         assert len(label["acceptable"]) == 1 and set(label["acceptable"]) <= set(label["candidates"])

@@ -1,0 +1,11 @@
+{
+ "id": "sunnyhollow_market",
+ "note": "group-watch D23 / G11's growth: 50 turns with three characters, generated once with naive through the store (task 10.3, the user's choice of 2026-10-13), so who_scene grows by B2's 40 items. Not a recap source.",
+ "world": "wld_seedSunnyHollow",
+ "cast": ["chr_seedHana", "chr_seedRin", "chr_seedTakeshi"],
+ "premise": "On a rainy Saturday the family runs a stall at the night market: Hana sells bouquets, Rin demos her game on a borrowed screen, and Takeshi has a plan to catch the last train home with everything packed.",
+ "language": "en",
+ "turns": 50,
+ "paceMs": 500,
+ "notes": {"25": "The market manager announces the last train is cancelled; the replacement bus leaves at 22:40."}
+}

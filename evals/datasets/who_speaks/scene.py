@@ -64,6 +64,30 @@ SCENE_LABELS: dict[tuple[str, int], tuple[list[str], str]] = {
     ("sunnyhollow", 33): (["hana"], "en"), ("sunnyhollow", 34): (["rin"], "en"),
     ("sunnyhollow", 39): (["hana"], "en"),
 }
+# G11's growth (task 10.3, the user's choice of 2026-10-13): the first 60's test interval straddled 0.80, so B2's 40
+# more cuts come from two further histories, labelled blind under the same rule before any Jev answer to them.
+SCENE_GROWN: dict[tuple[str, int], tuple[list[str], str]] = {
+    ("meridian_inquiry", 1): (["victor"], "en"), ("meridian_inquiry", 4): (["victor"], "en"),
+    ("meridian_inquiry", 5): (["amara"], "en"), ("meridian_inquiry", 7): (["victor"], "en"),
+    ("meridian_inquiry", 9): (["mei"], "en"), ("meridian_inquiry", 10): (["victor"], "en"),
+    ("meridian_inquiry", 18): (["amara"], "en"), ("meridian_inquiry", 24): (["mei"], "en"),
+    ("meridian_inquiry", 25): (["mei"], "en"), ("meridian_inquiry", 29): (["amara"], "en"),
+    ("meridian_inquiry", 30): (["amara"], "en"), ("meridian_inquiry", 33): (["mei"], "en"),
+    ("meridian_inquiry", 34): (["victor"], "en"), ("meridian_inquiry", 39): (["mei"], "en"),
+    ("meridian_inquiry", 42): (["mei"], "en"), ("meridian_inquiry", 44): (["amara"], "en"),
+    ("meridian_inquiry", 45): (["mei"], "en"), ("meridian_inquiry", 49): (["victor"], "en"),
+    ("sunnyhollow_market", 2): (["takeshi"], "en"), ("sunnyhollow_market", 4): (["rin"], "en"),
+    ("sunnyhollow_market", 5): (["takeshi"], "en"), ("sunnyhollow_market", 7): (["takeshi"], "en"),
+    ("sunnyhollow_market", 10): (["takeshi"], "en"), ("sunnyhollow_market", 15): (["rin"], "en"),
+    ("sunnyhollow_market", 16): (["takeshi"], "en"), ("sunnyhollow_market", 17): (["hana"], "en"),
+    ("sunnyhollow_market", 19): (["rin"], "en"), ("sunnyhollow_market", 23): (["takeshi"], "en"),
+    ("sunnyhollow_market", 24): (["rin"], "en"), ("sunnyhollow_market", 29): (["hana"], "en"),
+    ("sunnyhollow_market", 32): (["takeshi"], "en"), ("sunnyhollow_market", 33): (["hana"], "en"),
+    ("sunnyhollow_market", 35): (["hana"], "en"), ("sunnyhollow_market", 39): (["hana"], "en"),
+    ("sunnyhollow_market", 40): (["takeshi"], "en"), ("sunnyhollow_market", 41): (["takeshi"], "en"),
+    ("sunnyhollow_market", 43): (["takeshi"], "en"), ("sunnyhollow_market", 44): (["hana"], "en"),
+    ("sunnyhollow_market", 45): (["hana"], "en"), ("sunnyhollow_market", 46): (["takeshi"], "en"),
+}
 SHORT = {"amara": "chr_seedAmara", "mei": "chr_seedMei", "victor": "chr_seedVictor", "hana": "chr_seedHana",
          "rin": "chr_seedRin", "takeshi": "chr_seedTakeshi"}
 
@@ -125,8 +149,9 @@ def scene_prefix(n: int, tests: int = 20) -> str:
 
 def build_scene(prof: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:
     rows = []
-    prefix = scene_prefix(len(SCENE_LABELS))
-    for n, ((hid, k), (ok, lang)) in enumerate(sorted(SCENE_LABELS.items()), 1):
+    prefix = scene_prefix(len(SCENE_LABELS))   # from the first 60 alone, so their ids and splits never move
+    order = sorted(SCENE_LABELS.items()) + sorted(SCENE_GROWN.items())   # the growth is numbered after them
+    for n, ((hid, k), (ok, lang)) in enumerate(order, 1):
         state, label = cut(history(hid), k, prof)
         label["acceptable"] = [SHORT[c] for c in ok]
         item_id = f"{prefix}-{n:03d}"
