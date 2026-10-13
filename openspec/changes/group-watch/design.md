@@ -1060,6 +1060,19 @@ rule).
 - **D23's labels:** the B2 review is **delegated to me**, as in M8 and M9: a recorded pass in `evals/reviews/`, with
   the held-out test split as the safeguard.
 
+### D28. The user's choices during the apply (2026-10-13)
+
+- **D15's wording:** a plan made ahead whose inputs changed is "not used" (it has already settled by the turn's due
+  time); only `clear()` and a Pause record it `cancelled`. Kept as built (the watch-direction scenario reworded).
+- **Pause drops the plan made ahead,** so Play always plans afresh (a pause changes no fingerprint field). Kept.
+- **Splits:** each M10 set takes the first id prefix whose hash split reaches its test minimum (D23's built note).
+  Kept.
+- **The paid runs:** 10.3, 10.4, 10.5 and 10.6–10.9 are approved with their plan-only estimates (who_speaks
+  ≈ $0.013 + its watch part; talk_finished ≈ $0.004; the emotion slice ≈ $0.002; recaps ≈ $0.012; follow timing
+  ≈ $0.005; watch timing ≈ $0.013; free runs ≈ $0.04), to run off-peak. **10.1 (`watch-history`, ≈ $0.026) waits
+  for the user to call back after 18:00 KL**, and everything that needs the histories (10.2, the watch part of 10.3,
+  10.6) follows it.
+
 ## Open Questions
 
 None. The four choices are D27.
