@@ -119,7 +119,7 @@ Two runtime switches, `persona.repeatHint` and `context.voiceReminder`, SHALL de
 - **THEN** the tail holds the hint with their first words, and the system message is the same as with the switch off
 
 ### Requirement: The preview is the real prompt
-The creation wizard's "View as prompt" SHALL show the `agent` system message for a 1:1 chat in the character's world, compiled by a TypeScript twin, with its shared token count labelled "≈". It SHALL update as the profile is edited. Both languages SHALL pass the same committed fixtures byte for byte. No client SHALL fill `systemPromptPreview`. Below the message, one fixed note SHALL say that each AUTO reply also gets a one-line mood hint, with an example from the same phrase table the backend uses.
+The creation wizard's "View as prompt" SHALL show the `agent` system message for a 1:1 chat in the character's world, compiled by a TypeScript twin, with its shared token count labelled "≈". It SHALL update as the profile is edited. Both languages SHALL pass the same committed fixtures byte for byte. No client SHALL fill `systemPromptPreview`. Below the message, one fixed note SHALL say that in group and watch a reply's cue may add one sentence about whom the character is answering, with an example from the same sentence table the backend uses.
 
 #### Scenario: Same text in both languages
 - **WHEN** every shared persona fixture is compiled in Python and in TypeScript
@@ -132,6 +132,10 @@ The creation wizard's "View as prompt" SHALL show the `agent` system message for
 #### Scenario: No mock label
 - **WHEN** the Profile step's prompt view is open
 - **THEN** it does not say "mock template"
+
+#### Scenario: The cue note
+- **WHEN** the Profile step's prompt view is open
+- **THEN** below the system message it shows the note with the example "Hana has just answered. Don't repeat them; add your own angle, or answer Hana directly."
 
 ### Requirement: The mood line
 While the runtime switch `persona.moodLine` is on, a planned `agent` reply whose face is not `neutral`, in AUTO mode, SHALL carry one tail line: "Your mood right now: {phrase}. Let it show in how you word this reply; don't name the feeling." The phrase SHALL come from one table shared by Python and TypeScript. There SHALL be no line for `neutral`, in MANUAL mode, or on an unplanned turn. The switch SHALL default to off (design D40: E8's on/off run found no gain), and with it off the engine SHALL send and report `agent-1`; with it on, `agent-2`.
@@ -150,3 +154,18 @@ The `agent-2` request's system message and summary message SHALL be byte-identic
 #### Scenario: Prefix unchanged
 - **WHEN** the same planned 1:1 turn is built with face `happy` and with face `neutral`
 - **THEN** both requests' messages before the tail are byte-identical, and the `neutral` request equals the committed `agent-1` fixture byte for byte
+
+### Requirement: The turn cue's sentence in group and watch
+An `agent` reply's cue SHALL add one English sentence: for a follow-plan second reply, "{first} has just answered. Don't repeat them; add your own angle, or answer {first} directly."; for a group Next speaker, "Nobody asked you directly; say something that moves the talk on. You may answer anyone."; for a steered watch turn, "This thread has run its course. Take the scene somewhere new that still fits the premise." It SHALL follow any director's note and never touch the cached prefix.
+
+#### Scenario: Same table in both languages
+- **WHEN** the shared turn-cue fixtures are compiled in Python and in TypeScript
+- **THEN** each produces the same sentence
+
+#### Scenario: Prefix unchanged
+- **WHEN** a group first reply and a second reply are built for the same session
+- **THEN** their system message and summary message are byte-identical, and the requests differ only in the tail's cue line
+
+#### Scenario: After the director's note
+- **WHEN** a steered watch turn has an active director's note "Rin is hiding something"
+- **THEN** its cue reads "Continue the scene in character. Director: Rin is hiding something" and then the steer sentence
