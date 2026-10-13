@@ -226,7 +226,7 @@
 
 ## 9. Evaluation offline: datasets, policies, suites and smoke (design D16, D23)
 
-- [ ] 9.1 Write the labelling rule `evals/reviews/m10-labels.md` (who-speaks sets, `none` items, talk finished, watch
+- [x] 9.1 Write the labelling rule `evals/reviews/m10-labels.md` (who-speaks sets, `none` items, talk finished, watch
   emotion, language split) and commit it before any label.
 - [ ] 9.2 `horizon eval watch-history` (refuses to overwrite a committed history without `--force`; store on;
   `naive`). Verify with a test-mode run on the fake provider that it writes the transcript format the summary suite
