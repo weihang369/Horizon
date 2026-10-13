@@ -110,7 +110,7 @@
       "who_first": {
         "purpose": "turn_plan",
         "id": "who_first",
-        "version": 1,
+        "version": 2,
         "label": "who answers first?",
         "p": 0.72,
         "confidence": 0.72,
@@ -118,7 +118,7 @@
           {
             "name": "confidence",
             "value": 0.72,
-            "threshold": 0.6
+            "threshold": 0.2
           }
         ],
         "result": "used",
@@ -127,7 +127,7 @@
       "who_next": {
         "purpose": "turn_plan",
         "id": "who_next",
-        "version": 1,
+        "version": 2,
         "label": "who speaks next?",
         "p": 0.72,
         "confidence": 0.72,
@@ -135,7 +135,7 @@
           {
             "name": "confidence",
             "value": 0.72,
-            "threshold": 0.6
+            "threshold": 0.2
           }
         ],
         "result": "used",
@@ -144,7 +144,7 @@
       "who_scene": {
         "purpose": "turn_plan",
         "id": "who_scene",
-        "version": 1,
+        "version": 2,
         "label": "who speaks next?",
         "p": 0.72,
         "confidence": 0.72,
@@ -152,7 +152,7 @@
           {
             "name": "confidence",
             "value": 0.72,
-            "threshold": 0.6
+            "threshold": 0.2
           }
         ],
         "result": "used",
@@ -161,7 +161,7 @@
       "who_second": {
         "purpose": "follow_plan",
         "id": "who_second",
-        "version": 1,
+        "version": 2,
         "label": "who speaks up now?",
         "p": 0.72,
         "confidence": 0.72,
@@ -169,7 +169,7 @@
           {
             "name": "confidence",
             "value": 0.72,
-            "threshold": 0.6
+            "threshold": 0.3
           }
         ],
         "result": "used",

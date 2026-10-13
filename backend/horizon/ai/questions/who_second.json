@@ -1,6 +1,6 @@
 {
   "id": "who_second",
-  "version": 1,
+  "version": 2,
   "purpose": "follow_plan",
   "type": "choice",
   "label": "who speaks up now?",
@@ -24,7 +24,7 @@
     "quoted_message": "quoted"
   },
   "deadline": "follow_plan",
-  "floor": 0.6,
+  "floor": 0.3,
   "thresholds": {},
   "fallback": "no_second_reply"
 }

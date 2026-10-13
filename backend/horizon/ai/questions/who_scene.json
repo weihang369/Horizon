@@ -1,6 +1,6 @@
 {
   "id": "who_scene",
-  "version": 1,
+  "version": 2,
   "purpose": "turn_plan",
   "type": "choice",
   "label": "who speaks next?",
@@ -22,7 +22,7 @@
     "quoted_summary": "quoted"
   },
   "deadline": "turn_plan",
-  "floor": 0.6,
+  "floor": 0.2,
   "thresholds": {},
   "fallback": "least_recent_then_top2"
 }

@@ -141,11 +141,12 @@ async def test_energy_never_reaches_jev() -> None:
 
 
 async def test_unsure_pick_takes_the_least_recent_of_the_top_two() -> None:
-    planner, _, clock = make({"who_first": choice("chr_c", 0.3, chr_c=0.4, chr_a=0.35, chr_b=0.25), **faces()})
+    # under who_first's measured floor (0.2, task 10.3)
+    planner, _, clock = make({"who_first": choice("chr_c", 0.15, chr_c=0.4, chr_a=0.35, chr_b=0.25), **faces()})
     plan = await run(planner, clock, request(clock))
     assert plan.order == ["chr_a"] and plan.who is not None and plan.who.source == "below_floor"
     row = plan.shared_rows[0]
-    assert row["result"] == "below_threshold" and row["compared"][0]["value"] == 0.3
+    assert row["result"] == "below_threshold" and row["compared"][0]["value"] == 0.15
 
 
 async def test_late_answer_falls_back_to_the_least_recently_spoken() -> None:

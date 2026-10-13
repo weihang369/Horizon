@@ -92,19 +92,19 @@
     "version": 1
   },
   "who_first": {
-    "sha256": "0ca6501a69d789525b1beb2c527f93b3d0b3865c0d6c5742a3c96d425f467569",
-    "version": 1
+    "sha256": "0601f2ba8882bff56e7fc92a92fb6bfb0e3935a9504b16d1a7ddc54e77013182",
+    "version": 2
   },
   "who_next": {
-    "sha256": "68d32e92945adaeef74107bf4e3ca9a65342e2208e877ecfea7b71cadd3a9ce6",
-    "version": 1
+    "sha256": "a06d2fdbe967152aa6b46739c19a36017f22d9d868d2dd1bd50ae66dbcbbb1b8",
+    "version": 2
   },
   "who_scene": {
-    "sha256": "716da7ff51a1cb2e0a71e6dec3a4c305b92af5d6d908bfb3aa9a2070fff2945f",
-    "version": 1
+    "sha256": "00e146bea81b300249579dde15810a19aad91b02003e00f61cc7d3c9c576b14e",
+    "version": 2
   },
   "who_second": {
-    "sha256": "cf289609e0a13b9679e05c69e25fd12600b6a5c9dda84efa7c82795ffbbea2fe",
-    "version": 1
+    "sha256": "274d40c41f03bcdecca246c461ae8983ad88fc2d8eae59c33f11cecf9290e741",
+    "version": 2
   }
 }

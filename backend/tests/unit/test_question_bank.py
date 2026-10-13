@@ -331,7 +331,7 @@ WHO = ("who_first", "who_second", "who_next", "who_scene")
 @pytest.mark.parametrize("qid", WHO)
 def test_who_entries_compile_over_the_cast_with_none_only_in_the_second_slot(qid: str) -> None:
     q = bank().question(qid, values=CAST, seed="s:0", name="Hana")
-    assert isinstance(q, Choice) and q.meta is not None and q.meta.version == 1
+    assert isinstance(q, Choice) and q.meta is not None and q.meta.version == 2   # 10.3 wrote the measured floors
     assert ("none" in q.options) == (qid == "who_second")
     assert all(q.options[c].startswith(f"{n} (speaker). Not for:") for c, n in (("chr_a", "Ann"), ("chr_b", "Bo")))
     assert q.instructions.endswith(SENTENCE)
