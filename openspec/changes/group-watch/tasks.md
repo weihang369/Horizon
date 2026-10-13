@@ -287,11 +287,11 @@
   the user as a choice.
 - [x] 10.10 Copy each run's per-item results to `docs/ai/checks/m10/` with a README (as M9 did), and add each run's
   spend to m10.md's spend table against D24. Verify that `data/evals/spend.jsonl` matches.
-- [ ] 10.11 Gates green; commit "M10 phase 10".
+- [x] 10.11 Gates green; commit "M10 phase 10".
 
 ## 11. Docs and the final gates (design D25)
 
-- [ ] 11.1 Amend everything doc 07 §6 lists:
+- [x] 11.1 Amend everything doc 07 §6 lists:
   - doc 01: A3 rule 5, A4 and §8;
   - doc 02: B2, B3, B5, B7 and B8;
   - doc 03: C1;
@@ -301,8 +301,8 @@
 
   Add doc 07's built notes and D9's finding beside G2's A2 note, and doc 13 W12's found values. Verify that every
   link resolves (the docs link check).
-- [ ] 11.2 Finish `docs/ai/checks/m10.md`: step 0, the settle checks, `F`, every run, the findings, and "What M11
+- [x] 11.2 Finish `docs/ai/checks/m10.md`: step 0, the settle checks, `F`, every run, the findings, and "What M11
   inherits".
-- [ ] 11.3 Run every gate plus `npm run e2e`, and `openspec validate group-watch --strict`. Record the results in
+- [x] 11.3 Run every gate plus `npm run e2e`, and `openspec validate group-watch --strict`. Record the results in
   m10.md; the known flaky `live-and-session-tools.spec.ts:6` is reported as it falls.
-- [ ] 11.4 Commit "M10 phase 11". Don't push, and ask the user about archiving and the squash into dev.
+- [x] 11.4 Commit "M10 phase 11". Don't push, and ask the user about archiving and the squash into dev.
