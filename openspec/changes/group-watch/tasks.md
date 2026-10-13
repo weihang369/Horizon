@@ -265,9 +265,9 @@
 
 ## 10. Paid runs (design D24; each asked for separately, off-peak, with its estimate)
 
-- [ ] 10.1 Ask, then run `watch-history` for both histories (≈ $0.03). Read and commit them, and mark the run folder
+- [x] 10.1 Ask, then run `watch-history` for both histories (≈ $0.03). Read and commit them, and mark the run folder
   `.keep`.
-- [ ] 10.2 Build the watch who-speaks part and the recap items from the histories (9.3, 9.7). Re-run the offline
+- [x] 10.2 Build the watch who-speaks part and the recap items from the histories (9.3, 9.7). Re-run the offline
   checks and commit.
 - [ ] 10.3 Ask, then run `decisions --set who_speaks` (≈ $0.013): floors on dev, the test split once, the paired
   tests. Write the floors into the bank (a version bump and a re-lock) and record them in m10.md with the per-item

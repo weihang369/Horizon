@@ -12,6 +12,8 @@ not an independent reviewer.
 | `who_speaks/who_second` | 90 | 18 | 1011 | 0 | none |
 | `talk_finished` | 120 | 24 | 1012 | 0 | none |
 | `emotion/emotion_watch` | 40 | 15 | 1013 | 1 | that item relabelled |
+| `who_speaks/who_scene` (pass 1, task 10.2) | 60 | 15 | 1014 | 2 | the whole set relabelled |
+| `who_speaks/who_scene` (pass 2) | 60 | 15 | 1015 | 1 | that cut replaced |
 
 The sampled ids are in `m10-review.json`.
 
@@ -33,3 +35,16 @@ The sampled ids are in `m10-review.json`.
   labelled `happy` only. A reasonable reader could see him proud (`happy`) or puzzled by what the number means
   (`thinking`); the rule allows two faces exactly then, so the set became `happy, thinking`. One disagreement is
   under the rule's relabel trigger (two or more), so the rest of the set stands.
+- **`who_scene`** (task 10.2, labelled after reading both watch histories, before any Jev answer; all English by the
+  user's choice). Each cut has two candidates, the characters who didn't just speak, so every set holds exactly one
+  name. Pass 1 found two labels that don't hold: Meridian #22 ("someone going quiet when they were chatty" only
+  implies Victor) and #72 (Mei asked Victor to read the clause and Amara has the clinic's stake; either could fairly
+  answer). Two disagreements trigger B2's relabel, so all 60 cuts were re-read with the reading the rule implies made
+  explicit: a direct address or question outranks a mention, and a cut where both candidates are addressed directly,
+  or neither is, isn't an item. Nine cuts were dropped (Meridian #3, #7, #22, #45, #69, #72, #77; Sunny Hollow #16,
+  #36) and nine clear ones added. Pass 2 found one more of the same kind, Meridian #39 (Victor mentions Amara and Mei
+  and addresses neither); it was replaced by Sunny Hollow #11 (Rin: "the clipboard always wins, hana"). For
+  transparency: the dropped cuts mostly agreed with the round-robin baseline (7 of 9 at pass 1) and the added ones
+  mostly didn't, so the baseline's test-split score moved from 16/20 to 11/20 between the passes. The cuts were chosen
+  by the rule above without looking at the baseline; the shift says that ambiguous cuts in round-robin histories
+  tend to name the next character in order.

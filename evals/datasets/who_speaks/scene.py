@@ -28,8 +28,42 @@ from horizon.evals.datachecks import split_for  # noqa: E402
 USER = "Kai"
 WINDOW = 12   # the scene's recent lines as the cast plan sees them (doc 07 G6's state: premise, summary, 12 lines)
 
-# (history, the number of character lines before the cut) → (acceptable short names, lang). Filled in task 10.2.
-SCENE_LABELS: dict[tuple[str, int], tuple[list[str], str]] = {}
+# (history, the number of character lines before the cut) → (acceptable short names, lang). Labelled blind in task
+# 10.2 after reading both histories, before any Jev answer. One name each: the candidates are the two characters
+# who didn't just speak, so accepting both would accept anyone (m10-labels.md). All English (both histories are;
+# the user's choice of 2026-10-13, recorded in docs/ai/checks/m10.md).
+SCENE_LABELS: dict[tuple[str, int], tuple[list[str], str]] = {
+    ("meridian_long", 1): (["mei"], "en"), ("meridian_long", 2): (["victor"], "en"),
+    ("meridian_long", 5): (["amara"], "en"), ("meridian_long", 9): (["mei"], "en"),
+    ("meridian_long", 10): (["mei"], "en"), ("meridian_long", 11): (["victor"], "en"),
+    ("meridian_long", 12): (["amara"], "en"), ("meridian_long", 14): (["victor"], "en"),
+    ("meridian_long", 15): (["amara"], "en"), ("meridian_long", 17): (["victor"], "en"),
+    ("meridian_long", 19): (["victor"], "en"), ("meridian_long", 23): (["victor"], "en"),
+    ("meridian_long", 24): (["amara"], "en"), ("meridian_long", 26): (["victor"], "en"),
+    ("meridian_long", 27): (["amara"], "en"), ("meridian_long", 29): (["amara"], "en"),
+    ("meridian_long", 36): (["amara"], "en"), ("meridian_long", 37): (["mei"], "en"),
+    ("meridian_long", 38): (["amara"], "en"), ("meridian_long", 41): (["amara"], "en"),
+    ("meridian_long", 42): (["amara"], "en"), ("meridian_long", 47): (["victor"], "en"),
+    ("meridian_long", 48): (["amara"], "en"), ("meridian_long", 51): (["amara"], "en"),
+    ("meridian_long", 52): (["victor"], "en"), ("meridian_long", 53): (["amara"], "en"),
+    ("meridian_long", 56): (["victor"], "en"), ("meridian_long", 67): (["mei"], "en"),
+    ("meridian_long", 68): (["amara"], "en"), ("meridian_long", 70): (["mei"], "en"),
+    ("meridian_long", 71): (["victor"], "en"), ("meridian_long", 74): (["amara"], "en"),
+    ("meridian_long", 78): (["mei"], "en"), ("meridian_long", 80): (["amara"], "en"),
+    ("meridian_long", 85): (["victor"], "en"), ("meridian_long", 99): (["mei"], "en"),
+    ("sunnyhollow", 1): (["takeshi"], "en"), ("sunnyhollow", 2): (["takeshi"], "en"),
+    ("sunnyhollow", 4): (["rin"], "en"), ("sunnyhollow", 5): (["takeshi"], "en"),
+    ("sunnyhollow", 6): (["rin"], "en"), ("sunnyhollow", 7): (["rin"], "en"), ("sunnyhollow", 8): (["hana"], "en"),
+    ("sunnyhollow", 9): (["hana"], "en"), ("sunnyhollow", 10): (["takeshi"], "en"),
+    ("sunnyhollow", 11): (["hana"], "en"), ("sunnyhollow", 12): (["hana"], "en"),
+    ("sunnyhollow", 13): (["takeshi"], "en"), ("sunnyhollow", 14): (["takeshi"], "en"),
+    ("sunnyhollow", 18): (["hana"], "en"), ("sunnyhollow", 21): (["hana"], "en"),
+    ("sunnyhollow", 22): (["takeshi"], "en"), ("sunnyhollow", 23): (["takeshi"], "en"),
+    ("sunnyhollow", 26): (["takeshi"], "en"), ("sunnyhollow", 29): (["takeshi"], "en"),
+    ("sunnyhollow", 30): (["rin"], "en"), ("sunnyhollow", 32): (["takeshi"], "en"),
+    ("sunnyhollow", 33): (["hana"], "en"), ("sunnyhollow", 34): (["rin"], "en"),
+    ("sunnyhollow", 39): (["hana"], "en"),
+}
 SHORT = {"amara": "chr_seedAmara", "mei": "chr_seedMei", "victor": "chr_seedVictor", "hana": "chr_seedHana",
          "rin": "chr_seedRin", "takeshi": "chr_seedTakeshi"}
 
@@ -80,12 +114,22 @@ def cut(h: dict[str, Any], k: int, prof: dict[str, dict[str, Any]]) -> tuple[dic
     return state, label
 
 
+def scene_prefix(n: int, tests: int = 20) -> str:
+    """`build.id_prefix` for this part (D23's built note: the first of wsc, wsc1, … with at least 20 test items). Kept
+    here so the module loads by path without importing a module named `build`."""
+    k = 0
+    while sum(split_for(f"{'wsc' if k == 0 else f'wsc{k}'}-{i:03d}") == "test" for i in range(1, n + 1)) < tests:
+        k += 1
+    return "wsc" if k == 0 else f"wsc{k}"
+
+
 def build_scene(prof: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:
     rows = []
+    prefix = scene_prefix(len(SCENE_LABELS))
     for n, ((hid, k), (ok, lang)) in enumerate(sorted(SCENE_LABELS.items()), 1):
         state, label = cut(history(hid), k, prof)
         label["acceptable"] = [SHORT[c] for c in ok]
-        item_id = f"wsc1-{n:03d}"
+        item_id = f"{prefix}-{n:03d}"
         rows.append({"id": item_id, "question_id": "who_scene", "split": split_for(item_id), "lang": lang,
                      "kind": "watch", "item": {"state": state, "seed": f"m10-scene:{n}", "none": False,
                                                "values": [{"key": c, "name": str(prof[c]["name"]),

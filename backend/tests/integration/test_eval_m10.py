@@ -19,8 +19,8 @@ from tests.conftest import Api
 from tests.sessions.kit import API
 
 DATASETS = EVALS_DIR / "datasets"
-M10_FILES = ("who_speaks/who_first.jsonl", "who_speaks/who_second.jsonl", "talk_finished/talk_finished.jsonl",
-             "emotion/emotion_watch.jsonl")
+M10_FILES = ("who_speaks/who_first.jsonl", "who_speaks/who_second.jsonl", "who_speaks/who_scene.jsonl",
+             "talk_finished/talk_finished.jsonl", "emotion/emotion_watch.jsonl")
 
 
 def env_for(api: Api, tmp: Path, opts: Options) -> RunEnv:
@@ -68,6 +68,30 @@ def test_the_builders_are_deterministic_and_use_the_live_state() -> None:
     # the second slot's state is the follow plan's own (the user's message as quoted_message)
     second = suites.load_dataset(DATASETS / "who_speaks" / "who_second.jsonl")[0]
     assert "quoted_message" in second["item"]["state"]
+
+
+def test_the_watch_part_is_built_from_the_committed_histories() -> None:
+    """10.2: `who_scene` is the live cast plan's state at each labelled cut of `evals/watch/*.json`, one acceptable
+    name per item (never the last speaker), all English (the user's choice), at least 20 test items (D23)."""
+    import sys
+
+    sys.path.insert(0, str(DATASETS / "who_speaks"))
+    who = load("who_build", DATASETS / "who_speaks" / "build.py")
+    scene = load("who_scene_build", DATASETS / "who_speaks" / "scene.py")
+    rows = scene.build_scene(who.profiles())
+    assert rows == suites.load_dataset(DATASETS / "who_speaks" / "who_scene.jsonl")
+    assert len(rows) == 60 and sum(r["split"] == "test" for r in rows) >= 20
+    for r in rows:
+        label = r["label"]
+        assert len(label["acceptable"]) == 1 and set(label["acceptable"]) <= set(label["candidates"])
+        assert len(label["candidates"]) == 2 and r["lang"] == "en" and r["item"]["state"]["mode"] == "watch"
+
+
+def test_the_ten_recap_items_come_from_the_histories() -> None:
+    from horizon.evals.watch_suites import RECAP_POINTS, recap_items
+
+    items = recap_items()
+    assert len(items) == sum(len(v) for v in RECAP_POINTS.values()) == 10
 
 
 async def test_decisions_reports_the_m10_parts(api: Api, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
