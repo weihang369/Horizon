@@ -153,7 +153,7 @@ def register(sub: Any) -> None:
             s.add_argument("--messages", type=int, default=12)
         if name == "latency":
             s.add_argument("--part", choices=["follow", "watch"], default=None)
-        if name in ("decisions", "long", "transcript", "drafter", "watch-history"):
+        if name in ("decisions", "long", "transcript", "drafter", "watch-history", "summary"):
             s.add_argument("--set", default=None, help="decisions: one dataset folder (`judges`); long, transcript: "
                                                        "one script id; drafter: a seed file in evals/drafter/")
         s.set_defaults(fn=_suite)
