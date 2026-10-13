@@ -179,9 +179,9 @@ frozen transcripts start from a long committed history.
 
   | Set | Size | Why this size |
   |---|---|---|
-  | Layer 1: each **noul that sets a threshold** (needs documents, needs something from earlier (doc 09 M9), talk finished, the memory rewrite guard and in-session relevance (doc 09 M12)) | **~120 items, at least 60 of them "yes"** | A recall target is judged on 60+ positives. With 50, 45 right still leaves 79–96 %. |
+  | Layer 1: each **noul that sets a threshold** (needs documents, needs something from earlier (doc 09 M9), talk finished, the memory rewrite guard and in-session relevance (doc 09 M12)) | **~120 items, at least 60 of them "yes"**. *Built in M10 for talk finished: 120 watch scenes on six premises (65 yes; English 100, Malay 10, Chinese 6, mixed 4; 39 test)* | A recall target is judged on 60+ positives. With 50, 45 right still leaves 79–96 %. |
   | Layer 1: **passage score** | **~100 items** | It sets the floor every deep turn depends on |
-  | Layer 1: **who speaks** (doc 07 G11) | **~210 items**: group first slot 60, group second slot 90 (about 65 % with `none` right), watch next speaker 60 (≥ 3 awake characters each) | They set the floors every group and watch turn depends on; each test split has at least 20 items |
+  | Layer 1: **who speaks** (doc 07 G11) | **~210 items**: group first slot 60, group second slot 90 (about 65 % with `none` right), watch next speaker 60 (≥ 3 awake characters each). *Built in M10 (`group-watch` D23): `who_first` 60 (English 50, Malay 5, Chinese 3, mixed 2; 21 test), `who_second` 90 (58 `none`; English 78; 25 test), each from the frozen group transcripts' context with written lines, labelled blind under `evals/reviews/m10-labels.md`; `who_scene`'s 60 come from the committed watch histories (M10 phase 10)* | They set the floors every group and watch turn depends on; each test split has at least 20 items |
   | Layer 1: **emotion** (doc 06 E8) | **~100 items**; 20–30 % where keeping the face is acceptable. *Built in M9 (turn-plan-emotion D27): 100 items, 1:1 replies 55, group replies 30, greetings 15; English 80, Malay 10, Chinese 5, mixed 5; 29 keep-ok; 72 dev / 28 test by the hash rule; English is reported alone too, other languages show direction only* | The face shows on every turn of every mode; the cap stops "always keep" from carrying the score |
   | Layer 1: **listener reactions** (doc 06 E8) | **90 items** (30 test; a line, its context, one listener); at most 30 % where `none` is acceptable. *Built in M9 (D27): group 40, debate 25, watch 25; English 75; 27 `none`-acceptable; 65 dev / 25 test by the hash rule* | A gross-failure check with a trivial baseline to beat; the shown share is reported by the latency suite |
   | Layer 1: **debate member** (doc 08 V11) | **90 items** (30 test): rebuttal and closing slots with 2–3 eligible members, at least half with a single acceptable member | It sets `floor.member`; the lift over the fixed order is tested on the single-answer items, where 80 % is not a free pass |
@@ -190,7 +190,7 @@ frozen transcripts start from a long committed history.
   | Layer 3: frozen transcripts | **20**, each 8–12 turns, across both worlds: 1:1 × 6, group × 5, debate × 4, watch × 5; **4 of them start from a long committed history past one drop** (doc 05 X10) | About 200 compared turns; the 4 cover the summary in the prompt |
   | Layer 3 targeted lines (doc 04 P12) | **At least 10 Malay, Chinese or mixed user lines and 10 planted wrong claims**, placed in those transcripts, split dev / test | The language and push-back checks would pass trivially without them |
   | Drafter suite (doc 04 P12) | **20 seeds** across the three intents and both worlds, 10 dev / 10 test | Enough to see a systematic drafting fault |
-  | Summary suite (doc 05 X10) | **40 dropped-history inputs**, 3 planted facts and 1 promise each, 20 dev / 20 test; **plus 10 watch episode recaps** (doc 07 G11) | 60 test facts for the 90 % target; the 20-item checks use "at most 1 failure, each read" |
+  | Summary suite (doc 05 X10) | **40 dropped-history inputs**, 3 planted facts and 1 promise each, 20 dev / 20 test; **plus 10 watch episode recaps** (doc 07 G11). *Built in M10: the recaps run inside `summary` from the two committed watch histories (`--set recaps` runs only them), checked in code (≤ 120 words) and by three summary judges* | 60 test facts for the 90 % target; the 20-item checks use "at most 1 failure, each read" |
   | Long suite (doc 05 X10) | **3 runs** past two drops, 15 late fact probes | A signal for recall and drift, not a test; reported with intervals |
   | Layer 3: free-running conversations | **4**, one per mode, **plus 3 watch runs of 30 turns and 3 group runs of 12 user messages, `agent` only** (doc 07 G11), **and 2 `agent` debates** (doc 08 V11) | What only a live run shows (B3); the extra runs give the group and watch signals enough turns |
   | Debate suite (doc 08 V11) | **12 debates × 2** (balanced, planted weak side), split 4 dev / 8 test by debate, each also with the side blocks swapped; 10 verdict proses; 10 host bridges | A gross-failure check on the verdict, each failure read; the planted side gives a known winner; the margin is tuned on dev only |
@@ -267,6 +267,8 @@ frozen transcripts start from a long committed history.
   They are **not** compared pairwise. Doc 07 G11 adds **3 watch runs of 30 turns and 3 group runs of 12 user
   messages, `agent` only**, for the group and watch signals (second-reply rate, busiest speaker, the nobody-left-out
   rule, the steer), which depend on who actually spoke.
+  *Built in M10 (`group-watch` D23): `horizon eval freerun --mode watch|group`, signals only, with follow-plan
+  timeouts counted apart from `none` and every steered line printed for reading.*
 
 **Rejected:**
 - **fixed user lines with live character replies:** from turn 2 on, the two profiles answer different conversations,
@@ -431,6 +433,10 @@ with itself only about 64 % of the time, so that rule mixes up ordinary noise wi
     verdict as advice) and `latency` (`agent` 1:1 time to the face and to the first word, Stop at the first word, the
     store bypassed). `decisions` scores the emotion and reaction sets with the live code rule and reports the floor
     chosen on dev, the baseline difference (exact McNemar), coverage, the merge rate and the reaction share.*
+  - *Built in M10 (`group-watch` D23): `watch-history` (the two committed watch histories, generated once with
+    `naive`; it refuses to overwrite one without `--force`), `freerun` (`--mode watch|group`, `--runs`, `--turns`,
+    `--messages`), `latency --part follow|watch`, and the recaps in `summary`. `decisions` scores the who-speaks parts
+    (balanced accuracy for the second slot; exact one-sided paired tests) and `talk_finished` (`t_end`).*
   - *Built in M8 (`persona-context`): `drafter`, `summary`, `long` and `transcript` (the long-history frozen transcripts, generated by `naive`), `--set` (a dataset folder for `decisions`, a script for `long` and `transcript`), nouls in `decisions`, and B4's judge validation (`decisions --set judges`, recorded in `evals/baselines/judges.json`; a judge's figures read "unvalidated" until its current version passes). The 13 judges are `eval_judge` bank entries whose "yes" is the failure. The reply-rule code checks are `horizon/evals/reply_checks.py`.*
   - plus **`horizon eval capture <messageId>`** (B10) and **`horizon eval import <sessionId>`** ([doc 13](13-wrap-up.md) W10, built
     in the v1 endgame), which scores a recorded session as a free run without new replies.
@@ -545,6 +551,11 @@ with itself only about 64 % of the time, so that rule mixes up ordinary noise wi
   (m9.md 9.6, "The fix"). The re-run on the fix ran all 100 turns: first word p50 1208 ms, p90 1416 ms (1209 / 1416
   without the first 5 as warm-up); the face first on 99/99; `turn_plan` p50 532 ms, with a slow spell of Jev's (up to
   30 s, deadline fired 31/100) that left the first word unchanged.*
+- *Built in M10 (`group-watch` D9, D23): `latency --part follow` (50 hand-built follow states from the second-slot
+  dev items: state assembly `S` timed in process, Jev's `L`, and the measured stream-end-to-`turn.end` `F`; a miss is
+  `S + L > F + 400`, pass at ≤ 10 %) and `--part watch` (3 scenes × 20 turns at Fast pace: `turn.end` to the next
+  `turn.next` and first token against NFR-02, and how the plan made ahead fared). Both bypass the store and report
+  Jev's slow spells (≥ 3 requests over 2 s in a row) apart. The results are in [m10.md](checks/m10.md).*
 - **NFR-29 (the face within 800 ms of the first word)** is measured **at the HTTP client**, from the event timestamps of
   the M6 portable client:
   - face time minus first-word time;

@@ -135,6 +135,9 @@ DeepSeek streams, told the mood by one
   chosen by doc 07 G2's follow plan, which also asks its gates and emotion, so its face can react to the first reply.
   A **prefetched** reply keeps the answers it was planned with, before the line it follows existed: debate openings
   from their own Jev call 1, and every Everyone reply from the run's single call 1 (doc 07 G4). Watch never prefetches: its next plan starts at `turn.end` (doc 07 G8).
+  *Built in M10 (`group-watch` D7, D8, D11, D16): the follow plan asks each candidate's `emotion_reply` with
+  `who_second`; an Everyone run's one cast plan gives every reply its face, prefetched or not; watch asks
+  `emotion_line` per candidate (`emotion_opening` on the first turn), with floors from the watch slice.*
 - **MANUAL mode still asks it** (it costs almost nothing inside the same request): see E2 for where the answer goes.
 - **Confidence floor:** set by doc 02 B5's grid against E8's target. Below the floor counts as unsure (E3).
 

@@ -202,7 +202,8 @@ context limit.
   real use.
 - **Watch's "Summarise" button** (`Summariser.episode`) is a different summary, designed in doc 07 G10; it takes the
   rolling summary and the window as its input. Until it is built, `NaiveSummariser.episode` delegates to the scripted
-  one.
+  one. *Built in M10 (`group-watch` D19): one DeepSeek call with the premise, the cast, the rolling summary and the
+  window; no longer delegated.*
 - **The `naive` yardstick moves here, deliberately.** The window, the drop rule and the summariser are shared runtime
   machinery, not the naive prompt; both profiles get the same ones, so the comparison stays fair. The change lands
   before the first accepted baseline (doc 02 B7), so no baseline straddles it. The naive prompt itself is untouched
@@ -318,7 +319,7 @@ Doc 01 A3 rule 6: Jev gets less accurate as irrelevant content grows, so the sta
 |---|---|---|
 | `mode` | `one_on_one`, `group`, `watch` or `debate` | all |
 | `user_name` | the You-card name | all |
-| `cast` | per candidate: `name`, profile `role`, `about` (the first sentence of `personality.summary`, ≤ 60), `face` (current), `last_spoke` ("2 turns ago" / "not yet", from code); **no `energy`** (doc 07 G9: code applies energy, and exhausted characters are not candidates) | speaker, emotion |
+| `cast` | per candidate: `name`, profile `role`, `about` (the first sentence of `personality.summary`, ≤ 60), `face` (current), `last_spoke` ("2 turns ago" / "not yet", from code); **no `energy`** (doc 07 G9: code applies energy, and exhausted characters are not candidates; built in M8, pinned by an M10 test over every state kind) | speaker, emotion |
 | `documents` | per candidate with knowledge: up to 10 source titles (≤ 20 each) | needs documents? |
 | `latest` | the latest user message, quoted, cut to 600 (first 450 + last 150) | all |
 | `recent` | the last 6 messages before it as `{speaker, text}`, quoted, each cut to 300 | all |
