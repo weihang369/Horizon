@@ -459,6 +459,11 @@ Insight rule is display only.
 - Custom emotions (EMO-07): the full product (requirements EMO-07), not v1.
 - ~~Watch's pacing, the talk-finished question and energy-aware turn-taking (task 7).~~ Resolved by doc 07 G6–G9.
 - ~~Debate's member choice and the verdict (task 8)~~ resolved by doc 08 V2 and V7–V9; E5's debate `side` label is the only debate input here.
+  *Built in M11 (`debate` D7, D8, D29.1): debate faces are planned under `agent`: a rebuttal or closing asks
+  `emotion_line` about the argument just made inside the debate plan; an opening asks the new `emotion_debate_opening`
+  (planned at Start for the first, by its own prefetch for the rest); an Ask answer asks `emotion_reply` about the
+  moderator's question. Their floors are chosen on a 40-item debate emotion slice, reported apart
+  ([m11.md](checks/m11.md)).*
 - ~~The quoted-content wording in the emotion and reaction states (task 11).~~ Resolved by doc 11 S6 (`quoted_*`
   fields).
 - ~~The System 1 Insight section, with the live face-and-words check and the derived seeds (task 13).~~ Resolved by

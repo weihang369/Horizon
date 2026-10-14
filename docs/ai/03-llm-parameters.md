@@ -162,8 +162,8 @@ The table lives in the seed-build source `frontend/scripts/seed-build/runtime.co
 |---|---|---|---|---|---|
 | `reply.chat` | Character reply, 1:1 / group / watch | off | **1.0** (was 1.3; M8) | stream | naive today, agent profile |
 | `reply.debate` | Debate argument | off | 1.0 | stream | task 8 (doc 08 V4) |
-| `host` | Debate host lines, `max_tokens` 120, shown whole | off | 1.0 | text | task 8 (doc 08 V6) |
-| `verdict` | Debate verdict prose, `max_tokens` 1,200 | off | 0.7 | JSON | task 8 (doc 08 V8) |
+| `host` | Debate host lines, `max_tokens` 120, shown whole | off | 1.0 | text | task 8 (doc 08 V6). *Built in M11 (`debate` D11): `runtime.llm.calls.host`, prompt label `host-1`, cleaned (quotes and a "Host:" prefix stripped; over 60 words is no line)* |
+| `verdict` | Debate verdict prose, `max_tokens` 1,200 | off | 0.7 | JSON | task 8 (doc 08 V8). *Built in M11 (`debate` D13, D15): `runtime.llm.calls.verdict`, prompt label `verdict-1`, C7's parse → free quote repair → one paid retry, the whole call within `timeoutsMs.verdict` (30 s); `naive`'s single call writes the scores and the stronger case too* |
 | `summary` | Rolling summary (doc 05 X3, prompt `summary-2`), `max_tokens` 600, purpose `rolling_summary` | off | 0.7 | text | M8 (OpenSpec `persona-context`) |
 | `episode` | Watch's "Summarise" recap, `max_tokens` 400 | off | 0.7 | text | task 7 (doc 07 G10); *built in M10 (`group-watch` D19): `NaiveSummariser.episode`, prompt `episode-3` (after 10.6's language and pronoun fixes), the whole call limited to `timeoutsMs.episode` (30 s)* |
 | `memory` | Memory rewrite at a session pause, `max_tokens` 300 × characters present + 200 (≤ 3,000) | off | 0.7 | JSON | task 9 (doc 09 M3) |
@@ -516,7 +516,8 @@ existing `model.provider`. Prices come from the bundled config. `modelOverrides`
 ## 7. Left for later tasks
 
 - ~~The exact prompt wording for length, bubbles and repetition (task 4).~~ Resolved by doc 04 P5, P6, P8.
-- ~~The debate argument and host prompts (task 8).~~ Resolved by doc 08 V4, V6 and V8.
+- ~~The debate argument and host prompts (task 8).~~ Resolved by doc 08 V4, V6 and V8. *Built in M11 (`debate` D10,
+  D11, D13): the per-phase debate cue (prompt labels `agent-7`/`agent-8`), the host lines and the verdict prose.*
 - ~~The summary and memory-extraction prompts and schemas (task 9).~~ Resolved by doc 05 X3 (summary) and doc 09 M3
   (memory extraction).
 - ~~Whether a multi-document deep question should ever think (task 10, with eval data).~~ Resolved by doc 10 K14:

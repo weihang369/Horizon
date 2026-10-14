@@ -378,6 +378,12 @@ decide → route`, with `route` always `quick` until M12 adds the deep branch. I
 section's own rule would be plain code. It is a graph from the start so that check 1 measures the real structure
 and M12 extends it instead of rewriting it.
 
+*Built in M11 (OpenSpec `debate` D5, D12, D13): the **debate plan** runs on the same plan graph's shape (state → ask →
+decide → route) as the turn, cast and follow plans. The **verdict is plain code**, not a graph: one Jev request holds
+every rubric score question (the state is billed once, so parallel requests would only cost more), code picks the
+stronger case, then one DeepSeek call writes the prose. That is a straight line with no branch, loop or parallel
+step, so by this section's rule it is not a graph.*
+
 **Why the reply itself is not a graph:** it is a single streaming call. Keeping it as today's tested engine leaves the
 streaming, Stop and refusal paths unchanged, and LangGraph does the deciding, which is where its branching and
 parallelism pay off.
@@ -501,6 +507,16 @@ every node, and Forget would get harder.
   `turn.end` (deadline 400 ms, replacing the turn gap) and also asks the eligible members' gates and emotion; late or
   unsure means the next member in fixed order. A side with nobody awake pauses the debate with a top-up prompt.
 
+*Built in M11 (OpenSpec `debate` D3–D9, D27): the debate plan (purpose `debate_plan`, deadline 500 ms from
+`turn.end`, W12) asks `member_rebuttal`, `member_closing` or `member_panel` when two or more members are eligible,
+and `emotion_line` for each candidate, in one request. `turn.next` names the member as soon as Jev answers, by the
+deadline at the latest, with no turn gap; below `floor.member` or late, the next member in fixed order speaks. The
+faces are read when the turn starts, so a late member answer still gives Jev's face. The gates wait for M12. Openings
+keep the fixed order, with the first opening's face planned at Start and each prefetched opening planning its own; Ask
+answers are planned too (`debate_ask`). The trace's `routing` keeps `forcedBy: "round_order"` with the reason "Side
+by the debate order; speaker chosen by Jev", and the member is a `debate_plan` row in System 1. The deadline and
+`floor.member` as measured are in [m11.md](checks/m11.md).*
+
 ## 6. Failure modes (7.1.11) checked against this design
 
 | Failure | Status |
@@ -512,7 +528,7 @@ every node, and Forget would get harder.
 | Weak matches presented as answers | **Covered** by the Jev call 2 scores and the not-found rule (A6) |
 | Abstaining on small talk | **Covered:** a Jev failure means quick; abstain needs a confident gate and a user question; debate and watch never abstain (A6) |
 | Stacked timeouts on the deep path | **Covered:** the embedding wait is capped at 400 ms; if Jev call 1 failed, the turn is quick; if Jev call 2 is late, RRF top k is used (A6) |
-| Debate collapse | **Doc 08 V4, V11:** a side lock and per-phase cues in the prompt; measured by the "keeps its side" and "engages" judges |
+| Debate collapse | **Doc 08 V4, V11:** a side lock and per-phase cues in the prompt; measured by the "keeps its side" and "engages" judges. *Built in M11 (`debate` D10, D21): the per-phase cue in both compilers, shared by a fixture; both judges validated by B4 and run on the `naive` histories and the `agent` free runs as a signal ([m11.md](checks/m11.md)); V11's targets are judged at M15* |
 | Lost in the middle | **Doc 05** X1 and X6, doc 04 P2 (rules last), doc 10 K8, plus few, strongly scored passages (A6) |
 | Jev outage, slowness or uncertainty | **Covered** by the fallbacks and confidence floors (A4) |
 | Choice bias toward the first option | **Covered** by shuffling every choice's options (A3 rule 4) |
@@ -543,8 +559,8 @@ None of the backend rows changes the HTTP contract unless marked.
 | The reply receives the Jev emotion: show it at preflight, mood line in the dynamic tail, strip the tag. **Built in M9** for `agent` 1:1 (the face on the first chunk, `turn.start` and `emotion` in one write, D14) | backend | A5 | 6 |
 | `Summariser.rolling` and `ReactionPredictor.predict` become **async**, and both run after `turn.end` | backend | A7, A13 | 5, 6 |
 | ~~The citation check runs on interrupted replies~~ (withdrawn by doc 10 K10: evaluation only in v1); the after-reply work runs after `turn.end` | backend | A13 | 6, 10 |
-| Debate: Jev picks the member among those who haven't spoken in the phase; openings stay fixed; the trace uses existing `routing` fields (doc 08 V2), so **no contract change** | backend | A14 | 8 |
-| `DebateHost.narration()` returns a fixed string; it becomes async and calls DeepSeek, shown whole, not streamed (doc 08 V6) | backend | A7 | 8 |
+| Debate: Jev picks the member among those who haven't spoken in the phase; openings stay fixed; the trace uses existing `routing` fields (doc 08 V2), so **no contract change**. *Built in M11 (`debate` D5–D9, D24): no contract change* | backend | A14 | 8 |
+| `DebateHost.narration()` returns a fixed string; it becomes async and calls DeepSeek, shown whole, not streamed (doc 08 V6). *Built in M11 (`debate` D11): each line is requested ahead by its (kind, phase, iteration) key and shown by its deadline (the welcome Start + 3 s, the others their banner + 1.5 s), else the fixed line; a late answer is recorded `late`* | backend | A7 | 8 |
 | ~~Watch **"the talk is finished"** needs an outcome~~ **Withdrawn by doc 07 G7:** a finished thread steers the next line somewhere new; no early end, so no contract change. *Built in M10 (`group-watch` D14): the steer, with no contract change* | backend | A4 | 7 |
 | **A "System 1" section in `TurnTrace`, and its Insight UI** (**approved in principle by the user, 2026-10-09**; its fields and UI are designed at task 13, once tasks 7–11 have added their Jev questions; the live face-and-words check turns on with it, doc 06 E7). **Designed in [doc 13](13-wrap-up.md) W1 (contract rev 1.4, built in M7) and W2** | **contract + UI** | A12 | 13 |
 | **Docs to amend:** a new decision-log entry replacing D-97's rule; resolve OQ-AI-07 (Jev first; a failure keeps the previous face, doc 04 P7); note in D-92 that the planner is a runtime-called port; update the 05-ai-seams §3 purpose table and §2.2 port catalogue. **Applied with [doc 13](13-wrap-up.md) (§4; D-97 → D-100)** | docs | all | 13 |
@@ -565,7 +581,7 @@ async `Summariser.rolling` in M8 and `ReactionPredictor` in M9.
   Resolved by doc 10 K5–K9.
 - ~~What "input not safe" does, and the output guardrail's timeout (task 11).~~ Resolved by doc 11 S3 and S5.
 - ~~A side whose members are all exhausted (task 8, OQ-AI-17).~~ Resolved by doc 08 V5: the debate pauses with a top-up
-  prompt.
+  prompt. *Built in M11 (`debate` D4), in the runtime and the mock, with a parity fixture.*
 
 ## Sources
 

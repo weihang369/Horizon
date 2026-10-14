@@ -123,6 +123,9 @@ Start ─ host welcome (DeepSeek, written during the 1.6 s start delay; fixed li
   fairness would depend on a prompt;
 - **AI-written motion suggestions:** a new contract method for a "Should" item.
 
+*Built in M11 (OpenSpec `debate` D1–D3): unchanged; the phases are slots computed from the stored log
+(`sessions/debate_slots.py`), so an idle release, a fork or a restart rebuilds the same cursor.*
+
 ### V2. The debate plan: Jev picks the member right after each turn
 
 **Decision:**
@@ -187,6 +190,13 @@ Start ─ host welcome (DeepSeek, written during the 1.6 s start delay; fixed li
 - **Jev choosing openings:** it would stop the openings being generated ahead (NFR-02 at the start);
 - **a `none` option:** the slot belongs to the side; skipping it is the energy rule's job, not Jev's.
 
+*Built in M11 (D5–D9, D27): one `debate_plan` request at `turn.end` asks the phase's member question (two or more
+eligible) and `emotion_line` per candidate; `turn.next` is sent when Jev answers, by `turn.end` + 500 ms at the
+latest, with no turn gap; the faces are read when the turn starts. The stored plan carries M10 D15's fingerprint with
+V2's seq rule (only character and user messages move it) and its (phase, iteration) target; Pause marks it stale. A
+phase's first slot is planned at the boundary, its member fixed when the slot's turn starts. The measured timing (D9)
+and `floor.member` are in [m11.md](checks/m11.md).*
+
 ### V3. Who may speak, and the energy rules inside a phase
 
 **Decision:**
@@ -201,6 +211,10 @@ Start ─ host welcome (DeepSeek, written during the 1.6 s start delay; fixed li
   fresh `turn.next`); with none, the slot follows the two rules above.
 - **Asleep members are listed in the next turn's `routing.skipped`** with reason `exhausted` (OQ-AI-17), as group
   does.
+
+*Built in M11 (D3, D4): every two-sided profile alternates by slot (2 v 1 runs P, O, P) and a panel has one slot per
+panellist; each slot is filled by an awake member of its side not yet heard in the phase-iteration. Debate ignores
+mute, as before.*
 
 ### V4. The debate prompt: keeping the sides apart
 
@@ -254,6 +268,11 @@ The `agent` compiler (doc 04 P1) gets the debate wording; `naive` keeps its own 
 - **giving panellists a stance written by a model first:** an extra call before the debate, and the persona is
   already enough to argue from.
 
+*Built in M11 (D10): `DEBATE_CUES` and `debateCue()` with one shared fixture; the cue is the tail's cue line, with the
+extended-round, teammates-heard and moderator sentences when they apply (labels `agent-7` / `agent-8`); `naive` names
+teammates apart from opponents (`naive-6`). The side lock stays in the rules, and the debate-quality judge measures it
+(V11).*
+
 ### V5. A side with nobody awake pauses the debate (OQ-AI-17)
 
 **Decision:**
@@ -278,6 +297,9 @@ The `agent` compiler (doc 04 P1) gets the debate wording; `naive` keeps its own 
 - **forfeit to the verdict:** a running-out-of-energy game mechanic would decide a debate about argument quality;
 - **continuing one-sided (today):** finding 1; the verdict would judge a side that never argued;
 - **a new pause reason `energy`:** a contract change for what `user` plus the notes already show.
+
+*Built in M11 (D4): in the runtime and the mock's debate engine, with a parity fixture; the missed turns reach the
+verdict as a per-side note.*
 
 ### V6. The Auto host: DeepSeek lines, written ahead, shown whole
 
@@ -322,6 +344,11 @@ Only with `moderator: auto_host`. With "You" as moderator only the round banners
 - **streamed host lines:** host turns through the turn runner and the reducer, and each round change would wait on
   a stream;
 - **a host line before every argument:** about 12 more calls a debate, and the round banners already pace it.
+
+*Built in M11 (D11): `sessions/debate_host.py` requests each line ahead by its key (kind, phase, iteration) and shows
+it by its deadline (the welcome: Start + 3 s; the others: their banner + 1.5 s, `debate.hostWelcomeWaitMs` /
+`hostBannerWaitMs`), else the fixed line; a late answer is recorded `late`, a dropped one `cancelled`. The verdict
+lead-in is worded per verdict mode. Prompt `host-1`. The 10 timed bridges are in [m11.md](checks/m11.md).*
 
 ### V7. The verdict score: Jev scores, code decides the winner
 
@@ -372,6 +399,11 @@ Two-sided debates with verdict by **Arbiter** or **You decide** only.
   gives no per-side bar;
 - **weighting Persuasion higher:** no evidence for any weight; equal weights are explainable in one line.
 
+*Built in M11 (D12): `ai/agent/rubric.py`: one Jev request, one score question per side per criterion (the default
+four, `rubric_generic` by position for unknown ones), bars = unit × 10, the stronger case by mean bars with
+`verdict.margin` (0.5 to start; the value chosen on dev is in [m11.md](checks/m11.md)), the side blocks within 24,000
+tokens, a 429 retried once by the Decider. Swapped order is a different request, so the suite measures order bias.*
+
 ### V8. The verdict prose: DeepSeek JSON, told the result
 
 **Decision:**
@@ -418,6 +450,10 @@ Two-sided debates with verdict by **Arbiter** or **You decide** only.
 - **letting DeepSeek see no scores:** its rationale could contradict the banner;
 - **today's canned key disagreement in the fallback:** it reads like a real finding about a debate it never read.
 
+*Built in M11 (D13, D15): prompt `verdict-1`, told the result; parse, a free quote repair, one paid retry, all within
+30 s; every failure falls back to a quoted summary with a note, never a hang. `naive` makes one call that writes the
+scores and the stronger case too.*
+
 ### V9. The verdict work starts at the last closing, also for "You decide"
 
 **Decision:**
@@ -443,12 +479,20 @@ Two-sided debates with verdict by **Arbiter** or **You decide** only.
 - **starting at the click (today):** finding 5;
 - **streaming the prose into the card:** JSON can't stream usefully, and the card's reveal is one ceremony.
 
+*Built in M11 (D14): the verdict work starts at the last closing's `turn.end`; Extend and Skip discard it; End with
+verdict reuses matching work; the You-decide pick returns at once and the verdict follows; the debate's first command
+after a load, `debate.resume` and the cap-resume path re-run it when the verdict phase has none (the old hang is
+gone). The early-end estimate follows the price table and the price period (D16).*
+
 ### V10. Steering, unchanged in shape
 
 **Decision:** Ask, Interject, Extend, Skip to closing, End debate and the auto-advance toggle keep today's behaviour.
 What changes: an Interject adds V4's moderator sentence to the next argument. A stored plan (V2), a host request
 (V6) and the started verdict work (V9) each check what they were made from (a fingerprint or a target phase) rather
 than a list of events, so any steering that changes their inputs makes them be redone or dropped.
+
+*Built in M11: unchanged in shape; the moderator's notes reach the next argument once (the cue's moderator sentence,
+D10).*
 
 ### V11. Evaluation additions
 
@@ -504,6 +548,13 @@ than a list of events, so any steering that changes their inputs makes them be r
 - **a live side-keeping check:** the user chose measure-first (V4);
 - **a "too close" target:** the right rate depends on the debates.
 
+*Built in M11 (D21, D22, D30): the 4 frozen debate transcripts don't exist, so 13 debate histories were generated once
+with `naive` (12 two-sided for the suite, 1 panel), with four written eval-only characters joining the seed's six in
+that run's database so 2 v 2, 3 v 2 and a panel of 4 can be cast; the planted weak sides were written once by
+DeepSeek. The member slice, the debate emotion slice and both judges' validation sets come from them. The prose and
+host nouls are first-pass pointers, never B4-validated, with every item read. The `naive` arm of the debate suite is
+paid at M15 (W6). Every result is in [m11.md](checks/m11.md).*
+
 ### V12. Speed, cost and profiles, in one place
 
 **Speed and cost** for a Standard 2 v 2 debate, medium turns, Auto host and Arbiter (off-peak; DeepSeek doubles at
@@ -533,6 +584,10 @@ the design):
 
 **Rejected:** giving `naive` the scripted verdict: a profile that spends real money on the arguments would then show a
 random winner.
+
+*Built in M11 (D24–D26): no contract change; purposes `debate_plan` (decision) and `eval_plant` (chat, evaluation
+only); `timeoutsMs.verdict` 30 s; the profiles: `agent` plans and scores, `naive` writes host lines and a single-call
+verdict, `scripted` keeps the mock's.*
 
 ## 5. Checks before this is locked
 
