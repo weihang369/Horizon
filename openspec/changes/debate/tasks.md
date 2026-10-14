@@ -427,7 +427,7 @@
   - doc 07: §7, and the cost pointers in docs 05–07.
   Then add doc 08's built notes per V, doc 07 G3's steer note, and doc 13's W12 and W6 rows.
   Verify: the docs link check reports 0 broken links in `docs/ai`.
-- [ ] 11.2 Finish `docs/ai/checks/m11.md`: step 0, every run, "What M11 found" and "What M12 inherits".
+- [x] 11.2 Finish `docs/ai/checks/m11.md`: step 0, every run, "What M11 found" and "What M12 inherits".
   Verify: every number in it traces to a run folder or a committed file.
 
 ## 12. The final gates
