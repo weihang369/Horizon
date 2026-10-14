@@ -387,7 +387,7 @@
 - [x] 10.5 `decisions --set debate_member` (≈ $0.010), then write `floor.member` into the three entries (version 2,
   `bank-lock`, seed rebuilt).
   Verify: m11.md has the dev grid, the test result, the paired test and the baseline.
-- [ ] 10.6 `decisions --set emotion` for the debate slice (≈ $0.002), then write the debate faces' floors.
+- [x] 10.6 `decisions --set emotion` for the debate slice (≈ $0.002), then write the debate faces' floors.
   Verify: m11.md has the slice's report.
 - [ ] 10.7 `latency --part debate` (≈ $0.015). Apply D9's rule and D29.3 if more than 10 % miss: set the
   `debate_plan` deadline from the measured p90 in `seed/pricing.json` and the mock, and record the NFR-02 exception.

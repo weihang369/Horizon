@@ -1110,6 +1110,25 @@ delta. If implementation finds a need, it stops and asks (the user's rule).
     `naive`, and stay.
 - **Order inside the change:** phase 0 first. The paid runs come only after every offline phase is green.
 
+### D31. The user's four choices during the paid runs (2026-10-14, 19:00 KL)
+
+1. **Small overruns:** a run may pass 1.5× its estimate without asking while it stays under $0.01 in total; a bigger
+   run still stops and asks. (10.6 stopped at its $0.003 cap on a ~$0.002 estimate and was finished.)
+   - **Rejected:** asking for every overrun; stopping 10.6 with 25 of its 40 items.
+2. **`judge_engages` failed its planted items** (23 of 30; real 30 of 30): its plants (D21, "an opening put in a
+   rebuttal slot") are often about the very point the other side then answered. **The plants are rebuilt:** 30 real
+   rebuttals and closings rewritten once by DeepSeek to ignore everything said and start a new topic (D21's own
+   plant prompt for engages, `eval_plant`), each read before use, and B4 run again.
+   - **Rejected:** keeping the judge "NOT COUNTED" in M11; rewording the judge on the same plants.
+3. **`naive`'s written notes** (10.1: 14 arguments with `<e:thinking>` notes … `</e:thinking>`, 10 more with a stray
+   closing tag): **the tag parser drops `</e:…>`** like any stray tag (backend and the TS reference, one shared
+   fixture). The notes before the tag still show; the `naive` prompt fix moves to M15, where `naive`'s debate arm is
+   paid and measured.
+   - **Rejected:** a `naive` prompt line now (unmeasured until M15); changing nothing.
+4. **The member pick misses its 80 % bar** (0.71 in the set) but beats the fixed order (+0.23, McNemar p 0.033):
+   **kept as measured,** `floor.member` 0.5, recorded in m11.md; a rewording can come in a later milestone.
+   - **Rejected:** a reworded member question re-tested now on the same held-out items.
+
 ## Open Questions
 
-None. The four choices are D29. D20's watch-faces choice is asked after its measurement, by design.
+None. The four choices are D29, the apply-time choices D30 and D31. D20's watch-faces choice is asked after its measurement, by design.
