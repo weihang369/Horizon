@@ -411,7 +411,7 @@
   Write the floors found.
   Verify: m11.md has each result against its bar. D20's watch-faces comparison goes to the user as a choice, and is
   applied as chosen.
-- [ ] 10.12 Spend against D23: every run's per-item results under `docs/ai/checks/m11/`, checked line by line against
+- [x] 10.12 Spend against D23: every run's per-item results under `docs/ai/checks/m11/`, checked line by line against
   `data/evals/spend.jsonl`.
   Verify: m11.md's spend table matches the log.
 
