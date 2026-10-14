@@ -83,26 +83,31 @@ def wire_problems(w: dict[str, Any]) -> list[str]:
     return out
 
 
+STUB_SIDE = "Proposition"   # M11 (debate D7): the side a sided entry is compiled about when an item names none
 STUB_NAME = "Amara"   # M9 (design D11): the subject a named entry is compiled about when an item names none (smoke)
 
 
 def compile_entry(qid: str, values: list[dict[str, Any]] | None = None, seed: str = "smoke",
-                  name: str | None = None, none: bool = True) -> Question:
+                  name: str | None = None, none: bool = True, side: str | None = None, n: int | None = None) -> Question:
     """The entry compiled as live; a dynamic choice with no values gets two stub options (the wire check needs ≥ 2),
     and an entry that names its subject gets the item's `name` (or a stub one). `none=False` (M10): the first slot and
-    watch ask with no `none`, as the planner does."""
+    watch ask with no `none`, as the planner does. M11 (debate D7, D12): an entry naming a side gets the item's `side`
+    (or "Proposition"), and a criterion's position `n` (or 1)."""
     e = bank().get(qid)
     dynamic = e.type == "choice" and e.options.get("kind") != "static"
     named = NAME in e.instructions
+    sided = "{side}" in e.instructions or "{other}" in e.instructions
     return bank().question(qid, values=values or (STUB_VALUES if dynamic else ()), seed=seed,
-                           name=(name or STUB_NAME) if named else None, none=none)
+                           name=(name or STUB_NAME) if named else None, none=none,
+                           side=(side or STUB_SIDE) if sided else None,
+                           n=(n or 1) if "{n}" in e.instructions else None)
 
 
 def item_question(item: dict[str, Any], seed: str | None = None) -> Question:
     """A dataset line's question, compiled exactly as the live code asks it."""
     it = item["item"]
     return compile_entry(item["question_id"], it.get("values"), seed=seed or str(it.get("seed") or item["id"]),
-                         name=it.get("name"), none=bool(it.get("none", True)))
+                         name=it.get("name"), none=bool(it.get("none", True)), side=it.get("side"), n=it.get("n"))
 
 
 def reordered(q: Question) -> Question:
@@ -222,7 +227,9 @@ class Decisions:
             q = item_question(item)   # M9 D26: the live seeded order, when stored
             row: dict[str, Any] = {"id": item["id"], "question_id": qid, "version": version, "label": item["label"],
                                    "smoke_only": bool(item.get("smoke_only")), "planted": bool(item.get("planted")),
-                                   "split": item["split"], "lang": item.get("lang", "en")}
+                                   "split": item["split"], "lang": item.get("lang", "en"),
+                                   **({"kind": item["kind"]} if item.get("kind") else {}),
+                                   **({"fresh": True} if item.get("fresh") else {})}   # M11: scored apart (D17)
             if isinstance(q, Noul):   # D27: asked once; "yes" when p reaches the entry's threshold
                 r = await env.rt.gateway.decide(item["item"]["state"], {qid: wire_question(q)}, call_ctx("eval_judge"))
                 ans = validate(q, r.answers.get(qid))
@@ -286,13 +293,26 @@ class Decisions:
         fade = env.rt.runtime_cfg.runtime.emotion_fade
         for kind in ("emotion", "reaction"):   # M9 D26: the code rule's policies, floors from dev
             mine = [r for r in res.rows if isinstance(r["label"], dict) and policies.kind_of(r["question_id"]) == kind]
+            # M11 (debate D29.1): the debate slice chooses its own floors and is reported apart
+            debate = [r for r in mine if r.get("kind") == "debate"]
+            mine = [r for r in mine if r.get("kind") != "debate"]
             if mine and not self.smoke:
                 res.summary += policies.report(mine, kind, fade)
+            if debate and not self.smoke:
+                res.summary += policies.report(debate, kind, fade, title="Emotion (the debate slice, its own floor)")
+        watch = [r for r in res.rows if r.get("kind") == "watch" and isinstance(r["label"], dict)
+                 and policies.kind_of(r["question_id"]) == "emotion"]
+        if watch and not self.smoke:   # M11 (debate D20): both merge rules side by side, for the user's choice
+            res.summary += policies.merge_comparison(watch, fade)
         if not self.smoke:   # M10 (group-watch D23): who speaks (three parts) and "is the talk finished?"
             for part in who_policies.PARTS:
                 mine = [r for r in res.rows if r["question_id"] == part and isinstance(r["label"], dict)]
                 if mine:
                     res.summary += who_policies.who_report(mine, part)
+            member = [r for r in res.rows if r["question_id"] in who_policies.MEMBER_QIDS
+                      and isinstance(r["label"], dict)]
+            if member:   # M11 (debate D21): the three member questions scored together
+                res.summary += who_policies.member_report(member)
             talk = [r for r in res.rows if r["question_id"] == "talk_finished"]
             if talk:
                 res.summary += who_policies.talk_report(talk)
@@ -412,6 +432,7 @@ class Smoke:
                 empty.append(suite.name)
         content_lines += await self.m9(env, plan, empty)
         content_lines += await self.m10(env, plan, empty)
+        content_lines += await self.m11(env, plan, empty)
         res.summary += ["## Smoke (never compared with baselines)",
                         f"- bank: {len(bank().entries)} entr(ies), wire problems: {problems or 'none'}",
                         f"- datasets: {n_lines} line(s) load", *d.summary,
@@ -455,6 +476,10 @@ class Smoke:
                 rt.decider_fixtures.clear()
         return out
 
+
+    @staticmethod
+    async def m11(env: RunEnv, plan: Plan, empty: list[str]) -> list[str]:
+        return await m11_smoke(env, plan, empty)
 
     @staticmethod
     async def m10(env: RunEnv, plan: Plan, empty: list[str]) -> list[str]:
@@ -510,6 +535,57 @@ class Smoke:
         return out
 
 
+SMOKE_DEBATE: dict[str, Any] = {"id": "smoke-debate", "world": "wld_seedMeridian",
+                "cast": ["chr_evalSofia", "chr_seedMei", "chr_seedAmara", "chr_seedVictor"],
+                "config": {"motion": "This house would tax sugary drinks", "format": "two_sided",
+                           "sides": {"prop": ["chr_evalSofia", "chr_seedAmara"], "opp": ["chr_seedMei", "chr_seedVictor"]},
+                           "roundsPreset": "quick", "phases": ["opening", "closing"], "turnLength": "short",
+                           "moderator": "auto_host", "verdictBy": "arbiter", "rubric": [], "autoAdvance": True,
+                           "pauseMs": 1500}}
+
+
+async def m11_smoke(env: RunEnv, plan: Plan, empty: list[str]) -> list[str]:
+    """M11 (debate 9.10): under `agent`, one Quick 2 v 2 debate with Auto host and Arbiter to its verdict, one
+    debate-plan timing request and one rubric request, all at $0 in CI. In test mode the host lines and the verdict
+    prose are canned (W14: synthetic until 10.7 records real ones). The run's own profile is restored afterwards."""
+    from horizon.ai.agent import rubric
+    from horizon.ai.profile import ProfileSpec
+    from horizon.evals import debate_suites as ds
+
+    rt = env.rt
+    out: list[str] = []
+    before = rt.profile
+    rt.set_profile(ProfileSpec(profile="agent", test_mode=rt.cfg.test_mode))
+    try:
+        if rt.fake is not None:
+            from horizon.gateway.fake import load_canned
+
+            for name in ("debate-host", "debate-verdict"):
+                purpose, canned = load_canned(name)
+                rt.fake.set_canned(purpose, canned)
+        await ds.install_cast(env)
+        await ds.top_up(env, SMOKE_DEBATE["cast"])
+        doc, complete, _, msgs, _ = await ds.drive_debate(env, SMOKE_DEBATE, resume=False)
+        hosts = [m for m in msgs if m.get("kind") == "narration"]
+        v = dict(doc.get("verdict") or {})
+        out.append(f"- debate: {len(ds.arguments(doc))} argument(s), {len(hosts)} host line(s), verdict "
+                   f"{v.get('decidedBy')} with {len(v.get('scores') or [])} score(s)")
+        if not complete or not hosts or v.get("decidedBy") != "arbiter" or not v.get("scores"):
+            empty.append("debate")
+        slots = ds.natural_member_slots(doc)
+        rows = await ds.plan_timing(env, [("smoke", ds.cut_request(doc, slots[0], ds.profiles()))] if slots else [])
+        out.append(f"- debate-plan timing: {len(rows)} request(s)")
+        if not rows:
+            empty.append("debate-plan timing")
+        sc = await rubric.score(rt.ai.deps, ds.verdict_request(doc))
+        out.append(f"- rubric: {len(sc.bars or [])} bar(s)" + (f", failure {sc.failure}" if sc.failure else ""))
+        if not sc.bars:
+            empty.append("rubric")
+    finally:
+        rt.set_profile(before)
+    return out
+
+
 async def planned_group_send(env: RunEnv) -> int:
     """One `agent` group send through the app; the replies it got."""
     import httpx
@@ -536,11 +612,14 @@ async def planned_group_send(env: RunEnv) -> int:
 
 def _content() -> dict[str, Any]:
     from horizon.evals.content import Drafter, Long, Summary, Transcript
+    from horizon.evals.debate_suites import DebateHistory, DebatePlant, DebateQuality, DebateSuite
     from horizon.evals.latency import Latency
     from horizon.evals.moodline import Moodline
     from horizon.evals.watch_suites import FreeRun, WatchHistory
     return {"drafter": Drafter(), "summary": Summary(), "long": Long(), "transcript": Transcript(),
-            "moodline": Moodline(), "latency": Latency(), "watch-history": WatchHistory(), "freerun": FreeRun()}
+            "moodline": Moodline(), "latency": Latency(), "watch-history": WatchHistory(), "freerun": FreeRun(),
+            "debate-history": DebateHistory(), "debate-plant": DebatePlant(), "debate-quality": DebateQuality(),
+            "debate": DebateSuite()}
 
 
 SUITES: dict[str, Any] = {"canary": Canary(), "decisions": Decisions(), "smoke": Smoke(), **_content()}

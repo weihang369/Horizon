@@ -274,6 +274,12 @@ class DecisionCall:
     def sent(self) -> bool:
         return self._task is not None
 
+    @property
+    def landed(self) -> bool:
+        """The request has settled (answered or failed), so a read now returns at once (M11, debate D8)."""
+        return (not self._pending or self._refused is not None
+                or (self._task is not None and self._task.done()))
+
     def outcome(self) -> str:
         """How the call ended, for its ledger row (design D6)."""
         if self.cancelled:
@@ -316,9 +322,29 @@ class DecisionCall:
         if self._refused is not None:
             return await self._fail(self._refused)
         self._check_cancel()
-        await asyncio.shield(self._signal)
+        await self._until_signal()
         self._check_cancel()
         return await self._resolve()
+
+    async def _until_signal(self) -> None:
+        """Wait for the request to settle (or a cancel) with the caller's activity token given up, so a reader that
+        only waits (M11: the debate plan's holder, its late rows) never keeps virtual time from settling."""
+        if self._signal.done():
+            return
+        fut: asyncio.Future[None] = asyncio.get_running_loop().create_future()
+        holder = vclock.current_holder()
+
+        def wake(_f: Any = None) -> None:
+            if not fut.done():
+                if holder is not None:
+                    holder.hold()
+                fut.set_result(None)
+
+        self._signal.add_done_callback(wake)
+        try:
+            await vclock.wait_handoff(fut, holder)
+        finally:
+            self._signal.remove_done_callback(wake)
 
     def _check_cancel(self) -> None:
         if self.cancelled:

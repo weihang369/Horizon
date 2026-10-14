@@ -17,7 +17,7 @@ from __future__ import annotations
 from collections.abc import Callable, Mapping, Sequence
 from typing import Any
 
-from horizon.ai.agent.emotion import MERGED, decide_face, kept
+from horizon.ai.agent.emotion import MERGED, decide_face, kept, merges
 from horizon.ai.agent.reactions import keep as keep_reactions
 from horizon.ai.contexts import ListenerView
 from horizon.ai.decider import ChoiceAnswer
@@ -29,8 +29,9 @@ FADE = frozenset({"surprised", "embarrassed"})
 
 
 def emotion_answer(answer: ChoiceAnswer | None, label: Mapping[str, Any], floor: float,
-                   fade: frozenset[str] = FADE) -> str:
-    return decide_face(answer, base=str(label["previous"]), floor=floor, fade=fade).face
+                   fade: frozenset[str] = FADE, merge: bool = True) -> str:
+    rule = merge and bool(label.get("merge", True))   # a label may carry its question's live rule (`report`)
+    return decide_face(answer, base=str(label["previous"]), floor=floor, fade=fade, merge=rule).face
 
 
 def emotion_correct(face: str, label: Mapping[str, Any], fade: frozenset[str] = FADE) -> bool:
@@ -63,10 +64,14 @@ def accuracy(rows: Sequence[tuple[ChoiceAnswer | None, Mapping[str, Any]]], scor
     return sum(1 for a, lab in rows if score(a, lab)) / len(rows) if rows else 0.0
 
 
-def choose_floor(rows: Sequence[tuple[ChoiceAnswer | None, Mapping[str, Any]]], kind: str) -> dict[str, Any]:
-    """B5 on dev rows (answer, label): accuracy per floor, "no floor" (0) and "fallback only" (above any confidence)."""
-    answer = emotion_answer if kind == "emotion" else reaction_answer
+def choose_floor(rows: Sequence[tuple[ChoiceAnswer | None, Mapping[str, Any]]], kind: str,
+                 merge: bool = True) -> dict[str, Any]:
+    """B5 on dev rows (answer, label): accuracy per floor, "no floor" (0) and "fallback only" (above any confidence).
+    `merge` False scores emotion under D20's no-merge rule."""
     correct: Callable[..., bool] = emotion_correct if kind == "emotion" else (lambda f, lab, *_: reaction_correct(f, lab))
+
+    def answer(a: ChoiceAnswer | None, lab: Mapping[str, Any], floor: float) -> str:
+        return emotion_answer(a, lab, floor, merge=merge) if kind == "emotion" else reaction_answer(a, lab, floor)
 
     def acc(floor: float) -> float:
         return accuracy(rows, lambda a, lab: correct(answer(a, lab, floor), lab))
@@ -91,12 +96,15 @@ def kind_of(question_id: str) -> str | None:
     return "emotion" if question_id.startswith("emotion_") else "reaction" if question_id == "reaction" else None
 
 
-def report(rows: Sequence[Mapping[str, Any]], kind: str, fade: frozenset[str] = FADE) -> list[str]:
+def report(rows: Sequence[Mapping[str, Any]], kind: str, fade: frozenset[str] = FADE,
+           title: str | None = None) -> list[str]:
     """B5's floor from dev, then the test split once with it, on its English items: accuracy (Wilson), the baseline
     and its paired difference (exact McNemar), coverage, the merge rate (emotion) or the reaction share (reactions).
     Other languages are a "runs" check only (the user's rule, 2026-10-12)."""
     answer = emotion_answer if kind == "emotion" else reaction_answer
-    title = "Emotion" if kind == "emotion" else "Reactions"
+    title = title or ("Emotion" if kind == "emotion" else "Reactions")
+    if kind == "emotion":   # each item under its question's live merge rule (M11 D33)
+        rows = [{**r, "label": {**r["label"], "merge": merges(str(r.get("question_id") or ""))}} for r in rows]
     dev = [(answer_of(r), r["label"]) for r in rows if r.get("split") == "dev"]
     test = [r for r in rows if r.get("split") == "test"]
     if not dev or not test:
@@ -138,7 +146,7 @@ def report(rows: Sequence[Mapping[str, Any]], kind: str, fade: frozenset[str] = 
     for r, _, _, face in scored:
         a, lab = answer_of(r), r["label"]
         if kind == "emotion":
-            f = decide_face(a, base=str(lab["previous"]), floor=floor, fade=fade)
+            f = decide_face(a, base=str(lab["previous"]), floor=floor, fade=fade, merge=bool(lab.get("merge", True)))
             used += f.outcome == "jev"
             if lab["previous"] == "neutral":
                 neutral_n += 1
@@ -157,3 +165,37 @@ def report(rows: Sequence[Mapping[str, Any]], kind: str, fade: frozenset[str] = 
         out.append(f"- other languages: {ran}/{len(others)} test items ran and returned an answer (only that they run "
                    "is checked; right or wrong isn't judged)")
     return out
+
+
+# ── M11 (debate D20): the watch faces under both merge rules, for the user's choice ──
+def merge_comparison(rows: Sequence[Mapping[str, Any]], fade: frozenset[str] = FADE) -> list[str]:
+    """`emotion_line` items scored under (a) the live neutral + none merge and (b) no merge, each with its own floor
+    from the same grid on dev; then the English test once per rule, and every item where the two faces differ."""
+    lines_ = [r for r in rows if r.get("question_id") == "emotion_line"]
+    dev = [(answer_of(r), r["label"]) for r in lines_ if r.get("split") == "dev"]
+    test = [r for r in lines_ if r.get("split") == "test" and str(r.get("lang") or "en") == "en"]
+    title = "## Watch faces: the neutral + none merge vs no merge (emotion_line; debate D20, the user chooses)"
+    if not dev or not test:
+        return [f"{title}: needs dev and test items (dev {len(dev)}, test {len(test)})"]
+    out = [title]
+    floors: dict[bool, float] = {}
+    for merge, name in ((True, "(a) merge (today)"), (False, "(b) no merge")):
+        sel = choose_floor(dev, "emotion", merge=merge)
+        floors[merge] = float(sel["floor"])
+        k = sum(emotion_correct(emotion_answer(answer_of(r), r["label"], floors[merge], fade, merge), r["label"], fade)
+                for r in test)
+        lo, hi = wilson(k, len(test))
+        out.append(f"- {name}: floor {floors[merge]:.1f}, dev {sel['accuracy']:.2f}; English test {k}/{len(test)} = "
+                   f"{k / len(test):.2f} (95% Wilson {lo:.2f}–{hi:.2f})")
+    differ = []
+    for r in lines_:
+        a, lab = answer_of(r), r["label"]
+        fa = emotion_answer(a, lab, floors[True], fade, True)
+        fb = emotion_answer(a, lab, floors[False], fade, False)
+        if fa != fb:
+            mark = "".join("✓" if emotion_correct(f, lab, fade) else "✗" for f in (fa, fb))
+            differ.append(f"  - {r.get('id')} ({r.get('split')}): merge {fa}, no merge {fb} [{mark}]; previous "
+                          f"{lab['previous']}, acceptable {', '.join(lab.get('acceptable') or []) or '-'}"
+                          + (", keep ok" if lab.get("keep_ok") else ""))
+    out.append(f"- the two rules give different faces on {len(differ)}/{len(lines_)} items:")
+    return out + differ

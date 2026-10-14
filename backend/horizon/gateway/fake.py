@@ -140,6 +140,10 @@ class FakeOpenRouter:
         self.embed_dims: int | None = None        # force the returned vector length (None: honour `dimensions`)
         self._decision_parks: dict[int, asyncio.Event] = {}
         self.decision_parked = asyncio.Event()    # set once a parked decisions request is being held
+        self._chat_parks: dict[str, asyncio.Event] = {}   # purpose -> the next chat request with it is held (M11)
+        self._question_parks: list[tuple[str, asyncio.Event]] = []   # a question key prefix -> the next decisions
+                                                                     # request asking it is held (M11)
+        self.chat_parked = asyncio.Event()        # set once a parked chat request is being held
         self.canned: dict[str, list[Mapping[str, Any]]] = {}   # purpose -> recorded responses, answered in turn
         self._canned_i: Counter[str] = Counter()
 
@@ -159,6 +163,21 @@ class FakeOpenRouter:
         """Hold the n-th decisions request (1-based, over this fake's life) until the returned event is set."""
         ev = asyncio.Event()
         self._decision_parks[n] = ev
+        return ev
+
+    def park_question(self, prefix: str) -> asyncio.Event:
+        """Hold the next decisions request holding a question whose key starts with `prefix` (M11: the debate plan's
+        `member_rebuttal`, its `emotion_line:` faces) until the returned event is set; counting-free, so other Jev
+        requests in between (reactions, the face check) don't move it."""
+        ev = asyncio.Event()
+        self._question_parks.append((prefix, ev))
+        return ev
+
+    def park_chat(self, purpose: str) -> asyncio.Event:
+        """Hold the next chat request labelled `purpose` (the test-mode purpose header) until the returned event is set
+        (debate D2: a host line or a verdict waiting on DeepSeek). The caller's activity token is given up while held."""
+        ev = asyncio.Event()
+        self._chat_parks[purpose] = ev
         return ev
 
     def set_canned(self, purpose: str, responses: Sequence[Mapping[str, Any]] | None) -> None:
@@ -191,8 +210,18 @@ class FakeOpenRouter:
         if epark is not None:
             return self._held(epark, request, flag=self.embed_parked)
         dpark = self._decision_parks.pop(self.counts["decisions"], None) if route == ("POST", "/alpha/decisions") else None
+        if dpark is None and route == ("POST", "/alpha/decisions") and self._question_parks:
+            keys = list(json.loads(request.content or b"{}").get("questions") or {})
+            hit = next((i for i, (pre, _) in enumerate(self._question_parks) if any(k.startswith(pre) for k in keys)),
+                       None)
+            if hit is not None:
+                dpark = self._question_parks.pop(hit)[1]
         if dpark is not None:
             return self._held(dpark, request, flag=self.decision_parked, idle=True)
+        if route == ("POST", "/v1/chat/completions") and self._chat_parks:
+            cpark = self._chat_parks.pop(request.headers.get(PURPOSE_HEADER) or "", None)
+            if cpark is not None:
+                return self._held(cpark, request, flag=self.chat_parked, idle=True)
         return self._answer(request, route)
 
     async def _held(self, park: asyncio.Event, request: httpx.Request, *, flag: asyncio.Event | None = None,

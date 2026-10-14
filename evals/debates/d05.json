@@ -1,0 +1,204 @@
+{
+ "schemaVersion": 1,
+ "id": "d05",
+ "mode": "debate",
+ "world": "wld_seedSunnyHollow",
+ "cast": [
+  "chr_evalAiko",
+  "chr_seedTakeshi",
+  "chr_seedRin",
+  "chr_seedHana"
+ ],
+ "language": "en",
+ "motion": "This house would ban smartphones in primary schools",
+ "format": "two_sided",
+ "roundsPreset": "standard",
+ "phases": [
+  "opening",
+  "rebuttal",
+  "closing"
+ ],
+ "sides": {
+  "prop": [
+   "chr_evalAiko",
+   "chr_seedTakeshi"
+  ],
+  "opp": [
+   "chr_seedRin",
+   "chr_seedHana"
+  ]
+ },
+ "lines": [
+  {
+   "seq": 2,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_evalAiko",
+   "name": "Aiko Fujita",
+   "text": "Kai, before I say anything about the motion, let me tell you who lives there. I visit a home in Sunny Hollow where a seven-year-old walks to school with a phone in her backpack, and I've watched what it does to the walk itself — heads down, no noticing the neighbors. I've held the hand of her grandmother, and the health risk is plain: less movement, less sleep, less face-to-face play, which hurts growing bodies and young minds. The classroom is the one place we can still protect that hour. Banning smartphones in primary schools is not punishment, it is a pediatric and public health measure. Schools already supervise children for six hours; removing the device restores attention, playground games, and sleep. I support the motion.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 3,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedRin",
+   "name": "Rin Morisaki",
+   "text": "so our side is against banning smartphones in primary schools. before anyone clutches pearls, nobody's saying hand a seven year old unlimited tiktok, we're saying a blanket ban is lazy design. a total ban just teaches kids phones are forbidden fruit, then they hit middle school with zero guidance and go feral. hana and i ran a quick mental sim: supervised, curriculum-tied phone use teaches digital literacy early, and that's the actual skill they need. plus accessibility, kids with diabetes monitors, translation apps, contact home in emergencies. school policy should be the difficulty setting, not just blocking the level. fight me.",
+   "emotion": "neutral"
+  },
+  {
+   "seq": 4,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_seedTakeshi",
+   "name": "Takeshi Morisaki",
+   "text": "Right on schedule, let's get rolling. I drove trains for thirty years, Kai, and the first rule of any signal system is simple: you don't hand a kid the controls before they know the brakes. Same thing here. A smartphone in a primary classroom is a loaded switch — notifications derailing attention every ninety seconds, screens crowding out the reading and the recess that actually build a growing brain. Banning them isn't cruelty, it's track maintenance. Kids can still call home from the office, same as I did in 1978. We're not against phones, we're for childhood staying on the rails. Structure now means fewer wrecks later. And hey, if you disagree, fine — I'll still wave from the pier. A phone in class is like a fish in a pocket: nobody ends up happy.",
+   "emotion": "neutral"
+  },
+  {
+   "seq": 5,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedHana",
+   "name": "Hana Morisaki",
+   "text": "Aiko, that's such a tender point, and I mean it — I'd never wave away a worried grandmother!! But here's my flower-shop take: you don't ban the rain because some stems rot; you teach the plant where to stand. Phones in primary school are the same. They're how a kid calls home when practice runs late, how a nervous little one reaches a parent at lunch, how families in Sunny Hollow stay woven together. The answer isn't a blanket ban, it's teaching — digital manners, screen breaks, playground time, all of it inside the school day. And honestly, Kai works in IT; he'd tell you the tool isn't the villain, the training is. Ban the phone",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 7,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_evalAiko",
+   "name": "Aiko Fujita",
+   "text": "Let me take Hana's rain image seriously, because it deserves an answer rather than a shrug. She says we don't ban rain, we teach the plant where to stand. Fair — but a six-hour school day is not open weather; it is a greenhouse we built on purpose, and we choose what goes inside. I've held the hand of a boy in Sunny Hollow whose glucose monitor lives on his mother's phone, and I would never take that safety away — that is exactly why the ban should have a documented medical exception, written down, not an assumption. Digital literacy is real teaching, yes; but a curriculum module is not the same as a pocket full of notifications during reading. Teach the skill on school devices, at the scheduled hour. The playground, the face-to-face talk, the walk home — those are the brakes Takeshi means.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 8,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedRin",
+   "name": "Rin Morisaki",
+   "text": "ok so aiko just described our policy and called it a ban, which is a bold move and i respect the hustle. documented medical exceptions, scheduled digital-literacy modules on school devices, screens off during reading? that's not a ban, that's guided use with a fire door, and if the motion means that, we already agree, no debate needed. but a true blanket ban means the kid with the glucose monitor waits for paperwork and the family that texts grandma in another country loses their thread. teach the brakes, keep the keys, same as takeshi's trains. forest rule: don't burn the forest to stop one campfire. our side says regulate, don't erase. fight me.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 9,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_seedTakeshi",
+   "name": "Takeshi Morisaki",
+   "text": "Stable track beats a scenic detour, Rin. You say we've just described guided use — no. A ban with a medical lane is a signal, not a suggestion: phones off by default, exceptions written, checked, renewed. Guided use means the device stays in the pocket all day, and \"guided\" drifts into buzzing during math. I've run a schedule thirty years; the timetable is what keeps the train from meeting the platform sideways. One campfire rule doesn't burn the forest, agreed — but one lit match in a dry classroom isn't a campfire either. And Kai, you in IT know the oldest truth in the book: the default setting is the policy. Leave it on, and that's your answer. So: brake first, whistle later. Right on schedule.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 10,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedHana",
+   "name": "Hana Morisaki",
+   "text": "Takeshi, you're my dad, so I have to be nice — but come on, a rule with a documented lane is still a rule everyone has to navigate, and that's exactly the tangle our side is trying to avoid!! Here's the thing I keep coming back to: Grandma wrote in her notebook that flowers on the table should never be taller than your elbow, because people want to see each other when they eat — the point was never \"no flowers,\" it was \"arrange them so nobody's hidden.\" Phones are the same. You don't ban the phone, you arrange the day so the phone serves the kid and not the other way around. Rin's right — a true blanket ban turns a safety tool into a contraband item you have to prove your child deserves. That's not track maintenance, that's making the platform taller than the train. Probably.",
+   "emotion": "happy"
+  },
+  {
+   "seq": 12,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_evalAiko",
+   "name": "Aiko Fujita",
+   "text": "Let me tell you who lives there, Kai, one last time, because endings deserve a person, not a statistic. I visit a house on Alder Street where a nine-year-old now reads to her grandmother after school instead of scrolling, and I have watched that girl's sleep and appetite come back. That is the whole motion, felt in a kitchen, not argued in a hall. Rin calls our rule guided use rebranded; I say a fire door is not the same as an open flame, and the default setting is the policy. Hana's flowers can be arranged, yes — after the meal, at the table we all agreed on. We keep the medical lane wide and documented. Teach the brakes in scheduled lessons. But for six hours a day, let childhood stay on the rails.",
+   "emotion": "sad"
+  },
+  {
+   "seq": 13,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedRin",
+   "name": "Rin Morisaki",
+   "text": "aiko, i genuinely respect the alder street kitchen, no sarcasm, but that's our whole argument wearing an apron. that girl reads to grandma because someone arranged the afternoon, not because a school confiscated a rectangle. takeshi says the default is the policy, fine, our default is teaching the brakes before the key turns, medical lane wide and documented, screens off in scheduled lessons, phones pocketed during reading. a ban-as-default just outsources the lesson to middle school, where it costs more. we're not pro-phone, we're pro-kid, pro-family, pro-learning it early with adults nearby. so vote against. that's it, that's the closing. sincere moment over, fight me.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 14,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_seedTakeshi",
+   "name": "Takeshi Morisaki",
+   "text": "The Alder Street kitchen is real, and so is the train that got her there: someone laid the rails, they didn't rip the engine out. Rin's right — a default that teaches beats a default that confiscates, because the lesson just gets deferred to middle school where it costs more. But a classroom is a locomotive cab, Kai, and you don't put a seven-year-old's hands there unattended. Documented medical lane, wide. Pockets during reading. Scheduled lessons on school devices. That's not an open flame, it's a fire door — and a fire door is what keeps the greenhouse standing. We set the timetable; the timetable sets the kid. Vote for the motion. Right on schedule — and if you'd rather argue, the pier's free Sunday.",
+   "emotion": "neutral"
+  },
+  {
+   "seq": 15,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedHana",
+   "name": "Hana Morisaki",
+   "text": "My turn to close for our side, and I want the kitchen too, Aiko, I do — Grandma's notebook says rainy-day soup should be served in the good bowls and called dragon broth if a child balks, because presentation is half of care. That's our whole motion: a school can do for phones what the good bowls do for soup, make them part of the meal instead of banned from the table. A blanket ban wipes out the kid whose monitor lives on a phone, the kid translating for a parent, the kid who needs one text home. Teach the brakes in lessons, pocket them during reading, keep the medical lane documented — that's regulation with warmth, not a fence. Our default is taught, not confiscated. So vote against the motion, and honestly, you already know which side Rin and I are on. Probably.",
+   "emotion": "sad"
+  }
+ ],
+ "verdict": {
+  "summary": [
+   {
+    "subjectId": "prop",
+    "points": [
+     "Ban is a pediatric and public health measure; it restores attention, play, and sleep.",
+     "Phones are loaded switches; notifications derail attention and crowd out reading and recess.",
+     "A ban with a documented medical lane is a signal, not a suggestion; default is policy.",
+     "Guidance without a ban drifts into buzzing during math; structure now means fewer wrecks.",
+     "Classroom is a locomotive cab; don't put a seven-year-old's hands there unattended."
+    ]
+   },
+   {
+    "subjectId": "opp",
+    "points": [
+     "Blanket ban is lazy design; it makes phones forbidden fruit and defers lessons to middle school.",
+     "Supervised, curriculum-tied use teaches digital literacy early, which is the actual skill.",
+     "Accessibility matters: diabetes monitors, translation apps, contact home in emergencies.",
+     "True ban turns a safety tool into contraband you must prove your child deserves.",
+     "Regulate, don't erase: teach brakes in lessons, pocket phones during reading, keep medical lane wide."
+    ]
+   }
+  ],
+  "keyDisagreement": "Whether a ban with a documented medical lane is a clear default that protects the classroom, or rebranded guided use that turns a safety tool into contraband.",
+  "decidedBy": "none",
+  "strongerCase": null
+ }
+}

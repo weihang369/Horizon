@@ -22,9 +22,16 @@ from typing import Any
 
 from sqlalchemy import select
 
-from horizon.ai.agent.emotion import decide_face, emotion_row
+from horizon.ai.agent.emotion import decide_face, emotion_row, merges
 from horizon.ai.agent.plan_graph import Branch
-from horizon.ai.agent.plan_state import Candidate, PlanState, PlanStateInput, build_turn_plan_state
+from horizon.ai.agent.plan_state import (
+    Candidate,
+    DebateInput,
+    PlanState,
+    PlanStateInput,
+    _tokens,
+    build_turn_plan_state,
+)
 from horizon.ai.agent.planner import _name
 from horizon.ai.contexts import CastKind, CastPlan, CastRequest, PlannedFace, SessionContext, TalkFinished, WhoPick
 from horizon.ai.decider import Answers, ChoiceAnswer, DecisionResult, NoulAnswer
@@ -37,13 +44,17 @@ PURPOSE = "turn_plan"
 TALK = "talk_finished"
 WHO_QUESTION: dict[CastKind, str | None] = {
     "group_first": "who_first", "everyone": "who_first", "step_in": "who_first", "group_mentioned": None,
-    "next": "who_next", "scene": "who_scene", "opening": "who_scene"}
+    "next": "who_next", "scene": "who_scene", "opening": "who_scene",
+    "debate_opening": None, "debate_ask": None, "debate_line": None}   # M11: debate turns are forced (debate D8)
 FACE_QUESTION: dict[CastKind, str] = {
     "group_first": "emotion_reply", "group_mentioned": "emotion_reply", "everyone": "emotion_reply",
-    "step_in": "emotion_reply", "next": "emotion_line", "scene": "emotion_line", "opening": "emotion_opening"}
+    "step_in": "emotion_reply", "next": "emotion_line", "scene": "emotion_line", "opening": "emotion_opening",
+    # M11 (doc 06 E1; debate D7): an opening's side of the motion, an Ask answer, a line re-asked at its turn
+    "debate_opening": "emotion_debate_opening", "debate_ask": "emotion_reply", "debate_line": "emotion_line"}
 WHO_ACTION: dict[CastKind, str] = {
     "group_first": "answers first", "step_in": "answers first", "everyone": "sets the order",
-    "next": "speaks next", "scene": "speaks next", "opening": "speaks next", "group_mentioned": "answers first"}
+    "next": "speaks next", "scene": "speaks next", "opening": "speaks next", "group_mentioned": "answers first",
+    "debate_opening": "speaks", "debate_ask": "answers", "debate_line": "speaks"}
 
 
 # ── pure rules, shared with the evaluation ──
@@ -151,8 +162,14 @@ def recent_lines(session: SessionContext, skip_last: bool) -> list[dict[str, str
     return [{"speaker": (you or "the user") if m.author_type == "user" else m.name, "text": m.content} for m in recent]
 
 
+# M11 (debate design D17): the plans whose who-speaks question is judged on fit alone see no `last_spoke` label
+NO_LAST_SPOKE: frozenset[str] = frozenset({"scene", "opening", "next", "debate_opening", "debate_ask", "debate_line"})
+DEBATE_KINDS: frozenset[str] = frozenset({"debate_opening", "debate_ask", "debate_line"})
+
+
 def state_input(req: CastRequest) -> PlanStateInput:
-    """X9's input. `latest` is the line being answered, so it isn't repeated in `recent` (the last stored line)."""
+    """X9's input. `latest` is the line being answered, so it isn't repeated in `recent` (the last stored line).
+    Watch turns and group Next speaker leave `last_spoke` out (`who_scene` / `who_next` v3)."""
     s = req.session
     ids = list(dict.fromkeys([*req.forced, *req.candidates]))   # everyone who may speak, for context
     cands = candidate_views(s, ids, req.cast, req.base_faces, req.turns_since)
@@ -160,7 +177,12 @@ def state_input(req: CastRequest) -> PlanStateInput:
     premise = str((s.config or {}).get("premise") or "") if s.mode == "watch" else ""
     return PlanStateInput(mode=s.mode, user_name=you, candidates=cands, latest=req.latest,
                           recent=recent_lines(s, skip_last=bool(req.latest)), premise=premise,
-                          summary=s.summary or "" if s.mode == "watch" else "")
+                          summary=s.summary or "" if s.mode == "watch" else "",
+                          last_spoke=req.kind not in NO_LAST_SPOKE,
+                          debate=DebateInput(motion=req.debate.motion, phase=req.debate.phase, side=req.debate.side,
+                                             last_opposing=req.debate.last_opposing,
+                                             latest_by_candidate=dict(req.debate.latest_by_candidate))
+                          if req.debate is not None else None)
 
 
 def asked_about(req: CastRequest) -> list[str]:
@@ -186,7 +208,14 @@ class CastSteps:
         return f"{req.session.seed}:{req.turn_index}"
 
     async def state(self, req: CastRequest) -> PlanState:
-        return build_turn_plan_state(state_input(req))
+        built = build_turn_plan_state(state_input(req))
+        if req.kind not in DEBATE_KINDS:
+            return built
+        # M11 (doc 01 A3 rule 6; debate D7): a debate turn's face question sees only the fields it declares
+        from horizon.ai.agent.debate_plan import only_declared
+
+        state = only_declared(dict(built.state), self.questions(req)[0])
+        return PlanState(state=state, tokens=_tokens(state), dropped_gates=list(built.dropped_gates))
 
     def questions(self, req: CastRequest) -> tuple[dict[str, Any], dict[str, Any]]:
         b = bank()
@@ -246,7 +275,7 @@ class CastSteps:
             a = res.answers.get(key)
             face = decide_face(a if isinstance(a, ChoiceAnswer) else None, base=req.base_faces.get(cid, "neutral"),
                                floor=fe.floor if fe.floor is not None else 0.6, fade=fade, manual=req.manual,
-                               failure=res.failure)
+                               failure=res.failure, merge=merges(fq))
             faces[cid] = face
             face_rows[cid] = emotion_row(face, qid=fq, version=fe.version, label=fe.label, about=cid)
         shared: list[dict[str, Any]] = []

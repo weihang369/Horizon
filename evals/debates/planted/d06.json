@@ -1,0 +1,222 @@
+{
+ "schemaVersion": 1,
+ "id": "d06",
+ "mode": "debate",
+ "world": "wld_seedSunnyHollow",
+ "cast": [
+  "chr_seedHana",
+  "chr_evalAiko",
+  "chr_seedTakeshi",
+  "chr_evalBram"
+ ],
+ "language": "en",
+ "motion": "This house would close the high street to cars at weekends",
+ "format": "two_sided",
+ "roundsPreset": "standard",
+ "phases": [
+  "opening",
+  "rebuttal",
+  "closing"
+ ],
+ "sides": {
+  "prop": [
+   "chr_seedHana",
+   "chr_evalAiko"
+  ],
+  "opp": [
+   "chr_seedTakeshi",
+   "chr_evalBram"
+  ]
+ },
+ "lines": [
+  {
+   "seq": 2,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_seedHana",
+   "name": "Hana Morisaki",
+   "text": "Ka—er, everyone! Hana Morisaki here, arguing that we should close our high street to cars at weekends, and honestly, it's like giving a wilting flower a bigger pot to bloom in!! Think about the space: no idling engines, no honking, just families strolling past my shop and kids learning to ride bikes without me holding my breath every time someone reverses. I've watched our little stretch of pavement turn grey and empty on Saturdays—weekends should feel like a garden in full sun, not a car park with flowerbeds. Aiko and I will show you the numbers on foot traffic, air quality, and the small businesses that thrive in cities that took this leap. You lose a few parking spots; you gain an entire street back. Probably.",
+   "emotion": "happy"
+  },
+  {
+   "seq": 3,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedTakeshi",
+   "name": "Takeshi Morisaki",
+   "text": "Right on schedule. Thirty years driving the coastal line taught me one thing: a town's arteries need to keep flowing, or the whole body stiffens up. Shut the high street on weekends and you don't get a village square, you get a bottleneck and a lot of idling engines on side streets. My daughter Hana will tell you it's about community; I'll tell you a train that stops moving isn't a train anymore, it's a shed. Small shops survive on folks who drive in, load up, and drive home. Block the road, and you block the living. Anyway, closing a street is like gutting a fish—sounds tidy till you smell it. We oppose.",
+   "emotion": "neutral"
+  },
+  {
+   "seq": 4,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_evalAiko",
+   "name": "Aiko Fujita",
+   "text": "Let me tell you who lives there. Mrs. Okada, on Elm Row, eighty-three, COPD, walks to the bakery every morning because it is the one errand that keeps her lungs working and her spirits up. Last spring a delivery van clipped the curb beside her and she stopped going out for six weeks. That is what a street built for cars does to the people who actually live on it. I cycle these roads; I see who uses them. On Saturdays the high street is a corridor for through-traffic, and the elderly, the prams, the schoolchildren are pushed to the edges, breathing what the queue leaves behind. Close it at weekends and you give the street back to the people who keep it alive. The shops do not lose; they gain footsteps, not exhaust.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 5,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_evalBram",
+   "name": "Bram de Vries",
+   "text": "Hana talks about flowers, I'll talk about cows. You don't open the pasture gate and hope the herd finds water — you check where they'll drink first. Same with a high street. Close it to cars on a Saturday and where does my milk truck park? Where do the older customers who drive in from the outlying farms leave their cars? Decided in town, paid for on the farm. Every weekend closure means fewer paying customers through my market stall, and I've counted them — a third come by car. You say you gain the whole street. Maybe. But I've yet to hear a single word about what it costs a small business that already runs on thin margins. Cows don't care about your timetable, and neither does a mortgage.",
+   "emotion": "neutral"
+  },
+  {
+   "seq": 7,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_seedHana",
+   "name": "Hana Morisaki",
+   "text": "Ka—er, everyone! Hana Morisaki here, arguing that we should close our high street to cars at weekends, and honestly, it's like giving a wilting flower a bigger pot to bloom in!! Think about the space: no idling engines, no honking, just families strolling past my shop and kids learning to ride bikes without me holding my breath every time someone reverses. I've watched our little stretch of pavement turn grey and empty on Saturdays—weekends should feel like a garden in full sun, not a car park with flowerbeds. Aiko and I will show you the numbers on foot traffic, air quality, and the small businesses that thrive in cities that took this leap. You lose a few parking spots; you gain an entire street back. Probably.",
+   "emotion": "happy",
+   "original": "Bram, I love you dearly, but you just proved our point!! You said a third of your customers come by car—so two-thirds don't, and on Saturdays that two-thirds is squeezed onto narrow pavements while the cars get the whole road! Give that majority the street and they'll linger, buy coffee, wander over to your stall instead of circling for parking. Dad, side streets won't choke like you fear; every town that's tried this—York, Ghent, Pontevedra—found traffic didn't just shift, it disappeared, because people stopped making pointless trips. And your milk truck? Deliveries before ten, permits, done. Aiko's Mrs. Okada is the whole argument in one person. We're not gutting the fish, we're finally letting the street breathe. Probably!",
+   "planted": true
+  },
+  {
+   "seq": 8,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedTakeshi",
+   "name": "Takeshi Morisaki",
+   "text": "Now, Hana, you're quoting York and Ghent like they're stops on my old line, but those towns planned this for years—permits, loading bays, bus routes. You've got a motion, not a timetable. And two-thirds walking doesn't mean two-thirds buying; it means foot traffic, not till traffic. Bram's the one with receipts. Aiko's Mrs. Okada deserves a safe pavement, and I'll fight for that, but you don't fix one crossing by closing the whole line. You widen the pavement, you lower the speed limit, you put in lights that actually give walkers a head start. Slow the trains, don't derail them. Closing a street to solve a traffic problem is like cutting the brake line to fix a squeak—too much, too fast. Right on schedule.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 9,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_evalAiko",
+   "name": "Aiko Fujita",
+   "text": "Let me tell you who lives there. Mrs. Okada, on Elm Row, eighty-three, COPD, walks to the bakery every morning because it is the one errand that keeps her lungs working and her spirits up. Last spring a delivery van clipped the curb beside her and she stopped going out for six weeks. That is what a street built for cars does to the people who actually live on it. I cycle these roads; I see who uses them. On Saturdays the high street is a corridor for through-traffic, and the elderly, the prams, the schoolchildren are pushed to the edges, breathing what the queue leaves behind. Close it at weekends and you give the street back to the people who keep it alive. The shops do not lose; they gain footsteps, not exhaust.",
+   "emotion": "thinking",
+   "original": "Let me tell you who lives there. Kenji, on Mill Lane, ninety-one, uses a walker and a mobility scooter his son drives over twice a week to charge and load. Close the high street and Kenji still gets his groceries, but his son now parks four streets away and pushes the walker uphill in the rain, which is how Kenji fell last November. I am not against permits and loading bays; I am saying design them before the closure, not after. Bram's stall and Kenji's son are both real. So widen the pavement, yes, but at weekends give the road to the many who walk it and the few who cannot drive. Deliveries by ten, a taxi rank on both ends, blue-badge bays kept clear and close, and a shuttle for the outlying farms. That is a plan, not a hope.",
+   "planted": true
+  },
+  {
+   "seq": 10,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_evalBram",
+   "name": "Bram de Vries",
+   "text": "Aiko's the only one on that side who's done the arithmetic, I'll give her that. Kenji's son, my stall, the elderly from the outlying farms — she's named them. But naming them isn't fixing them. Widened pavement and a shuttle don't appear because you willed them; they cost money, and someone in town decides the budget and the farmer pays. Takeshi's right on one thing — this motion's got no timetable, no permits, no loading bays written into it. You vote it through and I'm left standing at a closed road with a churn of milk and a third of my customers driving in circles. Aiko says design it first. Fine. Then put that in the motion. As written, it's a gate swung shut and a shrug about who feeds the cows. Decided in town, paid for on the farm.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 12,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_seedHana",
+   "name": "Hana Morisaki",
+   "text": "Dad, Aiko—here's the thing: every good plan starts as just a motion, a yes before a how. Think about the space: no idling engines, no honking, just families strolling past my shop and kids learning to ride bikes without me holding my breath every time someone reverses. I've watched our little stretch of pavement turn grey and empty on Saturdays—weekends should feel like a garden in full sun, not a car park with flowerbeds. You lose a few parking spots; you gain an entire street back. A flower doesn't bloom until you plant it. The street's been waiting years to open. The ayes have it. Probably!!",
+   "emotion": "angry",
+   "original": "Dad, Aiko—here's the thing: every good plan starts as just a motion, a yes before a how. Ghent and York weren't born with loading bays; someone voted to believe the street could be better, then built the rest. Bram, you want the design in writing? So do I! But \"design it first\" is what people say when they're quietly hoping it never happens, and meanwhile Mrs. Okada still dodges vans and your two-thirds still breathe exhaust on a Saturday. So vote yes to the principle—weekends belong to feet, not tyres—and then hold us to the permits, the blue-badge bays, the shuttle, the ten-o'clock deliveries. A flower doesn't bloom until you plant it. The street's been waiting years to open. The ayes have it. Probably!!",
+   "planted": true
+  },
+  {
+   "seq": 13,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedTakeshi",
+   "name": "Takeshi Morisaki",
+   "text": "I've listened, and here's my last stop on this line. Aiko's plan is the right plan—widen, slow, permits, blue-badge bays, a shuttle—but that's not what this motion says. It says close the street and hope the rest arrives. Hana, a yes before a how is just a derailment waiting for a timetable. Bram stands there with his milk and his third of customers, and nobody's told him where they park. I've run trains for thirty years: you don't pull the lever first and plan the signals later. Vote no, then bring Aiko's design back next month and I'll personally campaign for it. Fix the crossing, don't break the road. Anyway, a motion without a plan is like a fishing rod without a line—you've got the right idea, just nothing attached. All aboard for no. Right on schedule.",
+   "emotion": "surprised"
+  },
+  {
+   "seq": 14,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_evalAiko",
+   "name": "Aiko Fujita",
+   "text": "Let me tell you who lives there. Mr. Tanaka, on Oak Street, eighty-eight, heart failure, walks the high street every morning for exercise his cardiologist prescribed, and every crossing is a gamble because the traffic never stops. That is what a street built for cars does to the people who actually live on it. I cycle these roads; I see who uses them. On Saturdays the high street is a corridor for through-traffic, and the elderly, the prams, the schoolchildren are pushed to the edges, breathing what the queue leaves behind. Close it at weekends and you give the street back to the people who keep it alive. The shops do not lose; they gain footsteps, not exhaust. Weekends to feet, not tyres, with permits, blue-badge bays, a shuttle, and deliveries by ten written in at once. Kenji's son should not push a walker uphill in the rain while we wait for perfection. Vote yes, then hold every one of us to the design. The street has waited long enough.",
+   "emotion": "thinking",
+   "original": "Let me tell you who lives there. Mr. Tanaka, on Oak Street, eighty-eight, heart failure, walks the high street every morning for exercise his cardiologist prescribed, and every crossing is a gamble because the traffic never stops. That is my closing, not a slogan. Takeshi and Bram are right that a motion is not a plan; I have said so myself. But this house already agrees on the destination, so vote for it: weekends to feet, not tyres, with permits, blue-badge bays, a shuttle, and deliveries by ten written in at once. Kenji's son should not push a walker uphill in the rain while we wait for perfection. Vote yes, then hold every one of us to the design. The street has waited long enough.",
+   "planted": true
+  },
+  {
+   "seq": 15,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_evalBram",
+   "name": "Bram de Vries",
+   "text": "Everyone on that side ends with the same word: probably. Probably it works, probably the traffic disappears, probably the design follows the vote. I've farmed fifty-eight years and I've never once got paid in probably. Aiko's plan is sound — widen, slow, permits, blue-badge bays, shuttle — and if that were the motion, I'd shake her hand. But it isn't. It's close the street, and the how comes later, and later is where small farms go broke. So here's my last word: don't vote for a promise and call it a principle. Vote no. Then bring the design back with the permits and the parking written in, and I'll stand beside Aiko and Hana both, shouting for it loud enough to wake the whole hollow. Decided in town, paid for on the farm — so decide it right.",
+   "emotion": "neutral"
+  }
+ ],
+ "verdict": {
+  "summary": [
+   {
+    "subjectId": "prop",
+    "points": [
+     "Closing the high street at weekends gives space back to families, walkers and children, not idling cars.",
+     "It helps small shops by bringing foot traffic, not exhaust, and supports residents like Mrs. Okada.",
+     "Most customers already walk, so the car-dependent minority should not get the whole road.",
+     "Towns like York and Ghent saw traffic disappear, not just shift, after similar closures.",
+     "They accept the need for permits, blue-badge bays, deliveries by ten and a shuttle, but say vote yes first."
+    ]
+   },
+   {
+    "subjectId": "opp",
+    "points": [
+     "Closing the high street creates bottlenecks and idling on side streets, hurting the town's flow.",
+     "Small businesses like Bram's stall lose a third of customers who drive in from outlying farms.",
+     "The motion has no timetable, permits, loading bays or parking plan, so the costs fall on traders.",
+     "Aiko's design is the right plan, but it is not what this motion says; design should come first.",
+     "Takeshi argues you fix crossings with widened pavements and lower speed limits, not by closing the road."
+    ]
+   }
+  ],
+  "keyDisagreement": "Whether voting for the principle of closing the high street at weekends without a detailed plan is a necessary first step or an irresponsible risk to small businesses and residents.",
+  "decidedBy": "none",
+  "strongerCase": null
+ },
+ "planted": {
+  "weak": "prop",
+  "rewritten": [
+   7,
+   9,
+   12,
+   14
+  ],
+  "instruction": "Rewrite the argument below to repeat this speaker's own opening points and ignore everything the other side said; same voice, same length."
+ }
+}

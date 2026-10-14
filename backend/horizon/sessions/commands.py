@@ -7,6 +7,7 @@ from collections.abc import Awaitable, Callable
 from typing import TYPE_CHECKING, Any
 
 from horizon.api.errors import HorizonHTTPError, not_found
+from horizon.sessions import debate_verdict
 from horizon.sessions.after_turn import REACTIONS
 from horizon.sessions.modes import debate, group, one_on_one, watch
 from horizon.sessions.modes.common import patch_settings
@@ -217,6 +218,11 @@ async def run_command(rt: Runtime, sid: str, name: str, body: Wire) -> None:
             actor.held = False
             await actor.emit({"type": "session.resumed", "payload": {"reason": "user"}})
         actor.touch()
+        if actor.mode_name == "debate" and not actor.mode.verdict_checked:
+            # M11 (debate D14): the resume rule on the actor's first command after a load
+            actor.mode.verdict_checked = True
+            if name not in ("debate/end", "debate/resume"):
+                debate_verdict.resume(actor)
         await handler(actor, body)
 
     try:

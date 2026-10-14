@@ -53,13 +53,14 @@ async def name_of(actor: SessionActor, character_id: str) -> str:
     return first_name(str(row["profile"].get("name", character_id))) if row is not None else character_id
 
 
-async def asleep_note(actor: SessionActor, character_id: str, *, skipping: bool) -> None:
-    """"{name} is asleep" (+ `energy_exhausted`, so the UI can offer a top-up)."""
+async def asleep_note(actor: SessionActor, character_id: str, *, skipping: bool, debate: Wire | None = None) -> None:
+    """"{name} is asleep" (+ `energy_exhausted`, so the UI can offer a top-up). A debate's notes carry its phase tag
+    (M11, debate design D3), so the slot cursor can read them from the log."""
     name = await name_of(actor, character_id)
     energy = await runner(actor).energy_now(character_id)
     current = int(energy["current"]) if energy else 0
     text = f"{name} is asleep, skipping." if skipping else f"{name} is asleep (⚡ {current})."
-    msg = note(actor, text, targetCharacterId=character_id)
+    msg = note(actor, text, targetCharacterId=character_id, debate=debate)
     await actor.emit(message_event(msg), {"type": "error", "payload": {
         "code": "energy_exhausted", "message": f"{name} is asleep (⚡ 0).", "retryable": False, "messageId": msg["id"]}})
 

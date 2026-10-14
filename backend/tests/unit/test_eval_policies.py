@@ -102,3 +102,36 @@ def test_the_reaction_report_gives_the_share_shown() -> None:
 def test_a_report_without_both_splits_says_so() -> None:
     assert "needs dev and test" in report([_row(1, "dev", "sad", 0.9, {"previous": "neutral", "acceptable": ["sad"]})],
                                           "emotion")[0]
+
+
+# ── M11 (debate D20): the watch faces under both merge rules ──
+def test_both_policies_reported() -> None:
+    """The evaluation-harness scenario "Both policies reported": each rule's floor, dev and test accuracy, and the items
+    where they differ."""
+    from horizon.evals.policies import merge_comparison
+
+    split = {"happy": 0.45, "neutral": 0.3, "none": 0.25}     # merged neutral + none 0.55 beats happy's 0.45
+    rows = []
+    for i in range(12):
+        lab = {"previous": "neutral", "acceptable": ["happy"], "keep_ok": False}
+        rows.append({"id": f"w{i}", "question_id": "emotion_line", "split": "dev" if i < 6 else "test", "lang": "en",
+                     "kind": "watch", "answer": "happy", "confidence": 0.45, "probabilities": split, "label": lab})
+    rows.append({"id": "op", "question_id": "emotion_opening", "split": "test", "lang": "en", "kind": "watch",
+                 "answer": "happy", "confidence": 0.45, "probabilities": split,
+                 "label": {"previous": "neutral", "acceptable": ["happy"], "keep_ok": False}})
+    lines = merge_comparison(rows)
+    assert lines[0].startswith("## Watch faces: the neutral + none merge vs no merge")
+    (a_line,) = [x for x in lines if x.startswith("- (a) merge")]
+    (b_line,) = [x for x in lines if x.startswith("- (b) no merge")]
+    assert "dev 0.00" in a_line and "English test 0/6" in a_line
+    assert "dev 1.00" in b_line and "English test 6/6" in b_line
+    assert "different faces on 12/12 items" in lines[3]               # emotion_line only: the opening isn't merged
+    assert lines[4] == "  - w0 (dev): merge neutral, no merge happy [✗✓]; previous neutral, acceptable happy"
+
+
+def test_the_live_rule_still_merges() -> None:
+    probs = {"happy": 0.45, "neutral": 0.3, "none": 0.25}
+    ans = ChoiceAnswer("happy", confidence=0.45, probabilities=probs)
+    lab = {"previous": "neutral", "acceptable": ["happy"], "keep_ok": False}
+    assert emotion_answer(ans, lab, 0.3) == "neutral"
+    assert emotion_answer(ans, lab, 0.3, merge=False) == "happy"

@@ -1,0 +1,45 @@
+{"part": "plan", "id": "dmm-002", "s_ms": 1.736, "l_ms": 1327.9, "tokens": 1971}
+{"part": "plan", "id": "dmm-006", "s_ms": 0.418, "l_ms": 552.6, "tokens": 1716}
+{"part": "plan", "id": "dmm-007", "s_ms": 0.708, "l_ms": 631.6, "tokens": 1759}
+{"part": "plan", "id": "dmm-008", "s_ms": 0.407, "l_ms": 594.9, "tokens": 1651}
+{"part": "plan", "id": "dmm-009", "s_ms": 2.838, "l_ms": 650.1, "tokens": 1981}
+{"part": "plan", "id": "dmm-010", "s_ms": 0.341, "l_ms": 582.7, "tokens": 1663}
+{"part": "plan", "id": "dmm-011", "s_ms": 0.668, "l_ms": 573.4, "tokens": 1984}
+{"part": "plan", "id": "dmm-012", "s_ms": 1.14, "l_ms": 604.0, "tokens": 1676}
+{"part": "plan", "id": "dmm-016", "s_ms": 6.174, "l_ms": 559.2, "tokens": 1967}
+{"part": "plan", "id": "dmm-019", "s_ms": 1.56, "l_ms": 578.5, "tokens": 1897}
+{"part": "plan", "id": "dmm-020", "s_ms": 0.627, "l_ms": 593.5, "tokens": 1787}
+{"part": "plan", "id": "dmm-022", "s_ms": 2.402, "l_ms": 591.2, "tokens": 2045}
+{"part": "plan", "id": "dmm-023", "s_ms": 1.866, "l_ms": 541.4, "tokens": 1850}
+{"part": "plan", "id": "dmm-024", "s_ms": 0.451, "l_ms": 582.5, "tokens": 1750}
+{"part": "plan", "id": "dmm-025", "s_ms": 0.961, "l_ms": 578.2, "tokens": 1793}
+{"part": "plan", "id": "dmm-026", "s_ms": 1.012, "l_ms": 554.1, "tokens": 1639}
+{"part": "plan", "id": "dmm-027", "s_ms": 0.535, "l_ms": 606.2, "tokens": 1965}
+{"part": "plan", "id": "dmm-028", "s_ms": 1.019, "l_ms": 568.5, "tokens": 2153}
+{"part": "plan", "id": "dmm-029", "s_ms": 1.75, "l_ms": 628.5, "tokens": 1964}
+{"part": "plan", "id": "dmm-030", "s_ms": 1.299, "l_ms": 584.0, "tokens": 2030}
+{"part": "plan", "id": "dmm-032", "s_ms": 1.807, "l_ms": 649.1, "tokens": 1905}
+{"part": "plan", "id": "dmm-035", "s_ms": 1.838, "l_ms": 575.6, "tokens": 1753}
+{"part": "plan", "id": "dmm-037", "s_ms": 0.615, "l_ms": 572.2, "tokens": 1419}
+{"part": "plan", "id": "dmm-038", "s_ms": 0.631, "l_ms": 648.8, "tokens": 1653}
+{"part": "plan", "id": "dmm-039", "s_ms": 1.883, "l_ms": 582.6, "tokens": 1969}
+{"part": "plan", "id": "dmm-041", "s_ms": 0.758, "l_ms": 548.4, "tokens": 1979}
+{"part": "plan", "id": "dmm-043", "s_ms": 0.506, "l_ms": 586.4, "tokens": 1399}
+{"part": "plan", "id": "dmm-046", "s_ms": 0.633, "l_ms": 581.8, "tokens": 1865}
+{"part": "plan", "id": "dmm-048", "s_ms": 0.348, "l_ms": 685.0, "tokens": 1577}
+{"part": "plan", "id": "dmm-052", "s_ms": 1.158, "l_ms": 565.5, "tokens": 1383}
+{"part": "bridge", "debate": "d01", "key": "rebuttal 1", "ms": 1411.7, "on_time": true, "line": "Proposition argued that a narrow pilot replacing private cars with accessible alternatives would cut road trauma, asthma and heat stress. Opposition argued that a blanket ban is coercive and that the evidence base for such pilots is too weak to justify it.\n\nWe now move to rebuttals."}
+{"part": "bridge", "debate": "d01", "key": "closing 1", "ms": 1267.9, "on_time": true, "line": "Proposition argued the ban, with exemptions, is the needed public-health measure; opposition argued pricing and permits achieve the same relief, or the pilot isn't the motion. We now move to closing statements."}
+{"part": "bridge", "debate": "d02", "key": "rebuttal 1", "ms": 955.2, "on_time": true, "line": "Proposition argued that adolescent body clocks and sleep debt make a ten o'clock start a public-health necessity; opposition argued that it shifts real costs onto transport, parents and after-school care. Next: rebuttals."}
+{"part": "bridge", "debate": "d02", "key": "closing 1", "ms": 1488.9, "on_time": true, "line": "Daniel Osei and Amara Okafor argued a ten o'clock start is a fair remedy for the poorest pupils' lost sleep; Mei Tanaka-Ruiz and Sofia Brandt argued such a mandate is premature without equity-first pilots. We now move to closing statements."}
+{"part": "bridge", "debate": "d03", "key": "rebuttal 1", "ms": 1154.7, "on_time": true, "line": "Proposition argued that evidence-based, staged pilots could sustain a four-day week, while Opposition argued that continuous, taxpayer-funded services cannot absorb a capacity cut without degrading coverage. We now move to rebuttals."}
+{"part": "bridge", "debate": "d03", "key": "closing 1", "ms": 1126.0, "on_time": true, "line": "Proposition argued for a funded, staged pilot covering both desk and rota roles, treating burnout costs as real. Opposition argued the motion mandates a four-day week without naming revenue, leaving implementation to spreadsheets. Closing statements follow."}
+{"part": "bridge", "debate": "d04", "key": "rebuttal 1", "ms": 1384.8, "on_time": true, "line": "Proposition argued that sugary-drink taxes cut purchases and reach the households facing the highest disease burden; opposition argued that the term \"sugary\" is unmeasurable and that the levy hits poor families while leaving marketing untouched. We now move to rebuttals."}
+{"part": "bridge", "debate": "d04", "key": "closing 1", "ms": 1311.1, "on_time": true, "line": "Proposition argued that a levy cuts purchases and should be paired with reformulation and marketing limits; Opposition argued it is regressive and insufficient without shelf and contract reform. We now move to closing statements."}
+{"part": "bridge", "debate": "d05", "key": "rebuttal 1", "ms": 1103.6, "on_time": true, "line": "Proposition argued a ban protects children's health, attention, and play; Opposition argued a blanket ban is lazy design, favoring supervised, curriculum-tied phone use and accessibility. Now to rebuttals."}
+{"part": "bridge", "debate": "d05", "key": "closing 1", "ms": 965.2, "on_time": true, "line": "Proposition argued a default-off ban with documented medical exceptions; opposition argued guided regulation rather than erasure. We now move to closing statements."}
+{"part": "verdict", "debate": "d01", "ms": 6567.1, "scored": true, "stronger": null, "notes": []}
+{"part": "verdict", "debate": "d03", "ms": 3535.1, "scored": true, "stronger": null, "notes": []}
+{"part": "verdict", "debate": "d04", "ms": 3930.7, "scored": true, "stronger": "prop", "notes": []}
+{"part": "verdict", "debate": "d05", "ms": 3369.0, "scored": true, "stronger": null, "notes": []}
+{"part": "verdict", "debate": "d08", "ms": 4096.2, "scored": true, "stronger": "opp", "notes": []}

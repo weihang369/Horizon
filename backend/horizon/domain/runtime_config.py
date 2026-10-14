@@ -123,6 +123,8 @@ class RuntimeKnobs:
     llm_calls: dict[str, LlmCall]
     switches: dict[str, bool] = field(default_factory=dict)   # M8: "persona.repeatHint", "context.voiceReminder"
     emotion_fade: frozenset[str] = frozenset({"surprised", "embarrassed"})   # M9 (docs/ai/06 E3; design D13)
+    host_welcome_wait_ms: float = 3000.0   # M11 (doc 08 V6; debate D11): Start + this for the welcome
+    host_banner_wait_ms: float = 1500.0    # every other host line: its banner + this
 
     def switch(self, name: str) -> bool:
         """A dynamic-tail switch (docs/ai/04 P8, 05 X5; doc 13 W12): off unless the table turns it on."""
@@ -176,7 +178,9 @@ class RuntimeConfig:
                 switches={"persona.repeatHint": bool((r.get("persona") or {}).get("repeatHint", False)),
                           "persona.moodLine": bool((r.get("persona") or {}).get("moodLine", False)),   # M9 D40
                           "context.voiceReminder": bool((r.get("context") or {}).get("voiceReminder", False))},
-                emotion_fade=frozenset(str(x) for x in r["emotion"]["fade"])),
+                emotion_fade=frozenset(str(x) for x in r["emotion"]["fade"]),
+                host_welcome_wait_ms=float(r["debate"]["hostWelcomeWaitMs"]),
+                host_banner_wait_ms=float(r["debate"]["hostBannerWaitMs"])),
             jobs=JobTiming(
                 profile_draft_ms=float(t["profileDraftMs"]), field_regenerate_ms=float(t["fieldRegenerateMs"]),
                 portrait_ms=float(t["portraitMs"]), portrait_parallel=int(t["portraitParallel"]),

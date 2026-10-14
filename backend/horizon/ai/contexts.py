@@ -100,12 +100,71 @@ class LineHint(Frozen):
     verbatim: bool = False          # M8 (docs/ai/04 P9): say `text` word for word, with no model call
 
 
+class DebateLine(Frozen):
+    """One line of a debate's transcript for the verdict (M11, debate D12, D13), read by the runtime from the log:
+    an argument or an Ask answer with its phase, iteration, side and speaker, or a moderator's note or question."""
+
+    kind: Literal["argument", "answer", "note", "question"]
+    phase: str = ""
+    iteration: int = 1
+    side: str | None = None
+    speaker: str = ""
+    character_id: str | None = None
+    text: str
+
+
+class VerdictRequest(Frozen):
+    """What `DebateHost.assess` reads (D12–D15): the session, the verdict mode, the transcript and the missed turns.
+    `swapped` asks with the Opposition block first (the evaluation's order check, V11)."""
+
+    session: SessionContext
+    by: str                                         # arbiter | user | none
+    lines: list[DebateLine] = []
+    missed: dict[str, dict[str, Any]] = {}          # per side {missed, reason} (debate_slots.missed_turns)
+    swapped: bool = False
+
+
+class Assessment(Frozen):
+    """The verdict work's result before a pick (D14): the bars and the arbiter's stronger case when scored, the prose or
+    its quoted fallback, the failure notes to post, and whether a cap refused it (nothing to deliver: the session
+    pauses, and the work runs again on resume)."""
+
+    by: str
+    two_sided: bool
+    scored: bool = False
+    scores: list[dict[str, Any]] = []
+    stronger: str | None = None                     # the arbiter's stronger case; None: too close, or no scores
+    summary: list[dict[str, Any]] = []
+    key_disagreement: str | None = None
+    rationale: str | None = None
+    notes: list[str] = []
+    refused: bool = False
+    simulated: dict[str, Any] | None = None         # `scripted`: the mock's verdict, delivered as it is
+
+
+HostKind = Literal["welcome", "bridge", "extended", "skip", "lead_in"]
+
+
+class HostKey(Frozen):
+    """What a host line introduces (doc 08 V6; debate D11): its kind and the (phase, iteration) it opens (the lead-in:
+    `verdict`). A line requested for one key is dropped when a different one comes next (Extend, Skip)."""
+
+    kind: HostKind
+    phase: str
+    iteration: int = 1
+
+
 class DebateMeta(Frozen):
     phase: str
     round: int
     iteration: int
     side: str | None = None
     motion: str = ""
+    # M11 (debate D10): the cue's facts, computed by the runtime from the log when it builds the spec (A9: a stored
+    # context replays the same request); the engine only renders them
+    teammates_heard: list[str] = []      # character IDs of teammates already heard in this phase-iteration
+    after_interject: bool = False        # an Interject is newer than the last argument
+    panel: bool = False
 
 
 class KnowledgeHit(Frozen):
@@ -190,7 +249,8 @@ class PlanRequest(Frozen):
 
 
 # ── The cast plan and the follow plan (M10: doc 07 G1–G8; group-watch design D3, D8, D22) ──
-CastKind = Literal["group_first", "group_mentioned", "everyone", "next", "step_in", "scene", "opening"]
+CastKind = Literal["group_first", "group_mentioned", "everyone", "next", "step_in", "scene", "opening",
+                   "debate_opening", "debate_ask", "debate_line"]   # M11 (debate D5, D8): forced, the face only
 WhoSource = Literal["jev", "below_floor", "fallback", "late", "forced", "single"]
 SteerBlock = Literal["recent", "note"]
 
@@ -205,7 +265,7 @@ class WhoPick(Frozen):
     p: float | None = None
     confidence: float | None = None
     candidates: list[dict[str, Any]] = []           # routing.candidates: [{characterId, p}], highest first
-    forced_by: Literal["mention", "nudge", "round_order"] | None = None
+    forced_by: Literal["mention", "nudge", "round_order", "user_ask"] | None = None
     reason: str | None = None                       # routing.reason ("fallback", or the guard's sentence)
 
 
@@ -217,6 +277,18 @@ class TalkFinished(Frozen):
     action: str
 
 
+class DebateFacts(Frozen):
+    """What a debate state holds besides the cast (docs/ai/05 X9's debate row; debate design D6): the motion, the
+    phase and side set by code, the last argument by the other side (by anyone else in a panel), and each candidate's
+    latest argument."""
+
+    motion: str
+    phase: str
+    side: str | None = None
+    last_opposing: str = ""
+    latest_by_candidate: dict[str, str] = {}
+
+
 class CastRequest(Frozen):
     """What the runtime gives `plan_cast` (D3): the candidates, who is forced, and what is being answered."""
 
@@ -224,7 +296,7 @@ class CastRequest(Frozen):
     kind: CastKind
     candidates: list[str]                           # who may be picked or asked about, in cast order
     forced: list[str] = []                          # speak without a who question (mentions, a nudge, the guard)
-    forced_by: Literal["mention", "nudge", "round_order"] | None = None
+    forced_by: Literal["mention", "nudge", "round_order", "user_ask"] | None = None
     reason: str | None = None                       # the guard's routing.reason
     cast: list[CharacterView] = []                  # the candidates' profiles (X9's `about`)
     latest: str = ""                                # the line being answered: the user's text, or "Name: line"
@@ -235,6 +307,7 @@ class CastRequest(Frozen):
     steer_block: SteerBlock | None = None           # watch: why a steer can't happen this turn (D14)
     started_at: datetime
     deadline_at: datetime | None = None             # None: started_at + the turn_plan deadline; plan-ahead sets it (D15)
+    debate: DebateFacts | None = None               # M11: a debate turn's motion, phase and side (debate D7)
 
 
 class CastPlan(Frozen):
@@ -316,6 +389,50 @@ class FollowPlan(Frozen):
         return TurnPlan(seed=self.seed, kind="reply", branch="quick", emotion=self.faces.get(cid), rows=rows,
                         calls=list(self.calls), graph_path=list(self.graph_path), state_tokens=self.state_tokens,
                         cue="second", answered=answered)
+
+
+# ── The debate plan (M11: doc 08 V2, V3; doc 13 W5 row 11, W11; debate design D5, D6, D8, D27) ──
+class DebateRequest(Frozen):
+    """What the runtime gives `start_debate`: the slot, its eligible members in fixed order, and what they answer."""
+
+    session: SessionContext
+    phase: str
+    iteration: int
+    side: str | None                                # None: a panel
+    candidates: list[str]                           # eligible (awake, not yet heard), fixed order
+    cast: list[CharacterView] = []
+    facts: DebateFacts
+    latest: str = ""                                # the argument just made, "Name: text" (emotion_line's quoted_latest)
+    turn_index: int = 0
+    base_faces: dict[str, str] = {}
+    manual: bool = False
+    started_at: datetime                            # the `turn.end` it starts at
+
+
+DebateOutcome = Literal["jev", "below_floor", "late", "fallback", "single", "cancelled"]
+
+
+class DebatePlan(Frozen):
+    """The debate plan's answer: the member (fixed at the deadline), and each candidate's face when Jev's answer
+    landed in time (else the fallback faces). `for_speaker` gives the argument its frozen `TurnPlan`."""
+
+    seed: str
+    member: str
+    outcome: DebateOutcome
+    who: WhoPick | None = None
+    faces: dict[str, PlannedFace] = {}
+    face_rows: dict[str, dict[str, Any]] = {}
+    shared_rows: list[dict[str, Any]] = []          # the member row (none for a single candidate)
+    calls: list[dict[str, Any]] = []
+    graph_path: list[str] = []
+    state_tokens: int = 0
+
+    def for_speaker(self, cid: str) -> TurnPlan:
+        rows = list(self.shared_rows)
+        for other, row in self.face_rows.items():
+            rows.append(row if other == cid else {**row, "result": "not_used"})
+        return TurnPlan(seed=self.seed, kind="reply", branch="quick", emotion=self.faces.get(cid), rows=rows,
+                        calls=list(self.calls), graph_path=list(self.graph_path), state_tokens=self.state_tokens)
 
 
 class ListenerView(Frozen):

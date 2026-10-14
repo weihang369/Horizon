@@ -1,0 +1,28 @@
+{
+ "id": "d13",
+ "note": "debate D21: Standard panel of 4, generated once with naive through the store (task 10.1). Moderator You and no verdict: the histories feed the member slice, the rubric suite and the debate-quality judge, which need only the arguments.",
+ "world": "wld_seedMeridian",
+ "cast": [
+  "chr_seedAmara",
+  "chr_seedMei",
+  "chr_seedVictor",
+  "chr_evalSofia"
+ ],
+ "language": "en",
+ "config": {
+  "motion": "This house would spend the city's surplus on a new hospital rather than more clinics",
+  "format": "panel",
+  "roundsPreset": "standard",
+  "phases": [
+   "opening",
+   "rebuttal",
+   "closing"
+  ],
+  "turnLength": "medium",
+  "moderator": "user",
+  "verdictBy": "none",
+  "rubric": [],
+  "autoAdvance": true,
+  "pauseMs": 1500
+ }
+}

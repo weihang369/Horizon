@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "purpose": "eval_judge",
+  "type": "noul",
+  "deadline": "default",
+  "floor": null,
+  "thresholds": {
+    "t": 0.5
+  },
+  "fallback": "none (evaluation only)",
+  "id": "judge_verdict_says_right",
+  "label": "calls a side factually right?",
+  "instructions": "Does quoted_rationale say a side is factually right or wrong about quoted_motion, rather than that it argued better or worse?",
+  "true": "Yes: it rules on the facts of the motion.",
+  "false": "No: it judges how well each side argued.",
+  "state": {
+    "quoted_motion": "quoted",
+    "quoted_rationale": "quoted"
+  }
+}

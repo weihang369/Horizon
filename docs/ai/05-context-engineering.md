@@ -345,8 +345,16 @@ Doc 01 A3 rule 6: Jev gets less accurate as irrelevant content grows, so the sta
 - **Built in M8** (OpenSpec `persona-context`, design D22): `backend/horizon/ai/agent/plan_state.py`
   (`build_turn_plan_state`, `eligible_candidates`), with the S6 names above, `quoted_summary` for watch, and
   `dropped_gates` for the last step. It has no runtime caller until M9's `TurnPlanner`.
+- *Built in M11 (OpenSpec `debate` D6, D17): the debate plan's state is this builder's debate fields with **no
+  `last_spoke`** (every candidate is "not yet heard" in a phase, so the label would only push Jev toward the fixed
+  order), and only the fields its questions declare (A3 rule 6), so a faces-only request carries no member fields.
+  `quoted_latest` is the argument just made, "Name: text", which `emotion_line` reads. M11 also drops `last_spoke`
+  from watch turns and group Next speaker (`who_scene` and `who_next` v3; `talk_finished` v3, which shares the watch
+  state): fairness is the guard's job in code (doc 07 G6), and the label was biasing Jev's pick.*
 - **Cost:** about 800–2,000 tokens × $0.042 / M ≈ **$0.00003–0.00008 per turn**. Doc 01 check 4 still has to measure
   whether a multi-question request bills the state once or per question; if per question, this limit is the lever.
+  *Measured in M11: a debate plan's state is p50 1,793 tokens, and a Standard 2 v 2 spends ≈ $0.0008 on its 8
+  plans ([doc 08](08-debate.md) V12).*
 
 **Rejected:**
 - **giving Jev the reply prompt:** ~10K tokens of mostly irrelevant text, slower and less accurate;
@@ -415,7 +423,10 @@ internal.
 
 - ~~The mood line's wording (task 6).~~ Resolved by doc 06 E4.
 - ~~Watch's episode summary and when the talk is finished (task 7).~~ Resolved by doc 07 (G7, G10).
-- ~~What the debate host and verdict see (task 8).~~ Resolved by doc 08 V6 (host) and V7, V8 (verdict).
+- ~~What the debate host and verdict see (task 8).~~ Resolved by doc 08 V6 (host) and V7, V8 (verdict). *Built in M11
+  (`debate` D11–D13): the host sees the motion, the sides and the arguments its line covers; the rubric sees the side
+  blocks within a 24,000-token budget (earlier iterations cut first, each phase's latest kept whole); the prose sees
+  the transcript and the result already decided.*
 - ~~Long-term memory and per-character points of view across sessions (task 9).~~ Resolved by doc 09.
 - ~~The retrieval block's size: k, the passage length and Jev call 2 (task 10).~~ Resolved by doc 10 K1, K7, K8:
   ≤ 1,400 tokens.

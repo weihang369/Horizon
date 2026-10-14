@@ -7,7 +7,7 @@ from typing import Any
 
 import pytest
 
-from horizon.ai.agent.emotion import candidates, decide_face, emotion_row
+from horizon.ai.agent.emotion import candidates, decide_face, emotion_row, merges
 from horizon.ai.decider import ChoiceAnswer
 
 FADE = frozenset({"surprised", "embarrassed"})
@@ -88,3 +88,13 @@ def test_not_used_row() -> None:
 def test_candidates_ignore_unknown_keys_and_rank_stably() -> None:
     assert candidates({"happy": 0.4, "sad": 0.4, "none": 0.2}, "happy") == [{"label": "happy", "p": 0.4},
                                                                             {"label": "sad", "p": 0.4}]
+
+
+def test_emotion_line_does_not_merge_neutral_and_none() -> None:
+    """M11 D33 (the user's choice after D20's measure): `emotion_line` (watch, group, debate lines) keeps `none` as
+    "keep" and `neutral` as its own answer; the other face questions still merge."""
+    assert not merges("emotion_line") and merges("emotion_reply") and merges("emotion_opening")
+    a = ans("thinking", 0.41, thinking=0.41, neutral=0.24, none=0.21)   # 10.5's emw-023: merged, neutral wins
+    merged = decide_face(a, base="neutral", floor=0.2, fade=FADE, merge=merges("emotion_reply"))
+    line = decide_face(a, base="neutral", floor=0.2, fade=FADE, merge=merges("emotion_line"))
+    assert (merged.face, line.face) == ("neutral", "thinking")

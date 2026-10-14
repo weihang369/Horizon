@@ -1,0 +1,40 @@
+{
+ "id": "d10",
+ "note": "debate D21: Standard 3 v 2, generated once with naive through the store (task 10.1). Moderator You and no verdict: the histories feed the member slice, the rubric suite and the debate-quality judge, which need only the arguments.",
+ "world": "wld_seedSunnyHollow",
+ "cast": [
+  "chr_evalAiko",
+  "chr_seedTakeshi",
+  "chr_evalBram",
+  "chr_seedRin",
+  "chr_seedHana"
+ ],
+ "language": "en",
+ "config": {
+  "motion": "This house would ban video games for under-twelves on school nights",
+  "format": "two_sided",
+  "roundsPreset": "standard",
+  "phases": [
+   "opening",
+   "rebuttal",
+   "closing"
+  ],
+  "turnLength": "medium",
+  "moderator": "user",
+  "verdictBy": "none",
+  "rubric": [],
+  "autoAdvance": true,
+  "pauseMs": 1500,
+  "sides": {
+   "prop": [
+    "chr_evalAiko",
+    "chr_seedTakeshi",
+    "chr_evalBram"
+   ],
+   "opp": [
+    "chr_seedRin",
+    "chr_seedHana"
+   ]
+  }
+ }
+}

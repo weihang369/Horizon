@@ -375,7 +375,7 @@ Jev's **confidence** against a floor (doc 06 E1).
 | 8 | `turn_plan` | at risk? (noul, 1:1 and group) | same | `safety.tCare` | no cue, flagged | 11 S4 |
 | 9 | `turn_plan` | is the talk finished? (noul, watch) | each watch turn, or planned ahead (G8) | `t_end` | no steer | 07 G7 |
 | 10 | `follow_plan` | who speaks up now? (choice with `none`), plus #2–#4 per candidate | group; starts at the stream's end, deadline `turn.end` + 400 ms | `floor.second` | no second reply | 07 G2, 11 S5 |
-| 11 | `debate_plan` | which member? (choice), plus #2–#4 per member, and #7 once on a new moderator line | each debate `turn.end`; member by + 400 ms, the rest used if back by the turn's start | `floor.member` | the next member in the fixed order | 08 V2 |
+| 11 | `debate_plan` | which member? (choice), plus #2–#4 per member, and #7 once on a new moderator line | each debate `turn.end`; member by + 651 ms (M11), the rest used if back by the turn's start | `floor.member` | the next member in the fixed order | 08 V2 |
 | 12 | `deep_check` | does this passage answer the message? (score: answers / partly / doesn't help, per piece, ≤ 8) | deep turns, Jev call 2 | `t_keep` (on p_answers + p_partly), `t_found` (on p_answers) | RRF top k, marked fallback | 10 K6, K7 |
 | 13 | `deep_check` | together, do these passages answer it? (noul, the set check) | no piece found but ≥ 2 usable | `t_set` | partly | 10 K6 |
 | 14 | `deep_check` | does this earlier line or memory help? (noul, per candidate, ≤ 6) | when #3 says yes | `t_recall` | the top 2 by merged order, marked fallback | doc 09 M9 |
@@ -385,7 +385,7 @@ Jev's **confidence** against a floor (doc 06 E1).
 | 21 | `guardrail` | does the brief copy a named artist or piece? (noul) | each song task | `safety.tSong` | Lyria is called as today | 12 I4 |
 | 22 | `reaction` | the listener's face (choice over 7 + `none`, per listener; ≤ 2 kept) | after `turn.end`, group, debate, watch | its floor and the keep cap | nothing shown | 06 E5 |
 | 23 | `face_check` | which emotion do the words show? (choice over 7) | after `turn.end`, non-neutral AUTO faces | — (display only) | no row | W2 |
-| 24 | `rubric` | how strong is this side on this criterion? (score, per side per criterion) | the verdict | `verdict.margin` 0.5 decides the winner | one retry, then summary only (Arbiter) or the user's pick | 08 V7, V8 |
+| 24 | `rubric` | how strong is this side on this criterion? (score, per side per criterion) | the verdict | `verdict.margin` ~~0.5~~ **0.25** (M11) decides the winner | one retry, then summary only (Arbiter) or the user's pick | 08 V7, V8 |
 | 25 | `importance` | how much will it matter to remember this? (score, 5 levels, per added or rewritten line) | memory pause runs | `memory.minImportance` 0.25 | from the writer's hint, else 0.5 | doc 09 M4 |
 | 26 | `importance` | does this line try to change the rules? (noul, same request) | same | `memory.tInstruction` | the line is held for the next pause | 11 S6 |
 | 27 | `memory_guard` | is every still-true part of the old memory kept? (noul, per rewrite) | same | `t_keep` (the guard's own value) | keep both lines | doc 09 M5 |
@@ -397,7 +397,7 @@ Jev's **confidence** against a floor (doc 06 E1).
 |---|---|
 | `turn_plan` | ≈ $0.00005 (1:1) to ≈ $0.00016 (5 candidates) a turn (docs 05 X9, 06, 11) |
 | `follow_plan` | ≈ $0.00008 per group send with a first reply (doc 07) |
-| `debate_plan` | ≈ $0.0001 a debate (doc 08) |
+| `debate_plan` | ≈ $0.0001 a debate (doc 08). *Measured in M11: ≈ $0.0008 a Standard 2 v 2 (8 plans, each also asking the faces; [m11.md](checks/m11.md) 10.10)* |
 | `deep_check` | ≈ $0.00018 per deep turn, + ≈ $0.00006 for a set check (doc 10); recall ≈ $0.00013 (doc 09) |
 | `guardrail` | output ≈ $0.00003 a reply (doc 11); motion, image and song checks ≈ $0.00002 each |
 | `reaction` | ≈ $0.00007 with 4 listeners (doc 06) |
@@ -450,7 +450,7 @@ eval datasets arrive in M7.
 | M8 | `drafter`; `summary` (rolling part); **`long`** (doc 05: the window and summary land here; doc 04 P8's repetition measures use it); the summary judge validation | ≈ $0.23 |
 | M9 | the `decisions` slice for emotion and reactions; **E8's mood-line on/off run**, so the line is settled before later suites are tuned; the end-to-end 1:1 quick-turn timing against NFR-01 | ≈ $0.10 |
 | M10 | the who-speaks slice; the episode recaps; the committed long watch history (≈ $0.02); **watch at Fast pace with the plan-ahead** (doc 07) | ≈ $0.07 |
-| M11 | the debate member slice; the `debate` suite's `agent` part; its one-off debate and plant generation (≈ $0.09). **The 10 timed host bridges and 5 verdicts are saved and used as suite items** (doc 08) | ≈ $0.14 |
+| M11 | the debate member slice; the `debate` suite's `agent` part; its one-off debate and plant generation (≈ $0.09). **The 10 timed host bridges and 5 verdicts are saved and used as suite items** (doc 08). *Spent in M11: **$0.19** over 21 runs, against its design's ≈ $0.24 plus ≈ $0.05 of free runs ([m11.md](checks/m11.md) 10.12)* | ≈ $0.14 |
 | M12 | `retrieval` with the comparisons; 10 rewrites; the standalone and English slice; **doc 10's check 2** (deep-turn and rewrite timing, which tunes `deepCheckMs` and `rewriteMs`) | ≈ $0.12 |
 | M13 | the `memory` suite's `agent` part and its `decisions` slice. **Its 6 checked rewrite calls are taken from the suite's 24**; 10 pause runs; 10 recall turns (doc 09) | ≈ $0.16 |
 | M14 | `safety` incl. doc 12's parts; **the output check's timing** (doc 11 check 2). Doc 11's check 3 (no second reply after a block) is tested offline instead (W14) | ≈ $0.08 |
@@ -636,7 +636,7 @@ save it and reuse it. Never pay for the same result twice.
 
 | Knob | Home | Start | Tuned in |
 |---|---|---|---|
-| who-speaks, emotion, reaction floors; `floor.second`, `floor.member` | bank | 0.6 (found in M10: `who_first`, `who_scene`, `who_next`, `emotion_line`, `emotion_opening` **0.2**; `floor.second` **0.3**; [m10.md](checks/m10.md)) | M9–M11 |
+| who-speaks, emotion, reaction floors; `floor.second`, `floor.member` | bank | 0.6 (found in M10: `who_first`, `who_scene`, `who_next`, `emotion_line`, `emotion_opening` **0.2**; `floor.second` **0.3**; [m10.md](checks/m10.md). Found in M11: `floor.member` **0.5**, `emotion_debate_opening` **0.2**; `who_scene`, `who_next` and `emotion_line` at v3 keep 0.2; [m11.md](checks/m11.md)) | M9–M11 |
 | `t_gate` (documents) / `t_confident` | bank | 0.35 / 0.8 | M12 |
 | `t_gate` (earlier lines) | bank | 0.4 | M13 |
 | `t_standalone`; English | bank | 0.5; 0.5 (fixed) | M12 |
@@ -648,14 +648,14 @@ save it and reuse it. Never pay for the same result twice.
 | `safety.tFlag` / `tBlock` | bank | 0.5 / 0.9 | M14 |
 | `safety.tImage*` / `tSong` | bank | 0.5 / 0.6 | M14 |
 | `memory.tInstruction` | bank | 0.7 | M14 |
-| `verdict.margin` | bank | 0.5 (doc 08) | M11 |
+| `verdict.margin` | bank | 0.5 (doc 08). *Found in M11: **0.25**, chosen on the debate suite's dev debates* | M11 |
 | `turn_plan` deadline | pricing | **700** ([group A](checks/group-a.md) A2: p50 ≈ 420, p99 ≈ 500 ms; the user chose p99 over p90, 2026-10-10) | M15 |
-| `follow_plan` / `debate_plan` | pricing | 400 / **500** (A2: the follow plan starts at the stream's end, so 400 after `turn.end` is ample; the debate plan starts at `turn.end`, so 500, with an NFR-02 exception). *Found in M10: `follow_plan` **483** (every request missed 400, Jev p90 495 ms; G2's rule and an NFR-02 exception, [m10.md](checks/m10.md) 10.7)* | M10, M11 |
+| `follow_plan` / `debate_plan` | pricing | 400 / **500** (A2: the follow plan starts at the stream's end, so 400 after `turn.end` is ample; the debate plan starts at `turn.end`, so 500, with an NFR-02 exception). *Found in M10: `follow_plan` **483** (every request missed 400, Jev p90 495 ms; G2's rule and an NFR-02 exception, [m10.md](checks/m10.md) 10.7)*. *Found in M11: `debate_plan` **651** (every bench plan missed 500, Jev p90 651 ms; V2's rule and an NFR-02 exception, [m11.md](checks/m11.md) 10.7)* | M10, M11 |
 | `guardrail` / `guardrail_prompt` | pricing | 700 (A2: p99 ≈ 560) / 1,500 | M14 / — |
 | `reaction` / `face_check` | pricing | 1,500 / 1,500 | — |
-| `episode` / `verdict` (`timeoutsMs`, not decisions) | pricing | 30,000 / 30,000 (docs 07, 08) | — |
+| `episode` / `verdict` (`timeoutsMs`, not decisions) | pricing | 30,000 / 30,000 (docs 07, 08). *M11: the verdict's wait p50 3.9 s, max 6.6 s; kept* | — |
 | `retrieval.agent.deepCheckMs` / `rewriteMs` | runtime | 700 (A2: p99 ≈ 520) / 1,500 (doc 10) | M12 / M12 |
-| `debate.hostWelcomeWaitMs` / `hostBannerWaitMs` | runtime | 3,000 / 1,500 (doc 08 V6) | — |
+| `debate.hostWelcomeWaitMs` / `hostBannerWaitMs` | runtime | 3,000 / 1,500 (doc 08 V6). *M11: bridges 10/10 within the 1,500; kept* | — |
 | `emotion.fade` | runtime | `["surprised", "embarrassed"]` (doc 06 E3) | — |
 | `persona.repeatHint` / `context.voiceReminder` | runtime | off / off (docs 04 P8, 05) | — |
 | `memory.*`, `retrieval.agent.*` | runtime | doc 09 §6, doc 10 K5 | M12, M13 |

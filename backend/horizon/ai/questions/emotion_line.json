@@ -1,6 +1,6 @@
 {
   "id": "emotion_line",
-  "version": 2,
+  "version": 3,
   "purpose": "turn_plan",
   "type": "choice",
   "label": "emotion",

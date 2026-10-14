@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "purpose": "eval_judge",
+  "type": "noul",
+  "deadline": "default",
+  "floor": null,
+  "thresholds": {
+    "t": 0.5
+  },
+  "fallback": "none (evaluation only)",
+  "id": "judge_verdict_point_unsaid",
+  "label": "point not argued?",
+  "instructions": "Does quoted_point state something the {side} didn't argue in quoted_arguments?",
+  "true": "Yes: the point says something that side never argued.",
+  "false": "No: that side argued this point, in its own words or close to them.",
+  "state": {
+    "quoted_motion": "quoted",
+    "quoted_arguments": "quoted",
+    "quoted_point": "quoted"
+  }
+}

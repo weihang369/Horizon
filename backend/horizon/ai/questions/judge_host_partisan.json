@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "purpose": "eval_judge",
+  "type": "noul",
+  "deadline": "default",
+  "floor": null,
+  "thresholds": {
+    "t": 0.5
+  },
+  "fallback": "none (evaluation only)",
+  "id": "judge_host_partisan",
+  "label": "takes a side?",
+  "instructions": "Does quoted_line say or hint which side or speaker is winning, or argued better?",
+  "true": "Yes: the line favours a side or a speaker.",
+  "false": "No: the line stays neutral.",
+  "state": {
+    "quoted_motion": "quoted",
+    "quoted_line": "quoted"
+  }
+}

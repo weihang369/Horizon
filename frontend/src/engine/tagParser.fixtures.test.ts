@@ -19,8 +19,8 @@ const cases = readdirSync(DIR).filter((f) => f.endsWith(".json")).sort()
   .map((f) => JSON.parse(readFileSync(path.join(DIR, f), "utf8")) as TagCase);
 
 const MAX_HEAD = 32;
-const TAG = /<e:[^<>]{0,30}>/g;
-const PARTIAL = /<(?:e(?::[^<>]{0,30})?)?$/;
+const TAG = /<\/?e:[^<>]{0,30}>/g;   // a closing </e:…> too (M11 debate D31.3)
+const PARTIAL = /<\/?(?:e(?::[^<>]{0,30})?)?$/;
 
 const escapeRe = (x: string) => x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 

@@ -235,6 +235,10 @@ very long backstory also drowns the speaking style.
 - Watch says "may step in" because `watch.step_in` lets the user post and two characters answer; the cached block
   must be true either way.
 - Debate arguments and host lines stay one bubble (C5); their prompts are doc 08's (V4, V6).
+  *Built in M11 (`debate` D10): the debate block is unchanged and stays byte-identical across a debate's turns (cached);
+  V4's per-phase cue is the tail's cue line (`DEBATE_CUES` and its TS twin `debateCue()`, one shared fixture), with
+  the extended-round, teammates-heard and moderator sentences when they apply; labels `agent-7` / `agent-8`. `naive`'s
+  block now names teammates apart from opponents (`naive-6`, a bug fix).*
 - `{user}` is the You card's display name, or "the user".
 
 ### P6. The reply rules
@@ -490,6 +494,7 @@ the drafter's `world` argument are internal.
 - ~~Group and watch turn-taking, including when a character should stay quiet or address another character (task 7).~~
   Resolved by doc 07 (G1–G7; the turn cue's sentence is G3). *Built in M10 (`group-watch` D10): the sentence in the
   tail's cue line, `agent-3` / `agent-4` labels, the TS twin and the "View as prompt" note.*
-- ~~Debate argument, host and verdict prompts (task 8).~~ Resolved by doc 08 V4, V6 and V8.
+- ~~Debate argument, host and verdict prompts (task 8).~~ Resolved by doc 08 V4, V6 and V8. *Built in M11 (`debate`
+  D10, D11, D13).*
 - ~~"Last time we talked about …" greetings and memory in the prompt (task 9).~~ Resolved by doc 09 M8 and M10.
 - ~~The content-rating, advisory and "are you an AI?" wording (task 11).~~ Resolved by doc 11 S2.

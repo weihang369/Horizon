@@ -379,3 +379,11 @@ async def test_each_fingerprint_field_forces_a_redo(api: Api, monkeypatch: Any, 
     assert plan is not None
     assert stored.cancelled() is redo
     assert len(plan_bodies(api)) == n + (1 if redo else 0)
+
+
+# ── M11 (debate design D17; watch-direction "Who speaks next is judged on fit, not on turns since") ──
+async def test_the_scene_question_sees_no_last_spoke_while_the_guard_still_counts(api: Api) -> None:
+    _, msgs = await _without_mei(api)
+    assert speakers(msgs)[-1] == MEI   # the guard still forces the silent one, from the log
+    bodies = plan_bodies(api)
+    assert bodies and all("last_spoke" not in c for b in bodies for c in b["state"]["quoted_cast"])

@@ -2,6 +2,7 @@
 // "End without verdict". Destructive-ish but recoverable, so the safe default focus is Cancel.
 import { useState } from "react";
 import { client } from "../../client";
+import { useRushHour } from "../../client/hooks";
 import type { DebateConfig } from "../../contract/types";
 import type { OverlayComponentProps } from "../../app/overlayTypes";
 import { reportError } from "../../app/errors";
@@ -9,10 +10,8 @@ import { toast } from "../../app/layers";
 import { navigate } from "../../router";
 import { Button, Modal, formatUsd } from "../../ui";
 import { useSlot } from "./shared";
+import { verdictEstimateUsd } from "./verdictEstimate";
 import s from "./Overlays.module.css";
-
-/** Arbiter verdict call: ~6.2k in (2.4k cached) + 420 out on the decision model (mock pricing). */
-const VERDICT_ESTIMATE_USD = 0.0012;
 
 export function EndDebate({ sessionId, close }: OverlayComponentProps<"O26">) {
   const slot = useSlot(sessionId);
@@ -21,6 +20,7 @@ export function EndDebate({ sessionId, close }: OverlayComponentProps<"O26">) {
   const phase = slot?.runtime?.phase?.phase;
   const [busy, setBusy] = useState<"verdict" | "end" | null>(null);
   const verdictOff = cfg?.verdictBy === "none";
+  const estimate = verdictEstimateUsd(useRushHour().period);
 
   const go = async (withVerdict: boolean) => {
     setBusy(withVerdict ? "verdict" : "end");
@@ -49,7 +49,7 @@ export function EndDebate({ sessionId, close }: OverlayComponentProps<"O26">) {
           </Button>
           {!verdictOff && (
             <Button disabled={!!busy} onClick={() => void go(true)}>
-              {busy === "verdict" ? "Calling the arbiter…" : `Go to verdict now (≈ ${formatUsd(VERDICT_ESTIMATE_USD)})`}
+              {busy === "verdict" ? "Calling the arbiter…" : `Go to verdict now (≈ ${formatUsd(estimate)})`}
             </Button>
           )}
         </>

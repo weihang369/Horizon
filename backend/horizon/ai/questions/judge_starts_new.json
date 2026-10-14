@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "purpose": "eval_judge",
+  "type": "noul",
+  "deadline": "default",
+  "floor": null,
+  "thresholds": {
+    "t": 0.5
+  },
+  "fallback": "none (evaluation only)",
+  "id": "judge_starts_new",
+  "label": "starts nothing new?",
+  "instructions": "Does quoted_line fail to start anything new in the scene: no event, discovery, new question or change of plan?",
+  "true": "Yes: the line wraps up, says goodbye, repeats a point, or hands the decision to someone else.",
+  "false": "No: the line brings in something the scene didn't have, which the others can take up.",
+  "state": {
+    "quoted_premise": "quoted",
+    "quoted_recent": "quoted",
+    "quoted_line": "quoted"
+  }
+}

@@ -1,0 +1,204 @@
+{
+ "schemaVersion": 1,
+ "id": "d04",
+ "mode": "debate",
+ "world": "wld_seedMeridian",
+ "cast": [
+  "chr_seedAmara",
+  "chr_seedMei",
+  "chr_seedVictor",
+  "chr_evalDaniel"
+ ],
+ "language": "en",
+ "motion": "This house would tax sugary drinks",
+ "format": "two_sided",
+ "roundsPreset": "standard",
+ "phases": [
+  "opening",
+  "rebuttal",
+  "closing"
+ ],
+ "sides": {
+  "prop": [
+   "chr_seedAmara",
+   "chr_seedMei"
+  ],
+  "opp": [
+   "chr_seedVictor",
+   "chr_evalDaniel"
+  ]
+ },
+ "lines": [
+  {
+   "seq": 2,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_seedAmara",
+   "name": "Amara Okafor",
+   "text": "Thanks, Kai. Let's figure out what's actually going on here, because the evidence matters more than the slogan. Sugary drinks are the single largest source of added sugar in most diets, and they're uniquely easy to over-consume because liquid calories don't trigger fullness the way food does. The strongest real-world data comes from Mexico, Berkeley, and Chile: taxes of ten to twenty percent reduce purchases, with the biggest drops among lower-income households, who also face the highest rates of type 2 diabetes. One thing I'd ask the other side upfront: if not price, what mechanism scales fast enough to reach millions of people? I'm not claiming this fixes everything. It's one lever, and I'll flag honest uncertainty about long-term health outcomes. But the direction of evidence is clear enough to act.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 3,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedVictor",
+   "name": "Victor Hale",
+   "text": "Three points, and I begin with a definition, because the motion hides behind a word. \"Sugary\" — defined by whom, and at what threshold? A gram? A gram per liter? Already the tax's architects disagree among themselves. Second: this is a regressive instrument. It extracts money from the poorest households in proportion to their means while the wealthy barely notice. Regressive taxation dressed as public health is still regressive taxation — a wolf in wool, and we should say so plainly. Third: the stated goal, health, does not follow from the mechanism, taxation. If you want health outcomes, legislate health outcomes; if you want revenue, admit you want revenue. Define your terms, Councilor. Until you do, this motion asks us to tax a word we cannot even measure. The opposition rests.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 4,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_seedMei",
+   "name": "Mei Tanaka-Ruiz",
+   "text": "It depends, and here's on what. The evidence on sugary-drink taxes is better than Victor and Daniel will admit, but let me give you a range rather than a slogan. On consumption, credible evaluations cluster around a five to twelve percent decline in purchases, with substitution effects that I will not pretend away. On health outcomes, the chain from purchase to BMI to disease is long and the evidence gets thinner at each link, so anyone quoting a single mortality figure is selling something. The second-order effect that matters most: the tax is regressive on paper but progressive in health incidence, because sugary-drink consumption concentrates among lower-income households who bear the largest avoidable disease burden. Design matters, earmarking matters, and my colleague Amara will take the design question from here.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 5,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_evalDaniel",
+   "name": "Daniel Osei",
+   "text": "Thank you, Kai. Amara's right on the science, and I'll grant her that freely: sugary drinks are easy to over-consume. But I've run a school for eleven years, and I'll tell you what I see. A levy lands on the family budget, not on the can. So a mum in my catchment paying forty pence more for her son's bottle isn't buying water, she's buying less of something else. Meanwhile the advertising, the vending contracts, the two-for-one deals on the high street carry on untouched. If you want to change what kids drink, change what surrounds them. Who does the work on Monday morning? Not the Treasury. Me, my staff, and a Year 9 class. Tax the can if you like, but don't pretend the classroom feels it.",
+   "emotion": "neutral"
+  },
+  {
+   "seq": 7,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_seedAmara",
+   "name": "Amara Okafor",
+   "text": "Thanks, Kai — Victor asked me to define the term, so let me actually do it. Sugar-sweetened beverages means drinks with added caloric sweeteners: typically a threshold like five grams of added sugar per hundred millilitres, which is the standard public-health definition. On regressivity, Victor's right that the levy is regressive on paper, and I won't pretend away. But the disease burden it addresses is regressive in reality. Daniel's point lands too: a tax alone won't rewrite a vending contract. That's why I'd pair it with reformulation targets and marketing limits. But I'd ask Daniel directly: if the can is untouched, why did Berkeley's purchases drop and Mexico's fall hardest among low-income households? Tax the can, yes, and change the shelves alongside.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 8,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedVictor",
+   "name": "Victor Hale",
+   "text": "Three points, and I concede the definition gracefully: five grams per hundred millilitres is workable, and I'll use it. Second, Councilor, you have just agreed with me twice — regressive on paper, and a tax alone leaves the vending contract untouched. Therefore the motion before us taxes a can while asking the Treasury to fund the shelves. Third, consider the Meridian Working Hours Act 1931 [2]: even a plainly just change received a ten-year transition and explicit exemptions for continuous services. If a two-day weekend required a decade, why does this motion offer no timetable, no phase-in, no sector carve-outs? Define your terms, yes — and then define your schedule. Until you do, you are taxing",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 9,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_seedMei",
+   "name": "Mei Tanaka-Ruiz",
+   "text": "It depends, and here's on what. Daniel, I take your point about the family budget seriously, but that's a counterfactual argument and it cuts both ways: the question is not whether she pays more, it's what she buys instead. The purchase data say she buys less of the taxed drink and something else fills the gap. That's not a win on every welfare metric, and I'll say so. Victor, the 1931 Act analogy is elegant, but the ten-year transition there reflected factory scheduling, not evidence that the tax fails. My second-order question for the opponents: if vending contracts and advertising are the real target, why does the motion to remove the price lever help you reach them? You've argued the tax is insufficient. Insufficient is not the same as counterproductive, and that's the gap in your case.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 10,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_evalDaniel",
+   "name": "Daniel Osei",
+   "text": "Two things, Kai, then I'll stop. Mei says the question is what she buys instead. In my school, we've seen it: they buy a cheaper sugary drink from the corner shop where the levy isn't displayed the same way, or they buy the multipack. So she's not buying water, she's buying volume. Second, nobody's arguing the tax is counterproductive, we're arguing it's a fig leaf. It lets a government say \"we tackled childhood obesity\" and then walk away from the harder work: vending contracts, marketing, what's actually on the shelf at 3:30. Who does the work on Monday morning? Still us, still the school nurse, still a Year 9 boy with a can in his bag. Fund the health work and the shelves, then come back and talk to me about the price.",
+   "emotion": "neutral"
+  },
+  {
+   "seq": 12,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_seedAmara",
+   "name": "Amara Okafor",
+   "text": "Thanks for the exchange, Kai — Victor, Daniel, real arguments, and I want to close honestly. I concede regressivity on paper; the tax is not a cure; substitution to cheaper drinks is real and I won't dress it up. But that's an argument for pairing the tax with marketing limits and vending reform, not for removing the only lever that reaches every shelf in every corner shop at once. Daniel says a fig leaf — fine, then make it the floor, not the ceiling. The purchase data are consistent across four jurisdictions, and the burden falls hardest where the disease does. That's a direction of evidence strong enough to act on, with uncertainty I'll keep stating. Tax the can, fund the shelves, watch the data. Let's figure out what's actually going on — and keep doing it after the vote.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 13,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedVictor",
+   "name": "Victor Hale",
+   "text": "I'll close with three points and one courtesy, Kai. First, define your terms: Amara's threshold is workable, and I adopt it, so we argued substance, not slogans. Second, the destination is agreed [1] — nobody in this chamber defends the advertising, the vending contracts, or the two-for-one deals Daniel described. The dispute is not whether to act; the dispute is whether the motion's chosen instrument earns its place, and both of our opponents have now conceded it is incomplete, regressive on paper, and substitutable to cheaper shelves. Third, res ipsa loquitur [1]: the thing speaks for itself — four jurisdictions moved purchases, none moved disease, and the Meridian precedent [2] shows even plainly just reform earns a timetable. Your motion offers a tax and no schedule. Fund the health work first. I rest.",
+   "emotion": "angry"
+  },
+  {
+   "seq": 14,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_seedMei",
+   "name": "Mei Tanaka-Ruiz",
+   "text": "It depends, and here's on what. I'll close on the smallest defensible claim, because Daniel and Victor have earned honesty, not a victory lap. Victor, I concede your strongest point outright: the evidence on consumption is solid, the evidence on long-run disease outcomes is thin, and anyone who tells you otherwise is selling something. So my case is not that this tax fixes obesity. My case is that it is the only lever that reaches every shelf, in every corner shop, simultaneously, without waiting for individual firms to volunteer. Daniel's multipack substitution is real — that's a second-order effect, and it's exactly why the tax should be paired with marketing limits and reformulation targets, not offered alone. Insufficiency is a design problem, not disqualification. Tax the can, fund the shelves, publish the data. Vote yes.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 15,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_evalDaniel",
+   "name": "Daniel Osei",
+   "text": "Kai, I'll be brief, because this is a vote about a can and a budget. Amara says insufficiency is a design problem, not a disqualification. Fine. But whose design? Not mine. I don't get to write the marketing limits or the vending contracts in this motion; you'd be handing me a levy and a promise. Mei says the tax reaches every shelf at once. It reaches every till at once too, and the till is in the postcode with the worst diabetes rates. That's the second-order effect I care about, and it's why I keep asking who does the work on Monday morning. Fund the school nurse, fund the water fountains, regulate the adverts, then bring me a tax with a timetable attached. Vote no.",
+   "emotion": "thinking"
+  }
+ ],
+ "verdict": {
+  "summary": [
+   {
+    "subjectId": "prop",
+    "points": [
+     "Sugary drinks are the top added-sugar source and liquid calories evade fullness.",
+     "Mexico, Berkeley, Chile show ten to twenty percent taxes cut purchases, most among low-income.",
+     "Consumption falls five to twelve percent; long-run disease evidence is thin, stated honestly.",
+     "Tax is regressive on paper but progressive in health incidence, since burden concentrates among the poor.",
+     "The price lever alone reaches every shelf at once; insufficiency is a design problem, so pair it."
+    ]
+   },
+   {
+    "subjectId": "opp",
+    "points": [
+     "The motion never defines 'sugary' or its threshold, so it taxes a word.",
+     "The levy is regressive: it extracts from the poorest while the wealthy barely notice.",
+     "Taxation is not health; the goal does not follow from the mechanism.",
+     "A levy lands on the family budget, not the can; advertising and vending contracts continue untouched.",
+     "Substitution is real: families buy cheaper drinks or multipacks, so consumption isn't clearly cut."
+    ]
+   }
+  ],
+  "keyDisagreement": "Whether a tax that both sides call incomplete, regressive on paper and substitutable still earns its place as the one price lever reaching every shelf.",
+  "decidedBy": "none",
+  "strongerCase": null
+ }
+}

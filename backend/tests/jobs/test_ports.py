@@ -32,7 +32,8 @@ def test_naive_ports_and_overrides() -> None:
     assert NAIVE_PORTS == {"turn", "router", "drafter", "image", "song",   # M5 adds these (knowledge-memory-storage)
                            "embedder", "knowledge_retriever", "memory_retriever", "converter",
                            "summariser",   # M8 (persona-context): the rolling summary
-                           "planner", "face_check"}   # M9 (turn-plan-emotion D5): naive's own no-ops
+                           "planner", "face_check",   # M9 (turn-plan-emotion D5): naive's own no-ops
+                           "host"}   # M11 (debate D11): host lines
     spec = ProfileSpec.from_env({"HORIZON_AI_PROFILE": "naive", "HORIZON_AI_IMAGE": "scripted"})
     assert spec.choose("image", key_set=True) == "scripted"
     assert spec.choose("drafter", key_set=True) == "naive"

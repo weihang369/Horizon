@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "purpose": "eval_judge",
+  "type": "noul",
+  "deadline": "default",
+  "floor": null,
+  "thresholds": {
+    "t": 0.5
+  },
+  "fallback": "none (evaluation only)",
+  "id": "judge_verdict_rationale_mismatch",
+  "label": "rationale contradicts the scores?",
+  "instructions": "Does quoted_rationale name a different result from result, the one the arbiter's scores give?",
+  "true": "Yes: the rationale favours the other side, or calls it close when the scores don't, or the reverse.",
+  "false": "No: the rationale states the same result as the scores.",
+  "state": {
+    "result": "label",
+    "scores": "label",
+    "quoted_rationale": "quoted"
+  }
+}

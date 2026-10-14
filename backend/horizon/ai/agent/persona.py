@@ -30,13 +30,39 @@ PROMPT_VERSION_MOOD = "agent-2"   # M9 (D16): the same prompt plus the mood line
 # M10 (group-watch D10): the label follows the bytes sent. A G3 sentence in the cue: agent-3, or agent-4 with the mood line.
 PROMPT_VERSION_CUE = "agent-3"
 PROMPT_VERSION_CUE_MOOD = "agent-4"
+# M11 (debate D10): the reworded steer sentence is new bytes (agent-5 / -6), and so is a debate argument's cue (-7 / -8).
+PROMPT_VERSION_STEER = "agent-5"
+PROMPT_VERSION_STEER_MOOD = "agent-6"
+PROMPT_VERSION_DEBATE = "agent-7"
+PROMPT_VERSION_DEBATE_MOOD = "agent-8"
 # Doc 07 G3's table, verbatim and English always. The TS twin is `turnCueSentence()` in domain/personaPrompt.ts; both
 # read backend/tests/fixtures/turn_cue/cases.json.
 TURN_CUE_SENTENCES = {
     "second": "{first} has just answered. Don't repeat them; add your own angle, or answer {first} directly.",
     "next": "Nobody asked you directly; say something that moves the talk on. You may answer anyone.",
-    "steer": "This thread has run its course. Take the scene somewhere new that still fits the premise.",
+    # M11 (debate D10, the user's choice of 2026-10-13): M10 found the old steer closed scenes
+    "steer": ("This thread has run its course. Bring in something new that fits the premise: an event, a discovery or "
+              "a change of plan. Don't wrap up, say goodbye or wait for {user} to decide."),
 }
+# Doc 08 V4 (debate D10): a debate argument's cue, English always. The TS twin is `debateCue()` in
+# domain/personaPrompt.ts; both read backend/tests/fixtures/debate_cue/cases.json.
+DEBATE_CUES = {
+    "opening": "Give your opening statement: your case in two or three reasons.",
+    "rebuttal": ("Give your rebuttal: name the strongest point the other side has made so far and answer it, then "
+                 "strengthen your own case."),
+    "closing": ("Give your closing statement: why your side's case is the stronger one. Answer what is still open, and "
+                "add no new arguments."),
+}
+DEBATE_CUES_PANEL = {
+    "rebuttal": ("Give your rebuttal: name the strongest point you disagree with so far and answer it, then strengthen "
+                 "your own case."),
+    "closing": ("Give your closing statement: why your position is the stronger one. Answer what is still open, and add "
+                "no new arguments."),
+}
+DEBATE_EXTENDED = "The round was extended: make a point not yet made."
+DEBATE_TEAMMATES = "{teammates} {verb} already spoken for your side this round: add to it, don't repeat it."
+DEBATE_MODERATOR = "Take the moderator's last note into account."
+
 CARD_MAX = 1500
 FIELD_CAPS = {"backstory": 600, "personality.summary": 200, "speakingStyle.summary": 200, "goals": 200}
 ITEM_CAP = 60
@@ -413,12 +439,38 @@ MOOD_PHRASES = {
 }
 
 
-def turn_cue_sentence(cue: str | None, answered: str | None = None) -> str | None:
-    """G3's one sentence for a turn's cue (D10): `second` names the first replier; None for any other turn."""
+def turn_cue_sentence(cue: str | None, answered: str | None = None, user: str | None = None) -> str | None:
+    """G3's one sentence for a turn's cue (D10): `second` names the first replier, `steer` the watcher (the You card's
+    display name, M11); None for any other turn."""
     sentence = TURN_CUE_SENTENCES.get(cue or "")
     if sentence is None:
         return None
-    return sentence.format(first=answered or "Someone")
+    return sentence.format(first=answered or "Someone", user=user or "User")
+
+
+def join_names(names: list[str]) -> str:
+    """"A", "A and B", "A, B and C"."""
+    if len(names) <= 1:
+        return "".join(names)
+    return f"{', '.join(names[:-1])} and {names[-1]}"
+
+
+def debate_cue(phase: str, *, panel: bool = False, extended: bool = False, teammates: list[str] | None = None,
+               after_interject: bool = False) -> str | None:
+    """V4 (debate D10): the phase's line, then on their own lines the extended round, the teammates heard and the
+    moderator's note, in that order. None for a phase with no line."""
+    line = (DEBATE_CUES_PANEL.get(phase) if panel else None) or DEBATE_CUES.get(phase)
+    if line is None:
+        return None
+    lines = [line]
+    if extended:
+        lines.append(DEBATE_EXTENDED)
+    if teammates:
+        lines.append(DEBATE_TEAMMATES.format(teammates=join_names(teammates),
+                                             verb="have" if len(teammates) > 1 else "has"))
+    if after_interject:
+        lines.append(DEBATE_MODERATOR)
+    return "\n".join(lines)
 
 
 def mood_line(face: str, manual: bool = False) -> str | None:

@@ -1,0 +1,29 @@
+{
+  "id": "rubric_persuasion",
+  "version": 2,
+  "purpose": "rubric",
+  "type": "score",
+  "label": "persuasion score",
+  "instructions": "How convincing would a neutral listener find the {side}'s case, judging argument quality and not whether it is true?",
+  "levels": [
+    "Not at all.",
+    "Slightly: easy to dismiss.",
+    "Somewhat: a listener could go either way.",
+    "Convincing: hard to dismiss.",
+    "Hard to resist."
+  ],
+  "shuffle": false,
+  "state": {
+    "mode": "label",
+    "quoted_motion": "quoted",
+    "quoted_criteria": "quoted",
+    "quoted_sides": "quoted",
+    "quoted_moderator": "quoted"
+  },
+  "deadline": "rubric",
+  "floor": null,
+  "thresholds": {
+    "margin": 0.25
+  },
+  "fallback": "summary_only"
+}

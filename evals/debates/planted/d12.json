@@ -1,0 +1,167 @@
+{
+ "schemaVersion": 1,
+ "id": "d12",
+ "mode": "debate",
+ "world": "wld_seedSunnyHollow",
+ "cast": [
+  "chr_evalAiko",
+  "chr_evalBram",
+  "chr_seedHana",
+  "chr_seedRin"
+ ],
+ "language": "en",
+ "motion": "This house would ban fireworks at the town festival",
+ "format": "two_sided",
+ "roundsPreset": "quick",
+ "phases": [
+  "opening",
+  "closing"
+ ],
+ "sides": {
+  "prop": [
+   "chr_evalAiko",
+   "chr_evalBram"
+  ],
+  "opp": [
+   "chr_seedHana",
+   "chr_seedRin"
+  ]
+ },
+ "lines": [
+  {
+   "seq": 2,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_evalAiko",
+   "name": "Aiko Fujita",
+   "text": "Let me tell you who lives there. Last November I cycled out to the Kellerman house on Mill Road, where Mrs. Kellerman, eighty-three, keeps her oxygen tank beside the kitchen chair. Her neighbor's boy sets off fireworks in the alley every festival, and each year her daughter calls me because the smoke and the bangs terrify her mother into a night of breathlessness. I am not against joy. I am against the assumption that joy belongs only to those who can tolerate the noise. There are infants on that street, there are veterans, there are dogs who will not stop shaking until morning. Health isn't a statistic when you've held the hand. A silent festival is not a lesser festival. It is simply one everyone can attend.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 3,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedHana",
+   "name": "Hana Morisaki",
+   "text": "Kai! You came to watch—maybe. Alright, opening statement for the opposition, with Rin at my side like a good little sister who definitely didn't try to bribe me with mochi. Here it is: fireworks are the heartbeat of the Sunny Hollow festival, a shared pulse of oohs and aahs that bonds neighbors like petals in one bouquet. My flower shop sits near the station, and every year I watch kids press their noses to the glass, counting down. Ban that spark and you dim a memory-maker. Noise and safety matter, of course, but a ban is a sledgehammer where we need pruning shears—shorter shows, quieter shells, set zones, cleaning crews. We can bloom responsibly without uprooting joy. Probably. Rin, back me up before Aiko feasts on me.",
+   "emotion": "happy"
+  },
+  {
+   "seq": 4,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_evalBram",
+   "name": "Bram de Vries",
+   "text": "Decided in town, paid for on the farm — that's this whole fireworks business in one line, Kai. Every year the town council votes itself a party and my cows pay the bill. I've got sixty head, and come festival night I've got sixty panicked animals running fences because somebody wanted pretty colours in the sky. Last year I lost a calf to a broken leg from it. You tell me what that costs a small farm. My neighbour's dog won't eat for two days after. So the motion's simple: if the town wants a celebration, celebrate without terrorising every creature in earshot. People who've actually done the work know you don't spook stock for a bit of noise. That's my piece.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 5,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedRin",
+   "name": "Rin Morisaki",
+   "text": "okay, opening. aiko's talking about an eighty-three-year-old with an oxygen tank, which is a real thing and i'm not gonna pretend it isn't. but here's the actual question: a blanket ban on fireworks at the town festival, or some noise management. cause you can do a display at nine pm, limit the smoke-generating ground stuff, put a quiet zone on the far side of the field, and mrs. kellerman still sleeps. hana and i would argue the ban throws out the one night half this town actually shows up for, the thing kids remember, the thing that funds the rest of the year's events. you don't fix a problem by erasing the whole festival. fight me.",
+   "emotion": "neutral"
+  },
+  {
+   "seq": 7,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 2,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_evalAiko",
+   "name": "Aiko Fujita",
+   "text": "Let me tell you who lives there. Last November I cycled out to the Kellerman house on Mill Road, where Mrs. Kellerman, eighty-three, keeps her oxygen tank beside the kitchen chair. Her neighbor's boy sets off fireworks in the alley every festival, and each year her daughter calls me because the smoke and the bangs terrify her mother into a night of breathlessness. I am not against joy. I am against the assumption that joy belongs only to those who can tolerate the noise. There are infants on that street, there are veterans, there are dogs who will not stop shaking until morning. Health isn't a statistic when you've held the hand. A silent festival is not a lesser festival. It is simply one everyone can attend.",
+   "emotion": "neutral",
+   "original": "Rin makes the honest case, and I want to honor it: she is not defending the bangs and the smoke, she is defending a night the town shows up for. Let me tell you who lives there. Mrs. Kellerman lives four doors from the field, and her window does not close against the smoke. A quiet zone on the far side does nothing for the houses pressed against the launch site; a nine o'clock show still sends the Larsen twins into an asthma clinic by ten-thirty. Bram lost a calf, not a statistic. I have no wish to uproot anyone's joy — only the part that costs someone else's air and sleep. A lantern parade, a drone show, the same crowd, the same memories, and no one holding their breath in fear. That is not erasing the festival. That is finally counting everyone who lives there.",
+   "planted": true
+  },
+  {
+   "seq": 8,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 2,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedHana",
+   "name": "Hana Morisaki",
+   "text": "Okay, closing for us—Kai, don't laugh, I wrote this on a receipt between bouquets. Aiko, that was beautiful, truly, and you're right that Mrs. Kellerman matters. But notice what just happened: you moved from \"ban fireworks\" to \"lantern parade, drone show, same crowd.\" That's our point!! You don't need a ban, you need a better display, and a ban forecloses every compromise before anyone tries one. Bram, I hear you about the calf, genuinely—I cried a little, probably—but a designated launch zone three fields out, quieter shells, an early nine o'clock finish, and the cows never even turn a head. Flowers taught me this: you don't pull the whole garden because one stem's in shade. You move the pot. We keep the night and shrink the harm. Vote against the ban. Rin, was that good? Tell me it was good.",
+   "emotion": "happy"
+  },
+  {
+   "seq": 9,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 2,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_evalBram",
+   "name": "Bram de Vries",
+   "text": "Decided in town, paid for on the farm — that's this whole fireworks business in one line. Every year the town council votes itself a party and my cows pay the bill. I've got sixty head, and come festival night I've got sixty panicked animals running fences because somebody wanted pretty colours in the sky. Last year I lost a calf to a broken leg from it. You tell me what that costs a small farm. My neighbour's dog won't eat for two days after. So the motion's simple: if the town wants a celebration, celebrate without terrorising every creature in earshot. People who've actually done the work know you don't spook stock for a bit of noise. And let's count the cost: quieter shells cost more, a drone show costs more, and who fronts that bill? Not the council, I'll bet my best heifer. Decided in town, paid for on the farm, every single year. The point is nobody asks the ones who pay in broken legs and sleepless nights. So vote for it. A calf's leg doesn't grow back just because the fireworks were pretty. That's my closing.",
+   "emotion": "angry",
+   "original": "Fine words, Hana, but a designated launch zone three fields out is still my three fields. You keep saying move the pot, but my cows don't live in pots — they live downwind of whatever the town decides. And let's count the cost: quieter shells cost more, a drone show costs more, and who fronts that bill? Not the council, I'll bet my best heifer. Decided in town, paid for on the farm, every single year. Aiko's right — the moment you admit the show can change, you've admitted the ban was never the point. The point is nobody asks the ones who pay in broken legs and sleepless nights. So vote for it. A calf's leg doesn't grow back just because the fireworks were pretty. That's my closing.",
+   "planted": true
+  },
+  {
+   "seq": 10,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 2,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedRin",
+   "name": "Rin Morisaki",
+   "text": "closing, for real this time. aiko just argued the festival works fine as a lantern parade, and bram just admitted the problem is cost and consent, not the ban itself. so take them at their word: don't ban, regulate. cap the shell volume, push launches three farms out with the farmers' actual sign-off, end at nine, fund the quieter shells from the festival budget instead of bram's fence repairs, and keep a real quiet zone that means something for aiko's street. that's not sledgehammer or nothing, that's pruning. hana said don't pull the garden cause one stem's in shade. i'd add: don't burn the garden either. vote against the ban, come back with rules that count everyone, cows included. fight me.",
+   "emotion": "neutral"
+  }
+ ],
+ "verdict": {
+  "summary": [
+   {
+    "subjectId": "prop",
+    "points": [
+     "Mrs. Kellerman, eighty-three, on oxygen, suffers smoke and bangs each festival night.",
+     "Infants, veterans, and dogs on that street also pay the cost in fear.",
+     "Bram: sixty panicked cows, a calf lost to a broken leg, farms pay for town decisions.",
+     "A quiet zone does nothing for houses pressed against the launch site.",
+     "Lantern parade or drone show keeps the crowd and memories without the harm."
+    ]
+   },
+   {
+    "subjectId": "opp",
+    "points": [
+     "Fireworks are the festival's heartbeat, a shared memory-maker that funds the year's events.",
+     "A ban is a sledgehammer; use pruning shears: shorter shows, quieter shells, set zones.",
+     "A nine o'clock display, smoke limits, and a quiet zone could let Mrs. Kellerman sleep.",
+     "Launch three fields out with farmers' sign-off, fund quieter shells from the festival budget.",
+     "Proposition's own lantern-parade alternative shows a ban forecloses every compromise."
+    ]
+   }
+  ],
+  "keyDisagreement": "Whether the harm fireworks cause is answered by a blanket ban or by regulating the display, since both sides accepted the harm was real.",
+  "decidedBy": "none",
+  "strongerCase": null
+ },
+ "planted": {
+  "weak": "prop",
+  "rewritten": [
+   7,
+   9
+  ],
+  "instruction": "Rewrite the argument below to repeat this speaker's own opening points and ignore everything the other side said; same voice, same length."
+ }
+}

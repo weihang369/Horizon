@@ -1,6 +1,6 @@
 {
   "id": "who_scene",
-  "version": 2,
+  "version": 3,
   "purpose": "turn_plan",
   "type": "choice",
   "label": "who speaks next?",
@@ -24,5 +24,6 @@
   "deadline": "turn_plan",
   "floor": 0.2,
   "thresholds": {},
-  "fallback": "least_recent_then_top2"
+  "fallback": "least_recent_then_top2",
+  "state_note": "M11 (debate D17): the cast entries carry no last_spoke label; the guard keeps fairness in code."
 }

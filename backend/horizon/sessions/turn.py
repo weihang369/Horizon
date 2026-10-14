@@ -185,6 +185,7 @@ class TurnRunner:
             await rt.clock.sleep(rt.runtime_cfg.timing.thinking_ms / 1000)
             await actor.emit({"type": "turn.thinking", "payload": {"characterId": spec.speaker}})
             if prefetch is not None:
+                await prefetch.planned()   # M11: a prefetched opening's own plan (debate D8), at most its deadline
                 info.ctx = prefetch.ctx
                 pplan = prefetch.ctx.plan
                 if pplan is not None:   # M10 (D11): a prefetched Everyone reply carries its plan's rows and call
@@ -261,6 +262,7 @@ class TurnRunner:
                                 else rt.ai.turn(self.key_set()))
         co = Coalescer(knobs.coalesce_max_chars, knobs.coalesce_max_ms, lambda: float(to_ms(clock.now())))
         timer: asyncio.Task[None] | None = None
+        writing = False   # the timer is past its sleep: its delta is taken and its token write must land
         trace: dict[str, Any] = {}
         citations: list[dict[str, Any]] | None = None
         first_token_ms: float | None = None
@@ -278,18 +280,25 @@ class TurnRunner:
                 await actor.emit({"type": "token", "payload": payload})
 
         async def trailing() -> None:
+            nonlocal writing
             await clock.sleep(co.due_in_ms() / 1000)
+            writing = True
             await flush()
 
         def arm() -> None:
-            nonlocal timer
+            nonlocal timer, writing
             if co.pending and (timer is None or timer.done()):
+                writing = False
                 timer = rt.spawn(f"coalesce:{actor.sid}", trailing())
 
         async def settle_timer() -> None:
             nonlocal timer
             if timer is not None and not timer.done():
-                timer.cancel()
+                # a sleeping timer is cancelled; a writing one is waited for. Cancelling it while its write waited for
+                # the write lock lost its delta from the stored reply (docs/ai/checks/m11.md 10.1: debates, where
+                # reactions, the plan and host lines all write, lost a first word or a last phrase)
+                if not writing:
+                    timer.cancel()
                 # not `await timer`: a Stop cancelling this turn would pass its cancel on to the timer, a second one
                 # landing in the timer's token write (docs/ai/checks/m9.md 9.6)
                 await asyncio.wait((timer,))

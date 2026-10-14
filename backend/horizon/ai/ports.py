@@ -17,16 +17,21 @@ from typing import Any, Protocol
 from sqlalchemy.ext.asyncio import AsyncConnection
 
 from horizon.ai.contexts import (
+    Assessment,
     CastPlan,
     CastRequest,
+    DebatePlan,
+    DebateRequest,
     FollowPlan,
     FollowRequest,
+    HostKey,
     PlanRequest,
     ReactionRequest,
     RouteContext,
     SessionContext,
     TurnContext,
     TurnPlan,
+    VerdictRequest,
 )
 from horizon.gateway.context import CallContext
 
@@ -103,6 +108,19 @@ class FollowCall(Protocol):
     def cancel(self) -> None: ...
 
 
+class DebateCall(Protocol):
+    """M11 (doc 08 V2; doc 13 W11; debate design D5, D8): a debate plan already started at `turn.end`. One request
+    serves two waits: `member` fixes who speaks by the deadline (`turn.next` names them), and `faces` reads the same
+    answer when the turn starts (fallback faces if it hasn't landed). Neither raises except CancelledError."""
+
+    async def member(self, deadline: datetime) -> DebatePlan: ...
+    async def faces(self, until: datetime) -> DebatePlan: ...
+    async def late_rows(self) -> DebatePlan | None: ...
+    def cancel(self) -> None: ...
+    @property
+    def landed(self) -> bool: ...
+
+
 class TurnPlanner(Protocol):
     """M9 (docs/ai/01 A4; turn-plan-emotion design D4): plans a turn before its reply. Returns None when the profile
     has no planner (`naive`). It never raises, except CancelledError: a failed or late Jev call is a fallback plan.
@@ -116,6 +134,7 @@ class TurnPlanner(Protocol):
     async def plan(self, req: PlanRequest) -> TurnPlan | None: ...
     async def plan_cast(self, req: CastRequest) -> CastPlan | None: ...
     def start_follow(self, req: FollowRequest) -> FollowCall | None: ...
+    def start_debate(self, req: DebateRequest) -> DebateCall | None: ...   # M11 (debate D5)
 
 
 class FaceChecker(Protocol):
@@ -133,9 +152,16 @@ class ReactionPredictor(Protocol):
 
 
 class DebateHost(Protocol):
+    """M11 (doc 08 V6; debate D11): the fixed lines, and `narration`, the async written line (None on any failure; the
+    runtime owns the timing and shows `fixed_line` when it isn't ready by its deadline)."""
+
     def round_note(self, phase: str, round_: int, iteration: int) -> str: ...
-    def narration(self, phase: str, motion: str) -> str: ...
-    async def verdict(self, ctx: SessionContext, by: str, picked: str | None) -> dict[str, Any]: ...
+    def fixed_line(self, key: HostKey, by: str, motion: str = "") -> str: ...
+    async def narration(self, ctx: SessionContext, key: HostKey, *,
+                        finish: Callable[[], str | None] | None = None) -> str | None: ...
+    # M11 (doc 08 V9; debate D14): the verdict splits into the work, started early and cancellable, and the delivery
+    async def assess(self, req: VerdictRequest) -> Assessment: ...
+    def deliver(self, a: Assessment, picked: str | None) -> dict[str, Any]: ...
 
 
 class WatchDirector(Protocol):

@@ -130,9 +130,14 @@ def register(sub: Any) -> None:
                            ("transcript", "generate the long-history frozen transcripts with naive (paid, M8)"),
                            ("moodline", "the mood line on vs off over non-neutral transcript turns (paid, once, M9)"),
                            ("latency", "agent 1:1 time to the face and the first word, store bypassed (paid, M9); "
-                                       "--part follow|watch for M10's follow plan and watch timing"),
+                                       "--part follow|watch for M10's follow plan and watch timing, debate for M11's"),
                            ("watch-history", "generate the committed watch histories with naive (paid, once, M10)"),
-                           ("freerun", "agent group and watch free runs: signals, no target (paid, M10)")):
+                           ("freerun", "agent group and watch free runs: signals, no target (paid, M10)"),
+                           ("debate-history", "generate the committed debate histories with naive (paid, once, M11)"),
+                           ("debate-plant", "write the planted weak sides of the debate histories (paid, once, M11)"),
+                           ("debate-quality", "the debate-quality judge over the committed histories (paid, M11)"),
+                           ("debate", "the agent verdict on the 12 debates, the margin, the prose and host checks "
+                                      "(paid, M11)")):
         s = esub.add_parser(name, help=helptext)
         s.add_argument("--profile", default="naive", choices=["scripted", "naive", "agent"])
         s.add_argument("--limit", type=int, default=None)
@@ -144,16 +149,17 @@ def register(sub: Any) -> None:
                        help="run against another seed folder (a runtime.json experiment); the report names it")
         if name == "canary":
             s.add_argument("--accept", action="store_true", help="accept the new answers as the baseline")
-        if name == "watch-history":
+        if name in ("watch-history", "debate-history", "debate-plant"):
             s.add_argument("--force", action="store_true", help="overwrite a committed history")
         if name == "freerun":
-            s.add_argument("--mode", choices=["watch", "group"], default="watch")
+            s.add_argument("--mode", choices=["watch", "group", "debate"], default="watch")
             s.add_argument("--runs", type=int, default=3)
             s.add_argument("--turns", type=int, default=30)
             s.add_argument("--messages", type=int, default=12)
         if name == "latency":
-            s.add_argument("--part", choices=["follow", "watch"], default=None)
-        if name in ("decisions", "long", "transcript", "drafter", "watch-history", "summary"):
+            s.add_argument("--part", choices=["follow", "watch", "debate"], default=None)
+        if name in ("decisions", "long", "transcript", "drafter", "watch-history", "summary", "debate-history",
+                    "debate-plant", "debate-quality"):
             s.add_argument("--set", default=None, help="decisions: one dataset folder (`judges`); long, transcript: "
                                                        "one script id; drafter: a seed file in evals/drafter/")
         s.set_defaults(fn=_suite)

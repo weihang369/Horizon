@@ -1,6 +1,6 @@
 {
   "id": "talk_finished",
-  "version": 2,
+  "version": 3,
   "purpose": "turn_plan",
   "type": "noul",
   "label": "is the talk finished?",
@@ -22,5 +22,6 @@
   "thresholds": {
     "t_end": 0.5
   },
-  "fallback": "no_steer"
+  "fallback": "no_steer",
+  "state_note": "M11 (debate D30.2): the watch state carries no last_spoke label (D6), so the version moved."
 }

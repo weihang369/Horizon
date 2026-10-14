@@ -9,7 +9,15 @@ from __future__ import annotations
 
 from typing import Any
 
-from horizon.ai.contexts import CastPlan, CastRequest, FollowRequest, PlanRequest, SessionContext, TurnPlan
+from horizon.ai.contexts import (
+    CastPlan,
+    CastRequest,
+    DebateRequest,
+    FollowRequest,
+    PlanRequest,
+    SessionContext,
+    TurnPlan,
+)
 
 
 class NoPlanner:
@@ -23,6 +31,9 @@ class NoPlanner:
 
     def start_follow(self, req: FollowRequest) -> None:
         return None
+
+    def start_debate(self, req: DebateRequest) -> None:
+        return None   # M11 (debate D5, V12): naive fills debate slots in fixed order
 
 
 class NoFaceCheck:

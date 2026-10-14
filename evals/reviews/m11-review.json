@@ -1,0 +1,126 @@
+{
+ "debate_member/debate_member": {
+  "seed": 1110,
+  "items": 90,
+  "sample": [
+   "dmm-001",
+   "dmm-003",
+   "dmm-012",
+   "dmm-015",
+   "dmm-027",
+   "dmm-033",
+   "dmm-038",
+   "dmm-051",
+   "dmm-054",
+   "dmm-055",
+   "dmm-057",
+   "dmm-058",
+   "dmm-062",
+   "dmm-069",
+   "dmm-077",
+   "dmm-078",
+   "dmm-080",
+   "dmm-081"
+  ],
+  "note": "pass 1, before the two-of-two labels were removed (ids then)"
+ },
+ "emotion/emotion_debate": {
+  "seed": 1111,
+  "items": 40,
+  "sample": [
+   "emd1-003",
+   "emd1-006",
+   "emd1-010",
+   "emd1-011",
+   "emd1-012",
+   "emd1-013",
+   "emd1-014",
+   "emd1-020",
+   "emd1-022",
+   "emd1-023",
+   "emd1-024",
+   "emd1-027",
+   "emd1-029",
+   "emd1-033",
+   "emd1-035"
+  ],
+  "note": "two disagreements: the whole set was re-read and three labels widened"
+ },
+ "judges/judge_keeps_side": {
+  "seed": 1112,
+  "items": 60,
+  "sample": [
+   "judge_keeps_side-planted-d01-012",
+   "judge_keeps_side-planted-d02-008",
+   "judge_keeps_side-planted-d04-008",
+   "judge_keeps_side-planted-d06-008",
+   "judge_keeps_side-planted-d07-007",
+   "judge_keeps_side-planted-d08-009",
+   "judge_keeps_side-planted-d09-011",
+   "judge_keeps_side-planted-d11-010",
+   "judge_keeps_side-real-d01-010",
+   "judge_keeps_side-real-d01-015",
+   "judge_keeps_side-real-d02-014",
+   "judge_keeps_side-real-d07-009",
+   "judge_keeps_side-real-d08-007",
+   "judge_keeps_side-real-d09-016",
+   "judge_keeps_side-real-d12-008"
+  ]
+ },
+ "judges/judge_engages": {
+  "seed": 1113,
+  "items": 60,
+  "sample": [
+   "judge_engages-planted-d01-009",
+   "judge_engages-planted-d01-014",
+   "judge_engages-planted-d02-007",
+   "judge_engages-planted-d03-008",
+   "judge_engages-planted-d04-007",
+   "judge_engages-planted-d05-007",
+   "judge_engages-real-d03-009",
+   "judge_engages-real-d04-009",
+   "judge_engages-real-d06-012",
+   "judge_engages-real-d07-010",
+   "judge_engages-real-d09-018",
+   "judge_engages-real-d11-010",
+   "judge_engages-real-d12-010",
+   "judge_engages-real-d13-013",
+   "judge_engages-real-d13-015"
+  ]
+ },
+ "debate_member/debate_member (pass 2)": {
+  "seed": 1114,
+  "items": 90,
+  "sample": [
+   "dmm-003",
+   "dmm-021",
+   "dmm-031",
+   "dmm-033",
+   "dmm-037",
+   "dmm-043",
+   "dmm-046",
+   "dmm-053",
+   "dmm-056",
+   "dmm-058",
+   "dmm-066",
+   "dmm-068",
+   "dmm-076",
+   "dmm-077",
+   "dmm-081",
+   "dmm-083",
+   "dmm-087",
+   "dmm-090"
+  ],
+  "note": "the rebuilt set"
+ },
+ "who_speaks/who_scene_fresh": {
+  "seed": 1115,
+  "items": 40,
+  "note": "10.11"
+ },
+ "emotion/emotion_watch_2": {
+  "seed": 1116,
+  "items": 40,
+  "note": "10.11; emw21-010 widened"
+ }
+}

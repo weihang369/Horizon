@@ -96,6 +96,7 @@ ignore = ["RUF001", "RUF002", "RUF003"]
 "horizon/evals/content.py" = ["TID251"]   # M8: the long and transcript suites drive the in-process app, as smoke does
 "horizon/evals/latency.py" = ["TID251"]   # M9 (D31): the latency suite drives the in-process app the same way
 "horizon/evals/watch_suites.py" = ["TID251"]   # M10: watch-history, freerun and the timing parts drive the in-process app too
+"horizon/evals/debate_suites.py" = ["TID251"]   # M11: debate-history, the debate free runs and timing do the same
 
 [tool.mypy]
 python_version = "3.12"

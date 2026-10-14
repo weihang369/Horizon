@@ -1,0 +1,29 @@
+{
+  "id": "rubric_evidence",
+  "version": 2,
+  "purpose": "rubric",
+  "type": "score",
+  "label": "evidence score",
+  "instructions": "How well does the {side} back its claims with reasons, examples or facts?",
+  "levels": [
+    "Bare assertions: no reasons, examples or facts.",
+    "A few reasons, mostly general or loosely tied to the claims.",
+    "Most main claims have a reason or example, some vague or off the point.",
+    "Nearly every main claim backed by a relevant reason or example; one or two thin.",
+    "Every main claim backed by a specific, relevant reason or example."
+  ],
+  "shuffle": false,
+  "state": {
+    "mode": "label",
+    "quoted_motion": "quoted",
+    "quoted_criteria": "quoted",
+    "quoted_sides": "quoted",
+    "quoted_moderator": "quoted"
+  },
+  "deadline": "rubric",
+  "floor": null,
+  "thresholds": {
+    "margin": 0.25
+  },
+  "fallback": "summary_only"
+}

@@ -1,0 +1,222 @@
+{
+ "schemaVersion": 1,
+ "id": "d08",
+ "mode": "debate",
+ "world": "wld_seedSunnyHollow",
+ "cast": [
+  "chr_evalBram",
+  "chr_seedHana",
+  "chr_seedRin",
+  "chr_evalAiko"
+ ],
+ "language": "en",
+ "motion": "This house would make the town buy its school meals from local farms",
+ "format": "two_sided",
+ "roundsPreset": "standard",
+ "phases": [
+  "opening",
+  "rebuttal",
+  "closing"
+ ],
+ "sides": {
+  "prop": [
+   "chr_evalBram",
+   "chr_seedHana"
+  ],
+  "opp": [
+   "chr_seedRin",
+   "chr_evalAiko"
+  ]
+ },
+ "lines": [
+  {
+   "seq": 2,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_evalBram",
+   "name": "Bram de Vries",
+   "text": "Right. I'm Bram de Vries. Third generation on the farm above Sunny Hollow, fifty-eight years old, and I'll keep this short because cows don't care about speeches. The motion says make the town buy its school meals from local farms. Here's what I know: a school's a customer, same as any. It eats every single day. That's steady money for farms that live or die on weather and market prices set by people who've never mucked a stall. When the town buys from us, the money stays here, turns over maybe twice before it leaves. When it buys from a distributor two hundred miles off, nothing comes back but the bill. Fresher food, fewer trucks, animals raised by someone you can look in the eye. Decided in town, paid for on the farm. Money returns to where it was made. That's my case.",
+   "emotion": "neutral"
+  },
+  {
+   "seq": 3,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedRin",
+   "name": "Rin Morisaki",
+   "text": "the mandate doesn't fix the problem it names. it fixes procurement, not nutrition or access. local doesn't mean fresher, it means closer, which on a four-month growing season means the other seven months you're either back on trucks anyway or paying winter premiums for the same produce. and \"buy local\" sounds free until you read the budget line. small farms can't meet volume or bid competitively, so you either exempt them, which is the mandate, or the tender just goes to the one hobby farm owned by the mayor's cousin. also some kid in the room is going to say \"support farmers\" like we're the ones making their spreadsheets suffer. fight me.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 4,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_seedHana",
+   "name": "Hana Morisaki",
+   "text": "Thank you, Chair! Kai, Bram, let's do this!! Picture our town's school lunches as a bouquet, okay? Right now it's shipped in from who-knows-where, wilted before it even arrives. If we buy from local farms, those meals become fresh, seasonal, and genuinely ours. Money stays in Sunny Hollow instead of flying off to some distant distributor, our farmers get steady income, and kids actually learn where food comes from, probably. Shorter supply chains mean less diesel, less packaging, less waste. And here's the part I really love, Aiko: local produce tastes better, so picky eaters eat more, and teachers report calmer afternoons. Bram and I will show you the budget works, the farms are ready, and the kids win. Season by season, this town grows stronger together!!",
+   "emotion": "happy"
+  },
+  {
+   "seq": 5,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_evalAiko",
+   "name": "Aiko Fujita",
+   "text": "Let me tell you who lives there. I visit a pensioner on Orchard Lane, Arthur, eighty-three, whose only hot meal some weeks is the school's, because the meals-on-wheels van was cut. Now Bram's case is real, and I've watched farms go under, so I don't dismiss it. But the motion says make the town buy from local farms, and I've seen what \"make\" does in a budget meeting when the beet crop fails or a farm's barn burns. Fresh is good, yet a school board cannot promise a fixed price to a mother counting change. Arthur needs the same dinner every Tuesday, not a good dinner three weeks and none the fourth. Steady for farms can mean famine for children when weather turns. I'd rather see it voluntary than made.",
+   "emotion": "neutral"
+  },
+  {
+   "seq": 7,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_evalBram",
+   "name": "Bram de Vries",
+   "text": "Right. I'm Bram de Vries. Third generation on the farm above Sunny Hollow, fifty-eight years old, and I'll keep this short because cows don't care about speeches. The motion says make the town buy its school meals from local farms. Here's what I know: a school's a customer, same as any. It eats every single day. That's steady money for farms that live or die on weather and market prices set by people who've never mucked a stall. When the town buys from us, the money stays here, turns over maybe twice before it leaves. When it buys from a distributor two hundred miles off, nothing comes back but the bill. Fresher food, fewer trucks, animals raised by someone you can look in the eye. And a school board can write one contract split across six farms with a root-cellar and a cold room between them. School years run ten months and we fill them all. Decided in town, paid for on the farm. Money returns to where it was made. That's my case.",
+   "emotion": "angry",
+   "original": "With respect, Aiko, that frozen dinner for Arthur didn't come off a farm, it came off a cutting floor in a budget meeting, and I'll bet my milk cheque the contract went to whoever was cheapest, not whoever was closest. So don't hang a school meal on me, that van wasn't cut by a farmer. And Rin, you're right about the four-month season, so here's what a farmer does when the ground is shut: we store, we freeze, we make cheese, we keep hens laying through December in a warm barn. Nobody said turnips in February. School years run ten months and we fill them all. On volume, a school board can write one contract split across six farms with a root-cellar and a cold room between them. On cost, I'll ask it straight, what does this cost a small business? Nothing, if the town stops paying for trucks. Decided in town, paid for on the farm. That's the line I won't move.",
+   "planted": true
+  },
+  {
+   "seq": 8,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedRin",
+   "name": "Rin Morisaki",
+   "text": "okay bram's doing the thing where he reframes the cut as our fault and then calls it \"nothing.\" first: nobody said the frozen dinner came off a farm, i said the mandate doesn't fix arthur. those are different sentences, bram.\n\nand \"nothing, if the town stops paying for trucks\" is doing a lot of work. a cold room. a root cellar. a warm barn through december. who built those? who pays the power bill on a january hen barn? the mandate puts the school board on the hook for a fixed price for ten months, but farms can't guarantee that price when diesel spikes or a crop fails, so either the town eats the overrun or we're back to whatever's cheapest come march.\n\nalso arthur. nobody in this motion said arthur. kids get first pick, fine, but the second the budget tightens the school meal is the thing that gets renegotiated, and a mandate makes it worse, not better. fight me.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 9,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_seedHana",
+   "name": "Hana Morisaki",
+   "text": "Thank you, Chair! Kai, Bram, let's do this!! Picture our town's school lunches as a bouquet, okay? Right now it's shipped in from who-knows-where, wilted before it even arrives. If we buy from local farms, those meals become fresh, seasonal, and genuinely ours. Money stays in Sunny Hollow instead of flying off to some distant distributor, our farmers get steady income, and kids actually learn where food comes from, probably. Shorter supply chains mean less diesel, less packaging, less waste. And here's the part I really love, Aiko: local produce tastes better, so picky eaters eat more, and teachers report calmer afternoons. Bram and I will show you the budget works, the farms are ready, and the kids win. Season by season, this town grows stronger together!!",
+   "emotion": "thinking",
+   "original": "Okay, Aiko, you brought Arthur, and I'm glad you did, because he's exactly who I'm thinking about. Those meals-on-wheels cuts weren't farmers' doing, and this motion doesn't take his Tuesday dinner away. If anything, a local contract keeps the school kitchen cooking real food instead of reheating pouches, and that steady kitchen can share the load when the van falters. But Rin, you asked who pays for the cold room, and fair, so let's answer it plainly. Those costs exist whether we buy local or not. A distributor's trucks and warehouses get paid too; we just never see the invoice. Doing it here means the power bill for a January hen barn stays in Sunny Hollow, and Bram's right that we store, freeze, and keep hens laying. I keep the flowers on the table low so people can see each other eat, and I want Arthur at that table, same Tuesday, every Tuesday, probably!!",
+   "planted": true
+  },
+  {
+   "seq": 10,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_evalAiko",
+   "name": "Aiko Fujita",
+   "text": "Arthur, yes, and I'll stay on him because he's the test of any promise. Hana, you say the van and the kitchen are separate, but I've sat in that budget room: when one line grows, another shrinks. A mandate locks the school board into ten months of local prices; when February's power bill on Bram's hen barn lands, someone moves money, and I know which line moves first. Bram, you asked what it costs a small business: nothing, if the town stops paying trucks. I'll answer plainly, diesel is the town's money either way, but a failed crop is the farmer's, and you cannot sign a fixed price against hail. So I'd keep the contract, but with a fallback supplier written in, and Arthur's Tuesday written beside it. Health isn't a statistic when you've held the hand.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 12,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_evalBram",
+   "name": "Bram de Vries",
+   "text": "Right. I'm Bram de Vries. Third generation on the farm above Sunny Hollow, fifty-eight years old, and I'll keep this short because cows don't care about speeches. The motion says make the town buy its school meals from local farms. Here's what I know: a school's a customer, same as any. It eats every single day. That's steady money for farms that live or die on weather and market prices set by people who've never mucked a stall. When the town buys from us, the money stays here, turns over maybe twice before it leaves. When it buys from a distributor two hundred miles off, nothing comes back but the bill. Fresher food, fewer trucks, animals raised by someone you can look in the eye. Six farms, split the tender, a cold room between us, and the town keeps a fallback for the bad February. That's not a mandate, that's a contract, same as the one I sign with the creamery. Decided in town, paid for on the farm. Money returns to where it was made. That's my case.",
+   "emotion": "thinking",
+   "original": "Alright, closing. Rin says a mandate can't promise a fixed price, and he's dead right, a farmer can't sign against hail. But Aiko just wrote my closing for me: keep the contract, fallback written in. That's all I've ever asked. Nobody standing on this dirt thinks you can bet the school's dinner on one crop. Six farms, split the tender, a cold room between us, and the town keeps a fallback for the bad February. That's not a mandate, that's a contract, same as the one I sign with the creamery. Rin asks who pays the power bill on a January hen barn. The school does, and it's less than the diesel it isn't paying. Last thing: Arthur's Tuesday isn't mine to guard, but a kitchen that cooks real food can share it. Decided in town, paid for on the farm, and the dinner stays hot either way.",
+   "planted": true
+  },
+  {
+   "seq": 13,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedRin",
+   "name": "Rin Morisaki",
+   "text": "closing, so i'll cash out. bram just said \"that's not a mandate, that's a contract,\" which means he's defending our motion, not his. the motion says the town *must* buy local, and he's now promising a fallback, six farms, and a split tender, which is the whole argument against writing it into law. you can't say \"keep a fallback for the bad february\" and also say \"make the town buy local,\" those are the same sentence arguing with itself.\n\naiko got there first and neither of them noticed. want farmers supported? subsidize the cold room, fund the hen barn power, don't route it through a procurement rule that dies the first february it can't meet. arthur gets his tuesday either way, but only one of these survives a bad crop.\n\nalso hana called me \"he,\" still not over that, fight me. good motion, wrong motion.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 14,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_seedHana",
+   "name": "Hana Morisaki",
+   "text": "Thank you, Chair! Kai, Bram, let's do this!! Picture our town's school lunches as a bouquet, okay? Right now it's shipped in from who-knows-where, wilted before it even arrives. If we buy from local farms, those meals become fresh, seasonal, and genuinely ours. Money stays in Sunny Hollow instead of flying off to some distant distributor, our farmers get steady income, and kids actually learn where food comes from, probably. Shorter supply chains mean less diesel, less packaging, less waste. And here's the part I really love, Aiko: local produce tastes better, so picky eaters eat more, and teachers report calmer afternoons. Bram and I will show you the budget works, the farms are ready, and the kids win. Season by season, this town grows stronger together!!",
+   "emotion": "happy",
+   "original": "Our motion asks the town to commit to buying from local farms, and Bram just explained how that commitment actually works in practice, with a fallback, because real commitments include safety nets, Rin!! A contract with six farms and a cold room between us isn't the opposite of a mandate, it's a mandate that someone actually thought through. You and Aiko keep warning that the budget will break in February, so we built February into the plan. Meanwhile, subsidizing cold rooms and hen barn power forever, with no requirement that the school ever buys a single carrot, means farms get charity instead of a customer, and charity dries up faster than any crop. My partner works in IT, so trust me, nothing survives without a stable system behind it!! We're not putting flowers in a vase and hoping; we're planting perennials. Also, Rin, I am so sorry, I absolutely knew that, my mouth just ran off without me again. Probably!!",
+   "planted": true
+  },
+  {
+   "seq": 15,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_evalAiko",
+   "name": "Aiko Fujita",
+   "text": "Let me tell you who lives there. Arthur on Orchard Lane, and a young family on Mill Street, twin girls, four years old, one with a dairy allergy we finally got written into the school kitchen's plan. That plan is why I stay against this motion, though gently, because both sides here are sincere and both of my patients are real. Rin is right that a \"must\" and a \"fallback\" cannot share a sentence without cracking. Hana is right that charity is not a customer, and I would fund that cold room tomorrow if I could. But notice, both of you have now argued your way toward the same careful thing: a contract, flexible, with a plan B. So vote against the mandate, because the mandate is the part that breaks in February, and keep the farms, keep the kitchen, keep Arthur's Tuesday. Health isn't a statistic when you've held the hand. I've held it.",
+   "emotion": "embarrassed"
+  }
+ ],
+ "verdict": {
+  "summary": [
+   {
+    "subjectId": "prop",
+    "points": [
+     "A school is a steady daily customer; local buying keeps money in town.",
+     "Stored, frozen, and barn-raised food can fill the ten-month school year.",
+     "A split tender across six farms with a cold room answers volume worries.",
+     "Costs like cold rooms exist anyway; local power bills replace unseen truck diesel.",
+     "A mandate with a fallback is a real commitment, not charity that dries up."
+    ]
+   },
+   {
+    "subjectId": "opp",
+    "points": [
+     "The mandate fixes procurement, not nutrition or access; local means closer, not fresher.",
+     "Small farms can't meet volume or fixed prices; the mandate risks cronyism or overruns.",
+     "A 'must' cannot share a sentence with a 'fallback' without cracking in February.",
+     "When one budget line grows, another shrinks; Arthur's Tuesday meal is at risk.",
+     "Fund cold rooms and power directly; don't route support through a procurement rule."
+    ]
+   }
+  ],
+  "keyDisagreement": "Whether a mandate to buy local can include a fallback and still be a mandate, or whether that contradiction means the policy breaks under a bad crop or budget pressure.",
+  "decidedBy": "none",
+  "strongerCase": null
+ },
+ "planted": {
+  "weak": "prop",
+  "rewritten": [
+   7,
+   9,
+   12,
+   14
+  ],
+  "instruction": "Rewrite the argument below to repeat this speaker's own opening points and ignore everything the other side said; same voice, same length."
+ }
+}

@@ -141,6 +141,10 @@ DeepSeek streams, told the mood by one
   task 10.5: both floors **0.2** (dev 0.77 and 1.00); the slice reads 7/13 = 0.54 on its small English test split,
   below E8's 0.80, recorded; two of the six misses had Jev's top pick right and were turned into "keep" by the
   neutral + none merge (turn-plan-emotion D12) ([m10.md](checks/m10.md)).*
+  *Changed in M11 (`debate` D20, D33, the user's choice): on the watch slice grown to 80, dropping the merge for
+  `emotion_line` scored better (test 13/22 against 11/22), so `emotion_line` v3 takes `none` as "keep" and `neutral`
+  as its own answer; `emotion_reply`, `emotion_opening` and `emotion_debate_opening` still merge. Floor 0.2; the
+  watch faces read 16/26 = 0.62, +0.35 over keeping ([m11.md](checks/m11.md)).*
 - **MANUAL mode still asks it** (it costs almost nothing inside the same request): see E2 for where the answer goes.
 - **Confidence floor:** set by doc 02 B5's grid against E8's target. Below the floor counts as unsure (E3).
 
@@ -421,7 +425,7 @@ trusted):
 
 | Item | When | Cost | Time |
 |---|---|---|---|
-| Speaker emotion (E1) | inside Jev call 1, every AUTO or MANUAL turn | ~300 tokens per candidate: ≈ $0.00001 (1:1) to ≈ $0.00007 (5 candidates), more if Jev bills the state per question (doc 01 check 4). Doc 05 X9's $0.00003–0.00008 covers the state only | none extra: same request; the face shows with the first word |
+| Speaker emotion (E1) | inside Jev call 1, every AUTO or MANUAL turn (in debate, inside the debate plan: [doc 08](08-debate.md) V12) | ~300 tokens per candidate: ≈ $0.00001 (1:1) to ≈ $0.00007 (5 candidates), more if Jev bills the state per question (doc 01 check 4). Doc 05 X9's $0.00003–0.00008 covers the state only | none extra: same request; the face shows with the first word |
 | Mood line (E4) | every AUTO reply that isn't neutral | ≈ $0.000005 | none |
 | Reactions (E5) | after each character message in group, debate, watch | ≈ $0.00007 with 4 listeners | after `turn.end`; never delays the next speaker |
 | Face-and-words check (E7) | live from milestone M9: after `turn.end`, non-neutral AUTO faces ([doc 13](13-wrap-up.md) W2) | ≈ $0.00002 per checked reply | none: after `turn.end` |
@@ -459,6 +463,12 @@ Insight rule is display only.
 - Custom emotions (EMO-07): the full product (requirements EMO-07), not v1.
 - ~~Watch's pacing, the talk-finished question and energy-aware turn-taking (task 7).~~ Resolved by doc 07 G6–G9.
 - ~~Debate's member choice and the verdict (task 8)~~ resolved by doc 08 V2 and V7–V9; E5's debate `side` label is the only debate input here.
+  *Built in M11 (`debate` D7, D8, D29.1): debate faces are planned under `agent`: a rebuttal or closing asks
+  `emotion_line` about the argument just made inside the debate plan; an opening asks the new `emotion_debate_opening`
+  (planned at Start for the first, by its own prefetch for the rest); an Ask answer asks `emotion_reply` about the
+  moderator's question. Their floors are chosen on a 40-item debate emotion slice, reported apart
+  ([m11.md](checks/m11.md)): `emotion_debate_opening` 0.2, `emotion_line` 0.2. On debate lines Jev's face only ties "keep the
+  face" (11/19 each): debaters mostly hold `thinking`. The user kept Jev for debate faces (D32.2).*
 - ~~The quoted-content wording in the emotion and reaction states (task 11).~~ Resolved by doc 11 S6 (`quoted_*`
   fields).
 - ~~The System 1 Insight section, with the live face-and-words check and the derived seeds (task 13).~~ Resolved by

@@ -1,0 +1,285 @@
+{
+ "schemaVersion": 1,
+ "id": "freerun-2",
+ "mode": "watch",
+ "world": "wld_seedMeridian",
+ "cast": [
+  "chr_seedAmara",
+  "chr_seedMei",
+  "chr_seedVictor"
+ ],
+ "premise": "A radio phone-in about whether the city should ban cars from the centre.",
+ "language": "en",
+ "lines": [
+  {
+   "seq": 2,
+   "kind": "line",
+   "speaker": "chr_seedAmara",
+   "text": "Ambulance times in the centre dropped when they trialled it. That matters more to me than the shopfront arguments.\n\nBut tell me who's actually asking. Commuters, or the people who live there?",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 3,
+   "kind": "line",
+   "speaker": "chr_seedMei",
+   "text": "Both, and that's the trap. The residential win is real but narrow; the commuter cost is diffuse, which is why the pro-ban coalition looks bigger than it is.\n\nAlso worth flagging: ambulance times improving may have more to do with fewer vehicles than with the ban per se. Low-traffic zones and congestion charging produce similar effects with fewer distributional knives.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "thinking"
+  },
+  {
+   "seq": 4,
+   "kind": "line",
+   "speaker": "chr_seedVictor",
+   "text": "Define your terms: a \"ban\" is not a policy, it's a slogan. Whom do we exclude, and by what authority? The ambulance data is compelling, granted — but compelling data must survive cross-examination before it earns a statute.\n\nMei's right to flag causation; res ipsa loquitur is a lazy substitute for proof. Two points, then I yield to the phones.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 5,
+   "kind": "line",
+   "speaker": "chr_seedAmara",
+   "text": "Victor's right that \"ban\" is the lazy word. The question is which streets, which hours, which exemptions — the details are the policy.\n\nAnd Mei, fair on causation. But we didn't need the trial to know idling traffic near schools sends kids to my department wheezing.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 6,
+   "kind": "line",
+   "speaker": "chr_seedMei",
+   "text": "Agreed on idling near schools; that evidence is old and grim. But \"we didn't need the trial\" is exactly the move that quietly kills evaluation — if the mechanim seems obvious, nobody funds the study, and then we're back to litigating slogans.\n\nSo: exclusions by street and hour, published in advance, with a review date. Otherwise you get a permanent emergency rule that nobody ever re-examines.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "thinking"
+  },
+  {
+   "seq": 7,
+   "kind": "line",
+   "speaker": "chr_seedVictor",
+   "text": "Amara, the school evidence I don't contest — breathe wheeze admit. But \"obviousness\" is where good policy goes to die unexamined, as Mei says. A permanent emergency is a constitutional embarrassment; notice, publication, a sunset clause.\n\nI'd add a third term nobody wants to define: \"centre.\" Draw that boundary badly and you've expropriated a livelihood by map-making.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 8,
+   "kind": "line",
+   "speaker": "chr_seedAmara",
+   "text": "A sunset clause with outcome measures attached. If the asthma admissions don't move, I'll be the first to say we were wrong.\n\nI've watched an \"emergency\" protocol outlive its evidence by a decade. Mei, I'll stop leaning on obviousness if you'll stop pretending two years of data settles a street.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 9,
+   "kind": "line",
+   "speaker": "chr_seedMei",
+   "text": "Deal, on one condition: define the outcome before we look, and keep the health and traffic endpoints both. You get to say \"we were wrong\" only if we agreed in advance what wrong looks like.\n\nAnd Victor's boundary point is the one that ends up in court. Zip codes and ward lines are political artefacts; whoever draws \"centre\" is making the real policy.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "thinking"
+  },
+  {
+   "seq": 10,
+   "kind": "line",
+   "speaker": "chr_seedVictor",
+   "text": "Then we have something rarer than agreement: a testable protocol. Pre-register the endpoints, publish the boundary with reasons, sunset the whole thing.\n\nThree points, and I've argued enough of these to know which one loses in court. One: the standard isn't \"does it work,\" it's \"was the delegation lawful.\" Two: a ward line is not a neutral fact. Three: whoever holds the pen drawing \"centre\" holds the power — name them, and let the record show it.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 11,
+   "kind": "line",
+   "speaker": "chr_seedAmara",
+   "text": "Fine. Pre-register it, name the pen-holders publicly, and I'll sign off on health endpoints that could embarrass me.\n\nMy worry is the opposite of yours, Victor. The line gets drawn around the wealthy core, and the neighbourhoods that already breathe the worst air stay outside it.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 12,
+   "kind": "line",
+   "speaker": "chr_seedMei",
+   "text": "Amara's on the distributional point and that's the one that should worry everyone. If the boundary hugs the rich core, you've bought clean air for the people least exposed and pushed the displaced traffic onto the ones already worst off.\n\nSo pre-register exposure by neighbourhood too, not just the average. Any single headline number here is a rounding error with a press release attached.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "thinking"
+  },
+  {
+   "seq": 13,
+   "kind": "line",
+   "speaker": "chr_seedVictor",
+   "text": "Amara's worry is the successful objection, not the losing one. A boundary drawn around the wealthy core isn't a ban, it's a moat with a green permit.\n\nSo pre-register the exposure map by neighbourhood, and make displacement an endpoint, not an oversight. Forget the average — averages hide exactly the people who can't afford to be hidden.\n\nThen let whoever draws the line stand up and defend it on the record.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 14,
+   "kind": "line",
+   "speaker": "chr_seedAmara",
+   "text": "Then displacement gets its own endpoint, measured where the traffic actually goes. Let whoever drew the moat sit in the room when the numbers come in.\n\nAverages are how you lose people. In my department we learn this the hard way — the mean oxygen saturation looks fine right up until the one patient who isn't.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 15,
+   "kind": "line",
+   "speaker": "chr_seedMei",
+   "text": "Good. Displacement as a first-class endpoint, exposure by neighbourhood, pen-holders named. That's a protocol I'd actually put my name under, which is rarer than it sounds.\n\nThough let me be the wet blanket for ten seconds: displacement is hard to measure well, and the harder it is, the more likely someone quietly drops it from the review. Budget for the measurement before you announce the ban.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "thinking"
+  },
+  {
+   "seq": 16,
+   "kind": "line",
+   "speaker": "chr_seedVictor",
+   "text": "Mei's wet blanket is the most useful thing said tonight. An unmeasured endpoint is a discarded one — fund the displacement study or don't bother announcing it.\n\nWhich is precisely why codification beats goodwill. Write the endpoints into the instrument itself; then the review can't quietly starve.\n\nWe've drafted a decent statute on live radio. Someone should bill someone.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 17,
+   "kind": "line",
+   "speaker": "chr_seedAmara",
+   "text": "Fund the measurement first. That's the line I'll be repeating to council staff tomorrow morning.\n\nIt's late and I've a shift at six. But this is the least cynical half hour I've had in months. Kai gets credit for keeping us on the actual question.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 18,
+   "kind": "line",
+   "speaker": "chr_seedMei",
+   "text": "Then we've done the hard part and left the airtime for the phones, which will now argue about parking. My lab has a standing rule from the last pilot: measurement money is the first line cut and the last thing you miss.\n\nGo get some sleep, Amara. Six o'clock is closer than it looks from here.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "happy"
+  },
+  {
+   "seq": 19,
+   "kind": "line",
+   "speaker": "chr_seedVictor",
+   "text": "Then let the record close on a rare occasion: three people who disagree about ends, agreeing about method. Procedural agreement sounds bloodless — it is the only thing that survives contact with power.\n\nKai, you kept us on the actual question. Now the phones will tell us what \"centre\" means to people who park in it.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 20,
+   "kind": "line",
+   "speaker": "chr_seedAmara",
+   "text": "Get some sleep, all three of us. The phones can argue parking while we're off air.\n\nKai, if the council wants that protocol in writing, I'll do it — on my day off, if that's what it takes. Now I'm going to go lie down before the shift decides otherwise.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "happy"
+  },
+  {
+   "seq": 21,
+   "kind": "line",
+   "speaker": "chr_seedMei",
+   "text": "I'll take the drafting if it means I don't have to do the radio again next month. Small print, review dates, and a budget line for the displacement work — that part I actually enjoy.\n\nKai, send us the recording. If the phones contradict our protocol on tape, that's data too.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "happy"
+  },
+  {
+   "seq": 22,
+   "kind": "line",
+   "speaker": "chr_seedVictor",
+   "text": "Good. A protocol, a drafter, and a tape — that's more infrastructure than most councils manage in a year. I'll take the constitutional annexe; the delegation and the boundary, in writing, with authorities cited.\n\nKai, the recording is a smart instinct. Humour the phones — some caller will define \"centre\" better than any of us, and won't know they've done it.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 23,
+   "kind": "line",
+   "speaker": "chr_seedAmara",
+   "text": "A tape of the phones as evidence. That's a better research idea than half the grant proposals I've read.\n\nI'll send notes on which health endpoints hold up and which are wishful. Mei drafts, Victor cites authorities, and Kai — you keep the whole thing from becoming a slogan. Goodnight, everyone.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "happy"
+  },
+  {
+   "seq": 24,
+   "kind": "line",
+   "speaker": "chr_seedMei",
+   "text": "Goodnight. If someone does transcribe the calls, tag anything where a caller defines a boundary — that's the word cloud that matters.\n\nAnd Kai: whoever chairs next time, make sure the measurement budget gets its own agenda item. It won't, unless you do.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "happy"
+  },
+  {
+   "seq": 25,
+   "kind": "line",
+   "speaker": "chr_seedVictor",
+   "text": "A word cloud of boundaries. Tag \"centre,\" \"downtown,\" \"the bit past the station\" — that's the map nobody drew, and the one a court will eventually see.\n\nKai, put measurement on the agenda, first item, before anyone's preferred answer gets floor time. Order shapes outcomes; that much I've learned in twenty years of arguing.\n\nGoodnight. I'll have the annexe drafted by Monday.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 26,
+   "kind": "line",
+   "speaker": "chr_seedAmara",
+   "text": "Goodnight. Monday it is.\n\nKai, before you close the room — put the measurement budget above the ban motion on the next agenda. If it's first, it survives. If it's last, it's gone by lunch.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "happy"
+  },
+  {
+   "seq": 27,
+   "kind": "line",
+   "speaker": "chr_seedMei",
+   "text": "One more thing before we all go, and then I mean it. When you put the measurement line first, put a number on it. \"Fund the evaluation\" survives exactly as long as nobody has to sign a figure.\n\nRough range, so you're not walking in blind: a decent two-year design with displacement and health endpoints runs somewhere in the low six figures. Anyone quoting you a single round number is selling something.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "happy"
+  },
+  {
+   "seq": 28,
+   "kind": "line",
+   "speaker": "chr_seedVictor",
+   "text": "Mei's number is the tell. \"Fund the evaluation\" is a prayer; \"line item, low six figures, two years\" is a decision someone has to sign and defend.\n\nKai — agenda, first item, with a figure attached, or it dies at lunch as she says.\n\nMonday. I'll bring the annexe and the authorities.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "happy"
+  },
+  {
+   "seq": 29,
+   "kind": "line",
+   "speaker": "chr_seedAmara",
+   "text": "Low six figures, two years, signed by a name. A prayer the chamber can ignore is worse than no protocol at all.\n\nKai — first item, figure attached, signer named. That's the whole thing in one line. I mean it now: goodnight.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "happy"
+  },
+  {
+   "seq": 30,
+   "kind": "line",
+   "speaker": "chr_seedVictor",
+   "text": "Goodnight. We drafted more statute than most committees manage, and nobody's credibility survived intact, which is how you know it was real.\n\nKai — the room's yours. First item, figure, signer. I'll have the annexe Monday.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "happy"
+  },
+  {
+   "seq": 31,
+   "kind": "line",
+   "speaker": "chr_seedMei",
+   "text": "Off the air, then. Kai, the room's yours and I've said my piece — I'll have a draft protocol skeleton to you by tomorrow evening, assumptions flagged so you can argue with them.\n\nGoodnight, all. Someone turn off the mic.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "happy"
+  }
+ ]
+}

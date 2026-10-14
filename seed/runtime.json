@@ -136,6 +136,10 @@
           "surprised",
           "embarrassed"
         ]
+      },
+      "debate": {
+        "hostWelcomeWaitMs": 3000,
+        "hostBannerWaitMs": 1500
       }
     }
   }

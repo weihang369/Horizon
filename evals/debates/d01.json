@@ -1,0 +1,204 @@
+{
+ "schemaVersion": 1,
+ "id": "d01",
+ "mode": "debate",
+ "world": "wld_seedMeridian",
+ "cast": [
+  "chr_evalSofia",
+  "chr_seedAmara",
+  "chr_seedVictor",
+  "chr_seedMei"
+ ],
+ "language": "en",
+ "motion": "This house would ban private cars from the city centre",
+ "format": "two_sided",
+ "roundsPreset": "standard",
+ "phases": [
+  "opening",
+  "rebuttal",
+  "closing"
+ ],
+ "sides": {
+  "prop": [
+   "chr_evalSofia",
+   "chr_seedAmara"
+  ],
+  "opp": [
+   "chr_seedVictor",
+   "chr_seedMei"
+  ]
+ },
+ "lines": [
+  {
+   "seq": 2,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_evalSofia",
+   "name": "Sofia Brandt",
+   "text": "Draw it on a map first: the centre is roughly two square kilometres, ringed by a one-way gyratory that already functions as a de facto wall. Every morning, sixty per cent of vehicles entering the core are through-traffic, not destination traffic — so we are giving the best streets in the city to people who are simply crossing them. My proposal is simple: a twelve-month pilot banning private cars between the river and the old market, with bus lanes kept open, delivery windows before eight, blue-badge access, and full taxi provision. Before we argue about bans, let me ask Victor and Mei for the pilot data they would want to see. If the data says I'm wrong, I'll say so.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 3,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedVictor",
+   "name": "Victor Hale",
+   "text": "Three points. First, define your terms: \"ban\" is not a nudge, it is coercion, and a city centre is not a monolith but a living economy. Second, funicular — no, pardon me — proportional: the motion reaches private cars generally, catching the disabled driver, the tradesman, the parent at midnight, not merely the idling commuter. Third, necessity: oppose the motion only if less restrictive means exist — congestion pricing, permits, timed access zones — and they plainly do. Cui bono, who benefits? Not liberty. Res ipsa loquitur: a blanket ban speaks for itself as the bluntest instrument in the drawer. We oppose, and we invite the proposition to sharpen its scalpel before wielding a hammer.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 4,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_seedAmara",
+   "name": "Amara Okafor",
+   "text": "Kai, thanks for convening us. I'm Dr. Amara Okafor, and I'll be arguing for the ban alongside Sofia. I come at this as an emergency physician, so let me start with what actually brings people into my department: road trauma, asthma attacks, and heat stress. Private cars in a dense centre contribute to all three. But I want to be honest about uncertainty, because that's how I work. A ban alone doesn't fix anything. What matters is what replaces it, buses, trams, safe cycling, accessible routes. Before I go further, two questions I'd genuinely like answered in this debate: who is currently driving into the centre, and what alternatives do they have right now? If the answer is \"no real alternative,\" the ban isn't the intervention, the transport network is. Let's figure out what's actually going on.",
+   "emotion": "neutral"
+  },
+  {
+   "seq": 5,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedMei",
+   "name": "Mei Tanaka-Ruiz",
+   "text": "It depends, and here's on what. Let me first note what we're actually comparing: Sofia's pilot against a counterfactual nobody has run. The strongest causal evidence to hand comes from a related domain, working-time pilots, where selection did the heavy lifting: 92% of organisations kept the policy afterwards, yet participants were not randomly selected, so the authors themselves warn against reading it as a national estimate [3]; and, tellingly, 71% sat in professional services rather than shift-based work [2], with survey response decaying from 74% to 58% [4]. That isn't an argument against cities being brave — it's an argument about what we can honestly claim. On city centres you need cordon counts, retail turnover, bus journey times, and displacement to the ring road, with pre-registered metrics. Otherwise we will ban cars, celebrate a 21% drop in something, and blame residents for noticing the second-order effect.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 7,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_evalSofia",
+   "name": "Sofia Brandt",
+   "text": "Victor asks cui bono, and the answer is the bus passenger stuck behind a single-occupancy car on Bridge Street — that's the whole map. On proportionality, I never proposed a blanket ban: my pilot exempts blue-badge holders, tradespeople with permits, taxis, and delivery windows before eight, which is precisely the scalpel he's asking for. Mei's right that we need pre-registered metrics, and I'll commit to cordon counts, retail turnover, bus journey times and ring-road displacement published quarterly — but that's an argument for running the pilot, not delaying it. Her working-time analogy actually cuts my way: selection bias means we can't infer from other cities, so we need our own local data, and a twelve-month pilot generates exactly that. Victor says less restrictive means exist; congestion pricing is complementary, not a substitute. Give me the cordon and I'll give you the evidence.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 8,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedVictor",
+   "name": "Victor Hale",
+   "text": "Three points. First, I accept the concession gracefully: Sofia has authored a pilot, not the motion we are told to debate — a ban with exemptions and evidence clauses is not \"ban private cars,\" it is access management wearing a ban's nameplate, and the destination is agreed. Second, necessity: she says pricing is complementary, not a substitute — define your terms; complementary means we can achieve the same congestion relief by price and permit, capturing through-traffic she herself identifies, without the blunt prohibition. Third, the burden: the status quo is also a policy, and shift rules show continuous sectors running staged duties under a clear endpoint [3][5]; a phase-in precedent exists precisely so we need not gamble a city centre on one pilot. Res ipsa loquitur: run the pricing, publish the data, and spare us the hammer.",
+   "emotion": "sad"
+  },
+  {
+   "seq": 9,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_seedAmara",
+   "name": "Amara Okafor",
+   "text": "Victor's point about \"necessity\" is the crux, so let me meet it head-on. He says pricing is complementary, not a substitute, then flips it to argue pricing alone achieves the same relief. Both can't be true. Congestion pricing reduces demand at the margin; it does not return street space to buses, pedestrians, and cyclists, and that space is the actual public-health intervention. On the motion as written, the exemptions Sofia listed, blue badges, trades, taxis, deliveries, are access management, yes, and that's what a well-drafted ban looks like in practice, not a concession but the design. Victor wants a phase-in precedent; I'd note the shift-work evidence he cites involves staged duties with protected rest and quarterly reporting, which is what a monitored pilot is, not a gamble. Pre-registered metrics, twelve months, publish or drop it.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 10,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedMei",
+   "name": "Mei Tanaka-Ruiz",
+   "text": "Fair points from both, so let me be precise about where I actually stand. Sofia says the selection-bias problem justifies local data — agreed, but it also means a single volunteer pilot tells us about firms that redesign workflows, not about cities that don't [2][4]. My worry is the comparison group: if Bridge Street gets the ban and the adjacent quarter doesn't, we can measure displacement; if the whole core gets it at once, we cannot. Victor, \"complementary versus substitute\" is a false binary — pricing and prohibition target different margins, so define the counterfactual, not the slogan. Amara, returning space to buses is real, but the health gain depends on how many actually switch versus how many simply avoid the centre [5]. So: randomise the cordon quarters, pre-register metrics, publish or drop it. That I'd support — and it isn't the motion.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 12,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_evalSofia",
+   "name": "Sofia Brandt",
+   "text": "Draw it on a map, and the motion survives the round. Mei wants randomised quarters: I'll take it, provided Bridge Street and the market quarter are both in the treated cordon, because displacement to the ring road is exactly what we'd be publishing. Victor says pricing alone captures through-traffic, but pricing doesn't widen a footway or give a bus its own lane, and the sixty per cent crossing the centre aren't paying their way under a cordon priced for commuters. The motion says ban private cars; every functioning ban in Europe carries exemptions, and mine are on the napkin before the ink dries. Twelve months, pre-registered metrics, published quarterly, drop it if the data says so. Vote for the motion and let the pilot argue the rest.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 13,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedVictor",
+   "name": "Victor Hale",
+   "text": "One point, and it is the whole case. Mei has now told you plainly: what she would support \"isn't the motion.\" Sofia's own napkin carries blue badges, trades, taxis, deliveries — that is access management, which the mover has renamed a ban to keep the sentence dramatic. Define your terms: a motion that requires exemption for everyone with a legitimate reason is not a ban on private cars; it is a permit regime with a headline. The working-time and shift precedents show staging works where the endpoint is fixed and the protections are real [3][5] — so fix the endpoint, run pricing and permits, publish the pre-registered metrics, and drop what fails. Res ipsa loquitur: the text convicts itself. Oppose the motion as written; write a better one.",
+   "emotion": "happy"
+  },
+  {
+   "seq": 14,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_seedAmara",
+   "name": "Amara Okafor",
+   "text": "Mei's right that the health gain depends on switching, not just avoiding, and I won't pretend otherwise. But let me close on what I actually know from the emergency department. Road trauma, asthma, heat exposure, these aren't abstractions to me, they're the presentations I see. The motion says ban private cars from the city centre; in practice that means returning street space to buses, cyclists and walkers, and that is the intervention with the strongest evidence for injury and respiratory harm. Sofia's exemptions aren't a retreat from the motion, they're how every functioning ban is written, and Victor knows it. Mei's randomised quarters plus pre-registered metrics is exactly the honest frame, and I'd take that deal. But notice what's on the table if we vote down the motion: pricing and permits, which by Victor's own logic capture through-traffic, and I'd support those too. Vote for the motion, and if the data says drop it, we drop it. That's not a gamble.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 15,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedMei",
+   "name": "Mei Tanaka-Ruiz",
+   "text": "It depends, and here's on what: on whether the motion as written is the instrument that generates the evidence, or merely the banner under it. Sofia and Amara have spent three rounds describing a randomised cordon pilot with exemptions, quarterly metrics, and a drop clause. That is a good policy. It is not a ban on private cars; Victor is right on the text, and the text is what we vote on. My own discomfort stands: a single volunteer pilot cannot tell us about cities that don't redesign, and the passage admits fewer than half the firms tracked output consistently [2]. So oppose the motion, then write the better one with quarterly published data, randomised quarters, and a sunset. Anyone who gives you one number is selling something.",
+   "emotion": "surprised"
+  }
+ ],
+ "verdict": {
+  "summary": [
+   {
+    "subjectId": "prop",
+    "points": [
+     "Sofia: pilot ban on through-traffic, with bus lanes, deliveries, blue badges, taxis, and data.",
+     "Amara: cars cause trauma, asthma, heat; the ban must return street space to buses and bikes.",
+     "Sofia: exemptions are the scalpel Victor wants; pre-registered metrics argue for running the pilot.",
+     "Amara: pricing cuts demand but does not return street space; monitored pilot is not a gamble.",
+     "Sofia: accepts randomised quarters; pricing does not widen footways or give buses lanes."
+    ]
+   },
+   {
+    "subjectId": "opp",
+    "points": [
+     "Victor: a ban is coercion, not a nudge; pricing, permits and timed zones are less restrictive.",
+     "Mei: pilots from working-time studies suffer selection bias; demand cordon counts and pre-registered metrics.",
+     "Victor: Sofia has authored a pilot with exemptions, not the ban the motion states.",
+     "Mei: selection bias means one volunteer pilot tells us little; randomise the cordon quarters.",
+     "Victor: a ban requiring exemptions for everyone is a permit regime with a headline."
+    ]
+   }
+  ],
+  "keyDisagreement": "Whether the motion as written, a ban carrying exemptions and metrics, is the instrument that generates evidence, or merely a banner over a permit regime that should be opposed.",
+  "decidedBy": "none",
+  "strongerCase": null
+ }
+}

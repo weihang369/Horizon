@@ -1,0 +1,204 @@
+{
+ "schemaVersion": 1,
+ "id": "d02",
+ "mode": "debate",
+ "world": "wld_seedMeridian",
+ "cast": [
+  "chr_evalDaniel",
+  "chr_seedAmara",
+  "chr_seedMei",
+  "chr_evalSofia"
+ ],
+ "language": "en",
+ "motion": "This house would start the secondary-school day at ten",
+ "format": "two_sided",
+ "roundsPreset": "standard",
+ "phases": [
+  "opening",
+  "rebuttal",
+  "closing"
+ ],
+ "sides": {
+  "prop": [
+   "chr_evalDaniel",
+   "chr_seedAmara"
+  ],
+  "opp": [
+   "chr_seedMei",
+   "chr_evalSofia"
+  ]
+ },
+ "lines": [
+  {
+   "seq": 2,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_evalDaniel",
+   "name": "Daniel Osei",
+   "text": "Thank you, Kai. I'll keep this simple, because I've got a school to get back to. I'm Daniel Osei, headteacher of a large comprehensive, and I want to tell you about my Year 9s. Last term I stood at the gate at half seven and watched kids eat cereal out of a bag, walking. Their first lesson began at 8:40 and half of them weren't awake for it. The evidence on adolescent body clocks is real; I've watched it walk through my doors for eleven years. A later start isn't indulgence, it's timing. But I'll say the difficult part plainly: whoever votes for this must also answer my caretaker, my bus drivers, my parents on shifts. Who does the work on Monday morning? If you can't answer that, the motion stays theory. I can answer it. Let's talk.",
+   "emotion": "happy"
+  },
+  {
+   "seq": 3,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedMei",
+   "name": "Mei Tanaka-Ruiz",
+   "text": "It depends, and here's on what: a ten o'clock start shifts costs rather than removing them. Before celebrating the chronobiology, note who absorbs the change: transport networks on peak-hour pricing, parents on rigid shifts, and schools already running staggered rotas. My lab looked at compressed-hours evidence and only 71% of the pilot organisations were in professional services, software, marketing or the non-profit sector, with just nine covering round-the-clock services [1]. That is a weak base for a universal reform. The plausible effects run from modest attendance gains of, say, 2–5% in affluent catchments to neutral or negative in low-income areas where after-school care collapses. The second-order effect: an even later finish pushes extracurriculars, paid work and homework into the evening. Anyone offering one number is selling something.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 4,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_seedAmara",
+   "name": "Amara Okafor",
+   "text": "Thank you, Kai. Let's figure out what's actually going on with adolescent sleep, because the evidence here is unusually clear. During puberty, the circadian clock shifts later by roughly two hours, so a teenager told to sleep at ten simply cannot fall asleep at ten. The result is a chronic sleep debt: the average secondary pupil gets under seven hours against a nine-hour need. That debt shows up as poorer attention, worse mood, and higher rates of anxiety and depression. The American Academy of Pediatrics and the CDC both recommend start times no earlier than 8:30. So the honest question isn't whether ten is convenient for adults, it's whether we're currently asking children to learn while sleep-deprived. I'd argue that's a public-health problem we can fix with a timetable. I'll hand to Daniel.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 5,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_evalSofia",
+   "name": "Sofia Brandt",
+   "text": "Thank you, Kai. Draw it on a map first. A school isn't a bell, it's a catchment: a bus route with seven stops, a rail line running every twenty minutes, a road where drop-off already backs up at half seven. Push the start to ten and you don't change the pupils' biology, you change every journey feeding it. Show me the timetable that still gets a rural Year 9 home before their parents' night shift, show me the depot that runs extra buses at 9:40, and I'll look at the pilot. Until then I'm against the motion as written, not against the science. Every ban is a detour for somebody, and here the detour is a whole city's morning.",
+   "emotion": "neutral"
+  },
+  {
+   "seq": 7,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_evalDaniel",
+   "name": "Daniel Osei",
+   "text": "Kai, let me take Sofia's map seriously first, because she's right that a school is a catchment, not a bell. But she's describing a problem we already solve every single day. My Year 10s already start at different times for exams, for work experience, for the sports fixtures that run until six. We stagger. So here's my answer to \"who does the work on Monday morning\": the same people who do it now, my site team and my local authority, but they'd do it at nine instead of seven. On Mei's point: yes, costs shift. No honest headteacher claims otherwise. But tell me why the shift should land on the sleep of fourteen-year-olds rather than on an adult timetable that's had seventy years to adapt. The equity worry cuts the other way — the kids who ride the earliest buses in my catchment are the poorest, and they're the ones losing the most sleep. That's the cost I won't accept.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 8,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedMei",
+   "name": "Mei Tanaka-Ruiz",
+   "text": "Daniel's equity point is the strongest one in the room, and it's his, not mine to dismiss. But staggering exam days is not staggering a whole city's transport. My worry is that we legislate on a single-number answer: three hours of extra sleep, guaranteed. The evidence doesn't give that. The pilots that actually worked redesigned the surrounding system first, and the authors themselves ask for sector-specific trials with independently measured output before any national standard [2]. A ten o'clock day imposed centrally, without staggered transport, subsidised care and a rebuilt after-school timetable, is a reform that helps the loudest catchments and quietly costs the quietest. The second-order effect: pupils who can't get home until seven are the same pupils Daniel is trying to protect. The science is real. The mandate is premature.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 9,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_seedAmara",
+   "name": "Amara Okafor",
+   "text": "Mei's right that we can't claim a guaranteed three-hour sleep gain, and Sofia's right that the catchment map is real. But neither has answered the equity question Daniel raised. Let me press the sharpest point: the current system imposes a biological cost on the poorest kids. On the burnout parallel, our own review found staff on long consecutive blocks reported fatigue scores 38% higher, with effects strongest in acute medicine where rest days got cancelled [1]. That's the same structural pattern — we ask the people with the least slack to absorb the cost. A ten o'clock start is not a silver bullet, but the burden of proof should sit with those defending the status quo that already fails the most vulnerable. I'd ask Mei and Sofia: what would a phased, equity-first pilot actually look like? Let's figure out what's going on before we vote.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 10,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_evalSofia",
+   "name": "Sofia Brandt",
+   "text": "Thanks, Kai. Amara asks what a phased, equity-first pilot looks like, so here it is: pick four secondary catches with the longest bus journeys and the lowest attendance, and stagger the start by catchment, not by borough. Measure three things at the gate, at half seven and at four: journey time, attendance, and the number still waiting for a lift home. Run it a full school year, publish the data, then vote. Amara wants the burden of proof on the status quo; I agree, but that means funding the trial, not skipping it for a universal ten o'clock. The kids riding the earliest buses are the ones Daniel names, and they're exactly who I'd put in the pilot first. Show me their timetables and I'll draw the map.",
+   "emotion": "happy"
+  },
+  {
+   "seq": 12,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_evalDaniel",
+   "name": "Daniel Osei",
+   "text": "Kai, one last thing, and it's the story I started with. Last term a Year 9 girl fell asleep in my office, mid-sentence, at twenty past eight in the morning. Not ill, not lazy. Just a fourteen-year-old on a bus at half six, three hours short. Sofia's pilot? I'd run it tomorrow, and I'd put my earliest bus route in it first, because those are my poorest kids and they're the ones losing sleep. I'm not asking anyone to legislate a magic number. I'm asking you to stop defending a timetable that already fails the vulnerable. Amara gave you the science; I'm giving you the gate, the cereal bag, the girl asleep in a chair. So when you vote, ask it plainly: who does the work on Monday morning? If the answer is our sleep-deprived fourteen-year-olds, then the motion deserves your vote. Thank you.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 13,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedMei",
+   "name": "Mei Tanaka-Ruiz",
+   "text": "Daniel's closing is the best argument in this debate, and I want to name that, because it isn't mine. But a girl asleep in his office tells us something is broken; it does not tell us that ten o'clock fixes it. The evidence base for start-time reform is thinner than the confidence around this room suggests: participation in the relevant evaluations attritioned from 74% to 58% by final wave [3], and the authors recommend sector-specific, independently measured trials in health, transport and care before any national standard is set [4]. Those are exactly the catchments Sofia named. My honest position: fund the phased pilot, protect Daniel's earliest bus route first, but don't skip the trial to buy the headline. A mandated ten o'clock, without rebuilt transport and care, moves the cost onto the same poorest pupils — and hands us confidence we haven't earned. It depends, and here's on what.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 14,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_seedAmara",
+   "name": "Amara Okafor",
+   "text": "Kai, I'll close on the evidence and the burden of proof. Mei says the base is thin, but on sleep duration the science is consistent: adolescent circadian delay is measurable, and later starts add real sleep. The disagreement isn't biology, it's implementation. Sofia's phased, equity-first pilot is actually the strongest thing said against us — and I'd fund it, because good pilots don't refute the motion, they test it. But note what the status quo already guarantees: the kids on the earliest buses, the poorest in the catchment, absorb the cost daily. That's the same structural unfairness our fatigue review found in clinical staff, where the least-supported absorbed the most harm [1]. So the burden of proof sits with defending that status quo, not with changing it. Vote for the motion, and let the pilot decide the details. Where exactly are these symptoms, Kai? And what's changed lately? Let's figure out what's actually going on.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 15,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_evalSofia",
+   "name": "Sofia Brandt",
+   "text": "Thank you, Kai. Draw it on a map first, and here's the map: four catchments, staggered starts, one school year, published data. Amara calls my pilot the strongest thing said against her motion, and that's precisely my point. Nobody in this room has shown me the bus depot running at 9:40, the after-school club open till seven, or the rural Year 9 home before their mum's shift. Daniel's girl asleep in the chair moves me, but a motion isn't a diagnosis. Vote against the ten o'clock mandate and vote for the trial instead. Measure the gate, the half-seven bus and the walk home. If the data comes back clean, I'll be the first to redraw the timetable. Until then, the honest answer to \"who works on Monday morning\" is: find out first.",
+   "emotion": "angry"
+  }
+ ],
+ "verdict": {
+  "summary": [
+   {
+    "subjectId": "prop",
+    "points": [
+     "Daniel: Year 9s arrive asleep; adolescent body clocks make early starts harmful.",
+     "Amara: Circadian shift means teens can't sleep early; chronic debt harms mental health.",
+     "Daniel: Staggering already happens; shift costs to adults, not poorest kids.",
+     "Amara: Current system burdens poorest; burden of proof on status quo defenders.",
+     "Daniel: Pilot would put earliest bus route first; vote on who works Monday morning."
+    ]
+   },
+   {
+    "subjectId": "opp",
+    "points": [
+     "Mei: Costs shift to transport, parents, schools; evidence base is thin and sector-specific.",
+     "Sofia: A school is a catchment; ten o'clock disrupts bus routes, rural journeys, after-school care.",
+     "Mei: No guaranteed sleep gain; pilots redesigned systems first; mandate premature.",
+     "Sofia: Proposes phased, equity-first pilot in four catchments, measuring journey, attendance, waiting.",
+     "Mei: Fund pilot, protect earliest bus route, but don't skip trial for universal ten o'clock."
+    ]
+   }
+  ],
+  "keyDisagreement": "Whether a universal ten o'clock start should be mandated now or whether a phased, equity-first pilot must come first.",
+  "decidedBy": "none",
+  "strongerCase": null
+ }
+}

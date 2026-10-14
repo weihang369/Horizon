@@ -78,7 +78,7 @@ def embeddings_key(body: Mapping[str, Any]) -> str:
 log = logging.getLogger("horizon.gateway")
 # M9 D35: decisions off the reply's own path, whose refusal pauses nothing (the next reply's preflight takes the pause);
 # M10 (group-watch D8): the follow plan too, an optional slot
-AFTER_TURN = frozenset({"reaction", "face_check", "follow_plan"})
+AFTER_TURN = frozenset({"reaction", "face_check", "follow_plan", "debate_plan"})   # M11: debate D25
 T = TypeVar("T")
 
 
@@ -403,7 +403,8 @@ class Gateway:
 
         def row_of(*a: Any, **kw: Any) -> LedgerRow:
             r = _row(*a, **kw)
-            return replace(r, finish_reason=finish()) if finish is not None else r
+            why = finish() if finish is not None else None
+            return replace(r, finish_reason=why) if why is not None else r
 
         summ = dict(summary or {}, model=model, purpose=ctx.purpose)
         try:
@@ -450,7 +451,9 @@ class Gateway:
     async def chat_complete(self, req: ChatRequest, ctx: CallContext, *, estimate: float | None = None,
                             before_send: BeforeSend | None = None,
                             after_response: Callable[[ChatResult], Awaitable[None]] | None = None,
-                            commit_with: CommitWith | None = None) -> ChatResult:
+                            commit_with: CommitWith | None = None,
+                            finish: Callable[[], str | None] | None = None) -> ChatResult:
+        """`finish()` (M11, a host line): when it returns a reason (`late`, `cancelled`), the row records it."""
         est = self.chat_estimate(req) if estimate is None else estimate
         body: dict[str, Any] | None = {"request": {"messages": req.messages}} if self.capture_bodies else None
         store = self._store_for("chat")
@@ -479,7 +482,7 @@ class Gateway:
             summary["body"] = body
         with TRACER.traced(f"chat:{ctx.purpose}", {"model": req.model, "messages": req.messages}) as out:
             r = await self.paid(ctx, est, send, model=req.model, summary=summary, before_send=before_send,
-                                after_response=after_response, commit_with=commit_with)
+                                after_response=after_response, commit_with=commit_with, finish=finish)
             out["text"] = r.content
         return r
 

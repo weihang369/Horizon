@@ -48,10 +48,19 @@ def candidates(probs: Mapping[str, float], base: str, n: int = 3) -> list[dict[s
     return [{"label": k, "p": _r(v)} for k, v in ranked[:n]]
 
 
+# M11 (debate D20, D33: the user's choice): these questions don't merge neutral + none; `none` keeps, `neutral` is its own
+NO_MERGE = frozenset({"emotion_line"})
+
+
+def merges(qid: str) -> bool:
+    """Whether a face question's answer goes through turn-plan-emotion D12's neutral + none merge."""
+    return qid not in NO_MERGE
+
+
 def decide_face(answer: ChoiceAnswer | None, *, base: str, floor: float, fade: frozenset[str], manual: bool = False,
-                failure: str | None = None) -> PlannedFace:
+                failure: str | None = None, merge: bool = True) -> PlannedFace:
     """The face for one candidate. `answer` None or a fallback answer means Jev failed; `failure` "timeout" marks it
-    late."""
+    late. `merge` False (`merges(qid)`; M11 D33 for `emotion_line`): `none` keeps, and `neutral` is its own answer."""
     if answer is None or answer.source == "fallback":
         face, faded = kept(base, fade)
         outcome: FaceOutcome = "late" if failure == "timeout" else "fallback"
@@ -61,7 +70,7 @@ def decide_face(answer: ChoiceAnswer | None, *, base: str, floor: float, fade: f
     pick = answer.choice
     value = float(answer.confidence if answer.confidence is not None else probs.get(pick, 0.0))
     name = CONFIDENCE
-    if base == "neutral":
+    if merge and base == "neutral":
         top = max(m, key=lambda k: (m[k], k == "neutral"))   # a tie goes to keeping the neutral face
         if top == "neutral" or pick in ("neutral", NONE):
             pick, value, name = "neutral", m.get("neutral", 0.0), MERGED
