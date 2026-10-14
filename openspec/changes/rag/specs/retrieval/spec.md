@@ -42,12 +42,12 @@ When passages or memories are retrieved, the naive reply engine SHALL add them a
 An `agent` search SHALL rank the speaker's passages by keyword (top 20) and by meaning (top 20 per query text with a vector), fuse the meaning lists first and then keyword and meaning by reciprocal rank, normalise the fused scores to 0–1 within the pool, and pick 8 candidates from the top 20 so that near-copies don't fill the slots. Recall (M13) SHALL use the same pipeline with its own numbers.
 
 #### Scenario: Near-copies spread out
-- **WHEN** a speaker's top 3 fused passages are near-identical copies
-- **THEN** at most one of them is among the 8 candidates unless fewer than 8 others qualify
+- **WHEN** a speaker's top 3 fused passages are near-identical copies, and at least 7 other passages of similar relevance and different content are in the pool
+- **THEN** at most one of the copies is among the 8 candidates
 
 #### Scenario: Keyword-only pieces still diversify
-- **WHEN** a search runs with no vectors at all
-- **THEN** it still returns at most 8 candidates, with near-copies spread out by their words
+- **WHEN** a search runs with no vectors at all and its top passages are word-for-word copies
+- **THEN** it still returns at most 8 candidates, and a different passage comes before the second copy
 
 ### Requirement: Agent keyword terms
 An `agent` search's keyword terms SHALL drop common English stop words, be ordered rarest first within the speaker's searchable passages, and number at most 16, or 24 when the query was rewritten (the rewrite's terms first, then the message's). User text SHALL still be unable to change how the search works.

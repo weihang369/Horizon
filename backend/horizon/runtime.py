@@ -332,7 +332,8 @@ class Runtime:
                       system1_row=lambda qid, answer: fixture_row(self.cfg.seed_dir, qid, answer),
                       switch=lambda name: self.runtime_cfg.runtime.switch(name),
                       windows=lambda: self.runtime_cfg.runtime.window_tokens.as_dict(),
-                      emotion_fade=lambda: self.runtime_cfg.runtime.emotion_fade)
+                      emotion_fade=lambda: self.runtime_cfg.runtime.emotion_fade, spawn=self.spawn,
+                      retrieval=lambda: self.runtime_cfg.runtime.retrieval, deep_io=lambda: self.deep_io)
         self._ai = AiPorts(deps, self.profile)
         chat = str(self.settings_doc()["models"].get("chat") or "")
         if chat and chat != self.prices.chat.model:   # docs/ai/03 C9: one chat-model source; tell the developer
@@ -392,6 +393,13 @@ class Runtime:
             await self._gateway.core.aclose()
         self.book.clear()
         self._gateway = self._corrector = self._keys = self._decider = None
+
+    @property
+    def deep_io(self) -> Any:
+        """M12 (rag D15): the deep work's reads (the speaker's scoped index, the space, the embedder)."""
+        from horizon.sessions.deep_io import RuntimeDeepIO
+
+        return RuntimeDeepIO(self)
 
     def spawn(self, name: str, coro: Coroutine[Any, Any, T]) -> asyncio.Task[T]:
         """The only way `sessions/` and `ai/` start background work: the task holds an activity token while it runs,

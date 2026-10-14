@@ -490,6 +490,9 @@ embedding every message as it is sent (most never leave the window; paid for and
 (offered: a memory below the cut would stay invisible until a confirmation lifted it); a 2,000-token list instead
 (pushes the problem back, with more over-mentioning).
 
+*M12 (OpenSpec `rag` D12) built the shared pipeline this recall runs on: `retrieval.search(index, bundle,
+SearchParams(pool=10, candidates=6, …))` takes recall's own numbers, so M13 passes them rather than changing code.*
+
 ### M10. The greeting: "last time…"
 
 **Decision:**

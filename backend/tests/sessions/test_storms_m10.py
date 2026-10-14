@@ -268,7 +268,7 @@ async def _settle(api: Api, sid: str, releases: list[Any]) -> list[str]:
 async def test_a_storm_on_the_plan_made_ahead_while_parked(api: Api) -> None:
     sid, actor, releases = await _watch_with_a_parked_plan_ahead(api)
     assert actor.mode.plan_ahead is not None
-    _, task = actor.mode.plan_ahead
+    _, task, _deep = actor.mode.plan_ahead
     await storm(task)
     await assert_writer_free(api.rt.db)
     finish = await _settle(api, sid, releases)

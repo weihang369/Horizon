@@ -25,7 +25,17 @@ from horizon.ai.agent.emotion import decide_face, emotion_row
 from horizon.ai.agent.persona import first_name
 from horizon.ai.agent.plan_graph import Branch, build_plan_graph, run_plan
 from horizon.ai.agent.plan_state import Candidate, PlanState, PlanStateInput, build_turn_plan_state
-from horizon.ai.contexts import CastPlan, CastRequest, DebateRequest, FollowRequest, PlanRequest, TurnPlan
+from horizon.ai.agent.query import earlier_lines
+from horizon.ai.contexts import (
+    CastPlan,
+    CastRequest,
+    DebateRequest,
+    DeepRequest,
+    FollowRequest,
+    PlanRequest,
+    SessionContext,
+    TurnPlan,
+)
 from horizon.ai.decider import Answers, ChoiceAnswer, DecisionResult
 from horizon.ai.questions import bank
 
@@ -77,11 +87,25 @@ def plan_state_input(req: PlanRequest) -> PlanStateInput:
                           documents=docs)
 
 
+def answered_message(session: SessionContext) -> tuple[str | None, list[str], str]:
+    """The user message a 1:1 or group reply answers: (its id, the two lines before it, the user message before
+    that), read from the window (M12, rag D10)."""
+    you = str((session.world.you or {}).get("displayName") or "") or "the user"
+    users = [m for m in session.recent if m.author_type == "user" and m.content]
+    if not users:
+        return None, [], ""
+    last = users[-1]
+    return last.id, earlier_lines(session.recent, last.id, you), users[-2].content if len(users) > 1 else ""
+
+
 class JevTurnPlanner:
     decides_retrieval = True   # M10 (group-watch D18): a planned turn's retrieval follows the plan's branch
 
     def __init__(self, deps: Any) -> None:
         self.deps = deps
+        from horizon.ai.agent.deep import DeepSteps, build_deep_graph
+
+        self.deep_graph = build_deep_graph(DeepSteps(deps))   # M12 (rag D15): one graph for every mode
         self.graph = build_plan_graph(self)
         from horizon.ai.agent.cast_plan import CastSteps
 
@@ -132,6 +156,18 @@ class JevTurnPlanner:
             log.exception("the debate plan could not start in %s", req.session.session_id)
             return None
 
+    def start_deep(self, req: DeepRequest, *, spawn: Any = None) -> Any:
+        """M12 (rag D15): one speaker's deep work, started as soon as the speaker is known and their gate said yes
+        (group, watch, debate). Returns a `DeepCall` the turn awaits; a bug inside gives a quick turn. `spawn`: the
+        runtime's owner for the task (the actor's background, so `clear()` cancels it)."""
+        from horizon.ai.agent.deep import DeepCall
+
+        try:
+            return DeepCall(self.deps, self.deep_graph, req, spawn)
+        except Exception:
+            log.exception("the deep work could not start for %s", req.speaker.id)
+            return None
+
     # ── the port ──
     async def plan(self, req: PlanRequest) -> TurnPlan | None:
         try:
@@ -145,7 +181,8 @@ class JevTurnPlanner:
             entry = bank().get(qid)
             row = emotion_row(face, qid=qid, version=entry.version, label=entry.label, about=req.speaker_id)
             return TurnPlan(seed=self.seed(req), kind=req.kind, branch="quick", emotion=face, rows=[row])
-        out: TurnPlan = plan.model_copy(update={"graph_path": path, "branch": self.route(req, plan)})
+        branch = plan.branch if plan.branch is not None else self.route(req, plan)
+        out: TurnPlan = plan.model_copy(update={"graph_path": [*path, *plan.graph_path], "branch": branch})
         return out
 
     # ── the graph's steps (plan_graph.PlanSteps) ──
@@ -198,6 +235,28 @@ class JevTurnPlanner:
     def route(self, req: PlanRequest, plan: TurnPlan) -> Branch:
         """M12 (rag D8): deep when the speaker's own gate is at or above `t_gate`."""
         return "deep" if gates.deep(plan.gate) else "quick"
+
+    async def deep(self, req: PlanRequest, plan: TurnPlan) -> TurnPlan:
+        """M12 (rag D15): the plan graph's deep node in 1:1, so the plan returns with its passages. A bug inside is a
+        quick turn with a `fallback` row and call (the port never raises)."""
+        from horizon.ai.agent.deep import fallback_result, run_safely
+
+        mid, earlier, previous = answered_message(req.session)
+        view = req.cast[0] if req.cast else None
+        if view is None:
+            return plan.model_copy(update={"branch": "quick"})
+        knobs = self.deps.retrieval().agent
+        dreq = DeepRequest(session=req.session, speaker=view, kind=req.kind, message=req.latest, message_id=mid,
+                           earlier=earlier, previous_user=previous, gate=plan.gate, abstain_ok=plan.abstain_ok,
+                           nouls=plan.nouls, stored_rewrite=req.stored_rewrite, k=knobs.k_for("one_on_one"),
+                           reply_message_id=req.message_id, started_at=req.started_at)
+        res = await run_safely(self.deep_graph, dreq, self.deps)
+        if res is None:
+            failed = fallback_result(dreq, self.deps)
+            return plan.model_copy(update={"branch": "quick", "rows": [*plan.rows, *failed.rows],
+                                           "calls": [*plan.calls, *failed.calls]})
+        out: TurnPlan = plan.with_deep(res).model_copy(update={"branch": "deep"})
+        return out
 
     @staticmethod
     def seed(req: PlanRequest) -> str:

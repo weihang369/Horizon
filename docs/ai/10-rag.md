@@ -448,6 +448,14 @@ the data directory (`data/server.lock`). The comparison test and `dupCosine` are
   Insight;
 - **temperature 0.7** (the first version): a query should be the same each time it is asked.
 
+*Built in M12 (OpenSpec `rag` D10, D11, D19): `ai/agent/query.py` (the committed stop list, terms ordered rarest
+first by one scoped FTS5 count each, at most 40 looked at; 16 terms, or 24 rewritten; the bundle per case) and
+`ai/agent/rewrite.py` (the reply's prefix byte for byte plus the instruction; one line, ≤ 30 words, ≥ 60 % Latin;
+`rewriteMs`; stored per user message and speaker in `message_ai_meta`, reused on regenerate). The embedding starts in
+the deep graph's gather step, only for a speaker with an `indexed` source, and is shared across speakers by the
+embedder's in-flight de-duplication. In 1:1 a new message queues behind the reply rather than superseding it, so Stop
+is 1:1's cut; in group a newer message cancels the deep work (m12.md).*
+
 ### K5. The search: one pipeline for documents and recall
 
 **Decision:** for documents:
@@ -482,6 +490,12 @@ the data directory (`data/server.lock`). The comparison test and `dupCosine` are
 - **fusing all lists at once:** a rewritten turn would weigh dense twice as much as BM25;
 - **relative score fusion:** it needs tuned weights (6.10).
 
+*Built in M12 (`rag` D12): `retrieval.search(index, bundle, params)`, the parameters passed in (recall's own in
+M13), two-step RRF, min–max normalisation (one item or all equal: 1.0), MMR over the stored vectors (cosine) or
+lower-cased words (Jaccard) with ties to the fused order. `ScopedIndex.vectors` reads the vectors of the index's own
+space, so a switch mid-turn never mixes spaces. Measured on a 3,000-piece worst case (m12.md): keyword searches p99
+46 ms, dense ones p99 69 ms; sqlite-vec's flat scans and stored-vector reads are the cost.*
+
 ### K6. Jev call 2 for documents: a 3-level score per piece, then a set check when needed
 
 **Decision:**
@@ -513,6 +527,11 @@ the data directory (`data/server.lock`). The comparison test and `dupCosine` are
 - **"at least half back" is enough** (the first version): it could say "not in my notes" while the top pieces were
   still out;
 - **counting two "partly" pieces as found without a check:** they may each cover the same half.
+
+*Built in M12 (`rag` D13): one `deep_check` request per candidate, all started at once and each read by
+`deepCheckMs` from when it was sent (read one after another against that instant, which is the same wait); a 429 falls
+back at once; the set check when no passage is found and two or more are usable. Every request is cancelled with the
+turn (recorded `cancelled`).*
 
 ### K7. The keep rule: found, partly, not found, and k per mode
 
@@ -551,6 +570,11 @@ the data directory (`data/server.lock`). The comparison test and `dupCosine` are
 - **a fixed top k with no threshold:** course notes 6.14's trap, weak matches presented as answers;
 - **one threshold and no partly;**
 - **tuning on dev and checking count targets on a 33-item test split:** the counts can't be shown at that size.
+
+*Built in M12 (`rag` D14, D15): `ai/agent/keep.py` and the deep graph `ai/agent/deep.py` (gather → search → check →
+keep), frozen in and out (`DeepRequest`, `DeepResult`). One addition to K7's table: a search that matches nothing in
+the speaker's documents is "not found" (Jev call 2 never ran, and nothing failed). In 1:1 the graph runs inside the
+plan; elsewhere it starts as soon as the speaker and their gate are known (`start_deep`).*
 
 ### K8. The prompt block and deterministic citations
 
@@ -597,6 +621,9 @@ the data directory (`data/server.lock`). The comparison test and `dupCosine` are
 - **trusting markers the model invents:** 6.14;
 - **the quote as the piece's first 400 characters** (today's `naive`): the cited fact is often past it.
 
+*Built in M12 (`rag` D16, D17): `ai/agent/docs_block.py` (the block with S6's tags, the 1,400-token guard, the
+deterministic quote window, `score` absent on a fallback) and the labels `+docs-1` / `+nodocs-1`.*
+
 ### K9. Not found and partly: say so, then their own view (the user's decision)
 
 **Decision:** two lines for the dynamic tail, phrased as instructions; the character answers in their own voice and
@@ -622,6 +649,9 @@ the conversation's language.
 **Rejected (the user's choice):**
 - **a strict refusal;**
 - **a silent general answer.**
+
+*Built in M12 (`rag` D16): the partly line after the passages and the not-found block at the quick length, both
+only where abstaining is allowed (D8).*
 
 ### K10. Citation faithfulness: measured in the evaluation, not checked live (the user's decision)
 
@@ -700,6 +730,9 @@ only re-embed, keeping their IDs; startup never re-chunks (`tests/knowledge/test
 - **Why `naive` changes at all:** a `pack@2` section runs to about 6,000 characters. Today's "first 1,200 characters"
   would often miss the very piece it retrieved, and the agent-vs-naive comparison would partly measure that artefact.
 - **The rest of `naive` stays M5's,** so the comparison measures what K2 and K4–K9 add.
+
+*Built in M12 (`rag` D18): `naive` reads each hit as the 1,200-character slice of its section centred on the piece
+(`naive-7`, `naive-8` in debate); `scripted` is unchanged; the Knowledge tab's preview ribbon is gone.*
 
 ### K14. Evaluation additions
 

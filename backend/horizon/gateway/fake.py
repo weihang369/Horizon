@@ -239,8 +239,8 @@ class FakeOpenRouter:
         if park is not None:
             return self._held(park, request)
         epark = self._embed_parks.pop(self.counts["embeddings"], None) if route == ("POST", "/v1/embeddings") else None
-        if epark is not None:
-            return self._held(epark, request, flag=self.embed_parked)
+        if epark is not None:   # M12: idle, so virtual time can pass a query embedding's 400 ms wait while held
+            return self._held(epark, request, flag=self.embed_parked, idle=True)
         dpark = self._decision_parks.pop(self.counts["decisions"], None) if route == ("POST", "/alpha/decisions") else None
         if dpark is None and route == ("POST", "/alpha/decisions") and self._question_parks:
             keys = list(json.loads(request.content or b"{}").get("questions") or {})

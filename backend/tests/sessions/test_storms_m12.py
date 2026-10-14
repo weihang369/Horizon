@@ -102,3 +102,167 @@ async def test_a_held_chat_response_settles_on_release(api: Api) -> None:
     await api.drive(100)
     await task
     assert [r for r in await ledger(api) if r["purpose"] == "query_rewrite"]
+
+
+# ── 5.6 and 7.8: the deep path's cancel paths (rag D2) ──
+async def _deep_one_on_one(api: Api) -> str:
+    from tests.sessions.test_deep_m12 import nouls
+    from tests.sessions.test_gates_m12 import AMARA, agent, gate, send
+
+    sid = await agent(api, "one_on_one", [AMARA])
+    gate(api, AMARA, 0.8)
+    nouls(api, standalone=0.06)
+    await send(api, sid, "How much worse is fatigue after long shift blocks?")
+    return sid
+
+
+async def _until(api: Api, flag: asyncio.Event, limit_ms: float = 15000) -> None:
+    t = 0.0
+    while not flag.is_set() and t < limit_ms:
+        await api.drive(50)
+        t += 50
+    assert flag.is_set()
+
+
+async def _cancelled(api: Api, purpose: str) -> list[dict[str, Any]]:
+    from tests.sessions.kit import ledger
+
+    return [r for r in await ledger(api) if r["purpose"] == purpose and r["finish_reason"] == "cancelled"]
+
+
+async def test_the_rewrite_cut_by_stop(api: Api) -> None:
+    from tests.helpers.storm import after_storm
+    from tests.sessions.kit import chars, command, messages
+
+    sid = await _deep_one_on_one(api)
+    release = park_next_chat(api.rt, "query_rewrite")
+    n = len(chars(await messages(api, sid)))
+    await command(api, sid, "send", {"text": "and nights?"})
+    assert api.rt.fake is not None
+    await _until(api, api.rt.fake.chat_parked)
+    await command(api, sid, "stop")
+    release.set()
+    await api.drive(20000)
+    await after_storm(api, sid)
+    assert len(chars(await messages(api, sid))) == n            # no reply was written
+
+
+async def test_the_rewrite_cut_by_a_new_group_message(api: Api) -> None:
+    """In group a newer user message supersedes the first reply's deep work (G5); in 1:1 a message queues behind the
+    reply instead, so Stop is 1:1's cut."""
+    from tests.helpers.storm import after_storm
+    from tests.sessions.kit import chars, command, messages
+    from tests.sessions.test_deep_m12 import nouls
+    from tests.sessions.test_gates_m12 import AMARA, MEI, VICTOR, agent, gate
+
+    sid = await agent(api, "group", [AMARA, MEI, VICTOR])
+    assert api.rt.fake is not None
+    api.rt.fake.answer_question("who_first", {"type": "choice", "choice": AMARA, "confidence": 0.9,
+                                              "probabilities": {AMARA: 0.9}})
+    gate(api, AMARA, 0.8)
+    nouls(api, standalone=0.06)
+    release = park_next_chat(api.rt, "query_rewrite")
+    await command(api, sid, "send", {"text": "and nights?"})
+    await _until(api, api.rt.fake.chat_parked)
+    await command(api, sid, "send", {"text": "Actually, never mind."})
+    release.set()
+    await api.drive(25000)
+    await after_storm(api, sid)
+    first = [m for m in chars(await messages(api, sid))
+             if m["seq"] < next(u["seq"] for u in await messages(api, sid)
+                                if u["author"]["type"] == "user" and "never mind" in u["content"])]
+    assert not first                                            # the superseded reply was never written
+
+
+async def test_the_embedding_wait_cut_by_stop(api: Api) -> None:
+    from tests.helpers.storm import after_storm
+    from tests.sessions.kit import chars, command, messages
+    from tests.sessions.test_deep_m12 import _indexed_source
+    from tests.sessions.test_gates_m12 import HANA, SUNNY, agent, gate
+
+    await api.set_key()
+    await _indexed_source(api, HANA)
+    sid = await agent(api, "one_on_one", [HANA], world=SUNNY)
+    gate(api, HANA, 0.8)
+    fake = api.rt.fake
+    assert fake is not None
+    release = fake.park_embedding(fake.counts["embeddings"] + 1)
+    n = len(chars(await messages(api, sid)))
+    await command(api, sid, "send", {"text": "How long should the rice soak?"})
+    await _until(api, fake.embed_parked)
+    await command(api, sid, "stop")
+    release.set()
+    await api.drive(5000)
+    await after_storm(api, sid)
+    assert len(chars(await messages(api, sid))) == n
+
+
+async def test_the_rewrite_store_cut_mid_transaction(api: Api) -> None:
+    from horizon.services.ai_meta import store_rewrite
+    from tests.helpers.storm import storm_during_write
+    from tests.sessions.kit import messages
+
+    sid = await _deep_one_on_one(api)
+    user = next(m for m in await messages(api, sid) if m["author"]["type"] == "user")
+
+    async def write() -> None:
+        await store_rewrite(api.rt, user["id"], "chr_seedAmara", "night shift fatigue")
+
+    cut = await storm_during_write(api, sid, write, storms=15)
+    assert 0 <= cut <= 15
+
+
+@pytest.mark.parametrize("mode", ["one_on_one", "group", "watch", "debate"])
+async def test_the_checks_cut_by_stop_in_each_mode(api: Api, mode: str) -> None:
+    """The deep_check requests (and the set check) held, then Stop: no reply waits on them, every held request is
+    recorded `cancelled`, and the writer is free (D2)."""
+    from tests.helpers.storm import after_storm
+    from tests.sessions.kit import command
+    from tests.sessions.test_gates_m12 import AMARA, MEI, VICTOR, agent, gate
+
+    fake = api.rt.fake
+    for cid in (AMARA, MEI, VICTOR):
+        gate(api, cid, 0.9)
+    if mode == "watch":
+        from tests.sessions.test_watch_plan import agent_watch
+
+        sid = await agent_watch(api, maxTurns=10, paceMs=1500)
+        assert api.rt.fake is not None
+        api.rt.fake.set_canned("reply", [{"content": "The four-day week pilots and long shift blocks, again."}])
+    elif mode == "debate":
+        from tests.sessions.test_debate_plan import debate
+
+        sid = await debate(api, motion="Long shift blocks harm patient safety")
+    else:
+        sid = await agent(api, mode, [AMARA] if mode == "one_on_one" else [AMARA, MEI, VICTOR])
+    assert api.rt.fake is not None
+    held = api.rt.fake.park_questions("passage:", 8)
+    if mode in ("one_on_one", "group"):
+        await command(api, sid, "send", {"text": "What did the four-day week pilots and the fatigue review find?"})
+    await _until(api, api.rt.fake.decision_parked, 60000)
+    await command(api, sid, "stop")
+    for ev in held:
+        ev.set()
+    await api.drive(3000)
+    await after_storm(api, sid)
+    assert await _cancelled(api, "deep_check")
+    assert fake is not None
+
+
+async def test_the_checks_cut_by_a_superseding_message(api: Api) -> None:
+    from tests.helpers.storm import after_storm
+    from tests.sessions.kit import command
+    from tests.sessions.test_gates_m12 import AMARA, MEI, VICTOR, agent, gate
+
+    sid = await agent(api, "group", [AMARA, MEI, VICTOR])
+    for cid in (AMARA, MEI, VICTOR):
+        gate(api, cid, 0.9)
+    assert api.rt.fake is not None
+    held = api.rt.fake.park_questions("passage:", 8)
+    await command(api, sid, "send", {"text": "What did the four-day week pilots and the fatigue review find?"})
+    await _until(api, api.rt.fake.decision_parked)
+    await command(api, sid, "send", {"text": "Never mind that."})
+    for ev in held:
+        ev.set()
+    await api.drive(25000)
+    await after_storm(api, sid)

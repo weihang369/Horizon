@@ -72,7 +72,7 @@
   - a property test checks the offsets invariant on every fixture (text minus a repeated header equals the
     collapsed source slice);
   - `grep CHUNKER_VERSION` finds one definition.
-- [ ] 1.3 Make the mock's `paragraphs()` (`mock/engines/knowledge.ts`) `pack@2`'s twin on Markdown and text, reading
+- [x] 1.3 Make the mock's `paragraphs()` (`mock/engines/knowledge.ts`) `pack@2`'s twin on Markdown and text, reading
   the same fixtures. Update `clientContract.portable.ts`'s chunking test (one Soups piece, `§ Soups`).
   Verify: `npm test` and `npm run test:http` pass with the same expectation on both clients.
 - [x] 1.4 Reindex of a `para@1` source re-chunks from the `chunk` stage. Seed sources only re-embed, keeping their
@@ -180,19 +180,19 @@
 
 ## 5. The query (design D10, D11, D19; K4; D-100)
 
-- [ ] 5.1 Extend `QueryBundle` to D10's fields, JSON round-trip, and build it per mode (1:1 and group message, the
+- [x] 5.1 Extend `QueryBundle` to D10's fields, JSON round-trip, and build it per mode (1:1 and group message, the
   rewrite rows, debate's motion + argument, watch's two texts, Ask's question + motion).
   Verify: a test per mode checks `dense_texts`, `earlier`, `source` and `display` (≤ 120 characters), and that the
   bundle round-trips.
-- [ ] 5.2 Implement `agent_terms`: the committed stop list, rarity from scoped FTS5 counts (≤ 40 terms looked at),
+- [x] 5.2 Implement `agent_terms`: the committed stop list, rarity from scoped FTS5 counts (≤ 40 terms looked at),
   ≤ 16 terms, or ≤ 24 rewritten with the rewrite's terms first, still as quoted OR terms.
   Verify:
   - unit tests for stop words, rarity order on a fixture index, the 24-term case;
   - the existing "message full of syntax" scenario.
-- [ ] 5.3 Migration `0004_message_ai_meta` (D19), with upgrade and downgrade. Fork copies its rows in
+- [x] 5.3 Migration `0004_message_ai_meta` (D19), with upgrade and downgrade. Fork copies its rows in
   `sessions/lifecycle.py`, deleting a message cascades, and a factory reset removes it.
   Verify: migration up/down test; fork and cascade tests; `assert_reduces` unaffected.
-- [ ] 5.4 Implement the rewrite (`ai/agent/rewrite.py`):
+- [x] 5.4 Implement the rewrite (`ai/agent/rewrite.py`):
   - the speaker's `agent` reply prefix byte for byte, plus K4's instruction;
   - `query_rewrite` with `runtime.llm.calls.query_rewrite`;
   - K4's output checks;
@@ -207,24 +207,24 @@
   - a held rewrite past 1,500 ms falls back to the message + earlier lines;
   - regenerate reuses the stored rewrite with no chat call;
   - a group's second speaker gets its own rewrite.
-- [ ] 5.5 Implement D11's embedding at the gate: started in parallel with BM25 and the rewrite, skipped without
+- [x] 5.5 Implement D11's embedding at the gate: started in parallel with BM25 and the rewrite, skipped without
   vectors, waited ≤ 400 ms, and the rewrite's embedding ≤ 400 ms. `start_query` stays off for `agent`.
   Verify:
   - one `query_embed` row for a group message both repliers searched;
   - none when the gate said no;
   - none for a keyword-only speaker;
   - a late embedding → keywords only, still recorded.
-- [ ] 5.6 Storms (D2): the rewrite cut by Stop, a new message and `clear()`; the embedding wait cut by Stop; the
+- [x] 5.6 Storms (D2): the rewrite cut by Stop, a new message and `clear()`; the embedding wait cut by Stop; the
   `message_ai_meta` write cut mid-transaction.
   Verify: each storm's asserts pass.
 
 ## 6. The shared search pipeline (design D12; K5)
 
-- [ ] 6.1 Add `ScopedIndex.vectors(rids)` reading the active space's `knowledge_vec` rows in the speaker's partition.
+- [x] 6.1 Add `ScopedIndex.vectors(rids)` reading the active space's `knowledge_vec` rows in the speaker's partition.
   Verify:
   - it returns stored vectors for indexed pieces and nothing for keyword-only ones;
   - another character's rid returns nothing.
-- [ ] 6.2 Implement `search(index, bundle, params)`:
+- [x] 6.2 Implement `search(index, bundle, params)`:
   - BM25 + dense lists;
   - two-step RRF;
   - min–max normalisation (single-item and all-equal pools give 1.0);
@@ -238,14 +238,14 @@
 - [ ] 6.3 Time the pipeline on a fully loaded test database (every seed and corpus document, 3,000 pieces for one
   character).
   Verify: p99 of `search` under 50 ms in the test, recorded in m12.md.
-- [ ] 6.4 Storm (D2): a reindex and a space-build flip landing while a turn searches.
+- [x] 6.4 Storm (D2): a reindex and a space-build flip landing while a turn searches.
   Verify: the turn's candidates all come from its starting space, and the next turn uses the new one.
-- [ ] 6.5 Note K5 as built in doc 10, and doc 09 M9's "same pipeline" seam.
+- [x] 6.5 Note K5 as built in doc 10, and doc 09 M9's "same pipeline" seam.
   Verify: the docs link check passes.
 
 ## 7. Jev call 2, the keep rule and the deep graph (design D13–D15)
 
-- [ ] 7.1 Implement Jev call 2 (`ai/agent/deep.py`'s check step):
+- [x] 7.1 Implement Jev call 2 (`ai/agent/deep.py`'s check step):
   - one `deep_check` request per candidate, started together, each read by `deepCheckMs`;
   - a 429 falls back at once;
   - the set check when K6 says;
@@ -256,14 +256,14 @@
   - two late with none found → fallback;
   - one late with one found → found;
   - the set check yes and no.
-- [ ] 7.2 Implement the keep rule (`ai/agent/keep.py`): usable, found, partly, not found, fallback; k per mode; the
+- [x] 7.2 Implement the keep rule (`ai/agent/keep.py`): usable, found, partly, not found, fallback; k per mode; the
   ordering; and the abstain rule (D8).
   Verify: a table test over outcomes × modes, including "debate never abstains" and "not found needs every answer".
-- [ ] 7.3 Build the deep graph (gather → search → check → keep), with `DeepRequest` and `DeepResult` frozen and JSON
+- [x] 7.3 Build the deep graph (gather → search → check → keep), with `DeepRequest` and `DeepResult` frozen and JSON
   round-trip. A bug inside gives a quick turn with a logged error and a `fallback` row.
   Verify: graph path tests; a forced exception test; a settle test on the virtual clock (50 deep turns run twice give
   identical results).
-- [ ] 7.4 Wire 1:1. The plan graph's `route ──deep──▶ deep` edge returns the plan with its passages. `TurnPlan` gains:
+- [x] 7.4 Wire 1:1. The plan graph's `route ──deep──▶ deep` edge returns the plan with its passages. `TurnPlan` gains:
   - `knowledge`;
   - `retrieved`;
   - `query`;
@@ -276,18 +276,18 @@
   - a deep 1:1 turn's request holds the passages;
   - not found gets the quick cap;
   - replay from JSON makes no decision, embedding or chat request before the reply.
-- [ ] 7.5 Add `start_deep` to the planner port. `naive` and `scripted` return None. Wire group's first reply and
+- [x] 7.5 Add `start_deep` to the planner port. `naive` and `scripted` return None. Wire group's first reply and
   Everyone (from the cast plan) and group's second reply (from the follow plan).
   Verify:
   - group first reply's `deep_check` requests are sent before its `turn.next`;
   - the second reply's deep work starts when the follow plan lands;
   - a new message cancels both, with every request `cancelled`.
-- [ ] 7.6 Wire watch. The plan made ahead starts the speaker's deep work and stores it with its fingerprint; a stale
+- [x] 7.6 Wire watch. The plan made ahead starts the speaker's deep work and stores it with its fingerprint; a stale
   plan cancels both.
   Verify:
   - a pause longer than the deep work → the reply request goes out with no wait after `turn.next`;
   - a director's note mid-work → both discarded, with requests `cancelled`.
-- [ ] 7.7 Wire debate:
+- [x] 7.7 Wire debate:
   - a rebuttal, closing or panel turn starts its deep work when the member is fixed and its gate is in;
   - an opening's starts with its prefetch;
   - an Ask's starts when its cast plan lands;
@@ -297,42 +297,42 @@
   - the member deadline is unchanged;
   - Skip during a prefetched opening's checks cancels them;
   - a debate turn never rewrites or abstains.
-- [ ] 7.8 Storms (D2): the 8 checks and the set check cut by Stop and by a superseding message, in each wired mode.
+- [x] 7.8 Storms (D2): the 8 checks and the set check cut by Stop and by a superseding message, in each wired mode.
   Verify: each storm's asserts pass.
-- [ ] 7.9 Note K6, K7 and the deep graph in doc 10, doc 01 A6/A7 and the plan graph's docstring.
+- [x] 7.9 Note K6, K7 and the deep graph in doc 10, doc 01 A6/A7 and the plan graph's docstring.
   Verify: the docs link check passes.
 
 ## 8. The reply (design D16–D18, D20)
 
-- [ ] 8.1 Build the `agent` documents block (K8 + S6 tags), the tag stripping, the 1,400-token guard, the partly line
+- [x] 8.1 Build the `agent` documents block (K8 + S6 tags), the tag stripping, the 1,400-token guard, the partly line
   and the not-found block, and place them first in the tail (P2).
   Verify:
   - the block's exact text for two passages;
   - a planted `< /PASSAGE >` is removed;
   - partly and not-found texts;
   - a deep turn and a quick turn send byte-identical system message 1, summary and history.
-- [ ] 8.2 Add the prompt labels `+docs-1` and `+nodocs-1` (D16) to `prompt_version_for`.
+- [x] 8.2 Add the prompt labels `+docs-1` and `+nodocs-1` (D16) to `prompt_version_for`.
   Verify: a label test per combination (1:1, cue, steer, debate, with and without the mood line).
-- [ ] 8.3 Citations: the numbering, `kept_citations`, the deterministic quote window (D17), `score` = `unit` or
+- [x] 8.3 Citations: the numbering, `kept_citations`, the deterministic quote window (D17), `score` = `unit` or
   absent on a fallback.
   Verify:
   - unit tests for the quote window (fact in sentence four, CJK sentences, no overlap, a first sentence over 400);
   - an invented marker stays plain text;
   - a fallback citation has no score.
-- [ ] 8.4 Build the trace: `knowledge` with `query`, `trigger "gated"` and the 8 `retrieved` (score, cited, n);
+- [x] 8.4 Build the trace: `knowledge` with `query`, `trigger "gated"` and the 8 `retrieved` (score, cited, n);
   `context.used.knowledge`; the System 1 rows of D20, grouped under "passages".
   Verify:
   - a deep reply's trace round-trips through the contract schema (`export-schema:check`);
   - Insight resolves passage rows to titles in a frontend test;
   - a 5-candidate group deep turn stays ≤ 64 rows.
-- [ ] 8.5 `naive`'s next version: the centred 1,200-character slice, labelled `naive-7` (`naive-8` for debate). The
+- [x] 8.5 `naive`'s next version: the centred 1,200-character slice, labelled `naive-7` (`naive-8` for debate). The
   rest is unchanged.
   Verify:
   - a hit 4,000 characters into its section is wholly in the request;
   - `naive` requests without passages keep `naive-5` and `naive-6`.
-- [ ] 8.6 Remove the Knowledge tab's "Preview" ribbon, keeping the Memory tab's.
+- [x] 8.6 Remove the Knowledge tab's "Preview" ribbon, keeping the Memory tab's.
   Verify: `npm test` and the e2e Knowledge tab test pass.
-- [ ] 8.7 Note K8, K9 and K13 as built in doc 10, doc 03 C1 and doc 11 S6.
+- [x] 8.7 Note K8, K9 and K13 as built in doc 10, doc 03 C1 and doc 11 S6.
   Verify: the docs link check passes.
 
 ## 9. The evaluation, offline (design D22–D24, D30)

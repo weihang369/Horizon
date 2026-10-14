@@ -81,6 +81,7 @@ class TurnSpec:
     debate: DebateMeta | None = None
     direction_note: str | None = None
     plan: TurnPlan | None = None                    # M10 (group-watch D3): a plan the mode already made for this turn
+    deep: Any = None                                # M12 (rag D15): the speaker's deep work, started ahead of the turn
     # M10 (doc 07 G2, doc 11 S5; group-watch D8): called at the stream's end of a reply that streamed without an error;
     # it starts the follow plan and returns its handle (or None), which the outcome carries back to the mode
     follow: Callable[[TurnInfo], Awaitable[Any]] | None = None
@@ -174,6 +175,10 @@ class TurnRunner:
         planning = (rt.spawn(f"plan:{actor.sid}", self._plan(actor, spec, row, mid))
                     if prefetch is None and not spec.line.verbatim and actor.mode_name == "one_on_one"
                     and spec.plan is None else None)
+        if spec.plan is not None and spec.plan.branch == "deep" and spec.deep is None and prefetch is None:
+            from horizon.sessions.deep import attach  # M12 (rag D15): anything a mode didn't start earlier
+
+            await attach(actor, spec)
         try:
             if spec.epoch is None:
                 await actor.emit({"type": "turn.next", "payload": nxt})
@@ -182,6 +187,8 @@ class TurnRunner:
                 info.closed = True   # G5: superseded before it announced; nothing was written
                 if prefetch is not None:
                     await prefetch.discard()
+                if spec.deep is not None:
+                    spec.deep.cancel()   # M12: its Jev calls are recorded `cancelled`
                 return TurnOutcome(None, "superseded")
             await rt.clock.sleep(rt.runtime_cfg.timing.thinking_ms / 1000)
             await actor.emit({"type": "turn.thinking", "payload": {"characterId": spec.speaker}})
@@ -198,6 +205,14 @@ class TurnRunner:
                 sctx, plan = await vclock.join(planning)   # the worker's token is given up while Jev thinks
             else:
                 sctx = await session_context(rt, actor)   # M8: no summary work here (docs/ai/05 X2: after turn.end)
+            if plan is not None and spec.deep is not None:   # M12 (rag D15): deep work started ahead of the turn
+                merged = await self._deep(actor, spec, plan, mid, started_iso)
+                if merged is None:   # a newer user message arrived during the deep work (G5): no reply
+                    info.closed = True
+                    return TurnOutcome(None, "superseded")
+                plan = merged
+            if plan is not None and plan.rewrite and plan.rewrite_for:   # M12 (D19): its own small write
+                await self._store_rewrite(plan.rewrite_for, spec.speaker, plan.rewrite)
             if spec.line.verbatim:   # M8 (docs/ai/04 P9, persona-context D19): no retrieval, no model call
                 ctx = TurnContext(session=sctx, speaker=character_view(row), message_id=mid, variant_id=vid,
                                   prompt=spec.prompt, line=spec.line, turn_index=actor.mode.turn, max_tokens=1)
@@ -207,7 +222,10 @@ class TurnRunner:
                 ctx = TurnContext(session=sctx, speaker=character_view(row), message_id=mid, variant_id=vid,
                                   prompt=spec.prompt, line=spec.line, turn_index=actor.mode.turn,
                                   max_tokens=reply_cap(rt, sctx, plan), direction_note=spec.direction_note,
-                                  debate=spec.debate, plan=plan)
+                                  debate=spec.debate, plan=plan,
+                                  # M12 (ai-ports): an agent reply's passages come only from its frozen plan
+                                  knowledge=list(plan.knowledge) if plan.branch == "deep" else [],
+                                  query=plan.query if plan.branch == "deep" else None)
             else:
                 if plan is not None:   # a planner that leaves retrieval alone (the scripted one): its rows only
                     spec.calls.extend(plan.calls)
@@ -232,6 +250,45 @@ class TurnRunner:
             if actor.current is info and info.closed:
                 actor.current = None
 
+    async def _deep(self, actor: SessionActor, spec: TurnSpec, plan: TurnPlan, mid: str,
+                    started_iso: str = "") -> TurnPlan | None:
+        """M12 (rag D15): wait for the deep work started ahead, link its ledger rows to this reply, and merge it into
+        the plan; a bug inside gave no result, so the turn is quick with a `fallback` row. Cancelling the turn cancels
+        the work (its Jev calls are recorded `cancelled`), and so does a newer user message (G5): None, no reply."""
+        from horizon.ai.agent.deep import PASSAGE, PURPOSE
+
+        call = spec.deep
+        try:
+            if spec.epoch is not None and not await vclock.wait_unless(call.task, actor.superseded(spec.epoch)):
+                call.cancel()
+                return None
+            res = await call.result()
+        except asyncio.CancelledError:
+            call.cancel()
+            raise
+        for row_id in list(call.rows):
+            await self.rt.ledger.link_message(row_id, mid)
+        # the rows recorded before this turn started (watch's plan made ahead) aren't found by the turn-end listing
+        spec.calls.extend(await self.rt.ledger.calls_for_rows(list(call.rows), before=started_iso or None))
+        if res is None:
+            row = {"purpose": PURPOSE, "id": PASSAGE, "answer": "error", "compared": [], "result": "fallback",
+                   "action": "quick reply"}
+            return plan.model_copy(update={"branch": "quick", "rows": [*plan.rows, row], "calls": [*plan.calls, {
+                "purpose": PURPOSE, "model": self.rt.prices.decision.model, "costUsd": 0.0, "latencyMs": 0.0,
+                "fallback": True}]})
+        merged: TurnPlan = plan.with_deep(res).model_copy(update={"branch": "deep"})
+        return merged
+
+    async def _store_rewrite(self, message_id: str, speaker: str, text: str) -> None:
+        from horizon.services.ai_meta import store_rewrite
+
+        try:
+            await store_rewrite(self.rt, message_id, speaker, text)
+        except asyncio.CancelledError:
+            raise
+        except Exception:   # a derived row: losing it costs one more rewrite on regenerate, never the reply
+            log.exception("storing the rewrite for %s failed", message_id)
+
     async def _plan(self, actor: SessionActor, spec: TurnSpec, row: Any, mid: str) -> tuple[SessionContext, TurnPlan | None]:
         """The turn's context and its plan (D6): started before `turn.next`, so the deadline counts from here. The
         base face is the current face in AUTO, and the speaker's last AI-chosen face under MANUAL (docs/ai/06 E2)."""
@@ -250,9 +307,15 @@ class TurnRunner:
         # M12 (rag D6): the gate's titles, read only for a planner that decides retrieval (agent) and a reply
         docs = await document_titles(rt, sctx.world.id, [spec.speaker]) \
             if kind == "reply" and getattr(planner, "decides_retrieval", False) else {}
+        stored = None
+        if docs:   # M12 (rag D19): a rewrite stored for this message and speaker is reused (regenerate)
+            from horizon.ai.agent.planner import answered_message
+            from horizon.services.ai_meta import stored_rewrite
+
+            stored = await stored_rewrite(rt, answered_message(sctx)[0], spec.speaker)
         req = PlanRequest(session=sctx, speaker_id=spec.speaker, cast=[character_view(row)], message_id=mid,
                           kind=kind, latest=spec.prompt.removesuffix(REGENERATE_SUFFIX), turn_index=actor.mode.turn,
-                          base_face=base, manual=manual, started_at=started, documents=docs)
+                          base_face=base, manual=manual, started_at=started, documents=docs, stored_rewrite=stored)
         return sctx, await planner.plan(req)
 
     async def _stream(self, actor: SessionActor, spec: TurnSpec, info: TurnInfo, ctx: TurnContext, t0: float,

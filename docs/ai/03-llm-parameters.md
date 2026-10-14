@@ -193,6 +193,9 @@ Why these temperatures:
 - Values hard-coded in each engine: tuning would mean code changes, and the eval (B7) could not vary them.
 - One temperature for everything: summaries and arguments need less randomness than chat.
 
+*Built in M12 (OpenSpec `rag` D10): the `query_rewrite` row is read by the rewrite (temperature 0.0, 60 tokens,
+text, thinking off).*
+
 ### C2. Thinking is off everywhere, including deep turns, behind a switch
 
 **Decision:** every call sends `reasoning: {enabled: false}`. Each row in C1 has a `thinking` field (`off | low |

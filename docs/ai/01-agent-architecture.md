@@ -367,6 +367,10 @@ emotion, and the hits it kept. The reply engine never queries storage (D-92 hold
 - a dedicated reranker model, which the user dropped for Jev;
 - retrieval inside the reply engine, which D-92 rejects because it breaks replay and scope binding.
 
+*Built in M12 (OpenSpec `rag` D13–D15): the deep path in all four modes. 1:1 runs it as the plan graph's `deep` node;
+group, watch and debate start it with `start_deep` once the speaker and their gate are known (the cast plan, the
+follow plan, the plan made ahead, the member fixed); debate and watch never rewrite and never abstain.*
+
 ### A7. When something is a LangGraph graph
 
 **Decision:**
@@ -399,6 +403,9 @@ parallelism pay off.
 - wrapping the reply stream in a graph, which is ceremony and puts new code on the most sensitive path;
 - plain code everywhere, which loses the uniform tracing and the Insight graph view, and isn't the stack the
   stakeholder fixed.
+
+*Built in M12 (`rag` D15): the deep graph is the second graph, with its own frozen request and result; its steps run
+the Decider and our code only.*
 
 ### A8. Every model call goes through our gateway
 

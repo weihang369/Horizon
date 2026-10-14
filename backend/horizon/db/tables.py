@@ -266,6 +266,14 @@ turn_traces = Table(
     Column("created_at", Text, nullable=False),
 )
 
+# M12 (rag D19; doc 13 W13): AI-owned per-message data, not event-sourced; fork copies it, deleting a message cascades
+message_ai_meta = Table(
+    "message_ai_meta", metadata,
+    Column("message_id", Text, _fk("messages.id", "CASCADE"), primary_key=True),
+    Column("rewrites", J, nullable=False, server_default=text("'{}'")),
+    Column("updated_at", Text, nullable=True),
+)
+
 trace_memory_refs = Table(
     "trace_memory_refs", metadata,
     Column("memory_item_id", Text, nullable=False),

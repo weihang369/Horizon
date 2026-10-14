@@ -367,7 +367,7 @@ async def test_each_fingerprint_field_forces_a_redo(api: Api, monkeypatch: Any, 
     await start_plan_ahead(actor, api.rt.clock.now() + timedelta(seconds=10))
     await api.drive(50)
     assert actor.mode.plan_ahead is not None
-    fp, stored = actor.mode.plan_ahead
+    fp, stored, _deep = actor.mode.plan_ahead
     n = len(plan_bodies(api))
     await change(api, sid, actor, monkeypatch)
     assert (fp != await fingerprint(actor)) is redo
@@ -376,7 +376,7 @@ async def test_each_fingerprint_field_forces_a_redo(api: Api, monkeypatch: Any, 
     await api.drive(1000)
     release.set()
     await api.drive(10000)
-    plan, _ = await task
+    plan, _, _d = await task
     assert plan is not None
     assert stored.cancelled() is redo
     assert len(plan_bodies(api)) == n + (1 if redo else 0)

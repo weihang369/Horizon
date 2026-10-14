@@ -197,7 +197,7 @@ export function MemoryTab({ c, worldId, onChat }: { c: Character; worldId: strin
   );
 }
 
-// ── Knowledge (PRF-08, M5 design D20; the final presentation is AI-stage, so the ribbon stays) ─
+// ── Knowledge (PRF-08, M5 design D20; M12 (rag D18): the AI stage built it, so the ribbon is gone) ─
 
 export function KnowledgeTab({ c }: { c: Character }) {
   const q = useKnowledge(c.id);
@@ -252,7 +252,6 @@ export function KnowledgeTab({ c }: { c: Character }) {
         onChange={(e) => { const files = [...(e.target.files ?? [])]; e.target.value = ""; void add(files); }}
       />
       <div className={k.top}>
-        <div className={s.ribbon}>Preview: final design by AI team</div>
         {docs.length > 0 && <p className={k.sum}>{docs.length} {docs.length === 1 ? "source" : "sources"}{cites ? <> · cited <b>{cites}×</b> in conversations</> : null}</p>}
         <Button size="sm" variant="secondary" className={k.paste} onClick={() => openOverlay("O29", { characterId: c.id, name: first })}>Paste text</Button>
       </div>
