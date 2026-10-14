@@ -72,3 +72,60 @@ async def test_a_storm_on_the_asleep_side_pause_leaves_the_writer_free(api: Api)
     cut = await storm_during_write(api, sid, pause, storms=20, window_s=0.25)
     print(f"\nstorms on the asleep-side pause: {cut} of 20 cut before it finished")
     assert 0 < cut < 20   # the storms hit both sides of the writes
+
+
+async def test_storms_on_a_stored_debate_plan(api: Api) -> None:
+    """Task 3.10 (D2, D8): a stored debate plan cut by `clear()` while its Jev answer is parked (the call recorded
+    `cancelled`), by storms landing in the plan's start and its `turn.next` write, and by a fingerprint change (an
+    Interject) at the turn's start. The writer stays free each time."""
+    from types import SimpleNamespace
+
+    from horizon.sessions.modes import debate as mode
+    from tests.sessions.test_debate_plan import debate, first_rebuttal_end, jev_answers
+
+    sid = await debate(api)
+    jev_answers(api, member_rebuttal=("chr_seedMei", 0.9))
+    assert api.rt.fake is not None
+    release = api.rt.fake.park_question("member_rebuttal")
+    await first_rebuttal_end(api, sid)
+    await api.drive(100)
+    actor: SessionActor = await api.rt.sessions.get(sid)
+    hold = list(actor._named.get("debate_plan", ()))
+    assert len(hold) == 1 and actor.mode.debate_plan is not None
+    await storm_during_call(api, sid, hold[0], release)
+    await api.drive(2000)
+    assert "cancelled" in {r["finish_reason"] for r in await ledger(api) if r["purpose"] == "debate_plan"}
+
+    await command(api, sid, "debate/pause")
+    await api.drive(100)
+
+    async def plan_and_announce() -> None:
+        await mode.after_argument(actor, SimpleNamespace(ended_at=api.rt.clock.now()))
+
+    cut = await storm_during_write(api, sid, plan_and_announce, storms=12, window_s=0.4)
+    print(f"\nstorms on the debate plan's start (cut in the turn gap): {cut} of 12 cut before it finished")
+    await actor.clear()
+    await api.drive(100)
+    assert actor.mode.debate_plan is None and not actor._named.get("debate_plan")
+
+    async def write_turn_next() -> None:
+        try:
+            await actor.emit({"type": "turn.next", "payload": {"nextSpeakerId": "chr_seedMei"}})
+        finally:
+            await actor.clear()
+
+    cut = await storm_during_write(api, sid, write_turn_next, storms=20, window_s=0.02)
+    print(f"storms on the turn.next write with clear(): {cut} of 20 cut before it finished")
+    assert actor.mode.debate_plan is None
+
+    # a fingerprint change: the moderator interjects after the plan is stored; the turn drops it and asks again
+    sid2 = await debate(api)
+    release2 = api.rt.fake.park_question("emotion_line:")
+    await first_rebuttal_end(api, sid2)
+    await api.drive(100)
+    await command(api, sid2, "debate/interject", {"text": "Please keep to the evidence."})
+    release2.set()
+    await api.drive(60000)
+    from tests.helpers.storm import after_storm
+
+    await after_storm(api, sid2)

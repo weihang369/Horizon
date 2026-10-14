@@ -225,7 +225,7 @@ def step(actor: SessionActor) -> None:
                     if p is not None:
                         m.debate_prefetch[j] = p
         target = (str(now.get("phase")), int(now.get("iteration", 1)))
-        cid, plan, routing, stored = await plan_slot(actor, idx, target, cid, f, announced is not None)
+        cid, plan, routing, stored = await plan_slot(actor, idx, side, target, cid, f, announced is not None)
         spec = turn_spec(actor, cid, now)
         spec.skipped = skipped
         if plan is not None:
@@ -243,41 +243,60 @@ def step(actor: SessionActor) -> None:
     actor.enqueue(job)
 
 
-async def plan_slot(actor: SessionActor, idx: int, target: tuple[str, int], cid: str, f: Fill,
+async def plan_slot(actor: SessionActor, idx: int, side: str | None, target: tuple[str, int], cid: str, f: Fill,
                     was_announced: bool) -> tuple[str, Any, Wire | None, Any]:
-    """At the turn's start (D8): (who speaks, their frozen plan, the routing to show, the stored plan used). A stored
-    plan whose fingerprint holds gives its faces; a changed one keeps the member and asks the face again; with none
-    stored, an `agent` turn plans its face now (`turn_plan` deadline). `naive` and `scripted` plan nothing."""
+    """At the turn's start (D8): (who speaks, their frozen plan, the routing to show, the stored plan used).
+
+    - A stored plan whose fingerprint holds gives its faces (a phase's first-slot plan fixes its member now).
+    - A changed one keeps the announced member and asks the face again (`turn_plan` deadline); a changed first-slot
+      plan is dropped, and the slot plans now.
+    - With none, a slot with two or more eligible members and no announcement plans its member and faces now, under
+      the `turn_plan` deadline (late or unsure: fixed order); otherwise the forced speaker's face is planned now.
+    `naive` and `scripted` plan nothing. Openings keep the fixed order (their faces are planned with their turn)."""
     stored, fresh = await debate_plan.take(actor, idx, target)
-    routing: Wire | None = None
-    plan: Any = None
-    if stored is not None:
-        if stored.member is None:   # the phase's first slot, planned at the last phase's end: the member is chosen now
-            stored.member = await stored.call.member(actor.rt.clock.now())
-            if stored.asked and not was_announced and stored.member.member in f.eligible:
-                cid = stored.member.member
-        member = stored.member
-        if member.who is not None:
-            routing = {"question": member.who.label, "candidates": member.who.candidates, "selected": cid,
-                       "forcedBy": "round_order", "reason": member.who.reason}
-        if fresh:
-            dp = await stored.call.faces(actor.rt.clock.now())
-            plan = dp.for_speaker(cid)
-        else:
-            stored.call.cancel()   # the stored faces are stale (V2): the member stays, the face is asked again
-            again = await plan_face(actor, cid, target)
-            if again is not None:
-                plan = again.model_copy(update={"rows": [*member.shared_rows, *again.rows],
-                                                "calls": [*member.calls, *again.calls]})
-            stored = None
-        if stored is not None:
-            debate_plan.finish_with(actor, stored)
-        else:
-            debate_plan.drop(actor)
-        return cid, plan, routing, stored
-    if target[0] != "opening":
-        plan = await plan_face(actor, cid, target)
+    if stored is not None and stored.member is None and not fresh:
+        debate_plan.drop(actor)
+        stored = None
+    if stored is None:
+        if target[0] == "opening":
+            return cid, None, None, None
+        if len(f.eligible) >= 2 and not was_announced:
+            now = actor.rt.clock.now()
+            stored = await debate_plan.start(actor, idx, target, side, list(f.eligible), now)
+            if stored is not None:
+                deadline = now + timedelta(seconds=actor.rt.decider.timeout_for("turn_plan"))
+                stored.member = await stored.call.member(deadline)
+                if stored.member.member in f.eligible:
+                    cid = stored.member.member
+                dp = await stored.call.faces(deadline)
+                debate_plan.finish_with(actor, stored)
+                return cid, dp.for_speaker(cid), member_routing(stored.member, cid), stored
+        return cid, await plan_face(actor, cid, target), None, None
+    if stored.member is None:   # the phase's first slot, planned at the last phase's end: the member is fixed now
+        stored.member = await stored.call.member(actor.rt.clock.now())
+        if stored.asked and not was_announced and stored.member.member in f.eligible:
+            cid = stored.member.member
+    member = stored.member
+    routing = member_routing(member, cid)
+    if fresh:
+        dp = await stored.call.faces(actor.rt.clock.now())
+        debate_plan.finish_with(actor, stored)
+        return cid, dp.for_speaker(cid), routing, stored
+    debate_plan.drop(actor)   # the stored faces are stale (V2): the member stays, the face is asked again
+    again = await plan_face(actor, cid, target)
+    plan = None
+    if again is not None:
+        plan = again.model_copy(update={"rows": [*member.shared_rows, *again.rows],
+                                        "calls": [*member.calls, *again.calls]})
     return cid, plan, routing, None
+
+
+def member_routing(member: Any, cid: str) -> Wire | None:
+    """D27 / the debate-plan spec: the member question's label, Jev's probabilities, who speaks, and why."""
+    if member is None or member.who is None:
+        return None
+    return {"question": member.who.label, "candidates": member.who.candidates, "selected": cid,
+            "forcedBy": "round_order", "reason": member.who.reason}
 
 
 async def plan_face(actor: SessionActor, cid: str, target: tuple[str, int], kind: str = "debate_line") -> Any:
@@ -445,6 +464,7 @@ def skip_to_closing(actor: SessionActor) -> None:
 
 async def pause(actor: SessionActor) -> None:
     actor.held = True
+    debate_plan.stale(actor)   # D8: Play plans the faces afresh; an announced member stays
     await actor.emit({"type": "session.paused", "payload": {"reason": "user"}})
 
 

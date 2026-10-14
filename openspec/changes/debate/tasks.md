@@ -129,17 +129,17 @@
 - [x] 3.1 Add `debate_plan` to `PURPOSE_CATEGORY` (`decision`), and a refused debate plan publishes `budget.reached`
   without pausing (M9 D35's rule).
   Verify: the provider-gateway scenario "Cap reached at the debate plan".
-- [ ] 3.2 The types: `DebateRequest`, `DebatePlan`, and the `DebateCall` protocol with `member(deadline)`,
+- [x] 3.2 The types: `DebateRequest`, `DebatePlan`, and the `DebateCall` protocol with `member(deadline)`,
   `faces(until)` and `cancel()`. `TurnPlanner.start_debate` returns `None` from `NoPlanner` and
   `ScriptedTurnPlanner`.
   Verify: type checks, and a test that `naive` and `scripted` debates make no `debate_plan` request.
-- [ ] 3.3 `ai/agent/debate_plan.py`: the state per D6 (the builder with `last_spoke=False`, `last_opposing` per the
+- [x] 3.3 `ai/agent/debate_plan.py`: the state per D6 (the builder with `last_spoke=False`, `last_opposing` per the
   side and panel rules, `latest_by_candidate` at 60 words), the questions (member question when ≥ 2 candidates,
   `emotion_line` per candidate) and the decide step (`floor.member`, fixed-order fallback), on the plan graph's shape
   with one Decider `start(...)` behind `member` and `faces` (W11).
   Verify: unit tests for each outcome row of D8's table, and the debate-plan scenarios "The rebuttal state" and
   "Uneven sides never quote a teammate".
-- [ ] 3.4 The runtime timeline (`sessions/debate_plan.py`, D8):
+- [x] 3.4 The runtime timeline (`sessions/debate_plan.py`, D8):
   - start at `turn.end` for the next same-phase slot;
   - with a member question, emit `turn.next` when `member()` returns, with no turn gap; with one member, the gap as
     today;
@@ -147,30 +147,30 @@
   - at turn start, use `faces(now)`.
   Verify: the scenarios "A quick pick", "A late answer", "Unsure", "A late member, an on-time face" and "Too late for
   the face", all on the virtual clock with `park_decision`.
-- [ ] 3.5 The fingerprint: M10 D15's function, with the seq of the last character or user message, plus the target
+- [x] 3.5 The fingerprint: M10 D15's function, with the seq of the last character or user message, plus the target
   (phase, iteration). A mismatch at turn start keeps the announced member and asks the faces again (`debate_ask`'s
   machinery, `turn_plan` deadline). Pause drops the stored faces.
   Verify:
   - one test per fingerprint part;
   - "A banner doesn't spoil the plan";
   - "An Ask in the pause".
-- [ ] 3.6 The phase-boundary plan: at a phase's last `turn.end` (not before the verdict), stored with its target, and
+- [x] 3.6 The phase-boundary plan: at a phase's last `turn.end` (not before the verdict), stored with its target, and
   its member deadline is that slot's turn start. `begin_phase` uses it only on a matching target and fingerprint;
   Extend and Skip discard it.
   Verify: the scenario "Extend discards the plan", and a test that the closing's first slot uses a stored plan after
   the bridge.
-- [ ] 3.7 The trace:
+- [x] 3.7 The trace:
   - `routing.question`, `candidates`, `selected`, `forcedBy: "round_order"`;
   - `routing.reason` "Side by the debate order; speaker chosen by Jev" (and its fallbacks);
   - the rows of D27, with late answers written through `append_system1` as `fallback` rows carrying Jev's answer.
   Verify: the system1-trace scenarios "A confident pick", "A late answer during the argument" and "Faces asked again
   after an Ask".
-- [ ] 3.8 `clear()` adds `"debate_plan"` to the names it cancels.
+- [x] 3.8 `clear()` adds `"debate_plan"` to the names it cancels.
   Verify: the debate-plan scenario "Ending during a plan", with the call recorded `cancelled`.
-- [ ] 3.9 Settling (M9 check 1's test, repeated for debate): 50 `agent` debate slots with parked and released
+- [x] 3.9 Settling (M9 check 1's test, repeated for debate): 50 `agent` debate slots with parked and released
   answers, run twice.
   Verify: the virtual clock settles, and the two runs' event logs are identical.
-- [ ] 3.10 Storms (D2) on a stored debate plan: cut by `clear()` during the `turn.next` write and during the parked
+- [x] 3.10 Storms (D2) on a stored debate plan: cut by `clear()` during the `turn.next` write and during the parked
   call, and cut by a fingerprint change.
   Verify: the D2 checks pass.
 

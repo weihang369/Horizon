@@ -25,7 +25,7 @@ from horizon.ai.agent.plan_graph import Branch, build_plan_graph, run_plan
 from horizon.ai.agent.plan_state import DebateInput, PlanState, PlanStateInput, _tokens, build_turn_plan_state
 from horizon.ai.agent.planner import _name
 from horizon.ai.contexts import DebatePlan, DebateRequest, PlannedFace, WhoPick
-from horizon.ai.decider import Answers, ChoiceAnswer, DecisionCall, DecisionResult, Question
+from horizon.ai.decider import Answers, ChoiceAnswer, DecisionCall, DecisionCancelled, DecisionResult, Question
 from horizon.ai.questions import bank
 
 log = logging.getLogger("horizon.ai.planner")
@@ -179,6 +179,9 @@ class JevDebateCall:
         except asyncio.CancelledError:
             self.call.cancel()   # the request already sent settles and is recorded `cancelled` (M9 D8)
             raise
+        except DecisionCancelled:   # the plan was dropped under us (a clear, a newer plan): fixed order, quietly
+            plan, path = self.plan_from(DecisionResult(answers={}, failure="cancelled"),
+                                        {"call": None, "deadline_ms": 0.0}, member=None), []
         except Exception:   # the port never raises: a bug costs Jev's pick, never the debate
             log.exception("the debate plan failed for %s; fixed order", self.req.session.session_id)
             plan, path = DebatePlan(seed=self.steps.seed(self.req), member=self.req.candidates[0],
@@ -194,6 +197,8 @@ class JevDebateCall:
         except asyncio.CancelledError:
             self.call.cancel()
             raise
+        except DecisionCancelled:   # dropped under us: the member stands, the faces fall back
+            res, meta = DecisionResult(answers={}, failure="cancelled"), {"call": None, "deadline_ms": 0.0}
         return self.plan_from(res, meta, member=fixed)
 
     async def late_rows(self) -> DebatePlan | None:

@@ -41,6 +41,7 @@ class Stored:
     call: Any                       # the planner's DebateCall
     asked: bool                     # a member question was asked (two or more eligible)
     member: DebatePlan | None = None
+    used: bool = False              # a turn has read it: its call is no longer the hold's to cancel
 
 
 def _ordered(actor: SessionActor) -> list[Wire]:
@@ -79,16 +80,22 @@ def facts(actor: SessionActor, sctx: SessionContext, phase: str, side: str | Non
     return f, said(last_line) if last_line is not None else ""
 
 
+def fingerprint_of(epoch: int, reply_epoch: int, msgs: list[Wire], emotion_mode: Any,
+                   parts: list[tuple[str, bool, bool, Any]], target: tuple[str, int]) -> tuple[Any, ...]:
+    """The pure part (tested one part at a time): only character and user messages move the seq (V2)."""
+    said = [m for m in msgs if m["author"]["type"] in ("character", "user")]
+    return (epoch, reply_epoch, int(said[-1]["seq"]) if said else 0, emotion_mode, tuple(parts), target)
+
+
 async def fingerprint(actor: SessionActor, target: tuple[str, int]) -> tuple[Any, ...]:
     """M10 D15's list with V2's seq rule: the seq of the last character or user message, so a round banner, a host
     line or a system note doesn't spoil the plan; plus the slot's (phase, iteration)."""
-    msgs = [m for m in _ordered(actor) if m["author"]["type"] in ("character", "user")]
     parts = []
     for p in actor.session["participants"]:
         cid = p["characterId"]
         parts.append((cid, not await is_asleep(actor, cid), bool(p.get("mutedByUser")), p.get("currentEmotion")))
-    return (actor.epoch, actor.reply_epoch, int(msgs[-1]["seq"]) if msgs else 0, actor.session.get("emotionMode"),
-            tuple(parts), target)
+    return fingerprint_of(actor.epoch, actor.reply_epoch, _ordered(actor), actor.session.get("emotionMode"), parts,
+                          target)
 
 
 async def start(actor: SessionActor, slot: int, target: tuple[str, int], side: str | None, candidates: list[str],
@@ -111,18 +118,20 @@ async def start(actor: SessionActor, slot: int, target: tuple[str, int], side: s
     drop(actor)
     stored = Stored(fp=await fingerprint(actor, target), slot=slot, target=target, call=call,
                     asked=len(candidates) >= 2)
-    actor.background(NAME, _hold(call))
+    actor.background(NAME, _hold(stored))
     actor.mode.debate_plan = stored
     return stored
 
 
-async def _hold(call: Any) -> None:
+async def _hold(stored: Stored) -> None:
     """Keeps the request owned by the actor: `clear()` cancels this task, which cancels the call (recorded
-    `cancelled` unless it already settled); idle release waits for it."""
+    `cancelled` unless it already settled); idle release waits for it. Once a turn has used the plan, its late answer
+    belongs to that turn's `debate_plan_late` task, so a newer plan replacing this hold leaves the call alone."""
     try:
-        await call.late_rows()
+        await stored.call.late_rows()
     except asyncio.CancelledError:
-        call.cancel()
+        if not stored.used:
+            stored.call.cancel()
         raise
 
 
@@ -146,8 +155,17 @@ async def take(actor: SessionActor, slot: int, target: tuple[str, int]) -> tuple
     return stored, stored.fp == await fingerprint(actor, target)
 
 
+def stale(actor: SessionActor) -> None:
+    """Pause (D8, as M10 D28 for watch): the stored faces are dropped, so Play plans them afresh; an announced member
+    stays (`turn.next` already named them), and a phase's first-slot plan is not used."""
+    stored = actor.mode.debate_plan
+    if stored is not None:
+        stored.fp = ("paused",)
+
+
 def finish_with(actor: SessionActor, stored: Stored) -> None:
     """The turn has used the plan: forget it, without cancelling the request (a late answer still lands)."""
+    stored.used = True
     if actor.mode.debate_plan is stored:
         actor.mode.debate_plan = None
 
