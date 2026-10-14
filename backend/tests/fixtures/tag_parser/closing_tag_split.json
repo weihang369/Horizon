@@ -1,0 +1,14 @@
+{
+  "name": "closing_tag_split",
+  "doc": "A closing tag later in the stream is stripped like any stray tag, even split (debate D31.3)",
+  "chunks": [
+    "<e:thinking>Keep it short.</e:th",
+    "inking> Draw it on a map first."
+  ],
+  "previous": "neutral",
+  "expected": {
+    "emotion": "thinking",
+    "source": "llm",
+    "text": "Keep it short. Draw it on a map first."
+  }
+}

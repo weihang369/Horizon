@@ -183,7 +183,7 @@ class AiStateHooks(Protocol):            # implemented by the AI layer; called f
   - buffers up to 32 characters or until `>`, and handles a tag split across chunks;
   - accepts only the 7 labels;
   - if no valid tag appears in the buffer, releases the text and yields `Emotion(source="default")` (keeping the previous face);
-  - strips stray tags anywhere before tokens are yielded.
+  - strips stray tags anywhere before tokens are yielded, a closing `</e:…>` included (M11 debate D31.3: `naive` sometimes wraps notes as `<e:thinking>…</e:thinking>`; the notes themselves are M15's `naive` prompt fix).
 
   These rules are also encoded in the scripted engine's fixtures.
 - **Parameters:** reasoning off and `max_tokens` from the per-mode reply caps (config). Model pinning and the routing above.

@@ -8,7 +8,8 @@ The model is asked to begin its reply with `<e:label>`. The parser:
 - (persona-context D37, the user's choice after 10.4) also accepts a bare `<label>` (one of the 7, any case) at the
   head the same way: DeepSeek V4.1 Flash wrote `<neutral>` for `<e:neutral>` in 87 of 91 replies of one transcript,
   and the user saw it;
-- strips stray tags (`<e:…>`) anywhere later, including a tag split across chunks, before tokens are yielded;
+- strips stray tags (`<e:…>`, and a closing `</e:…>`: debate D31.3) anywhere later, including a tag split across
+  chunks, before tokens are yielded;
 - drops the whitespace between the opening tag and the first visible text;
 - (docs/ai/03 C6, ai-foundation design D16) given the speaker's name(s), drops a leading `<name>:` on the FIRST line,
   before or after the tag (case-insensitive, spaces allowed around the colon), holding at most the name's length + 2
@@ -29,8 +30,8 @@ from dataclasses import dataclass
 
 EMOTIONS = ("neutral", "happy", "sad", "angry", "surprised", "thinking", "embarrassed")
 MAX_HEAD = 32
-_TAG = re.compile(r"<e:[^<>]{0,30}>")
-_PARTIAL = re.compile(r"<(?:e(?::[^<>]{0,30})?)?$")
+_TAG = re.compile(r"</?e:[^<>]{0,30}>")   # a closing `</e:…>` too (M11 debate D31.3)
+_PARTIAL = re.compile(r"</?(?:e(?::[^<>]{0,30})?)?$")
 _BARE = tuple(f"<{e}>" for e in EMOTIONS)   # D37: the model's own form of the tag
 
 

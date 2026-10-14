@@ -1,0 +1,13 @@
+{
+  "name": "closing_tag_at_end",
+  "doc": "A closing tag that ends the reply is stripped (debate D31.3)",
+  "chunks": [
+    "<e:happy>We keep the night and shrink the harm. Probably.</e:happy>"
+  ],
+  "previous": "neutral",
+  "expected": {
+    "emotion": "happy",
+    "source": "llm",
+    "text": "We keep the night and shrink the harm. Probably."
+  }
+}
