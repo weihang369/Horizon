@@ -99,8 +99,10 @@ def history(hid: str) -> dict[str, Any]:
     return data
 
 
-def cut(h: dict[str, Any], k: int, prof: dict[str, dict[str, Any]]) -> tuple[dict[str, Any], dict[str, Any]]:
-    """The state and the label skeleton for the turn after the k-th character line."""
+def cut(h: dict[str, Any], k: int, prof: dict[str, dict[str, Any]],
+        faces: dict[str, str] | None = None) -> tuple[dict[str, Any], dict[str, Any]]:
+    """The state and the label skeleton for the turn after the k-th character line. `faces` (M11's watch emotion
+    growth): each character's face then; neutral by default, as M10's items were built."""
     from datetime import UTC, datetime
 
     lines = h["lines"]
@@ -132,7 +134,7 @@ def cut(h: dict[str, Any], k: int, prof: dict[str, dict[str, Any]]) -> tuple[dic
     latest = latest_line["text"] if latest_line["kind"] == "note" else f"{prof[last]['name']}: {latest_line['text']}"
     req = CastRequest(session=sctx, kind="scene", candidates=cands,
                       cast=[CharacterView(id=c, name=str(prof[c]["name"]), profile=prof[c]) for c in cast],
-                      latest=latest, base_faces=dict.fromkeys(cast, "neutral"), turns_since=since,
+                      latest=latest, base_faces={c: (faces or {}).get(c, "neutral") for c in cast}, turns_since=since,
                       started_at=datetime(2026, 10, 3, 3, 0, tzinfo=UTC))
     state = build_turn_plan_state(state_input(req)).state
     label = {"candidates": cands, "none_ok": False, "last_spoke": since,

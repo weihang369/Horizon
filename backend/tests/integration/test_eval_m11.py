@@ -621,3 +621,18 @@ async def test_smoke_in_ci_runs_a_debate_to_its_verdict(tmp_path: Path) -> None:
     report = (run / "naive" / "report.md").read_text(encoding="utf-8")
     assert "- debate: 8 argument(s), 3 host line(s), verdict arbiter with 8 score(s)" in report
     assert "- debate-plan timing: 1 request(s)" in report and "- rubric: 8 bar(s)" in report
+
+
+# ── 10.11's builders, on a committed M10 history as the fixture ──
+def test_the_fresh_cuts_and_the_growth_are_cut_with_the_live_state() -> None:
+    sys.path.insert(0, str(DATASETS / "who_speaks"))
+    fresh = load("who_fresh_build", DATASETS / "who_speaks" / "fresh.py")
+    rows = fresh.build_fresh(fresh.profiles(), {("sunnyhollow", 1): ("takeshi", "en"), ("sunnyhollow", 4): ("rin", "en")})
+    assert [r["id"] for r in rows] == ["wsf-001", "wsf-002"]
+    assert all(r["fresh"] and r["split"] == "test" for r in rows)
+    assert "last_spoke" not in json.dumps(rows[0]["item"]["state"])
+    grow = load("emotion_watch_2_build", DATASETS / "emotion" / "build_watch_2.py")
+    items = grow.build(grow.seed_profiles(), [("sunnyhollow", 0, ["happy"], False, "en"),
+                                              ("sunnyhollow", 4, ["thinking"], True, "en")], tests=0)
+    assert [r["question_id"] for r in items] == ["emotion_opening", "emotion_line"]
+    assert items[1]["item"]["state"]["mode"] == "watch" and items[1]["item"]["name"]

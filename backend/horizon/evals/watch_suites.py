@@ -176,7 +176,8 @@ async def drive_watch(env: RunEnv, script: dict[str, Any]) -> tuple[dict[str, An
         cur = [s for s in sums if int(s["upto_seq"]) < int(m["seq"])]
         lines.append({"seq": m["seq"], "kind": kind, "speaker": who, "text": m["content"],
                       "summary_upto": cur[-1]["upto_seq"] if cur else None,
-                      "summary": cur[-1]["text"] if cur else None})
+                      "summary": cur[-1]["text"] if cur else None,
+                      **({"emotion": m["emotion"]} if m.get("emotion") else {})})   # M11: the growth's "previous" face
     doc = {"schemaVersion": 1, "id": script["id"], "mode": "watch", "world": script["world"], "cast": script["cast"],
            "premise": script["premise"], "language": script.get("language", "en"), "lines": lines}
     return doc, complete, sid, msgs
@@ -422,8 +423,12 @@ class FreeRun:
     @staticmethod
     async def watch(env: RunEnv, item: dict[str, Any]) -> tuple[list[dict[str, Any]], int]:
         world, cast, premise = FREERUN_PREMISES[item["run"] % len(FREERUN_PREMISES)]
-        _, _, _, msgs = await drive_watch(env, {"id": f"freerun-{item['run']}", "world": world, "cast": cast,
-                                                "premise": premise, "turns": item["n"], "paceMs": 500})
+        doc, _, _, msgs = await drive_watch(env, {"id": f"freerun-{item['run']}", "world": world, "cast": cast,
+                                                  "premise": premise, "turns": item["n"], "paceMs": 500})
+        # M11 (debate D17, D20): the scene is kept in the history format, so the fresh who_scene cuts and the watch
+        # emotion growth are cut from it once it is committed (evals/watch/)
+        out = env.run_dir / f"freerun-{item['run']}.json"
+        out.write_text(json.dumps(doc, ensure_ascii=False, indent=1) + "\n", encoding="utf-8", newline="\n")
         return msgs, 0
 
     @staticmethod
