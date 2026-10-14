@@ -100,6 +100,60 @@ class LineHint(Frozen):
     verbatim: bool = False          # M8 (docs/ai/04 P9): say `text` word for word, with no model call
 
 
+class DebateLine(Frozen):
+    """One line of a debate's transcript for the verdict (M11, debate D12, D13), read by the runtime from the log:
+    an argument or an Ask answer with its phase, iteration, side and speaker, or a moderator's note or question."""
+
+    kind: Literal["argument", "answer", "note", "question"]
+    phase: str = ""
+    iteration: int = 1
+    side: str | None = None
+    speaker: str = ""
+    character_id: str | None = None
+    text: str
+
+
+class VerdictRequest(Frozen):
+    """What `DebateHost.assess` reads (D12–D15): the session, the verdict mode, the transcript and the missed turns.
+    `swapped` asks with the Opposition block first (the evaluation's order check, V11)."""
+
+    session: SessionContext
+    by: str                                         # arbiter | user | none
+    lines: list[DebateLine] = []
+    missed: dict[str, dict[str, Any]] = {}          # per side {missed, reason} (debate_slots.missed_turns)
+    swapped: bool = False
+
+
+class Assessment(Frozen):
+    """The verdict work's result before a pick (D14): the bars and the arbiter's stronger case when scored, the prose or
+    its quoted fallback, the failure notes to post, and whether a cap refused it (nothing to deliver: the session
+    pauses, and the work runs again on resume)."""
+
+    by: str
+    two_sided: bool
+    scored: bool = False
+    scores: list[dict[str, Any]] = []
+    stronger: str | None = None                     # the arbiter's stronger case; None: too close, or no scores
+    summary: list[dict[str, Any]] = []
+    key_disagreement: str | None = None
+    rationale: str | None = None
+    notes: list[str] = []
+    refused: bool = False
+    simulated: dict[str, Any] | None = None         # `scripted`: the mock's verdict, delivered as it is
+
+
+HostKind = Literal["welcome", "bridge", "extended", "skip", "lead_in"]
+
+
+class HostKey(Frozen):
+    """What a host line introduces (doc 08 V6; debate D11): its kind and the (phase, iteration) it opens (the lead-in:
+    `verdict`). A line requested for one key is dropped when a different one comes next (Extend, Skip)."""
+
+    kind: HostKind
+    phase: str
+    iteration: int = 1
+
+
 class DebateMeta(Frozen):
     phase: str
     round: int

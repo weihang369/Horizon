@@ -1,8 +1,9 @@
 """Debate (session-modes "Debate phases", "Debate moderation", "Debate verdict"; a port of `mock/engines/debate.ts`).
 
 The configured phases run in order; each opens with a `phase` event, a `ROUND n · LABEL` note and, with `auto_host`,
-host narration. Speakers alternate prop/opp (two-sided) or follow cast order (panel), marked `forcedBy: "round_order"`
-and tagged with phase, round and iteration. With `autoAdvance`, the next step starts `pauseMs` after a turn ends.
+the host's line (M11: written by DeepSeek ahead of its banner, else the fixed sentence; sessions/debate_host).
+Speakers alternate prop/opp (two-sided) or follow cast order (panel), marked `forcedBy: "round_order"` and tagged with
+phase, round and iteration. With `autoAdvance`, the next step starts `pauseMs` after a turn ends.
 Steering (Ask, Interject, extend, skip) lands at the next turn boundary.
 """
 
@@ -11,10 +12,10 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Any
 
-from horizon.ai.contexts import DebateMeta, LineHint
+from horizon.ai.contexts import DebateMeta, HostKey, LineHint
 from horizon.domain import vclock
 from horizon.gateway.errors import ProviderError
-from horizon.sessions import debate_plan
+from horizon.sessions import debate_host, debate_plan
 from horizon.sessions.context import session_context
 from horizon.sessions.debate_slots import SIDE_NAME, Fill, cursor, fill, is_argument, members, phase_slots, two_sided
 from horizon.sessions.modes.common import (
@@ -76,7 +77,27 @@ def _host(actor: SessionActor) -> Any:
     return actor.rt.ai.host(runner(actor).key_set())
 
 
-async def begin_phase(actor: SessionActor, phase: str, iteration: int = 1) -> None:
+def host_key(actor: SessionActor, phase: str, iteration: int, via: str | None = None) -> HostKey:
+    """D11: what a phase's host line introduces: the welcome (the first phase), an extended round, Skip's closing, or a
+    bridge."""
+    phases = [str(p) for p in cfg_of(actor).get("phases") or ["opening"]]
+    if iteration > 1:
+        return HostKey(kind="extended", phase=phase, iteration=iteration)
+    if via == "skip":
+        return HostKey(kind="skip", phase=phase)
+    if phases and phase == phases[0]:
+        return HostKey(kind="welcome", phase=phase)
+    return HostKey(kind="bridge", phase=phase)
+
+
+def banner_wait(actor: SessionActor) -> timedelta:
+    return timedelta(milliseconds=actor.rt.runtime_cfg.runtime.host_banner_wait_ms)
+
+
+async def begin_phase(actor: SessionActor, phase: str, iteration: int = 1, *, via: str | None = None,
+                      host_until: datetime | None = None) -> None:
+    """The phase event and its banner; then, with Auto host, its line (V6): shown when written, by `host_until` (the
+    welcome's Start + `hostWelcomeWaitMs`) or the banner + `hostBannerWaitMs`, else the fixed sentence."""
     for pf in actor.mode.debate_prefetch.values():
         await pf.discard()
     actor.mode.debate_prefetch = {}
@@ -89,21 +110,24 @@ async def begin_phase(actor: SessionActor, phase: str, iteration: int = 1) -> No
     events: list[Wire] = [{"type": "phase", "payload": {"phase": phase, "round": round_, "iteration": iteration}},
                           message_event(note(actor, host.round_note(phase, round_, iteration)))]
     await actor.emit(*events)
-    if cfg.get("moderator") == "auto_host":
-        await actor.emit(message_event(note(actor, host.narration(phase, str(cfg.get("motion", ""))), "narration",
-                                            {"type": "host"})))
+    if debate_host.auto_host(actor):
+        await debate_host.show(actor, host_key(actor, phase, iteration, via),
+                               host_until or actor.rt.clock.now() + banner_wait(actor))
 
 
 def start(actor: SessionActor) -> None:
     async def job() -> None:
         wait = actor.rt.runtime_cfg.timing.debate_start_ms / 1000
+        t0 = actor.rt.clock.now()
+        phases = cfg_of(actor).get("phases") or ["opening"]
+        debate_host.request(actor, host_key(actor, str(phases[0]), 1))   # V6: the welcome is written during the splash
         first = await first_opening(actor)
         if first is not None:   # D8: the first opening's face is planned inside the start delay
             await debate_plan.start_opening(actor, ("opening", 1), first,
                                             actor.rt.clock.now() + timedelta(seconds=wait))
         await actor.rt.clock.sleep(wait)
-        phases = cfg_of(actor).get("phases") or ["opening"]
-        await begin_phase(actor, str(phases[0]))
+        await begin_phase(actor, str(phases[0]), host_until=t0 + timedelta(
+            milliseconds=actor.rt.runtime_cfg.runtime.host_welcome_wait_ms))
         step(actor)
 
     actor.enqueue(job)
@@ -194,7 +218,7 @@ def step(actor: SessionActor) -> None:
             await begin_phase(actor, phases[0] if phases else "opening")
         m = actor.mode
         if m.skip_to_closing and state_of(actor).get("phase") != "closing":
-            await begin_phase(actor, "closing")
+            await begin_phase(actor, "closing", via="skip")
             m.skip_to_closing = False
             schedule_next(actor)
             return
@@ -373,6 +397,10 @@ async def after_argument(actor: SessionActor, out: Any) -> None:
     nxt = await next_slot(actor)
     if nxt is None:
         target = next_target(actor, phase, iteration)
+        if target is None:
+            debate_host.request(actor, HostKey(kind="lead_in", phase="verdict"))
+        elif not m.extend and not m.skip_to_closing:   # Extend's and Skip's lines are asked when their phase begins
+            debate_host.request(actor, HostKey(kind="bridge", phase=target[0]))
         if target is not None and target[0] != "opening":
             cfg, cast = cfg_of(actor), _cast(actor)
             side = phase_slots(cfg, cast)[0] if phase_slots(cfg, cast) else None
@@ -474,11 +502,20 @@ async def go_verdict(actor: SessionActor) -> None:
     n = len(cfg.get("phases") or []) + 1
     await actor.emit({"type": "phase", "payload": {"phase": "verdict", "round": n, "iteration": 1}},
                      message_event(note(actor, f"ROUND {n} · VERDICT")))
+    banner_at = actor.rt.clock.now()
+
+    async def lead_in() -> None:   # V6: with Auto host, the lead-in after the VERDICT banner (a job: never the inbox)
+        await debate_host.show(actor, HostKey(kind="lead_in", phase="verdict"), banner_at + banner_wait(actor))
+
     if cfg.get("verdictBy") == "user":
+        if debate_host.auto_host(actor):
+            actor.enqueue(lead_in)
         return  # waits for debate.pick
 
     async def job() -> None:
-        await actor.rt.clock.sleep(VERDICT_DELAY_MS / 1000)
+        await lead_in()
+        spent = (actor.rt.clock.now() - banner_at).total_seconds()
+        await actor.rt.clock.sleep(max(0.0, VERDICT_DELAY_MS / 1000 - spent))
         sctx = await session_context(actor.rt, actor, recent=1000)
         try:
             verdict = await _host(actor).verdict(sctx, str(cfg.get("verdictBy", "arbiter")), None)

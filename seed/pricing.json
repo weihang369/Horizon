@@ -68,6 +68,7 @@
         "embedding": 30000,
         "meta": 10000,
         "episode": 30000,
+        "verdict": 30000,
         "decision": {
           "route": 400,
           "turn_plan": 700,
@@ -77,7 +78,8 @@
           "guardrail_prompt": 1500,
           "reaction": 1500,
           "face_check": 1500,
-          "default": 3000
+          "default": 3000,
+          "rubric": 10000
         }
       }
     }

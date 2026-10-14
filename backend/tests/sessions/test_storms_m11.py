@@ -129,3 +129,45 @@ async def test_storms_on_a_stored_debate_plan(api: Api) -> None:
     from tests.helpers.storm import after_storm
 
     await after_storm(api, sid2)
+
+
+async def test_storms_on_a_host_line(api: Api) -> None:
+    """Task 6.5 (D2, D11): a host line cut while its DeepSeek answer is parked, by storms landing in its write, and by
+    Extend and Skip dropping a line made for something else. The writer stays free each time."""
+    from horizon.ai.contexts import HostKey
+    from horizon.sessions import debate_host
+    from tests.sessions.test_debate_host import debate
+
+    sid = await debate(api)
+    assert api.rt.fake is not None
+    release = park_next_chat(api.rt, "host")             # the welcome, asked at Start
+    await api.drive(200)
+    actor: SessionActor = await api.rt.sessions.get(sid)
+    pending = list(actor._named.get("host_line", ()))
+    assert len(pending) == 1
+    await storm_during_call(api, sid, pending[0], release)
+    await api.drive(3000)
+    assert "cancelled" in {r["finish_reason"] for r in await ledger(api) if r["purpose"] == "host"}
+
+    await command(api, sid, "debate/pause")
+    await api.drive(100)
+
+    async def show() -> None:
+        await debate_host.show(actor, HostKey(kind="bridge", phase="rebuttal"), api.rt.clock.now())
+
+    cut = await storm_during_write(api, sid, show, storms=20, window_s=0.03)
+    print(f"\nstorms on a host line's write: {cut} of 20 cut before it finished")
+
+    for name in ("debate/extend-round", "debate/skip-to-closing"):   # a line asked for something else is dropped
+        rel = park_next_chat(api.rt, "host")
+        debate_host.request(actor, HostKey(kind="bridge", phase="closing"))
+        await api.drive(50)
+        await command(api, sid, name)
+        debate_host.request(actor, HostKey(kind="extended", phase="rebuttal", iteration=2))
+        from tests.helpers.storm import after_storm
+
+        await after_storm(api, sid)
+        rel.set()
+        await api.drive(100)
+    debate_host.drop(actor)
+    await api.drive(100)

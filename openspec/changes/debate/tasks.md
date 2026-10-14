@@ -224,26 +224,28 @@
 
 ## 6. The host (design D11, D25)
 
-- [ ] 6.1 `seed/runtime.json` (from `scripts/seed-build/runtime.config.ts`) gains `debate.hostWelcomeWaitMs` 3,000 and
+- [x] 6.1 `seed/runtime.json` (from `scripts/seed-build/runtime.config.ts`) gains `debate.hostWelcomeWaitMs` 3,000 and
   `debate.hostBannerWaitMs` 1,500; `domain/runtime_config.py` reads them, and the mock's timing config mirrors them.
+  (Built: the knobs sit under `runtime.debate`; the mock's host lines are fixed and instant, so it has no wait to
+  mirror.)
   Verify: `seed:check` passes, and a config test reads both values.
-- [ ] 6.2 The port: `DebateHost` gains `fixed_line(key, by)`, `async narration(ctx, key)`, `async assess(ctx, by)`
+- [x] 6.2 The port: `DebateHost` gains `fixed_line(key, by)`, `async narration(ctx, key)`, `async assess(ctx, by)`
   and `deliver(assessment, picked)`. `host` joins `NAIVE_PORTS` and `AGENT_PORTS`. `ScriptedDebateHost` returns its
   fixed lines and the three fixed lead-ins, and the mock's `debate.ts` shows the same lead-in after the VERDICT
   banner with Auto host.
   Verify: the ai-ports scenario "Profile selection", and the debate-host scenario "Scripted stays free".
-- [ ] 6.3 `ai/naive/host.py` (prompt `host-1`):
+- [x] 6.3 `ai/naive/host.py` (prompt `host-1`):
   - V6's instruction verbatim, the S6 transcript sentence, the per-kind content, the explicit language last line;
   - `runtime.llm.calls.host`, purpose `host`;
   - validation: quotes and "Host:" stripped; empty or over 60 words → `None`.
   Verify: request-shape tests with canned responses, and the scenario "Too long".
-- [ ] 6.4 The runtime: each line is requested ahead by `HostKey` as `actor.background("host_line")` at D11's moments,
+- [x] 6.4 The runtime: each line is requested ahead by `HostKey` as `actor.background("host_line")` at D11's moments,
   and shown after its banner when ready, or replaced by the fixed line at its deadline (the late answer dropped). A
   key that no longer matches is cancelled. `clear()` adds `"host_line"`. A cap refusal shows the fixed line and takes
   the existing pause path.
   Verify: the debate-host scenarios "A Standard debate's lines", "A late bridge", "A bridge made for something else",
   "No host" and "The ledger".
-- [ ] 6.5 Storms (D2): a host line cut by Extend, Skip and `clear()` during its write and during a parked chat
+- [x] 6.5 Storms (D2): a host line cut by Extend, Skip and `clear()` during its write and during a parked chat
   response.
   Verify: the D2 checks pass.
 

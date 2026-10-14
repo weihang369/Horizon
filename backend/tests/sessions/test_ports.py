@@ -64,10 +64,11 @@ def test_contexts_round_trip_through_json_and_are_frozen() -> None:
 
 @pytest.mark.parametrize(("env", "key_set", "turn", "router", "host"), [
     ({}, False, "scripted", "scripted", "scripted"),
-    ({}, True, "naive", "naive", "scripted"),
+    ({}, True, "naive", "naive", "naive"),          # M11 (debate D11): the host joins NAIVE_PORTS
     ({"HORIZON_AI_PROFILE": "scripted"}, True, "scripted", "scripted", "scripted"),
-    ({"HORIZON_AI_PROFILE": "naive", "HORIZON_AI_TURN": "scripted"}, True, "scripted", "naive", "scripted"),
-    ({"HORIZON_AI_PROFILE": "naive", "HORIZON_AI_HOST": "naive"}, False, "naive", "naive", "scripted"),
+    ({"HORIZON_AI_PROFILE": "naive", "HORIZON_AI_TURN": "scripted"}, True, "scripted", "naive", "naive"),
+    ({"HORIZON_AI_PROFILE": "naive", "HORIZON_AI_HOST": "scripted"}, True, "naive", "naive", "scripted"),
+    ({"HORIZON_AI_PROFILE": "agent"}, True, "agent", "naive", "agent"),   # and AGENT_PORTS
 ])
 def test_profile_selection(env: dict[str, str], key_set: bool, turn: str, router: str, host: str) -> None:
     spec = ProfileSpec.from_env(env)

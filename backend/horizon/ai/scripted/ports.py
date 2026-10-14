@@ -20,6 +20,7 @@ from horizon.ai.contexts import (
     CastRequest,
     DebateRequest,
     FollowRequest,
+    HostKey,
     MessageView,
     PlanRequest,
     ReactionRequest,
@@ -363,6 +364,11 @@ class ScriptedFaceCheck:
         return (row, call) if row is not None else None
 
 
+LEAD_INS = {"arbiter": "Thank you all. The arbiter is weighing the arguments.",
+            "user": "Thank you all. Now it's your call.",
+            "none": "Thank you all. Here is the summary."}
+
+
 class ScriptedDebateHost:
     def __init__(self, deps: AiDeps) -> None:
         self.deps = deps
@@ -370,12 +376,22 @@ class ScriptedDebateHost:
     def round_note(self, phase: str, round_: int, iteration: int) -> str:
         return f"ROUND {round_} · {LABEL.get(phase, phase.upper())}{' · EXTENDED' if iteration > 1 else ''}"
 
-    def narration(self, phase: str, motion: str) -> str:
-        if phase == "opening":
+    def fixed_line(self, key: HostKey, by: str, motion: str = "") -> str:
+        """Today's sentence for the phase a line opens (an extended round and Skip's closing repeat it), or the verdict
+        lead-in by `verdictBy` (M11, debate D11; the mock shows the same)."""
+        if key.kind == "lead_in":
+            return LEAD_INS.get(by, LEAD_INS["arbiter"])
+        if key.phase == "opening":
             return f'Welcome. Tonight\'s motion: "{motion}". Opening statements, please.'
-        if phase == "rebuttal":
+        if key.phase == "rebuttal":
             return "Thank you. Rebuttals now: engage with what you actually heard."
         return "Closing statements. Make them count."
+
+    async def narration(self, ctx: SessionContext, key: HostKey, *,
+                        finish: Callable[[], str | None] | None = None) -> str | None:
+        """`scripted` keeps its fixed sentences, at once (mock parity)."""
+        cfg = ctx.config or {}
+        return self.fixed_line(key, str(cfg.get("verdictBy") or "arbiter"), str(cfg.get("motion", "")))
 
     async def verdict(self, ctx: SessionContext, by: str, picked: str | None) -> dict[str, Any]:
         """The mock's `makeVerdict`; a verdict the user doesn't pick is a paid call first (as the mock charges it)."""

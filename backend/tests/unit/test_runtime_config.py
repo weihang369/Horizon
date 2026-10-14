@@ -38,3 +38,8 @@ def test_an_old_single_window_still_loads() -> None:
 
 def test_the_emotion_fade_set_loads() -> None:   # M9 (turn-plan-emotion task 2.6; docs/ai/06 E3, doc 13 W12)
     assert load_runtime_config(SEED).runtime.emotion_fade == frozenset({"surprised", "embarrassed"})
+
+
+def test_the_host_waits_load() -> None:   # M11 (debate task 6.1; doc 08 V6; design D11)
+    r = load_runtime_config(SEED).runtime
+    assert (r.host_welcome_wait_ms, r.host_banner_wait_ms) == (3000.0, 1500.0)

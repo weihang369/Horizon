@@ -32,10 +32,14 @@ export interface GatewayConfig {
     chatFirstToken: number; chatIdle: number; image: number; music: number; embedding: number; meta: number;
     /** M10 (group-watch D19): watch's recap, the whole non-streamed call. */
     episode: number;
+    /** M11 (debate D13): the verdict's prose, the whole non-streamed JSON call. */
+    verdict: number;
     /** Jev deadlines per question deadline key (docs/ai/13 W12; group A A2). Keys a change doesn't call yet are inert. */
     decision: {
       route: number; turn_plan: number; follow_plan: number; debate_plan: number; guardrail: number;
       guardrail_prompt: number; reaction: number; face_check: number; default: number;
+      /** M11 (debate D12): the rubric's scores, a background purpose. */
+      rubric: number;
     };
   };
 }

@@ -42,6 +42,9 @@ export interface RuntimeConfig {
   context: { voiceReminder: boolean };
   /** docs/ai/06 E3 (doc 13 W12): a kept face in this set becomes neutral, for the speaker and for listeners. */
   emotion: { fade: string[] };
+  /** M11 (doc 08 V6; debate D11): how long the Auto host's written line may hold the debate: the welcome until Start +
+   *  this, every other line until its banner + this; then the fixed sentence shows. The mock's host is instant. */
+  debate: { hostWelcomeWaitMs: number; hostBannerWaitMs: number };
 }
 
 export const RUNTIME: RuntimeConfig = {
@@ -71,4 +74,5 @@ export const RUNTIME: RuntimeConfig = {
   persona: { repeatHint: false, moodLine: false },
   context: { voiceReminder: false },
   emotion: { fade: ["surprised", "embarrassed"] },   // M9 (turn-plan-emotion D13): moments, not moods
+  debate: { hostWelcomeWaitMs: 3000, hostBannerWaitMs: 1500 },
 };

@@ -23,6 +23,7 @@ from horizon.ai.contexts import (
     DebateRequest,
     FollowPlan,
     FollowRequest,
+    HostKey,
     PlanRequest,
     ReactionRequest,
     RouteContext,
@@ -149,8 +150,13 @@ class ReactionPredictor(Protocol):
 
 
 class DebateHost(Protocol):
+    """M11 (doc 08 V6; debate D11): the fixed lines, and `narration`, the async written line (None on any failure; the
+    runtime owns the timing and shows `fixed_line` when it isn't ready by its deadline)."""
+
     def round_note(self, phase: str, round_: int, iteration: int) -> str: ...
-    def narration(self, phase: str, motion: str) -> str: ...
+    def fixed_line(self, key: HostKey, by: str, motion: str = "") -> str: ...
+    async def narration(self, ctx: SessionContext, key: HostKey, *,
+                        finish: Callable[[], str | None] | None = None) -> str | None: ...
     async def verdict(self, ctx: SessionContext, by: str, picked: str | None) -> dict[str, Any]: ...
 
 

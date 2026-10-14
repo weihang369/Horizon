@@ -136,6 +136,14 @@ const hostLine = (phase: DebateTurnPhase, motion: string): string =>
     : phase === "rebuttal" ? "Thank you. Rebuttals now: engage with what you actually heard."
       : "Closing statements. Make them count.";
 
+// M11 (debate D11): the verdict lead-in after the VERDICT banner with Auto host, one per verdict mode (the scripted
+// host's fixed lines; naive and agent write theirs).
+export const LEAD_INS: Record<string, string> = {
+  arbiter: "Thank you all. The arbiter is weighing the arguments.",
+  user: "Thank you all. Now it's your call.",
+  none: "Thank you all. Here is the summary.",
+};
+
 export function start(h: DebateHost, sid: string): void {
   const live = h.live(sid);
   const cfg = cfgOf(live);
@@ -277,6 +285,9 @@ export function goVerdict(h: DebateHost, sid: string): void {
     { type: "phase", payload: { phase: "verdict", round: cfg.phases.length + 1, iteration: 1 } },
     { type: "message", payload: { message: systemNote(h, sid, `ROUND ${cfg.phases.length + 1} · VERDICT`) } },
   );
+  if (cfg.moderator === "auto_host") {
+    h.emit(sid, { type: "message", payload: { message: systemNote(h, sid, LEAD_INS[cfg.verdictBy] ?? LEAD_INS.arbiter, "narration", { type: "host" }) } });
+  }
   if (cfg.verdictBy === "user") return; // waits for pickStrongerCase
   enqueue(live, (done) => h.after(sid, 1800, () => {
     h.charge(sid, "decision", chatCostUsd({ tokensIn: 6200, tokensCached: 2400, tokensOut: 420 }, h.pricing.decision, h.period()));

@@ -51,9 +51,11 @@ PORTS = ("turn", "router", "reactions", "host", "director", "summariser", "guard
          "embedder", "knowledge_retriever", "memory_retriever", "memory_writer", "converter", "planner", "face_check")
 NAIVE_PORTS = frozenset({"turn", "router", "drafter", "image", "song", "embedder", "knowledge_retriever",
                          "memory_retriever", "converter", "summariser",   # M8: the DeepSeek rolling summary (X3)
-                         "planner", "face_check"})   # M9 (design D5): naive's own no-ops, never the scripted stand-ins
+                         "planner", "face_check",   # M9 (design D5): naive's own no-ops, never the scripted stand-ins
+                         "host"})   # M11 (debate D11): the DeepSeek host lines
 KEYLESS_PORTS = frozenset({"converter"})   # chosen by availability, not by the profile or the key (D-96)
-AGENT_PORTS = frozenset({"turn", "planner", "reactions", "face_check"})   # `agent` implementations (M8 turn; M9 the rest)
+AGENT_PORTS = frozenset({"turn", "planner", "reactions", "face_check",   # `agent` implementations (M8 turn; M9 the rest)
+                         "host"})   # M11 (debate D11): the same host lines; its verdict half differs (D14)
 ENV_PROFILE = "HORIZON_AI_PROFILE"
 
 
@@ -142,6 +144,9 @@ class AiPorts:
             if port == "face_check":
                 from horizon.ai.agent.face_check import JevFaceCheck
                 return JevFaceCheck(d)
+            if port == "host":
+                from horizon.ai.naive.host import NaiveDebateHost
+                return NaiveDebateHost(d)
             raise KeyError(f"no agent implementation for port {port!r}")
         if impl == "naive":
             if port == "turn":
@@ -178,6 +183,9 @@ class AiPorts:
                 return NoPlanner()
             if port == "face_check":
                 return NoFaceCheck()
+            if port == "host":
+                from horizon.ai.naive.host import NaiveDebateHost
+                return NaiveDebateHost(d)
             raise KeyError(f"no naive implementation for port {port!r}")
         builders: dict[str, Callable[[], Any]] = {
             "turn": lambda: ScriptedTurnEngine(d), "router": lambda: ScriptedRouter(d),
