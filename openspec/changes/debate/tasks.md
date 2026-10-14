@@ -384,7 +384,7 @@
 - [ ] 10.4 Judge validations: `judge_keeps_side`, `judge_engages`, `judge_starts_new` and
   `judge_summary_unsupported` v2 (≈ $0.015).
   Verify: each clears B4's bar, recorded in m11.md. A failing judge is reported to the user as a choice.
-- [ ] 10.5 `decisions --set debate_member` (≈ $0.010), then write `floor.member` into the three entries (version 2,
+- [x] 10.5 `decisions --set debate_member` (≈ $0.010), then write `floor.member` into the three entries (version 2,
   `bank-lock`, seed rebuilt).
   Verify: m11.md has the dev grid, the test result, the paired test and the baseline.
 - [ ] 10.6 `decisions --set emotion` for the debate slice (≈ $0.002), then write the debate faces' floors.

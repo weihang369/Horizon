@@ -77,8 +77,11 @@ def steered_msg(i: int, cid: str, text: str, steer: bool) -> dict[str, Any]:
             "trace": {"routing": {}, "system1": {"questions": rows}}}
 
 
-def test_steered_lines_are_listed_with_their_judge_p() -> None:
+def test_steered_lines_are_listed_with_their_judge_p(monkeypatch: pytest.MonkeyPatch) -> None:
     """The evaluation-harness scenario "Steered lines are listed", on fixture answers."""
+    from horizon.evals import judges
+
+    monkeypatch.setattr(judges, "validated", lambda qid, version, record=None: False)   # whatever the record says
     msgs = [steered_msg(i, f"chr_{i % 3}", f"Line {i}.", i in (4, 9, 13)) for i in range(15)]
     text = "\n".join(watch_suites.freerun_report("watch", msgs, 0, {"m4": 0.2, "m9": 0.8, "m13": 0.1}))
     assert "the steer fired on 3/15" in text
@@ -419,6 +422,7 @@ async def test_an_unvalidated_judge_does_not_count(api: Api, tmp_path: Path, mon
     await api.set_key()
     h = meridian_history("d01", [SOFIA, AMARA], [VICTOR, MEI])
     monkeypatch.setattr(ds, "histories", lambda root=None: [h])
+    monkeypatch.setattr(judges, "validated", lambda qid, version, record=None: False)   # whatever the record says
     opts = Options("debate-quality")
     s = ds.DebateQuality()
     res = await s.run(env_for(api, tmp_path, opts), s.plan(opts, api.rt.prices, paid=False))

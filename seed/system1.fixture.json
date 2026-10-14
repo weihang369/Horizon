@@ -100,7 +100,7 @@
       "member_closing": {
         "purpose": "debate_plan",
         "id": "member_closing",
-        "version": 1,
+        "version": 2,
         "label": "who sums up?",
         "p": 0.72,
         "confidence": 0.72,
@@ -108,7 +108,7 @@
           {
             "name": "confidence",
             "value": 0.72,
-            "threshold": 0.6
+            "threshold": 0.5
           }
         ],
         "result": "used",
@@ -117,7 +117,7 @@
       "member_panel": {
         "purpose": "debate_plan",
         "id": "member_panel",
-        "version": 1,
+        "version": 2,
         "label": "who speaks next?",
         "p": 0.72,
         "confidence": 0.72,
@@ -125,7 +125,7 @@
           {
             "name": "confidence",
             "value": 0.72,
-            "threshold": 0.6
+            "threshold": 0.5
           }
         ],
         "result": "used",
@@ -134,7 +134,7 @@
       "member_rebuttal": {
         "purpose": "debate_plan",
         "id": "member_rebuttal",
-        "version": 1,
+        "version": 2,
         "label": "who answers it?",
         "p": 0.72,
         "confidence": 0.72,
@@ -142,7 +142,7 @@
           {
             "name": "confidence",
             "value": 0.72,
-            "threshold": 0.6
+            "threshold": 0.5
           }
         ],
         "result": "used",

@@ -109,7 +109,7 @@ async def test_a_confident_pick_is_used_with_its_row() -> None:
     row = plan.for_speaker(B).rows[0]
     assert (row["purpose"], row["id"], row["answer"], row["result"], row["action"]) == (
         "debate_plan", "member_rebuttal", B, "used", "speaks")
-    assert row["compared"] == [{"name": "confidence", "value": 0.9, "threshold": 0.6}]
+    assert row["compared"] == [{"name": "confidence", "value": 0.9, "threshold": 0.5}]   # floor.member (task 10.5)
     tp = plan.for_speaker(B)
     assert tp.emotion is not None and tp.emotion.face == "angry"
     assert {r["about"]: r["result"] for r in tp.rows if r["id"] == "emotion_line"} == {A: "not_used", B: "used"}

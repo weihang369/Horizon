@@ -119,7 +119,7 @@ def test_member_closing_and_panel() -> None:
 def test_the_member_entries_share_floor_member() -> None:
     b = bank()
     floors = {b.get(q).floor for q in ("member_rebuttal", "member_closing", "member_panel")}
-    assert floors == {0.6}   # W12's start, tuned in task 10.5
+    assert floors == {0.5}   # W12 started it at 0.6; task 10.5 chose 0.5 on the member slice's dev split
     assert {b.get(q).purpose for q in ("member_rebuttal", "member_closing", "member_panel")} == {"debate_plan"}
 
 

@@ -1,6 +1,6 @@
 {
   "id": "member_panel",
-  "version": 1,
+  "version": 2,
   "purpose": "debate_plan",
   "type": "choice",
   "label": "who speaks next?",
@@ -21,7 +21,7 @@
     "quoted_recent": "quoted"
   },
   "deadline": "debate_plan",
-  "floor": 0.6,
+  "floor": 0.5,
   "thresholds": {},
   "fallback": "next_in_order"
 }

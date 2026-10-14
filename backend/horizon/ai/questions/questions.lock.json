@@ -116,16 +116,16 @@
     "version": 4
   },
   "member_closing": {
-    "sha256": "e85918395c46c53934d362ebe66cf77dc05178988d5353cd1677c017b577c9fa",
-    "version": 1
+    "sha256": "28d3c93daed23b6a64d94d385e144aa688eff00006f06c1b435a95156f0e478d",
+    "version": 2
   },
   "member_panel": {
-    "sha256": "02fd6f308782fa9dd49a742d7003036d1b5d2f9e153030c1e4cb3ba28b415a50",
-    "version": 1
+    "sha256": "d8cd0ad4a8dd9c81169665f5006cba8d6d63a6a95a6db6b7e60d1315fe14a82d",
+    "version": 2
   },
   "member_rebuttal": {
-    "sha256": "b97f9bdc04f02b3f4b901d8f3482eeb20167c78dda750fbe2171af1ff9485fe6",
-    "version": 1
+    "sha256": "d5ad5842d332c6456cb944db5bfef97d73ff6fc66a6e6c672e1f685881998d44",
+    "version": 2
   },
   "reaction": {
     "sha256": "c08fc6c998448b69195d93c8782e9e676acd6ab2fe53eecc684156e86dff9850",
