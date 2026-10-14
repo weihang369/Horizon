@@ -14,6 +14,8 @@ not an independent reviewer.
 | `emotion/emotion_debate` | 40 | 15 | 1111 | 2 | the whole set re-read; three labels widened |
 | `judges/judge_keeps_side` | 60 | 15 | 1112 | 0 | none |
 | `judges/judge_engages` | 60 | 15 | 1113 | 0 | none |
+| `who_speaks/who_scene_fresh` (10.11) | 40 | 15 | 1115 | 0 | none |
+| `emotion/emotion_watch_2` (10.11) | 40 | 15 | 1116 | 1 | that item widened |
 
 The sampled ids are in `m11-review.json`.
 
@@ -50,3 +52,11 @@ The sampled ids are in `m11-review.json`.
   the judge sees with it, 59 dropped (a contrast with a point made, a concession, a name, the other side argued, a
   repeated text) and 32 kept; the set takes the first 30 in turn. All 30 planted `judge_keeps_side` candidates were
   kept.
+- **`who_scene_fresh` (10.11).** Cut from the three 10.10 watch scenes after reading them, before any v3 answer.
+  Each sampled cut points to one of its two candidates by name ("Amara, draft it"), by an answer owed ("Dad, shop
+  rules can't be made up"), or by field (a nurse-roster point to the emergency physician). Cuts where both candidates
+  fit equally were never written.
+- **`emotion_watch_2` (10.11).** One disagreement: `emw21-010` (Amara hearing her line will go in the minutes, with
+  seven minutes on the clock) was `happy` only; she may as fairly be thinking about the draft, so `happy, thinking`.
+  Under the relabel trigger, so the rest stand. The six openings ask the opener and one more of the cast each, from
+  the premise alone (three scenes, D20's six).

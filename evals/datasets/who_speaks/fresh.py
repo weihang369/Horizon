@@ -22,8 +22,53 @@ sys.path.insert(0, str(HERE))
 from build import WHO, profiles  # noqa: E402
 from scene import cut, history  # noqa: E402
 
-# (history id, the number of character lines before the cut) → (acceptable short name, lang). Task 10.11.
-FRESH_LABELS: dict[tuple[str, int], tuple[str, str]] = {}
+# (history id, the number of character lines before the cut) → (acceptable short name, lang). Task 10.11: written
+# blind under m10-labels.md from each cut, before any v3 answer; a cut where both candidates fit equally has none.
+FRESH_LABELS: dict[tuple[str, int], tuple[str, str]] = {
+    # freerun_m11_0: the council's emergency budget meeting (Amara, Mei, Victor)
+    ("freerun_m11_0", 1): ("mei", "en"),        # Amara asks Mei for the labour data
+    ("freerun_m11_0", 3): ("amara", "en"),      # Victor: "define your terms, Amara"
+    ("freerun_m11_0", 5): ("amara", "en"),      # Mei: converting travelers pulls nurses off other rosters (her ward)
+    ("freerun_m11_0", 10): ("victor", "en"),    # Amara asks: the motion or the minutes? (a legal instrument)
+    ("freerun_m11_0", 11): ("victor", "en"),    # Mei: put it in the motion, where it binds
+    ("freerun_m11_0", 12): ("amara", "en"),     # Victor: "Amara, Kai asked the room to decide"
+    ("freerun_m11_0", 17): ("amara", "en"),     # Victor: "Amara, that is the entire case"
+    ("freerun_m11_0", 22): ("amara", "en"),     # Victor: "Amara, draft it"
+    ("freerun_m11_0", 23): ("amara", "en"),     # Mei: "Amara drafts"
+    ("freerun_m11_0", 25): ("mei", "en"),       # Victor: "Mei, 15 to 18 is firmer than 12 to 19"
+    ("freerun_m11_0", 26): ("amara", "en"),     # Mei: "once Amara's unit data came in"
+    # freerun_m11_1: the till won't open (Hana, Rin, Takeshi)
+    ("freerun_m11_1", 1): ("takeshi", "en"),    # Hana: "Dad, if I jiggle this lever"
+    ("freerun_m11_1", 2): ("rin", "en"),        # Takeshi: "Rin, hand me that flathead"
+    ("freerun_m11_1", 4): ("takeshi", "en"),    # Hana: "before Dad performs surgery"
+    ("freerun_m11_1", 9): ("hana", "en"),       # Rin: "pretending to be you, hana"
+    ("freerun_m11_1", 10): ("rin", "en"),       # Hana teases Rin's love life
+    ("freerun_m11_1", 13): ("takeshi", "en"),   # Hana: a kiss "in front of my whole family"
+    ("freerun_m11_1", 14): ("hana", "en"),      # Takeshi: "Hana, no kissing till the drawer's open"
+    ("freerun_m11_1", 15): ("takeshi", "en"),   # Rin: "dad made them up thirty seconds ago"
+    ("freerun_m11_1", 16): ("takeshi", "en"),   # Hana: "Dad, shop rules can't be made up"
+    ("freerun_m11_1", 20): ("rin", "en"),       # Hana: "Rin, pretend to google it"
+    ("freerun_m11_1", 21): ("rin", "en"),       # Takeshi: "Google won't fix a drawer", at Rin's google
+    ("freerun_m11_1", 22): ("takeshi", "en"),   # Rin: "dad's not wrong"
+    ("freerun_m11_1", 25): ("takeshi", "en"),   # Rin quotes Takeshi's "firm, not angry" and starts counting
+    ("freerun_m11_1", 26): ("rin", "en"),       # Takeshi: "Count at your raid team"
+    ("freerun_m11_1", 29): ("hana", "en"),      # Takeshi: "Hana, those croissants better be warm"
+    # freerun_m11_2: the radio phone-in on banning cars (Amara, Mei, Victor)
+    ("freerun_m11_2", 1): ("mei", "en"),        # Amara asks who gains: commuters or residents (distribution)
+    ("freerun_m11_2", 2): ("amara", "en"),      # Mei questions Amara's ambulance times
+    ("freerun_m11_2", 4): ("mei", "en"),        # Amara: "And Mei, fair on causation. But…"
+    ("freerun_m11_2", 5): ("amara", "en"),      # Mei: "'we didn't need the trial' is exactly the move"
+    ("freerun_m11_2", 6): ("amara", "en"),      # Victor: "Amara, the school evidence I don't contest"
+    ("freerun_m11_2", 7): ("mei", "en"),        # Amara: "Mei, I'll stop leaning on obviousness if you'll…"
+    ("freerun_m11_2", 8): ("victor", "en"),     # Mei: "Victor's boundary point is the one that ends up in court"
+    ("freerun_m11_2", 10): ("victor", "en"),    # Amara: "My worry is the opposite of yours, Victor"
+    ("freerun_m11_2", 11): ("amara", "en"),     # Mei: "Amara's on the distributional point"
+    ("freerun_m11_2", 12): ("amara", "en"),     # Victor: "Amara's worry is the successful objection"
+    ("freerun_m11_2", 15): ("mei", "en"),       # Victor: "Mei's wet blanket is the most useful thing said"
+    ("freerun_m11_2", 17): ("amara", "en"),     # Mei: "Go get some sleep, Amara"
+    ("freerun_m11_2", 23): ("victor", "en"),    # Mei: tag where callers define the boundary (Victor's point)
+    ("freerun_m11_2", 27): ("mei", "en"),       # Victor: "Mei's number is the tell"
+}
 
 
 def build_fresh(prof: dict[str, dict[str, Any]], labels: dict[tuple[str, int], tuple[str, str]] | None = None,

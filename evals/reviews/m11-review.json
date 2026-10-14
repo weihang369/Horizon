@@ -112,5 +112,15 @@
    "dmm-090"
   ],
   "note": "the rebuilt set"
+ },
+ "who_speaks/who_scene_fresh": {
+  "seed": 1115,
+  "items": 40,
+  "note": "10.11"
+ },
+ "emotion/emotion_watch_2": {
+  "seed": 1116,
+  "items": 40,
+  "note": "10.11; emw21-010 widened"
  }
 }
