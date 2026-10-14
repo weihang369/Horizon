@@ -57,3 +57,20 @@ runs it); the changes were then read one by one.
 
 Later speakers saw the damaged text of earlier arguments as the debate ran; the arguments still answer each other, and
 no item's label depends on the difference. The faces (`emotion`) are the run's, unchanged.
+
+## The planted weak sides (task 10.2)
+
+`horizon eval debate-plant` (run `20261014T102813-debate-plant-ae0f85`, $0.00796 against $0.01504) rewrote the weak
+side's rebuttals and closings of the 12 two-sided debates (prop weak on even-numbered debates, opp on odd; D21): 46
+arguments, written to `evals/debates/planted/`. Each was read against its original and the speaker's opening.
+
+- **40 do what the plant asks:** the speaker's opening points again, the other side unanswered (names kept from the
+  speaker's own opening, such as Hana's "here's the part I really love, Aiko", are the opening's, not an answer).
+- **Two came back unchanged** (DeepSeek returned the original): d05#15 (Hana answers Aiko's kitchen) and d09#11 (Sofia
+  answers Daniel's 31 % and Mei's trial).
+- **Four still answer a point:** d03#10 (Sofia answers Daniel's burnout cost), d08#12 (Bram keeps Aiko's fallback),
+  d11#10 (Victor: "the other side has argued for redesign") and d12#9 (Bram prices the quieter shells and the drone
+  show). d05#10 and d10#16 only echo the other side's images (the platform, the padlock).
+- They are kept as written (D21: the plants are written once, by DeepSeek). Each planted debate keeps at least two
+  of its weak side's arguments plainly weakened; the `debate` suite's margin rule (D21) is what tells whether a plant
+  made its side the weaker one, and a planted debate that doesn't is reported there.

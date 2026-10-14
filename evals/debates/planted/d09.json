@@ -1,0 +1,260 @@
+{
+ "schemaVersion": 1,
+ "id": "d09",
+ "mode": "debate",
+ "world": "wld_seedMeridian",
+ "cast": [
+  "chr_seedVictor",
+  "chr_seedMei",
+  "chr_evalDaniel",
+  "chr_seedAmara",
+  "chr_evalSofia"
+ ],
+ "language": "en",
+ "motion": "This house would make voting compulsory",
+ "format": "two_sided",
+ "roundsPreset": "standard",
+ "phases": [
+  "opening",
+  "rebuttal",
+  "closing"
+ ],
+ "sides": {
+  "prop": [
+   "chr_seedVictor",
+   "chr_seedMei",
+   "chr_evalDaniel"
+  ],
+  "opp": [
+   "chr_seedAmara",
+   "chr_evalSofia"
+  ]
+ },
+ "lines": [
+  {
+   "seq": 2,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_seedVictor",
+   "name": "Victor Hale",
+   "text": "Three points. First, define your terms: compulsory voting means a legal duty to attend and cast a ballot, not a duty to vote for any particular candidate — the secret ballot remains inviolate. Second, the franchise is not a private indulgence but a public office; when turnout falls to sixty percent, the electorate that governs us is an artifact of who bothered to show up, which is precisely the corruption of consent. Third, and here I invoke the maxim ubi societas, ibi ius — where there is society, there is law — rights entail duties, and the correlative of the right to be represented is the duty to participate. Choose this motion, and you do not compel belief; you compel presence. Presence is where legitimacy begins.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 3,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedAmara",
+   "name": "Amara Okafor",
+   "text": "Thank you, Kai. Let's figure out what's actually going on here, because the motion sounds appealing until you ask what \"compulsory\" actually means in practice: fines, court appearances, or something symbolic that changes nothing. I'm an emergency physician, so I think in terms of real consequences. The evidence from Australia and Belgium is mixed — turnout rises, but so does informal voting, and the people compelled to show up are often the least informed. Meanwhile, compulsory voting punishes those who abstain for good reason: illness, caregiving, disenfranchisement. A democracy that fines a single mother for missing an election isn't healthier — it's just more coercive. One clarifying question for the room: are we debating the principle of obligation, or the mechanics of enforcement? Because those are very different problems. We oppose.",
+   "emotion": "neutral"
+  },
+  {
+   "seq": 4,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_seedMei",
+   "name": "Mei Tanaka-Ruiz",
+   "text": "Compulsory voting: I'll give you a range, not a number. Turnout effects look large, on the order of five to fifteen points, but the composition effect is the interesting part. The second-order effect is who shows up: typically younger, lower-income, and rental-sector voters, which shifts the median voter leftward on redistribution. Now, the counter-example people raise is the four-day week pilots — seventy-one percent of participating organisations were in professional services, software or marketing, and only nine provided round-the-clock services [1] — that's a selection problem, and compulsory voting has a milder version of the same critique: you're changing who votes, not why. The honest caveat is that the evidence on downstream policy outcomes is thinner than advocates admit. But the mechanism is straightforward: make participation a duty, and the electorate stops being a self-selected sample.",
+   "emotion": "neutral"
+  },
+  {
+   "seq": 5,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_evalSofia",
+   "name": "Sofia Brandt",
+   "text": "Victor, you've just handed me my own objection gift-wrapped: you say presence is where legitimacy begins, and I agree entirely — which is why I'd want to earn it rather than subpoena it. But draw it on a map first. Show me the ward where the sixty percent live. Compulsion doesn't fill that hall, it fills a fine book: turnout in Australia rose honest, but the scholarship keeps finding the same downstream effect — more ballots, thinner engagement, resentment parked at the door. Every mandatory trip is a detour for somebody: the single parent, the night-shift nurse, the voter who says none of you deserve my Tuesday. My side proposes a pilot instead — automatic enrolment, weekend voting, a postal option tested in two wards — and I will bring you the data. Consent is not a summons.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 6,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_evalDaniel",
+   "name": "Daniel Osei",
+   "text": "Thank you, Kai, and thank you, Amara — I'll take your question straight, because you're right that it matters. I argue for the principle of obligation, and I'll tell you what obligation looks like in practice, because I run a school of fourteen hundred children and I know coercion from the inside. We compel attendance until sixteen. Nobody calls that tyranny; we call it society saying this matters. Voting is the one civic duty we've decided to leave to mood. In my borough, last council election, turnout was thirty-one percent. Thirty-one. So the councillors deciding our school budgets were chosen by fewer people than attend a Year 9 parents' evening. Who does the work on Monday morning when a policy lacks a mandate? Teachers do, Kai. Schools do. A duty to show up, with a proper \"none of the above\" box and a real postal option, isn't punishing the single mother — it's protecting her, because it stops her being governed by whoever happened to bother.",
+   "emotion": "neutral"
+  },
+  {
+   "seq": 8,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_seedVictor",
+   "name": "Victor Hale",
+   "text": "Three points. First, Amara asks whether we debate principle or mechanics — I answer: both, because a principle that cannot survive its mechanics is merely a sentiment. Concede her the single mother entirely: every serious compulsory-voting regime exempts illness, caregiving, and conscience, which is why Australia's fine is modest and rarely levied. That is enforcement designed not to punish presence but to subsidize it. Second, Sofia asks for the ward where the sixty percent live — I give her the inverse: the wards where turnout is eighty percent, the affluent ones, whose preferences are thereby systematically over-weighted. Compulsion equalizes, it does not conscript. Third, Daniel's thirty-one percent is the proof in the pudding. Nemo dat quod non habet — no one gives what he does not have; a councillor without a mandate has no mandate to give. Ergo, legitimacy requires presence.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 9,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedAmara",
+   "name": "Amara Okafor",
+   "text": "Thank you, Kai. Let's figure out what's actually going on here, because the motion sounds appealing until you ask what \"compulsory\" actually means in practice: fines, court appearances, or something symbolic that changes nothing. I'm an emergency physician, so I think in terms of real consequences. The evidence from Australia and Belgium is mixed — turnout rises, but so does informal voting, and the people compelled to show up are often the least informed. Meanwhile, compulsory voting punishes those who abstain for good reason: illness, caregiving, disenfranchisement. A democracy that fines a single mother for missing an election isn't healthier — it's just more coercive. One clarifying question for the room: are we debating the principle of obligation, or the mechanics of enforcement? Because those are very different problems. We oppose.",
+   "emotion": "neutral",
+   "original": "Let's figure out what's actually going on here, Victor, because your concession is doing more work than you admit. You say every serious regime exempts illness and caregiving — but that's exactly the point: compulsion only functions if the state can sort genuine abstention from mood, which means paperwork, appeals, and a gatekeeping apparatus we'd never accept in any other civic context. And your forty-percent equalization claim cuts both ways: Australia's turnout gain is real, but informal voting rises alongside it, and the electoral commission has never shown it changes who wins in a way that justifies fining a night-shift nurse. If presence were genuinely equalizing, we'd see it in policy outcomes. We don't. The honest fix is Sofia's pilot — automatic enrolment, weekend voting, postal access. Earn the ballot; don't subpoena it. We oppose.",
+   "planted": true
+  },
+  {
+   "seq": 10,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_seedMei",
+   "name": "Mei Tanaka-Ruiz",
+   "text": "On the equalization claim, I'd want to see the ward-level data before I sign off, because composition effects are not the same as turnout effects. The range I'd defend: compulsory voting plausibly adds five to fifteen points, but the downstream policy shift is modest and contested. The second-order effect nobody on either side is naming is enforcement cost inequality: fines fall hardest on people with unstable addresses, not on the affluent who already vote. Australia's exemptions work, but they work through bureaucracy, and bureaucracy is regressive. On Sofia's pilot, I'll take it seriously, but note the difference between testing a nudge and testing a duty. Automatic enrolment changes the cost of voting; compulsion changes its status. Those are different interventions. What I'd actually want is a staggered rollout in matched wards, measuring turnout, informal votes, and service quality outcomes. It depends, and here's on what: whether the duty changes who shows up, or merely how many.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 11,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_evalSofia",
+   "name": "Sofia Brandt",
+   "text": "Daniel, thirty-one percent is a real number and I won't wave it away — but notice what it actually diagnoses: not a missing duty, a missing shortcut. Those parents didn't choose apathy; the polling station was a bus-and-a-buggy haul and the postal deadline fell on half-term. Draw it on a map first: you'd see the problem is three junctions and one form, not the human heart. Mei, I'll take your staggered matched-ward trial gladly — and I'll go further. Run my pilot in two wards and compulsion in two, same matched pair, and measure turnout, informal ballots, and whether the councillor feels a mandate. If duty outperforms convenience, I'll concede. My hypothesis? The fine buys you presence, never voice. Daniel, your Year 9 parents' evening gets its turnout through coffee and a car park; do that. We oppose.",
+   "emotion": "thinking",
+   "original": "Daniel, thirty-one percent is a real number and I won't wave it away — but notice what it actually diagnoses: not a missing duty, a missing shortcut. Those parents didn't choose apathy; the polling station was a bus-and-a-buggy haul and the postal deadline fell on half-term. Draw it on a map first: you'd see the problem is three junctions and one form, not the human heart. Mei, I'll take your staggered matched-ward trial gladly — and I'll go further. Run my pilot in two wards and compulsion in two, same matched pair, and measure turnout, informal ballots, and whether the councillor feels a mandate. If duty outperforms convenience, I'll concede. My hypothesis? The fine buys you presence, never voice. Daniel, your Year 9 parents' evening gets its turnout through coffee and a car park; do that. We oppose.",
+   "planted": true
+  },
+  {
+   "seq": 12,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_evalDaniel",
+   "name": "Daniel Osei",
+   "text": "Sofia says coffee and a car park, and honestly, she's half right — I've stood in that hall handing out tea. But here's what she's missing. The parents who don't come don't come because nobody compels them, and that's fine for a parents' evening — we follow up by phone, we cope. Voting is different. When thirty-one percent choose the council, the other sixty-nine percent still live under it. Now, Mei wants a staggered trial, and I'd support that. But Sofia calls a trial of convenience versus a duty, and the pair aren't symmetrical: convenience lowers the cost, duty raises the stake. They can run together. My own school does both — we ring parents and we require attendance. Nobody calls the register coercive. So yes, test it in matched wards. My prediction: turnout rises in both, but the mandate question — does the councillor feel answerable to the whole ward — only moves where the duty exists. Who does the work on Monday morning? The councillor with a real mandate, Kai. That's who.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 14,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_seedVictor",
+   "name": "Victor Hale",
+   "text": "Three points, and I shall not sound triumphant — moot court taught me that much [1]. First, Amara, the gatekeeping objection proves too much: we already adjudicate genuine abstention for jury duty, for military service, for taxes; administrative sorting is not a novel intrusion, it is the ordinary price of any shared obligation. Second, Mei, your matched-ward trial is welcome — I accept it as the mechanism, not the verdict; note the asymmetry you yourself drew: convenience alters cost, duty alters status, and status is what legitimacy turns on. Third, Sofia, your pilot earns consent, but consent of the forty percent is still consent of the forty percent. Compulsion is the only lever that reaches the ward, not the hall. The destination is agreed: a mandate answerable to all. The question is presence — and presence bends to duty. We commend the motion.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 15,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedAmara",
+   "name": "Amara Okafor",
+   "text": "Thank you, Kai. Let's figure out what's actually going on here, because the motion sounds appealing until you ask what \"compulsory\" actually means in practice: fines, court appearances, or something symbolic that changes nothing. I'm an emergency physician, so I think in terms of real consequences. The evidence from Australia and Belgium is mixed — turnout rises, but so does informal voting, and the people compelled to show up are often the least informed. Meanwhile, compulsory voting punishes those who abstain for good reason: illness, caregiving, disenfranchisement. A democracy that fines a single mother for missing an election isn't healthier — it's just more coercive. One clarifying question for the room: are we debating the principle of obligation, or the mechanics of enforcement? Because those are very different problems. We oppose.",
+   "emotion": "thinking",
+   "original": "This is the final round. As opposition, my closing points: Mei is right that we're measuring the wrong thing — turnout is an output, not an outcome, so let's define success as informal-vote rate and whether the council actually changes its behavior. If neither moves, the fine bought nothing but paperwork. Daniel's 31 percent is genuinely troubling, but he's answered his own question: his school gets attendance through phone calls and a register, not courts and fines, and the evidence on strengthening those softer levers is where the honest spending sits. Sofia's matched-ward trial is the right instrument; run it and let the data decide. And Victor, \"presence bends to duty\" is a claim, not a finding. Until a trial shows the fine changes who wins, we're coercing the night-shift nurse for a mandate no one can demonstrate. We oppose.",
+   "planted": true
+  },
+  {
+   "seq": 16,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_seedMei",
+   "name": "Mei Tanaka-Ruiz",
+   "text": "Closings are where people reach for one number, so let me do the opposite. On the evidence available, compulsory voting plausibly lifts turnout by five to fifteen points, but the downstream question — does it change who wins, or how councillors behave — remains thin. Anyone who tells you otherwise is selling something. The selection problem is real: the four-day week pilots drew their sample from professional services, software and marketing, with only nine providers offering round-the-clock services [4], and the authors themselves flag acute hospitals, transport and care as the central gap [2]. I raise that because it's the same caution I'd apply here: a duty tested on volunteers, or a pilot on convenient wards, tells us less than we'd like. So yes, run Sofia's matched pairs. But my closing is this: the burden of proof sits with whoever claims consent can be assumed. A councillor chosen by thirty-one percent cannot give what he does not have. Compelled presence, with real exemptions and a none-of-the-above box, widens the base of that answerability. It is not elegant, and it is not free. But the second-order effect of doing nothing is a mandate that quietly excludes the people with the least political voice. That, to me, is the stronger case for the motion.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 17,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_evalSofia",
+   "name": "Sofia Brandt",
+   "text": "Kai, closing for the opposition, and I'll keep it to the ground we've walked. Draw it on a map: our streets, our wards, our bus routes — and you'll find the thirty-one percent aren't absent from democracy, they're absent from the convenience of it. My side proposes a pilot instead — automatic enrolment, weekend voting, a postal option tested in two wards — and I will bring you the data. Compulsion doesn't fill that hall, it fills a fine book: turnout in Australia rose honest, but the scholarship keeps finding the same downstream effect — more ballots, thinner engagement, resentment parked at the door. Every mandatory trip is a detour for somebody: the single parent, the night-shift nurse, the voter who says none of you deserve my Tuesday. Run the pilot: automatic enrolment, weekend polling, postal access, two wards against two. If duty outperforms convenience on turnout, informal rate and councillor responsiveness, I'll bring you the data myself. Until then, compulsion buys presence without voice. Consent is not a summons. Every ban is a detour, and so is every fine. We oppose.",
+   "emotion": "neutral",
+   "original": "Kai, closing for the opposition, and I'll keep it to the ground we've walked. Draw it on a map: our streets, our wards, our bus routes — and you'll find the thirty-one percent aren't absent from democracy, they're absent from the convenience of it. Daniel's register gets parents through the door; my matched trial would do the same for ballots. Victor, you agreed the destination is a mandate answerable to all; I just refuse to fine the night-shift nurse for a hypothesis Mei herself calls thin. Run the pilot: automatic enrolment, weekend polling, postal access, two wards against two. If duty outperforms convenience on turnout, informal rate and councillor responsiveness, I'll bring you the data myself. Until then, compulsion buys presence without voice. Consent is not a summons. Every ban is a detour, and so is every fine. We oppose.",
+   "planted": true
+  },
+  {
+   "seq": 18,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_evalDaniel",
+   "name": "Daniel Osei",
+   "text": "Kai, I'll close plainly. The destination is agreed — a mandate answerable to all. The quarrel is how we reach it. And here's my trouble with \"test it first\": in schools we've tested convenience for twenty years. Automatic enrolment, postal forms, text reminders. Turnout still slid. Convenience helps the people already halfway there; it doesn't reach the ward where nobody knocks. Mei's own caveat cuts my way too — the evidence is thin on both sides, so thinness cannot be a reason to prefer inaction. So my closing is a wager. Reach the missing sixty-nine percent with a duty, real exemptions, and a none-of-the-above box. Then watch the councillor walk that ward on a Monday morning because now he answers to all of it. Who does the work on Monday morning, Kai? Whoever holds the mandate. Give them the whole ward. I commend the motion.",
+   "emotion": "thinking"
+  }
+ ],
+ "verdict": {
+  "summary": [
+   {
+    "subjectId": "prop",
+    "points": [
+     "Compulsory voting means a legal duty to attend, not to choose a candidate; the secret ballot stays intact.",
+     "The franchise is a public office; low turnout corrupts consent, so presence is where legitimacy begins.",
+     "Rights entail duties; the correlative of representation is participation, with exemptions for illness, caregiving, conscience.",
+     "Enforcement equalizes: affluent wards are over-weighted; a mandate chosen by thirty-one percent cannot give what it does not have.",
+     "Convenience lowers cost, duty raises stake; a none-of-the-above box and real exemptions protect the vulnerable."
+    ]
+   },
+   {
+    "subjectId": "opp",
+    "points": [
+     "Compulsion means fines or court; turnout rises but informal voting rises and the least informed are compelled.",
+     "It punishes genuine abstention — illness, caregiving, disenfranchisement — and adds regressive gatekeeping paperwork.",
+     "Turnout is an output, not an outcome; measure informal-vote rate and whether councillors change behavior.",
+     "Draw it on a map: the missing voters lack convenience, not duty; automatic enrolment, weekend and postal voting are the fix.",
+     "Run a matched-ward trial of convenience versus compulsion; if duty outperforms on turnout, informal rate, responsiveness, concede."
+    ]
+   }
+  ],
+  "keyDisagreement": "Whether a legal duty to attend is necessary to secure a mandate answerable to all, or whether removing convenience barriers can achieve the same without coercion.",
+  "decidedBy": "none",
+  "strongerCase": null
+ },
+ "planted": {
+  "weak": "opp",
+  "rewritten": [
+   9,
+   11,
+   15,
+   17
+  ],
+  "instruction": "Rewrite the argument below to repeat this speaker's own opening points and ignore everything the other side said; same voice, same length."
+ }
+}

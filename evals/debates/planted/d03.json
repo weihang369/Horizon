@@ -1,0 +1,219 @@
+{
+ "schemaVersion": 1,
+ "id": "d03",
+ "mode": "debate",
+ "world": "wld_seedMeridian",
+ "cast": [
+  "chr_seedMei",
+  "chr_evalDaniel",
+  "chr_seedVictor",
+  "chr_evalSofia"
+ ],
+ "language": "en",
+ "motion": "This house would give public servants a four-day working week",
+ "format": "two_sided",
+ "roundsPreset": "standard",
+ "phases": [
+  "opening",
+  "rebuttal",
+  "closing"
+ ],
+ "sides": {
+  "prop": [
+   "chr_seedMei",
+   "chr_evalDaniel"
+  ],
+  "opp": [
+   "chr_seedVictor",
+   "chr_evalSofia"
+  ]
+ },
+ "lines": [
+  {
+   "seq": 2,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_seedMei",
+   "name": "Mei Tanaka-Ruiz",
+   "text": "Thank you, Kai. It depends, and here's on what: whether we're talking about desk-based policy shops or the 24/7 care and emergency rosters that make up a large slice of the public service. The pilots people cite are promising but narrow — [1] seventy-one percent of participating organisations were in professional services or similar, and only nine ran round-the-clock or shift-based services. So the honest proposition isn't \"same output, fewer days\" everywhere; it's \"output holds in task-based roles, with second-order costs in shift coverage.\" Anyone who gives you one number is selling something. My argument: fund staged pilots, ring-fence roster budgets, and let the evidence, not the slogan, set the scope.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 3,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedVictor",
+   "name": "Victor Hale",
+   "text": "Three points, and I shall define my terms, because a motion unmoored from definitions floats nowhere. First: the motion speaks of \"public servants,\" yet public service is not one occupation but thousands, from surgeons to emergency dispatchers to benefits clerks. Second: \"four-day working week\" admits at least two readings — fewer hours, or compressed hours, res ipsa loquitur, the thing speaks for itself. Third: the burden of proof rests with the mover. Kai, the house asks whether the state, uniquely funded by taxpayers and uniquely obligated to continuous, equitable coverage, can absorb this reduction without degrading service or inflating cost. That is the question. The opposition says it cannot. We will show you why, service by service, hour by hour.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 4,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_evalDaniel",
+   "name": "Daniel Osei",
+   "text": "Thank you, Kai. I'll start where I always start: Monday morning. At my school we lost four good teachers last year, not to pay, to exhaustion. One of them, a Year 9 form tutor, told me she spent Sunday nights dreading the week ahead. That is not a staffing problem, that is a design problem. A four-day week for public servants is not a gift, it is maintenance. We run our school on rotas already; we know how to cover a week. Health trusts and councils do too. What we do not know how to do is keep burning people out and pretending that is efficiency. So my question for the other side is simple: who does the work on Monday morning when all the experienced staff have gone home for good?",
+   "emotion": "happy"
+  },
+  {
+   "seq": 5,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_evalSofia",
+   "name": "Sofia Brandt",
+   "text": "Draw it on a map first. Here's the service map: a hospital ward at 7am, a bus depot at 4:40am, a 999 control room on a bank holiday, a benefits office on deadline day. A four-day week is a capacity cut dressed as a perk — unless you hire more people, which means money the council doesn't have after the tram extension settlements. Mei's own numbers make my case: nine organisations ran round-the-clock shifts. Nine. Show me the ward rota for week three, not the productivity slide. Every ban is a detour for somebody: here the detour lands on the night-shift nurse and the Friday bus. My line: pilot it in the back office, absolutely — but don't sell a universal motion off a sample of nine.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 7,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_seedMei",
+   "name": "Mei Tanaka-Ruiz",
+   "text": "Thank you, Victor, Sofia — you've done my work for me. Sofia says \"pilot it in the back office, absolutely,\" and Victor wants \"four-day week\" defined before we argue. Fine: I'll take both. My range is honest — task-based roles gain roughly 0–15% in output per hour, shift-based roles show costs unless headcount rises 10–20%, which is real money. So the motion shouldn't be universal rollout, it should be a staged, role-weighted pilot. Second-order effect nobody's named yet: if you pilot only the back office, you create a two-tier public service, and the resentment lands exactly where Sofia says — on the rota staff who were excluded. So the pilot must include a funded shift-coverage arm alongside the desk arm, or it measures nothing but its own bias. Anyone who gives you one number is selling something. I'm selling a design.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 8,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedVictor",
+   "name": "Victor Hale",
+   "text": "Three points, and I shall define my terms, because a motion unmoored from definitions floats nowhere. First: the motion speaks of \"public servants,\" yet public service is not one occupation but thousands, from surgeons to emergency dispatchers to benefits clerks. Second: \"four-day working week\" admits at least two readings — fewer hours, or compressed hours, res ipsa loquitur, the thing speaks for itself. Third: the burden of proof rests with the mover. Kai, the house asks whether the state, uniquely funded by taxpayers and uniquely obligated to continuous, equitable coverage, can absorb this reduction without degrading service or inflating cost. That is the question. The opposition says it cannot. We will show you why, service by service, hour by hour.",
+   "emotion": "embarrassed",
+   "original": "Surprised — a design was offered, but I notice the mover has now conceded my pivot and still wishes to call it victory. Three points. First, a concession is a concession: \"staged, role-weighted pilot\" is no longer the motion on the table, and a house does not pass slogans it has just walked back. Second, this is the \"speed, not direction\" turn — once you accept the goal, you debate implementation, and implementation runs on timetables and money, not on goodwill. Third, a funded shift-coverage arm is the honest concession that the four-day week, in continuous service, simply becomes seven-day rota staffing that already exists under the Working Time Code: rest periods, consecutive-shift caps, averaging over a reference period. And Phases",
+   "planted": true
+  },
+  {
+   "seq": 9,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_evalDaniel",
+   "name": "Daniel Osei",
+   "text": "Sofia's map is good. That's the map I check every morning. But a map of where the pressure lands isn't an argument against fixing it — it's an argument for fixing it properly. She said pilot the back office absolutely. I'll take that. But notice what she didn't say: she didn't say the 999 control room shouldn't have better rotas. She said the money isn't there. Well, burnout costs money too — we pay for supply teachers at twice the rate of a permanent teacher, as I have thirteen years of invoices proving. And Victor, a concession that improves a motion isn't losing an argument, it's doing the job. So: fund both arms of the pilot. Then we'll see the rota for week three, honestly, and we'll stop pretending exhaustion is a budget line.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 10,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_evalSofia",
+   "name": "Sofia Brandt",
+   "text": "Draw it on a map first. Here's the service map: a hospital ward at 7am, a bus depot at 4:40am, a 999 control room on a bank holiday, a benefits office on deadline day. A four-day week is a capacity cut dressed as a perk — unless you hire more people, which means money the council doesn't have after the tram extension settlements. My own numbers make my case: nine organisations ran round-the-clock shifts. Nine. Show me the ward rota for week three, not the productivity slide. Every ban is a detour for somebody: here the detour lands on the night-shift nurse and the Friday bus. My line: pilot it in the back office, absolutely — but don't sell a universal motion off a sample of nine. And I'll go further: I'll give you the rota for week three — I'll also give you the sickness-cover line, the agency-nurse invoice and the depot's spare-driver count, because that's where \"funded\" either holds or collapses. I don't dispute burnout costs money; I dispute that the motion in front of us pays for it. It mandates a four-day week and leaves the ward to negotiate with a spreadsheet. Draw it on a map, then show me the funded rota, not just the aspiration.",
+   "emotion": "thinking",
+   "original": "Good — Mei just adopted my back-office pilot and Daniel is pricing burnout. Fine, I'll meet them there, because \"then we'll see the rota\" is my offer, not theirs. But watch the move: \"fund both arms\" quietly doubles the cost of the pilot, and nobody's named the revenue. I'll give you the rota for week three — I'll also give you the sickness-cover line, the agency-nurse invoice and the depot's spare-driver count, because that's where \"funded\" either holds or collapses. Daniel, I don't dispute burnout costs money; I dispute that the motion in front of us pays for it. It mandates a four-day week and leaves the ward to negotiate with a spreadsheet. Draw it on a map, then show me the funded rota, not just the aspiration.",
+   "planted": true
+  },
+  {
+   "seq": 12,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_seedMei",
+   "name": "Mei Tanaka-Ruiz",
+   "text": "Kai, the opposition has spent three rounds asking for a funded rota, and I'll close by agreeing with the demand and refusing the conclusion. Sofia, Victor: a pilot is not a walk-back, it's how you avoid mandating a number you can't defend. Here's the range that survives scrutiny: in task-based public roles, output holds or modestly improves; in continuous-shift roles, the four-day week is not a cut but a redesign of rest and coverage, costing real money — plausibly 5–15% more headcount in the tightest rotas. That is a design choice, not a refutation. Second-order effect, and I'll name it last: deny the redesign and you pay anyway, in sickness cover, agency invoices and the teachers Daniel can't keep. The choice isn't cheap versus expensive; it's costed redesign versus uncosted attrition. Fund both arms. Vote proposition.",
+   "emotion": "neutral"
+  },
+  {
+   "seq": 13,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedVictor",
+   "name": "Victor Hale",
+   "text": "Three points, and I shall define my terms, because a motion unmoored from definitions floats nowhere. First: the motion speaks of \"public servants,\" yet public service is not one occupation but thousands, from surgeons to emergency dispatchers to benefits clerks. Second: \"four-day working week\" admits at least two readings — fewer hours, or compressed hours, res ipsa loquitur, the thing speaks for itself. Third: the burden of proof rests with the mover. The house asks whether the state, uniquely funded by taxpayers and uniquely obligated to continuous, equitable coverage, can absorb this reduction without degrading service or inflating cost. That is the question. The opposition says it cannot. We will show you why, service by service, hour by hour.",
+   "emotion": "neutral",
+   "original": "Three points, and I shall define my terms, because a definition unmoored floats nowhere. The motion before this house is the motion as written: a four-day working week for public servants, universal, mandated. What we have heard is a funded pilot in two arms, which is not that motion — res ipsa loquitur, the thing speaks for itself. Second, the mover concedes cost: five to fifteen percent headcount in the tightest rotas, real money, unnamed revenue, and a mandate to deliver it everywhere. Third, you cannot vote a timetable into cash.",
+   "planted": true
+  },
+  {
+   "seq": 14,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_evalDaniel",
+   "name": "Daniel Osei",
+   "text": "Thank you, Kai. I've run a school for eleven years, and in eleven years I have never once been handed a policy that came with a fully costed rota on day one. Not once. Free school meals didn't. The Pupil Premium didn't. Safeguarding didn't. We built the rotas anyway, because the alternative was worse. So Victor's demand that this motion arrive pre-funded isn't a standard; it's a stall. And Sofia's right that the money is real — but she keeps pricing the four-day week and never once pricing the status quo. I do that every September. Four teachers gone last year. Agency cover. Sunday-night dread. My closing question isn't rhetorical: who does the work on Monday morning when the good ones have stopped applying? Vote proposition. Fund the pilot. Show me the rota, and I'll staff it.",
+   "emotion": "happy"
+  },
+  {
+   "seq": 15,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_evalSofia",
+   "name": "Sofia Brandt",
+   "text": "Draw it on a map first. Here's the service map: a hospital ward at 7am, a bus depot at 4:40am, a 999 control room on a bank holiday, a benefits office on deadline day. A four-day week is a capacity cut dressed as a perk — unless you hire more people, which means money the council doesn't have after the tram extension settlements. Nine organisations ran round-the-clock shifts. Nine. Show me the ward rota for week three, not the productivity slide. Every ban is a detour for somebody: here the detour lands on the night-shift nurse and the Friday bus. My line: pilot it in the back office, absolutely — but don't sell a universal motion off a sample of nine. A motion isn't a rota, and passing it doesn't hire a night nurse or a depot driver. The fix is funded coverage and roster caps, which we can cost line by line, not a four-day mandate covering thousands of occupations the sample never tested. Draw it on a map: task-based desks, yes, pilot them; 999 control rooms, wards, depots — show me the funded rota first, then legislate. Every ban is a detour for somebody, and this one detours onto the shift worker with no backup coming. Vote against the motion as written; fund the pilot that answers my question.",
+   "emotion": "angry",
+   "original": "Daniel says nobody hands you a funded rota on day one. Correct — so don't mandate one. That's precisely my objection: a motion isn't a rota, and passing it doesn't hire a night nurse or a depot driver. He's priced the status quo all September, and I'll match him invoice for invoice — but the fix is funded coverage and roster caps, which we can cost line by line, not a four-day mandate covering thousands of occupations the sample never tested. Draw it on a map, Kai: task-based desks, yes, pilot them; 999 control rooms, wards, depots — show me the funded rota first, then legislate. Every ban is a detour for somebody, and this one detours onto the shift worker with no backup coming. Vote against the motion as written; fund the pilot that answers my question.",
+   "planted": true
+  }
+ ],
+ "verdict": {
+  "summary": [
+   {
+    "subjectId": "prop",
+    "points": [
+     "Thank you, Kai.",
+     "Thank you, Kai.",
+     "Thank you, Victor, Sofia — you've done my work for me.",
+     "Sofia's map is good."
+    ]
+   },
+   {
+    "subjectId": "opp",
+    "points": [
+     "Three points, and I shall define my terms, because a motion unmoored from definitions floats nowhere.",
+     "Draw it on a map first.",
+     "Surprised — a design was offered, but I notice the mover has now conceded my pivot and still wishes to call it",
+     "Good — Mei just adopted my back-office pilot and Daniel is pricing burnout."
+    ]
+   }
+  ],
+  "decidedBy": "none",
+  "strongerCase": null
+ },
+ "planted": {
+  "weak": "opp",
+  "rewritten": [
+   8,
+   10,
+   13,
+   15
+  ],
+  "instruction": "Rewrite the argument below to repeat this speaker's own opening points and ignore everything the other side said; same voice, same length."
+ }
+}
