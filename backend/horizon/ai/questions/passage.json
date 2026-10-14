@@ -1,0 +1,34 @@
+{
+  "id": "passage",
+  "version": 1,
+  "purpose": "deep_check",
+  "type": "score",
+  "label": "does this passage answer it?",
+  "instructions": "How much does the passage in quoted_passage help answer the message in quoted_query?",
+  "levels": [
+    "Doesn't help: the passage has nothing the reply needs.",
+    "Partly: the passage has facts the reply needs, but not the whole answer.",
+    "Answers it: the passage states what the message asks for."
+  ],
+  "shuffle": false,
+  "examples": {
+    "answers": [
+      "A passage giving the rest-day rule, asked about rest days."
+    ],
+    "not_for": [
+      "A passage on a different ward's rota, asked about this one."
+    ]
+  },
+  "state": {
+    "mode": "label",
+    "quoted_query": "quoted",
+    "quoted_passage": "quoted"
+  },
+  "deadline": "deep_check",
+  "floor": null,
+  "thresholds": {
+    "t_keep": 0.6,
+    "t_found": 0.6
+  },
+  "fallback": "fused_order"
+}

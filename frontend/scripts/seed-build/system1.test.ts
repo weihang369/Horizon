@@ -18,6 +18,8 @@ describe("system1Fixture", () => {
     expect(entries.map((e) => e.id)).toContain("reaction");
     expect(rows).not.toContain("reaction");
     expect(rows).toEqual(expect.arrayContaining(["emotion_reply", "emotion_greeting", "face_check"]));
+    // M12 (rag D20): the retrieval rows
+    expect(rows).toEqual(expect.arrayContaining(["docs", "standalone", "english", "passage", "passage_set"]));
     expect(system1Fixture().rows.face_check).toEqual({ purpose: "face_check", id: "face_check", version: 1,
       label: "face and words agree?", p: 0.72, compared: [], result: "shown_only" });
   });

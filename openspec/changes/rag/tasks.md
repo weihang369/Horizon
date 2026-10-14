@@ -116,21 +116,21 @@
 
 ## 3. The bank, the purposes and the knobs (design D7, D21, D26)
 
-- [ ] 3.1 Add the five bank entries at version 1, worded exactly as D7, with `what` / `not_for` examples:
+- [x] 3.1 Add the five bank entries at version 1, worded exactly as D7, with `what` / `not_for` examples:
   `docs`, `standalone`, `english`, `passage` (3 ordered levels, `shuffle: false`), `passage_set`. `docs` declares
   every plan state field (1:1, group, watch and debate). Run `uv run horizon eval bank-lock`.
   Verify:
   - `test_question_bank_m12.py` checks wording, types, thresholds (D7's starting values) and the declared fields;
   - a `docs` question is accepted in a debate plan state;
   - `passage`'s levels keep their order across seeds.
-- [ ] 3.2 Add `deep_check: decision` and `query_rewrite: chat` to `PURPOSE_CATEGORY`.
+- [x] 3.2 Add `deep_check: decision` and `query_rewrite: chat` to `PURPOSE_CATEGORY`.
   Verify: `call_ctx` accepts both, an unknown purpose still raises, and neither drains energy.
-- [ ] 3.3 Add the `retrieval.agent` knobs to `runtime.config.ts` and `seed/runtime.json` (D26), and regenerate the
+- [x] 3.3 Add the `retrieval.agent` knobs to `runtime.config.ts` and `seed/runtime.json` (D26), and regenerate the
   seed. `naive` and `scripted` keep `knowledgeK`, `memoryK` and `queryEmbedWaitMs`.
   Verify:
   - `npm run seed:build` then `seed:check` pass;
   - the backend reads every knob in a config test.
-- [ ] 3.4 Regenerate `seed/system1.fixture.json` with rows for the five entries.
+- [x] 3.4 Regenerate `seed/system1.fixture.json` with rows for the five entries.
   Verify:
   - `seed:check` passes;
   - the demo-data test finds the five rows and no judge rows;

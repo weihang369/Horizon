@@ -12,6 +12,28 @@ export interface LlmCallRow {
   maxTokens?: number;
 }
 
+/** M12 (docs/ai/10 K5–K7, K15; doc 13 W12; rag D26): the `agent` deep path's knobs. `naive` and `scripted` keep
+ *  `knowledgeK`, `memoryK` and `queryEmbedWaitMs`. AI-stage tunables; the thresholds live in the question bank. */
+export interface AgentRetrieval {
+  /** BM25 and dense lists, each this long (K5). */
+  pool: number;
+  /** Candidates picked by MMR from the top `pool` and checked by Jev call 2 (K5, K6). */
+  candidates: number;
+  /** The documents block's ceiling (K8). */
+  blockTokens: number;
+  /** MMR's relevance weight; 1.0 turns it off (K5). */
+  mmrLambda: number;
+  /** Passages kept per reply, by mode (K7). */
+  k: { oneOnOne: number; group: number; watch: number; debate: number };
+  /** `pack@2`'s piece target and ceiling (K1), recorded here for the evaluation's arms. */
+  pieceTarget: number;
+  pieceMax: number;
+  /** The query rewrite's deadline from its start (K4). */
+  rewriteMs: number;
+  /** Each `deep_check` request's deadline from when it was sent (K6). */
+  deepCheckMs: number;
+}
+
 export interface RuntimeConfig {
   /** Per-mode reply caps (`max_tokens`), a safety net about 1.5–2× the prompt's length target (docs/ai/03 C4);
    *  `one_on_one_deep` is used once a turn plan says the turn is deep (M9); debate by turn length. */
@@ -34,7 +56,7 @@ export interface RuntimeConfig {
   llmConcurrency: number;
   /** M5 retrieval (knowledge-memory-storage design D12, D13): hits per reply, and how long a reply waits for the
    *  user message's query embedding before using keyword retrieval alone. AI-stage tunables. */
-  retrieval: { knowledgeK: number; memoryK: number; queryEmbedWaitMs: number };
+  retrieval: { knowledgeK: number; memoryK: number; queryEmbedWaitMs: number; agent: AgentRetrieval };
   /** docs/ai/04 P8: the dynamic-tail repeat hint, off until the repetition metric misses its target (doc 13 W12).
    *  docs/ai/06 E4: the mood line, off since M9's on/off run found no gain (turn-plan-emotion D40). */
   persona: { repeatHint: boolean; moodLine: boolean };
@@ -70,7 +92,13 @@ export const RUNTIME: RuntimeConfig = {
   idleReleaseMs: 600_000,
   prefetchMax: 2,
   llmConcurrency: 4,
-  retrieval: { knowledgeK: 5, memoryK: 3, queryEmbedWaitMs: 400 },
+  retrieval: {
+    knowledgeK: 5, memoryK: 3, queryEmbedWaitMs: 400,
+    agent: {
+      pool: 20, candidates: 8, blockTokens: 1400, mmrLambda: 0.7, k: { oneOnOne: 3, group: 2, watch: 2, debate: 2 },
+      pieceTarget: 300, pieceMax: 400, rewriteMs: 1500, deepCheckMs: 700,
+    },
+  },
   persona: { repeatHint: false, moodLine: false },
   context: { voiceReminder: false },
   emotion: { fade: ["surprised", "embarrassed"] },   // M9 (turn-plan-emotion D13): moments, not moods

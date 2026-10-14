@@ -21,6 +21,8 @@ PURPOSE_CATEGORY: dict[str, Category] = {
     "turn_plan": "decision", "face_check": "decision",   # M9 (turn-plan-emotion design D4, D24)
     "follow_plan": "decision",                           # M10 (group-watch design D8, D20)
     "debate_plan": "decision",                           # M11 (debate design D8, D25)
+    "deep_check": "decision",                            # M12 (rag D13, D21): Jev call 2, one request per passage
+    "query_rewrite": "chat",                             # M12 (rag D10): the speaker's search query, when needed
     "eval_plant": "chat",                                # M11 (debate D21): the planted weak sides, written once
     "query_embed": "embedding", "embed_doc": "embedding",
     "summary": "summary", "rolling_summary": "summary",   # M8 (docs/ai/05 X3): the rolling summary, apart from watch's
