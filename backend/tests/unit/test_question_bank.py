@@ -155,11 +155,12 @@ def test_judges_are_one_condition_nouls_worded_so_yes_is_the_failure() -> None:
     from horizon.ai.questions import bank
 
     judges = [e for e in bank().entries.values() if e.purpose == "eval_judge"]
-    assert len(judges) == 15   # M9 (turn-plan-emotion D28, D29): names the feeling, and the pairwise choice judge
+    assert len(judges) == 18   # M9 (D28, D29): names the feeling, the pairwise judge; M11 (debate D18, D21): three more
     for e in judges:
         assert e.label.endswith("?") and e.deadline == "default"
         assert all(k.startswith("quoted_") for k, v in e.state.items() if v == "quoted")
-        w = wire_question(bank().question(e.id, name="Amara") if e.id == "judge_pairwise" else bank().question(e.id))
+        w = wire_question(bank().question(e.id, name="Amara") if e.id == "judge_pairwise"
+                          else bank().question(e.id, side="Proposition"))
         assert w["instructions"].endswith(bank().sentence)
         if e.id == "judge_pairwise":
             continue
@@ -202,7 +203,7 @@ def test_entries_without_the_placeholder_are_unchanged() -> None:
     b = bank()
     for qid in b.entries:
         e = b.get(qid)
-        if "{name}" in e.instructions:
+        if any(x in e.instructions for x in ("{name}", "{side}", "{other}", "{n}")):
             continue
         assert b.question(qid, values=CAST, seed="s:0", name="Ignored").instructions == f"{e.instructions.rstrip()} {SENTENCE}"
     assert check_lock() == []
@@ -279,6 +280,10 @@ def _compiled(qid: str) -> dict:
     kw: dict = {"seed": "golden:1"}
     if "{name}" in e.instructions:
         kw["name"] = "Amara"
+    if "{side}" in e.instructions or "{other}" in e.instructions:
+        kw["side"] = "Proposition"
+    if "{n}" in e.instructions:
+        kw["n"] = 1
     if e.type == "choice" and e.options.get("kind") == "dynamic":
         kw["values"] = GOLDEN_VALUES
     q = bank().question(qid, **kw)
@@ -294,7 +299,7 @@ def test_entries_at_their_golden_version_compile_byte_identically() -> None:
     the same text: the `none` switch and the label cut are additive."""
     golden = json.loads(GOLDEN.read_text(encoding="utf-8"))
     same = [qid for qid, g in golden.items() if qid in bank().entries and bank().get(qid).version == g["version"]]
-    assert len(same) >= 19
+    assert len(same) >= 18   # M11 moved judge_summary_unsupported to v2 (debate D19)
     for qid in same:
         assert json.loads(json.dumps(_compiled(qid))) == golden[qid]["compiled"], qid
 
@@ -331,7 +336,8 @@ WHO = ("who_first", "who_second", "who_next", "who_scene")
 @pytest.mark.parametrize("qid", WHO)
 def test_who_entries_compile_over_the_cast_with_none_only_in_the_second_slot(qid: str) -> None:
     q = bank().question(qid, values=CAST, seed="s:0", name="Hana")
-    assert isinstance(q, Choice) and q.meta is not None and q.meta.version == 2   # 10.3 wrote the measured floors
+    # 10.3 wrote the measured floors (v2); M11 (debate D17) took `last_spoke` out of who_scene / who_next's state (v3)
+    assert isinstance(q, Choice) and q.meta is not None and q.meta.version == {"who_next": 3, "who_scene": 3}.get(qid, 2)
     assert ("none" in q.options) == (qid == "who_second")
     assert all(q.options[c].startswith(f"{n} (speaker). Not for:") for c, n in (("chr_a", "Ann"), ("chr_b", "Bo")))
     assert q.instructions.endswith(SENTENCE)

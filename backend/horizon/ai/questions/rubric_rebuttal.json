@@ -1,0 +1,29 @@
+{
+  "id": "rubric_rebuttal",
+  "version": 1,
+  "purpose": "rubric",
+  "type": "score",
+  "label": "rebuttal score",
+  "instructions": "How directly does the {side} answer the other side's strongest points?",
+  "levels": [
+    "Ignores the other side.",
+    "Mentions the other side but answers none of its points.",
+    "Answers some of the other side's points, but not its strongest.",
+    "Answers the other side's main points, including the strongest, but not fully.",
+    "Names the other side's strongest point and answers it."
+  ],
+  "shuffle": false,
+  "state": {
+    "mode": "label",
+    "quoted_motion": "quoted",
+    "quoted_criteria": "quoted",
+    "quoted_sides": "quoted",
+    "quoted_moderator": "quoted"
+  },
+  "deadline": "rubric",
+  "floor": null,
+  "thresholds": {
+    "margin": 0.5
+  },
+  "fallback": "summary_only"
+}

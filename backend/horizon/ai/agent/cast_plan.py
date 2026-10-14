@@ -151,8 +151,13 @@ def recent_lines(session: SessionContext, skip_last: bool) -> list[dict[str, str
     return [{"speaker": (you or "the user") if m.author_type == "user" else m.name, "text": m.content} for m in recent]
 
 
+# M11 (debate design D17): the plans whose who-speaks question is judged on fit alone see no `last_spoke` label
+NO_LAST_SPOKE: frozenset[str] = frozenset({"scene", "opening", "next"})
+
+
 def state_input(req: CastRequest) -> PlanStateInput:
-    """X9's input. `latest` is the line being answered, so it isn't repeated in `recent` (the last stored line)."""
+    """X9's input. `latest` is the line being answered, so it isn't repeated in `recent` (the last stored line).
+    Watch turns and group Next speaker leave `last_spoke` out (`who_scene` / `who_next` v3)."""
     s = req.session
     ids = list(dict.fromkeys([*req.forced, *req.candidates]))   # everyone who may speak, for context
     cands = candidate_views(s, ids, req.cast, req.base_faces, req.turns_since)
@@ -160,7 +165,8 @@ def state_input(req: CastRequest) -> PlanStateInput:
     premise = str((s.config or {}).get("premise") or "") if s.mode == "watch" else ""
     return PlanStateInput(mode=s.mode, user_name=you, candidates=cands, latest=req.latest,
                           recent=recent_lines(s, skip_last=bool(req.latest)), premise=premise,
-                          summary=s.summary or "" if s.mode == "watch" else "")
+                          summary=s.summary or "" if s.mode == "watch" else "",
+                          last_spoke=req.kind not in NO_LAST_SPOKE)
 
 
 def asked_about(req: CastRequest) -> list[str]:

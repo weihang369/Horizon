@@ -33,6 +33,7 @@ from horizon.ai.language import language_cue
 from horizon.ai.llm import llm_request
 from horizon.ai.naive.prompt import (
     PROMPT_VERSION,
+    PROMPT_VERSION_DEBATE,
     SUMMARY_HEADING,
     TRAILING_CUE,
     RetrievalBlock,
@@ -80,6 +81,13 @@ class NaiveTurnEngine:
     def __init__(self, deps: AiDeps) -> None:
         self.deps = deps
         self._prefix: dict[tuple[str, str], str] = {}
+
+    def prompt_version_for(self, ctx: TurnContext | None) -> str | None:
+        """The label of the bytes this turn sent (M9 D40's principle): a debate request is `naive-6` since M11 named
+        teammates apart from opponents (debate design D10); every other request keeps `naive-5`."""
+        if ctx is not None and ctx.session.mode == "debate":
+            return PROMPT_VERSION_DEBATE
+        return self.prompt_version
 
     def _row(self, ctx: TurnContext) -> LlmCall:
         row = self.deps.llm("reply.debate" if ctx.session.mode == "debate" else "reply.chat")

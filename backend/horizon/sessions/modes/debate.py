@@ -13,6 +13,7 @@ from typing import TYPE_CHECKING, Any
 from horizon.ai.contexts import DebateMeta, LineHint
 from horizon.gateway.errors import ProviderError
 from horizon.sessions.context import session_context
+from horizon.sessions.debate_slots import SIDE_NAME, Fill, cursor, fill, members, phase_slots
 from horizon.sessions.modes.common import (
     asleep_note,
     is_asleep,
@@ -52,6 +53,8 @@ def side_of(actor: SessionActor, cid: str) -> str | None:
 
 
 def phase_order(cfg: Wire, cast: list[str]) -> list[str]:
+    """Today's fixed order for a phase (prop[i] / opp[i] interleaved, or cast order): who fills each slot while everyone
+    is awake (M11, debate design D3)."""
     sides = cfg.get("sides")
     if cfg.get("format") != "two_sided" or not sides:
         return list(cast)
@@ -76,9 +79,7 @@ async def begin_phase(actor: SessionActor, phase: str, iteration: int = 1) -> No
     cfg = cfg_of(actor)
     phases = list(cfg.get("phases") or [])
     round_ = phases.index(phase) + 1 if phase in phases else len(phases)
-    cast = [p["characterId"] for p in actor.session["participants"]]
-    actor.mode.debate_order = phase_order(cfg, cast)
-    actor.mode.debate_idx = 0
+    actor.mode.debate_announced = None
     actor.mode.extend = False
     host = _host(actor)
     events: list[Wire] = [{"type": "phase", "payload": {"phase": phase, "round": round_, "iteration": iteration}},
@@ -99,18 +100,65 @@ def start(actor: SessionActor) -> None:
     actor.enqueue(job)
 
 
-def ensure_cursor(actor: SessionActor) -> None:
-    """Rebuild the cursor for a resumed or forked debate from the messages already in the current phase."""
-    if actor.mode.debate_order is not None:
-        return
-    st = state_of(actor)
-    cast = [p["characterId"] for p in actor.session["participants"]]
-    spoken = sum(1 for m in actor.state["messages"].values()
-                 if m["author"]["type"] == "character" and m["kind"] == "chat" and not m.get("forcedSpeaker")
-                 and (m.get("debate") or {}).get("phase") == st.get("phase")
-                 and (m.get("debate") or {}).get("iteration") == st.get("iteration"))
-    actor.mode.debate_order = phase_order(cfg_of(actor), cast)
-    actor.mode.debate_idx = spoken
+def _messages(actor: SessionActor) -> list[Wire]:
+    from horizon.services.runtime.reducer import ordered_messages
+
+    out: list[Wire] = ordered_messages(actor.state)
+    return out
+
+
+def _cast(actor: SessionActor) -> list[str]:
+    return [p["characterId"] for p in actor.session["participants"]]
+
+
+async def next_slot(actor: SessionActor) -> tuple[int, str | None, Fill] | None:
+    """The next slot of this phase and how it is filled (D3), or None when the phase is done. A slot with a prefetched
+    opening is that member's; otherwise the slot rule decides from who is awake now."""
+    cfg, cast = cfg_of(actor), _cast(actor)
+    slots = phase_slots(cfg, cast)
+    cur = cursor(_messages(actor))
+    if cur.used >= len(slots):
+        return None
+    side = slots[cur.used]
+    pf = actor.mode.debate_prefetch.get(cur.used)
+    if pf is not None:
+        return cur.used, side, Fill("speak", who=pf.spec.speaker, eligible=(pf.spec.speaker,))
+    side_members = members(cfg, cast, side)
+    awake = {c: not await is_asleep(actor, c) for c in side_members}
+    return cur.used, side, fill(side_members, cur.heard, awake)
+
+
+async def upcoming(actor: SessionActor, after_idx: int, heard: list[str], n: int) -> list[tuple[int, str]]:
+    """The members the next `n` slots after `after_idx` would get in fixed order, given `heard` (the opening prefetch,
+    D3): skipped slots are passed over, and a slot that would pause ends the look-ahead."""
+    cfg, cast = cfg_of(actor), _cast(actor)
+    slots = phase_slots(cfg, cast)
+    out: list[tuple[int, str]] = []
+    heard = list(heard)
+    for j in range(after_idx + 1, min(len(slots), after_idx + 1 + n)):
+        pf = actor.mode.debate_prefetch.get(j)
+        if pf is not None:
+            heard.append(pf.spec.speaker)
+            continue
+        side_members = members(cfg, cast, slots[j])
+        f = fill(side_members, heard, {c: not await is_asleep(actor, c) for c in side_members})
+        if f.action == "pause":
+            break
+        if f.action == "speak" and f.who is not None:
+            out.append((j, f.who))
+            heard.append(f.who)
+    return out
+
+
+async def pause_side(actor: SessionActor, side: str | None, asleep: tuple[str, ...]) -> None:
+    """V5 (D4): every asleep member of the side gets its note with `energy_exhausted`, a system note names the side,
+    and the debate pauses with reason `user`. The slot is kept: play runs it again."""
+    for cid in asleep:
+        await asleep_note(actor, cid, skipping=False, debate=meta(actor))
+    text = ("Everyone on the panel is asleep. Top someone up to continue the debate." if side is None else
+            f"The {SIDE_NAME[side]} is asleep. Top someone up to continue the debate.")
+    actor.held = True
+    await actor.emit(message_event(note(actor, text)), {"type": "session.paused", "payload": {"reason": "user"}})
 
 
 def step(actor: SessionActor) -> None:
@@ -123,15 +171,14 @@ def step(actor: SessionActor) -> None:
         phases = [str(p) for p in cfg.get("phases") or []]
         if st.get("phase") == "setup":
             await begin_phase(actor, phases[0] if phases else "opening")
-        ensure_cursor(actor)
         m = actor.mode
         if m.skip_to_closing and state_of(actor).get("phase") != "closing":
             await begin_phase(actor, "closing")
             m.skip_to_closing = False
             schedule_next(actor)
             return
-        order = m.debate_order or []
-        if m.debate_idx >= len(order):
+        slot = await next_slot(actor)
+        if slot is None:
             phase = str(state_of(actor).get("phase"))
             nxt = phases[phases.index(phase) + 1] if phase in phases and phases.index(phase) + 1 < len(phases) else None
             if m.extend:
@@ -143,27 +190,42 @@ def step(actor: SessionActor) -> None:
                 return
             schedule_next(actor)
             return
-        idx = m.debate_idx
-        cid = order[idx]
-        m.debate_idx += 1
-        pf = m.debate_prefetch.pop(idx, None)
-        if pf is None and await is_asleep(actor, cid):
-            await asleep_note(actor, cid, skipping=True)
+        idx, side, f = slot
+        if f.action == "pause":
+            await pause_side(actor, side, f.asleep)
+            return
+        if f.action == "skip":
+            assert f.who is not None
+            await asleep_note(actor, f.who, skipping=True, debate=meta(actor))
             schedule_next(actor, 200)
             return
+        cid = str(f.who)
+        pf = m.debate_prefetch.pop(idx, None)
+        if pf is not None and pf.spec.speaker != cid:
+            await pf.discard()
+            pf = None
+        announced, m.debate_announced = m.debate_announced, None
+        skipped: list[Wire] | None = None
+        if announced is not None and announced[0] == idx and announced[1] != cid and await is_asleep(actor, announced[1]):
+            # V3 (D3): the announced member fell asleep before their turn; the next eligible one speaks, and the turn's
+            # own `turn.next` names them with the asleep member under `skipped`
+            skipped = [{"characterId": announced[1], "reason": "exhausted"}]
         now = state_of(actor)
         if now.get("phase") == "opening" and int(now.get("iteration", 1)) == 1:
             # The opening round is known in advance: generate up to 2 later openings now (design D5).
-            for j in range(idx + 1, min(len(order), idx + 1 + actor.rt.runtime_cfg.runtime.prefetch_max)):
-                if j not in m.debate_prefetch and not await is_asleep(actor, order[j]):
-                    p = await Prefetch.start(actor, turn_spec(actor, order[j], now))
+            heard = [*cursor(_messages(actor)).heard, cid]
+            for j, who in await upcoming(actor, idx, heard, actor.rt.runtime_cfg.runtime.prefetch_max):
+                if j not in m.debate_prefetch:
+                    p = await Prefetch.start(actor, turn_spec(actor, who, now))
                     if p is not None:
                         m.debate_prefetch[j] = p
-        await speak_then(actor, turn_spec(actor, cid, now), prefetch=pf)
-        order = m.debate_order or []
-        upcoming = order[m.debate_idx] if m.debate_idx < len(order) else None
-        if upcoming:
-            await actor.emit({"type": "turn.next", "payload": {"nextSpeakerId": upcoming}})
+        spec = turn_spec(actor, cid, now)
+        spec.skipped = skipped
+        await speak_then(actor, spec, prefetch=pf)
+        nxt_slot = await next_slot(actor)
+        if nxt_slot is not None and nxt_slot[2].action == "speak" and nxt_slot[2].who is not None:
+            await actor.emit({"type": "turn.next", "payload": {"nextSpeakerId": nxt_slot[2].who}})
+            m.debate_announced = (nxt_slot[0], nxt_slot[2].who)
         schedule_next(actor)
 
     actor.enqueue(job)
@@ -257,12 +319,10 @@ async def interject(actor: SessionActor, text: str) -> None:
 
 
 def extend_round(actor: SessionActor) -> None:
-    ensure_cursor(actor)
     actor.mode.extend = True
 
 
 def skip_to_closing(actor: SessionActor) -> None:
-    ensure_cursor(actor)
     actor.mode.skip_to_closing = True
 
 

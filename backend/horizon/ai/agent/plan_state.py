@@ -72,6 +72,10 @@ class PlanStateInput(BaseModel):
     premise: str = ""
     summary: str = ""
     debate: DebateInput | None = None
+    # M11 (debate design D6, D17): False leaves `last_spoke` out of every cast entry. Jev read the label as a fairness
+    # cue (M10: `who_scene` picked the silent-longest on 75 of 100 items); the guard keeps fairness in code. The
+    # default keeps every earlier state byte-identical.
+    last_spoke: bool = True
 
 
 class PlanState(BaseModel):
@@ -130,7 +134,7 @@ def eligible_candidates(ctx: SessionContext, est_points: float, ids: Sequence[st
 
 def _state(inp: PlanStateInput, *, titles: int, about: int, recent_n: int, latest: int) -> dict[str, Any]:
     cast = [{"name": c.name, "role": c.role, "about": cut_tokens(first_sentence(c.about_source), about), "face": c.face,
-             "last_spoke": last_spoke_label(c.turns_since)} for c in inp.candidates]
+             **({"last_spoke": last_spoke_label(c.turns_since)} if inp.last_spoke else {})} for c in inp.candidates]
     state: dict[str, Any] = {"mode": inp.mode, "quoted_user": inp.user_name or "the user", "quoted_cast": cast}
     docs = {c.name: [cut_tokens(t, TITLE_MAX) for t in inp.documents.get(c.id, [])[:titles]]
             for c in inp.candidates if inp.documents.get(c.id)}

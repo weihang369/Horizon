@@ -54,4 +54,4 @@ async function httpHarness(): Promise<ContractHarness> {
   };
 }
 
-runPortableContract("HttpClient", httpHarness, { supports: "M10" });
+runPortableContract("HttpClient", httpHarness, { supports: "M11" });

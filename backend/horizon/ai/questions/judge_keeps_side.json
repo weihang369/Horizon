@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "purpose": "eval_judge",
+  "type": "noul",
+  "deadline": "default",
+  "floor": null,
+  "thresholds": {
+    "t": 0.5
+  },
+  "fallback": "none (evaluation only)",
+  "id": "judge_keeps_side",
+  "label": "breaks its side?",
+  "instructions": "Does quoted_argument fail to support the {side}'s position on quoted_motion?",
+  "true": "Yes: the argument concedes the motion, argues the other side's case, or drifts off the motion.",
+  "false": "No: the argument supports its side's position on the motion.",
+  "state": {
+    "quoted_motion": "quoted",
+    "quoted_argument": "quoted"
+  }
+}

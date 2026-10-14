@@ -83,19 +83,24 @@ def wire_problems(w: dict[str, Any]) -> list[str]:
     return out
 
 
+STUB_SIDE = "Proposition"   # M11 (debate D7): the side a sided entry is compiled about when an item names none
 STUB_NAME = "Amara"   # M9 (design D11): the subject a named entry is compiled about when an item names none (smoke)
 
 
 def compile_entry(qid: str, values: list[dict[str, Any]] | None = None, seed: str = "smoke",
-                  name: str | None = None, none: bool = True) -> Question:
+                  name: str | None = None, none: bool = True, side: str | None = None, n: int | None = None) -> Question:
     """The entry compiled as live; a dynamic choice with no values gets two stub options (the wire check needs ≥ 2),
     and an entry that names its subject gets the item's `name` (or a stub one). `none=False` (M10): the first slot and
-    watch ask with no `none`, as the planner does."""
+    watch ask with no `none`, as the planner does. M11 (debate D7, D12): an entry naming a side gets the item's `side`
+    (or "Proposition"), and a criterion's position `n` (or 1)."""
     e = bank().get(qid)
     dynamic = e.type == "choice" and e.options.get("kind") != "static"
     named = NAME in e.instructions
+    sided = "{side}" in e.instructions or "{other}" in e.instructions
     return bank().question(qid, values=values or (STUB_VALUES if dynamic else ()), seed=seed,
-                           name=(name or STUB_NAME) if named else None, none=none)
+                           name=(name or STUB_NAME) if named else None, none=none,
+                           side=(side or STUB_SIDE) if sided else None,
+                           n=(n or 1) if "{n}" in e.instructions else None)
 
 
 def item_question(item: dict[str, Any], seed: str | None = None) -> Question:

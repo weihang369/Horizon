@@ -32,6 +32,7 @@ from horizon.ai.contexts import KnowledgeHit, MemoryHit, TurnContext
 from horizon.ai.naive.tag_parser import EMOTIONS
 
 PROMPT_VERSION = "naive-5"
+PROMPT_VERSION_DEBATE = "naive-6"   # M11 (debate design D10): a debate request names its teammates apart
 DEBATE_WORDS = {"short": 80, "medium": 140, "long": 220}
 TRAILING_CUE = "Continue with your next message, in character."
 SECTION_MAX = 1200
@@ -78,8 +79,7 @@ def system_prompt(ctx: TurnContext) -> str:
     if s.mode == "group" and others:
         lines.append(f"This is a group chat with {', '.join(others)} and the user. Speak only as yourself.")
     elif s.mode == "debate":
-        cfg = s.config or {}
-        lines.append(f"This is a moderated debate on the motion: \"{cfg.get('motion', '')}\". Opponents: {', '.join(others)}.")
+        lines.append(debate_line(ctx))
     elif s.mode == "watch":
         cfg = s.config or {}
         lines.append(f"This is a scene the user watches. Premise: {cfg.get('premise', '')}. Others: {', '.join(others)}.")
@@ -91,6 +91,22 @@ def system_prompt(ctx: TurnContext) -> str:
                  "Never write tags anywhere else. Then reply in character, in plain text.")
     lines.append(length_line(s.mode, (s.config or {}).get("turnLength")))
     return "\n".join(lines)
+
+
+def debate_line(ctx: TurnContext) -> str:
+    """The debate's session line (doc 08 finding 2, fixed in M11): the speaker's side and teammates apart from the
+    opponents. A panel lists the others as fellow panellists."""
+    s = ctx.session
+    motion = str((s.config or {}).get("motion", ""))
+    me = next((p for p in s.participants if p.character_id == ctx.speaker.id), None)
+    others = [p for p in s.participants if p.character_id != ctx.speaker.id]
+    if me is None or me.side not in ("prop", "opp"):
+        return f"This is a moderated panel debate on: \"{motion}\". Also on the panel: {', '.join(p.name for p in others)}."
+    mates = [p.name for p in others if p.side == me.side]
+    opponents = [p.name for p in others if p.side not in (None, me.side)]
+    with_ = f", with {', '.join(mates)}" if mates else ""
+    return (f"This is a moderated debate on the motion: \"{motion}\". You argue {'for' if me.side == 'prop' else 'against'} "
+            f"it{with_}. Opponents: {', '.join(opponents)}.")
 
 
 def length_line(mode: str, turn_length: object = None) -> str:

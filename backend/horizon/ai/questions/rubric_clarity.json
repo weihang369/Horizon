@@ -1,0 +1,29 @@
+{
+  "id": "rubric_clarity",
+  "version": 1,
+  "purpose": "rubric",
+  "type": "score",
+  "label": "clarity score",
+  "instructions": "How easy is the {side}'s case to follow?",
+  "levels": [
+    "No clear claim.",
+    "A claim is there but buried; the reasons wander.",
+    "A clear claim; some reasons loosely linked to it.",
+    "A clear claim; most reasons plainly linked to it.",
+    "One clear claim, each reason plainly linked to it."
+  ],
+  "shuffle": false,
+  "state": {
+    "mode": "label",
+    "quoted_motion": "quoted",
+    "quoted_criteria": "quoted",
+    "quoted_sides": "quoted",
+    "quoted_moderator": "quoted"
+  },
+  "deadline": "rubric",
+  "floor": null,
+  "thresholds": {
+    "margin": 0.5
+  },
+  "fallback": "summary_only"
+}

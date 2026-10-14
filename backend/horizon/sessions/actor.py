@@ -77,11 +77,11 @@ class ModeState:
     nudge: str | None = None
     direction: tuple[str, int] | None = None      # watch: (note, turns left)
     watch_idx: int | None = None
-    debate_order: list[str] | None = None
-    debate_idx: int = 0
     skip_to_closing: bool = False
     extend: bool = False
-    debate_prefetch: dict[int, Any] = field(default_factory=dict)   # opening-round prefetches by order index
+    debate_prefetch: dict[int, Any] = field(default_factory=dict)   # opening-round prefetches by slot index
+    # M11 (debate design D3): the slot and member the last `turn.next` named; the cursor itself is read from the log
+    debate_announced: tuple[int, str] | None = None
     plan_ahead: tuple[Any, Any] | None = None     # M10 watch (D15): (fingerprint, task) of the next turn's plan
 
 

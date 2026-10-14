@@ -28,7 +28,7 @@ export interface ContractHarness {
 export type MakeHarness = () => Promise<ContractHarness>;
 
 /** The backend milestone whose routes a test needs (doc backend/06). The mock supports everything ("all"). */
-export type Milestone = "M1b" | "M2" | "M3" | "M4" | "M5" | "M6" | "M7" | "M8" | "M10";
+export type Milestone = "M1b" | "M2" | "M3" | "M4" | "M5" | "M6" | "M7" | "M8" | "M10" | "M11";
 
 /** A valid 16×9 PNG (83 bytes) for the cover upload tests. */
 const TINY_PNG = [
@@ -36,7 +36,7 @@ const TINY_PNG = [
   0, 26, 73, 68, 65, 84, 120, 156, 99, 212, 59, 178, 141, 129, 20, 192, 68, 146, 106, 134, 81, 13, 196, 1, 146, 131, 21, 0, 231,
   232, 1, 186, 121, 203, 221, 186, 0, 0, 0, 0, 73, 69, 78, 68, 174, 66, 96, 130,
 ];
-export const MILESTONES: readonly Milestone[] = ["M1b", "M2", "M3", "M4", "M5", "M6", "M7", "M8", "M10"];
+export const MILESTONES: readonly Milestone[] = ["M1b", "M2", "M3", "M4", "M5", "M6", "M7", "M8", "M10", "M11"];
 export interface PortableOptions {
   /** The latest milestone this client's backend implements. Later tests are listed as `[pending Mx]`, never silently skipped. */
   supports: Milestone | "all";
@@ -280,6 +280,34 @@ export function runPortableContract(label: string, makeHarness: MakeHarness, opt
       const types = evs.filter((e) => e.type === "turn.next" || e.type === "turn.end" || e.type === "message").map((e) =>
         e.type === "message" ? `message:${author(e)}` : e.type);
       expect(types).toEqual(["message:user", "turn.next", "turn.end", "message:user", "turn.next", "turn.end", "turn.next", "turn.end"]);
+    });
+
+    test("M11", "debate: a side with nobody awake pauses on its slot; after a top-up the same slot runs (doc 08 V5)", async () => {
+      const { c, tick, setScenario } = await make({ key: true });
+      await setScenario("character_exhausted");   // Takeshi, the whole Opposition, is asleep
+      const s = await c.sessions.create({
+        worldId: "wld_seedSunnyHollow", mode: "debate", characterIds: ["chr_seedHana", "chr_seedRin", "chr_seedTakeshi"],
+        config: { motion: "This house would close the bakery on Sundays", format: "two_sided", sides: { prop: ["chr_seedHana", "chr_seedRin"], opp: ["chr_seedTakeshi"] }, roundsPreset: "quick", phases: ["opening", "closing"], turnLength: "short", moderator: "user", verdictBy: "none", rubric: [], autoAdvance: true, pauseMs: 1500 },
+      });
+      const sid = s.session.id;
+      await tick(30000);
+      let snap = await c.sessions.get(sid);
+      expect(snap.session.status).toBe("paused");
+      expect(chars(snap.messages).map((m) => m.author.characterId)).toEqual(["chr_seedHana"]);
+      const notes = snap.messages.filter((m) => m.kind === "system_note").map((m) => m.content);
+      expect(notes.filter((t) => /^Takeshi is asleep \(⚡/.test(t))).toHaveLength(1);
+      expect(notes).toContain("The Opposition is asleep. Top someone up to continue the debate.");
+      const paused = (await c.sessions.events(sid)).filter((e) => e.type === "session.paused");
+      expect(paused.map((e) => (e.payload as { reason: string }).reason)).toEqual(["user"]);
+      await c.characters.topUpEnergy("chr_seedTakeshi", 500);
+      await c.debate.resume(sid);
+      await tick(90000);
+      snap = await c.sessions.get(sid);
+      expect(chars(snap.messages).map((m) => m.author.characterId)).toEqual(
+        ["chr_seedHana", "chr_seedTakeshi", "chr_seedRin", "chr_seedHana", "chr_seedTakeshi", "chr_seedRin"]);
+      expect(snap.session.status).toBe("ended");
+      const types = (await c.sessions.events(sid)).filter((e) => e.type === "turn.next" || e.type === "session.paused" || e.type === "session.resumed").map((e) => e.type);
+      expect(types.slice(0, 4)).toEqual(["turn.next", "session.paused", "session.resumed", "turn.next"]);
     });
 
     test("M10", "watch Summarise (scripted): the canned recap and one summary charge (doc 07 G10)", async () => {

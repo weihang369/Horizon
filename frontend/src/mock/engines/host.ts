@@ -42,8 +42,9 @@ export interface LiveSession {
   direction?: { note: string; turnsLeft: number };
   /** Watch: nudged next speaker. Debate: forced next speaker. */
   nudge?: string;
-  /** Debate cursor. */
-  debate?: { order: string[]; idx: number; skipToClosing?: boolean; extend?: boolean };
+  /** Debate steering flags, and the slot and member the last `turn.next` named (M11, debate D3: the cursor itself is
+   *  read from the log). */
+  debate?: { skipToClosing?: boolean; extend?: boolean; announced?: [number, string] };
   /** Watch round-robin cursor. */
   watchIdx?: number;
   /** M10 (doc 07 G5; group-watch D12): bumped by each group send and Step in. A reply task captures it when queued;
@@ -340,11 +341,11 @@ export function speakThen(h: EngineHost, sid: string, cid: string, opts: SpeakOp
 }
 
 /** "{name} is asleep" note (+ energy_exhausted error so the UI can offer Top up). */
-export function asleepNote(h: EngineHost, sid: string, cid: string, skipping: boolean): void {
+export function asleepNote(h: EngineHost, sid: string, cid: string, skipping: boolean, debate?: Message["debate"]): void {
   const c = h.db.characters[cid];
   if (!c) return;
   const name = firstName(c);
-  const msg = systemNote(h, sid, skipping ? `${name} is asleep, skipping.` : `${name} is asleep (⚡ ${energyNow(h, cid).current}).`, "system_note", { type: "system" }, { targetCharacterId: cid });
+  const msg = systemNote(h, sid, skipping ? `${name} is asleep, skipping.` : `${name} is asleep (⚡ ${energyNow(h, cid).current}).`, "system_note", { type: "system" }, { targetCharacterId: cid, ...(debate ? { debate } : {}) });
   h.emit(sid,
     { type: "message", payload: { message: msg } },
     { type: "error", payload: { code: "energy_exhausted", message: `${name} is asleep (⚡ 0).`, retryable: false, messageId: msg.id } },

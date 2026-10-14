@@ -8,7 +8,9 @@ parked Jev answer. Afterwards the writer must be free.
 from __future__ import annotations
 
 import asyncio
+import random
 import time
+from collections.abc import Awaitable, Callable
 from typing import Any
 
 from sqlalchemy import text
@@ -46,3 +48,51 @@ def park_next_decision(rt: Any) -> asyncio.Event:
     assert fake is not None, "test mode only"
     ev: asyncio.Event = fake.park_decision(fake.counts["decisions"] + 1)
     return ev
+
+
+# ── M11 (debate design D2): the two storms every new cancel path gets ──
+def park_next_chat(rt: Any, purpose: str) -> asyncio.Event:
+    """Hold the fake provider's next chat request labelled `purpose` (a host line, a verdict) until the returned event
+    is set, so a storm can land while the call is out."""
+    fake = rt.fake
+    assert fake is not None, "test mode only"
+    ev: asyncio.Event = fake.park_chat(purpose)
+    return ev
+
+
+async def after_storm(api: Any, sid: str) -> None:
+    """D2's checks after a storm: the writer is free (a fresh write, every connection back), the clock settles, and the
+    served events reduce to the served messages and session."""
+    from tests.sessions.kit import assert_reduces
+
+    await assert_writer_free(api.rt.db)
+    await api.rt.clock.settle()
+    await assert_reduces(api, sid)
+
+
+async def storm_during_write(api: Any, sid: str, run: Callable[[], Awaitable[Any]], *, storms: int = 20,
+                             window_s: float = 0.03, seed: int = 11) -> int:
+    """Run `run()` in a task of its own `storms` times, each storm starting at a random point in its first `window_s`
+    seconds, so cancels land in its writes (BEGIN, the body, COMMIT). D2's checks follow each storm. Returns how many
+    storms ended the task cancelled (a storm that starts after the task finished cuts nothing)."""
+    rng = random.Random(seed)
+    cut = 0
+    for _ in range(storms):
+        task = asyncio.ensure_future(run())
+        await storm(task, after_s=rng.uniform(0.0, window_s))
+        if task.cancelled():
+            cut += 1
+        elif task.exception() is not None:
+            raise task.exception()  # type: ignore[misc]
+        await after_storm(api, sid)
+    return cut
+
+
+async def storm_during_call(api: Any, sid: str, task: asyncio.Task[Any], release: asyncio.Event) -> None:
+    """`task` waits on a parked call (`park_decision` or `park_next_chat`): storm it, run D2's checks, then release the
+    parked request so it settles."""
+    assert not task.done(), "the task must still be waiting on its parked call"
+    await storm(task)
+    await after_storm(api, sid)
+    release.set()
+    await api.drive(10)
