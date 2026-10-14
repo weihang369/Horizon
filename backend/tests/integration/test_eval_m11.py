@@ -250,6 +250,46 @@ async def test_which_side_is_weak(api: Api, tmp_path: Path, monkeypatch: pytest.
     assert "same voice, same length" in body["messages"][0]["content"]
 
 
+async def test_the_engages_plants_answer_nothing_said(api: Api, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """D31.2: rebuttals and closings in turn across the debates, real items skipped, each written once from the motion,
+    the side and the speaker's opening alone; the builder asks the plant in the argument's own slot."""
+    import sys
+
+    from horizon.evals import debate_suites as ds
+
+    await api.set_key()
+    assert api.rt.fake is not None
+    api.rt.fake.set_canned(ds.PLANT_PURPOSE, [{"content": "'A new point nobody raised.'"}])
+    hs = [fixture_history("d02"), fixture_history("d04")]
+    monkeypatch.setattr(ds, "histories", lambda root=None: hs)
+    monkeypatch.setattr(ds, "real_engages", lambda path=None: {("d02", 8)})
+    opts = Options("debate-plant", set="engages", limit=3)
+    s = ds.DebatePlant()
+    plan = s.plan(opts, api.rt.prices, paid=False)
+    assert [(h["id"], a["seq"]) for h, a in plan.items] == [("d02", 7), ("d04", 7), ("d02", 9)]
+    env = env_for(api, tmp_path, opts)
+    res = await s.run(env, plan)
+    doc = json.loads((env.run_dir / "planted" / "engages.json").read_text(encoding="utf-8"))
+    assert {k: v["text"] for k, v in doc["plants"].items()} == {"d02#7": "A new point nobody raised.",
+                                                                "d04#7": "A new point nobody raised.",
+                             "d02#9": "A new point nobody raised."}
+    assert len(res.rows) == 3 and "3 argument(s) rewritten to answer nothing said" in res.summary[0]
+    body = next(json.loads(r.content) for r in api.rt.fake.requests if r.url.path.endswith("/chat/completions"))
+    user = body["messages"][1]["content"]
+    assert "Their opening (the voice to keep; don't repeat its points):\n'Ana opening argument 0.'" in user
+    assert "Ben opening argument 1." not in user        # instruction 3: the debate isn't shown, so none of it is answered
+    assert "Don't address anyone" in body["messages"][0]["content"] and "in favour of" in body["messages"][0]["content"]
+    assert "Ana, for the Proposition, in the rebuttal." in user   # the slot named: a rebuttal and a closing differ
+
+    sys.path.insert(0, str(ds.EVALS_DIR / "datasets" / "judges"))
+    import debate_quality as dq
+
+    got = dq.planted_engages(hs, {("d02", 8)}, n=2, plants={k: v["text"] for k, v in doc["plants"].items()})
+    assert [r["source"] for r in got] == ["debate:d02#7 rewritten to answer nothing said",
+                                          "debate:d04#7 rewritten to answer nothing said"]
+    assert "Ana: A new point nobody raised." in got[0]["item"]["state"]["quoted_argument"]
+
+
 # ── 9.3: the member slice ──
 SOFIA, AMARA, VICTOR, MEI, DANIEL = "chr_evalSofia", "chr_seedAmara", "chr_seedVictor", "chr_seedMei", "chr_evalDaniel"
 
@@ -398,7 +438,8 @@ def test_the_judge_sets_plant_by_rule() -> None:
     dq = load("debate_quality_build", DATASETS / "judges" / "debate_quality.py")
     hs = [meridian_history("d01", [SOFIA, AMARA], [VICTOR, MEI]), meridian_history("d02", [DANIEL, AMARA], [MEI, SOFIA])]
     real_keeps = [("d01", 7, "no")]
-    sets = dq.build(hs, real_keeps, [("d02", 12, "no")], n=4)
+    sets = dq.build(hs, real_keeps, [("d02", 12, "no")], n=4, plants={"d01#8": "A point nobody raised.",
+                                                                       "d02#7": "Another new point."})
     keeps, engages = sets[ds.KEEPS], sets[ds.ENGAGES]
     assert [r["planted"] for r in keeps] == [False, True, True, True, True]
     real = keeps[0]
@@ -406,9 +447,11 @@ def test_the_judge_sets_plant_by_rule() -> None:
     first = keeps[1]                     # d01's first unused rebuttal (Victor, opp) asked as the Proposition
     assert first["source"].startswith("debate:d01#8") and first["item"]["side"] == "Proposition"
     assert keeps[2]["source"].startswith("debate:d02#7")                  # the debates take turns
-    plant = engages[1]
-    assert plant["item"]["state"]["quoted_argument"].endswith("on opening.")      # the speaker's own opening
-    assert plant["label"] == "yes" and plant["item"]["state"]["quoted_previous"].startswith("Victor Hale: ")
+    plant = engages[2]                   # D31.2: the rewrite, in the argument's own slot (only rewritten ones)
+    assert [r["source"] for r in engages[1:]] == ["debate:d02#7 rewritten to answer nothing said",
+                                                  "debate:d01#8 rewritten to answer nothing said"]
+    assert plant["item"]["state"]["quoted_argument"] == "Victor Hale: A point nobody raised."
+    assert plant["label"] == "yes" and plant["item"]["state"]["quoted_previous"].startswith("Sofia Brandt: ")
     q = suites.item_question(first)
     assert "Proposition's position" in q.instructions
     assert dq.check(sets) != []          # 30 + 30 each only on the real histories

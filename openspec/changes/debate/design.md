@@ -1117,8 +1117,11 @@ delta. If implementation finds a need, it stops and asks (the user's rule).
    - **Rejected:** asking for every overrun; stopping 10.6 with 25 of its 40 items.
 2. **`judge_engages` failed its planted items** (23 of 30; real 30 of 30): its plants (D21, "an opening put in a
    rebuttal slot") are often about the very point the other side then answered. **The plants are rebuilt:** 30 real
-   rebuttals and closings rewritten once by DeepSeek to ignore everything said and start a new topic (D21's own
-   plant prompt for engages, `eval_plant`), each read before use, and B4 run again.
+   rebuttals and closings rewritten once by DeepSeek to answer nothing said (`horizon eval debate-plant --set
+   engages`, `eval_plant`), each read before use, and B4 run again. Shown the debate, DeepSeek kept answering it, so
+   the instruction went through four versions (the last writes a new point for the side from the motion and the
+   speaker's opening alone); every plant records its version, and the drops are listed in
+   `horizon.evals.debate_suites`. It passed: planted 0.90, real 1.00 (m11.md 10.4).
    - **Rejected:** keeping the judge "NOT COUNTED" in M11; rewording the judge on the same plants.
 3. **`naive`'s written notes** (10.1: 14 arguments with `<e:thinking>` notes … `</e:thinking>`, 10 more with a stray
    closing tag): **the tag parser drops `</e:…>`** like any stray tag (backend and the TS reference, one shared

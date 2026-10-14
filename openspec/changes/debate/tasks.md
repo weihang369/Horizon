@@ -381,7 +381,7 @@
 - [x] 10.3 Build the member slice, the debate emotion slice and the debate-quality real items from the committed
   histories. Do the delegated B2 review (D29.2) as a recorded pass in `evals/reviews/m11-review.md`.
   Verify: `corpus-check`, `overlap`, and the builders' tests pass on the real files.
-- [ ] 10.4 Judge validations: `judge_keeps_side`, `judge_engages`, `judge_starts_new` and
+- [x] 10.4 Judge validations: `judge_keeps_side`, `judge_engages`, `judge_starts_new` and
   `judge_summary_unsupported` v2 (≈ $0.015).
   Verify: each clears B4's bar, recorded in m11.md. A failing judge is reported to the user as a choice.
 - [x] 10.5 `decisions --set debate_member` (≈ $0.010), then write `floor.member` into the three entries (version 2,

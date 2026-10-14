@@ -44,7 +44,9 @@ The sampled ids are in `m11-review.json`.
   (Proposition) d10#6 ("the wrong tool aimed at the wrong ditch") and d10#18 ("Against the motion.").
 - **`judge_engages`.** The real rebuttals and closings each answer the other side's latest point, so the real items are
   all `no` and the planted items carry the `yes` labels; that limit is recorded with the judge's validation.
-  The planted items are each speaker's own opening in their rebuttal or closing slot. 52 candidates were read to keep
-  30: 22 were dropped (`DROP_ENGAGES`) because the opening already answers the other side's opening (a second speaker's
-  opening, such as Daniel's "Amara's right on the science", or Rin's "local doesn't mean fresher" after Bram's "fresher
-  food"). All 30 planted `judge_keeps_side` candidates were kept.
+  The first planted items were each speaker's own opening in their rebuttal or closing slot (52 read, 22 dropped
+  because the opening already answered the other side's opening). They failed B4 (planted 23 of 30), and the user
+  chose to rebuild them (D31.2): 91 DeepSeek rewrites over four instructions, every one read against the arguments
+  the judge sees with it, 59 dropped (a contrast with a point made, a concession, a name, the other side argued, a
+  repeated text) and 32 kept; the set takes the first 30 in turn. All 30 planted `judge_keeps_side` candidates were
+  kept.

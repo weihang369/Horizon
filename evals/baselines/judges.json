@@ -24,9 +24,9 @@
  "judge_engages": {
   "baseline": 0.5,
   "date": "2026-10-14",
-  "overall": 0.8833,
-  "passed": false,
-  "planted": 0.7667,
+  "overall": 0.95,
+  "passed": true,
+  "planted": 0.9,
   "planted_n": 30,
   "real": 1.0,
   "real_n": 30,

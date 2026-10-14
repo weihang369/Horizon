@@ -8,9 +8,11 @@ Run from backend/: `uv run python ../evals/datasets/judges/debate_quality.py`. D
   an argument that answers the other side's latest point, even badly, engages.
 - **Planted (30 each, known `yes`):**
   - keeps its side: an argument asked as if the other side had made it (D21's relabel);
-  - engages: the speaker's own opening put in their rebuttal or closing slot, against what the other side said there.
+  - engages (debate D31.2, replacing D21's "an opening put in a rebuttal slot", which failed B4 on 7 of 30): the
+    argument rewritten once by DeepSeek to answer nothing said (`horizon eval debate-plant --set engages`, committed as
+    `evals/debates/planted/engages.json`), asked in its own slot against what the other side said there.
   Plants are taken by rule (`planted_keeps`, `planted_engages`): every two-sided debate in turn, its rebuttal and
-  closing arguments in order, skipping any argument used as a real item.
+  closing arguments in order, skipping any argument used as a real item and any plant dropped after reading.
 - **State:** `horizon.evals.debate_suites.keeps_item` / `engages_item`, the ones the debate-quality run asks.
 """
 
@@ -59,13 +61,10 @@ REAL_ENGAGES: list[tuple[str, int, str]] = [
     ("d12", 8, "no"), ("d12", 10, "no"), ("d13", 8, "no"), ("d13", 10, "no"), ("d13", 13, "no"), ("d13", 15, "no"),
 ]
 
-# Planted candidates read in task 10.3 that don't plainly fail, dropped before the next in turn is taken (m11-labels.md)
+# Planted candidates read before use that don't plainly fail, dropped before the next in turn is taken (m11-labels.md).
+# 10.3's 22 engages drops applied to D21's opening plants, which D31.2 replaced.
 DROP_KEEPS: set[tuple[str, int]] = set()
-DROP_ENGAGES: set[tuple[str, int]] = {   # the speaker's opening already answers the other side's opening
-    ("d01", 10), ("d02", 8), ("d02", 10), ("d03", 10), ("d04", 10), ("d05", 9), ("d06", 8), ("d06", 10),
-    ("d07", 7), ("d08", 8), ("d10", 9), ("d11", 8), ("d11", 9), ("d02", 13), ("d06", 13), ("d06", 15), ("d07", 12),
-    ("d08", 9), ("d10", 10), ("d02", 14), ("d08", 14), ("d08", 15),
-}
+DROP_ENGAGES: set[tuple[str, int]] = set()   # the rewritten plants, read before use (D31.2)
 
 
 def row(qid: str, item_id: str, it: dict[str, Any], label: str, planted: bool, source: str) -> dict[str, Any]:
@@ -97,20 +96,26 @@ def planted_keeps(hs: list[dict[str, Any]], used: set[tuple[str, int]], n: int =
     return out
 
 
-def planted_engages(hs: list[dict[str, Any]], used: set[tuple[str, int]], n: int = N) -> list[dict[str, Any]]:
+def planted_engages(hs: list[dict[str, Any]], used: set[tuple[str, int]], n: int = N,
+                    plants: dict[str, str] | None = None) -> list[dict[str, Any]]:
+    if plants is None:   # the committed rewrites, less those reading dropped (D31.2)
+        plants = {k: str(v["text"]) for k, v in ds.engages_plants().items() if k not in ds.ENGAGES_DROPPED}
     out = []
-    for h, a in candidates_in_turn(hs, used)[:n]:
-        opening = ds.opening_of(h, str(a["speaker"]))
-        if not opening:
+    for h, a in candidates_in_turn(hs, used):
+        text = plants.get(f"{h['id']}#{a['seq']}")
+        if text is None:
             continue
-        it = ds.engages_item(h, a, text=opening)
+        it = ds.engages_item(h, a, text=text)
         out.append(row(ds.ENGAGES, f"{ds.ENGAGES}-planted-{h['id']}-{a['seq']:03d}", it, "yes", True,
-                       f"debate:{h['id']}#{a['seq']} with the speaker's opening"))
+                       f"debate:{h['id']}#{a['seq']} rewritten to answer nothing said"))
+        if len(out) == n:
+            break
     return out
 
 
 def build(hs: list[dict[str, Any]], real_keeps: list[tuple[str, int, str]] | None = None,
-          real_engages: list[tuple[str, int, str]] | None = None, n: int = N) -> dict[str, list[dict[str, Any]]]:
+          real_engages: list[tuple[str, int, str]] | None = None, n: int = N,
+          plants: dict[str, str] | None = None) -> dict[str, list[dict[str, Any]]]:
     real_keeps = REAL_KEEPS if real_keeps is None else real_keeps
     real_engages = REAL_ENGAGES if real_engages is None else real_engages
     by_id = {h["id"]: h for h in hs}
@@ -119,7 +124,7 @@ def build(hs: list[dict[str, Any]], real_keeps: list[tuple[str, int, str]] | Non
     engages = [row(ds.ENGAGES, f"{ds.ENGAGES}-real-{d}-{s:03d}", ds.engages_item(by_id[d], arg_at(by_id[d], s)), lab,
                    False, f"debate:{d}#{s}") for d, s, lab in real_engages]
     keeps += planted_keeps(hs, {(d, s) for d, s, _ in real_keeps} | DROP_KEEPS, n)
-    engages += planted_engages(hs, {(d, s) for d, s, _ in real_engages} | DROP_ENGAGES, n)
+    engages += planted_engages(hs, {(d, s) for d, s, _ in real_engages} | DROP_ENGAGES, n, plants)
     return {ds.KEEPS: keeps, ds.ENGAGES: engages}
 
 
