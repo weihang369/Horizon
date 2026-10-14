@@ -1249,7 +1249,7 @@ def member_sources(msgs: Sequence[dict[str, Any]]) -> dict[str, int]:
                 out["Jev"] += 1
             elif r.get("result") == "below_threshold":
                 out["unsure"] += 1
-            elif "late" in str(r.get("answer")):
+            elif "late" in str(r.get("answer")) or "late" in str(r.get("action")):   # the action says "(… late)"
                 out["late"] += 1
             else:
                 out["failed"] += 1

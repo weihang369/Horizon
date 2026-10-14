@@ -1,0 +1,294 @@
+{
+ "schemaVersion": 1,
+ "id": "freerun-1",
+ "mode": "watch",
+ "world": "wld_seedSunnyHollow",
+ "cast": [
+  "chr_seedHana",
+  "chr_seedRin",
+  "chr_seedTakeshi"
+ ],
+ "premise": "A rainy Sunday at the flower shop, and the till won't open.",
+ "language": "en",
+ "lines": [
+  {
+   "seq": 2,
+   "kind": "line",
+   "speaker": "chr_seedHana",
+   "text": "Rainy Sundays are supposed to be slow and cozy, not the day my till decides to lock up like a stubborn tulip bud!\n\nDad, if I jiggle this lever while you hit the drawer, will that help, or am I about to lose a fingernail?",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "embarrassed"
+  },
+  {
+   "seq": 3,
+   "kind": "line",
+   "speaker": "chr_seedTakeshi",
+   "text": "Step back from that lever, Hana. That drawer's like a frozen switch on a cold morning — force it and you'll snap something you can't fix with duct tape.  \n\nRin, hand me that flathead screwdriver from under the counter and nobody loses a fingernail today.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 4,
+   "kind": "line",
+   "speaker": "chr_seedRin",
+   "text": "found it. also watching you two try to beat a cash register is the best content this shop's had all week.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 5,
+   "kind": "line",
+   "speaker": "chr_seedHana",
+   "text": "I just wanted to buy my own croissant, is that so much to ask on a rainy day?\n\nRin, keep filming and I'm putting you on watering duty for the ferns. All of them. Kai, you're the tech person here — any brilliant ideas before Dad performs surgery?",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "embarrassed"
+  },
+  {
+   "seq": 6,
+   "kind": "line",
+   "speaker": "chr_seedTakeshi",
+   "text": "Printer's probably the culprit — the receipt feed jams and the till sulks. Check the little display for an error code first, Kai.\n\nSome days you're the train, some days you're the cow on the tracks. This drawer's the cow.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 7,
+   "kind": "line",
+   "speaker": "chr_seedRin",
+   "text": "ferns are your job, i'm just the audience. dad's right though, check the display first.\n\nand kai, if you fix this you're officially more useful than my entire studio's it guy. low bar, but still.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 8,
+   "kind": "line",
+   "speaker": "chr_seedHana",
+   "text": "No pressure, Kai, but my whole morning hangs on you now!\n\nHonestly the bouquet orders can wait, it's the croissants at the station bakery I'm worried about — they sell out by ten.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 9,
+   "kind": "line",
+   "speaker": "chr_seedTakeshi",
+   "text": "Croissant deadline, now that's a real emergency. Thirty years on the rails, I never once left the platform late. Bakeries are no different.\n\nThat screwdriver's getting warm in my hand, Kai. You've got until the coffee goes cold — and the coffee's already coffee.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 10,
+   "kind": "line",
+   "speaker": "chr_seedRin",
+   "text": "it's 9:40, so if kai doesn't crack it in twenty i'm calling the bakery and pretending to be you, hana. sacrifices must be made.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 11,
+   "kind": "line",
+   "speaker": "chr_seedHana",
+   "text": "You wouldn't survive one conversation with Mrs. Okada, she asks about everyone's love life and you don't even have one!\n\nFine. Plan B is I slip a note under the bakery door asking them to save me two, and we accept being known as the flaky croissant people forever.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "embarrassed"
+  },
+  {
+   "seq": 12,
+   "kind": "line",
+   "speaker": "chr_seedTakeshi",
+   "text": "I raised two daughters. I can outwait a bakery, a till, and the both of you combined.\n\nNow quit chatting. The screwdriver's older than Rin, so it's earned the right to do nothing until we've read that error code.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 13,
+   "kind": "line",
+   "speaker": "chr_seedRin",
+   "text": "mrs. okada can ask me whatever she wants, i'll just lie creatively. you're welcome.\n\nkai, seriously though. what's the screen say.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "happy"
+  },
+  {
+   "seq": 14,
+   "kind": "line",
+   "speaker": "chr_seedHana",
+   "text": "Kai, I'm holding my breath here — say it's something dumb like a paper jam and I'll kiss you in front of my whole family.\n\nWhich I'll do anyway, but the paper jam sweetens it!",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 15,
+   "kind": "line",
+   "speaker": "chr_seedTakeshi",
+   "text": "Focus, Kai. A screen's like a signal box — read it before you pull anything.\n\nIf it's a jam, you owe me a croissant too. And Hana, no kissing till the drawer's open. Shop rules.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 16,
+   "kind": "line",
+   "speaker": "chr_seedRin",
+   "text": "shop rules are fake, dad made them up thirty seconds ago.\n\nbut yeah, error code, kai. we're all invested now. this is basically a raid boss and you're the only one with a key.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "happy"
+  },
+  {
+   "seq": 17,
+   "kind": "line",
+   "speaker": "chr_seedHana",
+   "text": "Raid boss is right, it's wearing us all down! I've been standing here so long my apron's got a crease in it.\n\nDad, shop rules can't be made up on rainy days, that's practically constitutional law.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 18,
+   "kind": "line",
+   "speaker": "chr_seedTakeshi",
+   "text": "Rainy days are exactly when rules get made. Nobody's coming to stop me.\n\nEnough stalling. Kai, read it out loud — I'll tell you if it's a jam or a jam with extra paperwork.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 19,
+   "kind": "line",
+   "speaker": "chr_seedRin",
+   "text": "y'all have turned one error code into a family drama. it's honestly impressive.\n\nkai, i'd bail you out but my specialty is game balance, not cash drawers. you're on your own, hero.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "happy"
+  },
+  {
+   "seq": 20,
+   "kind": "line",
+   "speaker": "chr_seedTakeshi",
+   "text": "Hero business runs on coffee and patience. Good thing we've got one of those.\n\nKai. Screen. Out loud. That croissant's not going to save itself.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 21,
+   "kind": "line",
+   "speaker": "chr_seedHana",
+   "text": "Rin, the least you could do is pretend to google it dramatically instead of narrating our suffering!\n\nKai, whatever the code says, I believe in you. If it's gibberish, that's still more than the rest of us have managed.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 22,
+   "kind": "line",
+   "speaker": "chr_seedTakeshi",
+   "text": "Google won't fix a drawer, it'll just tell you twelve ways to be wrong. This is a lever and a spring. Simple as a train coupling.\n\nTen minutes, Kai, or I'm prying it myself and the bakery story becomes my obituary.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 23,
+   "kind": "line",
+   "speaker": "chr_seedRin",
+   "text": "\"twelve ways to be wrong\" is just the google experience, dad's not wrong.\n\nfine, grabbing my phone. kai, if you look at the screen and it says something like e-04 i'm gonna laugh so hard.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "happy"
+  },
+  {
+   "seq": 24,
+   "kind": "line",
+   "speaker": "chr_seedHana",
+   "text": "Stop threatening my shop with dramatic obituaries, you're not allowed to die in here, I just mopped!\n\nDad's got a point though, Kai — it really is just a lever and a spring under all the beeping.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "happy"
+  },
+  {
+   "seq": 25,
+   "kind": "line",
+   "speaker": "chr_seedTakeshi",
+   "text": "Nine forty-five. Coffee's cold, so it's clock time now.\n\nKai, push the release latch under the drawer and give it one clean pull. Like uncoupling a car — firm, not angry.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 26,
+   "kind": "line",
+   "speaker": "chr_seedRin",
+   "text": "\"firm, not angry\" is how i wish my raid team took feedback.\n\ndo it, kai. i'll count to three and if it doesn't open i'm blaming you forever. one. two.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "happy"
+  },
+  {
+   "seq": 27,
+   "kind": "line",
+   "speaker": "chr_seedTakeshi",
+   "text": "Don't count at a mechanic. Count at your raid team.\n\nOne clean pull, Kai. On my mark.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 28,
+   "kind": "line",
+   "speaker": "chr_seedHana",
+   "text": "I can't watch, I'm staring at the peonies instead. They look how I feel. Under a lot of pressure, slightly droopy!\n\nIf this works I'm declaring croissants on the house for everyone. Forever. Including Mrs. Okada.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "happy"
+  },
+  {
+   "seq": 29,
+   "kind": "line",
+   "speaker": "chr_seedRin",
+   "text": "three.\n\nthat was anticlimactic. i want my money back.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "happy"
+  },
+  {
+   "seq": 30,
+   "kind": "line",
+   "speaker": "chr_seedTakeshi",
+   "text": "Ha. There she blows. Like the six-forty express, right on schedule.\n\nSomebody check the receipt roll so it doesn't jam again next Sunday, and Hana, those croissants better be warm.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 31,
+   "kind": "line",
+   "speaker": "chr_seedHana",
+   "text": "It opened! Kai, you beautiful nerd, I could actually cry over a cash drawer and I'm not even embarrassed!\n\nWarm croissants, all four of us, my treat. Rain's easing too — see, the day's unfolding like a tulip after all.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "embarrassed"
+  },
+  {
+   "seq": 32,
+   "kind": "line",
+   "speaker": "chr_seedRin",
+   "text": "kai gets the win, fine. i'll take the free croissant as my reward for moral support.\n\nrain's easing, so now dad can tell us the cow-on-the-tracks story on the walk over. again. fourth time this month.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "happy"
+  }
+ ]
+}

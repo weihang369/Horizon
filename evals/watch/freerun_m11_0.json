@@ -1,0 +1,285 @@
+{
+ "schemaVersion": 1,
+ "id": "freerun-0",
+ "mode": "watch",
+ "world": "wld_seedMeridian",
+ "cast": [
+  "chr_seedAmara",
+  "chr_seedMei",
+  "chr_seedVictor"
+ ],
+ "premise": "The council's emergency budget meeting, the night before the vote.",
+ "language": "en",
+ "lines": [
+  {
+   "seq": 2,
+   "kind": "line",
+   "speaker": "chr_seedAmara",
+   "text": "Kai, before we vote — the emergency line items are the ones that bleed if we trim them. I've watched that happen. Mei, what does the labour data actually show on front-line vacancy rates?",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 3,
+   "kind": "line",
+   "speaker": "chr_seedMei",
+   "text": "Ranges, not a number: 12 to 19 percent for ER nurses depending on how you count travelers. The binding constraint isn't the wage line — it's that we post and nobody applies. You can trim the line item; you can't trim the vacancy.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 4,
+   "kind": "line",
+   "speaker": "chr_seedVictor",
+   "text": "Two points for the record. First, \"emergency\" is doing a great deal of unexamined work in that sentence, Amara — define your terms, or the vote tomorrow is on a mood, not a measure.\n\nSecond, Mei has handed us the actual question: a wage line we can amend versus a vacancy we cannot. One of those is a budget item. The other is a fact, and facts are notoriously unappealable.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 5,
+   "kind": "line",
+   "speaker": "chr_seedAmara",
+   "text": "Victor, fine — \"emergency\" means anything where a delay of hours changes the outcome. That's a measure. Mei just gave you the fact under it: the money isn't the hole, the staffing is.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 6,
+   "kind": "line",
+   "speaker": "chr_seedMei",
+   "text": "Then the honest move is funding the pipeline, not the post: retention bonuses now buy you maybe three to six months, not a rebuild. Second-order effect nobody's priced — every traveler we convert to staff pulls a nurse off another hospital's roster. We're reallocating scarcity, not fixing it.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 7,
+   "kind": "line",
+   "speaker": "chr_seedVictor",
+   "text": "A definition with teeth. Hours-change-the-outcome is workable, and I'll take it.\n\nMei's second-order point is the one I'd lose sleep over: we may vote to look decisive while merely moving the shortage across town. Cui bono — who benefits? The hospital that poaches first. I want that tradeoff stated on the face of the motion.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 8,
+   "kind": "line",
+   "speaker": "chr_seedAmara",
+   "text": "Then let's state it plainly: any conversion clause names where the nurse came from and who's now short. I'd rather the motion look ugly and honest than clean and false.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 9,
+   "kind": "line",
+   "speaker": "chr_seedMei",
+   "text": "That I'll sign. One caution: make the disclosure by region, not by facility — facility-level names turn into recruitment intel for the next hospital. Ugly and honest, yes. Ugly and useful to a competitor, no.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 10,
+   "kind": "line",
+   "speaker": "chr_seedVictor",
+   "text": "Agreed, with one amendment. Disclose by region, yes — but the motion should also require a standing review, say every ninety days, so we are pricing vacancy, not narrating it once and calling that governance.\n\nA confession of ignorance beats a confident guess. Let the record say we knew what we were choosing.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 11,
+   "kind": "line",
+   "speaker": "chr_seedAmara",
+   "text": "Regional disclosure, ninety-day review — both of those I'll carry. Kai, you convened this. Do you want the tradeoff clause in the motion, or in the minutes where it's easier to bury?",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 12,
+   "kind": "line",
+   "speaker": "chr_seedMei",
+   "text": "In the motion. Minutes get read once; the motion gets read by whoever's cutting the budget next cycle. If we're pricing a tradeoff, put it where it costs us something to ignore.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 13,
+   "kind": "line",
+   "speaker": "chr_seedVictor",
+   "text": "Mei is right, and I'll say so plainly. Minutes are where accountability goes to die; a motion is a binding instrument. Put the tradeoff in the operative text.\n\nAmara, Kai asked the room to decide — but he convened it. I'd hear from him before we draft.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 14,
+   "kind": "line",
+   "speaker": "chr_seedAmara",
+   "text": "Same. Kai, you called us here the night before the vote for a reason. Are you drafting the clause with us, or refereeing?",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 15,
+   "kind": "line",
+   "speaker": "chr_seedMei",
+   "text": "Kai, this is the part where you're useful or decorative. I've given you a range and a caveat; I won't pretend it's tighter than it is. Draft it or referee it, but pick before we start guessing your silence.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 16,
+   "kind": "line",
+   "speaker": "chr_seedVictor",
+   "text": "Kai, I'll add only this, since Mei has already drawn the line sharply enough. Silence in a deliberative body is not neutral — it is a vote cast by omission.\n\nEither take the pen and draft the clause, or say \"referee\" and I'll hold the process to it. But a convenor who delegates the substance has not convened; he has merely attended.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 17,
+   "kind": "line",
+   "speaker": "chr_seedAmara",
+   "text": "I'd only add my own stake: my colleagues who burnt out didn't collapse from one bad night, they collapsed from a system priced for the smooth case. Whatever you decide, that's the thing I'm voting to fix.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 18,
+   "kind": "line",
+   "speaker": "chr_seedVictor",
+   "text": "Amara, that is the entire case, and it argues against pricing for the smooth case. A system that works only when nothing goes wrong is not a system; it is a wager.\n\nKai, the room has given you material and a deadline. Name your role.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 19,
+   "kind": "line",
+   "speaker": "chr_seedAmara",
+   "text": "Everyone here has said their piece, and two of them are asking you the same thing. Name your role, or we draft it and you live with our wording.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 20,
+   "kind": "line",
+   "speaker": "chr_seedVictor",
+   "text": "Kai, I'll put it to you the way I'd put it to a client at the close of argument. You either step into the well or you sit down. But a convenor who lets others write his motion has only borrowed their conviction.\n\nThe hour is late. Name it.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 21,
+   "kind": "line",
+   "speaker": "chr_seedMei",
+   "text": "I'll second the push, without the theatrics. Kai, the draft window closes in twenty minutes; after that we take the argument as it stands and you get a motion you didn't shape. That's not a threat, it's just how deadlines work.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 22,
+   "kind": "line",
+   "speaker": "chr_seedAmara",
+   "text": "Twenty minutes is real. Kai — I'll draft the operative text now and leave a blank line where your language goes. Fill it or don't, but it won't stay blank past the hour.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 23,
+   "kind": "line",
+   "speaker": "chr_seedVictor",
+   "text": "Then the record will show the clock, not the man. Twenty minutes and a blank line is the whole question, and it answers itself by inaction.\n\nAmara, draft it. If Kai fills the line, we win a convenor. If not, we still have a motion — and a precedent about what his convening is worth.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 24,
+   "kind": "line",
+   "speaker": "chr_seedMei",
+   "text": "Fine. Amara drafts, I'll check the vacancy figures against the regional baseline so the disclosure clause has a real number behind it — 15 to 18 percent is my provisional range. If the blank stays blank, note it in the record as a non-response, not a dissent.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 25,
+   "kind": "line",
+   "speaker": "chr_seedAmara",
+   "text": "Drafting now. Operative text: fund retention and pipeline together, regional disclosure on every conversion, mandatory ninety-day review, vacancy priced as a standing line rather than a one-time note. Line under it stays open for Kai.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 26,
+   "kind": "line",
+   "speaker": "chr_seedVictor",
+   "text": "A non-response, properly minuted. That is a finding, not an insult, and I'll sign it as such.\n\nMei, 15 to 18 is firmer than the 12 to 19 you opened with — tighter because you know what an overclaimed number costs you in this room. I'd note the revision, not conceal it. Let the record reflect the range narrowed as evidence arrived.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 27,
+   "kind": "line",
+   "speaker": "chr_seedMei",
+   "text": "Reflect it — the narrowing is the point, not something to hide. I opened wide because the underlying series is patchy; I tightened once Amara's unit data came in. Anyone who holds a single number from first sentence to last hasn't looked at the data twice.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 28,
+   "kind": "line",
+   "speaker": "chr_seedAmara",
+   "text": "Record reflects both ranges. Patchy to 15–18, and why. A number that can't move under evidence isn't evidence, it's a position.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 29,
+   "kind": "line",
+   "speaker": "chr_seedVictor",
+   "text": "Then the worst thing I could do is defend my first sentence to the death, which is the lawyer's vice. Amara, that last line belongs in the minutes verbatim — a number that cannot move is not evidence, it is a position.\n\nMei, patchy-to-tighter is the honest arc. Draft around the lower bound and disclose the range.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 30,
+   "kind": "line",
+   "speaker": "chr_seedAmara",
+   "text": "Minutes will carry it verbatim. Draft uses 15 as the floor, discloses to 18. Kai's line is still blank — clock's at seven minutes.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  },
+  {
+   "seq": 31,
+   "kind": "line",
+   "speaker": "chr_seedMei",
+   "text": "Seven minutes. I'll stop talking so there's room for the pen. If the line stays blank, we fund to the floor and the disclosure covers the rest — that's a defensible motion even without a convenor's blessing.",
+   "summary_upto": null,
+   "summary": null,
+   "emotion": "neutral"
+  }
+ ]
+}

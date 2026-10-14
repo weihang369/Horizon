@@ -683,3 +683,16 @@ def test_the_fresh_cuts_and_the_growth_are_cut_with_the_live_state() -> None:
                                               ("sunnyhollow", 4, ["thinking"], True, "en")], tests=0)
     assert [r["question_id"] for r in items] == ["emotion_opening", "emotion_line"]
     assert items[1]["item"]["state"]["mode"] == "watch" and items[1]["item"]["name"]
+
+
+def test_member_sources_count_a_late_answer_from_its_action() -> None:
+    """10.10: the runtime writes a late pick's reason in `action` ("next in order (Jev answered late)"); the free-run
+    report had counted those as failed."""
+    from horizon.evals import debate_suites as ds
+
+    def msg(result: str, action: str) -> dict[str, Any]:
+        return {"trace": {"system1": {"questions": [{"id": "member_panel", "result": result, "action": action}]}}}
+
+    got = ds.member_sources([msg("used", "speaks"), msg("below_threshold", "next in order (unsure)"),
+                             msg("fallback", "next in order (Jev answered late)"), msg("fallback", "next in order")])
+    assert got == {"Jev": 1, "unsure": 1, "late": 1, "failed": 1}
