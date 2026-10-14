@@ -106,6 +106,11 @@ class DebateMeta(Frozen):
     iteration: int
     side: str | None = None
     motion: str = ""
+    # M11 (debate D10): the cue's facts, computed by the runtime from the log when it builds the spec (A9: a stored
+    # context replays the same request); the engine only renders them
+    teammates_heard: list[str] = []      # character IDs of teammates already heard in this phase-iteration
+    after_interject: bool = False        # an Interject is newer than the last argument
+    panel: bool = False
 
 
 class KnowledgeHit(Frozen):
@@ -206,7 +211,7 @@ class WhoPick(Frozen):
     p: float | None = None
     confidence: float | None = None
     candidates: list[dict[str, Any]] = []           # routing.candidates: [{characterId, p}], highest first
-    forced_by: Literal["mention", "nudge", "round_order"] | None = None
+    forced_by: Literal["mention", "nudge", "round_order", "user_ask"] | None = None
     reason: str | None = None                       # routing.reason ("fallback", or the guard's sentence)
 
 
@@ -237,7 +242,7 @@ class CastRequest(Frozen):
     kind: CastKind
     candidates: list[str]                           # who may be picked or asked about, in cast order
     forced: list[str] = []                          # speak without a who question (mentions, a nudge, the guard)
-    forced_by: Literal["mention", "nudge", "round_order"] | None = None
+    forced_by: Literal["mention", "nudge", "round_order", "user_ask"] | None = None
     reason: str | None = None                       # the guard's routing.reason
     cast: list[CharacterView] = []                  # the candidates' profiles (X9's `about`)
     latest: str = ""                                # the line being answered: the user's text, or "Name: line"

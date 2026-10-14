@@ -4,7 +4,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import amaraJson from "@seed/characters/chr_seedAmara.json";
 import type { Character, CharacterProfile } from "@/contract/types";
-import { compilePersona } from "@/domain/personaPrompt";
+import { compilePersona, DEBATE_CUES } from "@/domain/personaPrompt";
 import { countTokens } from "@/domain/tokens";
 import { PromptPreview } from "./PromptPreview";
 
@@ -31,6 +31,12 @@ describe("PromptPreview", () => {
     const example = "Hana has just answered. Don't repeat them; add your own angle, or answer Hana directly.";
     expect(out).toContain(`In group and watch, a reply's cue may add one sentence about whom the character is answering, e.g. “${example}”`);
     expect(out.indexOf("e.g. “Hana")).toBeGreaterThan(out.indexOf("</pre>"));
+  });
+
+  it("shows the debate note under the message, quoting the TS debate cue table's rebuttal line (M11 D10)", () => {
+    const out = decode(html(amara.profile));
+    expect(out).toContain(`In a debate, each argument's cue names its round, e.g. “${DEBATE_CUES.rebuttal}”`);
+    expect(out.indexOf("In a debate")).toBeGreaterThan(out.indexOf("</pre>"));
   });
 
   it("updates with a long backstory: the cut and the new count", () => {

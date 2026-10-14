@@ -240,7 +240,7 @@ async def test_too_late_for_the_face_keeps_the_fallback_and_writes_the_late_rows
     await api.drive(60000)
     amara = args(await messages(api, sid), "rebuttal")[1]
     assert amara["author"]["characterId"] == AMARA
-    assert amara["emotion"] != "happy"
+    assert amara["emotion"] != "happy" and amara["emotionSource"] != "classifier"   # a kept (or faded) face
     rows = [r for r in amara["trace"]["system1"]["questions"] if r["purpose"] == "debate_plan"]
     late = [r for r in rows if r["id"] == "emotion_line" and r.get("about") == AMARA and r["result"] == "fallback"
             and r.get("answer") == "happy"]

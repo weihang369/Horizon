@@ -176,50 +176,50 @@
 
 ## 4. Faces in debate (design D7, D8)
 
-- [ ] 4.1 Add the `CastKind` values `debate_opening` (`emotion_debate_opening`, forced speaker) and `debate_ask`
+- [x] 4.1 Add the `CastKind` values `debate_opening` (`emotion_debate_opening`, forced speaker) and `debate_ask`
   (`emotion_reply`) to `plan_cast`.
   Verify: unit tests of each request's keys and state.
-- [ ] 4.2 The first opening's plan starts at Start, during `debateStartMs`, and is stored with the fingerprint; its
+- [x] 4.2 The first opening's plan starts at Start, during `debateStartMs`, and is stored with the fingerprint; its
   deadline is the first opening's turn start.
   Verify: the turn-plan scenario "The first opening's face is ready at its start".
-- [ ] 4.3 Each prefetched opening runs its own `plan_cast(debate_opening)` when its prefetch starts, and
+- [x] 4.3 Each prefetched opening runs its own `plan_cast(debate_opening)` when its prefetch starts, and
   `Prefetch.start` passes the plan into its context (M10 D11's path). An opening with no prefetch plans at turn start.
   Verify: the scenario "A prefetched opening keeps its own plan", and that a prefetch discarded by Extend is recorded
   `cancelled`.
-- [ ] 4.4 Ask answers plan at turn start with `plan_cast(debate_ask)`.
+- [x] 4.4 Ask answers plan at turn start with `plan_cast(debate_ask)`.
   Verify: the scenario "Ask answers are planned".
-- [ ] 4.5 The face rule in debate is M9's `decide_face` (floor, keep, fade, the merge). `AgentTurnEngine` no longer
+- [x] 4.5 The face rule in debate is M9's `decide_face` (floor, keep, fade, the merge). `AgentTurnEngine` no longer
   holds M8's face for a planned debate turn.
   Verify: the speaker-emotion scenarios "A rebuttal reacts to the argument it answers" and "A late face is a kept
   face", and the updated ai-ports scenario "Face kept".
 
 ## 5. The debate cue, the steer reword and the prompt labels (design D10)
 
-- [ ] 5.1 First, before the engine changes: record an `agent-1` debate request fixture beside M9's and M10's in
+- [x] 5.1 First, before the engine changes: record an `agent-1` debate request fixture beside M9's and M10's in
   `backend/tests/fixtures/agent_request/`.
   Verify: the fixture is committed and a test loads it.
-- [ ] 5.2 `DebateMeta` gains `teammates_heard`, `after_interject` and `panel`, computed by the runtime from the log
+- [x] 5.2 `DebateMeta` gains `teammates_heard`, `after_interject` and `panel`, computed by the runtime from the log
   when it builds the spec.
   Verify: unit tests for a teammate heard, an Interject before and after the last argument, and an extended round.
-- [ ] 5.3 `DEBATE_CUES` and the debate branch of `AgentTurnEngine.cue()`: the phase line, then the extended,
+- [x] 5.3 `DEBATE_CUES` and the debate branch of `AgentTurnEngine.cue()`: the phase line, then the extended,
   teammate and moderator sentences in D10's order. Ask keeps `naive`'s cue.
   Verify: the persona-prompt scenarios "A rebuttal after a teammate", "An extended rebuttal after an Interject" and
   session-modes' "Interject reaches the next argument once".
-- [ ] 5.4 The TS twin `debateCue()` in `domain/personaPrompt.ts`, plus the shared fixture
+- [x] 5.4 The TS twin `debateCue()` in `domain/personaPrompt.ts`, plus the shared fixture
   `backend/tests/fixtures/debate_cue/cases.json` read by both suites.
   Verify: the scenario "Same table in both languages".
-- [ ] 5.5 Replace the steer sentence in `TURN_CUE_SENTENCES` and `turnCueSentence()` with D10's wording, with
+- [x] 5.5 Replace the steer sentence in `TURN_CUE_SENTENCES` and `turnCueSentence()` with D10's wording, with
   `{user}` filled from the You card, and update the turn-cue fixtures.
   Verify: the persona-prompt scenario "The steer names the watcher".
-- [ ] 5.6 The labels: `prompt_version_for` gives `agent-5` / `agent-6` for the steer sentence and `agent-7` /
+- [x] 5.6 The labels: `prompt_version_for` gives `agent-5` / `agent-6` for the steer sentence and `agent-7` /
   `agent-8` for a debate argument with the cue. `agent-1` … `agent-4` are unchanged.
   Verify: the ai-ports scenarios "Label follows the bytes" and "Steer and debate labels".
-- [ ] 5.7 The prefix proof:
+- [x] 5.7 The prefix proof:
   - a V4 debate request differs from 5.1's fixture only in the tail's cue line;
   - system message 1 is byte-identical across one debate's turns;
   - every M9 and M10 request fixture is unchanged.
   Verify: the persona-prompt scenario "Two rounds, one prefix", plus the existing fixture tests.
-- [ ] 5.8 "View as prompt" gains the fixed debate note, built from `debateCue("rebuttal")`.
+- [x] 5.8 "View as prompt" gains the fixed debate note, built from `debateCue("rebuttal")`.
   Verify: the persona-prompt scenario "The note is the table's", as a frontend unit test.
 
 ## 6. The host (design D11, D25)

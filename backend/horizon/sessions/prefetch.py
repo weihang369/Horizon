@@ -16,11 +16,12 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Callable, Coroutine
 from typing import TYPE_CHECKING, Any
 
-from horizon.ai.contexts import TurnContext
+from horizon.ai.contexts import TurnContext, TurnPlan
 from horizon.ai.ports import Token, TurnEvent
+from horizon.domain import vclock
 from horizon.domain.ids import new_id
 from horizon.domain.timeutil import to_ms
 from horizon.domain.vclock import Inbox
@@ -46,17 +47,26 @@ class Prefetch:
         self.error: ProviderError | None = None
         self.channel: Inbox[Any] = Inbox()
         self.task: asyncio.Task[None] | None = None
+        self.planning: asyncio.Task[TurnPlan | None] | None = None   # M11: its own face plan (debate D8)
         self.released = False
 
     @classmethod
-    async def start(cls, actor: SessionActor, spec: TurnSpec) -> Prefetch | None:
+    async def start(cls, actor: SessionActor, spec: TurnSpec,
+                    plan_with: Callable[[], Coroutine[Any, Any, TurnPlan | None]] | None = None) -> Prefetch | None:
+        """`plan_with` (M11, debate D8): a prefetched debate opening plans its own face when its prefetch starts, in
+        the background; the prefetch waits for that plan (its `turn_plan` deadline) before it streams, so nothing on
+        screen waits. Its plan decides retrieval, as an Everyone reply's does."""
         rt = actor.rt
         row = (await characters(rt, [spec.speaker])).get(spec.speaker)
         if row is None or row["deleted_at"] is not None:
             return None
         sctx = await session_context(rt, actor)
         plan = spec.plan
-        if plan is not None and plan.branch is not None:
+        if plan_with is not None:
+            ctx = TurnContext(session=sctx, speaker=character_view(row), message_id=None, prompt=spec.prompt,
+                              line=spec.line, turn_index=actor.mode.turn, max_tokens=reply_cap(rt, sctx),
+                              direction_note=spec.direction_note, debate=spec.debate)
+        elif plan is not None and plan.branch is not None:
             # M10 (group-watch D11, D18): an Everyone reply's plan came from the run's one cast plan; it decided
             # retrieval, so none runs here (the runner adds the plan's rows and call when the prefetch is released)
             ctx = TurnContext(session=sctx, speaker=character_view(row), message_id=None, prompt=spec.prompt,
@@ -75,6 +85,8 @@ class Prefetch:
         actor.mode.turn += 1
         engine = rt.ai.turn(rt.keys.status() == "set")
         pf = cls(actor, spec, ctx, new_id("msg"), engine)
+        if plan_with is not None:
+            pf.planning = rt.spawn(f"prefetch-plan:{actor.sid}", plan_with())
         pf.task = rt.spawn(f"prefetch:{actor.sid}", pf._produce())
         actor.prefetches.add(pf)
         return pf
@@ -83,6 +95,7 @@ class Prefetch:
         rt = self.actor.rt
         token = RECORDED_SINK.set(self.rows.append)
         try:
+            await self.planned()
             async with rt.llm_slots.slot():
                 agen: Any = self.engine.run(self.ctx)
                 try:
@@ -95,6 +108,16 @@ class Prefetch:
         finally:
             RECORDED_SINK.reset(token)
             self.channel.put(_END)
+
+    async def planned(self) -> TurnPlan | None:
+        """The prefetch's own plan once made (at most its `turn_plan` deadline), put into its context."""
+        if self.planning is None:
+            return self.ctx.plan
+        plan = await vclock.join(self.planning)
+        if plan is not None and self.ctx.plan is None:
+            self.ctx = self.ctx.model_copy(update={
+                "plan": plan, "max_tokens": reply_cap(self.actor.rt, self.ctx.session, plan)})
+        return plan
 
     async def replay(self) -> AsyncIterator[TurnEvent]:
         """The buffered events at speaking pace: everything before the first token at once, then the original gaps."""
@@ -129,6 +152,10 @@ class Prefetch:
     async def discard(self) -> None:
         """Cancel it (D-77): its rows keep no message ID, and their drain stands."""
         self.actor.prefetches.discard(self)
+        if self.planning is not None and not self.planning.done():
+            self.planning.cancel()   # its Jev call is recorded `cancelled` (M9 D8)
+            with contextlib.suppress(asyncio.CancelledError, Exception):
+                await self.planning
         if self.task is not None and not self.task.done():
             self.task.cancel()
             with contextlib.suppress(asyncio.CancelledError, Exception):

@@ -185,6 +185,7 @@ class TurnRunner:
             await rt.clock.sleep(rt.runtime_cfg.timing.thinking_ms / 1000)
             await actor.emit({"type": "turn.thinking", "payload": {"characterId": spec.speaker}})
             if prefetch is not None:
+                await prefetch.planned()   # M11: a prefetched opening's own plan (debate D8), at most its deadline
                 info.ctx = prefetch.ctx
                 pplan = prefetch.ctx.plan
                 if pplan is not None:   # M10 (D11): a prefetched Everyone reply carries its plan's rows and call

@@ -8,14 +8,15 @@ Steering (Ask, Interject, extend, skip) lands at the next turn boundary.
 
 from __future__ import annotations
 
-from datetime import timedelta
+from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Any
 
 from horizon.ai.contexts import DebateMeta, LineHint
+from horizon.domain import vclock
 from horizon.gateway.errors import ProviderError
 from horizon.sessions import debate_plan
 from horizon.sessions.context import session_context
-from horizon.sessions.debate_slots import SIDE_NAME, Fill, cursor, fill, members, phase_slots
+from horizon.sessions.debate_slots import SIDE_NAME, Fill, cursor, fill, is_argument, members, phase_slots, two_sided
 from horizon.sessions.modes.common import (
     asleep_note,
     gap,
@@ -95,7 +96,12 @@ async def begin_phase(actor: SessionActor, phase: str, iteration: int = 1) -> No
 
 def start(actor: SessionActor) -> None:
     async def job() -> None:
-        await actor.rt.clock.sleep(actor.rt.runtime_cfg.timing.debate_start_ms / 1000)
+        wait = actor.rt.runtime_cfg.timing.debate_start_ms / 1000
+        first = await first_opening(actor)
+        if first is not None:   # D8: the first opening's face is planned inside the start delay
+            await debate_plan.start_opening(actor, ("opening", 1), first,
+                                            actor.rt.clock.now() + timedelta(seconds=wait))
+        await actor.rt.clock.sleep(wait)
         phases = cfg_of(actor).get("phases") or ["opening"]
         await begin_phase(actor, str(phases[0]))
         step(actor)
@@ -112,6 +118,18 @@ def _messages(actor: SessionActor) -> list[Wire]:
 
 def _cast(actor: SessionActor) -> list[str]:
     return [p["characterId"] for p in actor.session["participants"]]
+
+
+async def first_opening(actor: SessionActor) -> str | None:
+    """Who the first opening's slot will get in fixed order now (the first phase must be the opening)."""
+    cfg, cast = cfg_of(actor), _cast(actor)
+    phases = [str(p) for p in cfg.get("phases") or ["opening"]]
+    slots = phase_slots(cfg, cast)
+    if not phases or phases[0] != "opening" or not slots:
+        return None
+    side_members = members(cfg, cast, slots[0])
+    f = fill(side_members, [], {c: not await is_asleep(actor, c) for c in side_members})
+    return f.who if f.action == "speak" else None
 
 
 async def next_slot(actor: SessionActor) -> tuple[int, str | None, Fill] | None:
@@ -219,13 +237,19 @@ def step(actor: SessionActor) -> None:
         if now.get("phase") == "opening" and int(now.get("iteration", 1)) == 1:
             # The opening round is known in advance: generate up to 2 later openings now (design D5).
             heard = [*cursor(_messages(actor)).heard, cid]
-            for j, who in await upcoming(actor, idx, heard, actor.rt.runtime_cfg.runtime.prefetch_max):
+            ups = await upcoming(actor, idx, heard, actor.rt.runtime_cfg.runtime.prefetch_max)
+            for k, (j, who) in enumerate(ups):
                 if j not in m.debate_prefetch:
-                    p = await Prefetch.start(actor, turn_spec(actor, who, now))
+                    before = [*heard, *(w for _, w in ups[:k])]   # who will have argued by this opening (D10)
+                    p = await Prefetch.start(actor, turn_spec(actor, who, now, heard=before),
+                                             plan_with=opening_planner(actor, who))
                     if p is not None:
                         m.debate_prefetch[j] = p
         target = (str(now.get("phase")), int(now.get("iteration", 1)))
-        cid, plan, routing, stored = await plan_slot(actor, idx, side, target, cid, f, announced is not None)
+        if pf is not None:   # a prefetched opening carries its own plan (D8)
+            plan, routing, stored = None, None, None
+        else:
+            cid, plan, routing, stored = await plan_slot(actor, idx, side, target, cid, f, announced is not None)
         spec = turn_spec(actor, cid, now)
         spec.skipped = skipped
         if plan is not None:
@@ -254,12 +278,18 @@ async def plan_slot(actor: SessionActor, idx: int, side: str | None, target: tup
       the `turn_plan` deadline (late or unsure: fixed order); otherwise the forced speaker's face is planned now.
     `naive` and `scripted` plan nothing. Openings keep the fixed order (their faces are planned with their turn)."""
     stored, fresh = await debate_plan.take(actor, idx, target)
+    if stored is not None and stored.face_task is not None:   # the first opening's face, planned at Start
+        if fresh and stored.speaker == cid:
+            debate_plan.finish_with(actor, stored)
+            return cid, await vclock.join(stored.face_task), None, None
+        debate_plan.drop(actor)
+        stored = None
     if stored is not None and stored.member is None and not fresh:
         debate_plan.drop(actor)
         stored = None
     if stored is None:
-        if target[0] == "opening":
-            return cid, None, None, None
+        if target[0] == "opening":   # an opening with no prefetch (D8): its face is planned now
+            return cid, await plan_face(actor, cid, target, kind="debate_opening"), None, None
         if len(f.eligible) >= 2 and not was_announced:
             now = actor.rt.clock.now()
             stored = await debate_plan.start(actor, idx, target, side, list(f.eligible), now)
@@ -299,18 +329,36 @@ def member_routing(member: Any, cid: str) -> Wire | None:
             "forcedBy": "round_order", "reason": member.who.reason}
 
 
-async def plan_face(actor: SessionActor, cid: str, target: tuple[str, int], kind: str = "debate_line") -> Any:
-    """One forced speaker's face, planned now (`turn_plan`): `emotion_line` about the argument just made, an opening's
-    `emotion_debate_opening`, or an Ask answer's `emotion_reply` (D7, D8). None without a planner."""
-    from horizon.sessions.plans import cast_request, plan_cast
+async def plan_face(actor: SessionActor, cid: str, target: tuple[str, int], kind: str = "debate_line", *,
+                    latest: str | None = None, deadline_at: datetime | None = None,
+                    forced_by: str = "round_order") -> Any:
+    """One forced speaker's face, planned now (`turn_plan`, or by `deadline_at`): `emotion_line` about the argument
+    just made, an opening's `emotion_debate_opening`, or an Ask answer's `emotion_reply` about the moderator's question
+    (`latest`) (D7, D8). None without a planner."""
+    from horizon.sessions.plans import cast_request, plan_cast, plans_cast
 
+    if not plans_cast(actor):
+        return None
     sctx = await session_context(actor.rt, actor)
     side = side_of(actor, cid)
-    facts, latest = debate_plan.facts(actor, sctx, target[0], side, [cid])
-    req = await cast_request(actor, kind, [], forced=[cid], forced_by="round_order", latest=latest, sctx=sctx,  # type: ignore[arg-type]
-                             debate=facts)
+    facts, last_line = debate_plan.facts(actor, sctx, target[0], side, [cid])
+    req = await cast_request(actor, kind, [], forced=[cid], forced_by=forced_by,  # type: ignore[arg-type]
+                             latest=last_line if latest is None else latest, sctx=sctx, debate=facts,
+                             deadline_at=deadline_at)
     cp = await plan_cast(actor, req)
     return cp.for_speaker(cid) if cp is not None else None
+
+
+def opening_planner(actor: SessionActor, cid: str) -> Any:
+    """A prefetched opening's own face plan (D8), run by its prefetch when it starts; None without a planner."""
+    from horizon.sessions.plans import plans_cast
+
+    if not plans_cast(actor):
+        return None
+
+    async def plan() -> Any:
+        return await debate_plan.opening_face(actor, cid, ("opening", 1))
+    return plan
 
 
 async def after_argument(actor: SessionActor, out: Any) -> None:
@@ -367,14 +415,28 @@ def next_target(actor: SessionActor, phase: str, iteration: int) -> tuple[str, i
     return None
 
 
-def turn_spec(actor: SessionActor, cid: str, now: Wire) -> TurnSpec:
+def turn_spec(actor: SessionActor, cid: str, now: Wire, heard: list[str] | None = None) -> TurnSpec:
+    """`heard`: who will have argued in this phase-iteration before this turn (a prefetched opening's look-ahead);
+    by default, from the log."""
     side = side_of(actor, cid)
     meta: Wire = {"phase": now["phase"], "round": now["round"], "iteration": now["iteration"]}
     if side:
         meta["side"] = side
+    msgs = _messages(actor)
+    heard = list(cursor(msgs).heard) if heard is None else heard
+    teammates = [c for c in heard if c != cid and side is not None and side_of(actor, c) == side]
     return TurnSpec(speaker=cid, line=LineHint(kind="debate"), forced_by="round_order", message={"debate": meta},
                     debate=DebateMeta(phase=str(now["phase"]), round=int(now["round"]), iteration=int(now["iteration"]),
-                                      side=side, motion=str(cfg_of(actor).get("motion", ""))))
+                                      side=side, motion=str(cfg_of(actor).get("motion", "")),
+                                      teammates_heard=teammates, after_interject=after_interject(msgs),
+                                      panel=not two_sided(cfg_of(actor))))
+
+
+def after_interject(msgs: list[Wire]) -> bool:
+    """V4 (D10): an Interject newer than the last argument reaches the next argument only."""
+    last_arg = max((int(m["seq"]) for m in msgs if is_argument(m)), default=0)
+    return any(m["author"]["type"] == "user" and m.get("kind") == "interject" and int(m["seq"]) > last_arg
+               for m in msgs)
 
 
 def schedule_next(actor: SessionActor, ms: float | None = None) -> None:
@@ -442,9 +504,13 @@ async def ask(actor: SessionActor, cid: str, text: str) -> None:
             return
         side = side_of(actor, cid)
         mm = {**meta(actor), **({"side": side} if side else {})}
+        st = state_of(actor)
+        you = str(((await session_context(actor.rt, actor)).world.you or {}).get("displayName") or "User")
+        plan = await plan_face(actor, cid, (str(st.get("phase")), int(st.get("iteration", 1))), kind="debate_ask",
+                               latest=f"{you}: {text}", forced_by="user_ask")
         await speak_then(actor, TurnSpec(
             speaker=cid, line=LineHint(kind="answer"), prompt=text, forced_by="user_ask",
-            message={"forcedSpeaker": True, "debate": mm},
+            message={"forcedSpeaker": True, "debate": mm}, plan=plan,
             routing={"question": text, "selected": cid, "forcedBy": "user_ask"}))
 
     actor.enqueue(job, front=True)

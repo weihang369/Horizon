@@ -38,10 +38,12 @@ class Stored:
     fp: tuple[Any, ...]
     slot: int
     target: tuple[str, int]
-    call: Any                       # the planner's DebateCall
+    call: Any                       # the planner's DebateCall (None for an opening's face plan)
     asked: bool                     # a member question was asked (two or more eligible)
     member: DebatePlan | None = None
     used: bool = False              # a turn has read it: its call is no longer the hold's to cancel
+    speaker: str | None = None      # an opening's face plan: whose
+    face_task: asyncio.Task[Any] | None = None   # an opening's face plan (`plan_cast(debate_opening)`)
 
 
 def _ordered(actor: SessionActor) -> list[Wire]:
@@ -138,9 +140,29 @@ async def _hold(stored: Stored) -> None:
 def drop(actor: SessionActor) -> None:
     """Forget any stored plan (Pause, Extend, Skip, a new plan): its call is cancelled."""
     stored, actor.mode.debate_plan = actor.mode.debate_plan, None
-    if stored is not None:
+    if stored is not None and stored.call is not None:
         stored.call.cancel()
     actor.cancel_background(NAME)
+
+
+async def start_opening(actor: SessionActor, target: tuple[str, int], cid: str, due: datetime) -> None:
+    """D8: the first opening's face is planned at Start, inside the start delay, and stored with the fingerprint; its
+    Jev deadline is the first opening's turn start (`due`). Under `naive` and `scripted` it plans nothing."""
+    from horizon.sessions.plans import plans_cast
+
+    if not plans_cast(actor):
+        return
+    drop(actor)
+    fp = await fingerprint(actor, target)
+    task = actor.background(NAME, opening_face(actor, cid, target, due))
+    actor.mode.debate_plan = Stored(fp=fp, slot=0, target=target, call=None, asked=False, speaker=cid, face_task=task)
+
+
+async def opening_face(actor: SessionActor, cid: str, target: tuple[str, int], due: datetime | None = None) -> Any:
+    """An opening's face (`emotion_debate_opening`), by `due` or the `turn_plan` deadline."""
+    from horizon.sessions.modes.debate import plan_face
+
+    return await plan_face(actor, cid, target, kind="debate_opening", deadline_at=due)
 
 
 async def take(actor: SessionActor, slot: int, target: tuple[str, int]) -> tuple[Stored | None, bool]:

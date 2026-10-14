@@ -3,7 +3,7 @@
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { compilePersona, cutTo, moodLine, PROMPT_VERSION, turnCueSentence, type PersonaInput, type PersonaPrompt } from "./personaPrompt";
+import { compilePersona, cutTo, debateCue, moodLine, PROMPT_VERSION, turnCueSentence, type PersonaInput, type PersonaPrompt } from "./personaPrompt";
 import { countTokens } from "./tokens";
 
 interface Fixture { name: string; doc: string; input: PersonaInput; expected: PersonaPrompt }
@@ -52,13 +52,25 @@ describe("moodLine (shared with persona.py's mood_line)", () => {
 
 // Doc 07 G3 (group-watch D10; persona-prompt "Same table in both languages"): the same cases as persona.py's
 // turn_cue_sentence().
-interface CueCase { cue: string | null; answered: string | null; sentence: string | null }
+interface CueCase { cue: string | null; answered: string | null; user?: string | null; sentence: string | null }
 const CUE = JSON.parse(readFileSync(path.resolve(__dirname, "../../../backend/tests/fixtures/turn_cue/cases.json"), "utf8")) as { cases: CueCase[] };
 
 describe("turnCueSentence (shared with persona.py's turn_cue_sentence)", () => {
   for (const c of CUE.cases) {
-    it(`${c.cue ?? "none"} ${c.answered ?? ""}`, () => {
-      expect(turnCueSentence(c.cue, c.answered)).toBe(c.sentence);
+    it(`${c.cue ?? "none"} ${c.answered ?? ""} ${c.user ?? ""}`, () => {
+      expect(turnCueSentence(c.cue, c.answered, c.user)).toBe(c.sentence);
+    });
+  }
+});
+
+// M11 (debate D10): doc 08 V4's debate cue table, shared with persona.py's debate_cue().
+interface DebateCueCase { phase: string; panel: boolean; extended: boolean; teammates: string[]; afterInterject: boolean; cue: string | null }
+const DEBATE = JSON.parse(readFileSync(path.resolve(__dirname, "../../../backend/tests/fixtures/debate_cue/cases.json"), "utf8")) as { cases: DebateCueCase[] };
+
+describe("debateCue (shared with persona.py's debate_cue)", () => {
+  for (const c of DEBATE.cases) {
+    it(`${c.phase}${c.panel ? " panel" : ""}${c.extended ? " extended" : ""} ${c.teammates.join("+")}${c.afterInterject ? " interject" : ""}`, () => {
+      expect(debateCue(c.phase, { panel: c.panel, extended: c.extended, teammates: c.teammates, afterInterject: c.afterInterject })).toBe(c.cue);
     });
   }
 });

@@ -23,8 +23,13 @@ from horizon.ai.agent.persona import (
     PROMPT_VERSION,
     PROMPT_VERSION_CUE,
     PROMPT_VERSION_CUE_MOOD,
+    PROMPT_VERSION_DEBATE,
+    PROMPT_VERSION_DEBATE_MOOD,
     PROMPT_VERSION_MOOD,
+    PROMPT_VERSION_STEER,
+    PROMPT_VERSION_STEER_MOOD,
     compile_persona,
+    debate_cue,
     first_name,
     mood_line,
     persona_input,
@@ -122,10 +127,15 @@ class AgentTurnEngine(NaiveTurnEngine):
         return PROMPT_VERSION_MOOD if self.deps.switch("persona.moodLine") else PROMPT_VERSION
 
     def prompt_version_for(self, ctx: TurnContext | None) -> str:
-        """M10 (group-watch D10): the label of the bytes this turn sent. A G3 sentence in the cue makes it `agent-3`
-        (`agent-4` with the mood line on); every other request keeps M9's `agent-1` / `agent-2`."""
+        """M10 (group-watch D10): the label of the bytes this turn sent. A G3 "second" or "next" sentence in the cue
+        makes it `agent-3`; M11 (debate D10): the reworded steer sentence `agent-5`, a debate argument's cue `agent-7`;
+        each one higher with the mood line on. Every other request keeps M9's `agent-1` / `agent-2`."""
         mood = self.deps.switch("persona.moodLine")
+        if ctx is not None and self.debate_line(ctx) is not None:
+            return PROMPT_VERSION_DEBATE_MOOD if mood else PROMPT_VERSION_DEBATE
         if ctx is not None and self.sentence(ctx) is not None:
+            if ctx.plan is not None and ctx.plan.cue == "steer":
+                return PROMPT_VERSION_STEER_MOOD if mood else PROMPT_VERSION_STEER
             return PROMPT_VERSION_CUE_MOOD if mood else PROMPT_VERSION_CUE
         return PROMPT_VERSION_MOOD if mood else PROMPT_VERSION
 
@@ -134,7 +144,19 @@ class AgentTurnEngine(NaiveTurnEngine):
     def sentence(ctx: TurnContext) -> str | None:
         """G3's sentence for this turn (a follow-plan second reply, a group Next speaker, a steered scene), if any."""
         plan = ctx.plan
-        return turn_cue_sentence(plan.cue, plan.answered) if plan is not None else None
+        you = str((ctx.session.world.you or {}).get("displayName") or "") or None
+        return turn_cue_sentence(plan.cue, plan.answered, you) if plan is not None else None
+
+    @staticmethod
+    def debate_line(ctx: TurnContext) -> str | None:
+        """V4 (debate D10): a debate argument's cue from `DebateMeta`'s facts; None for an Ask answer or another
+        turn (naive's cue stands)."""
+        d = ctx.debate
+        if ctx.line.kind != "debate" or d is None:
+            return None
+        names = {p.character_id: p.name for p in ctx.session.participants}
+        return debate_cue(d.phase, panel=d.panel, extended=d.iteration > 1, after_interject=d.after_interject,
+                          teammates=[first_name(names.get(c, c)) for c in d.teammates_heard])
 
     def cue(self, ctx: TurnContext) -> str | None:
         """D7: naive's cues, except a generated greeting, which avoids the stored one (P9). M10 (D10): then G3's
@@ -143,6 +165,9 @@ class AgentTurnEngine(NaiveTurnEngine):
             stored = str(ctx.speaker.profile.get("greeting") or "").strip()
             base = "Open the conversation with a short, warm greeting in character."
             return f"{base} Don't reuse your usual greeting: '{stored}'." if stored else base
+        debate = self.debate_line(ctx)
+        if debate is not None:
+            return debate
         lines = [x for x in (turn_cue(ctx), self.sentence(ctx)) if x]
         return "\n".join(lines) if lines else None
 

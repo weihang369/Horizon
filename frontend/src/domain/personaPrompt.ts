@@ -323,12 +323,43 @@ export function compilePersona(inp: PersonaInput): PersonaPrompt {
 export const TURN_CUE_SENTENCES: Record<string, string> = {
   second: "{first} has just answered. Don't repeat them; add your own angle, or answer {first} directly.",
   next: "Nobody asked you directly; say something that moves the talk on. You may answer anyone.",
-  steer: "This thread has run its course. Take the scene somewhere new that still fits the premise.",
+  // M11 (debate D10, the user's choice of 2026-10-13): M10 found the old steer closed scenes.
+  steer: "This thread has run its course. Bring in something new that fits the premise: an event, a discovery or a change of plan. Don't wrap up, say goodbye or wait for {user} to decide.",
 };
 
-export function turnCueSentence(cue: string | null, answered?: string | null): string | null {
+export function turnCueSentence(cue: string | null, answered?: string | null, user?: string | null): string | null {
   const sentence = cue != null && Object.hasOwn(TURN_CUE_SENTENCES, cue) ? TURN_CUE_SENTENCES[cue] : null;
-  return sentence == null ? null : sentence.replaceAll("{first}", answered || "Someone");
+  return sentence == null ? null : sentence.replaceAll("{first}", answered || "Someone").replaceAll("{user}", user || "User");
+}
+
+// Doc 08 V4 (debate D10): a debate argument's cue, in the tail, never in system message 1. The twin of persona.py's
+// DEBATE_CUES / debate_cue(); both pass backend/tests/fixtures/debate_cue/cases.json.
+export const DEBATE_CUES: Record<string, string> = {
+  opening: "Give your opening statement: your case in two or three reasons.",
+  rebuttal: "Give your rebuttal: name the strongest point the other side has made so far and answer it, then strengthen your own case.",
+  closing: "Give your closing statement: why your side's case is the stronger one. Answer what is still open, and add no new arguments.",
+};
+export const DEBATE_CUES_PANEL: Record<string, string> = {
+  rebuttal: "Give your rebuttal: name the strongest point you disagree with so far and answer it, then strengthen your own case.",
+  closing: "Give your closing statement: why your position is the stronger one. Answer what is still open, and add no new arguments.",
+};
+
+function joinNames(names: string[]): string {
+  return names.length <= 1 ? names.join("") : `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}`;
+}
+
+export interface DebateCueFacts { panel?: boolean; extended?: boolean; teammates?: string[]; afterInterject?: boolean }
+
+export function debateCue(phase: string, facts: DebateCueFacts = {}): string | null {
+  const line = (facts.panel && Object.hasOwn(DEBATE_CUES_PANEL, phase) ? DEBATE_CUES_PANEL[phase] : null)
+    ?? (Object.hasOwn(DEBATE_CUES, phase) ? DEBATE_CUES[phase] : null);
+  if (line == null) return null;
+  const lines = [line];
+  if (facts.extended) lines.push("The round was extended: make a point not yet made.");
+  const mates = facts.teammates ?? [];
+  if (mates.length) lines.push(`${joinNames(mates)} ${mates.length > 1 ? "have" : "has"} already spoken for your side this round: add to it, don't repeat it.`);
+  if (facts.afterInterject) lines.push("Take the moderator's last note into account.");
+  return lines.join("\n");
 }
 
 // docs/ai/06 E4 (turn-plan-emotion D16): one line in the dynamic tail, never in system message 1. The twin of

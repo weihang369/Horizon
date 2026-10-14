@@ -225,3 +225,29 @@ async def test_fifty_debate_slots_settle_and_repeat() -> None:
     late = sum(1 for _, o, _ in first if o == "late")
     print(f"\ndebate check 1 settling: 50 slots × 2 settled; {late} members fell back at 500 ms, every face on time")
     assert late == 25 and all(f == "happy" for _, _, f in first)
+
+
+# ── 4.1: the two forced debate kinds of `plan_cast` ──
+async def test_debate_opening_and_debate_ask_ask_one_face_each_with_their_state() -> None:
+    from tests.unit.test_cast_plan import request as cast_request
+    from tests.unit.test_cast_plan import run
+
+    facts = DebateFacts(motion="This house would ban homework", phase="opening", side="prop")
+    planner, jev, clock = make({f"emotion_debate_opening:{A}": choice("happy", 0.9)})
+    plan = await run(planner, clock, cast_request(clock, "debate_opening", candidates=[], forced=[A],
+                                                  forced_by="round_order", latest="", debate=facts))
+    assert set(jev.sent[0]) == {f"emotion_debate_opening:{A}"}
+    assert set(jev.states[0]) == {"mode", "side", "quoted_user", "quoted_cast", "quoted_motion"}
+    assert "last_spoke" not in json.dumps(jev.states[0])
+    tp = plan.for_speaker(A)
+    assert tp.emotion is not None and tp.emotion.face == "happy"
+    assert [(r["id"], r["result"]) for r in tp.rows if r["id"].startswith("emotion")] == [("emotion_debate_opening", "used")]
+
+    planner, jev, clock = make({f"emotion_reply:{A}": choice("surprised", 0.9)})
+    plan = await run(planner, clock, cast_request(clock, "debate_ask", candidates=[], forced=[A], forced_by="user_ask",
+                                                  latest="Kai: Would you ban weekend homework too?",
+                                                  debate=facts.model_copy(update={"phase": "rebuttal"})))
+    assert set(jev.sent[0]) == {f"emotion_reply:{A}"}
+    assert jev.states[0]["quoted_latest"] == "Kai: Would you ban weekend homework too?"
+    tp = plan.for_speaker(A)
+    assert tp.emotion is not None and tp.emotion.face == "surprised"
