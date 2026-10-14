@@ -18,6 +18,7 @@ from typing import Any
 from horizon.ai.contexts import (
     CastPlan,
     CastRequest,
+    DebateRequest,
     FollowRequest,
     MessageView,
     PlanRequest,
@@ -334,6 +335,9 @@ class ScriptedTurnPlanner:
 
     def start_follow(self, req: FollowRequest) -> None:
         return None
+
+    def start_debate(self, req: DebateRequest) -> None:
+        return None   # M11 (debate D5, V12): scripted fills debate slots in fixed order, as the MockClient does
 
 
 class ScriptedFaceCheck:

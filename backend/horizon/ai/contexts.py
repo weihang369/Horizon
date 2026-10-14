@@ -190,7 +190,8 @@ class PlanRequest(Frozen):
 
 
 # ── The cast plan and the follow plan (M10: doc 07 G1–G8; group-watch design D3, D8, D22) ──
-CastKind = Literal["group_first", "group_mentioned", "everyone", "next", "step_in", "scene", "opening"]
+CastKind = Literal["group_first", "group_mentioned", "everyone", "next", "step_in", "scene", "opening",
+                   "debate_opening", "debate_ask", "debate_line"]   # M11 (debate D5, D8): forced, the face only
 WhoSource = Literal["jev", "below_floor", "fallback", "late", "forced", "single"]
 SteerBlock = Literal["recent", "note"]
 
@@ -217,6 +218,18 @@ class TalkFinished(Frozen):
     action: str
 
 
+class DebateFacts(Frozen):
+    """What a debate state holds besides the cast (docs/ai/05 X9's debate row; debate design D6): the motion, the
+    phase and side set by code, the last argument by the other side (by anyone else in a panel), and each candidate's
+    latest argument."""
+
+    motion: str
+    phase: str
+    side: str | None = None
+    last_opposing: str = ""
+    latest_by_candidate: dict[str, str] = {}
+
+
 class CastRequest(Frozen):
     """What the runtime gives `plan_cast` (D3): the candidates, who is forced, and what is being answered."""
 
@@ -235,6 +248,7 @@ class CastRequest(Frozen):
     steer_block: SteerBlock | None = None           # watch: why a steer can't happen this turn (D14)
     started_at: datetime
     deadline_at: datetime | None = None             # None: started_at + the turn_plan deadline; plan-ahead sets it (D15)
+    debate: DebateFacts | None = None               # M11: a debate turn's motion, phase and side (debate D7)
 
 
 class CastPlan(Frozen):
@@ -316,6 +330,50 @@ class FollowPlan(Frozen):
         return TurnPlan(seed=self.seed, kind="reply", branch="quick", emotion=self.faces.get(cid), rows=rows,
                         calls=list(self.calls), graph_path=list(self.graph_path), state_tokens=self.state_tokens,
                         cue="second", answered=answered)
+
+
+# ── The debate plan (M11: doc 08 V2, V3; doc 13 W5 row 11, W11; debate design D5, D6, D8, D27) ──
+class DebateRequest(Frozen):
+    """What the runtime gives `start_debate`: the slot, its eligible members in fixed order, and what they answer."""
+
+    session: SessionContext
+    phase: str
+    iteration: int
+    side: str | None                                # None: a panel
+    candidates: list[str]                           # eligible (awake, not yet heard), fixed order
+    cast: list[CharacterView] = []
+    facts: DebateFacts
+    latest: str = ""                                # the argument just made, "Name: text" (emotion_line's quoted_latest)
+    turn_index: int = 0
+    base_faces: dict[str, str] = {}
+    manual: bool = False
+    started_at: datetime                            # the `turn.end` it starts at
+
+
+DebateOutcome = Literal["jev", "below_floor", "late", "fallback", "single", "cancelled"]
+
+
+class DebatePlan(Frozen):
+    """The debate plan's answer: the member (fixed at the deadline), and each candidate's face when Jev's answer
+    landed in time (else the fallback faces). `for_speaker` gives the argument its frozen `TurnPlan`."""
+
+    seed: str
+    member: str
+    outcome: DebateOutcome
+    who: WhoPick | None = None
+    faces: dict[str, PlannedFace] = {}
+    face_rows: dict[str, dict[str, Any]] = {}
+    shared_rows: list[dict[str, Any]] = []          # the member row (none for a single candidate)
+    calls: list[dict[str, Any]] = []
+    graph_path: list[str] = []
+    state_tokens: int = 0
+
+    def for_speaker(self, cid: str) -> TurnPlan:
+        rows = list(self.shared_rows)
+        for other, row in self.face_rows.items():
+            rows.append(row if other == cid else {**row, "result": "not_used"})
+        return TurnPlan(seed=self.seed, kind="reply", branch="quick", emotion=self.faces.get(cid), rows=rows,
+                        calls=list(self.calls), graph_path=list(self.graph_path), state_tokens=self.state_tokens)
 
 
 class ListenerView(Frozen):

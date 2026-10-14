@@ -19,6 +19,8 @@ from sqlalchemy.ext.asyncio import AsyncConnection
 from horizon.ai.contexts import (
     CastPlan,
     CastRequest,
+    DebatePlan,
+    DebateRequest,
     FollowPlan,
     FollowRequest,
     PlanRequest,
@@ -103,6 +105,19 @@ class FollowCall(Protocol):
     def cancel(self) -> None: ...
 
 
+class DebateCall(Protocol):
+    """M11 (doc 08 V2; doc 13 W11; debate design D5, D8): a debate plan already started at `turn.end`. One request
+    serves two waits: `member` fixes who speaks by the deadline (`turn.next` names them), and `faces` reads the same
+    answer when the turn starts (fallback faces if it hasn't landed). Neither raises except CancelledError."""
+
+    async def member(self, deadline: datetime) -> DebatePlan: ...
+    async def faces(self, until: datetime) -> DebatePlan: ...
+    async def late_rows(self) -> DebatePlan | None: ...
+    def cancel(self) -> None: ...
+    @property
+    def landed(self) -> bool: ...
+
+
 class TurnPlanner(Protocol):
     """M9 (docs/ai/01 A4; turn-plan-emotion design D4): plans a turn before its reply. Returns None when the profile
     has no planner (`naive`). It never raises, except CancelledError: a failed or late Jev call is a fallback plan.
@@ -116,6 +131,7 @@ class TurnPlanner(Protocol):
     async def plan(self, req: PlanRequest) -> TurnPlan | None: ...
     async def plan_cast(self, req: CastRequest) -> CastPlan | None: ...
     def start_follow(self, req: FollowRequest) -> FollowCall | None: ...
+    def start_debate(self, req: DebateRequest) -> DebateCall | None: ...   # M11 (debate D5)
 
 
 class FaceChecker(Protocol):

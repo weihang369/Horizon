@@ -23,7 +23,7 @@ from horizon.ai.agent.emotion import decide_face, emotion_row
 from horizon.ai.agent.persona import first_name
 from horizon.ai.agent.plan_graph import Branch, build_plan_graph, run_plan
 from horizon.ai.agent.plan_state import Candidate, PlanState, PlanStateInput, build_turn_plan_state
-from horizon.ai.contexts import CastPlan, CastRequest, FollowRequest, PlanRequest, TurnPlan
+from horizon.ai.contexts import CastPlan, CastRequest, DebateRequest, FollowRequest, PlanRequest, TurnPlan
 from horizon.ai.decider import Answers, ChoiceAnswer, DecisionResult
 from horizon.ai.questions import bank
 
@@ -85,6 +85,10 @@ class JevTurnPlanner:
 
         self._follow = FollowSteps(deps)
         self.follow_graph = build_plan_graph(self._follow)   # M10: the follow plan (D4, D8)
+        from horizon.ai.agent.debate_plan import DebateSteps
+
+        self._debate = DebateSteps(deps)
+        self.debate_graph = build_plan_graph(self._debate)   # M11: the debate plan (debate D5, D8)
 
     async def plan_cast(self, req: CastRequest) -> CastPlan | None:
         """M10 (group-watch D3–D7, D11, D13, D14): who speaks and every candidate's face, in one `turn_plan` request.
@@ -110,6 +114,17 @@ class JevTurnPlanner:
             return self._follow.start(self, req)
         except Exception:
             log.exception("the follow plan could not start after %s", req.first_id)
+            return None
+
+    def start_debate(self, req: DebateRequest) -> Any:
+        """M11 (doc 08 V2; debate D5, D8): start the debate plan at `turn.end` for the next slot. None when nobody is
+        eligible; a bug here costs Jev's pick and faces (fixed order, kept faces), never the debate."""
+        if not req.candidates:
+            return None
+        try:
+            return self._debate.start(self, req)
+        except Exception:
+            log.exception("the debate plan could not start in %s", req.session.session_id)
             return None
 
     # ── the port ──

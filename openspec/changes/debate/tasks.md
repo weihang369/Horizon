@@ -37,7 +37,7 @@
 
 ## 0. The base (design D2)
 
-- [ ] 0.1 Confirm the base. `git diff --stat ef94298 c8cdb54 -- backend frontend seed evals` must show no code
+- [x] 0.1 Confirm the base. `git diff --stat ef94298 c8cdb54 -- backend frontend seed evals` must show no code
   change (M10's gates ran on `ef94298`). Re-run the backend gate in the gate worktree on c8cdb54, plus the frontend
   gates and `npm run e2e`. Write the results into a new `docs/ai/checks/m11.md` ("Step 0"). If any gate differs from
   M10's (1451 / 507 / 61 / 66 + 2 skipped), stop and tell the user.
@@ -126,7 +126,7 @@
 
 ## 3. The debate plan (design D5, D6, D8, D9, D25, D27)
 
-- [ ] 3.1 Add `debate_plan` to `PURPOSE_CATEGORY` (`decision`), and a refused debate plan publishes `budget.reached`
+- [x] 3.1 Add `debate_plan` to `PURPOSE_CATEGORY` (`decision`), and a refused debate plan publishes `budget.reached`
   without pausing (M9 D35's rule).
   Verify: the provider-gateway scenario "Cap reached at the debate plan".
 - [ ] 3.2 The types: `DebateRequest`, `DebatePlan`, and the `DebateCall` protocol with `member(deadline)`,

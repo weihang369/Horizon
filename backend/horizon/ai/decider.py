@@ -274,6 +274,11 @@ class DecisionCall:
     def sent(self) -> bool:
         return self._task is not None
 
+    @property
+    def landed(self) -> bool:
+        """The request has settled (answered or failed), so a read now returns at once (M11, debate D8)."""
+        return self._refused is not None or (self._task is not None and self._task.done())
+
     def outcome(self) -> str:
         """How the call ended, for its ledger row (design D6)."""
         if self.cancelled:

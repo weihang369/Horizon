@@ -8,14 +8,17 @@ Steering (Ask, Interject, extend, skip) lands at the next turn boundary.
 
 from __future__ import annotations
 
+from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 
 from horizon.ai.contexts import DebateMeta, LineHint
 from horizon.gateway.errors import ProviderError
+from horizon.sessions import debate_plan
 from horizon.sessions.context import session_context
 from horizon.sessions.debate_slots import SIDE_NAME, Fill, cursor, fill, members, phase_slots
 from horizon.sessions.modes.common import (
     asleep_note,
+    gap,
     is_asleep,
     message_event,
     note,
@@ -200,11 +203,13 @@ def step(actor: SessionActor) -> None:
             schedule_next(actor, 200)
             return
         cid = str(f.who)
+        announced, m.debate_announced = m.debate_announced, None
+        if announced is not None and announced[0] == idx and announced[1] in f.eligible:
+            cid = announced[1]   # `turn.next` named them (Jev's pick, D8): they speak if still eligible
         pf = m.debate_prefetch.pop(idx, None)
         if pf is not None and pf.spec.speaker != cid:
             await pf.discard()
             pf = None
-        announced, m.debate_announced = m.debate_announced, None
         skipped: list[Wire] | None = None
         if announced is not None and announced[0] == idx and announced[1] != cid and await is_asleep(actor, announced[1]):
             # V3 (D3): the announced member fell asleep before their turn; the next eligible one speaks, and the turn's
@@ -219,16 +224,128 @@ def step(actor: SessionActor) -> None:
                     p = await Prefetch.start(actor, turn_spec(actor, who, now))
                     if p is not None:
                         m.debate_prefetch[j] = p
+        target = (str(now.get("phase")), int(now.get("iteration", 1)))
+        cid, plan, routing, stored = await plan_slot(actor, idx, target, cid, f, announced is not None)
         spec = turn_spec(actor, cid, now)
         spec.skipped = skipped
-        await speak_then(actor, spec, prefetch=pf)
-        nxt_slot = await next_slot(actor)
-        if nxt_slot is not None and nxt_slot[2].action == "speak" and nxt_slot[2].who is not None:
-            await actor.emit({"type": "turn.next", "payload": {"nextSpeakerId": nxt_slot[2].who}})
-            m.debate_announced = (nxt_slot[0], nxt_slot[2].who)
+        if plan is not None:
+            spec.plan = plan
+        if routing is not None:
+            spec.routing = {**routing, **({"skipped": skipped} if skipped else {})}
+        late = stored is not None and not stored.call.landed
+        out = await runner(actor).run(actor, spec, prefetch=pf)
+        if late and stored is not None and out.message_id is not None:
+            actor.background(debate_plan.LATE, debate_plan.append_late(actor, stored, out.message_id, cid))
+        if out.status in ("complete", "interrupted", "error"):
+            await after_argument(actor, out)
         schedule_next(actor)
 
     actor.enqueue(job)
+
+
+async def plan_slot(actor: SessionActor, idx: int, target: tuple[str, int], cid: str, f: Fill,
+                    was_announced: bool) -> tuple[str, Any, Wire | None, Any]:
+    """At the turn's start (D8): (who speaks, their frozen plan, the routing to show, the stored plan used). A stored
+    plan whose fingerprint holds gives its faces; a changed one keeps the member and asks the face again; with none
+    stored, an `agent` turn plans its face now (`turn_plan` deadline). `naive` and `scripted` plan nothing."""
+    stored, fresh = await debate_plan.take(actor, idx, target)
+    routing: Wire | None = None
+    plan: Any = None
+    if stored is not None:
+        if stored.member is None:   # the phase's first slot, planned at the last phase's end: the member is chosen now
+            stored.member = await stored.call.member(actor.rt.clock.now())
+            if stored.asked and not was_announced and stored.member.member in f.eligible:
+                cid = stored.member.member
+        member = stored.member
+        if member.who is not None:
+            routing = {"question": member.who.label, "candidates": member.who.candidates, "selected": cid,
+                       "forcedBy": "round_order", "reason": member.who.reason}
+        if fresh:
+            dp = await stored.call.faces(actor.rt.clock.now())
+            plan = dp.for_speaker(cid)
+        else:
+            stored.call.cancel()   # the stored faces are stale (V2): the member stays, the face is asked again
+            again = await plan_face(actor, cid, target)
+            if again is not None:
+                plan = again.model_copy(update={"rows": [*member.shared_rows, *again.rows],
+                                                "calls": [*member.calls, *again.calls]})
+            stored = None
+        if stored is not None:
+            debate_plan.finish_with(actor, stored)
+        else:
+            debate_plan.drop(actor)
+        return cid, plan, routing, stored
+    if target[0] != "opening":
+        plan = await plan_face(actor, cid, target)
+    return cid, plan, routing, None
+
+
+async def plan_face(actor: SessionActor, cid: str, target: tuple[str, int], kind: str = "debate_line") -> Any:
+    """One forced speaker's face, planned now (`turn_plan`): `emotion_line` about the argument just made, an opening's
+    `emotion_debate_opening`, or an Ask answer's `emotion_reply` (D7, D8). None without a planner."""
+    from horizon.sessions.plans import cast_request, plan_cast
+
+    sctx = await session_context(actor.rt, actor)
+    side = side_of(actor, cid)
+    facts, latest = debate_plan.facts(actor, sctx, target[0], side, [cid])
+    req = await cast_request(actor, kind, [], forced=[cid], forced_by="round_order", latest=latest, sctx=sctx,  # type: ignore[arg-type]
+                             debate=facts)
+    cp = await plan_cast(actor, req)
+    return cp.for_speaker(cid) if cp is not None else None
+
+
+async def after_argument(actor: SessionActor, out: Any) -> None:
+    """After an argument's `turn.end` (D8): the next slot's plan starts at once. With a member question, `turn.next`
+    names the member as soon as Jev answers, by `turn.end` + the `debate_plan` deadline, with no turn gap; otherwise
+    the turn gap, then `turn.next`, as before. At a phase's end no `turn.next` is sent; the next phase's first slot is
+    planned now and decided when it starts."""
+    m = actor.mode
+    st = state_of(actor)
+    phase, iteration = str(st.get("phase")), int(st.get("iteration", 1))
+    ended = out.ended_at or actor.rt.clock.now()
+    nxt = await next_slot(actor)
+    if nxt is None:
+        target = next_target(actor, phase, iteration)
+        if target is not None and target[0] != "opening":
+            cfg, cast = cfg_of(actor), _cast(actor)
+            side = phase_slots(cfg, cast)[0] if phase_slots(cfg, cast) else None
+            side_members = members(cfg, cast, side)
+            first = fill(side_members, [], {c: not await is_asleep(actor, c) for c in side_members})
+            if first.action == "speak":
+                await debate_plan.start(actor, 0, target, side, list(first.eligible), ended)
+        await gap(actor, None)
+        return
+    idx, side, f = nxt
+    if f.action != "speak" or f.who is None:
+        await gap(actor, None)
+        return
+    member = f.who
+    stored = None
+    if phase != "opening":
+        stored = await debate_plan.start(actor, idx, (phase, iteration), side, list(f.eligible), ended)
+    if stored is not None and stored.asked:
+        deadline = ended + timedelta(seconds=actor.rt.decider.timeout_for(debate_plan.NAME))
+        stored.member = await stored.call.member(deadline)
+        member = stored.member.member
+    else:
+        if stored is not None:
+            stored.member = await stored.call.member(ended)   # one candidate: fixed at once, nothing waits
+        await gap(actor, None)
+    await actor.emit({"type": "turn.next", "payload": {"nextSpeakerId": member}})
+    m.debate_announced = (idx, member)
+
+
+def next_target(actor: SessionActor, phase: str, iteration: int) -> tuple[str, int] | None:
+    """The (phase, iteration) the next step opens, as the boundary will decide it now; None for the verdict."""
+    m = actor.mode
+    phases = [str(p) for p in cfg_of(actor).get("phases") or []]
+    if m.skip_to_closing and phase != "closing":
+        return ("closing", 1)
+    if m.extend:
+        return (phase, iteration + 1)
+    if phase in phases and phases.index(phase) + 1 < len(phases):
+        return (phases[phases.index(phase) + 1], 1)
+    return None
 
 
 def turn_spec(actor: SessionActor, cid: str, now: Wire) -> TurnSpec:

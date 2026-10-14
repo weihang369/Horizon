@@ -82,6 +82,7 @@ class ModeState:
     debate_prefetch: dict[int, Any] = field(default_factory=dict)   # opening-round prefetches by slot index
     # M11 (debate design D3): the slot and member the last `turn.next` named; the cursor itself is read from the log
     debate_announced: tuple[int, str] | None = None
+    debate_plan: Any = None                       # M11 (debate D8): the stored plan for the next slot (sessions/debate_plan)
     plan_ahead: tuple[Any, Any] | None = None     # M10 watch (D15): (fingerprint, task) of the next turn's plan
 
 
@@ -300,8 +301,9 @@ class SessionActor:
         checks are dropped (M9 D20; E5, W2), and so is a watch's plan made ahead (M10 D15); the rolling summary and the
         memory writer keep running."""
         self.turns.clear()
-        self.cancel_background("reactions", "face_check", "plan_ahead")
+        self.cancel_background("reactions", "face_check", "plan_ahead", "debate_plan", "debate_plan_late")
         self.mode.plan_ahead = None
+        self.mode.debate_plan = None   # M11 (debate D8): its call is cancelled with its holding task
         for x in list(self._timers):
             x.cancel()
         self._timers.clear()

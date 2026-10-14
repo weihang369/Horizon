@@ -78,7 +78,7 @@ def embeddings_key(body: Mapping[str, Any]) -> str:
 log = logging.getLogger("horizon.gateway")
 # M9 D35: decisions off the reply's own path, whose refusal pauses nothing (the next reply's preflight takes the pause);
 # M10 (group-watch D8): the follow plan too, an optional slot
-AFTER_TURN = frozenset({"reaction", "face_check", "follow_plan"})
+AFTER_TURN = frozenset({"reaction", "face_check", "follow_plan", "debate_plan"})   # M11: debate D25
 T = TypeVar("T")
 
 

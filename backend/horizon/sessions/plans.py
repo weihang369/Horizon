@@ -13,7 +13,7 @@ from collections.abc import Sequence
 from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
-from horizon.ai.contexts import CastKind, CastPlan, CastRequest, SessionContext, SteerBlock
+from horizon.ai.contexts import CastKind, CastPlan, CastRequest, DebateFacts, SessionContext, SteerBlock
 from horizon.sessions.context import character_view, characters, session_context
 
 if TYPE_CHECKING:
@@ -60,7 +60,8 @@ def base_faces(actor: SessionActor, sctx: SessionContext, ids: Sequence[str]) ->
 async def cast_request(actor: SessionActor, kind: CastKind, candidates: Sequence[str], *, latest: str = "",
                        forced: Sequence[str] = (), forced_by: Any = None, reason: str | None = None,
                        steer_block: SteerBlock | None = None, scene_start: int = 0,
-                       deadline_at: datetime | None = None, sctx: SessionContext | None = None) -> CastRequest:
+                       deadline_at: datetime | None = None, sctx: SessionContext | None = None,
+                       debate: DebateFacts | None = None) -> CastRequest:
     rt = actor.rt
     started = rt.clock.now()
     sctx = sctx or await session_context(rt, actor)
@@ -70,7 +71,7 @@ async def cast_request(actor: SessionActor, kind: CastKind, candidates: Sequence
                        reason=reason, cast=[character_view(rows[c]) for c in ids if c in rows], latest=latest,
                        turn_index=actor.mode.turn, base_faces=base_faces(actor, sctx, ids), manual=manual(actor),
                        turns_since=turns_since(actor, ids, scene_start), steer_block=steer_block,
-                       started_at=started, deadline_at=deadline_at)
+                       started_at=started, deadline_at=deadline_at, debate=debate)
 
 
 async def plan_cast(actor: SessionActor, req: CastRequest) -> CastPlan | None:
