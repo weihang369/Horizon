@@ -3,7 +3,7 @@
 import { describe, expect, it } from "vitest";
 import { chatCostUsd, decisionCostUsd } from "../../domain/cost";
 import { PRICING } from "../../mock/pricing.config";
-import { VERDICT_JEV_TOKENS, VERDICT_PROSE, verdictEstimateUsd } from "./EndDebate";
+import { VERDICT_JEV_TOKENS, VERDICT_PROSE, verdictEstimateUsd } from "./verdictEstimate";
 
 describe("the early-end verdict estimate", () => {
   it("is Jev's part plus the prose's, the prose priced by the period", () => {
