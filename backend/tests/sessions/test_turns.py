@@ -192,3 +192,91 @@ async def test_mute_and_responder_policy(api: Api) -> None:
     await command(api, sid, "set-responder-policy", {"policy": "everyone"})
     assert (await snapshot(api, sid))["session"]["config"]["responderPolicy"] == "everyone"
     await assert_reduces(api, sid)
+
+
+# ── the coalescer's trailing timer, cancelled while it waits to write (docs/ai/checks/m11.md, 10.1) ──
+class GatedEngine:
+    """Streams `head`, parks, streams `body` and `tail`, parks, ends. `head` and `tail` are shorter than the coalescer's
+    48 characters, so each waits for the 50 ms timer. At each park the test holds the session's write lock and fires
+    the timer, so its token write is still waiting for the lock when the next delta (or the stream's end) settles the
+    timer. It parks on an `Inbox`, which gives up its activity token while it waits."""
+
+    name = "gated"
+    version = "t1"
+    prompt_version = None
+
+    def __init__(self, head: str, body: str, tail: str) -> None:
+        from horizon.domain.vclock import Inbox
+
+        self.parts = (head, body, tail)
+        self.parks = 0
+        self.go: Inbox[None] = Inbox()
+
+    async def run(self, ctx: TurnContext) -> AsyncIterator[TurnEvent]:
+        yield Emotion("thinking")
+        for i, part in enumerate(self.parts):
+            yield Token(part)
+            if i != 1:
+                self.parks += 1
+                await self.go.get()
+
+
+def _fire_timers(clock: Any, ms: float) -> None:
+    """Fire the timers due within `ms` WITHOUT settling: the woken timer then waits on a held lock, which `drive`
+    (settle after each timer) would wait on forever."""
+    import heapq
+    from datetime import timedelta
+
+    from horizon.domain.clock import _from_ms, _ms
+
+    target = clock._now + timedelta(milliseconds=ms)
+    while clock._timers and clock._timers[0].deadline_ms <= _ms(target):
+        t = heapq.heappop(clock._timers)
+        clock._now = max(clock._now, _from_ms(t.deadline_ms))
+        clock._fire(t)
+    clock._now = max(clock._now, target)
+
+
+async def test_a_token_the_timer_is_writing_is_never_lost(api: Api) -> None:
+    """M11 10.1: in debates (reactions, the plan and host lines all write), the trailing timer often waited for the
+    write lock when the next delta came; settling it cancelled the write, and the stored reply lost a word at its start
+    or a phrase at its end ("Thank" of "Thank you, Kai", "you one number is selling something.")."""
+    import asyncio
+
+    sid = await _one_on_one(api)
+    eng = GatedEngine("Thank", " you, Kai. Let's figure out what's actually going on here. Anyone who gives",
+                      " you one number is selling something.")
+    api.rt.ai.override("turn", eng)
+    actor = await api.rt.sessions.get(sid)
+    await command(api, sid, "send", {"text": "Is the evidence clear?"})
+    for park in (1, 2):
+        for _ in range(300):
+            if eng.parks == park:
+                break
+            await api.drive(10)
+        assert eng.parks == park
+        held, release = asyncio.Event(), asyncio.Event()
+
+        async def hold(held: asyncio.Event = held, release: asyncio.Event = release) -> None:
+            async with actor.write_lock:
+                held.set()
+                await release.wait()
+
+        holder = asyncio.create_task(hold())
+        await held.wait()
+        _fire_timers(api.rt.clock, 60)   # the timer wakes, takes its delta and waits for the lock
+        for _ in range(20):
+            await asyncio.sleep(0)
+        eng.go.put(None)                 # the next delta (or the stream's end) settles the timer
+        for _ in range(20):
+            await asyncio.sleep(0)
+        release.set()
+        await holder
+        await api.drive(10)
+    await api.drive(5000)
+    reply = [m for m in await messages(api, sid) if m["author"]["type"] == "character"][-1]
+    assert reply["status"] == "complete"
+    assert reply["content"] == "".join(eng.parts)
+    streamed = "".join(e["payload"]["delta"] for e in await events(api, sid)
+                       if e["type"] == "token" and e["payload"]["messageId"] == reply["id"])
+    assert streamed == reply["content"]

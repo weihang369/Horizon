@@ -1,0 +1,201 @@
+{
+ "schemaVersion": 1,
+ "id": "d07",
+ "mode": "debate",
+ "world": "wld_seedSunnyHollow",
+ "cast": [
+  "chr_seedTakeshi",
+  "chr_evalBram",
+  "chr_seedRin",
+  "chr_seedHana"
+ ],
+ "language": "en",
+ "motion": "This house would reopen the old branch railway to Sunny Hollow",
+ "format": "two_sided",
+ "roundsPreset": "standard",
+ "phases": [
+  "opening",
+  "rebuttal",
+  "closing"
+ ],
+ "sides": {
+  "prop": [
+   "chr_seedTakeshi",
+   "chr_evalBram"
+  ],
+  "opp": [
+   "chr_seedRin",
+   "chr_seedHana"
+  ]
+ },
+ "lines": [
+  {
+   "seq": 2,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_seedTakeshi",
+   "name": "Takeshi Morisaki",
+   "text": "Right on schedule. Thirty years I drove the coastal line, and I'll tell you what I saw: a branch railway isn't just steel and sleepers, it's a lifeline. You reopen that spur to Sunny Hollow, you bring back jobs, you bring back young families, you bring back a reason for folks to stay instead of drifting to the city like leaves on a slow current. My opponents will say it costs money. Everything costs money. Doing nothing costs more. A town without a railway is a boat without a motor — you can still float, but you're not going anywhere. We owe our neighbors a track to the future, not a dead-end siding. And if I'm wrong? Well, I've been on the wrong track before — it's called a railyard, and even there, you eventually find your way home. All aboard.",
+   "emotion": "neutral"
+  },
+  {
+   "seq": 3,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedRin",
+   "name": "Rin Morisaki",
+   "text": "okay so. two words: budget blackhole. braniff rail authority's own 2019 feasibility study put reactivation at 340 million, and sunny hollow's share would be roughly 60 mil, which is like, our entire road maintenance fund for a decade. hana can back me on the bridge at milepost nine, it's structurally shot. meanwhile we've got twelve buses a day that already do this route faster than a branch line would. my opponent will say heritage tourism but the numbers say ghost train. fight me, but read the appendix first.",
+   "emotion": "neutral"
+  },
+  {
+   "seq": 4,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_evalBram",
+   "name": "Bram de Vries",
+   "text": "So they've decided in town we're getting a railway, and the question's who pays for it — the same as always. I'll say my piece plain: I run ninety head up the hill above Sunny Hollow, and every litre goes down that winding road by truck. Fuel, tyres, hours of daylight I'll never get back, all because there's no rail. Reopen the old branch line, and milk, cheese, stock feed, all of it moves cheaper. My neighbours and I aren't asking for charity, we're asking for the same connection the towns had sixty years ago. What does it cost a small farm to stay cut off? Everything. Cows don't care about your timetable, but my bank account does. I'm for it.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 5,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedHana",
+   "name": "Hana Morisaki",
+   "text": "Oh, Takeshi's going straight for the heartstrings, as always — the man could sell a rusty bicycle as a family heirloom!! But Rin and I planned for this, so here goes. Papa, I love you, but a branch line isn't a bougainvillea — you can't just plant it and hope it blooms; someone has to water it every single day, and the watering can is empty. Ridership on our corridor dropped forty percent before they closed it, and reopening means new signals, new inspections, a subsidy that grows like morning glories on a fence — quietly, then everywhere. [4] Grandma always said zest the sugar first and don't skip it — the small steps are the whole flavor. The small steps here are the costs nobody's budgeting. We'd rather spend that on the bus that actually reaches Grandma's street. Probably.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 7,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_seedTakeshi",
+   "name": "Takeshi Morisaki",
+   "text": "Rin's got her appendix, Hana's got her flowers, and Bram's got ninety cows waiting on a truck. Three arguments land at me at once, so I'll sort them the way I'd sort a freight manifest — heaviest first. The sixty million isn't a surprise, it's a mortgage. You don't refuse a house because the roof needs fixing. Bram nailed the real ledger: fuel, tires, daylight, all bleeding out on that winding road while we argue. And Hana, sweetheart, the bus reaches Grandma's street, sure — but it doesn't reach her grandson's job, or Bram's milk cheque, or a single reason for a young family to plant roots here. Small steps matter, but you can't step anywhere from a siding that's rusted shut. Trains don't run on nostalgia, they run on schedules — and Sunny Hollow's been off-schedule for sixty years. Time to call it back to the platform.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 8,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedRin",
+   "name": "Rin Morisaki",
+   "text": "okay pops, mortgage analogy, cute, but a mortgage on a house nobody can afford to move into is just a foreclosure with extra steps. the 340 million is capital; the operating subsidy is the real leak, roughly 4 million a year forever, and ridership dropped 40 percent before closure because people already chose the bus. bram's cows are a real point, credit where it's due, but freight rail needs volume, not ninety head, unless you're planning to lease the whole valley. and \"roots\" is doing a lot of unpaid labor in your argument. we can fund rural broadband and a better bus loop for a tenth of one year's subsidy. cheaper, faster, actually reaches people. fight me, but bring track voltage specs next time.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 9,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_evalBram",
+   "name": "Bram de Vries",
+   "text": "Rin wants track voltage specs, so let's give her something better: a ledger from someone who actually moves freight. Ninety head is my herd, sure, but the co-op up the valley runs four hundred more, and the creamery fills a truck a day. You want volume? It's sitting there in the sheds, going down the road one diesel load at a time because the rails quit. And your four million a year — what's the road maintenance bill for trucks beating that asphalt to powder? That's a subsidy too, only we call it a pothole and pay it at the tire shop. Broadband's fine, I've got nothing against it, but you can't ship cheese through a router. Decided in town, paid for on the farm — and my farm's been paying sixty years for a railway it never got to use.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 10,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedHana",
+   "name": "Hana Morisaki",
+   "text": "Okay, Bram just handed me the hardest argument to swat — cheese through a router, that's actually funny — but he's bundling the co-op's volume into our corridor like topping up a small vase with a waterfall!! Here's the thing: the co-op's sheds sit twelve kilometers north of the old junction, so their milk still rolls by truck either way, and the branch line would need a whole new spur to reach them. We'd be paying the subsidy for the scenic route and no cheese. And that road maintenance bill he's waving? It's real, but compare it to four million a year forever and the potholes start looking like a bargain. Sunny Hollow doesn't need to relive 1963; it needs a bus that runs after seven. Probably.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 12,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_seedTakeshi",
+   "name": "Takeshi Morisaki",
+   "text": "Right on schedule, and this is my last stop, so I'll say it plain. Rin, your four million a year is real, but so is the pothole bill Bram pays every season, and broadband still won't carry a milk churn. Hana, my girl, you're sharp as a rail spike, but you keep pricing the spur that doesn't exist and ignoring the one that does — the co-op's trucks would use a reopened junction at milepost nine, and twelve kilometers is a morning's drive, not a dealbreaker. Here's the old engineer's truth: a town that waits for the perfect, cheap, guaranteed solution waits forever, and the weeds finish the job the budget started. Every problem looks smaller from a fishing pier, sure — but you still have to walk there, and the road's better with rails beside it. All aboard.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 13,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedRin",
+   "name": "Rin Morisaki",
+   "text": "we're the opposition, so closing means landing the whole thing, not just picking at yours. here's the shape of it. the capital cost is 340 million with sunny hollow on the hook for 60, the operating subsidy is 4 million a year in perpetuity, and the one existing bridge is structurally dead. your own feasibility study says so. ridership fell 40 percent before closure, you know why, because the bus was faster and cheaper, and it still is. bram's co-op is a real need but it's twelve kilometers off the junction, which means a new spur that nobody's budgeted, so his cheese argument buys us a second railway we can't afford. broadband and a better bus loop cost a tenth of one year's subsidy and reach more people. i'd rather fund the thing that works than the monument that rusts. hana?",
+   "emotion": "neutral"
+  },
+  {
+   "seq": 14,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_evalBram",
+   "name": "Bram de Vries",
+   "text": "My closing, then, and I'll keep it to what I know. Rin says the co-op's twelve kilometres off the junction, so it doesn't count — but a twelve-kilometre spur is a morning's work for men who once laid track through worse, and she keeps pricing the perfect version so she never has to price the honest one. Hana says milk still rolls by truck either way; it does, because the rails quit, and that's not an argument against them, it's a receipt for sixty years of doing it the hard way. Every season I pay the potholes, the tires, the daylight. That's my subsidy, and nobody ever calls it one. So vote it down if you like — but the milk still has to move, and it'll move cheaper on steel than on asphalt. Decided in town, paid for on the farm. Always has been.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 15,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedHana",
+   "name": "Hana Morisaki",
+   "text": "Papa, Bram, thank you, genuinely — I'd have tea with both of you any Sunday, and I mean that. But here's my closing, and it's simple: a railway is a rose, and roses need pruning, feeding, and years before they forgive you. We're being asked to plant one for a corridor where ridership already fell forty percent, on a bridge Rin says is structurally dead, for the cost of our entire road fund for a decade, plus four million a year that never stops. Bram's milk is real, and it deserves a real answer — a better trucking co-op, a grader that actually shows up, broadband that reaches the creamery's office. We can build that by Thursday. [5] Grandma pressed onigiri as if holding a small bird — gently, with just enough. So: vote against. Sunny Hollow should spend where it grows. Probably.",
+   "emotion": "happy"
+  }
+ ],
+ "verdict": {
+  "summary": [
+   {
+    "subjectId": "prop",
+    "points": [
+     "Right on schedule.",
+     "So they've decided in town we're getting a railway, and the question's who pays for it — the same as always.",
+     "Rin's got her appendix, Hana's got her flowers, and Bram's got ninety cows waiting on a truck.",
+     "Rin wants track voltage specs, so let's give her something better: a ledger from someone who actually moves fr"
+    ]
+   },
+   {
+    "subjectId": "opp",
+    "points": [
+     "okay so.",
+     "Oh, Takeshi's going straight for the heartstrings, as always — the man could sell a rusty bicycle as a family ",
+     "okay pops, mortgage analogy, cute, but a mortgage on a house nobody can afford to move into is just a foreclos",
+     "Okay, Bram just handed me the hardest argument to swat — cheese through a router, that's actually funny — but "
+    ]
+   }
+  ],
+  "decidedBy": "none",
+  "strongerCase": null
+ }
+}
