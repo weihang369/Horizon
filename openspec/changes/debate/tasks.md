@@ -394,7 +394,7 @@
   Record the canned `host` and `verdict` responses for the fake (W14).
   Verify: m11.md has `S`, `L`, the miss rate, the bridges on time and the verdict waits; `smoke` uses the recorded
   responses.
-- [ ] 10.8 `debate` suite (≈ $0.025): margin tuned on dev, the test measures, the prose and host checks read in full.
+- [x] 10.8 `debate` suite (≈ $0.025): margin tuned on dev, the test measures, the prose and host checks read in full.
   Write `verdict.margin` if it moved.
   Verify: m11.md has every measure, and each failure read.
 - [ ] 10.9 Debate-quality over the 13 histories (≈ $0.012).

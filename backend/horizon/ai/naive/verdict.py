@@ -19,6 +19,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import re
 from collections.abc import Sequence
 from dataclasses import replace
 from typing import Any
@@ -171,6 +172,18 @@ class Invalid(ValueError):
     pass
 
 
+
+def trim_rationale(text: str, limit: int = RATIONALE_WORDS) -> str | None:
+    """M11 D32 (the user's choice): a rationale over `limit` words is cut at the last full sentence that fits, a free
+    local repair; None (the call is invalid, so the paid retry runs) only when not even its first sentence fits."""
+    if len(text.split()) <= limit:
+        return text
+    for m in reversed(list(re.finditer(r"[.!?](?=\s|$)", text))):
+        cut = text[: m.end()].strip()
+        if len(cut.split()) <= limit:
+            return cut
+    return None
+
 def validate(req: VerdictRequest, text: str, *, with_scores: bool = False,
              criteria: Sequence[dict[str, str]] = ()) -> dict[str, Any]:
     """The prose (and, for naive, its scores) as the verdict's fields, or `Invalid` saying why."""
@@ -196,8 +209,10 @@ def validate(req: VerdictRequest, text: str, *, with_scores: bool = False,
     if not key or len(key.split()) > KEY_WORDS:
         raise Invalid(f"`keyDisagreement` must be one sentence of at most {KEY_WORDS} words")
     rationale = str(data.get("rationale") or "").strip()
-    if len(rationale.split()) > RATIONALE_WORDS:
+    trimmed = trim_rationale(rationale)
+    if trimmed is None:
         raise Invalid(f"`rationale` must be at most {RATIONALE_WORDS} words")
+    rationale = trimmed
     out: dict[str, Any] = {"summary": out_summary, "keyDisagreement": key, "rationale": rationale or None}
     if with_scores:
         scores = data.get("scores")

@@ -1132,6 +1132,18 @@ delta. If implementation finds a need, it stops and asks (the user's rule).
    **kept as measured,** `floor.member` 0.5, recorded in m11.md; a rewording can come in a later milestone.
    - **Rejected:** a reworded member question re-tested now on the same held-out items.
 
+### D32. The user's two choices after the debate suite (2026-10-14, 19:45 KL)
+
+1. **A long rationale is trimmed, not rejected:** the verdict prose's `rationale` over 60 words is cut at its last
+   full sentence within 60 (`trim_rationale`, shared by `naive` and `agent`), a free local repair like the quote
+   repair; the call is invalid (and the paid retry runs) only when not even the first sentence fits. 10.8 lost the
+   notes of 2 of 9 agent verdicts to rationales of 61, 61 and 69 words, and 10.1 two `naive` ones (74, 61).
+   `keyDisagreement`'s 30 words and the summary rules are unchanged.
+   - **Rejected:** a cap of 80 (longer notes, and a 90-word rationale still falls back); no change.
+2. **Debate faces keep Jev** (`emotion_line` in the debate plan at floor 0.2), though on the 40-item debate slice it
+   ties "keep the face" (11 of 19 on test): recorded; the slice can grow in a later milestone.
+   - **Rejected:** holding the face on debate lines (departs from "maximize Jev" on 19 test items).
+
 ## Open Questions
 
-None. The four choices are D29, the apply-time choices D30 and D31. D20's watch-faces choice is asked after its measurement, by design.
+None. The four choices are D29, the apply-time choices D30–D32. D20's watch-faces choice is asked after its measurement, by design.

@@ -153,6 +153,16 @@ def test_validation_rejects_a_missing_subject_and_long_fields() -> None:
         prose.validate(three_each(), "not json")
 
 
+def test_a_long_rationale_is_cut_at_the_last_full_sentence_that_fits() -> None:
+    """M11 D32: 10.8's agent prose fell back twice over a 61-word rationale; it is now trimmed for free, not retried."""
+    first = " ".join(["w"] * 40) + "."
+    second = " ".join(["x"] * 25) + "."
+    v = prose.validate(three_each(), body(rationale=f"{first} {second}"))
+    assert v["rationale"] == first
+    assert prose.trim_rationale(f"{first} {second}") == first and prose.trim_rationale(first) == first
+    assert prose.trim_rationale(" ".join(["w"] * 61) + ". Short.") is None   # not even the first sentence fits
+
+
 def test_the_naive_scores_are_checked_for_every_criterion() -> None:
     crit = [{"id": "evidence", "label": "Evidence"}, {"id": "wit", "label": "Wit"}]
     ok = body(scores={"prop": {"evidence": 7, "wit": 6.5}, "opp": {"evidence": 5, "wit": 9.0}}, strongerCase=None)

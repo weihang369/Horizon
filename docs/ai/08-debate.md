@@ -426,7 +426,8 @@ tokens, a 429 retried once by the Decider. Swapped order is a different request,
   only hides the bars, so its wording must say whose view it is.)
 - **Validation:** every expected subject present; two-sided 3–5 points per side (MULTI-08 AC1; 2 accepted for a side
   that made only one or two arguments), panel 2–4; more are cut to the maximum; `keyDisagreement` ≤ 30 words;
-  `rationale` ≤ 60 words. Invalid → one retry → the fallback below.
+  `rationale` ≤ 60 words, a longer one cut at its last full sentence within 60 (M11 D32: a free repair; 10.8 lost the
+  notes of 2 debates in 9 to 61-word rationales). Invalid → one retry → the fallback below.
 - **The verdict** sent is `{decidedBy, strongerCase, scoresBy, scores, summary, keyDisagreement, rationale}`, as the
   contract has it.
 - **Failure, without a hang or a fake** (finding 4; the session is in the verdict phase, so it must end):
