@@ -351,7 +351,7 @@
 - [x] 9.6 The debate-quality judge sets: 30 real + 30 planted each for `judge_keeps_side` and `judge_engages`, with
   B4 validation through the existing judge-validation path. A run over histories and free runs reports both columns.
   Verify: the scenario "An unvalidated judge doesn't count".
-- [ ] 9.7 `horizon eval debate`:
+- [x] 9.7 `horizon eval debate`:
   - items from the histories and plants, balanced and planted, each also swapped;
   - the split by debate (4 dev / 8 test);
   - margin tuning on dev per D21's rule;
@@ -359,14 +359,14 @@
   - the prose and host checks printing every item.
   Verify: the scenarios "Swap flips are counted apart from ties", "The margin is tuned on dev only" and "Every item
   is printed", on fixture answers.
-- [ ] 9.8 `latency --part debate`: D9's `S + L` for 30 states from the member slice's dev items, the 10 bridges and 5
+- [x] 9.8 `latency --part debate`: D9's `S + L` for 30 states from the member slice's dev items, the 10 bridges and 5
   verdicts timed from `turn.end`, spells apart, the 90 s watchdog. Bridges and verdicts are saved to the store after
   timing.
   Verify: the scenarios "A slow API is kept" and "Bridges are kept", on the fake with parked answers.
-- [ ] 9.9 `freerun --mode debate`: the two D22 runs and their report (member sources, host on time, pauses, verdict,
+- [x] 9.9 `freerun --mode debate`: the two D22 runs and their report (member sources, host on time, pauses, verdict,
   debate-quality rates).
   Verify: the scenario "A member choice report", on the fake.
-- [ ] 9.10 `smoke`: one Quick 2 v 2 `agent` debate with Auto host and Arbiter, one debate-plan timing request and one
+- [x] 9.10 `smoke`: one Quick 2 v 2 `agent` debate with Auto host and Arbiter, one debate-plan timing request and one
   rubric request, from fixture answers. Synthetic canned `host` and `verdict` responses (W14) stand until 10.x
   records real ones.
   Verify: the scenario "Smoke in CI" (`HORIZON_TEST=1 … smoke`, no socket).

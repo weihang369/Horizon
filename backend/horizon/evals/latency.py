@@ -39,6 +39,7 @@ TURN_WATCHDOG_S = 90.0
 STACKS = "stacks.txt"
 FOLLOW_N = 50          # M10 (D9): follow requests from the second-slot items' dev split
 WATCH_SCENES, WATCH_TURNS = 3, 20   # M10 (D23): scenes × turns at Fast pace
+DEBATE_PLANS = 30      # M11 (debate D9): debate-plan states from the member slice's dev items
 
 
 def lines(n: int) -> list[str]:
@@ -93,6 +94,15 @@ class Latency:
             n = scenes * turns_each
             return Plan(items=[{"part": "watch", "scene": k, "turns": turns_each} for k in range(scenes)],
                         estimate_usd=n * (reply + 1.2 * plan_call), expected_s=n * 6.0, paid=paid)
+        if opts.part == "debate":   # M11 (debate D9, D22): 30 plans, 10 bridges and 5 verdicts
+            n = opts.limit or DEBATE_PLANS
+            per = decision_estimate(prices, {"quoted_arguments": "x" * 7000}, {"q": {"instructions": "x" * 2400}})
+            line = estimate_chat(prices, prefix_tokens=0, warm=False, other_in=1800, expected_out_tokens=80,
+                                 period="off_peak")
+            verdict = 6 * per + estimate_chat(prices, prefix_tokens=0, warm=False, other_in=6000,
+                                              expected_out_tokens=300, period="off_peak")
+            return Plan(items=[{"part": "debate", "n": n}], estimate_usd=n * per + 10 * line + 5 * verdict,
+                        expected_s=n * 1.5 + 10 * 3 + 5 * 20, paid=paid)
         turns = plan_turns(opts.limit or DEFAULT_N)[opts.start:]
         first_words = estimate_chat(prices, prefix_tokens=4000, warm=True, other_in=300, expected_out_tokens=8,
                                     period="off_peak")
@@ -118,6 +128,11 @@ class Latency:
             return res
         if env.opts.part == "watch":
             await self.watch_part(env, plan, res)
+            return res
+        if env.opts.part == "debate":
+            from horizon.evals.debate_suites import debate_timing
+
+            await debate_timing(env, plan.items[0]["n"], res)
             return res
         app = create_app(env.rt.cfg, runtime=env.rt)
         sessions: dict[str, str] = {}

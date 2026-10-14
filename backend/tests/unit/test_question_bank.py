@@ -155,7 +155,7 @@ def test_judges_are_one_condition_nouls_worded_so_yes_is_the_failure() -> None:
     from horizon.ai.questions import bank
 
     judges = [e for e in bank().entries.values() if e.purpose == "eval_judge"]
-    assert len(judges) == 18   # M9 (D28, D29): names the feeling, the pairwise judge; M11 (debate D18, D21): three more
+    assert len(judges) == 23   # M9 (D28, D29): names the feeling, the pairwise judge; M11 (debate D18, D21): eight more
     for e in judges:
         assert e.label.endswith("?") and e.deadline == "default"
         assert all(k.startswith("quoted_") for k, v in e.state.items() if v == "quoted")

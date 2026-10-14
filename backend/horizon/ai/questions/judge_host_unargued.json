@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "purpose": "eval_judge",
+  "type": "noul",
+  "deadline": "default",
+  "floor": null,
+  "thresholds": {
+    "t": 0.5
+  },
+  "fallback": "none (evaluation only)",
+  "id": "judge_host_unargued",
+  "label": "adds what wasn't argued?",
+  "instructions": "Does quoted_line mention a point, fact or claim that isn't in quoted_arguments?",
+  "true": "Yes: the line brings in something nobody argued.",
+  "false": "No: it mentions only what was argued.",
+  "state": {
+    "quoted_motion": "quoted",
+    "quoted_arguments": "quoted",
+    "quoted_line": "quoted"
+  }
+}

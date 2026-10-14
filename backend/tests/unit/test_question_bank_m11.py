@@ -148,7 +148,13 @@ def test_the_generic_criterion_names_a_position_never_a_label() -> None:
 
 @pytest.mark.parametrize(("qid", "label"), [("judge_keeps_side", "breaks its side?"),
                                             ("judge_engages", "answers nothing said?"),
-                                            ("judge_starts_new", "starts nothing new?")])
+                                            ("judge_starts_new", "starts nothing new?"),
+                                            # D21's first-pass prose and host checks (every item read by hand)
+                                            ("judge_verdict_point_unsaid", "point not argued?"),
+                                            ("judge_verdict_rationale_mismatch", "rationale contradicts the scores?"),
+                                            ("judge_verdict_says_right", "calls a side factually right?"),
+                                            ("judge_host_partisan", "takes a side?"),
+                                            ("judge_host_unargued", "adds what wasn't argued?")])
 def test_the_m11_judges_are_worded_so_yes_is_the_failure(qid: str, label: str) -> None:
     e = bank().get(qid)
     assert e.label == label and e.type == "noul" and str(e.raw["true"]).startswith("Yes:")

@@ -15,6 +15,13 @@
 - **debate-quality** (V11, B4): "breaks its side?" on every two-sided argument and "answers nothing said?" on every
   rebuttal and closing, over the committed histories (the `naive` column; the `agent` column comes from the debate
   free runs). A judge that hasn't passed its B4 validation is reported as not counted.
+- **debate** (the `agent` verdict, D21): the 12 two-sided debates, balanced and planted, each also with the side blocks
+  swapped (48 rubric requests), split 4 dev / 8 test by debate. `verdict.margin` is chosen on dev and written to the
+  run folder before any test item is asked; then the test measures, the swap flips apart from too-close changes, and
+  the prose and host checks with every item printed.
+- **latency --part debate** (D9, D22; store bypassed): 30 debate-plan requests (`S + L`, a miss past 500 ms), the 10
+  bridges against the pause + 1.5 s, and 5 Arbiter verdicts' waits. The bridges and verdicts are timed with a
+  write-only store, so each response is kept and the debate suite reads it without a new call (W10).
 """
 
 from __future__ import annotations
@@ -23,6 +30,7 @@ import copy
 import json
 from collections.abc import Sequence
 from datetime import UTC, datetime
+from itertools import pairwise
 from pathlib import Path
 from typing import Any
 
@@ -93,10 +101,10 @@ def cast_wires(seed_dir: Path) -> list[dict[str, Any]]:
 
 
 async def install_cast(env: RunEnv) -> list[str]:
-    """Write the eval cast into the run's database (never the seed)."""
+    """Write the eval cast into the run's database (never the seed); safe to call again."""
     from horizon.contract import mappers as mp
     from horizon.db import tables as t
-    from horizon.services.seed import _insert, _upsert
+    from horizon.services.seed import _upsert
 
     rt = env.rt
     wires = cast_wires(rt.cfg.seed_dir)
@@ -104,7 +112,7 @@ async def install_cast(env: RunEnv) -> list[str]:
         for w in wires:
             row, assets = mp.character_rows(w, is_seed=False, energy_day=rt.energy_day)
             await _upsert(tx.conn, t.characters, [row])
-            await _insert(tx.conn, t.image_assets, assets)
+            await _upsert(tx.conn, t.image_assets, assets)   # idempotent: each free run installs it again
     return [w["id"] for w in wires]
 
 
@@ -148,8 +156,10 @@ def arguments(h: dict[str, Any]) -> list[dict[str, Any]]:
     return [x for x in h["lines"] if x["kind"] == "argument"]
 
 
-async def drive_debate(env: RunEnv, script: dict[str, Any]) -> tuple[dict[str, Any], bool]:
-    """Run one scripted debate to its end (moderator You, auto-advance, no verdict) and record it."""
+async def drive_debate(env: RunEnv, script: dict[str, Any], *,
+                       resume: bool = True) -> tuple[dict[str, Any], bool, str, list[dict[str, Any]], list[dict[str, Any]]]:
+    """Run one scripted debate to its end and record it: (the history, whether it completed, the session id, its
+    messages with their traces, its events). `resume` False leaves a pause standing (a free run reports it)."""
     import httpx
 
     from horizon.main import create_app
@@ -171,8 +181,8 @@ async def drive_debate(env: RunEnv, script: dict[str, Any]) -> tuple[dict[str, A
                 complete = False
                 break
             if snap["status"] == "paused":   # a cap or an asleep side: the history would be broken, so stop
-                resp = await c.post(f"{API}/sessions/{sid}/debate/resume", json={})
-                if budget_code(resp) or resp.status_code >= 400:
+                resp = await c.post(f"{API}/sessions/{sid}/debate/resume", json={}) if resume else None
+                if resp is None or budget_code(resp) or resp.status_code >= 400:
                     complete = False
                     break
             await advance(env, 1000)
@@ -184,9 +194,14 @@ async def drive_debate(env: RunEnv, script: dict[str, Any]) -> tuple[dict[str, A
                 break
         await wait_idle(env, sid)
         msgs = (await c.get(f"{API}/sessions/{sid}/messages", params={"limit": 1000})).json()["items"]
+        events = (await c.get(f"{API}/sessions/{sid}/events", params={"limit": 1000})).json()["items"]
+        final = ((await c.get(f"{API}/sessions/{sid}")).json()["session"].get("state") or {}).get("verdict")
         if complete is False:
             await c.post(f"{API}/sessions/{sid}/debate/end", json={"verdict": False})
-    return history_doc(script, msgs, profiles()), complete
+    doc = history_doc(script, msgs, profiles())
+    if final:
+        doc["verdict"] = final
+    return doc, complete, sid, msgs, events
 
 
 def expected_arguments(script: dict[str, Any]) -> int:
@@ -222,7 +237,7 @@ class DebateHistory:
         cast = await install_cast(env)
         for script in plan.items:
             await top_up(env, [*script["cast"], *cast])
-            doc, complete = await drive_debate(env, script)
+            doc, complete, _, _, _ = await drive_debate(env, script)
             out = (env.run_dir / f"{script['id']}.json") if env.opts.limit else history_path(script["id"])
             out.parent.mkdir(parents=True, exist_ok=True)
             out.write_text(json.dumps(doc, ensure_ascii=False, indent=1) + "\n", encoding="utf-8", newline="\n")
@@ -394,7 +409,7 @@ def cut_request(h: dict[str, Any], sl: dict[str, Any], prof: dict[str, Any],
                              side=side_of.get(cid)) for cid in h["cast"]]
     recent = [MessageView(id=f"m{x['seq']}", seq=int(x["seq"]), author_type="character", character_id=x["speaker"],
                           name=str(prof[x["speaker"]]["name"]), kind="chat", content=x["text"]) for x in before]
-    sctx = SessionContext(session_id="ses_eval", seed=f"m11-debate:{h['id']}", mode="debate", title="eval",
+    sctx = SessionContext(session_id="", seed=f"m11-debate:{h['id']}", mode="debate", title="eval",
                           world=WorldView(id=h["world"], name="", you={"displayName": YOU}), participants=parts,
                           recent=recent, config={"motion": h["motion"], "format": h["format"],
                                                  **({"sides": h["sides"]} if h["sides"] else {})})
@@ -562,3 +577,599 @@ class DebateQuality:
         res.rows += rows
         res.summary += quality_report(rows, "naive")
         return res
+
+
+# ── the debate suite (D21) ──
+MARGINS = (0.0, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0)
+TEST_DEBATES = 8
+BRIDGES = 10
+ARBITER_VERDICTS, USER_VERDICTS = 5, 3
+OTHER_SIDE = {"prop": "opp", "opp": "prop"}
+
+
+def debate_split(ids: Sequence[str], tests: int = TEST_DEBATES) -> dict[str, str]:
+    """The hash rule on the debate id, with M10's prefix search for exactly `tests` test debates (ids alone)."""
+    from horizon.evals.datachecks import split_for
+
+    k = 0
+    while True:
+        pre = "dbt" if k == 0 else f"dbt{k}"
+        sp = {i: split_for(f"{pre}-{i}") for i in ids}
+        if sum(v == "test" for v in sp.values()) == min(tests, len(ids)):
+            return sp
+        k += 1
+
+
+def history_session(h: dict[str, Any], upto: int | None = None, by: str = "arbiter") -> Any:
+    """A history (to line `upto`, exclusive) as the session context the verdict and the host read: the round banners
+    and the arguments, the participants with their sides."""
+    from horizon.ai.contexts import MessageView, ParticipantView, SessionContext, WorldView
+
+    prof = profiles()
+    side_of = {cid: side for side, ids in (h["sides"] or {}).items() for cid in ids}
+    parts = [ParticipantView(character_id=cid, name=str(prof[cid]["name"]), role="speaker",
+                             character_role=str(prof[cid].get("role") or ""), energy={"current": 500, "max": 1000},
+                             side=side_of.get(cid)) for cid in h["cast"]]
+    recent: list[Any] = []
+    seen: set[tuple[str, int]] = set()
+    for x in h["lines"][: upto if upto is not None else len(h["lines"])]:
+        if x["kind"] != "argument":
+            continue
+        key = (str(x["phase"]), int(x["iteration"] or 1))
+        if key not in seen:
+            seen.add(key)
+            recent.append(MessageView(id=f"b{x['seq']}", seq=int(x["seq"]) - 1, author_type="system", name="",
+                                      kind="system_note", content=f"ROUND {x['round']} · {str(x['phase']).upper()}"))
+        recent.append(MessageView(id=f"m{x['seq']}", seq=int(x["seq"]), author_type="character",
+                                  character_id=x["speaker"], name=str(prof[x["speaker"]]["name"]), kind="chat",
+                                  content=x["text"]))
+    cfg = {"motion": h["motion"], "format": h["format"], "verdictBy": by, "rubric": [], "moderator": "auto_host",
+           **({"sides": h["sides"]} if h["sides"] else {})}
+    return SessionContext(session_id="", seed=f"m11-verdict:{h['id']}", mode="debate",
+                          title="eval", world=WorldView(id=h["world"], name="", you={"displayName": YOU}),
+                          participants=parts, recent=recent, config=cfg)
+
+
+def verdict_request(h: dict[str, Any], by: str = "arbiter", swapped: bool = False) -> Any:
+    """The live verdict's request for a whole history (`debate_verdict.request`'s shape)."""
+    from horizon.ai.contexts import DebateLine, VerdictRequest
+
+    prof = profiles()
+    lines = [DebateLine(kind="argument", phase=str(a["phase"]), iteration=int(a["iteration"] or 1),
+                        side=a["side"], speaker=str(prof[a["speaker"]]["name"]), character_id=a["speaker"],
+                        text=a["text"]) for a in arguments(h)]
+    return VerdictRequest(session=history_session(h, by=by), by=by, lines=lines, swapped=swapped)
+
+
+def load_planted(did: str, root: Path | None = None) -> dict[str, Any] | None:
+    p = (root / f"{did}.json") if root is not None else planted_path(did)
+    return json.loads(p.read_text(encoding="utf-8")) if p.is_file() else None
+
+
+def bridge_points(hs: Sequence[dict[str, Any]], n: int | None = None) -> list[tuple[dict[str, Any], int, Any]]:
+    """D22's bridges: the round ends of the histories in script order (the line index after the round's last
+    argument, and the key of the round it opens), the first `n`."""
+    from horizon.ai.contexts import HostKey
+
+    n = BRIDGES if n is None else n
+    out: list[tuple[dict[str, Any], int, Any]] = []
+    for h in hs:
+        args = [(i, x) for i, x in enumerate(h["lines"]) if x["kind"] == "argument"]
+        for (i, x), (_, nxt) in pairwise(args):
+            if (nxt["phase"], nxt["iteration"]) != (x["phase"], x["iteration"]):
+                out.append((h, i + 1, HostKey(kind="bridge", phase=str(nxt["phase"]), iteration=int(nxt["iteration"]))))
+                if len(out) == n:
+                    return out
+    return out
+
+
+def round_before(h: dict[str, Any], upto: int) -> list[dict[str, Any]]:
+    """The arguments of the round a bridge closes."""
+    args = [x for x in h["lines"][:upto] if x["kind"] == "argument"]
+    if not args:
+        return []
+    last = (args[-1]["phase"], args[-1]["iteration"])
+    return [x for x in args if (x["phase"], x["iteration"]) == last]
+
+
+def bar(scores: Sequence[dict[str, Any]], side: str, criterion: str) -> float | None:
+    vals = [float(b["value"]) for b in scores if b["subjectId"] == side and b.get("criterionId") == criterion]
+    return vals[0] if vals else None
+
+
+def stronger_at(row: dict[str, Any], m: float) -> str | None:
+    from horizon.ai.agent.rubric import decide
+
+    return decide(row["bars"], m)[1] if row.get("bars") else None
+
+
+def choose_margin(dev: Sequence[dict[str, Any]]) -> dict[str, Any]:
+    """D21 on the dev items in the live order: keep the margins at which every planted item names the strong side and
+    not every balanced item is too close; of those, the largest. None qualifies: 0.5 stays and it is a finding."""
+    live = [r for r in dev if not r["swapped"] and r.get("bars")]
+    planted = [r for r in live if r["version"] == "planted"]
+    balanced = [r for r in live if r["version"] == "balanced"]
+    grid = {}
+    for m in MARGINS:
+        names_strong = all(stronger_at(r, m) == r["strong"] for r in planted) and bool(planted)
+        all_close = bool(balanced) and all(stronger_at(r, m) is None for r in balanced)
+        grid[m] = {"planted_right": sum(stronger_at(r, m) == r["strong"] for r in planted), "planted": len(planted),
+                   "too_close": sum(stronger_at(r, m) is None for r in balanced), "balanced": len(balanced),
+                   "ok": names_strong and not all_close}
+    ok = [m for m in MARGINS if grid[m]["ok"]]
+    return {"margin": max(ok) if ok else 0.5, "found": bool(ok), "grid": grid}
+
+
+def measures(test: Sequence[dict[str, Any]], m: float) -> list[str]:
+    """D21's test measures at the chosen margin, each failure listed for reading."""
+    out = []
+    live = {(r["debate"], r["version"]): r for r in test if not r["swapped"]}
+    swapped = {(r["debate"], r["version"]): r for r in test if r["swapped"]}
+    planted = [r for r in live.values() if r["version"] == "planted"]
+    wins = [r for r in planted if stronger_at(r, m) == r["strong"]]
+    reb = [r for r in planted if r.get("bars") and (bar(r["bars"], r["strong"], "rebuttal") or 0)
+           > (bar(r["bars"], OTHER_SIDE[r["strong"]], "rebuttal") or 0)]
+    out.append(f"- planted: the strong side wins {len(wins)}/{len(planted)} (target ≥ 7 of 8)"
+               + (" ✓" if len(wins) >= 7 else " ✗"))
+    out += [f"  - READ {r['debate']} planted: strong {r['strong']}, verdict {stronger_at(r, m) or 'too close'}, "
+            f"means {r.get('means')}" + (f", failure {r['failure']}" if r.get("failure") else "")
+            for r in planted if r not in wins]
+    out.append(f"- planted: the strong side's Rebuttal score is higher {len(reb)}/{len(planted)} (target ≥ 7 of 8)"
+               + (" ✓" if len(reb) >= 7 else " ✗"))
+    flips, close = [], []
+    for key, a in sorted(live.items()):
+        b = swapped.get(key)
+        if b is None:
+            continue
+        x, y = stronger_at(a, m), stronger_at(b, m)
+        if x is not None and y is not None and x != y:
+            flips.append(f"  - FLIP {key[0]} {key[1]}: {x} → {y}")
+        elif (x is None) != (y is None):
+            close.append(f"  - {key[0]} {key[1]}: {x or 'too close'} → {y or 'too close'}")
+    pairs = sum(1 for k in live if k in swapped)
+    out.append(f"- side swap: winner flips {len(flips)}/{pairs} (target ≤ 1 of 16)" + (" ✓" if len(flips) <= 1 else " ✗"))
+    out += flips
+    out.append(f"- side swap: changes to or from too close, reported apart: {len(close)}/{pairs}")
+    out += close
+    balanced = [r for r in live.values() if r["version"] == "balanced"]
+    tc = sum(stronger_at(r, m) is None for r in balanced)
+    out.append(f"- too close on the balanced items: {tc}/{len(balanced)} (no target)")
+    return out
+
+
+async def score_row(env: RunEnv, h: dict[str, Any], version: str, swapped: bool, split: str) -> dict[str, Any]:
+    from horizon.ai.agent import rubric
+
+    s = await rubric.score(env.rt.ai.deps, verdict_request(h, "arbiter", swapped))
+    strong = OTHER_SIDE[str(h["planted"]["weak"])] if version == "planted" else None
+    return {"debate": h["id"], "version": version, "swapped": swapped, "split": split, "strong": strong,
+            "bars": list(s.bars or []), "means": dict(s.means or {}), "failure": s.failure}
+
+
+async def noul(env: RunEnv, qid: str, state: dict[str, Any], side: str | None = None) -> float | None:
+    return await judge_item(env, qid, {"state": state, **({"side": side} if side else {})})
+
+
+async def prose_check(env: RunEnv, h: dict[str, Any], by: str) -> dict[str, Any]:
+    """One `agent` verdict and its first-pass nouls; every item is printed whatever they say."""
+    host = env.rt.ai.host(True)
+    a = await host.assess(verdict_request(h, by))
+    checks = await prose_nouls(env, h, a.summary, a.rationale, a.scored, a.scores, a.stronger)
+    return {"debate": h["id"], "by": by, "stronger": a.stronger, "rationale": a.rationale, "notes": list(a.notes),
+            "checks": checks}
+
+
+async def prose_nouls(env: RunEnv, h: dict[str, Any], summary: Sequence[dict[str, Any]], rationale: str | None,
+                      scored: bool, scores: Sequence[dict[str, Any]], stronger: str | None
+                      ) -> list[tuple[str, str, float | None]]:
+    """V11's three: each summary point said by that side; the rationale states the scores' result; no side called
+    factually right."""
+    prof = profiles()
+    checks: list[tuple[str, str, float | None]] = []
+    a_rationale, a_scored, a_scores, a_stronger = rationale, scored, list(scores), stronger
+    for block in summary:
+        side = block.get("subjectId")
+        if side not in ("prop", "opp"):
+            continue
+        said_ = "\n".join(f"{prof[x['speaker']]['name']}: {x['text']}" for x in arguments(h) if x["side"] == side)
+        for point in block.get("points") or []:
+            st = {"quoted_motion": h["motion"], "quoted_arguments": said_, "quoted_point": str(point)}
+            checks.append(("judge_verdict_point_unsaid", f"{side}: {point}",
+                           await noul(env, "judge_verdict_point_unsaid", st, SIDE_NAME[side])))
+    if a_rationale:
+        if a_scored:
+            means = {s_: sum(float(b["value"]) for b in a_scores if b["subjectId"] == s_)
+                     / max(1, sum(1 for b in a_scores if b["subjectId"] == s_)) for s_ in ("prop", "opp")}
+            st = {"result": SIDE_NAME[a_stronger] if a_stronger else "too close to call",
+                  "scores": f"Proposition {means['prop']:.1f}, Opposition {means['opp']:.1f}",
+                  "quoted_rationale": a_rationale}
+            checks.append(("judge_verdict_rationale_mismatch", "rationale vs the scores",
+                           await noul(env, "judge_verdict_rationale_mismatch", st)))
+        checks.append(("judge_verdict_says_right", "rationale on the facts",
+                       await noul(env, "judge_verdict_says_right", {"quoted_motion": h["motion"],
+                                                                   "quoted_rationale": a_rationale})))
+    return checks
+
+
+async def host_check(env: RunEnv, h: dict[str, Any], upto: int, key: Any) -> dict[str, Any]:
+    host = env.rt.ai.host(True)
+    line = await host.narration(history_session(h, upto), key)
+    args = "\n".join(said(x) for x in round_before(h, upto))
+    checks: list[tuple[str, str, float | None]] = []
+    if line:
+        checks.append(("judge_host_partisan", "neutral", await noul(env, "judge_host_partisan",
+                                                                     {"quoted_motion": h["motion"],
+                                                                      "quoted_line": line})))
+        checks.append(("judge_host_unargued", "only what was argued", await noul(env, "judge_host_unargued", {
+            "quoted_motion": h["motion"], "quoted_arguments": args, "quoted_line": line})))
+    return {"debate": h["id"], "key": f"{key.kind} → {key.phase} {key.iteration}", "line": line, "checks": checks}
+
+
+def check_report(title: str, items: Sequence[dict[str, Any]], text_of: Any) -> list[str]:
+    """Every item printed with each noul's p (D21: the nouls point; the reading decides)."""
+    from horizon.evals.content import failed
+
+    bad = [it for it in items if not text_of(it) or any(failed(p, q) for q, _, p in it["checks"])]
+    out = [f"## {title}: {len(bad)}/{len(items)} flagged by the first-pass nouls (target ≤ 1, each read; the nouls "
+           "aren't B4-validated)" + (" ✓" if len(bad) <= 1 else " ✗")]
+    for it in items:
+        mark = "FLAGGED" if it in bad else "ok"
+        out.append(f"- {mark} {it['debate']} ({it.get('by') or it.get('key')}): {text_of(it) or '(no text)'}")
+        for q, what, p in it["checks"]:
+            out.append(f"  - {q} [{what[:80]}]: p {'-' if p is None else f'{p:.2f}'}"
+                       + (" ← failure" if failed(p, q) else ""))
+    return out
+
+
+class DebateSuite:
+    name = "debate"
+
+    def _debates(self, opts: Options) -> list[dict[str, Any]]:
+        hs = [h for h in histories() if h["format"] == "two_sided"]
+        return hs[: opts.limit] if opts.limit else hs
+
+    def plan(self, opts: Options, prices: Any, *, paid: bool) -> Plan:
+        from horizon.ai.agent import rubric
+        from horizon.evals.runner import decision_estimate
+
+        hs = self._debates(opts)
+        est = 0.0
+        for h in hs:
+            req = verdict_request(h)
+            crit = rubric.criteria({})
+            st = rubric.state_for(req, crit)
+            from horizon.ai.decider import wire_question
+            one = decision_estimate(prices, st, {k: wire_question(q) for k, q in rubric.questions(req, crit).items()})
+            est += 4 * one                                                    # balanced, planted; each swapped
+        prose = estimate_chat(prices, prefix_tokens=0, warm=False, other_in=6000, expected_out_tokens=300,
+                              period="off_peak")
+        est += (ARBITER_VERDICTS + USER_VERDICTS + 1) * prose + BRIDGES * prose / 4 + 0.002   # store hits after timing
+        return Plan(items=hs, estimate_usd=est, expected_s=len(hs) * 4 * 6.0 + 120, paid=paid)
+
+    async def run(self, env: RunEnv, plan: Plan) -> Result:
+        res = Result()
+        hs = plan.items
+        split = debate_split([h["id"] for h in hs], min(TEST_DEBATES, max(1, round(len(hs) * 2 / 3))))
+        planted = {h["id"]: load_planted(h["id"]) for h in hs}
+        missing = [d for d, p in planted.items() if p is None]
+        rows: list[dict[str, Any]] = []
+        for phase in ("dev", "test"):
+            if phase == "test":   # D21: the margin is chosen on dev and written before any test item is asked
+                sel = choose_margin([r for r in rows if r["split"] == "dev"])
+                (env.run_dir / "margin.json").write_text(json.dumps({**sel, "grid": {str(k): v for k, v in
+                                                                                     sel["grid"].items()}}, indent=1),
+                                                         encoding="utf-8")
+            for h in hs:
+                if split[h["id"]] != phase:
+                    continue
+                for version, doc in (("balanced", h), ("planted", planted[h["id"]])):
+                    if doc is None:
+                        continue
+                    for swapped in (False, True):
+                        if await env.over_budget():
+                            res.status = "incomplete"
+                            break
+                        rows.append(await score_row(env, doc, version, swapped, phase))
+        res.rows += rows
+        m = float(sel["margin"])
+        res.summary.append(f"## Debate verdict (agent): margin {m:g} chosen on dev"
+                           + ("" if sel["found"] else " — NO margin qualified; 0.5 stays (a finding for the user)")
+                           + f"; {sum(v == 'test' for v in split.values())} test / "
+                           f"{sum(v == 'dev' for v in split.values())} dev debates")
+        res.summary.append("- dev grid: " + ", ".join(f"{k:g}: planted {v['planted_right']}/{v['planted']}, too close "
+                                                      f"{v['too_close']}/{v['balanced']}" for k, v in sel["grid"].items()))
+        if missing:
+            res.summary.append(f"- no planted version for {', '.join(missing)} (run `debate-plant`)")
+        failed_rows = [r for r in rows if r.get("failure")]
+        if failed_rows:
+            res.summary.append("- rubric failures: " + ", ".join(f"{r['debate']} {r['version']}"
+                                                               f"{' swapped' if r['swapped'] else ''}: {r['failure']}"
+                                                               for r in failed_rows))
+        res.summary += measures([r for r in rows if r["split"] == "test"], m)
+        if env.opts.limit is None or env.opts.limit >= len(hs):
+            res.summary += await self.checks(env, hs, split)
+        return res
+
+    @staticmethod
+    async def checks(env: RunEnv, hs: Sequence[dict[str, Any]], split: dict[str, str]) -> list[str]:
+        """D21's prose and host checks (9 verdicts here; the panel free run's is the 10th, D22)."""
+        test = [h for h in hs if split[h["id"]] == "test"]
+        verdicts = [(h, "arbiter") for h in arbiter_debates(hs)]
+        verdicts += [(h, "user") for h in test[ARBITER_VERDICTS: ARBITER_VERDICTS + USER_VERDICTS]]
+        panel = [h for h in histories() if h["format"] == "panel"]
+        verdicts += [(h, "arbiter") for h in panel[:1]]
+        proses = [await prose_check(env, h, by) for h, by in verdicts]
+        bridges = [await host_check(env, h, upto, key) for h, upto, key in bridge_points(histories())]
+        return (check_report("Verdict prose checks", proses, lambda it: it["rationale"] or "(summary only)")
+                + check_report("Host bridge checks", bridges, lambda it: it["line"]))
+
+
+# ── latency --part debate (D9, D22) ──
+PLAN_DEADLINE_MS = 500.0       # timeoutsMs.decision.debate_plan (W12), timed from turn.end: no F (D9)
+PLAN_MISS_MAX = 0.10
+BRIDGE_PASS = 8                # of 10 on time
+PAUSE_MS = 1500.0              # the histories' pauseMs
+
+
+class WriteOnly:
+    """A store that never serves but keeps every response (D22: timed outside the store, then saved as suite items)."""
+
+    def __init__(self, store: Any) -> None:
+        self.inner = store
+        self.fingerprint = store.fingerprint
+
+    def serves(self, kind: str) -> bool:
+        return bool(self.inner.serves(kind))
+
+    def get(self, kind: str, key: str) -> None:
+        return None
+
+    def put(self, kind: str, key: str, request: Any, response: Any, usage: Any) -> bool:
+        return bool(self.inner.put(kind, key, request, response, usage))
+
+
+def eval_store(env: RunEnv) -> Any:
+    """The eval store the paid suites read (the runner's `store_for`), under this run's data folder."""
+    from horizon.evals.store import ResponseStore
+
+    canary = EVALS_DIR / "canary.json"
+    fingerprint = json.loads(canary.read_text(encoding="utf-8")).get("fingerprint") if canary.is_file() else None
+    return ResponseStore.eval_view(env.run_dir.parents[2] / "cache", fingerprint)
+
+
+def member_dev_requests(n: int) -> list[tuple[str, Any]]:
+    """D9's states: the member slice's dev items, each rebuilt as its live request from the committed history."""
+    from horizon.evals.suites import load_dataset
+
+    path = EVALS_DIR / "datasets" / "debate_member" / "debate_member.jsonl"
+    rows = [r for r in load_dataset(path) if r["split"] == "dev"] if path.is_file() else []
+    prof = profiles()
+    out = []
+    for r in rows[:n]:
+        cut = r["cut"]
+        h = load_history(str(cut["debate"]))
+        if h is None:
+            continue
+        sl = next(x for x in slots(h) if x["seq"] == int(cut["seq"]))
+        out.append((str(r["id"]), cut_request(h, sl, prof, {int(k): v for k, v in (cut.get("replace") or {}).items()})))
+    return out
+
+
+async def plan_timing(env: RunEnv, reqs: Sequence[tuple[str, Any]]) -> list[dict[str, Any]]:
+    """`S` = the live state built in process; `L` = Jev's wall time for the live request (no store)."""
+    import time
+
+    from horizon.ai.agent.debate_plan import DebateSteps
+    from horizon.ai.decider import wire_question
+    from horizon.gateway.context import call_ctx
+
+    rows = []
+    for item_id, req in reqs:
+        if await env.over_budget():
+            break
+        t0 = time.perf_counter()
+        qs, _, _ = DebateSteps.questions(req)
+        st = DebateSteps.state_for(req, qs)
+        s_ms = (time.perf_counter() - t0) * 1000
+        t1 = time.perf_counter()
+        await env.rt.gateway.decide(st.state, {k: wire_question(q) for k, q in qs.items()}, call_ctx("debate_plan"))
+        rows.append({"id": item_id, "s_ms": round(s_ms, 3), "l_ms": round((time.perf_counter() - t1) * 1000, 1),
+                     "tokens": st.tokens})
+    return rows
+
+
+def plan_timing_report(rows: Sequence[dict[str, Any]]) -> list[str]:
+    """D9: pass at ≤ 10 % past 500 ms; otherwise V2's locked rule, with the p90 to set as the deadline."""
+    from horizon.evals.metrics import percentile
+    from horizon.evals.watch_suites import in_spell, spells
+
+    if not rows:
+        return ["## Debate-plan timing (D9): no states (build the member slice first, 10.3)"]
+    total = [r["s_ms"] + r["l_ms"] for r in rows]
+    miss = [t > PLAN_DEADLINE_MS for t in total]
+    rate = sum(miss) / len(rows)
+    ok = rate <= PLAN_MISS_MAX
+    p90 = percentile(total, 0.9)
+    out = [f"## Debate-plan timing (D9): {sum(miss)}/{len(rows)} past {PLAN_DEADLINE_MS:.0f} ms ({rate:.0%}; pass at "
+           f"≤ {PLAN_MISS_MAX:.0%}) → {'PASS' if ok else 'FAIL'}",
+           f"- S + L: p50 {percentile(total, 0.5):.0f} ms, p90 {p90:.0f} ms; S p90 "
+           f"{percentile([r['s_ms'] for r in rows], 0.9):.1f} ms; tokens p50 "
+           f"{percentile([float(r['tokens']) for r in rows], 0.5):.0f}"]
+    if not ok:
+        out.append(f"- V2's rule (D9, D29.3): keep Jev; set timeoutsMs.decision.debate_plan to the measured p90, "
+                   f"{p90:.0f} ms, and record the NFR-02 exception for turn.next")
+    sp = spells([r["l_ms"] for r in rows])
+    if sp:
+        keep = [t for i, t in enumerate(total) if not in_spell(i, sp)]
+        out.append(f"- slow spells: {len(sp)} ({'; '.join(f'{a + 1}–{b + 1}' for a, b in sp)}); without them "
+                   f"{sum(t > PLAN_DEADLINE_MS for t in keep)}/{len(keep)} past the deadline")
+    return out
+
+
+def arbiter_debates(hs: Sequence[dict[str, Any]]) -> list[dict[str, Any]]:
+    """D22's 5 Arbiter verdicts: the first balanced test debates (the debate suite's prose check reads the same)."""
+    two = [h for h in hs if h["format"] == "two_sided"]
+    split = debate_split([h["id"] for h in two], min(TEST_DEBATES, max(1, round(len(two) * 2 / 3))))
+    return [h for h in two if split[h["id"]] == "test"][:ARBITER_VERDICTS]
+
+
+async def bridge_timing(env: RunEnv) -> list[dict[str, Any]]:
+    import time
+
+    host = env.rt.ai.host(True)
+    wait = float(env.rt.runtime_cfg.runtime.host_banner_wait_ms)
+    rows = []
+    for h, upto, key in bridge_points(histories()):
+        if await env.over_budget():
+            break
+        t0 = time.perf_counter()
+        line = await host.narration(history_session(h, upto), key)
+        ms = (time.perf_counter() - t0) * 1000
+        rows.append({"debate": h["id"], "key": f"{key.phase} {key.iteration}", "ms": round(ms, 1),
+                     "on_time": line is not None and ms <= PAUSE_MS + wait, "line": line})
+    return rows
+
+
+async def verdict_timing(env: RunEnv) -> list[dict[str, Any]]:
+    import time
+
+    host = env.rt.ai.host(True)
+    rows = []
+    for h in arbiter_debates(histories()):
+        if await env.over_budget():
+            break
+        t0 = time.perf_counter()
+        a = await host.assess(verdict_request(h, "arbiter"))
+        rows.append({"debate": h["id"], "ms": round((time.perf_counter() - t0) * 1000, 1), "scored": a.scored,
+                     "stronger": a.stronger, "notes": list(a.notes)})
+    return rows
+
+
+def kept_report(bridges: Sequence[dict[str, Any]], verdicts: Sequence[dict[str, Any]], wait_ms: float) -> list[str]:
+    from horizon.evals.metrics import percentile
+
+    on = sum(r["on_time"] for r in bridges)
+    out = [f"## Host bridges: {on}/{len(bridges)} on time (within the pause + {wait_ms / 1000:g} s; target ≥ "
+           f"{BRIDGE_PASS} of 10)" + (" ✓" if on >= BRIDGE_PASS else " ✗")]
+    out += [f"  - {r['debate']} → {r['key']}: {r['ms']:.0f} ms" + ("" if r["on_time"] else " (LATE: the fixed line shows)")
+            for r in bridges]
+    if verdicts:
+        ms = [r["ms"] for r in verdicts]
+        out.append(f"## Arbiter verdicts: the viewer's wait from the last closing's turn.end, p50 "
+                   f"{percentile(ms, 0.5) / 1000:.1f} s, max {max(ms) / 1000:.1f} s ({len(ms)} verdicts)")
+        out += [f"  - {r['debate']}: {r['ms'] / 1000:.1f} s, {'scored' if r['scored'] else 'not scored'}"
+                + (f" ({'; '.join(r['notes'])})" if r["notes"] else "") for r in verdicts]
+    out.append("- the bridges and verdicts were kept in the store: the debate suite's checks read them (W10)")
+    return out
+
+
+async def debate_timing(env: RunEnv, n: int, res: Result) -> None:
+    rows = await plan_timing(env, member_dev_requests(n))
+    res.rows += [{"part": "plan", **r} for r in rows]
+    res.summary += plan_timing_report(rows)
+    prev = env.rt.gateway.store
+    env.rt.gateway.store = WriteOnly(eval_store(env))
+    try:
+        bridges = await bridge_timing(env)
+        verdicts = await verdict_timing(env)
+    finally:
+        env.rt.gateway.store = prev
+    res.rows += [{"part": "bridge", **r} for r in bridges] + [{"part": "verdict", **r} for r in verdicts]
+    res.summary += kept_report(bridges, verdicts, float(env.rt.runtime_cfg.runtime.host_banner_wait_ms))
+
+
+# ── freerun --mode debate (D22) ──
+FREE_DEBATES: tuple[dict[str, Any], ...] = (
+    {"id": "free-2v2", "world": "wld_seedMeridian", "cast": ["chr_evalSofia", "chr_seedMei", "chr_seedAmara",
+                                                             "chr_seedVictor"],
+     "config": {"motion": "This house would make the city's buses free to ride", "format": "two_sided",
+                "sides": {"prop": ["chr_evalSofia", "chr_seedAmara"], "opp": ["chr_seedMei", "chr_seedVictor"]},
+                "roundsPreset": "standard", "phases": ["opening", "rebuttal", "closing"], "turnLength": "medium",
+                "moderator": "auto_host", "verdictBy": "arbiter", "rubric": [], "autoAdvance": True, "pauseMs": 1500}},
+    {"id": "free-panel", "world": "wld_seedSunnyHollow", "cast": ["chr_seedHana", "chr_seedRin", "chr_seedTakeshi",
+                                                                  "chr_evalAiko"],
+     "config": {"motion": "This house would turn the old station into a covered market", "format": "panel",
+                "roundsPreset": "standard", "phases": ["opening", "rebuttal", "closing"], "turnLength": "medium",
+                "moderator": "auto_host", "verdictBy": "none", "rubric": [], "autoAdvance": True, "pauseMs": 1500}},
+)
+MEMBER_IDS = ("member_rebuttal", "member_closing", "member_panel")
+
+
+def member_sources(msgs: Sequence[dict[str, Any]]) -> dict[str, int]:
+    """Each member choice by its source: Jev, unsure (below the floor), late, or failed."""
+    out = {"Jev": 0, "unsure": 0, "late": 0, "failed": 0}
+    for m in msgs:
+        for r in (((m.get("trace") or {}).get("system1")) or {}).get("questions") or []:
+            if r.get("id") not in MEMBER_IDS:
+                continue
+            if r.get("result") == "used":
+                out["Jev"] += 1
+            elif r.get("result") == "below_threshold":
+                out["unsure"] += 1
+            elif "late" in str(r.get("answer")):
+                out["late"] += 1
+            else:
+                out["failed"] += 1
+    return out
+
+
+async def host_rows(env: RunEnv, sid: str) -> list[dict[str, Any]]:
+    from sqlalchemy import select
+
+    from horizon.db import tables as t
+
+    U = t.usage_records.c
+    async with env.rt.db.read() as conn:
+        rows = (await conn.execute(select(U.purpose, U.finish_reason).where(U.session_id == sid)
+                                   .where(U.purpose == "host"))).mappings().all()
+    return [dict(r) for r in rows]
+
+
+async def free_debate(env: RunEnv, script: dict[str, Any]) -> dict[str, Any]:
+    """One `agent` debate free run and what D22 reports from it."""
+    await install_cast(env)
+    await top_up(env, script["cast"])
+    doc, complete, sid, msgs, events = await drive_debate(env, script, resume=False)
+    hosts = [m for m in msgs if m.get("kind") == "narration"]
+    rows = await host_rows(env, sid)
+    late = sum(1 for r in rows if r.get("finish_reason") in ("late", "cancelled"))
+    pauses = [e["payload"].get("reason") for e in events if e["type"] == "session.paused"]
+    asleep = [m["content"] for m in msgs if m["author"]["type"] == "system" and "Top someone up" in str(m["content"])]
+    v = dict(doc.get("verdict") or {})
+    quality = await judge_histories(env, [doc])
+    prose = None
+    if v.get("summary"):
+        checks = await prose_nouls(env, doc, v.get("summary") or [], v.get("rationale"), bool(v.get("scores")),
+                                   v.get("scores") or [], v.get("strongerCase"))
+        prose = {"debate": script["id"], "by": v.get("decidedBy"), "rationale": v.get("rationale"), "checks": checks}
+    return {"id": script["id"], "complete": complete, "arguments": len(arguments(doc)), "members": member_sources(msgs),
+            "host_lines": len(hosts), "host_late": late, "pauses": pauses, "asleep": asleep,
+            "verdict": {k: v.get(k) for k in ("decidedBy", "strongerCase")} if v else None,
+            "quality": quality, "prose": prose}
+
+
+def debate_freerun_report(runs: Sequence[dict[str, Any]]) -> list[str]:
+    out = [f"## Free run (debate): {len(runs)} debate(s) — signals only, no target"]
+    for r in runs:
+        mem = r["members"]
+        out += [f"### {r['id']}: {r['arguments']} arguments" + ("" if r["complete"] else " (INCOMPLETE)"),
+                "- member choices: " + ", ".join(f"{k} {v}" for k, v in mem.items()) + f" (of {sum(mem.values())})",
+                f"- host lines: {r['host_lines']} shown; {r['host_late']} DeepSeek line(s) late or cancelled (the fixed "
+                "line showed)",
+                f"- pauses: {len(r['pauses'])}" + (f" ({', '.join(str(x) for x in r['pauses'])})" if r["pauses"] else "")
+                + (f"; asleep: {'; '.join(r['asleep'])}" if r["asleep"] else ""),
+                f"- verdict: {r['verdict'] or 'none'}"]
+        out += quality_report(r["quality"], "agent")
+        if r["prose"]:
+            out += check_report("Verdict prose check (free run)", [r["prose"]],
+                                lambda it: it["rationale"] or "(summary only)")
+    return out
+
+
+async def debate_freeruns(env: RunEnv, n: int) -> tuple[list[dict[str, Any]], list[str]]:
+    runs = []
+    for script in FREE_DEBATES[:n]:
+        if await env.over_budget():
+            break
+        runs.append(await free_debate(env, script))
+    return runs, debate_freerun_report(runs)

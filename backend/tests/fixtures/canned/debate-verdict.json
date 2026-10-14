@@ -1,0 +1,10 @@
+{
+ "source": "synthetic (debate task 9.10): a stand-in verdict prose until `latency --part debate` (task 10.7) records real ones",
+ "recorded": "2026-10-14",
+ "model": "none (synthetic)",
+ "note": "The fake provider answers `verdict` chat calls with this JSON (doc 13 W14; C7's JSON mode): three points per side, which a Quick 2 v 2's validation accepts (at least 2 when a side made 2 arguments), and a rationale under 60 words.",
+ "purpose": "verdict",
+ "responses": [
+  {"item": "any", "content": "{\"summary\": {\"prop\": [\"The change would help those who need it most.\", \"The cost is small next to the harm it prevents.\", \"Other cities have tried it and kept it.\"], \"opp\": [\"The evidence for the benefit is thin.\", \"The cost falls on people who can least afford it.\", \"There are cheaper ways to reach the same goal.\"]}, \"keyDisagreement\": \"Whether the benefit is worth the cost.\", \"rationale\": \"Both sides argued clearly; the scores put them close, so neither case clearly outweighed the other.\"}"}
+ ]
+}

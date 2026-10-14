@@ -432,6 +432,7 @@ class Smoke:
                 empty.append(suite.name)
         content_lines += await self.m9(env, plan, empty)
         content_lines += await self.m10(env, plan, empty)
+        content_lines += await self.m11(env, plan, empty)
         res.summary += ["## Smoke (never compared with baselines)",
                         f"- bank: {len(bank().entries)} entr(ies), wire problems: {problems or 'none'}",
                         f"- datasets: {n_lines} line(s) load", *d.summary,
@@ -475,6 +476,10 @@ class Smoke:
                 rt.decider_fixtures.clear()
         return out
 
+
+    @staticmethod
+    async def m11(env: RunEnv, plan: Plan, empty: list[str]) -> list[str]:
+        return await m11_smoke(env, plan, empty)
 
     @staticmethod
     async def m10(env: RunEnv, plan: Plan, empty: list[str]) -> list[str]:
@@ -530,6 +535,57 @@ class Smoke:
         return out
 
 
+SMOKE_DEBATE: dict[str, Any] = {"id": "smoke-debate", "world": "wld_seedMeridian",
+                "cast": ["chr_evalSofia", "chr_seedMei", "chr_seedAmara", "chr_seedVictor"],
+                "config": {"motion": "This house would tax sugary drinks", "format": "two_sided",
+                           "sides": {"prop": ["chr_evalSofia", "chr_seedAmara"], "opp": ["chr_seedMei", "chr_seedVictor"]},
+                           "roundsPreset": "quick", "phases": ["opening", "closing"], "turnLength": "short",
+                           "moderator": "auto_host", "verdictBy": "arbiter", "rubric": [], "autoAdvance": True,
+                           "pauseMs": 1500}}
+
+
+async def m11_smoke(env: RunEnv, plan: Plan, empty: list[str]) -> list[str]:
+    """M11 (debate 9.10): under `agent`, one Quick 2 v 2 debate with Auto host and Arbiter to its verdict, one
+    debate-plan timing request and one rubric request, all at $0 in CI. In test mode the host lines and the verdict
+    prose are canned (W14: synthetic until 10.7 records real ones). The run's own profile is restored afterwards."""
+    from horizon.ai.agent import rubric
+    from horizon.ai.profile import ProfileSpec
+    from horizon.evals import debate_suites as ds
+
+    rt = env.rt
+    out: list[str] = []
+    before = rt.profile
+    rt.set_profile(ProfileSpec(profile="agent", test_mode=rt.cfg.test_mode))
+    try:
+        if rt.fake is not None:
+            from horizon.gateway.fake import load_canned
+
+            for name in ("debate-host", "debate-verdict"):
+                purpose, canned = load_canned(name)
+                rt.fake.set_canned(purpose, canned)
+        await ds.install_cast(env)
+        await ds.top_up(env, SMOKE_DEBATE["cast"])
+        doc, complete, _, msgs, _ = await ds.drive_debate(env, SMOKE_DEBATE, resume=False)
+        hosts = [m for m in msgs if m.get("kind") == "narration"]
+        v = dict(doc.get("verdict") or {})
+        out.append(f"- debate: {len(ds.arguments(doc))} argument(s), {len(hosts)} host line(s), verdict "
+                   f"{v.get('decidedBy')} with {len(v.get('scores') or [])} score(s)")
+        if not complete or not hosts or v.get("decidedBy") != "arbiter" or not v.get("scores"):
+            empty.append("debate")
+        slots = ds.natural_member_slots(doc)
+        rows = await ds.plan_timing(env, [("smoke", ds.cut_request(doc, slots[0], ds.profiles()))] if slots else [])
+        out.append(f"- debate-plan timing: {len(rows)} request(s)")
+        if not rows:
+            empty.append("debate-plan timing")
+        sc = await rubric.score(rt.ai.deps, ds.verdict_request(doc))
+        out.append(f"- rubric: {len(sc.bars or [])} bar(s)" + (f", failure {sc.failure}" if sc.failure else ""))
+        if not sc.bars:
+            empty.append("rubric")
+    finally:
+        rt.set_profile(before)
+    return out
+
+
 async def planned_group_send(env: RunEnv) -> int:
     """One `agent` group send through the app; the replies it got."""
     import httpx
@@ -556,13 +612,14 @@ async def planned_group_send(env: RunEnv) -> int:
 
 def _content() -> dict[str, Any]:
     from horizon.evals.content import Drafter, Long, Summary, Transcript
-    from horizon.evals.debate_suites import DebateHistory, DebatePlant, DebateQuality
+    from horizon.evals.debate_suites import DebateHistory, DebatePlant, DebateQuality, DebateSuite
     from horizon.evals.latency import Latency
     from horizon.evals.moodline import Moodline
     from horizon.evals.watch_suites import FreeRun, WatchHistory
     return {"drafter": Drafter(), "summary": Summary(), "long": Long(), "transcript": Transcript(),
             "moodline": Moodline(), "latency": Latency(), "watch-history": WatchHistory(), "freerun": FreeRun(),
-            "debate-history": DebateHistory(), "debate-plant": DebatePlant(), "debate-quality": DebateQuality()}
+            "debate-history": DebateHistory(), "debate-plant": DebatePlant(), "debate-quality": DebateQuality(),
+            "debate": DebateSuite()}
 
 
 SUITES: dict[str, Any] = {"canary": Canary(), "decisions": Decisions(), "smoke": Smoke(), **_content()}

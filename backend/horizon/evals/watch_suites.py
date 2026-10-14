@@ -370,6 +370,14 @@ class FreeRun:
 
     def plan(self, opts: Options, prices: Any, *, paid: bool) -> Plan:
         mode = opts.mode or "watch"
+        if mode == "debate":   # M11 (D22): a Standard 2 v 2 with Auto host and Arbiter, and a panel of 4
+            n = min(opts.runs or 2, 2)
+            reply = estimate_chat(prices, prefix_tokens=4000, warm=True, other_in=1500, expected_out_tokens=300,
+                                  period="off_peak")
+            plan_call = decision_estimate(prices, {"quoted_arguments": "x" * 7000}, {"q": {"instructions": "x" * 2400}})
+            return Plan(items=[{"mode": "debate", "run": k, "n": 12} for k in range(n)],
+                        estimate_usd=n * (12 * (reply + plan_call + 2 * plan_call) + 6 * reply / 4 + 0.004),
+                        expected_s=n * 12 * 9.0, paid=paid)
         runs = opts.runs or 3
         per = (opts.turns or 30) if mode == "watch" else (opts.messages or 12)
         if opts.limit:
@@ -386,6 +394,13 @@ class FreeRun:
         if env.opts.profile != "agent" and not env.opts.limit:
             res.status = "failed"
             res.summary.append("## Free run: runs `agent` only; pass --profile agent")
+            return res
+        if plan.items and plan.items[0]["mode"] == "debate":   # M11 (debate D22)
+            from horizon.evals.debate_suites import debate_freeruns
+
+            runs, lines = await debate_freeruns(env, len(plan.items))
+            res.rows += [{k: v for k, v in r.items() if k != "quality"} for r in runs]
+            res.summary += lines
             return res
         msgs: list[dict[str, Any]] = []
         sends = 0

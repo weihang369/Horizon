@@ -1,0 +1,12 @@
+{
+ "source": "synthetic (debate task 9.10): stand-in host lines until `latency --part debate` (task 10.7) records real ones",
+ "recorded": "2026-10-14",
+ "model": "none (synthetic)",
+ "note": "The fake provider answers `host` chat calls with these, in turn (doc 13 W14): neutral, under V6's 60 words, naming only what a debate's arguments would hold.",
+ "purpose": "host",
+ "responses": [
+  {"item": "any", "content": "Welcome, everyone. Tonight's motion is on the table, and both sides are ready. Let's hear the openings."},
+  {"item": "any", "content": "Both sides have set out their case. Now each must answer what the other has said."},
+  {"item": "any", "content": "That's the closings done. Time to weigh what each side argued."}
+ ]
+}

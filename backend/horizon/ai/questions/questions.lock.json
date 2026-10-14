@@ -39,6 +39,14 @@
     "sha256": "d655578dd9dfcd1aa8868b7fb2a2010dca6810d33aaf21b1b9f0c831e45d935a",
     "version": 1
   },
+  "judge_host_partisan": {
+    "sha256": "453419c9f8fe5100e2b27a014020d1c0aa6ec2d15d8469d70ab24482f41fe534",
+    "version": 1
+  },
+  "judge_host_unargued": {
+    "sha256": "3dc45eb18ce7c35b41e81153bfbedf6580741f1ce92856e6b197cdba4defa717",
+    "version": 1
+  },
   "judge_keeps_side": {
     "sha256": "4e6a4a10cb8e154cc9c996f1e5ab7c0a1f10e90b9d30e3c93524bdd4118bd98b",
     "version": 1
@@ -89,6 +97,18 @@
   },
   "judge_summary_who": {
     "sha256": "dc5f4894e3fee54a19fffb3bc5ba1d85da0bc07b4a9c271c350add6303b1c66b",
+    "version": 1
+  },
+  "judge_verdict_point_unsaid": {
+    "sha256": "caf1119c047dd477920f500fb59ac66cbbb3c21af746298d5bab6cdba60340b2",
+    "version": 1
+  },
+  "judge_verdict_rationale_mismatch": {
+    "sha256": "2d3b44f3a3632357202fe16a1a2da5a5281396e9c6c26e09e41f67e49462243a",
+    "version": 1
+  },
+  "judge_verdict_says_right": {
+    "sha256": "3b51682c22f69252693faefc2e033cdf563459b851bf4e829d1967019e107f4a",
     "version": 1
   },
   "judge_voice": {

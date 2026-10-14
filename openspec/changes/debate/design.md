@@ -885,6 +885,21 @@ wrong for `agent`).
 - **The prose and host nouls aren't B4-validated** (the challenge): 20 items, each read in full by hand, are the check.
   The nouls are a first pass that points at the lines to read. Validating 5 more judges (300 labelled items) would
   cost more than the check it guards.
+- **Their wording** (written at apply, W4; purpose `eval_judge`, noul, `t` 0.5, yes = failure like every judge):
+  - `judge_verdict_point_unsaid` "point not argued?": "Does quoted_point state something the {side} didn't argue in
+    quoted_arguments?" (per summary point; state `quoted_motion`, `quoted_arguments` = that side's arguments,
+    `quoted_point`);
+  - `judge_verdict_rationale_mismatch` "rationale contradicts the scores?": "Does quoted_rationale name a different
+    result from result, the one the arbiter's scores give?" (scored verdicts only; `result` and `scores` are labels
+    code writes);
+  - `judge_verdict_says_right` "calls a side factually right?": "Does quoted_rationale say a side is factually right
+    or wrong about quoted_motion, rather than that it argued better or worse?";
+  - `judge_host_partisan` "takes a side?": "Does quoted_line say or hint which side or speaker is winning, or argued
+    better?";
+  - `judge_host_unargued` "adds what wasn't argued?": "Does quoted_line mention a point, fact or claim that isn't in
+    quoted_arguments?" (`quoted_arguments` = the round the bridge closes, as the host saw it).
+- **Where the 10th prose item comes from:** the suite judges 9 from the histories (5 Arbiter, 3 You decide, the panel
+  history); the panel free run's verdict is judged by the free-run report with the same nouls (D22).
 - **The `naive` arm** (48 `naive` verdicts) waits for M15 (W6). `naive`'s verdict code is built and tested offline
   here.
 

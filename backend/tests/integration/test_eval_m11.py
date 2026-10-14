@@ -427,3 +427,197 @@ async def test_an_unvalidated_judge_does_not_count(api: Api, tmp_path: Path, mon
     assert text.count("NOT COUNTED") == 2 and "(naive column)" in text
     monkeypatch.setattr(judges, "validated", lambda qid, version, record=None: True)
     assert "NOT COUNTED" not in "\n".join(ds.quality_report(res.rows, "agent"))
+
+
+# ── 9.7: the debate suite ──
+def scored(debate: str, version: str, swapped: bool, prop: float, opp: float, strong: str | None = None,
+           split: str = "test") -> dict[str, Any]:
+    bars = [{"subjectId": s, "criterionId": c, "value": v} for s, v in (("prop", prop), ("opp", opp))
+            for c in ("evidence", "rebuttal", "clarity", "persuasion")]
+    return {"debate": debate, "version": version, "swapped": swapped, "split": split, "strong": strong, "bars": bars,
+            "means": {"prop": prop, "opp": opp}, "failure": None}
+
+
+def test_swap_flips_are_counted_apart_from_ties() -> None:
+    """The scenario: one swapped item goes Proposition → Opposition, another Proposition → too close."""
+    from horizon.evals import debate_suites as ds
+
+    rows = [scored("d01", "balanced", False, 7.0, 5.0), scored("d01", "balanced", True, 5.0, 7.0),
+            scored("d02", "balanced", False, 7.0, 5.0), scored("d02", "balanced", True, 6.2, 6.0),
+            scored("d03", "balanced", False, 7.0, 5.0), scored("d03", "balanced", True, 7.0, 5.0)]
+    text = "\n".join(ds.measures(rows, 0.5))
+    assert "winner flips 1/3" in text and "FLIP d01 balanced: prop → opp" in text
+    assert "changes to or from too close, reported apart: 1/3" in text and "d02 balanced: prop → too close" in text
+
+
+def test_the_margin_rule() -> None:
+    from horizon.evals import debate_suites as ds
+
+    dev = [scored("d01", "planted", False, 7.0, 6.2, "prop", "dev"), scored("d02", "planted", False, 5.0, 7.5, "opp",
+                                                                            "dev"),
+           scored("d03", "balanced", False, 6.0, 6.6, None, "dev"), scored("d04", "balanced", False, 6.0, 6.1, None,
+                                                                            "dev")]
+    sel = ds.choose_margin(dev)
+    # the planted gaps are 0.8 and 2.5, the balanced 0.6 and 0.1: at 0.75 every balanced item is too close, and at
+    # 1.0 a planted one is, so 0.5 is the largest margin that keeps both rules
+    assert sel["margin"] == 0.5 and sel["found"]
+    assert [m for m, g in sel["grid"].items() if g["ok"]] == [0.0, 0.25, 0.5]
+    wrong = ds.choose_margin([scored("d01", "planted", False, 6.0, 7.0, "prop", "dev")])
+    assert wrong["margin"] == 0.5 and not wrong["found"]                  # none qualifies: 0.5 stays, a finding
+
+
+def fixture_suite(monkeypatch: pytest.MonkeyPatch) -> list[dict[str, Any]]:
+    from horizon.evals import debate_suites as ds
+
+    hs = [meridian_history(f"d{n:02d}", [SOFIA, AMARA], [VICTOR, MEI]) for n in range(1, 4)]
+    plants = {h["id"]: {**h, "planted": {"weak": ds.weak_side(h["id"]), "rewritten": []}} for h in hs}
+    panel = {**meridian_history("d13", [SOFIA, AMARA], [VICTOR, MEI]), "format": "panel", "sides": None}
+    for x in panel["lines"]:
+        x["side"] = None
+    monkeypatch.setattr(ds, "histories", lambda root=None: [*hs, panel])
+    monkeypatch.setattr(ds, "load_planted", lambda did, root=None: plants.get(did))
+    return hs
+
+
+async def test_the_margin_is_tuned_on_dev_only(api: Api, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The scenario: no test item's answer is read before the margin is written."""
+    from horizon.evals import debate_suites as ds
+
+    await _agent(api)
+    fixture_suite(monkeypatch)
+    monkeypatch.setattr(ds, "TEST_DEBATES", 2)
+    opts = Options("debate", profile="agent")
+    env = env_for(api, tmp_path, opts)
+    order: list[tuple[str, bool]] = []
+    real = ds.score_row
+
+    async def spy(env_: Any, h: dict[str, Any], version: str, swapped: bool, split: str) -> dict[str, Any]:
+        order.append((split, (env.run_dir / "margin.json").is_file()))
+        return await real(env_, h, version, swapped, split)
+
+    monkeypatch.setattr(ds, "score_row", spy)
+    s = ds.DebateSuite()
+    res = await s.run(env, s.plan(opts, api.rt.prices, paid=False))
+    assert [sp for sp, _ in order] == ["dev"] * 4 + ["test"] * 8          # 1 dev and 2 test debates, ×2 versions ×2
+    assert not any(written for sp, written in order if sp == "dev") and all(w for sp, w in order if sp == "test")
+    assert res.summary[0].startswith("## Debate verdict (agent): margin ")
+
+
+async def test_every_prose_and_host_item_is_printed(api: Api, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The scenario "Every item is printed": all the verdicts with each noul's p, flagged or not."""
+    from horizon.evals import debate_suites as ds
+
+    await _agent(api)
+    hs = fixture_suite(monkeypatch)
+    monkeypatch.setattr(ds, "ARBITER_VERDICTS", 2)
+    monkeypatch.setattr(ds, "USER_VERDICTS", 1)
+    monkeypatch.setattr(ds, "BRIDGES", 3)
+    env = env_for(api, tmp_path, Options("debate", profile="agent"))
+    lines = await ds.DebateSuite.checks(env, hs, {h["id"]: "test" for h in hs})
+    prose_head = next(x for x in lines if x.startswith("## Verdict prose checks"))
+    host_head = next(x for x in lines if x.startswith("## Host bridge checks"))
+    assert "/4 flagged" in prose_head and "/3 flagged" in host_head    # 2 Arbiter + 1 You decide + the panel
+    items = [x for x in lines if x.startswith("- ok ") or x.startswith("- FLAGGED ")]
+    assert len(items) == 7
+    assert sum(1 for x in lines if "judge_host_partisan" in x) == 3
+    assert any("judge_verdict_point_unsaid" in x and "p " in x for x in lines)
+
+
+async def _agent(api: Api) -> None:
+    from tests.sessions.kit import API
+
+    await api.set_key()
+    assert (await api.post(f"{API}/_test/ai-profile", {"profile": "agent"})).status_code == 204
+
+
+# ── 9.8: latency --part debate ──
+def test_a_slow_api_is_kept() -> None:
+    """The scenario: 9 of the 30 requests take longer than 500 ms → the check fails and states the p90 to set."""
+    from horizon.evals import debate_suites as ds
+
+    rows = [{"s_ms": 2.0, "l_ms": 420.0, "tokens": 2400}] * 21 + [{"s_ms": 2.0, "l_ms": 640.0, "tokens": 2400}] * 9
+    text = "\n".join(ds.plan_timing_report(rows))
+    assert "9/30 past 500 ms (30%" in text and "→ FAIL" in text
+    assert "set timeoutsMs.decision.debate_plan to the measured p90, 642 ms" in text
+    assert "→ PASS" in ds.plan_timing_report(rows[:21] + rows[21:23])[0]                 # 2 of 23 is under 10 %
+
+
+async def test_the_plan_timing_asks_the_live_request(api: Api, tmp_path: Path) -> None:
+    from horizon.evals import debate_suites as ds
+
+    await _agent(api)
+    h = meridian_history("d01", [SOFIA, AMARA], [VICTOR, MEI])
+    reqs = [(f"x{k}", ds.cut_request(h, sl, ds.profiles())) for k, sl in enumerate(ds.natural_member_slots(h))]
+    rows = await ds.plan_timing(env_for(api, tmp_path, Options("latency", profile="agent", part="debate")), reqs)
+    assert len(rows) == 4 and all(r["s_ms"] >= 0 and r["l_ms"] >= 0 and r["tokens"] > 0 for r in rows)
+    bodies = decision_bodies(api, "member_rebuttal")
+    assert len(bodies) == 2 and set(bodies[0]["questions"]) == {
+        "member_rebuttal", f"emotion_line:{SOFIA}", f"emotion_line:{AMARA}"}
+
+
+async def test_bridges_are_kept(api: Api, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The scenario: after the timing run, its bridges and verdicts are in the store, and the debate suite's prose and
+    host checks read them without a new call."""
+    from horizon.evals import debate_suites as ds
+    from horizon.evals.runner import Result
+
+    await _agent(api)
+    hs = [meridian_history(f"d{n:02d}", [SOFIA, AMARA], [VICTOR, MEI]) for n in range(1, 4)]
+    monkeypatch.setattr(ds, "histories", lambda root=None: hs)
+    monkeypatch.setattr(ds, "member_dev_requests", lambda n: [])
+    monkeypatch.setattr(ds, "ARBITER_VERDICTS", 2)
+    monkeypatch.setattr(ds, "USER_VERDICTS", 0)
+    monkeypatch.setattr(ds, "BRIDGES", 4)
+    env = env_for(api, tmp_path, Options("latency", profile="agent", part="debate"))
+    assert api.rt.gateway.store is None                                   # latency never reads the store
+    res = Result()
+    await ds.debate_timing(env, 30, res)
+    assert api.rt.gateway.store is None
+    text = "\n".join(res.summary)
+    assert "## Host bridges: " in text and "/4 on time" in text and "## Arbiter verdicts:" in text
+    assert [r["part"] for r in res.rows].count("verdict") == 2
+    assert api.rt.fake is not None
+    chats = sum(1 for r in api.rt.fake.requests if r.url.path.endswith("/chat/completions"))
+    api.rt.gateway.store = ds.eval_store(env)                           # the debate suite's run reads the store
+    try:
+        await ds.DebateSuite.checks(env, hs, {h["id"]: "test" for h in hs})
+    finally:
+        api.rt.gateway.store = None
+    assert sum(1 for r in api.rt.fake.requests if r.url.path.endswith("/chat/completions")) == chats   # no new call
+
+
+# ── 9.9: freerun --mode debate ──
+async def test_a_member_choice_report(api: Api, tmp_path: Path) -> None:
+    """The scenario "A member choice report": the report counts the member choices by source."""
+    from horizon.evals import watch_suites
+
+    await _agent(api)
+    opts = Options("freerun", profile="agent", mode="debate", runs=2)
+    s = watch_suites.FreeRun()
+    res = await s.run(env_for(api, tmp_path, opts), s.plan(opts, api.rt.prices, paid=False))
+    text = "\n".join(res.summary)
+    assert text.startswith("## Free run (debate): 2 debate(s)")
+    assert "### free-2v2: 12 arguments" in text and "### free-panel: 12 arguments" in text
+    lines = [x for x in text.splitlines() if x.startswith("- member choices: ")]
+    assert len(lines) == 2 and all("Jev " in x and "unsure " in x and "late " in x for x in lines)
+    first = res.rows[0]
+    assert sum(first["members"].values()) == 4                            # 2 v 2: a choice at each phase's first slot
+    assert "(agent column)" in text and "host lines: " in text
+    assert first["verdict"] and first["verdict"]["decidedBy"] == "arbiter"
+
+
+# ── 9.10: smoke ──
+async def test_smoke_in_ci_runs_a_debate_to_its_verdict(tmp_path: Path) -> None:
+    """The scenario "Smoke in CI": in test mode a Quick 2 v 2 debate reaches its verdict with host lines and scores,
+    plus one debate-plan timing request and one rubric request (the socket guard is on for every test)."""
+    from horizon.evals.runner import Runner
+    from tests.conftest import make_config
+
+    said: list[str] = []
+    r = Runner(make_config(tmp_path, test_mode=True))
+    r.out = said.append  # type: ignore[method-assign]
+    assert await r.run(Options("smoke", limit=5, yes=True)) == 0, said
+    (run,) = [p for p in (tmp_path / "evals").iterdir() if p.is_dir()]
+    report = (run / "naive" / "report.md").read_text(encoding="utf-8")
+    assert "- debate: 8 argument(s), 3 host line(s), verdict arbiter with 8 score(s)" in report
+    assert "- debate-plan timing: 1 request(s)" in report and "- rubric: 8 bar(s)" in report

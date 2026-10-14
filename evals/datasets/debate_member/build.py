@@ -67,6 +67,7 @@ def item(h: dict[str, Any], sl: dict[str, Any], prof: dict[str, Any], acceptable
                                                  "role": str(prof[c].get("role") or "")} for c in cands],
                      "seed": seed, "side": SIDE_LABEL.get(str(sl["side"])) if sl["side"] else None, "none": False},
             "label": {"candidates": cands, "acceptable": list(acceptable), "single": single, "fixed": cands[0]},
+            "cut": {"debate": h["id"], "seq": sl["seq"], "replace": {str(k): v for k, v in (replace or {}).items()}},
             "source": source}
 
 
