@@ -147,8 +147,8 @@ Start ─ host welcome (DeepSeek, written during the 1.6 s start delay; fixed li
   There is **no `none`**: the slot must be filled. The state holds the motion, the phase, the side, **the last
   opposing argument** in full (with uneven sides the argument just before may be a teammate's, so it is not used), and
   each candidate's latest argument cut to 60 words, so Jev can see who already covered a point (doc 05 X9 amended).
-- **A deadline, not a timeout:** `timeoutsMs.decision.debate_plan` = ~~400~~ **500**, measured from `turn.end`. It
-  **replaces the 400 ms turn gap** for this step (as doc 07 G2 does). *[Group A](checks/group-a.md) A2 measured
+- **A deadline, not a timeout:** `timeoutsMs.decision.debate_plan` = ~~400~~ ~~500~~ **651** (M11's measured p90),
+  measured from `turn.end`. It **replaces the 400 ms turn gap** for this step (as doc 07 G2 does). *[Group A](checks/group-a.md) A2 measured
   Jev at ≈ 415 ms p50 / 444 p90 / 498 p99 from Malaysia, so 400 missed every call. Per the user's rule (a slow API is
   accepted, Jev stays), the deadline is 500 and `turn.next` comes up to about 500 ms after `turn.end`: a recorded
   NFR-02 exception.*
@@ -191,8 +191,8 @@ Start ─ host welcome (DeepSeek, written during the 1.6 s start delay; fixed li
 - **a `none` option:** the slot belongs to the side; skipping it is the energy rule's job, not Jev's.
 
 *Built in M11 (D5–D9, D27): one `debate_plan` request at `turn.end` asks the phase's member question (two or more
-eligible) and `emotion_line` per candidate; `turn.next` is sent when Jev answers, by `turn.end` + 500 ms at the
-latest, with no turn gap; the faces are read when the turn starts. The stored plan carries M10 D15's fingerprint with
+eligible) and `emotion_line` per candidate; `turn.next` is sent when Jev answers, by `turn.end` + 651 ms (the measured
+p90, task 10.7) at the latest, with no turn gap; the faces are read when the turn starts. The stored plan carries M10 D15's fingerprint with
 V2's seq rule (only character and user messages move it) and its (phase, iteration) target; Pause marks it stale. A
 phase's first slot is planned at the boundary, its member fixed when the slot's turn starts. The measured timing (D9)
 and `floor.member` are in [m11.md](checks/m11.md).*

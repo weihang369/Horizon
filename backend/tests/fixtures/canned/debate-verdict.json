@@ -1,10 +1,13 @@
 {
- "source": "synthetic (debate task 9.10): a stand-in verdict prose until `latency --part debate` (task 10.7) records real ones",
+ "source": "recorded (debate task 10.7, run 20261014T112102-latency-176f0b): the agent arbiter's prose for d04 (the smoke debate's motion), DeepSeek, verdict-1",
  "recorded": "2026-10-14",
- "model": "none (synthetic)",
- "note": "The fake provider answers `verdict` chat calls with this JSON (doc 13 W14; C7's JSON mode): three points per side, which a Quick 2 v 2's validation accepts (at least 2 when a side made 2 arguments), and a rationale under 60 words.",
+ "model": "deepseek/deepseek-v4.1-flash",
+ "note": "The fake provider answers `verdict` chat calls with this JSON (doc 13 W14; C7's JSON mode): five points per side, the key disagreement in 24 words, the rationale in 59. Its rationale quotes d04's own scores, which a smoke run's fixture scores won't match; nothing in the smoke checks that.",
  "purpose": "verdict",
  "responses": [
-  {"item": "any", "content": "{\"summary\": {\"prop\": [\"The change would help those who need it most.\", \"The cost is small next to the harm it prevents.\", \"Other cities have tried it and kept it.\"], \"opp\": [\"The evidence for the benefit is thin.\", \"The cost falls on people who can least afford it.\", \"There are cheaper ways to reach the same goal.\"]}, \"keyDisagreement\": \"Whether the benefit is worth the cost.\", \"rationale\": \"Both sides argued clearly; the scores put them close, so neither case clearly outweighed the other.\"}"}
+  {
+   "item": "d04 (recorded)",
+   "content": "{\n  \"summary\": {\n    \"prop\": [\n      \"Sugary drinks are the top added-sugar source and liquid calories don't trigger fullness.\",\n      \"Taxes of 10-20% reduced purchases in Mexico, Berkeley, and Chile, especially among lower-income households.\",\n      \"The tax is regressive on paper but progressive in health incidence, since disease burden is regressive.\",\n      \"It's the only lever that reaches every shelf simultaneously; pair it with marketing limits and reformulation.\",\n      \"Consumption evidence is solid, but long-term disease evidence is thin; still, the direction justifies action.\"\n    ],\n    \"opp\": [\n      \"The motion hides behind an undefined 'sugary'; thresholds vary and must be specified.\",\n      \"The tax is regressive on paper, extracting money from the poorest households.\",\n      \"Taxation doesn't guarantee health outcomes; legislate health outcomes directly instead.\",\n      \"A levy hits the family budget, not the can; families buy cheaper or multipack drinks, not water.\",\n      \"The tax is a fig leaf that lets government avoid harder work on vending, marketing, and school health.\"\n    ]\n  },\n  \"keyDisagreement\": \"Whether a sugary-drink tax earns its place as a policy lever despite being regressive on paper and insufficient alone to change the food environment.\",\n  \"rationale\": \"The Proposition scored higher on Rebuttal (9.7 to 9.1) and Clarity (9.0 to 8.3), and they conceded weaknesses honestly while showing the tax reaches every shelf at once. The Opposition had a strong regressivity and fig-leaf case, but their lower Persuasion (6.1 to 7.4) and Evidence (7.6 to 8.2) left the Proposition's directional evidence and design pairing more compelling.\"\n}"
+  }
  ]
 }

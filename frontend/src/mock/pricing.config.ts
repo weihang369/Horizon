@@ -43,7 +43,7 @@ export const PRICING: PricingTable = {
       verdict: 30_000, // M11 (debate D13): the verdict's prose, one non-streamed JSON call, the whole call
       // Jev deadlines (docs/ai/13 W12, measured by group A A2 from Malaysia: Jev ≈ 420 ms p50 / 500 p99).
       decision: {
-        route: 400, turn_plan: 700, follow_plan: 483, debate_plan: 500, guardrail: 700, guardrail_prompt: 1_500,
+        route: 400, turn_plan: 700, follow_plan: 483, debate_plan: 651, guardrail: 700, guardrail_prompt: 1_500,
         reaction: 1_500, face_check: 1_500, default: 3_000,
         rubric: 10_000, // M11 (debate D12): a background purpose; a fallback costs the whole score
       },

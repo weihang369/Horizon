@@ -389,7 +389,7 @@
   Verify: m11.md has the dev grid, the test result, the paired test and the baseline.
 - [x] 10.6 `decisions --set emotion` for the debate slice (≈ $0.002), then write the debate faces' floors.
   Verify: m11.md has the slice's report.
-- [ ] 10.7 `latency --part debate` (≈ $0.015). Apply D9's rule and D29.3 if more than 10 % miss: set the
+- [x] 10.7 `latency --part debate` (≈ $0.015). Apply D9's rule and D29.3 if more than 10 % miss: set the
   `debate_plan` deadline from the measured p90 in `seed/pricing.json` and the mock, and record the NFR-02 exception.
   Record the canned `host` and `verdict` responses for the fake (W14).
   Verify: m11.md has `S`, `L`, the miss rate, the bridges on time and the verdict waits; `smoke` uses the recorded
