@@ -397,7 +397,7 @@
 - [x] 10.8 `debate` suite (≈ $0.025): margin tuned on dev, the test measures, the prose and host checks read in full.
   Write `verdict.margin` if it moved.
   Verify: m11.md has every measure, and each failure read.
-- [ ] 10.9 Debate-quality over the 13 histories (≈ $0.012).
+- [x] 10.9 Debate-quality over the 13 histories (≈ $0.012).
   Verify: m11.md has the `naive` column.
 - [ ] 10.10 Free runs from the smoke allowance (≈ $0.05): 2 `agent` debates and 3 `agent` watch runs of 30 turns.
   Verify: m11.md has the debate report (with the `agent` debate-quality column) and the steer report against M10's 0
