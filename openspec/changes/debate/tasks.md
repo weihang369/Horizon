@@ -440,5 +440,5 @@
   - `npm run e2e`;
   - `openspec validate debate --strict`.
   Verify: all green, recorded in m11.md's final gates table.
-- [ ] 12.2 Tell the user M11 is ready to archive and squash into dev. Push nothing unless asked.
+- [x] 12.2 Tell the user M11 is ready to archive and squash into dev. Push nothing unless asked.
   Verify: the user's answer is recorded.
