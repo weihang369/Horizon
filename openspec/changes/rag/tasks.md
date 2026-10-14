@@ -44,14 +44,14 @@
   change. Re-run the backend gate in the gate worktree and the frontend gates, and record them in a new
   `docs/ai/checks/m12.md` "Step 0" table.
   Verify: backend 1648, frontend 529 / http 62, e2e 66 + 2 skipped, or each difference explained there.
-- [ ] 0.2 Confirm the storm helper (`tests/helpers/storm.py`) and `park_decision` cover a held `deep_check` request
+- [x] 0.2 Confirm the storm helper (`tests/helpers/storm.py`) and `park_decision` cover a held `deep_check` request
   and a held chat response. Add a test for each holding shape the later phases need (several parked decisions at
   once, released in any order).
   Verify: the new helper tests pass on the virtual clock.
 
 ## 1. `pack@2` and its mock twin (design D3; K1, K12)
 
-- [ ] 1.1 Write the shared chunker fixtures `tests/fixtures/chunker/*.json`. Each holds input Markdown and the expected
+- [x] 1.1 Write the shared chunker fixtures `tests/fixtures/chunker/*.json`. Each holds input Markdown and the expected
   pieces (text, locator, heading). The cases:
   - heading carry, including a heading at a page foot and two headings in a row;
   - merging to 300;
@@ -65,7 +65,7 @@
   - the Soups case.
 
   Verify: the files load in both languages' test runners.
-- [ ] 1.2 Implement `pack@2` in `ai/chunker.py`, with the offsets invariant in its docstring, sections kept for
+- [x] 1.2 Implement `pack@2` in `ai/chunker.py`, with the offsets invariant in its docstring, sections kept for
   `naive`, and `CHUNKER_VERSION = "pack@2"` defined once and imported by `services/knowledge/sources.py`.
   Verify:
   - every fixture passes;
@@ -75,43 +75,43 @@
 - [ ] 1.3 Make the mock's `paragraphs()` (`mock/engines/knowledge.ts`) `pack@2`'s twin on Markdown and text, reading
   the same fixtures. Update `clientContract.portable.ts`'s chunking test (one Soups piece, `§ Soups`).
   Verify: `npm test` and `npm run test:http` pass with the same expectation on both clients.
-- [ ] 1.4 Reindex of a `para@1` source re-chunks from the `chunk` stage. Seed sources only re-embed, keeping their
+- [x] 1.4 Reindex of a `para@1` source re-chunks from the `chunk` stage. Seed sources only re-embed, keeping their
   piece IDs. Startup never re-chunks.
   Verify:
   - a test reindexes a stored `para@1` source and finds new piece IDs, with an old citation showing the viewer's
     "re-indexed" path;
   - a seed source keeps its IDs;
   - a restart changes no piece.
-- [ ] 1.5 Note `pack@2` in doc 10 K1/K12 ("built in M12") and in `docs/backend/05-ai-seams.md` §3.
+- [x] 1.5 Note `pack@2` in doc 10 K1/K12 ("built in M12") and in `docs/backend/05-ai-seams.md` §3.
   Verify: the docs link check passes.
 
 ## 2. The header space and `horizon space build` (design D4, D5; K3)
 
-- [ ] 2.1 Add `SpaceSpec.doc_template`, persisted in `embedding_spaces.doc_template` (read and written by
+- [x] 2.1 Add `SpaceSpec.doc_template`, persisted in `embedding_spaces.doc_template` (read and written by
   `ensure_active`, `create_building` and `spec_of`). Add the `knowledge` embedder kind and
   `request_text(text, kind, space, meta)`, where the header leaves the heading out when it equals the locator and
   strips the title's extension. Ingestion and `build_space` pass `(title, heading)` with each piece.
   Verify: unit tests for the four header cases (title + heading, seed row, no heading, memory plain).
-- [ ] 2.2 Key the LRU on the request text, and add in-flight de-duplication (a second miss for a key being embedded
+- [x] 2.2 Key the LRU on the request text, and add in-flight de-duplication (a second miss for a key being embedded
   awaits the first call).
   Verify:
   - two concurrent embeds of one message make one gateway call and one ledger row;
   - a changed instruction misses the cache.
-- [ ] 2.3 Make `qwen3-emb-8b@1024+h` the new `DEFAULT_SPACE`, with the template and the new instruction. An existing
+- [x] 2.3 Make `qwen3-emb-8b@1024+h` the new `DEFAULT_SPACE`, with the template and the new instruction. An existing
   install keeps its space.
   Verify:
   - a fresh data directory starts in the new space, with its vec tables;
   - a database whose active space is `qwen3-emb-8b@1024` keeps it after a restart;
   - seed indexing embeds with the header through the seed-only store view.
-- [ ] 2.4 `build_space` copies memory vectors when the model and dimensions match, and knowledge vectors only when the
+- [x] 2.4 `build_space` copies memory vectors when the model and dimensions match, and knowledge vectors only when the
   template also matches, inside the fill's write transaction with no ledger row. It takes the list of kinds to fill
   (the M13 seam, D27).
   Verify: a test builds the header space from the old one, copies 40 memory vectors (no ledger rows) and re-embeds
   the pieces (`embed_doc` rows).
-- [ ] 2.5 Add `horizon space build [--space ID] [--yes]`: it counts and estimates at today's price period, asks,
+- [x] 2.5 Add `horizon space build [--space ID] [--yes]`: it counts and estimates at today's price period, asks,
   refuses while the server holds the data directory, and with no confirmation spends nothing.
   Verify: CLI tests for declined, `--yes` on the fake provider, and server-running refusal.
-- [ ] 2.6 Note K3's built parts in doc 10 and the CLI in `docs/backend` (the local-backend command list).
+- [x] 2.6 Note K3's built parts in doc 10 and the CLI in `docs/backend` (the local-backend command list).
   Verify: the docs link check passes.
 
 ## 3. The bank, the purposes and the knobs (design D7, D21, D26)

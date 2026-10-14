@@ -1,0 +1,17 @@
+{
+  "what": "A paragraph that stops mid-sentence at a page marker runs on: one piece, pp. 3–4.",
+  "paged": true,
+  "markdown": "<!-- page 3 -->\n\n## Triage\n\nTriage starts at the door, and the nurse who meets the patient\n\n<!-- page 4 -->\n\nrecords the first vitals within ten minutes. Then the patient waits.\n\n<!-- page 5 -->\n\nA new page starts a new piece.",
+  "pieces": [
+    {
+      "text": "## Triage\n\nTriage starts at the door, and the nurse who meets the patient records the first vitals within ten minutes. Then the patient waits.",
+      "locator": "pp. 3–4",
+      "heading": "Triage"
+    },
+    {
+      "text": "A new page starts a new piece.",
+      "locator": "p. 5",
+      "heading": "Triage"
+    }
+  ]
+}

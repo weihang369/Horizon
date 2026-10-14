@@ -21,6 +21,10 @@ gateway code with no socket ever opened.
   `canned[purpose]` answers that purpose with recorded real responses, in turn (cycling), streamed or complete;
   `load_canned(set)` reads a committed set from `tests/fixtures/canned/`. `park_decision(n)` holds the n-th decisions
   request. Jev answers carry `type` and count tokens at UTF-8 bytes / 3, the shape group A recorded.
+- rag (M12 design D2): `park_questions(prefix, n)` holds the next n decisions requests asking a matching question
+  (a deep turn's 8 `passage:` checks), each released on its own event in any order; `answer_question(pattern, raw)`
+  answers a question key (or a `prefix*`) with a set raw answer; `refuse_question(prefix)` answers the next request
+  asking it with HTTP 429 (Jev's rate limit), once.
 
 The response shapes follow the recorded fixtures in `tests/fixtures/openrouter/` (unverified until the live run).
 """
@@ -146,6 +150,8 @@ class FakeOpenRouter:
         self.chat_parked = asyncio.Event()        # set once a parked chat request is being held
         self.canned: dict[str, list[Mapping[str, Any]]] = {}   # purpose -> recorded responses, answered in turn
         self._canned_i: Counter[str] = Counter()
+        self._set_answers: dict[str, dict[str, Any]] = {}  # question key, or "prefix*" -> raw answer (M12)
+        self._refusals: list[tuple[str, int]] = []           # question key prefix -> HTTP status, once each (M12)
 
     def park_image(self, n: int) -> asyncio.Event:
         """Hold the n-th images request (1-based, counted over this fake's life) until the returned event is set."""
@@ -172,6 +178,30 @@ class FakeOpenRouter:
         ev = asyncio.Event()
         self._question_parks.append((prefix, ev))
         return ev
+
+    def park_questions(self, prefix: str, n: int) -> list[asyncio.Event]:
+        """Hold the next `n` decisions requests asking a question whose key starts with `prefix`, each on its own event
+        (M12 D2: a deep turn's parallel `passage:` checks, released in any order)."""
+        return [self.park_question(prefix) for _ in range(n)]
+
+    def answer_question(self, pattern: str, raw: Mapping[str, Any] | None) -> None:
+        """Answer question key `pattern` (or every key starting with it, for `prefix*`) with `raw`, Jev's answer shape
+        (`{"type": "noul", "noul": 0.8}`); None removes it. Other keys keep the default answers."""
+        if raw is None:
+            self._set_answers.pop(pattern, None)
+        else:
+            self._set_answers[pattern] = dict(raw)
+
+    def refuse_question(self, prefix: str, status: int = 429) -> None:
+        """Answer the next decisions request asking a question whose key starts with `prefix` with `status` (Jev's
+        429 rate limit by default), once."""
+        self._refusals.append((prefix, status))
+
+    def _set_answer(self, key: str) -> dict[str, Any] | None:
+        if key in self._set_answers:
+            return self._set_answers[key]
+        hits = [p for p in self._set_answers if p.endswith("*") and key.startswith(p[:-1])]
+        return self._set_answers[max(hits, key=len)] if hits else None
 
     def park_chat(self, purpose: str) -> asyncio.Event:
         """Hold the next chat request labelled `purpose` (the test-mode purpose header) until the returned event is set
@@ -267,6 +297,12 @@ class FakeOpenRouter:
                 return self._canned(purpose, body)
             return self._chat(body)
         if route == ("POST", "/alpha/decisions"):
+            keys = list((body or {}).get("questions") or {})
+            hit = next((i for i, (pre, _) in enumerate(self._refusals) if any(k.startswith(pre) for k in keys)), None)
+            if hit is not None:
+                status = self._refusals.pop(hit)[1]
+                return httpx.Response(status, headers={"retry-after": "1"},
+                                      json={"error": {"code": status, "message": "Rate limit exceeded"}})
             return self._decide(body)
         if route == ("POST", "/v1/embeddings"):
             return self._embed(body)
@@ -357,6 +393,9 @@ class FakeOpenRouter:
                 answers[key] = {"type": "score", "score": mid, "confidence": 1.0,
                                 "probabilities": {str(i): (1.0 if i == round(mid) else 0.0) for i in range(len(levels))},
                                 "legend": levels}
+            set_raw = self._set_answer(key)
+            if set_raw is not None:
+                answers[key] = dict(set_raw)
         # Jev bills the state once plus each question (group A A1); counted at bytes / 3 like the gateway's estimate.
         tokens = _jev_tokens(body.get("state")) + sum(_jev_tokens(q) for q in (body.get("questions") or {}).values())
         cost = tokens * DECISION_COST_PER_M / 1e6

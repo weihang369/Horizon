@@ -217,6 +217,12 @@ The pipeline was built in M5; this task sets its AI policy.
   block, Jev state and costs below hold for every choice.
 - **D-65's 3,000-piece limit** holds about 900,000 tokens of text under `pack@2`, against about 240,000 today.
 
+*Built in M12 (OpenSpec `rag` D3): `pack@2` in `horizon/ai/chunker.py`, with the offsets invariant in its docstring and
+one `CHUNKER_VERSION`. Two things K1 left open are fixed there: a carried heading line is part of the next piece's text
+(as Markdown, joined by a blank line), and the 300 / 400 bounds count that whole text. Lists are cut between lines.
+The MockClient's twin is `mock/engines/chunker.ts`; both read the shared fixtures in
+`backend/tests/fixtures/chunker/`.*
+
 **Example** (an illustrative uploaded PDF; the seed's pieces are authored and never chunked):
 
 | `para@1` (today) | `pack@2` |
@@ -334,6 +340,14 @@ The pipeline was built in M5; this task sets its AI policy.
   - One search scans at most one character's 3,000 pieces.
   - IVF-flat pays off only past about 100,000 vectors in one partition, which D-65 rules out. It is the escape hatch
     if the limits are raised.
+
+*Built in M12 (OpenSpec `rag` D4, D5): `SpaceSpec.doc_template` (persisted), the `knowledge` embedder kind with
+`PieceMeta(title, heading, locator)`, the LRU keyed on the request text with in-flight de-duplication, the new
+`DEFAULT_SPACE` `qwen3-emb-8b@1024+h` (an existing install keeps its space), and `horizon space build [--space ID]
+[--yes]`. The build copies memory vectors when the model and dimensions match, and knowledge vectors only when the
+template matches too, in the fill's write transaction with no ledger row; it takes the kinds to fill, so M13 adds
+message vectors to the list. Building a retired space again restores it. The command refuses while a backend holds
+the data directory (`data/server.lock`). The comparison test and `dupCosine` are measured in phase 11 and M13.*
 
 **Prices on OpenRouter** (2026-10-10, per million input tokens):
 
@@ -667,6 +681,9 @@ the conversation's language.
 - **So there is no `knowledge_chunk_redirects` table** ([05-ai-seams](../backend/05-ai-seams.md) §6). Resolving
   old ids would need a contract change or rewritten events.
 - **Ingestion** costs about **$0.002** per 300 pages. Docling runs on the CPU (D-62).
+
+*Built in M12 (`rag` D3): Reindex sees a stale `chunker_version` and re-chunks from the `chunk` stage; seed sources
+only re-embed, keeping their IDs; startup never re-chunks (`tests/knowledge/test_rechunk_m12.py`).*
 
 ### K13. Profiles
 

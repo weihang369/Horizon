@@ -28,7 +28,7 @@ from sqlalchemy.ext.asyncio import AsyncConnection
 
 from horizon.ai.chunker import CHUNKER_VERSION, TOKENIZER, Chunked, chunk
 from horizon.ai.converter import ConversionError, ConvertedDoc, read_plain
-from horizon.ai.embedder import Batch, BatchHooks
+from horizon.ai.embedder import Batch, BatchHooks, PieceMeta
 from horizon.db import spaces
 from horizon.db import tables as t
 from horizon.domain.ids import new_id
@@ -234,7 +234,8 @@ class Pipeline:
             _, kno = spaces.vec_tables(space.id)
             async with rt.db.read() as conn:
                 todo = (await conn.execute(text(
-                    f"SELECT rid, text FROM knowledge_chunks WHERE source_id = :s AND rid NOT IN (SELECT rid FROM {kno}) "
+                    f"SELECT rid, text, heading, locator FROM knowledge_chunks WHERE source_id = :s "
+                    f"AND rid NOT IN (SELECT rid FROM {kno}) "
                     "ORDER BY idx"), {"s": self.sid})).all()
             if not todo:
                 continue
@@ -260,7 +261,9 @@ class Pipeline:
                 # D31: a shipped seed source's text may be served from (and kept in) the seed store; user text never
                 return BatchHooks(before_send=before, commit_with=commit, store_ok=bool(row["is_seed"]))
 
-            out = await embedder.embed([str(r[1]) for r in todo], kind="document", space=space, ctx=ctx, hooks=hooks)
+            meta = [PieceMeta(title=str(row["title"]), heading=r[2], locator=r[3]) for r in todo]   # rag D4
+            out = await embedder.embed([str(r[1]) for r in todo], kind="knowledge", space=space, ctx=ctx, hooks=hooks,
+                                       meta=meta)
             if out.cached:
                 async with rt.db.write() as tx:
                     await _write_vectors(tx.conn, kno, row["character_id"], [rids[i] for i in out.cached],

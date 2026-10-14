@@ -1,0 +1,17 @@
+{
+  "what": "Two headings in a row are both carried into the next piece; a heading is never a piece.",
+  "paged": false,
+  "markdown": "# Night cover\n\n## Long shift blocks\n\nBreak review cover pager overtime staff shift night triage patient audit room policy fatigue. Handover break leave rota ward break review cover pager overtime staff shift night triage.\n\n## Breaks\n\n### On nights\n\nCover pager overtime staff shift night triage patient audit room policy fatigue nurse rest. Leave rota ward break review cover pager overtime staff shift night triage patient audit.",
+  "pieces": [
+    {
+      "text": "# Night cover\n\n## Long shift blocks\n\nBreak review cover pager overtime staff shift night triage patient audit room policy fatigue. Handover break leave rota ward break review cover pager overtime staff shift night triage.",
+      "locator": "§ Long shift blocks",
+      "heading": "Night cover › Long shift blocks"
+    },
+    {
+      "text": "## Breaks\n\n### On nights\n\nCover pager overtime staff shift night triage patient audit room policy fatigue nurse rest. Leave rota ward break review cover pager overtime staff shift night triage patient audit.",
+      "locator": "§ On nights",
+      "heading": "Night cover › Breaks › On nights"
+    }
+  ]
+}

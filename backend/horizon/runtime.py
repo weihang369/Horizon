@@ -71,6 +71,7 @@ from horizon.services.purge import PurgeWorker
 from horizon.services.runtime.reducer import apply_event, initial_runtime, ordered_messages
 from horizon.services.settings import deep_merge, local_day, read_local_settings, read_seed_settings
 from horizon.sessions.system1 import fixture_row
+from horizon.storage.datalock import DataLock
 from horizon.tracing import TRACER
 from horizon.tracing import configure as configure_tracing
 
@@ -125,6 +126,7 @@ class Runtime:
         self.bus = EventBus()
         self.gate = Gate()
         self._db: Database | None = None
+        self._data_lock: DataLock | None = None
         self.space_id: str | None = None
         self.fts_secure_delete = True   # migration 0002 on SQLite >= 3.44; else Forget optimizes (design D16)
         self.seed_settings: dict[str, Any] = {}
@@ -426,6 +428,9 @@ class Runtime:
         self.loop = asyncio.get_running_loop()
         cfg.data_dir.mkdir(parents=True, exist_ok=True)
         logs.setup_logging(cfg.logs_dir, cfg.log_level)
+        self._data_lock = DataLock(cfg.data_dir)
+        if not self._data_lock.acquire():   # rag D5: advisory, so `horizon space build` can tell a backend is running
+            log.warning("another backend holds %s; offline commands can't tell this one is running", cfg.data_dir)
         self.seed_settings = read_seed_settings(cfg.seed_dir)
         await asyncio.to_thread(upgrade_head, cfg.db_path)
         self._db = Database(cfg.db_path, publish=self.publish)
@@ -480,6 +485,9 @@ class Runtime:
         if self._db is not None:
             await self._db.dispose()
             self._db = None
+        if self._data_lock is not None:
+            self._data_lock.release()
+            self._data_lock = None
         self.started = False
 
     # ── seed ──

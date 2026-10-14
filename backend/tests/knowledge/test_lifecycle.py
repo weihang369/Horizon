@@ -28,8 +28,13 @@ def write_key(data_dir: Path) -> None:
     (data_dir / "secrets.local.json").write_text(json.dumps({"openRouterKey": "sk-or-test-0001"}), encoding="utf-8")
 
 
+def seventy_parts() -> str:
+    """70 passages under `pack@2`: a heading change closes a piece, so each short part is its own passage."""
+    return "\n\n".join(f"# Part {i}\n\nParagraph number {i} about rice." for i in range(70))
+
+
 async def seventy(api: Api) -> str:
-    src = await add_text(api, "Long", "\n\n".join(f"Paragraph number {i} about rice." for i in range(70)))
+    src = await add_text(api, "Long", seventy_parts())
     await settle(api)
     assert (await source(api, src["id"]))["source"]["status"] == "keyword_only"
     return str(src["id"])
@@ -85,7 +90,7 @@ async def test_crash_during_a_batch_waits_for_a_user_retry(make_api: Any, tmp_pa
 async def test_restart_while_chunking_resumes(make_api: Any, tmp_path: Path) -> None:
     data = tmp_path / "chunking"
     first: Api = await make_api(data_dir=data)
-    src = await add_text(first, "Tea", "Steep.\n\nServe.")
+    src = await add_text(first, "Tea", "# Steep\n\nSteep.\n\n# Serve\n\nServe.")
     await settle(first)
     async with first.rt.db.write() as tx:
         await tx.conn.execute(text("UPDATE knowledge_sources SET status = 'chunking' WHERE id = :s"), {"s": src["id"]})
@@ -93,7 +98,7 @@ async def test_restart_while_chunking_resumes(make_api: Any, tmp_path: Path) -> 
     second: Api = await make_api(data_dir=data)
     await settle(second)
     got = await source(second, src["id"])
-    assert got["source"]["status"] == "keyword_only" and [c["text"] for c in got["chunks"]] == ["Steep.", "Serve."]
+    assert got["source"]["status"] == "keyword_only" and [c["text"] for c in got["chunks"]] == ["# Steep\n\nSteep.", "# Serve\n\nServe."]
 
 
 async def test_key_added_after_uploads_reembeds_user_sources_only(api: Api) -> None:

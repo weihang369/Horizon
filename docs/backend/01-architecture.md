@@ -145,7 +145,7 @@ Doc [04](04-gateway-budget-energy.md). Every paid call does preflight (caps, **r
 backend/
   pyproject.toml  uv.lock  alembic.ini  .env.example
   horizon/
-    main.py  config.py  cli.py            `horizon serve | migrate | seed | reset | models fetch | export-schema`
+    main.py  config.py  cli.py            `horizon serve | migrate | seed | reset | models fetch | export-schema | space build`
     api/        settings worlds characters jobs sessions commands usage knowledge memory events admin assets errors _test
     contract/   models.py  schema.json  validate.py
     domain/     energy.py budget.py pricing.py clock.py ids.py text.py
@@ -164,6 +164,10 @@ package.json (root)   "setup" | "dev" | "demo"  (concurrently, kill-on-exit)
 - **`npm run setup`:**
   1. `uv sync` (core) and `npm ci` (frontend). **Demo mode works after this step** (NFR-10, ≤ 5 min).
   2. `npm run setup:docling` (`uv sync --group docling`: CPU torch + Docling), then `uv run --project backend horizon models fetch` (the Docling models into `data/models/`, then `HF_HUB_OFFLINE=1`; the fetch writes `data/models/.horizon-models.json` last, and `/health` reports `ready` only once it exists). This step can be skipped: Markdown, text and pasted text never need it, and a PDF or DOCX added before it ends `failed` with these steps; Retry converts the kept original afterwards (D-96).
+- **`horizon space build [--space ID] [--yes]`** (M12, [docs/ai/10](../ai/10-rag.md) K3) switches an install to a new
+  embedding space: it prints what it would embed and copy and the estimated cost, asks, and builds. It refuses
+  while a backend holds the data directory (`data/server.lock`, held by the running backend), and spends nothing
+  without a yes.
 - **`npm run dev`:**
   - `concurrently --kill-others` runs `uv run horizon serve --reload --reload-dir backend/horizon` (port 8000) and Vite (port 5173).
   - Vite proxies `/api` and `/assets/gen` to port 8000, without buffering. It still serves `/assets/placeholder/**` from `seed/assets`.

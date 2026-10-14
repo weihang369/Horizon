@@ -28,12 +28,21 @@ class SpaceSpec:
     dims: int
     query_instruction: str | None = None
     normalized: bool = True
+    doc_template: str | None = None    # knowledge pieces only (rag D4): `{title}`, `{heading}`, `{text}`
 
 
-# Design D4 / OQ-12: the final model and dims are chosen at the AI stage; changing them is a space switch.
-DEFAULT_SPACE = SpaceSpec(
+HEADER_TEMPLATE = "{title}\n{heading}\n\n{text}"
+
+# The space before M12 (knowledge-memory-storage D4): plain pieces, the first query instruction. Existing installs keep
+# it until `horizon space build` switches them.
+PLAIN_SPACE = SpaceSpec(
     id="qwen3-emb-8b@1024", model="qwen/qwen3-embedding-8b", provider="Nebius", dims=1024,
     query_instruction="Given a question, retrieve passages that answer it",
+)
+# rag D4 (doc 10 K3): fresh installs start here: each knowledge piece embedded under its title and heading path.
+DEFAULT_SPACE = SpaceSpec(
+    id="qwen3-emb-8b@1024+h", model="qwen/qwen3-embedding-8b", provider="Nebius", dims=1024,
+    query_instruction="Given a chat message, retrieve passages that help answer it", doc_template=HEADER_TEMPLATE,
 )
 
 
@@ -68,8 +77,8 @@ async def ensure_active(conn: AsyncConnection, now_iso: str, default: SpaceSpec 
     if row is None:
         await conn.execute(embedding_spaces.insert().values(
             id=default.id, model=default.model, provider=default.provider, dims=default.dims, dtype="float32",
-            normalized=default.normalized, query_instruction=default.query_instruction, doc_template=None,
-            status="active", created_at=now_iso,
+            normalized=default.normalized, query_instruction=default.query_instruction,
+            doc_template=default.doc_template, status="active", created_at=now_iso,
         ))
         space_id, dims = default.id, default.dims
     else:
@@ -83,16 +92,21 @@ async def drop_retired(conn: AsyncConnection) -> None:
     """Startup step: retired spaces' tables are dropped on the next start (doc 02 §3.9)."""
     rows = (await conn.execute(select(embedding_spaces.c.id).where(embedding_spaces.c.status == "retired"))).scalars().all()
     for space_id in rows:
-        s = table_suffix(space_id)
-        mem, kno = vec_tables(space_id)
-        for stmt in (f"DROP TRIGGER IF EXISTS memory_items_vec_ad__{s}", f"DROP TRIGGER IF EXISTS knowledge_chunks_vec_ad__{s}",
-                     f"DROP TABLE IF EXISTS {mem}", f"DROP TABLE IF EXISTS {kno}"):
-            await conn.execute(text(stmt))
+        await _drop(conn, space_id)
+
+
+async def _drop(conn: AsyncConnection, space_id: str) -> None:
+    s = table_suffix(space_id)
+    mem, kno = vec_tables(space_id)
+    for stmt in (f"DROP TRIGGER IF EXISTS memory_items_vec_ad__{s}", f"DROP TRIGGER IF EXISTS knowledge_chunks_vec_ad__{s}",
+                 f"DROP TABLE IF EXISTS {mem}", f"DROP TABLE IF EXISTS {kno}"):
+        await conn.execute(text(stmt))
 
 
 def spec_of(row: Any) -> SpaceSpec:
     return SpaceSpec(id=str(row["id"]), model=str(row["model"]), provider=str(row["provider"]), dims=int(row["dims"]),
-                     query_instruction=row["query_instruction"], normalized=bool(row["normalized"]))
+                     query_instruction=row["query_instruction"], normalized=bool(row["normalized"]),
+                     doc_template=row["doc_template"])
 
 
 async def active(conn: AsyncConnection) -> SpaceSpec:
@@ -118,9 +132,16 @@ async def create_building(conn: AsyncConnection, spec: SpaceSpec, now_iso: str) 
     """Start a switch: register `spec` as `building` with its vec tables and delete triggers. One build at a time."""
     if await building(conn) is not None:
         raise RuntimeError("an embedding space is already building")
+    old = (await conn.execute(select(embedding_spaces.c.status).where(embedding_spaces.c.id == spec.id))).scalar()
+    if old == "active":
+        raise RuntimeError(f"{spec.id} is already the active space")
+    if old is not None:
+        # Building a retired space again (rag D5's rollback): its tables, if not dropped yet, hold stale vectors.
+        await _drop(conn, spec.id)
+        await conn.execute(embedding_spaces.delete().where(embedding_spaces.c.id == spec.id))
     await conn.execute(embedding_spaces.insert().values(
         id=spec.id, model=spec.model, provider=spec.provider, dims=spec.dims, dtype="float32",
-        normalized=spec.normalized, query_instruction=spec.query_instruction, doc_template=None,
+        normalized=spec.normalized, query_instruction=spec.query_instruction, doc_template=spec.doc_template,
         status="building", created_at=now_iso))
     for stmt in _ddl(spec.id, spec.dims):
         await conn.execute(text(stmt))

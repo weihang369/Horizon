@@ -9,6 +9,7 @@ import type { PricingTable } from "../../domain/cost";
 import { embeddingCostUsd, estimateTokens } from "../../domain/cost";
 import type { Dataset } from "../db/dataset";
 import type { Scheduler } from "../time/Scheduler";
+import { pack } from "./chunker";
 
 export const KNOWLEDGE_LIMITS = { maxBytes: 10 * 1024 * 1024, maxTextBytes: 204_800, maxSourcesPerCharacter: 20, maxPages: 300 } as const;
 
@@ -57,22 +58,10 @@ export function contentHash(bytes: Uint8Array): string {
   return `${h.toString(16).padStart(8, "0")}:${bytes.length}`;
 }
 
-function paragraphs(text: string): string[] {
-  const out: string[] = [];
-  for (const para of text.replace(/\r\n/g, "\n").split(/\n\s*\n/)) {
-    const p = para.replace(/\s+/g, " ").trim();
-    if (!p) continue;
-    // Keep passages readable in the viewer: split long paragraphs on sentence ends near 900 chars.
-    let rest = p;
-    while (rest.length > 1200) {
-      const cut = rest.lastIndexOf(". ", 900);
-      const at = cut > 300 ? cut + 1 : 900;
-      out.push(rest.slice(0, at).trim());
-      rest = rest.slice(at).trim();
-    }
-    out.push(rest);
-  }
-  return out;
+/** `pack@2`'s twin (chunker.ts): the pieces of Markdown or text, with their locators. */
+export function paragraphs(text: string): Prepared {
+  const pieces = pack(text);
+  return { chunks: pieces.map((p) => p.text), locators: pieces.map((p) => p.locator), locator: "¶" };
 }
 
 function syntheticPassages(title: string, kind: "pdf" | "docx", bytes: number): Prepared {
@@ -110,8 +99,8 @@ export async function acceptInput(h: KnowledgeHost, characterId: string, input: 
     let prepared: Prepared;
     if (ext === "pdf" || ext === "docx") prepared = syntheticPassages(f.name, ext, f.size);
     else {
-      const chunks = paragraphs(new TextDecoder().decode(bytes));
-      prepared = chunks.length ? { chunks, locator: "¶" } : { chunks: [], locator: "¶", error: "This file has no readable text." };
+      const read = paragraphs(new TextDecoder().decode(bytes));
+      prepared = read.chunks.length ? read : { chunks: [], locator: "¶", error: "This file has no readable text." };
     }
     accepted = { title: f.name, type: "file", bytes: f.size, hash: contentHash(bytes), prepared };
   } else {
@@ -121,7 +110,7 @@ export async function acceptInput(h: KnowledgeHost, characterId: string, input: 
     if (!input.text.trim()) throw invalid("Paste some text first.", { field: "text" });
     // D-65: pasted text is capped at 200 KB (the backend's limit; files stay at 10 MB).
     if (bytes.length > KNOWLEDGE_LIMITS.maxTextBytes) throw invalid("Pasted text can be at most 200 KB.", { field: "text", limit: KNOWLEDGE_LIMITS.maxTextBytes, bytes: bytes.length });
-    accepted = { title: title.slice(0, 200), type: "text", bytes: bytes.length, hash: contentHash(bytes), prepared: { chunks: paragraphs(input.text), locator: "¶" } };
+    accepted = { title: title.slice(0, 200), type: "text", bytes: bytes.length, hash: contentHash(bytes), prepared: paragraphs(input.text) };
   }
   const hashes = h.db.knowledgeHashes ?? {};
   const dup = existing.find((k) => hashes[k.id] === accepted.hash);

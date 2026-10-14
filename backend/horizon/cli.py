@@ -1,4 +1,5 @@
-"""`horizon` CLI (doc 01 §7): serve | migrate | seed | reset [--factory --yes] | export-schema --check | models fetch.
+"""`horizon` CLI (doc 01 §7): serve | migrate | seed | reset [--factory --yes] | export-schema --check | models fetch |
+space build [--space ID] [--yes] (rag D5).
 
 `serve` binds to loopback only (NFR-13); any other host is refused.
 """
@@ -125,6 +126,12 @@ def _models_fetch(_args: argparse.Namespace) -> int:
     return 0
 
 
+def _space_build(args: argparse.Namespace) -> int:
+    from horizon.services.knowledge.space_cli import run
+
+    return run(load_config(), args.space, args.yes)
+
+
 def main(argv: list[str] | None = None) -> int:
     from horizon.tracing import guard_env
 
@@ -150,6 +157,12 @@ def main(argv: list[str] | None = None) -> int:
     msub = m.add_subparsers(dest="models_cmd", required=True)
     fetch = msub.add_parser("fetch", help="download the Docling models into data/models/ (once; after npm run setup:docling)")
     fetch.set_defaults(fn=_models_fetch)
+    sp = sub.add_parser("space", help="manage embedding spaces")
+    spsub = sp.add_subparsers(dest="space_cmd", required=True)
+    build = spsub.add_parser("build", help="build an embedding space and switch to it (estimates and asks first)")
+    build.add_argument("--space", default=None, help="the space to build (default: the current default space)")
+    build.add_argument("--yes", action="store_true", help="build without asking")
+    build.set_defaults(fn=_space_build)
     from horizon.evals.cli import register as register_eval
 
     register_eval(sub)
