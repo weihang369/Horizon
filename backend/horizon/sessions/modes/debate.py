@@ -14,8 +14,7 @@ from typing import TYPE_CHECKING, Any
 
 from horizon.ai.contexts import DebateMeta, HostKey, LineHint
 from horizon.domain import vclock
-from horizon.gateway.errors import ProviderError
-from horizon.sessions import debate_host, debate_plan
+from horizon.sessions import debate_host, debate_plan, debate_verdict
 from horizon.sessions.context import session_context
 from horizon.sessions.debate_slots import SIDE_NAME, Fill, cursor, fill, is_argument, members, phase_slots, two_sided
 from horizon.sessions.modes.common import (
@@ -399,6 +398,7 @@ async def after_argument(actor: SessionActor, out: Any) -> None:
         target = next_target(actor, phase, iteration)
         if target is None:
             debate_host.request(actor, HostKey(kind="lead_in", phase="verdict"))
+            debate_verdict.start(actor)   # D14: in parallel with the gap, the pause, the banner and the delay
         elif not m.extend and not m.skip_to_closing:   # Extend's and Skip's lines are asked when their phase begins
             debate_host.request(actor, HostKey(kind="bridge", phase=target[0]))
         if target is not None and target[0] != "opening":
@@ -510,18 +510,16 @@ async def go_verdict(actor: SessionActor) -> None:
     if cfg.get("verdictBy") == "user":
         if debate_host.auto_host(actor):
             actor.enqueue(lead_in)
+        debate_verdict.start(actor)   # D14: ready before the click, usually
         return  # waits for debate.pick
 
     async def job() -> None:
         await lead_in()
         spent = (actor.rt.clock.now() - banner_at).total_seconds()
         await actor.rt.clock.sleep(max(0.0, VERDICT_DELAY_MS / 1000 - spent))
-        sctx = await session_context(actor.rt, actor, recent=1000)
-        try:
-            verdict = await _host(actor).verdict(sctx, str(cfg.get("verdictBy", "arbiter")), None)
-        except ProviderError:
-            return  # a cap refusal pauses the session; resume or end later
-        await finish(actor, verdict)
+        # D14: the work started at the last closing's turn.end (or now); a cap refusal delivers nothing: the session
+        # paused, and resume runs the work again
+        await debate_verdict.deliver(actor)
 
     actor.enqueue(job)
 
@@ -559,10 +557,12 @@ async def interject(actor: SessionActor, text: str) -> None:
 
 def extend_round(actor: SessionActor) -> None:
     actor.mode.extend = True
+    debate_verdict.discard(actor)   # D14: the verdict work made for this transcript is dropped
 
 
 def skip_to_closing(actor: SessionActor) -> None:
     actor.mode.skip_to_closing = True
+    debate_verdict.discard(actor)
 
 
 async def pause(actor: SessionActor) -> None:
@@ -574,22 +574,29 @@ async def pause(actor: SessionActor) -> None:
 async def resume(actor: SessionActor) -> None:
     actor.held = False
     await actor.emit({"type": "session.resumed", "payload": {"reason": "user"}})
-    if not actor.busy and len(actor.turns) == 0:
+    if debate_verdict.needs_rerun(actor):   # D14's resume rule: the cap-refusal hang is gone
+        debate_verdict.resume(actor)
+    elif not actor.busy and len(actor.turns) == 0:
         step(actor)
 
 
 async def end_debate(actor: SessionActor, with_verdict: bool) -> None:
+    """D14: "Go to verdict now" takes the stored verdict work out before the clear and puts it back, so work made for
+    this transcript is reused (End right after the last closing never pays twice); a streaming argument finishes first
+    (the verdict job runs after its turn job)."""
+    work = debate_verdict.take(actor) if with_verdict else None
     await actor.clear(keep_current=True)
     actor.held = False
     if with_verdict:
+        debate_verdict.put_back(actor, work)
         await go_verdict(actor)
     else:
         await finish(actor)
 
 
 async def pick(actor: SessionActor, side: str) -> None:
-    sctx = await session_context(actor.rt, actor, recent=1000)
-    await finish(actor, await _host(actor).verdict(sctx, "user", side))
+    """D14: the click only records the side; the verdict is delivered by a job when the work is done."""
+    debate_verdict.pick(actor, side)
 
 
 async def set_auto_advance(actor: SessionActor, on: bool) -> None:

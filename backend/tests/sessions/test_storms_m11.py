@@ -171,3 +171,60 @@ async def test_storms_on_a_host_line(api: Api) -> None:
         await api.drive(100)
     debate_host.drop(actor)
     await api.drive(100)
+
+
+async def test_storms_on_the_verdict_work(api: Api) -> None:
+    """Task 7.12 (D2, D14): the verdict work cut while its rubric answer is parked, by Extend, Skip and End without
+    verdict; End with verdict landing in a turn's writes; a resume landing in the re-run's writes. The writer stays
+    free each time."""
+    from horizon.sessions import debate_verdict
+    from horizon.sessions.modes import debate as mode
+    from tests.helpers.storm import after_storm
+    from tests.sessions.test_debate_verdict import can, debate, jev_scores, prose
+
+    for cut in ("debate/extend-round", "debate/skip-to-closing", "end"):
+        sid = await debate(api, phases=["opening", "rebuttal"] if cut != "debate/skip-to-closing" else ["opening",
+                                                                                                        "closing"])
+        jev_scores(api)
+        can(api, prose())
+        assert api.rt.fake is not None
+        release = api.rt.fake.park_question("rubric_")
+        api.rt.fake.decision_parked.clear()
+        while not api.rt.fake.decision_parked.is_set():
+            await api.drive(20)
+        actor: SessionActor = await api.rt.sessions.get(sid)
+        work = actor.mode.verdict_work
+        assert work is not None and not work.task.done()
+        if cut == "end":
+            await command(api, sid, "debate/end", {"withVerdict": False})
+        else:
+            await command(api, sid, cut)
+        await api.drive(100)
+        assert work.task.cancelled()
+        await after_storm(api, sid)
+        release.set()
+        await api.drive(2000)
+        if cut == "end":
+            continue
+        await command(api, sid, "debate/end", {"withVerdict": False})
+        await api.drive(1000)
+
+    sid = await debate(api, phases=["opening", "closing"])
+    jev_scores(api)
+    can(api, prose())
+    await api.drive(3000)
+    actor = await api.rt.sessions.get(sid)
+
+    async def end_now() -> None:
+        await mode.end_debate(actor, True)
+
+    cut_n = await storm_during_write(api, sid, end_now, storms=1, window_s=0.02)
+    await api.drive(60000)
+    await after_storm(api, sid)
+    print(f"\nstorms on End with verdict: {cut_n} of 1 cut")
+
+    async def rerun() -> None:
+        debate_verdict.resume(actor)
+        await actor.rt.clock.sleep(0)
+
+    await storm_during_write(api, sid, rerun, storms=5, window_s=0.02)

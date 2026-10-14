@@ -2,6 +2,11 @@
 // "End without verdict". Destructive-ish but recoverable, so the safe default focus is Cancel.
 import { useState } from "react";
 import { client } from "../../client";
+import { useRushHour } from "../../client/hooks";
+import { chatCostUsd, decisionCostUsd } from "../../domain/cost";
+import { PRICING } from "../../mock/pricing.config";
+import type { PricingTable } from "../../domain/cost";
+import type { PricePeriod } from "../../domain/rushHour";
 import type { DebateConfig } from "../../contract/types";
 import type { OverlayComponentProps } from "../../app/overlayTypes";
 import { reportError } from "../../app/errors";
@@ -11,8 +16,15 @@ import { Button, Modal, formatUsd } from "../../ui";
 import { useSlot } from "./shared";
 import s from "./Overlays.module.css";
 
-/** Arbiter verdict call: ~6.2k in (2.4k cached) + 420 out on the decision model (mock pricing). */
-const VERDICT_ESTIMATE_USD = 0.0012;
+/** M11 (debate D16): one estimate for the dearer of the real verdicts, `agent`'s: Jev's rubric scores (≈ 6,000 tokens on
+ *  the decision price, no peak multiplier) plus DeepSeek's prose (≈ 6,000 in and 300 out on the chat price, which the
+ *  peak multiplier raises). `naive`'s single call is about $0.0011, so "≈" holds for both. */
+export const VERDICT_JEV_TOKENS = 6000;
+export const VERDICT_PROSE = { tokensIn: 6000, tokensOut: 300 };
+
+export function verdictEstimateUsd(period: PricePeriod, pricing: PricingTable = PRICING): number {
+  return decisionCostUsd(VERDICT_JEV_TOKENS, pricing.decision) + chatCostUsd(VERDICT_PROSE, pricing.chat, period);
+}
 
 export function EndDebate({ sessionId, close }: OverlayComponentProps<"O26">) {
   const slot = useSlot(sessionId);
@@ -21,6 +33,7 @@ export function EndDebate({ sessionId, close }: OverlayComponentProps<"O26">) {
   const phase = slot?.runtime?.phase?.phase;
   const [busy, setBusy] = useState<"verdict" | "end" | null>(null);
   const verdictOff = cfg?.verdictBy === "none";
+  const estimate = verdictEstimateUsd(useRushHour().period);
 
   const go = async (withVerdict: boolean) => {
     setBusy(withVerdict ? "verdict" : "end");
@@ -49,7 +62,7 @@ export function EndDebate({ sessionId, close }: OverlayComponentProps<"O26">) {
           </Button>
           {!verdictOff && (
             <Button disabled={!!busy} onClick={() => void go(true)}>
-              {busy === "verdict" ? "Calling the arbiter…" : `Go to verdict now (≈ ${formatUsd(VERDICT_ESTIMATE_USD)})`}
+              {busy === "verdict" ? "Calling the arbiter…" : `Go to verdict now (≈ ${formatUsd(estimate)})`}
             </Button>
           )}
         </>

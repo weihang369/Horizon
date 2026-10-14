@@ -358,7 +358,7 @@ export class MockClient implements HorizonClient {
     this.changed("usage");
   }
 
-  private chargeSession(sid: string, category: "decision" | "summary", costUsd: number, purpose?: string): void {
+  private chargeSession(sid: string, category: "decision" | "summary" | "chat", costUsd: number, purpose?: string): void {
     const model = category === "decision" ? this.db.pricing.decision : this.db.pricing.chat;
     this.ledger({ category, model: model.model, provider: model.provider, pricePeriod: this.period(), sessionId: sid, costUsd: round6(costUsd) });
     if (purpose) this.chargedPurposes.push({ sessionId: sid, category, purpose });

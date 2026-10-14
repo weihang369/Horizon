@@ -129,6 +129,7 @@ async def test_user_decides(api: Api) -> None:
     snap = await snapshot(api, sid)
     assert snap["session"]["state"]["phase"] == "verdict" and snap["session"]["status"] == "active"
     await command(api, sid, "debate/pick", {"side": "prop"})
+    await api.drive(100)   # M11 (debate D14): the pick is recorded at once; a job delivers the verdict
     snap = await snapshot(api, sid)
     v = snap["session"]["state"]["verdict"]
     assert v["decidedBy"] == "user" and v["strongerCase"] == "prop" and snap["session"]["status"] == "ended"

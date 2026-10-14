@@ -227,7 +227,8 @@ class Decisions:
             q = item_question(item)   # M9 D26: the live seeded order, when stored
             row: dict[str, Any] = {"id": item["id"], "question_id": qid, "version": version, "label": item["label"],
                                    "smoke_only": bool(item.get("smoke_only")), "planted": bool(item.get("planted")),
-                                   "split": item["split"], "lang": item.get("lang", "en")}
+                                   "split": item["split"], "lang": item.get("lang", "en"),
+                                   **({"fresh": True} if item.get("fresh") else {})}   # M11: scored apart (D17)
             if isinstance(q, Noul):   # D27: asked once; "yes" when p reaches the entry's threshold
                 r = await env.rt.gateway.decide(item["item"]["state"], {qid: wire_question(q)}, call_ctx("eval_judge"))
                 ans = validate(q, r.answers.get(qid))

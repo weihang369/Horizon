@@ -17,7 +17,7 @@ import re
 from collections.abc import Callable
 from typing import Any
 
-from horizon.ai.contexts import HostKey, SessionContext
+from horizon.ai.contexts import Assessment, HostKey, SessionContext, VerdictRequest
 from horizon.ai.language import detect_language
 from horizon.ai.llm import llm_request
 from horizon.ai.scripted.ports import AiDeps, ScriptedDebateHost
@@ -113,10 +113,15 @@ def request_messages(ctx: SessionContext, key: HostKey, by: str) -> list[dict[st
 
 
 class NaiveDebateHost(ScriptedDebateHost):
-    """`naive`'s and `agent`'s host lines (V6). Its verdict half is still the scripted one until phase 7 (D14, D15)."""
+    """`naive`'s host: DeepSeek's lines (V6) and the single-call verdict (D15, the yardstick)."""
 
     def __init__(self, deps: AiDeps) -> None:
         super().__init__(deps)
+
+    async def assess(self, req: VerdictRequest) -> Assessment:
+        from horizon.ai.naive.verdict import naive_assess
+
+        return await naive_assess(self.deps, req)
 
     async def narration(self, ctx: SessionContext, key: HostKey, *,
                         finish: Callable[[], str | None] | None = None) -> str | None:
@@ -131,3 +136,13 @@ class NaiveDebateHost(ScriptedDebateHost):
             log.info("the host line failed (%s); the fixed line shows", e.code)
             return None
         return clean(str(out.content or ""))
+
+
+class AgentDebateHost(NaiveDebateHost):
+    """`agent`'s host: the same lines; the verdict is Jev's rubric scores, the winner in code, then the prose told the
+    result (D12, D13)."""
+
+    async def assess(self, req: VerdictRequest) -> Assessment:
+        from horizon.ai.naive.verdict import agent_assess
+
+        return await agent_assess(self.deps, req)

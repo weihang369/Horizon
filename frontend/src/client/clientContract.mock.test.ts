@@ -198,5 +198,16 @@ describe("MockClient only", () => {
       .toEqual([{ sessionId: s.session.id, category: "summary", purpose: "episode_summary" }]);
     expect((await h.mock.sessions.messages(s.session.id)).filter((m) => m.kind === "summary")).toHaveLength(1);
   });
+  it("Mock verdict: the Arbiter verdict's charge has purpose verdict in category chat (debate D15, demo-data)", async () => {
+    const h = await mockHarness();
+    await h.setKey();
+    const s = await h.mock.sessions.create({ worldId: "wld_seedMeridian", mode: "debate", characterIds: ["chr_seedAmara", "chr_seedVictor"],
+      config: { motion: "This house would ban homework", format: "two_sided", sides: { prop: ["chr_seedAmara"], opp: ["chr_seedVictor"] },
+        roundsPreset: "quick", phases: ["opening", "closing"], turnLength: "short", moderator: "user", verdictBy: "arbiter", rubric: [],
+        autoAdvance: true, pauseMs: 1500 } });
+    await h.advance(120000);
+    const got = h.mock.chargedPurposes.filter((x) => x.sessionId === s.session.id && x.purpose === "verdict");
+    expect(got).toEqual([{ sessionId: s.session.id, category: "chat", purpose: "verdict" }]);
+  });
 });
 

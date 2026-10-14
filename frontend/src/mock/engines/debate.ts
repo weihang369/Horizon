@@ -290,7 +290,8 @@ export function goVerdict(h: DebateHost, sid: string): void {
   }
   if (cfg.verdictBy === "user") return; // waits for pickStrongerCase
   enqueue(live, (done) => h.after(sid, 1800, () => {
-    h.charge(sid, "decision", chatCostUsd({ tokensIn: 6200, tokensCached: 2400, tokensOut: 420 }, h.pricing.decision, h.period()));
+    // M11 (debate D15, a parity fix): the scripted verdict is a chat call, purpose `verdict`, as the backend records it
+    h.charge(sid, "chat", chatCostUsd({ tokensIn: 6200, tokensCached: 2400, tokensOut: 420 }, h.pricing.chat, h.period()), "verdict");
     finish(h, sid, makeVerdict(h, live, cfg.verdictBy));
     done();
   }));

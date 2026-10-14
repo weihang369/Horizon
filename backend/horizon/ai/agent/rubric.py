@@ -4,7 +4,7 @@ criterion, and code decides the winner.
 - **One Jev request** (purpose `rubric`, deadline `rubric` = 10 s): one 5-level `score` question per side per criterion,
   keyed `rubric_evidence:prop`, …, or `rubric_generic:prop:{n}` for a criterion the config names without a known id
   (its label goes in `quoted_criteria`, never in the instructions: S6). A 429 is retried once after 1 s, inside the
-  deadline (W11's background rule).
+  deadline: the Decider's rule for background purposes (W11; ai-foundation D8).
 - **The state:** the motion, the criteria labels (only with a generic question), the sides as an ORDERED LIST of blocks
   (each side's members, its arguments in speaking order with phase and speaker, Ask answers inside their speaker's block,
   and its missed turns), and the moderator's notes and questions apart. A list, because the store key sorts dict keys
@@ -40,7 +40,6 @@ DEFAULT_RUBRIC = [{"id": "evidence", "label": "Evidence"}, {"id": "rebuttal", "l
 STATE_MAX = 24000
 SIDES = ("prop", "opp")
 SIDE_NAME = {"prop": "Proposition", "opp": "Opposition"}
-RETRY_AFTER_S = 1.0
 
 
 @dataclass(frozen=True)
@@ -203,29 +202,18 @@ async def score(deps: Any, req: VerdictRequest) -> Scores:
     state, cut = fitted
     qs = questions(req, crit)
     decider = deps.decider()
-    clock = deps.clock()
-    deadline = clock.now() + timedelta(seconds=decider.timeout_for("rubric"))
+    deadline = deps.clock().now() + timedelta(seconds=decider.timeout_for("rubric"))
 
-    async def fallback() -> Answers:
-        return {}
-
-    res: DecisionResult | None = None
-    for attempt in (0, 1):
-        call = decider.start(state, qs, req.session.call_ctx(PURPOSE), purpose=PURPOSE, fallback=None)
-        try:
-            res = await call.by(deadline)
-        except DecisionCancelled:
-            raise asyncio.CancelledError() from None
-        except asyncio.CancelledError:
-            call.cancel()
-            raise
-        except Exception as e:   # no fallback: a failure arrives as DecisionUnavailable
-            res = DecisionResult(answers={}, failure=str(e).split(";")[0] or "failed")
-        if res.failure == "rate_limited" and attempt == 0 and clock.now() + timedelta(seconds=RETRY_AFTER_S) < deadline:
-            await clock.sleep(RETRY_AFTER_S)
-            continue
-        break
-    assert res is not None
+    call = decider.start(state, qs, req.session.call_ctx(PURPOSE), purpose=PURPOSE, fallback=None)
+    try:
+        res = await call.by(deadline)   # a 429 is retried once after 1 s inside the deadline (the Decider's D8 rule)
+    except DecisionCancelled:
+        raise asyncio.CancelledError() from None
+    except asyncio.CancelledError:
+        call.cancel()
+        raise
+    except Exception as e:   # no fallback: a failure arrives as DecisionUnavailable
+        res = DecisionResult(answers={}, failure=str(e).split(";")[0] or "failed")
     tok = tokens(state)
     if res.failure is not None:
         return Scores(failure=res.failure, state_tokens=tok, cut=cut)

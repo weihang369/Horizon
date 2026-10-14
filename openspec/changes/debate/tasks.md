@@ -251,10 +251,10 @@
 
 ## 7. The verdict (design D12–D16, D25)
 
-- [ ] 7.1 `seed/pricing.json` and `pricing.config.ts` gain `timeoutsMs.verdict` 30,000 and
+- [x] 7.1 `seed/pricing.json` and `pricing.config.ts` gain `timeoutsMs.verdict` 30,000 and
   `timeoutsMs.decision.rubric` 10,000. A rubric 429 is retried once after 1 s inside the deadline.
   Verify: the provider-gateway scenarios "A rubric 429" and "Seed check".
-- [ ] 7.2 `ai/agent/rubric.py`:
+- [x] 7.2 `ai/agent/rubric.py`:
   - the state per D12 (`quoted_sides` as an ordered list, missed turns, moderator notes apart);
   - the 24,000-token budget with its cut order;
   - one score question per side per criterion, generic by position;
@@ -264,21 +264,21 @@
   - the debate-verdict scenarios "The default rubric", "An unknown criterion" and "A near tie";
   - the worst-case size test;
   - "A swapped order is a different request" (the store keys differ).
-- [ ] 7.3 The prose (`ai/naive/verdict.py`, prompt `verdict-1`):
+- [x] 7.3 The prose (`ai/naive/verdict.py`, prompt `verdict-1`):
   - V8's instruction, the S6 sentence, the single-quotes line, one example output, the subject mapping, the result,
     and the language last line;
   - `runtime.llm.calls.verdict`, `timeoutsMs.verdict`;
   - validation, local repair, one retry.
   Verify: request-shape and validation tests with canned JSON, and the scenarios "You decide" and "Too many points".
-- [ ] 7.4 The failure table (D13): prose only, scores under Arbiter, scores under You decide, both, and a cap refusal,
+- [x] 7.4 The failure table (D13): prose only, scores under Arbiter, scores under You decide, both, and a cap refusal,
   each with its note.
   Verify: one test per row, including "Scores fail under Arbiter".
-- [ ] 7.5 The agent host's `assess`: the Jev scores then the prose told the result. `deliver` applies a pick.
+- [x] 7.5 The agent host's `assess`: the Jev scores then the prose told the result. `deliver` applies a pick.
   Verify: a test of a whole `agent` Arbiter verdict from fixture answers and canned prose.
-- [ ] 7.6 `naive`'s single-call verdict (D15): its schema, its validation (every criterion for both sides in 0–10),
+- [x] 7.6 `naive`'s single-call verdict (D15): its schema, its validation (every criterion for both sides in 0–10),
   its stronger case used as written, and panel names mapped to IDs.
   Verify: the scenario "The yardstick's verdict", and a panel test.
-- [ ] 7.7 When the work runs (D14):
+- [x] 7.7 When the work runs (D14):
   - `actor.background("verdict")` from the last closing's `turn.end` unless Extend is set, stored with the transcript
     fingerprint;
   - Extend and Skip discard it;
@@ -286,20 +286,20 @@
   - End without verdict cancels it.
   Verify: the scenario "End right after the last closing" (one `rubric` and one `verdict` request), and discard
   tests.
-- [ ] 7.8 The non-blocking pick: `debate.pick` records `ModeState.picked` and returns. Delivery runs as an actor job
+- [x] 7.8 The non-blocking pick: `debate.pick` records `ModeState.picked` and returns. Delivery runs as an actor job
   when the work finishes, at once if it's done, or by starting the work if there is none.
   Verify: the scenario "A click before the work is done", with the HTTP route answering 202 before the parked rubric
   is released, and Pause handled meanwhile.
-- [ ] 7.9 The resume rule: a debate in the verdict phase with no verdict runs the work again on `debate.resume`, on
+- [x] 7.9 The resume rule: a debate in the verdict phase with no verdict runs the work again on `debate.resume`, on
   the cap-resume path, and on the actor's first command after a load.
   Verify: the scenario "The cap-refusal hang is gone", end to end on the fake with a cap set and raised.
-- [ ] 7.10 `scripted`: `assess` / `deliver` wrap `make_verdict` and its simulated call (none for a pick). The mock's
+- [x] 7.10 `scripted`: `assess` / `deliver` wrap `make_verdict` and its simulated call (none for a pick). The mock's
   verdict charge moves to category `chat`, purpose `verdict`.
   Verify: the debate-verdict scenario "Same cost category in both clients", and the demo-data scenario "Mock verdict".
-- [ ] 7.11 `EndDebate.tsx`'s estimate from `PRICING` and `status.pricing.period` (D16): Jev's ≈ 6,000 tokens plus the
+- [x] 7.11 `EndDebate.tsx`'s estimate from `PRICING` and `status.pricing.period` (D16): Jev's ≈ 6,000 tokens plus the
   prose's ≈ 6,000 in and 300 out, the peak multiplier on the DeepSeek part only.
   Verify: the scenario "Peak prices the prose higher", as a frontend unit test.
-- [ ] 7.12 Storms (D2): the assess work cut by Extend, Skip and End without verdict during a parked rubric call; End
+- [x] 7.12 Storms (D2): the assess work cut by Extend, Skip and End without verdict during a parked rubric call; End
   with verdict during the current argument's `turn.end` write; a resume during the re-run's first write.
   Verify: the D2 checks pass.
 

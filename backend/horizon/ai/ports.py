@@ -17,6 +17,7 @@ from typing import Any, Protocol
 from sqlalchemy.ext.asyncio import AsyncConnection
 
 from horizon.ai.contexts import (
+    Assessment,
     CastPlan,
     CastRequest,
     DebatePlan,
@@ -30,6 +31,7 @@ from horizon.ai.contexts import (
     SessionContext,
     TurnContext,
     TurnPlan,
+    VerdictRequest,
 )
 from horizon.gateway.context import CallContext
 
@@ -157,7 +159,9 @@ class DebateHost(Protocol):
     def fixed_line(self, key: HostKey, by: str, motion: str = "") -> str: ...
     async def narration(self, ctx: SessionContext, key: HostKey, *,
                         finish: Callable[[], str | None] | None = None) -> str | None: ...
-    async def verdict(self, ctx: SessionContext, by: str, picked: str | None) -> dict[str, Any]: ...
+    # M11 (doc 08 V9; debate D14): the verdict splits into the work, started early and cancellable, and the delivery
+    async def assess(self, req: VerdictRequest) -> Assessment: ...
+    def deliver(self, a: Assessment, picked: str | None) -> dict[str, Any]: ...
 
 
 class WatchDirector(Protocol):

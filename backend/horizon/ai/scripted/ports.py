@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Any
 
 from horizon.ai.contexts import (
+    Assessment,
     CastPlan,
     CastRequest,
     DebateRequest,
@@ -28,6 +29,7 @@ from horizon.ai.contexts import (
     SessionContext,
     TurnContext,
     TurnPlan,
+    VerdictRequest,
 )
 from horizon.ai.ports import (
     CitationMap,
@@ -393,15 +395,23 @@ class ScriptedDebateHost:
         cfg = ctx.config or {}
         return self.fixed_line(key, str(cfg.get("verdictBy") or "arbiter"), str(cfg.get("motion", "")))
 
-    async def verdict(self, ctx: SessionContext, by: str, picked: str | None) -> dict[str, Any]:
-        """The mock's `makeVerdict`; a verdict the user doesn't pick is a paid call first (as the mock charges it)."""
+    async def assess(self, req: VerdictRequest) -> Assessment:
+        """The mock's `makeVerdict` (M11, debate D15: the work); a verdict the user doesn't pick is a paid call first
+        (as the mock charges it), none for a pick."""
+        ctx, by = req.session, req.by
         if by != "user":
             prices = self.deps.prices
             await self.deps.gateway().simulated_call(
                 ctx.call_ctx("verdict"), model=prices.chat.model, tokens_in=6200, tokens_cached=2400, tokens_out=420,
                 cost_usd=chat_cost(prices.chat, tokens_in=6200, tokens_cached=2400, tokens_out=420,
                                    mult=multiplier(prices, ctx.period)), latency_ms=1800)
-        return make_verdict(ctx, by, picked)
+        return Assessment(by=by, two_sided=(ctx.config or {}).get("format") == "two_sided",
+                          simulated=make_verdict(ctx, by, None))
+
+    def deliver(self, a: Assessment, picked: str | None) -> dict[str, Any]:
+        from horizon.ai.naive.verdict import deliver
+
+        return deliver(a, picked)
 
 
 def make_verdict(ctx: SessionContext, by: str, picked: str | None) -> dict[str, Any]:

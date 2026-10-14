@@ -35,7 +35,7 @@ T_END_GRID = tuple(round(0.5 + 0.05 * i, 2) for i in range(10))     # 0.5 … 0.
 NEEDLESS_MAX = 0.15     # G2: needless second replies on at most 15 % of the `none` items
 MARGIN = 0.15           # G11: at least 15 points above the baseline
 ALPHA = 0.05
-PARTS = ("who_first", "who_second", "who_scene")
+PARTS = ("who_first", "who_second", "who_scene", "who_next")   # M11 (debate D17): who_next v3
 Row = tuple[ChoiceAnswer | None, Mapping[str, Any]]
 
 
@@ -174,9 +174,11 @@ def _english(rows: Sequence[Mapping[str, Any]]) -> list[Mapping[str, Any]]:
 
 def who_report(rows: Sequence[Mapping[str, Any]], part: str) -> list[str]:
     title = {"who_first": "Who answers first", "who_second": "Who speaks up second",
-             "who_scene": "Who speaks next in a watch"}[part]
-    dev = [(_answer(r), r["label"]) for r in rows if r.get("split") == "dev"]
-    test = [r for r in rows if r.get("split") == "test"]
+             "who_scene": "Who speaks next in a watch", "who_next": "Who speaks next in a group"}[part]
+    # M11 (debate D17): "fresh cuts" (`fresh: true`, all test) are scored once, apart, and never choose the floor
+    dev = [(_answer(r), r["label"]) for r in rows if r.get("split") == "dev" and not r.get("fresh")]
+    fresh = [r for r in rows if r.get("fresh")]
+    test = [r for r in rows if r.get("split") == "test" and not r.get("fresh")]
     if not dev or not test:
         return [f"## {title}: needs dev and test items (dev {len(dev)}, test {len(test)})"]
     sel = choose_who_floor(part, dev)
@@ -214,6 +216,11 @@ def who_report(rows: Sequence[Mapping[str, Any]], part: str) -> list[str]:
                 f"- baseline ({name}) {kb}/{n} = {kb / n:.2f}; difference {(k - kb) / n:+.2f}; exact one-sided McNemar "
                 f"p {p:.4f} ({only_p} only the policy right, {only_b} only the baseline) → margin "
                 f"{'PASS' if margin_passes((k - kb) / n, p) else 'FAIL'}"]
+    if fresh:
+        fe = _english(fresh)
+        fk = sum(who_correct(part, who_answer(part, _answer(r), r["label"], floor), r["label"]) for r in fe)
+        out.append(f"- fresh cuts (all test, scored once at the floor above): {fk}/{len(fe)} = "
+                   f"{fk / len(fe) if fe else 0.0:.2f}")
     others = [r for r in test if str(r.get("lang") or "en") != "en"]
     if others:
         ran = sum(1 for r in others if _answer(r) is not None)

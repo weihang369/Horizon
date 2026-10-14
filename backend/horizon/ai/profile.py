@@ -145,8 +145,8 @@ class AiPorts:
                 from horizon.ai.agent.face_check import JevFaceCheck
                 return JevFaceCheck(d)
             if port == "host":
-                from horizon.ai.naive.host import NaiveDebateHost
-                return NaiveDebateHost(d)
+                from horizon.ai.naive.host import AgentDebateHost
+                return AgentDebateHost(d)
             raise KeyError(f"no agent implementation for port {port!r}")
         if impl == "naive":
             if port == "turn":

@@ -84,6 +84,9 @@ class ModeState:
     debate_announced: tuple[int, str] | None = None
     debate_plan: Any = None                       # M11 (debate D8): the stored plan for the next slot (sessions/debate_plan)
     host_line: Any = None                         # M11 (debate D11): the host line requested ahead (sessions/debate_host)
+    verdict_work: Any = None                      # M11 (debate D14): the verdict work and its fingerprint
+    picked: str | None = None                     # M11 (debate D14): You decide's click, delivered when the work is done
+    verdict_checked: bool = False                 # M11 (debate D14): the resume rule ran on this actor's first command
     plan_ahead: tuple[Any, Any] | None = None     # M10 watch (D15): (fingerprint, task) of the next turn's plan
 
 
@@ -302,10 +305,12 @@ class SessionActor:
         checks are dropped (M9 D20; E5, W2), and so is a watch's plan made ahead (M10 D15); the rolling summary and the
         memory writer keep running."""
         self.turns.clear()
-        self.cancel_background("reactions", "face_check", "plan_ahead", "debate_plan", "debate_plan_late", "host_line")
+        self.cancel_background("reactions", "face_check", "plan_ahead", "debate_plan", "debate_plan_late", "host_line",
+                               "verdict")
         self.mode.plan_ahead = None
         self.mode.debate_plan = None   # M11 (debate D8): its call is cancelled with its holding task
         self.mode.host_line = None     # M11 (debate D11): its call is recorded `cancelled`
+        self.mode.verdict_work = None  # M11 (debate D14): End with verdict takes it out first, to reuse it
         for x in list(self._timers):
             x.cancel()
         self._timers.clear()
