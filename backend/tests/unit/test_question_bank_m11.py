@@ -82,12 +82,14 @@ def test_a_drifted_shared_knob_fails_to_load(tmp_path: Path, entries: list[dict]
 def test_equal_shared_knobs_load(tmp_path: Path) -> None:
     root = copy_bank(tmp_path)
     floor = bank().get("member_rebuttal").floor   # the shipped entries hold the same knobs
+    margin = bank().get("rubric_evidence").thresholds["margin"]
     assert floor is not None
-    for e in (_member("member_a", floor), _member("member_b", floor), _rubric("rubric_a", 0.5), _rubric("rubric_b", 0.5)):
+    for e in (_member("member_a", floor), _member("member_b", floor), _rubric("rubric_a", margin),
+              _rubric("rubric_b", margin)):
         write(root, e["id"], e)
     b = load_bank(root)
     assert {b.get("member_a").floor, b.get("member_b").floor} == {floor}
-    assert json.loads(json.dumps(b.get("rubric_b").thresholds)) == {"margin": 0.5}
+    assert json.loads(json.dumps(b.get("rubric_b").thresholds)) == {"margin": margin}
 
 
 # ── tasks 1.3–1.5, 1.8: the debate entries and the judges, as D7, D12, D18, D19 and D21 word them ──
@@ -137,7 +139,7 @@ def test_the_rubric_scores_have_five_ordered_levels(qid: str) -> None:
     e = b.get(qid)
     q = b.question(qid, side="Opposition")
     assert e.type == "score" and len(q.levels) == 5 and not e.shuffle   # type: ignore[attr-defined]
-    assert "the Opposition" in q.instructions and e.thresholds == {"margin": 0.5}
+    assert "the Opposition" in q.instructions and e.thresholds == {"margin": 0.25}   # task 10.8
 
 
 def test_the_generic_criterion_names_a_position_never_a_label() -> None:

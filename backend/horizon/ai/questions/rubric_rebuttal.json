@@ -1,6 +1,6 @@
 {
   "id": "rubric_rebuttal",
-  "version": 1,
+  "version": 2,
   "purpose": "rubric",
   "type": "score",
   "label": "rebuttal score",
@@ -23,7 +23,7 @@
   "deadline": "rubric",
   "floor": null,
   "thresholds": {
-    "margin": 0.5
+    "margin": 0.25
   },
   "fallback": "summary_only"
 }

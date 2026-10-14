@@ -136,24 +136,24 @@
     "version": 3
   },
   "rubric_clarity": {
-    "sha256": "fca8d7c6667c7ef67dd8ab9db4ce93a3f5999f25d1b956ef06f35841c1700e81",
-    "version": 1
+    "sha256": "39b5cb87cb60ee21979568e1387193e0ceca0d99cc1e56d0079ce9304b5f3175",
+    "version": 2
   },
   "rubric_evidence": {
-    "sha256": "7500a7e4c91a7d73ca4573a3ba33799f20a76fc952b7ba8f8effaa0d566b23a4",
-    "version": 1
+    "sha256": "00ce985a61981dfcfb41d6b0d8e5767559efb63bd7929a50a9cf8484858c7d41",
+    "version": 2
   },
   "rubric_generic": {
-    "sha256": "15abdd84dd810bf1e884c74c4c67153e06e67dc1f1f4e195ba8a6362f13dec90",
-    "version": 1
+    "sha256": "1eb7080b1b1655381fd8513a8e7f31f9116dd800cc508f139c7ba0a4bb8a8ce4",
+    "version": 2
   },
   "rubric_persuasion": {
-    "sha256": "3213a32e4e5ec757d9a71509fd98b7bb3c05cf0e1d1c6ba037271e959aae1b7d",
-    "version": 1
+    "sha256": "e756818702da778ccfc46a03a26a04c6b094d216b9bd1d700ed94fd360f6b2b5",
+    "version": 2
   },
   "rubric_rebuttal": {
-    "sha256": "d9550c12fa4056140b7a15135b1bee2c1aff73f58f9e829a8c645f8ad429047e",
-    "version": 1
+    "sha256": "9ef696b34b98e14c547b34c9981a6a73aa0f6d6aabb36b3e6c4d5f2bfcf9117e",
+    "version": 2
   },
   "talk_finished": {
     "sha256": "915d45afb5fadde6baf2c2d569507a4a203d2b89458f27130f509ec52643a749",

@@ -68,7 +68,7 @@ def test_bars_are_unit_times_ten_and_a_near_tie_is_too_close() -> None:
     means, stronger = rubric.decide([{"subjectId": "prop", "value": 6.4}, {"subjectId": "opp", "value": 6.1}], 0.5)
     assert stronger is None and means == {"prop": 6.4, "opp": 6.1}
     assert rubric.decide([{"subjectId": "prop", "value": 6.0}, {"subjectId": "opp", "value": 6.6}], 0.5)[1] == "opp"
-    assert rubric.margin() == 0.5
+    assert rubric.margin() == 0.25   # verdict.margin, chosen on the debate suite's dev split (task 10.8)
     fb = {**answers, crit[0].key("prop"): ScoreAnswer(score=2, source="fallback")}
     assert rubric.bars(fb, crit) is None
 
