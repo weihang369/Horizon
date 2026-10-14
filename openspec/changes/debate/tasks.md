@@ -373,12 +373,12 @@
 
 ## 10. The paid runs (design D23; each asked for with its estimate, off-peak, through the store)
 
-- [ ] 10.1 `debate-history` (13 debates, ≈ $0.10). Read and review every history, then commit them (`.keep` on the
+- [x] 10.1 `debate-history` (13 debates, ≈ $0.10). Read and review every history, then commit them (`.keep` on the
   run folder).
   Verify: 13 files in `evals/debates/`, the review recorded in `evals/reviews/m11-histories.md`.
-- [ ] 10.2 `debate-plant` (≈ $0.03). Review and commit.
+- [x] 10.2 `debate-plant` (≈ $0.03). Review and commit.
   Verify: 12 planted files; each rewritten argument read; the review recorded.
-- [ ] 10.3 Build the member slice, the debate emotion slice and the debate-quality real items from the committed
+- [x] 10.3 Build the member slice, the debate emotion slice and the debate-quality real items from the committed
   histories. Do the delegated B2 review (D29.2) as a recorded pass in `evals/reviews/m11-review.md`.
   Verify: `corpus-check`, `overlap`, and the builders' tests pass on the real files.
 - [ ] 10.4 Judge validations: `judge_keeps_side`, `judge_engages`, `judge_starts_new` and

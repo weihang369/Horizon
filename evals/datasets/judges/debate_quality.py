@@ -30,9 +30,42 @@ from horizon.evals.datachecks import split_for  # noqa: E402
 N = 30
 OTHER = {"prop": "opp", "opp": "prop"}
 
-# (debate, argument seq, label): task 10.3, from the committed histories
-REAL_KEEPS: list[tuple[str, int, str]] = []
-REAL_ENGAGES: list[tuple[str, int, str]] = []
+# (debate, argument seq, label): task 10.3, blind, from the argument and its context alone
+REAL_KEEPS: list[tuple[str, int, str]] = [
+    # "does the argument break its side?" (yes = failure). A small concession the speaker says doesn't change the
+    # answer is not a break (P5); arguing against the motion's own instrument from its side is.
+    ("d01", 3, "no"), ("d01", 7, "no"), ("d01", 10, "no"), ("d01", 15, "no"),
+    ("d02", 2, "no"), ("d02", 13, "no"), ("d02", 14, "no"),
+    ("d03", 7, "no"), ("d03", 12, "no"), ("d03", 13, "no"),
+    ("d04", 5, "no"), ("d04", 14, "no"),
+    ("d05", 9, "no"), ("d05", 14, "no"),
+    ("d06", 13, "no"), ("d06", 15, "no"),
+    ("d07", 9, "no"), ("d07", 13, "no"),
+    ("d08", 7, "no"), ("d08", 15, "no"),
+    ("d09", 8, "no"), ("d09", 10, "no"), ("d09", 16, "no"),
+    ("d10", 6, "yes"),    # Bram (Proposition): "the wrong tool aimed at the wrong ditch"; asks why a ban at all
+    ("d10", 12, "no"),
+    ("d10", 18, "yes"),   # Bram (Proposition) closes "Against the motion."
+    ("d11", 7, "no"), ("d11", 9, "no"),
+    ("d12", 8, "no"), ("d12", 9, "no"),
+]
+REAL_ENGAGES: list[tuple[str, int, str]] = [
+    # "does it answer nothing that was said?" (yes = failure): every real rebuttal and closing here answers the other
+    # side's latest point, even when briefly; the planted items carry the yes labels
+    ("d01", 8, "no"), ("d01", 13, "no"), ("d02", 9, "no"), ("d02", 15, "no"), ("d03", 9, "no"), ("d03", 14, "no"),
+    ("d04", 9, "no"), ("d04", 15, "no"), ("d05", 10, "no"), ("d05", 13, "no"), ("d06", 9, "no"), ("d06", 12, "no"),
+    ("d06", 14, "no"), ("d07", 10, "no"), ("d07", 14, "no"), ("d08", 10, "no"), ("d08", 13, "no"), ("d09", 11, "no"),
+    ("d09", 18, "no"), ("d10", 11, "no"), ("d10", 15, "no"), ("d10", 17, "no"), ("d11", 7, "no"), ("d11", 10, "no"),
+    ("d12", 8, "no"), ("d12", 10, "no"), ("d13", 8, "no"), ("d13", 10, "no"), ("d13", 13, "no"), ("d13", 15, "no"),
+]
+
+# Planted candidates read in task 10.3 that don't plainly fail, dropped before the next in turn is taken (m11-labels.md)
+DROP_KEEPS: set[tuple[str, int]] = set()
+DROP_ENGAGES: set[tuple[str, int]] = {   # the speaker's opening already answers the other side's opening
+    ("d01", 10), ("d02", 8), ("d02", 10), ("d03", 10), ("d04", 10), ("d05", 9), ("d06", 8), ("d06", 10),
+    ("d07", 7), ("d08", 8), ("d10", 9), ("d11", 8), ("d11", 9), ("d02", 13), ("d06", 13), ("d06", 15), ("d07", 12),
+    ("d08", 9), ("d10", 10), ("d02", 14), ("d08", 14), ("d08", 15),
+}
 
 
 def row(qid: str, item_id: str, it: dict[str, Any], label: str, planted: bool, source: str) -> dict[str, Any]:
@@ -85,8 +118,8 @@ def build(hs: list[dict[str, Any]], real_keeps: list[tuple[str, int, str]] | Non
                  f"debate:{d}#{s}") for d, s, lab in real_keeps]
     engages = [row(ds.ENGAGES, f"{ds.ENGAGES}-real-{d}-{s:03d}", ds.engages_item(by_id[d], arg_at(by_id[d], s)), lab,
                    False, f"debate:{d}#{s}") for d, s, lab in real_engages]
-    keeps += planted_keeps(hs, {(d, s) for d, s, _ in real_keeps}, n)
-    engages += planted_engages(hs, {(d, s) for d, s, _ in real_engages}, n)
+    keeps += planted_keeps(hs, {(d, s) for d, s, _ in real_keeps} | DROP_KEEPS, n)
+    engages += planted_engages(hs, {(d, s) for d, s, _ in real_engages} | DROP_ENGAGES, n)
     return {ds.KEEPS: keeps, ds.ENGAGES: engages}
 
 
