@@ -128,3 +128,44 @@ def test_the_reports_render() -> None:
     talk = [{"split": "dev" if i % 2 else "test", "lang": "en", "p": 0.95 if i % 3 else 0.2,
              "label": "yes" if i % 3 else "no"} for i in range(20)]
     assert wp.talk_report(talk)[0].startswith("## Is the talk finished?")
+
+
+# ── M11 (debate D17): who_next v3, and the fresh cuts held out ──
+def test_the_floor_is_chosen_on_the_existing_items_and_the_fresh_cuts_are_scored_once(monkeypatch: Any) -> None:
+    """Debate task 8.2: the 100 existing `who_scene` items choose the floor (dev) and are measured (test); the 40 fresh
+    cuts (`fresh: true`, all test) never reach the floor choice and appear once, on their own line."""
+    seen: list[list[Any]] = []
+    real = wp.choose_who_floor
+
+    def spy(part: str, rows: Any) -> dict[str, Any]:
+        seen.append(list(rows))
+        return real(part, rows)
+
+    monkeypatch.setattr(wp, "choose_who_floor", spy)
+    existing = [{"id": f"e{i}", "split": "dev" if i % 3 else "test", "lang": "en", "answer": B, "confidence": 0.8,
+                 "probabilities": {B: 0.8}, "label": {**label([B], cands=[A, B]), "round_robin_next": A}}
+                for i in range(100)]
+    fresh = [{"id": f"f{i}", "split": "test", "fresh": True, "lang": "en", "answer": A, "confidence": 0.8,
+              "probabilities": {A: 0.8}, "label": {**label([A] if i < 30 else [B], cands=[A, B]),
+                                                   "round_robin_next": B}} for i in range(40)]
+    lines = wp.who_report(existing + fresh, "who_scene")
+    (dev_rows,) = seen
+    assert len(dev_rows) == sum(r["split"] == "dev" for r in existing)          # the fresh cuts never choose it
+    assert any("English test accuracy 34/34" in x for x in lines)              # the existing test items alone
+    assert [x for x in lines if "fresh cuts" in x] == [
+        "- fresh cuts (all test, scored once at the floor above): 30/40 = 0.75"]
+
+
+def test_who_next_uses_the_least_recently_spoken_baseline_without_a_round_robin() -> None:
+    lab = label([C], cands=[B, C], last={B: 2, C: 0})
+    assert wp.who_baseline("who_next", lab) == B
+    assert "who_next" in wp.PARTS
+
+
+def test_fresh_cuts_are_test_by_rule() -> None:
+    from horizon.evals.datachecks import split_for, split_problems
+
+    dev_id = next(f"x{i}" for i in range(50) if split_for(f"x{i}") == "dev")
+    assert split_problems([{"id": dev_id, "split": "test", "fresh": True}]) == []
+    assert split_problems([{"id": dev_id, "split": "dev", "fresh": True}]) != []
+    assert split_problems([{"id": dev_id, "split": "test"}]) != []

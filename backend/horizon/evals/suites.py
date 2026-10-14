@@ -107,7 +107,7 @@ def item_question(item: dict[str, Any], seed: str | None = None) -> Question:
     """A dataset line's question, compiled exactly as the live code asks it."""
     it = item["item"]
     return compile_entry(item["question_id"], it.get("values"), seed=seed or str(it.get("seed") or item["id"]),
-                         name=it.get("name"), none=bool(it.get("none", True)))
+                         name=it.get("name"), none=bool(it.get("none", True)), side=it.get("side"), n=it.get("n"))
 
 
 def reordered(q: Question) -> Question:
@@ -228,6 +228,7 @@ class Decisions:
             row: dict[str, Any] = {"id": item["id"], "question_id": qid, "version": version, "label": item["label"],
                                    "smoke_only": bool(item.get("smoke_only")), "planted": bool(item.get("planted")),
                                    "split": item["split"], "lang": item.get("lang", "en"),
+                                   **({"kind": item["kind"]} if item.get("kind") else {}),
                                    **({"fresh": True} if item.get("fresh") else {})}   # M11: scored apart (D17)
             if isinstance(q, Noul):   # D27: asked once; "yes" when p reaches the entry's threshold
                 r = await env.rt.gateway.decide(item["item"]["state"], {qid: wire_question(q)}, call_ctx("eval_judge"))
@@ -292,13 +293,26 @@ class Decisions:
         fade = env.rt.runtime_cfg.runtime.emotion_fade
         for kind in ("emotion", "reaction"):   # M9 D26: the code rule's policies, floors from dev
             mine = [r for r in res.rows if isinstance(r["label"], dict) and policies.kind_of(r["question_id"]) == kind]
+            # M11 (debate D29.1): the debate slice chooses its own floors and is reported apart
+            debate = [r for r in mine if r.get("kind") == "debate"]
+            mine = [r for r in mine if r.get("kind") != "debate"]
             if mine and not self.smoke:
                 res.summary += policies.report(mine, kind, fade)
+            if debate and not self.smoke:
+                res.summary += policies.report(debate, kind, fade, title="Emotion (the debate slice, its own floor)")
+        watch = [r for r in res.rows if r.get("kind") == "watch" and isinstance(r["label"], dict)
+                 and policies.kind_of(r["question_id"]) == "emotion"]
+        if watch and not self.smoke:   # M11 (debate D20): both merge rules side by side, for the user's choice
+            res.summary += policies.merge_comparison(watch, fade)
         if not self.smoke:   # M10 (group-watch D23): who speaks (three parts) and "is the talk finished?"
             for part in who_policies.PARTS:
                 mine = [r for r in res.rows if r["question_id"] == part and isinstance(r["label"], dict)]
                 if mine:
                     res.summary += who_policies.who_report(mine, part)
+            member = [r for r in res.rows if r["question_id"] in who_policies.MEMBER_QIDS
+                      and isinstance(r["label"], dict)]
+            if member:   # M11 (debate D21): the three member questions scored together
+                res.summary += who_policies.member_report(member)
             talk = [r for r in res.rows if r["question_id"] == "talk_finished"]
             if talk:
                 res.summary += who_policies.talk_report(talk)
@@ -542,11 +556,13 @@ async def planned_group_send(env: RunEnv) -> int:
 
 def _content() -> dict[str, Any]:
     from horizon.evals.content import Drafter, Long, Summary, Transcript
+    from horizon.evals.debate_suites import DebateHistory, DebatePlant, DebateQuality
     from horizon.evals.latency import Latency
     from horizon.evals.moodline import Moodline
     from horizon.evals.watch_suites import FreeRun, WatchHistory
     return {"drafter": Drafter(), "summary": Summary(), "long": Long(), "transcript": Transcript(),
-            "moodline": Moodline(), "latency": Latency(), "watch-history": WatchHistory(), "freerun": FreeRun()}
+            "moodline": Moodline(), "latency": Latency(), "watch-history": WatchHistory(), "freerun": FreeRun(),
+            "debate-history": DebateHistory(), "debate-plant": DebatePlant(), "debate-quality": DebateQuality()}
 
 
 SUITES: dict[str, Any] = {"canary": Canary(), "decisions": Decisions(), "smoke": Smoke(), **_content()}

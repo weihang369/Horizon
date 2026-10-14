@@ -49,9 +49,10 @@ def candidates(probs: Mapping[str, float], base: str, n: int = 3) -> list[dict[s
 
 
 def decide_face(answer: ChoiceAnswer | None, *, base: str, floor: float, fade: frozenset[str], manual: bool = False,
-                failure: str | None = None) -> PlannedFace:
+                failure: str | None = None, merge: bool = True) -> PlannedFace:
     """The face for one candidate. `answer` None or a fallback answer means Jev failed; `failure` "timeout" marks it
-    late."""
+    late. `merge` False is the rule measured against the live one (M11, debate D20): `none` keeps, and `neutral` is its
+    own answer; the live code always merges."""
     if answer is None or answer.source == "fallback":
         face, faded = kept(base, fade)
         outcome: FaceOutcome = "late" if failure == "timeout" else "fallback"
@@ -61,7 +62,7 @@ def decide_face(answer: ChoiceAnswer | None, *, base: str, floor: float, fade: f
     pick = answer.choice
     value = float(answer.confidence if answer.confidence is not None else probs.get(pick, 0.0))
     name = CONFIDENCE
-    if base == "neutral":
+    if merge and base == "neutral":
         top = max(m, key=lambda k: (m[k], k == "neutral"))   # a tie goes to keeping the neutral face
         if top == "neutral" or pick in ("neutral", NONE):
             pick, value, name = "neutral", m.get("neutral", 0.0), MERGED

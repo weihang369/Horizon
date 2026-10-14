@@ -305,50 +305,50 @@
 
 ## 8. M10's carry-overs, offline (design D17–D20)
 
-- [ ] 8.1 The `who_next` set: 40 group items from the frozen group transcripts, cut at character lines that ask
+- [x] 8.1 The `who_next` set: 40 group items from the frozen group transcripts, cut at character lines that ask
   nobody directly, built by the existing who-speaks builder with `last_spoke=False`, labelled blind under
   `evals/reviews/m10-labels.md`'s rule, with M9's hash split (≥ 20 test).
   Verify: `corpus-check`, `overlap`, and a deterministic-builder test.
-- [ ] 8.2 The decisions suite scores `who_scene` and `who_next` v3 with the same G11 policies, plus a "fresh cuts"
+- [x] 8.2 The decisions suite scores `who_scene` and `who_next` v3 with the same G11 policies, plus a "fresh cuts"
   file whose items are all test.
   Verify: a test on fixture answers that the floor is chosen on the 100 existing items only, and the fresh cuts are
   scored once.
-- [ ] 8.3 The `judge_starts_new` validation set: 30 real items (M10's free-run lines, including its 7 steered lines,
+- [x] 8.3 The `judge_starts_new` validation set: 30 real items (M10's free-run lines, including its 7 steered lines,
   labelled blind) and 30 planted. Plus a free-run report that judges and prints every steered line, against M10's 0
   of 7.
   Verify: the evaluation-harness scenario "Steered lines are listed", on fixture answers.
-- [ ] 8.4 The recap check gives `judge_summary_unsupported` v2 the premise.
+- [x] 8.4 The recap check gives `judge_summary_unsupported` v2 the premise.
   Verify: the scenario "A detail from the premise", with the M10 recap item `recap-sunnyhollow-010`.
-- [ ] 8.5 The watch-faces comparison: the emotion policy scores `emotion_line` under both rules (merge, no merge)
+- [x] 8.5 The watch-faces comparison: the emotion policy scores `emotion_line` under both rules (merge, no merge)
   over the same floor grid. The growth file `emotion_watch_2.jsonl` is built in phase 10, from the free runs.
   Verify: the scenario "Both policies reported", on fixture answers.
 
 ## 9. The debate evaluation, offline (design D21, D22)
 
-- [ ] 9.1 `horizon eval debate-history`:
+- [x] 9.1 `horizon eval debate-history`:
   - scripts in `evals/debates/scripts/` (13: D21's mix, both worlds, 12 motions plus the panel's, casts chosen so a
     side's members differ in field);
   - generation through the live runtime under `naive` with the store;
   - output `evals/debates/<id>.json`;
   - refused without `--force`.
   Verify: the scenario "Refused regeneration", and a test-mode run of one script on the fake.
-- [ ] 9.2 `horizon eval debate-plant`: D21's alternating weak side, the rewrite prompt, and the output
+- [x] 9.2 `horizon eval debate-plant`: D21's alternating weak side, the rewrite prompt, and the output
   `evals/debates/planted/<id>.json`.
   Verify: the scenario "Which side is weak", on a fixture history with canned rewrites.
-- [ ] 9.3 The member slice builder (`evals/datasets/debate_member/`):
+- [x] 9.3 The member slice builder (`evals/datasets/debate_member/`):
   - natural slots from the histories (2–3 eligible), cut with the live state builder;
   - written variants;
   - the `single` flag, the fixed-order answer and the language split;
   - M9's hash split with M10's prefix search, ≥ 30 test;
   - the label rule written first in `evals/reviews/m11-labels.md`.
   Verify: `corpus-check`, `overlap`, and a builder test on fixture histories.
-- [ ] 9.4 The member policy (`evals/who_policies.py`): accuracy in the set, the single-answer lift over fixed order
+- [x] 9.4 The member policy (`evals/who_policies.py`): accuracy in the set, the single-answer lift over fixed order
   with the exact McNemar test, the random-pick baseline, and the floor chosen on dev.
   Verify: the scenario "A pass needs both measures", on fixture answers.
-- [ ] 9.5 The debate emotion slice builder (D29.1): 30 rebuttal or closing lines for `emotion_line` and 10 openings,
+- [x] 9.5 The debate emotion slice builder (D29.1): 30 rebuttal or closing lines for `emotion_line` and 10 openings,
   from the histories, as `evals/datasets/emotion/emotion_debate.jsonl`, with its own split.
   Verify: the evaluation-harness scenario "The slice is scored alone", on fixture answers.
-- [ ] 9.6 The debate-quality judge sets: 30 real + 30 planted each for `judge_keeps_side` and `judge_engages`, with
+- [x] 9.6 The debate-quality judge sets: 30 real + 30 planted each for `judge_keeps_side` and `judge_engages`, with
   B4 validation through the existing judge-validation path. A run over histories and free runs reports both columns.
   Verify: the scenario "An unvalidated judge doesn't count".
 - [ ] 9.7 `horizon eval debate`:

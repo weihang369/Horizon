@@ -1050,6 +1050,22 @@ delta. If implementation finds a need, it stops and asks (the user's rule).
    as M10 did for the follow plan. It is measured again after M14.
 4. **The carry-overs are inside M11,** in phase 8, after the debate work (D1).
 
+### D30. The user's two choices during apply (2026-10-14)
+
+1. **The debate histories' cast:** a debate's cast must be approved characters of one world, and each seed world has
+   three, so D21's 2 v 2, 3 v 2 and panel of 4 can't be cast from the seed. **An eval-only cast:** `debate-history`
+   adds four written characters (two per world, each with a field of their own) as approved rows in its own run
+   database only. Their profiles are committed in `evals/debates/cast.json`; the seed, the demo and the mock are
+   unchanged, and no image is made. The member slice and the debate emotion slice read their profiles from that file.
+   - **Rejected:** four new seed characters (paid images, a seed and mock rebuild); only 1 v 1 and 2 v 1 debates
+     (departs from D21's mix, and loses the 3 v 2 worst case and the panel).
+2. **`last_spoke` and the other watch questions:** D6 drops `last_spoke` from the whole cast-plan state for watch and
+   Next speaker, so `talk_finished` (watch-only) sees a changed state too. **`talk_finished` moves to version 3**
+   (B9), and its set is re-run in 10.11. `emotion_line` keeps its version: only its watch request changed, and the
+   watch slice is re-measured in 10.11 anyway. Recorded in m11.md.
+   - **Rejected:** bumping `emotion_line` too (it is shared with 1:1 and group, so every M9 emotion set would be asked
+     again); no bump.
+
 ## Risks / Trade-offs
 
 - **[The debate plan misses 500 ms on most requests]** → D9 names it. The check measures it, V2's locked rule sets

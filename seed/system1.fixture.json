@@ -247,7 +247,7 @@
       "talk_finished": {
         "purpose": "turn_plan",
         "id": "talk_finished",
-        "version": 2,
+        "version": 3,
         "label": "is the talk finished?",
         "p": 0.72,
         "compared": [

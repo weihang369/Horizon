@@ -37,8 +37,10 @@ def split_for(item_id: str) -> str:
 
 
 def split_problems(rows: Iterable[Mapping[str, Any]]) -> list[str]:
-    return [f"{r['id']}: split {r['split']} but the rule says {split_for(str(r['id']))}"
-            for r in rows if r.get("split") != split_for(str(r["id"]))]
+    """The hash rule; M11's fresh cuts (`fresh: true`, debate D17) are held out, so they are all test."""
+    def want(r: Mapping[str, Any]) -> str:
+        return "test" if r.get("fresh") else split_for(str(r["id"]))
+    return [f"{r['id']}: split {r['split']} but the rule says {want(r)}" for r in rows if r.get("split") != want(r)]
 
 
 def _lines(text: str) -> dict[str, str]:

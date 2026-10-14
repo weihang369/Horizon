@@ -8,7 +8,8 @@ histories", "Episode recaps in the summary suite", "Free runs for group and watc
   is printed.
 - **freerun:** `agent` watch scenes and group sessions with scripted user lines. Signals only, no target: the
   second-reply rate (follow-plan timeouts apart from `none`), the busiest speaker's share, the guard's and the steer's
-  firing rates, and every steered line printed for reading.
+  firing rates, and every steered line printed for reading. M11 (debate D18): each steered line is judged by
+  `judge_starts_new` and the share that starts something new is reported against M10's 0 of 7.
 - **latency parts** (`latency --part follow|watch`, store bypassed): the follow plan's miss rule (D9) over 50 hand-built
   follow states, and watch scenes at Fast pace against NFR-02. Jev's slow spells are reported apart.
 """
@@ -23,8 +24,10 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
 
+from horizon.ai.questions import bank
 from horizon.domain.clock import FrozenClock
 from horizon.domain.pricing import estimate_chat
+from horizon.evals import judges
 from horizon.evals.content import budget_code, failed, judge, rate_line, wait_idle
 from horizon.evals.metrics import percentile
 from horizon.evals.runner import EVALS_DIR, Options, Plan, Result, RunEnv, decision_estimate
@@ -261,13 +264,19 @@ async def run_recaps(env: RunEnv, items: Sequence[dict[str, Any]], res: Result) 
                                "recap": text, "words": words, "within_words": 0 < words <= RECAP_WORDS, "error": err,
                                "lines": joined}
         if text:
-            row["unsupported_p"] = await judge(env, "judge_summary_unsupported", {
-                "quoted_lines": joined, "quoted_previous": "none", "quoted_summary": text})
+            row["unsupported_p"] = await judge(env, "judge_summary_unsupported", recap_judge_state(h, joined, text))
             row["language_p"] = await judge(env, "judge_summary_language", {"quoted_lines": joined,
                                                                             "quoted_summary": text})
         rows.append(row)
     res.rows += rows
     res.summary += recap_report(rows)
+
+
+def recap_judge_state(h: dict[str, Any], joined: str, text: str) -> dict[str, Any]:
+    """`judge_summary_unsupported` v2's state for a recap: the premise too (M11, debate D19), so a detail only the
+    premise names is supported."""
+    return {"quoted_lines": joined, "quoted_previous": "none", "quoted_premise": str(h.get("premise") or "none"),
+            "quoted_summary": text}
 
 
 def recap_failures(r: dict[str, Any]) -> list[str]:
@@ -312,6 +321,43 @@ FREERUN_PREMISES = (
 )
 
 
+M10_STEERED = (0, 7)        # docs/ai/checks/m10.md 10.9: none of the 7 steered lines started something new
+STARTS_NEW_RECENT = 6       # debate D18: the judge sees the 6 lines before
+
+
+def starts_new_state(premise: str, before: Sequence[tuple[str, str]], line: tuple[str, str]) -> dict[str, Any]:
+    """`judge_starts_new`'s state (D18): the premise, the 6 lines before as "Name: text", and the line. The validation
+    set (`evals/datasets/judges/starts_new.py`) and the free run build it here, so the judge sees one template."""
+    recent = [f"{n}: {t}" for n, t in before[-STARTS_NEW_RECENT:]]
+    return {"quoted_premise": premise or "none", "quoted_recent": "\n".join(recent) or "none",
+            "quoted_line": f"{line[0]}: {line[1]}"}
+
+
+def steered_ids(msgs: Sequence[dict[str, Any]]) -> list[str]:
+    """The replies written with the steer sentence (the turn's plan said steer)."""
+    def rows(m: dict[str, Any]) -> list[dict[str, Any]]:
+        return list((((m.get("trace") or {}).get("system1")) or {}).get("questions") or [])
+    return [str(m["id"]) for m in msgs if m["author"]["type"] == "character"
+            and any(r.get("id") == "talk_finished" and r.get("action") == "steer" for r in rows(m))]
+
+
+async def judge_steered(env: RunEnv, premise: str, msgs: Sequence[dict[str, Any]],
+                        profiles: dict[str, Any]) -> dict[str, float | None]:
+    """p("starts nothing new") for every steered line of one scene, keyed by message id."""
+    lines: list[tuple[str, str, str]] = []
+    for m in msgs:
+        if m["author"]["type"] == "character":
+            cid = str(m["author"].get("characterId"))
+            lines.append((str(m["id"]), str((profiles.get(cid) or {}).get("name") or cid), str(m["content"])))
+    out: dict[str, float | None] = {}
+    want = set(steered_ids(msgs))
+    for i, (mid, name, text) in enumerate(lines):
+        if mid in want:
+            out[mid] = await judge(env, "judge_starts_new",
+                                   starts_new_state(premise, [(n, t) for _, n, t in lines[:i]], (name, text)))
+    return out
+
+
 def group_lines(k: int, n: int) -> list[str]:
     from horizon.evals.content import LONG_DIR
 
@@ -343,15 +389,19 @@ class FreeRun:
             return res
         msgs: list[dict[str, Any]] = []
         sends = 0
+        starts: dict[str, float | None] = {}
         for item in plan.items:
             if await env.over_budget():
                 res.status = "incomplete"
                 break
             got, n = await (self.watch(env, item) if item["mode"] == "watch" else self.group(env, item))
+            if item["mode"] == "watch":   # M11 (D18): every steered line judged
+                premise = FREERUN_PREMISES[item["run"] % len(FREERUN_PREMISES)][2]
+                starts.update(await judge_steered(env, premise, got, seed_profiles()))
             msgs += got
             sends += n
             res.rows.append({"mode": item["mode"], "run": item["run"], "replies": len(got), "sends": n})
-        res.summary += freerun_report(plan.items[0]["mode"] if plan.items else "watch", msgs, sends)
+        res.summary += freerun_report(plan.items[0]["mode"] if plan.items else "watch", msgs, sends, starts)
         return res
 
     @staticmethod
@@ -386,7 +436,8 @@ class FreeRun:
         return got, n
 
 
-def freerun_report(mode: str, msgs: Sequence[dict[str, Any]], sends: int) -> list[str]:
+def freerun_report(mode: str, msgs: Sequence[dict[str, Any]], sends: int,
+                   starts: dict[str, float | None] | None = None) -> list[str]:
     replies = [m for m in msgs if m["author"]["type"] == "character"]
     out = [f"## Free run ({mode}): {len(replies)} replies" + (f" to {sends} sends" if mode == "group" else "")
            + " — signals only, no target"]
@@ -411,12 +462,24 @@ def freerun_report(mode: str, msgs: Sequence[dict[str, Any]], sends: int) -> lis
         out.append(f"- no second reply: {none} none, {late} timeouts (late), {unsure} unsure (below the floor)")
     else:
         guard = sum(1 for m in replies if ((m.get("trace") or {}).get("routing") or {}).get("forcedBy") == "round_order")
-        steered = [m for m in replies if any(r.get("id") == "talk_finished" and r.get("action") == "steer"
-                                             for r in rows(m))]
+        ids = set(steered_ids(replies))
+        steered = [m for m in replies if str(m["id"]) in ids]
         out.append(f"- the guard fired on {guard}/{len(replies)} turns ({guard / len(replies):.0%})")
         out.append(f"- the steer fired on {len(steered)}/{len(replies)} turns ({len(steered) / len(replies):.0%})")
-        for m in steered:   # read by eye: does the steered line start something new? (no judge, D23)
-            out.append(f"  - STEERED {m['author'].get('characterId')}: {m['content'][:300]}")
+        starts = starts or {}
+        flags = [failed(starts.get(str(m["id"])), "judge_starts_new") for m in steered]
+        judged = [f for f in flags if f is not None]
+        if steered:   # M11 (D18): judged, and every line still printed for reading
+            new = sum(not f for f in judged)
+            out.append(f"- steered lines that start something new: {new}/{len(judged)}"
+                       + (f" ({new / len(judged):.0%})" if judged else "")
+                       + f" (M10: {M10_STEERED[0]} of {M10_STEERED[1]}; the user chooses if under half, D18)"
+                       + judges.label("judge_starts_new", bank().get("judge_starts_new").version))
+        for m, f in zip(steered, flags, strict=True):
+            p = starts.get(str(m["id"]))
+            verdict = "no judge answer" if f is None else ("starts nothing new" if f else "starts something new")
+            shown = "-" if p is None else f"{p:.2f}"
+            out.append(f"  - STEERED {m['author'].get('characterId')} (p {shown}, {verdict}): {m['content'][:300]}")
     return out
 
 

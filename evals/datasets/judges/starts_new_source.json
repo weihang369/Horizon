@@ -1,0 +1,569 @@
+{
+ "run": "20261013T131638-freerun-038af2",
+ "scenes": [
+  {
+   "session": "ses_01M4TPGWQ14N7DTWY256MR4JKB",
+   "premise": "The council's emergency budget meeting, the night before the vote.",
+   "lines": [
+    {
+     "seq": 2,
+     "speaker": "Amara Okafor",
+     "text": "Kai, before we vote — the emergency line items are the ones that bleed if we trim them. I've watched that happen. Mei, what does the labour data actually show on front-line vacancy rates?",
+     "steered": false
+    },
+    {
+     "seq": 3,
+     "speaker": "Mei Tanaka-Ruiz",
+     "text": "Ranges, not a number: 12 to 19 percent for ER nurses depending on how you count travelers. The binding constraint isn't the wage line — it's that we post and nobody applies. You can trim the",
+     "steered": false
+    },
+    {
+     "seq": 4,
+     "speaker": "Amara Okafor",
+     "text": "That gap between 12 and 19 is the whole argument, Mei. Travelers cost triple and burn out faster. Victor, is a one-year staffing floor even something this council can bind itself to?",
+     "steered": false
+    },
+    {
+     "seq": 5,
+     "speaker": "Victor Hale",
+     "text": "Three points, and I'll be brief, as the hour demands. A council binds itself by resolution, not by regret, so yes — a staffing floor is lawful, provided we define \"front-line\" precisely and attach a number to it. Vagueness is the only thing that truly bleeds.",
+     "steered": false
+    },
+    {
+     "seq": 6,
+     "speaker": "Amara Okafor",
+     "text": "Then define it, and define it tight. I'd rather vote on a floor I can hold you to in March than a hope I can't. Kai, you've been quiet — you're the one who has to sell this to the floor tomorrow.",
+     "steered": false
+    },
+    {
+     "seq": 7,
+     "speaker": "Mei Tanaka-Ruiz",
+     "text": "A floor's fine in principle. But be careful what you count as \"front-line\" — narrow it too tightly and every hospital relabels staff to dodge it. The second-order effect is the loophole, not the line.",
+     "steered": false
+    },
+    {
+     "seq": 8,
+     "speaker": "Victor Hale",
+     "text": "Define your terms — take \"front-line\" as direct patient-contact hours funded by this council, measured monthly, audited, not titles. Mei's loophole worry is sound law: audit the effect, not the label. Kai, what number do you intend to name tomorrow?",
+     "steered": false
+    },
+    {
+     "seq": 9,
+     "speaker": "Amara Okafor",
+     "text": "Measure the hours, audit the effect — that I can live with. But a floor with no money behind it just relabels exhaustion. Kai, name a number you can fund, or we're voting on poetry.",
+     "steered": false
+    },
+    {
+     "seq": 10,
+     "speaker": "Mei Tanaka-Ruiz",
+     "text": "I'll stay out of picking the number — that's your call, Kai. My caution is the funding date, not the level. A floor that starts in July with no phased cash is a promise the payroll can't keep in March.",
+     "steered": false
+    },
+    {
+     "seq": 11,
+     "speaker": "Amara Okafor",
+     "text": "Mei's right about the date. Start the floor when the cash starts, not before — a hollow mandate erodes trust faster than no mandate at all. Kai, what",
+     "steered": false
+    },
+    {
+     "seq": 12,
+     "speaker": "Victor Hale",
+     "text": "Cui bono — who benefits — from a floor with no appropriation behind it? No one in this room, and least of all the nurses. Name the level you can fund this quarter and phase the rest to July; a promise kept twice outweighs a grander one kept never.",
+     "steered": false
+    },
+    {
+     "seq": 13,
+     "speaker": "Amara Okafor",
+     "text": "Victor's right. I've watched a well-meaning mandate collapse when the money didn't follow, and the staff paid for it.\n\nKai, give me a fundable number tonight and I'll stop arguing. Then walk me through who's likely to sink it tomorrow.",
+     "steered": false
+    },
+    {
+     "seq": 14,
+     "speaker": "Mei Tanaka-Ruiz",
+     "text": "I'll add one thing while Kai decides: whatever number you name, phase it on payroll cycles, not fiscal quarters. Quarterly cash and monthly rosters rarely align, and the gap",
+     "steered": false
+    },
+    {
+     "seq": 15,
+     "speaker": "Amara Okafor",
+     "text": "—and the gap is where people quit. Monthly payroll, monthly audit, or the numbers drift and we're back here in June.\n\nKai. You've got the pen. What's the number?",
+     "steered": false
+    },
+    {
+     "seq": 16,
+     "speaker": "Victor Hale",
+     "text": "You've all made the case for precision; I'll not restate it a fourth time. Kai, the pen is yours, and the record will show whatever you write. My only brief: name the number in the resolution itself, not in the preamble — a floor buried in recitals is no floor at all.",
+     "steered": false
+    },
+    {
+     "seq": 17,
+     "speaker": "Amara Okafor",
+     "text": "Operative clause, not recital — agreed. And put my name on the line that flags staffing as a safety issue, not just a budget one. That's the honest framing. Kai, the room's waiting on you.",
+     "steered": false
+    },
+    {
+     "seq": 18,
+     "speaker": "Mei Tanaka-Ruiz",
+     "text": "The room's waiting, sure. But a number named at midnight by three tired people is how you get a floor nobody defends by spring. Kai, name it, defend it in daylight, and I'll bring the vacancy data to March.",
+     "steered": false
+    },
+    {
+     "seq": 19,
+     "speaker": "Victor Hale",
+     "text": "Then let the record note the hour and still vote — weariness is not a reason to decide badly, but indecision at midnight is its own bad decision. Kai, name it, and I'll argue the operative clause tomorrow whether I agree with the figure or not.",
+     "steered": false
+    },
+    {
+     "seq": 20,
+     "speaker": "Amara Okafor",
+     "text": "Then vote tonight and defend it tomorrow. Mei, you've asked Kai for a number twice — I'd rather have a real one from him than a perfect one that never lands.\n\nKai, I'm serious. What's the number?",
+     "steered": false
+    },
+    {
+     "seq": 21,
+     "speaker": "Mei Tanaka-Ruiz",
+     "text": "I've said my part twice; I won't bully the pen. But note it in the minutes that the vacancy range is 12 to 19 percent, because whatever number gets named is a guess dressed as a decision. Kai, over to you.",
+     "steered": true
+    },
+    {
+     "seq": 22,
+     "speaker": "Victor Hale",
+     "text": "Two things, briefly. First, a guess documented is still a decision the chamber can be held to, which is more than most budgets manage. Second, Kai — exercise the pen, or the clock will do it for you, and the clock is a merciless drafter.",
+     "steered": false
+    },
+    {
+     "seq": 23,
+     "speaker": "Amara Okafor",
+     "text": "Nothing more from me until Kai answers. I've made my case, named my framing, and I won't keep circling good people at midnight.\n\nKai — you're the vote-seller. Give us the number, or tell us you're sleeping on it.",
+     "steered": false
+    },
+    {
+     "seq": 24,
+     "speaker": "Mei Tanaka-Ruiz",
+     "text": "Then I'll say the uncomfortable version while the room waits: if it's this contested at midnight, a number tonight buys you a resolution, not a majority. Sleeping on it costs a day and maybe a cleaner vote. That's the trade.",
+     "steered": true
+    },
+    {
+     "seq": 25,
+     "speaker": "Victor Hale",
+     "text": "Mei has just framed the real motion, and it isn't the number. It's whether tonight buys a resolution or a majority — and the two are not the same instrument. Kai, choose the one you can carry at noon.",
+     "steered": false
+    },
+    {
+     "seq": 26,
+     "speaker": "Amara Okafor",
+     "text": "Agreed — and a resolution you can't carry is just paper. But the vote's tomorrow, not next week. Kai, if you sleep on it, the funding date slips by a month. That's a real cost.\n\nSo I'll ask once more, then stop. What's the number?",
+     "steered": false
+    },
+    {
+     "seq": 27,
+     "speaker": "Mei Tanaka-Ruiz",
+     "text": "One more cost, since nobody's said it: slip the date and the traveler contracts renew first, at triple — so \"sleeping on it\" isn't free, it's a month of premium. Now I'll stop circling too.",
+     "steered": false
+    },
+    {
+     "seq": 28,
+     "speaker": "Victor Hale",
+     "text": "Both costs are real, and neither cancels the other. So decide on the record and stop negotiating with silence — a chair who waits for consensus at midnight will wait past the vote. Kai, the floor is",
+     "steered": true
+    },
+    {
+     "seq": 29,
+     "speaker": "Amara Okafor",
+     "text": "Your room, your call, Kai. I've said what I needed to — fundable number, operative clause, monthly audit. Whatever you decide, I'll be at the table tomorrow. But you can't chair a vote from behind silence. Speak.",
+     "steered": false
+    },
+    {
+     "seq": 30,
+     "speaker": "Victor Hale",
+     "text": "Three words, then: speak, Kai. Finance the floor this quarter or phase it to July — either is defensible. Silence is not a position the chair can vote, and the minutes won't record a blank.",
+     "steered": false
+    },
+    {
+     "seq": 31,
+     "speaker": "Amara Okafor",
+     "text": "We've all said it now. Kai — number, or sleep on it and own the cost. Those are the only two doors. Pick one.",
+     "steered": true
+    },
+    {
+     "seq": 32,
+     "speaker": "Mei Tanaka-Ruiz",
+     "text": "Both of you keep handing Kai the pen like the room isn't watching three of us sweat. Fine. Kai, pick a door. If it's July-phase, I'll model the traveler renewal cost before the vote so nobody claims surprise.",
+     "steered": false
+    }
+   ]
+  },
+  {
+   "session": "ses_01M4TPJZ9BGTBGPGD6ATYMHF7V",
+   "premise": "A rainy Sunday at the flower shop, and the till won't open.",
+   "lines": [
+    {
+     "seq": 2,
+     "speaker": "Hana Morisaki",
+     "text": "Rainy Sundays are supposed to be slow and cozy, not the day my till decides to lock up like a stubborn tulip bud!\n\nDad, if I jiggle this lever while you hit the drawer, will that help, or am I about to lose a fingernail?",
+     "steered": false
+    },
+    {
+     "seq": 3,
+     "speaker": "Takeshi Morisaki",
+     "text": "Step back from that lever, Hana. That drawer's like a frozen switch on a cold morning — force it and you'll snap something you can't fix with duct tape.  \n\nRin, hand me that flathead screwdriver from under the counter and nobody loses a fingernail today.",
+     "steered": false
+    },
+    {
+     "seq": 4,
+     "speaker": "Rin Morisaki",
+     "text": "found it. also watching you two try to beat a cash register is the best content this shop",
+     "steered": false
+    },
+    {
+     "seq": 5,
+     "speaker": "Hana Morisaki",
+     "text": "I'm stepping back, I'm stepping back! And Rin, you were supposed to be helping, not making commentary reels out of your own family.\n\nAnyway, Kai, come see how exciting a rainy Sunday gets around here.",
+     "steered": false
+    },
+    {
+     "seq": 6,
+     "speaker": "Takeshi Morisaki",
+     "text": "A register's like a train door. Pops easy when the latch isn't jammed sideways. Give me a second here.\n\nUsed to the old coast line diesels — they had a drawer just like this. Lost a fry cook's lunch money to one for a week once. Right, got it.",
+     "steered": false
+    },
+    {
+     "seq": 7,
+     "speaker": "Hana Morisaki",
+     "text": "There it goes! See, everybody, that's the difference between thirty years of diesels and me shaking a lever like a maraca.\n\nKai, quick, if you're stopping by could you grab a couple coffees? Dad's earned one, and I think Rin owes me for the moral damage.",
+     "steered": false
+    },
+    {
+     "seq": 8,
+     "speaker": "Rin Morisaki",
+     "text": "dad fixed it with a screwdriver and a train story. of course he did.\n\ncoffee's on kai. i'm not apologizing for the commentary, it was accurate.",
+     "steered": false
+    },
+    {
+     "seq": 9,
+     "speaker": "Hana Morisaki",
+     "text": "Accurate or not, you're still fetching the sugar packets, missy. Also it's been raining since six, so if either of you tracked puddles in, I'm blaming the whole counter on you.\n\nKai, two creams in mine, like",
+     "steered": false
+    },
+    {
+     "seq": 10,
+     "speaker": "Takeshi Morisaki",
+     "text": "Two creams, got it. And I'll take mine black — a man doesn't water down good coffee, same as he doesn't water down engine oil.\n\nRin, bring an extra sugar packet. Your sister's stingy with hers and I",
+     "steered": false
+    },
+    {
+     "seq": 11,
+     "speaker": "Hana Morisaki",
+     "text": "Dad, I am not stingy, I am a woman with a budget, and that budget currently has a hole in it called \"till repair.\"\n\nKai, ignore him. Text me when you're close and I'll prop the door so you don",
+     "steered": false
+    },
+    {
+     "seq": 12,
+     "speaker": "Rin Morisaki",
+     "text": "two creams, one black, extra sugar. kai's running a full restaurant order now.\n\nbudget with a hole in it, cute. you run a flower shop, hana, not a startup.",
+     "steered": false
+    },
+    {
+     "seq": 13,
+     "speaker": "Hana Morisaki",
+     "text": "Flowers are a startup, actually, we just wilt faster than their quarterly projections.\n\nKai, seriously though, don't drip on the tulips when you come in, I've had a rough relationship with this drawer and I don't need a third thing.",
+     "steered": false
+    },
+    {
+     "seq": 14,
+     "speaker": "Takeshi Morisaki",
+     "text": "Buying coffee for a family of complainers. Should've stayed on the train and let it drive itself.",
+     "steered": false
+    },
+    {
+     "seq": 15,
+     "speaker": "Rin Morisaki",
+     "text": "flowers being a startup is a cursed sentence but i'll allow it.\n\ndad, you retired. you literally chose this. no refunds.",
+     "steered": false
+    },
+    {
+     "seq": 16,
+     "speaker": "Hana Morisaki",
+     "text": "He complains like it's a pension perk. Retired fifteen years and still runs this family like a timetable.\n\nKai, if you're drenched, the apron hook by the door is free, just hang your jacket so it stops",
+     "steered": false
+    },
+    {
+     "seq": 17,
+     "speaker": "Takeshi Morisaki",
+     "text": "Fifteen years retired and still the only one who fixed anything today. Hanging the jacket up now.\n\nRin, you could've held that flashlight steady instead of filming. Comes with the territory of being useful.",
+     "steered": false
+    },
+    {
+     "seq": 18,
+     "speaker": "Hana Morisaki",
+     "text": "Dad, you fixed a drawer with a screwdriver and forty years of train metaphors, let's not put it on a plaque yet.\n\nRin, put the phone down and grab some roses from the bucket, the pink ones",
+     "steered": false
+    },
+    {
+     "seq": 19,
+     "speaker": "Rin Morisaki",
+     "text": "phone's already down. and i was not filming, that was moral support at range.\n\npink roses coming up. the bucket's soaked, so if i get wetter blame the rain.",
+     "steered": false
+    },
+    {
+     "seq": 20,
+     "speaker": "Hana Morisaki",
+     "text": "Blame the rain, blame the bucket, blame the till — today everyone gets an excuse but me.\n\nKai, hope you're braving all this for more than caffeine. Two years with me and you still show up on a Sunday like it's a dare.",
+     "steered": false
+    },
+    {
+     "seq": 21,
+     "speaker": "Takeshi Morisaki",
+     "text": "Grab the pink ones near the window, Rin. The back bucket's been leaking since Tuesday.\n\nKai showing up in the rain with coffee beats any dare I ever ran on that line.",
+     "steered": false
+    },
+    {
+     "seq": 22,
+     "speaker": "Rin Morisaki",
+     "text": "got the window ones. bucket's dry, dad, your leak report is from another era.\n\nkai probably shows up for the coffee, the flowers are a bonus. two years and you still haven't told them about the swan fountain incident.",
+     "steered": false
+    },
+    {
+     "seq": 23,
+     "speaker": "Hana Morisaki",
+     "text": "Rin, we do not speak of the swan fountain in front of Kai. My dignity has survived the till, don't jinx it now.\n\nKai, if Rin starts a story, you come stand by me and drink your coffee fast, deal?",
+     "steered": false
+    },
+    {
+     "seq": 24,
+     "speaker": "Takeshi Morisaki",
+     "text": "Swan fountain stays buried. Some things sink on purpose, like good bait once the fish are gone.\n\nRin, wrap those roses or the family curse gets a new chapter.",
+     "steered": false
+    },
+    {
+     "seq": 25,
+     "speaker": "Rin Morisaki",
+     "text": "deal for kai. swan fountain is officially classified, i'm just the keeper of the archive.\n\nwrapping. anyone actually buying flowers on a day like this, or are these for the family pride.",
+     "steered": false
+    },
+    {
+     "seq": 26,
+     "speaker": "Hana Morisaki",
+     "text": "Rainy days sell the pale ones, people want soft things when the sky's gray. So we're saving the pink, wrapping them, and pretending it's strategy.\n\nAnd if nobody comes, Kai gets roses, because that's what this dumb little shop is for.",
+     "steered": false
+    },
+    {
+     "seq": 27,
+     "speaker": "Takeshi Morisaki",
+     "text": "Nobody buys flowers in this rain. Any man worth his boots walks in wet and leaves with wet roses.\n\nHere — coffee's getting cold. Somebody drink before I take it back to the depot.",
+     "steered": false
+    },
+    {
+     "seq": 28,
+     "speaker": "Rin Morisaki",
+     "text": "giving kai roses as a rain day consolation prize. that's not a business, that's a hostage situation.\n\nfine, coffee. first one in weeks that isn't from a machine at 2am.",
+     "steered": false
+    },
+    {
+     "seq": 29,
+     "speaker": "Hana Morisaki",
+     "text": "It's not a consolation prize, it's inventory management with a romantic flavor. Very different.\n\nKai, come take your cup before Dad drinks it out of spite. And if you're quiet on the walk back, I'll keep Rin busy and you can d",
+     "steered": false
+    },
+    {
+     "seq": 30,
+     "speaker": "Takeshi Morisaki",
+     "text": "Inventory management. That's what we called it when the dining car ran out of pie too.\n\nKai, drink up. I don't drink other people's coffee. I just guard it.",
+     "steered": false
+    },
+    {
+     "seq": 31,
+     "speaker": "Rin Morisaki",
+     "text": "kai gets a free escort and i get to wrap roses alone. generous system you've set up.\n\ntakeshi you're not guarding it, you're hovering. drink it or give it back, this is not a depot.",
+     "steered": false
+    }
+   ]
+  },
+  {
+   "session": "ses_01M4TPN4SPHE0YXVRVTJ5EFMBF",
+   "premise": "A radio phone-in about whether the city should ban cars from the centre.",
+   "lines": [
+    {
+     "seq": 2,
+     "speaker": "Amara Okafor",
+     "text": "Ambulance times in the centre dropped when they trialled it. That matters more to me than the shopfront arguments.\n\nBut tell me who's actually asking. Commuters, or the people who live there?",
+     "steered": false
+    },
+    {
+     "seq": 3,
+     "speaker": "Mei Tanaka-Ruiz",
+     "text": "Both, and that's the trap. The residential win is real but narrow; the commuter cost is diffuse, which is why the pro-ban coalition looks bigger than it is.\n\nAlso worth flagging: ambulance times improving may have more to do with fewer vehicles than with the ban per se. Low-traffic zones and congestion charging produce similar effects with fewer distributional knives.",
+     "steered": false
+    },
+    {
+     "seq": 4,
+     "speaker": "Amara Okafor",
+     "text": "Fair, but a low-traffic zone still keeps cars on the ring road — the ambulances cross that too. The trial that helped us was the one with fewer vehicles full stop.\n\nI'd want the health data published alongside whatever you pick.",
+     "steered": false
+    },
+    {
+     "seq": 5,
+     "speaker": "Victor Hale",
+     "text": "Three points. First, everyone here is litigating \"the centre\" as though it were a defined term — it is not, and until someone draws the boundary on a map, we are arguing about a mood, not a policy. Define your terms, or the referendum writes itself.\n\nSecond, Amara's ambulance data is the strongest evidence in the room precisely because it is boring: it measures a body, not a preference. Third, Mei is right that the coalition is a mirage, which means the ban's real fate turns on who can be bothered to answer a",
+     "steered": false
+    },
+    {
+     "seq": 6,
+     "speaker": "Mei Tanaka-Ruiz",
+     "text": "Amara's right that the ring road confounds it, but that cuts both ways — the trial's vehicle drop was partly the recession, not the ban. Publish the counterfactual, or you'll be arguing about weather and call it causality.\n\nVictor, definitions help, but the boundary is also a lever. Draw it tight enough and you've exempted the people who shout loudest. That's",
+     "steered": false
+    },
+    {
+     "seq": 7,
+     "speaker": "Victor Hale",
+     "text": "Mei, you've just accused me of helping — I'll take it. But a boundary drawn to exempt the loudest is a boundary that will not survive its first judicial review, and the sort of litigant who brings that challenge is the sort who enjoys it.\n\nPublish the counterfactual, yes. Also publish the map. A legerdemain in the drafting is where this policy dies, not in the phone-in.",
+     "steered": false
+    },
+    {
+     "seq": 8,
+     "speaker": "Amara Okafor",
+     "text": "A definition I can actually use: the centre is wherever a cardiac arrest has to fight traffic. That's the map I'd draw.\n\nAnd you're both right — publish the counterfactual and the map together. One without the other is just a press release.",
+     "steered": false
+    },
+    {
+     "seq": 9,
+     "speaker": "Mei Tanaka-Ruiz",
+     "text": "Amara, that's a lovely line and a terrible boundary. \"Wherever a cardiac arrest fights traffic\" is a third of the city, including two hospital corridors. Poetic, unfalsifiable, and Victor will be litigating it until retirement.\n\nPublish both, fine. But the honest framing is a range: modest health gains in a narrow zone, real disruption concentrated on the inelastic trips. Anyone selling a single decisive number is selling something.",
+     "steered": false
+    },
+    {
+     "seq": 10,
+     "speaker": "Victor Hale",
+     "text": "Mei's rare double concession — \"poetic, unfalsifiable\" — is how I lose arguments and how I win cases. The line is beautiful; the line is also non-justiciable, and Amara knows it better than anyone in this studio.\n\nHere is my offer to the council. Draw the boundary by trip, not by geography, and make the exemption criteria deaf to income: emergency vehicles, disability-mobility permits, and deliveries in fixed windows. Once the map is contestable, the phone-in becomes a hearing, and a hearing can be won.",
+     "steered": false
+    },
+    {
+     "seq": 11,
+     "speaker": "Amara Okafor",
+     "text": "I know it's unfalsifiable. It was a line, not a statute. My actual ask is duller: count the vehicles, count the crossings, track response times by postcode. Whatever boundary survives the lawyers, measure the ambulances against it.\n\nAnd Victor, trips-not-geography is fine, but only if the disability permits are automatic, not applied for and reviewed. The people who need them are exactly the people who don't have the stamina for a tribunal. That's not a concession to the loudest — that's the data.",
+     "steered": false
+    },
+    {
+     "seq": 12,
+     "speaker": "Mei Tanaka-Ruiz",
+     "text": "Automatic permits, yes — and that's where this quietly gets expensive. Means-testing is the tired compromise; the real tension is universal automatic permits versus a review queue, and universality wins on dignity and the budget side is smaller than people fear.\n\nMy one worry: trip-based boundaries are harder to evaluate. You measure a zone; a trip regime gives you a ledger. Duller,",
+     "steered": false
+    },
+    {
+     "seq": 13,
+     "speaker": "Victor Hale",
+     "text": "Two concessions in one round. I should check the ceiling for leaks.\n\nAmara, automatic, not applied-for — agreed, and not for sympathy, for administration: a permit reviewed by tribunal is a permit that arrives after the need. Mei, a ledger instead of a zone is duller and better — you cannot subpoena a boundary, but you can subpoena a ledger.\n\nThen my one dissent stands. Automatic permits must be legislated, not left to an officer's discretion, or every refusal becomes my next case.",
+     "steered": false
+    },
+    {
+     "seq": 14,
+     "speaker": "Amara Okafor",
+     "text": "Then let's put the ledger in the airtime. Publish response times by postcode quarterly, with the permit numbers next to them. If the automatic permits are working, the data will say so and the phone-in gets quieter.\n\nI'll take the officer's discretion point, Victor. That's how good intentions become someone's worst day.",
+     "steered": false
+    },
+    {
+     "seq": 15,
+     "speaker": "Mei Tanaka-Ruiz",
+     "text": "Quarterly postcode data, automatic permits legislated, ledger over zone. I'd sign that. Two caveats, because I always have two.\n\nPermit volumes will drift up over years; you need an audit clause or you're measuring a subsidy you can no longer see. And response times are noisy — quarters will show noise, so commit to four-quarter rolling averages before someone declares victory in month three. Pre-",
+     "steered": false
+    },
+    {
+     "seq": 16,
+     "speaker": "Victor Hale",
+     "text": "\"Pre-commit the metric or the metric precedes you\" — Mei, you have just described the entire discipline of law and dressed it as economics. I'll take both caveats, and add a third she'll hate: write the sunset into the statute.\n\nAn audit clause and a rolling average protect the data. A sunset protects the city from a policy no one has the appetite to repeal. Dull, yes. But the dull lever is the one that survives a change of government — and, evidently, one phone-in.",
+     "steered": false
+    },
+    {
+     "seq": 17,
+     "speaker": "Mei Tanaka-Ruiz",
+     "text": "I don't hate the sunset; I just want to see the number on it. Three years tells you nothing given the noise floor — five, and I'll stop complaining. And write the renewal test first, so the repeal debate is about the data, not the mood.",
+     "steered": false
+    },
+    {
+     "seq": 18,
+     "speaker": "Amara Okafor",
+     "text": "Five years, renewal test written before we start, audit clause, rolling averages. I'll take all of it. That's the version I could defend to a patient's family.\n\nOne thing none of you has said yet: a ban that pushes idling traffic to the ring road near a school is a health loss with our name on it. Put the school gates on the map before the lawyers draw the line, not after.",
+     "steered": false
+    },
+    {
+     "seq": 19,
+     "speaker": "Victor Hale",
+     "text": "Amara, you've found the sentence that ends careers: \"a health loss with our name on it.\" Every policy I've ever seen die died of a harm it hadn't intended and hadn't measured. School gates on the map before the lines, not after — agreed, and before the ledger, not merely alongside it.\n\nSo the instrument, in order: define the line, map the gates, legislate the permits, publish the ledger, write the renewal test, set the sunset at five years. Six clauses. I'll bring a draft to the council — and I won't be the one praised for restraint when it passes.",
+     "steered": false
+    },
+    {
+     "seq": 20,
+     "speaker": "Mei Tanaka-Ruiz",
+     "text": "Your sixth clause is the whole argument, Victor: you've sequenced it so the evidence can't arrive after the politics. That's the only order that works.\n\nI'll bring my lab's cost estimates — a range, obviously — and the false-precision warning. Kai, over to you; that's your agenda to convene.",
+     "steered": false
+    },
+    {
+     "seq": 21,
+     "speaker": "Amara Okafor",
+     "text": "Kai, that's the room you're convening: six clauses, a range of costs, and a school gate on the map. Bring it as written, and I'll bring the postcode data.\n\nNo catchphrase tonight. Anyone who wants to win this with one number can lose it with the same number.",
+     "steered": false
+    },
+    {
+     "seq": 22,
+     "speaker": "Victor Hale",
+     "text": "Then I'll spare you mine, Amara — you've earned the quiet ending. Six clauses, one range, five years, and a school gate. Convene it, Kai, and I'll bring the draft before anyone has a slogan worth defending.\n\nOne warning, said plainly and once: this is argument architecture, not legal advice for your council. Real drafting wants a licensed solicitor's hand. I'll hold the pen on the framing; someone else should hold it on the filing.",
+     "steered": false
+    },
+    {
+     "seq": 23,
+     "speaker": "Amara Okafor",
+     "text": "He's right about the drafting — this is framing, not a filing. Get a solicitor on the text before it's tabled.\n\nThat's where I'll leave it. If the trial's numbers come out before the vote, send them my way. I'd rather read the response-time data than the phone-in.",
+     "steered": true
+    },
+    {
+     "seq": 24,
+     "speaker": "Mei Tanaka-Ruiz",
+     "text": "Seconded on the solicitor — this is architecture, and Victor's the only one here licensed to say so. I'll send Kai the cost range and the measurement caveats tonight; they're the two things that get quietly dropped between the phone-in and the vote.",
+     "steered": false
+    },
+    {
+     "seq": 25,
+     "speaker": "Victor Hale",
+     "text": "Signed off, both of you. Mei, when you send the caveats, put them first, not in an appendix — written last, read never.\n\nKai, I'll have the six clauses framed by morning. Bring your convenor's agenda, and bring a solicitor. Everything else we settled tonight.",
+     "steered": false
+    },
+    {
+     "seq": 26,
+     "speaker": "Mei Tanaka-Ruiz",
+     "text": "Agreed — caveats in the headnotes, not the appendix. I'll have the range and the noise note to Kai before this drops off the front page. Goodnight, both.",
+     "steered": true
+    },
+    {
+     "seq": 27,
+     "speaker": "Amara Okafor",
+     "text": "Goodnight, both. Kai, I'll get you the postcode data template before the costs land — line shifts are easier to publish when the format's set.\n\nAnd my email to the solicitor will be one paragraph. Short ones get read.",
+     "steered": false
+    },
+    {
+     "seq": 28,
+     "speaker": "Victor Hale",
+     "text": "Goodnight, both. Short paragraphs, caveats first, one school gate on the map — the whole night's argument, and none of the shouting.\n\nKai, the draft's mine by morning. The vote's yours.",
+     "steered": false
+    },
+    {
+     "seq": 29,
+     "speaker": "Amara Okafor",
+     "text": "Kai, one last thing, then I'm off the line. When the vote comes, let the public see the ledger, not just the result. People trust a number they can check, even a boring one.\n\nThe clinic opens at six.",
+     "steered": true
+    },
+    {
+     "seq": 30,
+     "speaker": "Victor Hale",
+     "text": "Then the ledger is public, the vote is secondary, and the clinic takes the first ambulance of the day either way. Goodnight, Amara — go get some sleep before the cardiac arrests do.\n\nKai, I'm off the air. The clauses will be on your desk by morning, numbered.",
+     "steered": false
+    },
+    {
+     "seq": 31,
+     "speaker": "Mei Tanaka-Ruiz",
+     "text": "I'll keep the range honest and the appendix empty. Night, Kai — bring the solicitor.",
+     "steered": false
+    }
+   ]
+  }
+ ]
+}

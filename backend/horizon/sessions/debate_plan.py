@@ -57,9 +57,15 @@ def facts(actor: SessionActor, sctx: SessionContext, phase: str, side: str | Non
           candidates: list[str]) -> tuple[DebateFacts, str]:
     """D6: the motion, the phase and side, the last argument by the other side (by anyone else in a panel), each
     candidate's latest argument; and the argument just made ("Name: text"), which `emotion_line` reads."""
-    msgs = _ordered(actor)
     names = {p.character_id: p.name for p in sctx.participants}
     sides = {p.character_id: p.side for p in sctx.participants}
+    motion = str((actor.session.get("config") or {}).get("motion", ""))
+    return facts_from(_ordered(actor), names, sides, motion, phase, side, candidates)
+
+
+def facts_from(msgs: list[Wire], names: dict[str, str], sides: dict[str, str | None], motion: str, phase: str,
+               side: str | None, candidates: list[str]) -> tuple[DebateFacts, str]:
+    """`facts` over a message list: pure, so the member slice cuts a committed history with the live code (D21)."""
     args = [m for m in msgs if is_argument(m)]
 
     def said(m: Wire) -> str:
@@ -77,7 +83,7 @@ def facts(actor: SessionActor, sctx: SessionContext, phase: str, side: str | Non
         if mine is not None:
             latest_by[cid] = str(mine.get("content", ""))
     last_line = next((m for m in reversed(msgs) if m["author"]["type"] == "character" and m.get("kind") == "chat"), None)
-    f = DebateFacts(motion=str((actor.session.get("config") or {}).get("motion", "")), phase=phase, side=side,
+    f = DebateFacts(motion=motion, phase=phase, side=side,
                     last_opposing=said(opposing) if opposing is not None else "", latest_by_candidate=latest_by)
     return f, said(last_line) if last_line is not None else ""
 

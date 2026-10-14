@@ -17,6 +17,10 @@ group-watch design D23; evaluation-harness "M10 decision sets").
 - **`t_end`** is the lowest threshold in {0.5, 0.55, …, 0.95} with precision ≥ 0.90 on dev (B5). Recall is reported;
   under 0.50 means the question is reworded.
 - English is evaluated for accuracy; other languages only need to run (the user's rule, 2026-10-12).
+- **The debate member** (M11, debate D21): `member_rebuttal`, `member_closing` and `member_panel` scored together. The
+  policy answer is `decide_member` (Jev's pick at or above `floor.member`, else the first eligible member). A pass needs
+  both measures: ≥ 80 % inside the set on the English test items, and on the single-answer ones ≥ 15 points above
+  the fixed order with an exact one-sided McNemar test. The random-pick baseline is reported.
 """
 
 from __future__ import annotations
@@ -26,6 +30,7 @@ from math import comb
 from typing import Any
 
 from horizon.ai.agent.cast_plan import least_recent, pick_who
+from horizon.ai.agent.debate_plan import decide_member
 from horizon.ai.agent.follow_plan import decide_second
 from horizon.ai.decider import ChoiceAnswer
 from horizon.evals.metrics import wilson
@@ -253,3 +258,74 @@ def talk_report(rows: Sequence[Mapping[str, Any]]) -> list[str]:
             "- dev table: " + ", ".join(f"{k:.2f}: P {v['precision']:.2f} R {v['recall']:.2f}"
                                         for k, v in sel["table"].items())]
 
+
+
+# ── M11 (debate D21): the debate member ──
+MEMBER_QIDS = ("member_rebuttal", "member_closing", "member_panel")
+MEMBER_TARGET = 0.80
+
+
+def member_answer(answer: ChoiceAnswer | None, label: Mapping[str, Any], floor: float) -> str:
+    return decide_member(answer, candidates(label), floor=floor, failure=None)[0]
+
+
+def member_correct(pick: str, label: Mapping[str, Any]) -> bool:
+    return pick in set(label.get("acceptable") or [])
+
+
+def random_pick(label: Mapping[str, Any]) -> float:
+    """The chance a uniform pick among the candidates is acceptable."""
+    cands = candidates(label)
+    return len(set(label.get("acceptable") or []) & set(cands)) / len(cands) if cands else 0.0
+
+
+def choose_member_floor(rows: Sequence[Row]) -> dict[str, Any]:
+    """`floor.member` on dev over D36's grid: the most accurate, ties to the lower floor."""
+    grid = {f: (sum(member_correct(member_answer(a, lab, f), lab) for a, lab in rows) / len(rows) if rows else 0.0)
+            for f in WHO_GRID}
+    return {"floor": max(WHO_GRID, key=lambda f: (grid[f], -f)), "grid": grid}
+
+
+def member_report(rows: Sequence[Mapping[str, Any]]) -> list[str]:
+    title = "## Debate member (member_rebuttal, member_closing, member_panel)"
+    dev = [(_answer(r), r["label"]) for r in rows if r.get("split") == "dev"]
+    test = _english([r for r in rows if r.get("split") == "test"])
+    if not dev or not test:
+        return [f"{title}: needs dev and test items (dev {len(dev)}, test {len(test)})"]
+    sel = choose_member_floor(dev)
+    floor = float(sel["floor"])
+    picks = [(member_answer(_answer(r), r["label"], floor), r) for r in test]
+    k = sum(member_correct(p, r["label"]) for p, r in picks)
+    n = len(picks)
+    lo, hi = wilson(k, n)
+    single = [(p, r) for p, r in picks if r["label"].get("single")]
+    ok_p = [member_correct(p, r["label"]) for p, r in single]
+    ok_f = [member_correct(str(r["label"]["fixed"]), r["label"]) for _, r in single]
+    only_p = sum(a and not b for a, b in zip(ok_p, ok_f, strict=True))
+    only_f = sum(b and not a for a, b in zip(ok_p, ok_f, strict=True))
+    ns = len(single)
+    diff = (sum(ok_p) - sum(ok_f)) / ns if ns else 0.0
+    pval = mcnemar_one_sided(only_p, only_f)
+    inside = k / n >= MEMBER_TARGET
+    lift = margin_passes(diff, pval)
+    rand = sum(random_pick(r["label"]) for _, r in picks) / n
+    by_source: dict[str, int] = {}
+    for r in test:
+        a = _answer(r)
+        _, outcome, _ = decide_member(a, candidates(r["label"]), floor=floor, failure=None)
+        by_source[outcome] = by_source.get(outcome, 0) + 1
+    out = [f"{title}: floor {floor:.1f} (chosen on dev) → member check {'PASS' if inside and lift else 'FAIL'} "
+           "(needs both measures)",
+           f"- English test inside the set {k}/{n} = {k / n:.2f} (95% Wilson {lo:.2f}–{hi:.2f}); target ≥ "
+           f"{MEMBER_TARGET:.2f} → {'PASS' if inside else 'FAIL'}",
+           f"- single-answer test items ({ns}): policy {sum(ok_p)}/{ns}, fixed order {sum(ok_f)}/{ns}; difference "
+           f"{diff:+.2f} (target ≥ +{MARGIN:.2f}); exact one-sided McNemar p {pval:.4f} ({only_p} only the policy right, "
+           f"{only_f} only the fixed order) → {'PASS' if lift else 'FAIL'}",
+           f"- random-pick baseline: {rand:.2f} expected inside the set",
+           "- the answer's source on test: " + ", ".join(f"{k_}: {v}" for k_, v in sorted(by_source.items())),
+           "- floor grid (dev): " + ", ".join(f"{f:.1f}: {g:.2f}" for f, g in sel["grid"].items())]
+    others = [r for r in rows if r.get("split") == "test" and str(r.get("lang") or "en") != "en"]
+    if others:
+        out.append(f"- other languages: {sum(1 for r in others if _answer(r) is not None)}/{len(others)} test items "
+                   "ran (only that they run is checked)")
+    return out
