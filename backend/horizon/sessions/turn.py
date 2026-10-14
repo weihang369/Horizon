@@ -25,7 +25,7 @@ import re
 from collections.abc import Awaitable, Callable, Mapping
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal
 
 from horizon.ai.contexts import DebateMeta, LineHint, PlanRequest, SessionContext, TurnContext, TurnPlan
 from horizon.ai.ports import OWNED_TRACE_KEYS, CitationMap, Emotion, Token, TracePatch
@@ -42,6 +42,7 @@ from horizon.sessions.coalesce import Coalescer
 from horizon.sessions.context import (
     character_view,
     characters,
+    document_titles,
     energy_of,
     reply_cap,
     session_context,
@@ -245,10 +246,13 @@ class TurnRunner:
             base = str(max(mine, key=lambda m: m["seq"])["emotion"]) if mine else "neutral"
         else:
             base = next((p.emotion for p in sctx.participants if p.character_id == spec.speaker), "neutral")
+        kind: Literal["reply", "greeting"] = "greeting" if spec.line.kind == "greeting" else "reply"
+        # M12 (rag D6): the gate's titles, read only for a planner that decides retrieval (agent) and a reply
+        docs = await document_titles(rt, sctx.world.id, [spec.speaker]) \
+            if kind == "reply" and getattr(planner, "decides_retrieval", False) else {}
         req = PlanRequest(session=sctx, speaker_id=spec.speaker, cast=[character_view(row)], message_id=mid,
-                          kind="greeting" if spec.line.kind == "greeting" else "reply",
-                          latest=spec.prompt.removesuffix(REGENERATE_SUFFIX), turn_index=actor.mode.turn,
-                          base_face=base, manual=manual, started_at=started)
+                          kind=kind, latest=spec.prompt.removesuffix(REGENERATE_SUFFIX), turn_index=actor.mode.turn,
+                          base_face=base, manual=manual, started_at=started, documents=docs)
         return sctx, await planner.plan(req)
 
     async def _stream(self, actor: SessionActor, spec: TurnSpec, info: TurnInfo, ctx: TurnContext, t0: float,

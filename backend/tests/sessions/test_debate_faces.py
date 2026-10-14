@@ -45,8 +45,10 @@ async def test_a_prefetched_opening_keeps_its_own_plan(api: Api) -> None:
         assert row["about"] == cid and row["result"] == "used"
         assert any(c["purpose"] == "turn_plan" for c in m["trace"]["calls"])
     asked = [b for b in requests(api) if any(k.startswith("emotion_debate_opening:") for k in b["questions"])]
-    assert all(len(b["questions"]) == 1 for b in asked) and len(asked) == 3
-    assert set(asked[1]["state"]) <= {"mode", "side", "quoted_user", "quoted_cast", "quoted_motion"}
+    assert all(len([k for k in b["questions"] if not k.startswith("docs:")]) == 1 for b in asked)   # + M12's gate
+    assert len(asked) == 3
+    assert set(asked[1]["state"]) <= {"mode", "side", "quoted_user", "quoted_cast", "quoted_motion",
+                                      "quoted_documents"}   # M12: the gate's titles, nothing else
     await assert_reduces(api, sid)
 
 

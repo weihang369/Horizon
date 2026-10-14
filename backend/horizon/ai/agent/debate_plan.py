@@ -10,6 +10,9 @@ V2, V3; doc 13 W5 row 11, W11; debate design D5–D9, D27; debate-plan spec).
   member that fell back can still get Jev's face. `late_rows()` waits for an answer that missed both, for the trace.
 - **The state** (D6): X9's debate fields from M8's builder, with no `last_spoke` (every candidate is "not yet heard";
   the label only pushes Jev towards the fixed order), and only the fields its questions declare (A3 rule 6).
+- **The gate** (M12, rag D8): "needs documents?" about each eligible member with a searchable source rides the same
+  request (no "standalone?" or "English?": debate never rewrites), with their titles in `quoted_documents`. The member's
+  deadline is unchanged; the gate is read with the faces at the turn's start, and one still missing then is quick.
 """
 
 from __future__ import annotations
@@ -19,6 +22,7 @@ import logging
 from datetime import datetime
 from typing import Any
 
+from horizon.ai.agent import gates
 from horizon.ai.agent.cast_plan import candidate_views, ledger_call, recent_lines
 from horizon.ai.agent.emotion import decide_face, emotion_row, merges
 from horizon.ai.agent.plan_graph import Branch, build_plan_graph, run_plan
@@ -107,6 +111,8 @@ class DebateSteps:
             qs[key] = b.question(FACE, seed=f"{seed}:{cid}", name=_name(names[cid].name if cid in names else cid),
                                  about=cid)
             keys[cid] = key
+        who = gates.gated(req.candidates, req.documents)
+        qs.update(gates.questions({c: names[c].name if c in names else c for c in who}, who, nouls=False))
         return qs, keys, qid
 
     @staticmethod
@@ -117,25 +123,33 @@ class DebateSteps:
         f = req.facts
         inp = PlanStateInput(mode="debate", user_name=you,
                              candidates=candidate_views(s, req.candidates, req.cast, req.base_faces, {}),
+                             documents={c: list(req.documents[c]) for c in gates.gated(req.candidates, req.documents)},
                              latest=req.latest, recent=recent_lines(s, skip_last=bool(req.latest)),
                              debate=DebateInput(motion=f.motion, phase=f.phase, side=f.side,
                                                 last_opposing=f.last_opposing,
                                                 latest_by_candidate=dict(f.latest_by_candidate)),
                              last_spoke=False)
         built = build_turn_plan_state(inp)
-        state = only_declared(dict(built.state), questions)
+        # M12: the titles a gate reads are added to what the member and face questions declare, and nothing else
+        state = only_declared(dict(built.state), {k: q for k, q in questions.items() if not k.startswith("docs:")})
+        if "quoted_documents" in built.state:
+            state["quoted_documents"] = built.state["quoted_documents"]
         return PlanState(state=state, tokens=_tokens(state), dropped_gates=list(built.dropped_gates))
 
     def start(self, planner: Any, req: DebateRequest) -> JevDebateCall:
         qs, keys, qid = self.questions(req)
         state = self.state_for(req, qs)
+        for cid in state.dropped_gates:   # X9's cap dropped their titles: no gate, a quick turn
+            qs.pop(gates.gate_key(cid), None)
+        nouls = gates.fallbacks(qs)
 
         async def fallback() -> Answers:
-            return {k: ChoiceAnswer(req.candidates[0] if k == qid else "none") for k in qs}
+            return {k: nouls.get(k, ChoiceAnswer(req.candidates[0] if k == qid else "none")) for k in qs}
 
         call = self.deps.decider().start(state.state, qs, req.session.call_ctx(PURPOSE), purpose=PURPOSE,
                                          fallback=fallback)
-        return JevDebateCall(planner, self, req, state, call, keys, qid)
+        return JevDebateCall(planner, self, req, state, call, keys, qid,
+                             [c for c in req.candidates if gates.gate_key(c) in qs])
 
     # ── the graph (run by `member`) ──
     async def state(self, run: dict[str, Any]) -> PlanState:
@@ -158,9 +172,10 @@ class JevDebateCall:
     """The handle `start_debate` returns: the request is in flight from `turn.end`."""
 
     def __init__(self, planner: Any, steps: DebateSteps, req: DebateRequest, state: PlanState, call: DecisionCall,
-                 keys: dict[str, str], qid: str | None) -> None:
+                 keys: dict[str, str], qid: str | None, gated: list[str] | None = None) -> None:
         self.planner, self.steps, self.req, self.state, self.call = planner, steps, req, state, call
         self.keys, self.qid = keys, qid
+        self.gated = list(gated or [])   # M12: who was asked "needs documents?"
         self.fixed: DebatePlan | None = None   # the plan as `member` fixed it
 
     async def read(self, at: datetime) -> tuple[DecisionResult, dict[str, Any]]:
@@ -271,10 +286,13 @@ class JevDebateCall:
                           "latencyMs": float(meta["deadline_ms"]), "fallback": True})
         elif meta.get("call"):
             calls.append(meta["call"])
+        found, _ = gates.read(res, self.gated, nouls=False)   # M12: used only if back by the turn's start (D8)
+        found.update(gates.dropped([c for c in gates.gated(req.candidates, req.documents) if c not in self.gated]))
         return DebatePlan(seed=self.steps.seed(req), member=chosen, outcome=outcome, who=who,  # type: ignore[arg-type]
                           faces=faces if not late else {}, face_rows=face_rows, shared_rows=shared, calls=calls,
                           state_tokens=self.state.tokens,
-                          graph_path=list(member.graph_path) if member is not None else [])
+                          graph_path=list(member.graph_path) if member is not None else [],
+                          gates=found if not late else {})
 
     @staticmethod
     def _answered_after(res: DecisionResult, member: DebatePlan) -> bool:

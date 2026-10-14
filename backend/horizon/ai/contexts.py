@@ -212,6 +212,23 @@ class PlannedFace(Frozen):
 CueKind = Literal["second", "next", "steer"]
 
 
+class GateAnswer(Frozen):
+    """One candidate's "needs documents?" (M12: docs/ai/01 A4; rag design D7, D8): Jev's p, or None and why."""
+
+    p: float | None = None
+    outcome: Literal["jev", "late", "fallback", "dropped"] = "jev"
+
+
+class MessageNouls(Frozen):
+    """"standalone?" and "English?" about the message being answered (M12: doc 10 K4; rag D8), asked once per message
+    in 1:1 and group. None: that answer fell back (no rewrite)."""
+
+    standalone: float | None = None
+    english: float | None = None
+    outcome: Literal["jev", "late", "fallback"] = "jev"
+    message_id: str | None = None                   # the message they were asked about (the follow plan reuses them)
+
+
 class TurnPlan(Frozen):
     """The frozen result of the turn plan (A9: a turn replays from JSON with no Jev call)."""
 
@@ -226,6 +243,9 @@ class TurnPlan(Frozen):
     dropped_gates: list[str] = []
     cue: CueKind | None = None                      # M10 (doc 07 G3; group-watch D10): the cue's one sentence
     answered: str | None = None                     # the first replier's name, for cue "second"
+    gate: GateAnswer | None = None                  # M12: the speaker's "needs documents?" (None: not asked)
+    abstain_ok: bool = False                        # M12 (rag D8): a not-found outcome may say so
+    nouls: MessageNouls | None = None               # M12: "standalone?" / "English?" for the rewrite (1:1, group)
 
     @property
     def deep(self) -> bool:
@@ -246,6 +266,7 @@ class PlanRequest(Frozen):
     base_face: str = "neutral"                      # AUTO: the face now; MANUAL: the last AI-chosen face (E2)
     manual: bool = False
     started_at: datetime                            # the deadline counts from here (the plan starts before turn.next)
+    documents: dict[str, list[str]] = {}            # M12 (rag D6): searchable sources' titles, by character
 
 
 # ── The cast plan and the follow plan (M10: doc 07 G1–G8; group-watch design D3, D8, D22) ──
@@ -308,6 +329,8 @@ class CastRequest(Frozen):
     started_at: datetime
     deadline_at: datetime | None = None             # None: started_at + the turn_plan deadline; plan-ahead sets it (D15)
     debate: DebateFacts | None = None               # M11: a debate turn's motion, phase and side (debate D7)
+    documents: dict[str, list[str]] = {}            # M12 (rag D6): searchable sources' titles, by character
+    message_id: str | None = None                   # M12: the user message being answered (the nouls are about it)
 
 
 class CastPlan(Frozen):
@@ -324,6 +347,8 @@ class CastPlan(Frozen):
     calls: list[dict[str, Any]] = []
     graph_path: list[str] = []
     state_tokens: int = 0
+    gates: dict[str, GateAnswer] = {}               # M12 (rag D8): "needs documents?" per candidate asked
+    nouls: MessageNouls | None = None               # M12: "standalone?" / "English?" when a group message is answered
 
     @property
     def steer(self) -> bool:
@@ -331,16 +356,24 @@ class CastPlan(Frozen):
 
     def for_speaker(self, cid: str, *, cue: CueKind | None = None, answered: str | None = None) -> TurnPlan:
         """The reply's frozen plan: its face, the shared rows plus its own row `used`, and the other candidates' rows
-        `not_used` (W1), except on an Everyone reply, which carries only its own (D22)."""
+        `not_used` (W1), except on an Everyone reply, which carries only its own (D22). M12: the speaker's own gate
+        decides the branch; the other candidates' gate rows are `not_used`."""
+        from horizon.ai.agent import gates as g
+
         rows = list(self.shared_rows)
         for other, row in self.face_rows.items():
             if other == cid:
                 rows.append(row)
             elif self.kind != "everyone":
                 rows.append({**row, "result": "not_used"})
-        return TurnPlan(seed=self.seed, kind="reply", branch="quick", emotion=self.faces.get(cid), rows=rows,
-                        calls=list(self.calls), graph_path=list(self.graph_path), state_tokens=self.state_tokens,
-                        cue="steer" if self.steer and cue is None else cue, answered=answered)
+        gate = self.gates.get(cid)
+        rows += g.speaker_rows(cid, self.gates, self.nouls, purpose="turn_plan", kind=self.kind,
+                               everyone=self.kind == "everyone")
+        return TurnPlan(seed=self.seed, kind="reply", branch="deep" if g.deep(gate) else "quick",
+                        emotion=self.faces.get(cid), rows=rows, calls=list(self.calls),
+                        graph_path=list(self.graph_path), state_tokens=self.state_tokens,
+                        cue="steer" if self.steer and cue is None else cue, answered=answered, gate=gate,
+                        abstain_ok=g.abstain_allowed(gate, self.kind), nouls=self.nouls)
 
 
 class FollowRequest(Frozen):
@@ -359,6 +392,9 @@ class FollowRequest(Frozen):
     manual: bool = False
     turns_since: dict[str, int | None] = {}
     started_at: datetime                            # the first reply's stream end (doc 11 S5)
+    documents: dict[str, list[str]] = {}            # M12 (rag D6): searchable sources' titles, by character
+    message_id: str | None = None                   # M12: the user message both replies answer
+    nouls: MessageNouls | None = None               # M12 (rag D8): the cast plan's answers for that message, reused
 
 
 FollowOutcome = Literal["jev", "none", "below_floor", "late", "fallback", "cancelled"]
@@ -377,18 +413,33 @@ class FollowPlan(Frozen):
     calls: list[dict[str, Any]] = []
     graph_path: list[str] = []
     state_tokens: int = 0
+    gates: dict[str, GateAnswer] = {}               # M12 (rag D8): "needs documents?" per follow candidate asked
+    nouls: MessageNouls | None = None               # M12: the cast plan's, or this plan's own when it had to ask
+    asked_nouls: bool = False                       # M12: this request asked them (the cast plan hadn't)
 
     def rows_for_first(self) -> list[dict[str, Any]]:
-        """No second reply: the rows go on the first reply's trace (W1), every emotion row `not_used`."""
-        return [*self.shared_rows, *({**r, "result": "not_used"} for r in self.face_rows.values())]
+        """No second reply: the rows go on the first reply's trace (W1), every emotion row `not_used`, and every gate
+        row this plan asked `not_used` too."""
+        from horizon.ai.agent import gates as g
+
+        rows = [*self.shared_rows, *({**r, "result": "not_used"} for r in self.face_rows.values())]
+        rows += [g.gate_row(c, a, purpose="follow_plan", abstain_kind=True, result="not_used")
+                 for c, a in self.gates.items() if a.outcome != "dropped"]
+        return rows
 
     def for_speaker(self, cid: str, *, answered: str) -> TurnPlan:
+        from horizon.ai.agent import gates as g
+
         rows = list(self.shared_rows)
         for other, row in self.face_rows.items():
             rows.append(row if other == cid else {**row, "result": "not_used"})
-        return TurnPlan(seed=self.seed, kind="reply", branch="quick", emotion=self.faces.get(cid), rows=rows,
-                        calls=list(self.calls), graph_path=list(self.graph_path), state_tokens=self.state_tokens,
-                        cue="second", answered=answered)
+        gate = self.gates.get(cid)
+        rows += g.speaker_rows(cid, self.gates, self.nouls if self.asked_nouls else None, purpose="follow_plan",
+                               kind="second")
+        return TurnPlan(seed=self.seed, kind="reply", branch="deep" if g.deep(gate) else "quick",
+                        emotion=self.faces.get(cid), rows=rows, calls=list(self.calls),
+                        graph_path=list(self.graph_path), state_tokens=self.state_tokens, cue="second",
+                        answered=answered, gate=gate, abstain_ok=g.abstain_allowed(gate, "second"), nouls=self.nouls)
 
 
 # ── The debate plan (M11: doc 08 V2, V3; doc 13 W5 row 11, W11; debate design D5, D6, D8, D27) ──
@@ -407,6 +458,7 @@ class DebateRequest(Frozen):
     base_faces: dict[str, str] = {}
     manual: bool = False
     started_at: datetime                            # the `turn.end` it starts at
+    documents: dict[str, list[str]] = {}            # M12 (rag D6): searchable sources' titles, by character
 
 
 DebateOutcome = Literal["jev", "below_floor", "late", "fallback", "single", "cancelled"]
@@ -426,13 +478,19 @@ class DebatePlan(Frozen):
     calls: list[dict[str, Any]] = []
     graph_path: list[str] = []
     state_tokens: int = 0
+    gates: dict[str, GateAnswer] = {}               # M12 (rag D8): used if back by the turn's start, else fallback
 
     def for_speaker(self, cid: str) -> TurnPlan:
+        from horizon.ai.agent import gates as g
+
         rows = list(self.shared_rows)
         for other, row in self.face_rows.items():
             rows.append(row if other == cid else {**row, "result": "not_used"})
-        return TurnPlan(seed=self.seed, kind="reply", branch="quick", emotion=self.faces.get(cid), rows=rows,
-                        calls=list(self.calls), graph_path=list(self.graph_path), state_tokens=self.state_tokens)
+        gate = self.gates.get(cid)
+        rows += g.speaker_rows(cid, self.gates, None, purpose="debate_plan", kind="debate")
+        return TurnPlan(seed=self.seed, kind="reply", branch="deep" if g.deep(gate) else "quick",
+                        emotion=self.faces.get(cid), rows=rows, calls=list(self.calls),
+                        graph_path=list(self.graph_path), state_tokens=self.state_tokens, gate=gate)
 
 
 class ListenerView(Frozen):

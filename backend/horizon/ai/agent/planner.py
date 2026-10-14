@@ -1,15 +1,16 @@
 """The `agent` turn planner: Jev call 1 on the plan graph (docs/ai/01 A4, A5; docs/ai/06 E1–E3; turn-plan-emotion design
 D3, D4, D6, D7, D10, D12, D13; turn-plan spec).
 
-In M9 it plans `agent` 1:1 turns and asks one question per candidate: the emotion (`emotion_reply`, or
-`emotion_greeting` for a generated greeting). No gate is asked, so `route` is always quick (W4: every 1:1 turn is
-quick until M12).
+It plans `agent` 1:1 turns and asks one question per candidate: the emotion (`emotion_reply`, or `emotion_greeting`
+for a generated greeting). M12 (rag D6–D8): a reply to a speaker with searchable documents also asks "needs
+documents?" about them, and "standalone?" and "English?" about the message, in the same request; `route` answers
+deep when the speaker's gate is at or above `t_gate`. A generated greeting asks no gate.
 
-- **state:** M8's `build_turn_plan_state`, imported unchanged, with no document titles (no gate reads them yet).
+- **state:** M8's `build_turn_plan_state`, with the speaker's document titles when the gate is asked.
 - **ask:** one `turn_plan` request through the `Decider`, waited for until `started_at` + the `turn_plan` deadline. A
   late, failed, refused or oversized call is a fallback at once; a late answer is still billed and then discarded
   (W11). Cancelling the plan (Stop) detaches the readers and lets the request settle (D8).
-- **decide:** `decide_face` per candidate, and one System 1 row each.
+- **decide:** `decide_face` per candidate, and one System 1 row each; the gate rows (D20).
 """
 
 from __future__ import annotations
@@ -19,6 +20,7 @@ import logging
 from datetime import timedelta
 from typing import Any
 
+from horizon.ai.agent import gates
 from horizon.ai.agent.emotion import decide_face, emotion_row
 from horizon.ai.agent.persona import first_name
 from horizon.ai.agent.plan_graph import Branch, build_plan_graph, run_plan
@@ -69,7 +71,10 @@ def plan_state_input(req: PlanRequest) -> PlanStateInput:
         recent = recent[:-1]
     you = str((s.world.you or {}).get("displayName") or "")
     lines = [{"speaker": (you or "the user") if m.author_type == "user" else m.name, "text": m.content} for m in recent]
-    return PlanStateInput(mode=s.mode, user_name=you, candidates=cands, latest=req.latest, recent=lines)
+    docs = {req.speaker_id: list(req.documents[req.speaker_id])} \
+        if req.kind == "reply" and req.documents.get(req.speaker_id) else {}
+    return PlanStateInput(mode=s.mode, user_name=you, candidates=cands, latest=req.latest, recent=lines,
+                          documents=docs)
 
 
 class JevTurnPlanner:
@@ -153,20 +158,23 @@ class JevTurnPlanner:
         name = next((p.name for p in req.session.participants if p.character_id == cid), cid)
         key = f"{qid}:{cid}"
         q = bank().question(qid, seed=f"{self.seed(req)}:{cid}", name=_name(name), about=cid)
+        gated = gates.gated([cid], req.documents, state.dropped_gates) if req.kind == "reply" else []
+        qs = {key: q, **gates.questions({cid: name}, gated, nouls=True)}
 
         async def fallback() -> Answers:
-            return {key: ChoiceAnswer("none")}
+            return {key: ChoiceAnswer("none"), **gates.fallbacks(qs)}
 
         decider = self.deps.decider()
         ctx = req.session.call_ctx(PURPOSE, character_id=cid, message_id=req.message_id)
-        call = decider.start(state.state, {key: q}, ctx, purpose=PURPOSE, fallback=fallback)
+        call = decider.start(state.state, qs, ctx, purpose=PURPOSE, fallback=fallback)
         try:
             res: DecisionResult = await call.by(req.started_at + timedelta(seconds=decider.timeout_for(PURPOSE)))
         except asyncio.CancelledError:
             call.cancel()   # D8: readers detach; the request already sent settles and is recorded `cancelled`
             raise
         return res, {"key": key, "qid": qid, "version": q.meta.version if q.meta else 0,
-                     "label": q.meta.label if q.meta else "emotion", "timeout_s": decider.timeout_for(PURPOSE)}
+                     "label": q.meta.label if q.meta else "emotion", "timeout_s": decider.timeout_for(PURPOSE),
+                     "gated": gated}
 
     def decide(self, req: PlanRequest, state: PlanState, result: tuple[DecisionResult, dict[str, Any]]) -> TurnPlan:
         res, meta = result
@@ -180,11 +188,16 @@ class JevTurnPlanner:
         if face.outcome in ("fallback", "late"):   # a fallback has no ledger row of its own by turn.end (the router's rule)
             calls.append({"purpose": PURPOSE, "model": self.deps.prices.decision.model, "costUsd": 0.0,
                           "latencyMs": float(meta["timeout_s"] * 1000), "fallback": True})
-        return TurnPlan(seed=self.seed(req), kind=req.kind, emotion=face, rows=[row], calls=calls,
-                        state_tokens=state.tokens, dropped_gates=list(state.dropped_gates))
+        found, nouls = gates.read(res, meta["gated"], nouls=True)
+        gate = found.get(req.speaker_id)
+        rows = [row, *gates.speaker_rows(req.speaker_id, found, nouls, purpose=PURPOSE, kind=req.kind)]
+        return TurnPlan(seed=self.seed(req), kind=req.kind, emotion=face, rows=rows, calls=calls,
+                        state_tokens=state.tokens, dropped_gates=list(state.dropped_gates), gate=gate,
+                        abstain_ok=gates.abstain_allowed(gate, req.kind), nouls=nouls)
 
     def route(self, req: PlanRequest, plan: TurnPlan) -> Branch:
-        return "quick"   # M12 adds "deep" when a gate says documents are needed
+        """M12 (rag D8): deep when the speaker's own gate is at or above `t_gate`."""
+        return "deep" if gates.deep(plan.gate) else "quick"
 
     @staticmethod
     def seed(req: PlanRequest) -> str:

@@ -40,7 +40,7 @@
 
 ## 0. The base (design D2)
 
-- [ ] 0.1 Confirm the base. `git diff --stat cf157b9 a16a5ec -- backend frontend seed evals` must show no code
+- [x] 0.1 Confirm the base. `git diff --stat cf157b9 a16a5ec -- backend frontend seed evals` must show no code
   change. Re-run the backend gate in the gate worktree and the frontend gates, and record them in a new
   `docs/ai/checks/m12.md` "Step 0" table.
   Verify: backend 1648, frontend 529 / http 62, e2e 66 + 2 skipped, or each difference explained there.
@@ -138,20 +138,20 @@
 
 ## 4. The gates in every plan (design D6, D8, D20)
 
-- [ ] 4.1 The runtime reads each candidate's searchable-source titles (`indexed` or `keyword_only`, extension stripped,
+- [x] 4.1 The runtime reads each candidate's searchable-source titles (`indexed` or `keyword_only`, extension stripped,
   newest first) through a world-bound read, and fills `PlanStateInput.documents` for gated candidates only.
   Verify:
   - a state for Amara (keyword-only seed sources) lists her titles;
   - a candidate with no source has none;
   - X9's cuts still keep the state ≤ 2,000 tokens, reporting `dropped_gates`.
-- [ ] 4.2 Add the gates to Jev call 1 in 1:1: `docs:{speaker}`, plus `standalone` and `english` when `docs` is asked.
+- [x] 4.2 Add the gates to Jev call 1 in 1:1: `docs:{speaker}`, plus `standalone` and `english` when `docs` is asked.
   Decide the branch: `route` answers `deep` when p ≥ `t_gate`, and generated greetings ask no gate.
   Verify `test_gates_m12.py`:
   - one request holds the three questions;
   - p 0.8 → `deep`, p 0.1 → `quick`;
   - a late plan → quick with a `fallback` row;
   - a character without sources gets no gate.
-- [ ] 4.3 Add the gates to the cast plan:
+- [x] 4.3 Add the gates to the cast plan:
   - `group_first`, `group_mentioned` and `everyone`: `docs` per gated candidate, plus `standalone` and `english` once;
   - `next` and `step_in`: `docs` only;
   - watch `scene` and `opening`: `docs` only;
@@ -162,20 +162,20 @@
   - per-kind request contents;
   - only the speaker's `docs` row is `used`;
   - `dropped_gates` candidates go quick.
-- [ ] 4.4 Add the gates to the follow plan: `docs` per candidate, reusing the cast plan's `standalone` and `english`
+- [x] 4.4 Add the gates to the follow plan: `docs` per candidate, reusing the cast plan's `standalone` and `english`
   for the same message, or asking them when it didn't.
   Verify: a follow request holds `docs` and no rewrite nouls when the cast plan asked them, and holds them when it
   didn't.
-- [ ] 4.5 Add the gate to the debate plan: `docs` per eligible member with titles, no rewrite nouls. The member's
+- [x] 4.5 Add the gate to the debate plan: `docs` per eligible member with titles, no rewrite nouls. The member's
   651 ms deadline is unchanged; the gate is used if back by the turn's start, else the turn is quick.
   Verify, on the virtual clock:
   - the member fixed at 651 ms is unaffected;
   - a gate landing after the deadline but before the turn's start is used;
   - one landing later gives a quick turn with a `fallback` row.
-- [ ] 4.6 Measure each grown request on the fake: the state and question tokens of 1:1, a group of 5 with 4 gated,
+- [x] 4.6 Measure each grown request on the fake: the state and question tokens of 1:1, a group of 5 with 4 gated,
   watch, follow and a debate plan with 3 members. Record them in m12.md.
   Verify: every request is under the Decider's size check, and the table is in m12.md.
-- [ ] 4.7 Note the gates in doc 01 A4 and doc 05 X9 ("built in M12").
+- [x] 4.7 Note the gates in doc 01 A4 and doc 05 X9 ("built in M12").
   Verify: the docs link check passes.
 
 ## 5. The query (design D10, D11, D19; K4; D-100)

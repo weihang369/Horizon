@@ -351,6 +351,11 @@ Doc 01 A3 rule 6: Jev gets less accurate as irrelevant content grows, so the sta
   `quoted_latest` is the argument just made, "Name: text", which `emotion_line` reads. M11 also drops `last_spoke`
   from watch turns and group Next speaker (`who_scene` and `who_next` v3; `talk_finished` v3, which shares the watch
   state): fairness is the guard's job in code (doc 07 G6), and the label was biasing Jev's pick.*
+  *Built in M12 (OpenSpec `rag` D6, D8): `quoted_documents` is filled for the gated candidates only (their searchable
+  sources' titles), and X9's cuts apply unchanged: titles past 5 first, and a candidate dropped by the cap gets no gate
+  (a quick turn, `dropped_gates`). A debate plan or debate face request adds only `quoted_documents` to the fields its
+  questions declare. Measured sizes with the gates: [m12.md](checks/m12.md) (a group of five with four gated: state
+  1,022 tokens, 12 questions).*
 - **Cost:** about 800–2,000 tokens × $0.042 / M ≈ **$0.00003–0.00008 per turn**. Doc 01 check 4 still has to measure
   whether a multi-question request bills the state once or per question; if per question, this limit is the lever.
   *Measured in M11: a debate plan's state is p50 1,793 tokens, and a Standard 2 v 2 spends ≈ $0.0008 on its 8

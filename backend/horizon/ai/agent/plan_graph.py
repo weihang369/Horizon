@@ -3,7 +3,9 @@
 Built to its final shape, although in M9 it is one Jev call:
 
     state ──▶ ask ──▶ decide ──▶ route ──quick──▶ END
-                                      └──deep───▶ (M12: embed → search → Jev call 2 → keep)
+                                      └──deep───▶ deep ──▶ END   (M12: gather → search → check → keep)
+
+A plan whose steps have no `deep` step passes a deep answer straight to END (the plan's branch still says deep).
 
 - **No checkpointer** (A9): every run starts from frozen inputs and returns a result; nothing is stored between runs.
 - **Only `langgraph`** (A8): the nodes call our own `Decider` and code; no LangChain model class is used.
@@ -43,8 +45,12 @@ class PlanSteps(Protocol):
     def route(self, req: Any, plan: Any) -> Branch: ...
 
 
+class DeepStep(Protocol):
+    async def deep(self, req: Any, plan: Any) -> Any: ...
+
+
 def build_plan_graph(steps: PlanSteps) -> Any:
-    """Compile the graph over `steps`. In M9 only the quick branch exists, so `route` must answer "quick"."""
+    """Compile the graph over `steps`. M12: a `deep` answer runs `steps.deep(req, plan)` when the steps have one."""
 
     # LangGraph's node protocol names the parameter `state`; here it is the whole run, not the Jev state.
     async def state_node(state: PlanRun) -> PlanRun:
@@ -59,16 +65,23 @@ def build_plan_graph(steps: PlanSteps) -> Any:
     async def route_node(state: PlanRun) -> PlanRun:
         return {"branch": steps.route(state["req"], state["plan"]), "path": ["route"]}
 
+    async def deep_node(state: PlanRun) -> PlanRun:
+        deep = getattr(steps, "deep", None)
+        plan = await deep(state["req"], state["plan"]) if deep is not None else state["plan"]
+        return {"plan": plan, "path": ["deep"] if deep is not None else []}
+
     g = StateGraph(PlanRun)
     g.add_node("state", state_node)
     g.add_node("ask", ask_node)
     g.add_node("decide", decide_node)
     g.add_node("route", route_node)
+    g.add_node("deep", deep_node)
     g.add_edge(START, "state")
     g.add_edge("state", "ask")
     g.add_edge("ask", "decide")
     g.add_edge("decide", "route")
-    g.add_conditional_edges("route", lambda run: run["branch"], {"quick": END})   # M12 adds "deep"
+    g.add_conditional_edges("route", lambda run: run["branch"], {"quick": END, "deep": "deep"})
+    g.add_edge("deep", END)
     return g.compile()
 
 

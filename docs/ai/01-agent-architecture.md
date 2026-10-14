@@ -234,6 +234,13 @@ probabilities for Insight.
   the follow plan (`start_follow`, purpose `follow_plan`), which replaces the second-replier re-plan. Everyone's order
   is the cast plan's probabilities, and every Everyone reply uses that one call's faces. The gates arrive with M12; until
   then a planned group or watch turn is quick (no retrieval, D18).*
+  *Built in M12 (OpenSpec `rag` D6–D8, D20): "needs documents?" (`docs:{characterId}`) rides every plan's one request
+  (Jev call 1 in 1:1, the cast plan, the follow plan and the debate plan) about each candidate with an `indexed` or
+  `keyword_only` source, whose titles (extension stripped, newest first) fill `quoted_documents`. "standalone?" and
+  "English?" ride once per message in 1:1 and when a group message is answered; the follow plan reuses the cast
+  plan's, and debate and watch never ask them. Only the speaker's own answer counts (at or above `t_gate`: deep); the
+  other candidates' rows are `not_used`, a dropped gate or a fallback is quick, and the debate's gate is used if back
+  by the turn's start. The grown requests' sizes are in [m12.md](checks/m12.md).*
 - **Size check.** The `Decider` checks the whole request (state + all questions) against the real limit of the
   OpenRouter endpoint, as well as state + the longest question. Check 4 finds that limit.
 - **Confidence floors** apply to every choice and score answer. A noul has no confidence, so its probability is used

@@ -165,7 +165,8 @@ async def test_auto_opening_asks_who_scene_and_opening_faces_without_talk_finish
     jev(api, lambda b: {"who_scene": pick(VICTOR)} if "who_scene" in b["questions"] else {})
     first = await replies(api, sid, 1)
     body = plan_bodies(api)[0]
-    assert set(body["questions"]) == {"who_scene", *(f"emotion_opening:{c}" for c in TRIO)}
+    assert set(body["questions"]) == {"who_scene", *(f"emotion_opening:{c}" for c in TRIO),
+                                      *(f"docs:{c}" for c in TRIO)}   # M12: watch asks the gate, never the nouls
     assert "none" not in body["questions"]["who_scene"]["criteria"]
     assert speakers(first) == [VICTOR]
 
@@ -173,7 +174,7 @@ async def test_auto_opening_asks_who_scene_and_opening_faces_without_talk_finish
 async def test_a_chosen_opening_speaker_is_forced(api: Api) -> None:
     sid = await agent_watch(api, maxTurns=10, openingSpeaker=MEI)
     first = await replies(api, sid, 1)
-    assert list(plan_bodies(api)[0]["questions"]) == [f"emotion_opening:{MEI}"]
+    assert list(plan_bodies(api)[0]["questions"]) == [f"emotion_opening:{MEI}", f"docs:{MEI}"]
     assert speakers(first) == [MEI]
 
 

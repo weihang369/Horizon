@@ -14,7 +14,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
 from horizon.ai.contexts import CastKind, CastPlan, CastRequest, DebateFacts, SessionContext, SteerBlock
-from horizon.sessions.context import character_view, characters, session_context
+from horizon.sessions.context import character_view, characters, document_titles, session_context
 
 if TYPE_CHECKING:
     from horizon.sessions.actor import SessionActor
@@ -61,17 +61,19 @@ async def cast_request(actor: SessionActor, kind: CastKind, candidates: Sequence
                        forced: Sequence[str] = (), forced_by: Any = None, reason: str | None = None,
                        steer_block: SteerBlock | None = None, scene_start: int = 0,
                        deadline_at: datetime | None = None, sctx: SessionContext | None = None,
-                       debate: DebateFacts | None = None) -> CastRequest:
+                       debate: DebateFacts | None = None, message_id: str | None = None) -> CastRequest:
     rt = actor.rt
     started = rt.clock.now()
     sctx = sctx or await session_context(rt, actor)
     ids = list(dict.fromkeys([*forced, *candidates]))
     rows = await characters(rt, ids)
+    docs = await document_titles(rt, sctx.world.id, ids)   # M12 (rag D6, D8): the gate's titles
     return CastRequest(session=sctx, kind=kind, candidates=list(candidates), forced=list(forced), forced_by=forced_by,
                        reason=reason, cast=[character_view(rows[c]) for c in ids if c in rows], latest=latest,
                        turn_index=actor.mode.turn, base_faces=base_faces(actor, sctx, ids), manual=manual(actor),
                        turns_since=turns_since(actor, ids, scene_start), steer_block=steer_block,
-                       started_at=started, deadline_at=deadline_at, debate=debate)
+                       started_at=started, deadline_at=deadline_at, debate=debate, documents=docs,
+                       message_id=message_id)
 
 
 async def plan_cast(actor: SessionActor, req: CastRequest) -> CastPlan | None:

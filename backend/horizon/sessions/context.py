@@ -40,6 +40,24 @@ async def characters(rt: Runtime, ids: list[str]) -> dict[str, Any]:
     return {r["id"]: r for r in rows}
 
 
+async def document_titles(rt: Runtime, world_id: str, ids: list[str]) -> dict[str, list[str]]:
+    """M12 (rag D6): each character's searchable sources (`indexed` or `keyword_only`, the states K2 searches), titled
+    without their file extension, newest first. Read-only and bound to the world; a character with none is left out."""
+    from horizon.ai.embedder import strip_extension
+
+    if not ids:
+        return {}
+    K = t.knowledge_sources.c
+    async with rt.db.read() as conn:
+        rows = (await conn.execute(select(K.character_id, K.title).where(
+            K.world_id == world_id, K.character_id.in_(ids), K.status.in_(("indexed", "keyword_only")))
+            .order_by(K.added_at.desc(), K.id))).all()
+    out: dict[str, list[str]] = {}
+    for cid, title in rows:
+        out.setdefault(str(cid), []).append(strip_extension(str(title)))
+    return out
+
+
 def energy_of(rt: Runtime, row: Any) -> dict[str, Any]:
     p = rt.energy_params()
     return read_energy(mp.stored_energy(row), p.now_ms, frozen=p.frozen, est_reply_points=p.est_reply_points,

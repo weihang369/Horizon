@@ -24,7 +24,9 @@ gateway code with no socket ever opened.
 - rag (M12 design D2): `park_questions(prefix, n)` holds the next n decisions requests asking a matching question
   (a deep turn's 8 `passage:` checks), each released on its own event in any order; `answer_question(pattern, raw)`
   answers a question key (or a `prefix*`) with a set raw answer; `refuse_question(prefix)` answers the next request
-  asking it with HTTP 429 (Jev's rate limit), once.
+  asking it with HTTP 429 (Jev's rate limit), once. Every "needs documents?" (`docs:…`) is answered no (0.0) unless a
+  test sets it, so a character with documents stays on the quick path by default. A queued streamed (SSE) response
+  waits for a chat request: a Jev request in between (a gate riding the plan) never takes it.
 
 The response shapes follow the recorded fixtures in `tests/fixtures/openrouter/` (unverified until the live run).
 """
@@ -270,7 +272,8 @@ class FakeOpenRouter:
         return self._answer(request, (request.method, request.url.path.removeprefix("/api")))
 
     def _answer(self, request: httpx.Request, route: tuple[str, str]) -> httpx.Response:
-        if self.queued:
+        if self.queued and (route == ("POST", "/v1/chat/completions")
+                            or self.queued[0].headers.get("content-type") != "text/event-stream"):
             return self.queued.pop(0)
         auth = request.headers.get("authorization", "")
         if not auth.startswith("Bearer sk-or-") or auth.startswith("Bearer sk-or-bad"):
@@ -386,7 +389,7 @@ class FakeOpenRouter:
                 answers[key] = {"type": "choice", "choice": opts[0] if opts else None, "confidence": p,
                                 "probabilities": dict.fromkeys(opts, p)}
             elif kind == "noul":
-                answers[key] = {"type": "noul", "noul": 0.5}
+                answers[key] = {"type": "noul", "noul": 0.0 if key.startswith("docs:") else 0.5}
             elif kind == "score":
                 levels = list(crit or [])
                 mid = (len(levels) - 1) / 2
