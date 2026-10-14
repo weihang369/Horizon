@@ -402,7 +402,7 @@
 - [x] 10.10 Free runs from the smoke allowance (≈ $0.05): 2 `agent` debates and 3 `agent` watch runs of 30 turns.
   Verify: m11.md has the debate report (with the `agent` debate-quality column) and the steer report against M10's 0
   of 7. The steer rule (D18) goes to the user if fewer than half the steered lines start something new.
-- [ ] 10.11 The carry-over re-tests (≈ $0.011):
+- [x] 10.11 The carry-over re-tests (≈ $0.011):
   - cut 40 fresh `who_scene` items and 40 watch emotion growth items from the 10.10 watch runs, labelled blind before
     any v3 answer is seen;
   - run `who_scene` (140) and `who_next` (40);

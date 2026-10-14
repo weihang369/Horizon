@@ -1144,6 +1144,22 @@ delta. If implementation finds a need, it stops and asks (the user's rule).
    ties "keep the face" (11 of 19 on test): recorded; the slice can grow in a later milestone.
    - **Rejected:** holding the face on debate lines (departs from "maximize Jev" on 19 test items).
 
+### D33. The user's two choices after the carry-over re-tests (2026-10-14, 20:05 KL)
+
+1. **D20's watch faces: no merge for `emotion_line`.** On the grown watch slice (80 items) dropping turn-plan-emotion
+   D12's neutral + none merge scored better on both splits (dev 0.70 vs 0.68; English test 13/22 vs 11/22; of the 8
+   items where the rules differ, no merge right on 5, merge on 2). `emotion_line` (watch, group and debate lines) now
+   takes `none` as "keep" and `neutral` as its own answer (`emotion.merges`); `emotion_reply`, `emotion_opening` and
+   `emotion_debate_opening` still merge. `emotion_line` moves to version 3; its floor, re-chosen on dev under the new
+   rule, stays 0.2.
+   - **Rejected:** keeping the merge (floor 0.3).
+2. **`who_scene` v3 and `who_next` still miss 0.80** (`who_scene` test 0.63, +0.14 over round-robin, p 0.031; the 40
+   fresh cuts 24/40; `who_next` 0.75, +0.10, p 0.31): **recorded, floors kept at 0.2.** Jev still picks the
+   longest-silent character on 69 % of `who_scene` items (M10: 75 %) though the state no longer says who spoke when:
+   the watch transcripts mostly rotate, and Jev follows the rotation. Live watch stays fair (G6's guard; a miss is a
+   fair rotation pick, never the last speaker). A reword can be tried later on new held-out cuts.
+   - **Rejected:** a v4 reword now (new held-out cuts from another free run, ≈ $0.03).
+
 ## Open Questions
 
-None. The four choices are D29, the apply-time choices D30–D32. D20's watch-faces choice is asked after its measurement, by design.
+None. The four choices are D29, the apply-time choices D30–D33. D20's watch-faces choice is asked after its measurement, by design.

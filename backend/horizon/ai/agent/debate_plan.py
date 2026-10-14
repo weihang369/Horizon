@@ -20,7 +20,7 @@ from datetime import datetime
 from typing import Any
 
 from horizon.ai.agent.cast_plan import candidate_views, ledger_call, recent_lines
-from horizon.ai.agent.emotion import decide_face, emotion_row
+from horizon.ai.agent.emotion import decide_face, emotion_row, merges
 from horizon.ai.agent.plan_graph import Branch, build_plan_graph, run_plan
 from horizon.ai.agent.plan_state import DebateInput, PlanState, PlanStateInput, _tokens, build_turn_plan_state
 from horizon.ai.agent.planner import _name
@@ -259,7 +259,7 @@ class JevDebateCall:
             fa = res.answers.get(key)
             face = decide_face(fa if isinstance(fa, ChoiceAnswer) else None, base=req.base_faces.get(cid, "neutral"),
                                floor=fe.floor if fe.floor is not None else 0.6, fade=fade, manual=req.manual,
-                               failure=res.failure)
+                               failure=res.failure, merge=merges(FACE))
             faces[cid] = face
             row = emotion_row(face, qid=FACE, version=fe.version, label=fe.label, about=cid, purpose=PURPOSE)
             if late:

@@ -17,7 +17,7 @@ from __future__ import annotations
 from collections.abc import Callable, Mapping, Sequence
 from typing import Any
 
-from horizon.ai.agent.emotion import MERGED, decide_face, kept
+from horizon.ai.agent.emotion import MERGED, decide_face, kept, merges
 from horizon.ai.agent.reactions import keep as keep_reactions
 from horizon.ai.contexts import ListenerView
 from horizon.ai.decider import ChoiceAnswer
@@ -30,7 +30,8 @@ FADE = frozenset({"surprised", "embarrassed"})
 
 def emotion_answer(answer: ChoiceAnswer | None, label: Mapping[str, Any], floor: float,
                    fade: frozenset[str] = FADE, merge: bool = True) -> str:
-    return decide_face(answer, base=str(label["previous"]), floor=floor, fade=fade, merge=merge).face
+    rule = merge and bool(label.get("merge", True))   # a label may carry its question's live rule (`report`)
+    return decide_face(answer, base=str(label["previous"]), floor=floor, fade=fade, merge=rule).face
 
 
 def emotion_correct(face: str, label: Mapping[str, Any], fade: frozenset[str] = FADE) -> bool:
@@ -102,6 +103,8 @@ def report(rows: Sequence[Mapping[str, Any]], kind: str, fade: frozenset[str] = 
     Other languages are a "runs" check only (the user's rule, 2026-10-12)."""
     answer = emotion_answer if kind == "emotion" else reaction_answer
     title = title or ("Emotion" if kind == "emotion" else "Reactions")
+    if kind == "emotion":   # each item under its question's live merge rule (M11 D33)
+        rows = [{**r, "label": {**r["label"], "merge": merges(str(r.get("question_id") or ""))}} for r in rows]
     dev = [(answer_of(r), r["label"]) for r in rows if r.get("split") == "dev"]
     test = [r for r in rows if r.get("split") == "test"]
     if not dev or not test:
@@ -143,7 +146,7 @@ def report(rows: Sequence[Mapping[str, Any]], kind: str, fade: frozenset[str] = 
     for r, _, _, face in scored:
         a, lab = answer_of(r), r["label"]
         if kind == "emotion":
-            f = decide_face(a, base=str(lab["previous"]), floor=floor, fade=fade)
+            f = decide_face(a, base=str(lab["previous"]), floor=floor, fade=fade, merge=bool(lab.get("merge", True)))
             used += f.outcome == "jev"
             if lab["previous"] == "neutral":
                 neutral_n += 1

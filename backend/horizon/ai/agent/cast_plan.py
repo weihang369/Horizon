@@ -22,7 +22,7 @@ from typing import Any
 
 from sqlalchemy import select
 
-from horizon.ai.agent.emotion import decide_face, emotion_row
+from horizon.ai.agent.emotion import decide_face, emotion_row, merges
 from horizon.ai.agent.plan_graph import Branch
 from horizon.ai.agent.plan_state import (
     Candidate,
@@ -275,7 +275,7 @@ class CastSteps:
             a = res.answers.get(key)
             face = decide_face(a if isinstance(a, ChoiceAnswer) else None, base=req.base_faces.get(cid, "neutral"),
                                floor=fe.floor if fe.floor is not None else 0.6, fade=fade, manual=req.manual,
-                               failure=res.failure)
+                               failure=res.failure, merge=merges(fq))
             faces[cid] = face
             face_rows[cid] = emotion_row(face, qid=fq, version=fe.version, label=fe.label, about=cid)
         shared: list[dict[str, Any]] = []
