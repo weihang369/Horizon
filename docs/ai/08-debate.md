@@ -91,7 +91,7 @@ Start ─ host welcome (DeepSeek, written during the 1.6 s start delay; fixed li
   │
   ├─ ROUND 1 · OPENING   openings in fixed order, 2 generated ahead (unchanged)
   │
-  ├─ every turn.end ──► debate plan for the next slot (Jev, deadline turn.end + 400 ms)        V2
+  ├─ every turn.end ──► debate plan for the next slot (Jev, deadline turn.end + 651 ms)        V2
   │                       which member of the side (only when 2+ can speak) + their gates and emotion
   │                       late / unsure → next member in fixed order; turn.next announces them
   │                     side with nobody awake → pause, top-up prompt                          V5
@@ -194,8 +194,11 @@ Start ─ host welcome (DeepSeek, written during the 1.6 s start delay; fixed li
 eligible) and `emotion_line` per candidate; `turn.next` is sent when Jev answers, by `turn.end` + 651 ms (the measured
 p90, task 10.7) at the latest, with no turn gap; the faces are read when the turn starts. The stored plan carries M10 D15's fingerprint with
 V2's seq rule (only character and user messages move it) and its (phase, iteration) target; Pause marks it stale. A
-phase's first slot is planned at the boundary, its member fixed when the slot's turn starts. The measured timing (D9)
-and `floor.member` are in [m11.md](checks/m11.md).*
+phase's first slot is planned at the boundary, its member fixed when the slot's turn starts. Measured ([m11.md](checks/m11.md)):
+30 of 30 bench plans missed 500 ms (Jev p50 583 / p90 651 ms on a p50 1,793-token state), hence 651 and the
+NFR-02 exception; live, 6 of 10 member picks still reached 651 ms unanswered, as the plan runs alongside the turn's
+reactions and host line (re-measured after M14). `floor.member` **0.5**: 0.71 on the member slice's test split,
++0.23 over the fixed order (p 0.033), below 0.80, recorded.*
 
 ### V3. Who may speak, and the energy rules inside a phase
 
@@ -348,7 +351,8 @@ Only with `moderator: auto_host`. With "You" as moderator only the round banners
 *Built in M11 (D11): `sessions/debate_host.py` requests each line ahead by its key (kind, phase, iteration) and shows
 it by its deadline (the welcome: Start + 3 s; the others: their banner + 1.5 s, `debate.hostWelcomeWaitMs` /
 `hostBannerWaitMs`), else the fixed line; a late answer is recorded `late`, a dropped one `cancelled`. The verdict
-lead-in is worded per verdict mode. Prompt `host-1`. The 10 timed bridges are in [m11.md](checks/m11.md).*
+lead-in is worded per verdict mode. Prompt `host-1`. The 10 timed bridges were all on time (955–1,489 ms), and 1
+of 10 was flagged partisan by a first-pass noul, a false positive on reading ([m11.md](checks/m11.md)).*
 
 ### V7. The verdict score: Jev scores, code decides the winner
 
@@ -401,7 +405,7 @@ Two-sided debates with verdict by **Arbiter** or **You decide** only.
 
 *Built in M11 (D12): `ai/agent/rubric.py`: one Jev request, one score question per side per criterion (the default
 four, `rubric_generic` by position for unknown ones), bars = unit × 10, the stronger case by mean bars with
-`verdict.margin` (0.5 to start; the value chosen on dev is in [m11.md](checks/m11.md)), the side blocks within 24,000
+`verdict.margin` (0.5 to start; **0.25** chosen on the suite's dev debates, [m11.md](checks/m11.md)), the side blocks within 24,000
 tokens, a 429 retried once by the Decider. Swapped order is a different request, so the suite measures order bias.*
 
 ### V8. The verdict prose: DeepSeek JSON, told the result
@@ -453,7 +457,8 @@ tokens, a 429 retried once by the Decider. Swapped order is a different request,
 
 *Built in M11 (D13, D15): prompt `verdict-1`, told the result; parse, a free quote repair, one paid retry, all within
 30 s; every failure falls back to a quoted summary with a note, never a hang. `naive` makes one call that writes the
-scores and the stronger case too.*
+scores and the stronger case too. A rationale over 60 words is trimmed, not rejected (D32), after the suite lost two
+proses to rationales of 61–69 words.*
 
 ### V9. The verdict work starts at the last closing, also for "You decide"
 
@@ -483,7 +488,8 @@ scores and the stronger case too.*
 *Built in M11 (D14): the verdict work starts at the last closing's `turn.end`; Extend and Skip discard it; End with
 verdict reuses matching work; the You-decide pick returns at once and the verdict follows; the debate's first command
 after a load, `debate.resume` and the cap-resume path re-run it when the verdict phase has none (the old hang is
-gone). The early-end estimate follows the price table and the price period (D16).*
+gone). The early-end estimate follows the price table and the price period (D16). Measured: the viewer's wait from
+the last closing's `turn.end` to the verdict, p50 3.9 s, max 6.6 s (5 Arbiter debates).*
 
 ### V10. Steering, unchanged in shape
 
@@ -554,7 +560,9 @@ with `naive` (12 two-sided for the suite, 1 panel), with four written eval-only 
 that run's database so 2 v 2, 3 v 2 and a panel of 4 can be cast; the planted weak sides were written once by
 DeepSeek. The member slice, the debate emotion slice and both judges' validation sets come from them. The prose and
 host nouls are first-pass pointers, never B4-validated, with every item read. The `naive` arm of the debate suite is
-paid at M15 (W6). Every result is in [m11.md](checks/m11.md).*
+paid at M15 (W6). Results ([m11.md](checks/m11.md)): planted, the strong side wins 7/8 and scores higher on Rebuttal 8/8; the
+side swap flips the winner 0/16; keeps its side `naive` 134/142 and `agent` 12/12, engages `naive` 100/100 and
+`agent` 8/8 (V11's targets are judged at M15); the member slice 0.71 (below 80 %; the lift passes).*
 
 ### V12. Speed, cost and profiles, in one place
 
@@ -588,11 +596,14 @@ random winner.
 
 *Built in M11 (D24–D26): no contract change; purposes `debate_plan` (decision) and `eval_plant` (chat, evaluation
 only); `timeoutsMs.verdict` 30 s; the profiles: `agent` plans and scores, `naive` writes host lines and a single-call
-verdict, `scripted` keeps the mock's.*
+verdict, `scripted` keeps the mock's. Measured in a live `agent` Standard 2 v 2 ([m11.md](checks/m11.md) 10.10): the debate
+plan ≈ $0.0008 (8 plans, each also asking the faces, against V12's ≈ $0.0001 for the member question alone), 4 host
+lines ≈ $0.0006, the rubric ≈ $0.0002 and the prose ≈ $0.0006: **≈ $0.0021 a debate** on top of the arguments.*
 
 ## 5. Checks before this is locked
 
-Collected for the paid-check step after all 13 tasks (the user's rule), not run now:
+Collected for the paid-check step after all 13 tasks (the user's rule), not run now. *Run in M11: the results are in
+[m11.md](checks/m11.md) 10.7; the rubric's billing and score scale were settled by [group A](checks/group-a.md) A1.*
 
 | # | Check | Pass | If it fails |
 |---|---|---|---|
@@ -606,7 +617,7 @@ None changes the HTTP contract or a requirement.
 
 | Change | Kind | Why | Decision |
 |---|---|---|---|
-| The **debate plan**: `Decider` purpose `debate_plan` (**added to the gateway's `PURPOSE_CATEGORY` as a decision**; `call_ctx` refuses unknown purposes), `timeoutsMs.decision.debate_plan` = 500 ([group A](checks/group-a.md)) as a deadline from `turn.end` replacing `turnGapMs` for that step; the member question per phase over the last opposing argument, `floor.member` in the question bank; doc 07 G8's fingerprint and lifecycle; the phase-boundary plan with its target; energy re-checked at turn start; routing trace with `forcedBy: "round_order"`, `reason` and `skipped` | backend + config | A14 | V2, V3 |
+| The **debate plan**: `Decider` purpose `debate_plan` (**added to the gateway's `PURPOSE_CATEGORY` as a decision**; `call_ctx` refuses unknown purposes), `timeoutsMs.decision.debate_plan` = ~~500~~ **651** ([group A](checks/group-a.md); M11's measured p90) as a deadline from `turn.end` replacing `turnGapMs` for that step; the member question per phase over the last opposing argument, `floor.member` in the question bank; doc 07 G8's fingerprint and lifecycle; the phase-boundary plan with its target; energy re-checked at turn start; routing trace with `forcedBy: "round_order"`, `reason` and `skipped` | backend + config | A14 | V2, V3 |
 | A slot whose side has nobody awake pauses the debate (notes, `energy_exhausted`, reason `user`, slot kept), in the runtime **and the mock's debate engine**, with a parity fixture; missed turns passed to the verdict | backend + mock | finding 1 | V5 |
 | The debate session block, reply rules and per-phase cue in the `agent` compiler and its TS twin with shared fixtures; teammates named as teammates in `naive` | backend + frontend | findings 2, 3 | V4 |
 | `DebateHost.narration()` async with the session context; a DeepSeek host (`runtime.llm.calls.host`, text, `max_tokens` 120, ledger purpose `host`), requested ahead, keyed by (phase, iteration), with deadlines and the fixed sentence as fallback; lines for Extend and Skip; a verdict lead-in worded per verdict mode with three fixed fallbacks (`naive`, `agent`) | backend + config | finding 4 | V6 |

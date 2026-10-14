@@ -507,15 +507,18 @@ every node, and Forget would get harder.
   `turn.end` (deadline 400 ms, replacing the turn gap) and also asks the eligible members' gates and emotion; late or
   unsure means the next member in fixed order. A side with nobody awake pauses the debate with a top-up prompt.
 
-*Built in M11 (OpenSpec `debate` D3–D9, D27): the debate plan (purpose `debate_plan`, deadline 500 ms from
-`turn.end`, W12) asks `member_rebuttal`, `member_closing` or `member_panel` when two or more members are eligible,
+*Built in M11 (OpenSpec `debate` D3–D9, D27): the debate plan (purpose `debate_plan`, deadline 651 ms from
+`turn.end`, M11's measured p90, W12) asks `member_rebuttal`, `member_closing` or `member_panel` when two or more members are eligible,
 and `emotion_line` for each candidate, in one request. `turn.next` names the member as soon as Jev answers, by the
 deadline at the latest, with no turn gap; below `floor.member` or late, the next member in fixed order speaks. The
 faces are read when the turn starts, so a late member answer still gives Jev's face. The gates wait for M12. Openings
 keep the fixed order, with the first opening's face planned at Start and each prefetched opening planning its own; Ask
 answers are planned too (`debate_ask`). The trace's `routing` keeps `forcedBy: "round_order"` with the reason "Side
-by the debate order; speaker chosen by Jev", and the member is a `debate_plan` row in System 1. The deadline and
-`floor.member` as measured are in [m11.md](checks/m11.md).*
+by the debate order; speaker chosen by Jev", and the member is a `debate_plan` row in System 1. Measured
+([m11.md](checks/m11.md)): every one of 30 bench plans missed 500 ms (Jev p90 651 ms; our side under 2 ms), so the
+deadline is **651 ms** with an NFR-02 exception, re-measured after M14; in the live free runs 6 of 10 member picks
+were still late. `floor.member` is **0.5**: 0.71 on the member slice's test split, +0.23 over the fixed order
+(p 0.033), below the 0.80 target, recorded.*
 
 ## 6. Failure modes (7.1.11) checked against this design
 

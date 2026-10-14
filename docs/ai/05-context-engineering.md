@@ -353,6 +353,8 @@ Doc 01 A3 rule 6: Jev gets less accurate as irrelevant content grows, so the sta
   state): fairness is the guard's job in code (doc 07 G6), and the label was biasing Jev's pick.*
 - **Cost:** about 800–2,000 tokens × $0.042 / M ≈ **$0.00003–0.00008 per turn**. Doc 01 check 4 still has to measure
   whether a multi-question request bills the state once or per question; if per question, this limit is the lever.
+  *Measured in M11: a debate plan's state is p50 1,793 tokens, and a Standard 2 v 2 spends ≈ $0.0008 on its 8
+  plans ([doc 08](08-debate.md) V12).*
 
 **Rejected:**
 - **giving Jev the reply prompt:** ~10K tokens of mostly irrelevant text, slower and less accurate;

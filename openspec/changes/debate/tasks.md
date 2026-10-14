@@ -417,7 +417,7 @@
 
 ## 11. Docs (design D28)
 
-- [ ] 11.1 Amend everything doc 08 §6 lists:
+- [x] 11.1 Amend everything doc 08 §6 lists:
   - doc 01: A7, A14, §6, §8, §9;
   - doc 02: B2, B4, B5, B7, B8, §8;
   - doc 03: C1 and §7;

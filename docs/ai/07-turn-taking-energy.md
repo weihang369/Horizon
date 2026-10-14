@@ -232,8 +232,9 @@ every other request keeps `agent-1` / `agent-2`. "View as prompt" shows a fixed 
 steer sentence is now "This thread has run its course. Bring in something new that fits the premise: an event, a
 discovery or a change of plan. Don't wrap up, say goodbye or wait for {user} to decide." (`{user}` is the You card's
 name). A steered request is labelled `agent-5` (`agent-6` with the mood line on), so M10's `agent-3` answers keep
-theirs. The new `judge_starts_new` noul judges every steered line in the watch free runs against M10's 0 of 7; the
-result is in [m11.md](checks/m11.md).*
+theirs. The new `judge_starts_new` noul judges every steered line in the watch free runs against M10's 0 of 7: **4 of
+8** started something new (a draft plan, a vacancy check, a till that opened, a constitutional annexe), read by hand
+too; D18's rule (the user chooses below half) is not triggered ([m11.md](checks/m11.md) 10.10).*
 
 **Rejected:**
 - **no sentence:** the second replier's most common failure is restating the first reply in other words;
@@ -522,7 +523,7 @@ turns, the busiest speaker had 25 % (watch) and 55 % (group), second replies cam
 | Episode recap (G10) | on Summarise | ≈ 2–4 s (one non-streamed call) | ≤ ≈ $0.0017 off-peak |
 
 A group send with two replies costs about **$0.0001 more in Jev** than today's single route call; that rounds to
-nothing next to the replies themselves.
+nothing next to the replies themselves. The debate plan's cost, measured in M11, is in [doc 08](08-debate.md) V12.
 
 *Built in M10 (D20): `follow_plan` (decision) and `episode_summary` (summary) are ledger purposes; `timeoutsMs.episode`
 = 30,000 is new in `seed/pricing.json` and its mirror; G6's 2 rounds and G7's 1-in-3 cap are code constants citing their
