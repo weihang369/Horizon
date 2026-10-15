@@ -414,12 +414,12 @@
   rewrites) and the piece arms' kept-set precision (≈ $0.02). Choose the space, piece target, λ, instruction,
   `t_keep` and `t_found` by D23 and K7.
   Verify: m12.md has every comparison and the thresholds, with each choice and its rule.
-- [ ] 11.6 `retrieval` on test, once (≈ $0.02).
+- [x] 11.6 `retrieval` on test, once (≈ $0.02).
   Verify: m12.md has the test figures against K7 and B5's targets (≤ 3 wrong abstains in 100; ≥ 32 of 40 abstained),
   and the naming questions reported apart.
 - [x] 11.7 Check 3: 10 real rewrites (≈ $0.004).
   Verify: each passes K4's output checks and stands on its own, read by hand in m12.md.
-- [ ] 11.8 End to end: 50 not-found and partly replies, the judges' 30 real items labelled from them, B4 validation,
+- [x] 11.8 End to end: 50 not-found and partly replies, the judges' 30 real items labelled from them, B4 validation,
   then scoring (≈ $0.03).
   Verify: m12.md has the validation and both judges' rates against ≥ 90 %.
 - [ ] 11.9 Check 2: deep-turn timing (≈ $0.09).
