@@ -24,6 +24,8 @@ source SHALL give a quick reply with no search, no embedding and no `deep_check`
 ### Requirement: The query is built at the gate, in parallel
 When a turn goes deep, keyword search over the message's terms, the message's embedding (only if the speaker has an `indexed` source in the active space) and, in 1:1 and group, the rewrite (only when the message is not standalone or not English) SHALL all start together. A rewrite that lands in time SHALL be searched together with the message: its words join the keyword terms and it is embedded.
 
+In 1:1 and when a group message is answered (the cast plan and the follow plan), the user message's embedding SHALL start with the plan's Jev request, for the first candidate with an `indexed` source, before the gate answers (the user's choice of 2026-10-15, after the query embedding measured ≈ 1.1 s at the median). The deep path's own request for the same text SHALL join it, so one `query_embed` row exists per message. The search SHALL wait for each vector at most `retrieval.agent.queryEmbedWaitMs` (800 ms) from when it needs it; a late vector means keywords only for that text.
+
 #### Scenario: Follow-up rewritten
 - **WHEN** Kai asks Amara "and nights?" after a question about long shift blocks, with `standalone` p 0.06
 - **THEN** one `query_rewrite` call is made, and the search uses both the rewrite and the message
@@ -35,6 +37,14 @@ When a turn goes deep, keyword search over the message's terms, the message's em
 #### Scenario: Keyword-only speaker
 - **WHEN** a deep turn's speaker has only `keyword_only` sources
 - **THEN** no `query_embed` row is written and the search uses keywords only
+
+#### Scenario: The embedding starts with the plan
+- **WHEN** Kai sends Hana, who has an `indexed` source, a message whose `docs` gate comes back at 0.1
+- **THEN** the reply is quick, and exactly one `query_embed` row exists, linked to Kai's message
+
+#### Scenario: A deep turn joins the early embedding
+- **WHEN** the same message's gate comes back at 0.8 and the turn goes deep
+- **THEN** still exactly one `query_embed` row exists for the message text
 
 ### Requirement: The rewrite is checked, bounded and reused
 A rewrite SHALL be used only if it is one line, at most 30 words, mostly Latin script and not empty. It SHALL be abandoned after `rewriteMs`. An accepted rewrite SHALL be stored for that user message and speaker, reused on regenerate with no new call, and never used by another speaker. Debate and watch turns SHALL NOT rewrite.

@@ -38,6 +38,7 @@ from sqlalchemy.ext.asyncio import AsyncConnection
 
 from horizon.ai.scripted.ports import AiDeps
 from horizon.db.spaces import SpaceSpec
+from horizon.domain import vclock
 from horizon.gateway.context import CallContext
 from horizon.gateway.errors import malformed
 
@@ -195,11 +196,19 @@ class _BaseEmbedder:
                 self._settle(k, mine, None)
         retry: list[int] = []
         for i, fut in waits:
+            # another call's request: this caller is idle until it lands (its token given up, as a held request's is,
+            # so virtual time can pass a deadline; rag 11.5's early embedding is often the call being waited on)
+            holder = vclock.current_holder()
+            if holder is not None:
+                holder.drop()
             try:
                 out[i] = await fut
                 cached.append(i)
             except _Abandoned:
                 retry.append(i)
+            finally:
+                if holder is not None:
+                    holder.hold()
         if retry:
             again = await self.embed([texts[i] for i in retry], kind=kind, space=space, ctx=ctx, hooks=None,
                                      meta=[meta[i] for i in retry] if meta is not None else None)
@@ -243,7 +252,8 @@ class QwenEmbedder(_BaseEmbedder):
                     hooks: BatchHooks) -> list[list[float]]:
         after, commit = self._wire(batch, hooks, space.dims)
         await self.deps.gateway().embed_batch(texts, ctx, model=space.model, dimensions=space.dims,
-                                              before_send=hooks.before_send, after_response=after, commit_with=commit,
+                                              provider=space.provider, before_send=hooks.before_send,
+                                              after_response=after, commit_with=commit,
                                               store_ok=hooks.store_ok)
         return batch.vectors
 

@@ -5,9 +5,15 @@ D10–D15; deep-turn spec).
 
 - **gather** (D10, D11): the message's keyword terms, its embedding (only when the speaker has an `indexed` source in
   the index's space) and, in 1:1 and group, the rewrite when the message isn't standalone or isn't English, all start
-  together. A rewrite in time joins the terms and is embedded (≤ `queryEmbedWaitMs`); a failed or late one is a
-  fallback query (the message, and the two earlier lines with it). The search waits for each vector at most
-  `queryEmbedWaitMs` from when it needs it; a late one is still recorded, and the search runs on keywords.
+  together. A rewrite in time joins the terms and is embedded (≤ `retrieval.agent.queryEmbedWaitMs`); a failed or
+  late one is a fallback query (the message, and the two earlier lines with it). The search waits for each vector at
+  most `retrieval.agent.queryEmbedWaitMs` (800 ms) from when it needs it; a late one is still recorded, and the search
+  runs on keywords.
+- **The early start** (rag 11.5, the user's choice of 2026-10-15): from Malaysia a query embedding takes ≈ 1.1 s at
+  the median, so the 1:1, cast (group) and follow plans start the user message's embedding with Jev call 1, for a
+  candidate with vectors (`start_early_embedding`). gather's own request for the same text joins it through the
+  embedder's in-flight de-duplication and LRU, so no second call is made. Watch and debate start at the gate as before
+  (their deep work runs ahead of the turn).
 - **search** (D12): `retrieval.search` with `retrieval.agent`'s numbers, in the speaker's `ScopedIndex`.
 - **check** (D13): one `deep_check` request per candidate, all started at once, each read by `deepCheckMs` from when
   it was sent; a 429 falls back at once (a hot-path purpose). The set check when no passage is found and two or more
@@ -25,6 +31,7 @@ import asyncio
 import contextlib
 import logging
 import operator
+from collections.abc import Sequence
 from datetime import timedelta
 from typing import Annotated, Any, TypedDict
 
@@ -117,7 +124,7 @@ class DeepSteps:
     # ── gather ──
     async def gather(self, req: DeepRequest) -> tuple[QueryBundle, rw.Rewrite | None]:
         knobs = self.knobs()
-        wait = _seconds(self.deps.retrieval().query_embed_wait_ms)
+        wait = _seconds(knobs.query_embed_wait_ms)
         index = self.index(req)
         io = self.deps.deep_io()
         space = await io.space(index.active_space)
@@ -390,6 +397,35 @@ def level_probs(a: ScoreAnswer) -> tuple[float, float, float]:
     total = p0 + p1 + p2 or 1.0
     p1, p2 = p1 / total, p2 / total
     return p2, p1, (p1 + 2 * p2) / 2
+
+
+async def early_embedding(deps: Any, session: Any, who: Sequence[str], text: str, message_id: str | None) -> None:
+    """The user message's query embedding, started with Jev call 1 (rag 11.5): once, for the first of `who` with
+    vectors in the active space. A failure costs nothing: gather asks again at the gate."""
+    RECORDED_SINK.set(None)   # its ledger row links to the message, never to a reply's sink
+    io = deps.deep_io()
+    try:
+        if not io.key_set():
+            return
+        for cid in who:
+            index = io.index(session.world.id, cid)
+            space = await io.space(index.active_space)
+            if space is not None and await io.has_vectors(cid, index.active_space):
+                ctx = call_ctx("query_embed", world_id=session.world.id, session_id=session.session_id,
+                               message_id=message_id)
+                await io.embedder().embed([text], kind="query", space=space, ctx=ctx)
+                return
+    except asyncio.CancelledError:
+        raise
+    except Exception as e:   # a cap, a provider error: the gate's own request tries again
+        log.info("the early query embedding failed (%s)", getattr(e, "code", type(e).__name__))
+
+
+def start_early_embedding(deps: Any, session: Any, who: Sequence[str], text: str, message_id: str | None) -> None:
+    """Spawn `early_embedding` on the runtime's tracked spawn (a plan never waits for it)."""
+    if who and text.strip():
+        deps.spawn(f"query-embed-early:{session.session_id}", early_embedding(deps, session, list(who), text,
+                                                                               message_id))
 
 
 def build_deep_graph(steps: DeepSteps) -> Any:

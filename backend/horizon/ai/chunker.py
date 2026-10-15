@@ -5,7 +5,8 @@ on Markdown and text, and both read the shared fixtures in `tests/fixtures/chunk
 
 - **Blocks.** The Markdown splits on blank lines and `<!-- page N -->` marker lines (Docling output) into headings
   (one line each), paragraphs, lists and tables. Paragraph whitespace is collapsed; list and table lines keep their
-  line breaks (each line collapsed).
+  line breaks (each line collapsed). Docling's `<!-- image -->` placeholder lines end a block and are dropped: they
+  hold no text (rag 11.2, check 4: a piece of image markers alone was indexed).
 - **Headings are carried forward.** A heading line updates the heading path and goes, as Markdown, at the top of the
   next piece; it is never a piece on its own (a heading at the foot of a page, or two in a row, wait for the next
   content). A piece never crosses a heading change. Headings with no content after them end the document unused.
@@ -45,6 +46,7 @@ TARGET = 300
 MAX = 400
 SECTION_TOKENS = 1500
 _PAGE = re.compile(r"^\s*<!--\s*page\s+(\d+)\s*-->\s*$", re.IGNORECASE)
+_IMAGE = re.compile(r"^\s*<!--\s*image\s*-->\s*$", re.IGNORECASE)   # Docling's figure placeholder: no text
 _HEADING = re.compile(r"^\s{0,3}(#{1,6})\s+(.+?)\s*#*\s*$")
 _LINE = re.compile(r"[^\r\n]*(?:\r\n|\r|\n)?")   # not `splitlines`: the TS twin splits on these three only
 _LIST = re.compile(r"^\s*(?:[-*+]|\d{1,9}[.)])\s+")
@@ -202,7 +204,7 @@ def _blocks(md: str) -> tuple[list[_Part], list[tuple[int, int]]]:
         line = _LINE.match(md, off).group(0)  # type: ignore[union-attr]  # always matches
         body = line.rstrip("\r\n")
         m = _PAGE.match(body)
-        if not body.strip() or m:
+        if not body.strip() or m or _IMAGE.match(body):
             close()
             if m:
                 markers.append((off, int(m.group(1))))

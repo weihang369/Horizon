@@ -197,6 +197,10 @@ class JevTurnPlanner:
         q = bank().question(qid, seed=f"{self.seed(req)}:{cid}", name=_name(name), about=cid)
         gated = gates.gated([cid], req.documents, state.dropped_gates) if req.kind == "reply" else []
         qs = {key: q, **gates.questions({cid: name}, gated, nouls=True)}
+        if gated:   # rag 11.5: the query embedding starts with Jev call 1
+            from horizon.ai.agent.deep import start_early_embedding
+
+            start_early_embedding(self.deps, req.session, gated, req.latest, answered_message(req.session)[0])
 
         async def fallback() -> Answers:
             return {key: ChoiceAnswer("none"), **gates.fallbacks(qs)}

@@ -32,6 +32,9 @@ export interface AgentRetrieval {
   rewriteMs: number;
   /** Each `deep_check` request's deadline from when it was sent (K6). */
   deepCheckMs: number;
+  /** The deep path's wait for a query embedding from when the search needs it (rag 11.5: 800, the embedding starting
+   *  with Jev call 1; the top-level `queryEmbedWaitMs` stays naive's). */
+  queryEmbedWaitMs: number;
 }
 
 export interface RuntimeConfig {
@@ -96,7 +99,7 @@ export const RUNTIME: RuntimeConfig = {
     knowledgeK: 5, memoryK: 3, queryEmbedWaitMs: 400,
     agent: {
       pool: 20, candidates: 8, blockTokens: 1400, mmrLambda: 0.7, k: { oneOnOne: 3, group: 2, watch: 2, debate: 2 },
-      pieceTarget: 300, pieceMax: 400, rewriteMs: 1500, deepCheckMs: 700,
+      pieceTarget: 300, pieceMax: 400, rewriteMs: 1500, deepCheckMs: 700, queryEmbedWaitMs: 800,
     },
   },
   persona: { repeatHint: false, moodLine: false },

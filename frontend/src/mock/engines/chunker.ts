@@ -3,7 +3,7 @@
 // backend/tests/fixtures/chunker/ (chunker.test.ts), so a rule changed on one side fails the other's tests.
 //
 // - Blocks: headings (one line), paragraphs (whitespace collapsed), lists and tables (each line collapsed, line breaks
-//   kept), split on blank lines and page markers.
+//   kept), split on blank lines and page markers; `<!-- image -->` lines end a block and are dropped.
 // - A heading is carried to the top of the next piece, never a piece of its own; a piece never crosses a heading change.
 // - Blocks are packed, joined by a blank line, until a piece reaches 300 tokens or the next block would pass 400.
 // - A block too large for an empty piece is cut at the sentence end nearest 300 that fits (a line, for lists and
@@ -22,6 +22,7 @@ type Kind = "heading" | "para" | "list" | "table";
 interface Part { kind: Kind; text: string; header: number; repeated?: number }   // repeated: a leading repeated header
 
 const PAGE = /^\s*<!--\s*page\s+(\d+)\s*-->\s*$/i;
+const IMAGE = /^\s*<!--\s*image\s*-->\s*$/i;   // Docling's figure placeholder: no text, dropped
 const HEADING = /^\s{0,3}(#{1,6})\s+(.+?)\s*#*\s*$/;
 const LIST = /^\s*(?:[-*+]|\d{1,9}[.)])\s+/;
 const TABLE_SEP = /^[\s|:-]*-[\s|:-]*$/;
@@ -66,7 +67,7 @@ function blocks(md: string): Part[] {
     cur = [];
   };
   for (const body of md.split(/\r\n|\r|\n/)) {
-    if (!body.trim() || PAGE.test(body)) { close(); continue; }
+    if (!body.trim() || PAGE.test(body) || IMAGE.test(body)) { close(); continue; }
     if (HEADING.test(body)) { close(); out.push({ kind: "heading", text: collapse(body), header: 0 }); continue; }
     const k = lineKind(body);
     if (cur.length && !(k === kind || (kind === "list" && k === "para"))) close();

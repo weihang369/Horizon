@@ -173,6 +173,12 @@ class FollowSteps:
         async def fallback() -> Answers:
             return {k: nouls.get(k, ChoiceAnswer("none")) for k in qs}
 
+        who = gates.gated(req.candidates, req.documents, state.dropped_gates)
+        if who:   # rag 11.5: the user message's embedding starts with the follow plan (shared with the first reply's)
+            from horizon.ai.agent.deep import start_early_embedding
+            from horizon.ai.agent.planner import answered_message
+
+            start_early_embedding(self.deps, req.session, who, req.message, answered_message(req.session)[0])
         call = self.deps.decider().start(state.state, qs, req.session.call_ctx(PURPOSE), purpose=PURPOSE,
                                          fallback=fallback)
         return JevFollowCall(planner, req, state, call, keys, frozenset(qs))

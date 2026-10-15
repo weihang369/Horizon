@@ -35,11 +35,19 @@ A source's text SHALL be cut by structure first: a heading changes the heading p
 - **THEN** its pieces are cut after a "。"
 
 ### Requirement: Tables and lists keep their lines
-Paragraph text SHALL have its whitespace collapsed; tables and lists SHALL keep their line breaks. A table SHALL be cut only between rows, and each part after the first SHALL repeat the header row. Each piece's text, without a repeated header row, SHALL equal the collapsed source text between its stored start and end offsets.
+Paragraph text SHALL have its whitespace collapsed; tables and lists SHALL keep their line breaks. A table SHALL be cut only between rows, and each part after the first SHALL repeat the header row, unless the header row and that part's first row do not fit one piece together; then that part SHALL start at the row. No piece SHALL hold only a repeated header. Each piece's text, without a repeated header row, SHALL equal the collapsed source text between its stored start and end offsets. Docling's `<!-- image -->` placeholder lines SHALL end a block and be dropped.
 
 #### Scenario: Long table
 - **WHEN** a Markdown table of 60 rows is longer than 400 tokens
 - **THEN** it is split between rows, and every part starts with the header row
+
+#### Scenario: A header too wide to repeat
+- **WHEN** a table's header row is 390 tokens and a later row is 40 tokens
+- **THEN** the part holding that row starts at the row, and no piece is header text alone
+
+#### Scenario: Image placeholders
+- **WHEN** a converted PDF holds `<!-- image -->` lines between paragraphs, and six of them in a row
+- **THEN** no piece contains an image placeholder, and none is made of placeholders alone
 
 ### Requirement: A source chunked by an older version is re-chunked on reindex
 A source chunked by an earlier chunker version SHALL keep its passages until it is reindexed. Reindexing it SHALL chunk it again with the current version, giving its passages new IDs; old citations SHALL keep their stored title and quote. Seed sources SHALL keep their authored passages and IDs. No source SHALL be re-chunked without a reindex.

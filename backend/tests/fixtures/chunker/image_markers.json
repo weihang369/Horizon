@@ -1,0 +1,17 @@
+{
+ "what": "Docling's <!-- image --> placeholder lines end a block and are dropped: no piece holds one, and a run of them never makes a piece of its own (check 4's CDC sheet).",
+ "paged": false,
+ "markdown": "# Self care\n\n<!-- image -->\n\nCover the rash with gauze or a bandage to limit spread to others and to the home.\n\n<!-- image -->\n\n<!-- image -->\n\nDo not pick or scratch the rash. Wash your hands often.\n\n## Pain relief\n\n<!-- image -->\n\n- Medicines such as ibuprofen can help you feel better.\n- Call your provider if the pain is severe.\n\n<!-- image -->\n",
+ "pieces": [
+  {
+   "text": "# Self care\n\nCover the rash with gauze or a bandage to limit spread to others and to the home.\n\nDo not pick or scratch the rash. Wash your hands often.",
+   "locator": "§ Self care",
+   "heading": "Self care"
+  },
+  {
+   "text": "## Pain relief\n\n- Medicines such as ibuprofen can help you feel better.\n- Call your provider if the pain is severe.",
+   "locator": "§ Pain relief",
+   "heading": "Self care › Pain relief"
+  }
+ ]
+}

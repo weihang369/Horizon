@@ -137,7 +137,8 @@
           "pieceTarget": 300,
           "pieceMax": 400,
           "rewriteMs": 1500,
-          "deepCheckMs": 700
+          "deepCheckMs": 700,
+          "queryEmbedWaitMs": 800
         }
       },
       "persona": {

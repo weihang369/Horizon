@@ -320,13 +320,16 @@ async def _indexed_source(api: Api, cid: str) -> None:
     await settle(api, 2000)
 
 
-async def test_no_embedding_when_the_gate_says_no(api: Api) -> None:
+async def test_the_embedding_starts_with_the_plan_even_when_the_gate_says_no(api: Api) -> None:
+    """rag 11.5 (the user's choice, reversing D-100's "never before"): the message's embedding starts with Jev call 1,
+    so a quick turn still has its one early embedding, linked to the message; the deep path adds none."""
     await api.set_key()
     await _indexed_source(api, HANA)
     sid = await agent(api, "one_on_one", [HANA], world=SUNNY)
     gate(api, HANA, 0.1)
     await send(api, sid, "How long should the rice soak?")
-    assert not [r for r in await ledger(api) if r["purpose"] == "query_embed"]
+    embeds = [r for r in await ledger(api) if r["purpose"] == "query_embed"]
+    assert len(embeds) == 1 and embeds[0]["message_id"] is not None
 
 
 async def test_an_indexed_speaker_embeds_at_the_gate(api: Api) -> None:

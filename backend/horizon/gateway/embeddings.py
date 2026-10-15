@@ -36,11 +36,14 @@ class EmbeddingsClient:
         self.batch_size = batch_size
         self.timeout_s = timeout_s
 
-    async def embed_batch(self, texts: Sequence[str], *, model: str, dimensions: int | None = None) -> EmbedBatch:
+    async def embed_batch(self, texts: Sequence[str], *, model: str, dimensions: int | None = None,
+                          provider: str | None = None) -> EmbedBatch:
+        """`provider`: the space's pinned provider (rag 11.5: a space on another provider, e.g. bge-m3 on DeepInfra, was
+        sent to the configured one and refused); None keeps the configured provider."""
         if not texts or len(texts) > self.batch_size:
             raise ValueError(f"an embedding request takes 1..{self.batch_size} texts")
         body: dict[str, Any] = {"model": model, "input": list(texts),
-                                "provider": {"order": [self.provider], "allow_fallbacks": False}}
+                                "provider": {"order": [provider or self.provider], "allow_fallbacks": False}}
         if dimensions:
             body["dimensions"] = dimensions
         resp = await self.core.request("POST", PATH, json=body, http_timeout=self.timeout_s)

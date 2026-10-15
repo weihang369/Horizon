@@ -902,6 +902,31 @@ choice (U4):
    pruned.
    - **Rejected:** raising `KEEP_RUNS`.
 
+### D32. Decisions made during apply (the user's, 2026-10-15)
+
+Phase 11's runs found five things. Each went to the user as a choice:
+1. **Dense search p99 (task 6.3):** 69 ms against the 50 ms target. **Accepted and recorded.** Dense searches keep the
+   100 ms test guard, and the step is judged inside check 2.
+2. **Query embeddings from Malaysia take ≈ 1.1 s at the median** (0.9 s at the fastest), and 94 of 107 dev deep turns
+   missed D11's 400 ms wait. **Start early and wait 800 ms:**
+   - the 1:1, cast and follow plans start the user message's embedding with Jev call 1, for a candidate with vectors;
+   - gather joins it, so there is still one call per message;
+   - the agent path waits up to `retrieval.agent.queryEmbedWaitMs` (800 ms);
+   - this reverses D11's (and D-100's) "never before the gate", so a quick turn to an indexed speaker costs one
+     ≈ $0.000002 embedding;
+   - watch and debate still start at the gate.
+   - **Rejected:** a 1,200 ms wait alone; a provider probe first; keeping 400 ms.
+3. **The piece arms' kept-set precision** costs ≈ $0.095, not D28's $0.02. **Run both.**
+4. **Docling's `<!-- image -->` lines became pieces** (check 4). **`pack@2` drops them.** It keeps its version: it
+   ships with M12, so no installed data holds its pieces.
+5. **X9's cap drops every member's gate late in the panel and three-a-side debates.** **Recorded for M13**, with the
+   memory block's budget. X9's order is unchanged in M12.
+
+Bugs found by the runs and fixed without a choice (they broke the design as written):
+- `pack@2` made a header-only piece on a table with a very wide header row;
+- the embeddings client ignored a space's own provider;
+- the comparison arms waited with live timing, so they measured the store, not the ranking.
+
 ## Risks / Trade-offs
 
 - **[Deep turns near NFR-01's 4 s p90 with a rewrite]** → Every step starts at the gate in parallel. Group's deep

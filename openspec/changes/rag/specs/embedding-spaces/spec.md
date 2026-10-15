@@ -55,3 +55,10 @@ When a space is built from the active one with the same model and dimensions, me
 #### Scenario: Switching to the header space
 - **WHEN** the header space is built from `qwen3-emb-8b@1024` on a database with 40 memories and 300 indexed passages
 - **THEN** the memories' vectors are copied with no ledger row, and the passages are embedded again with `embed_doc` rows
+
+### Requirement: A space is embedded on its own provider
+Every embedding request for a space SHALL pin that space's own provider, with no fallbacks; the configured embedding provider SHALL be used only when a caller names no space.
+
+#### Scenario: A space on another provider
+- **WHEN** `horizon space build` builds `bge-m3@1024+h`, whose provider is DeepInfra, while the configured provider is Nebius
+- **THEN** its embedding requests pin DeepInfra, and the default space's requests still pin Nebius

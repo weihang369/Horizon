@@ -268,6 +268,10 @@ class CastSteps:
                     least_recent(req.candidates, req.turns_since) if key == meta["who"] else "none")
             return out
 
+        if req.kind in gates.NOUL_KINDS and meta["gated"]:   # rag 11.5: a user message's embedding starts now
+            from horizon.ai.agent.deep import start_early_embedding
+
+            start_early_embedding(self.deps, req.session, meta["gated"], req.latest, req.message_id)
         decider = self.deps.decider()
         ctx = req.session.call_ctx(PURPOSE)
         call = decider.start(state.state, qs, ctx, purpose=PURPOSE, fallback=fallback)

@@ -32,7 +32,11 @@ The suite SHALL compare, each chosen on dev and confirmed once on test:
 - rewrite against none;
 - header against none.
 
-Only kept-set precision SHALL make Jev calls.
+Only kept-set precision SHALL make Jev calls. A comparison measures retrieval order, not timing, so every comparison run SHALL wait for its query embeddings in full; the main run keeps live timing and reports the share of deep turns missing their dense half.
+
+#### Scenario: A slow embedding never decides a comparison
+- **WHEN** a challenger space's query embeddings take 1.2 s each
+- **THEN** the challenger's searches still use their vectors, and its Recall@8 is compared with the default's
 
 #### Scenario: A challenger space must win clearly
 - **WHEN** a challenger space gains 2 points of Recall@8 on dev

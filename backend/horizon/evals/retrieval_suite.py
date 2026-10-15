@@ -39,6 +39,7 @@ from horizon.evals.runner import Options, Plan, Result, RunEnv, decision_estimat
 from horizon.gateway.context import call_ctx
 
 USER = "Kai"
+ARM_EMBED_WAIT_MS = 120_000.0
 ARM_SPACES: dict[str, SpaceSpec] = {
     "qwen3-emb-8b@2048+h": SpaceSpec(id="qwen3-emb-8b@2048+h", model="qwen/qwen3-embedding-8b", provider="Nebius",
                                      dims=2048, query_instruction=DEFAULT_SPACE.query_instruction,
@@ -155,10 +156,15 @@ async def prepare(env: RunEnv, arm: dict[str, str]) -> dict[str, str]:
     if arm.get("piece"):
         target = int(arm["piece"].split(":")[0])
         rt.piece_size = (target, max(400, target))
-    if arm.get("lambda"):
+    if arm:
+        # a comparison measures retrieval order only (D23; timing is check 2's): every arm waits for its query
+        # embeddings in full, so a late vector never stands in for a worse ranking (rag 11.5: from Malaysia an
+        # embedding takes ≈ 1.1 s, and only texts already in the store came back inside the live wait)
         knobs = rt.runtime_cfg.runtime.retrieval
         assert knobs.agent is not None
-        agent = dataclasses.replace(knobs.agent, mmr_lambda=float(arm["lambda"]))
+        agent = dataclasses.replace(knobs.agent, query_embed_wait_ms=ARM_EMBED_WAIT_MS)
+        if arm.get("lambda"):
+            agent = dataclasses.replace(agent, mmr_lambda=float(arm["lambda"]))
         rt.runtime_cfg = dataclasses.replace(rt.runtime_cfg, runtime=dataclasses.replace(
             rt.runtime_cfg.runtime, retrieval=dataclasses.replace(knobs, agent=agent)))
     if arm.get("space") and arm["space"] in ARM_SPACES:
@@ -241,6 +247,10 @@ async def deep_request(env: RunEnv, q: dict[str, Any], arm: dict[str, str], *, a
     if arm.get("rewrite") == "off":
         nouls = None
     elif ask:
+        # live starts the message's embedding with Jev call 1 (rag 11.5); the nouls stand in for that call here
+        from horizon.ai.agent.deep import start_early_embedding
+
+        start_early_embedding(rt.ai.planner(True).deps, sctx, [cid], q["message"], None)
         nouls = await ask_nouls(env, sctx, view.name, cid, q)
     else:   # the comparisons ask no Jev: the labels say which questions a rewrite is for
         nouls = MessageNouls(standalone=0.0 if q["kind"] == "followup" else 1.0,

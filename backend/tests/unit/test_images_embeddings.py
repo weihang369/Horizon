@@ -96,3 +96,20 @@ async def test_errors(core: HttpCore, fixture: str, code: str) -> None:
     with pytest.raises(ProviderError) as e2:
         await EmbeddingsClient(core, provider="Nebius", batch_size=32, timeout_s=30).embed_batch(["a"], model="q")
     assert e1.value.code == e2.value.code == code
+
+
+@respx.mock
+async def test_a_space_pins_its_own_provider(core: HttpCore) -> None:
+    """rag 11.5: a space on another provider (bge-m3 on DeepInfra) is sent there, not to the configured one."""
+    sent: list[dict[str, object]] = []
+
+    def answer(request: httpx.Request) -> httpx.Response:
+        body = json.loads(request.content)
+        sent.append(body["provider"])
+        return httpx.Response(200, json={"id": "g", "data": [{"index": 0, "embedding": [1.0]}], "usage": {"cost": 0.0}})
+
+    respx.post(EMB).mock(side_effect=answer)
+    c = EmbeddingsClient(core, provider="Nebius", batch_size=32, timeout_s=30)
+    await c.embed_batch(["a"], model="baai/bge-m3", provider="DeepInfra")
+    await c.embed_batch(["a"], model="qwen/qwen3-embedding-8b")
+    assert sent == [{"order": ["DeepInfra"], "allow_fallbacks": False}, {"order": ["Nebius"], "allow_fallbacks": False}]

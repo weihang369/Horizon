@@ -17,7 +17,7 @@ from horizon.domain.pricing import count_tokens
 
 FIXTURES = Path(__file__).resolve().parents[1] / "fixtures" / "chunker"
 CASES = sorted(FIXTURES.glob("*.json"))
-_MARKER = re.compile(r"^\s*<!--\s*page\s+\d+\s*-->\s*$", re.IGNORECASE | re.MULTILINE)
+_MARKER = re.compile(r"^\s*<!--\s*(?:page\s+\d+|image)\s*-->\s*$", re.IGNORECASE | re.MULTILINE)
 
 
 def collapse(s: str) -> str:
@@ -32,7 +32,8 @@ def load(p: Path) -> dict[str, Any]:
 def test_the_fixture_set_covers_the_cases() -> None:
     assert {p.stem for p in CASES} >= {
         "soups", "heading_carry", "heading_page_foot", "merge_300", "ceiling_cuts", "cjk_cuts", "table_split",
-        "list_kept", "page_break_mid_sentence", "heading_change", "paragraph_numbers"}
+        "list_kept", "page_break_mid_sentence", "heading_change", "paragraph_numbers", "image_markers",
+        "table_wide_header"}
 
 
 @pytest.mark.parametrize("path", CASES, ids=lambda p: p.stem)

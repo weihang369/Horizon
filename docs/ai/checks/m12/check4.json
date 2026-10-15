@@ -3,10 +3,10 @@
  "pdfs": [
   {
    "doc": "bls-empsit.pdf",
-   "pieces": 688,
+   "pieces": 687,
    "pages": 39,
    "tokens": {
-    "min": 5,
+    "min": 10,
     "median": 323,
     "max": 399
    },
@@ -55,11 +55,11 @@
   },
   {
    "doc": "cdc-monkeypox-self-care-zh.pdf",
-   "pieces": 5,
+   "pieces": 4,
    "pages": 1,
    "tokens": {
-    "min": 8,
-    "median": 182,
+    "min": 3,
+    "median": 323,
     "max": 348
    },
    "headings": [
@@ -76,10 +76,9 @@
    ],
    "chinese_piece_endings": [
     "痊愈。",
-    "-->",
-    "-->",
+    "供者。",
     "作用。",
-    "-->"
+    "猴 痘"
    ]
   }
  ],

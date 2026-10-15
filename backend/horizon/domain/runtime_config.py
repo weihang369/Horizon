@@ -125,6 +125,7 @@ class AgentRetrieval:
     piece_max: int = 400
     rewrite_ms: float = 1500.0
     deep_check_ms: float = 700.0
+    query_embed_wait_ms: float = 800.0   # rag 11.5: the agent path's own wait (naive and scripted keep theirs)
 
     def k_for(self, mode: str) -> int:
         return int(self.k.get(mode, self.k["group"]))
@@ -137,7 +138,8 @@ class AgentRetrieval:
                               k={"one_on_one": int(k["oneOnOne"]), "group": int(k["group"]), "watch": int(k["watch"]),
                                  "debate": int(k["debate"])},
                               piece_target=int(a["pieceTarget"]), piece_max=int(a["pieceMax"]),
-                              rewrite_ms=float(a["rewriteMs"]), deep_check_ms=float(a["deepCheckMs"]))
+                              rewrite_ms=float(a["rewriteMs"]), deep_check_ms=float(a["deepCheckMs"]),
+                              query_embed_wait_ms=float(a["queryEmbedWaitMs"]))
 
 
 @dataclass(frozen=True)
