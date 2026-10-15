@@ -57,9 +57,10 @@ ADULT_SLEEP = [
     corpus(M2, "Most adults need about 7 to 8 hours of good-quality sleep per night"),
     corpus(M2, "recommends that adults get 7 or more hours of sleep each day"),
 ]
-HEADACHE_ESCALATE = [seed(TRIAGE, "kch_amaraTri04", "or that comes with fever, neck stiffness, confusion, new weakness or "
-                                                    "changes in vision. These patients are graded 2 or higher and seen "
-                                                    "by a doctor without delay.")]
+HEADACHE_ESCALATE = [seed(TRIAGE, "kch_amaraTri04", "Escalate any headache that is sudden and severe (\"thunderclap\"), "
+                                                    "or that comes with fever, neck stiffness, confusion, new weakness "
+                                                    "or changes in vision. These patients are graded 2 or higher and "
+                                                    "seen by a doctor without delay.")]
 HEARSAY = [corpus(VIII, "the declarant does not make while testifying at the current trial or hearing"),
            corpus(VIII, "a party offers in evidence to prove the truth of the matter asserted in the statement")]
 
@@ -367,7 +368,7 @@ QUESTIONS: list[dict[str, Any]] = [
      "message": "When is a piece of evidence relevant?",
      "spans": [corpus(IV, "it has any tendency to make a fact more or less probable than it would be without the "
                           "evidence"),
-               corpus(IV, "the fact is of consequence in determining the action", 1)]},
+               corpus(IV, "the fact is of consequence in determining the action")]},
     {"id": "ret-a078", "kind": "answerable", "who": "victor",
      "message": "Can a judge throw out evidence even though it's relevant?",
      "spans": [corpus(IV, "The court may exclude relevant evidence if its probative value is substantially outweighed by a "
@@ -506,7 +507,8 @@ QUESTIONS: list[dict[str, Any]] = [
      "message": "Did the pilots find any difference in burnout between men and women?"},
     {"id": "ret-u027", "kind": "unanswerable", "who": "mei",
      "message": "How many federal employees are on compressed schedules right now?"},
-    {"id": "ret-u028", "kind": "unanswerable", "who": "mei", "message": "Do federal employees get their birthday off?"},
+    {"id": "ret-u028", "kind": "unanswerable", "who": "mei",
+     "message": "How many hours of sick leave does a federal employee earn each pay period?"},
     {"id": "ret-u029", "kind": "unanswerable", "who": "mei",
      "message": "How much paid parental leave do federal employees get?"},
     {"id": "ret-u030", "kind": "unanswerable", "who": "mei",
@@ -699,7 +701,7 @@ QUESTIONS: list[dict[str, Any]] = [
      "spans": [corpus(IV, "a statement made during plea discussions with an attorney for the prosecuting authority if the "
                           "discussions did not result in a guilty plea"),
                corpus(IV, "evidence of the following is not admissible against the defendant who made the plea or "
-                          "participated in the plea discussions", 1)]},
+                          "participated in the plea discussions")]},
     {"id": "ret-f030", "kind": "followup", "who": "victor",
      "earlier": ["Kai: The dying man named his attacker.",
                  "Victor: Then we're in Rule 804 territory, if he's truly unavailable."],
@@ -775,7 +777,7 @@ QUESTIONS: list[dict[str, Any]] = [
      "named": {"doc": "Grandma's recipe notebook", "section": "p. 5"},
      "message": "What's the sushi rice tip on page 5 of Grandma's recipe notebook?",
      "spans": [seed(RECIPES, "kch_hanaRecipe02", "Sushi rice for a crowd: three cups of rice and a splash more vinegar "
-                                                "than you think.", 1),
+                                                "than you think."),
                seed(RECIPES, "kch_hanaRecipe02", "A spoon of pineapple juice in the vinegar keeps it bright when the "
                                                 "fish is rich.")]},
     {"id": "ret-n005", "kind": "naming", "who": "hana", "named": {"doc": "Choose MyPlate", "section": None},
@@ -793,7 +795,7 @@ QUESTIONS: list[dict[str, Any]] = [
                                                "sleep quality improved, and patient throughput stayed within normal "
                                                "variation."),
                seed(FATIGUE, "kch_amaraFat06", "Two wards piloted a compressed rota: four longer days, then three days "
-                                               "off.", 1)]},
+                                               "off.")]},
     {"id": "ret-n008", "kind": "naming", "who": "amara",
      "named": {"doc": "NIOSH work organization module", "section": "Extended Shifts"},
      "message": "Under Extended Shifts in the work organization module, what did the 2014 systematic review conclude?",
@@ -837,7 +839,7 @@ QUESTIONS: list[dict[str, Any]] = [
      "message": "Under Rule 803(18) in the hearsay article, when can a statement from a treatise come in?",
      "spans": [corpus(VIII, "the statement is called to the attention of an expert witness on cross-examination or relied "
                             "on by the expert on direct examination"),
-               corpus(VIII, "the publication is established as a reliable authority", 1)]},
+               corpus(VIII, "the publication is established as a reliable authority")]},
     {"id": "ret-n017", "kind": "naming", "who": "victor", "seed": True,
      "named": {"doc": "Moot court notes", "section": "§ 4"},
      "message": "In section 4 of my moot court notes, what's the phase-in precedent?",

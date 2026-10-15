@@ -109,6 +109,60 @@ def test_overlap_reports_zero_on_a_fixture_set_and_catches_a_copy() -> None:
     assert overlap_problems([{"id": "ret-z", "item": [copied]}])
 
 
+# ── 10 the labels ──
+DATASETS = Path(__file__).resolve().parents[3] / "evals" / "datasets"
+
+
+def _load(name: str, path: Path) -> Any:
+    import importlib.util
+    import sys
+
+    spec = importlib.util.spec_from_file_location(name, path)
+    assert spec and spec.loader
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules.setdefault(name, mod)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def test_the_retrieval_questions_follow_d22s_mix() -> None:
+    b = _builder()
+    rows = b.build()
+    assert b.problems(rows) == []
+    assert len(rows) == 205 and sum(r["origin"] == "seed" for r in rows) >= 25
+    assert {r["character"] for r in rows} == set(b.CHARACTERS.values())
+
+
+def test_the_gate_sets_build_to_their_counts_and_match_the_committed_files() -> None:
+    import json
+
+    b = _load("gates_build", DATASETS / "docs" / "build.py")
+    prof = b.profiles()
+    docs = b.titles(prof)
+    sets = {"docs": b.build_docs(prof, docs), "standalone": b.build_standalone(prof, docs),
+            "english": b.build_english(prof, docs)}
+    assert b.problems(sets) == []
+    for name, rows in sets.items():
+        committed = (DATASETS / name / f"{name}.jsonl").read_text(encoding="utf-8")
+        assert committed == "".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows)
+    # every docs item is asked as live asks it: its key's candidate has titles in the state
+    for r in sets["docs"]:
+        assert r["item"]["key"].startswith("docs:") and r["item"]["state"]["quoted_documents"]
+
+
+def test_the_planted_notfound_items_load_and_name_their_failure() -> None:
+    from horizon.evals.notfound_suite import CITES, NONE_KEPT, SAYS
+    from horizon.evals.suites import load_dataset
+
+    nf = _load("notfound_build", DATASETS / "judges" / "notfound.py")
+    for qid, failures in ((SAYS, nf.SAYS_FAILURES), (CITES, nf.CITES_FAILURES)):
+        rows = [r for r in load_dataset(DATASETS / "judges" / f"{qid}.jsonl") if r.get("planted")]
+        assert len(rows) == 30 and all(r["label"] == "yes" and r["failure"] in failures for r in rows)
+        assert {"quoted_message", "quoted_passages", "quoted_reply"} == set(rows[0]["item"]["state"])
+    states = [r["item"]["state"] for r in load_dataset(DATASETS / "judges" / f"{CITES}.jsonl")]
+    assert any(s["quoted_passages"] == NONE_KEPT for s in states)
+
+
 # ── 9.3 the metrics and the report ──
 def _piece(cid: str, a: int, b: int, doc: str = "hana/x.md") -> Any:
     from horizon.evals.retrieval import Piece

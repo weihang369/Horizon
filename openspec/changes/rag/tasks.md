@@ -378,18 +378,18 @@
 
 ## 10. The labels (design D22; D31.2)
 
-- [ ] 10.1 Write the retrieval questions and span labels blind: 205 over the corpus and the seed, in D22's mix.
+- [x] 10.1 Write the retrieval questions and span labels blind: 205 over the corpus and the seed, in D22's mix.
   Verify:
   - the builder's counts match D22;
   - every span resolves;
   - `overlap` reports 0.
-- [ ] 10.2 Write the `docs` set (≈ 120, ≥ 60 yes, every mode, English 100 / Malay 10 / Chinese 6 / mixed 4), the
+- [x] 10.2 Write the `docs` set (≈ 120, ≥ 60 yes, every mode, English 100 / Malay 10 / Chinese 6 / mixed 4), the
   `standalone` set (100, 50 follow-ups) and the `english` set (40, 10 per language), labelled blind.
   Verify: the builders' counts and splits; `overlap` reports 0.
-- [ ] 10.3 Write the Not-found judges' 30 planted items. The 30 real items come from the first end-to-end run, in
+- [x] 10.3 Write the Not-found judges' 30 planted items. The 30 real items come from the first end-to-end run, in
   phase 11.
   Verify: the planted set loads and each item names its planted failure.
-- [ ] 10.4 The delegated review pass (D31.2): a recorded sample per set in `evals/reviews/m12-review.md`, and any set
+- [x] 10.4 The delegated review pass (D31.2): a recorded sample per set in `evals/reviews/m12-review.md`, and any set
   with two or more disagreements relabelled whole.
   Verify: the review file lists each set's sample, disagreements and outcome.
 
