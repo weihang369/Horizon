@@ -194,7 +194,8 @@ Why these temperatures:
 - One temperature for everything: summaries and arguments need less randomness than chat.
 
 *Built in M12 (OpenSpec `rag` D10): the `query_rewrite` row is read by the rewrite (temperature 0.0, 60 tokens,
-text, thinking off).*
+text, thinking off). Its instruction is `rewrite-2`, the last user message (D32.8): sent as a system message, it lost to
+the persona and DeepSeek replied in character. Measured on dev: 953 ms on average, and 1 of 26 past `rewriteMs`.*
 
 ### C2. Thinking is off everywhere, including deep turns, behind a switch
 
@@ -524,7 +525,9 @@ existing `model.provider`. Prices come from the bundled config. `modelOverrides`
 - ~~The summary and memory-extraction prompts and schemas (task 9).~~ Resolved by doc 05 X3 (summary) and doc 09 M3
   (memory extraction).
 - ~~Whether a multi-document deep question should ever think (task 10, with eval data).~~ Resolved by doc 10 K14:
-  off, revisited only on eval data.
+  off, revisited only on eval data. *M12 (`rag`) keeps thinking off on deep replies and on the rewrite. Its suites
+  score retrieval and the Not-found reply, not multi-document answers, so the question stays with M15's
+  conversations.*
 - Custom models (v2, [docs/v2](../v2/README.md)).
 
 ## Sources

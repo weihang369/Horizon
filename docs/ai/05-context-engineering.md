@@ -107,6 +107,12 @@ summary (X3). The next turn sees the new summary and a shorter window: one cache
     its own rendering of the history, ≈ $0.0008 each, up to 5 speakers;
   - **worst case,** a group speaker at the ceiling (X2, 18,000 of history): ≈ 23,000 ≈ **$0.0035**.
 
+*Built in M12 (`rag` D16, D26): the documents block is the tail's first section (P2), capped by
+`retrieval.agent.blockTokens` (1,400). With k at most 3 (2 outside 1:1) and pieces at most 400 tokens, the cap only
+guards a seed piece authored longer, which is cut at a sentence end. A not-found turn carries K9's short block
+instead, at the quick length. `context.used.knowledge` counts the block. The block sits in the tail, so a deep turn
+and a quick one send the same system message 1 (tested) and the cached prefix holds.*
+
 **Why:** OQ-AI-02 suggested about 8K for 1:1 and 12K for multi-agent; that was before prices were known. Cached
 reads cost $0.003 per million, so a bigger window costs almost nothing while the cache hits; it costs on misses and
 in prefill time. The caps keep a normal miss under about $0.002 and even the worst case far below the model's
@@ -434,7 +440,9 @@ internal.
   the transcript and the result already decided.*
 - ~~Long-term memory and per-character points of view across sessions (task 9).~~ Resolved by doc 09.
 - ~~The retrieval block's size: k, the passage length and Jev call 2 (task 10).~~ Resolved by doc 10 K1, K7, K8:
-  ≤ 1,400 tokens.
+  ≤ 1,400 tokens. *Built in M12 (`rag` D16; X1's note). Found in M12: X9's 2,000-token cap drops every member's
+  gate late in the panel and three-a-side debates, so those turns can't go deep; the user's choice was to record it
+  for M13, which sets the memory block's budget, and leave X9's order unchanged (D32.5).*
 - ~~The quoted-content wording in the Jev state and the prompts, and prompt injection through summaries (task 11).~~
   Resolved by doc 11 S6 (`quoted_*` fields; the summary prompt becomes `summary-2` with a reported-speech rule and
   a "record, not instructions" heading).

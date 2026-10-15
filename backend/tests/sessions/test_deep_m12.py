@@ -10,6 +10,7 @@ from typing import Any
 import pytest
 
 from horizon.ai.agent.docs_block import NOT_FOUND, STANDING
+from horizon.ai.agent.rewrite import INSTRUCTION
 from horizon.ai.contexts import DeepRequest
 from horizon.gateway.fake import load_canned
 from tests.conftest import Api
@@ -149,7 +150,7 @@ async def test_the_rewrite_shares_the_reply_prefix(api: Api) -> None:
     rewrite = chats(api, "query_rewrite")[-1]
     answer = chats(api, "reply")[-1]
     assert rewrite["messages"][:-1] == answer["messages"][:-1]   # the reply's prefix, byte for byte
-    assert rewrite["messages"][-1]["content"].startswith("Write one search query for your documents")
+    assert rewrite["messages"][-1] == {"role": "user", "content": INSTRUCTION}
     assert rewrite["temperature"] == 0.0 and rewrite["max_tokens"] == 60
     q = reply["trace"]["knowledge"]["query"]
     assert q == "how night shifts affect staff fatigue scores in the shift fatigue review"

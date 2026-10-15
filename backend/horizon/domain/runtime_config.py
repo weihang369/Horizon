@@ -119,12 +119,12 @@ class AgentRetrieval:
     pool: int = 20
     candidates: int = 8
     block_tokens: int = 1400
-    mmr_lambda: float = 0.7
+    mmr_lambda: float = 1.0
     k: dict[str, int] = field(default_factory=lambda: {"one_on_one": 3, "group": 2, "watch": 2, "debate": 2})
     piece_target: int = 300
     piece_max: int = 400
     rewrite_ms: float = 1500.0
-    deep_check_ms: float = 700.0
+    deep_check_ms: float = 1500.0
     query_embed_wait_ms: float = 800.0   # rag 11.5: the agent path's own wait (naive and scripted keep theirs)
 
     def k_for(self, mode: str) -> int:

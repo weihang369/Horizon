@@ -98,8 +98,8 @@ export const RUNTIME: RuntimeConfig = {
   retrieval: {
     knowledgeK: 5, memoryK: 3, queryEmbedWaitMs: 400,
     agent: {
-      pool: 20, candidates: 8, blockTokens: 1400, mmrLambda: 0.7, k: { oneOnOne: 3, group: 2, watch: 2, debate: 2 },
-      pieceTarget: 300, pieceMax: 400, rewriteMs: 1500, deepCheckMs: 700, queryEmbedWaitMs: 800,
+      pool: 20, candidates: 8, blockTokens: 1400, mmrLambda: 1.0, k: { oneOnOne: 3, group: 2, watch: 2, debate: 2 },
+      pieceTarget: 300, pieceMax: 400, rewriteMs: 1500, deepCheckMs: 1500, queryEmbedWaitMs: 800,
     },
   },
   persona: { repeatHint: false, moodLine: false },

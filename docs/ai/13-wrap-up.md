@@ -637,9 +637,9 @@ save it and reuse it. Never pay for the same result twice.
 | Knob | Home | Start | Tuned in |
 |---|---|---|---|
 | who-speaks, emotion, reaction floors; `floor.second`, `floor.member` | bank | 0.6 (found in M10: `who_first`, `who_scene`, `who_next`, `emotion_line`, `emotion_opening` **0.2**; `floor.second` **0.3**; [m10.md](checks/m10.md). Found in M11: `floor.member` **0.5**, `emotion_debate_opening` **0.2**; `who_scene`, `who_next` and `emotion_line` at v3 keep 0.2; [m11.md](checks/m11.md)) | M9–M11 |
-| `t_gate` (documents) / `t_confident` | bank | 0.35 / 0.8 | M12 |
+| `t_gate` (documents) / `t_confident` | bank | 0.35 / 0.8 (found in M12: **0.45** / **0.80**, test recall 0.93 / precision 1.00, `docs` v2; [m12.md](checks/m12.md) 11.3) | M12 |
 | `t_gate` (earlier lines) | bank | 0.4 | M13 |
-| `t_standalone`; English | bank | 0.5; 0.5 (fixed) | M12 |
+| `t_standalone`; English | bank | 0.5; 0.5 (fixed) (found in M12: `t_standalone` **0.35**, test follow-ups rewritten 0.94, `standalone` v2; English 40/40 at 0.5) | M12 |
 | `t_keep` / `t_found` / `t_set` (doc 10) | bank | 0.6 / 0.6 / 0.5 | M12 |
 | `t_recall` | bank | 0.5 | M13 |
 | `t_keep` (doc 09 guard) | bank | 0.7 | M13 |
@@ -658,7 +658,7 @@ save it and reuse it. Never pay for the same result twice.
 | `debate.hostWelcomeWaitMs` / `hostBannerWaitMs` | runtime | 3,000 / 1,500 (doc 08 V6). *M11: bridges 10/10 within the 1,500; kept* | — |
 | `emotion.fade` | runtime | `["surprised", "embarrassed"]` (doc 06 E3) | — |
 | `persona.repeatHint` / `context.voiceReminder` | runtime | off / off (docs 04 P8, 05) | — |
-| `memory.*`, `retrieval.agent.*` | runtime | doc 09 §6, doc 10 K5 | M12, M13 |
+| `memory.*`, `retrieval.agent.*` | runtime | doc 09 §6, doc 10 K5. *M12 adds `retrieval.agent.queryEmbedWaitMs` **800** (the user's choice with the early start, `rag` D32: the query embedding from Malaysia takes ≈ 1.1 s at the median); `naive` and `scripted` keep `queryEmbedWaitMs` 400* | M12, M13 |
 
 The noul starting values are chosen by each noul's cost of being wrong:
 - low where a miss is worse than a false alarm (`tCare`, the gates);

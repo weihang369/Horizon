@@ -296,6 +296,10 @@ The MockClient's twin is `mock/engines/chunker.ts`; both read the shared fixture
 - **metadata columns in vec0:** not needed without a document filter (and sqlite-vec 0.1.9 rejects NULL metadata,
   which most pieces would have for a page).
 
+*Built in M12 (`rag` D12, D25): no new filter. The deep search runs on the speaker's `ScopedIndex` (world and
+character, `indexed` and `keyword_only` sources), and nothing is read from the message to filter or boost. The
+naming questions are reported apart in the retrieval suite ([m12.md](checks/m12.md) 11.5).*
+
 ### K3. Embedding: Qwen3-Embedding-8B at 1,024 dimensions unless the test beats it; a header on each piece; a flat index
 
 **Decision:**
@@ -455,6 +459,17 @@ first by one scoped FTS5 count each, at most 40 looked at; 16 terms, or 24 rewri
 the deep graph's gather step, only for a speaker with an `indexed` source, and is shared across speakers by the
 embedder's in-flight de-duplication. In 1:1 a new message queues behind the reply rather than superseding it, so Stop
 is 1:1's cut; in group a newer message cancels the deep work (m12.md).*
+
+*Amended in M12 (`rag` D32.2, D32.8, the user's choices):
+- **The embedding starts with Jev call 1** for a candidate with vectors, waited for up to 800 ms (K15's trim 2).
+- **The instruction is `rewrite-2`.** Check 3 found DeepSeek answering follow-ups in character when this wording came
+  as a trailing system message ("Depends on your contract and jurisdiction, and I'd need to check."). It is now the
+  last user message: "This is a search step, not a chat line: don't reply to the last message. Write one search query
+  for your documents that would find what you need to reply to it. Make it stand on its own (no 'it', 'that' or
+  'there'), in English, at most 20 words, as keywords rather than a sentence. Output only the query."
+- **A shape check** fails a second sentence, or an ending in `.` or `!`.
+- **On dev,** 25 of 26 rewrites were then keyword queries, the 26th was late, and the rewrite is worth +13.5 points
+  of Recall@8 on follow-ups and non-English questions ([m12.md](checks/m12.md) 11.5, 11.7).*
 
 ### K5. The search: one pipeline for documents and recall
 
@@ -678,6 +693,9 @@ only where abstaining is allowed (D8).*
 
 **Rejected (the user's choice):** a live Jev check after each reply.
 
+*M12 (`rag`) adds no live check (D25). The two B4 rows run in the conversations suite, which is paid at M15 (doc 13
+W6); M12 builds and validates only the Not-found reply's two judges (K14).*
+
 ### K11. Keyword search stays tuned for English (the user's decision)
 
 **Decision:**
@@ -696,6 +714,11 @@ only where abstaining is allowed (D8).*
 **Rejected:**
 - **bigrams now** (the user: focus on English);
 - **SQLite's trigram tokenizer:** 2-character words never match.
+
+*Built in M12 (`rag` D3, D10): the FTS tables are unchanged; `pack@2` cuts at `。！？` (check 4: the CDC sheet's
+pieces end at `。`); the rewrite translates a non-English message for BM25, and "English?" decides when (40/40 in
+11.3). Found in check 4: Docling's text for a Chinese PDF puts spaces inside words at line wraps ("盖 住皮疹"), a
+converter artefact recorded, not changed.*
 
 ### K12. Re-chunking, old citations and ingestion
 
@@ -813,6 +836,11 @@ only re-embed, keeping their IDs; startup never re-chunks (`tests/knowledge/test
 4. **Tighter deadlines.**
 
 Trims 1 and 2 spend before the gate, so they come back to the user first. Jev stays in every case (doc 07 G2).
+
+*Trim 2 applied in M12, before check 2 (`rag` D32, the user's choice, 2026-10-15). The first dev retrieval run
+measured the query embedding from Malaysia at ≈ 1.1 s median (0.9 s at the fastest, p90 3.3 s), so the 400 ms wait
+after the gate left 94 of 107 deep turns on keywords only. In 1:1 and group the message's embedding now starts with
+Jev call 1 for a candidate with vectors, and the `agent` path waits up to 800 ms (`retrieval.agent.queryEmbedWaitMs`).*
 
 **Cost of one deep 1:1 turn** (off-peak):
 

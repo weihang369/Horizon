@@ -47,7 +47,7 @@ In 1:1 and when a group message is answered (the cast plan and the follow plan),
 - **THEN** still exactly one `query_embed` row exists for the message text
 
 ### Requirement: The rewrite is checked, bounded and reused
-A rewrite SHALL be used only if it is one line, at most 30 words, mostly Latin script and not empty. It SHALL be abandoned after `rewriteMs`. An accepted rewrite SHALL be stored for that user message and speaker, reused on regenerate with no new call, and never used by another speaker. Debate and watch turns SHALL NOT rewrite.
+The rewrite's instruction SHALL follow the reply's prefix as the last user message, saying it is a search step and not a chat line. A rewrite SHALL be used only if it is one line, at most 30 words, mostly Latin script, not empty, and not shaped like a chat line (a second sentence, or an ending in `.` or `!`). It SHALL be abandoned after `rewriteMs`. An accepted rewrite SHALL be stored for that user message and speaker, reused on regenerate with no new call, and never used by another speaker. Debate and watch turns SHALL NOT rewrite.
 
 #### Scenario: Regenerate reuses the rewrite
 - **WHEN** a reply that used a rewrite is regenerated and goes deep again
@@ -56,6 +56,10 @@ A rewrite SHALL be used only if it is one line, at most 30 words, mostly Latin s
 #### Scenario: Group repliers rewrite apart
 - **WHEN** both replies to a group message go deep and need a rewrite
 - **THEN** each speaker gets its own `query_rewrite` call, and one `query_embed` row exists for the message text
+
+#### Scenario: A rewrite that answers in character
+- **WHEN** the rewrite comes back as "Depends on your contract and jurisdiction, and I'd need to check."
+- **THEN** it is not used, and the search uses the fallback query
 
 #### Scenario: Rewrite rejected
 - **WHEN** the rewrite comes back as two lines

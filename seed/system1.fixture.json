@@ -188,7 +188,7 @@
       "passage": {
         "purpose": "deep_check",
         "id": "passage",
-        "version": 1,
+        "version": 2,
         "label": "does this passage answer it?",
         "p": 0.72,
         "confidence": 0.72,
@@ -196,12 +196,12 @@
           {
             "name": "t_found",
             "value": 0.72,
-            "threshold": 0.6
+            "threshold": 0.5
           },
           {
             "name": "t_keep",
             "value": 0.72,
-            "threshold": 0.6
+            "threshold": 0.9
           }
         ],
         "result": "used",

@@ -2,10 +2,14 @@
 
 Only on a deep 1:1 or group turn whose message isn't standalone (`p < t_standalone`) or isn't English (`p < 0.5`);
 debate and watch never rewrite. The request is this speaker's `agent` reply prefix byte for byte (system message 1,
-the summary, the history window), then one system message with K4's instruction, so it shares (and warms) the reply's
-cached prefix. Purpose `query_rewrite`, `runtime.llm.calls.query_rewrite` (thinking off, temperature 0.0, 60 tokens).
+the summary, the history window), then K4's instruction, so it shares (and warms) the reply's cached prefix. Purpose
+`query_rewrite`, `runtime.llm.calls.query_rewrite` (thinking off, temperature 0.0, 60 tokens).
 
-- **Checks** (K4): one line, at most 30 words, at least 60 % of its letters Latin script, not empty; else `failed`.
+- **The instruction** is `rewrite-2` (rag 11.7, the user's choice): check 3 found DeepSeek answering follow-ups in
+  character when K4's wording came as a trailing system message, so it is now the last *user* message and says it is
+  a search step, not a chat line, and asks for keywords.
+- **Checks** (K4): one line, at most 30 words, at least 60 % of its letters Latin script, not empty; and (11.7) not
+  shaped like a chat line: no second sentence, no ending in `.` or `!`. Else `failed`.
 - **Deadline:** `retrieval.agent.rewriteMs` from its start, on the runtime clock. A late call keeps running in a
   tracked task, is still billed and recorded, and is discarded (`late`).
 - **Cancelled with the turn:** cancelling the caller cancels the call (billed as the gateway bills a cancelled call).
@@ -28,11 +32,13 @@ from horizon.domain import vclock
 from horizon.gateway.chat import ChatRequest
 
 PURPOSE = "query_rewrite"
-INSTRUCTION = ("Write one search query for your documents that would find what you need to reply to the last message. "
-               "Make it stand on its own (no 'it', 'that' or 'there'), in English, at most 20 words. Output only the "
-               "query.")
+INSTRUCTION = ("This is a search step, not a chat line: don't reply to the last message. Write one search query for "
+               "your documents that would find what you need to reply to it. Make it stand on its own (no 'it', "
+               "'that' or 'there'), in English, at most 20 words, as keywords rather than a sentence. Output only "
+               "the query.")
 MAX_WORDS = 30
 LATIN_SHARE = 0.6
+_CHAT_LINE = re.compile(r"[.!?。！？]\s+\S|[.!。！]$")   # a second sentence, or a line ended like a remark
 RewriteStatus = Literal["ok", "stored", "failed", "late"]
 
 
@@ -52,7 +58,7 @@ def needed(standalone: float | None, english: float | None, *, t_standalone: flo
 
 def request(ctx: TurnContext, row: Any, model: str) -> ChatRequest:
     prefix, history, _you = reply_prefix(ctx)
-    messages = [*prefix, *history, {"role": "system", "content": INSTRUCTION}]
+    messages = [*prefix, *history, {"role": "user", "content": INSTRUCTION}]
     return llm_request(row, model, messages)
 
 
@@ -67,7 +73,7 @@ def check(text: str | None) -> str | None:
     if not letters:
         return None
     latin = sum(1 for ch in letters if "LATIN" in unicodedata.name(ch, ""))
-    if latin / len(letters) < LATIN_SHARE:
+    if latin / len(letters) < LATIN_SHARE or _CHAT_LINE.search(out):
         return None
     return re.sub(r"\s+", " ", out)
 

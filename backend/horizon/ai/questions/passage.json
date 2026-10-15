@@ -1,6 +1,6 @@
 {
   "id": "passage",
-  "version": 1,
+  "version": 2,
   "purpose": "deep_check",
   "type": "score",
   "label": "does this passage answer it?",
@@ -27,8 +27,9 @@
   "deadline": "deep_check",
   "floor": null,
   "thresholds": {
-    "t_keep": 0.6,
-    "t_found": 0.6
+    "t_keep": 0.9,
+    "t_found": 0.5
   },
+  "state_note": "rag 11.5: t_keep 0.9 and t_found 0.5 chosen by K7's leave-one-out on dev with every answer back, after the user's choice of deepCheckMs 1,500 (docs/ai/checks/m12.md).",
   "fallback": "fused_order"
 }

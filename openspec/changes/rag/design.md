@@ -904,7 +904,7 @@ choice (U4):
 
 ### D32. Decisions made during apply (the user's, 2026-10-15)
 
-Phase 11's runs found five things. Each went to the user as a choice:
+Phase 11's runs found eight things. Each went to the user as a choice:
 1. **Dense search p99 (task 6.3):** 69 ms against the 50 ms target. **Accepted and recorded.** Dense searches keep the
    100 ms test guard, and the step is judged inside check 2.
 2. **Query embeddings from Malaysia take ≈ 1.1 s at the median** (0.9 s at the fastest), and 94 of 107 dev deep turns
@@ -921,6 +921,24 @@ Phase 11's runs found five things. Each went to the user as a choice:
    ships with M12, so no installed data holds its pieces.
 5. **X9's cap drops every member's gate late in the panel and three-a-side debates.** **Recorded for M13**, with the
    memory block's budget. X9's order is unchanged in M12.
+6. **Jev call 2's tail (11.5).** Per turn, the slowest of the 8 `deep_check` requests is p50 ≈ 640 ms but p90
+   ≈ 1.3 s. At 700 ms about 1 turn in 7 falls back, and only 13 of 26 dev unanswerable questions abstained. With every
+   answer back it is 23 of 26, with 2 wrong abstains in 108. Counting a late passage as "doesn't help" gives 5–6
+   wrong abstains, so K6's missing-request rule stands. **`deepCheckMs` 1,500** (estimated ≈ 33 of 40 abstained).
+   Check 2 measures what it costs at the first word.
+   - `t_keep` **0.9** and `t_found` **0.5** come from K7's leave-one-out on dev with every answer back (`passage` v2).
+   - **Rejected:** 1,000 ms (≈ 28 of 40); keeping 700 ms; one 8-question request (K6's rejection, and new runs
+     before any choice).
+7. **MMR λ (11.5).** λ 1.0 and 0.7 tie on dev Recall@8, and D23 says 1.0 unless MMR helps. **`mmrLambda` 1.0** for
+   documents. The pipeline keeps MMR, and recall passes its own λ (M13).
+8. **The rewrite answered in character (check 3).** Sent as a trailing system message, K4's instruction lost to the
+   persona: most follow-up rewrites were replies to the user, and the short ones passed K4's checks. **`rewrite-2`
+   and a shape check:**
+   - the instruction is the last *user* message, says it is a search step and not a chat line, and asks for keywords;
+   - a rewrite with a second sentence, or ending in `.` or `!`, fails.
+
+   On the re-run, 25 of 26 dev rewrites were keyword queries, and the 26th was late.
+   - **Rejected:** the check alone; the wording alone; recording only.
 
 Bugs found by the runs and fixed without a choice (they broke the design as written):
 - `pack@2` made a header-only piece on a table with a very wide header row;

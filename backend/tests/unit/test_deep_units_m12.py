@@ -206,6 +206,12 @@ def test_the_rewrite_checks() -> None:
     assert check(" ".join(["word"] * 31)) is None
     assert check("夜班疲劳") is None and check("") is None and check("   ") is None
     assert check('"burnout in October"') == "burnout in October"
+    # 11.7: in-character replies that passed K4's first checks
+    assert check("Selection. The people who volunteer for a shorter week are often the ones who can afford it.") is None
+    assert check("Depends on your contract and jurisdiction, and I'd need to check.") is None
+    assert check("Kai, I'm a florist, not a doctor!!") is None
+    assert check("Kai dad evening chips snack healthier swap nuts") == "Kai dad evening chips snack healthier swap nuts"
+    assert check("is caffeine withdrawal an emergency?") == "is caffeine withdrawal an emergency?"
     assert needed(0.06, 0.9, t_standalone=0.5) and needed(0.9, 0.02, t_standalone=0.5)
     assert not needed(0.9, 0.9, t_standalone=0.5) and not needed(None, 0.9, t_standalone=0.5)
 

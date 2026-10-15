@@ -47,7 +47,7 @@ def test_the_thresholds_chosen_in_11_3() -> None:   # B5 on dev (docs/ai/checks/
     assert dict(b.get("docs").thresholds) == {"t_gate": 0.45, "t_confident": 0.8}
     assert dict(b.get("standalone").thresholds) == {"t_standalone": 0.35}
     assert dict(b.get("english").thresholds) == {"english": 0.5}
-    assert dict(b.get("passage").thresholds) == {"t_keep": 0.6, "t_found": 0.6}
+    assert dict(b.get("passage").thresholds) == {"t_keep": 0.9, "t_found": 0.5}
     assert dict(b.get("passage_set").thresholds) == {"t_set": 0.5}
     assert {e: b.get(e).raw["fallback"] for e in ("docs", "standalone", "english", "passage", "passage_set")} == {
         "docs": "quick", "standalone": "no_rewrite", "english": "no_rewrite", "passage": "fused_order",
@@ -98,9 +98,9 @@ def test_the_backend_reads_every_agent_knob() -> None:
     agent = RuntimeConfig.from_json(data).runtime.retrieval.agent
     raw = data["runtime"]["retrieval"]["agent"]
     assert agent is not None
-    assert (agent.pool, agent.candidates, agent.block_tokens, agent.mmr_lambda) == (20, 8, 1400, 0.7)
+    assert (agent.pool, agent.candidates, agent.block_tokens, agent.mmr_lambda) == (20, 8, 1400, 1.0)
     assert agent.k == {"one_on_one": 3, "group": 2, "watch": 2, "debate": 2}
-    assert (agent.piece_target, agent.piece_max, agent.rewrite_ms, agent.deep_check_ms) == (300, 400, 1500, 700)
+    assert (agent.piece_target, agent.piece_max, agent.rewrite_ms, agent.deep_check_ms) == (300, 400, 1500, 1500)
     assert set(raw) == {"pool", "candidates", "blockTokens", "mmrLambda", "k", "pieceTarget", "pieceMax", "rewriteMs",
                         "deepCheckMs", "queryEmbedWaitMs"}
     assert agent.query_embed_wait_ms == 800   # rag 11.5: the agent path's own wait

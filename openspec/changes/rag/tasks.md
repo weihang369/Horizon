@@ -410,14 +410,14 @@
 - [x] 11.4 D9's re-ask (≈ $0.01).
   Verify: m12.md records each affected entry's dev accuracy with and without titles, and any version bump with its
   re-chosen floor.
-- [ ] 11.5 Corpus embeddings for the comparison arms (≈ $0.01), then `retrieval` on dev (≈ $0.04, with 45
+- [x] 11.5 Corpus embeddings for the comparison arms (≈ $0.01), then `retrieval` on dev (≈ $0.04, with 45
   rewrites) and the piece arms' kept-set precision (≈ $0.02). Choose the space, piece target, λ, instruction,
   `t_keep` and `t_found` by D23 and K7.
   Verify: m12.md has every comparison and the thresholds, with each choice and its rule.
 - [ ] 11.6 `retrieval` on test, once (≈ $0.02).
   Verify: m12.md has the test figures against K7 and B5's targets (≤ 3 wrong abstains in 100; ≥ 32 of 40 abstained),
   and the naming questions reported apart.
-- [ ] 11.7 Check 3: 10 real rewrites (≈ $0.004).
+- [x] 11.7 Check 3: 10 real rewrites (≈ $0.004).
   Verify: each passes K4's output checks and stands on its own, read by hand in m12.md.
 - [ ] 11.8 End to end: 50 not-found and partly replies, the judges' 30 real items labelled from them, B4 validation,
   then scoring (≈ $0.03).
