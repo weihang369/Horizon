@@ -138,6 +138,10 @@ The seed transcripts' 1:1, group and watch character replies SHALL include line 
 - **WHEN** seed-build runs on M9's bank
 - **THEN** the fixture has rows for `emotion_reply`, `emotion_greeting` and `face_check`, and none for `reaction`
 
+#### Scenario: Retrieval rows
+- **WHEN** seed-build runs on M12's bank
+- **THEN** the fixture has rows for `docs`, `standalone`, `english`, `passage` and `passage_set`
+
 ### Requirement: The MockClient greets like the backend
 The MockClient SHALL apply the same first-chat rule as the backend, over its own dataset. On a first chat it SHALL stream the stored greeting word for word with emotion `happy` from source `default`, no simulated cost, no `energy` event and no `model` trace section. Otherwise it SHALL greet as before.
 
@@ -194,3 +198,10 @@ The MockClient's Arbiter verdict SHALL charge one simulated call with purpose `v
 #### Scenario: Mock verdict
 - **WHEN** a MockClient debate with Arbiter verdict ends
 - **THEN** its ledger has one `verdict` charge in category `chat`, and no `decision` charge for the verdict
+
+### Requirement: The MockClient chunks like the backend
+The MockClient SHALL cut added Markdown and text into passages by the same rules as the backend (see `knowledge-sources`), checked by fixtures both clients read.
+
+#### Scenario: Same pieces in both clients
+- **WHEN** the same Markdown text is added through the MockClient and through the backend
+- **THEN** both produce the same passages, with the same texts and locators
