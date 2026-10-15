@@ -169,7 +169,9 @@ class Pipeline:
                 return False
         await self.stage("chunking")
         self.progress("chunking", 0.55)
-        out: Chunked = await asyncio.to_thread(chunk, doc.markdown, paged=doc.paged)
+        size = getattr(self.rt, "piece_size", None)   # rag D23: an evaluation arm's (target, ceiling); None live
+        out: Chunked = await asyncio.to_thread(chunk, doc.markdown, paged=doc.paged,
+                                               **({"target": size[0], "ceiling": size[1]} if size else {}))
         children = out.children
         if not children:
             await self.finish("failed", error="This file has no readable text.", chunk_count=0)

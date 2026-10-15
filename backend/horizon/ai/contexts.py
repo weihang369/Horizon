@@ -262,6 +262,9 @@ class DeepResult(Frozen):
     slowest_check_ms: float | None = None
     path: list[str] = []
     quote_words: list[str] = []                     # the query's terms and the message's words (the quote window)
+    pool: list[str] = []                            # the fused top 20's chunk ids, in order (the evaluation's Recall@20)
+    checks: list[dict[str, Any]] = []               # each check's {chunkId, order, p_answers, p_partly, unit} (eval)
+    set_check: dict[str, Any] | None = None         # the set check asked: {p, chunkIds} (eval)
 
 
 class GateAnswer(Frozen):

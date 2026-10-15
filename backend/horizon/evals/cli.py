@@ -38,19 +38,25 @@ def _suite(args: argparse.Namespace) -> int:
                    allow_peak=args.allow_peak, accept=getattr(args, "accept", False), set=getattr(args, "set", None),
                    seed_dir=args.seed_dir, force=getattr(args, "force", False), mode=getattr(args, "mode", None),
                    runs=getattr(args, "runs", None), turns=getattr(args, "turns", None),
-                   messages=getattr(args, "messages", None), part=getattr(args, "part", None))
+                   messages=getattr(args, "messages", None), part=getattr(args, "part", None),
+                   arm=getattr(args, "arm", None))
     return asyncio.run(Runner(load_config()).run(opts))
 
 
 def _overlap(_args: argparse.Namespace) -> int:
     from horizon.evals.datachecks import overlap_problems, split_changes, split_problems
+    from horizon.evals.retrieval import DATASET, load_questions
     from horizon.evals.runner import EVALS_DIR
     from horizon.evals.suites import all_items, dataset_files
 
+    # M12: the retrieval questions are checked too (their message and earlier lines; rag D22)
+    asked = [{"id": q["id"], "split": q["split"], "item": [q["message"], *q.get("earlier", [])]}
+             for q in load_questions()]
     items = list(all_items())
-    problems = overlap_problems(items) + split_problems(items)
-    for f in dataset_files():
+    problems = overlap_problems(items + asked) + split_problems(items + asked)
+    for f in [*dataset_files(), *([DATASET] if DATASET.is_file() else [])]:
         problems += split_changes(f, EVALS_DIR.parent)
+    items += asked
     for p in problems:
         print(f"horizon: {p}", file=sys.stderr)
     print(f"horizon: {len(items)} item(s) checked for copied bank phrases (6-word shingles: catches copying, not "
@@ -86,12 +92,31 @@ def _review(args: argparse.Namespace) -> int:
 
 def _corpus_check(_args: argparse.Namespace) -> int:
     from horizon.evals.datachecks import corpus_problems
+    from horizon.evals.retrieval import load_questions, seed_chunks, span_problems
 
-    problems = corpus_problems()
+    seeds = {cid: text for cid, (_, text) in seed_chunks().items()}
+    problems = corpus_problems() + span_problems(load_questions(), seeds)   # M12: every span still sits in its source
     for p in problems:
         print(f"horizon: {p}", file=sys.stderr)
     print(f"horizon: corpus licence check: {len(problems)} problem(s)")
     return 1 if problems else 0
+
+
+def _retrieval_compare(args: argparse.Namespace) -> int:
+    from pathlib import Path
+
+    from horizon.evals.retrieval import compare_report
+
+    try:
+        lines = compare_report(Path(args.base), Path(args.arm), Path(args.base_test) if args.base_test else None,
+                               Path(args.arm_test) if args.arm_test else None)
+    except (ValueError, KeyError) as e:
+        print(f"horizon: {e}", file=sys.stderr)
+        return 2
+    text = "\n".join(lines) + "\n"
+    print(text, end="")
+    (Path(args.arm) / "compare.md").write_text(text, encoding="utf-8")
+    return 0
 
 
 def _capture(args: argparse.Namespace) -> int:
@@ -137,7 +162,11 @@ def register(sub: Any) -> None:
                            ("debate-plant", "write the planted weak sides of the debate histories (paid, once, M11)"),
                            ("debate-quality", "the debate-quality judge over the committed histories (paid, M11)"),
                            ("debate", "the agent verdict on the 12 debates, the margin, the prose and host checks "
-                                      "(paid, M11)")):
+                                      "(paid, M11)"),
+                           ("retrieval", "the agent deep path on the labelled retrieval questions; --arm for one "
+                                         "comparison arm (paid, M12)"),
+                           ("notfound", "the Not-found reply end to end: 40 unanswerable + 10 partly 1:1 turns and "
+                                        "its two judges (paid, M12)")):
         s = esub.add_parser(name, help=helptext)
         s.add_argument("--profile", default="naive", choices=["scripted", "naive", "agent"])
         s.add_argument("--limit", type=int, default=None)
@@ -157,9 +186,12 @@ def register(sub: Any) -> None:
             s.add_argument("--turns", type=int, default=30)
             s.add_argument("--messages", type=int, default=12)
         if name == "latency":
-            s.add_argument("--part", choices=["follow", "watch", "debate"], default=None)
+            s.add_argument("--part", choices=["follow", "watch", "debate", "deep"], default=None)
+        if name == "retrieval":
+            s.add_argument("--arm", default=None, help="space=<id> | piece=200|300|400[:kept] | lambda=0.5|0.7|1.0 | "
+                                                       "rewrite=off")
         if name in ("decisions", "long", "transcript", "drafter", "watch-history", "summary", "debate-history",
-                    "debate-plant", "debate-quality"):
+                    "debate-plant", "debate-quality", "retrieval", "notfound"):
             s.add_argument("--set", default=None, help="decisions: one dataset folder (`judges`); long, transcript: "
                                                        "one script id; drafter: a seed file in evals/drafter/")
         s.set_defaults(fn=_suite)
@@ -169,6 +201,13 @@ def register(sub: Any) -> None:
     rv.add_argument("--seed", type=int, default=None)
     rv.set_defaults(fn=_review)
     esub.add_parser("corpus-check", help="the corpus licence check").set_defaults(fn=_corpus_check)
+    rc = esub.add_parser("retrieval-compare", help="an arm's retrieval run against the default's, by K3's rule (free, "
+                                                   "M12)")
+    rc.add_argument("base", help="the default run's folder (dev)")
+    rc.add_argument("arm", help="the arm run's folder (dev); compare.md is written there")
+    rc.add_argument("--base-test", default=None)
+    rc.add_argument("--arm-test", default=None)
+    rc.set_defaults(fn=_retrieval_compare)
     cp = esub.add_parser("capture", help="write a message's captured AI calls to data/evals/cases/")
     cp.add_argument("message_id")
     cp.set_defaults(fn=_capture)

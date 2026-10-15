@@ -61,6 +61,8 @@ class DeepRun(TypedDict, total=False):
     hits: dict[int, KnowledgeHit]
     checked: list[keeping.Checked]
     set_yes: bool | None
+    set_info: dict[str, Any] | None
+    pool_ids: dict[int, str]
     failed: bool
     rows: list[dict[str, Any]]
     calls: list[dict[str, Any]]
@@ -196,6 +198,11 @@ class DeepSteps:
         hits = await index.knowledge_hits(rids, {c.rid: c.score for c in result.candidates})
         return result, {h.rid: h for h in hits if h.rid is not None}
 
+    async def pool_ids(self, req: DeepRequest, result: SearchResult) -> dict[int, str]:
+        """The fused pool's chunk ids (the evaluation's Recall@20; one small read)."""
+        got: dict[int, str] = await self.index(req).chunk_ids([c.rid for c in result.pool])
+        return got
+
     # ── check ──
     def _quoted_query(self, req: DeepRequest, bundle: QueryBundle) -> dict[str, Any]:
         if req.session.mode == "debate":
@@ -205,7 +212,8 @@ class DeepSteps:
         return {"message": req.message, "earlier": list(req.earlier)}
 
     async def check(self, req: DeepRequest, bundle: QueryBundle, result: SearchResult,
-                    hits: dict[int, KnowledgeHit]) -> tuple[list[keeping.Checked], bool | None, bool, float | None]:
+                    hits: dict[int, KnowledgeHit]
+                    ) -> tuple[list[keeping.Checked], bool | None, bool, float | None, dict[str, Any] | None]:
         """Jev call 2. Returns the checked candidates, the set check's answer, whether call 2 failed as a whole, and
         the slowest check's latency (ms)."""
         knobs = self.knobs()
@@ -216,7 +224,7 @@ class DeepSteps:
         qq = self._quoted_query(req, bundle)
         cands = [c for c in result.candidates if c.rid in hits]
         if not cands:
-            return [], None, False, None
+            return [], None, False, None, None
         sent = self.deps.clock().now()
         at = sent + timedelta(milliseconds=knobs.deep_check_ms)
         calls: list[DecisionCall] = []
@@ -257,6 +265,7 @@ class DeepSteps:
         failed = not any(x.back for x in checked)
         slowest = max(landed.values()) if landed else None
         set_yes: bool | None = None
+        set_info: dict[str, Any] | None = None
         if not failed and keeping.needs_set_check(checked, t_keep=th["t_keep"], t_found=th["t_found"]):
             use = keeping.best_first([x for x in checked if keeping.usable(x, th["t_keep"])])[:req.k]
             set_state: dict[str, Any] = {"mode": req.session.mode, "quoted_query": qq, "quoted_passages": [
@@ -267,14 +276,16 @@ class DeepSteps:
             try:
                 res = await call.by(started + timedelta(milliseconds=knobs.deep_check_ms))
                 a = res.answers.get(PASSAGE_SET)
+                set_info = {"chunkIds": [hits[x.rid].chunk_id for x in use], "p": None}
                 if isinstance(a, NoulAnswer) and a.source == "jev":
                     set_yes = a.p >= th["t_set"]
+                    set_info["p"] = a.p
             except asyncio.CancelledError:
                 call.cancel()
                 raise
             except Exception:   # late, refused or failed: the set check is missing (D7: partly)
                 set_yes = None
-        return checked, set_yes, failed, slowest
+        return checked, set_yes, failed, slowest, set_info
 
     @staticmethod
     def _passage_thresholds() -> dict[str, float]:
@@ -286,7 +297,8 @@ class DeepSteps:
     # ── keep ──
     def keep(self, req: DeepRequest, bundle: QueryBundle, rewrite: rw.Rewrite | None, result: SearchResult,
              hits: dict[int, KnowledgeHit], checked: list[keeping.Checked], set_yes: bool | None, failed: bool,
-             slowest: float | None) -> DeepResult:
+             slowest: float | None, set_info: dict[str, Any] | None = None,
+             pool_ids: dict[int, str] | None = None) -> DeepResult:
         th = self._passage_thresholds()
         k = keeping.keep(checked, k=req.k, t_keep=th["t_keep"], t_found=th["t_found"], set_yes=set_yes,
                          abstain_ok=req.abstain_ok, failed=failed)
@@ -320,10 +332,13 @@ class DeepSteps:
                           "latencyMs": float(slowest or self.knobs().deep_check_ms), "fallback": True})
         new_rewrite = rewrite.text if rewrite is not None and rewrite.status == "ok" else None
         words = list(dict.fromkeys([*bundle.terms, *q.words(req.message)]))
+        checks = [{"chunkId": hits[c.rid].chunk_id, "order": c.order, "p_answers": c.p_answers,
+                   "p_partly": c.p_partly, "unit": c.unit} for c in checked if c.rid in hits]
         return DeepResult(query=bundle.to_json(), display=bundle.display, retrieved=retrieved, kept=kept_hits,
                           outcome=k.outcome, abstain=k.abstain, partly_line=k.partly_line, rows=rows, calls=calls,
                           rewrite=new_rewrite, rewrite_status=rewrite.status if rewrite is not None else None,
-                          slowest_check_ms=slowest, quote_words=words)
+                          slowest_check_ms=slowest, quote_words=words, checks=checks,
+                          set_check=set_info, pool=[ids[c.rid] for c in result.pool if c.rid in (ids := pool_ids or {})])
 
     def rows(self, checked: list[keeping.Checked], hits: dict[int, KnowledgeHit], k: keeping.Kept,
              set_yes: bool | None) -> list[dict[str, Any]]:
@@ -385,16 +400,19 @@ def build_deep_graph(steps: DeepSteps) -> Any:
 
     async def search_node(state: DeepRun) -> DeepRun:
         result, hits = await steps.search(state["req"], state["bundle"])
-        return {"result": result, "hits": hits, "path": ["search"]}
+        pool = await steps.pool_ids(state["req"], result)
+        return {"result": result, "hits": hits, "pool_ids": pool, "path": ["search"]}
 
     async def check_node(state: DeepRun) -> DeepRun:
-        checked, set_yes, failed, slowest = await steps.check(state["req"], state["bundle"], state["result"],
-                                                              state["hits"])
-        return {"checked": checked, "set_yes": set_yes, "failed": failed, "slowest": slowest, "path": ["check"]}
+        checked, set_yes, failed, slowest, set_info = await steps.check(state["req"], state["bundle"],
+                                                                        state["result"], state["hits"])
+        return {"checked": checked, "set_yes": set_yes, "failed": failed, "slowest": slowest, "set_info": set_info,
+                "path": ["check"]}
 
     async def keep_node(state: DeepRun) -> DeepRun:
         out = steps.keep(state["req"], state["bundle"], state.get("rewrite"), state["result"], state["hits"],
-                         state["checked"], state.get("set_yes"), bool(state.get("failed")), state.get("slowest"))
+                         state["checked"], state.get("set_yes"), bool(state.get("failed")), state.get("slowest"),
+                         state.get("set_info"), state.get("pool_ids"))
         return {"out": out, "path": ["keep"]}
 
     g = StateGraph(DeepRun)

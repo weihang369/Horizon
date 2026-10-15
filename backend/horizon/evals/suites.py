@@ -39,9 +39,14 @@ REQUIRED = ("id", "question_id", "split", "item", "label")
 
 
 # ── datasets ──
+NOT_DECISIONS = frozenset({"retrieval"})   # M12: the retrieval suite's questions are not decision items
+
+
 def dataset_files(root: Path | None = None) -> list[Path]:
     root = root or DATASETS
-    return sorted(root.rglob("*.jsonl")) if root.is_dir() else []
+    if not root.is_dir():
+        return []
+    return sorted(p for p in root.rglob("*.jsonl") if not NOT_DECISIONS & set(p.relative_to(root).parts[:-1]))
 
 
 def load_dataset(path: Path) -> list[dict[str, Any]]:
@@ -193,8 +198,12 @@ class Decisions:
         self.smoke = smoke
 
     def _items(self, opts: Options) -> list[dict[str, Any]]:
-        """Layer-1 items; `--set NAME` runs one dataset folder instead (the judges' B4 validation is `--set judges`)."""
-        source = all_items(DATASETS / opts.set) if opts.set else all_items(judges=False)
+        """Layer-1 items; `--set NAME` runs one dataset folder instead (the judges' B4 validation is `--set judges`;
+        M12's `--set reask` is D9's re-ask with titles)."""
+        from horizon.evals import m12_sets
+
+        source = (iter(m12_sets.reask_items()) if opts.set == m12_sets.REASK_SET else
+                  all_items(DATASETS / opts.set) if opts.set else all_items(judges=False))
         items = [i for i in source if bool(i.get("smoke_only")) == self.smoke][opts.start:]
         return items[: opts.limit] if opts.limit else items
 
@@ -203,7 +212,8 @@ class Decisions:
         est = 0.0
         for i in items:
             q = item_question(i, seed=i["id"])
-            asks = 2 if isinstance(q, Choice) else 1   # a noul has no option order to reverse (D27)
+            # a noul has no option order to reverse (D27); M12 D9's re-ask compares the live order only
+            asks = 2 if isinstance(q, Choice) and not i.get("reask") else 1
             est += asks * decision_estimate(prices, i["item"]["state"], {i["question_id"]: wire_question(q)})
         return Plan(items=items, estimate_usd=est, expected_s=len(items) * 4.0, paid=paid)
 
@@ -214,11 +224,15 @@ class Decisions:
         correct = total = flips = 0
         bins: dict[int, list[int]] = {}
         skipped: set[str] = set()
-        mark = measured_marks(plan.items)
+        from horizon.evals import m12_sets
+
+        reask = env.opts.set == m12_sets.REASK_SET   # M12 D9: measured apart, so a re-ask never hides the live set
+        mark = {(f"{m12_sets.REASK_SET}:{k}" if reask else k): v for k, v in measured_marks(plan.items).items()}
         for item in plan.items:
             qid = str(item["question_id"])
+            mkey = f"{m12_sets.REASK_SET}:{qid}" if reask else qid
             version = bank().get(qid).version
-            if not self.smoke and measured.get(qid) == mark[qid]:
+            if not self.smoke and measured.get(mkey) == mark[mkey]:
                 skipped.add(qid)
                 continue
             if await env.over_budget():
@@ -229,13 +243,16 @@ class Decisions:
                                    "smoke_only": bool(item.get("smoke_only")), "planted": bool(item.get("planted")),
                                    "split": item["split"], "lang": item.get("lang", "en"),
                                    **({"kind": item["kind"]} if item.get("kind") else {}),
-                                   **({"fresh": True} if item.get("fresh") else {})}   # M11: scored apart (D17)
+                                   **({"fresh": True} if item.get("fresh") else {}),   # M11: scored apart (D17)
+                                   **({"reask": True} if item.get("reask") else {})}   # M12 D9
             if isinstance(q, Noul):   # D27: asked once; "yes" when p reaches the entry's threshold
-                r = await env.rt.gateway.decide(item["item"]["state"], {qid: wire_question(q)}, call_ctx("eval_judge"))
-                ans = validate(q, r.answers.get(qid))
+                key = str(item["item"].get("key") or qid)   # M12: the gate is asked under its live key, `docs:{id}`
+                r = await env.rt.gateway.decide(item["item"]["state"], {key: wire_question(q)}, call_ctx("eval_judge"))
+                ans = validate(q, r.answers.get(key))
                 if isinstance(ans, NoulAnswer):
                     th = bank().get(qid).thresholds   # M10: talk_finished's threshold is `t_end` (re-chosen on dev)
-                    t = float(th.get("t", th.get("t_end", 0.5)))
+                    t = float(next((th[k] for k in ("t", "t_end", "t_gate", "t_standalone", "english") if k in th),
+                                   0.5))
                     said = "yes" if ans.p >= t else "no"
                     row.update(answer=said, p=ans.p, correct=said == item["label"])
                     total += 1
@@ -264,10 +281,10 @@ class Decisions:
                 res.rows.append(row)
                 continue
             answers = []
-            for order in (q, reordered(q)):
+            for order in (q,) if item.get("reask") else (q, reordered(q)):
                 r = await env.rt.gateway.decide(item["item"]["state"], {qid: wire_question(order)}, call_ctx("eval_judge"))
                 answers.append(validate(order, r.answers.get(qid)))
-            a, b = answers
+            a, b = answers if len(answers) == 2 else (answers[0], answers[0])
             if isinstance(a, ChoiceAnswer) and isinstance(b, ChoiceAnswer) and isinstance(item["label"], dict):
                 # M9 D26: scored by the live code rule at report time (the floor comes from dev); both orders kept
                 row.update(answer=a.choice, answer_reversed=b.choice, confidence=a.confidence,
@@ -285,7 +302,8 @@ class Decisions:
             res.rows.append(row)
         if not self.smoke:
             for qid in {r["question_id"] for r in res.rows}:
-                measured[qid] = mark[qid]
+                mkey = f"{m12_sets.REASK_SET}:{qid}" if reask else qid
+                measured[mkey] = mark[mkey]
             done_path.parent.mkdir(parents=True, exist_ok=True)
             done_path.write_text(json.dumps(measured, indent=1), encoding="utf-8")
         if env.opts.set == JUDGES_SET and not self.smoke:
@@ -316,6 +334,7 @@ class Decisions:
             talk = [r for r in res.rows if r["question_id"] == "talk_finished"]
             if talk:
                 res.summary += who_policies.talk_report(talk)
+            res.summary += m12_sets.reports(res.rows)   # M12: docs, standalone, english and D9's re-ask
         n_policy = sum(1 for r in res.rows if isinstance(r["label"], dict) and not r.get("invalid"))
         if self.smoke:
             res.summary.append(f"## Decisions (smoke only: {total + n_policy} item(s), never a measurement)")
@@ -615,11 +634,14 @@ def _content() -> dict[str, Any]:
     from horizon.evals.debate_suites import DebateHistory, DebatePlant, DebateQuality, DebateSuite
     from horizon.evals.latency import Latency
     from horizon.evals.moodline import Moodline
+    from horizon.evals.notfound_suite import NotFound
+    from horizon.evals.retrieval_suite import Retrieval
     from horizon.evals.watch_suites import FreeRun, WatchHistory
     return {"drafter": Drafter(), "summary": Summary(), "long": Long(), "transcript": Transcript(),
             "moodline": Moodline(), "latency": Latency(), "watch-history": WatchHistory(), "freerun": FreeRun(),
             "debate-history": DebateHistory(), "debate-plant": DebatePlant(), "debate-quality": DebateQuality(),
-            "debate": DebateSuite()}
+            "debate": DebateSuite(), "retrieval": Retrieval(),
+            "notfound": NotFound()}
 
 
 SUITES: dict[str, Any] = {"canary": Canary(), "decisions": Decisions(), "smoke": Smoke(), **_content()}

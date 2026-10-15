@@ -128,6 +128,7 @@ class Runtime:
         self._db: Database | None = None
         self._data_lock: DataLock | None = None
         self.space_id: str | None = None
+        self.piece_size: tuple[int, int] | None = None   # M12 (rag D23): an evaluation arm's piece target and ceiling
         self.fts_secure_delete = True   # migration 0002 on SQLite >= 3.44; else Forget optimizes (design D16)
         self.seed_settings: dict[str, Any] = {}
         self._seed: seeding.SeedData | None = None

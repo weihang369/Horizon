@@ -110,6 +110,15 @@ class ScopedIndex:
                 return {}
         return {int(rid): _floats(blob) for rid, blob in rows}
 
+    async def chunk_ids(self, rids: list[int]) -> dict[int, str]:
+        if not rids:
+            return {}
+        C = t.knowledge_chunks.c
+        async with self.rt.db.read() as conn:
+            rows = (await conn.execute(select(C.rid, C.id).where(and_(
+                C.rid.in_(rids), C.world_id == self.world_id, C.character_id == self.character_id)))).all()
+        return {int(r[0]): str(r[1]) for r in rows}
+
     async def piece_texts(self, rids: list[int]) -> dict[int, str]:
         if not rids:
             return {}

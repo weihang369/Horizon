@@ -67,6 +67,14 @@
     "sha256": "fd52b737302f103c274876ad0173527ca39194c6f2172da1b4b1922164f6cb6b",
     "version": 2
   },
+  "judge_notfound_cites": {
+    "sha256": "52296f38a90daee076b1ec4a0b83c2d4e9465bfec9967e87dc1e32c5e9a377f5",
+    "version": 1
+  },
+  "judge_notfound_says": {
+    "sha256": "52333f445a08094e6e721723685ebbe8e1f53bd8ceb4f81a3ab5934a655d9316",
+    "version": 1
+  },
   "judge_pairwise": {
     "sha256": "edca205d7276e97b6d8a094479ea21726478e84ac75debffe64a5c84e2e46bbe",
     "version": 2

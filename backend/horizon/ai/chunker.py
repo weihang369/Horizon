@@ -260,18 +260,18 @@ class _Bytes:
         return 0 if n == 0 else -(-n // BYTES_PER_TOKEN)
 
 
-def _split(part: _Part, prefix_bytes: int) -> tuple[_Part, _Part | None]:
+def _split(part: _Part, prefix_bytes: int, target: int = TARGET, ceiling: int = MAX) -> tuple[_Part, _Part | None]:
     """Cut `part` for an empty piece whose carried text (heading lines and their join) is `prefix_bytes` long: the head
-    fits within `MAX` tokens; the rest is returned for the next piece."""
+    fits within `ceiling` tokens; the rest is returned for the next piece."""
     text = part.text
     bc = _Bytes(text)
 
     def fits(c: int) -> bool:
-        return bc.tokens(prefix_bytes, 0, c) <= MAX
+        return bc.tokens(prefix_bytes, 0, c) <= ceiling
 
     def nearest(cands: list[int]) -> int | None:
         ok = [c for c in cands if 0 < c < len(text) and fits(c)]
-        return min(ok, key=lambda c: (abs(bc.tokens(prefix_bytes, 0, c) - TARGET), c)) if ok else None
+        return min(ok, key=lambda c: (abs(bc.tokens(prefix_bytes, 0, c) - target), c)) if ok else None
 
     cut: int | None = None
     if part.kind in ("list", "table"):
@@ -316,7 +316,8 @@ class _Piece:
         return len((JOIN.join(h.text for h in self.heads) + JOIN).encode("utf-8"))
 
 
-def chunk(markdown: str, *, paged: bool = False) -> Chunked:
+def chunk(markdown: str, *, paged: bool = False, target: int = TARGET, ceiling: int = MAX) -> Chunked:
+    """`target` / `ceiling`: the piece size (300 / 400 live; the evaluation's piece-size arms change them, rag D23)."""
     md = markdown
     blocks, markers = _blocks(md)
     if paged:
@@ -353,15 +354,15 @@ def chunk(markdown: str, *, paged: bool = False) -> Chunked:
                 path = " › ".join(t for _, t in heads) or None
                 cur = _Piece(heads=pending, path=path, nearest=heads[-1][1] if heads else None)
                 pending = []
-            if count_tokens(cur.text(rest)) <= MAX:
+            if count_tokens(cur.text(rest)) <= ceiling:
                 cur.parts.append(rest)
                 rest = None
-                if count_tokens(cur.text()) >= TARGET:
+                if count_tokens(cur.text()) >= target:
                     close()
             elif cur.parts:
                 close()
             else:
-                head, rest = _split(rest, cur.prefix_bytes())
+                head, rest = _split(rest, cur.prefix_bytes(), target, ceiling)
                 cur.parts.append(head)
                 close()
     close()

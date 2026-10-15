@@ -337,16 +337,16 @@
 
 ## 9. The evaluation, offline (design D22–D24, D30)
 
-- [ ] 9.1 The runner marks every paid run's folder `.keep` when it finishes (D31.4).
+- [x] 9.1 The runner marks every paid run's folder `.keep` when it finishes (D31.4).
   Verify: a test runs a paid-shaped run on the fake and finds `.keep`; a smoke run is still pruned past 20.
-- [ ] 9.2 Build `evals/datasets/retrieval/`: the question format, span labels with offsets, the hash split, and the
+- [x] 9.2 Build `evals/datasets/retrieval/`: the question format, span labels with offsets, the hash split, and the
   corpus and seed loader into a run database as each character's sources. Check spans with `corpus-check`, and
   check against the bank with `overlap`.
   Verify:
   - the builder is deterministic;
   - every span resolves to its source text;
   - `overlap` reports 0 on a fixture set.
-- [ ] 9.3 Implement `horizon eval retrieval`:
+- [x] 9.3 Implement `horizon eval retrieval`:
   - D23's metrics;
   - the 80 % coverage rule;
   - K7's leave-one-out tuning and counts;
@@ -354,19 +354,19 @@
   - seed and corpus apart.
   Verify: `HORIZON_TEST=1 horizon eval retrieval --limit 5 --yes` completes with fixture answers, and a report test
   checks every metric on a fixture run.
-- [ ] 9.4 Implement the comparisons (spaces, piece target at a fixed 1,200-token budget, λ, instruction, rewrite,
+- [x] 9.4 Implement the comparisons (spaces, piece target at a fixed 1,200-token budget, λ, instruction, rewrite,
   header), each in its own run database, with dev-only kept-set precision for the piece arms.
   Verify:
   - a fixture comparison run reports each arm;
   - K3's rule keeps the default on a 2-point gain.
-- [ ] 9.5 Add the M12 sets to `decisions`:
+- [x] 9.5 Add the M12 sets to `decisions`:
   - `docs` (with `t_gate` and `t_confident` by B5's rules);
   - `standalone` (`t_standalone`);
   - `english` (≥ 95 %);
   - D9's re-ask of the who-speaks and emotion items that hold gated candidates, compared with their recorded
     answers.
   Verify: report tests on fixture answers for each set.
-- [ ] 9.6 Add the Not-found judges (`judge_notfound_says`, `judge_notfound_cites`) as `eval_judge` entries, their B4
+- [x] 9.6 Add the Not-found judges (`judge_notfound_says`, `judge_notfound_cites`) as `eval_judge` entries, their B4
   validation set format, and the end-to-end run (40 unanswerable + 10 partly, 1:1, `agent`), reading "NOT COUNTED"
   until validated.
   Verify: fixture tests for the validation report and the NOT COUNTED rule.
