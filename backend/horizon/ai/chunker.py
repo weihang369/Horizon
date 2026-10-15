@@ -17,7 +17,9 @@ on Markdown and text, and both read the shared fixtures in `tests/fixtures/chunk
   carried heading lines included.
 - **Too large → split.** A block that doesn't fit an empty piece is cut at the sentence end nearest `TARGET` that
   fits; failing that at the last word boundary that fits (`MAX`). Lists are cut between lines, and tables between
-  rows, each later part of a table starting with the header row repeated.
+  rows, each later part of a table starting with the header row repeated, unless the header and that part's first row
+  don't fit one piece together (a very wide table): then the part starts at the row, and the rest of that table goes
+  without the repeat (rag 11.2, check 4: a header-only piece held no source text).
 - **Locators:** `p. N` or `pp. N–M` for paged documents; else `§ {nearest heading}`; else `¶ {n}`, n the 1-based piece
   number in the source. `heading` is the heading path joined with " › ".
 - **Offsets (the invariant).** `char_start` / `char_end` span the piece's first to last block in the Markdown given
@@ -272,6 +274,12 @@ def _split(part: _Part, prefix_bytes: int, target: int = TARGET, ceiling: int = 
     def nearest(cands: list[int]) -> int | None:
         ok = [c for c in cands if 0 < c < len(text) and fits(c)]
         return min(ok, key=lambda c: (abs(bc.tokens(prefix_bytes, 0, c) - target), c)) if ok else None
+
+    if part.kind == "table" and part.header and part.pos and part.pos[0] < 0:   # a repeated header leads this part
+        row_end = text.find("\n", part.header + 1)
+        if not fits(len(text) if row_end < 0 else row_end):   # it can't share a piece with a row: drop the repeat
+            k = part.header + 1
+            return _split(_Part("table", text[k:], part.pos[k:]), prefix_bytes, target, ceiling)
 
     cut: int | None = None
     if part.kind in ("list", "table"):

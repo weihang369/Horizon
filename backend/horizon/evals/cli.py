@@ -167,7 +167,9 @@ def register(sub: Any) -> None:
                            ("retrieval", "the agent deep path on the labelled retrieval questions; --arm for one "
                                          "comparison arm (paid, M12)"),
                            ("notfound", "the Not-found reply end to end: 40 unanswerable + 10 partly 1:1 turns and "
-                                        "its two judges (paid, M12)")):
+                                        "its two judges (paid, M12)"),
+                           ("deep-check", "doc 10 check 5: deep_check on 20 passages, the set check on 5 pairs, the two "
+                                          "nouls on 20 messages (paid, M12)")):
         s = esub.add_parser(name, help=helptext)
         s.add_argument("--profile", default="naive", choices=["scripted", "naive", "agent"])
         s.add_argument("--limit", type=int, default=None)

@@ -6,7 +6,7 @@
       "docs": {
         "purpose": "turn_plan",
         "id": "docs",
-        "version": 1,
+        "version": 2,
         "label": "needs documents?",
         "p": 0.72,
         "compared": [
@@ -18,7 +18,7 @@
           {
             "name": "t_gate",
             "value": 0.72,
-            "threshold": 0.35
+            "threshold": 0.45
           }
         ],
         "result": "used",
@@ -322,14 +322,14 @@
       "standalone": {
         "purpose": "turn_plan",
         "id": "standalone",
-        "version": 1,
+        "version": 2,
         "label": "standalone?",
         "p": 0.72,
         "compared": [
           {
             "name": "t_standalone",
             "value": 0.72,
-            "threshold": 0.5
+            "threshold": 0.35
           }
         ],
         "result": "used",

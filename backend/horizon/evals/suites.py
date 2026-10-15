@@ -639,6 +639,7 @@ async def planned_group_send(env: RunEnv) -> int:
 def _content() -> dict[str, Any]:
     from horizon.evals.content import Drafter, Long, Summary, Transcript
     from horizon.evals.debate_suites import DebateHistory, DebatePlant, DebateQuality, DebateSuite
+    from horizon.evals.deep_check_suite import DeepCheck
     from horizon.evals.latency import Latency
     from horizon.evals.moodline import Moodline
     from horizon.evals.notfound_suite import NotFound
@@ -648,7 +649,7 @@ def _content() -> dict[str, Any]:
             "moodline": Moodline(), "latency": Latency(), "watch-history": WatchHistory(), "freerun": FreeRun(),
             "debate-history": DebateHistory(), "debate-plant": DebatePlant(), "debate-quality": DebateQuality(),
             "debate": DebateSuite(), "retrieval": Retrieval(),
-            "notfound": NotFound()}
+            "notfound": NotFound(), "deep-check": DeepCheck()}
 
 
 SUITES: dict[str, Any] = {"canary": Canary(), "decisions": Decisions(), "smoke": Smoke(), **_content()}

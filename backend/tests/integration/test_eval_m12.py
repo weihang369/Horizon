@@ -526,3 +526,23 @@ def test_a_deep_line_without_citations_is_not_ok() -> None:
     line, ok = deep_line("1:1", reply)
     assert not ok and "citations none" in line
     assert deep_line("group", None) == ("- deep group: no reply", False)
+
+
+# ── 11.1 check 5 ──
+def test_check_5_asks_twenty_passages_five_sets_and_twenty_messages_as_live() -> None:
+    from horizon.evals.deep_check_suite import items, report, request
+
+    its = items()
+    parts = [i["part"] for i in its]
+    assert (parts.count("passage"), parts.count("set"), parts.count("nouls")) == (20, 5, 20)
+    assert sorted(i["expect"] for i in its if i["part"] == "passage") == [0] * 7 + [1] * 6 + [2] * 7
+    assert items() == its   # deterministic
+    st, qs, purpose = request(next(i for i in its if i["part"] == "passage"))
+    assert purpose == "deep_check" and set(st) == {"mode", "quoted_query", "quoted_passage"}
+    assert next(iter(qs)).startswith("passage:")
+    _, qs, purpose = request(next(i for i in its if i["part"] == "nouls"))
+    assert purpose == "turn_plan" and set(qs) == {"standalone", "english"}
+    rows = [{"part": "passage", "id": "a", "expect": 2, "unit": 0.9, "top": 2, "probs_given": True},
+            {"part": "passage", "id": "b", "expect": 0, "unit": 0.1, "top": 0, "probs_given": False}]
+    rep = "\n".join(report(rows))
+    assert "probabilities came back on 1" in rep and "expected answers (1): unit min 0.90" in rep

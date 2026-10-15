@@ -1,6 +1,6 @@
 {
   "id": "standalone",
-  "version": 1,
+  "version": 2,
   "purpose": "turn_plan",
   "type": "noul",
   "label": "standalone?",
@@ -29,7 +29,8 @@
   "deadline": "turn_plan",
   "floor": null,
   "thresholds": {
-    "t_standalone": 0.5
+    "t_standalone": 0.35
   },
-  "fallback": "no_rewrite"
+  "fallback": "no_rewrite",
+  "state_note": "rag 11.3: t_standalone 0.35 chosen on dev by B5 (docs/ai/checks/m12.md)."
 }

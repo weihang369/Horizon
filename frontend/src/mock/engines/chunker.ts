@@ -7,7 +7,8 @@
 // - A heading is carried to the top of the next piece, never a piece of its own; a piece never crosses a heading change.
 // - Blocks are packed, joined by a blank line, until a piece reaches 300 tokens or the next block would pass 400.
 // - A block too large for an empty piece is cut at the sentence end nearest 300 that fits (a line, for lists and
-//   tables, each later table part repeating the header row), else at the last word that fits.
+//   tables, each later table part repeating the header row unless the header and its first row don't fit one piece
+//   together), else at the last word that fits.
 // - Tokens are UTF-8 bytes / 3, rounded up (the backend's `count_tokens`).
 // - Locators: `§ {nearest heading}`, else `¶ {n}`; `heading` is the heading path joined with " › ".
 
@@ -18,7 +19,7 @@ export const MAX = 400;
 export interface Piece { text: string; locator: string; heading: string | null }
 
 type Kind = "heading" | "para" | "list" | "table";
-interface Part { kind: Kind; text: string; header: number }
+interface Part { kind: Kind; text: string; header: number; repeated?: number }   // repeated: a leading repeated header
 
 const PAGE = /^\s*<!--\s*page\s+(\d+)\s*-->\s*$/i;
 const HEADING = /^\s{0,3}(#{1,6})\s+(.+?)\s*#*\s*$/;
@@ -101,6 +102,12 @@ function split(part: Part, prefix: number): [Part, Part | null] {
     }
     return best;
   };
+  if (part.kind === "table" && part.header && part.repeated) {   // a repeated header leads this part
+    const rowEnd = text.indexOf("\n", part.header + 1);
+    if (!fits(rowEnd < 0 ? text.length : rowEnd)) {   // it can't share a piece with a row: drop the repeat
+      return split({ kind: "table", text: text.slice(part.repeated), header: 0 }, prefix);
+    }
+  }
   let cut: number | null = null;
   if (part.kind === "list" || part.kind === "table") {
     const lo = part.kind === "table" ? part.header : 0;
@@ -127,7 +134,7 @@ function split(part: Part, prefix: number): [Part, Part | null] {
   let rest: Part = { kind: part.kind, text: text.slice(a), header: 0 };
   if (part.kind === "table" && part.header && cut > part.header) {
     const hdr = text.slice(0, part.header);
-    rest = { kind: "table", text: `${hdr}\n${rest.text}`, header: hdr.length };
+    rest = { kind: "table", text: `${hdr}\n${rest.text}`, header: hdr.length, repeated: hdr.length + 1 };
   }
   return [head, rest];
 }

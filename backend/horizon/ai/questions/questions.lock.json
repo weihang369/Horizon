@@ -1,7 +1,7 @@
 {
   "docs": {
-    "sha256": "e83c5d67dec94e3c631f80678b59413fbe37f54ded7863d041c0ec7d92b50f3a",
-    "version": 1
+    "sha256": "8a63e2214ac5af07756144b82542b7c89151c122d91c91afd8e24a6e721ab132",
+    "version": 2
   },
   "emotion_debate_opening": {
     "sha256": "8873a9fc2868bd382ddee95d497dfe47e3e71868412ba00e0616b5f2e2c2e461",
@@ -180,8 +180,8 @@
     "version": 2
   },
   "standalone": {
-    "sha256": "dff1fcfaf5ce75ebd4ac204dea8a12f14bd92cd59c9290d701dd0a025c6dca42",
-    "version": 1
+    "sha256": "61eaa95dd32e9b9dff5b7bb8768c85ea7d605928e797714ee58000e24f99116e",
+    "version": 2
   },
   "talk_finished": {
     "sha256": "915d45afb5fadde6baf2c2d569507a4a203d2b89458f27130f509ec52643a749",

@@ -1,6 +1,6 @@
 {
   "id": "docs",
-  "version": 1,
+  "version": 2,
   "purpose": "turn_plan",
   "type": "noul",
   "label": "needs documents?",
@@ -35,9 +35,9 @@
   "deadline": "turn_plan",
   "floor": null,
   "thresholds": {
-    "t_gate": 0.35,
+    "t_gate": 0.45,
     "t_confident": 0.8
   },
   "fallback": "quick",
-  "state_note": "rag D7, D8: asked in the 1:1 plan, the cast plan, the follow plan and the debate plan, so it declares every plan state field."
+  "state_note": "rag D7, D8: asked in the 1:1 plan, the cast plan, the follow plan and the debate plan, so it declares every plan state field. rag 11.3: t_gate 0.45 and t_confident 0.80 chosen on dev by B5 (docs/ai/checks/m12.md)."
 }

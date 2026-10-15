@@ -245,4 +245,4 @@ async def test_a_debate_gate_later_than_the_turns_start_is_quick(api: Api) -> No
 
 def test_gate_rows_compare_against_the_bank() -> None:
     row = gates.gate_row(AMARA, GateAnswer(p=0.5), purpose="turn_plan", abstain_kind=False)
-    assert row["compared"] == [{"name": "t_gate", "value": 0.5, "threshold": 0.35}]
+    assert row["compared"] == [{"name": "t_gate", "value": 0.5, "threshold": 0.45}]

@@ -21,7 +21,7 @@ SENTENCE = bank().sentence
 def test_the_five_entries_are_worded_as_designed() -> None:
     b = bank()
     docs = b.get("docs")
-    assert (docs.version, docs.type, docs.purpose, docs.label) == (1, "noul", "turn_plan", "needs documents?")
+    assert (docs.version, docs.type, docs.purpose, docs.label) == (2, "noul", "turn_plan", "needs documents?")   # v2: 11.3's thresholds
     assert docs.instructions == ("Does {name}'s next line need facts that {name}'s own documents, named in "
                                  "quoted_documents, may hold?")
     q = b.question("docs", name="Amara", about="chr_seedAmara")
@@ -42,10 +42,10 @@ def test_the_five_entries_are_worded_as_designed() -> None:
     assert check_lock() == []
 
 
-def test_starting_thresholds() -> None:
+def test_the_thresholds_chosen_in_11_3() -> None:   # B5 on dev (docs/ai/checks/m12.md); the rest still start
     b = bank()
-    assert dict(b.get("docs").thresholds) == {"t_gate": 0.35, "t_confident": 0.8}
-    assert dict(b.get("standalone").thresholds) == {"t_standalone": 0.5}
+    assert dict(b.get("docs").thresholds) == {"t_gate": 0.45, "t_confident": 0.8}
+    assert dict(b.get("standalone").thresholds) == {"t_standalone": 0.35}
     assert dict(b.get("english").thresholds) == {"english": 0.5}
     assert dict(b.get("passage").thresholds) == {"t_keep": 0.6, "t_found": 0.6}
     assert dict(b.get("passage_set").thresholds) == {"t_set": 0.5}
@@ -112,5 +112,5 @@ def test_the_backend_reads_every_agent_knob() -> None:
 def test_the_fixture_has_the_retrieval_rows() -> None:
     rows = json.loads((ROOT / "seed" / "system1.fixture.json").read_text(encoding="utf-8"))["data"]["rows"]
     for qid in ("docs", "standalone", "english", "passage", "passage_set"):
-        assert rows[qid]["version"] == 1 and rows[qid]["label"] == bank().get(qid).label
+        assert rows[qid]["version"] == bank().get(qid).version and rows[qid]["label"] == bank().get(qid).label
     assert not [k for k in rows if k.startswith("judge_")]
