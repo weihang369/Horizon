@@ -49,8 +49,9 @@ async def test_a_one_on_one_send_is_planned(api: Api) -> None:
     before = len(await ledger(api))
     reply = await send(api, sid, "My dog died this morning.")
     new = (await ledger(api))[before:]
-    assert purposes(new)[:2] == ["turn_plan", "reply"]          # the plan's row lands before the chat row
-    plan_row = new[0]
+    # the plan's row lands before the chat row (a short message's rewrite may start beside the plan, rag 11.9)
+    assert [p for p in purposes(new) if p != "query_rewrite"][:2] == ["turn_plan", "reply"]
+    plan_row = next(r for r in new if r["purpose"] == "turn_plan")
     assert plan_row["category"] == "decision" and plan_row["message_id"] == reply["id"]
     sys1 = reply["trace"]["system1"]
     assert sys1["seed"].endswith(":1") or ":" in sys1["seed"]

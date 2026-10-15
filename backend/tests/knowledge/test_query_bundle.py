@@ -131,18 +131,22 @@ async def test_cap_refusing_the_query_embedding_means_keywords_and_no_error_even
 
 # ── M10 (group-watch task 3.4, design D18; session-modes "Agent group and watch retrieve nothing before M12") ──
 async def test_agent_sends_start_no_query_embedding_even_with_vectors(api: Api) -> None:
-    """The plan decides retrieval under `agent`, and no gate is asked before M12, so a sent message embeds nothing,
-    in 1:1 and in group. (M9 D9 said so for 1:1; M10 builds it.)"""
+    """The plan decides retrieval under `agent`: a sent message never gets D-97's embedding at send, in 1:1 and in
+    group. (M9 D9 said so for 1:1; M10 builds it.) Since rag 11.5 the plan itself starts the user message's
+    embedding beside Jev call 1 for a gated candidate with vectors, so any `query_embed` row is that early one, linked
+    to the user's message, and the turns here stay quick (the fake's gate says no)."""
     await api.set_key()
     await naive_retrieval(api)
     await indexed_note(api)
     assert (await api.post(f"{API}/_test/ai-profile", {"profile": "agent"})).status_code == 204
-    _, replies = await group_send(api, "What happens to burnout on night shifts?")
+    gid, replies = await group_send(api, "What happens to burnout on night shifts?")
     sid = (await create(api, "one_on_one", [AMARA]))["session"]["id"]
     await api.drive(6000)
     await command(api, sid, "send", {"text": "What happens to burnout on night shifts?"})
     await api.drive(20000)
-    assert replies and await query_rows(api) == []
+    users = {m["id"] for s in (gid, sid) for m in await messages(api, s) if m["author"]["type"] == "user"}
+    rows = await query_rows(api)   # the same text twice: one early embedding, the 1:1's served by the embedder's LRU
+    assert replies and len(rows) == 1 and rows[0]["message_id"] in users
     assert all("knowledge" not in m["trace"] for m in [*replies, *chars(await messages(api, sid))])
 
 

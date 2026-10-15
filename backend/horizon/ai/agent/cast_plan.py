@@ -270,8 +270,10 @@ class CastSteps:
 
         if req.kind in gates.NOUL_KINDS and meta["gated"]:   # rag 11.5: a user message's embedding starts now
             from horizon.ai.agent.deep import start_early_embedding
+            from horizon.ai.agent.planner import answered_message
 
-            start_early_embedding(self.deps, req.session, meta["gated"], req.latest, req.message_id)
+            start_early_embedding(self.deps, req.session, meta["gated"], req.latest,
+                                  req.message_id or answered_message(req.session)[0])
         decider = self.deps.decider()
         ctx = req.session.call_ctx(PURPOSE)
         call = decider.start(state.state, qs, ctx, purpose=PURPOSE, fallback=fallback)

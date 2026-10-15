@@ -272,8 +272,11 @@ class FakeOpenRouter:
         return self._answer(request, (request.method, request.url.path.removeprefix("/api")))
 
     def _answer(self, request: httpx.Request, route: tuple[str, str]) -> httpx.Response:
-        if self.queued and (route == ("POST", "/v1/chat/completions")
-                            or self.queued[0].headers.get("content-type") != "text/event-stream"):
+        # a queued response answers the reply-side calls it was queued for; the rewrite (started early beside the
+        # plan since rag 11.9) never takes it, and is answered by its canned set or the default chat instead
+        if self.queued and request.headers.get(PURPOSE_HEADER) != "query_rewrite" \
+                and (route == ("POST", "/v1/chat/completions")
+                     or self.queued[0].headers.get("content-type") != "text/event-stream"):
             return self.queued.pop(0)
         auth = request.headers.get("authorization", "")
         if not auth.startswith("Bearer sk-or-") or auth.startswith("Bearer sk-or-bad"):
