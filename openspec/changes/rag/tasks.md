@@ -235,7 +235,7 @@
   Verify:
   - unit tests for fusion arithmetic, normalisation edge cases, MMR spreading near-copies, Jaccard with no vectors;
   - the same inputs always give the same 8.
-- [ ] 6.3 Time the pipeline on a fully loaded test database (every seed and corpus document, 3,000 pieces for one
+- [x] 6.3 Time the pipeline on a fully loaded test database (every seed and corpus document, 3,000 pieces for one
   character).
   Verify: p99 of `search` under 50 ms in the test, recorded in m12.md.
 - [x] 6.4 Storm (D2): a reindex and a space-build flip landing while a turn searches.
@@ -395,19 +395,19 @@
 
 ## 11. The paid runs (design D28; each asked for with its estimate, off-peak)
 
-- [ ] 11.1 Check 5: `deep_check` on 20 pieces, the set check on 5 pairs, and the two nouls on 20 messages (≈ $0.002).
+- [x] 11.1 Check 5: `deep_check` on 20 pieces, the set check on 5 pairs, and the two nouls on 20 messages (≈ $0.002).
   Verify: m12.md records whether the levels' probabilities and the weighted score come back as K7 expects.
-- [ ] 11.2 Check 4 (local, free). Propose the two PDFs' URLs and licence notes to the user, download after the OK
+- [x] 11.2 Check 4 (local, free). Propose the two PDFs' URLs and licence notes to the user, download after the OK
   (D31.3), and run `pack@2` on them and on the corpus.
   Verify: m12.md records:
   - headings carried forward;
   - tables keeping their lines and header rows;
   - a mid-sentence page break giving `pp. N–M`;
   - Chinese cut at `。`.
-- [ ] 11.3 `decisions` for `docs`, `standalone` and `english` (≈ $0.013). Write `t_gate`, `t_confident` and
+- [x] 11.3 `decisions` for `docs`, `standalone` and `english` (≈ $0.013). Write `t_gate`, `t_confident` and
   `t_standalone` into the bank (version bumps, `bank-lock`, seed rebuilt).
   Verify: m12.md has each threshold against B5's rule, with the test split's figures and Wilson intervals.
-- [ ] 11.4 D9's re-ask (≈ $0.01).
+- [x] 11.4 D9's re-ask (≈ $0.01).
   Verify: m12.md records each affected entry's dev accuracy with and without titles, and any version bump with its
   re-chosen floor.
 - [ ] 11.5 Corpus embeddings for the comparison arms (≈ $0.01), then `retrieval` on dev (≈ $0.04, with 45

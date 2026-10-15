@@ -1,0 +1,45 @@
+{"part": "passage", "id": "ret-a002", "expect": 2, "score": 2.0, "probs_given": true, "probabilities": {"0": 0.0, "1": 0.0, "2": 1.0}, "p_answers": 1.0, "p_partly": 0.0, "unit": 1.0, "top": 2}
+{"part": "passage", "id": "ret-a003", "expect": 2, "score": 1.98, "probs_given": true, "probabilities": {"0": 0.0, "1": 0.02, "2": 0.98}, "p_answers": 0.98, "p_partly": 0.02, "unit": 0.99, "top": 2}
+{"part": "passage", "id": "ret-a004", "expect": 2, "score": 1.94, "probs_given": true, "probabilities": {"0": 0.0, "1": 0.06, "2": 0.94}, "p_answers": 0.94, "p_partly": 0.06, "unit": 0.97, "top": 2}
+{"part": "passage", "id": "ret-a006", "expect": 2, "score": 2.0, "probs_given": true, "probabilities": {"0": 0.0, "1": 0.0, "2": 1.0}, "p_answers": 1.0, "p_partly": 0.0, "unit": 1.0, "top": 2}
+{"part": "passage", "id": "ret-a007", "expect": 2, "score": 1.97, "probs_given": true, "probabilities": {"0": 0.0, "1": 0.03, "2": 0.97}, "p_answers": 0.97, "p_partly": 0.03, "unit": 0.985, "top": 2}
+{"part": "passage", "id": "ret-a008", "expect": 2, "score": 1.91, "probs_given": true, "probabilities": {"0": 0.0, "1": 0.08, "2": 0.92}, "p_answers": 0.92, "p_partly": 0.08, "unit": 0.96, "top": 2}
+{"part": "passage", "id": "ret-a010", "expect": 2, "score": 2.0, "probs_given": true, "probabilities": {"0": 0.0, "1": 0.0, "2": 1.0}, "p_answers": 1.0, "p_partly": 0.0, "unit": 1.0, "top": 2}
+{"part": "passage", "id": "ret-a024", "expect": 1, "score": 1.0, "probs_given": true, "probabilities": {"0": 0.0, "1": 1.0, "2": 0.0}, "p_answers": 0.0, "p_partly": 1.0, "unit": 0.5, "top": 1}
+{"part": "passage", "id": "ret-a026", "expect": 1, "score": 1.0, "probs_given": true, "probabilities": {"0": 0.0, "1": 1.0, "2": 0.0}, "p_answers": 0.0, "p_partly": 1.0, "unit": 0.5, "top": 1}
+{"part": "passage", "id": "ret-a073", "expect": 1, "score": 1.0, "probs_given": true, "probabilities": {"0": 0.0, "1": 1.0, "2": 0.0}, "p_answers": 0.0, "p_partly": 1.0, "unit": 0.5, "top": 1}
+{"part": "passage", "id": "ret-a074", "expect": 1, "score": 0.94, "probs_given": true, "probabilities": {"0": 0.07, "1": 0.93, "2": 0.0}, "p_answers": 0.0, "p_partly": 0.93, "unit": 0.465, "top": 1}
+{"part": "passage", "id": "ret-a075", "expect": 1, "score": 1.0, "probs_given": true, "probabilities": {"0": 0.0, "1": 1.0, "2": 0.0}, "p_answers": 0.0, "p_partly": 1.0, "unit": 0.5, "top": 1}
+{"part": "passage", "id": "ret-a099", "expect": 1, "score": 0.99, "probs_given": true, "probabilities": {"0": 0.02, "1": 0.97, "2": 0.01}, "p_answers": 0.01, "p_partly": 0.97, "unit": 0.495, "top": 1}
+{"part": "passage", "id": "ret-a028~ret-a049", "expect": 0, "score": 0.0, "probs_given": true, "probabilities": {"0": 1.0, "1": 0.0, "2": 0.0}, "p_answers": 0.0, "p_partly": 0.0, "unit": 0.0, "top": 0}
+{"part": "passage", "id": "ret-a012~ret-a023", "expect": 0, "score": 0.15, "probs_given": true, "probabilities": {"0": 0.85, "1": 0.15, "2": 0.0}, "p_answers": 0.0, "p_partly": 0.15, "unit": 0.075, "top": 0}
+{"part": "passage", "id": "ret-a053~ret-a076", "expect": 0, "score": 0.28, "probs_given": true, "probabilities": {"0": 0.73, "1": 0.26, "2": 0.01}, "p_answers": 0.01, "p_partly": 0.26, "unit": 0.14, "top": 0}
+{"part": "passage", "id": "ret-a077~ret-a098", "expect": 0, "score": 0.0, "probs_given": true, "probabilities": {"0": 1.0, "1": 0.0, "2": 0.0}, "p_answers": 0.0, "p_partly": 0.0, "unit": 0.0, "top": 0}
+{"part": "passage", "id": "ret-a029~ret-a047", "expect": 0, "score": 0.0, "probs_given": true, "probabilities": {"0": 1.0, "1": 0.0, "2": 0.0}, "p_answers": 0.0, "p_partly": 0.0, "unit": 0.0, "top": 0}
+{"part": "passage", "id": "ret-a013~ret-a022", "expect": 0, "score": 0.0, "probs_given": true, "probabilities": {"0": 1.0, "1": 0.0, "2": 0.0}, "p_answers": 0.0, "p_partly": 0.0, "unit": 0.0, "top": 0}
+{"part": "passage", "id": "ret-a054~ret-a070", "expect": 0, "score": 0.0, "probs_given": true, "probabilities": {"0": 1.0, "1": 0.0, "2": 0.0}, "p_answers": 0.0, "p_partly": 0.0, "unit": 0.0, "top": 0}
+{"part": "set", "id": "ret-a005", "expect": "yes", "p": 0.87}
+{"part": "set", "id": "ret-a019", "expect": "yes", "p": 0.89}
+{"part": "set", "id": "ret-a020", "expect": "yes", "p": 0.65}
+{"part": "set", "id": "ret-a042~ret-a098", "expect": "no", "p": 0.11}
+{"part": "set", "id": "ret-a043~ret-a097", "expect": "no", "p": 0.21}
+{"part": "nouls", "id": "std-003", "expect": {"standalone": "no"}, "standalone": 0.13, "english": 0.98}
+{"part": "nouls", "id": "std-007", "expect": {"standalone": "no"}, "standalone": 0.38, "english": 0.97}
+{"part": "nouls", "id": "std-009", "expect": {"standalone": "no"}, "standalone": 0.16, "english": 0.97}
+{"part": "nouls", "id": "std-011", "expect": {"standalone": "no"}, "standalone": 0.17, "english": 0.99}
+{"part": "nouls", "id": "std-017", "expect": {"standalone": "no"}, "standalone": 0.16, "english": 0.98}
+{"part": "nouls", "id": "std-002", "expect": {"standalone": "yes"}, "standalone": 0.75, "english": 0.98}
+{"part": "nouls", "id": "std-004", "expect": {"standalone": "yes"}, "standalone": 0.75, "english": 0.98}
+{"part": "nouls", "id": "std-006", "expect": {"standalone": "yes"}, "standalone": 0.47, "english": 0.98}
+{"part": "nouls", "id": "std-008", "expect": {"standalone": "yes"}, "standalone": 0.5, "english": 0.97}
+{"part": "nouls", "id": "std-010", "expect": {"standalone": "yes"}, "standalone": 0.81, "english": 0.99}
+{"part": "nouls", "id": "eng-001", "expect": {"english": "yes"}, "standalone": 0.94, "english": 0.98}
+{"part": "nouls", "id": "eng-003", "expect": {"english": "yes"}, "standalone": 0.71, "english": 0.98}
+{"part": "nouls", "id": "eng-004", "expect": {"english": "yes"}, "standalone": 0.85, "english": 0.96}
+{"part": "nouls", "id": "eng-031", "expect": {"english": "no"}, "standalone": 0.84, "english": 0.06}
+{"part": "nouls", "id": "eng-032", "expect": {"english": "no"}, "standalone": 0.92, "english": 0.06}
+{"part": "nouls", "id": "eng-033", "expect": {"english": "no"}, "standalone": 0.65, "english": 0.08}
+{"part": "nouls", "id": "eng-011", "expect": {"english": "no"}, "standalone": 0.94, "english": 0.03}
+{"part": "nouls", "id": "eng-013", "expect": {"english": "no"}, "standalone": 0.62, "english": 0.04}
+{"part": "nouls", "id": "eng-014", "expect": {"english": "no"}, "standalone": 0.94, "english": 0.03}
+{"part": "nouls", "id": "eng-021", "expect": {"english": "no"}, "standalone": 0.94, "english": 0.03}
