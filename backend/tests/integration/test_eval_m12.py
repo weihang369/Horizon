@@ -405,3 +405,70 @@ async def test_notfound_runs_offline_on_the_fake(tmp_path: Path) -> None:
     assert rows and rows[0]["reply"] and rows[0]["status"] == "complete"
     assert (run / "agent" / "judge_states.jsonl").is_file()
     assert "## The Not-found reply" in (run / "agent" / "report.md").read_text(encoding="utf-8")
+
+
+# ── 9.7 latency --part deep ──
+def test_latency_deep_needs_the_agent_profile() -> None:
+    from horizon.evals.latency import Latency
+
+    assert "--profile agent" in (Latency().refuse(Options("latency", part="deep")) or "")
+    assert Latency().refuse(Options("latency", part="deep", profile="agent")) is None
+    assert Latency().refuse(Options("latency")) is None
+
+
+async def test_latency_deep_runs_on_the_virtual_clock(tmp_path: Path) -> None:
+    import json
+
+    cfg = base(tmp_path)
+    (tmp_path / "secrets.local.json").write_text('{"openRouterKey": "sk-or-test-0001"}', encoding="utf-8")
+    out: list[str] = []
+    r = Runner(cfg, stdin=lambda _p: "y", out=out.append, now=lambda: SATURDAY)
+    assert await r.run(Options("latency", profile="agent", part="deep", limit=3, yes=True)) == 0, out
+    (run,) = [p for p in (tmp_path / "evals").iterdir() if p.is_dir()]
+    rep = (run / "agent" / "report.md").read_text(encoding="utf-8")
+    assert "## Deep-turn timing" in rep
+    for title in ("1:1 with a rewrite", "1:1 without a rewrite", "group", "debate", "watch"):
+        assert f"### {title}: " in rep, title
+    for step in ("Jev call 1", "the rewrite", "the embeddings", "the search", "the slowest `deep_check`",
+                 "the set check", "Jev 429s", "deep runs that fell back"):
+        assert step in rep, step
+    rows = [json.loads(x) for x in (run / "agent" / "results.jsonl").read_text(encoding="utf-8").splitlines()]
+    runs = [x["deep_run"] for x in rows if "deep_run" in x]
+    by_arm = {a: [x for x in runs if x["arm"] == a] for a in ("one_on_one_rewrite", "one_on_one_plain", "group")}
+    assert all(len(v) >= 3 for v in by_arm.values()), {k: len(v) for k, v in by_arm.items()}
+    assert all(x.get("outcome") and "search_ms" in x and "slowest_ms" in x for v in by_arm.values() for x in v)
+    assert all(x["rewrite_status"] for x in by_arm["one_on_one_rewrite"])       # standalone 0.1: rewritten
+    assert not any(x["rewrite_status"] for x in by_arm["one_on_one_plain"])     # standalone 0.9: as written
+    assert sum(1 for x in runs if x["arm"] == "debate") >= 3 and any(x["arm"] == "watch" for x in runs)
+    first = [x for x in rows if x.get("arm") == "one_on_one_plain" and "to_token_ms" in x]
+    assert len(first) == 3 and all(x["to_token_ms"] is not None for x in first)
+
+
+# ── 9.8 smoke ──
+async def test_smoke_runs_a_deep_one_on_one_and_a_deep_group_turn(tmp_path: Path) -> None:
+    """In test mode, at $0: each deep reply keeps passages, cites [1] and shows its System 1 passage rows."""
+    import re
+
+    from tests.conftest import make_config
+
+    said: list[str] = []
+    r = Runner(make_config(tmp_path, test_mode=True))
+    r.out = said.append  # type: ignore[method-assign]
+    assert await r.run(Options("smoke", limit=5, yes=True)) == 0, said
+    (run,) = [p for p in (tmp_path / "evals").iterdir() if p.is_dir()]
+    report = (run / "naive" / "report.md").read_text(encoding="utf-8")
+    for name in ("1:1", "group"):
+        m = re.search(rf"- deep {re.escape(name)}: (\d+) passage\(s\) kept, citations \[1\], (\d+) System 1 passage "
+                      r"row\(s\)", report)
+        assert m and int(m[1]) >= 1 and int(m[2]) >= 1, report
+    assert "FAILED" not in report.splitlines()[0].upper()
+
+
+def test_a_deep_line_without_citations_is_not_ok() -> None:
+    from horizon.evals.deep_timing import deep_line
+
+    reply = {"trace": {"knowledge": {"retrieved": [{"chunkId": "k", "n": 1}]},
+                       "system1": {"questions": [{"id": "passage"}]}}, "citations": []}
+    line, ok = deep_line("1:1", reply)
+    assert not ok and "citations none" in line
+    assert deep_line("group", None) == ("- deep group: no reply", False)

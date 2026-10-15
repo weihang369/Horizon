@@ -452,6 +452,7 @@ class Smoke:
         content_lines += await self.m9(env, plan, empty)
         content_lines += await self.m10(env, plan, empty)
         content_lines += await self.m11(env, plan, empty)
+        content_lines += await self.m12(env, empty)
         res.summary += ["## Smoke (never compared with baselines)",
                         f"- bank: {len(bank().entries)} entr(ies), wire problems: {problems or 'none'}",
                         f"- datasets: {n_lines} line(s) load", *d.summary,
@@ -499,6 +500,12 @@ class Smoke:
     @staticmethod
     async def m11(env: RunEnv, plan: Plan, empty: list[str]) -> list[str]:
         return await m11_smoke(env, plan, empty)
+
+    @staticmethod
+    async def m12(env: RunEnv, empty: list[str]) -> list[str]:
+        from horizon.evals.deep_timing import deep_smoke
+
+        return await deep_smoke(env, empty)
 
     @staticmethod
     async def m10(env: RunEnv, plan: Plan, empty: list[str]) -> list[str]:

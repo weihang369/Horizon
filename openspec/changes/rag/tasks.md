@@ -370,10 +370,10 @@
   validation set format, and the end-to-end run (40 unanswerable + 10 partly, 1:1, `agent`), reading "NOT COUNTED"
   until validated.
   Verify: fixture tests for the validation report and the NOT COUNTED rule.
-- [ ] 9.7 Implement `horizon eval latency --part deep` (D24), with the store bypassed.
+- [x] 9.7 Implement `horizon eval latency --part deep` (D24), with the store bypassed.
   Verify: `HORIZON_TEST=1 horizon eval latency --part deep --limit 3 --yes` completes on the virtual clock and
   reports every step, the slowest check, the 429s and the fallbacks.
-- [ ] 9.8 Smoke runs a deep 1:1 turn and a deep group turn on canned answers.
+- [x] 9.8 Smoke runs a deep 1:1 turn and a deep group turn on canned answers.
   Verify: the smoke report shows the passages kept, the citations and the System 1 passage rows, at $0.
 
 ## 10. The labels (design D22; D31.2)

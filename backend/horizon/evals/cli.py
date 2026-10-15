@@ -155,7 +155,8 @@ def register(sub: Any) -> None:
                            ("transcript", "generate the long-history frozen transcripts with naive (paid, M8)"),
                            ("moodline", "the mood line on vs off over non-neutral transcript turns (paid, once, M9)"),
                            ("latency", "agent 1:1 time to the face and the first word, store bypassed (paid, M9); "
-                                       "--part follow|watch for M10's follow plan and watch timing, debate for M11's"),
+                                       "--part follow|watch for M10's follow plan and watch timing, debate for M11's, deep for "
+                                       "M12's deep turns (--profile agent)"),
                            ("watch-history", "generate the committed watch histories with naive (paid, once, M10)"),
                            ("freerun", "agent group and watch free runs: signals, no target (paid, M10)"),
                            ("debate-history", "generate the committed debate histories with naive (paid, once, M11)"),

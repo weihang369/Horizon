@@ -81,6 +81,11 @@ def row_line(name: str, qs: dict[str, Any], *, target: bool = False) -> str:
 class Latency:
     name = "latency"
 
+    def refuse(self, opts: Options) -> str | None:
+        if opts.part == "deep" and opts.profile != "agent":   # M12 (rag D24): the deep path is agent's
+            return "horizon: `latency --part deep` runs the agent deep path; pass --profile agent"
+        return None
+
     def plan(self, opts: Options, prices: Any, *, paid: bool) -> Plan:
         if opts.part == "follow":   # M10 (group-watch D9): 50 follow requests, Jev only
             n = opts.limit or FOLLOW_N
@@ -94,6 +99,10 @@ class Latency:
             n = scenes * turns_each
             return Plan(items=[{"part": "watch", "scene": k, "turns": turns_each} for k in range(scenes)],
                         estimate_usd=n * (reply + 1.2 * plan_call), expected_s=n * 6.0, paid=paid)
+        if opts.part == "deep":     # M12 (rag D24): forced deep turns in every mode on a loaded database
+            from horizon.evals import deep_timing
+
+            return deep_timing.plan(opts, prices, paid=paid)
         if opts.part == "debate":   # M11 (debate D9, D22): 30 plans, 10 bridges and 5 verdicts
             n = opts.limit or DEBATE_PLANS
             per = decision_estimate(prices, {"quoted_arguments": "x" * 7000}, {"q": {"instructions": "x" * 2400}})
@@ -134,6 +143,11 @@ class Latency:
 
             await debate_timing(env, plan.items[0]["n"], res)
             return res
+        if env.opts.part == "deep":
+            from horizon.evals import deep_timing
+
+            await deep_timing.run(env, plan, res)
+            return res
         app = create_app(env.rt.cfg, runtime=env.rt)
         sessions: dict[str, str] = {}
         async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://127.0.0.1") as c:
@@ -165,7 +179,9 @@ class Latency:
         res.summary += await self.report(env, res.rows, list(sessions.values()))
         return res
 
-    async def one(self, env: RunEnv, c: Any, sid: str, cid: str, text: str) -> dict[str, Any] | None:
+    async def one(self, env: RunEnv, c: Any, sid: str, cid: str | None, text: str) -> dict[str, Any] | None:
+        """One send, timed to its reply's face and first token, then Stop. `cid` None: whichever character answers
+        first (a group)."""
         since = max((e["seq"] for e in await self.events(env, sid)), default=0)
         sent_ms = float(ms_from_iso(env.rt.now_iso()))
         r = await c.post(f"{API}/sessions/{sid}/send", json={"text": text})
@@ -180,8 +196,9 @@ class Latency:
             for e in await self.events(env, sid, since):
                 since = max(since, e["seq"])
                 p = e["payload"]
-                if e["type"] == "turn.start" and (p.get("author") or {}).get("characterId") == cid:
-                    message_id = p["messageId"]
+                who = (p.get("author") or {}).get("characterId")
+                if e["type"] == "turn.start" and message_id is None and who and (cid is None or who == cid):
+                    message_id, cid = p["messageId"], who
                 elif e["type"] == "emotion" and p.get("messageId") and p.get("messageId") == message_id and emotion is None:
                     emotion = e
                 elif e["type"] == "token" and p.get("messageId") == message_id and token is None:
