@@ -1,0 +1,22 @@
+{
+ "id": "judge_notfound_says",
+ "version": 1,
+ "purpose": "eval_judge",
+ "type": "noul",
+ "label": "doesn't say what's missing?",
+ "instructions": "Does quoted_reply fail to say that the documents in quoted_passages don't cover quoted_message, or which part of it they don't cover?",
+ "true": "Yes: the reply answers as if the documents covered all of the message, or never says what they leave out.",
+ "false": "No: the reply says plainly that the documents don't cover it, or names the part they don't cover.",
+ "state": {
+  "quoted_message": "quoted",
+  "quoted_passages": "quoted",
+  "quoted_reply": "quoted"
+ },
+ "deadline": "default",
+ "floor": null,
+ "thresholds": {
+  "t": 0.5
+ },
+ "fallback": "none (evaluation only)",
+ "state_note": "rag D22 (doc 10 K14): the Not-found reply judge, B4-validated on 30 real + 30 planted items; quoted_passages is the kept passages, numbered as the reply saw them, or a line saying none were kept."
+}

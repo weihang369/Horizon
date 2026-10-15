@@ -37,13 +37,13 @@ async def test_markdown_with_a_key_is_indexed_with_progress(api: Api) -> None:
     assert {p["stage"] for p in progress} == {"extracting", "chunking", "embedding"}
     assert "progress" not in events[-1] and "progress" not in events[0]
     got = await source(api, src["id"])
-    assert got["source"]["status"] == "indexed" and got["source"]["chunks"] == 3
-    assert [c["text"] for c in got["chunks"]] == ["# Soups", "Miso first.", "Then tofu."]
+    assert got["source"]["status"] == "indexed" and got["source"]["chunks"] == 1
+    assert [(c["text"], c["locator"]) for c in got["chunks"]] == [("# Soups\n\nMiso first.\n\nThen tofu.", "§ Soups")]
     for c in got["chunks"]:
         api.rt.schema.check("KnowledgeChunk", c)
     [usage] = await embedding_rows(api, HANA)
     assert usage["tokens_in"] > 0 and usage["model"] == "qwen/qwen3-embedding-8b" and usage["purpose"] == "embed_doc"
-    assert await vector_count(api, src["id"]) == 3
+    assert await vector_count(api, src["id"]) == 1
     r = await row(api, src["id"])
     assert r["embed_sent_at"] is None and r["embedding_space_id"] == api.rt.space_id and r["indexed_at"]
     api.rt.bus.unsubscribe(sub)
@@ -73,7 +73,7 @@ async def test_cap_reached_ends_keyword_only_without_an_error(api: Api) -> None:
 
 async def test_seventy_paragraphs_make_three_rows(api: Api) -> None:
     await api.set_key()
-    body = "\n\n".join(f"Paragraph number {i} about rice." for i in range(70))
+    body = "\n\n".join(f"# Part {i}\n\nParagraph number {i} about rice." for i in range(70))   # 70 passages
     src = await add_text(api, "Long", body)
     await settle(api)
     assert (await source(api, src["id"]))["source"]["status"] == "indexed"
@@ -121,7 +121,7 @@ async def test_too_many_passages_fails_and_keeps_the_others(api: Api) -> None:
         seed = int((await conn.execute(text("SELECT count(*) FROM knowledge_chunks WHERE character_id = :c"), {"c": HANA}))
                    .scalar_one())
     await _fill_chunks(api, 2990 - seed)
-    src = await add_text(api, "Twenty", "\n\n".join(f"Extra passage {i}." for i in range(20)))
+    src = await add_text(api, "Twenty", "\n\n".join(f"# Part {i}\n\nExtra passage {i}." for i in range(20)))
     await settle(api)
     got = await source(api, src["id"])
     assert got["source"]["status"] == "failed" and "3,000" in got["source"]["error"]

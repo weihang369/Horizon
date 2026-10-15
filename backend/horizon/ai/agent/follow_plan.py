@@ -10,7 +10,10 @@ W5 row 10, W11; group-watch design D3, D4, D8, D9, D22; follow-plan spec).
 - **Outcomes favour silence:** a pick at or above `floor.second` speaks second; `none`, unsure, failed or late gives no
   second reply. `by` never raises except CancelledError.
 - **On the graph** (D4): `by` runs `state → ask → decide → route`; `state` returns the state built at the stream end and
-  `ask` waits for the request already sent. M12 adds the deep branch here, as for the turn plan.
+  `ask` waits for the request already sent.
+- **The gates** (M12, rag D8): "needs documents?" about each candidate with a searchable source, in the same request.
+  "standalone?" and "English?" are the cast plan's answers for the same message (`FollowRequest.nouls`), asked here
+  only when it didn't ask them. The second reply's own gate decides its branch.
 """
 
 from __future__ import annotations
@@ -20,6 +23,7 @@ import logging
 from datetime import datetime
 from typing import Any
 
+from horizon.ai.agent import gates
 from horizon.ai.agent.cast_plan import candidate_views, ledger_call
 from horizon.ai.agent.emotion import decide_face, emotion_row
 from horizon.ai.agent.plan_graph import Branch, build_plan_graph, run_plan
@@ -63,6 +67,7 @@ def follow_state(req: FollowRequest) -> PlanState:
     you = str((s.world.you or {}).get("displayName") or "")
     inp = PlanStateInput(mode=s.mode, user_name=you,
                          candidates=candidate_views(s, req.candidates, req.cast, req.base_faces, req.turns_since),
+                         documents={c: list(req.documents[c]) for c in gates.gated(req.candidates, req.documents)},
                          latest=f"{req.first_name}: {req.first_text}", recent=lines_before_message(req),
                          premise=str((s.config or {}).get("premise") or "") if s.mode == "watch" else "",
                          summary=(s.summary or "") if s.mode == "watch" else "")
@@ -110,8 +115,9 @@ class JevFollowCall:
     """The handle `start_follow` returns: the request is already in flight; `by(deadline)` runs the graph."""
 
     def __init__(self, planner: Any, req: FollowRequest, state: PlanState, call: DecisionCall,
-                 keys: dict[str, str]) -> None:
+                 keys: dict[str, str], asked: frozenset[str] = frozenset()) -> None:
         self.planner, self.req, self.state, self.call, self.keys = planner, req, state, call, keys
+        self.asked = asked   # the request's question keys (M12: which gates rode it)
 
     async def by(self, deadline: datetime) -> FollowPlan:
         try:
@@ -140,9 +146,9 @@ class FollowSteps:
         return f"{req.session.seed}:{req.turn_index}:follow"
 
     @classmethod
-    def questions(cls, req: FollowRequest) -> tuple[dict[str, Any], dict[str, str]]:
-        """The request's questions (`who_second` and each candidate's face) and the face keys by candidate. Shared
-        with the follow timing check (D9), so it asks exactly what live asks."""
+    def questions(cls, req: FollowRequest, *, dropped: list[str] | None = None) -> tuple[dict[str, Any], dict[str, str]]:
+        """The request's questions (`who_second`, each candidate's face and, M12, the gates) and the face keys by
+        candidate. Shared with the follow timing check (D9), so it asks exactly what live asks."""
         b = bank()
         names = {p.character_id: p for p in req.session.participants}
         values = [{"key": c, "name": names[c].name if c in names else c,
@@ -155,18 +161,27 @@ class FollowSteps:
             qs[key] = b.question(FACE, seed=f"{seed}:{cid}", name=_name(names[cid].name if cid in names else cid),
                                  about=cid)
             keys[cid] = key
+        who = gates.gated(req.candidates, req.documents, dropped or ())
+        qs.update(gates.questions({c: names[c].name if c in names else c for c in who}, who, nouls=req.nouls is None))
         return qs, keys
 
     def start(self, planner: Any, req: FollowRequest) -> JevFollowCall:
         state = follow_state(req)
-        qs, keys = self.questions(req)
+        qs, keys = self.questions(req, dropped=list(state.dropped_gates))
+        nouls = gates.fallbacks(qs)
 
         async def fallback() -> Answers:
-            return {k: ChoiceAnswer("none") for k in qs}
+            return {k: nouls.get(k, ChoiceAnswer("none")) for k in qs}
 
+        who = gates.gated(req.candidates, req.documents, state.dropped_gates)
+        if who:   # rag 11.5: the user message's embedding starts with the follow plan (shared with the first reply's)
+            from horizon.ai.agent.deep import start_early_embedding
+            from horizon.ai.agent.planner import answered_message
+
+            start_early_embedding(self.deps, req.session, who, req.message, answered_message(req.session)[0])
         call = self.deps.decider().start(state.state, qs, req.session.call_ctx(PURPOSE), purpose=PURPOSE,
                                          fallback=fallback)
-        return JevFollowCall(planner, req, state, call, keys)
+        return JevFollowCall(planner, req, state, call, keys, frozenset(qs))
 
     async def state(self, run: dict[str, Any]) -> PlanState:
         st: PlanState = run["handle"].state
@@ -216,9 +231,14 @@ class FollowSteps:
                           "latencyMs": float(meta["deadline_ms"]), "fallback": True})
         elif meta.get("call"):
             calls.append(meta["call"])
+        asked = [c for c in req.candidates if gates.gate_key(c) in h.asked]
+        own = req.nouls is None and bool(asked)
+        found, nouls = gates.read(res, asked, nouls=own, message_id=req.message_id)
+        found.update(gates.dropped([c for c in gates.gated(req.candidates, req.documents) if c not in asked]))
         return FollowPlan(seed=self.seed(req), second=second, outcome=outcome, who=who, faces=faces,  # type: ignore[arg-type]
                           face_rows=face_rows, shared_rows=[second_row(who, outcome, version=we.version, floor=floor)],
-                          calls=calls, state_tokens=state.tokens)
+                          calls=calls, state_tokens=state.tokens, gates=found, nouls=nouls if own else req.nouls,
+                          asked_nouls=own)
 
     def route(self, run: dict[str, Any], plan: FollowPlan) -> Branch:
         return "quick"   # M12 adds "deep"

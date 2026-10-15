@@ -38,7 +38,7 @@ from horizon.ai.agent.persona import (
 from horizon.ai.contexts import MessageView, TurnContext
 from horizon.ai.language import language_cue
 from horizon.ai.llm import llm_request
-from horizon.ai.naive.prompt import SUMMARY_HEADING, TRAILING_CUE, RetrievalBlock, turn_cue
+from horizon.ai.naive.prompt import SUMMARY_HEADING, TRAILING_CUE, turn_cue
 from horizon.ai.naive.tag_parser import ParsedEmotion, TagParser
 from horizon.ai.naive.turn import NaiveTurnEngine
 from horizon.domain.pricing import count_tokens
@@ -117,6 +117,19 @@ def stop_sequences(ctx: TurnContext, you: str, history: list[dict[str, Any]]) ->
     return list(dict.fromkeys(s for s in out if s.strip() and s != "\n["))[:16]
 
 
+def reply_prefix(ctx: TurnContext) -> tuple[list[dict[str, Any]], list[dict[str, Any]], str]:
+    """The cached prefix of this speaker's reply: system message 1, the summary (when there is one) and the merged
+    history window, plus the user's display name. Shared byte for byte with the query rewrite (M12, doc 10 K4), so the
+    rewrite warms the reply's cache."""
+    s = ctx.session
+    persona = compile_persona(persona_input(ctx))
+    prefix: list[dict[str, Any]] = [{"role": "system", "content": persona.text}]
+    if s.summary:
+        prefix.append({"role": "system", "content": f"{SUMMARY_HEADING}\n{summary_text(s.summary)}"})
+    you = str((s.world.you or {}).get("displayName") or "User")
+    return prefix, render_merged(s.recent, ctx.speaker.id, you), you
+
+
 class AgentTurnEngine(NaiveTurnEngine):
     name = "agent"
     version = "2"   # M9: the face comes from the plan (turn-plan-emotion D14)
@@ -129,7 +142,22 @@ class AgentTurnEngine(NaiveTurnEngine):
     def prompt_version_for(self, ctx: TurnContext | None) -> str:
         """M10 (group-watch D10): the label of the bytes this turn sent. A G3 "second" or "next" sentence in the cue
         makes it `agent-3`; M11 (debate D10): the reworded steer sentence `agent-5`, a debate argument's cue `agent-7`;
-        each one higher with the mood line on. Every other request keeps M9's `agent-1` / `agent-2`."""
+        each one higher with the mood line on. Every other request keeps M9's `agent-1` / `agent-2`. M12 (rag D16):
+        a request carrying the documents block adds `+docs-1`, the not-found block `+nodocs-1`."""
+        base = self._base_version(ctx)
+        block = self.block(ctx) if ctx is not None else None
+        label = getattr(block, "label", None)
+        return f"{base}+{label}-1" if label else base
+
+    def block(self, ctx: TurnContext) -> Any:
+        """M12 (rag D16): the documents block from the frozen plan, never a retriever (ai-ports)."""
+        from horizon.ai.agent.docs_block import BLOCK_TOKENS, agent_block
+
+        r = getattr(self.deps, "retrieval", lambda: None)()
+        knobs = getattr(r, "agent", None)
+        return agent_block(ctx, knobs.block_tokens if knobs is not None else BLOCK_TOKENS)
+
+    def _base_version(self, ctx: TurnContext | None) -> str:
         mood = self.deps.switch("persona.moodLine")
         if ctx is not None and self.debate_line(ctx) is not None:
             return PROMPT_VERSION_DEBATE_MOOD if mood else PROMPT_VERSION_DEBATE
@@ -195,15 +223,9 @@ class AgentTurnEngine(NaiveTurnEngine):
                 out.append(f"Stay {first_name(ctx.speaker.name)}: {first}")
         return out
 
-    def request(self, ctx: TurnContext, block: RetrievalBlock | None = None, *,
+    def request(self, ctx: TurnContext, block: Any = None, *,
                 force_cue: bool = False) -> tuple[ChatRequest, list[dict[str, Any]]]:
-        s = ctx.session
-        persona = compile_persona(persona_input(ctx))
-        prefix: list[dict[str, Any]] = [{"role": "system", "content": persona.text}]
-        if s.summary:
-            prefix.append({"role": "system", "content": f"{SUMMARY_HEADING}\n{summary_text(s.summary)}"})
-        you = str((s.world.you or {}).get("displayName") or "User")
-        history = render_merged(s.recent, ctx.speaker.id, you)
+        prefix, history, you = reply_prefix(ctx)
         tail: list[str] = []
         if block is not None and block.content:
             tail.append(block.content)
@@ -233,7 +255,7 @@ class AgentTurnEngine(NaiveTurnEngine):
                               per_line=True)
 
     # ── seam 3: the trace (X7) ──
-    def trace_patch(self, ctx: TurnContext, req: ChatRequest, prefix: list[dict[str, Any]], block: RetrievalBlock | None,
+    def trace_patch(self, ctx: TurnContext, req: ChatRequest, prefix: list[dict[str, Any]], block: Any,
                     said: str, chosen: ParsedEmotion | None, *, warm: bool) -> dict[str, Any]:
         persona = compile_persona(persona_input(ctx))
         t = persona.tokens

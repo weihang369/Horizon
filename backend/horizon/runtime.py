@@ -71,6 +71,7 @@ from horizon.services.purge import PurgeWorker
 from horizon.services.runtime.reducer import apply_event, initial_runtime, ordered_messages
 from horizon.services.settings import deep_merge, local_day, read_local_settings, read_seed_settings
 from horizon.sessions.system1 import fixture_row
+from horizon.storage.datalock import DataLock
 from horizon.tracing import TRACER
 from horizon.tracing import configure as configure_tracing
 
@@ -125,7 +126,9 @@ class Runtime:
         self.bus = EventBus()
         self.gate = Gate()
         self._db: Database | None = None
+        self._data_lock: DataLock | None = None
         self.space_id: str | None = None
+        self.piece_size: tuple[int, int] | None = None   # M12 (rag D23): an evaluation arm's piece target and ceiling
         self.fts_secure_delete = True   # migration 0002 on SQLite >= 3.44; else Forget optimizes (design D16)
         self.seed_settings: dict[str, Any] = {}
         self._seed: seeding.SeedData | None = None
@@ -330,7 +333,8 @@ class Runtime:
                       system1_row=lambda qid, answer: fixture_row(self.cfg.seed_dir, qid, answer),
                       switch=lambda name: self.runtime_cfg.runtime.switch(name),
                       windows=lambda: self.runtime_cfg.runtime.window_tokens.as_dict(),
-                      emotion_fade=lambda: self.runtime_cfg.runtime.emotion_fade)
+                      emotion_fade=lambda: self.runtime_cfg.runtime.emotion_fade, spawn=self.spawn,
+                      retrieval=lambda: self.runtime_cfg.runtime.retrieval, deep_io=lambda: self.deep_io)
         self._ai = AiPorts(deps, self.profile)
         chat = str(self.settings_doc()["models"].get("chat") or "")
         if chat and chat != self.prices.chat.model:   # docs/ai/03 C9: one chat-model source; tell the developer
@@ -391,6 +395,13 @@ class Runtime:
         self.book.clear()
         self._gateway = self._corrector = self._keys = self._decider = None
 
+    @property
+    def deep_io(self) -> Any:
+        """M12 (rag D15): the deep work's reads (the speaker's scoped index, the space, the embedder)."""
+        from horizon.sessions.deep_io import RuntimeDeepIO
+
+        return RuntimeDeepIO(self)
+
     def spawn(self, name: str, coro: Coroutine[Any, Any, T]) -> asyncio.Task[T]:
         """The only way `sessions/` and `ai/` start background work: the task holds an activity token while it runs,
         so a virtual-time advance waits for it (session-runtime D2)."""
@@ -426,6 +437,9 @@ class Runtime:
         self.loop = asyncio.get_running_loop()
         cfg.data_dir.mkdir(parents=True, exist_ok=True)
         logs.setup_logging(cfg.logs_dir, cfg.log_level)
+        self._data_lock = DataLock(cfg.data_dir)
+        if not self._data_lock.acquire():   # rag D5: advisory, so `horizon space build` can tell a backend is running
+            log.warning("another backend holds %s; offline commands can't tell this one is running", cfg.data_dir)
         self.seed_settings = read_seed_settings(cfg.seed_dir)
         await asyncio.to_thread(upgrade_head, cfg.db_path)
         self._db = Database(cfg.db_path, publish=self.publish)
@@ -480,6 +494,9 @@ class Runtime:
         if self._db is not None:
             await self._db.dispose()
             self._db = None
+        if self._data_lock is not None:
+            self._data_lock.release()
+            self._data_lock = None
         self.started = False
 
     # ── seed ──

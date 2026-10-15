@@ -632,7 +632,12 @@ None changes the HTTP contract or a requirement.
   section (task 13).~~ Resolved by [doc 13](13-wrap-up.md) W1: the member choice is a `debate_plan` row; the rubric scores stay
   on the verdict screen; host lines are not character messages, so they have no Insight (INS-01 AC5).
 - ~~Retrieval in debate turns (task 10).~~ Resolved by doc 10 K4 and K7: the motion plus the last opposing argument,
-  never rewritten; the gate decides per member; k = 2; never abstains.
+  never rewritten; the gate decides per member; k = 2; never abstains. *Built in M12 (`rag` D8, D15): "needs
+  documents?" rides the debate plan for each eligible member and is used if back by the turn's start (V2); the deep
+  work starts once the member is fixed and their gate said yes (the opening at its prefetch, an Ask answer when its
+  cast plan lands), so a debate's first token waits for it; an Extend or Skip discard cancels it. Found in M12
+  ([m12.md](checks/m12.md) 11.3): the gate reads most arguments as needing documents (precision 0.50), and X9's
+  cap drops every member's gate late in long debates; both are recorded for M13 (D32.5).*
 - ~~What a debater says when a motion is unsafe, and checking the motion itself: task 11.~~ Resolved by doc 11 S3:
   the motion is checked once at creation (`content_refused`), and a moderator line by the next `debate_plan`.
 - Not in v1: cross-examination, a cast character as chair, AI-written motion suggestions (MULTI-05).

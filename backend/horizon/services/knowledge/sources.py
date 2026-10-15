@@ -24,6 +24,7 @@ from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import and_, func, select, update
 
+from horizon.ai.chunker import CHUNKER_VERSION, TOKENIZER
 from horizon.api.errors import conflict, not_found
 from horizon.contract import mappers as mp
 from horizon.db import tables as t
@@ -36,8 +37,6 @@ from horizon.storage.atomic import write_atomic
 if TYPE_CHECKING:
     from horizon.runtime import Runtime
 
-CHUNKER_VERSION = "para@1"
-TOKENIZER = "utf8/4"
 EXT: dict[str, str] = {"pdf": "pdf", "docx": "docx", "md": "md", "txt": "txt", "text": "txt"}
 
 
@@ -151,15 +150,12 @@ async def delete_source(rt: Runtime, source_id: str) -> None:
 
 def _start_stage(rt: Runtime, row: Any) -> str:
     """The first stage whose stored output is out of date (design D2, knowledge-sources "Reindex")."""
-    from horizon.ai.chunker import CHUNKER_VERSION as CURRENT_CHUNKER
-    from horizon.ai.chunker import TOKENIZER as CURRENT_TOKENIZER
-
     if not row["has_original"]:
         return "embed"                      # seed: re-embed only, so chunk ids (and old citations) are kept
     if row["status"] == "failed" or not row["extractor_version"]:
         return "extract"
     folder = source_dir(rt, row["world_id"], row["character_id"], row["id"])
-    if row["chunker_version"] != CURRENT_CHUNKER or row["tokenizer"] != CURRENT_TOKENIZER:
+    if row["chunker_version"] != CHUNKER_VERSION or row["tokenizer"] != TOKENIZER:
         return "chunk" if (folder / "extracted.md").is_file() else "extract"
     return "embed"
 

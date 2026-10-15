@@ -29,7 +29,7 @@ from horizon.sessions.modes.common import (
 from horizon.sessions.modes.group import run_speakers
 from horizon.sessions.plans import cast_request, plan_cast, plans_cast
 from horizon.sessions.turn import TurnSpec
-from horizon.sessions.watch_plan import PLAN_AHEAD, ScenePick, start_plan_ahead, take_plan
+from horizon.sessions.watch_plan import ScenePick, drop_deep_ahead, drop_plan_ahead, start_plan_ahead, take_plan
 
 if TYPE_CHECKING:
     from horizon.sessions.actor import SessionActor
@@ -108,7 +108,7 @@ def turn(actor: SessionActor, manual: bool = False) -> None:
         plan: CastPlan | None = None
         pick: ScenePick | None = None
         if planned:   # M10 (D13): a nudge, else the guard, else Jev's pick; the plan may have been made ahead (D15)
-            plan, pick = await take_plan(actor)
+            plan, pick, deep = await take_plan(actor)
             cid = plan.order[0] if plan is not None and plan.order else None
             if plan is None:
                 cid = await pick_speaker(actor)
@@ -136,6 +136,10 @@ def turn(actor: SessionActor, manual: bool = False) -> None:
             spec.plan = plan.for_speaker(cid)
             spec.routing = scene_routing(plan, pick, cid)
             spec.forced_by = pick.forced_by
+            if deep is not None and deep.req.speaker.id == cid:   # M12 (rag D15): made with the plan ahead
+                spec.deep = deep
+            elif deep is not None:
+                deep.cancel()
         out = await runner(actor).run(actor, spec)
         if out.status not in ("complete", "interrupted", "error"):
             return
@@ -165,8 +169,7 @@ async def play(actor: SessionActor) -> None:
 
 async def pause(actor: SessionActor) -> None:
     actor.held = True
-    actor.cancel_background(PLAN_AHEAD)   # D15: Play plans afresh (a pause outlasts any plan made ahead)
-    actor.mode.plan_ahead = None
+    drop_plan_ahead(actor)   # D15: Play plans afresh (a pause outlasts any plan made ahead); M12: its deep work too
     await actor.emit(*watch_state(actor, {"status": "paused"}), {"type": "session.paused", "payload": {"reason": "user"}})
 
 
@@ -201,6 +204,9 @@ async def set_pace(actor: SessionActor, pace_ms: float) -> None:
 
 
 async def direct(actor: SessionActor, text: str) -> None:
+    # M12 (rag D15): the note makes any plan made ahead stale (its fingerprint holds the note), so its deep work goes
+    # now, while its requests are in flight; the plan itself runs out as M10 left it, and the turn plans afresh
+    drop_deep_ahead(actor)
     actor.mode.direction = (text, 2)
     await actor.emit(message_event(user_message(actor, text, "direction")))
 

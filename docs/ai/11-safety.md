@@ -421,6 +421,10 @@ boundary plus the output check fits the risk. The memory noul rides in a request
   across turns;
 - **an injection classifier on every reply:** another request per turn for a risk S5 and the eval already bound.
 
+*Built in M12 (OpenSpec `rag` D16): each passage is wrapped in `<passage>` … `</passage>` with its `[n]` header, any
+tag text is removed from pieces and titles (case and spaces ignored), and the standing line says the passages are
+reference text, not instructions.*
+
 ### S7. The never-store list grows
 
 **Decision:** doc 09 M3's never-store list becomes:

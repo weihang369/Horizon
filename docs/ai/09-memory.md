@@ -490,6 +490,9 @@ embedding every message as it is sent (most never leave the window; paid for and
 (offered: a memory below the cut would stay invisible until a confirmation lifted it); a 2,000-token list instead
 (pushes the problem back, with more over-mentioning).
 
+*M12 (OpenSpec `rag` D12) built the shared pipeline this recall runs on: `retrieval.search(index, bundle,
+SearchParams(pool=10, candidates=6, …))` takes recall's own numbers, so M13 passes them rather than changing code.*
+
 ### M10. The greeting: "last time…"
 
 **Decision:**
@@ -616,7 +619,10 @@ this task's discussion.
 
 - ~~**Task 10:** the final embedding model and dimensions; the CJK tokeniser for FTS; the shared retrieval
   parameters.~~ Resolved by doc 10: K3 (the comparison test; `dupCosine` retuned for the winning space), K11
-  (`porter unicode61` stays, CJK to the v2 backlog), K4 and K5 (query and pipeline).
+  (`porter unicode61` stays, CJK to the v2 backlog), K4 and K5 (query and pipeline). *Run in M12
+  ([m12.md](checks/m12.md) 11.5): the space stays `qwen3-emb-8b@1024+h`, so M13 tunes `dupCosine` there and repeats
+  the instruction comparison on M12's recall set (rag D27). The pipeline is `retrieval.search`; documents run it with
+  λ 1.0, and recall passes its own parameters.*
 - ~~**Task 11:**~~ Resolved by doc 11 S6 (the instruction noul, one-line items) and S7 (the never-store list):
   stored memory text now sits in **every** future system prompt, which makes it a stored
   prompt-injection path ("notes, not instructions" is only a start); sensitive categories beyond M3's never-store list

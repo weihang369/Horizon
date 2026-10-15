@@ -274,7 +274,8 @@ async def fork(rt: Runtime, sid: str, at_seq: int | None) -> Wire:
                                     .order_by(t.session_events.c.seq))).mappings().all()
     source = mp.session_wire(srow, parts)
     new_sid = new_id("ses")
-    events, final = fork_events([mp.event_wire(e) for e in erows], source, at_seq, new_sid, rt.now_iso())
+    ids: dict[str, str] = {}
+    events, final = fork_events([mp.event_wire(e) for e in erows], source, at_seq, new_sid, rt.now_iso(), ids)
     session = final["session"]
     messages = ordered_messages(final)
     row, prows = mp.session_rows(session, is_seed=False)
@@ -295,6 +296,13 @@ async def fork(rt: Runtime, sid: str, at_seq: int | None) -> Wire:
         cites = [r for m in messages for r in mp.citation_rows(m)]
         if cites:
             await tx.conn.execute(t.message_citations.insert(), cites)
+        if ids:   # M12 (rag D19): the copied messages' stored rewrites come with them
+            A = t.message_ai_meta.c
+            meta = (await tx.conn.execute(select(A.message_id, A.rewrites, A.updated_at)
+                                          .where(A.message_id.in_(list(ids))))).all()
+            if meta:
+                await tx.conn.execute(t.message_ai_meta.insert(), [
+                    {"message_id": ids[r[0]], "rewrites": r[1], "updated_at": r[2]} for r in meta])
         tx.publish(GLOBAL, {"type": "entity.changed", "kind": "session", "id": new_sid, "worldId": session["worldId"]})
     actor = await manager.get(new_sid)
     multi = session["mode"] in ("debate", "watch")

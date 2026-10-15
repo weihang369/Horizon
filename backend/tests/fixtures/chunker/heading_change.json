@@ -1,0 +1,17 @@
+{
+  "what": "A piece never crosses a heading change, even when both parts are short.",
+  "paged": false,
+  "markdown": "# Breaks\n\nTake a break every four hours.\n\n# Leave\n\nBook leave a month ahead.",
+  "pieces": [
+    {
+      "text": "# Breaks\n\nTake a break every four hours.",
+      "locator": "§ Breaks",
+      "heading": "Breaks"
+    },
+    {
+      "text": "# Leave\n\nBook leave a month ahead.",
+      "locator": "§ Leave",
+      "heading": "Leave"
+    }
+  ]
+}

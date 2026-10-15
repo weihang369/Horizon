@@ -122,6 +122,19 @@ class LedgerWriter:
         return [{"purpose": r["purpose"] or "", "model": r["model"] or "", "costUsd": round(float(r["cost_usd"]), 6),
                  "latencyMs": int(r["latency_ms"] or 0)} for r in rows]
 
+    async def calls_for_rows(self, row_ids: list[str], before: str | None = None) -> list[dict[str, Any]]:
+        """M12 (rag D15): deep work started ahead of its turn, as `TurnTrace.calls` entries; `before` keeps only the
+        rows recorded before the turn's start (the later ones are listed by `calls_for_message`)."""
+        if not row_ids:
+            return []
+        q = select(U.purpose, U.model, U.cost_usd, U.latency_ms).where(U.id.in_(row_ids))
+        if before is not None:
+            q = q.where(U.at < before)
+        async with self.db.read() as conn:
+            rows = (await conn.execute(q.order_by(U.at, U.id))).mappings().all()
+        return [{"purpose": r["purpose"] or "", "model": r["model"] or "", "costUsd": round(float(r["cost_usd"]), 6),
+                 "latencyMs": int(r["latency_ms"] or 0)} for r in rows]
+
     async def link_message(self, row_id: str, message_id: str) -> None:
         """A prefetched reply was released as `message_id` (session-runtime D5): link its row (one-row update)."""
         async with self.db.write() as tx:

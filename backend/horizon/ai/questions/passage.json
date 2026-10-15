@@ -1,0 +1,35 @@
+{
+  "id": "passage",
+  "version": 2,
+  "purpose": "deep_check",
+  "type": "score",
+  "label": "does this passage answer it?",
+  "instructions": "How much does the passage in quoted_passage help answer the message in quoted_query?",
+  "levels": [
+    "Doesn't help: the passage has nothing the reply needs.",
+    "Partly: the passage has facts the reply needs, but not the whole answer.",
+    "Answers it: the passage states what the message asks for."
+  ],
+  "shuffle": false,
+  "examples": {
+    "answers": [
+      "A passage giving the rest-day rule, asked about rest days."
+    ],
+    "not_for": [
+      "A passage on a different ward's rota, asked about this one."
+    ]
+  },
+  "state": {
+    "mode": "label",
+    "quoted_query": "quoted",
+    "quoted_passage": "quoted"
+  },
+  "deadline": "deep_check",
+  "floor": null,
+  "thresholds": {
+    "t_keep": 0.9,
+    "t_found": 0.5
+  },
+  "state_note": "rag 11.5: t_keep 0.9 and t_found 0.5 chosen by K7's leave-one-out on dev with every answer back, after the user's choice of deepCheckMs 1,500 (docs/ai/checks/m12.md).",
+  "fallback": "fused_order"
+}

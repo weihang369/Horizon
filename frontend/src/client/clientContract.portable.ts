@@ -693,8 +693,8 @@ export function runPortableContract(label: string, makeHarness: MakeHarness, opt
       for (const g of globals) GlobalEventSchema.parse(g);
       const { source, chunks } = await c.characters.knowledgeSource(src.id);
       expect(source.status).toBe("indexed");
-      expect(source.chunks).toBe(3);
-      expect(chunks.map((k) => k.text)).toEqual(["# Soups", "Miso first.", "Then tofu."]);
+      expect(source.chunks).toBe(1);   // pack@2 (rag D3): the heading is carried, the paragraphs packed
+      expect(chunks.map((k) => [k.text, k.locator])).toEqual([["# Soups\n\nMiso first.\n\nThen tofu.", "§ Soups"]]);
       for (const k of chunks) KnowledgeChunkSchema.parse(k);
       const rows = (await c.usage.list()).filter((r) => r.category === "embedding" && r.characterId === "chr_seedHana");
       expect(rows.length).toBe(1);

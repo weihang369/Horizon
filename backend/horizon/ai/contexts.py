@@ -178,6 +178,9 @@ class KnowledgeHit(Frozen):
     text: str                       # the child: what is cited and quoted
     section_text: str               # its parent section: what an LLM reads
     score: float                    # 0..1
+    rid: int | None = None          # M12: the piece's row id in the speaker's index (the deep work's key)
+    char_start: int | None = None   # M12 (naive-7, D18): where the piece sits in its section's source
+    section_start: int | None = None
 
 
 class MemoryHit(Frozen):
@@ -210,6 +213,75 @@ class PlannedFace(Frozen):
 
 
 CueKind = Literal["second", "next", "steer"]
+KnowledgeOutcome = Literal["found", "partly", "not_found", "fallback"]
+
+
+class DeepRequest(Frozen):
+    """One speaker's deep work (M12: doc 10 K4–K9; rag design D10, D15), built by the planner or the runtime once the
+    speaker is known and their gate said yes. Frozen: the work replays from it."""
+
+    session: SessionContext
+    speaker: CharacterView
+    kind: str                                       # the plan kind (reply, group_first, second, next, scene, debate…)
+    message: str                                    # what is answered: the user's message, watch's last line, or
+                                                    # debate's text (motion + argument, the motion, question + motion)
+    message_id: str | None = None                   # the message being answered (the query embedding links to it)
+    earlier: list[str] = []                         # the two lines before it, "Name: text"
+    previous_user: str = ""                         # the user's message before it (a failed rewrite's extra words)
+    motion: str = ""                                # debate: the motion, for Jev call 2's quoted_query
+    argument: str = ""                              # debate: the last opposing argument (or the moderator's question)
+    gate: GateAnswer | None = None
+    abstain_ok: bool = False
+    nouls: MessageNouls | None = None
+    stored_rewrite: str | None = None               # the rewrite stored for (message, speaker): reused with no call
+    k: int = 3
+    reply_message_id: str | None = None             # the reply's message, when already known (1:1): rows link to it
+    started_at: datetime
+
+    @property
+    def rewrites(self) -> bool:
+        """K4: debate and watch never rewrite; neither do Next speaker and Step in (no user message answered)."""
+        return self.kind in ("reply", "group_first", "group_mentioned", "everyone", "second")
+
+
+class DeepResult(Frozen):
+    """The deep work's frozen result (D15): what was searched, the checked candidates, the kept passages and the
+    outcome, with the System 1 rows and the trace calls."""
+
+    query: dict[str, Any] = {}                      # QueryBundle.to_json()
+    display: str | None = None
+    retrieved: list[dict[str, Any]] = []
+    kept: list[KnowledgeHit] = []
+    outcome: KnowledgeOutcome = "fallback"
+    abstain: bool = False
+    partly_line: bool = False
+    rows: list[dict[str, Any]] = []
+    calls: list[dict[str, Any]] = []
+    rewrite: str | None = None                      # an accepted, new rewrite (not a stored one) for the runtime to store
+    rewrite_status: str | None = None               # ok | stored | failed | late | None (no rewrite needed)
+    slowest_check_ms: float | None = None
+    path: list[str] = []
+    quote_words: list[str] = []                     # the query's terms and the message's words (the quote window)
+    pool: list[str] = []                            # the fused top 20's chunk ids, in order (the evaluation's Recall@20)
+    checks: list[dict[str, Any]] = []               # each check's {chunkId, order, p_answers, p_partly, unit} (eval)
+    set_check: dict[str, Any] | None = None         # the set check asked: {p, chunkIds} (eval)
+
+
+class GateAnswer(Frozen):
+    """One candidate's "needs documents?" (M12: docs/ai/01 A4; rag design D7, D8): Jev's p, or None and why."""
+
+    p: float | None = None
+    outcome: Literal["jev", "late", "fallback", "dropped"] = "jev"
+
+
+class MessageNouls(Frozen):
+    """"standalone?" and "English?" about the message being answered (M12: doc 10 K4; rag D8), asked once per message
+    in 1:1 and group. None: that answer fell back (no rewrite)."""
+
+    standalone: float | None = None
+    english: float | None = None
+    outcome: Literal["jev", "late", "fallback"] = "jev"
+    message_id: str | None = None                   # the message they were asked about (the follow plan reuses them)
 
 
 class TurnPlan(Frozen):
@@ -226,11 +298,37 @@ class TurnPlan(Frozen):
     dropped_gates: list[str] = []
     cue: CueKind | None = None                      # M10 (doc 07 G3; group-watch D10): the cue's one sentence
     answered: str | None = None                     # the first replier's name, for cue "second"
+    gate: GateAnswer | None = None                  # M12: the speaker's "needs documents?" (None: not asked)
+    abstain_ok: bool = False                        # M12 (rag D8): a not-found outcome may say so
+    nouls: MessageNouls | None = None               # M12: "standalone?" / "English?" for the rewrite (1:1, group)
+    # M12 (rag D15, D17): the deep work's frozen result, so the turn replays from JSON with no Jev, embedding or
+    # rewrite call
+    knowledge: list[KnowledgeHit] = []              # the kept passages, numbered [1]…[k] in this order
+    retrieved: list[dict[str, Any]] = []            # the checked candidates (TurnTrace.knowledge.retrieved)
+    query: str | None = None                        # QueryBundle.display
+    knowledge_outcome: KnowledgeOutcome | None = None
+    abstain: bool = False                           # the not-found line (abstaining allowed, nothing usable)
+    partly_line: bool = False                       # the partly line rides after the passages
+    rewrite: str | None = None                      # an accepted rewrite the runtime stores for the message
+    rewrite_for: str | None = None                  # the user message it is stored under
+    source_kind: str | None = None                  # M12: the plan that made it (reply, group_first, second, debate…)
+    quote_words: list[str] = []                     # M12 (rag D17): the words a citation's quote window looks for
 
     @property
     def deep(self) -> bool:
-        """The reply cap reads this (`reply_cap`): M12's deep turns get the deep cap."""
-        return self.branch == "deep"
+        """The reply cap reads this (`reply_cap`): a deep turn gets the deep cap, except a not-found one (D14: the
+        not-found line is said at the quick length)."""
+        return self.branch == "deep" and self.knowledge_outcome != "not_found"
+
+    def with_deep(self, res: DeepResult) -> TurnPlan:
+        """The plan with its deep work merged in (rows and calls appended)."""
+        return self.model_copy(update={
+            "knowledge": list(res.kept), "retrieved": list(res.retrieved), "query": res.display,
+            "knowledge_outcome": res.outcome, "abstain": res.abstain, "partly_line": res.partly_line,
+            "rewrite": res.rewrite, "rewrite_for": res.query.get("message_id") if res.rewrite else None,
+            "quote_words": list(res.quote_words),
+            "rows": [*self.rows, *res.rows], "calls": [*self.calls, *res.calls],
+            "graph_path": [*self.graph_path, *res.path]})
 
 
 class PlanRequest(Frozen):
@@ -246,6 +344,8 @@ class PlanRequest(Frozen):
     base_face: str = "neutral"                      # AUTO: the face now; MANUAL: the last AI-chosen face (E2)
     manual: bool = False
     started_at: datetime                            # the deadline counts from here (the plan starts before turn.next)
+    documents: dict[str, list[str]] = {}            # M12 (rag D6): searchable sources' titles, by character
+    stored_rewrite: str | None = None               # M12 (rag D19): the speaker's stored rewrite for this message
 
 
 # ── The cast plan and the follow plan (M10: doc 07 G1–G8; group-watch design D3, D8, D22) ──
@@ -308,6 +408,8 @@ class CastRequest(Frozen):
     started_at: datetime
     deadline_at: datetime | None = None             # None: started_at + the turn_plan deadline; plan-ahead sets it (D15)
     debate: DebateFacts | None = None               # M11: a debate turn's motion, phase and side (debate D7)
+    documents: dict[str, list[str]] = {}            # M12 (rag D6): searchable sources' titles, by character
+    message_id: str | None = None                   # M12: the user message being answered (the nouls are about it)
 
 
 class CastPlan(Frozen):
@@ -324,6 +426,8 @@ class CastPlan(Frozen):
     calls: list[dict[str, Any]] = []
     graph_path: list[str] = []
     state_tokens: int = 0
+    gates: dict[str, GateAnswer] = {}               # M12 (rag D8): "needs documents?" per candidate asked
+    nouls: MessageNouls | None = None               # M12: "standalone?" / "English?" when a group message is answered
 
     @property
     def steer(self) -> bool:
@@ -331,16 +435,24 @@ class CastPlan(Frozen):
 
     def for_speaker(self, cid: str, *, cue: CueKind | None = None, answered: str | None = None) -> TurnPlan:
         """The reply's frozen plan: its face, the shared rows plus its own row `used`, and the other candidates' rows
-        `not_used` (W1), except on an Everyone reply, which carries only its own (D22)."""
+        `not_used` (W1), except on an Everyone reply, which carries only its own (D22). M12: the speaker's own gate
+        decides the branch; the other candidates' gate rows are `not_used`."""
+        from horizon.ai.agent import gates as g
+
         rows = list(self.shared_rows)
         for other, row in self.face_rows.items():
             if other == cid:
                 rows.append(row)
             elif self.kind != "everyone":
                 rows.append({**row, "result": "not_used"})
-        return TurnPlan(seed=self.seed, kind="reply", branch="quick", emotion=self.faces.get(cid), rows=rows,
-                        calls=list(self.calls), graph_path=list(self.graph_path), state_tokens=self.state_tokens,
-                        cue="steer" if self.steer and cue is None else cue, answered=answered)
+        gate = self.gates.get(cid)
+        rows += g.speaker_rows(cid, self.gates, self.nouls, purpose="turn_plan", kind=self.kind,
+                               everyone=self.kind == "everyone")
+        return TurnPlan(seed=self.seed, kind="reply", branch="deep" if g.deep(gate) else "quick",
+                        emotion=self.faces.get(cid), rows=rows, calls=list(self.calls),
+                        graph_path=list(self.graph_path), state_tokens=self.state_tokens,
+                        cue="steer" if self.steer and cue is None else cue, answered=answered, gate=gate,
+                        abstain_ok=g.abstain_allowed(gate, self.kind), nouls=self.nouls, source_kind=self.kind)
 
 
 class FollowRequest(Frozen):
@@ -359,6 +471,9 @@ class FollowRequest(Frozen):
     manual: bool = False
     turns_since: dict[str, int | None] = {}
     started_at: datetime                            # the first reply's stream end (doc 11 S5)
+    documents: dict[str, list[str]] = {}            # M12 (rag D6): searchable sources' titles, by character
+    message_id: str | None = None                   # M12: the user message both replies answer
+    nouls: MessageNouls | None = None               # M12 (rag D8): the cast plan's answers for that message, reused
 
 
 FollowOutcome = Literal["jev", "none", "below_floor", "late", "fallback", "cancelled"]
@@ -377,18 +492,34 @@ class FollowPlan(Frozen):
     calls: list[dict[str, Any]] = []
     graph_path: list[str] = []
     state_tokens: int = 0
+    gates: dict[str, GateAnswer] = {}               # M12 (rag D8): "needs documents?" per follow candidate asked
+    nouls: MessageNouls | None = None               # M12: the cast plan's, or this plan's own when it had to ask
+    asked_nouls: bool = False                       # M12: this request asked them (the cast plan hadn't)
 
     def rows_for_first(self) -> list[dict[str, Any]]:
-        """No second reply: the rows go on the first reply's trace (W1), every emotion row `not_used`."""
-        return [*self.shared_rows, *({**r, "result": "not_used"} for r in self.face_rows.values())]
+        """No second reply: the rows go on the first reply's trace (W1), every emotion row `not_used`, and every gate
+        row this plan asked `not_used` too."""
+        from horizon.ai.agent import gates as g
+
+        rows = [*self.shared_rows, *({**r, "result": "not_used"} for r in self.face_rows.values())]
+        rows += [g.gate_row(c, a, purpose="follow_plan", abstain_kind=True, result="not_used")
+                 for c, a in self.gates.items() if a.outcome != "dropped"]
+        return rows
 
     def for_speaker(self, cid: str, *, answered: str) -> TurnPlan:
+        from horizon.ai.agent import gates as g
+
         rows = list(self.shared_rows)
         for other, row in self.face_rows.items():
             rows.append(row if other == cid else {**row, "result": "not_used"})
-        return TurnPlan(seed=self.seed, kind="reply", branch="quick", emotion=self.faces.get(cid), rows=rows,
-                        calls=list(self.calls), graph_path=list(self.graph_path), state_tokens=self.state_tokens,
-                        cue="second", answered=answered)
+        gate = self.gates.get(cid)
+        rows += g.speaker_rows(cid, self.gates, self.nouls if self.asked_nouls else None, purpose="follow_plan",
+                               kind="second")
+        return TurnPlan(seed=self.seed, kind="reply", branch="deep" if g.deep(gate) else "quick",
+                        emotion=self.faces.get(cid), rows=rows, calls=list(self.calls),
+                        graph_path=list(self.graph_path), state_tokens=self.state_tokens, cue="second",
+                        answered=answered, gate=gate, abstain_ok=g.abstain_allowed(gate, "second"), nouls=self.nouls,
+                        source_kind="second")
 
 
 # ── The debate plan (M11: doc 08 V2, V3; doc 13 W5 row 11, W11; debate design D5, D6, D8, D27) ──
@@ -407,6 +538,7 @@ class DebateRequest(Frozen):
     base_faces: dict[str, str] = {}
     manual: bool = False
     started_at: datetime                            # the `turn.end` it starts at
+    documents: dict[str, list[str]] = {}            # M12 (rag D6): searchable sources' titles, by character
 
 
 DebateOutcome = Literal["jev", "below_floor", "late", "fallback", "single", "cancelled"]
@@ -426,13 +558,20 @@ class DebatePlan(Frozen):
     calls: list[dict[str, Any]] = []
     graph_path: list[str] = []
     state_tokens: int = 0
+    gates: dict[str, GateAnswer] = {}               # M12 (rag D8): used if back by the turn's start, else fallback
 
     def for_speaker(self, cid: str) -> TurnPlan:
+        from horizon.ai.agent import gates as g
+
         rows = list(self.shared_rows)
         for other, row in self.face_rows.items():
             rows.append(row if other == cid else {**row, "result": "not_used"})
-        return TurnPlan(seed=self.seed, kind="reply", branch="quick", emotion=self.faces.get(cid), rows=rows,
-                        calls=list(self.calls), graph_path=list(self.graph_path), state_tokens=self.state_tokens)
+        gate = self.gates.get(cid)
+        rows += g.speaker_rows(cid, self.gates, None, purpose="debate_plan", kind="debate")
+        return TurnPlan(seed=self.seed, kind="reply", branch="deep" if g.deep(gate) else "quick",
+                        emotion=self.faces.get(cid), rows=rows, calls=list(self.calls),
+                        graph_path=list(self.graph_path), state_tokens=self.state_tokens, gate=gate,
+                        source_kind="debate")
 
 
 class ListenerView(Frozen):

@@ -217,6 +217,12 @@ The pipeline was built in M5; this task sets its AI policy.
   block, Jev state and costs below hold for every choice.
 - **D-65's 3,000-piece limit** holds about 900,000 tokens of text under `pack@2`, against about 240,000 today.
 
+*Built in M12 (OpenSpec `rag` D3): `pack@2` in `horizon/ai/chunker.py`, with the offsets invariant in its docstring and
+one `CHUNKER_VERSION`. Two things K1 left open are fixed there: a carried heading line is part of the next piece's text
+(as Markdown, joined by a blank line), and the 300 / 400 bounds count that whole text. Lists are cut between lines.
+The MockClient's twin is `mock/engines/chunker.ts`; both read the shared fixtures in
+`backend/tests/fixtures/chunker/`.*
+
 **Example** (an illustrative uploaded PDF; the seed's pieces are authored and never chunked):
 
 | `para@1` (today) | `pack@2` |
@@ -290,6 +296,10 @@ The pipeline was built in M5; this task sets its AI policy.
 - **metadata columns in vec0:** not needed without a document filter (and sqlite-vec 0.1.9 rejects NULL metadata,
   which most pieces would have for a page).
 
+*Built in M12 (`rag` D12, D25): no new filter. The deep search runs on the speaker's `ScopedIndex` (world and
+character, `indexed` and `keyword_only` sources), and nothing is read from the message to filter or boost. The
+naming questions are reported apart in the retrieval suite ([m12.md](checks/m12.md) 11.5).*
+
 ### K3. Embedding: Qwen3-Embedding-8B at 1,024 dimensions unless the test beats it; a header on each piece; a flat index
 
 **Decision:**
@@ -334,6 +344,14 @@ The pipeline was built in M5; this task sets its AI policy.
   - One search scans at most one character's 3,000 pieces.
   - IVF-flat pays off only past about 100,000 vectors in one partition, which D-65 rules out. It is the escape hatch
     if the limits are raised.
+
+*Built in M12 (OpenSpec `rag` D4, D5): `SpaceSpec.doc_template` (persisted), the `knowledge` embedder kind with
+`PieceMeta(title, heading, locator)`, the LRU keyed on the request text with in-flight de-duplication, the new
+`DEFAULT_SPACE` `qwen3-emb-8b@1024+h` (an existing install keeps its space), and `horizon space build [--space ID]
+[--yes]`. The build copies memory vectors when the model and dimensions match, and knowledge vectors only when the
+template matches too, in the fill's write transaction with no ledger row; it takes the kinds to fill, so M13 adds
+message vectors to the list. Building a retired space again restores it. The command refuses while a backend holds
+the data directory (`data/server.lock`). The comparison test and `dupCosine` are measured in phase 11 and M13.*
 
 **Prices on OpenRouter** (2026-10-10, per million input tokens):
 
@@ -434,6 +452,27 @@ The pipeline was built in M5; this task sets its AI policy.
   Insight;
 - **temperature 0.7** (the first version): a query should be the same each time it is asked.
 
+*Built in M12 (OpenSpec `rag` D10, D11, D19): `ai/agent/query.py` (the committed stop list, terms ordered rarest
+first by one scoped FTS5 count each, at most 40 looked at; 16 terms, or 24 rewritten; the bundle per case) and
+`ai/agent/rewrite.py` (the reply's prefix byte for byte plus the instruction; one line, ≤ 30 words, ≥ 60 % Latin;
+`rewriteMs`; stored per user message and speaker in `message_ai_meta`, reused on regenerate). The embedding starts in
+the deep graph's gather step, only for a speaker with an `indexed` source, and is shared across speakers by the
+embedder's in-flight de-duplication. In 1:1 a new message queues behind the reply rather than superseding it, so Stop
+is 1:1's cut; in group a newer message cancels the deep work (m12.md).*
+
+*Amended in M12 (`rag` D32.2, D32.8, the user's choices):
+- **The embedding starts with Jev call 1** for a candidate with vectors (K15's trim 2), waited for up to 200 ms after
+  check 2. The rewrite's own vector is never waited for, and in 1:1 the rewrite of a message of at most six words
+  starts with Jev call 1 too (K15's trim 1).
+- **The instruction is `rewrite-2`.** Check 3 found DeepSeek answering follow-ups in character when this wording came
+  as a trailing system message ("Depends on your contract and jurisdiction, and I'd need to check."). It is now the
+  last user message: "This is a search step, not a chat line: don't reply to the last message. Write one search query
+  for your documents that would find what you need to reply to it. Make it stand on its own (no 'it', 'that' or
+  'there'), in English, at most 20 words, as keywords rather than a sentence. Output only the query."
+- **A shape check** fails a second sentence, or an ending in `.` or `!`.
+- **On dev,** 25 of 26 rewrites were then keyword queries, the 26th was late, and the rewrite is worth +13.5 points
+  of Recall@8 on follow-ups and non-English questions ([m12.md](checks/m12.md) 11.5, 11.7).*
+
 ### K5. The search: one pipeline for documents and recall
 
 **Decision:** for documents:
@@ -468,6 +507,12 @@ The pipeline was built in M5; this task sets its AI policy.
 - **fusing all lists at once:** a rewritten turn would weigh dense twice as much as BM25;
 - **relative score fusion:** it needs tuned weights (6.10).
 
+*Built in M12 (`rag` D12): `retrieval.search(index, bundle, params)`, the parameters passed in (recall's own in
+M13), two-step RRF, min–max normalisation (one item or all equal: 1.0), MMR over the stored vectors (cosine) or
+lower-cased words (Jaccard) with ties to the fused order. `ScopedIndex.vectors` reads the vectors of the index's own
+space, so a switch mid-turn never mixes spaces. Measured on a 3,000-piece worst case (m12.md): keyword searches p99
+46 ms, dense ones p99 69 ms; sqlite-vec's flat scans and stored-vector reads are the cost.*
+
 ### K6. Jev call 2 for documents: a 3-level score per piece, then a set check when needed
 
 **Decision:**
@@ -499,6 +544,11 @@ The pipeline was built in M5; this task sets its AI policy.
 - **"at least half back" is enough** (the first version): it could say "not in my notes" while the top pieces were
   still out;
 - **counting two "partly" pieces as found without a check:** they may each cover the same half.
+
+*Built in M12 (`rag` D13): one `deep_check` request per candidate, all started at once and each read by
+`deepCheckMs` from when it was sent (read one after another against that instant, which is the same wait); a 429 falls
+back at once; the set check when no passage is found and two or more are usable. Every request is cancelled with the
+turn (recorded `cancelled`).*
 
 ### K7. The keep rule: found, partly, not found, and k per mode
 
@@ -537,6 +587,19 @@ The pipeline was built in M5; this task sets its AI policy.
 - **a fixed top k with no threshold:** course notes 6.14's trap, weak matches presented as answers;
 - **one threshold and no partly;**
 - **tuning on dev and checking count targets on a 33-item test split:** the counts can't be shown at that size.
+
+*Built in M12 (`rag` D14, D15): `ai/agent/keep.py` and the deep graph `ai/agent/deep.py` (gather → search → check →
+keep), frozen in and out (`DeepRequest`, `DeepResult`). One addition to K7's table: a search that matches nothing in
+the speaker's documents is "not found" (Jev call 2 never ran, and nothing failed). In 1:1 the graph runs inside the
+plan; elsewhere it starts as soon as the speaker and their gate are known (`start_deep`).*
+
+*Tuned in M12 ([m12.md](checks/m12.md) 11.5, 11.6; `rag` D32.6). Jev call 2's slowest-of-8 is p90 ≈ 1.3 s from
+Malaysia. At `deepCheckMs` 700 about 1 turn in 7 fell back, and only 13 of 26 dev unanswerable questions abstained.
+- **By the user's choice, `deepCheckMs` is 1,500.**
+- **The thresholds** `t_keep` **0.9** and `t_found` **0.5** come from the leave-one-out on dev with every answer back
+  (`passage` v2). `t_set` stays 0.5 (18 set checks, fewer than 20).
+- **Test, once:** 1 wrong abstain in 57 and 13 of 14 unanswerable abstained, both passing B5.
+- **K6's rule stands:** counting a late passage as "doesn't help" instead gives 5–6 wrong abstains in 108.*
 
 ### K8. The prompt block and deterministic citations
 
@@ -583,6 +646,9 @@ The pipeline was built in M5; this task sets its AI policy.
 - **trusting markers the model invents:** 6.14;
 - **the quote as the piece's first 400 characters** (today's `naive`): the cited fact is often past it.
 
+*Built in M12 (`rag` D16, D17): `ai/agent/docs_block.py` (the block with S6's tags, the 1,400-token guard, the
+deterministic quote window, `score` absent on a fallback) and the labels `+docs-1` / `+nodocs-1`.*
+
 ### K9. Not found and partly: say so, then their own view (the user's decision)
 
 **Decision:** two lines for the dynamic tail, phrased as instructions; the character answers in their own voice and
@@ -609,6 +675,9 @@ the conversation's language.
 - **a strict refusal;**
 - **a silent general answer.**
 
+*Built in M12 (`rag` D16): the partly line after the passages and the not-found block at the quick length, both
+only where abstaining is allowed (D8).*
+
 ### K10. Citation faithfulness: measured in the evaluation, not checked live (the user's decision)
 
 **Decision:**
@@ -634,6 +703,9 @@ the conversation's language.
 
 **Rejected (the user's choice):** a live Jev check after each reply.
 
+*M12 (`rag`) adds no live check (D25). The two B4 rows run in the conversations suite, which is paid at M15 (doc 13
+W6); M12 builds and validates only the Not-found reply's two judges (K14).*
+
 ### K11. Keyword search stays tuned for English (the user's decision)
 
 **Decision:**
@@ -653,6 +725,11 @@ the conversation's language.
 - **bigrams now** (the user: focus on English);
 - **SQLite's trigram tokenizer:** 2-character words never match.
 
+*Built in M12 (`rag` D3, D10): the FTS tables are unchanged; `pack@2` cuts at `。！？` (check 4: the CDC sheet's
+pieces end at `。`); the rewrite translates a non-English message for BM25, and "English?" decides when (40/40 in
+11.3). Found in check 4: Docling's text for a Chinese PDF puts spaces inside words at line wraps ("盖 住皮疹"), a
+converter artefact recorded, not changed.*
+
 ### K12. Re-chunking, old citations and ingestion
 
 **Decision:**
@@ -667,6 +744,9 @@ the conversation's language.
 - **So there is no `knowledge_chunk_redirects` table** ([05-ai-seams](../backend/05-ai-seams.md) §6). Resolving
   old ids would need a contract change or rewritten events.
 - **Ingestion** costs about **$0.002** per 300 pages. Docling runs on the CPU (D-62).
+
+*Built in M12 (`rag` D3): Reindex sees a stale `chunker_version` and re-chunks from the `chunk` stage; seed sources
+only re-embed, keeping their IDs; startup never re-chunks (`tests/knowledge/test_rechunk_m12.py`).*
 
 ### K13. Profiles
 
@@ -683,6 +763,9 @@ the conversation's language.
 - **Why `naive` changes at all:** a `pack@2` section runs to about 6,000 characters. Today's "first 1,200 characters"
   would often miss the very piece it retrieved, and the agent-vs-naive comparison would partly measure that artefact.
 - **The rest of `naive` stays M5's,** so the comparison measures what K2 and K4–K9 add.
+
+*Built in M12 (`rag` D18): `naive` reads each hit as the 1,200-character slice of its section centred on the piece
+(`naive-7`, `naive-8` in debate); `scripted` is unchanged; the Knowledge tab's preview ribbon is gone.*
 
 ### K14. Evaluation additions
 
@@ -736,6 +819,19 @@ the conversation's language.
     $0.78);
   - the rare `latency` suite grows by 100 deep turns (check 2), to ≈ $0.11.
 
+*Built and run in M12 ([m12.md](checks/m12.md) 11.5–11.8; `rag` D22, D23, D32):
+- **The sets:** the 205 questions and the "needs documents?", "standalone?" and "English?" sets.
+- **Every comparison:**
+  - no challenger wins by K3's rule: the 2,048 space, bge-m3, the old instruction, no header (naming −7.7 points),
+    piece 200 or 400, or λ 0.5;
+  - λ 1.0 ties 0.7, so MMR is off for documents;
+  - turning the rewrite off loses 13.5 points on follow-ups and non-English questions.
+- **The naming questions keep up** (Recall@8 1.000 on dev and test), so K2's "Jev picks the named document" isn't
+  revisited.
+- **The Not-found reply:** both judges pass B4. Where K9's lines are sent they work (14 of 16), but only 12 of 40
+  unanswerable turns reach them, so the row is reported both ways (the user's choice).
+- **Sentence faithfulness** on the two-passage items is M15's conversations, so multi-document thinking stays off.*
+
 ### K15. Speed and cost in one place
 
 **Before the first word on a deep turn:**
@@ -763,6 +859,32 @@ the conversation's language.
 4. **Tighter deadlines.**
 
 Trims 1 and 2 spend before the gate, so they come back to the user first. Jev stays in every case (doc 07 G2).
+
+*Trim 2 applied in M12, before check 2 (`rag` D32, the user's choice, 2026-10-15). The first dev retrieval run
+measured the query embedding from Malaysia at ≈ 1.1 s median (0.9 s at the fastest, p90 3.3 s), so the 400 ms wait
+after the gate left 94 of 107 deep turns on keywords only. In 1:1 and group the message's embedding now starts with
+Jev call 1 for a candidate with vectors, and the `agent` path waits up to 800 ms (`retrieval.agent.queryEmbedWaitMs`).*
+
+*Check 2 in M12 ([m12.md](checks/m12.md) 11.9), store bypassed:
+- **The times** (send, or `turn.end`, to the first word, p50 / p90):
+
+  | Arm | p50 / p90 | Target |
+  |---|---|---|
+  | 1:1 deep with a rewrite | 4.8 / 5.8 s | NFR-01 2 / 4 s: fails |
+  | 1:1 deep without | 2.8 / 3.8 s | NFR-01: fails at p50 |
+  | group | 2.4 s p50 | NFR-02 3 s: passes |
+  | watch | 2.4 s p50 | NFR-02: passes |
+  | debate | 3.07 s p50 | NFR-02: just fails |
+
+- **The waste was the embedding wait:** Nebius ran p50 6.8–10.8 s that evening.
+- **By the user's choices (`rag` D32.9–11):**
+  - the wait is 200 ms, and the rewrite's own vector is never waited for;
+  - **trim 1 applies in 1:1** (a message of at most six words);
+  - `rewriteMs` is 1,200.
+- **Estimated after the changes:** with a rewrite ≈ 2.8 s p50, without ≈ 2.2 s, debate ≈ 2.5 s.
+- **A deep turn's serial minimum** (Jev call 1 + `deep_check` + DeepSeek's first token, ≈ 2.1 s) is over NFR-01's
+  p50 by itself, so NFR-01 is judged blended with quick turns in M15's run.
+- **Trims 3 and 4 are not applied:** no 429s, and 4 % of turns fell back.*
 
 **Cost of one deep 1:1 turn** (off-peak):
 

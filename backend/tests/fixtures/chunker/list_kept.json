@@ -1,0 +1,12 @@
+{
+  "what": "A short list keeps its line breaks and sits in one piece with the paragraph before it.",
+  "paged": false,
+  "markdown": "# Handover\n\nBefore you leave:\n\n- Check the pager.\n- Sign the drug chart.\n  It must be countersigned.\n- Hand over the keys.",
+  "pieces": [
+    {
+      "text": "# Handover\n\nBefore you leave:\n\n- Check the pager.\n- Sign the drug chart.\nIt must be countersigned.\n- Hand over the keys.",
+      "locator": "§ Handover",
+      "heading": "Handover"
+    }
+  ]
+}

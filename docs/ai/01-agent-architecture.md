@@ -234,6 +234,13 @@ probabilities for Insight.
   the follow plan (`start_follow`, purpose `follow_plan`), which replaces the second-replier re-plan. Everyone's order
   is the cast plan's probabilities, and every Everyone reply uses that one call's faces. The gates arrive with M12; until
   then a planned group or watch turn is quick (no retrieval, D18).*
+  *Built in M12 (OpenSpec `rag` D6–D8, D20): "needs documents?" (`docs:{characterId}`) rides every plan's one request
+  (Jev call 1 in 1:1, the cast plan, the follow plan and the debate plan) about each candidate with an `indexed` or
+  `keyword_only` source, whose titles (extension stripped, newest first) fill `quoted_documents`. "standalone?" and
+  "English?" ride once per message in 1:1 and when a group message is answered; the follow plan reuses the cast
+  plan's, and debate and watch never ask them. Only the speaker's own answer counts (at or above `t_gate`: deep); the
+  other candidates' rows are `not_used`, a dropped gate or a fallback is quick, and the debate's gate is used if back
+  by the turn's start. The grown requests' sizes are in [m12.md](checks/m12.md).*
 - **Size check.** The `Decider` checks the whole request (state + all questions) against the real limit of the
   OpenRouter endpoint, as well as state + the longest question. Check 4 finds that limit.
 - **Confidence floors** apply to every choice and score answer. A noul has no confidence, so its probability is used
@@ -304,6 +311,12 @@ emotion, and the hits it kept. The reply engine never queries storage (D-92 hold
 - **Deep reply:**
   1. **Embed the question, and only now.** Never before the gate says yes. The plan waits at most
      `retrieval.queryEmbedWaitMs` (400 ms), then falls back to keyword-only search.
+     *Amended in M12 (`rag` D32, the user's choice, 2026-10-15): from Malaysia a query embedding takes ≈ 1.1 s at the
+     median, so 94 of 107 dev deep turns missed the 400 ms wait. In 1:1 and group the user message's embedding now
+     starts with Jev call 1 for a candidate with vectors, and the `agent` path waits up to
+     `retrieval.agent.queryEmbedWaitMs` (800 ms). A quick turn to an indexed speaker costs one ≈ $0.000002 embedding;
+     watch and debate still start at the gate. Then check 2 measured that evening's embeddings at p50 6.8 s, so the
+     wait became **200 ms**, and the rewrite's own vector is never waited for (D32.9).*
   2. **Search:** keyword + vector over knowledge and/or this session's older lines and the memories beyond the prompt list (doc 09 M9), fused with RRF.
   3. **Jev call 2 (`Decider` purpose `deep_check`).** One small request per candidate passage, all sent in parallel.
      Each state holds just the question and one passage, which is TypeSafe's rerank cookbook pattern; no request sees
@@ -360,6 +373,10 @@ emotion, and the hits it kept. The reply engine never queries storage (D-92 hold
 - a dedicated reranker model, which the user dropped for Jev;
 - retrieval inside the reply engine, which D-92 rejects because it breaks replay and scope binding.
 
+*Built in M12 (OpenSpec `rag` D13–D15): the deep path in all four modes. 1:1 runs it as the plan graph's `deep` node;
+group, watch and debate start it with `start_deep` once the speaker and their gate are known (the cast plan, the
+follow plan, the plan made ahead, the member fixed); debate and watch never rewrite and never abstain.*
+
 ### A7. When something is a LangGraph graph
 
 **Decision:**
@@ -392,6 +409,9 @@ parallelism pay off.
 - wrapping the reply stream in a graph, which is ceremony and puts new code on the most sensitive path;
 - plain code everywhere, which loses the uniform tracing and the Insight graph view, and isn't the stack the
   stakeholder fixed.
+
+*Built in M12 (`rag` D15): the deep graph is the second graph, with its own frozen request and result; its steps run
+the Decider and our code only.*
 
 ### A8. Every model call goes through our gateway
 
@@ -491,6 +511,12 @@ every node, and Forget would get harder.
   only in v1.
 - **Deep-only work runs only when Jev call 1 says deep.** A little speed is traded for not paying on quick turns.
 
+*Built in M12 (`rag` D15, D32): before the first word a deep turn runs the rewrite, BM25 and the embedding in
+parallel, then the search and the 8 `deep_check` requests at once (plus a set check when needed). One exception to
+"only when Jev call 1 says deep" was the user's choice (D32): the user message's embedding starts beside Jev call 1
+for a candidate with vectors, because from Malaysia it takes longer than Jev call 1 itself; it costs ≈ $0.000002 on a
+quick turn. Group's deep work hides in the preamble and watch's in the pace; debate's has nothing to hide behind.*
+
 ### A14. Debate: fair sides, Jev picks the member
 
 **Decision:**
@@ -530,7 +556,7 @@ were still late. `floor.member` is **0.5**: 0.71 on the member slice's test spli
 | Prompt injection via retrieved text or user text | **Doc 10 K8 and doc 11 S6:** quoted content in the Jev state and the prompt (`<passage>` tags, `quoted_*` fields), a memory noul, and the output check (S5) as the backstop |
 | Weak matches presented as answers | **Covered** by the Jev call 2 scores and the not-found rule (A6) |
 | Abstaining on small talk | **Covered:** a Jev failure means quick; abstain needs a confident gate and a user question; debate and watch never abstain (A6) |
-| Stacked timeouts on the deep path | **Covered:** the embedding wait is capped at 400 ms; if Jev call 1 failed, the turn is quick; if Jev call 2 is late, RRF top k is used (A6) |
+| Stacked timeouts on the deep path | **Covered:** the embedding wait is capped at 400 ms; if Jev call 1 failed, the turn is quick; if Jev call 2 is late, RRF top k is used (A6). *Built in M12 (`rag` D15, D32): each step has its own deadline (rewrite 1.2 s, the message's embedding 200 ms on the `agent` path, started with Jev call 1; each `deep_check` 1.5 s, the set check 1.5 s more), so the worst case is bounded; check 2 measures it ([m12.md](checks/m12.md))* |
 | Debate collapse | **Doc 08 V4, V11:** a side lock and per-phase cues in the prompt; measured by the "keeps its side" and "engages" judges. *Built in M11 (`debate` D10, D21): the per-phase cue in both compilers, shared by a fixture; both judges validated by B4 and run on the `naive` histories and the `agent` free runs as a signal ([m11.md](checks/m11.md)); V11's targets are judged at M15* |
 | Lost in the middle | **Doc 05** X1 and X6, doc 04 P2 (rules last), doc 10 K8, plus few, strongly scored passages (A6) |
 | Jev outage, slowness or uncertainty | **Covered** by the fallbacks and confidence floors (A4) |
@@ -557,8 +583,8 @@ None of the backend rows changes the HTTP contract unless marked.
 |---|---|---|---|
 | A **`TurnPlanner` port** (the turn plan graph), the `agent` profile value, and a scripted twin with fixtures so the mock parity tests still pass. **Built in M9** (`turn-plan-emotion` D3–D5): the port, the graph and `TurnContext.plan`; the scripted twin lands with the System 1 fixture rows | backend | A4, A6, A12 | 5 |
 | **Every turn entry point calls the planner:** 1:1 send, regenerate, group auto, Everyone, nudge (random today), watch turns and step-in (random today), debate turns and Ask, the opening prefetch. **1:1 built in M9** (send, regenerate, a generated greeting; D6). **Group and watch built in M10** (`group-watch` D5, D11, D13: group Auto, mentions, Everyone and policy `everyone`, Next speaker, watch turns, the Auto opening, Step in and the Everyone prefetch) | backend | A4 | 5–8 |
-| **New `Decider` purposes** `turn_plan` and `deep_check`, with config timeouts and ledger purposes; the `Decider` also checks the total request size | backend | A4, A6 | 5 |
-| **Embed only on deep turns**, replacing D-97's embedding at send; keep the 400 ms wait; debate and watch turns may embed; doc 10 K4 adds the rewrite when needed | backend | A6 | 10 |
+| **New `Decider` purposes** `turn_plan` and `deep_check`, with config timeouts and ledger purposes; the `Decider` also checks the total request size. *`deep_check` built in M12 (`rag` D13, D26): category `decision`, its deadline `retrieval.agent.deepCheckMs` in `runtime.json` (700 ms, then 1,500 ms by the user's choice after 11.5), no retry on a 429* | backend | A4, A6 | 5 |
+| **Embed only on deep turns**, replacing D-97's embedding at send; keep the 400 ms wait; debate and watch turns may embed; doc 10 K4 adds the rewrite when needed. *Built in M12 (`rag` D11, D32): `start_query` is off for `agent`; the rewrite is embedded too. Amended by the user's choices (D32): in 1:1 and group the message's embedding starts with Jev call 1 for a candidate with vectors, waited for up to 200 ms on the `agent` path (check 2), and a rewrite's own vector is never waited for; `naive` and `scripted` keep 400 ms* | backend | A6 | 10 |
 | The reply receives the Jev emotion: show it at preflight, mood line in the dynamic tail, strip the tag. **Built in M9** for `agent` 1:1 (the face on the first chunk, `turn.start` and `emotion` in one write, D14) | backend | A5 | 6 |
 | `Summariser.rolling` and `ReactionPredictor.predict` become **async**, and both run after `turn.end` | backend | A7, A13 | 5, 6 |
 | ~~The citation check runs on interrupted replies~~ (withdrawn by doc 10 K10: evaluation only in v1); the after-reply work runs after `turn.end` | backend | A13 | 6, 10 |
@@ -570,7 +596,8 @@ None of the backend rows changes the HTTP contract unless marked.
 
 **Built in** ([doc 13](13-wrap-up.md) W4): the `agent` profile in M7 and the `TurnPlanner` in M9; the entry points in M9 (1:1),
 M10 (group, watch) and M11 (debate); the `Decider` changes in M7 (each new purpose is added by the change that first calls it, doc 13 W4); embedding only on deep turns (D-100) in M12; the
-async `Summariser.rolling` in M8 and `ReactionPredictor` in M9.
+async `Summariser.rolling` in M8 and `ReactionPredictor` in M9. *M12 (`rag`) built `deep_check`, the deep path in all
+four modes and D-100's embedding, amended by the user's choice to start it with Jev call 1 (D32).*
 
 ## 9. Left for later tasks
 
@@ -581,7 +608,8 @@ async `Summariser.rolling` in M8 and `ReactionPredictor` in M9.
 - ~~The mood-line wording, and AUTO emotion confirmed by the evaluation (task 6).~~ Resolved by doc 06 (E4, E8).
 - ~~Exactly which fields go into Jev call 1's state, and its token budget (task 5).~~ Resolved by doc 05 X9.
 - ~~Jev call 2's score levels, the number of candidates, k, and the wording of the not-found line (task 10).~~
-  Resolved by doc 10 K5–K9.
+  Resolved by doc 10 K5–K9. *Built and tuned in M12 ([m12.md](checks/m12.md)): three levels over 8 candidates, k 3
+  in 1:1 and 2 elsewhere; `t_gate` 0.45, `t_confident` 0.80, `t_keep` 0.9, `t_found` 0.5, `deepCheckMs` 1,500.*
 - ~~What "input not safe" does, and the output guardrail's timeout (task 11).~~ Resolved by doc 11 S3 and S5.
 - ~~A side whose members are all exhausted (task 8, OQ-AI-17).~~ Resolved by doc 08 V5: the debate pauses with a top-up
   prompt. *Built in M11 (`debate` D4), in the runtime and the mock, with a parity fixture.*

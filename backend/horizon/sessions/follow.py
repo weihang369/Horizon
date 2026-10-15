@@ -15,9 +15,9 @@ from collections.abc import Callable
 from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 
-from horizon.ai.contexts import FollowPlan, FollowRequest
+from horizon.ai.contexts import FollowPlan, FollowRequest, MessageNouls
 from horizon.domain import vclock
-from horizon.sessions.context import character_view, characters, session_context
+from horizon.sessions.context import character_view, characters, document_titles, session_context
 from horizon.sessions.modes.common import gap, is_asleep, runner, speak_then
 from horizon.sessions.plans import base_faces, manual, turns_since
 from horizon.sessions.turn import TurnOutcome, TurnSpec
@@ -29,9 +29,9 @@ Wire = dict[str, Any]
 PURPOSE = "follow_plan"
 
 
-def follow_hook(actor: SessionActor, message: str) -> Callable[[TurnInfo], Any]:
+def follow_hook(actor: SessionActor, message: str, nouls: MessageNouls | None = None) -> Callable[[TurnInfo], Any]:
     """The hook `TurnRunner` calls at the first reply's stream end (S5): candidates are the cast that can speak now,
-    minus whoever answered this message."""
+    minus whoever answered this message. M12 (rag D8): the cast plan's "standalone?" / "English?" ride along."""
     async def start(info: TurnInfo) -> Any:
         rt = actor.rt
         sctx = await session_context(rt, actor)
@@ -46,12 +46,15 @@ def follow_hook(actor: SessionActor, message: str) -> Callable[[TurnInfo], Any]:
         if not cands:
             return None
         rows = await characters(rt, cands)
+        planner = rt.ai.planner(rt.keys.status() == "set")
+        docs = await document_titles(rt, sctx.world.id, cands) if getattr(planner, "decides_retrieval", False) else {}
         req = FollowRequest(session=sctx, first_id=info.character_id, first_name=sctx.name_of(info.character_id),
                             first_message_id=info.message_id, first_text=info.content, message=message,
                             candidates=cands, cast=[character_view(rows[c]) for c in cands if c in rows],
                             turn_index=actor.mode.turn, base_faces=base_faces(actor, sctx, cands), manual=manual(actor),
-                            turns_since=turns_since(actor, cands), started_at=rt.clock.now())
-        return rt.ai.planner(rt.keys.status() == "set").start_follow(req)
+                            turns_since=turns_since(actor, cands), started_at=rt.clock.now(), documents=docs,
+                            nouls=nouls)
+        return planner.start_follow(req)
 
     return start
 
@@ -62,7 +65,7 @@ async def answer_then_follow(actor: SessionActor, first: TurnSpec, message: str,
     that supersedes the job (G5) ends the wait at once and cancels the follow plan (its ledger row: `cancelled`)."""
     rt = actor.rt
     epoch = first.epoch
-    first.follow = follow_hook(actor, message)
+    first.follow = follow_hook(actor, message, first.plan.nouls if first.plan is not None else None)
     out = await runner(actor).run(actor, first)
     turn_gap = rt.runtime_cfg.timing.turn_gap_ms / 1000
     if out.status not in ("complete", "interrupted", "error"):

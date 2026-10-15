@@ -73,7 +73,8 @@ async def test_next_speaker_under_agent_asks_who_next_without_the_last_speaker(a
     await api.drive(30000)
     (body,) = decision_bodies(api, "who_next")
     assert set(body["questions"]["who_next"]["criteria"]) == {MEI, VICTOR}           # not the last speaker
-    assert set(body["questions"]) == {"who_next", f"emotion_line:{MEI}", f"emotion_line:{VICTOR}"}
+    assert set(body["questions"]) == {"who_next", f"emotion_line:{MEI}", f"emotion_line:{VICTOR}",
+                                      f"docs:{MEI}", f"docs:{VICTOR}"}   # M12: Next speaker asks the gate only
     (reply,) = chars(await messages(api, sid))[before:]
     assert reply["author"]["characterId"] == VICTOR
     who = next(r for r in reply["trace"]["system1"]["questions"] if r["id"] == "who_next")
@@ -87,7 +88,7 @@ async def test_next_speaker_with_a_chosen_character_asks_only_its_face(api: Api,
     await command(api, sid, "next-speaker", {"characterId": MEI})
     await api.drive(30000)
     (body,) = decision_bodies(api, f"emotion_line:{MEI}")
-    assert list(body["questions"]) == [f"emotion_line:{MEI}"]
+    assert list(body["questions"]) == [f"emotion_line:{MEI}", f"docs:{MEI}"]
     reply = chars(await messages(api, sid))[-1]
     assert reply["author"]["characterId"] == MEI and reply["trace"]["routing"]["forcedBy"] == "nudge"
     assert seen == [(MEI, "next")]

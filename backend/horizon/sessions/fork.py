@@ -27,8 +27,10 @@ def replay_base(s: Wire) -> Wire:
     return out
 
 
-def fork_events(events: list[Wire], source: Wire, at_seq: int | None, new_id: str, now: str) -> tuple[list[Wire], Wire]:
-    """Returns the renamed, renumbered events and the reduced state of the new session."""
+def fork_events(events: list[Wire], source: Wire, at_seq: int | None, new_id: str, now: str,
+                ids: dict[str, str] | None = None) -> tuple[list[Wire], Wire]:
+    """Returns the renamed, renumbered events and the reduced state of the new session. `ids`, when given, is filled
+    with each copied message's old id → new id (M12: the fork copies their `message_ai_meta` rows)."""
     sid = source["id"]
     if at_seq is not None:
         cut = [e for e in events if e["seq"] <= at_seq]
@@ -45,6 +47,8 @@ def fork_events(events: list[Wire], source: Wire, at_seq: int | None, new_id: st
     msg_prefix = new_id.replace("ses_", "msg_", 1)
     for i, mid in enumerate(reduced["order"]):
         text = text.replace(f'"{mid}"', f'"{msg_prefix}m{i}"')
+        if ids is not None:
+            ids[mid] = f"{msg_prefix}m{i}"
     evt_prefix = new_id.replace("ses_", "evt_", 1)
     re_events = [{**e, "id": f"{evt_prefix}e{i + 1}", "seq": i + 1} for i, e in enumerate(json.loads(text))]
     base = {**replay_base(source), "id": new_id, "title": f"{source['title']} · live", "titleIsCustom": False,

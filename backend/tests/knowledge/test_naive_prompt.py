@@ -118,7 +118,7 @@ async def test_cited_passage(api: Api) -> None:
     async with api.rt.db.read() as conn:
         row = (await conn.execute(text("SELECT engine, engine_version, prompt_version FROM turn_traces "
                                        "WHERE message_id = :m"), {"m": reply["id"]})).one()
-    assert tuple(row) == ("naive", "3", "naive-5")
+    assert tuple(row) == ("naive", "3", "naive-7")   # M12 (rag D18): passages read as their centred slice
 
 
 class TwoMemories:

@@ -33,6 +33,9 @@ from horizon.ai.naive.tag_parser import EMOTIONS
 
 PROMPT_VERSION = "naive-5"
 PROMPT_VERSION_DEBATE = "naive-6"   # M11 (debate design D10): a debate request names its teammates apart
+# M12 (rag D18): a request whose passages are read as the slice of their section centred on the hit
+PROMPT_VERSION_SLICE = "naive-7"
+PROMPT_VERSION_SLICE_DEBATE = "naive-8"
 DEBATE_WORDS = {"short": 80, "medium": 140, "long": 220}
 TRAILING_CUE = "Continue with your next message, in character."
 SECTION_MAX = 1200
@@ -179,6 +182,39 @@ class RetrievalBlock:
                               **({"score": round(m.score, 4)} if m.score is not None else {})} for m in self.memories]}
 
 
+_SENTENCE_END = re.compile(r"[.!?。！？][\"'”’)\]}»」』]*(?:\s+|$)")
+
+
+def centred_slice(section: str, piece: str, limit: int = SECTION_MAX) -> str:
+    """M12 (rag D18; retrieval "Naive replies can use and cite what was retrieved"): at most `limit` characters of the
+    section, centred on the hit piece and cut back to whole sentences, so a hit deep in a long section is read whole.
+    The piece's place in the section is found by its text (the section is its pieces joined)."""
+    if len(section) <= limit:
+        return section
+    pos = section.find(piece)
+    if pos < 0:
+        return section[:limit - 1] + "\u2026"
+    if len(piece) >= limit:
+        return piece[:limit]
+    spare = limit - len(piece)
+    start = max(0, pos - spare // 2)
+    end = min(len(section), start + limit)
+    start = max(0, end - limit)
+    if start > 0:   # forward to the start of a sentence, never past the piece
+        m = _SENTENCE_END.search(section, start, pos)
+        if m is not None:
+            start = m.end()
+    if end < len(section):   # back to the end of a sentence, never before the piece ends
+        cut = None
+        for m in _SENTENCE_END.finditer(section, pos + len(piece), end):
+            cut = m.end()
+        if cut is not None:
+            end = cut
+        elif pos + len(piece) <= end:
+            end = pos + len(piece)
+    return section[start:end].strip()
+
+
 def retrieval_block(ctx: TurnContext) -> RetrievalBlock | None:
     if not ctx.knowledge and not ctx.memory:
         return None
@@ -190,7 +226,7 @@ def retrieval_block(ctx: TurnContext) -> RetrievalBlock | None:
         if n is None:
             n = sections[h.section_text] = len(sections) + 1
             block.passages[n] = []
-            text = h.section_text if len(h.section_text) <= SECTION_MAX else h.section_text[:SECTION_MAX - 1] + "\u2026"
+            text = centred_slice(h.section_text, h.text)
             where = f", {h.locator}" if h.locator else ""
             parts.append(f"[{n}] {h.title}{where}: {text}")
         block.passages[n].append(h)

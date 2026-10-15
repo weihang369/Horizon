@@ -1,15 +1,16 @@
 """The `agent` turn planner: Jev call 1 on the plan graph (docs/ai/01 A4, A5; docs/ai/06 E1–E3; turn-plan-emotion design
 D3, D4, D6, D7, D10, D12, D13; turn-plan spec).
 
-In M9 it plans `agent` 1:1 turns and asks one question per candidate: the emotion (`emotion_reply`, or
-`emotion_greeting` for a generated greeting). No gate is asked, so `route` is always quick (W4: every 1:1 turn is
-quick until M12).
+It plans `agent` 1:1 turns and asks one question per candidate: the emotion (`emotion_reply`, or `emotion_greeting`
+for a generated greeting). M12 (rag D6–D8): a reply to a speaker with searchable documents also asks "needs
+documents?" about them, and "standalone?" and "English?" about the message, in the same request; `route` answers
+deep when the speaker's gate is at or above `t_gate`. A generated greeting asks no gate.
 
-- **state:** M8's `build_turn_plan_state`, imported unchanged, with no document titles (no gate reads them yet).
+- **state:** M8's `build_turn_plan_state`, with the speaker's document titles when the gate is asked.
 - **ask:** one `turn_plan` request through the `Decider`, waited for until `started_at` + the `turn_plan` deadline. A
   late, failed, refused or oversized call is a fallback at once; a late answer is still billed and then discarded
   (W11). Cancelling the plan (Stop) detaches the readers and lets the request settle (D8).
-- **decide:** `decide_face` per candidate, and one System 1 row each.
+- **decide:** `decide_face` per candidate, and one System 1 row each; the gate rows (D20).
 """
 
 from __future__ import annotations
@@ -19,11 +20,23 @@ import logging
 from datetime import timedelta
 from typing import Any
 
+from horizon.ai.agent import gates
 from horizon.ai.agent.emotion import decide_face, emotion_row
 from horizon.ai.agent.persona import first_name
 from horizon.ai.agent.plan_graph import Branch, build_plan_graph, run_plan
 from horizon.ai.agent.plan_state import Candidate, PlanState, PlanStateInput, build_turn_plan_state
-from horizon.ai.contexts import CastPlan, CastRequest, DebateRequest, FollowRequest, PlanRequest, TurnPlan
+from horizon.ai.agent.query import earlier_lines
+from horizon.ai.contexts import (
+    CastPlan,
+    CastRequest,
+    DebateRequest,
+    DeepRequest,
+    FollowRequest,
+    PlanRequest,
+    SessionContext,
+    TurnContext,
+    TurnPlan,
+)
 from horizon.ai.decider import Answers, ChoiceAnswer, DecisionResult
 from horizon.ai.questions import bank
 
@@ -69,7 +82,21 @@ def plan_state_input(req: PlanRequest) -> PlanStateInput:
         recent = recent[:-1]
     you = str((s.world.you or {}).get("displayName") or "")
     lines = [{"speaker": (you or "the user") if m.author_type == "user" else m.name, "text": m.content} for m in recent]
-    return PlanStateInput(mode=s.mode, user_name=you, candidates=cands, latest=req.latest, recent=lines)
+    docs = {req.speaker_id: list(req.documents[req.speaker_id])} \
+        if req.kind == "reply" and req.documents.get(req.speaker_id) else {}
+    return PlanStateInput(mode=s.mode, user_name=you, candidates=cands, latest=req.latest, recent=lines,
+                          documents=docs)
+
+
+def answered_message(session: SessionContext) -> tuple[str | None, list[str], str]:
+    """The user message a 1:1 or group reply answers: (its id, the two lines before it, the user message before
+    that), read from the window (M12, rag D10)."""
+    you = str((session.world.you or {}).get("displayName") or "") or "the user"
+    users = [m for m in session.recent if m.author_type == "user" and m.content]
+    if not users:
+        return None, [], ""
+    last = users[-1]
+    return last.id, earlier_lines(session.recent, last.id, you), users[-2].content if len(users) > 1 else ""
 
 
 class JevTurnPlanner:
@@ -77,6 +104,9 @@ class JevTurnPlanner:
 
     def __init__(self, deps: Any) -> None:
         self.deps = deps
+        from horizon.ai.agent.deep import DeepSteps, build_deep_graph
+
+        self.deep_graph = build_deep_graph(DeepSteps(deps))   # M12 (rag D15): one graph for every mode
         self.graph = build_plan_graph(self)
         from horizon.ai.agent.cast_plan import CastSteps
 
@@ -127,6 +157,18 @@ class JevTurnPlanner:
             log.exception("the debate plan could not start in %s", req.session.session_id)
             return None
 
+    def start_deep(self, req: DeepRequest, *, spawn: Any = None) -> Any:
+        """M12 (rag D15): one speaker's deep work, started as soon as the speaker is known and their gate said yes
+        (group, watch, debate). Returns a `DeepCall` the turn awaits; a bug inside gives a quick turn. `spawn`: the
+        runtime's owner for the task (the actor's background, so `clear()` cancels it)."""
+        from horizon.ai.agent.deep import DeepCall
+
+        try:
+            return DeepCall(self.deps, self.deep_graph, req, spawn)
+        except Exception:
+            log.exception("the deep work could not start for %s", req.speaker.id)
+            return None
+
     # ── the port ──
     async def plan(self, req: PlanRequest) -> TurnPlan | None:
         try:
@@ -140,7 +182,8 @@ class JevTurnPlanner:
             entry = bank().get(qid)
             row = emotion_row(face, qid=qid, version=entry.version, label=entry.label, about=req.speaker_id)
             return TurnPlan(seed=self.seed(req), kind=req.kind, branch="quick", emotion=face, rows=[row])
-        out: TurnPlan = plan.model_copy(update={"graph_path": path, "branch": self.route(req, plan)})
+        branch = plan.branch if plan.branch is not None else self.route(req, plan)
+        out: TurnPlan = plan.model_copy(update={"graph_path": [*path, *plan.graph_path], "branch": branch})
         return out
 
     # ── the graph's steps (plan_graph.PlanSteps) ──
@@ -153,20 +196,32 @@ class JevTurnPlanner:
         name = next((p.name for p in req.session.participants if p.character_id == cid), cid)
         key = f"{qid}:{cid}"
         q = bank().question(qid, seed=f"{self.seed(req)}:{cid}", name=_name(name), about=cid)
+        gated = gates.gated([cid], req.documents, state.dropped_gates) if req.kind == "reply" else []
+        qs = {key: q, **gates.questions({cid: name}, gated, nouls=True)}
+        if gated:   # rag 11.5: the query embedding starts with Jev call 1; 11.9: so does a short message's rewrite
+            from horizon.ai.agent import rewrite as rw
+            from horizon.ai.agent.deep import start_early_embedding
+
+            mid = answered_message(req.session)[0]
+            start_early_embedding(self.deps, req.session, gated, req.latest, mid)
+            if req.cast and not req.stored_rewrite:
+                rw.start_early(self.deps, TurnContext(session=req.session, speaker=req.cast[0],
+                                                      message_id=req.message_id, max_tokens=1), req.latest, mid)
 
         async def fallback() -> Answers:
-            return {key: ChoiceAnswer("none")}
+            return {key: ChoiceAnswer("none"), **gates.fallbacks(qs)}
 
         decider = self.deps.decider()
         ctx = req.session.call_ctx(PURPOSE, character_id=cid, message_id=req.message_id)
-        call = decider.start(state.state, {key: q}, ctx, purpose=PURPOSE, fallback=fallback)
+        call = decider.start(state.state, qs, ctx, purpose=PURPOSE, fallback=fallback)
         try:
             res: DecisionResult = await call.by(req.started_at + timedelta(seconds=decider.timeout_for(PURPOSE)))
         except asyncio.CancelledError:
             call.cancel()   # D8: readers detach; the request already sent settles and is recorded `cancelled`
             raise
         return res, {"key": key, "qid": qid, "version": q.meta.version if q.meta else 0,
-                     "label": q.meta.label if q.meta else "emotion", "timeout_s": decider.timeout_for(PURPOSE)}
+                     "label": q.meta.label if q.meta else "emotion", "timeout_s": decider.timeout_for(PURPOSE),
+                     "gated": gated}
 
     def decide(self, req: PlanRequest, state: PlanState, result: tuple[DecisionResult, dict[str, Any]]) -> TurnPlan:
         res, meta = result
@@ -180,11 +235,38 @@ class JevTurnPlanner:
         if face.outcome in ("fallback", "late"):   # a fallback has no ledger row of its own by turn.end (the router's rule)
             calls.append({"purpose": PURPOSE, "model": self.deps.prices.decision.model, "costUsd": 0.0,
                           "latencyMs": float(meta["timeout_s"] * 1000), "fallback": True})
-        return TurnPlan(seed=self.seed(req), kind=req.kind, emotion=face, rows=[row], calls=calls,
-                        state_tokens=state.tokens, dropped_gates=list(state.dropped_gates))
+        found, nouls = gates.read(res, meta["gated"], nouls=True)
+        gate = found.get(req.speaker_id)
+        rows = [row, *gates.speaker_rows(req.speaker_id, found, nouls, purpose=PURPOSE, kind=req.kind)]
+        return TurnPlan(seed=self.seed(req), kind=req.kind, emotion=face, rows=rows, calls=calls,
+                        state_tokens=state.tokens, dropped_gates=list(state.dropped_gates), gate=gate,
+                        abstain_ok=gates.abstain_allowed(gate, req.kind), nouls=nouls)
 
     def route(self, req: PlanRequest, plan: TurnPlan) -> Branch:
-        return "quick"   # M12 adds "deep" when a gate says documents are needed
+        """M12 (rag D8): deep when the speaker's own gate is at or above `t_gate`."""
+        return "deep" if gates.deep(plan.gate) else "quick"
+
+    async def deep(self, req: PlanRequest, plan: TurnPlan) -> TurnPlan:
+        """M12 (rag D15): the plan graph's deep node in 1:1, so the plan returns with its passages. A bug inside is a
+        quick turn with a `fallback` row and call (the port never raises)."""
+        from horizon.ai.agent.deep import fallback_result, run_safely
+
+        mid, earlier, previous = answered_message(req.session)
+        view = req.cast[0] if req.cast else None
+        if view is None:
+            return plan.model_copy(update={"branch": "quick"})
+        knobs = self.deps.retrieval().agent
+        dreq = DeepRequest(session=req.session, speaker=view, kind=req.kind, message=req.latest, message_id=mid,
+                           earlier=earlier, previous_user=previous, gate=plan.gate, abstain_ok=plan.abstain_ok,
+                           nouls=plan.nouls, stored_rewrite=req.stored_rewrite, k=knobs.k_for("one_on_one"),
+                           reply_message_id=req.message_id, started_at=req.started_at)
+        res = await run_safely(self.deep_graph, dreq, self.deps)
+        if res is None:
+            failed = fallback_result(dreq, self.deps)
+            return plan.model_copy(update={"branch": "quick", "rows": [*plan.rows, *failed.rows],
+                                           "calls": [*plan.calls, *failed.calls]})
+        out: TurnPlan = plan.with_deep(res).model_copy(update={"branch": "deep"})
+        return out
 
     @staticmethod
     def seed(req: PlanRequest) -> str:

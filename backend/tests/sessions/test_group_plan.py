@@ -19,6 +19,12 @@ AMARA, MEI, VICTOR = "chr_seedAmara", "chr_seedMei", "chr_seedVictor"
 TRIO = [AMARA, MEI, VICTOR]
 
 
+def gate_keys(*cids: str) -> list[str]:
+    """M12 (rag D8): the seed characters with documents are asked "needs documents?" in the same request, and a group
+    message's "standalone?" and "English?" once."""
+    return [*(f"docs:{c}" for c in cids), "standalone", "english"]
+
+
 def unsure_who(api: Api) -> None:
     """The fake's who-speaks answers at confidence 0.1, below every measured floor (who_first 0.2, who_second 0.3;
     task 10.3): the fake's own 1/n (0.33 for three options) now clears them. The requests still go out."""
@@ -91,7 +97,7 @@ async def test_the_plan_call_is_listed_and_unsure_takes_the_least_recent_of_the_
     unsure_who(api)
     replies = await send(api, sid, "Anyone around?")
     body = plan_requests(api)[0]                                # call 1 (the follow plan's request comes after it)
-    assert set(body["questions"]) == {"who_first", *(f"emotion_reply:{c}" for c in TRIO)}
+    assert set(body["questions"]) == {"who_first", *(f"emotion_reply:{c}" for c in TRIO), *gate_keys(*TRIO)}
     assert "none" not in body["questions"]["who_first"]["criteria"]
     assert len(replies) == 1
     tr = replies[0]["trace"]
@@ -109,7 +115,7 @@ async def test_one_eligible_character_is_not_asked_who_but_its_face_is(api: Api)
     replies = await send(api, sid, "Just us two, then.")
     assert [m["author"]["characterId"] for m in replies] == [AMARA]
     (body,) = plan_requests(api)
-    assert list(body["questions"]) == [f"emotion_reply:{AMARA}"]
+    assert list(body["questions"]) == [f"emotion_reply:{AMARA}", *gate_keys(AMARA)]
     assert "question" not in (replies[0]["trace"].get("routing") or {})
 
 
@@ -117,7 +123,7 @@ async def test_one_mention_asks_only_its_face(api: Api) -> None:
     sid = await agent(api, "group", TRIO)
     replies = await send(api, sid, "Victor, thoughts?", [VICTOR])
     assert replies[0]["author"]["characterId"] == VICTOR and replies[0]["forcedSpeaker"] is True
-    assert list(plan_requests(api)[0]["questions"]) == [f"emotion_reply:{VICTOR}"]
+    assert list(plan_requests(api)[0]["questions"]) == [f"emotion_reply:{VICTOR}", *gate_keys(VICTOR)]
     assert replies[0]["trace"]["routing"]["forcedBy"] == "mention"
 
 
@@ -126,7 +132,7 @@ async def test_two_mentions_answer_in_order_from_one_request(api: Api) -> None:
     replies = await send(api, sid, "Mei and Victor, settle this.", [MEI, VICTOR], ms=40000)
     assert [m["author"]["characterId"] for m in replies] == [MEI, VICTOR]
     (body,) = plan_requests(api)
-    assert set(body["questions"]) == {f"emotion_reply:{MEI}", f"emotion_reply:{VICTOR}"}
+    assert set(body["questions"]) == {f"emotion_reply:{MEI}", f"emotion_reply:{VICTOR}", *gate_keys(MEI, VICTOR)}
 
 
 async def test_policy_everyone_follows_jevs_order(api: Api) -> None:

@@ -47,7 +47,7 @@ async def checked_reply(api: Api, face: str, response: httpx.Response | None, *,
     sid = await agent(api)
     await fixture(api, face, 0.9)
     assert api.rt.fake is not None
-    release = api.rt.fake.park_decision(api.rt.fake.counts["decisions"] + 1)   # the plan is a fixture: no request
+    release = api.rt.fake.park_question("face_check")   # M12: the plan sends its gate questions; hold the check
     await command(api, sid, "send", {"text": text})
     await until_parked(api)
     if response is not None:
@@ -107,7 +107,8 @@ async def test_agreement_adds_a_second_insight_with_the_row_and_the_call(api: Ap
     before, after = insights[0]["payload"]["trace"], insights[1]["payload"]["trace"]
     assert after["system1"]["questions"][:-1] == before["system1"]["questions"]   # the earlier rows unchanged
     face_rows = [r for r in await ledger(api) if r["purpose"] in ("turn_plan", "face_check")]
-    assert {r["purpose"] for r in face_rows} == {"face_check"}               # the plan was a fixture: no row
+    # the face was a fixture; M12's gates (Amara has documents) still ride the plan's one request
+    assert {r["purpose"] for r in face_rows} == {"turn_plan", "face_check"}
 
 
 async def test_clash(api: Api) -> None:
@@ -129,7 +130,7 @@ async def test_a_late_check_adds_no_row(api: Api) -> None:
     sid = await agent(api)
     await fixture(api, "sad", 0.9)
     assert api.rt.fake is not None
-    release = api.rt.fake.park_decision(api.rt.fake.counts["decisions"] + 1)
+    release = api.rt.fake.park_question("face_check")
     await command(api, sid, "send", {"text": "My dog died."})
     await api.drive(12000)                                                     # well past the 1.5 s deadline
     api.rt.fake.queued.append(answer("sad", 0.9))
@@ -143,8 +144,7 @@ async def test_regenerated_before_the_row_drops_it(api: Api) -> None:
     sid = await agent(api)
     await fixture(api, "sad", 0.9)
     assert api.rt.fake is not None
-    n = api.rt.fake.counts["decisions"]
-    release = api.rt.fake.park_decision(n + 1)
+    release = api.rt.fake.park_question("face_check")
     await command(api, sid, "send", {"text": "My dog died."})
     await until_parked(api)
     reply = chars(await messages(api, sid))[-1]
@@ -168,7 +168,7 @@ async def test_stop_cancels_a_pending_check(api: Api) -> None:
     sid = await agent(api)
     await fixture(api, "sad", 0.9)
     assert api.rt.fake is not None
-    release = api.rt.fake.park_decision(api.rt.fake.counts["decisions"] + 1)
+    release = api.rt.fake.park_question("face_check")
     await command(api, sid, "send", {"text": "My dog died."})
     await until_parked(api)
     await command(api, sid, "stop")

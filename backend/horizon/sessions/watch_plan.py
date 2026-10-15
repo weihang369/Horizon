@@ -7,7 +7,9 @@ traces in `actor.state`, never from `ModeState` counters, so an idle release cha
 
 The plan for the next turn starts right after a turn's `turn.end` (`actor.background("plan_ahead")`) and may wait for
 Jev until that turn is due. It is stored with a fingerprint of its inputs; at turn time a different fingerprint
-cancels it (ledger outcome `cancelled`) and the turn plans again with the normal deadline.
+cancels it (ledger outcome `cancelled`) and the turn plans again with the normal deadline. M12 (rag D15): when the plan
+made ahead picks a speaker whose gate says yes, their deep work starts as soon as the plan lands and is stored with
+it; a stale plan cancels both.
 """
 
 from __future__ import annotations
@@ -175,27 +177,69 @@ async def fingerprint(actor: SessionActor) -> tuple[Any, ...]:
             actor.mode.nudge, actor.session.get("emotionMode"), tuple(parts))
 
 
+async def _plan_ahead(actor: SessionActor, due: datetime, holder: list[Any]) -> tuple[CastPlan | None, ScenePick]:
+    """The plan made ahead, then (M12) its speaker's deep work, started at once and kept in `holder`."""
+    plan, pick = await plan_scene(actor, deadline_at=due)
+    if plan is not None and plan.order:
+        from horizon.ai.contexts import LineHint
+        from horizon.sessions.deep import attach
+        from horizon.sessions.turn import TurnSpec
+
+        spec = TurnSpec(speaker=plan.order[0], line=LineHint(kind="scene"))
+        spec.plan = plan.for_speaker(plan.order[0])
+        await attach(actor, spec)
+        if spec.deep is not None:
+            holder.append(spec.deep)
+    return plan, pick
+
+
 async def start_plan_ahead(actor: SessionActor, due: datetime) -> None:
     """Start the next turn's plan now, waiting for Jev until `due` (the next turn's start), and store it."""
     fp = await fingerprint(actor)
-    task = actor.background(PLAN_AHEAD, plan_scene(actor, deadline_at=due))
-    actor.mode.plan_ahead = (fp, task)
+    holder: list[Any] = []
+    task = actor.background(PLAN_AHEAD, _plan_ahead(actor, due, holder))
+    actor.mode.plan_ahead = (fp, task, holder)
 
 
-async def take_plan(actor: SessionActor) -> tuple[CastPlan | None, ScenePick]:
-    """At turn time: the stored plan when its fingerprint still matches; else cancel it and plan now (700 ms)."""
+def _drop_deep(holder: list[Any]) -> None:
+    for call in holder:
+        call.cancel()   # M12: its Jev calls are recorded `cancelled`
+    holder.clear()
+
+
+async def take_plan(actor: SessionActor) -> tuple[CastPlan | None, ScenePick, Any]:
+    """At turn time: the stored plan (and its speaker's deep work) when its fingerprint still matches; else cancel
+    both and plan now (700 ms)."""
     stored, actor.mode.plan_ahead = actor.mode.plan_ahead, None
     if stored is not None:
-        fp, task = stored
+        fp, task, holder = stored
         if fp == await fingerprint(actor) and not task.cancelled():
             try:
                 got: tuple[CastPlan | None, ScenePick] = await vclock.join(task)
-                return got
+                return got[0], got[1], holder[0] if holder else None
             except asyncio.CancelledError:
                 if not task.cancelled():
                     raise
             except Exception:
                 log.exception("the plan made ahead failed in %s; planning now", actor.sid)
+            _drop_deep(holder)
         else:
             actor.cancel_background(PLAN_AHEAD)
-    return await plan_scene(actor)
+            _drop_deep(holder)
+    plan, pick = await plan_scene(actor)
+    return plan, pick, None
+
+
+def drop_deep_ahead(actor: SessionActor) -> None:
+    """A change that spoils the plan made ahead (a director's note): its deep work goes now; the plan is left to the
+    turn's fingerprint check (M10 D15)."""
+    if actor.mode.plan_ahead is not None:
+        _drop_deep(actor.mode.plan_ahead[2])
+
+
+def drop_plan_ahead(actor: SessionActor) -> None:
+    """Pause and clear: the plan made ahead and its deep work go."""
+    stored, actor.mode.plan_ahead = actor.mode.plan_ahead, None
+    actor.cancel_background(PLAN_AHEAD)
+    if stored is not None:
+        _drop_deep(stored[2])

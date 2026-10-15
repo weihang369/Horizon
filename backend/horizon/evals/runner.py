@@ -13,7 +13,8 @@ The run lifecycle:
 5. **Run** through the isolated runtime's gateway, so every call is priced in that run's ledger. The runner stops
    itself when the run's ledger reaches `--max-usd`; a budget refusal ends the run `incomplete`, never a wrong answer.
 6. **Report:** `report.md` and `results.jsonl` in the run folder; the spend appended to `spend.jsonl`; the newest 20
-   run folders kept.
+   run folders kept. M12 (rag D31.4): a paid run's folder is marked `.keep` when it finishes, so a paid output is never
+   pruned (M11 lost a source run that way); free smoke runs still are.
 
 Paid suites refuse in test mode. `smoke` runs in either mode: in test mode on the in-process fake ($0).
 **The store (D35)** is never attached to the canary, latency or repeatability runs, `capture` or `import`.
@@ -67,6 +68,7 @@ class Options:
     turns: int | None = None              # M10 freerun --mode watch: turns per scene
     messages: int | None = None           # M10 freerun --mode group: user lines per session
     part: str | None = None               # M10 latency: follow | watch (None: M9's 1:1 part)
+    arm: str | None = None                # M12 retrieval: one comparison arm (rag D23), e.g. `piece=200`
 
 
 @dataclass
@@ -144,6 +146,13 @@ def prune_runs(runs_dir: Path, keep: int = KEEP_RUNS) -> list[str]:
     for p in gone:
         shutil.rmtree(p, ignore_errors=True)
     return [p.name for p in gone]
+
+
+def finish_run(runs_dir: Path, run_id: str, *, paid: bool) -> list[str]:
+    """M12 (rag D31.4): mark a paid run's folder `.keep`, then prune the unmarked ones past `KEEP_RUNS`."""
+    if paid and (runs_dir / run_id).is_dir():
+        (runs_dir / run_id / ".keep").write_text("paid run: never pruned (rag D31.4)\n", encoding="utf-8")
+    return prune_runs(runs_dir)
 
 
 def overlaps_peak(cal: PricingCalendar, start: datetime, seconds: float) -> bool:
@@ -244,7 +253,7 @@ class Runner:
             with p.open("a", encoding="utf-8") as f:
                 f.write(json.dumps({"at": now.isoformat(), "run": run_id, "suite": opts.suite, "usd": round(spent, 6)})
                         + "\n")
-        prune_runs(self.runs_dir)
+        finish_run(self.runs_dir, run_id, paid=plan.paid)
         self.out(f"{opts.suite}: {result.status} | spent ${spent:.5f} | report {run_dir / 'report.md'}")
         return 0 if result.status == "ok" else 1
 

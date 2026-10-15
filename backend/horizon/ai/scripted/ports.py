@@ -115,6 +115,9 @@ class AiDeps:
     switch: Callable[[str], bool] = lambda name: False        # M8: a runtime.json dynamic-tail switch (P8, X5)
     windows: Callable[[], Mapping[str, int]] = lambda: {}    # M8: windowTokens per mode (X2); {} = X2's defaults
     emotion_fade: Callable[[], frozenset[str]] = lambda: frozenset({"surprised", "embarrassed"})   # M9: E3's set
+    spawn: Callable[[str, Any], Any] | None = None             # M12: the runtime's tracked spawn (a late call still lands)
+    retrieval: Callable[[], Any] = lambda: None               # M12: `runtime.retrieval` (the agent knobs)
+    deep_io: Callable[[], Any] = lambda: None                 # M12 (rag D15): the runtime's reads for the deep work
 
 
 def emotion_candidates(chosen: str, rng: random.Random) -> list[dict[str, Any]]:

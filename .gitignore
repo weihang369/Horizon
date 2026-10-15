@@ -26,3 +26,6 @@ __pycache__/
 
 # Node (root workspace scripts)
 /node_modules/
+
+# M12 check 4 (rag D22, D31.3): downloaded public-domain PDFs, used locally only, never committed
+evals/check4/

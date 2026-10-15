@@ -108,6 +108,38 @@ class RetrievalKnobs:
     knowledge_k: int
     memory_k: int
     query_embed_wait_ms: float
+    agent: AgentRetrieval | None = None
+
+
+@dataclass(frozen=True)
+class AgentRetrieval:
+    """M12 (docs/ai/10 K5–K7, K15; doc 13 W12; rag D26): the `agent` deep path's knobs. The thresholds are in the
+    question bank."""
+
+    pool: int = 20
+    candidates: int = 8
+    block_tokens: int = 1400
+    mmr_lambda: float = 1.0
+    k: dict[str, int] = field(default_factory=lambda: {"one_on_one": 3, "group": 2, "watch": 2, "debate": 2})
+    piece_target: int = 300
+    piece_max: int = 400
+    rewrite_ms: float = 1200.0
+    deep_check_ms: float = 1500.0
+    query_embed_wait_ms: float = 200.0   # rag 11.5: the agent path's own wait (naive and scripted keep theirs)
+
+    def k_for(self, mode: str) -> int:
+        return int(self.k.get(mode, self.k["group"]))
+
+    @staticmethod
+    def from_json(a: dict[str, Any]) -> AgentRetrieval:
+        k = a["k"]
+        return AgentRetrieval(pool=int(a["pool"]), candidates=int(a["candidates"]), block_tokens=int(a["blockTokens"]),
+                              mmr_lambda=float(a["mmrLambda"]),
+                              k={"one_on_one": int(k["oneOnOne"]), "group": int(k["group"]), "watch": int(k["watch"]),
+                                 "debate": int(k["debate"])},
+                              piece_target=int(a["pieceTarget"]), piece_max=int(a["pieceMax"]),
+                              rewrite_ms=float(a["rewriteMs"]), deep_check_ms=float(a["deepCheckMs"]),
+                              query_embed_wait_ms=float(a["queryEmbedWaitMs"]))
 
 
 @dataclass(frozen=True)
@@ -169,7 +201,8 @@ class RuntimeConfig:
                 prefetch_max=int(r["prefetchMax"]), llm_concurrency=int(r["llmConcurrency"]),
                 retrieval=RetrievalKnobs(knowledge_k=int(r["retrieval"]["knowledgeK"]),
                                          memory_k=int(r["retrieval"]["memoryK"]),
-                                         query_embed_wait_ms=float(r["retrieval"]["queryEmbedWaitMs"])),
+                                         query_embed_wait_ms=float(r["retrieval"]["queryEmbedWaitMs"]),
+                                         agent=AgentRetrieval.from_json(r["retrieval"]["agent"])),
                 llm_calls={str(k): LlmCall(thinking=str(v["thinking"]),
                                            temperature=None if v.get("temperature") is None else float(v["temperature"]),
                                            output=str(v["output"]),

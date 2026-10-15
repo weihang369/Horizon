@@ -1,0 +1,12 @@
+{
+  "what": "The portable test's case: a heading and two short paragraphs are one piece.",
+  "paged": false,
+  "markdown": "# Soups\n\nMiso first.\n\nThen tofu.",
+  "pieces": [
+    {
+      "text": "# Soups\n\nMiso first.\n\nThen tofu.",
+      "locator": "§ Soups",
+      "heading": "Soups"
+    }
+  ]
+}

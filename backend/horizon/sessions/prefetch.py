@@ -48,6 +48,7 @@ class Prefetch:
         self.channel: Inbox[Any] = Inbox()
         self.task: asyncio.Task[None] | None = None
         self.planning: asyncio.Task[TurnPlan | None] | None = None   # M11: its own face plan (debate D8)
+        self._planned: asyncio.Task[TurnPlan | None] | None = None   # M12: the plan with its deep work merged
         self.released = False
 
     @classmethod
@@ -68,7 +69,11 @@ class Prefetch:
                               direction_note=spec.direction_note, debate=spec.debate)
         elif plan is not None and plan.branch is not None:
             # M10 (group-watch D11, D18): an Everyone reply's plan came from the run's one cast plan; it decided
-            # retrieval, so none runs here (the runner adds the plan's rows and call when the prefetch is released)
+            # retrieval, so none runs here (the runner adds the plan's rows and call when the prefetch is released).
+            # M12 (rag D15): a deep plan's work starts now; the prefetch waits for it before it streams
+            from horizon.sessions.deep import attach
+
+            await attach(actor, spec, sctx)
             ctx = TurnContext(session=sctx, speaker=character_view(row), message_id=None, prompt=spec.prompt,
                               line=spec.line, turn_index=actor.mode.turn, max_tokens=reply_cap(rt, sctx, plan),
                               direction_note=spec.direction_note, debate=spec.debate, plan=plan)
@@ -110,14 +115,47 @@ class Prefetch:
             self.channel.put(_END)
 
     async def planned(self) -> TurnPlan | None:
-        """The prefetch's own plan once made (at most its `turn_plan` deadline), put into its context."""
-        if self.planning is None:
-            return self.ctx.plan
-        plan = await vclock.join(self.planning)
-        if plan is not None and self.ctx.plan is None:
-            self.ctx = self.ctx.model_copy(update={
-                "plan": plan, "max_tokens": reply_cap(self.actor.rt, self.ctx.session, plan)})
+        """The prefetch's own plan once made (at most its `turn_plan` deadline), put into its context. M12 (rag D15): a
+        deep plan's work (started with the prefetch, or now for an opening whose own plan went deep) is merged in, so
+        the prefetch streams with its passages. The producer and the runner both ask; one task does the work."""
+        if self._planned is None:
+            self._planned = self.actor.rt.spawn(f"prefetch-planned:{self.actor.sid}", self._plan_and_merge())
+        done: TurnPlan | None = await vclock.join(self._planned)
+        return done
+
+    async def _plan_and_merge(self) -> TurnPlan | None:
+        plan = self.ctx.plan
+        if self.planning is not None:
+            plan = await vclock.join(self.planning)
+            self.planning = None
+            if plan is not None and self.ctx.plan is None:
+                self.ctx = self.ctx.model_copy(update={
+                    "plan": plan, "max_tokens": reply_cap(self.actor.rt, self.ctx.session, plan)})
+        if plan is not None and plan.branch == "deep" and plan.knowledge_outcome is None:
+            from horizon.sessions.deep import attach
+
+            if self.spec.deep is None:
+                self.spec.plan = plan
+                await attach(self.actor, self.spec, self.ctx.session)
+            if self.spec.deep is not None:
+                plan = await self._merge(plan)
         return plan
+
+    async def _merge(self, plan: TurnPlan) -> TurnPlan:
+        call = self.spec.deep
+        try:
+            res = await call.result()
+        except asyncio.CancelledError:
+            call.cancel()
+            raise
+        self.rows.extend(call.rows)   # linked to the message when the prefetch is released
+        merged = plan.with_deep(res).model_copy(update={"branch": "deep"}) if res is not None \
+            else plan.model_copy(update={"branch": "quick"})
+        self.ctx = self.ctx.model_copy(update={
+            "plan": merged, "max_tokens": reply_cap(self.actor.rt, self.ctx.session, merged),
+            "knowledge": list(merged.knowledge) if merged.branch == "deep" else [],
+            "query": merged.query if merged.branch == "deep" else None})
+        return merged
 
     async def replay(self) -> AsyncIterator[TurnEvent]:
         """The buffered events at speaking pace: everything before the first token at once, then the original gaps."""
@@ -152,6 +190,10 @@ class Prefetch:
     async def discard(self) -> None:
         """Cancel it (D-77): its rows keep no message ID, and their drain stands."""
         self.actor.prefetches.discard(self)
+        if self.spec.deep is not None:
+            self.spec.deep.cancel()   # M12: its Jev calls are recorded `cancelled`
+        if self._planned is not None and not self._planned.done():
+            self._planned.cancel()
         if self.planning is not None and not self.planning.done():
             self.planning.cancel()   # its Jev call is recorded `cancelled` (M9 D8)
             with contextlib.suppress(asyncio.CancelledError, Exception):

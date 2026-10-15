@@ -6,7 +6,10 @@ One `turn_plan` request per plan, on the M9 plan graph (`state → ask → decid
   nudge, the guard) or only one candidate is left;
 - **the emotion of every candidate asked** (`emotion_reply`, `emotion_line` or `emotion_opening`), so code keeps the
   answers for whoever speaks (A4's Speculative Fan-Out);
-- **"is the talk finished?"** on a watch turn after the opening.
+- **"is the talk finished?"** on a watch turn after the opening;
+- M12 (rag D6–D8): **"needs documents?"** about each candidate asked who has a searchable source, plus
+  **"standalone?" and "English?"** once when a group message is answered (`group_first`, `group_mentioned`,
+  `everyone`). `for_speaker` takes the speaker's own gate; the others are `not_used`.
 
 Code then applies the floors and G1's fallbacks: unsure → the least recently spoken of Jev's top 2; failed or late →
 the least recently spoken. Energy never reaches Jev (G9): the runtime gives only awake, unmuted candidates.
@@ -22,6 +25,7 @@ from typing import Any
 
 from sqlalchemy import select
 
+from horizon.ai.agent import gates
 from horizon.ai.agent.emotion import decide_face, emotion_row, merges
 from horizon.ai.agent.plan_graph import Branch
 from horizon.ai.agent.plan_state import (
@@ -175,7 +179,8 @@ def state_input(req: CastRequest) -> PlanStateInput:
     cands = candidate_views(s, ids, req.cast, req.base_faces, req.turns_since)
     you = str((s.world.you or {}).get("displayName") or "")
     premise = str((s.config or {}).get("premise") or "") if s.mode == "watch" else ""
-    return PlanStateInput(mode=s.mode, user_name=you, candidates=cands, latest=req.latest,
+    docs = {c: list(req.documents[c]) for c in gates.gated(asked_about(req), req.documents)}   # M12: gated only
+    return PlanStateInput(mode=s.mode, user_name=you, candidates=cands, latest=req.latest, documents=docs,
                           recent=recent_lines(s, skip_last=bool(req.latest)), premise=premise,
                           summary=s.summary or "" if s.mode == "watch" else "",
                           last_spoke=req.kind not in NO_LAST_SPOKE,
@@ -211,13 +216,19 @@ class CastSteps:
         built = build_turn_plan_state(state_input(req))
         if req.kind not in DEBATE_KINDS:
             return built
-        # M11 (doc 01 A3 rule 6; debate D7): a debate turn's face question sees only the fields it declares
+        # M11 (doc 01 A3 rule 6; debate D7): a debate turn's face question sees only the fields it declares; M12 adds
+        # the titles a gate reads, and nothing else
         from horizon.ai.agent.debate_plan import only_declared
 
-        state = only_declared(dict(built.state), self.questions(req)[0])
+        qs, _ = self.questions(req, gated=[])
+        state = only_declared(dict(built.state), qs)
+        if "quoted_documents" in built.state:
+            state["quoted_documents"] = built.state["quoted_documents"]
         return PlanState(state=state, tokens=_tokens(state), dropped_gates=list(built.dropped_gates))
 
-    def questions(self, req: CastRequest) -> tuple[dict[str, Any], dict[str, Any]]:
+    def questions(self, req: CastRequest, *, gated: list[str] | None = None) -> tuple[dict[str, Any], dict[str, Any]]:
+        """The request's questions. `gated`: who is asked "needs documents?" (None: everyone asked about who has a
+        searchable source)."""
         b = bank()
         seed = self.seed(req)
         names = {p.character_id: p for p in req.session.participants}
@@ -238,18 +249,31 @@ class CastSteps:
         if req.kind == "scene":
             qs[TALK] = b.question(TALK)
             meta["talk"] = True
+        who_gated = gates.gated(asked_about(req), req.documents) if gated is None else list(gated)
+        meta["gated"] = who_gated
+        meta["nouls"] = req.kind in gates.NOUL_KINDS and bool(who_gated)
+        qs.update(gates.questions({c: names[c].name if c in names else c for c in who_gated}, who_gated,
+                                  nouls=meta["nouls"]))
         return qs, meta
 
     async def ask(self, req: CastRequest, state: PlanState) -> tuple[DecisionResult, dict[str, Any]]:
-        qs, meta = self.questions(req)
+        qs, meta = self.questions(req, gated=gates.gated(asked_about(req), req.documents, state.dropped_gates))
+        meta["dropped"] = [c for c in gates.gated(asked_about(req), req.documents) if c in state.dropped_gates]
+        nouls = gates.fallbacks(qs)
 
         async def fallback() -> Answers:
-            out: dict[str, ChoiceAnswer | NoulAnswer] = {}
+            out: dict[str, Any] = {}
             for key in qs:
-                out[key] = NoulAnswer(0.0) if key == TALK else ChoiceAnswer(
+                out[key] = nouls[key] if key in nouls else NoulAnswer(0.0) if key == TALK else ChoiceAnswer(
                     least_recent(req.candidates, req.turns_since) if key == meta["who"] else "none")
             return out
 
+        if req.kind in gates.NOUL_KINDS and meta["gated"]:   # rag 11.5: a user message's embedding starts now
+            from horizon.ai.agent.deep import start_early_embedding
+            from horizon.ai.agent.planner import answered_message
+
+            start_early_embedding(self.deps, req.session, meta["gated"], req.latest,
+                                  req.message_id or answered_message(req.session)[0])
         decider = self.deps.decider()
         ctx = req.session.call_ctx(PURPOSE)
         call = decider.start(state.state, qs, ctx, purpose=PURPOSE, fallback=fallback)
@@ -328,8 +352,11 @@ class CastSteps:
                           "latencyMs": float(meta.get("timeout_s", 0.7) * 1000), "fallback": True})
         elif meta.get("call"):
             calls.append(meta["call"])
+        found, nouls = gates.read(res, meta.get("gated", []), nouls=bool(meta.get("nouls")), message_id=req.message_id)
+        found.update(gates.dropped(meta.get("dropped", [])))
         return CastPlan(seed=self.seed(req), kind=req.kind, order=order, who=who, faces=faces, face_rows=face_rows,
-                        shared_rows=shared, talk=talk, calls=calls, state_tokens=state.tokens)
+                        shared_rows=shared, talk=talk, calls=calls, state_tokens=state.tokens, gates=found,
+                        nouls=nouls)
 
     def route(self, req: CastRequest, plan: CastPlan) -> Branch:
         return "quick"   # M12 adds "deep"

@@ -677,7 +677,7 @@ class Gateway:
                                before_send=before_send, after_response=after_response, commit_with=commit_with)
 
     async def embed_batch(self, texts: Sequence[str], ctx: CallContext, *, model: str, dimensions: int | None = None,
-                          before_send: BeforeSend | None = None,
+                          provider: str | None = None, before_send: BeforeSend | None = None,
                           after_response: Callable[[list[list[float]]], Awaitable[None]] | None = None,
                           commit_with: CommitWith | None = None, store_ok: bool = False) -> list[list[float]]:
         """One embedding request (≤ `embed_batch` texts) as one paid call with the D-84 hooks: the ingestion worker marks
@@ -689,7 +689,8 @@ class Gateway:
         skey = ""
         if store is not None:
             kbody: dict[str, Any] = {"model": model, "input": list(texts),
-                                     "provider": {"order": [self.cfg.embedding_provider], "allow_fallbacks": False}}
+                                     "provider": {"order": [provider or self.cfg.embedding_provider],
+                                                  "allow_fallbacks": False}}
             if dimensions:
                 kbody["dimensions"] = dimensions
             skey = embeddings_key(kbody)
@@ -703,7 +704,7 @@ class Gateway:
                 return vectors
 
         async def send() -> tuple[list[list[float]], Billing]:
-            r = await self.embeddings.embed_batch(texts, model=model, dimensions=dimensions)
+            r = await self.embeddings.embed_batch(texts, model=model, dimensions=dimensions, provider=provider)
             if store is not None:
                 store.put("embeddings", skey, {"input": list(texts), "dimensions": dimensions}, {"vectors": r.vectors},
                           {"cost": r.usage.cost_usd if r.usage else None})

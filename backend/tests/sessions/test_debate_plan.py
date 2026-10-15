@@ -107,7 +107,9 @@ async def test_two_eligible_members_are_asked_about_in_one_request_with_the_rebu
     asked = [b for b in plan_requests(api) if "member_rebuttal" in b["questions"]]
     assert len(asked) == 1
     body = asked[0]
-    assert set(body["questions"]) == {"member_rebuttal", f"emotion_line:{AMARA}", f"emotion_line:{MEI}"}
+    assert set(body["questions"]) == {"member_rebuttal", f"emotion_line:{AMARA}", f"emotion_line:{MEI}",
+                                      f"docs:{AMARA}", f"docs:{MEI}"}   # M12 (rag D8): the gate, no rewrite nouls
+    assert set(body["state"]["quoted_documents"]) == {"Amara Okafor", "Mei Tanaka-Ruiz"}
     assert set(body["questions"]["member_rebuttal"]["criteria"]) == {AMARA, MEI}
     st = body["state"]
     text = json.dumps(st)
@@ -124,7 +126,7 @@ async def test_one_eligible_member_is_not_asked_about(api: Api) -> None:
     await api.drive(120000)
     single = [b for b in plan_requests(api) if not any(k.startswith("member_") for k in b["questions"])]
     assert single, "the boundary plan for Victor's rebuttal and the last Opposition slot ask the face only"
-    assert all(len(b["questions"]) == 1 for b in single)
+    assert all(len([k for k in b["questions"] if not k.startswith("docs:")]) == 1 for b in single)   # + M12's gate
     await assert_reduces(api, sid)
 
 
@@ -134,8 +136,8 @@ async def test_uneven_sides_never_quote_a_teammate(api: Api) -> None:
     await api.drive(120000)
     reb = args(await messages(api, sid), "rebuttal")
     assert reb[1]["author"]["characterId"] == VICTOR
-    third = [b for b in plan_requests(api) if set(b["questions"]) == {f"emotion_line:{MEI}"}
-             or set(b["questions"]) == {f"emotion_line:{AMARA}"}]
+    third = [b for b in plan_requests(api) if set(b["questions"]) == {f"emotion_line:{MEI}", f"docs:{MEI}"}
+             or set(b["questions"]) == {f"emotion_line:{AMARA}", f"docs:{AMARA}"}]
     for body in third:
         st = body.get("state") or {}
         lo = (st.get("quoted_arguments") or {}).get("last_opposing")

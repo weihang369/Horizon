@@ -140,6 +140,13 @@ flowchart LR
 | **Drafter suite** (doc 04 P12) | The profile drafter on 20 seeds (10 dev / 10 test) | Code checks (valid, adult, example lines, plain speech, names) and two Jev checks |
 | **Summary suite** (doc 05 X10) | The rolling summariser on 40 dropped-history inputs (20 dev / 20 test) | Planted facts and the promise kept, same language, nothing unsupported, within the cap |
 
+*Built in M12 (`rag` D22, D23): layer 2 is `horizon eval retrieval`. Each question runs the `agent` deep path
+without the reply (the corpus loaded as the characters' sources in the run's own database) and reports Recall@20,
+Recall@8, MRR, nDCG@8, recall within 1,200 tokens, kept-set precision and recall, the found / partly / not-found
+outcomes against B5, the share of deep turns missing their dense half, and the set-check report. Seed and corpus,
+and the naming questions, are reported apart. Layer 1 gains the "needs documents?", "standalone?" and "English?"
+sets in `decisions`, and `deep-check` (doc 10 check 5).*
+
 Doc 04 P8 and P12 also add, to layer 3: code checks on every reply for the reply rules, two Jev checks on a 100-reply
 sample, language and push-back checks on targeted transcript lines (B2's transcripts gain non-English user lines and
 planted wrong claims), repetition rates on free runs only, and three `agent`-only 1:1 free runs of 15 turns. Each new
@@ -179,14 +186,14 @@ frozen transcripts start from a long committed history.
 
   | Set | Size | Why this size |
   |---|---|---|
-  | Layer 1: each **noul that sets a threshold** (needs documents, needs something from earlier (doc 09 M9), talk finished, the memory rewrite guard and in-session relevance (doc 09 M12)) | **~120 items, at least 60 of them "yes"**. *Built in M10 for talk finished: 120 watch scenes on six premises (65 yes; English 100, Malay 10, Chinese 6, mixed 4; 39 test)* | A recall target is judged on 60+ positives. With 50, 45 right still leaves 79–96 %. |
-  | Layer 1: **passage score** | **~100 items** | It sets the floor every deep turn depends on |
+  | Layer 1: each **noul that sets a threshold** (needs documents, needs something from earlier (doc 09 M9), talk finished, the memory rewrite guard and in-session relevance (doc 09 M12)) | **~120 items, at least 60 of them "yes"**. *Built in M10 for talk finished: 120 watch scenes on six premises (65 yes; English 100, Malay 10, Chinese 6, mixed 4; 39 test). Built in M12 for needs documents (`rag` D22): 121 items (61 yes; 1:1 61, group 31, watch 11, debate 18; English 101, Malay 10, Chinese 6, mixed 4), cut from the committed transcripts, watch histories and debate histories with the live plan-state builders and the candidates' real source titles* | A recall target is judged on 60+ positives. With 50, 45 right still leaves 79–96 %. |
+  | Layer 1: **passage score** | **~100 items**. *Built in M12 (`rag` D22) as no separate set: the retrieval suite's candidate pieces, graded by the labelled spans they cover, are the passage-score items, so the same judgement is never labelled twice* | It sets the floor every deep turn depends on |
   | Layer 1: **who speaks** (doc 07 G11) | **~210 items**: group first slot 60, group second slot 90 (about 65 % with `none` right), watch next speaker 60 (≥ 3 awake characters each). *Built in M10 (`group-watch` D23): `who_first` 60 (English 50, Malay 5, Chinese 3, mixed 2; 21 test), `who_second` 90 (58 `none`; English 78; 25 test), each from the frozen group transcripts' context with written lines, labelled blind under `evals/reviews/m10-labels.md`; `who_scene` 100 (60, then grown by 40 under the straddle rule; 35 test) from four committed watch histories (M10 phase 10)* | They set the floors every group and watch turn depends on; each test split has at least 20 items |
   | Layer 1: **emotion** (doc 06 E8) | **~100 items**; 20–30 % where keeping the face is acceptable. *Built in M9 (turn-plan-emotion D27): 100 items, 1:1 replies 55, group replies 30, greetings 15; English 80, Malay 10, Chinese 5, mixed 5; 29 keep-ok; 72 dev / 28 test by the hash rule; English is reported alone too, other languages show direction only* | The face shows on every turn of every mode; the cap stops "always keep" from carrying the score |
   | Layer 1: **listener reactions** (doc 06 E8) | **90 items** (30 test; a line, its context, one listener); at most 30 % where `none` is acceptable. *Built in M9 (D27): group 40, debate 25, watch 25; English 75; 27 `none`-acceptable; 65 dev / 25 test by the hash rule* | A gross-failure check with a trivial baseline to beat; the shown share is reported by the latency suite |
   | Layer 1: **debate member** (doc 08 V11) | **90 items** (30 test): rebuttal and closing slots with 2–3 eligible members, at least half with a single acceptable member. *Built in M11 (`debate` D21, D30): natural slots cut from 13 debate histories generated once with `naive` (`evals/debates/`; four written characters join the seed's six, in the history run's database only, so 2 v 2, 3 v 2 and a panel of 4 can be cast) with the live debate-plan state, plus written variants; labelled blind under `evals/reviews/m11-labels.md`; counts in [m11.md](checks/m11.md)* | It sets `floor.member`; the lift over the fixed order is tested on the single-answer items, where 80 % is not a free pass |
   | Layer 1: every other question | **40 items**, plus another 40 **only when the interval straddles the target** | 40 items catch a gross failure, and we grow a set only where the answer is unclear |
-  | Layer 2: retrieval | **100 answerable questions and 40 unanswerable ones** on the same topics, plus doc 10 K14's 30 follow-ups, 15 non-English and 20 named-document questions | 50 items can never show "≤ 5 % wrong abstains" (0 of 50 still allows up to 7 %) |
+  | Layer 2: retrieval | **100 answerable questions and 40 unanswerable ones** on the same topics, plus doc 10 K14's 30 follow-ups, 15 non-English and 20 named-document questions. *Built in M12 (`rag` D22): 205 questions in `evals/datasets/retrieval/` (100 answerable with 10 needing two passages and 10 partly, 40 unanswerable, 30 follow-ups, 15 non-English (Malay 8, Chinese 7), 20 naming (12 with a section); 24 about the seed documents), split by the hash rule. Also built: `standalone` (100 messages, 50 follow-ups) and `english` (40, 10 per language), and the Not-found judges' 30 planted items each* | 50 items can never show "≤ 5 % wrong abstains" (0 of 50 still allows up to 7 %) |
   | Layer 3: frozen transcripts | **20**, each 8–12 turns, across both worlds: 1:1 × 6, group × 5, debate × 4, watch × 5; **4 of them start from a long committed history past one drop** (doc 05 X10) | About 200 compared turns; the 4 cover the summary in the prompt |
   | Layer 3 targeted lines (doc 04 P12) | **At least 10 Malay, Chinese or mixed user lines and 10 planted wrong claims**, placed in those transcripts, split dev / test | The language and push-back checks would pass trivially without them |
   | Drafter suite (doc 04 P12) | **20 seeds** across the three intents and both worlds, 10 dev / 10 test | Enough to see a systematic drafting fault |
@@ -218,7 +225,9 @@ frozen transcripts start from a long committed history.
 - **Retrieval labels:**
   - **Labels point at text, not chunk ids.** Each label is a document plus a quoted span. A chunk counts as relevant
     when it contains at least half of the span. Relevance is recomputed after every re-chunk, so the labels survive
-    task 10 changing the chunker or the embedding model.
+    task 10 changing the chunker or the embedding model. *Built in M12 (`rag` D22) with a stricter rule: a piece
+    covers a span when it holds at least 80 % of the span's characters by offset, and every span must resolve to its
+    source text before the set is committed.*
   - **Graded relevance:** 2 = answers it, 1 = partly, 0 = no. This matches Jev call 2's score levels.
   - **Questions are written like a user's chat message,** sharing at most 30 % of the passage's content words, so they
     don't flatter keyword search.
@@ -234,6 +243,9 @@ frozen transcripts start from a long committed history.
   - The implied label error rate is reported, because noisy labels cap the accuracy we can measure.
   - *In M11 the user delegated the review to the team (`debate` D29.2), as in M8–M10: a recorded pass in
     `evals/reviews/m11-review.md`, with the held-out test split as the safeguard.*
+  - *In M12 the user delegated it again (`rag` D31.2): `evals/reviews/m12-review.md`. The retrieval set's first pass
+    found two disagreements in 41, so the whole set was relabelled and passed a second sample; the other five sets
+    had none ([m12.md](checks/m12.md)).*
   - Once Jev's answers have been seen, labels change only through the user's review, never by me "fixing" them toward
     Jev.
 - **No leakage:** a question bank example (`what`, `not_for`, examples) may not appear in, or paraphrase, an evaluation
@@ -289,7 +301,7 @@ frozen transcripts start from a long committed history.
   | **Agent vs naive** | a choice of "reply A", "reply B" or "about the same", **asked in both orders** | the last 2 turns + both replies |
   | **Citation support** | a noul for each cited passage: "does this passage support what the reply says it supports?" (evaluation only in v1, doc 10 K10; ≥ 95 %) | the passage + the cited sentence |
   | **Sentence faithfulness** (deep turns) | code splits the reply into sentences; a noul for each factual sentence against the kept passages | the passages + one sentence |
-  | **Not-found reply** (doc 10 K14) | 2 nouls: tells the user the documents don't cover the question (or which part) · anything beyond them is framed as the character's own view, with no `[n]`; ≥ 90 % each | the question + the reply |
+  | **Not-found reply** (doc 10 K14) | 2 nouls: tells the user the documents don't cover the question (or which part) · anything beyond them is framed as the character's own view, with no `[n]`; ≥ 90 % each. *Built in M12 (`rag` D22): `judge_notfound_says` and `judge_notfound_cites`, both B4-validated on 30 real + 30 planted (says 0.97 / 1.00; cites 0.93 / 0.93, missing both real failures, so its rate is a ceiling). End to end on 50 turns ([m12.md](checks/m12.md) 11.8): cites 2 failures; says fails end to end (13 of 40 unanswerable say it). K9's lines work where they are sent (14/16), and 12 of 40 unanswerable turns reach them. By the user's choice the row is reported both ways; M15 measures it again* | the question + the reply |
   | **Reply rules** (doc 04 P12) | 4 nouls: no assistant voice · no flattery (on a 100-reply sample) · replies in the user's language (non-English lines only) · pushes back (planted wrong claims only) | the last user line + the reply |
   | **Draft quality** (doc 04 P12) | 2 nouls: fits the seed · the relationship fits the You card | the seed, the You card + the draft |
   | **Summary quality** (doc 05 X10) | 5 nouls: a planted fact is kept · the promise is kept · it says who made the promise · same language as most lines · nothing unsupported | the dropped lines + the summary (one fact or promise per question) |
@@ -380,6 +392,12 @@ the largest Jev item, so judge results are cached (B7).
   | needs something from earlier (doc 09 M9) | `t_gate` | the highest threshold with **recall ≥ 85 %** |
   | standalone (doc 10 K4) | `t_standalone` | the highest threshold that sends **≥ 90 % of follow-ups** to the rewrite; the share of standalone messages rewritten is reported |
   | English (doc 10 K4) | 0.5 | **≥ 95 %** accuracy on 40 messages in 4 languages |
+
+  *Found in M12 (`rag` D22; [m12.md](checks/m12.md) 11.3), English items setting each threshold on dev: "needs
+  documents?" `t_gate` **0.45** (test recall 0.93) and `t_confident` **0.80** (test precision 1.00), `docs` v2;
+  `t_standalone` **0.35** (test: follow-ups rewritten 0.94, standalone messages 0.00), `standalone` v2; "English?"
+  40/40 at 0.5. Debate and watch over-ask (debate precision 0.50 at `t_gate`): the cost is a deep turn where a quick
+  one would do.*
   | talk finished | `t_end` | the lowest threshold with **precision ≥ 90 %**; its recall is reported, and a recall under 50 % means the question is rewritten |
   | input safe (doc 11 S3) | `safety.tSteer` | the lowest threshold with **≤ 3/60 false steers** on hard-safe items; ≥ 27/30 steered, ≥ 8/10 split requests |
   | motion and premise (doc 11 S3) | `safety.tMotion` | ≥ 13/15 refused; ≤ 1/15 hard-topic motions falsely refused |
@@ -463,6 +481,12 @@ with itself only about 64 % of the time, so that rule mixes up ordinary noise wi
     slice reported apart, `who_next`, the watch faces under both merge rules side by side). `smoke` runs a Quick 2 v 2
     debate to its verdict on canned host and verdict responses. M11's 21 paid runs cost $0.19 in all
     ([m11.md](checks/m11.md) 10.12).*
+  - *Built in M12 (`rag` D22–D24, D30, D32): `retrieval` (`--arm` for one comparison: `space=`, `piece=` with
+    `:kept` for the kept-set precision arms, `lambda=`, `rewrite=off`; an arm measures order only and waits for its
+    query embeddings in full, while the main run keeps live timing), `retrieval-compare --base --arm` (the paired
+    comparison of two runs), `deep-check` (doc 10 check 5), `notfound` (the Not-found reply end to end), `latency
+    --part deep`, and the `docs`, `standalone`, `english` and `reask` sets in `decisions`. `--max-usd` is per run
+    (default 1.5 × the estimate), and every paid run's folder is marked `.keep` when it finishes (D30).*
   - *Built in M8 (`persona-context`): `drafter`, `summary`, `long` and `transcript` (the long-history frozen transcripts, generated by `naive`), `--set` (a dataset folder for `decisions`, a script for `long` and `transcript`), nouls in `decisions`, and B4's judge validation (`decisions --set judges`, recorded in `evals/baselines/judges.json`; a judge's figures read "unvalidated" until its current version passes). The 13 judges are `eval_judge` bank entries whose "yes" is the failure. The reply-rule code checks are `horizon/evals/reply_checks.py`.*
   - plus **`horizon eval capture <messageId>`** (B10) and **`horizon eval import <sessionId>`** ([doc 13](13-wrap-up.md) W10, built
     in the v1 endgame), which scores a recorded session as a free run without new replies.
@@ -584,6 +608,14 @@ with itself only about 64 % of the time, so that rule mixes up ordinary noise wi
   (m9.md 9.6, "The fix"). The re-run on the fix ran all 100 turns: first word p50 1208 ms, p90 1416 ms (1209 / 1416
   without the first 5 as warm-up); the face first on 99/99; `turn_plan` p50 532 ms, with a slow spell of Jev's (up to
   30 s, deadline fired 31/100) that left the first word unchanged.*
+- *Built in M12 (`rag` D24) as `latency --part deep` ([m12.md](checks/m12.md) 11.9): 100 deep 1:1 turns with a
+  rewrite and 100 without (forced by fixture), 25 deep each in group, debate and watch, on a fully loaded database
+  with the store bypassed, timed per step (Jev call 1, the rewrite, the embeddings, the search, the slowest
+  `deep_check` and the set check). First word p50 / p90: 1:1 with a rewrite 4.8 / 5.8 s, without 2.8 / 3.8 s (NFR-01
+  fails for deep turns alone); group 2.4 s and watch 2.4 s pass NFR-02; debate 3.07 s just fails. No 429s; 4 % of
+  deep runs fell back. The query embedding was p50 6.8 s that evening, so the user cut its wait to 200 ms, applied
+  K15's trim 1 in 1:1 and set `rewriteMs` to 1,200 (D32.9–11); M15's must-pass run measures the result blended at the
+  real deep rate.*
 - *Built in M10 (`group-watch` D9, D23): `latency --part follow` (50 hand-built follow states from the second-slot
   dev items: state assembly `S` timed in process, Jev's `L`, and the measured stream-end-to-`turn.end` `F`; a miss is
   `S + L > F + 400`, pass at ≤ 10 %) and `--part watch` (3 scenes × 20 turns at Fast pace: `turn.end` to the next
@@ -786,7 +818,8 @@ section.
   D12, D21).*
 - ~~The memory retrieval set and the memory-importance labels (task 9).~~ Resolved by doc 09 M12.
 - ~~The final embedding model and its dimensions (task 10).~~ Resolved by doc 10 K3: the retrieval suite's comparison
-  test decides between Qwen3-Embedding-8B at 1,024 and 2,048 and bge-m3.
+  test decides between Qwen3-Embedding-8B at 1,024 and 2,048 and bge-m3. *Decided in M12 ([m12.md](checks/m12.md)
+  11.5): neither challenger gained (2,048: −0.5 points of dev Recall@8; bge-m3: 0.0), so `qwen3-emb-8b@1024+h` stays.*
 - ~~How many passages Jev call 2 scores, and k (task 10).~~ Resolved by doc 10 K5 and K7: 8 candidates, k = 3 in 1:1
   and 2 elsewhere; the metric is Recall@8.
 - ~~The red-team set and the input-safe threshold (task 11).~~ Resolved by doc 11 S10 and B5's rows.

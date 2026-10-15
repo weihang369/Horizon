@@ -1,0 +1,29 @@
+{
+  "id": "passage_set",
+  "version": 1,
+  "purpose": "deep_check",
+  "type": "noul",
+  "label": "do these passages answer it together?",
+  "instructions": "Read together, do the passages in quoted_passages answer the message in quoted_query?",
+  "true": "Yes: together they state what the message asks for.",
+  "false": "No: even together they leave part of what was asked unanswered.",
+  "examples": {
+    "true": [
+      "One passage gives the rule, the other the exception the message asks about."
+    ],
+    "false": [
+      "Both passages describe the day rota when the message asks about nights."
+    ]
+  },
+  "state": {
+    "mode": "label",
+    "quoted_query": "quoted",
+    "quoted_passages": "quoted"
+  },
+  "deadline": "deep_check",
+  "floor": null,
+  "thresholds": {
+    "t_set": 0.5
+  },
+  "fallback": "partly"
+}

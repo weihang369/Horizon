@@ -107,6 +107,12 @@ summary (X3). The next turn sees the new summary and a shorter window: one cache
     its own rendering of the history, ≈ $0.0008 each, up to 5 speakers;
   - **worst case,** a group speaker at the ceiling (X2, 18,000 of history): ≈ 23,000 ≈ **$0.0035**.
 
+*Built in M12 (`rag` D16, D26): the documents block is the tail's first section (P2), capped by
+`retrieval.agent.blockTokens` (1,400). With k at most 3 (2 outside 1:1) and pieces at most 400 tokens, the cap only
+guards a seed piece authored longer, which is cut at a sentence end. A not-found turn carries K9's short block
+instead, at the quick length. `context.used.knowledge` counts the block. The block sits in the tail, so a deep turn
+and a quick one send the same system message 1 (tested) and the cached prefix holds.*
+
 **Why:** OQ-AI-02 suggested about 8K for 1:1 and 12K for multi-agent; that was before prices were known. Cached
 reads cost $0.003 per million, so a bigger window costs almost nothing while the cache hits; it costs on misses and
 in prefill time. The caps keep a normal miss under about $0.002 and even the worst case far below the model's
@@ -351,6 +357,11 @@ Doc 01 A3 rule 6: Jev gets less accurate as irrelevant content grows, so the sta
   `quoted_latest` is the argument just made, "Name: text", which `emotion_line` reads. M11 also drops `last_spoke`
   from watch turns and group Next speaker (`who_scene` and `who_next` v3; `talk_finished` v3, which shares the watch
   state): fairness is the guard's job in code (doc 07 G6), and the label was biasing Jev's pick.*
+  *Built in M12 (OpenSpec `rag` D6, D8): `quoted_documents` is filled for the gated candidates only (their searchable
+  sources' titles), and X9's cuts apply unchanged: titles past 5 first, and a candidate dropped by the cap gets no gate
+  (a quick turn, `dropped_gates`). A debate plan or debate face request adds only `quoted_documents` to the fields its
+  questions declare. Measured sizes with the gates: [m12.md](checks/m12.md) (a group of five with four gated: state
+  1,022 tokens, 12 questions).*
 - **Cost:** about 800–2,000 tokens × $0.042 / M ≈ **$0.00003–0.00008 per turn**. Doc 01 check 4 still has to measure
   whether a multi-question request bills the state once or per question; if per question, this limit is the lever.
   *Measured in M11: a debate plan's state is p50 1,793 tokens, and a Standard 2 v 2 spends ≈ $0.0008 on its 8
@@ -429,7 +440,9 @@ internal.
   the transcript and the result already decided.*
 - ~~Long-term memory and per-character points of view across sessions (task 9).~~ Resolved by doc 09.
 - ~~The retrieval block's size: k, the passage length and Jev call 2 (task 10).~~ Resolved by doc 10 K1, K7, K8:
-  ≤ 1,400 tokens.
+  ≤ 1,400 tokens. *Built in M12 (`rag` D16; X1's note). Found in M12: X9's 2,000-token cap drops every member's
+  gate late in the panel and three-a-side debates, so those turns can't go deep; the user's choice was to record it
+  for M13, which sets the memory block's budget, and leave X9's order unchanged (D32.5).*
 - ~~The quoted-content wording in the Jev state and the prompts, and prompt injection through summaries (task 11).~~
   Resolved by doc 11 S6 (`quoted_*` fields; the summary prompt becomes `summary-2` with a reported-speech rule and
   a "record, not instructions" heading).
