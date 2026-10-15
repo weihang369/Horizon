@@ -38,7 +38,8 @@ def test_migrate_twice_and_no_drift(tmp_path: Path) -> None:
         names = set(conn.execute(text("SELECT name FROM sqlite_master WHERE type='table'")).scalars())
     engine.dispose()
     assert diff == [], diff
-    assert version == "0003"
+    assert version == "0004"  # M12: message_ai_meta
+    assert "message_ai_meta" in names
     assert {"memory_fts", "knowledge_fts"} <= names
     assert not any("_vec__" in n for n in names)  # vec tables belong to the SpaceManager
 
