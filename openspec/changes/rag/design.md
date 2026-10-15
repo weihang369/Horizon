@@ -904,7 +904,7 @@ choice (U4):
 
 ### D32. Decisions made during apply (the user's, 2026-10-15)
 
-Phase 11's runs found eight things. Each went to the user as a choice:
+Phase 11's runs found eleven things. Each went to the user as a choice:
 1. **Dense search p99 (task 6.3):** 69 ms against the 50 ms target. **Accepted and recorded.** Dense searches keep the
    100 ms test guard, and the step is judged inside check 2.
 2. **Query embeddings from Malaysia take ≈ 1.1 s at the median** (0.9 s at the fastest), and 94 of 107 dev deep turns
@@ -939,6 +939,19 @@ Phase 11's runs found eight things. Each went to the user as a choice:
 
    On the re-run, 25 of 26 dev rewrites were keyword queries, and the 26th was late.
    - **Rejected:** the check alone; the wording alone; recording only.
+9. **Check 2 (11.9): the query embedding.** That evening, Qwen3 Embedding 8B on Nebius ran at p50 6.8–10.8 s and
+   p90 up to 25 s, against 1.1 s that afternoon. So the 800 ms wait almost never got a vector, but added ≈ 0.8 s to
+   every deep turn.
+   - **`queryEmbedWaitMs` 200.** The early start still gives ≈ 0.6 s head start beside Jev call 1.
+   - **The rewrite's and the fallback's own vectors are never waited for:** they can only start after the gate.
+   - **Rejected:** keeping 800 ms and trying another provider later; 400 ms with the rewrite's vector kept.
+10. **K15's trim 1.** In 1:1 a message of at most six words to a speaker with documents starts its rewrite beside Jev
+    call 1, and gather joins it. This costs ≈ $0.00005 on a quick turn. Group's speaker isn't known at Jev call 1, so
+    the trim is 1:1 only.
+11. **`rewriteMs` 1,200,** from the measured p90 (1,172 ms) by D24's rule.
+
+Check 2's other result stands as measured: NFR-01's 2 s p50 can't hold for deep turns alone (their serial minimum is
+≈ 2.1–2.4 s). B8 judges it blended with quick turns in M15's must-pass run.
 
 Bugs found by the runs and fixed without a choice (they broke the design as written):
 - `pack@2` made a header-only piece on a table with a very wide header row;

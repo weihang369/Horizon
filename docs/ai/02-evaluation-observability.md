@@ -301,7 +301,7 @@ frozen transcripts start from a long committed history.
   | **Agent vs naive** | a choice of "reply A", "reply B" or "about the same", **asked in both orders** | the last 2 turns + both replies |
   | **Citation support** | a noul for each cited passage: "does this passage support what the reply says it supports?" (evaluation only in v1, doc 10 K10; ≥ 95 %) | the passage + the cited sentence |
   | **Sentence faithfulness** (deep turns) | code splits the reply into sentences; a noul for each factual sentence against the kept passages | the passages + one sentence |
-  | **Not-found reply** (doc 10 K14) | 2 nouls: tells the user the documents don't cover the question (or which part) · anything beyond them is framed as the character's own view, with no `[n]`; ≥ 90 % each | the question + the reply |
+  | **Not-found reply** (doc 10 K14) | 2 nouls: tells the user the documents don't cover the question (or which part) · anything beyond them is framed as the character's own view, with no `[n]`; ≥ 90 % each. *Built in M12 (`rag` D22): `judge_notfound_says` and `judge_notfound_cites`, both B4-validated on 30 real + 30 planted (says 0.97 / 1.00; cites 0.93 / 0.93, missing both real failures, so its rate is a ceiling). End to end on 50 turns ([m12.md](checks/m12.md) 11.8): cites 2 failures; says fails end to end (13 of 40 unanswerable say it). K9's lines work where they are sent (14/16), and 12 of 40 unanswerable turns reach them. By the user's choice the row is reported both ways; M15 measures it again* | the question + the reply |
   | **Reply rules** (doc 04 P12) | 4 nouls: no assistant voice · no flattery (on a 100-reply sample) · replies in the user's language (non-English lines only) · pushes back (planted wrong claims only) | the last user line + the reply |
   | **Draft quality** (doc 04 P12) | 2 nouls: fits the seed · the relationship fits the You card | the seed, the You card + the draft |
   | **Summary quality** (doc 05 X10) | 5 nouls: a planted fact is kept · the promise is kept · it says who made the promise · same language as most lines · nothing unsupported | the dropped lines + the summary (one fact or promise per question) |
@@ -608,6 +608,14 @@ with itself only about 64 % of the time, so that rule mixes up ordinary noise wi
   (m9.md 9.6, "The fix"). The re-run on the fix ran all 100 turns: first word p50 1208 ms, p90 1416 ms (1209 / 1416
   without the first 5 as warm-up); the face first on 99/99; `turn_plan` p50 532 ms, with a slow spell of Jev's (up to
   30 s, deadline fired 31/100) that left the first word unchanged.*
+- *Built in M12 (`rag` D24) as `latency --part deep` ([m12.md](checks/m12.md) 11.9): 100 deep 1:1 turns with a
+  rewrite and 100 without (forced by fixture), 25 deep each in group, debate and watch, on a fully loaded database
+  with the store bypassed, timed per step (Jev call 1, the rewrite, the embeddings, the search, the slowest
+  `deep_check` and the set check). First word p50 / p90: 1:1 with a rewrite 4.8 / 5.8 s, without 2.8 / 3.8 s (NFR-01
+  fails for deep turns alone); group 2.4 s and watch 2.4 s pass NFR-02; debate 3.07 s just fails. No 429s; 4 % of
+  deep runs fell back. The query embedding was p50 6.8 s that evening, so the user cut its wait to 200 ms, applied
+  K15's trim 1 in 1:1 and set `rewriteMs` to 1,200 (D32.9–11); M15's must-pass run measures the result blended at the
+  real deep rate.*
 - *Built in M10 (`group-watch` D9, D23): `latency --part follow` (50 hand-built follow states from the second-slot
   dev items: state assembly `S` timed in process, Jev's `L`, and the measured stream-end-to-`turn.end` `F`; a miss is
   `S + L > F + 400`, pass at ≤ 10 %) and `--part watch` (3 scenes × 20 turns at Fast pace: `turn.end` to the next
@@ -810,7 +818,8 @@ section.
   D12, D21).*
 - ~~The memory retrieval set and the memory-importance labels (task 9).~~ Resolved by doc 09 M12.
 - ~~The final embedding model and its dimensions (task 10).~~ Resolved by doc 10 K3: the retrieval suite's comparison
-  test decides between Qwen3-Embedding-8B at 1,024 and 2,048 and bge-m3.
+  test decides between Qwen3-Embedding-8B at 1,024 and 2,048 and bge-m3. *Decided in M12 ([m12.md](checks/m12.md)
+  11.5): neither challenger gained (2,048: −0.5 points of dev Recall@8; bge-m3: 0.0), so `qwen3-emb-8b@1024+h` stays.*
 - ~~How many passages Jev call 2 scores, and k (task 10).~~ Resolved by doc 10 K5 and K7: 8 candidates, k = 3 in 1:1
   and 2 elsewhere; the metric is Recall@8.
 - ~~The red-team set and the input-safe threshold (task 11).~~ Resolved by doc 11 S10 and B5's rows.

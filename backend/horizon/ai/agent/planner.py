@@ -34,6 +34,7 @@ from horizon.ai.contexts import (
     FollowRequest,
     PlanRequest,
     SessionContext,
+    TurnContext,
     TurnPlan,
 )
 from horizon.ai.decider import Answers, ChoiceAnswer, DecisionResult
@@ -197,10 +198,15 @@ class JevTurnPlanner:
         q = bank().question(qid, seed=f"{self.seed(req)}:{cid}", name=_name(name), about=cid)
         gated = gates.gated([cid], req.documents, state.dropped_gates) if req.kind == "reply" else []
         qs = {key: q, **gates.questions({cid: name}, gated, nouls=True)}
-        if gated:   # rag 11.5: the query embedding starts with Jev call 1
+        if gated:   # rag 11.5: the query embedding starts with Jev call 1; 11.9: so does a short message's rewrite
+            from horizon.ai.agent import rewrite as rw
             from horizon.ai.agent.deep import start_early_embedding
 
-            start_early_embedding(self.deps, req.session, gated, req.latest, answered_message(req.session)[0])
+            mid = answered_message(req.session)[0]
+            start_early_embedding(self.deps, req.session, gated, req.latest, mid)
+            if req.cast and not req.stored_rewrite:
+                rw.start_early(self.deps, TurnContext(session=req.session, speaker=req.cast[0],
+                                                      message_id=req.message_id, max_tokens=1), req.latest, mid)
 
         async def fallback() -> Answers:
             return {key: ChoiceAnswer("none"), **gates.fallbacks(qs)}

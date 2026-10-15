@@ -160,6 +160,24 @@ async def test_the_rewrite_shares_the_reply_prefix(api: Api) -> None:
     assert (row["answer"], row["result"]) == ("no", "used")
 
 
+async def test_a_short_message_starts_its_rewrite_with_the_plan_and_the_deep_path_joins_it(api: Api) -> None:
+    """rag 11.9 (K15's trim 1, the user's choice): in 1:1 a short message to a speaker with documents has its rewrite
+    started beside Jev call 1. A quick turn still pays for it; a deep turn joins it, so there is one call either way."""
+    sid = await agent(api, "one_on_one", [AMARA])
+    gate(api, AMARA, 0.1)
+    await send(api, sid, "How much worse is fatigue after long shift blocks?")   # 9 words: no early rewrite
+    assert chats(api, "query_rewrite") == []
+    await send(api, sid, "and nights?")                                         # quick, but started early
+    assert len(chats(api, "query_rewrite")) == 1
+    gate(api, AMARA, 0.8)
+    nouls(api, standalone=0.06)
+    assert api.rt.fake is not None
+    api.rt.fake.set_canned("query_rewrite", load_canned("query-rewrites")[1][:1])
+    [reply] = await send(api, sid, "and weekends?")                             # deep: joins the early call
+    assert len(chats(api, "query_rewrite")) == 2
+    assert reply["trace"]["knowledge"]["query"] == "how night shifts affect staff fatigue scores in the shift fatigue review"
+
+
 async def test_a_two_line_rewrite_is_rejected_for_the_fallback_query(api: Api) -> None:
     sid = await agent(api, "one_on_one", [AMARA])
     gate(api, AMARA, 0.8)

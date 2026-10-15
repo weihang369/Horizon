@@ -461,7 +461,9 @@ embedder's in-flight de-duplication. In 1:1 a new message queues behind the repl
 is 1:1's cut; in group a newer message cancels the deep work (m12.md).*
 
 *Amended in M12 (`rag` D32.2, D32.8, the user's choices):
-- **The embedding starts with Jev call 1** for a candidate with vectors, waited for up to 800 ms (K15's trim 2).
+- **The embedding starts with Jev call 1** for a candidate with vectors (K15's trim 2), waited for up to 200 ms after
+  check 2. The rewrite's own vector is never waited for, and in 1:1 the rewrite of a message of at most six words
+  starts with Jev call 1 too (K15's trim 1).
 - **The instruction is `rewrite-2`.** Check 3 found DeepSeek answering follow-ups in character when this wording came
   as a trailing system message ("Depends on your contract and jurisdiction, and I'd need to check."). It is now the
   last user message: "This is a search step, not a chat line: don't reply to the last message. Write one search query
@@ -590,6 +592,14 @@ turn (recorded `cancelled`).*
 keep), frozen in and out (`DeepRequest`, `DeepResult`). One addition to K7's table: a search that matches nothing in
 the speaker's documents is "not found" (Jev call 2 never ran, and nothing failed). In 1:1 the graph runs inside the
 plan; elsewhere it starts as soon as the speaker and their gate are known (`start_deep`).*
+
+*Tuned in M12 ([m12.md](checks/m12.md) 11.5, 11.6; `rag` D32.6). Jev call 2's slowest-of-8 is p90 ≈ 1.3 s from
+Malaysia. At `deepCheckMs` 700 about 1 turn in 7 fell back, and only 13 of 26 dev unanswerable questions abstained.
+- **By the user's choice, `deepCheckMs` is 1,500.**
+- **The thresholds** `t_keep` **0.9** and `t_found` **0.5** come from the leave-one-out on dev with every answer back
+  (`passage` v2). `t_set` stays 0.5 (18 set checks, fewer than 20).
+- **Test, once:** 1 wrong abstain in 57 and 13 of 14 unanswerable abstained, both passing B5.
+- **K6's rule stands:** counting a late passage as "doesn't help" instead gives 5–6 wrong abstains in 108.*
 
 ### K8. The prompt block and deterministic citations
 
@@ -809,6 +819,19 @@ only re-embed, keeping their IDs; startup never re-chunks (`tests/knowledge/test
     $0.78);
   - the rare `latency` suite grows by 100 deep turns (check 2), to ≈ $0.11.
 
+*Built and run in M12 ([m12.md](checks/m12.md) 11.5–11.8; `rag` D22, D23, D32):
+- **The sets:** the 205 questions and the "needs documents?", "standalone?" and "English?" sets.
+- **Every comparison:**
+  - no challenger wins by K3's rule: the 2,048 space, bge-m3, the old instruction, no header (naming −7.7 points),
+    piece 200 or 400, or λ 0.5;
+  - λ 1.0 ties 0.7, so MMR is off for documents;
+  - turning the rewrite off loses 13.5 points on follow-ups and non-English questions.
+- **The naming questions keep up** (Recall@8 1.000 on dev and test), so K2's "Jev picks the named document" isn't
+  revisited.
+- **The Not-found reply:** both judges pass B4. Where K9's lines are sent they work (14 of 16), but only 12 of 40
+  unanswerable turns reach them, so the row is reported both ways (the user's choice).
+- **Sentence faithfulness** on the two-passage items is M15's conversations, so multi-document thinking stays off.*
+
 ### K15. Speed and cost in one place
 
 **Before the first word on a deep turn:**
@@ -841,6 +864,27 @@ Trims 1 and 2 spend before the gate, so they come back to the user first. Jev st
 measured the query embedding from Malaysia at ≈ 1.1 s median (0.9 s at the fastest, p90 3.3 s), so the 400 ms wait
 after the gate left 94 of 107 deep turns on keywords only. In 1:1 and group the message's embedding now starts with
 Jev call 1 for a candidate with vectors, and the `agent` path waits up to 800 ms (`retrieval.agent.queryEmbedWaitMs`).*
+
+*Check 2 in M12 ([m12.md](checks/m12.md) 11.9), store bypassed:
+- **The times** (send, or `turn.end`, to the first word, p50 / p90):
+
+  | Arm | p50 / p90 | Target |
+  |---|---|---|
+  | 1:1 deep with a rewrite | 4.8 / 5.8 s | NFR-01 2 / 4 s: fails |
+  | 1:1 deep without | 2.8 / 3.8 s | NFR-01: fails at p50 |
+  | group | 2.4 s p50 | NFR-02 3 s: passes |
+  | watch | 2.4 s p50 | NFR-02: passes |
+  | debate | 3.07 s p50 | NFR-02: just fails |
+
+- **The waste was the embedding wait:** Nebius ran p50 6.8–10.8 s that evening.
+- **By the user's choices (`rag` D32.9–11):**
+  - the wait is 200 ms, and the rewrite's own vector is never waited for;
+  - **trim 1 applies in 1:1** (a message of at most six words);
+  - `rewriteMs` is 1,200.
+- **Estimated after the changes:** with a rewrite ≈ 2.8 s p50, without ≈ 2.2 s, debate ≈ 2.5 s.
+- **A deep turn's serial minimum** (Jev call 1 + `deep_check` + DeepSeek's first token, ≈ 2.1 s) is over NFR-01's
+  p50 by itself, so NFR-01 is judged blended with quick turns in M15's run.
+- **Trims 3 and 4 are not applied:** no 429s, and 4 % of turns fell back.*
 
 **Cost of one deep 1:1 turn** (off-peak):
 

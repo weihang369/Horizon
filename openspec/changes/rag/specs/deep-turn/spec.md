@@ -22,16 +22,16 @@ source SHALL give a quick reply with no search, no embedding and no `deep_check`
 - **THEN** her reply is quick, and her `docs` System 1 row has `result: "fallback"`
 
 ### Requirement: The query is built at the gate, in parallel
-When a turn goes deep, keyword search over the message's terms, the message's embedding (only if the speaker has an `indexed` source in the active space) and, in 1:1 and group, the rewrite (only when the message is not standalone or not English) SHALL all start together. A rewrite that lands in time SHALL be searched together with the message: its words join the keyword terms and it is embedded.
+When a turn goes deep, keyword search over the message's terms, the message's embedding (only if the speaker has an `indexed` source in the active space) and, in 1:1 and group, the rewrite (only when the message is not standalone or not English) SHALL all start together. A rewrite that lands in time SHALL be searched together with the message: its words join the keyword terms. Its embedding, and the fallback query's, SHALL be requested but not waited for (the user's choice of 2026-10-15, after check 2 measured the query embedding at a 6.8 s median that evening); a vector already at hand is used.
 
-In 1:1 and when a group message is answered (the cast plan and the follow plan), the user message's embedding SHALL start with the plan's Jev request, for the first candidate with an `indexed` source, before the gate answers (the user's choice of 2026-10-15, after the query embedding measured ≈ 1.1 s at the median). The deep path's own request for the same text SHALL join it, so one `query_embed` row exists per message. The search SHALL wait for each vector at most `retrieval.agent.queryEmbedWaitMs` (800 ms) from when it needs it; a late vector means keywords only for that text.
+In 1:1 and when a group message is answered (the cast plan and the follow plan), the user message's embedding SHALL start with the plan's Jev request, for the first candidate with an `indexed` source, before the gate answers (the user's choice of 2026-10-15, after the query embedding measured ≈ 1.1 s at the median). The deep path's own request for the same text SHALL join it, so one `query_embed` row exists per message. The search SHALL wait for the message's vector at most `retrieval.agent.queryEmbedWaitMs` (200 ms) from when it needs it; a late vector means keywords only for that text. In 1:1, a user message of at most six words to a speaker with searchable knowledge SHALL have its rewrite started with the plan's Jev request (doc 10 K15's trim 1, the user's choice), and the deep path SHALL join that call rather than send another.
 
 #### Scenario: Follow-up rewritten
 - **WHEN** Kai asks Amara "and nights?" after a question about long shift blocks, with `standalone` p 0.06
 - **THEN** one `query_rewrite` call is made, and the search uses both the rewrite and the message
 
 #### Scenario: Standalone English question
-- **WHEN** a deep 1:1 message is standalone and in English
+- **WHEN** a deep 1:1 message of more than six words is standalone and in English
 - **THEN** no `query_rewrite` call is made, and the message is searched as written
 
 #### Scenario: Keyword-only speaker
@@ -41,6 +41,10 @@ In 1:1 and when a group message is answered (the cast plan and the follow plan),
 #### Scenario: The embedding starts with the plan
 - **WHEN** Kai sends Hana, who has an `indexed` source, a message whose `docs` gate comes back at 0.1
 - **THEN** the reply is quick, and exactly one `query_embed` row exists, linked to Kai's message
+
+#### Scenario: A short message's rewrite starts with the plan
+- **WHEN** Kai sends Amara "and nights?" and her `docs` gate comes back at 0.1
+- **THEN** the reply is quick, and one `query_rewrite` call was still made; had the turn gone deep and needed a rewrite, it would have used that call
 
 #### Scenario: A deep turn joins the early embedding
 - **WHEN** the same message's gate comes back at 0.8 and the turn goes deep

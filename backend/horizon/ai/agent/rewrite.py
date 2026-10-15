@@ -14,6 +14,10 @@ the summary, the history window), then K4's instruction, so it shares (and warms
   tracked task, is still billed and recorded, and is discarded (`late`).
 - **Cancelled with the turn:** cancelling the caller cancels the call (billed as the gateway bills a cancelled call).
 - **Reuse:** a stored rewrite (the runtime reads it per user message and speaker) is used with no call (`stored`).
+- **The early start** (doc 10 K15's trim 1; rag 11.9, the user's choice): in 1:1, a short user message (<= 6 words)
+  to a speaker with documents has its rewrite started beside Jev call 1 (`start_early`), before anyone knows a rewrite
+  is needed. gather joins it (`run(early=...)`), with `rewriteMs` counted from the call's own start. When the turn is
+  quick or the message needs no rewrite, the call is still billed and its answer unused (about $0.00005).
 """
 
 from __future__ import annotations
@@ -22,7 +26,9 @@ import asyncio
 import contextlib
 import re
 import unicodedata
+from collections import OrderedDict
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Any, Literal
 
 from horizon.ai.agent.turn import reply_prefix
@@ -37,6 +43,8 @@ INSTRUCTION = ("This is a search step, not a chat line: don't reply to the last 
                "'that' or 'there'), in English, at most 20 words, as keywords rather than a sentence. Output only "
                "the query.")
 MAX_WORDS = 30
+EARLY_MAX_WORDS = 6
+EARLY_KEEP = 64
 LATIN_SHARE = 0.6
 _CHAT_LINE = re.compile(r"[.!?。！？]\s+\S|[.!。！]$")   # a second sentence, or a line ended like a remark
 RewriteStatus = Literal["ok", "stored", "failed", "late"]
@@ -78,14 +86,47 @@ def check(text: str | None) -> str | None:
     return re.sub(r"\s+", " ", out)
 
 
-async def run(deps: Any, ctx: TurnContext, *, timeout_s: float, stored: str | None = None) -> Rewrite:
-    """The rewrite for this speaker's turn: the stored one, or one call bounded by `timeout_s`."""
+EarlyKey = tuple[str, str, str]
+_EARLY: OrderedDict[EarlyKey, tuple[asyncio.Task[Any], datetime]] = OrderedDict()
+
+
+def _settled(task: asyncio.Task[Any]) -> None:
+    if not task.cancelled():
+        task.exception()
+
+
+def early_key(ctx: TurnContext, message_id: str | None) -> EarlyKey | None:
+    return (ctx.session.session_id, ctx.speaker.id, message_id) if message_id else None
+
+
+def start_early(deps: Any, ctx: TurnContext, message: str, message_id: str | None) -> None:
+    """K15's trim 1: start this speaker's rewrite of a short message now, for gather to join (one call either way)."""
+    key = early_key(ctx, message_id)
+    if key is None or key in _EARLY or len(message.split()) > EARLY_MAX_WORDS:
+        return
+    req = request(ctx, deps.llm(PURPOSE), deps.prices.chat.model)
+    task: asyncio.Task[Any] = deps.spawn(f"rewrite-early:{ctx.speaker.id}",
+                                         deps.gateway().chat_complete(req, ctx.call_ctx(PURPOSE)))
+    task.add_done_callback(_settled)   # a failed call nobody joins (a quick turn) is still retrieved
+    _EARLY[key] = (task, deps.clock().now())
+    while len(_EARLY) > EARLY_KEEP:   # an unused early call (a quick turn) is dropped here, long settled
+        _EARLY.popitem(last=False)
+
+
+async def run(deps: Any, ctx: TurnContext, *, timeout_s: float, stored: str | None = None,
+              early: EarlyKey | None = None) -> Rewrite:
+    """The rewrite for this speaker's turn: the stored one, the early call joined, or one call bounded by `timeout_s`
+    from its start."""
     if stored:
         return Rewrite(stored, "stored")
-    req = request(ctx, deps.llm(PURPOSE), deps.prices.chat.model)
-    cctx = ctx.call_ctx(PURPOSE)
-    coro = deps.gateway().chat_complete(req, cctx)
-    task: asyncio.Task[Any] = deps.spawn(f"rewrite:{ctx.speaker.id}", coro)   # tracked: a late call still lands
+    joined = _EARLY.pop(early, None) if early is not None else None
+    task: asyncio.Task[Any]
+    if joined is not None and not joined[0].cancelled():
+        task, started = joined
+        timeout_s = max(0.0, timeout_s - (deps.clock().now() - started).total_seconds())
+    else:
+        req = request(ctx, deps.llm(PURPOSE), deps.prices.chat.model)
+        task = deps.spawn(f"rewrite:{ctx.speaker.id}", deps.gateway().chat_complete(req, ctx.call_ctx(PURPOSE)))
     try:
         done = await vclock.wait_at_most(deps.clock(), task, timeout_s)
     except asyncio.CancelledError:

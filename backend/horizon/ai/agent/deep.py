@@ -5,13 +5,16 @@ D10–D15; deep-turn spec).
 
 - **gather** (D10, D11): the message's keyword terms, its embedding (only when the speaker has an `indexed` source in
   the index's space) and, in 1:1 and group, the rewrite when the message isn't standalone or isn't English, all start
-  together. A rewrite in time joins the terms and is embedded (≤ `retrieval.agent.queryEmbedWaitMs`); a failed or
-  late one is a fallback query (the message, and the two earlier lines with it). The search waits for each vector at
-  most `retrieval.agent.queryEmbedWaitMs` (800 ms) from when it needs it; a late one is still recorded, and the search
-  runs on keywords.
+  together. A rewrite in time joins the terms; a failed or late one is a fallback query (the message, and the two
+  earlier lines with it). The search waits for the message's vector at most `retrieval.agent.queryEmbedWaitMs`
+  (200 ms, rag 11.9) from when it needs it; a late one is still recorded, and the search runs on keywords.
+- **No wait for a text born after the gate** (rag 11.9, the user's choice): the rewrite's vector and the fallback's
+  "earlier lines + message" vector are requested but never waited for. Check 2 measured the query embedding at p50
+  6.8 s that evening, so that wait only ever added time; a vector already served (the LRU, on regenerate) is used.
 - **The early start** (rag 11.5, the user's choice of 2026-10-15): from Malaysia a query embedding takes ≈ 1.1 s at
   the median, so the 1:1, cast (group) and follow plans start the user message's embedding with Jev call 1, for a
-  candidate with vectors (`start_early_embedding`). gather's own request for the same text joins it through the
+  candidate with vectors (`start_early_embedding`). In 1:1 the rewrite of a short message starts there too
+  (`rewrite.start_early`, rag 11.9), and gather joins it. gather's own request for the same text joins it through the
   embedder's in-flight de-duplication and LRU, so no second call is made. Watch and debate start at the gate as before
   (their deep work runs ahead of the turn).
 - **search** (D12): `retrieval.search` with `retrieval.agent`'s numbers, in the speaker's `ScopedIndex`.
@@ -147,7 +150,7 @@ class DeepSteps:
                 tctx = TurnContext(session=req.session, speaker=req.speaker, message_id=req.reply_message_id,
                                    max_tokens=1)
                 rewrite = await rw.run(self.deps, tctx, timeout_s=_seconds(knobs.rewrite_ms),
-                                       stored=req.stored_rewrite)
+                                       stored=req.stored_rewrite, early=rw.early_key(tctx, req.message_id))
             source: Any
             extra: dict[int, list[float]] = {}
             if req.session.mode == "debate":
@@ -162,7 +165,7 @@ class DeepSteps:
                 if vec_ok:
                     t2 = self._spawn(f"query-embed:{req.speaker.id}:rw", self._embed(req, [rewrite.text], space))
                     tasks.append(t2)
-                    got = await self._wait(t2, wait)
+                    got = await self._wait(t2, 0.0)   # never waited for (rag 11.9)
                     if got:
                         extra[0] = got[0]
             elif rewrite is not None:
@@ -171,7 +174,7 @@ class DeepSteps:
                 if vec_ok and with_earlier:
                     t2 = self._spawn(f"query-embed:{req.speaker.id}:fb", self._embed(req, [with_earlier], space))
                     tasks.append(t2)
-                    got = await self._wait(t2, wait)
+                    got = await self._wait(t2, 0.0)   # never waited for (rag 11.9)
                     if got:
                         extra[1] = got[0]
             else:

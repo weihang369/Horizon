@@ -422,16 +422,16 @@
 - [x] 11.8 End to end: 50 not-found and partly replies, the judges' 30 real items labelled from them, B4 validation,
   then scoring (≈ $0.03).
   Verify: m12.md has the validation and both judges' rates against ≥ 90 %.
-- [ ] 11.9 Check 2: deep-turn timing (≈ $0.09).
+- [x] 11.9 Check 2: deep-turn timing (≈ $0.09).
   Verify: m12.md has each step's p50 and p90, both 1:1 arms against NFR-01, group, debate and watch against NFR-02,
   the slowest-of-8, the 429s and the fallbacks. Any deadline or trim change goes to the user as a choice (D13, D24).
-- [ ] 11.10 Spend against D28: copy every run's per-item results to `docs/ai/checks/m12/`, and check them line by
+- [x] 11.10 Spend against D28: copy every run's per-item results to `docs/ai/checks/m12/`, and check them line by
   line against `data/evals/spend.jsonl`.
   Verify: m12.md's spend table matches the log.
 
 ## 12. Docs (design D29)
 
-- [ ] 12.1 Amend everything doc 10 §6 lists:
+- [x] 12.1 Amend everything doc 10 §6 lists:
   - doc 01: A4, A6, A7, A13, §8, §9;
   - doc 02: B1, B2, B4, B5, B7, B8, §8;
   - doc 03: C1, §7;
@@ -442,7 +442,7 @@
 
   Then add doc 10's built notes per K, and doc 13's W12 and W6 rows.
   Verify: the docs link check reports 0 broken links in `docs/ai`.
-- [ ] 12.2 Finish `docs/ai/checks/m12.md`: step 0, every run, "What M12 found" and "What M13 inherits" (D27's four
+- [x] 12.2 Finish `docs/ai/checks/m12.md`: step 0, every run, "What M12 found" and "What M13 inherits" (D27's four
   items included).
   Verify: every number in it traces to a run folder or a committed file.
 

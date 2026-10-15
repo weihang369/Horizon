@@ -136,9 +136,9 @@
           },
           "pieceTarget": 300,
           "pieceMax": 400,
-          "rewriteMs": 1500,
+          "rewriteMs": 1200,
           "deepCheckMs": 1500,
-          "queryEmbedWaitMs": 800
+          "queryEmbedWaitMs": 200
         }
       },
       "persona": {
