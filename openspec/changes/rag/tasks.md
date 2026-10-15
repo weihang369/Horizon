@@ -448,7 +448,7 @@
 
 ## 13. The final gates
 
-- [ ] 13.1 Run every gate:
+- [x] 13.1 Run every gate:
   - the backend `pytest` in the gate worktree, `ruff`, `mypy`;
   - the frontend `lint`, `typecheck`, `npm test`, `test:http`;
   - `seed:check`, `fixtures:check`, `export-schema:check`;
