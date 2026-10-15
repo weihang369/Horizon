@@ -456,5 +456,5 @@
   - `npm run e2e`;
   - `openspec validate rag --strict`.
   Verify: all green, recorded in m12.md's final gates table.
-- [ ] 13.2 Tell the user M12 is ready to archive and squash into dev. Push nothing unless asked.
+- [x] 13.2 Tell the user M12 is ready to archive and squash into dev. Push nothing unless asked.
   Verify: the user's answer is recorded.
