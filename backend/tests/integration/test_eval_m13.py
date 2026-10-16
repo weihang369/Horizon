@@ -136,7 +136,8 @@ def test_an_unvalidated_judge_reads_not_counted(monkeypatch: pytest.MonkeyPatch)
 
 def test_a_memory_for_an_absent_character_cannot_be_written() -> None:
     """D40: a unit test, not a judge. The call names characters by their number among those present, so a number
-    past the list, or an `about` naming nobody present, is dropped by the code checks."""
+    past the list is dropped by the code checks. An `about` naming nobody present reads as the user (phase 10, the
+    user's choice), so it can't point a memory at an absent character either."""
     from horizon.ai.memory import rewrite as mem1
     from tests.sessions.test_memory_writer_m13 import AMARA, _present, _stretch
 
@@ -144,7 +145,9 @@ def test_a_memory_for_an_absent_character_cannot_be_written() -> None:
     out = mem1.check([{"for": 2, "op": "add", "kind": "fact", "text": "Kai likes tea", "source": 1},
                       {"for": 1, "op": "add", "kind": "fact", "about": 5, "text": "Kai likes tea", "source": 1},
                       {"for": 1, "op": "add", "kind": "fact", "text": "Kai likes tea", "source": 1}], s)
-    assert [c.character_id for c in out.changes] == [AMARA] and len(out.log) == 2
+    assert [c.character_id for c in out.changes] == [AMARA] and out.changes[0].about_character_id is None
+    assert [x["why"] for x in out.log] == ["unknown character", "about names no one present: read as the user",
+                                           "duplicate in the answer"]
 
 
 async def test_score_rewrite_counts_each_target(tmp_path: Path) -> None:

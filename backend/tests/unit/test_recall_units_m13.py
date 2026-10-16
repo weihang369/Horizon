@@ -131,7 +131,7 @@ async def test_the_sessions_lines_are_searched_by_vector_only_when_there_is_one(
     for dense, lines_dense, want in (({0: [1.0, 0.0]}, True, ["knn"]), ({}, True, ["fts"]),
                                      ({0: [1.0, 0.0]}, False, ["fts", "knn"])):
         lines = _Lines()
-        io = SimpleNamespace(active_space=lambda: "sp", lines=lambda *a, l=lines: l, overflow=lambda *a: None)
+        io = SimpleNamespace(active_space=lambda: "sp", lines=lambda *a, ln=lines: ln, overflow=lambda *a: None)
         req = SimpleNamespace(message="What's my dog's name?", earlier=[], message_id=None,
                               speaker=SimpleNamespace(id="chr_x"), session=SimpleNamespace(
                                   mode="one_on_one", session_id="ses_x", world=SimpleNamespace(id="wld_x")),

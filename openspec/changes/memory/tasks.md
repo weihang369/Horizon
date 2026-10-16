@@ -410,7 +410,7 @@
 
 ## 12. The final gates and the merge
 
-- [ ] 12.1 Run every gate on the final commit:
+- [x] 12.1 Run every gate on the final commit:
   - backend pytest (gate worktree), ruff, mypy;
   - frontend lint, typecheck, test, test:http;
   - `seed:check`, `fixtures:check`, `export-schema:check`;
