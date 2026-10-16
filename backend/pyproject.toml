@@ -99,7 +99,8 @@ ignore = ["RUF001", "RUF002", "RUF003"]
 "horizon/evals/debate_suites.py" = ["TID251"]   # M11: debate-history, the debate free runs and timing do the same
 "horizon/evals/notfound_suite.py" = ["TID251"]   # M12: the Not-found reply end to end drives the in-process app too
 "horizon/evals/deep_timing.py" = ["TID251"]   # M12: latency --part deep drives the in-process app too
-"horizon/evals/memory_suite.py" = ["TID251"]   # M13: layer 3's two sessions drive the in-process app too
+"horizon/evals/memory_suite.py" = ["TID251"]
+"horizon/evals/recall_timing.py" = ["TID251"]   # M13: latency --part recall drives the in-process app too   # M13: layer 3's two sessions drive the in-process app too
 
 [tool.mypy]
 python_version = "3.12"

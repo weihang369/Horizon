@@ -142,7 +142,7 @@ def planted_list(who: str, changed: Fact, confirmed: Fact, k: int) -> list[dict[
     others = [f for f in FACTS if f.id not in (changed.id, confirmed.id) and f.lang == "en"]
     pick = [others[(k * 5 + i * 3) % len(others)].memory for i in range(6 + k % 6)]
     lines = [changed.memory, *pick[:3], confirmed.memory, *pick[3:], *FILLER_MEMORIES[: 2 + k % 5]]
-    return [{"label": f"m{i + 1}", "id": f"mem_{who}_{k:02d}_{i + 1:02d}", "kind": "fact", "text": t,
+    return [{"label": f"m{i + 1}", "id": f"mem_{who}{k:02d}x{i + 1:02d}", "kind": "fact", "text": t,
              "importance": 0.6} for i, t in enumerate(dict.fromkeys(lines))]
 
 

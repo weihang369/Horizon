@@ -172,7 +172,7 @@ def register(sub: Any) -> None:
                            ("moodline", "the mood line on vs off over non-neutral transcript turns (paid, once, M9)"),
                            ("latency", "agent 1:1 time to the face and the first word, store bypassed (paid, M9); "
                                        "--part follow|watch for M10's follow plan and watch timing, debate for M11's, deep for "
-                                       "M12's deep turns (--profile agent)"),
+                                       "M12's deep turns, recall for M13's recall timing (--profile agent)"),
                            ("watch-history", "generate the committed watch histories with naive (paid, once, M10)"),
                            ("freerun", "agent group and watch free runs: signals, no target (paid, M10)"),
                            ("debate-history", "generate the committed debate histories with naive (paid, once, M11)"),
@@ -207,7 +207,7 @@ def register(sub: Any) -> None:
             s.add_argument("--turns", type=int, default=30)
             s.add_argument("--messages", type=int, default=12)
         if name == "latency":
-            s.add_argument("--part", choices=["follow", "watch", "debate", "deep"], default=None)
+            s.add_argument("--part", choices=["follow", "watch", "debate", "deep", "recall"], default=None)
         if name == "retrieval":
             s.add_argument("--arm", default=None, help="space=<id> | piece=200|300|400[:kept] | lambda=0.5|0.7|1.0 | "
                                                        "rewrite=off")
@@ -215,8 +215,9 @@ def register(sub: Any) -> None:
             s.add_argument("--part", choices=["rewrite", "recall", "layer3", "dup"], default=None)
             s.add_argument("--arm", default=None, help="recall only: search=bm25|dense | mmr=off | lambda=0.5|0.7|1.0 | "
                                                        "space=<id>")
-            s.add_argument("--latency", action="store_true", help="recall: store-bypassed, every check read to its end "
-                                                                  "(the tail for recall.checkMs)")
+            s.add_argument("--latency", action="store_true", help="store-bypassed: recall reads every check to its "
+                                                                  "end (the tail for recall.checkMs); rewrite times "
+                                                                  "each run (doc 09 check 2)")
         if name in ("decisions", "long", "transcript", "drafter", "watch-history", "summary", "debate-history",
                     "debate-plant", "debate-quality", "retrieval", "notfound", "memory"):
             s.add_argument("--set", default=None, help="decisions: one dataset folder (`judges`); long, transcript: "

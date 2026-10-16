@@ -43,7 +43,7 @@
 
 ## 0. The base and the storms (design D2)
 
-- [ ] 0.1 Confirm M12's gates on 6ceb366:
+- [x] 0.1 Confirm M12's gates on 6ceb366:
   - in the gate worktree: backend pytest 1841 passed, noting the load-sensitive
     `test_search_on_a_loaded_database_is_fast`, plus ruff and mypy;
   - frontend 542 / http 62;

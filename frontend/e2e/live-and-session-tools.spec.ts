@@ -23,7 +23,9 @@ test("live: set a key, “Continue live” on a replay, send a message, a stream
   const reply = page.getByRole("log").getByRole("listitem").filter({ has: page.getByRole("button", { name: "Regenerate reply" }) });
   await expect(reply).toHaveCount(1);
   await expect(reply).toContainText("Amara");
-  await expect(reply.getByRole("paragraph").first()).toHaveText(/\w+(\s+\w+){5,}/);
+  // The scripted line is picked by the session's createdAt (wall time here), and some open with a short sentence
+  // ("That's genuinely good to hear."): every line's last paragraph is a full one.
+  await expect(reply.getByRole("paragraph").last()).toHaveText(/\w+(\s+\w+){5,}/);
   await expect(input).toHaveValue("");
 });
 

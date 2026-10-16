@@ -128,9 +128,9 @@ def overflow_list(fact_id: str, n: int) -> list[dict[str, Any]]:
     needed = next(f for f in fs if f.id == fact_id)
     others = [f.extend for f in fs if f.id != fact_id]
     others += [f"{USER} said: {line}" for _w, line, _lvl, lang in small_talk() if lang == "en"]
-    rows = [{"id": f"mem_ovf_{fact_id}_00", "text": needed.memory, "importance": 0.3, "days": 120}]
-    for i, line in enumerate(others[: n - 1]):
-        rows.append({"id": f"mem_ovf_{fact_id}_{i + 1:02d}", "text": line, "importance": round(0.5 + 0.1 * (i % 5), 2),
+    rows = [{"id": f"mem_ovf{fact_id}x00", "text": needed.memory, "importance": 0.3, "days": 120}]
+    for i, line in enumerate(others[: n - 1]):   # ids are contract-valid: a planted memory can reach a trace
+        rows.append({"id": f"mem_ovf{fact_id}x{i + 1:02d}", "text": line, "importance": round(0.5 + 0.1 * (i % 5), 2),
                      "days": i % 20})
     return rows
 
@@ -293,6 +293,12 @@ def rewrite_report(rows: Sequence[Mapping[str, Any]]) -> list[str]:
     guard = [x for r in rows for x in r.get("log") or [] if x.get("step") == "guard"]
     out.append(f"- guard kept beside: {len(guard)}; duplicates reinforced: "
                f"{sum(1 for r in rows for x in r.get('log') or [] if x.get('step') == 'duplicate')}")
+    timed = [float(r["run_ms"]) for r in rows if r.get("latency") and r.get("run_ms") is not None]
+    if timed:   # doc 09 check 2: expectations only, nothing waits on a run
+        out.append(f"### Check 2: pause-run time, store-bypassed ({len(timed)} runs)")
+        out.append(f"- p50 {_pct(timed, 0.5):.0f} ms, p90 {_pct(timed, 0.9):.0f} ms, max {max(timed):.0f} ms "
+                   "(memory-1, Jev's importance and guard, the duplicate check's embedding; the commit is one local "
+                   "transaction)")
     fails = [f"- `{r['id']}` {f}" for r in rows for f in r.get("failures") or []]
     if fails:
         out += ["### Failures to read", *fails]
@@ -442,7 +448,8 @@ async def rewrite_item(env: RunEnv, item: Mapping[str, Any]) -> dict[str, Any]:
     for i, ln in enumerate(item["lines"]):
         you = ln["speaker"] == "you"
         who = None if you else cid_of(str(ln["speaker"]))
-        lines.append(StretchLine(n=i + 1, message_id=f"msg_{item['id']}_{i + 1:02d}", variant_id=None, seq=i + 1,
+        lines.append(StretchLine(n=i + 1, message_id=f"msg_{str(item['id']).replace('-', '')}x{i + 1:02d}",
+                                 variant_id=None, seq=i + 1,
                                  speaker=USER if you else names.get(who or "", who or ""), text=str(ln["text"]),
                                  author="user" if you else "character", character_id=who))
     pres = [Present(n=k + 1, character_id=c, name=names[c], role=str(rows[c]["profile"].get("role") or ""),
@@ -456,8 +463,11 @@ async def rewrite_item(env: RunEnv, item: Mapping[str, Any]) -> dict[str, Any]:
     ctx = RunContext(world_id=world, session_id=sid, now=rt.clock.now, knobs=rt.runtime_cfg.runtime.memory,
                      io=RunIO(rt, world))
     writer = rt.ai.memory_writer(True)
+    started = time.perf_counter()   # check 2: the run's own time (memory-1, Jev, the embedding); the commit is local
     out = await writer.graph.ainvoke({"stretch": stretch, "ctx": ctx, "path": []}, config={"recursion_limit": 10})
-    return await score_rewrite(env, item, out["rewrite"], out["result"])
+    run_ms = round((time.perf_counter() - started) * 1000, 1)
+    row = await score_rewrite(env, item, out["rewrite"], out["result"])
+    return {**row, "run_ms": run_ms, "latency": bool(env.opts.latency), "calls": out["rewrite"].calls}
 
 
 def transcript_text(item: Mapping[str, Any]) -> str:
@@ -584,12 +594,13 @@ async def load_transcript(env: RunEnv, name: str) -> Scene:
     msgs: list[Msg] = []
     seq_of_turn: dict[int, str] = {}
     for i, turn in enumerate(d["turns"]):
-        mid = f"msg_{name}_{len(msgs) + 1:04d}"
+        mid = f"msg_{name.replace('_', '')}{len(msgs) + 1:04d}"
         seq_of_turn[i] = mid
         msgs.append(Msg(id=mid, seq=len(msgs) + 1, author_type="user", character_id=None, kind="chat",
                         content=str(turn["user"]), status="complete", variant_id=None))
         for r in turn["replies"]:
-            msgs.append(Msg(id=f"msg_{name}_{len(msgs) + 1:04d}", seq=len(msgs) + 1, author_type="character",
+            msgs.append(Msg(id=f"msg_{name.replace('_', '')}{len(msgs) + 1:04d}", seq=len(msgs) + 1,
+                            author_type="character",
                             character_id=str(r["speaker"]), kind="chat", content=str(r["text"]), status="complete",
                             variant_id=None))
     async with rt.db.write() as tx:

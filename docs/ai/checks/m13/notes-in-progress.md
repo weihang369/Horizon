@@ -41,3 +41,12 @@
     gate; D28 now trims the arguments and keeps it, so the state live sends carries Victor's titles and the cut
     arguments. Its label (Mei's documents) is unchanged; the set was rebuilt so the item stays as live asks it. The
     other 120 `docs` items, `standalone` and `english` are byte-identical.
+13. e2e's "Continue live" test was flaky before M13 (the scripted line is seeded by the session's wall-clock
+    `createdAt`; 2 of 6 lines open with a short sentence, and the test read the first paragraph). Fixed in the test
+    (the last paragraph); 8/8 after. Recorded in m13.md §0.
+14. A planted memory id must be contract-valid (`^[a-z]+_[0-9A-Za-z]{1,40}$`): `mem_ovf_f01_16` reached a reply's
+    System 1 rows in the recall timing run and the messages endpoint failed its contract check (500). The suite's
+    planted and synthetic ids are valid now (`mem_ovff01x16`, `mem_amara00x01`, `msg_longoneononeen0005`).
+15. Check 4 and D33's timing: `horizon eval latency --part recall` (10 recall-only turns asking for an overflow
+    memory, then 50 turns with both gates; the corpus loaded and each corpus character given a 50-memory overflow).
+    Check 2: `horizon eval memory --part rewrite --latency --limit 10` (each writer run timed, store-bypassed).

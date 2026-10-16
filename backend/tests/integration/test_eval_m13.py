@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import re
 import sys
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -276,6 +277,15 @@ async def test_the_memory_suite_runs_offline_on_the_fake(tmp_path: Path) -> None
     assert (folder / "judge_states.jsonl").is_file()
 
 
+async def test_check_2_times_the_runs_store_bypassed(tmp_path: Path) -> None:
+    r, out = _runner(tmp_path)
+    assert await r.run(Options("memory", profile="agent", part="rewrite", limit=2, latency=True, yes=True)) == 0, out
+    folder = _run_folder(tmp_path)
+    rows = [json.loads(x) for x in (folder / "results.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert all(x["latency"] and x["run_ms"] >= 0 and x["calls"] >= 1 for x in rows)
+    assert "### Check 2: pause-run time, store-bypassed (2 runs)" in (folder / "report.md").read_text(encoding="utf-8")
+
+
 async def test_a_recall_arm_runs_without_jev_call_2(tmp_path: Path) -> None:
     r, out = _runner(tmp_path)
     assert await r.run(Options("memory", profile="agent", part="recall", arm="search=dense", limit=2,
@@ -294,7 +304,7 @@ async def test_the_overflow_probes_and_the_latency_tail_run_offline(tmp_path: Pa
     folder = _run_folder(tmp_path)
     rows = [json.loads(x) for x in (folder / "results.jsonl").read_text(encoding="utf-8").splitlines()]
     assert [x["kind"] for x in rows] == ["overflow", "overflow"] and not any(x.get("listed") for x in rows)
-    assert all(x["needed"].startswith("mem_ovf_") and x["latency"] for x in rows)
+    assert all(re.fullmatch(r"[a-z]+_[0-9A-Za-z]{1,40}", x["needed"]) and x["latency"] for x in rows)
     assert "`recall.checkMs` from the tail" in (folder / "report.md").read_text(encoding="utf-8")
 
 
@@ -305,3 +315,35 @@ async def test_the_dup_sweep_runs_offline(tmp_path: Path) -> None:
     rows = [json.loads(x) for x in (folder / "results.jsonl").read_text(encoding="utf-8").splitlines()]
     assert len(rows) == len(MS.dup_pairs()) and all(-1.0 <= x["cosine"] <= 1.0 for x in rows)
     assert "## dupCosine (D39)" in (folder / "report.md").read_text(encoding="utf-8")
+
+
+# ── 10.6's instrument: check 4 and D33's timing ──
+async def test_the_recall_timing_runs_offline_with_both_arms(tmp_path: Path) -> None:
+    r, out = _runner(tmp_path)
+    assert await r.run(Options("latency", profile="agent", part="recall", limit=2, yes=True)) == 0, out
+    (run,) = [p for p in (tmp_path / "evals").iterdir() if p.is_dir()]
+    folder = run / "agent"
+    rows = [json.loads(x) for x in (folder / "results.jsonl").read_text(encoding="utf-8").splitlines()]
+    runs = [x["deep_run"] for x in rows if "deep_run" in x]
+    assert {x["arm"] for x in runs} == {"recall", "both"}
+    assert all(x.get("recall_outcome") for x in runs)
+    both = [x for x in runs if x["arm"] == "both"]
+    assert all(x.get("passage_slowest_ms") is not None and "recall_after_docs_ms" in x for x in both)
+    assert not any(x.get("docs_ms") for x in runs if x["arm"] == "recall")   # recall only: no documents branch
+    rep = (folder / "report.md").read_text(encoding="utf-8")
+    assert "slowest of all 14" in rep and "Jev 429s: none" in rep
+
+
+def test_d33s_tail_rule_goes_to_the_user_over_200_ms() -> None:
+    from types import SimpleNamespace as NS
+
+    from horizon.evals import recall_timing as RT
+
+    rec = RT.Recorder()
+    rec.runs = [{"arm": "both", "recall_slowest_ms": 400.0, "passage_slowest_ms": 300.0,
+                 "recall_after_docs_ms": float(t), "recall_outcome": "jev"} for t in (0, 50, 100, 150, 250, 300, 350,
+                                                                                      400, 450, 500)]
+    knobs = NS(recall=NS(check_ms=1500.0))
+    assert any("the user gets a choice" in x for x in RT.report([], rec, knobs))
+    rec.runs = [{**x, "recall_after_docs_ms": 10.0} for x in rec.runs]
+    assert not any("the user gets a choice" in x for x in RT.report([], rec, knobs))
