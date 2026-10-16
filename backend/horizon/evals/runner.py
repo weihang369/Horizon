@@ -43,7 +43,7 @@ if TYPE_CHECKING:
 
 EVALS_DIR = REPO_ROOT / "evals"
 KEEP_RUNS = 20
-BYPASS_SUITES = frozenset({"canary", "capture", "import", "latency"})   # M9 D31: latency never touches the store
+BYPASS_SUITES = frozenset({"canary", "capture", "import", "latency", "embed-probe"})   # M9 D31: timing never uses the store
 PAID_ONLY = frozenset({"canary", "decisions"})
 SMOKE_START = datetime(2026, 10, 3, 3, 0, tzinfo=UTC)   # a Saturday: off-peak, like the test harness
 

@@ -35,6 +35,58 @@ export interface AgentRetrieval {
   /** The deep path's wait for a query embedding from when the search needs it (rag 11.5: 800, the embedding starting
    *  with Jev call 1; the top-level `queryEmbedWaitMs` stays naive's). */
   queryEmbedWaitMs: number;
+  /** M13 (docs/ai/09 M9; memory design D31–D35, D42): recall's search, Jev call 2 and tail; `t_recall` is in the bank. */
+  recall: RecallKnobs;
+}
+
+export interface RecallKnobs {
+  /** BM25 and dense lists per corpus. */
+  pool: number;
+  /** At most this many from each corpus (the session's lines, the overflow memories) into the merge. */
+  perCorpus: number;
+  /** MMR's picks over the merge, each checked by Jev call 2. */
+  candidates: number;
+  mmrLambda: number;
+  /** Kept at or above `t_recall`, by p. */
+  keep: number;
+  /** Every answer missing: this many from the top of the merged order, unscored. */
+  fallbackKeep: number;
+  /** Each recall check's deadline from when it was sent. */
+  checkMs: number;
+  /** M13 phase 10: the session's lines are searched by vector only (BM25 only when the message has no vector). */
+  linesDense: boolean;
+  /** M13 phase 10: when nothing reaches `t_recall`, the top candidate is kept if its p ≥ `standoutP` … */
+  standoutP: number;
+  /** … and at least `standoutRatio` × the runner-up's p. */
+  standoutRatio: number;
+  /** Both recall headings in the tail together. */
+  tailTokens: number;
+  /** A line hit and the message before it, each at most this many words. */
+  lineWords: number;
+}
+
+/** M13 (docs/ai/09 M1, M2, M4–M8; doc 13 W12; memory design D42): pause runs and the memory list. AI-stage
+ *  tunables; the guard's `t_keep` lives in the question bank. The mock never writes memories. */
+export interface MemoryKnobs {
+  /** Doc 09 M1 trigger 1: the session stream left with nobody back this long starts a pause run. */
+  leaveGraceMs: number;
+  /** Pause runs at once (never the reply slots). */
+  maxConcurrent: number;
+  /** Doc 09 M2: a longer stretch runs in pieces of this many tokens. */
+  pieceTokens: number;
+  /** Doc 09 M6: failed tries on one checkpoint before the piece is skipped. */
+  maxTries: number;
+  /** Doc 09 M8: the memory list in system message 1, filled to this many tokens. */
+  blockTokens: number;
+  /** Recency = max(recencyFloor, 0.5 ^ (days / halfLifeDays)). */
+  halfLifeDays: number;
+  recencyFloor: number;
+  /** D-71's down-weighting by the memory's source mode. */
+  modeWeight: { oneOnOne: number; group: number; debate: number; watch: number };
+  /** Doc 09 M4: an added line scored under this is dropped. */
+  minImportance: number;
+  /** Doc 09 M5: an added line this close (cosine) to a current memory reinforces it instead. */
+  dupCosine: number;
 }
 
 export interface RuntimeConfig {
@@ -70,6 +122,8 @@ export interface RuntimeConfig {
   /** M11 (doc 08 V6; debate D11): how long the Auto host's written line may hold the debate: the welcome until Start +
    *  this, every other line until its banner + this; then the fixed sentence shows. The mock's host is instant. */
   debate: { hostWelcomeWaitMs: number; hostBannerWaitMs: number };
+  /** M13: pause runs and the memory list. */
+  memory: MemoryKnobs;
 }
 
 export const RUNTIME: RuntimeConfig = {
@@ -100,10 +154,18 @@ export const RUNTIME: RuntimeConfig = {
     agent: {
       pool: 20, candidates: 8, blockTokens: 1400, mmrLambda: 1.0, k: { oneOnOne: 3, group: 2, watch: 2, debate: 2 },
       pieceTarget: 300, pieceMax: 400, rewriteMs: 1200, deepCheckMs: 1500, queryEmbedWaitMs: 200,
+      // M13 (memory D42): recall's numbers, tuned in phase 10
+      recall: { pool: 10, perCorpus: 5, candidates: 6, mmrLambda: 0.7, keep: 3, fallbackKeep: 2, checkMs: 1500,
+        tailTokens: 400, lineWords: 60, linesDense: true, standoutP: 0.25, standoutRatio: 3 },
     },
   },
   persona: { repeatHint: false, moodLine: false },
   context: { voiceReminder: false },
   emotion: { fade: ["surprised", "embarrassed"] },   // M9 (turn-plan-emotion D13): moments, not moods
   debate: { hostWelcomeWaitMs: 3000, hostBannerWaitMs: 1500 },
+  memory: {
+    leaveGraceMs: 30_000, maxConcurrent: 2, pieceTokens: 8000, maxTries: 3, blockTokens: 1000, halfLifeDays: 30,
+    recencyFloor: 0.5, modeWeight: { oneOnOne: 1.0, group: 1.0, debate: 0.85, watch: 0.7 }, minImportance: 0.25,
+    dupCosine: 0.85,   // M13 phase 10: a pre-filter; an add this close to a memory asks Jev "same fact?"
+  },
 };

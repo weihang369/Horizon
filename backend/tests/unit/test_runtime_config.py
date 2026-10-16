@@ -43,3 +43,12 @@ def test_the_emotion_fade_set_loads() -> None:   # M9 (turn-plan-emotion task 2.
 def test_the_host_waits_load() -> None:   # M11 (debate task 6.1; doc 08 V6; design D11)
     r = load_runtime_config(SEED).runtime
     assert (r.host_welcome_wait_ms, r.host_banner_wait_ms) == (3000.0, 1500.0)
+
+
+def test_the_memory_knobs_load() -> None:   # M13 (memory task 2.2; doc 09 M1, M2, M4–M8; design D42)
+    m = load_runtime_config(SEED).runtime.memory
+    assert (m.leave_grace_ms, m.max_concurrent, m.piece_tokens, m.max_tries) == (30_000, 2, 8000, 3)
+    assert (m.block_tokens, m.half_life_days, m.recency_floor) == (1000, 30, 0.5)
+    assert m.mode_weight == {"one_on_one": 1.0, "group": 1.0, "debate": 0.85, "watch": 0.7}
+    assert m.weight("watch") == 0.7 and m.weight(None) == 1.0 and m.weight("seed") == 1.0
+    assert (m.min_importance, m.dup_cosine) == (0.25, 0.85)   # M13 phase 10: dupCosine is Jev's pre-filter

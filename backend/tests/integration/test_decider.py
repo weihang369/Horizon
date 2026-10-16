@@ -156,7 +156,8 @@ def test_timeouts_from_config() -> None:
             t.for_decision("debate_plan")) == (0.4, 0.7, 0.483, 0.651)   # follow_plan, debate_plan: measured p90s
     assert (t.for_decision("guardrail"), t.for_decision("guardrail_prompt"), t.for_decision("reaction"),
             t.for_decision("face_check")) == (0.7, 1.5, 1.5, 1.5)
-    assert t.for_decision("importance") == 3.0  # the default
+    assert t.for_decision("importance") == t.for_decision("memory_guard") == 30.0   # M13 (memory D42): background
+    assert t.for_decision("passage_set") == t.decision["default"] == 3.0   # anything else: the default
     assert not {"gate", "rerank", "emotion"} & set(t.decision)  # removed with their purposes (design D9, D10)
 
 

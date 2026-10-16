@@ -22,6 +22,7 @@ PURPOSE_CATEGORY: dict[str, Category] = {
     "follow_plan": "decision",                           # M10 (group-watch design D8, D20)
     "debate_plan": "decision",                           # M11 (debate design D8, D25)
     "deep_check": "decision",                            # M12 (rag D13, D21): Jev call 2, one request per passage
+    "memory_guard": "decision",                          # M13 (memory D15): one request per rewrite, in a pause run
     "query_rewrite": "chat",                             # M12 (rag D10): the speaker's search query, when needed
     "eval_plant": "chat",                                # M11 (debate D21): the planted weak sides, written once
     "query_embed": "embedding", "embed_doc": "embedding",
@@ -41,6 +42,9 @@ class CallContext:
     job_id: str | None = None
     message_id: str | None = None
     creation: bool = False               # counts toward the character's creation cap (unapproved characters only)
+    # M13 (memory D11; provider-gateway "A call can be marked as never pausing sessions"): memory pause runs and the
+    # window-drop indexing are background work: reaching or being refused by the daily cap through them pauses nothing
+    pauses_sessions: bool = True
 
     @property
     def drains(self) -> bool:
@@ -49,9 +53,10 @@ class CallContext:
 
 def call_ctx(purpose: str, *, category: Category | None = None, world_id: str | None = None,
              character_id: str | None = None, session_id: str | None = None, job_id: str | None = None,
-             message_id: str | None = None, creation: bool = False) -> CallContext:
+             message_id: str | None = None, creation: bool = False, pauses_sessions: bool = True) -> CallContext:
     cat = category or PURPOSE_CATEGORY.get(purpose) or ("image" if purpose.startswith("image_") else None)
     if cat is None:
         raise ValueError(f"purpose {purpose!r} needs an explicit ledger category")
     return CallContext(category=cat, purpose=purpose, world_id=world_id, character_id=character_id,
-                       session_id=session_id, job_id=job_id, message_id=message_id, creation=creation)
+                       session_id=session_id, job_id=job_id, message_id=message_id, creation=creation,
+                       pauses_sessions=pauses_sessions)

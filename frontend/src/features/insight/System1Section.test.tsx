@@ -50,6 +50,28 @@ describe("System 1 section", () => {
     expect(resolveId("chr_seedRin", trace, nameOf)).toBe("Rin");
   });
 
+  it("groups recall's rows as earlier lines and resolves mem_ and msg_ through what the turn was given (M13 D35)", () => {
+    const t: TurnTrace = {
+      messageId: "msg_a2",
+      calls: [{ purpose: "deep_check", model: "typesafe/jev-1.13", costUsd: 0.00001, latencyMs: 640 }],
+      memory: { recalled: [{ memoryItemId: "mem_1", text: "Kai plays the cello every Sunday morning.", score: 0.81 }] },
+      contextInSession: [{ text: "Kai: My sister Mia just started nights.", messageId: "msg_9" }],
+      system1: {
+        questions: [
+          { purpose: "deep_check", id: "passage", version: 2, label: "does this passage answer it?", about: "kch_p1", answer: "answers", result: "used" },
+          { purpose: "deep_check", id: "recall", version: 1, label: "does this earlier line help?", about: "mem_1", answer: "yes", p: 0.81, result: "used" },
+          { purpose: "deep_check", id: "recall", version: 1, label: "does this earlier line help?", about: "msg_9", answer: "yes", p: 0.7, result: "used" },
+        ],
+      },
+    };
+    const g = groupSystem1(t);
+    expect(g.map((x) => x.label)).toEqual(["passages", "earlier lines"]);
+    expect(g[1].latencyMs).toBe(640);
+    expect(resolveId("mem_1", t, nameOf)).toBe("“Kai plays the cello every Sunday mornin…”");
+    expect(resolveId("msg_9", t, nameOf)).toBe("“Kai: My sister Mia just started nights.”");
+    expect(resolveId("msg_404", t, nameOf)).toBe("a message");
+  });
+
   it("is hidden without rows and absent in Compact mode", () => {
     expect(groupSystem1({ messageId: "msg_a1" })).toEqual([]);
     expect(showSystem1({ messageId: "msg_a1" }, false)).toBe(false);

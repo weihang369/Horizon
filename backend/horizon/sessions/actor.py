@@ -120,6 +120,10 @@ class SessionActor:
         self._superseded: asyncio.Future[None] = asyncio.get_running_loop().create_future()
         self.stopped = False
         self.summary: Any = None   # M8: sessions.summary.SummaryTask, made on first use (docs/ai/05 X2, X3)
+        # M13 (memory D23): each `agent` speaker's memory list, frozen for the sitting; Forget and a run's commit drop it
+        self.memory_blocks: dict[str, list[Any]] = {}
+        self.memory_overflow: dict[str, bool] = {}
+        self.memory_gen: dict[str, int] = {}   # bumped by each drop, so a read that raced one is never cached
 
     # ── views ──
     @property
@@ -342,7 +346,9 @@ class SessionActor:
     # ── writing ──
     async def emit(self, *events: Mapping[str, Any], traces: Mapping[str, TraceMeta] | None = None) -> list[Wire]:
         async with self.write_lock:
-            return await self.writer.append(list(events), traces=traces)
+            stored = await self.writer.append(list(events), traces=traces)
+        self._memory_triggers(stored)
+        return stored
 
     async def emit_checked(self, event: Mapping[str, Any], check: Callable[[Wire], bool]) -> list[Wire]:
         """Append `event` only if `check(state)` passes under the writer lock, just before the append (M9 D20): nothing
@@ -350,11 +356,21 @@ class SessionActor:
         async with self.write_lock:
             if not check(self.state):
                 return []
-            return await self.writer.append([event])
+            stored = await self.writer.append([event])
+        self._memory_triggers(stored)
+        return stored
 
     async def emit_with(self, events: Sequence[Mapping[str, Any]], extra: Any) -> list[Wire]:
         async with self.write_lock:
-            return await self.writer.append(list(events), extra=extra)
+            stored = await self.writer.append(list(events), extra=extra)
+        self._memory_triggers(stored)
+        return stored
+
+    def _memory_triggers(self, stored: Sequence[Mapping[str, Any]]) -> None:
+        """M13 (memory D7): leave, end, a debate's end, watch's turn cap and a kept turn's end request a pause run."""
+        runs = self.rt._memory_runs
+        if runs is not None and stored:
+            runs.on_events(self.sid, stored)
 
     # ── System 1 rows after the turn (contract rev 1.4; ai-foundation design D24) ──
     async def append_system1(self, message_id: str, variant_id: str | None, rows: Sequence[Mapping[str, Any]],
@@ -408,6 +424,8 @@ class SessionActor:
             wait = max(1.0, self.last_active_ms + idle_ms - now)
             await self.rt.clock.sleep(wait / 1000)
             if self.is_idle(idle_ms):
+                if self.rt._memory_runs is not None:   # M13 (memory D7 trigger 7): the backstop
+                    self.rt._memory_runs.request(self.sid, reason="idle release")
                 self.rt.spawn(f"release:{self.sid}", self.manager.release(self.sid, self))
                 return
 

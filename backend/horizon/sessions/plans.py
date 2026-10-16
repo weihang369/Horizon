@@ -14,7 +14,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
 from horizon.ai.contexts import CastKind, CastPlan, CastRequest, DebateFacts, SessionContext, SteerBlock
-from horizon.sessions.context import character_view, characters, document_titles, session_context
+from horizon.sessions.context import character_view, characters, document_titles, recallable, session_context
 
 if TYPE_CHECKING:
     from horizon.sessions.actor import SessionActor
@@ -73,7 +73,7 @@ async def cast_request(actor: SessionActor, kind: CastKind, candidates: Sequence
                        turn_index=actor.mode.turn, base_faces=base_faces(actor, sctx, ids), manual=manual(actor),
                        turns_since=turns_since(actor, ids, scene_start), steer_block=steer_block,
                        started_at=started, deadline_at=deadline_at, debate=debate, documents=docs,
-                       message_id=message_id)
+                       message_id=message_id, recallable=await recallable(rt, actor, ids))   # M13 (memory D26)
 
 
 async def plan_cast(actor: SessionActor, req: CastRequest) -> CastPlan | None:

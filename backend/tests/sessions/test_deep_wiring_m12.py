@@ -14,7 +14,7 @@ from sqlalchemy import create_engine, inspect, text
 
 from horizon.ai.agent import gates
 from horizon.ai.contexts import CastPlan, GateAnswer, MessageNouls, TurnContext, TurnPlan
-from horizon.db.migrate import alembic_config, upgrade_head
+from horizon.db.migrate import alembic_config
 from horizon.services.ai_meta import store_rewrite, stored_rewrite
 from horizon.sessions.system1 import MAX_ROWS, section
 from tests.conftest import Api
@@ -242,7 +242,7 @@ def test_the_migration_up_and_down(tmp_path: Path) -> None:
     from alembic import command as alembic
 
     db = tmp_path / "m.db"
-    upgrade_head(db)
+    alembic.upgrade(alembic_config(db), "0004")   # M13's 0005 comes after; it has its own test
     eng = create_engine(f"sqlite:///{db}")
     names = set(inspect(eng).get_table_names())
     assert "message_ai_meta" in names

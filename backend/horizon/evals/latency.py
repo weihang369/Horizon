@@ -82,8 +82,8 @@ class Latency:
     name = "latency"
 
     def refuse(self, opts: Options) -> str | None:
-        if opts.part == "deep" and opts.profile != "agent":   # M12 (rag D24): the deep path is agent's
-            return "horizon: `latency --part deep` runs the agent deep path; pass --profile agent"
+        if opts.part in ("deep", "recall") and opts.profile != "agent":   # M12 (rag D24), M13 (memory D33): agent's
+            return f"horizon: `latency --part {opts.part}` runs the agent deep path; pass --profile agent"
         return None
 
     def plan(self, opts: Options, prices: Any, *, paid: bool) -> Plan:
@@ -103,6 +103,10 @@ class Latency:
             from horizon.evals import deep_timing
 
             return deep_timing.plan(opts, prices, paid=paid)
+        if opts.part == "recall":   # M13 (memory D33; doc 09 check 4): recall turns, then both gates
+            from horizon.evals import recall_timing
+
+            return recall_timing.plan(opts, prices, paid=paid)
         if opts.part == "debate":   # M11 (debate D9, D22): 30 plans, 10 bridges and 5 verdicts
             n = opts.limit or DEBATE_PLANS
             per = decision_estimate(prices, {"quoted_arguments": "x" * 7000}, {"q": {"instructions": "x" * 2400}})
@@ -147,6 +151,11 @@ class Latency:
             from horizon.evals import deep_timing
 
             await deep_timing.run(env, plan, res)
+            return res
+        if env.opts.part == "recall":
+            from horizon.evals import recall_timing
+
+            await recall_timing.run(env, plan, res)
             return res
         app = create_app(env.rt.cfg, runtime=env.rt)
         sessions: dict[str, str] = {}

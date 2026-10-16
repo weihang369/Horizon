@@ -15,7 +15,7 @@ writes them the same way.
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
-from typing import Any
+from typing import Any, Literal
 
 from horizon.ai.agent.persona import first_name
 from horizon.ai.contexts import GateAnswer, MessageNouls
@@ -23,6 +23,7 @@ from horizon.ai.decider import Answers, DecisionResult, NoulAnswer, Question
 from horizon.ai.questions import bank
 
 GATE = "docs"
+EARLIER = "earlier"   # M13 (memory D26): "needs something from earlier?", per candidate with something to search
 STANDALONE = "standalone"
 ENGLISH = "english"
 # D8: the kinds whose reply answers a user message in 1:1 or group, so may abstain (the second reply is the follow plan)
@@ -43,6 +44,21 @@ def gate_key(cid: str) -> str:
     return f"{GATE}:{cid}"
 
 
+def earlier_key(cid: str) -> str:
+    return f"{EARLIER}:{cid}"
+
+
+def t_earlier() -> float:
+    return float(bank().get(EARLIER).thresholds.get("t_gate", 0.4))
+
+
+def recall_asked(candidates: Sequence[str], recallable: Sequence[str], dropped: Sequence[str] = ()) -> list[str]:
+    """M13 (D26): who is asked "needs something from earlier?": candidates with something to search (the session has
+    indexed lines, or the candidate has an overflow) whose gates X9's cap didn't drop."""
+    have = set(recallable)
+    return [c for c in candidates if c in have and c not in dropped]
+
+
 def thresholds() -> dict[str, float]:
     b = bank()
     d, s, e = b.get(GATE).thresholds, b.get(STANDALONE).thresholds, b.get(ENGLISH).thresholds
@@ -55,19 +71,23 @@ def gated(candidates: Sequence[str], documents: Mapping[str, Sequence[str]], dro
     return [c for c in candidates if documents.get(c) and c not in dropped]
 
 
-def questions(names: Mapping[str, str], who: Sequence[str], *, nouls: bool) -> dict[str, Question]:
-    """The gate questions to add to a plan's request."""
+def questions(names: Mapping[str, str], who: Sequence[str], *, nouls: bool,
+              recall: Sequence[str] = ()) -> dict[str, Question]:
+    """The gate questions to add to a plan's request. M13 (D26): `recall` are asked "needs something from earlier?"."""
     b = bank()
     qs: dict[str, Question] = {gate_key(c): b.question(GATE, name=_name(names.get(c, c)), about=c) for c in who}
     if nouls and who:
         qs[STANDALONE] = b.question(STANDALONE)
         qs[ENGLISH] = b.question(ENGLISH)
+    for c in recall:
+        qs[earlier_key(c)] = b.question(EARLIER, name=_name(names.get(c, c)), about=c)
     return qs
 
 
 def fallbacks(qs: Mapping[str, Question]) -> Answers:
     """Every gate's fallback: no (quick, no rewrite). The Decider marks them `source="fallback"`."""
-    return {k: NoulAnswer(0.0) for k in qs if k.startswith(f"{GATE}:") or k in (STANDALONE, ENGLISH)}
+    return {k: NoulAnswer(0.0) for k in qs
+            if k.startswith((f"{GATE}:", f"{EARLIER}:")) or k in (STANDALONE, ENGLISH)}
 
 
 def _p(res: DecisionResult, key: str) -> float | None:
@@ -89,6 +109,42 @@ def read(res: DecisionResult, who: Sequence[str], *, nouls: bool,
         msg = MessageNouls(standalone=s, english=e, outcome="jev" if s is not None and e is not None else why,  # type: ignore[arg-type]
                            message_id=message_id)
     return gates, msg
+
+
+def read_recall(res: DecisionResult, who: Sequence[str]) -> dict[str, GateAnswer]:
+    """M13 (D26): the "needs something from earlier?" answers, as code sees them."""
+    why = "late" if res.failure == "timeout" else "fallback"
+    out: dict[str, GateAnswer] = {}
+    for c in who:
+        p = _p(res, earlier_key(c))
+        out[c] = GateAnswer(p=p, outcome="jev" if p is not None else why)   # type: ignore[arg-type]
+    return out
+
+
+def recalls(gate: GateAnswer | None) -> bool:
+    """M13 (D26): recall runs for the speaker at or above its own `t_gate`; late, failed or dropped: no recall."""
+    return gate is not None and gate.p is not None and gate.p >= t_earlier()
+
+
+def branch(gate: GateAnswer | None, recall_gate: GateAnswer | None = None) -> Literal["quick", "deep"]:
+    """A turn is deep when "needs documents?" or "needs something from earlier?" says yes for its speaker."""
+    return "deep" if deep(gate) or recalls(recall_gate) else "quick"
+
+
+def recall_row(cid: str, gate: GateAnswer, *, purpose: str, result: str | None = None) -> dict[str, Any]:
+    """M13 (D35): one "needs something from earlier?" row about a candidate, as the `docs` rows are built."""
+    e = bank().get(EARLIER)
+    row: dict[str, Any] = {"purpose": purpose, "id": EARLIER, "version": e.version, "label": e.label, "about": cid}
+    if gate.p is None:
+        row.update(answer="no", compared=[], result="fallback" if result != "not_used" else "not_used",
+                   action="no recall")
+        return row
+    p = round(gate.p, 4)
+    yes = gate.p >= t_earlier()
+    row.update(answer="yes" if yes else "no", p=p, compared=[{"name": "t_gate", "value": p,
+                                                               "threshold": t_earlier()}],
+               result=result or "used", action="search earlier lines" if yes else "no recall")
+    return row
 
 
 def dropped(who: Sequence[str]) -> dict[str, GateAnswer]:
@@ -144,7 +200,7 @@ def noul_rows(msg: MessageNouls, *, purpose: str, considered: bool) -> list[dict
 
 
 def speaker_rows(cid: str, gates: Mapping[str, GateAnswer], msg: MessageNouls | None, *, purpose: str, kind: str,
-                 everyone: bool = False) -> list[dict[str, Any]]:
+                 everyone: bool = False, recall_gates: Mapping[str, GateAnswer] | None = None) -> list[dict[str, Any]]:
     """A reply's gate rows: its own `docs` row, the other candidates' `not_used` (none on an Everyone reply, D22), and
     the message's nouls when asked."""
     rows: list[dict[str, Any]] = []
@@ -158,4 +214,11 @@ def speaker_rows(cid: str, gates: Mapping[str, GateAnswer], msg: MessageNouls | 
             rows.append(gate_row(other, g, purpose=purpose, abstain_kind=abstain_kind, result="not_used"))
     if msg is not None:
         rows.extend(noul_rows(msg, purpose=purpose, considered=deep(gates.get(cid))))
+    for other, g in (recall_gates or {}).items():   # M13 (D35): the earlier rows, after the docs rows
+        if g.outcome == "dropped":
+            continue
+        if other == cid:
+            rows.append(recall_row(other, g, purpose=purpose))
+        elif not everyone:
+            rows.append(recall_row(other, g, purpose=purpose, result="not_used"))
     return rows

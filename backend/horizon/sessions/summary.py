@@ -10,6 +10,8 @@ persona-context design D9, D11, D12).
   don't touch it: it folds older, finished messages, which Forget never changes (D11).
 - **One writer:** every `rolling` row, real or fallback, is written here under the session's write lock, after
   re-reading the latest row; a result whose boundary isn't newer is discarded.
+- **M13 (memory D29):** once a summary row is written, the messages it folded are indexed for recall
+  (`horizon.services.memory.index`), in this same task: Stop doesn't cancel it, a delete does.
 - **Bounded failures:** per summary boundary, a second attempt waits until the window has grown by 1,000 more tokens;
   after 2 failures the free fallback is written (the old notes minus their oldest lines, then the last 12 dropped
   lines, within 600 tokens). The counts live on the actor: a restart allows at most 2 more paid attempts.
@@ -104,21 +106,32 @@ class SummaryTask:
             if st.failures < MAX_ATTEMPTS:
                 return
             text = fallback_summary(previous, lines)
-        await self._write(plan.upto_seq, text)
+        written = await self._write(plan.upto_seq, text)
         self.attempts.pop(upto, None)
+        if written:   # M13 (memory D29): the lines that left the window are indexed for recall, once
+            await self._index(sctx, [m.id for m in plan.dropped], you, {m.character_id: m.name for m in views
+                                                                         if m.character_id})
 
-    async def _write(self, upto_seq: int, text: str) -> None:
+    async def _index(self, sctx: Any, ids: list[str], you: str, names: dict[str, str]) -> None:
+        from horizon.services.memory.index import index_drop, rows_of
+
+        actor, rt = self.actor, self.actor.rt
+        rows = rows_of(actor.state.get("messages", {}), ids, names, you, str(actor.session["mode"]))
+        await index_drop(rt, actor.sid, str(actor.session["worldId"]), rows)
+
+    async def _write(self, upto_seq: int, text: str) -> bool:
         from horizon.sessions.context import _latest_summary
 
         actor, rt = self.actor, self.actor.rt
         async with actor.write_lock:
             latest, _ = await _latest_summary(rt, actor.sid)
             if latest >= upto_seq:
-                return   # another row already covers this boundary (it shouldn't): never two summaries racing
+                return False   # another row already covers this boundary (it shouldn't): never two summaries racing
             async with rt.db.write() as tx:
                 await tx.conn.execute(t.session_summaries.insert().values(
                     session_id=actor.sid, upto_seq=upto_seq, kind="rolling", character_id=None, text=text,
                     created_at=rt.now_iso()))
+        return True
 
 
 def summary_task(actor: SessionActor) -> SummaryTask:

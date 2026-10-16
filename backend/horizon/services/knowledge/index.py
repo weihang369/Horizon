@@ -15,7 +15,7 @@ import sqlite_vec
 from sqlalchemy import and_, select, text
 
 from horizon.ai.contexts import KnowledgeHit, MemoryHit
-from horizon.ai.retrieval import Candidate, rank_score
+from horizon.ai.retrieval import Candidate, KnowledgeCorpus, rank_score
 from horizon.db import spaces
 from horizon.db import tables as t
 
@@ -33,6 +33,10 @@ class ScopedIndex:
     @property
     def _scope(self) -> dict[str, Any]:
         return {"w": self.world_id, "c": self.character_id}
+
+    def knowledge(self) -> KnowledgeCorpus:
+        """M13 (memory D30): the speaker's documents as a `Corpus` for `retrieval.search`."""
+        return KnowledgeCorpus(self)
 
     async def knowledge_fts(self, query: str, limit: int) -> list[Candidate]:
         async with self.rt.db.read() as conn:

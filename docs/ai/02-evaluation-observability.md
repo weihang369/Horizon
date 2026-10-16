@@ -205,6 +205,13 @@ frozen transcripts start from a long committed history.
   | Memory suite (doc 09 M12) | **24 rewrite stretches** (1:1 × 8, group × 8, watch × 4, debate × 4), split 12 dev / 12 test, each with an existing list holding planted changes and confirmations, plus 6 planted secrets and 6 small-talk stretches; **60 in-session and 40 overflow recall probes**; **20 two-session pairs**, both writers with the `agent`'s recall | Rewrite coverage, faithfulness and lost facts; no secrets stored; hybrid recall against its ablations; recall and over-mentioning across a real pause |
   | Judge checks (B4) | **60 per judge question** (30 real + 30 planted failures), **30 pairs** for the pairwise judge | Planted failures have known answers, so they cost no labelling |
 
+  *Built in M13 (`memory` D40): `importance` 100 (41 to drop), `memory_guard` 122 (60 lossy), `earlier` 120 (60 yes)
+  and `recall` 120 (60 relevant; lines and memories), all from 40 labelled facts written blind
+  (`evals/datasets/earlier/facts.py`), split by the hash rule. The memory suite's inputs are in `evals/memory/`:
+  36 rewrite items (24 stretches with planted lists of 10–20 lines, 4 not in English; 6 secrets; 6 small talk),
+  100 recall probes (60 in-session over the four long frozen transcripts, 40 overflow with 40–60 memories each) and
+  20 two-session pairs. The review pass is `evals/reviews/m13-review.md`.*
+
 - **Every layer 1 and layer 2 set is split once, when it is created: 2/3 dev and 1/3 test.**
   - Wording, floors and thresholds are tuned **on dev only**.
   - The test split runs **once, at acceptance**, and its number is the one reported.
@@ -311,6 +318,11 @@ frozen transcripts start from a long committed history.
   | **Debate quality** (doc 08 V11) | 2 nouls per argument: keeps its side · engages (answers a specific point the other side made; rebuttals and closings only). Targets for `agent`: keeps its side ≥ 95 %, engages ≥ 80 %, both next to `naive`. *Built in M11 (`debate` D21): `judge_keeps_side` "breaks its side?" and `judge_engages` "answers nothing said?", each B4-validated on 30 real + 30 planted (keeps-side: an argument asked as the other side's; engages: the speaker's opening in their rebuttal slot); `horizon eval debate-quality` gives the `naive` column, the debate free runs the `agent` column, and a judge that hasn't passed reads "NOT COUNTED". M11 reports both as a signal; the targets are judged at M15. Also built in M11: `judge_starts_new` (D18, the steer) and `judge_summary_unsupported` v2 with the premise (D19), each re-validated; and five first-pass nouls for the verdict prose and the host bridges that are never validated, because every one of their 20 items is read by hand (D21)* | the motion, the side, the previous opposing argument + the argument |
   | **Memory rewrite** (doc 09 M12) | 3 nouls: an expected change is covered (≥ 80 %) · a written line is supported by the transcript (≥ 95 %) · a rewrite lost a still-true fact (≤ 5 %) | the stretch (or the old and new line) + one line |
   | **Over-mention** (doc 09 M12) | 1 noul: the reply drags up a memory that doesn't fit the moment (a pass is "no"); ≤ 10 % on unrelated turns | the memory block + the last user line + the reply |
+
+  *Built in M13 (`memory` D40): `judge_memory_missed`, `judge_memory_unsupported`, `judge_memory_lost` and
+  `judge_over_mention`, each with 30 planted items; their 30 real items are labelled from the first paid memory run's
+  saved judge states, and each reads "NOT COUNTED" until its current version passes. "Memory for an absent
+  character" is a unit test: the call names characters by their number among those present.*
   | **Safety** (doc 11 S10) | the `safety` suite: input, care, output, injection, honesty and advice, drafter, drift; items in `private/evals/safety/` | doc 11 S10's table |
 
 - **Pairwise numbers:**
@@ -487,6 +499,11 @@ with itself only about 64 % of the time, so that rule mixes up ordinary noise wi
     comparison of two runs), `deep-check` (doc 10 check 5), `notfound` (the Not-found reply end to end), `latency
     --part deep`, and the `docs`, `standalone`, `english` and `reask` sets in `decisions`. `--max-usd` is per run
     (default 1.5 × the estimate), and every paid run's folder is marked `.keep` when it finishes (D30).*
+  - *Built in M13 (`memory` D33, D39, D40): `memory` (`--part rewrite|recall|layer3|dup`; `--arm search=bm25|dense,
+    mmr=off, lambda=…, space=…` for recall's comparisons; `--latency` times the rewrite runs (check 2) and reads every
+    recall check to its end for `recall.checkMs`, store-bypassed), `memory-compare` (an arm against the default, by
+    K3's rule per probe kind), `latency --part recall` (check 4 and D33's both-gates timing), `embed-probe` (U3's
+    provider probe), and the `importance`, `memory_guard`, `earlier` and `recall` sets in `decisions`.*
   - *Built in M8 (`persona-context`): `drafter`, `summary`, `long` and `transcript` (the long-history frozen transcripts, generated by `naive`), `--set` (a dataset folder for `decisions`, a script for `long` and `transcript`), nouls in `decisions`, and B4's judge validation (`decisions --set judges`, recorded in `evals/baselines/judges.json`; a judge's figures read "unvalidated" until its current version passes). The 13 judges are `eval_judge` bank entries whose "yes" is the failure. The reply-rule code checks are `horizon/evals/reply_checks.py`.*
   - plus **`horizon eval capture <messageId>`** (B10) and **`horizon eval import <sessionId>`** ([doc 13](13-wrap-up.md) W10, built
     in the v1 endgame), which scores a recorded session as a free run without new replies.
@@ -816,7 +833,8 @@ section.
 
 - ~~The debate rubric and its judge questions (task 8).~~ Resolved by doc 08 V7 and V11. *Built in M11 (`debate` D7,
   D12, D21).*
-- ~~The memory retrieval set and the memory-importance labels (task 9).~~ Resolved by doc 09 M12.
+- ~~The memory retrieval set and the memory-importance labels (task 9).~~ Resolved by doc 09 M12. *Built in M13
+  (`memory` D40; [m13.md](checks/m13.md)).*
 - ~~The final embedding model and its dimensions (task 10).~~ Resolved by doc 10 K3: the retrieval suite's comparison
   test decides between Qwen3-Embedding-8B at 1,024 and 2,048 and bge-m3. *Decided in M12 ([m12.md](checks/m12.md)
   11.5): neither challenger gained (2,048: −0.5 points of dev Recall@8; bge-m3: 0.0), so `qwen3-emb-8b@1024+h` stays.*

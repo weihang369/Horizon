@@ -197,14 +197,17 @@ class JevTurnPlanner:
         key = f"{qid}:{cid}"
         q = bank().question(qid, seed=f"{self.seed(req)}:{cid}", name=_name(name), about=cid)
         gated = gates.gated([cid], req.documents, state.dropped_gates) if req.kind == "reply" else []
-        qs = {key: q, **gates.questions({cid: name}, gated, nouls=True)}
-        if gated:   # rag 11.5: the query embedding starts with Jev call 1; 11.9: so does a short message's rewrite
+        # M13 (memory D26): "needs something from earlier?" only with something to search, and not dropped by X9
+        recalling = gates.recall_asked([cid], req.recallable, state.dropped_gates) if req.kind == "reply" else []
+        qs = {key: q, **gates.questions({cid: name}, gated, nouls=True, recall=recalling)}
+        if gated or recalling:   # rag 11.5 (M13 D32: widened): the query embedding starts with Jev call 1
             from horizon.ai.agent import rewrite as rw
             from horizon.ai.agent.deep import start_early_embedding
 
             mid = answered_message(req.session)[0]
-            start_early_embedding(self.deps, req.session, gated, req.latest, mid)
-            if req.cast and not req.stored_rewrite:
+            start_early_embedding(self.deps, req.session, gated or recalling, req.latest, mid,
+                                  any_space=bool(recalling))
+            if gated and req.cast and not req.stored_rewrite:   # 11.9: so does a short message's rewrite
                 rw.start_early(self.deps, TurnContext(session=req.session, speaker=req.cast[0],
                                                       message_id=req.message_id, max_tokens=1), req.latest, mid)
 
@@ -221,7 +224,7 @@ class JevTurnPlanner:
             raise
         return res, {"key": key, "qid": qid, "version": q.meta.version if q.meta else 0,
                      "label": q.meta.label if q.meta else "emotion", "timeout_s": decider.timeout_for(PURPOSE),
-                     "gated": gated}
+                     "gated": gated, "recalling": recalling}
 
     def decide(self, req: PlanRequest, state: PlanState, result: tuple[DecisionResult, dict[str, Any]]) -> TurnPlan:
         res, meta = result
@@ -236,15 +239,19 @@ class JevTurnPlanner:
             calls.append({"purpose": PURPOSE, "model": self.deps.prices.decision.model, "costUsd": 0.0,
                           "latencyMs": float(meta["timeout_s"] * 1000), "fallback": True})
         found, nouls = gates.read(res, meta["gated"], nouls=True)
-        gate = found.get(req.speaker_id)
-        rows = [row, *gates.speaker_rows(req.speaker_id, found, nouls, purpose=PURPOSE, kind=req.kind)]
+        recall = gates.read_recall(res, meta.get("recalling", []))
+        recall.update(gates.dropped([c for c in [req.speaker_id] if c in req.recallable and c in state.dropped_gates]))
+        gate, rgate = found.get(req.speaker_id), recall.get(req.speaker_id)
+        rows = [row, *gates.speaker_rows(req.speaker_id, found, nouls, purpose=PURPOSE, kind=req.kind,
+                                         recall_gates=recall)]
         return TurnPlan(seed=self.seed(req), kind=req.kind, emotion=face, rows=rows, calls=calls,
                         state_tokens=state.tokens, dropped_gates=list(state.dropped_gates), gate=gate,
-                        abstain_ok=gates.abstain_allowed(gate, req.kind), nouls=nouls)
+                        abstain_ok=gates.abstain_allowed(gate, req.kind), nouls=nouls, recall_gate=rgate)
 
     def route(self, req: PlanRequest, plan: TurnPlan) -> Branch:
-        """M12 (rag D8): deep when the speaker's own gate is at or above `t_gate`."""
-        return "deep" if gates.deep(plan.gate) else "quick"
+        """M12 (rag D8): deep when the speaker's own gate is at or above `t_gate`. M13 (D26): or its "needs something
+        from earlier?" at or above its own."""
+        return gates.branch(plan.gate, plan.recall_gate)
 
     async def deep(self, req: PlanRequest, plan: TurnPlan) -> TurnPlan:
         """M12 (rag D15): the plan graph's deep node in 1:1, so the plan returns with its passages. A bug inside is a
@@ -259,7 +266,10 @@ class JevTurnPlanner:
         dreq = DeepRequest(session=req.session, speaker=view, kind=req.kind, message=req.latest, message_id=mid,
                            earlier=earlier, previous_user=previous, gate=plan.gate, abstain_ok=plan.abstain_ok,
                            nouls=plan.nouls, stored_rewrite=req.stored_rewrite, k=knobs.k_for("one_on_one"),
-                           reply_message_id=req.message_id, started_at=req.started_at)
+                           reply_message_id=req.message_id, started_at=req.started_at,
+                           docs=gates.deep(plan.gate), recall=gates.recalls(plan.recall_gate),
+                           recall_gate=plan.recall_gate, upto_seq=req.upto_seq, block_ids=list(req.block_ids),
+                           has_overflow=req.has_overflow)
         res = await run_safely(self.deep_graph, dreq, self.deps)
         if res is None:
             failed = fallback_result(dreq, self.deps)

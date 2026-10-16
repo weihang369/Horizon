@@ -452,7 +452,7 @@ eval datasets arrive in M7.
 | M10 | the who-speaks slice; the episode recaps; the committed long watch history (≈ $0.02); **watch at Fast pace with the plan-ahead** (doc 07) | ≈ $0.07 |
 | M11 | the debate member slice; the `debate` suite's `agent` part; its one-off debate and plant generation (≈ $0.09). **The 10 timed host bridges and 5 verdicts are saved and used as suite items** (doc 08). *Spent in M11: **$0.19** over 21 runs, against its design's ≈ $0.24 plus ≈ $0.05 of free runs ([m11.md](checks/m11.md) 10.12)* | ≈ $0.14 |
 | M12 | `retrieval` with the comparisons; 10 rewrites; the standalone and English slice; **doc 10's check 2** (deep-turn and rewrite timing, which tunes `deepCheckMs` and `rewriteMs`). *Spent in M12: **$0.37** over 46 runs, of which $0.074 was a batch run twice by a leftover script, so **$0.30** as approved, against its design's ≈ $0.24; check 2 alone $0.13 ([m12.md](checks/m12.md) 11.10)* | ≈ $0.12 |
-| M13 | the `memory` suite's `agent` part and its `decisions` slice. **Its 6 checked rewrite calls are taken from the suite's 24**; 10 pause runs; 10 recall turns (doc 09) | ≈ $0.16 |
+| M13 | the `memory` suite's `agent` part and its `decisions` slice. **Its 6 checked rewrite calls are taken from the suite's 24**; 10 pause runs; 10 recall turns (doc 09). *Spent in M13: **$0.152** over 26 runs, all off-peak and approved, against its design's ≈ $0.27; check 4 with D33's timing alone $0.035 ([m13.md](checks/m13.md) 10.8)* | ≈ $0.16 |
 | M14 | `safety` incl. doc 12's parts; **the output check's timing** (doc 11 check 2). Doc 11's check 3 (no second reply after a block) is tested offline instead (W14) | ≈ $0.08 |
 | M15 | **`conversations`** (both profiles, ≈ $0.44); **the `naive` arms** of `debate` and `memory` (≈ $0.10); every other suite from the store; **the one must-pass latency run** (B8, NFR-01/02/29), after safety is in | ≈ $0.55 + latency ≈ $0.11 |
 | v1 endgame | **doc 12's v3 image check (was A4):** the first seed characters recreated in the app (Hana, Amara, Rin, Victor) are judged by eye for identity, skin tone, adult read, detail, age drift and outfits; W3's identity edit is tried once; how Seedream signals moderation is noted (doc 12 checks 1, 4) | none extra: these are the demo's own images (W10) |
@@ -638,11 +638,12 @@ save it and reuse it. Never pay for the same result twice.
 |---|---|---|---|
 | who-speaks, emotion, reaction floors; `floor.second`, `floor.member` | bank | 0.6 (found in M10: `who_first`, `who_scene`, `who_next`, `emotion_line`, `emotion_opening` **0.2**; `floor.second` **0.3**; [m10.md](checks/m10.md). Found in M11: `floor.member` **0.5**, `emotion_debate_opening` **0.2**; `who_scene`, `who_next` and `emotion_line` at v3 keep 0.2; [m11.md](checks/m11.md)) | M9–M11 |
 | `t_gate` (documents) / `t_confident` | bank | 0.35 / 0.8 (found in M12: **0.45** / **0.80**, test recall 0.93 / precision 1.00, `docs` v2; [m12.md](checks/m12.md) 11.3) | M12 |
-| `t_gate` (earlier lines) | bank | 0.4 | M13 |
+| `t_gate` (earlier lines) | bank | 0.4 (found in M13: **0.15**, `earlier` v2, recall-first by the user's choice; test recall 1.00, precision 0.55; [m13.md](checks/m13.md) 10.2) | M13 |
 | `t_standalone`; English | bank | 0.5; 0.5 (fixed) (found in M12: `t_standalone` **0.35**, test follow-ups rewritten 0.94, `standalone` v2; English 40/40 at 0.5) | M12 |
 | `t_keep` / `t_found` / `t_set` (doc 10) | bank | 0.6 / 0.6 / 0.5 (found in M12: **0.9 / 0.5**, `passage` v2, by K7's leave-one-out on dev with every answer back; `t_set` stays 0.5 with 18 set checks; test: 1 wrong abstain in 57, 13 of 14 abstained; [m12.md](checks/m12.md) 11.5, 11.6) | M12 |
-| `t_recall` | bank | 0.5 | M13 |
-| `t_keep` (doc 09 guard) | bank | 0.7 | M13 |
+| `t_recall` | bank | 0.5 (M13: **stays 0.5**; the rule's 0.30 had test precision 0.75; a clear standout below it is kept by `recall.standoutP` / `standoutRatio`; [m13.md](checks/m13.md) 10.2, 10.4) | M13 |
+| `t_keep` (doc 09 guard) | bank | 0.7 (found in M13: **0.35**, `memory_guard` v3, which counts a changed detail as kept; test lossy let through 0.04; [m13.md](checks/m13.md) 10.2) | M13 |
+| `t_same` (doc 09 duplicates, phase 10) | bank | 0.5 (M13: **stays 0.5** by the user's choice; the rule's 0.05 is perfect on the 122 pairs but sits against the "different" pairs) | M13 |
 | `t_end` | bank | 0.8 (found in M10: **0.5**, precision 1.00 / recall 0.91 on test) | M10 |
 | `safety.tSteer` / `tCare` / `tMotion` | bank | 0.7 / 0.3 / 0.7 | M14 |
 | `safety.tFlag` / `tBlock` | bank | 0.5 / 0.9 | M14 |
@@ -658,7 +659,7 @@ save it and reuse it. Never pay for the same result twice.
 | `debate.hostWelcomeWaitMs` / `hostBannerWaitMs` | runtime | 3,000 / 1,500 (doc 08 V6). *M11: bridges 10/10 within the 1,500; kept* | — |
 | `emotion.fade` | runtime | `["surprised", "embarrassed"]` (doc 06 E3) | — |
 | `persona.repeatHint` / `context.voiceReminder` | runtime | off / off (docs 04 P8, 05) | — |
-| `memory.*`, `retrieval.agent.*` | runtime | doc 09 §6, doc 10 K5. *M12 adds `retrieval.agent.queryEmbedWaitMs`, first **800** with the early start (`rag` D32.2: the query embedding from Malaysia took ≈ 1.1 s at the median), then **200** after check 2 measured p50 6.8 s that evening (D32.9); `mmrLambda` **1.0** (D32.7); `naive` and `scripted` keep `queryEmbedWaitMs` 400* | M12, M13 |
+| `memory.*`, `retrieval.agent.*` | runtime | doc 09 §6, doc 10 K5. *M12 adds `retrieval.agent.queryEmbedWaitMs`, first **800** with the early start (`rag` D32.2: the query embedding from Malaysia took ≈ 1.1 s at the median), then **200** after check 2 measured p50 6.8 s that evening (D32.9); `mmrLambda` **1.0** (D32.7); `naive` and `scripted` keep `queryEmbedWaitMs` 400. M13 adds `memory.dupCosine` **0.85** (now a pre-filter for the `same_fact` noul: no cosine separates a rewording from an extension) and `retrieval.agent.recall.*` (pool 10, candidates 6, λ 0.7, keep 3, `checkMs` **1,500**, kept by the user's choice over the tail's 3,200; `linesDense` **true**; `standoutP` **0.25**; `standoutRatio` **3**); [m13.md](checks/m13.md)* | M12, M13 |
 
 The noul starting values are chosen by each noul's cost of being wrong:
 - low where a miss is worse than a false alarm (`tCare`, the gates);

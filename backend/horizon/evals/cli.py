@@ -39,7 +39,7 @@ def _suite(args: argparse.Namespace) -> int:
                    seed_dir=args.seed_dir, force=getattr(args, "force", False), mode=getattr(args, "mode", None),
                    runs=getattr(args, "runs", None), turns=getattr(args, "turns", None),
                    messages=getattr(args, "messages", None), part=getattr(args, "part", None),
-                   arm=getattr(args, "arm", None))
+                   arm=getattr(args, "arm", None), latency=getattr(args, "latency", False))
     return asyncio.run(Runner(load_config()).run(opts))
 
 
@@ -119,6 +119,22 @@ def _retrieval_compare(args: argparse.Namespace) -> int:
     return 0
 
 
+def _memory_compare(args: argparse.Namespace) -> int:
+    from pathlib import Path
+
+    from horizon.evals.memory_suite import compare_report
+
+    try:
+        lines = compare_report(Path(args.base), Path(args.arm))
+    except (ValueError, KeyError) as e:
+        print(f"horizon: {e}", file=sys.stderr)
+        return 2
+    text = "\n".join(lines) + "\n"
+    (Path(args.arm) / "compare.md").write_text(text, encoding="utf-8")   # first: a console that can't print it
+    print(text, end="")
+    return 0
+
+
 def _capture(args: argparse.Namespace) -> int:
     from horizon.config import load_config
     from horizon.evals.stats import capture_case
@@ -156,7 +172,7 @@ def register(sub: Any) -> None:
                            ("moodline", "the mood line on vs off over non-neutral transcript turns (paid, once, M9)"),
                            ("latency", "agent 1:1 time to the face and the first word, store bypassed (paid, M9); "
                                        "--part follow|watch for M10's follow plan and watch timing, debate for M11's, deep for "
-                                       "M12's deep turns (--profile agent)"),
+                                       "M12's deep turns, recall for M13's recall timing (--profile agent)"),
                            ("watch-history", "generate the committed watch histories with naive (paid, once, M10)"),
                            ("freerun", "agent group and watch free runs: signals, no target (paid, M10)"),
                            ("debate-history", "generate the committed debate histories with naive (paid, once, M11)"),
@@ -169,7 +185,11 @@ def register(sub: Any) -> None:
                            ("notfound", "the Not-found reply end to end: 40 unanswerable + 10 partly 1:1 turns and "
                                         "its two judges (paid, M12)"),
                            ("deep-check", "doc 10 check 5: deep_check on 20 passages, the set check on 5 pairs, the two "
-                                          "nouls on 20 messages (paid, M12)")):
+                                          "nouls on 20 messages (paid, M12)"),
+                           ("memory", "the memory suite: rewrite, recall (in-session, overflow; --arm), layer 3, the "
+                                      "dupCosine sweep (--part dup) (paid, M13; --profile agent)"),
+                           ("embed-probe", "query embeddings on each named OpenRouter provider of the active space's "
+                                           "model, timed, store-bypassed (paid, M13 U3; --set A,B)")):
         s = esub.add_parser(name, help=helptext)
         s.add_argument("--profile", default="naive", choices=["scripted", "naive", "agent"])
         s.add_argument("--limit", type=int, default=None)
@@ -189,12 +209,19 @@ def register(sub: Any) -> None:
             s.add_argument("--turns", type=int, default=30)
             s.add_argument("--messages", type=int, default=12)
         if name == "latency":
-            s.add_argument("--part", choices=["follow", "watch", "debate", "deep"], default=None)
+            s.add_argument("--part", choices=["follow", "watch", "debate", "deep", "recall"], default=None)
         if name == "retrieval":
             s.add_argument("--arm", default=None, help="space=<id> | piece=200|300|400[:kept] | lambda=0.5|0.7|1.0 | "
                                                        "rewrite=off")
+        if name == "memory":
+            s.add_argument("--part", choices=["rewrite", "recall", "layer3", "dup", "rejudge"], default=None)
+            s.add_argument("--arm", default=None, help="recall only: search=bm25|dense | mmr=off | lambda=0.5|0.7|1.0 | "
+                                                       "space=<id>")
+            s.add_argument("--latency", action="store_true", help="store-bypassed: recall reads every check to its "
+                                                                  "end (the tail for recall.checkMs); rewrite times "
+                                                                  "each run (doc 09 check 2)")
         if name in ("decisions", "long", "transcript", "drafter", "watch-history", "summary", "debate-history",
-                    "debate-plant", "debate-quality", "retrieval", "notfound"):
+                    "debate-plant", "debate-quality", "retrieval", "notfound", "memory", "embed-probe"):
             s.add_argument("--set", default=None, help="decisions: one dataset folder (`judges`); long, transcript: "
                                                        "one script id; drafter: a seed file in evals/drafter/")
         s.set_defaults(fn=_suite)
@@ -211,6 +238,11 @@ def register(sub: Any) -> None:
     rc.add_argument("--base-test", default=None)
     rc.add_argument("--arm-test", default=None)
     rc.set_defaults(fn=_retrieval_compare)
+    mc = esub.add_parser("memory-compare", help="a recall arm's memory run against the default's, by K3's rule "
+                                                "(free, M13)")
+    mc.add_argument("base", help="the default `memory --part recall` run's folder")
+    mc.add_argument("arm", help="the arm run's folder; compare.md is written there")
+    mc.set_defaults(fn=_memory_compare)
     cp = esub.add_parser("capture", help="write a message's captured AI calls to data/evals/cases/")
     cp.add_argument("message_id")
     cp.set_defaults(fn=_capture)

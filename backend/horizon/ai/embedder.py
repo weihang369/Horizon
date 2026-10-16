@@ -42,7 +42,7 @@ from horizon.domain import vclock
 from horizon.gateway.context import CallContext
 from horizon.gateway.errors import malformed
 
-Kind = Literal["query", "document", "knowledge"]
+Kind = Literal["query", "document", "knowledge", "message"]   # M13: "message" is an indexed line, sent plain
 LRU_SIZE = 4096
 _EXT = re.compile(r"\.(pdf|docx|md|markdown|txt)$", re.IGNORECASE)
 _FIELD = re.compile(r"\{(title|heading|text)\}")

@@ -191,6 +191,10 @@ sessions = Table(
     Column("created_at", Text, nullable=False),
     Column("updated_at", Text, nullable=False),
     Column("last_message_at", Text, nullable=True),
+    # M13 (memory D5; doc 09 M2; doc 13 W13): the pause run's bookkeeping, set by runs and never by events
+    Column("memory_seq", Integer, nullable=False, server_default=text("0")),
+    Column("memory_reread", J, nullable=False, server_default=text("'[]'")),
+    Column("memory_tries", Integer, nullable=False, server_default=text("0")),
     Index("ix_sessions_world_updated", "world_id", "updated_at"),
 )
 
@@ -272,6 +276,20 @@ message_ai_meta = Table(
     Column("message_id", Text, _fk("messages.id", "CASCADE"), primary_key=True),
     Column("rewrites", J, nullable=False, server_default=text("'{}'")),
     Column("updated_at", Text, nullable=True),
+)
+
+# M13 (memory D5, D29): one row per line that has left the window, for recall. Its own integer `rid` keys the FTS5 and
+# vec0 indexes (`messages` is TEXT-keyed); not event-sourced; deleting the message cascades
+message_index = Table(
+    "message_index", metadata,
+    Column("rid", Integer, primary_key=True, autoincrement=True),
+    Column("message_id", Text, _fk("messages.id", "CASCADE"), nullable=False, unique=True),
+    Column("session_id", Text, nullable=False),
+    Column("seq", Integer, nullable=False),
+    Column("author", Text, nullable=False),
+    Column("text", Text, nullable=False),
+    Column("created_at", Text, nullable=False),
+    Index("ix_message_index_session_seq", "session_id", "seq"),
 )
 
 trace_memory_refs = Table(
@@ -536,8 +554,20 @@ FTS_DDL: tuple[str, ...] = (
     "CREATE TRIGGER knowledge_chunks_au AFTER UPDATE OF text, heading ON knowledge_chunks BEGIN "
     "INSERT INTO knowledge_fts(knowledge_fts, rowid, text, heading) VALUES ('delete', old.rid, old.text, old.heading); "
     "INSERT INTO knowledge_fts(rowid, text, heading) VALUES (new.rid, new.text, new.heading); END",
+    # M13 (migration 0005): recall's keyword index over the lines that left the window
+    "CREATE VIRTUAL TABLE message_fts USING fts5(text, content='message_index', content_rowid='rid', "
+    "tokenize='porter unicode61')",
+    "CREATE TRIGGER message_index_ai AFTER INSERT ON message_index BEGIN "
+    "INSERT INTO message_fts(rowid, text) VALUES (new.rid, new.text); END",
+    "CREATE TRIGGER message_index_ad AFTER DELETE ON message_index BEGIN "
+    "INSERT INTO message_fts(message_fts, rowid, text) VALUES ('delete', old.rid, old.text); END",
+    "CREATE TRIGGER message_index_au AFTER UPDATE OF text ON message_index BEGIN "
+    "INSERT INTO message_fts(message_fts, rowid, text) VALUES ('delete', old.rid, old.text); "
+    "INSERT INTO message_fts(rowid, text) VALUES (new.rid, new.text); END",
 )
 FTS_DROP: tuple[str, ...] = (
+    "DROP TRIGGER IF EXISTS message_index_au", "DROP TRIGGER IF EXISTS message_index_ad",
+    "DROP TRIGGER IF EXISTS message_index_ai", "DROP TABLE IF EXISTS message_fts",
     "DROP TRIGGER IF EXISTS knowledge_chunks_au", "DROP TRIGGER IF EXISTS knowledge_chunks_ad",
     "DROP TRIGGER IF EXISTS knowledge_chunks_ai", "DROP TABLE IF EXISTS knowledge_fts",
     "DROP TRIGGER IF EXISTS memory_items_au", "DROP TRIGGER IF EXISTS memory_items_ad",

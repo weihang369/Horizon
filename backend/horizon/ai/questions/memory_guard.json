@@ -1,0 +1,31 @@
+{
+  "id": "memory_guard",
+  "version": 3,
+  "purpose": "memory_guard",
+  "type": "noul",
+  "label": "rewrite keeps the old facts?",
+  "instructions": "Is every part of the old memory in quoted_old that is still true after the messages in quoted_source kept in the new memory in quoted_new? A detail the messages changed counts as kept when the new memory gives its new value.",
+  "true": "Yes: everything the old memory said that is still true is in the new one, though it may be worded differently, extended, or updated where the messages changed it.",
+  "false": "No: the new memory drops or blurs something from the old one that the messages didn't change.",
+  "examples": {
+    "true": [
+      "\"Kai quit coffee.\" → \"Kai quit coffee last month; temple headaches when he cut back.\"",
+      "\"Kai's exam is on Monday.\" → \"Kai's exam moved to Wednesday.\" (the messages moved it)"
+    ],
+    "false": [
+      "\"Kai's sister Mia is a nurse in Ipoh.\" → \"Kai's sister is a nurse.\""
+    ]
+  },
+  "state": {
+    "quoted_old": "quoted",
+    "quoted_new": "quoted",
+    "quoted_source": "quoted"
+  },
+  "deadline": "memory_guard",
+  "floor": null,
+  "thresholds": {
+    "t_keep": 0.35
+  },
+  "fallback": "keep_both",
+  "state_note": "memory D15: one request per rewrite; p >= t_keep supersedes, else the new line is inserted beside the old one. v2 (phase 10, the user's choice): a changed detail counts as kept. v3: t_keep 0.35 by D40's rule on the set with changed values (test: lossy through 0.04, changed values 7/7 supersede; m13.md)."
+}

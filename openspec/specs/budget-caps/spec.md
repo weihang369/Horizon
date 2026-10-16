@@ -100,3 +100,14 @@ Paid generation SHALL start only from an explicit user action. The app SHALL NOT
 #### Scenario: Stored value has no effect
 - **WHEN** `autoGenerateMissingEmotions` is set to true through the API and a character with missing emotions is opened
 - **THEN** no generation job is started and no ledger row is written
+
+### Requirement: Memory work counts against the cap but never pauses
+The `memory`, `importance` and `memory_guard` calls and their embeddings SHALL count against the daily cap, SHALL NOT drain energy, and SHALL NOT pause live sessions when they reach or are refused by the cap. A refused run SHALL wait for its next trigger.
+
+#### Scenario: Cap reached by a run
+- **WHEN** a pause run's spend crosses the daily cap
+- **THEN** no session pauses, and the next reply in any session is refused by the cap
+
+#### Scenario: No energy drained
+- **WHEN** a pause run writes memories for Amara
+- **THEN** Amara's energy is unchanged

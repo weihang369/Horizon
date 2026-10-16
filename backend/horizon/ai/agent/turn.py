@@ -130,6 +130,9 @@ def reply_prefix(ctx: TurnContext) -> tuple[list[dict[str, Any]], list[dict[str,
     return prefix, render_merged(s.recent, ctx.speaker.id, you), you
 
 
+LAST_TIME_CUE = "If something from last time fits, you may mention it in a short phrase."   # M13 (memory D25)
+
+
 class AgentTurnEngine(NaiveTurnEngine):
     name = "agent"
     version = "2"   # M9: the face comes from the plan (turn-plan-emotion D14)
@@ -192,7 +195,10 @@ class AgentTurnEngine(NaiveTurnEngine):
         if ctx.line.kind == "greeting":
             stored = str(ctx.speaker.profile.get("greeting") or "").strip()
             base = "Open the conversation with a short, warm greeting in character."
-            return f"{base} Don't reuse your usual greeting: '{stored}'." if stored else base
+            cue = f"{base} Don't reuse your usual greeting: '{stored}'." if stored else base
+            if ctx.line.last_time:   # M13 (memory D25; doc 09 M10): the newest memories from the last 1:1
+                cue = "\n".join([f"{cue} {LAST_TIME_CUE}", "From last time:", *(f"- {x}" for x in ctx.line.last_time)])
+            return cue
         debate = self.debate_line(ctx)
         if debate is not None:
             return debate
@@ -229,6 +235,9 @@ class AgentTurnEngine(NaiveTurnEngine):
         tail: list[str] = []
         if block is not None and block.content:
             tail.append(block.content)
+        recalled = self.recall_text(ctx)   # M13 (memory D35): after the documents block, before the mood line
+        if recalled:
+            tail.append(recalled)
         mood = self.mood(ctx)   # M9 D16: after the retrieval block, before the repeat hint (doc 04 P2, doc 06 E4)
         if mood:
             tail.append(mood)
@@ -247,6 +256,21 @@ class AgentTurnEngine(NaiveTurnEngine):
         req = llm_request(self._row(ctx), self.deps.prices.chat.model, messages, max_tokens=ctx.max_tokens,
                           stop=stop_sequences(ctx, you, history))
         return req, prefix
+
+    def recall_text(self, ctx: TurnContext) -> str:
+        """M13 (memory D35): recall's two headings, within `recall.tailTokens`; "" with nothing kept."""
+        return self.recall_shown(ctx)[0]
+
+    def recall_shown(self, ctx: TurnContext) -> tuple[str, list[Any]]:
+        hits = list(ctx.plan.recall) if ctx.plan is not None else []
+        if not hits:
+            return "", []
+        from horizon.ai.agent.recall import shown
+
+        r = self.deps.retrieval()
+        knobs = r.agent.recall if r is not None and r.agent is not None else None
+        return shown(hits, budget_tokens=knobs.tail_tokens if knobs else 400,
+                     line_words=knobs.line_words if knobs else 60)
 
     # ── seam 2: the parser ──
     def parser(self, ctx: TurnContext, previous: str, names: list[str]) -> TagParser:
@@ -267,13 +291,18 @@ class AgentTurnEngine(NaiveTurnEngine):
         latest = next((clip(m.content) for m in reversed(ctx.session.recent) if m.author_type == "user"), "")
         user = count_tokens(latest) if latest else 0
         block_tokens = count_tokens(block.content) if block is not None and block.content else 0
-        memory = count_tokens(block.memory_text) if block is not None and block.memory_text else 0
-        mode_tail = max(0, count_tokens(tail) - block_tokens) if tail else 0
+        tail_memory = count_tokens(block.memory_text) if block is not None and block.memory_text else 0
+        # M13 (memory D24, D35): the list in system message 1, plus recall's memories; recall's lines are history
+        recalled, hits = self.recall_shown(ctx)
+        recall_lines = sum(count_tokens(h.text) + count_tokens(h.before or "") for h in hits if h.kind == "line")
+        recall_mems = sum(count_tokens(h.text) for h in hits if h.kind == "memory")
+        memory = t.get("memory", 0) + tail_memory + recall_mems
+        mode_tail = max(0, count_tokens(tail) - block_tokens - (count_tokens(recalled) if recalled else 0)) if tail else 0
         patch: dict[str, Any] = {"context": {
-            "budget": planned_input(ctx.session.mode, self.deps.windows()),
+            "budget": planned_input(ctx.session.mode, self.deps.windows(), self.deps.memory_block_tokens()),
             "used": {"persona": t["card"], "system": t["world"] + t["rules"], "mode": t["session"] + mode_tail,
-                     "history": summary + max(0, history - user), "user": user, "memory": memory,
-                     "knowledge": max(0, block_tokens - memory)}}}
+                     "history": summary + max(0, history - user) + recall_lines, "user": user, "memory": memory,
+                     "knowledge": max(0, block_tokens - tail_memory)}}}
         if chosen is not None:
             patch["emotion"] = {"chosen": chosen.emotion, "source": chosen.source}
             face = ctx.plan.emotion if ctx.plan is not None else None
@@ -286,4 +315,16 @@ class AgentTurnEngine(NaiveTurnEngine):
             mem = block.memory_trace()
             if mem is not None:
                 patch["memory"] = mem
+        # M13 (memory D24, D35): what the model was given: the list's lines with no score, then recall's memories with
+        # Jev's p (none on a fallback); recall's lines as `contextInSession` (Insight's "In-session recall")
+        listed = [{"memoryItemId": m.id, "text": m.text} for m in ctx.speaker.memories]
+        recalled_mems = [{"memoryItemId": h.id, "text": h.text,
+                          **({"sourceSessionId": h.source_session_id} if h.source_session_id else {}),
+                          **({"score": round(h.p, 4)} if h.p is not None else {})} for h in hits if h.kind == "memory"]
+        if listed or recalled_mems:
+            patch["memory"] = {"recalled": [*listed, *recalled_mems,
+                                            *((patch.get("memory") or {}).get("recalled") or [])]}
+        lines = [{"text": h.text, "messageId": h.id} for h in hits if h.kind == "line"]
+        if lines:
+            patch["contextInSession"] = lines
         return patch

@@ -4,7 +4,9 @@ vec tables are created here at runtime, never by Alembic. For the active space (
 knowledge-memory-storage design D9) it ensures:
 - `memory_vec__{space}` and `knowledge_vec__{space}` (vec0, `character_id` partition key, cosine distance);
 - `AFTER DELETE` triggers on `memory_items` / `knowledge_chunks` that delete the vector by `rid`
-  (spike 02: they fire on FK-cascade deletes too).
+  (spike 02: they fire on FK-cascade deletes too);
+- M13 (memory design D6): `message_vec__{space}` (vec0, `session_id` partition key, cosine) for recall's indexed lines,
+  with its `AFTER DELETE` trigger on `message_index`.
 Everything is idempotent, so restarts change nothing.
 """
 
@@ -56,8 +58,14 @@ def vec_tables(space_id: str) -> tuple[str, str]:
     return f"memory_vec__{s}", f"knowledge_vec__{s}"
 
 
+def message_vec_table(space_id: str) -> str:
+    """M13 (memory D6): recall's vectors for the lines that left the window, partitioned by session."""
+    return f"message_vec__{table_suffix(space_id)}"
+
+
 def _ddl(space_id: str, dims: int) -> list[str]:
     mem, kno = vec_tables(space_id)
+    msg = message_vec_table(space_id)
     s = table_suffix(space_id)
     return [
         f"CREATE VIRTUAL TABLE IF NOT EXISTS {mem} USING vec0(rid INTEGER PRIMARY KEY, "
@@ -68,6 +76,10 @@ def _ddl(space_id: str, dims: int) -> list[str]:
         f"DELETE FROM {mem} WHERE rid = old.rid; END",
         f"CREATE TRIGGER IF NOT EXISTS knowledge_chunks_vec_ad__{s} AFTER DELETE ON knowledge_chunks BEGIN "
         f"DELETE FROM {kno} WHERE rid = old.rid; END",
+        f"CREATE VIRTUAL TABLE IF NOT EXISTS {msg} USING vec0(rid INTEGER PRIMARY KEY, "
+        f"session_id TEXT PARTITION KEY, embedding FLOAT[{dims}] distance_metric=cosine)",
+        f"CREATE TRIGGER IF NOT EXISTS message_index_vec_ad__{s} AFTER DELETE ON message_index BEGIN "
+        f"DELETE FROM {msg} WHERE rid = old.rid; END",
     ]
 
 
@@ -85,6 +97,10 @@ async def ensure_active(conn: AsyncConnection, now_iso: str, default: SpaceSpec 
         space_id, dims = str(row["id"]), int(row["dims"])
     for stmt in _ddl(space_id, dims):
         await conn.execute(text(stmt))
+    built = await building(conn)
+    if built is not None:   # M13: a build started before an upgrade gains the tables added since (idempotent)
+        for stmt in _ddl(built.id, built.dims):
+            await conn.execute(text(stmt))
     return space_id
 
 
@@ -99,7 +115,9 @@ async def _drop(conn: AsyncConnection, space_id: str) -> None:
     s = table_suffix(space_id)
     mem, kno = vec_tables(space_id)
     for stmt in (f"DROP TRIGGER IF EXISTS memory_items_vec_ad__{s}", f"DROP TRIGGER IF EXISTS knowledge_chunks_vec_ad__{s}",
-                 f"DROP TABLE IF EXISTS {mem}", f"DROP TABLE IF EXISTS {kno}"):
+                 f"DROP TRIGGER IF EXISTS message_index_vec_ad__{s}",
+                 f"DROP TABLE IF EXISTS {mem}", f"DROP TABLE IF EXISTS {kno}",
+                 f"DROP TABLE IF EXISTS {message_vec_table(space_id)}"):
         await conn.execute(text(stmt))
 
 

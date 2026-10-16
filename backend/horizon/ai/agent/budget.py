@@ -15,6 +15,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 
 CARD = 1500
+MEMORY_BLOCK = 1000                                 # M13 (memory D24): `memory.blockTokens`, the list's share of FIXED
 FIXED = 1720
 SUMMARY = 600
 TAIL = 1860
@@ -22,7 +23,8 @@ NOT_WINDOW = CARD + FIXED + SUMMARY + TAIL          # 5,680
 WINDOWS: Mapping[str, int] = {"one_on_one": 6000, "group": 9000, "watch": 9000, "debate": 9000}   # X2's defaults
 
 
-def planned_input(mode: str, windows: Mapping[str, int] | None = None) -> int:
-    """X1: the sum of the caps, so 11,680 for 1:1 and 14,680 for group, watch and debate with X2's windows."""
+def planned_input(mode: str, windows: Mapping[str, int] | None = None, block_tokens: int = MEMORY_BLOCK) -> int:
+    """X1: the sum of the caps, so 11,680 for 1:1 and 14,680 for group, watch and debate with X2's windows. M13 (D24):
+    the memory list's share of the fixed blocks follows `memory.blockTokens`, so the denominator stays honest."""
     w = windows or WINDOWS
-    return NOT_WINDOW + int(w.get(mode, w.get("group", WINDOWS["group"])))
+    return NOT_WINDOW - MEMORY_BLOCK + int(block_tokens) + int(w.get(mode, w.get("group", WINDOWS["group"])))

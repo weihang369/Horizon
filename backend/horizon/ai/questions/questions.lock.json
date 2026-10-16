@@ -3,6 +3,10 @@
     "sha256": "8a63e2214ac5af07756144b82542b7c89151c122d91c91afd8e24a6e721ab132",
     "version": 2
   },
+  "earlier": {
+    "sha256": "5ac426115d161d062a05aa642594a5257d54cb72eb17b7b710ad8eca63a41138",
+    "version": 2
+  },
   "emotion_debate_opening": {
     "sha256": "8873a9fc2868bd382ddee95d497dfe47e3e71868412ba00e0616b5f2e2c2e461",
     "version": 2
@@ -29,6 +33,10 @@
   },
   "face_check": {
     "sha256": "4709bc69e08b6debce18d397c5cd950b137a92eef94543773907f8cec1c8acea",
+    "version": 1
+  },
+  "importance": {
+    "sha256": "fd6bf130c776368f2a71547831210ac49d9deef245292715cbc99663a1a54adc",
     "version": 1
   },
   "judge_assistant_voice": {
@@ -63,6 +71,18 @@
     "sha256": "36d7ff52273365048d225f561b90cc8565ff880ff4f713dc9dc37cc85b6c8fd5",
     "version": 1
   },
+  "judge_memory_lost": {
+    "sha256": "103d2b5b9dc9a7094cb18e34bc6d3ab16b069da190b891b1e096f75b77972480",
+    "version": 2
+  },
+  "judge_memory_missed": {
+    "sha256": "99b36cc75290f1708c0a2dbb2fa8ad8e70fe0370af419fa75e0031a1e2879340",
+    "version": 1
+  },
+  "judge_memory_unsupported": {
+    "sha256": "f25470718b10e1cf416f0f73e65dd049b8adbbc9b1de8ab75b252463c5dbb302",
+    "version": 1
+  },
   "judge_names_feeling": {
     "sha256": "fd52b737302f103c274876ad0173527ca39194c6f2172da1b4b1922164f6cb6b",
     "version": 2
@@ -74,6 +94,10 @@
   "judge_notfound_says": {
     "sha256": "52333f445a08094e6e721723685ebbe8e1f53bd8ceb4f81a3ab5934a655d9316",
     "version": 1
+  },
+  "judge_over_mention": {
+    "sha256": "de8b49ebb61c8155183a7ea58e312b7972ee1d4e7182bf7defde0d060573f864",
+    "version": 2
   },
   "judge_pairwise": {
     "sha256": "edca205d7276e97b6d8a094479ea21726478e84ac75debffe64a5c84e2e46bbe",
@@ -143,6 +167,10 @@
     "sha256": "d5ad5842d332c6456cb944db5bfef97d73ff6fc66a6e6c672e1f685881998d44",
     "version": 2
   },
+  "memory_guard": {
+    "sha256": "cf6f9fbc3a0c5b2b06eee63239aa0c2ff52e44dfc68db5cf107ab88fb025b427",
+    "version": 3
+  },
   "passage": {
     "sha256": "9be7b756a0b94f1342364816327f260f3b70083470d62a13cf24c547680a223b",
     "version": 2
@@ -154,6 +182,10 @@
   "reaction": {
     "sha256": "c08fc6c998448b69195d93c8782e9e676acd6ab2fe53eecc684156e86dff9850",
     "version": 2
+  },
+  "recall": {
+    "sha256": "948d408c18915e387203b87268bb6672237207351a289cd7b104984f25523af2",
+    "version": 1
   },
   "route": {
     "sha256": "db97fefdc49293af9ff2d56e8f421e7e96473f6c22bbc9e26d231be6ce7abd61",
@@ -178,6 +210,10 @@
   "rubric_rebuttal": {
     "sha256": "9ef696b34b98e14c547b34c9981a6a73aa0f6d6aabb36b3e6c4d5f2bfcf9117e",
     "version": 2
+  },
+  "same_fact": {
+    "sha256": "51cf8bf55e568f009471a16c7af60d3e6f3ed287dabbd57300d247f3463472b9",
+    "version": 1
   },
   "standalone": {
     "sha256": "61eaa95dd32e9b9dff5b7bb8768c85ea7d605928e797714ee58000e24f99116e",

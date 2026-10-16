@@ -1,0 +1,30 @@
+{"provider": "Nebius", "text": "What does my sister do for work again?", "ok": true, "error": null, "wall_ms": 2900.3}
+{"provider": "Nebius", "text": "Which city is my sister based in?", "ok": true, "error": null, "wall_ms": 1327.7}
+{"provider": "Nebius", "text": "Remind me of my sister's name?", "ok": true, "error": null, "wall_ms": 867.4}
+{"provider": "Nebius", "text": "Which antibiotic should I avoid, did I mention?", "ok": true, "error": null, "wall_ms": 1048.5}
+{"provider": "Nebius", "text": "What am I allergic to again?", "ok": true, "error": null, "wall_ms": 870.0}
+{"provider": "Nebius", "text": "Is there any medicine I told you I react badly to?", "ok": true, "error": null, "wall_ms": 913.6}
+{"provider": "Nebius", "text": "Which days do I usually run?", "ok": true, "error": null, "wall_ms": 831.2}
+{"provider": "Nebius", "text": "What time do I go running, remember?", "ok": true, "error": null, "wall_ms": 847.9}
+{"provider": "Nebius", "text": "Can I fit a run into my usual schedule this week?", "ok": true, "error": null, "wall_ms": 837.4}
+{"provider": "Nebius", "text": "What's my dog's name, do you remember?", "ok": true, "error": null, "wall_ms": 1317.4}
+{"provider": "DeepInfra", "text": "What breed did I say my dog is?", "ok": true, "error": null, "wall_ms": 1125.3}
+{"provider": "DeepInfra", "text": "What colour is my dog again?", "ok": true, "error": null, "wall_ms": 1149.1}
+{"provider": "DeepInfra", "text": "Where am I moving for work?", "ok": true, "error": null, "wall_ms": 1113.2}
+{"provider": "DeepInfra", "text": "When is my big move happening?", "ok": true, "error": null, "wall_ms": 1156.0}
+{"provider": "DeepInfra", "text": "Remind me why I'm relocating?", "ok": true, "error": null, "wall_ms": 726.9}
+{"provider": "DeepInfra", "text": "Adik saya belajar apa, ingat tak?", "ok": true, "error": null, "wall_ms": 1079.3}
+{"provider": "DeepInfra", "text": "Adik saya belajar di negeri mana?", "ok": true, "error": null, "wall_ms": 1186.2}
+{"provider": "DeepInfra", "text": "Siapa nama adik saya tadi?", "ok": true, "error": null, "wall_ms": 1322.7}
+{"provider": "DeepInfra", "text": "Saya alah kepada apa, awak ingat?", "ok": true, "error": null, "wall_ms": 1527.4}
+{"provider": "DeepInfra", "text": "Bunga apa yang saya tak boleh dekat?", "ok": true, "error": null, "wall_ms": 1147.4}
+{"provider": "SiliconFlow", "text": "Boleh tak saya letak bunga matahari dalam jambangan saya?", "ok": true, "error": null, "wall_ms": 1408.0}
+{"provider": "SiliconFlow", "text": "Bila hari jadi saya?", "ok": true, "error": null, "wall_ms": 5722.7}
+{"provider": "SiliconFlow", "text": "Bulan apa saya lahir, ingat tak?", "ok": true, "error": null, "wall_ms": 11335.9}
+{"provider": "SiliconFlow", "text": "Hari jadi saya dah dekat ke?", "ok": true, "error": null, "wall_ms": 6005.3}
+{"provider": "SiliconFlow", "text": "Apa nama haiwan peliharaan saya?", "ok": true, "error": null, "wall_ms": 8436.1}
+{"provider": "SiliconFlow", "text": "Haiwan apa yang saya bela?", "ok": true, "error": null, "wall_ms": 7069.0}
+{"provider": "SiliconFlow", "text": "Kura-kura saya namanya apa tadi?", "ok": true, "error": null, "wall_ms": 2399.8}
+{"provider": "SiliconFlow", "text": "Saya kerja di mana?", "ok": true, "error": null, "wall_ms": 3205.2}
+{"provider": "SiliconFlow", "text": "Kedai apa tempat saya kerja?", "ok": true, "error": null, "wall_ms": 3970.4}
+{"provider": "SiliconFlow", "text": "Di bandar mana saya bekerja?", "ok": true, "error": null, "wall_ms": 2701.5}

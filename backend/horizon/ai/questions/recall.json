@@ -1,0 +1,23 @@
+{
+  "id": "recall",
+  "version": 1,
+  "purpose": "deep_check",
+  "type": "noul",
+  "label": "does this earlier line help?",
+  "instructions": "Does the earlier line or memory in quoted_candidate help {name} reply to the message in quoted_query?",
+  "true": "Yes: it holds a fact, name, detail or event the reply needs or should take into account.",
+  "false": "No: it is about something else, or only shares words with the message.",
+  "state": {
+    "mode": "label",
+    "candidate_kind": "label",
+    "quoted_query": "quoted",
+    "quoted_candidate": "quoted"
+  },
+  "deadline": "deep_check",
+  "floor": null,
+  "thresholds": {
+    "t_recall": 0.5
+  },
+  "fallback": "merged_order",
+  "state_note": "memory D33: one request per candidate (≤ 6), read by retrieval.agent.recall.checkMs; keep ≤ 3 at or above t_recall, by p. Every answer missing: the top 2 of the merged order, unscored."
+}

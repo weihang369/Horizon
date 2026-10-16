@@ -38,9 +38,9 @@ def test_migrate_twice_and_no_drift(tmp_path: Path) -> None:
         names = set(conn.execute(text("SELECT name FROM sqlite_master WHERE type='table'")).scalars())
     engine.dispose()
     assert diff == [], diff
-    assert version == "0004"  # M12: message_ai_meta
-    assert "message_ai_meta" in names
-    assert {"memory_fts", "knowledge_fts"} <= names
+    assert version == "0005"  # M13: the memory run columns and message_index
+    assert {"message_ai_meta", "message_index"} <= names
+    assert {"memory_fts", "knowledge_fts", "message_fts"} <= names
     assert not any("_vec__" in n for n in names)  # vec tables belong to the SpaceManager
 
 
@@ -93,6 +93,61 @@ def test_0003_ai_foundation_columns_and_table(tmp_path: Path) -> None:
         assert conn.execute("SELECT COUNT(*) FROM ai_calls").fetchone() == (0,)   # the world's rows cascade
     finally:
         conn.close()
+
+
+def test_0005_memory_up_and_down(tmp_path: Path) -> None:
+    """memory 1.1 (data-storage "The memory migration"): an M12 database's sessions get their checkpoint at their
+    highest message `seq` (an empty one at 0), `message_index` cascades from messages and feeds `message_fts` by
+    trigger, and the downgrade leaves every other table as it was."""
+    from alembic import command
+    from sqlalchemy import inspect
+
+    from horizon.db.migrate import alembic_config
+
+    db = tmp_path / "m12.db"
+    command.upgrade(alembic_config(db), "0004")
+    eng = create_engine(f"sqlite:///{db.as_posix()}")
+    before = set(inspect(eng).get_table_names())
+    before_cols = {c["name"] for c in inspect(eng).get_columns("sessions")}
+    eng.dispose()
+    now = "2026-10-16T03:00:00.000Z"
+    conn = sqlite3.connect(db)
+    conn.execute("INSERT INTO worlds(id, name, cover, is_seed, created_at, updated_at, last_active_at) "
+                 "VALUES ('wld_a', 'A', '{}', 0, ?, ?, ?)", (now, now, now))
+    for sid in ("ses_long", "ses_empty"):
+        conn.execute("INSERT INTO sessions(id, world_id, title, title_is_custom, mode, status, emotion_mode, "
+                     "music_policy, readable_mode, is_seed, cost_usd, message_count, created_at, updated_at) "
+                     "VALUES (?, 'wld_a', 'T', 0, 'one_on_one', 'active', 'auto', 'off', 0, 0, 0, 0, ?, ?)",
+                     (sid, now, now))
+    for seq in range(1, 58):
+        conn.execute("INSERT INTO messages(id, session_id, seq, author_type, kind, content, status, created_at) "
+                     "VALUES (?, 'ses_long', ?, 'user', 'chat', 'hi', 'complete', ?)", (f"msg_{seq:02d}", seq, now))
+    conn.commit()
+    conn.close()
+    upgrade_head(db)
+    conn = sqlite3.connect(db)
+    try:
+        conn.execute("PRAGMA foreign_keys = ON")
+        seqs = dict(conn.execute("SELECT id, memory_seq FROM sessions").fetchall())
+        assert seqs == {"ses_long": 57, "ses_empty": 0}
+        assert conn.execute("SELECT memory_reread, memory_tries FROM sessions WHERE id = 'ses_long'").fetchone()             == ("[]", 0)
+        conn.execute("INSERT INTO message_index(message_id, session_id, seq, author, text, created_at) "
+                     "VALUES ('msg_03', 'ses_long', 3, 'Kai', 'Kai: my sister Mia works nights', ?)", (now,))
+        hits = conn.execute("SELECT rowid FROM message_fts WHERE message_fts MATCH 'sister'").fetchall()
+        assert len(hits) == 1
+        cfg = dict(conn.execute("SELECT k, v FROM message_fts_config").fetchall())
+        assert cfg.get("secure-delete") == 1
+        conn.execute("DELETE FROM messages WHERE id = 'msg_03'")              # the index row cascades
+        assert conn.execute("SELECT count(*) FROM message_index").fetchone() == (0,)
+        assert conn.execute("SELECT rowid FROM message_fts WHERE message_fts MATCH 'sister'").fetchall() == []
+        conn.commit()
+    finally:
+        conn.close()
+    command.downgrade(alembic_config(db), "0004")
+    eng = create_engine(f"sqlite:///{db.as_posix()}")
+    assert set(inspect(eng).get_table_names()) == before
+    assert {c["name"] for c in inspect(eng).get_columns("sessions")} == before_cols
+    eng.dispose()
 
 
 def test_0002_keeps_rows_of_an_m4_database(tmp_path: Path) -> None:
@@ -221,6 +276,48 @@ async def test_default_space_once(tmp_path: Path) -> None:
         assert [(r["id"], r["status"], r["dims"]) for r in rows] == [(space, "active", 1024)]
         for name in (mem, kno):
             assert (await conn.execute(text(f"SELECT count(*) FROM {name}"))).scalar_one() == 0
+    await db.dispose()
+
+
+async def test_message_vectors_live_beside_the_others(tmp_path: Path) -> None:
+    """memory 1.2 (data-storage "Message vector tables exist at startup"): the active space gets
+    `message_vec__{space}` partitioned by session; a restart keeps its rows; deleting the index row (or its message, by
+    cascade) deletes the vector; dropping a retired space drops it."""
+    import sqlite_vec
+
+    db = Database(_migrated(tmp_path))
+    now = "2026-10-16T03:00:00.000Z"
+    async with db.write() as tx:
+        space = await spaces.ensure_active(tx.conn, now)
+    msg = spaces.message_vec_table(space)
+    async with db.write() as tx:
+        c = tx.conn
+        await c.execute(text("INSERT INTO worlds(id, name, cover, is_seed, created_at, updated_at, last_active_at) "
+                             "VALUES ('wld_a', 'A', '{}', 0, :n, :n, :n)"), {"n": now})
+        await c.execute(text("INSERT INTO sessions(id, world_id, title, title_is_custom, mode, status, emotion_mode, "
+                             "music_policy, readable_mode, is_seed, cost_usd, message_count, created_at, updated_at) "
+                             "VALUES ('ses_a', 'wld_a', 'T', 0, 'one_on_one', 'active', 'auto', 'off', 0, 0, 0, 0, "
+                             ":n, :n)"), {"n": now})
+        await c.execute(text("INSERT INTO messages(id, session_id, seq, author_type, kind, content, status, created_at) "
+                             "VALUES ('msg_a', 'ses_a', 1, 'user', 'chat', 'hi', 'complete', :n)"), {"n": now})
+        rid = (await c.execute(text("INSERT INTO message_index(message_id, session_id, seq, author, text, created_at) "
+                                    "VALUES ('msg_a', 'ses_a', 1, 'Kai', 'Kai: hi', :n) RETURNING rid"),
+                               {"n": now})).scalar_one()
+        await c.execute(text(f"INSERT INTO {msg}(rid, session_id, embedding) VALUES (:r, 'ses_a', :e)"),
+                        {"r": rid, "e": sqlite_vec.serialize_float32([0.1] * 1024)})
+    async with db.write() as tx:   # a restart changes nothing
+        await spaces.ensure_active(tx.conn, now)
+    async with db.read() as conn:
+        assert (await conn.execute(text(f"SELECT count(*) FROM {msg}"))).scalar_one() == 1
+    async with db.write() as tx:
+        await tx.conn.execute(text("DELETE FROM messages WHERE id = 'msg_a'"))   # cascades to the index row
+    async with db.read() as conn:
+        assert (await conn.execute(text(f"SELECT count(*) FROM {msg}"))).scalar_one() == 0
+    async with db.write() as tx:
+        await spaces._drop(tx.conn, space)
+    async with db.read() as conn:
+        names = set((await conn.execute(text("SELECT name FROM sqlite_master"))).scalars())
+    assert msg not in names and f"message_index_vec_ad__{spaces.table_suffix(space)}" not in names
     await db.dispose()
 
 

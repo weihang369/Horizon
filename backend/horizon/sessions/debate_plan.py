@@ -20,7 +20,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
 from horizon.ai.contexts import DebateFacts, DebatePlan, DebateRequest, SessionContext
-from horizon.sessions.context import character_view, characters, document_titles, session_context
+from horizon.sessions.context import character_view, characters, document_titles, recallable, session_context
 from horizon.sessions.debate_slots import is_argument
 from horizon.sessions.modes.common import is_asleep
 from horizon.sessions.plans import base_faces, manual
@@ -120,7 +120,8 @@ async def start(actor: SessionActor, slot: int, target: tuple[str, int], side: s
     req = DebateRequest(session=sctx, phase=target[0], iteration=target[1], side=side, candidates=candidates,
                         cast=[character_view(rows[c]) for c in candidates if c in rows], facts=f, latest=latest,
                         turn_index=actor.mode.turn, base_faces=base_faces(actor, sctx, candidates), manual=manual(actor),
-                        started_at=started_at, documents=docs)
+                        started_at=started_at, documents=docs,
+                        recallable=await recallable(rt, actor, candidates))   # M13 (memory D26)
     call = planner.start_debate(req)
     if call is None:
         return None

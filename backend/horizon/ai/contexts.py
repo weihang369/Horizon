@@ -29,12 +29,22 @@ class WorldView(Frozen):
     you: dict[str, Any] | None = None
 
 
+class MemoryLine(Frozen):
+    """M13 (memory D22): one line of a character's memory list, as system message 1 shows it."""
+
+    id: str
+    kind: str
+    text: str
+
+
 class CharacterView(Frozen):
     id: str
     name: str
     profile: dict[str, Any]
     appearance_summary: str = ""    # M8 (doc 04 P3): the "Looks" line, so self-descriptions match the portrait
     advisory: bool = False          # M8 (doc 11 S2): advisory characters get the advisory line
+    # M13 (memory D22, D23): an `agent` speaker's memory list, best first, frozen for the sitting (empty otherwise)
+    memories: list[MemoryLine] = []
 
     @property
     def first_name(self) -> str:
@@ -98,6 +108,7 @@ class LineHint(Frozen):
     text: str | None = None
     emotion: str | None = None
     verbatim: bool = False          # M8 (docs/ai/04 P9): say `text` word for word, with no model call
+    last_time: list[str] = []       # M13 (memory D25): a generated greeting's ≤ 2 newest memories from the last 1:1
 
 
 class DebateLine(Frozen):
@@ -191,6 +202,22 @@ class MemoryHit(Frozen):
     score: float | None = None
 
 
+class RecallHit(Frozen):
+    """M13 (memory D31–D35): one recall hit: an earlier line of this session (`msg_…`) or an overflow memory (`mem_…`).
+    `p` is Jev's (None when kept by the all-missing fallback)."""
+
+    kind: Literal["line", "memory"]
+    id: str                         # the message id (a line) or the memory id
+    text: str                       # "Name: text" for a line; the memory's text
+    before: str | None = None       # a line's indexed line before it, shown with it
+    p: float | None = None
+    memory_kind: str | None = None  # a memory's kind
+    source_session_id: str | None = None
+
+
+RecallOutcome = Literal["jev", "fallback", "none"]
+
+
 # ── The turn plan (M9, turn-plan-emotion design D4; turn-plan spec) ──
 PlanKind = Literal["reply", "greeting"]
 FaceOutcome = Literal["jev", "none", "below_floor", "fallback", "late"]
@@ -237,6 +264,13 @@ class DeepRequest(Frozen):
     k: int = 3
     reply_message_id: str | None = None             # the reply's message, when already known (1:1): rows link to it
     started_at: datetime
+    # M13 (memory D34): which branches run, and what recall searches
+    docs: bool = True                               # the documents branch ("needs documents?" said yes)
+    recall: bool = False                            # the recall branch ("needs something from earlier?" said yes)
+    recall_gate: GateAnswer | None = None
+    upto_seq: int = 0                               # the session's indexed lines up to the latest summary's bound
+    block_ids: list[str] = []                       # the speaker's memory list: never a recall candidate
+    has_overflow: bool = False
 
     @property
     def rewrites(self) -> bool:
@@ -265,6 +299,13 @@ class DeepResult(Frozen):
     pool: list[str] = []                            # the fused top 20's chunk ids, in order (the evaluation's Recall@20)
     checks: list[dict[str, Any]] = []               # each check's {chunkId, order, p_answers, p_partly, unit} (eval)
     set_check: dict[str, Any] | None = None         # the set check asked: {p, chunkIds} (eval)
+    # M13 (memory D34): recall's branch
+    docs: bool = True                               # the documents branch ran (a recall-only turn: False)
+    recall: list[RecallHit] = []                    # the kept hits, best first
+    recall_outcome: RecallOutcome | None = None     # None: recall didn't run
+    recall_rows: list[dict[str, Any]] = []
+    recall_checks: list[dict[str, Any]] = []        # each check's {id, kind, order, p} (eval)
+    recall_lists: dict[str, int] = {}               # how many each list returned per corpus (dense 0: BM25 only)
 
 
 class GateAnswer(Frozen):
@@ -313,6 +354,10 @@ class TurnPlan(Frozen):
     rewrite_for: str | None = None                  # the user message it is stored under
     source_kind: str | None = None                  # M12: the plan that made it (reply, group_first, second, debate…)
     quote_words: list[str] = []                     # M12 (rag D17): the words a citation's quote window looks for
+    # M13 (memory D26, D34): the speaker's "needs something from earlier?" and recall's frozen result
+    recall_gate: GateAnswer | None = None
+    recall: list[RecallHit] = []
+    recall_outcome: RecallOutcome | None = None
 
     @property
     def deep(self) -> bool:
@@ -323,11 +368,12 @@ class TurnPlan(Frozen):
     def with_deep(self, res: DeepResult) -> TurnPlan:
         """The plan with its deep work merged in (rows and calls appended)."""
         return self.model_copy(update={
-            "knowledge": list(res.kept), "retrieved": list(res.retrieved), "query": res.display,
-            "knowledge_outcome": res.outcome, "abstain": res.abstain, "partly_line": res.partly_line,
+            "knowledge": list(res.kept), "retrieved": list(res.retrieved), "query": res.display if res.docs else None,
+            "knowledge_outcome": res.outcome if res.docs else None, "abstain": res.abstain,
+            "partly_line": res.partly_line,
             "rewrite": res.rewrite, "rewrite_for": res.query.get("message_id") if res.rewrite else None,
-            "quote_words": list(res.quote_words),
-            "rows": [*self.rows, *res.rows], "calls": [*self.calls, *res.calls],
+            "quote_words": list(res.quote_words), "recall": list(res.recall), "recall_outcome": res.recall_outcome,
+            "rows": [*self.rows, *res.rows, *res.recall_rows], "calls": [*self.calls, *res.calls],
             "graph_path": [*self.graph_path, *res.path]})
 
 
@@ -346,6 +392,10 @@ class PlanRequest(Frozen):
     started_at: datetime                            # the deadline counts from here (the plan starts before turn.next)
     documents: dict[str, list[str]] = {}            # M12 (rag D6): searchable sources' titles, by character
     stored_rewrite: str | None = None               # M12 (rag D19): the speaker's stored rewrite for this message
+    recallable: list[str] = []                      # M13 (memory D26): candidates with something earlier to search
+    upto_seq: int = 0                               # M13 (D34): the session's indexed lines up to this seq
+    block_ids: list[str] = []                       # M13 (D34): the speaker's memory list (never a recall candidate)
+    has_overflow: bool = False                      # M13 (D34): the speaker has current memories past its list
 
 
 # ── The cast plan and the follow plan (M10: doc 07 G1–G8; group-watch design D3, D8, D22) ──
@@ -410,6 +460,7 @@ class CastRequest(Frozen):
     debate: DebateFacts | None = None               # M11: a debate turn's motion, phase and side (debate D7)
     documents: dict[str, list[str]] = {}            # M12 (rag D6): searchable sources' titles, by character
     message_id: str | None = None                   # M12: the user message being answered (the nouls are about it)
+    recallable: list[str] = []                      # M13 (memory D26): candidates with something earlier to search
 
 
 class CastPlan(Frozen):
@@ -428,6 +479,7 @@ class CastPlan(Frozen):
     state_tokens: int = 0
     gates: dict[str, GateAnswer] = {}               # M12 (rag D8): "needs documents?" per candidate asked
     nouls: MessageNouls | None = None               # M12: "standalone?" / "English?" when a group message is answered
+    recall_gates: dict[str, GateAnswer] = {}        # M13 (memory D26): "needs something from earlier?" per candidate
 
     @property
     def steer(self) -> bool:
@@ -445,14 +497,15 @@ class CastPlan(Frozen):
                 rows.append(row)
             elif self.kind != "everyone":
                 rows.append({**row, "result": "not_used"})
-        gate = self.gates.get(cid)
+        gate, rgate = self.gates.get(cid), self.recall_gates.get(cid)
         rows += g.speaker_rows(cid, self.gates, self.nouls, purpose="turn_plan", kind=self.kind,
-                               everyone=self.kind == "everyone")
-        return TurnPlan(seed=self.seed, kind="reply", branch="deep" if g.deep(gate) else "quick",
+                               everyone=self.kind == "everyone", recall_gates=self.recall_gates)
+        return TurnPlan(seed=self.seed, kind="reply", branch=g.branch(gate, rgate),
                         emotion=self.faces.get(cid), rows=rows, calls=list(self.calls),
                         graph_path=list(self.graph_path), state_tokens=self.state_tokens,
                         cue="steer" if self.steer and cue is None else cue, answered=answered, gate=gate,
-                        abstain_ok=g.abstain_allowed(gate, self.kind), nouls=self.nouls, source_kind=self.kind)
+                        abstain_ok=g.abstain_allowed(gate, self.kind), nouls=self.nouls, source_kind=self.kind,
+                        recall_gate=rgate)
 
 
 class FollowRequest(Frozen):
@@ -474,6 +527,7 @@ class FollowRequest(Frozen):
     documents: dict[str, list[str]] = {}            # M12 (rag D6): searchable sources' titles, by character
     message_id: str | None = None                   # M12: the user message both replies answer
     nouls: MessageNouls | None = None               # M12 (rag D8): the cast plan's answers for that message, reused
+    recallable: list[str] = []                      # M13 (memory D26): candidates with something earlier to search
 
 
 FollowOutcome = Literal["jev", "none", "below_floor", "late", "fallback", "cancelled"]
@@ -493,6 +547,7 @@ class FollowPlan(Frozen):
     graph_path: list[str] = []
     state_tokens: int = 0
     gates: dict[str, GateAnswer] = {}               # M12 (rag D8): "needs documents?" per follow candidate asked
+    recall_gates: dict[str, GateAnswer] = {}        # M13 (memory D26): "needs something from earlier?"
     nouls: MessageNouls | None = None               # M12: the cast plan's, or this plan's own when it had to ask
     asked_nouls: bool = False                       # M12: this request asked them (the cast plan hadn't)
 
@@ -504,6 +559,8 @@ class FollowPlan(Frozen):
         rows = [*self.shared_rows, *({**r, "result": "not_used"} for r in self.face_rows.values())]
         rows += [g.gate_row(c, a, purpose="follow_plan", abstain_kind=True, result="not_used")
                  for c, a in self.gates.items() if a.outcome != "dropped"]
+        rows += [g.recall_row(c, a, purpose="follow_plan", result="not_used")
+                 for c, a in self.recall_gates.items() if a.outcome != "dropped"]
         return rows
 
     def for_speaker(self, cid: str, *, answered: str) -> TurnPlan:
@@ -512,14 +569,14 @@ class FollowPlan(Frozen):
         rows = list(self.shared_rows)
         for other, row in self.face_rows.items():
             rows.append(row if other == cid else {**row, "result": "not_used"})
-        gate = self.gates.get(cid)
+        gate, rgate = self.gates.get(cid), self.recall_gates.get(cid)
         rows += g.speaker_rows(cid, self.gates, self.nouls if self.asked_nouls else None, purpose="follow_plan",
-                               kind="second")
-        return TurnPlan(seed=self.seed, kind="reply", branch="deep" if g.deep(gate) else "quick",
+                               kind="second", recall_gates=self.recall_gates)
+        return TurnPlan(seed=self.seed, kind="reply", branch=g.branch(gate, rgate),
                         emotion=self.faces.get(cid), rows=rows, calls=list(self.calls),
                         graph_path=list(self.graph_path), state_tokens=self.state_tokens, cue="second",
                         answered=answered, gate=gate, abstain_ok=g.abstain_allowed(gate, "second"), nouls=self.nouls,
-                        source_kind="second")
+                        source_kind="second", recall_gate=rgate)
 
 
 # ── The debate plan (M11: doc 08 V2, V3; doc 13 W5 row 11, W11; debate design D5, D6, D8, D27) ──
@@ -539,6 +596,7 @@ class DebateRequest(Frozen):
     manual: bool = False
     started_at: datetime                            # the `turn.end` it starts at
     documents: dict[str, list[str]] = {}            # M12 (rag D6): searchable sources' titles, by character
+    recallable: list[str] = []                      # M13 (memory D26): candidates with something earlier to search
 
 
 DebateOutcome = Literal["jev", "below_floor", "late", "fallback", "single", "cancelled"]
@@ -559,6 +617,7 @@ class DebatePlan(Frozen):
     graph_path: list[str] = []
     state_tokens: int = 0
     gates: dict[str, GateAnswer] = {}               # M12 (rag D8): used if back by the turn's start, else fallback
+    recall_gates: dict[str, GateAnswer] = {}        # M13 (memory D26): the same rule
 
     def for_speaker(self, cid: str) -> TurnPlan:
         from horizon.ai.agent import gates as g
@@ -566,12 +625,13 @@ class DebatePlan(Frozen):
         rows = list(self.shared_rows)
         for other, row in self.face_rows.items():
             rows.append(row if other == cid else {**row, "result": "not_used"})
-        gate = self.gates.get(cid)
-        rows += g.speaker_rows(cid, self.gates, None, purpose="debate_plan", kind="debate")
-        return TurnPlan(seed=self.seed, kind="reply", branch="deep" if g.deep(gate) else "quick",
+        gate, rgate = self.gates.get(cid), self.recall_gates.get(cid)
+        rows += g.speaker_rows(cid, self.gates, None, purpose="debate_plan", kind="debate",
+                               recall_gates=self.recall_gates)
+        return TurnPlan(seed=self.seed, kind="reply", branch=g.branch(gate, rgate),
                         emotion=self.faces.get(cid), rows=rows, calls=list(self.calls),
                         graph_path=list(self.graph_path), state_tokens=self.state_tokens, gate=gate,
-                        source_kind="debate")
+                        source_kind="debate", recall_gate=rgate)
 
 
 class ListenerView(Frozen):

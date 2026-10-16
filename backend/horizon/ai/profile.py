@@ -16,9 +16,11 @@ guardrail and the memory writer stay what `naive` resolves to. M9 (turn-plan-emo
 and face check so the scripted stand-ins never bill it.
 
 M5 (knowledge-memory-storage design D4, D7, D17): the `embedder` and the memory and knowledge retrievers have naive
-implementations; the `memory_writer` writes nothing in both profiles. The document `converter` does not follow the
-profile or the key (conversion is local and free, D-62): it is the real converter unless overridden, and in test mode
-it defaults to the deterministic scripted one, so CI never starts a conversion process.
+implementations. M13 (memory D18): the `memory_writer` is `naive` (the one rewrite call) and `agent` (the graph with
+Jev); in test mode with a key and no explicit profile it is the `agent` writer, on canned answers. The document
+`converter` does not follow the profile or the key (conversion is local and free, D-62): it is the real converter
+unless overridden, and in test mode it defaults to the deterministic scripted one, so CI never starts a conversion
+process.
 """
 
 from __future__ import annotations
@@ -52,10 +54,12 @@ PORTS = ("turn", "router", "reactions", "host", "director", "summariser", "guard
 NAIVE_PORTS = frozenset({"turn", "router", "drafter", "image", "song", "embedder", "knowledge_retriever",
                          "memory_retriever", "converter", "summariser",   # M8: the DeepSeek rolling summary (X3)
                          "planner", "face_check",   # M9 (design D5): naive's own no-ops, never the scripted stand-ins
-                         "host"})   # M11 (debate D11): the DeepSeek host lines
+                         "host",   # M11 (debate D11): the DeepSeek host lines
+                         "memory_writer"})   # M13 (memory D18): the one rewrite call, no Jev
 KEYLESS_PORTS = frozenset({"converter"})   # chosen by availability, not by the profile or the key (D-96)
 AGENT_PORTS = frozenset({"turn", "planner", "reactions", "face_check",   # `agent` implementations (M8 turn; M9 the rest)
-                         "host"})   # M11 (debate D11): the same host lines; its verdict half differs (D14)
+                         "host",   # M11 (debate D11): the same host lines; its verdict half differs (D14)
+                         "memory_writer"})   # M13 (memory D17): the graph, with Jev's importance and guard
 ENV_PROFILE = "HORIZON_AI_PROFILE"
 
 
@@ -92,6 +96,8 @@ class ProfileSpec:
         if port in KEYLESS_PORTS:
             return self.overrides.get(port) or ("scripted" if self.test_mode else "naive")
         impl: Impl = self.overrides.get(port) or self.profile or ("naive" if key_set else "scripted")
+        if port == "memory_writer" and self.test_mode and key_set and not self.overrides.get(port)                 and self.profile is None:
+            impl = "agent"   # M13 (memory D18): test mode runs the `agent` writer on canned answers
         if impl == "agent":
             if not key_set:
                 return "scripted"
@@ -147,6 +153,9 @@ class AiPorts:
             if port == "host":
                 from horizon.ai.naive.host import AgentDebateHost
                 return AgentDebateHost(d)
+            if port == "memory_writer":
+                from horizon.ai.memory.writers import AgentMemoryWriter
+                return AgentMemoryWriter(d)
             raise KeyError(f"no agent implementation for port {port!r}")
         if impl == "naive":
             if port == "turn":
@@ -186,6 +195,9 @@ class AiPorts:
             if port == "host":
                 from horizon.ai.naive.host import NaiveDebateHost
                 return NaiveDebateHost(d)
+            if port == "memory_writer":
+                from horizon.ai.memory.writers import NaiveMemoryWriter
+                return NaiveMemoryWriter(d)
             raise KeyError(f"no naive implementation for port {port!r}")
         builders: dict[str, Callable[[], Any]] = {
             "turn": lambda: ScriptedTurnEngine(d), "router": lambda: ScriptedRouter(d),

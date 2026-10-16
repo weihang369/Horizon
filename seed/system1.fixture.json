@@ -24,6 +24,22 @@
         "result": "used",
         "action": "used"
       },
+      "earlier": {
+        "purpose": "turn_plan",
+        "id": "earlier",
+        "version": 2,
+        "label": "needs something from earlier?",
+        "p": 0.72,
+        "compared": [
+          {
+            "name": "t_gate",
+            "value": 0.72,
+            "threshold": 0.15
+          }
+        ],
+        "result": "used",
+        "action": "used"
+      },
       "emotion_debate_opening": {
         "purpose": "turn_plan",
         "id": "emotion_debate_opening",
@@ -134,6 +150,17 @@
         "compared": [],
         "result": "shown_only"
       },
+      "importance": {
+        "purpose": "importance",
+        "id": "importance",
+        "version": 1,
+        "label": "how much does it matter?",
+        "p": 0.72,
+        "confidence": 0.72,
+        "compared": [],
+        "result": "used",
+        "action": "used"
+      },
       "member_closing": {
         "purpose": "debate_plan",
         "id": "member_closing",
@@ -185,6 +212,22 @@
         "result": "used",
         "action": "used"
       },
+      "memory_guard": {
+        "purpose": "memory_guard",
+        "id": "memory_guard",
+        "version": 3,
+        "label": "rewrite keeps the old facts?",
+        "p": 0.72,
+        "compared": [
+          {
+            "name": "t_keep",
+            "value": 0.72,
+            "threshold": 0.35
+          }
+        ],
+        "result": "used",
+        "action": "used"
+      },
       "passage": {
         "purpose": "deep_check",
         "id": "passage",
@@ -216,6 +259,22 @@
         "compared": [
           {
             "name": "t_set",
+            "value": 0.72,
+            "threshold": 0.5
+          }
+        ],
+        "result": "used",
+        "action": "used"
+      },
+      "recall": {
+        "purpose": "deep_check",
+        "id": "recall",
+        "version": 1,
+        "label": "does this earlier line help?",
+        "p": 0.72,
+        "compared": [
+          {
+            "name": "t_recall",
             "value": 0.72,
             "threshold": 0.5
           }
@@ -314,6 +373,22 @@
             "name": "margin",
             "value": 0.72,
             "threshold": 0.25
+          }
+        ],
+        "result": "used",
+        "action": "used"
+      },
+      "same_fact": {
+        "purpose": "memory_guard",
+        "id": "same_fact",
+        "version": 1,
+        "label": "same fact?",
+        "p": 0.72,
+        "compared": [
+          {
+            "name": "t_same",
+            "value": 0.72,
+            "threshold": 0.5
           }
         ],
         "result": "used",

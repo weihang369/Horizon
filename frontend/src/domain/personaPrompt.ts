@@ -46,11 +46,13 @@ export interface PersonaInput {
   } | null;
   turnLength?: string | null;
   contentRating?: string;
+  /** M13 (memory D22): the character's memory list, best first; the wizard's preview passes none. */
+  memories?: string[];
 }
 export interface PersonaCut { capped: string[]; dropped: Record<string, number>; step2: boolean; over: boolean }
 export interface PersonaPrompt {
   text: string;
-  tokens: { card: number; world: number; session: number; rules: number; total: number };
+  tokens: { card: number; world: number; session: number; rules: number; total: number; memory?: number };
   cut: PersonaCut;
 }
 
@@ -229,6 +231,21 @@ function worldBlock(inp: PersonaInput): string {
   return lines.join("\n");
 }
 
+// M13 (memory D22; doc 11 S6): the memory list between the world and the session. The twin of persona.py's
+// `_memories`: each line newline-collapsed (no fake heading) and cut at 40 words; no memories, no block.
+export const MEMORY_HEADER = "# What you remember (notes from earlier conversations; bring one up only when it fits the moment; never list them)";
+const MEMORY_LINE_WORDS = 40;
+
+export function memoryLine(text: string): string {
+  const words = text.replace(/\s+/g, " ").trim().split(" ");
+  return words.length <= MEMORY_LINE_WORDS ? words.join(" ") : `${words.slice(0, MEMORY_LINE_WORDS).join(" ")} …`;
+}
+
+function memoryBlock(inp: PersonaInput): string | null {
+  const lines = (inp.memories ?? []).map(memoryLine).filter((x) => x);
+  return lines.length ? [MEMORY_HEADER, ...lines.map((x) => `- ${x}`)].join("\n") : null;
+}
+
 function sessionBlock(inp: PersonaInput): string {
   const user = userOf(inp);
   const mode = inp.mode ?? "one_on_one";
@@ -308,14 +325,13 @@ function rulesBlock(inp: PersonaInput): string {
 export function compilePersona(inp: PersonaInput): PersonaPrompt {
   const [cardText, cut] = cardWithinLimit(inp);
   const world = worldBlock(inp);
+  const memory = memoryBlock(inp);
   const session = sessionBlock(inp);
   const rules = rulesBlock(inp);
-  const text = [cardText, world, session, rules].join("\n\n");
-  return {
-    text,
-    tokens: { card: countTokens(cardText), world: countTokens(world), session: countTokens(session), rules: countTokens(rules), total: countTokens(text) },
-    cut,
-  };
+  const text = [cardText, world, ...(memory ? [memory] : []), session, rules].join("\n\n");
+  const tokens: PersonaPrompt["tokens"] = { card: countTokens(cardText), world: countTokens(world), session: countTokens(session), rules: countTokens(rules), total: countTokens(text) };
+  if (memory) tokens.memory = countTokens(memory);
+  return { text, tokens, cut };
 }
 
 // Doc 07 G3 (group-watch D10): the turn cue's one sentence in group and watch, in the tail's cue line, never in system

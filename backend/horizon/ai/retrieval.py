@@ -255,17 +255,62 @@ def mmr(pool: list[Scored], n: int, lam: float, vectors: dict[int, list[float]],
     return picked
 
 
-async def search(index: ScopedIndex, bundle: QueryBundle, params: SearchParams) -> SearchResult:
-    """BM25 top `pool` over the bundle's terms; dense top `pool` per dense text with a vector in the index's space;
-    the dense lists fused first (RRF), then RRF over BM25 and dense; min–max normalised; MMR picks `candidates`."""
+class Corpus(Protocol):
+    """M13 (memory D30): what `search` reads, bound by the runtime to one scope: a speaker's documents
+    (`ScopedIndex.knowledge()`), a session's indexed lines, or a character's overflow memories."""
+
+    space_id: str
+
+    async def fts(self, query: str, limit: int) -> list[Candidate]: ...
+    async def knn(self, vector: list[float], limit: int) -> list[Candidate]: ...
+    async def vectors(self, rids: list[int]) -> dict[int, list[float]]: ...
+    async def texts(self, rids: list[int]) -> dict[int, str]: ...
+
+
+class KnowledgeCorpus:
+    """The documents corpus over a `ScopedIndex` (M12's four reads, renamed)."""
+
+    def __init__(self, index: ScopedIndex) -> None:
+        self.index = index
+        self.space_id = index.active_space
+
+    async def fts(self, query: str, limit: int) -> list[Candidate]:
+        return await self.index.knowledge_fts(query, limit)
+
+    async def knn(self, vector: list[float], limit: int) -> list[Candidate]:
+        return await self.index.knowledge_knn(vector, limit)
+
+    async def vectors(self, rids: list[int]) -> dict[int, list[float]]:
+        return await self.index.vectors(rids)
+
+    async def texts(self, rids: list[int]) -> dict[int, str]:
+        return await self.index.piece_texts(rids)
+
+
+def corpus_of(source: Corpus | ScopedIndex) -> Corpus:
+    """A `Corpus` as is; a `ScopedIndex` (every M12 caller) as its documents corpus."""
+    if hasattr(source, "fts") and hasattr(source, "space_id"):
+        return source   # type: ignore[return-value]
+    knowledge = getattr(source, "knowledge", None)
+    if callable(knowledge):
+        out: Corpus = knowledge()
+        return out
+    return KnowledgeCorpus(source)
+
+
+async def search(source: Corpus | ScopedIndex, bundle: QueryBundle, params: SearchParams) -> SearchResult:
+    """BM25 top `pool` over the bundle's terms; dense top `pool` per dense text with a vector in the corpus's space;
+    the dense lists fused first (RRF), then RRF over BM25 and dense; min–max normalised; MMR picks `candidates`.
+    M13 (memory D30): over any `Corpus`; a `ScopedIndex` searches its documents, exactly as before."""
     from horizon.ai.agent.query import fts_or
 
+    corpus = corpus_of(source)
     q = fts_or(bundle.terms)
-    bm25 = [c.rid for c in await index.knowledge_fts(q, params.pool)] if q is not None else []
+    bm25 = [c.rid for c in await corpus.fts(q, params.pool)] if q is not None else []
     known: dict[int, list[float]] = {}   # vectors that came with the KNN hits (a vec0 lookup by rid is slow)
     dense_lists: list[list[int]] = []
-    for v in bundle.vectors_in(index.active_space):
-        hits = await index.knowledge_knn(v, params.pool)
+    for v in bundle.vectors_in(corpus.space_id):
+        hits = await corpus.knn(v, params.pool)
         known.update({c.rid: c.vector for c in hits if c.vector is not None})
         dense_lists.append([c.rid for c in hits])
     dense = [rid for rid, _ in rrf(dense_lists)] if len(dense_lists) > 1 else (dense_lists[0] if dense_lists else [])
@@ -275,8 +320,8 @@ async def search(index: ScopedIndex, bundle: QueryBundle, params: SearchParams) 
     vectors = {r: known[r] for r in rids if r in known}
     missing = [r for r in rids if r not in vectors]
     if missing:
-        vectors.update(await index.vectors(missing))
-    texts = await index.piece_texts([r for r in rids if r not in vectors]) if len(vectors) < len(rids) else {}
-    return SearchResult(space_id=index.active_space, candidates=mmr(pool, params.candidates, params.mmr_lambda,
-                                                                     vectors, texts),
+        vectors.update(await corpus.vectors(missing))
+    texts = await corpus.texts([r for r in rids if r not in vectors]) if len(vectors) < len(rids) else {}
+    return SearchResult(space_id=corpus.space_id, candidates=mmr(pool, params.candidates, params.mmr_lambda,
+                                                                  vectors, texts),
                         pool=pool, lists={"bm25": len(bm25), "dense": len(dense)})

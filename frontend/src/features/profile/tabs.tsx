@@ -152,13 +152,20 @@ export function SessionsTab({ c, worldId, onChat }: { c: Character; worldId: str
   );
 }
 
-// ── Memory (Should; mock with ribbon) ───────────────────────────────────────
+// ── Memory (PRF-07; M13 (memory D37): the AI stage built it, so the ribbon is gone) ─────────────────
 const KIND: Record<MemoryItem["kind"], string> = { fact: "Fact", event: "Event", preference: "Preference", about_user: "About you" };
+
+/** M13 (memory D37): the newest 50, then "Show more (n)" 50 at a time; the list call is unchanged. */
+export const MEMORY_PAGE = 50;
+export function memoryPage<T>(items: T[], shown: number): { visible: T[]; more: number } {
+  return { visible: items.slice(0, shown), more: Math.max(0, items.length - shown) };
+}
 
 export function MemoryTab({ c, worldId, onChat }: { c: Character; worldId: string; onChat: () => void }) {
   const q = useMemory(c.id);
   const now = useNow(60_000);
   const [gone, setGone] = useState<Set<string>>(new Set());
+  const [shown, setShown] = useState(MEMORY_PAGE);
   const forget = async (m: MemoryItem) => {
     setGone((g) => new Set(g).add(m.id));
     try {
@@ -170,14 +177,15 @@ export function MemoryTab({ c, worldId, onChat }: { c: Character; worldId: strin
     }
   };
   const items = (q.data ?? []).filter((m) => !gone.has(m.id));
+  const { visible, more } = memoryPage(items, shown);
   return (
     <div className={s.mem}>
-      <div className={s.ribbon}>Preview: final design by AI team</div>
       {q.loading ? <Skeleton lines={4} height={40} /> : items.length === 0 ? (
         <EmptyState title={`Nothing remembered yet. Talk to ${c.profile.name.split(" ")[0]}.`} action={{ label: "Chat", run: onChat }} paletteId={c.paletteId} />
       ) : (
+        <>
         <ul className={s.memList}>
-          {items.map((m, i) => (
+          {visible.map((m, i) => (
             <li key={m.id} className={s.memItem} style={{ "--i": i } as CSSProperties}>
               <span className={s.memKind}>{KIND[m.kind]}</span>
               <p className={s.memText}>{m.text}</p>
@@ -192,6 +200,10 @@ export function MemoryTab({ c, worldId, onChat }: { c: Character; worldId: strin
             </li>
           ))}
         </ul>
+        {more > 0 && (
+          <Button size="sm" variant="ghost" onClick={() => setShown((n) => n + MEMORY_PAGE)}>Show more ({more})</Button>
+        )}
+        </>
       )}
     </div>
   );

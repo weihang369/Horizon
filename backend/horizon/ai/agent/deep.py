@@ -3,6 +3,14 @@ D10–D15; deep-turn spec).
 
     gather (BM25 terms · the embedding · the rewrite, in parallel) ──▶ search ──▶ check (≤ 8 + the set check) ──▶ keep
 
+M13 (memory D34) adds recall beside it, when "needs something from earlier?" said yes for the speaker:
+
+    gather ─┬─▶ search docs ──▶ check docs (≤ 8 + set) ──▶ keep docs ─┐
+            └─▶ search recall ─▶ check recall (≤ 6) ─────▶ keep recall ─┴─▶ out
+
+The two branches run as children of the deep work (`vclock.together`): each keeps its own fallback, and Stop, a
+superseding message or `clear()` cancels both. A recall-only request skips gather (no rewrite) and the documents.
+
 - **gather** (D10, D11): the message's keyword terms, its embedding (only when the speaker has an `indexed` source in
   the index's space) and, in 1:1 and group, the rewrite when the message isn't standalone or isn't English, all start
   together. A rewrite in time joins the terms; a failed or late one is a fallback query (the message, and the two
@@ -42,6 +50,7 @@ from langgraph.graph import END, START, StateGraph
 
 from horizon.ai.agent import keep as keeping
 from horizon.ai.agent import query as q
+from horizon.ai.agent import recall as rc
 from horizon.ai.agent import rewrite as rw
 from horizon.ai.agent.gates import thresholds
 from horizon.ai.contexts import DeepRequest, DeepResult, KnowledgeHit, TurnContext
@@ -197,6 +206,46 @@ class DeepSteps:
                           rewrite=rewrite.text if rewrite is not None else None, terms=terms,
                           dense={index.active_space: dense} if dense else {})
         return bundle, rewrite
+
+    # ── recall (M13, memory D31–D34) ──
+    async def recall(self, req: DeepRequest, docs_bundle: QueryBundle | None) -> dict[str, Any]:
+        """Recall's branch: its query (the documents' bundle, or the message and its earlier lines), the search over
+        the session's lines and the overflow, Jev call 2 and the keep rule."""
+        r = self.deps.retrieval()
+        knobs = r.agent.recall
+        io = self.deps.deep_io()
+        space_id = io.active_space()
+        dense: dict[int, list[float]] = {}
+        # the message's own vector (the early start's, usually already served) when the documents' search had none
+        if (docs_bundle is None or not docs_bundle.dense.get(space_id)) and io.key_set():
+            space = await io.space(space_id)
+            if space is not None:
+                task = self._spawn(f"query-embed:{req.speaker.id}:recall", self._embed(req, [req.message], space))
+                try:
+                    dense = await self._wait(task, _seconds(self.knobs().query_embed_wait_ms)) or {}
+                except asyncio.CancelledError:
+                    task.cancel()
+                    raise
+        bundle = rc.recall_bundle(req, docs_bundle, dense, space_id)
+        found = await rc.find(io, req, bundle, knobs, self.deps.memory_knobs(), self.deps.clock().now())
+        ps, slowest = await rc.check(self.deps, req, bundle, found.picked, knobs)
+        kept, outcome = rc.keep(found.picked, found.merged, ps, knobs)
+        rows = rc.rows(found.picked, ps, kept, outcome)
+        checks = [{"id": it.hit.id, "kind": it.kind, "order": i, "p": p} for i, (it, p) in
+                  enumerate(zip(found.picked, ps, strict=True))]
+        calls: list[dict[str, Any]] = []
+        if outcome == "fallback":
+            calls.append({"purpose": PURPOSE, "model": self.deps.prices.decision.model, "costUsd": 0.0,
+                          "latencyMs": float(slowest or knobs.check_ms), "fallback": True})
+        return {"recall": kept, "recall_outcome": outcome, "recall_rows": rows, "recall_checks": checks,
+                "recall_lists": found.lists, "recall_calls": calls}
+
+    async def docs_chain(self, req: DeepRequest, bundle: QueryBundle, rewrite: rw.Rewrite | None) -> DeepResult:
+        """The documents branch end to end (search, check, keep), for a turn that also recalls."""
+        result, hits = await self.search(req, bundle)
+        pool = await self.pool_ids(req, result)
+        checked, set_yes, failed, slowest, set_info = await self.check(req, bundle, result, hits)
+        return self.keep(req, bundle, rewrite, result, hits, checked, set_yes, failed, slowest, set_info, pool)
 
     # ── search ──
     async def search(self, req: DeepRequest, bundle: QueryBundle) -> tuple[SearchResult, dict[int, KnowledgeHit]]:
@@ -402,9 +451,11 @@ def level_probs(a: ScoreAnswer) -> tuple[float, float, float]:
     return p2, p1, (p1 + 2 * p2) / 2
 
 
-async def early_embedding(deps: Any, session: Any, who: Sequence[str], text: str, message_id: str | None) -> None:
+async def early_embedding(deps: Any, session: Any, who: Sequence[str], text: str, message_id: str | None,
+                          any_space: bool = False) -> None:
     """The user message's query embedding, started with Jev call 1 (rag 11.5): once, for the first of `who` with
-    vectors in the active space. A failure costs nothing: gather asks again at the gate."""
+    vectors in the active space. A failure costs nothing: gather asks again at the gate. M13 (memory D32): with
+    `any_space` (recall has earlier lines or overflow memories to search), whatever the documents."""
     RECORDED_SINK.set(None)   # its ledger row links to the message, never to a reply's sink
     io = deps.deep_io()
     try:
@@ -413,7 +464,7 @@ async def early_embedding(deps: Any, session: Any, who: Sequence[str], text: str
         for cid in who:
             index = io.index(session.world.id, cid)
             space = await io.space(index.active_space)
-            if space is not None and await io.has_vectors(cid, index.active_space):
+            if space is not None and (any_space or await io.has_vectors(cid, index.active_space)):
                 ctx = call_ctx("query_embed", world_id=session.world.id, session_id=session.session_id,
                                message_id=message_id)
                 await io.embedder().embed([text], kind="query", space=space, ctx=ctx)
@@ -424,15 +475,37 @@ async def early_embedding(deps: Any, session: Any, who: Sequence[str], text: str
         log.info("the early query embedding failed (%s)", getattr(e, "code", type(e).__name__))
 
 
-def start_early_embedding(deps: Any, session: Any, who: Sequence[str], text: str, message_id: str | None) -> None:
+def start_early_embedding(deps: Any, session: Any, who: Sequence[str], text: str, message_id: str | None,
+                          any_space: bool = False) -> None:
     """Spawn `early_embedding` on the runtime's tracked spawn (a plan never waits for it)."""
     if who and text.strip():
         deps.spawn(f"query-embed-early:{session.session_id}", early_embedding(deps, session, list(who), text,
-                                                                               message_id))
+                                                                               message_id, any_space))
+
+
+def with_recall(out: DeepResult, got: dict[str, Any]) -> DeepResult:
+    return out.model_copy(update={"recall": got["recall"], "recall_outcome": got["recall_outcome"],
+                                  "recall_rows": got["recall_rows"], "recall_checks": got["recall_checks"],
+                                  "recall_lists": got["recall_lists"], "calls": [*out.calls, *got["recall_calls"]]})
 
 
 def build_deep_graph(steps: DeepSteps) -> Any:
     # LangGraph's node protocol names the parameter `state`; here it is the whole run
+    async def both_node(state: DeepRun) -> DeepRun:
+        """M13 (D34): both branches at once, as children of this run (a cancel reaches both)."""
+        req = state["req"]
+        try:
+            docs, got = await vclock.together(steps.docs_chain(req, state["bundle"], state.get("rewrite")),
+                                              steps.recall(req, state["bundle"]))
+        except BaseExceptionGroup as eg:
+            raise eg.exceptions[0] from None
+        return {"out": with_recall(docs, got), "path": ["search", "check", "keep", "recall"]}
+
+    async def recall_only_node(state: DeepRun) -> DeepRun:
+        """M13 (D34): a recall-only request skips gather (no rewrite) and the documents branch."""
+        got = await steps.recall(state["req"], None)
+        return {"out": with_recall(DeepResult(docs=False, outcome="not_found"), got), "path": ["recall"]}
+
     async def gather_node(state: DeepRun) -> DeepRun:
         bundle, rewrite = await steps.gather(state["req"])
         return {"bundle": bundle, "rewrite": rewrite, "path": ["gather"]}
@@ -459,8 +532,14 @@ def build_deep_graph(steps: DeepSteps) -> Any:
     g.add_node("search", search_node)
     g.add_node("check", check_node)
     g.add_node("keep", keep_node)
-    g.add_edge(START, "gather")
-    g.add_edge("gather", "search")
+    g.add_node("both", both_node)
+    g.add_node("recall", recall_only_node)
+    g.add_conditional_edges(START, lambda run: "gather" if run["req"].docs else "recall",
+                            {"gather": "gather", "recall": "recall"})
+    g.add_conditional_edges("gather", lambda run: "both" if run["req"].recall else "search",
+                            {"both": "both", "search": "search"})
+    g.add_edge("both", END)
+    g.add_edge("recall", END)
     g.add_edge("search", "check")
     g.add_edge("check", "keep")
     g.add_edge("keep", END)

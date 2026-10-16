@@ -21,7 +21,7 @@ from collections.abc import Iterator
 from pathlib import Path
 from typing import Any
 
-from horizon.ai.decider import Choice, ChoiceAnswer, Noul, NoulAnswer, Question, validate, wire_question
+from horizon.ai.decider import Choice, ChoiceAnswer, Noul, NoulAnswer, Question, Score, ScoreAnswer, validate, wire_question
 from horizon.ai.questions import NAME, bank
 from horizon.domain.clock import FrozenClock
 from horizon.evals import canary as canary_mod
@@ -202,8 +202,11 @@ class Decisions:
         M12's `--set reask` is D9's re-ask with titles)."""
         from horizon.evals import m12_sets
 
+        name, _, only = (opts.set or "").partition(":")   # M13: `judges:qid,qid` validates only those judges
+        keep = set(only.split(",")) if only else None
         source = (iter(m12_sets.reask_items()) if opts.set == m12_sets.REASK_SET else
-                  all_items(DATASETS / opts.set) if opts.set else all_items(judges=False))
+                  (i for i in all_items(DATASETS / name) if keep is None or i["question_id"] in keep) if opts.set
+                  else all_items(judges=False))
         items = [i for i in source if bool(i.get("smoke_only")) == self.smoke][opts.start:]
         return items[: opts.limit] if opts.limit else items
 
@@ -251,13 +254,25 @@ class Decisions:
                 ans = validate(q, r.answers.get(key))
                 if isinstance(ans, NoulAnswer):
                     th = bank().get(qid).thresholds   # M10: talk_finished's threshold is `t_end` (re-chosen on dev)
-                    t = float(next((th[k] for k in ("t", "t_end", "t_gate", "t_standalone", "english") if k in th),
-                                   0.5))
+                    t = float(next((th[k] for k in ("t", "t_end", "t_gate", "t_standalone", "english", "t_keep",
+                                                    "t_recall") if k in th), 0.5))
                     said = "yes" if ans.p >= t else "no"
                     row.update(answer=said, p=ans.p, correct=said == item["label"])
                     total += 1
                     correct += said == item["label"]
                     bins.setdefault(min(9, int(ans.p * 10)), []).append(int(said == "yes"))
+                else:
+                    row["invalid"] = True
+                res.rows.append(row)
+                continue
+            if isinstance(q, Score) and isinstance(item["label"], int):   # M13 (memory D40): importance, levels 1–n
+                key = str(item["item"].get("key") or qid)
+                r = await env.rt.gateway.decide(item["item"]["state"], {key: wire_question(q)}, call_ctx("eval_judge"))
+                sa = validate(q, r.answers.get(key))
+                if isinstance(sa, ScoreAnswer):
+                    level = round(sa.score) + 1
+                    row.update(answer=level, score=sa.score, unit=round(sa.unit(len(q.levels)), 4),
+                               correct=level == int(item["label"]))
                 else:
                     row["invalid"] = True
                 res.rows.append(row)
@@ -306,7 +321,7 @@ class Decisions:
                 measured[mkey] = mark[mkey]
             done_path.parent.mkdir(parents=True, exist_ok=True)
             done_path.write_text(json.dumps(measured, indent=1), encoding="utf-8")
-        if env.opts.set == JUDGES_SET and not self.smoke:
+        if (env.opts.set or "").partition(":")[0] == JUDGES_SET and not self.smoke:
             res.summary += self._judge_report(res.rows, plan.items)
         fade = env.rt.runtime_cfg.runtime.emotion_fade
         for kind in ("emotion", "reaction"):   # M9 D26: the code rule's policies, floors from dev
@@ -335,6 +350,9 @@ class Decisions:
             if talk:
                 res.summary += who_policies.talk_report(talk)
             res.summary += m12_sets.reports(res.rows)   # M12: docs, standalone, english and D9's re-ask
+            from horizon.evals import m13_sets
+
+            res.summary += m13_sets.reports(res.rows)   # M13: importance, memory_guard, earlier, recall, same_fact
         n_policy = sum(1 for r in res.rows if isinstance(r["label"], dict) and not r.get("invalid"))
         if self.smoke:
             res.summary.append(f"## Decisions (smoke only: {total + n_policy} item(s), never a measurement)")
@@ -641,6 +659,7 @@ def _content() -> dict[str, Any]:
     from horizon.evals.debate_suites import DebateHistory, DebatePlant, DebateQuality, DebateSuite
     from horizon.evals.deep_check_suite import DeepCheck
     from horizon.evals.latency import Latency
+    from horizon.evals.memory_suite import EmbedProbe, Memory
     from horizon.evals.moodline import Moodline
     from horizon.evals.notfound_suite import NotFound
     from horizon.evals.retrieval_suite import Retrieval
@@ -649,7 +668,8 @@ def _content() -> dict[str, Any]:
             "moodline": Moodline(), "latency": Latency(), "watch-history": WatchHistory(), "freerun": FreeRun(),
             "debate-history": DebateHistory(), "debate-plant": DebatePlant(), "debate-quality": DebateQuality(),
             "debate": DebateSuite(), "retrieval": Retrieval(),
-            "notfound": NotFound(), "deep-check": DeepCheck()}
+            "notfound": NotFound(), "deep-check": DeepCheck(), "memory": Memory(),
+            "embed-probe": EmbedProbe()}
 
 
 SUITES: dict[str, Any] = {"canary": Canary(), "decisions": Decisions(), "smoke": Smoke(), **_content()}

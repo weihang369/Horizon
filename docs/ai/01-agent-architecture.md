@@ -241,6 +241,13 @@ probabilities for Insight.
   plan's, and debate and watch never ask them. Only the speaker's own answer counts (at or above `t_gate`: deep); the
   other candidates' rows are `not_used`, a dropped gate or a fallback is quick, and the debate's gate is used if back
   by the turn's start. The grown requests' sizes are in [m12.md](checks/m12.md).*
+  *Built in M13 (OpenSpec `memory` D26–D28): "needs memories?" is replaced by "needs something from earlier?"
+  (`earlier:{characterId}`, `t_gate` 0.15 from phase 10's run, recall-first), asked in the same plan requests about each candidate with something to
+  search: everyone when the session has indexed lines up to its latest summary, else the candidates whose memories
+  overflow their list. Either gate's "yes" makes the speaker's turn deep. A long debate state cuts its arguments
+  (each member's latest to 30 words, then the last opposing one to 120 tokens) before X9 drops any gate. An `earlier`
+  question is 227 tokens as sent, not ≈ 90; the grown requests stay far under the size check
+  ([m13.md](checks/m13.md)).*
 - **Size check.** The `Decider` checks the whole request (state + all questions) against the real limit of the
   OpenRouter endpoint, as well as state + the longest question. Check 4 finds that limit.
 - **Confidence floors** apply to every choice and score answer. A noul has no confidence, so its probability is used
@@ -413,6 +420,10 @@ parallelism pay off.
 *Built in M12 (`rag` D15): the deep graph is the second graph, with its own frozen request and result; its steps run
 the Decider and our code only.*
 
+*Built in M13 (`memory` D17, D34): the memory writer is the third graph (rewrite → judge → ops, or rewrite → failed),
+run at session pauses and never on the reply path. The deep graph gains a recall branch: with both gates it runs the
+documents chain and recall together, and a recall-only request skips the documents.*
+
 ### A8. Every model call goes through our gateway
 
 **Decision:**
@@ -441,6 +452,9 @@ the Decider and our code only.*
 
 **Rejected:** a checkpointer on every graph, because the state would be stored twice, there would be disk writes after
 every node, and Forget would get harder.
+
+*Built in M13 (`memory` D17): confirmed for the memory graph. Its checkpoint is `sessions.memory_seq` in SQL, moved in
+the same transaction as the run's writes; `data/graph.db` is still unused.*
 
 ### A10. No tool-calling loop on the reply path, and no MCP
 
@@ -516,6 +530,10 @@ parallel, then the search and the 8 `deep_check` requests at once (plus a set ch
 "only when Jev call 1 says deep" was the user's choice (D32): the user message's embedding starts beside Jev call 1
 for a candidate with vectors, because from Malaysia it takes longer than Jev call 1 itself; it costs ≈ $0.000002 on a
 quick turn. Group's deep work hides in the preamble and watch's in the pace; debate's has nothing to hide behind.*
+
+*Built in M13 (`memory` D29, D32–D34): recall rides the deep path. Its Jev call 2 (up to 6 `recall` requests) runs
+beside the documents' checks, and the early embedding also starts when only recall may need it. Indexing the lines
+that leave the window runs after the rolling summary, and memory writing at pauses; neither delays a reply.*
 
 ### A14. Debate: fair sides, Jev picks the member
 
@@ -597,7 +615,8 @@ None of the backend rows changes the HTTP contract unless marked.
 **Built in** ([doc 13](13-wrap-up.md) W4): the `agent` profile in M7 and the `TurnPlanner` in M9; the entry points in M9 (1:1),
 M10 (group, watch) and M11 (debate); the `Decider` changes in M7 (each new purpose is added by the change that first calls it, doc 13 W4); embedding only on deep turns (D-100) in M12; the
 async `Summariser.rolling` in M8 and `ReactionPredictor` in M9. *M12 (`rag`) built `deep_check`, the deep path in all
-four modes and D-100's embedding, amended by the user's choice to start it with Jev call 1 (D32).*
+four modes and D-100's embedding, amended by the user's choice to start it with Jev call 1 (D32). M13 (`memory`) built
+recall from earlier lines and overflow memories on the same deep path, and the memory graph at pauses.*
 
 ## 9. Left for later tasks
 

@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import select
 
-from horizon.ai.contexts import CharacterView, MessageView, ParticipantView, SessionContext, WorldView
+from horizon.ai.contexts import CharacterView, MemoryLine, MessageView, ParticipantView, SessionContext, WorldView
 from horizon.ai.scripted.ports import estimate_tokens
 from horizon.contract import mappers as mp
 from horizon.db import tables as t
@@ -95,6 +95,65 @@ async def session_context(rt: Runtime, actor: SessionActor, *, recent: int | Non
         mode=s["mode"], title=s["title"], config=s.get("config"), state=s.get("state"), participants=parts,
         recent=views, summary=summ, emotion_mode=s["emotionMode"], content_rating=str(settings.get("contentRating", "sfw")),
         period=rt.clock.pricing_period(), history_tokens=sum(estimate_tokens(m["content"]) for m in msgs))
+
+
+async def speaker_view(rt: Runtime, actor: SessionActor, row: Any) -> CharacterView:
+    """M13 (memory D22, D23): the speaker's view with its memory list, for `agent` replies only. The list is read the
+    first time this sitting builds the character's view and frozen in `actor.memory_blocks`, so system message 1 stays
+    byte-identical (and cached) across the sitting; Forget and a run's commit drop it, and the next turn reads it again."""
+    view = character_view(row)
+    if not agent_turns(rt):
+        return view
+    block, _ = await memory_block(rt, actor, str(row["id"]))
+    return view.model_copy(update={"memories": list(block)})
+
+
+def agent_turns(rt: Runtime) -> bool:
+    return bool(rt.ai.impl("turn", key_set=rt.keys.status() == "set") == "agent")
+
+
+async def memory_block(rt: Runtime, actor: SessionActor, cid: str) -> tuple[list[MemoryLine], bool]:
+    """M13 (memory D22, D23): the character's frozen list for this sitting and whether it has an overflow."""
+    block = actor.memory_blocks.get(cid)
+    while block is None:
+        from horizon.services.memory.block import memory_list
+
+        gen = actor.memory_gen.get(cid, 0)
+        async with rt.db.read() as conn:
+            listed, overflow = await memory_list(conn, cid, str(actor.session["worldId"]), rt.clock.now(),
+                                                 rt.runtime_cfg.runtime.memory)
+        fresh = [MemoryLine(id=m.id, kind=m.kind, text=m.text) for m in listed]
+        if actor.memory_gen.get(cid, 0) != gen:   # a Forget or a commit dropped it while we read: read again
+            continue
+        block = actor.memory_blocks[cid] = fresh
+        actor.memory_overflow[cid] = overflow
+    return block, bool(actor.memory_overflow.get(cid))
+
+
+async def recallable(rt: Runtime, actor: SessionActor, cids: list[str]) -> list[str]:
+    """M13 (memory D26): the candidates with something earlier to search: everyone when the session has indexed lines
+    (up to the latest summary's bound), else those with an overflow. `agent` turns only."""
+    if not cids or not agent_turns(rt):
+        return []
+    from horizon.services.memory.corpora import session_has_lines
+
+    upto, _ = await _latest_summary(rt, actor.sid)
+    if upto and await session_has_lines(rt, actor.sid, upto):
+        return list(cids)
+    out = []
+    for cid in cids:
+        _, overflow = await memory_block(rt, actor, cid)
+        if overflow:
+            out.append(cid)
+    return out
+
+
+async def recall_scope(rt: Runtime, actor: SessionActor, cid: str) -> dict[str, Any]:
+    """M13 (memory D34): what a speaker's recall searches: the session's lines up to the latest summary's bound, and
+    its overflow (every current memory not in its frozen list)."""
+    upto, _ = await _latest_summary(rt, actor.sid)
+    block, overflow = await memory_block(rt, actor, cid)
+    return {"upto_seq": upto, "block_ids": [m.id for m in block], "has_overflow": overflow}
 
 
 def character_view(row: Any) -> CharacterView:

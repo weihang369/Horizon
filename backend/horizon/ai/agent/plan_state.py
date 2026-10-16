@@ -7,8 +7,10 @@ A pure builder with no runtime caller until M9's `TurnPlanner`, which imports it
 - Numbers become labels in code (A3 rule 7): "not yet", "just now", "1 turn ago", "n turns ago".
 - **No energy** (G9): code applies energy; `eligible_candidates` drops exhausted and muted characters first.
 - **At most 2,000 tokens** (`count_tokens`), cut in X9's order: document titles past 5, `about` to 30, the oldest
-  recent lines (keeping 3), the latest message to 300; then the candidates last in speaking order lose their
-  per-candidate gate questions (reported in `dropped_gates`, never removed from the cast).
+  recent lines (keeping 3), the latest message to 300; M13 (memory D28, the user's U2): a debate then cuts each
+  candidate's latest argument to 30 words and the last opposing argument to 120 tokens; only then the candidates last
+  in speaking order lose their per-candidate gate questions (reported in `dropped_gates`, never removed from the
+  cast).
 """
 
 from __future__ import annotations
@@ -36,6 +38,8 @@ RECENT = 6
 RECENT_WATCH = 12
 RECENT_KEEP = 3
 ARGUMENT_WORDS = 60
+ARGUMENT_WORDS_CUT = 30      # M13 (memory D28, the user's U2): a long debate cuts its arguments before its gates
+OPPOSING_CUT = 120           # tokens
 _FIRST_SENTENCE = re.compile(r"(?<=[.!?。！？])\s")
 
 
@@ -132,7 +136,8 @@ def eligible_candidates(ctx: SessionContext, est_points: float, ids: Sequence[st
             and float(p.energy.get("current", 0)) >= est_points]
 
 
-def _state(inp: PlanStateInput, *, titles: int, about: int, recent_n: int, latest: int) -> dict[str, Any]:
+def _state(inp: PlanStateInput, *, titles: int, about: int, recent_n: int, latest: int,
+           arg_words: int = ARGUMENT_WORDS, opposing: int | None = None) -> dict[str, Any]:
     cast = [{"name": c.name, "role": c.role, "about": cut_tokens(first_sentence(c.about_source), about), "face": c.face,
              **({"last_spoke": last_spoke_label(c.turns_since)} if inp.last_spoke else {})} for c in inp.candidates]
     state: dict[str, Any] = {"mode": inp.mode, "quoted_user": inp.user_name or "the user", "quoted_cast": cast}
@@ -158,8 +163,8 @@ def _state(inp: PlanStateInput, *, titles: int, about: int, recent_n: int, lates
             state["side"] = d.side
         state["quoted_motion"] = d.motion
         state["quoted_arguments"] = {
-            "last_opposing": d.last_opposing,
-            "latest_by_candidate": {c.name: words(d.latest_by_candidate[c.id], ARGUMENT_WORDS)
+            "last_opposing": cut_tokens(d.last_opposing, opposing) if opposing is not None else d.last_opposing,
+            "latest_by_candidate": {c.name: words(d.latest_by_candidate[c.id], arg_words)
                                     for c in inp.candidates if d.latest_by_candidate.get(c.id)}}
     return state
 
@@ -168,14 +173,17 @@ def _tokens(state: Mapping[str, Any]) -> int:
     return count_tokens(json.dumps(state, ensure_ascii=False))
 
 
-def build_turn_plan_state(inp: PlanStateInput) -> PlanState:
-    """The state, cut in X9's order until it fits 2,000 tokens."""
+def build_turn_plan_state(inp: PlanStateInput, *, cut_arguments: bool = True) -> PlanState:
+    """The state, cut in X9's order until it fits 2,000 tokens. `cut_arguments=False` is M12's order (the measurement
+    of D28 only)."""
     recent_n = RECENT_WATCH if inp.mode == "watch" else RECENT
-    knobs = {"titles": TITLES_MAX, "about": ABOUT_MAX, "recent_n": recent_n, "latest": LATEST_MAX}
+    knobs: dict[str, Any] = {"titles": TITLES_MAX, "about": ABOUT_MAX, "recent_n": recent_n, "latest": LATEST_MAX}
     state = _state(inp, **knobs)
-    steps: list[dict[str, int]] = [{"titles": TITLES_CUT}, {"about": ABOUT_CUT}]
+    steps: list[dict[str, Any]] = [{"titles": TITLES_CUT}, {"about": ABOUT_CUT}]
     steps += [{"recent_n": n} for n in range(min(recent_n, len(inp.recent)) - 1, RECENT_KEEP - 1, -1)]
     steps.append({"latest": LATEST_CUT})
+    if inp.debate is not None and cut_arguments:   # M13 (memory D28, U2): arguments cut before any gate drops
+        steps += [{"arg_words": ARGUMENT_WORDS_CUT}, {"opposing": OPPOSING_CUT}]
     for step in steps:
         if _tokens(state) <= LIMIT:
             break

@@ -162,7 +162,9 @@ class FollowSteps:
                                  about=cid)
             keys[cid] = key
         who = gates.gated(req.candidates, req.documents, dropped or ())
-        qs.update(gates.questions({c: names[c].name if c in names else c for c in who}, who, nouls=req.nouls is None))
+        recalling = gates.recall_asked(req.candidates, req.recallable, dropped or ())   # M13 (memory D26, D27)
+        qs.update(gates.questions({c: names[c].name if c in names else c for c in [*who, *recalling]}, who,
+                                  nouls=req.nouls is None, recall=recalling))
         return qs, keys
 
     def start(self, planner: Any, req: FollowRequest) -> JevFollowCall:
@@ -174,11 +176,13 @@ class FollowSteps:
             return {k: nouls.get(k, ChoiceAnswer("none")) for k in qs}
 
         who = gates.gated(req.candidates, req.documents, state.dropped_gates)
-        if who:   # rag 11.5: the user message's embedding starts with the follow plan (shared with the first reply's)
+        recalling = gates.recall_asked(req.candidates, req.recallable, state.dropped_gates)
+        if who or recalling:   # rag 11.5 (M13 D32: widened): the user message's embedding starts with the follow plan
             from horizon.ai.agent.deep import start_early_embedding
             from horizon.ai.agent.planner import answered_message
 
-            start_early_embedding(self.deps, req.session, who, req.message, answered_message(req.session)[0])
+            start_early_embedding(self.deps, req.session, who or recalling, req.message,
+                                  answered_message(req.session)[0], any_space=bool(recalling))
         call = self.deps.decider().start(state.state, qs, req.session.call_ctx(PURPOSE), purpose=PURPOSE,
                                          fallback=fallback)
         return JevFollowCall(planner, req, state, call, keys, frozenset(qs))
@@ -235,10 +239,14 @@ class FollowSteps:
         own = req.nouls is None and bool(asked)
         found, nouls = gates.read(res, asked, nouls=own, message_id=req.message_id)
         found.update(gates.dropped([c for c in gates.gated(req.candidates, req.documents) if c not in asked]))
+        recall_asked = [c for c in req.candidates if gates.earlier_key(c) in h.asked]
+        recall = gates.read_recall(res, recall_asked)
+        recall.update(gates.dropped([c for c in gates.recall_asked(req.candidates, req.recallable)
+                                     if c not in recall_asked]))
         return FollowPlan(seed=self.seed(req), second=second, outcome=outcome, who=who, faces=faces,  # type: ignore[arg-type]
                           face_rows=face_rows, shared_rows=[second_row(who, outcome, version=we.version, floor=floor)],
                           calls=calls, state_tokens=state.tokens, gates=found, nouls=nouls if own else req.nouls,
-                          asked_nouls=own)
+                          asked_nouls=own, recall_gates=recall)
 
     def route(self, run: dict[str, Any], plan: FollowPlan) -> Branch:
         return "quick"   # M12 adds "deep"

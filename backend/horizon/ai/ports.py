@@ -296,8 +296,21 @@ class Touch:
 MemoryOp = Insert | Supersede | Reinforce | Touch
 
 
-class MemoryWriter(Protocol):
-    """After a completed reply: the memory operations from `perspective`'s point of view (applied by the backend's
-    `MemoryStore.apply` in one transaction). Both profiles ship a writer that returns `[]` (memory policy is AI-stage)."""
+class SessionRecall(Protocol):
+    """M13 (memory D36): an `agent` speaker's recall over this session's indexed lines and its overflow memories (D31),
+    Jev call 2 (D33) and the keep rule; called from the deep graph only (`horizon.ai.agent.deep.DeepSteps.recall`).
+    `docs_bundle` is the documents' query when that branch ran, else None (a recall-only turn: no rewrite). Returns the
+    kept hits, the outcome, the System 1 rows and the evaluation's checks. `naive` and `scripted` keep `MemoryRetriever`'s
+    tail recall."""
 
-    async def after_turn(self, ctx: TurnContext, perspective: str, message_id: str) -> list[MemoryOp]: ...
+    async def recall(self, req: Any, docs_bundle: Any) -> dict[str, Any]: ...
+
+
+class MemoryWriter(Protocol):
+    """M13 (memory D12; doc 09 M1–M5): a pause run's writer. It reads one stretch (`horizon.services.memory.stretch`:
+    the numbered new lines, every present character's current list, the context) and returns each character's memory
+    operations, the duplicate check's vectors and a log of what it dropped; the run commits them with the checkpoint
+    (`MemoryStore.apply_run`). `ctx` is the run's `RunContext`: call contexts that never pause sessions, the knobs and
+    the run's reads. `scripted` writes nothing, `naive` makes the one rewrite call, `agent` adds Jev (D18)."""
+
+    async def on_stretch(self, stretch: Any, ctx: Any) -> Any: ...
