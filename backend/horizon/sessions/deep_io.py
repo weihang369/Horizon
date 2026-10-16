@@ -43,3 +43,17 @@ class RuntimeDeepIO:
 
     def key_set(self) -> bool:
         return self.rt.keys.status() == "set"
+
+    # ── M13 (memory D30): recall's corpora, bound here to the world and the session or the character ──
+    def active_space(self) -> str:
+        return self.rt.space_id or ""
+
+    def lines(self, world_id: str, session_id: str, upto_seq: int, space_id: str) -> Any:
+        from horizon.services.memory.corpora import SessionLines
+
+        return SessionLines(self.rt, world_id, session_id, upto_seq, space_id)
+
+    def overflow(self, world_id: str, character_id: str, exclude_ids: list[str], space_id: str) -> Any:
+        from horizon.services.memory.corpora import Overflow
+
+        return Overflow(self.rt, world_id, character_id, exclude_ids, space_id)

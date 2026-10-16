@@ -35,6 +35,28 @@ export interface AgentRetrieval {
   /** The deep path's wait for a query embedding from when the search needs it (rag 11.5: 800, the embedding starting
    *  with Jev call 1; the top-level `queryEmbedWaitMs` stays naive's). */
   queryEmbedWaitMs: number;
+  /** M13 (docs/ai/09 M9; memory design D31–D35, D42): recall's search, Jev call 2 and tail; `t_recall` is in the bank. */
+  recall: RecallKnobs;
+}
+
+export interface RecallKnobs {
+  /** BM25 and dense lists per corpus. */
+  pool: number;
+  /** At most this many from each corpus (the session's lines, the overflow memories) into the merge. */
+  perCorpus: number;
+  /** MMR's picks over the merge, each checked by Jev call 2. */
+  candidates: number;
+  mmrLambda: number;
+  /** Kept at or above `t_recall`, by p. */
+  keep: number;
+  /** Every answer missing: this many from the top of the merged order, unscored. */
+  fallbackKeep: number;
+  /** Each recall check's deadline from when it was sent. */
+  checkMs: number;
+  /** Both recall headings in the tail together. */
+  tailTokens: number;
+  /** A line hit and the message before it, each at most this many words. */
+  lineWords: number;
 }
 
 /** M13 (docs/ai/09 M1, M2, M4–M8; doc 13 W12; memory design D42): pause runs and the memory list. AI-stage
@@ -126,6 +148,9 @@ export const RUNTIME: RuntimeConfig = {
     agent: {
       pool: 20, candidates: 8, blockTokens: 1400, mmrLambda: 1.0, k: { oneOnOne: 3, group: 2, watch: 2, debate: 2 },
       pieceTarget: 300, pieceMax: 400, rewriteMs: 1200, deepCheckMs: 1500, queryEmbedWaitMs: 200,
+      // M13 (memory D42): recall's numbers, tuned in phase 10
+      recall: { pool: 10, perCorpus: 5, candidates: 6, mmrLambda: 0.7, keep: 3, fallbackKeep: 2, checkMs: 1500,
+        tailTokens: 400, lineWords: 60 },
     },
   },
   persona: { repeatHint: false, moodLine: false },

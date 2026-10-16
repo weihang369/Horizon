@@ -112,7 +112,9 @@ class DebateSteps:
                                  about=cid)
             keys[cid] = key
         who = gates.gated(req.candidates, req.documents)
-        qs.update(gates.questions({c: names[c].name if c in names else c for c in who}, who, nouls=False))
+        recalling = gates.recall_asked(req.candidates, req.recallable)   # M13 (memory D26, D27): each member
+        qs.update(gates.questions({c: names[c].name if c in names else c for c in [*who, *recalling]}, who,
+                                  nouls=False, recall=recalling))
         return qs, keys, qid
 
     @staticmethod
@@ -131,7 +133,8 @@ class DebateSteps:
                              last_spoke=False)
         built = build_turn_plan_state(inp)
         # M12: the titles a gate reads are added to what the member and face questions declare, and nothing else
-        state = only_declared(dict(built.state), {k: q for k, q in questions.items() if not k.startswith("docs:")})
+        state = only_declared(dict(built.state), {k: q for k, q in questions.items()
+                                                  if not k.startswith(("docs:", "earlier:"))})
         if "quoted_documents" in built.state:
             state["quoted_documents"] = built.state["quoted_documents"]
         return PlanState(state=state, tokens=_tokens(state), dropped_gates=list(built.dropped_gates))
@@ -141,6 +144,7 @@ class DebateSteps:
         state = self.state_for(req, qs)
         for cid in state.dropped_gates:   # X9's cap dropped their titles: no gate, a quick turn
             qs.pop(gates.gate_key(cid), None)
+            qs.pop(gates.earlier_key(cid), None)   # M13 (D26): X9's dropped gates drop `earlier` too
         nouls = gates.fallbacks(qs)
 
         async def fallback() -> Answers:
@@ -149,7 +153,8 @@ class DebateSteps:
         call = self.deps.decider().start(state.state, qs, req.session.call_ctx(PURPOSE), purpose=PURPOSE,
                                          fallback=fallback)
         return JevDebateCall(planner, self, req, state, call, keys, qid,
-                             [c for c in req.candidates if gates.gate_key(c) in qs])
+                             [c for c in req.candidates if gates.gate_key(c) in qs],
+                             [c for c in req.candidates if gates.earlier_key(c) in qs])
 
     # ── the graph (run by `member`) ──
     async def state(self, run: dict[str, Any]) -> PlanState:
@@ -172,10 +177,12 @@ class JevDebateCall:
     """The handle `start_debate` returns: the request is in flight from `turn.end`."""
 
     def __init__(self, planner: Any, steps: DebateSteps, req: DebateRequest, state: PlanState, call: DecisionCall,
-                 keys: dict[str, str], qid: str | None, gated: list[str] | None = None) -> None:
+                 keys: dict[str, str], qid: str | None, gated: list[str] | None = None,
+                 recalling: list[str] | None = None) -> None:
         self.planner, self.steps, self.req, self.state, self.call = planner, steps, req, state, call
         self.keys, self.qid = keys, qid
         self.gated = list(gated or [])   # M12: who was asked "needs documents?"
+        self.recalling = list(recalling or [])   # M13: who was asked "needs something from earlier?"
         self.fixed: DebatePlan | None = None   # the plan as `member` fixed it
 
     async def read(self, at: datetime) -> tuple[DecisionResult, dict[str, Any]]:
@@ -288,11 +295,14 @@ class JevDebateCall:
             calls.append(meta["call"])
         found, _ = gates.read(res, self.gated, nouls=False)   # M12: used only if back by the turn's start (D8)
         found.update(gates.dropped([c for c in gates.gated(req.candidates, req.documents) if c not in self.gated]))
+        recall = gates.read_recall(res, self.recalling)   # M13 (D26): the same "back by the turn's start" rule
+        recall.update(gates.dropped([c for c in gates.recall_asked(req.candidates, req.recallable)
+                                     if c not in self.recalling]))
         return DebatePlan(seed=self.steps.seed(req), member=chosen, outcome=outcome, who=who,  # type: ignore[arg-type]
                           faces=faces if not late else {}, face_rows=face_rows, shared_rows=shared, calls=calls,
                           state_tokens=self.state.tokens,
                           graph_path=list(member.graph_path) if member is not None else [],
-                          gates=found if not late else {})
+                          gates=found if not late else {}, recall_gates=recall if not late else {})
 
     @staticmethod
     def _answered_after(res: DecisionResult, member: DebatePlan) -> bool:

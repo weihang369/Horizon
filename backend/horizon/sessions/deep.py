@@ -56,8 +56,14 @@ async def deep_request(actor: SessionActor, spec: TurnSpec, plan: TurnPlan,
     knobs = rt.runtime_cfg.runtime.retrieval.agent
     kind = plan.source_kind or "reply"
     k = knobs.k_for(K_MODE.get(sctx.mode, "group")) if knobs is not None else 2
+    from horizon.ai.agent import gates
+    from horizon.sessions.context import recall_scope
+
     common: dict[str, Any] = {"session": sctx, "speaker": await speaker_view(rt, actor, row), "kind": kind, "gate": plan.gate,
-                              "abstain_ok": plan.abstain_ok, "k": k, "started_at": rt.clock.now()}
+                              "abstain_ok": plan.abstain_ok, "k": k, "started_at": rt.clock.now(),
+                              # M13 (memory D34): which branches run, and recall's scope
+                              "docs": gates.deep(plan.gate), "recall": gates.recalls(plan.recall_gate),
+                              "recall_gate": plan.recall_gate, **await recall_scope(rt, actor, spec.speaker)}
     if sctx.mode == "debate":
         cfg = sctx.config or {}
         motion = str(cfg.get("motion") or "")

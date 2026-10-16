@@ -279,15 +279,15 @@
 
 ## 7. Recall (D26–D36)
 
-- [ ] 7.1 Add bank entries `earlier` and `recall` (D26, D33), with their wordings, state templates, thresholds and
+- [x] 7.1 Add bank entries `earlier` and `recall` (D26, D33), with their wordings, state templates, thresholds and
   fallbacks. Add `retrieval.agent.recall` knobs (D42) in both config sources, then rebuild the seed. Verify: bank and
   config tests, `seed:check`.
-- [ ] 7.2 Generalise `retrieval.search` over a `Corpus` (D30), with `ScopedIndex.knowledge()` for documents. Verify:
+- [x] 7.2 Generalise `retrieval.search` over a `Corpus` (D30), with `ScopedIndex.knowledge()` for documents. Verify:
   M12's retrieval tests and committed fixture outputs are unchanged, byte for byte (retrieval "Documents unchanged").
-- [ ] 7.3 Write the corpora `SessionLines(session, upto_seq)` and `Overflow(character, exclude_ids)`, world-bound.
+- [x] 7.3 Write the corpora `SessionLines(session, upto_seq)` and `Overflow(character, exclude_ids)`, world-bound.
   Verify: scope tests (another session's line and another world's memory never appear; a listed memory is never a
   candidate).
-- [ ] 7.4 Ask the `earlier` gate in every plan (D26, D27):
+- [x] 7.4 Ask the `earlier` gate in every plan (D26, D27):
   - the 1:1 plan, the cast plan, the follow plan, the debate plan and watch's plan-ahead;
   - asked only with something to search;
   - X9's dropped gates drop it too;
@@ -296,50 +296,50 @@
   Verify:
   - turn-plan, follow-plan, debate-plan and watch-direction scenario tests;
   - an offline size test that records each grown request's bytes and build time against M12's (D27) in m13.md.
-- [ ] 7.4a Make X9 cut debate arguments before gates (D28, U2): after the existing steps, a debate state cuts
+- [x] 7.4a Make X9 cut debate arguments before gates (D28, U2): after the existing steps, a debate state cuts
   `latest_by_candidate` to 30 words, then `last_opposing` to 120 tokens, and only then drops gates. Verify:
   - the debate-plan scenarios, run on M11's committed long debate states (how many gates survive, before and after,
     recorded in m13.md);
   - a short debate's state bytes are unchanged.
-- [ ] 7.5 Widen the early embedding (D32): it starts when the session has indexed lines or a candidate has an
+- [x] 7.5 Widen the early embedding (D32): it starts when the session has indexed lines or a candidate has an
   overflow with vectors; recall-only turns use the message and its earlier lines with no rewrite; BM25 only without a
   vector. Verify: the deep-turn "Recall-only speaker" scenario, and session-recall's "Recall only" and "No vector".
-- [ ] 7.6 Build recall's search (D31): per-corpus fused order, overflow weighting, the merge (≤ 5 each, lines first on
+- [x] 7.6 Build recall's search (D31): per-corpus fused order, overflow weighting, the merge (≤ 5 each, lines first on
   ties), MMR with composite keys. Verify: unit tests for weighting, the merge, the cap and MMR over mixed keys.
-- [ ] 7.7 Build recall's Jev call 2 (D33):
+- [x] 7.7 Build recall's Jev call 2 (D33):
   - one request per candidate, all at once, read by `recall.checkMs`;
   - 429 → fallback;
   - keep ≤ 3 at or above `t_recall`;
   - the all-missing fallback (top 2, no score) and partial answers deciding alone.
 
   Verify: session-recall's "Two kept" and "Every answer late", plus a partial test with `park_decision`.
-- [ ] 7.8 Add recall to the deep graph (D34):
+- [x] 7.8 Add recall to the deep graph (D34):
   - the parallel recall branch, and the `DeepRequest` / `DeepResult` fields;
   - each mode starts where M12 does;
   - each part has its own fallback, and both cancel together;
   - replay with no calls.
 
   Verify: deep-turn's "Both in parallel" and "Stop during both", and a replay test.
-- [ ] 7.9 Build the tail, the trace and System 1 (D35):
+- [x] 7.9 Build the tail, the trace and System 1 (D35):
   - the two headings after the documents block, ≤ 400 tokens, 60-word lines, newline collapse;
   - `contextInSession` and scored `memory.recalled`, plus `trace_memory_refs`;
   - `earlier` and `recall` rows, and `System1Section`'s "earlier lines" mapping and id resolution.
 
   Verify: session-recall's tail and trace scenarios, system1-trace's scenarios, and a frontend test resolving a
   `mem_` row.
-- [ ] 7.10 Add Touch at the next pause: the run reads the stretch's traces and Touches scored, still-current recalled
+- [x] 7.10 Add Touch at the next pause: the run reads the stretch's traces and Touches scored, still-current recalled
   memories, never block lines. Verify: session-recall's "Overflow memory used".
-- [ ] 7.11 Regenerate `system1.fixture.json` for scripted and the mock if any row shape changed. Verify:
+- [x] 7.11 Regenerate `system1.fixture.json` for scripted and the mock if any row shape changed. Verify:
   `fixtures:check` and `export-schema:check`.
-- [ ] 7.12 Run the recall storm: Stop during 8 passage checks and 6 recall checks. Verify: all recorded `cancelled`,
+- [x] 7.12 Run the recall storm: Stop during 8 passage checks and 6 recall checks. Verify: all recorded `cancelled`,
   no reply, writer free.
 
 ## 8. The Memory tab (D37)
 
-- [ ] 8.1 Make `reads.character_memory` left-join `sessions` and drop a dangling `sourceSessionId`, and make the
+- [x] 8.1 Make `reads.character_memory` left-join `sessions` and drop a dangling `sourceSessionId`, and make the
   MockClient do the same. Add the case to the portable contract suite. Verify: http-api and client-contract
   scenarios, with `npm run test:http` and `npm test`.
-- [ ] 8.2 Add Memory tab pagination (50 + "Show more (n)") and remove the "Preview" ribbon. Verify: a component test
+- [x] 8.2 Add Memory tab pagination (50 + "Show more (n)") and remove the "Preview" ribbon. Verify: a component test
   with 120 memories, and the e2e profile spec updated if it pins the ribbon.
 
 ## 9. The evaluation, offline (D40)

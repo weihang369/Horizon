@@ -24,6 +24,22 @@
         "result": "used",
         "action": "used"
       },
+      "earlier": {
+        "purpose": "turn_plan",
+        "id": "earlier",
+        "version": 1,
+        "label": "needs something from earlier?",
+        "p": 0.72,
+        "compared": [
+          {
+            "name": "t_gate",
+            "value": 0.72,
+            "threshold": 0.4
+          }
+        ],
+        "result": "used",
+        "action": "used"
+      },
       "emotion_debate_opening": {
         "purpose": "turn_plan",
         "id": "emotion_debate_opening",
@@ -243,6 +259,22 @@
         "compared": [
           {
             "name": "t_set",
+            "value": 0.72,
+            "threshold": 0.5
+          }
+        ],
+        "result": "used",
+        "action": "used"
+      },
+      "recall": {
+        "purpose": "deep_check",
+        "id": "recall",
+        "version": 1,
+        "label": "does this earlier line help?",
+        "p": 0.72,
+        "compared": [
+          {
+            "name": "t_recall",
             "value": 0.72,
             "threshold": 0.5
           }

@@ -759,7 +759,10 @@ export class MockClient implements HorizonClient {
       this.touchChar(c);
       return c.energy;
     }),
-    memory: (id) => this.query(() => Object.values(this.db.memory).filter((m) => m.characterId === id).sort((a, b) => b.createdAt.localeCompare(a.createdAt))),
+    // M13 (memory D37): a source session that is gone is dropped from the item, as the backend's left join does
+    memory: (id) => this.query(() => Object.values(this.db.memory).filter((m) => m.characterId === id)
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+      .map((m) => (m.sourceSessionId && !this.db.sessions[m.sourceSessionId] ? (({ sourceSessionId: _gone, ...rest }) => rest)(m) : m))),
     forgetMemory: (memoryItemId) => this.command(() => {
       const m = this.db.memory[memoryItemId];
       if (!m) throw notFound("Memory");   // the backend's DELETE /memory/{id} is 404 for an unknown id

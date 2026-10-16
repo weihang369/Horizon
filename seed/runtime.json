@@ -138,7 +138,18 @@
           "pieceMax": 400,
           "rewriteMs": 1200,
           "deepCheckMs": 1500,
-          "queryEmbedWaitMs": 200
+          "queryEmbedWaitMs": 200,
+          "recall": {
+            "pool": 10,
+            "perCorpus": 5,
+            "candidates": 6,
+            "mmrLambda": 0.7,
+            "keep": 3,
+            "fallbackKeep": 2,
+            "checkMs": 1500,
+            "tailTokens": 400,
+            "lineWords": 60
+          }
         }
       },
       "persona": {

@@ -296,6 +296,16 @@ class Touch:
 MemoryOp = Insert | Supersede | Reinforce | Touch
 
 
+class SessionRecall(Protocol):
+    """M13 (memory D36): an `agent` speaker's recall over this session's indexed lines and its overflow memories (D31),
+    Jev call 2 (D33) and the keep rule; called from the deep graph only (`horizon.ai.agent.deep.DeepSteps.recall`).
+    `docs_bundle` is the documents' query when that branch ran, else None (a recall-only turn: no rewrite). Returns the
+    kept hits, the outcome, the System 1 rows and the evaluation's checks. `naive` and `scripted` keep `MemoryRetriever`'s
+    tail recall."""
+
+    async def recall(self, req: Any, docs_bundle: Any) -> dict[str, Any]: ...
+
+
 class MemoryWriter(Protocol):
     """M13 (memory D12; doc 09 M1–M5): a pause run's writer. It reads one stretch (`horizon.services.memory.stretch`:
     the numbered new lines, every present character's current list, the context) and returns each character's memory

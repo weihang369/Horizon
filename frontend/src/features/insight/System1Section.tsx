@@ -13,6 +13,7 @@ const PURPOSE_LABEL: Record<string, string> = {
   follow_plan: "after the first reply",
   debate_plan: "debate plan",
   deep_check: "passages",
+  "deep_check:recall": "earlier lines",   // M13 (memory D35): recall's Jev call 2, apart from the passages
   guardrail: "output check",
   face_check: "after the reply",
   route: "who replies",
@@ -28,10 +29,15 @@ export interface System1Group {
 }
 
 const r2 = (p: number) => Math.round(p * 100) / 100;
+const SHORT = 40;
+const short = (t: string) => (t.length <= SHORT ? t : `${t.slice(0, SHORT - 1).trimEnd()}…`);
 
 /** INS-01 AC3 / AC5: hidden with no rows, and left out of Compact (presenter) mode. */
 export const showSystem1 = (trace: TurnTrace | undefined, compact: boolean): boolean =>
   !compact && !!trace?.system1?.questions.length;
+
+/** M13 (memory D35): recall's rows share `deep_check` with the passages but are their own group, "earlier lines". */
+const groupOf = (r: System1Row): string => (r.purpose === "deep_check" && r.id === "recall" ? "deep_check:recall" : r.purpose);
 
 /** Rows grouped by purpose in first-seen order; the header latency is the slowest of that purpose's calls. */
 export function groupSystem1(trace: TurnTrace | undefined): System1Group[] {
@@ -39,12 +45,14 @@ export function groupSystem1(trace: TurnTrace | undefined): System1Group[] {
   const order: string[] = [];
   const by = new Map<string, System1Row[]>();
   for (const r of rows) {
-    if (!by.has(r.purpose)) { by.set(r.purpose, []); order.push(r.purpose); }
-    by.get(r.purpose)!.push(r);
+    const g = groupOf(r);
+    if (!by.has(g)) { by.set(g, []); order.push(g); }
+    by.get(g)!.push(r);
   }
   return order.map((purpose) => {
     const all = by.get(purpose)!;
-    const lat = (trace?.calls ?? []).filter((c) => c.purpose === purpose).map((c) => c.latencyMs);
+    const callPurpose = purpose.split(":")[0];
+    const lat = (trace?.calls ?? []).filter((c) => c.purpose === callPurpose).map((c) => c.latencyMs);
     const shown = all.filter((r) => r.result !== "not_used");
     return {
       purpose, label: PURPOSE_LABEL[purpose] ?? purpose.replace(/_/g, " "),
@@ -62,8 +70,15 @@ export function resolveId(id: string, trace: TurnTrace | undefined, nameOf: (id:
     const k = trace?.knowledge?.retrieved.find((x) => x.chunkId === id);
     return k ? `${k.title}${k.locator ? ` (${k.locator})` : ""}` : "a passage";
   }
-  if (id.startsWith("mem_")) return "a memory";
-  if (id.startsWith("msg_")) return "a message";
+  // M13 (memory D35): recall's ids, through what the turn was given (as `kch_` resolves through `retrieved`)
+  if (id.startsWith("mem_")) {
+    const m = trace?.memory?.recalled.find((x) => x.memoryItemId === id);
+    return m ? `“${short(m.text)}”` : "a memory";
+  }
+  if (id.startsWith("msg_")) {
+    const l = trace?.contextInSession?.find((x) => x.messageId === id);
+    return l ? `“${short(l.text)}”` : "a message";
+  }
   return id;
 }
 

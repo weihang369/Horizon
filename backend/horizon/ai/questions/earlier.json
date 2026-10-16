@@ -1,0 +1,42 @@
+{
+  "id": "earlier",
+  "version": 1,
+  "purpose": "turn_plan",
+  "type": "noul",
+  "label": "needs something from earlier?",
+  "instructions": "Does {name}'s next line need something said earlier, in this conversation or a past one with {name}, that isn't in quoted_recent or quoted_latest?",
+  "true": "Yes: the line being answered refers back to something said before and not shown here ('remember what I told you about…', 'what was her name again?', 'like you said last time'), or answering it well needs a detail from that earlier talk.",
+  "false": "No: what the line needs is in the lines shown, or it starts something new.",
+  "examples": {
+    "true": [
+      "What did I say my sister's name was?",
+      "Did you ever try the cake I told you about?"
+    ],
+    "false": [
+      "How's your day going?",
+      "Tell me more about that."
+    ]
+  },
+  "state": {
+    "mode": "label",
+    "phase": "label",
+    "side": "label",
+    "quoted_user": "quoted",
+    "quoted_cast": "quoted",
+    "quoted_documents": "quoted",
+    "quoted_latest": "quoted",
+    "quoted_recent": "quoted",
+    "quoted_premise": "quoted",
+    "quoted_summary": "quoted",
+    "quoted_message": "quoted",
+    "quoted_motion": "quoted",
+    "quoted_arguments": "quoted"
+  },
+  "deadline": "turn_plan",
+  "floor": null,
+  "thresholds": {
+    "t_gate": 0.4
+  },
+  "fallback": "no_recall",
+  "state_note": "memory D26: asked per candidate (earlier:{characterId}) only when the session has indexed lines or the candidate has an overflow; rides every plan beside docs, with the same state fields. t_gate 0.4 is its own value, tuned in phase 10."
+}

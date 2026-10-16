@@ -342,6 +342,7 @@ class Runtime:
                       switch=lambda name: self.runtime_cfg.runtime.switch(name),
                       windows=lambda: self.runtime_cfg.runtime.window_tokens.as_dict(),
                       memory_block_tokens=lambda: int(self.runtime_cfg.runtime.memory.block_tokens),
+                      memory_knobs=lambda: self.runtime_cfg.runtime.memory,
                       emotion_fade=lambda: self.runtime_cfg.runtime.emotion_fade, spawn=self.spawn,
                       retrieval=lambda: self.runtime_cfg.runtime.retrieval, deep_io=lambda: self.deep_io)
         self._ai = AiPorts(deps, self.profile)

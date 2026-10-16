@@ -398,12 +398,13 @@ class MemoryRuns:
             if result.failed:
                 await self._failed(sid, piece)
                 return "done"
+            touched = [*result.touched, *await self._recalled(piece)]   # D35: what recall used, Touched now
             commit = None
             for attempt in (1, 2):   # a failed commit retries once with no second call (doc 09 M6)
                 try:
                     commit = await rt.memory.apply_run(
                         piece.world_id, result.ops, session_id=sid, from_seq=piece.from_seq, upto_seq=piece.upto_seq,
-                        reread_done=piece.reread_ids, vectors=result.vectors, touched=result.touched,
+                        reread_done=piece.reread_ids, vectors=result.vectors, touched=touched,
                         read_variants={ln.message_id: ln.variant_id for ln in piece.lines
                                        if ln.reread and ln.variant_id})
                     break
@@ -423,6 +424,22 @@ class MemoryRuns:
                        dropped=[*result.log, *commit.dropped])
             self.after_commit(piece.world_id, commit.changed)
         return "more" if len(pieces) > 1 else "done"
+
+    async def _recalled(self, piece: Stretch) -> list[str]:
+        """D35: the memories recall gave the stretch's replies (`memory.recalled` entries with a score; the list's own
+        lines have none), so a memory that matters again climbs back into the list. `apply_run` keeps current ones."""
+        ids = [ln.message_id for ln in piece.lines if ln.author == "character"]
+        if not ids:
+            return []
+        async with self.rt.db.read() as conn:
+            traces = (await conn.execute(select(t.turn_traces.c.trace).where(t.turn_traces.c.message_id.in_(ids))
+                                         )).scalars().all()
+        out: list[str] = []
+        for tr in traces:
+            for r in ((tr or {}).get("memory") or {}).get("recalled") or []:
+                if isinstance(r, dict) and r.get("score") is not None and r.get("memoryItemId") not in out:
+                    out.append(str(r["memoryItemId"]))
+        return out
 
     def after_commit(self, world_id: str, characters: Sequence[str]) -> None:
         """A live session holding one of these characters drops its cached memory list (D23): two tabs, trigger 5."""

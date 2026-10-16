@@ -119,6 +119,7 @@ class AiDeps:
     retrieval: Callable[[], Any] = lambda: None               # M12: `runtime.retrieval` (the agent knobs)
     deep_io: Callable[[], Any] = lambda: None                 # M12 (rag D15): the runtime's reads for the deep work
     memory_block_tokens: Callable[[], int] = lambda: 1000     # M13 (memory D24): `memory.blockTokens`
+    memory_knobs: Callable[[], Any] = lambda: None            # M13 (memory D31): the list's recency and mode weights
 
 
 def emotion_candidates(chosen: str, rng: random.Random) -> list[dict[str, Any]]:

@@ -220,13 +220,14 @@ class CastSteps:
         # the titles a gate reads, and nothing else
         from horizon.ai.agent.debate_plan import only_declared
 
-        qs, _ = self.questions(req, gated=[])
+        qs, _ = self.questions(req, gated=[], recall=[])
         state = only_declared(dict(built.state), qs)
         if "quoted_documents" in built.state:
             state["quoted_documents"] = built.state["quoted_documents"]
         return PlanState(state=state, tokens=_tokens(state), dropped_gates=list(built.dropped_gates))
 
-    def questions(self, req: CastRequest, *, gated: list[str] | None = None) -> tuple[dict[str, Any], dict[str, Any]]:
+    def questions(self, req: CastRequest, *, gated: list[str] | None = None,
+                  recall: list[str] | None = None) -> tuple[dict[str, Any], dict[str, Any]]:
         """The request's questions. `gated`: who is asked "needs documents?" (None: everyone asked about who has a
         searchable source)."""
         b = bank()
@@ -252,13 +253,21 @@ class CastSteps:
         who_gated = gates.gated(asked_about(req), req.documents) if gated is None else list(gated)
         meta["gated"] = who_gated
         meta["nouls"] = req.kind in gates.NOUL_KINDS and bool(who_gated)
-        qs.update(gates.questions({c: names[c].name if c in names else c for c in who_gated}, who_gated,
-                                  nouls=meta["nouls"]))
+        # M13 (memory D26, D27): "needs something from earlier?" per candidate with something to search
+        # (a debate slot's face-only cast plan asks none: the debate plan asks its members, D27)
+        recalling = [] if req.kind.startswith("debate") else (
+            gates.recall_asked(asked_about(req), req.recallable) if recall is None else list(recall))
+        meta["recalling"] = recalling
+        qs.update(gates.questions({c: names[c].name if c in names else c for c in [*who_gated, *recalling]},
+                                  who_gated, nouls=meta["nouls"], recall=recalling))
         return qs, meta
 
     async def ask(self, req: CastRequest, state: PlanState) -> tuple[DecisionResult, dict[str, Any]]:
-        qs, meta = self.questions(req, gated=gates.gated(asked_about(req), req.documents, state.dropped_gates))
+        qs, meta = self.questions(req, gated=gates.gated(asked_about(req), req.documents, state.dropped_gates),
+                                  recall=gates.recall_asked(asked_about(req), req.recallable, state.dropped_gates))
         meta["dropped"] = [c for c in gates.gated(asked_about(req), req.documents) if c in state.dropped_gates]
+        meta["recall_dropped"] = [c for c in gates.recall_asked(asked_about(req), req.recallable)
+                                  if c in state.dropped_gates]
         nouls = gates.fallbacks(qs)
 
         async def fallback() -> Answers:
@@ -268,12 +277,13 @@ class CastSteps:
                     least_recent(req.candidates, req.turns_since) if key == meta["who"] else "none")
             return out
 
-        if req.kind in gates.NOUL_KINDS and meta["gated"]:   # rag 11.5: a user message's embedding starts now
+        if req.kind in gates.NOUL_KINDS and (meta["gated"] or meta["recalling"]):   # rag 11.5 (M13 D32: widened)
             from horizon.ai.agent.deep import start_early_embedding
             from horizon.ai.agent.planner import answered_message
 
-            start_early_embedding(self.deps, req.session, meta["gated"], req.latest,
-                                  req.message_id or answered_message(req.session)[0])
+            start_early_embedding(self.deps, req.session, meta["gated"] or meta["recalling"], req.latest,
+                                  req.message_id or answered_message(req.session)[0],
+                                  any_space=bool(meta["recalling"]))
         decider = self.deps.decider()
         ctx = req.session.call_ctx(PURPOSE)
         call = decider.start(state.state, qs, ctx, purpose=PURPOSE, fallback=fallback)
@@ -354,9 +364,11 @@ class CastSteps:
             calls.append(meta["call"])
         found, nouls = gates.read(res, meta.get("gated", []), nouls=bool(meta.get("nouls")), message_id=req.message_id)
         found.update(gates.dropped(meta.get("dropped", [])))
+        recall = gates.read_recall(res, meta.get("recalling", []))
+        recall.update(gates.dropped(meta.get("recall_dropped", [])))
         return CastPlan(seed=self.seed(req), kind=req.kind, order=order, who=who, faces=faces, face_rows=face_rows,
                         shared_rows=shared, talk=talk, calls=calls, state_tokens=state.tokens, gates=found,
-                        nouls=nouls)
+                        nouls=nouls, recall_gates=recall)
 
     def route(self, req: CastRequest, plan: CastPlan) -> Branch:
         return "quick"   # M12 adds "deep"

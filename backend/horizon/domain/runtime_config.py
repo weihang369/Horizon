@@ -112,6 +112,28 @@ class RetrievalKnobs:
 
 
 @dataclass(frozen=True)
+class RecallKnobs:
+    """M13 (docs/ai/09 M9; memory design D31–D35, D42): recall's search, Jev call 2 and tail. `t_recall` is in the bank."""
+
+    pool: int = 10                # BM25 and dense lists per corpus
+    per_corpus: int = 5           # at most this many from each corpus into the merge
+    candidates: int = 6           # MMR's picks, each checked by Jev call 2
+    mmr_lambda: float = 0.7
+    keep: int = 3                 # kept at or above t_recall, by p
+    fallback_keep: int = 2        # every answer missing: the top of the merged order, unscored
+    check_ms: float = 1500.0      # each recall check's deadline from when it was sent
+    tail_tokens: int = 400        # both recall headings together
+    line_words: int = 60          # a line hit and the message before it, each
+
+    @staticmethod
+    def from_json(r: dict[str, Any]) -> RecallKnobs:
+        return RecallKnobs(pool=int(r["pool"]), per_corpus=int(r["perCorpus"]), candidates=int(r["candidates"]),
+                           mmr_lambda=float(r["mmrLambda"]), keep=int(r["keep"]), fallback_keep=int(r["fallbackKeep"]),
+                           check_ms=float(r["checkMs"]), tail_tokens=int(r["tailTokens"]),
+                           line_words=int(r["lineWords"]))
+
+
+@dataclass(frozen=True)
 class AgentRetrieval:
     """M12 (docs/ai/10 K5–K7, K15; doc 13 W12; rag D26): the `agent` deep path's knobs. The thresholds are in the
     question bank."""
@@ -126,6 +148,7 @@ class AgentRetrieval:
     rewrite_ms: float = 1200.0
     deep_check_ms: float = 1500.0
     query_embed_wait_ms: float = 200.0   # rag 11.5: the agent path's own wait (naive and scripted keep theirs)
+    recall: RecallKnobs = field(default_factory=RecallKnobs)   # M13 (memory D42)
 
     def k_for(self, mode: str) -> int:
         return int(self.k.get(mode, self.k["group"]))
@@ -139,7 +162,8 @@ class AgentRetrieval:
                                  "debate": int(k["debate"])},
                               piece_target=int(a["pieceTarget"]), piece_max=int(a["pieceMax"]),
                               rewrite_ms=float(a["rewriteMs"]), deep_check_ms=float(a["deepCheckMs"]),
-                              query_embed_wait_ms=float(a["queryEmbedWaitMs"]))
+                              query_embed_wait_ms=float(a["queryEmbedWaitMs"]),
+                              recall=RecallKnobs.from_json(a["recall"]) if "recall" in a else RecallKnobs())
 
 
 @dataclass(frozen=True)

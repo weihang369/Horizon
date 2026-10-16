@@ -17,7 +17,7 @@ from typing import TYPE_CHECKING, Any
 
 from horizon.ai.contexts import FollowPlan, FollowRequest, MessageNouls
 from horizon.domain import vclock
-from horizon.sessions.context import character_view, characters, document_titles, session_context
+from horizon.sessions.context import character_view, characters, document_titles, recallable, session_context
 from horizon.sessions.modes.common import gap, is_asleep, runner, speak_then
 from horizon.sessions.plans import base_faces, manual, turns_since
 from horizon.sessions.turn import TurnOutcome, TurnSpec
@@ -53,7 +53,7 @@ def follow_hook(actor: SessionActor, message: str, nouls: MessageNouls | None = 
                             candidates=cands, cast=[character_view(rows[c]) for c in cands if c in rows],
                             turn_index=actor.mode.turn, base_faces=base_faces(actor, sctx, cands), manual=manual(actor),
                             turns_since=turns_since(actor, cands), started_at=rt.clock.now(), documents=docs,
-                            nouls=nouls)
+                            nouls=nouls, recallable=await recallable(rt, actor, cands))   # M13 (memory D26)
         return planner.start_follow(req)
 
     return start

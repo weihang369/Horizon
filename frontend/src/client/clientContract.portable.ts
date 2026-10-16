@@ -757,6 +757,17 @@ export function runPortableContract(label: string, makeHarness: MakeHarness, opt
       expect(await code(c.characters.forgetMemory("mem_nope"))).toBe("not_found");
     });
 
+    test("M5", "memory: a memory whose source session was deleted keeps its text but loses its source link (M13 D37)", async () => {
+      const { c } = await make();
+      const before = await c.characters.memory("chr_seedHana");
+      const sourced = before.find((m) => m.sourceSessionId);
+      expect(sourced).toBeDefined();
+      await c.sessions.delete(sourced!.sourceSessionId!);
+      const after = (await c.characters.memory("chr_seedHana")).find((m) => m.id === sourced!.id);
+      expect(after?.text).toBe(sourced!.text);
+      expect(after?.sourceSessionId).toBeUndefined();
+    });
+
     test("M5", "knowledge: deleting a cited source removes it, but old transcripts keep their citations", async () => {
       const { c } = await make();
       const before = (await c.sessions.messages("ses_seedDebate4Day")).flatMap((m) => m.citations ?? []).filter((ct) => ct.sourceId === "kno_seedAmara1");

@@ -3,8 +3,8 @@
 Every new cancel path is stormed while it writes (`storm_during_write`) or cut while it waits on a held call. Afterwards
 the writer is free, the clock settles and the log reduces, and the run wrote either everything or nothing.
 
-Task 0.2 listed each path as a strict xfail naming the phase that builds it; each phase replaces its placeholders with
-the real storm, so a path can't be forgotten and a placeholder can't pass by accident.
+Task 0.2 listed each path as a strict xfail naming the phase that builds it; each phase replaced its placeholder with
+the real storm (listed below), so no path was forgotten.
 """
 
 from __future__ import annotations
@@ -15,7 +15,6 @@ import sqlite3
 from pathlib import Path
 from typing import Any
 
-import pytest
 from sqlalchemy import text
 
 from horizon.ai.ports import Insert, MemoryDraft
@@ -28,15 +27,8 @@ from tests.sessions.kit import API, command, create
 
 AMARA, MERIDIAN = "chr_seedAmara", "wld_seedMeridian"
 
-PATHS = [   # built: phase 4's in test_memory_undo_m13.py, 5's in test_memory_block_m13.py, 6's in test_memory_index_m13.py
-    ("recall's search and Jev call 2 on Stop", 7),
-]
-
-
-@pytest.mark.parametrize(("path", "phase"), PATHS, ids=[p for p, _ in PATHS])
-@pytest.mark.xfail(strict=True, reason="placeholder: the phase that builds this cancel path replaces it")
-async def test_storm_placeholder(api: Api, path: str, phase: int) -> None:
-    pytest.fail(f"not built yet (phase {phase}): {path}")
+# Task 0.2's placeholders are all built: phase 4's storms are in test_memory_undo_m13.py, 5's in test_memory_block_m13.py,
+# 6's in test_memory_index_m13.py, 7's (Stop during both branches) in test_memory_recall_m13.py.
 
 
 class HeldWriter:

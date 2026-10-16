@@ -21,7 +21,7 @@ from collections.abc import Iterator
 from pathlib import Path
 from typing import Any
 
-from horizon.ai.decider import Choice, ChoiceAnswer, Noul, NoulAnswer, Question, validate, wire_question
+from horizon.ai.decider import Choice, ChoiceAnswer, Noul, NoulAnswer, Question, Score, ScoreAnswer, validate, wire_question
 from horizon.ai.questions import NAME, bank
 from horizon.domain.clock import FrozenClock
 from horizon.evals import canary as canary_mod
@@ -251,13 +251,25 @@ class Decisions:
                 ans = validate(q, r.answers.get(key))
                 if isinstance(ans, NoulAnswer):
                     th = bank().get(qid).thresholds   # M10: talk_finished's threshold is `t_end` (re-chosen on dev)
-                    t = float(next((th[k] for k in ("t", "t_end", "t_gate", "t_standalone", "english") if k in th),
-                                   0.5))
+                    t = float(next((th[k] for k in ("t", "t_end", "t_gate", "t_standalone", "english", "t_keep",
+                                                    "t_recall") if k in th), 0.5))
                     said = "yes" if ans.p >= t else "no"
                     row.update(answer=said, p=ans.p, correct=said == item["label"])
                     total += 1
                     correct += said == item["label"]
                     bins.setdefault(min(9, int(ans.p * 10)), []).append(int(said == "yes"))
+                else:
+                    row["invalid"] = True
+                res.rows.append(row)
+                continue
+            if isinstance(q, Score) and isinstance(item["label"], int):   # M13 (memory D40): importance, levels 1–n
+                key = str(item["item"].get("key") or qid)
+                r = await env.rt.gateway.decide(item["item"]["state"], {key: wire_question(q)}, call_ctx("eval_judge"))
+                sa = validate(q, r.answers.get(key))
+                if isinstance(sa, ScoreAnswer):
+                    level = round(sa.score) + 1
+                    row.update(answer=level, score=sa.score, unit=round(sa.unit(len(q.levels)), 4),
+                               correct=level == int(item["label"]))
                 else:
                     row["invalid"] = True
                 res.rows.append(row)
@@ -335,6 +347,9 @@ class Decisions:
             if talk:
                 res.summary += who_policies.talk_report(talk)
             res.summary += m12_sets.reports(res.rows)   # M12: docs, standalone, english and D9's re-ask
+            from horizon.evals import m13_sets
+
+            res.summary += m13_sets.reports(res.rows)   # M13: importance, memory_guard, earlier, recall
         n_policy = sum(1 for r in res.rows if isinstance(r["label"], dict) and not r.get("invalid"))
         if self.smoke:
             res.summary.append(f"## Decisions (smoke only: {total + n_policy} item(s), never a measurement)")

@@ -27,6 +27,8 @@ gateway code with no socket ever opened.
   asking it with HTTP 429 (Jev's rate limit), once. Every "needs documents?" (`docs:…`) is answered no (0.0) unless a
   test sets it, so a character with documents stays on the quick path by default. A queued streamed (SSE) response
   waits for a chat request: a Jev request in between (a gate riding the plan) never takes it.
+- M13 (design D26): "needs something from earlier?" (`earlier:…`) is answered no (0.0) unless a test sets it, as
+  `docs:…` is, so a session with something to recall stays quick by default.
 - memory (M13 design D19): purpose `memory` answers `{"changes": []}` unless a canned set is loaded (the
   `memory-writes` set: one add, one rewrite and one confirm for Amara and Kai).
 
@@ -397,7 +399,7 @@ class FakeOpenRouter:
                 answers[key] = {"type": "choice", "choice": opts[0] if opts else None, "confidence": p,
                                 "probabilities": dict.fromkeys(opts, p)}
             elif kind == "noul":
-                answers[key] = {"type": "noul", "noul": 0.0 if key.startswith("docs:") else 0.5}
+                answers[key] = {"type": "noul", "noul": 0.0 if key.startswith(("docs:", "earlier:")) else 0.5}
             elif kind == "score":
                 levels = list(crit or [])
                 mid = (len(levels) - 1) / 2

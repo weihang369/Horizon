@@ -40,7 +40,6 @@ from horizon.sessions.actor import SessionActor, TurnInfo
 from horizon.sessions.after_turn import start_face_check, start_reactions
 from horizon.sessions.coalesce import Coalescer
 from horizon.sessions.context import (
-    character_view,
     characters,
     document_titles,
     energy_of,
@@ -314,9 +313,19 @@ class TurnRunner:
             from horizon.services.ai_meta import stored_rewrite
 
             stored = await stored_rewrite(rt, answered_message(sctx)[0], spec.speaker)
-        req = PlanRequest(session=sctx, speaker_id=spec.speaker, cast=[character_view(row)], message_id=mid,
+        # M13 (memory D22): the speaker's view carries its memory list, so the 1:1 rewrite (and the deep request built
+        # from this cast) share the reply's system message 1 byte for byte
+        # M13 (memory D26, D34): whether there is something earlier to search, and what recall would search
+        recall: dict[str, Any] = {}
+        if kind == "reply" and getattr(planner, "decides_retrieval", False):
+            from horizon.sessions.context import recall_scope, recallable
+
+            recall = {"recallable": await recallable(rt, actor, [spec.speaker]),
+                      **await recall_scope(rt, actor, spec.speaker)}
+        req = PlanRequest(session=sctx, speaker_id=spec.speaker, cast=[await speaker_view(rt, actor, row)], message_id=mid,
                           kind=kind, latest=spec.prompt.removesuffix(REGENERATE_SUFFIX), turn_index=actor.mode.turn,
-                          base_face=base, manual=manual, started_at=started, documents=docs, stored_rewrite=stored)
+                          base_face=base, manual=manual, started_at=started, documents=docs, stored_rewrite=stored,
+                          **recall)
         return sctx, await planner.plan(req)
 
     async def _stream(self, actor: SessionActor, spec: TurnSpec, info: TurnInfo, ctx: TurnContext, t0: float,

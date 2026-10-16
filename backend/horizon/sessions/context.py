@@ -102,9 +102,18 @@ async def speaker_view(rt: Runtime, actor: SessionActor, row: Any) -> CharacterV
     first time this sitting builds the character's view and frozen in `actor.memory_blocks`, so system message 1 stays
     byte-identical (and cached) across the sitting; Forget and a run's commit drop it, and the next turn reads it again."""
     view = character_view(row)
-    if rt.ai.impl("turn", key_set=rt.keys.status() == "set") != "agent":
+    if not agent_turns(rt):
         return view
-    cid = str(row["id"])
+    block, _ = await memory_block(rt, actor, str(row["id"]))
+    return view.model_copy(update={"memories": list(block)})
+
+
+def agent_turns(rt: Runtime) -> bool:
+    return bool(rt.ai.impl("turn", key_set=rt.keys.status() == "set") == "agent")
+
+
+async def memory_block(rt: Runtime, actor: SessionActor, cid: str) -> tuple[list[MemoryLine], bool]:
+    """M13 (memory D22, D23): the character's frozen list for this sitting and whether it has an overflow."""
     block = actor.memory_blocks.get(cid)
     while block is None:
         from horizon.services.memory.block import memory_list
@@ -118,7 +127,33 @@ async def speaker_view(rt: Runtime, actor: SessionActor, row: Any) -> CharacterV
             continue
         block = actor.memory_blocks[cid] = fresh
         actor.memory_overflow[cid] = overflow
-    return view.model_copy(update={"memories": list(block)})
+    return block, bool(actor.memory_overflow.get(cid))
+
+
+async def recallable(rt: Runtime, actor: SessionActor, cids: list[str]) -> list[str]:
+    """M13 (memory D26): the candidates with something earlier to search: everyone when the session has indexed lines
+    (up to the latest summary's bound), else those with an overflow. `agent` turns only."""
+    if not cids or not agent_turns(rt):
+        return []
+    from horizon.services.memory.corpora import session_has_lines
+
+    upto, _ = await _latest_summary(rt, actor.sid)
+    if upto and await session_has_lines(rt, actor.sid, upto):
+        return list(cids)
+    out = []
+    for cid in cids:
+        _, overflow = await memory_block(rt, actor, cid)
+        if overflow:
+            out.append(cid)
+    return out
+
+
+async def recall_scope(rt: Runtime, actor: SessionActor, cid: str) -> dict[str, Any]:
+    """M13 (memory D34): what a speaker's recall searches: the session's lines up to the latest summary's bound, and
+    its overflow (every current memory not in its frozen list)."""
+    upto, _ = await _latest_summary(rt, actor.sid)
+    block, overflow = await memory_block(rt, actor, cid)
+    return {"upto_seq": upto, "block_ids": [m.id for m in block], "has_overflow": overflow}
 
 
 def character_view(row: Any) -> CharacterView:

@@ -157,12 +157,16 @@ async def character_song(conn: AsyncConnection, character_id: str) -> Wire | Non
 
 
 async def character_memory(conn: AsyncConnection, character_id: str) -> list[Wire]:
+    """M13 (memory D37, W8): a `sourceSessionId` whose session is gone is dropped, so "View source" never points at a
+    deleted session (the memory itself stays)."""
     r = await character_row(conn, character_id)
     m = t.memory_items.c
-    rows = (await conn.execute(select(t.memory_items).where(and_(
-        m.character_id == character_id, m.world_id == r["world_id"], m.superseded_by.is_(None)))
+    rows = (await conn.execute(select(t.memory_items, t.sessions.c.id.label("live_session")).select_from(
+        t.memory_items.outerjoin(t.sessions, t.sessions.c.id == m.source_session_id)).where(and_(
+            m.character_id == character_id, m.world_id == r["world_id"], m.superseded_by.is_(None)))
         .order_by(m.created_at.desc(), m.id))).mappings().all()
-    return [mp.memory_wire(x) for x in rows]
+    return [mp.memory_wire({**x, "source_session_id": x["source_session_id"] if x["live_session"] else None})
+            for x in rows]
 
 
 async def _cited_counts(conn: AsyncConnection, source_ids: Sequence[str]) -> dict[str, int]:
