@@ -71,6 +71,18 @@
     "sha256": "36d7ff52273365048d225f561b90cc8565ff880ff4f713dc9dc37cc85b6c8fd5",
     "version": 1
   },
+  "judge_memory_lost": {
+    "sha256": "4eb7942220903a35b34f8221acf2ad4da41855a5d8d64196ca39f2c772c28632",
+    "version": 1
+  },
+  "judge_memory_missed": {
+    "sha256": "99b36cc75290f1708c0a2dbb2fa8ad8e70fe0370af419fa75e0031a1e2879340",
+    "version": 1
+  },
+  "judge_memory_unsupported": {
+    "sha256": "f25470718b10e1cf416f0f73e65dd049b8adbbc9b1de8ab75b252463c5dbb302",
+    "version": 1
+  },
   "judge_names_feeling": {
     "sha256": "fd52b737302f103c274876ad0173527ca39194c6f2172da1b4b1922164f6cb6b",
     "version": 2
@@ -81,6 +93,10 @@
   },
   "judge_notfound_says": {
     "sha256": "52333f445a08094e6e721723685ebbe8e1f53bd8ceb4f81a3ab5934a655d9316",
+    "version": 1
+  },
+  "judge_over_mention": {
+    "sha256": "af5647988985994dbf452fe6424c09339391a840815d5a9fd39ef072e653fa07",
     "version": 1
   },
   "judge_pairwise": {

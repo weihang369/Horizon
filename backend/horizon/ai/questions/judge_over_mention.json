@@ -1,0 +1,22 @@
+{
+ "id": "judge_over_mention",
+ "version": 1,
+ "purpose": "eval_judge",
+ "type": "noul",
+ "label": "brought up out of place?",
+ "instructions": "The character's reply in quoted_reply answers quoted_message. Does it bring up something from quoted_memories that the message gives no reason to mention?",
+ "true": "Out of place: it drags in a remembered detail the message has nothing to do with.",
+ "false": "Fine: it mentions nothing remembered, or only what the message calls for.",
+ "state": {
+  "quoted_memories": "quoted",
+  "quoted_message": "quoted",
+  "quoted_reply": "quoted"
+ },
+ "deadline": "default",
+ "floor": null,
+ "thresholds": {
+  "t": 0.5
+ },
+ "fallback": "none (evaluation only)",
+ "state_note": "memory D40 (B4 'Over-mention'): layer 3's unrelated turns in session 2."
+}

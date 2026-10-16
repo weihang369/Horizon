@@ -1,0 +1,22 @@
+{
+ "id": "judge_memory_unsupported",
+ "version": 1,
+ "purpose": "eval_judge",
+ "type": "noul",
+ "label": "line unsupported?",
+ "instructions": "Does the memory line in quoted_line state something that the conversation in quoted_messages and the earlier memories in quoted_memories don't support?",
+ "true": "Unsupported: the line adds or changes a detail nobody said.",
+ "false": "Supported: everything in the line was said or was already remembered.",
+ "state": {
+  "quoted_line": "quoted",
+  "quoted_messages": "quoted",
+  "quoted_memories": "quoted"
+ },
+ "deadline": "default",
+ "floor": null,
+ "thresholds": {
+  "t": 0.5
+ },
+ "fallback": "none (evaluation only)",
+ "state_note": "memory D40 (B4 'Memory rewrite', supported): one per written line."
+}

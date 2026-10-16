@@ -1,0 +1,22 @@
+{
+ "id": "judge_memory_lost",
+ "version": 1,
+ "purpose": "eval_judge",
+ "type": "noul",
+ "label": "fact lost?",
+ "instructions": "quoted_new replaced the memory in quoted_old after the conversation in quoted_messages. Does it lose a part of the old memory that the conversation didn't change?",
+ "true": "Lost: a detail of the old memory that is still true is missing or blurred.",
+ "false": "Kept: every still-true detail of the old memory is in the new one.",
+ "state": {
+  "quoted_old": "quoted",
+  "quoted_new": "quoted",
+  "quoted_messages": "quoted"
+ },
+ "deadline": "default",
+ "floor": null,
+ "thresholds": {
+  "t": 0.5
+ },
+ "fallback": "none (evaluation only)",
+ "state_note": "memory D40 (B4 'Memory rewrite', lost a fact): one per replacement written by the run."
+}

@@ -157,7 +157,7 @@ async def test_the_debate_plan_asks_earlier_per_member_with_the_same_state() -> 
                                 **faces(), f"earlier:{A}": {"type": "noul", "noul": 0.8},
                                 f"earlier:{B}": {"type": "noul", "noul": 0.1}})
     plain = request(clock)
-    member, final = await fixed(planner, clock, plain.model_copy(update={"recallable": [A, B]}))
+    _member, final = await fixed(planner, clock, plain.model_copy(update={"recallable": [A, B]}))
     assert {f"earlier:{A}", f"earlier:{B}"} <= set(jev.sent[0])
     planner2, jev2, clock2 = make()
     await fixed(planner2, clock2, request(clock2))
