@@ -297,7 +297,10 @@ MemoryOp = Insert | Supersede | Reinforce | Touch
 
 
 class MemoryWriter(Protocol):
-    """After a completed reply: the memory operations from `perspective`'s point of view (applied by the backend's
-    `MemoryStore.apply` in one transaction). Both profiles ship a writer that returns `[]` (memory policy is AI-stage)."""
+    """M13 (memory D12; doc 09 M1–M5): a pause run's writer. It reads one stretch (`horizon.services.memory.stretch`:
+    the numbered new lines, every present character's current list, the context) and returns each character's memory
+    operations, the duplicate check's vectors and a log of what it dropped; the run commits them with the checkpoint
+    (`MemoryStore.apply_run`). `ctx` is the run's `RunContext`: call contexts that never pause sessions, the knobs and
+    the run's reads. `scripted` writes nothing, `naive` makes the one rewrite call, `agent` adds Jev (D18)."""
 
-    async def after_turn(self, ctx: TurnContext, perspective: str, message_id: str) -> list[MemoryOp]: ...
+    async def on_stretch(self, stretch: Any, ctx: Any) -> Any: ...

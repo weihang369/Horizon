@@ -134,6 +134,17 @@
         "compared": [],
         "result": "shown_only"
       },
+      "importance": {
+        "purpose": "importance",
+        "id": "importance",
+        "version": 1,
+        "label": "how much does it matter?",
+        "p": 0.72,
+        "confidence": 0.72,
+        "compared": [],
+        "result": "used",
+        "action": "used"
+      },
       "member_closing": {
         "purpose": "debate_plan",
         "id": "member_closing",
@@ -180,6 +191,22 @@
             "name": "confidence",
             "value": 0.72,
             "threshold": 0.5
+          }
+        ],
+        "result": "used",
+        "action": "used"
+      },
+      "memory_guard": {
+        "purpose": "memory_guard",
+        "id": "memory_guard",
+        "version": 1,
+        "label": "rewrite keeps the old facts?",
+        "p": 0.72,
+        "compared": [
+          {
+            "name": "t_keep",
+            "value": 0.72,
+            "threshold": 0.7
           }
         ],
         "result": "used",

@@ -15,7 +15,7 @@ def test_new_ports_are_listed_with_env_overrides() -> None:
         assert port in PORTS
     assert env_name("knowledge_retriever") == "HORIZON_AI_KNOWLEDGE_RETRIEVER"
     assert env_name("converter") == "HORIZON_AI_CONVERTER"
-    assert "memory_writer" not in NAIVE_PORTS  # writes nothing in both profiles until the AI stage
+    assert "memory_writer" in NAIVE_PORTS  # M13 (memory D18): naive makes the one rewrite call
 
 
 def test_config_passes_every_port_override_through(tmp_path: Path) -> None:
@@ -37,9 +37,12 @@ def test_embedder_follows_the_profile(env: dict[str, str], key_set: bool, expect
     assert ProfileSpec.from_env(env).choose("embedder", key_set=key_set) == expect
 
 
-def test_memory_writer_is_scripted_in_both_profiles() -> None:
+def test_memory_writer_follows_the_profile() -> None:
+    # M13 (memory D18): naive and agent writers; a key is needed, except an explicit naive override
     for env in ({}, {"HORIZON_AI_PROFILE": "naive"}, {"HORIZON_AI_MEMORY_WRITER": "naive"}):
-        assert ProfileSpec.from_env(env).choose("memory_writer", key_set=True) == "scripted"
+        assert ProfileSpec.from_env(env).choose("memory_writer", key_set=True) == "naive"
+    assert ProfileSpec.from_env({"HORIZON_AI_PROFILE": "agent"}).choose("memory_writer", key_set=True) == "agent"
+    assert ProfileSpec.from_env({}).choose("memory_writer", key_set=False) == "scripted"
 
 
 @pytest.mark.parametrize(("env", "test_mode", "key_set", "expect"), [

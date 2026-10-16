@@ -31,6 +31,10 @@
     "sha256": "4709bc69e08b6debce18d397c5cd950b137a92eef94543773907f8cec1c8acea",
     "version": 1
   },
+  "importance": {
+    "sha256": "fd6bf130c776368f2a71547831210ac49d9deef245292715cbc99663a1a54adc",
+    "version": 1
+  },
   "judge_assistant_voice": {
     "sha256": "f90d1e4f2ab2de4dac23ce7207173e905cd090b59f2cf385aa3170f060546c26",
     "version": 2
@@ -142,6 +146,10 @@
   "member_rebuttal": {
     "sha256": "d5ad5842d332c6456cb944db5bfef97d73ff6fc66a6e6c672e1f685881998d44",
     "version": 2
+  },
+  "memory_guard": {
+    "sha256": "4126eca829fefa8c76b3a1b7a4c533714145daf10068b05453463663cc639ea8",
+    "version": 1
   },
   "passage": {
     "sha256": "9be7b756a0b94f1342364816327f260f3b70083470d62a13cf24c547680a223b",

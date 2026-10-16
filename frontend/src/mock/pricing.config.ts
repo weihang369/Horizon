@@ -46,6 +46,8 @@ export const PRICING: PricingTable = {
         route: 400, turn_plan: 700, follow_plan: 483, debate_plan: 651, guardrail: 700, guardrail_prompt: 1_500,
         reaction: 1_500, face_check: 1_500, default: 3_000,
         rubric: 10_000, // M11 (debate D12): a background purpose; a fallback costs the whole score
+        importance: 30_000, // M13 (memory D14): a background purpose; doc 09 M13 bounds only the run
+        memory_guard: 30_000, // M13 (memory D15)
       },
     },
   },

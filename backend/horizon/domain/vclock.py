@@ -360,3 +360,51 @@ async def join[R](task: asyncio.Task[R]) -> R:
     finally:
         task.remove_done_callback(wake)
     return task.result()
+
+
+async def together(*coros: Coroutine[Any, Any, Any]) -> list[Any]:
+    """Run `coros` as parallel children of the caller, in an `asyncio.TaskGroup` (M13, memory D17: a pause run's Jev
+    requests beside its embedding). Each child holds a token of its own from creation, so two children can each give
+    theirs up while they wait; the caller gives its token up while it waits for them, and the last child to end takes
+    it back on the caller's behalf. Cancelling the caller waits for the children to end (no request outlives it). Raises
+    the TaskGroup's `BaseExceptionGroup` on a failure."""
+    if not coros:
+        return []
+    parent = current_holder()
+    left = len(coros)
+
+    def child(i: int, coro: Coroutine[Any, Any, Any]) -> tuple[Coroutine[Any, Any, Any], Any]:
+        h = Holder(parent.activity, f"{parent.name}/{i}#{next(_names)}") if parent is not None else None
+        if h is not None:
+            h.hold()
+        started = False
+
+        async def run() -> Any:
+            nonlocal started
+            started = True
+            if h is not None:
+                _holder.set(h)
+            return await coro
+
+        def done(_t: asyncio.Task[Any]) -> None:
+            nonlocal left
+            if not started:
+                coro.close()
+            left -= 1
+            if left == 0 and parent is not None:
+                parent.hold()   # the caller's token, back before it resumes
+            if h is not None:
+                h.drop()
+
+        return run(), done
+
+    async with asyncio.TaskGroup() as tg:
+        tasks = []
+        for i, c in enumerate(coros):
+            run, done = child(i, c)
+            task = tg.create_task(run)
+            task.add_done_callback(done)
+            tasks.append(task)
+        if parent is not None:
+            parent.drop()
+    return [t.result() for t in tasks]

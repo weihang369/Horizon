@@ -40,6 +40,8 @@ export interface GatewayConfig {
       guardrail_prompt: number; reaction: number; face_check: number; default: number;
       /** M11 (debate D12): the rubric's scores, a background purpose. */
       rubric: number;
+      /** M13 (memory D14, D15): the pause runs' Jev questions, background purposes. */
+      importance: number; memory_guard: number;
     };
   };
 }

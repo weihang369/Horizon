@@ -1,0 +1,30 @@
+{
+  "id": "memory_guard",
+  "version": 1,
+  "purpose": "memory_guard",
+  "type": "noul",
+  "label": "rewrite keeps the old facts?",
+  "instructions": "Is every part of the old memory in quoted_old that is still true after the messages in quoted_source kept in the new memory in quoted_new?",
+  "true": "Yes: everything the old memory said that is still true is in the new one, though it may be worded differently or extended.",
+  "false": "No: the new memory drops or blurs something from the old one that the messages didn't change.",
+  "examples": {
+    "true": [
+      "\"Kai quit coffee.\" → \"Kai quit coffee last month; temple headaches when he cut back.\""
+    ],
+    "false": [
+      "\"Kai's sister Mia is a nurse in Ipoh.\" → \"Kai's sister is a nurse.\""
+    ]
+  },
+  "state": {
+    "quoted_old": "quoted",
+    "quoted_new": "quoted",
+    "quoted_source": "quoted"
+  },
+  "deadline": "memory_guard",
+  "floor": null,
+  "thresholds": {
+    "t_keep": 0.7
+  },
+  "fallback": "keep_both",
+  "state_note": "memory D15: one request per rewrite; p >= t_keep supersedes, else the new line is inserted beside the old one. t_keep starts at 0.7 and is tuned in M13 (phase 10)."
+}

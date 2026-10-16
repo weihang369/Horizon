@@ -39,8 +39,10 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import TYPE_CHECKING, Any, Literal
 
+import sqlite_vec
 from sqlalchemy import and_, select, text, update
 
+from horizon.db import spaces
 from horizon.db import tables as t
 from horizon.events.bus import session_channel
 from horizon.gateway.context import CallContext, call_ctx
@@ -65,20 +67,73 @@ log = logging.getLogger("horizon.memory")
 PREFIX = "session:"
 CONTEXT_REACH = 60          # messages before the checkpoint read for the context lines (only 6 kept ones are used)
 REREAD_REACH = 10
+NEAREST_K = 8               # the KNN reads a few and keeps the nearest still-current one (D16)
 WriterMode = Literal["scripted", "defer", "write"]
 
 
 @dataclass(frozen=True)
 class RunContext:
-    """What a writer gets besides the stretch: the call contexts (never pausing sessions, D11) and the clock."""
+    """What a writer gets besides the stretch (D12): the call contexts (never pausing sessions, D11), the clock, the
+    memory knobs and the run's reads (`io`, the writer's only way to the database)."""
 
     world_id: str
     session_id: str
     now: Callable[[], datetime]
+    knobs: Any = None
+    io: Any = None
 
     def call(self, purpose: str, *, character_id: str | None = None) -> CallContext:
         return call_ctx(purpose, world_id=self.world_id, session_id=self.session_id, character_id=character_id,
                         pauses_sessions=False)
+
+
+class RunIO:
+    """The writer's reads (`horizon.ai.memory.writers.MemoryIO`), bound to one run's world (D16)."""
+
+    def __init__(self, rt: Runtime, world_id: str) -> None:
+        self.rt = rt
+        self.world_id = world_id
+
+    async def current(self, character_id: str) -> list[tuple[str, str, float]]:
+        M = t.memory_items.c
+        async with self.rt.db.read() as conn:
+            rows = (await conn.execute(select(M.id, M.text, M.importance).where(and_(
+                M.character_id == character_id, M.world_id == self.world_id, M.superseded_by.is_(None))))).all()
+        return [(str(r[0]), str(r[1]), float(r[2])) for r in rows]
+
+    async def embed(self, texts: list[str]) -> tuple[str, list[list[float]]] | None:
+        """The adds' one embedding in the active space (purpose `embed_doc`, never stored, never pausing sessions).
+        None without a key or when it fails: the duplicate check is then case-folded equality only."""
+        rt = self.rt
+        if not texts or rt.keys.status() != "set":
+            return None
+        async with rt.db.read() as conn:
+            space = await spaces.active(conn)
+        ctx = call_ctx("embed_doc", world_id=self.world_id, pauses_sessions=False)
+        try:
+            async with rt.embed_slots.slot():
+                got = await rt.ai.embedder(True).embed(texts, kind="document", space=space, ctx=ctx)
+        except ProviderError as e:
+            log.info("duplicate check without vectors: embedding failed (%s)", e.code)
+            return None
+        return space.id, list(got.vectors)
+
+    async def nearest(self, character_id: str, space_id: str, vector: list[float]) -> tuple[str, float, float] | None:
+        """The nearest current memory of this character in `space_id`: (id, cosine, importance), or None."""
+        mem, _ = spaces.vec_tables(space_id)
+        async with self.rt.db.read() as conn:
+            try:
+                rows = (await conn.execute(text(
+                    f"SELECT m.id, v.distance, m.importance FROM {mem} v JOIN memory_items m ON m.rid = v.rid "
+                    "WHERE v.embedding MATCH :q AND v.character_id = :c AND v.k = :n "
+                    "AND m.character_id = :c AND m.world_id = :w AND m.superseded_by IS NULL ORDER BY v.distance"),
+                    {"q": sqlite_vec.serialize_float32(vector), "c": character_id, "w": self.world_id,
+                     "n": NEAREST_K})).all()
+            except Exception:   # the space's tables are gone (retired under us): no vector check
+                return None
+        if not rows:
+            return None
+        return str(rows[0][0]), 1.0 - float(rows[0][1]), float(rows[0][2])
 
 
 @dataclass
@@ -325,7 +380,8 @@ class MemoryRuns:
                 await self._advance(sid, piece.from_seq, piece.upto_seq, piece.reread_ids)
                 self._note(sid, "scripted", upto=piece.upto_seq)
                 return "more" if len(pieces) > 1 else "done"
-            ctx = RunContext(world_id=piece.world_id, session_id=sid, now=rt.clock.now)
+            ctx = RunContext(world_id=piece.world_id, session_id=sid, now=rt.clock.now, knobs=self.knobs,
+                             io=RunIO(rt, piece.world_id))
             try:
                 result = await self._write(piece, ctx)
             except ProviderError as e:
@@ -333,6 +389,11 @@ class MemoryRuns:
                     self._note(sid, "refused at the cap")   # not a try: the next trigger tries again
                     return "done"
                 log.warning("memory run for %s failed: %s", sid, e.code)
+                result = WriterResult(failed=True)
+            except asyncio.CancelledError:
+                raise
+            except Exception:   # a bug inside the writer counts a try, like a failed call (D17)
+                log.exception("memory writer for %s raised", sid)
                 result = WriterResult(failed=True)
             if result.failed:
                 await self._failed(sid, piece)
@@ -426,7 +487,7 @@ class MemoryRuns:
                 listed, _ = await memory_list(conn, str(p["character_id"]), world_id, now, self.knobs)
                 present.append(Present(n=len(present) + 1, character_id=str(p["character_id"]),
                                        name=str(prof.get("name") or p["character_id"]), role=str(prof.get("role") or ""),
-                                       memories=listed))
+                                       memories=listed, about=str((prof.get("personality") or {}).get("summary") or "")))
         names = {str(p["character_id"]): str((p["profile"] or {}).get("name") or p["character_id"]) for p in parts}
         msgs = [Msg(id=str(r["id"]), seq=int(r["seq"]), author_type=str(r["author_type"]),
                     character_id=r["author_character_id"], kind=str(r["kind"]), content=str(r["content"] or ""),

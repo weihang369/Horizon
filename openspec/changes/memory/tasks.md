@@ -165,10 +165,10 @@
 
 ## 3. The writer (D12–D19)
 
-- [ ] 3.1 Replace `MemoryWriter.after_turn` with `on_stretch(stretch, ctx) → WriterResult`. Add the types (D12), delete
+- [x] 3.1 Replace `MemoryWriter.after_turn` with `on_stretch(stretch, ctx) → WriterResult`. Add the types (D12), delete
   `NoMemoryWriter.after_turn`, and add `memory_writer` to `NAIVE_PORTS` and `AGENT_PORTS`. Verify: mypy and a
   port-resolution test per profile, with no key, with a key and in test mode.
-- [ ] 3.2 Write the `memory-1` prompt and its parser (D13):
+- [x] 3.2 Write the `memory-1` prompt and its parser (D13):
   - the fixed system message and the user-message layout;
   - `max_tokens` = 300 × present + 200 (≤ 3,000), and the split on `length`;
   - one retry on a parse or schema failure;
@@ -178,18 +178,18 @@
   - an unknown target, a bad `for`, a 45-word text and 7 changes for one character are each handled as D13 says;
   - a `length` answer splits;
   - the prompt bytes match a committed fixture.
-- [ ] 3.3 Add the bank entries `importance` and `memory_guard` (D14, D15), with their wordings, levels, state
+- [x] 3.3 Add the bank entries `importance` and `memory_guard` (D14, D15), with their wordings, levels, state
   templates, versions and lock. Add `memory_guard` to `PURPOSE_CATEGORY`, and add `timeoutsMs.decision.importance` /
   `memory_guard` (30,000) to pricing and its mirror. Verify: bank load and lock tests, a `unit` test (level 4 →
   0.75), and `seed:check`.
-- [ ] 3.4 Build the importance request with `extra_questions` (D14's M14 seam):
+- [x] 3.4 Build the importance request with `extra_questions` (D14's M14 seam):
   - the fallback from the weight hint;
   - `minImportance`, the higher-of rule on rewrites, and confirm → Reinforce +0.05.
 
   Verify: `DeciderFixtures` tests for each rule, plus an extra-question test showing `importance` keeps its version.
-- [ ] 3.5 Build the guard (D15): one request per rewrite, Supersede at or above `t_keep`, else Insert beside, and
+- [x] 3.5 Build the guard (D15): one request per rewrite, Supersede at or above `t_keep`, else Insert beside, and
   fallback → keep both. Verify: fixture tests for yes, no, late (`park_decision`) and a 429 retried once.
-- [ ] 3.6 Build the duplicate check (D16):
+- [x] 3.6 Build the duplicate check (D16):
   - case-fold equality first, then embed once and KNN top 1 in the character's partition against current memories;
   - the vectors are handed to `apply_run`, so each text is embedded once per space.
 
@@ -197,16 +197,16 @@
   - a near-duplicate above `dupCosine` reinforces;
   - exactly one embedding request carries a new add's text (embedding-spaces "Memory work embeds each new text
     once").
-- [ ] 3.7 Assemble the `agent` memory graph (D17): LangGraph, no checkpointer, a per-run semaphore of 10 Jev
+- [x] 3.7 Assemble the `agent` memory graph (D17): LangGraph, no checkpointer, a per-run semaphore of 10 Jev
   requests, cancellation through the run. Verify: a graph test over a two-character stretch with canned answers, and
   a storm test cancelling it mid-graph.
-- [ ] 3.8 Build the `naive` writer (D18): the same call, importance from the hint, Supersede with no guard, and the
+- [x] 3.8 Build the `naive` writer (D18): the same call, importance from the hint, Supersede with no guard, and the
   exact-duplicate skip. Verify: a test where a `naive` run makes exactly one `memory` call and no Jev request.
-- [ ] 3.9 Add canned memory responses to `FakeOpenRouter` (D19): purpose `memory` via `X-Horizon-Purpose`, a
+- [x] 3.9 Add canned memory responses to `FakeOpenRouter` (D19): purpose `memory` via `X-Horizon-Purpose`, a
   test-control route, and the defaults (empty, and add + rewrite + confirm). In test mode, use the `agent` writer
   unless the profile is `scripted`. Verify: an end-to-end backend test in which a 1:1 session pauses, writes the
   canned memories, and the Memory list shows them.
-- [ ] 3.10 Run the writer storms: cancel during the rewrite call, the Jev requests and the embeddings. Verify: the
+- [x] 3.10 Run the writer storms: cancel during the rewrite call, the Jev requests and the embeddings. Verify: the
   storm suite is green.
 
 ## 4. The undo and Forget (D20, D21)

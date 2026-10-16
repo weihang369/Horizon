@@ -27,6 +27,8 @@ gateway code with no socket ever opened.
   asking it with HTTP 429 (Jev's rate limit), once. Every "needs documents?" (`docs:…`) is answered no (0.0) unless a
   test sets it, so a character with documents stays on the quick path by default. A queued streamed (SSE) response
   waits for a chat request: a Jev request in between (a gate riding the plan) never takes it.
+- memory (M13 design D19): purpose `memory` answers `{"changes": []}` unless a canned set is loaded (the
+  `memory-writes` set: one add, one rewrite and one confirm for Amara and Kai).
 
 The response shapes follow the recorded fixtures in `tests/fixtures/openrouter/` (unverified until the live run).
 """
@@ -58,6 +60,7 @@ NOT_MP3 = b"RIFF" + bytes(4) + b"WAVEfmt " + bytes(64)   # a WAV-looking header:
 CANNED_DIR = Path(__file__).resolve().parents[2] / "tests" / "fixtures" / "canned"
 PURPOSE_HEADER = "x-horizon-purpose"
 CREDITS_TOTAL = 5.0
+EMPTY_MEMORY = '{"changes": []}'   # M13 (memory D19): the `memory` purpose's default answer
 CREDITS_USED = 0.79
 DEFAULT_DIMS = 1024
 # A 1×1 transparent PNG (kept for tests that need a tiny decodable image).
@@ -301,6 +304,8 @@ class FakeOpenRouter:
             purpose = request.headers.get(PURPOSE_HEADER)
             if purpose and self.canned.get(purpose):
                 return self._canned(purpose, body)
+            if purpose == "memory":   # M13 (memory D19): with no canned set, the writer hears "nothing changed"
+                return self._chat(body, EMPTY_MEMORY)
             return self._chat(body)
         if route == ("POST", "/alpha/decisions"):
             keys = list((body or {}).get("questions") or {})
@@ -320,7 +325,7 @@ class FakeOpenRouter:
                                              "usage": {"cost": self.image_cost}})
         return httpx.Response(404, json={"error": {"code": 404, "message": f"No fake for {request.method} {path}"}})
 
-    def _chat(self, body: dict[str, Any]) -> httpx.Response:
+    def _chat(self, body: dict[str, Any], content: str = "ok") -> httpx.Response:
         gid = self._gen("gen", CHAT_COST)
         prompt = _tokens(body.get("messages"))
         usage = {"prompt_tokens": prompt, "completion_tokens": 1, "total_tokens": prompt + 1,
@@ -328,9 +333,9 @@ class FakeOpenRouter:
         base = {"id": gid, "model": body.get("model"), "provider": "DeepSeek"}
         if not body.get("stream"):
             return httpx.Response(200, json={**base, "object": "chat.completion", "usage": usage, "choices": [
-                {"index": 0, "message": {"role": "assistant", "content": "ok"}, "finish_reason": "stop"}]})
+                {"index": 0, "message": {"role": "assistant", "content": content}, "finish_reason": "stop"}]})
         chunks = [
-            {**base, "object": "chat.completion.chunk", "choices": [{"index": 0, "delta": {"role": "assistant", "content": "ok"},
+            {**base, "object": "chat.completion.chunk", "choices": [{"index": 0, "delta": {"role": "assistant", "content": content},
                                                                        "finish_reason": None}]},
             {**base, "object": "chat.completion.chunk", "choices": [{"index": 0, "delta": {}, "finish_reason": "stop"}],
              "usage": usage},

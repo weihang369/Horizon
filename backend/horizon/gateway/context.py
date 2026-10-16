@@ -22,6 +22,7 @@ PURPOSE_CATEGORY: dict[str, Category] = {
     "follow_plan": "decision",                           # M10 (group-watch design D8, D20)
     "debate_plan": "decision",                           # M11 (debate design D8, D25)
     "deep_check": "decision",                            # M12 (rag D13, D21): Jev call 2, one request per passage
+    "memory_guard": "decision",                          # M13 (memory D15): one request per rewrite, in a pause run
     "query_rewrite": "chat",                             # M12 (rag D10): the speaker's search query, when needed
     "eval_plant": "chat",                                # M11 (debate D21): the planted weak sides, written once
     "query_embed": "embedding", "embed_doc": "embedding",

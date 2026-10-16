@@ -102,7 +102,7 @@ def test_agent_resolves_like_naive() -> None:
         assert agent.choose(p, key_set=True) == want, p
         assert agent.choose(p, key_set=False) == "scripted" or p == "converter", p
     # M9 (turn-plan-emotion D5, D18, D23) adds the planner, reactions and the face check; M11 (debate) the host
-    assert AGENT_PORTS == frozenset({"turn", "planner", "reactions", "face_check", "host"})
+    assert AGENT_PORTS == frozenset({"turn", "planner", "reactions", "face_check", "host", "memory_writer"})
 
 
 def test_agent_from_env() -> None:
@@ -115,7 +115,7 @@ async def test_agent_profile_over_http(api: Api) -> None:
     await api.set_key()
     assert (await api.post(f"{API}/_test/ai-profile", {"profile": "agent"})).status_code == 204
     resolved: dict[str, Any] = api.rt.ai.resolved(key_set=True)
-    assert resolved["router"] == "naive" and resolved["memory_writer"] == "scripted"
+    assert resolved["router"] == "naive" and resolved["memory_writer"] == "agent"
 
 
 async def test_test_routes_404_outside_test_mode(api_normal: Api) -> None:

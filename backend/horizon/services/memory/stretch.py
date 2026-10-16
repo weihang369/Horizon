@@ -58,6 +58,7 @@ class Present:
     name: str
     role: str
     memories: list[ListedMemory] = field(default_factory=list)   # m1…: the same lines as its prompt block
+    about: str = ""                # the profile's personality summary (importance's quoted_about, D14)
 
 
 @dataclass(frozen=True)

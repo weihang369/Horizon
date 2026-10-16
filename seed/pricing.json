@@ -79,7 +79,9 @@
           "reaction": 1500,
           "face_check": 1500,
           "default": 3000,
-          "rubric": 10000
+          "rubric": 10000,
+          "importance": 30000,
+          "memory_guard": 30000
         }
       }
     }

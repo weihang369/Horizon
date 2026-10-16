@@ -131,10 +131,13 @@ def emotion_candidates(chosen: str, rng: random.Random) -> list[dict[str, Any]]:
 
 
 class NoMemoryWriter:
-    """The memory writer of both profiles until the AI stage (doc 05 §2.2): it remembers nothing."""
+    """The scripted memory writer (memory D18): it remembers nothing. An explicitly `scripted` run never calls it (the
+    checkpoint just advances); it stands in wherever the port resolves to scripted."""
 
-    async def after_turn(self, ctx: TurnContext, perspective: str, message_id: str) -> list[Any]:
-        return []
+    async def on_stretch(self, stretch: Any, ctx: Any) -> Any:
+        from horizon.services.memory.stretch import WriterResult
+
+        return WriterResult()
 
 
 class ScriptedTurnEngine:
