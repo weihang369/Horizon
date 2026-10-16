@@ -391,3 +391,43 @@ NEW_TOPICS: list[tuple[str, str]] = [
     ("rin", "Hey Rin, busy morning at the café?"),
     ("takeshi", "Evening Takeshi, what's the special tonight?"),
 ]
+
+# Subjects a message and a fact can share (word starts). A turn meant to be unrelated to a fact shares none of them,
+# so a reply that brings the fact up there has no reason to (m13-review: "What's your favourite flower?" was once
+# paired with Kai's grandma's peonies).
+SUBJECTS: list[tuple[str, ...]] = [
+    ("coffee", "latte", "espresso", "café", "cafe", "kopitiam"),
+    ("flower", "tulip", "bouquet", "peon", "lil", "vase", "arrang", "bloom", "season", "garden", "botanical"),
+    ("rice", "tempura", "knife", "shellfish", "fish", "ramen", "noodle", "cook", "special", "vegetarian", "dinner",
+     "hawker", "broth"),
+    ("draw", "sketch", "mural", "art", "paint", "palette", "colour", "zine"),
+    ("contract", "agreement", "non-compete", "clause", "court", "case", "closing argument", "moot", "will"),
+    ("run", "marathon", "race", "water", "drink", "hot day"),   # running and staying hydrated go together
+    ("price", "fares", "gold", "index fund", "saving", "pay", "tax", "receipt", "deposit"),
+    ("shift", "hospital", "job", "work"),
+    ("cold", "flu", "allerg", "penicillin", "blood", "headache", "heart", "surgery"),
+]
+
+
+def shares_subject(a: str, b: str) -> bool:
+    import re
+
+    def has(text: str, stem: str) -> bool:
+        return re.search(r"\b" + re.escape(stem), text.casefold()) is not None
+
+    return any(any(has(a, s) for s in group) and any(has(b, s) for s in group) for group in SUBJECTS)
+
+
+NAMED = {"Hello! How's your shift going?", "Morning, Mei! Anything fun planned for the weekend?",
+         "Hi Victor, quick question about contracts in general.", "Hi Hana, what are you arranging today?",
+         "Hey Rin, busy morning at the café?", "Evening Takeshi, what's the special tonight?"}
+
+
+def unrelated(facts: list[str], who: str, n: int, start: int = 0) -> list[str]:
+    """`n` new topics sharing no subject with `facts`: the character's own first, then the others' (never one that
+    greets another character by name), in a rotation from `start`."""
+    own = [m for w, m in NEW_TOPICS if w == who]
+    others = [m for w, m in NEW_TOPICS if w != who and m not in NAMED]
+    pool = [m for m in own[start % len(own):] + own[:start % len(own)] + others[start % len(others):]
+            + others[:start % len(others)] if not any(shares_subject(m, f) for f in facts)]
+    return list(dict.fromkeys(pool))[:n]

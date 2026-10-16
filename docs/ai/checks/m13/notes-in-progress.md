@@ -24,3 +24,20 @@
    M12's order keeps 167 (10 states lose some); D28's keeps 193 (none lose any). Short states unchanged byte for byte.
 7. A lone regenerated reply is below the run minimum (one character line, no user line): it is re-read with the next
    run that has a user line. The re-read id waits in `memory_reread` meanwhile.
+8. Phase 9's review (`evals/reviews/m13-review.md`) fixed three builder flaws before any paid run:
+   - `judge_over_mention` paired a fact with a "new" topic that shared its subject (peonies with "your favourite
+     flower"), and its replies were ungrammatical; `facts.unrelated` now picks topics sharing no subject;
+   - layer 3 wrapped the fact list and repeated three pairs whole (17 distinct, counted as 20); now 20 distinct;
+   - one debate stretch's language tag (`ms` on a Chinese line).
+9. `recall.checkMs` from the tail: `horizon eval memory --part recall --latency` (store-bypassed, every check read to
+   its end) reports the slowest landing per probe, rather than the `latency` suite D40 names: recall's checks are the
+   suite's own calls, and the latency suite drives whole turns. Same measurement (store-bypassed, the real tail).
+10. The comparisons run as `memory --part recall --arm …` (`search=bm25|dense`, `mmr=off`, `lambda=…`, `space=…`) and
+    `horizon eval memory-compare <default> <arm>` (K3's rule per probe kind; Recall@6 for the instruction, hit@3 for
+    the rest); `dupCosine` as `--part dup` (140 planted pairs, 40 the same fact).
+11. Paid-run estimates from the suite's own plan (off-peak): rewrite 36 ≈ $0.077, recall 100 ≈ $0.027, layer 3 20 ≈
+    $0.120, dup ≈ $0.0006 (D41: ≈ $0.05 / $0.03 / $0.12 / $0.005).
+12. D28 changes one committed M12 item: `docs` `dcs-109` (debate d13#8) is late enough that M12's order dropped Victor's
+    gate; D28 now trims the arguments and keeps it, so the state live sends carries Victor's titles and the cut
+    arguments. Its label (Mei's documents) is unchanged; the set was rebuilt so the item stays as live asks it. The
+    other 120 `docs` items, `standalone` and `english` are byte-identical.

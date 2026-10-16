@@ -39,7 +39,7 @@ def _suite(args: argparse.Namespace) -> int:
                    seed_dir=args.seed_dir, force=getattr(args, "force", False), mode=getattr(args, "mode", None),
                    runs=getattr(args, "runs", None), turns=getattr(args, "turns", None),
                    messages=getattr(args, "messages", None), part=getattr(args, "part", None),
-                   arm=getattr(args, "arm", None))
+                   arm=getattr(args, "arm", None), latency=getattr(args, "latency", False))
     return asyncio.run(Runner(load_config()).run(opts))
 
 
@@ -119,6 +119,22 @@ def _retrieval_compare(args: argparse.Namespace) -> int:
     return 0
 
 
+def _memory_compare(args: argparse.Namespace) -> int:
+    from pathlib import Path
+
+    from horizon.evals.memory_suite import compare_report
+
+    try:
+        lines = compare_report(Path(args.base), Path(args.arm))
+    except (ValueError, KeyError) as e:
+        print(f"horizon: {e}", file=sys.stderr)
+        return 2
+    text = "\n".join(lines) + "\n"
+    print(text, end="")
+    (Path(args.arm) / "compare.md").write_text(text, encoding="utf-8")
+    return 0
+
+
 def _capture(args: argparse.Namespace) -> int:
     from horizon.config import load_config
     from horizon.evals.stats import capture_case
@@ -169,7 +185,9 @@ def register(sub: Any) -> None:
                            ("notfound", "the Not-found reply end to end: 40 unanswerable + 10 partly 1:1 turns and "
                                         "its two judges (paid, M12)"),
                            ("deep-check", "doc 10 check 5: deep_check on 20 passages, the set check on 5 pairs, the two "
-                                          "nouls on 20 messages (paid, M12)")):
+                                          "nouls on 20 messages (paid, M12)"),
+                           ("memory", "the memory suite: rewrite, recall (in-session, overflow; --arm), layer 3, the "
+                                      "dupCosine sweep (--part dup) (paid, M13; --profile agent)")):
         s = esub.add_parser(name, help=helptext)
         s.add_argument("--profile", default="naive", choices=["scripted", "naive", "agent"])
         s.add_argument("--limit", type=int, default=None)
@@ -193,8 +211,14 @@ def register(sub: Any) -> None:
         if name == "retrieval":
             s.add_argument("--arm", default=None, help="space=<id> | piece=200|300|400[:kept] | lambda=0.5|0.7|1.0 | "
                                                        "rewrite=off")
+        if name == "memory":
+            s.add_argument("--part", choices=["rewrite", "recall", "layer3", "dup"], default=None)
+            s.add_argument("--arm", default=None, help="recall only: search=bm25|dense | mmr=off | lambda=0.5|0.7|1.0 | "
+                                                       "space=<id>")
+            s.add_argument("--latency", action="store_true", help="recall: store-bypassed, every check read to its end "
+                                                                  "(the tail for recall.checkMs)")
         if name in ("decisions", "long", "transcript", "drafter", "watch-history", "summary", "debate-history",
-                    "debate-plant", "debate-quality", "retrieval", "notfound"):
+                    "debate-plant", "debate-quality", "retrieval", "notfound", "memory"):
             s.add_argument("--set", default=None, help="decisions: one dataset folder (`judges`); long, transcript: "
                                                        "one script id; drafter: a seed file in evals/drafter/")
         s.set_defaults(fn=_suite)
@@ -211,6 +235,11 @@ def register(sub: Any) -> None:
     rc.add_argument("--base-test", default=None)
     rc.add_argument("--arm-test", default=None)
     rc.set_defaults(fn=_retrieval_compare)
+    mc = esub.add_parser("memory-compare", help="a recall arm's memory run against the default's, by K3's rule "
+                                                "(free, M13)")
+    mc.add_argument("base", help="the default `memory --part recall` run's folder")
+    mc.add_argument("arm", help="the arm run's folder; compare.md is written there")
+    mc.set_defaults(fn=_memory_compare)
     cp = esub.add_parser("capture", help="write a message's captured AI calls to data/evals/cases/")
     cp.add_argument("message_id")
     cp.set_defaults(fn=_capture)

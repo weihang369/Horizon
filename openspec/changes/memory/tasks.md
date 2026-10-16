@@ -344,26 +344,26 @@
 
 ## 9. The evaluation, offline (D40)
 
-- [ ] 9.1 Build the `decisions` slices: `importance` (100), `memory_guard` (~120), `earlier` (~120), `recall`
+- [x] 9.1 Build the `decisions` slices: `importance` (100), `memory_guard` (~120), `earlier` (~120), `recall`
   (~120). Synthetic, split at creation, no bank overlap. The threshold rules are D40's. Verify: dataset checks, and
   test-mode runs on fixtures.
-- [ ] 9.2 Build the `memory` suite:
+- [x] 9.2 Build the `memory` suite:
   - rewrite (24 stretches with planted lists, 6 secrets, 6 small-talk);
   - in-session (60 over `evals/long`) and overflow (40) recall probes, with the three arms;
   - layer 3 (20 pairs, `agent` writer and recall).
 
   Wilson intervals throughout. Verify: `HORIZON_TEST=1 horizon eval memory --limit 3 --yes` runs on the fake.
-- [ ] 9.3 Add the judge rows "Memory rewrite" (covered · supported · lost a fact) and "Over-mention", with planted
+- [x] 9.3 Add the judge rows "Memory rewrite" (covered · supported · lost a fact) and "Over-mention", with planted
   validation sets; an unvalidated judge reports "not counted". Add the "memory for an absent character" unit test.
   Verify: judge tests.
-- [ ] 9.4 Build the comparisons:
+- [x] 9.4 Build the comparisons:
   - the query instruction on the recall dev split;
   - the `dupCosine` sweep on planted duplicates;
   - recall's λ;
   - `recall.checkMs` from a measured tail (the `latency` suite, store-bypassed).
 
   Verify: test-mode runs.
-- [ ] 9.5 Labels (U1: delegated to the team): record the review pass in `evals/reviews/m13-review.md`. Verify: the file exists, and
+- [x] 9.5 Labels (U1: delegated to the team): record the review pass in `evals/reviews/m13-review.md`. Verify: the file exists, and
   the held-out test split is untouched.
 
 ## 10. The paid runs (D41; each asked for separately)

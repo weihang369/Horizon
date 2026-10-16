@@ -656,6 +656,7 @@ def _content() -> dict[str, Any]:
     from horizon.evals.debate_suites import DebateHistory, DebatePlant, DebateQuality, DebateSuite
     from horizon.evals.deep_check_suite import DeepCheck
     from horizon.evals.latency import Latency
+    from horizon.evals.memory_suite import Memory
     from horizon.evals.moodline import Moodline
     from horizon.evals.notfound_suite import NotFound
     from horizon.evals.retrieval_suite import Retrieval
@@ -664,7 +665,7 @@ def _content() -> dict[str, Any]:
             "moodline": Moodline(), "latency": Latency(), "watch-history": WatchHistory(), "freerun": FreeRun(),
             "debate-history": DebateHistory(), "debate-plant": DebatePlant(), "debate-quality": DebateQuality(),
             "debate": DebateSuite(), "retrieval": Retrieval(),
-            "notfound": NotFound(), "deep-check": DeepCheck()}
+            "notfound": NotFound(), "deep-check": DeepCheck(), "memory": Memory()}
 
 
 SUITES: dict[str, Any] = {"canary": Canary(), "decisions": Decisions(), "smoke": Smoke(), **_content()}

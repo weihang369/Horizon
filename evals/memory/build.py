@@ -27,7 +27,7 @@ ROOT = HERE.parents[1]
 sys.path.insert(0, str(ROOT / "backend"))
 sys.path.insert(0, str(ROOT / "evals" / "datasets" / "earlier"))
 
-from facts import FACTS, NEW_TOPICS, SMALL_TALK, Fact  # noqa: E402
+from facts import FACTS, SMALL_TALK, Fact, unrelated  # noqa: E402
 
 from horizon.evals.datachecks import split_for  # noqa: E402
 
@@ -107,7 +107,7 @@ STRETCHES: list[tuple[str, list[str], str, str, str, str]] = [
     ("debate", ["amara", "mei"], "f09", "f05", "f10", "en"),
     ("debate", ["victor", "mei"], "f15", "f08", "f18", "en"),
     ("debate", ["takeshi", "rin"], "f35", "f30", "f27", "en"),
-    ("debate", ["hana", "takeshi"], "f32", "f24", "f12", "ms"),
+    ("debate", ["hana", "takeshi"], "f32", "f24", "f12", "zh"),
 ]
 MOTIONS = {"wld_seedMeridian": "This house would make the four-day week the law",
            "wld_seedSunnyHollow": "This house would close every shop on Sundays"}
@@ -269,21 +269,33 @@ def build_probes() -> list[dict[str, Any]]:
     return rows
 
 
+def layer3_pairs(n: int = 20) -> list[tuple[Fact, Fact]]:
+    """`n` distinct pairs of one character's English facts, spread over the six: neighbours (0, 1), (2, 3), … first,
+    then the shifted (1, 2), (3, 4), … (m13-review: wrapping the fact list once repeated three pairs whole)."""
+    by_who: dict[str, list[Fact]] = {}
+    for f in FACTS:
+        if f.lang == "en":
+            by_who.setdefault(f.who, []).append(f)
+    pairs: list[tuple[Fact, Fact]] = []
+    longest = max(len(v) for v in by_who.values())
+    for offset in (0, 1):
+        for k in range(offset, longest - 1, 2):
+            pairs += [(fs[k], fs[k + 1]) for fs in by_who.values() if k + 1 < len(fs)]
+    assert len({(a.id, b.id) for a, b in pairs}) == len(pairs) >= n
+    return pairs[:n]
+
+
 def build_layer3() -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
-    en = [f for f in FACTS if f.lang == "en"]
-    for i in range(20):
-        a, b = en[(2 * i) % len(en)], en[(2 * i + 1) % len(en)]
-        if a.who != b.who:
-            b = next(x for x in en if x.who == a.who and x.id != a.id)
+    for i, (a, b) in enumerate(layer3_pairs()):
         who = a.who
         talk = [t for w, t, lvl, lang in SMALL_TALK if w == who and lang == "en"]
-        new = [m for w, m in NEW_TOPICS if w == who]
+        new = unrelated([a.memory, a.said, b.memory, b.said], who, 2, start=i)
         item_id = f"ml3-{i + 1:03d}"
         rows.append({"id": item_id, "split": split_for(item_id), "speaker": WHO[who], "world": WORLD[who],
                      "session1": [talk[0], a.said, talk[1], b.said],
                      "probes": [{"fact": a.said, "probe": a.probe}, {"fact": b.said, "probe": b.probe}],
-                     "unrelated": [new[i % len(new)], new[(i + 1) % len(new)]]})
+                     "unrelated": new})
     return rows
 
 

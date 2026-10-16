@@ -23,7 +23,7 @@ ROOT = HERE.parents[2]
 sys.path.insert(0, str(ROOT / "backend"))
 sys.path.insert(0, str(ROOT / "evals" / "datasets" / "earlier"))
 
-from facts import FACTS, NEW_TOPICS, Fact  # noqa: E402
+from facts import FACTS, Fact, unrelated  # noqa: E402
 
 from horizon.evals.datachecks import split_for  # noqa: E402
 
@@ -33,9 +33,28 @@ ANSWER = "Honestly, it depends on you, but I'd start simple and see what fits."
 
 
 def you(text: str) -> str:
-    """A memory as the character would say it to Kai."""
-    return (text.replace("Kai's", "your").replace("Kai is", "you're").replace("Kai has", "you've")
-            .replace("Kai ", "you ").rstrip("."))
+    """A memory as the character would say it to Kai ("Kai runs" -> "you run", "his" -> "your")."""
+    import re
+
+    def verb(m: re.Match[str]) -> str:
+        v = m.group(1)
+        if v in ("was", "got", "had"):
+            return f"you {'were' if v == 'was' else v}"
+        if v.endswith("ies"):
+            return f"you {v[:-3]}y"
+        if v.endswith(("ches", "shes", "sses", "xes")):
+            return f"you {v[:-2]}"
+        return f"you {v[:-1]}" if v.endswith("s") and not v.endswith("ss") else f"you {v}"
+
+    out = text.replace("Kai's", "your").replace("Kai is", "you're").replace("Kai has", "you've")
+    if re.match(r"Kai (?!')", text):   # Kai is the subject: a second verb after "and" agrees with "you" too
+        for said, to in (("has", "have"), ("eats", "eat"), ("does", "do"), ("keeps", "keep")):
+            out = re.sub(rf"\band {said}\b", f"and {to}", out)
+    out = re.sub(r"\bKai (\w+)", verb, out)
+    out = re.sub(r"\bhis\b", "your", out)
+    out = re.sub(r"\bhim\b", "you", out)
+    out = re.sub(r"\bhe\b", "you", out)
+    return out.rstrip(".")
 
 
 def row(qid: str, n: int, state: dict[str, Any], label: str, f: Fact) -> dict[str, Any]:
@@ -80,7 +99,7 @@ def over_mention() -> list[dict[str, Any]]:
     out = []
     for i in range(N):
         f = EN[i % len(EN)]
-        _, message = NEW_TOPICS[i % len(NEW_TOPICS)]
+        message = unrelated([f.memory, f.said], f.who, 1, start=i)[0]
         reply = ANSWER if i % 2 == 0 else f"{ANSWER} Speaking of which, I keep thinking about how {you(f.memory)}."
         out.append(row("judge_over_mention", i + 1, {"quoted_memories": f.memory, "quoted_message": message,
                                                      "quoted_reply": reply}, "no" if i % 2 == 0 else "yes", f))
