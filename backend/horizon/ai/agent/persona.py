@@ -4,6 +4,7 @@ D5, D7; persona-prompt spec).
 A pure function from one input object to the cached system message 1:
 - `# Who you are` and `# How you talk`: the card (P3), at most 1,500 tokens (P4, `count_tokens`);
 - `# Your world and the user`: the world, the You card and the relationship (P2, P3);
+- `# What you remember` (M13, memory D22): the character's ranked memory list, one line each; no memories, no block;
 - `# This session`: the mode block with its length line (P5; debate worded by doc 08 V4);
 - `# How to reply`: the rules (P6), the emoji line, doc 11 S2's standing lines and, for advisory characters, the
   advisory line. No emotion-tag instruction (P7) and no mature variant (S1).
@@ -121,13 +122,14 @@ class PersonaInput(_In):
     debate: DebateBlock | None = None
     turn_length: str | None = None
     content_rating: str = "sfw"
+    memories: list[str] = Field(default_factory=list)   # M13 (memory D22): the ranked list's lines, best first
 
 
 class PersonaPrompt(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     text: str
-    tokens: dict[str, int]          # card, world, session, rules, total
+    tokens: dict[str, int]          # card, world, session, rules, total; `memory` when the block is there (M13)
     cut: dict[str, Any]             # capped field paths, dropped list items, whether step 2 ran
 
 
@@ -315,6 +317,26 @@ def _world(inp: PersonaInput) -> str:
     return "\n".join(lines)
 
 
+MEMORY_HEADER = ("# What you remember (notes from earlier conversations; bring one up only when it fits the moment; "
+                 "never list them)")
+MEMORY_LINE_WORDS = 40
+_WS = re.compile(r"\s+")
+
+
+def memory_line(text: str) -> str:
+    """M13 (memory D22; doc 11 S6): one line, newline-collapsed so it can't start a fake heading, cut at 40 words."""
+    words = _WS.sub(" ", text).strip().split(" ")
+    return " ".join(words) if len(words) <= MEMORY_LINE_WORDS else " ".join(words[:MEMORY_LINE_WORDS]) + " …"
+
+
+def _memories(inp: PersonaInput) -> str | None:
+    """M13 (memory D22): the character's memory list, between the world and the session; none → no block."""
+    lines = [x for x in (memory_line(m) for m in inp.memories) if x]
+    if not lines:
+        return None
+    return "\n".join([MEMORY_HEADER, *(f"- {x}" for x in lines)])
+
+
 def _session(inp: PersonaInput) -> str:
     user = _user(inp)
     lines = ["# This session"]
@@ -415,15 +437,17 @@ def persona_input(ctx: TurnContext) -> PersonaInput:
         others=[CastMember(name=p.name, role=p.character_role) for p in others],
         premise=str(cfg.get("premise", "")), debate=debate,
         turn_length=str(cfg.get("turnLength")) if s.mode == "debate" and cfg.get("turnLength") else None,
-        content_rating=s.content_rating)
+        content_rating=s.content_rating, memories=[m.text for m in ctx.speaker.memories])
 
 
 def compile_persona(inp: PersonaInput) -> PersonaPrompt:
     card, cut = _card_within_limit(inp)
-    world, session, rules = _world(inp), _session(inp), _rules(inp)
-    text = "\n\n".join([card, world, session, rules])
+    world, memory, session, rules = _world(inp), _memories(inp), _session(inp), _rules(inp)
+    text = "\n\n".join([card, world, *([memory] if memory else []), session, rules])
     tokens = {"card": count_tokens(card), "world": count_tokens(world), "session": count_tokens(session),
               "rules": count_tokens(rules), "total": count_tokens(text)}
+    if memory:
+        tokens["memory"] = count_tokens(memory)
     return PersonaPrompt(text=text, tokens=tokens, cut=cut)
 
 

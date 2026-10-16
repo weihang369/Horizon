@@ -403,7 +403,9 @@ class MemoryRuns:
                 try:
                     commit = await rt.memory.apply_run(
                         piece.world_id, result.ops, session_id=sid, from_seq=piece.from_seq, upto_seq=piece.upto_seq,
-                        reread_done=piece.reread_ids, vectors=result.vectors, touched=result.touched)
+                        reread_done=piece.reread_ids, vectors=result.vectors, touched=result.touched,
+                        read_variants={ln.message_id: ln.variant_id for ln in piece.lines
+                                       if ln.reread and ln.variant_id})
                     break
                 except LostRace:
                     log.info("memory run for %s lost the checkpoint race; nothing written", sid)
@@ -423,7 +425,10 @@ class MemoryRuns:
         return "more" if len(pieces) > 1 else "done"
 
     def after_commit(self, world_id: str, characters: Sequence[str]) -> None:
-        """A live session holding one of these characters drops its cached memory list (phase 5, D23)."""
+        """A live session holding one of these characters drops its cached memory list (D23): two tabs, trigger 5."""
+        from horizon.services.memory.forget import drop_blocks
+
+        drop_blocks(self.rt, characters)
 
     async def _write(self, piece: Stretch, ctx: RunContext) -> WriterResult:
         writer = self.rt.ai.memory_writer(True)

@@ -31,7 +31,7 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import logging
-from collections.abc import AsyncIterator, Sequence
+from collections.abc import AsyncIterator, Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
@@ -120,7 +120,7 @@ class MemoryStore:
     async def apply_run(self, world_id: str, ops_by_character: dict[str, list[MemoryOp]], *, session_id: str,
                         from_seq: int, upto_seq: int, reread_done: Sequence[str] = (),
                         vectors: dict[str, dict[str, list[float]]] | None = None,
-                        touched: Sequence[str] = ()) -> RunCommit:
+                        touched: Sequence[str] = (), read_variants: Mapping[str, str] | None = None) -> RunCommit:
         """A pause run's commit (D10). The caller holds `run_locks` for every character in `ops_by_character`.
         `vectors`: draft text → {space id: vector} already computed (the duplicate check's), reused here. Raises
         `LostRace` when the checkpoint moved."""
@@ -157,7 +157,12 @@ class MemoryStore:
             if reread_done:
                 cur = (await conn.execute(select(t.sessions.c.memory_reread).where(
                     t.sessions.c.id == session_id))).scalar_one()
-                left = [i for i in (cur or []) if i not in set(reread_done)]
+                done = set(reread_done)
+                if read_variants:   # regenerated again during the run: its newer variant still waits (D20)
+                    now_active = await self._active_variants(conn, [MemoryDraft("fact", "x", 0.5, source_message_id=i)
+                                                                    for i in read_variants])
+                    done = {i for i in done if now_active.get(i, read_variants.get(i)) == read_variants.get(i)}
+                left = [i for i in (cur or []) if i not in done]
                 await conn.execute(update(t.sessions).where(t.sessions.c.id == session_id).values(memory_reread=left))
             active = await self._active_variants(conn, [d for ops in kept.values() for d in drafts_of(ops)])
             for cid, ops in kept.items():

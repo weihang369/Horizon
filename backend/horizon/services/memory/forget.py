@@ -9,7 +9,8 @@ In **one** writer transaction:
    `memory.recalled[].text` becomes `"(forgotten)"`, and any other copy of the text in that trace is replaced too.
    They are found through `trace_memory_refs` **and** a scan of the world's traces and insight events for the text
    itself (a trace written without refs is still caught, and logged);
-4. the refs go, and an `ai_purge_queue` row `{scope: "memory", ids: {memoryItemIds, characterId, messageIds}}` is queued.
+4. M13 (memory D21): the character's stored query rewrites in the world go (`message_ai_meta.rewrites[characterId]`);
+5. the refs go, and an `ai_purge_queue` row `{scope: "memory", ids: {memoryItemIds, characterId, messageIds}}` is queued.
 
 After the commit: `entity.changed { kind: "memory", id: characterId, worldId }`; each live session that holds an
 affected trace drops the text from its in-memory state (through its inbox: one writer per session); the purge worker is
@@ -104,8 +105,8 @@ async def forget_chain(rt: Runtime, conn: AsyncConnection, *, character_id: str,
             import sqlite_vec
 
             zero = sqlite_vec.serialize_float32([0.0] * space.dims)
-            await conn.execute(text(f"UPDATE {mem} SET embedding = :z WHERE rid IN ({','.join(map(str, rids))})"),
-                               {"z": zero})
+            for rid in rids:   # one row per statement: vec0 refuses `rid IN (…)` on a partitioned table
+                await conn.execute(text(f"UPDATE {mem} SET embedding = :z WHERE rid = :r"), {"z": zero, "r": rid})
     R = t.trace_memory_refs.c
     message_ids = set((await conn.execute(select(R.message_id).where(R.memory_item_id.in_(chain)))).scalars())
     sessions = await _world_sessions(conn, world_id)
@@ -136,6 +137,7 @@ async def forget_chain(rt: Runtime, conn: AsyncConnection, *, character_id: str,
             if changed:
                 await conn.execute(update(t.session_events).where(E.id == eid).values(payload=new))
     await conn.execute(delete(t.trace_memory_refs).where(R.memory_item_id.in_(chain)))
+    await clear_rewrites(conn, character_id, sessions)
     await conn.execute(delete(t.memory_items).where(M.id.in_(chain)))
     if not rt.fts_secure_delete:
         await fts.scrub_index(conn, "memory_fts")
@@ -144,6 +146,19 @@ async def forget_chain(rt: Runtime, conn: AsyncConnection, *, character_id: str,
                              "messageIds": sorted(message_ids)},
         created_at=rt.now_iso(), attempts=0, done_at=None))
     return message_ids, texts
+
+
+async def clear_rewrites(conn: AsyncConnection, character_id: str, sessions: list[str]) -> None:
+    """M13 (memory D21): the character's stored query rewrites in this world go. Under `agent` a rewrite's request is
+    the speaker's cached prefix, which holds the memory list, so a stored rewrite may carry a forgotten line's words; a
+    regenerate then pays one new rewrite."""
+    if not sessions:
+        return
+    path = "$." + json.dumps(character_id)
+    await conn.execute(text(
+        "UPDATE message_ai_meta SET rewrites = json_remove(rewrites, :p) WHERE json_extract(rewrites, :p) IS NOT NULL "
+        "AND message_id IN (SELECT id FROM messages WHERE session_id IN (SELECT id FROM sessions WHERE world_id = "
+        "(SELECT world_id FROM sessions WHERE id = :s)))"), {"p": path, "s": sessions[0]})
 
 
 async def forget(rt: Runtime, memory_id: str) -> None:
@@ -163,11 +178,14 @@ async def forget(rt: Runtime, memory_id: str) -> None:
             message_ids, texts = await forget_chain(rt, conn, character_id=character_id, world_id=world_id,
                                                     chain=chain)
             tx.publish(GLOBAL, {"type": "entity.changed", "kind": "memory", "id": character_id, "worldId": world_id})
-        await after_forget(rt, chain, message_ids, texts)
+        await after_forget(rt, chain, message_ids, texts, characters=[character_id])
 
 
-async def after_forget(rt: Runtime, chain: set[str], message_ids: set[str], texts: list[str]) -> None:
-    """Live sessions drop the text from memory, the purge worker wakes, and the WAL is truncated (D16)."""
+async def after_forget(rt: Runtime, chain: set[str], message_ids: set[str], texts: list[str],
+                       characters: Iterable[str] = ()) -> None:
+    """Live sessions drop the text from memory, the purge worker wakes, and the WAL is truncated (D16). M13 (memory
+    D23): live sessions holding these characters drop their frozen memory lists; the next turn reads them again."""
+    drop_blocks(rt, characters)
     if message_ids:
         async with rt.db.read() as conn:
             sids = set((await conn.execute(select(t.messages.c.session_id).where(t.messages.c.id.in_(message_ids))))
@@ -178,6 +196,27 @@ async def after_forget(rt: Runtime, chain: set[str], message_ids: set[str], text
                 actor.post(_scrub_actor(actor, chain, message_ids, texts))
     rt.purge.notify()
     await rt.db.checkpoint_truncate()
+
+
+def drop_blocks(rt: Runtime, characters: Iterable[str]) -> None:
+    """M13 (memory D23): through each live actor's inbox (one writer per session), drop the cached memory list of these
+    characters; one cache miss on the next turn."""
+    wanted = set(characters)
+    if not wanted or rt._sessions is None:
+        return
+    for actor in list(rt.sessions.actors.values()):
+        held = wanted & {p["characterId"] for p in actor.session.get("participants", [])}
+        if held:
+            actor.post(_drop(actor, held))
+
+
+def _drop(actor: Any, held: set[str]) -> Any:
+    async def run() -> None:
+        for cid in held:
+            actor.memory_blocks.pop(cid, None)
+            actor.memory_overflow.pop(cid, None)
+            actor.memory_gen[cid] = actor.memory_gen.get(cid, 0) + 1
+    return run
 
 
 def _scrub_actor(actor: Any, chain: set[str], message_ids: set[str], texts: list[str]) -> Any:

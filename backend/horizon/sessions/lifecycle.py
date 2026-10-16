@@ -245,7 +245,10 @@ async def delete_session(rt: Runtime, sid: str) -> None:
         await rt.sessions.release(sid, actor)
     rt.memory_runs.cancel(session=sid)   # M13 (memory D8): its pause run writes nothing
     await rt.gateway.drain_background()
+    from horizon.services.memory.index import follow_session_delete
+
     async with rt.db.write() as tx:
+        await follow_session_delete(tx.conn, sid)   # M13 (memory D29): the line vectors are zeroed before the cascade
         await tx.conn.execute(delete(t.sessions).where(t.sessions.c.id == sid))
         await tx.conn.execute(t.ai_purge_queue.insert().values(scope="session", ids=[sid], created_at=rt.now_iso(),
                                                                attempts=0, done_at=None))
@@ -304,6 +307,14 @@ async def fork(rt: Runtime, sid: str, at_seq: int | None) -> Wire:
             if meta:
                 await tx.conn.execute(t.message_ai_meta.insert(), [
                     {"message_id": ids[r[0]], "rewrites": r[1], "updated_at": r[2]} for r in meta])
+            # M13 (memory D29; doc 09 M2): the copied messages' indexed lines and vectors come with them (no new
+            # embedding), and the fork's checkpoint starts at the copied messages' highest seq
+            from horizon.services.memory.index import follow_fork
+
+            await follow_fork(tx.conn, sid, new_sid, ids)
+        if messages:
+            await tx.conn.execute(update(t.sessions).where(t.sessions.c.id == new_sid).values(
+                memory_seq=max(int(m["seq"]) for m in messages)))
         tx.publish(GLOBAL, {"type": "entity.changed", "kind": "session", "id": new_sid, "worldId": session["worldId"]})
     actor = await manager.get(new_sid)
     multi = session["mode"] in ("debate", "watch")

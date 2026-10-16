@@ -211,7 +211,7 @@
 
 ## 4. The undo and Forget (D20, D21)
 
-- [ ] 4.1 Add the undo at Regenerate and Continue (D20), before streaming, for messages with `seq ≤ memory_seq`:
+- [x] 4.1 Add the undo at Regenerate and Continue (D20), before streaming, for messages with `seq ≤ memory_seq`:
   - remove still-current derived memories through the Forget path;
   - restore their predecessors;
   - add the message to `memory_reread`.
@@ -220,46 +220,46 @@
   - B replaced A, regenerate: B is gone and A is current;
   - the next run reads the new variant;
   - the checkpoint is unmoved.
-- [ ] 4.2 Switch `_forget_derived` to the undo. Verify: session-runtime's "Blocked regenerate keeps older memories"
+- [x] 4.2 Switch `_forget_derived` to the undo. Verify: session-runtime's "Blocked regenerate keeps older memories"
   scenario, with a forced block.
-- [ ] 4.3 Make Forget clear the character's stored rewrites in the world (D21), in the same transaction, for a user
+- [x] 4.3 Make Forget clear the character's stored rewrites in the world (D21), in the same transaction, for a user
   Forget, the undo and the blocked-reply undo. Verify with tests: no `rewrites[characterId]` remains in that world
   after a Forget, and a regenerate then makes a new `query_rewrite` call.
-- [ ] 4.4 Run the undo storms: a regenerate during a run, and Forget during a run. Verify: green.
+- [x] 4.4 Run the undo storms: a regenerate during a run, and Forget during a run. Verify: green.
 
 ## 5. The memory list and the greeting (D22–D25)
 
-- [ ] 5.1 Build the block reader (D22):
+- [x] 5.1 Build the block reader (D22):
   - current memories ranked importance × recency × mode weight, filled to 1,000 tokens;
   - each line cut at 40 words and newline-collapsed, with ties by newer then id;
   - an overflow flag.
 
   Add `CharacterView.memories`, filled by the runtime for `agent` speakers. Verify: ranking, budget, tie and collapse
   unit tests.
-- [ ] 5.2 Put "# What you remember" between the world and session blocks in `compile_persona`. Add `memories` to the
+- [x] 5.2 Put "# What you remember" between the world and session blocks in `compile_persona`. Add `memories` to the
   TS twin and new shared persona fixtures (a block, empty, the 40-word cut, a newline). Verify: the fixtures pass
   byte for byte in both languages; with no memories the bytes equal today's; the wizard preview passes none.
-- [ ] 5.3 Freeze the block per sitting (D23): `actor.memory_blocks`, dropped by Forget's actor scrub and by
+- [x] 5.3 Freeze the block per sitting (D23): `actor.memory_blocks`, dropped by Forget's actor scrub and by
   `apply_run`'s post to live actors sharing the character. Verify the D23 proof test: 5 turns are byte-identical;
   after a Forget the next turn lacks the line; the turn after is identical again. A second-tab test covers a commit.
-- [ ] 5.4 Put the block in the trace and the budget (D24):
+- [x] 5.4 Put the block in the trace and the budget (D24):
   - `memory.recalled` without a score, plus `trace_memory_refs`;
   - `context.used.memory` from the compile;
   - `planned_input` gains `memory.blockTokens`.
 
   Verify: a trace test, and a Forget test that scrubs a block line from a stored trace.
-- [ ] 5.5 Build the greeting (D25): a generated 1:1 greeting's tail gains ≤ 2 newest memories from the last 1:1
+- [x] 5.5 Build the greeting (D25): a generated 1:1 greeting's tail gains ≤ 2 newest memories from the last 1:1
   session and the cue sentence, with no wait; the first chat is unchanged. Verify: persona-prompt's "Second chat"
   scenario, and a first-chat test.
-- [ ] 5.6 Run the block-refresh storm: a Forget refresh posted while a turn builds its view. Verify: green, and no
+- [x] 5.6 Run the block-refresh storm: a Forget refresh posted while a turn builds its view. Verify: green, and no
   half-built block.
 
 ## 6. Recall's indexing (D29)
 
-- [ ] 6.1 Hook `SummaryTask._write` (the DeepSeek summary and the fallback) to index the newly dropped user and
+- [x] 6.1 Hook `SummaryTask._write` (the DeepSeek summary and the fallback) to index the newly dropped user and
   character lines (active, complete) as `message_index` rows with `"Name: text"`. Verify: session-recall's "A drop is
   indexed once" scenario, with notes and directions excluded.
-- [ ] 6.2 Add the batch embedding of a drop:
+- [x] 6.2 Add the batch embedding of a drop:
   - one call, active space, `embed_doc`, `pauses_sessions=False`, never stored, key only;
   - it runs as the summary task's continuation.
 
@@ -268,14 +268,14 @@
   - no store entry;
   - with no key the lines are keyword-only;
   - Stop doesn't cancel it, and a delete does.
-- [ ] 6.3 Make indexed lines follow their messages:
+- [x] 6.3 Make indexed lines follow their messages:
   - regenerate updates the row's text and re-embeds;
   - a blocked scrub zeroes, then deletes;
   - a session delete zeroes the session's vectors, then the cascade deletes;
   - fork copies rows and vectors under new ids and sets `memory_seq` to the copied max.
 
   Verify: the session-recall, session-lifecycle and data-storage scenarios, including "Fork copies without paying".
-- [ ] 6.4 Run the indexing storm: cancel mid-write of the rows and vectors. Verify: green, with no partial rows.
+- [x] 6.4 Run the indexing storm: cancel mid-write of the rows and vectors. Verify: green, with no partial rows.
 
 ## 7. Recall (D26–D36)
 

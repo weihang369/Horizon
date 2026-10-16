@@ -118,6 +118,7 @@ class AiDeps:
     spawn: Callable[[str, Any], Any] | None = None             # M12: the runtime's tracked spawn (a late call still lands)
     retrieval: Callable[[], Any] = lambda: None               # M12: `runtime.retrieval` (the agent knobs)
     deep_io: Callable[[], Any] = lambda: None                 # M12 (rag D15): the runtime's reads for the deep work
+    memory_block_tokens: Callable[[], int] = lambda: 1000     # M13 (memory D24): `memory.blockTokens`
 
 
 def emotion_candidates(chosen: str, rng: random.Random) -> list[dict[str, Any]]:

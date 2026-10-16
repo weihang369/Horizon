@@ -110,5 +110,7 @@ async def retrieve(rt: Runtime, actor: SessionActor, sctx: SessionContext, chara
     bundle = QueryBundle(text=query, vectors=vectors)
     k = rt.runtime_cfg.runtime.retrieval
     knowledge = await rt.ai.knowledge_retriever(key_set).retrieve(index, bundle, k.knowledge_k)
-    memory = await rt.ai.memory_retriever(key_set).recall(index, bundle, k.memory_k)
+    # M13 (memory D22): an `agent` speaker carries its memory list in system message 1; the tail recall is naive's
+    agent = rt.ai.impl("turn", key_set=key_set) == "agent"
+    memory = [] if agent else await rt.ai.memory_retriever(key_set).recall(index, bundle, k.memory_k)
     return Retrieved(query=query, knowledge=list(knowledge), memory=list(memory), calls=calls)

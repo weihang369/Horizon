@@ -664,8 +664,9 @@ nurse Ipoh shift").
   Recall's hits add theirs **with** a score (D35).
 - **`context.used.memory`** counts the block plus recall's memory hits. The agent trace patch reads the block's
   tokens from the persona compile instead of the tail block.
-- **`planned_input`** (`agent/budget.py`) adds `memory.blockTokens` to every mode's planned system budget (X1), so the
-  context bar's denominator stays honest.
+- **`planned_input`** (`agent/budget.py`) takes `memory.blockTokens` into every mode's planned system budget (X1), so
+  the context bar's denominator stays honest. *Built:* X1's fixed-blocks cap (1,720) already held the list's 1,000
+  tokens, so the knob replaces that share instead of adding to it: the default total stays 11,680 for 1:1.
 
 ### D25. The greeting (doc 09 M10)
 

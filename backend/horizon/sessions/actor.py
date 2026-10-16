@@ -120,6 +120,10 @@ class SessionActor:
         self._superseded: asyncio.Future[None] = asyncio.get_running_loop().create_future()
         self.stopped = False
         self.summary: Any = None   # M8: sessions.summary.SummaryTask, made on first use (docs/ai/05 X2, X3)
+        # M13 (memory D23): each `agent` speaker's memory list, frozen for the sitting; Forget and a run's commit drop it
+        self.memory_blocks: dict[str, list[Any]] = {}
+        self.memory_overflow: dict[str, bool] = {}
+        self.memory_gen: dict[str, int] = {}   # bumped by each drop, so a read that raced one is never cached
 
     # ── views ──
     @property

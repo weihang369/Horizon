@@ -130,6 +130,9 @@ def reply_prefix(ctx: TurnContext) -> tuple[list[dict[str, Any]], list[dict[str,
     return prefix, render_merged(s.recent, ctx.speaker.id, you), you
 
 
+LAST_TIME_CUE = "If something from last time fits, you may mention it in a short phrase."   # M13 (memory D25)
+
+
 class AgentTurnEngine(NaiveTurnEngine):
     name = "agent"
     version = "2"   # M9: the face comes from the plan (turn-plan-emotion D14)
@@ -192,7 +195,10 @@ class AgentTurnEngine(NaiveTurnEngine):
         if ctx.line.kind == "greeting":
             stored = str(ctx.speaker.profile.get("greeting") or "").strip()
             base = "Open the conversation with a short, warm greeting in character."
-            return f"{base} Don't reuse your usual greeting: '{stored}'." if stored else base
+            cue = f"{base} Don't reuse your usual greeting: '{stored}'." if stored else base
+            if ctx.line.last_time:   # M13 (memory D25; doc 09 M10): the newest memories from the last 1:1
+                cue = "\n".join([f"{cue} {LAST_TIME_CUE}", "From last time:", *(f"- {x}" for x in ctx.line.last_time)])
+            return cue
         debate = self.debate_line(ctx)
         if debate is not None:
             return debate
@@ -267,13 +273,14 @@ class AgentTurnEngine(NaiveTurnEngine):
         latest = next((clip(m.content) for m in reversed(ctx.session.recent) if m.author_type == "user"), "")
         user = count_tokens(latest) if latest else 0
         block_tokens = count_tokens(block.content) if block is not None and block.content else 0
-        memory = count_tokens(block.memory_text) if block is not None and block.memory_text else 0
+        tail_memory = count_tokens(block.memory_text) if block is not None and block.memory_text else 0
+        memory = t.get("memory", 0) + tail_memory   # M13 (memory D24): the list in system message 1, plus recall
         mode_tail = max(0, count_tokens(tail) - block_tokens) if tail else 0
         patch: dict[str, Any] = {"context": {
-            "budget": planned_input(ctx.session.mode, self.deps.windows()),
+            "budget": planned_input(ctx.session.mode, self.deps.windows(), self.deps.memory_block_tokens()),
             "used": {"persona": t["card"], "system": t["world"] + t["rules"], "mode": t["session"] + mode_tail,
                      "history": summary + max(0, history - user), "user": user, "memory": memory,
-                     "knowledge": max(0, block_tokens - memory)}}}
+                     "knowledge": max(0, block_tokens - tail_memory)}}}
         if chosen is not None:
             patch["emotion"] = {"chosen": chosen.emotion, "source": chosen.source}
             face = ctx.plan.emotion if ctx.plan is not None else None
@@ -286,4 +293,7 @@ class AgentTurnEngine(NaiveTurnEngine):
             mem = block.memory_trace()
             if mem is not None:
                 patch["memory"] = mem
+        if ctx.speaker.memories:   # M13 (memory D24): what the model was given, with no score; recall's hits follow
+            listed = [{"memoryItemId": m.id, "text": m.text} for m in ctx.speaker.memories]
+            patch["memory"] = {"recalled": [*listed, *((patch.get("memory") or {}).get("recalled") or [])]}
         return patch

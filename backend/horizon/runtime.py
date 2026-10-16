@@ -341,6 +341,7 @@ class Runtime:
                       system1_row=lambda qid, answer: fixture_row(self.cfg.seed_dir, qid, answer),
                       switch=lambda name: self.runtime_cfg.runtime.switch(name),
                       windows=lambda: self.runtime_cfg.runtime.window_tokens.as_dict(),
+                      memory_block_tokens=lambda: int(self.runtime_cfg.runtime.memory.block_tokens),
                       emotion_fade=lambda: self.runtime_cfg.runtime.emotion_fade, spawn=self.spawn,
                       retrieval=lambda: self.runtime_cfg.runtime.retrieval, deep_io=lambda: self.deep_io)
         self._ai = AiPorts(deps, self.profile)

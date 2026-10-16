@@ -27,7 +27,7 @@ from horizon.domain.timeutil import to_ms
 from horizon.domain.vclock import Inbox
 from horizon.gateway.errors import ProviderError
 from horizon.gateway.pipeline import RECORDED_SINK
-from horizon.sessions.context import character_view, characters, reply_cap, session_context
+from horizon.sessions.context import characters, reply_cap, session_context, speaker_view
 
 if TYPE_CHECKING:
     from horizon.sessions.actor import SessionActor
@@ -64,7 +64,7 @@ class Prefetch:
         sctx = await session_context(rt, actor)
         plan = spec.plan
         if plan_with is not None:
-            ctx = TurnContext(session=sctx, speaker=character_view(row), message_id=None, prompt=spec.prompt,
+            ctx = TurnContext(session=sctx, speaker=await speaker_view(rt, actor, row), message_id=None, prompt=spec.prompt,
                               line=spec.line, turn_index=actor.mode.turn, max_tokens=reply_cap(rt, sctx),
                               direction_note=spec.direction_note, debate=spec.debate)
         elif plan is not None and plan.branch is not None:
@@ -74,7 +74,7 @@ class Prefetch:
             from horizon.sessions.deep import attach
 
             await attach(actor, spec, sctx)
-            ctx = TurnContext(session=sctx, speaker=character_view(row), message_id=None, prompt=spec.prompt,
+            ctx = TurnContext(session=sctx, speaker=await speaker_view(rt, actor, row), message_id=None, prompt=spec.prompt,
                               line=spec.line, turn_index=actor.mode.turn, max_tokens=reply_cap(rt, sctx, plan),
                               direction_note=spec.direction_note, debate=spec.debate, plan=plan)
         else:
@@ -82,7 +82,7 @@ class Prefetch:
 
             got = await retrieve(rt, actor, sctx, spec.speaker, spec.prompt)   # M5: retrieved at prefetch time (D10)
             spec.calls.extend(got.calls)
-            ctx = TurnContext(session=sctx, speaker=character_view(row), message_id=None, prompt=spec.prompt,
+            ctx = TurnContext(session=sctx, speaker=await speaker_view(rt, actor, row), message_id=None, prompt=spec.prompt,
                               line=spec.line, turn_index=actor.mode.turn,
                               max_tokens=reply_cap(rt, sctx),   # after retrieval, as for a live turn (design D14)
                               direction_note=spec.direction_note, debate=spec.debate, knowledge=got.knowledge,

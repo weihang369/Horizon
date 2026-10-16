@@ -29,12 +29,22 @@ class WorldView(Frozen):
     you: dict[str, Any] | None = None
 
 
+class MemoryLine(Frozen):
+    """M13 (memory D22): one line of a character's memory list, as system message 1 shows it."""
+
+    id: str
+    kind: str
+    text: str
+
+
 class CharacterView(Frozen):
     id: str
     name: str
     profile: dict[str, Any]
     appearance_summary: str = ""    # M8 (doc 04 P3): the "Looks" line, so self-descriptions match the portrait
     advisory: bool = False          # M8 (doc 11 S2): advisory characters get the advisory line
+    # M13 (memory D22, D23): an `agent` speaker's memory list, best first, frozen for the sitting (empty otherwise)
+    memories: list[MemoryLine] = []
 
     @property
     def first_name(self) -> str:
@@ -98,6 +108,7 @@ class LineHint(Frozen):
     text: str | None = None
     emotion: str | None = None
     verbatim: bool = False          # M8 (docs/ai/04 P9): say `text` word for word, with no model call
+    last_time: list[str] = []       # M13 (memory D25): a generated greeting's ≤ 2 newest memories from the last 1:1
 
 
 class DebateLine(Frozen):

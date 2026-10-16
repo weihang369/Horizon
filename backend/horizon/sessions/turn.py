@@ -46,6 +46,7 @@ from horizon.sessions.context import (
     energy_of,
     reply_cap,
     session_context,
+    speaker_view,
 )
 from horizon.sessions.prefetch import Prefetch
 from horizon.sessions.retrieve import retrieve
@@ -214,12 +215,12 @@ class TurnRunner:
             if plan is not None and plan.rewrite and plan.rewrite_for:   # M12 (D19): its own small write
                 await self._store_rewrite(plan.rewrite_for, spec.speaker, plan.rewrite)
             if spec.line.verbatim:   # M8 (docs/ai/04 P9, persona-context D19): no retrieval, no model call
-                ctx = TurnContext(session=sctx, speaker=character_view(row), message_id=mid, variant_id=vid,
+                ctx = TurnContext(session=sctx, speaker=await speaker_view(rt, actor, row), message_id=mid, variant_id=vid,
                                   prompt=spec.prompt, line=spec.line, turn_index=actor.mode.turn, max_tokens=1)
             elif plan is not None and plan.branch is not None:   # D9: the plan decided retrieval (M9: always quick)
                 spec.calls.extend(plan.calls)
                 spec.system1 = system1_section(spec.system1, plan.rows, seed=plan.seed)
-                ctx = TurnContext(session=sctx, speaker=character_view(row), message_id=mid, variant_id=vid,
+                ctx = TurnContext(session=sctx, speaker=await speaker_view(rt, actor, row), message_id=mid, variant_id=vid,
                                   prompt=spec.prompt, line=spec.line, turn_index=actor.mode.turn,
                                   max_tokens=reply_cap(rt, sctx, plan), direction_note=spec.direction_note,
                                   debate=spec.debate, plan=plan,
@@ -232,7 +233,7 @@ class TurnRunner:
                     spec.system1 = system1_section(spec.system1, plan.rows, seed=plan.seed)
                 got = await retrieve(rt, actor, sctx, spec.speaker, spec.prompt)   # M5 design D10: the speaker's scope
                 spec.calls.extend(got.calls)
-                ctx = TurnContext(session=sctx, speaker=character_view(row), message_id=mid, variant_id=vid,
+                ctx = TurnContext(session=sctx, speaker=await speaker_view(rt, actor, row), message_id=mid, variant_id=vid,
                                   prompt=spec.prompt, line=spec.line, turn_index=actor.mode.turn,
                                   max_tokens=reply_cap(rt, sctx),   # after retrieval and the (M9) plan: design D14
                                   direction_note=spec.direction_note, debate=spec.debate, knowledge=got.knowledge,
@@ -611,27 +612,19 @@ class TurnRunner:
                 await tx.conn.execute(update(t.messages).where(t.messages.c.id == info.message_id).values(
                     content=row["content"], variants=row["variants"]))
             await self._forget_derived(tx.conn, actor, info.message_id)
+            from horizon.services.memory.index import follow_blocked
+
+            await follow_blocked(tx.conn, info.message_id)   # M13 (memory D29): its indexed line goes too
 
         return scrub
 
     async def _forget_derived(self, conn: Any, actor: SessionActor, message_id: str) -> None:
-        """A blocked reply leaves no memory (session-runtime "A blocked reply is scrubbed", closes M3 OQ-8): any memory
-        whose source is that message is forgotten, in the scrub's transaction, the way a user Forget does it."""
-        from sqlalchemy import select
+        """A blocked reply leaves no memory (session-runtime "A blocked reply is scrubbed", closes M3 OQ-8). M13 (memory
+        D20): the still-current memories sourced from it are undone, in the scrub's transaction, and what they
+        superseded is current again, so a blocked new variant can't destroy older memories that were only superseded."""
+        from horizon.services.memory.undo import undo_derived
 
-        from horizon.db import tables as t
-        from horizon.services.memory.forget import chain_of, forget_chain
-
-        M = t.memory_items.c
-        derived = (await conn.execute(select(M.id, M.character_id, M.world_id).where(M.source_message_id == message_id))).all()
-        done: set[str] = set()
-        for mem_id, character_id, world_id in derived:
-            if mem_id in done:
-                continue
-            items = (await conn.execute(select(M.id, M.superseded_by).where(M.character_id == character_id))).all()
-            chain = chain_of(str(mem_id), [(str(a), b) for a, b in items])
-            done |= chain
-            await forget_chain(self.rt, conn, character_id=str(character_id), world_id=str(world_id), chain=chain)
+        await undo_derived(self.rt, conn, message_id)
 
     # ── Stop ──
     async def close_interrupted(self, actor: SessionActor, info: TurnInfo, *, by: str = "user") -> None:

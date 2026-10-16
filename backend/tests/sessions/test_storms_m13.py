@@ -28,12 +28,8 @@ from tests.sessions.kit import API, command, create
 
 AMARA, MERIDIAN = "chr_seedAmara", "wld_seedMeridian"
 
-PATHS = [
-    ("Forget during a run", 4),
-    ("a regenerate during a run, and the undo before it streams", 4),
-    ("the window-drop indexing mid-write", 6),
+PATHS = [   # built: phase 4's in test_memory_undo_m13.py, 5's in test_memory_block_m13.py, 6's in test_memory_index_m13.py
     ("recall's search and Jev call 2 on Stop", 7),
-    ("the memory block's refresh through the actor inbox", 5),
 ]
 
 
