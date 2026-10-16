@@ -1,9 +1,9 @@
 """FTS5 secure-delete state (knowledge-memory-storage design D16).
 
-Migration 0002 turns on FTS5 `secure-delete` for `memory_fts` and `knowledge_fts` when the SQLite library supports it
-(>= 3.44). A delete then removes the row's terms from the index segments. Startup records whether it is on; when it
-isn't (an older library), Forget calls `scrub_index()` after its delete, which merges the segments and drops the
-tombstoned terms (cost: O(index size), small for memories).
+Migrations 0002 and 0005 turn on FTS5 `secure-delete` for `memory_fts`, `knowledge_fts` and `message_fts` when the
+SQLite library supports it (>= 3.44). A delete then removes the row's terms from the index segments. Startup records
+whether it is on; when it isn't (an older library), Forget calls `scrub_index()` after its delete, which merges the
+segments and drops the tombstoned terms (cost: O(index size), small for memories).
 """
 
 from __future__ import annotations
@@ -11,7 +11,7 @@ from __future__ import annotations
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncConnection
 
-FTS_TABLES = ("memory_fts", "knowledge_fts")
+FTS_TABLES = ("memory_fts", "knowledge_fts", "message_fts")   # M13: migration 0005 adds recall's index
 
 
 async def secure_delete_active(conn: AsyncConnection, table: str = "memory_fts") -> bool:

@@ -11,7 +11,8 @@ per character"; knowledge-memory-storage design D17).
 3. embeds the new texts **before** taking the writer lock, for every non-retired space, only with a key; an embedding
    failure leaves the items FTS-only (memory recall is FTS in M5);
 4. applies everything in **one** transaction: rows (FTS by trigger), vectors, `superseded_by`, `importance`,
-   `last_recalled_at`/`recall_count`; then announces `entity.changed { kind: "memory", id: characterId, worldId }`.
+   `last_recalled_at`/`recall_count` (M13: `Reinforce` refreshes `last_recalled_at` too); then announces
+   `entity.changed { kind: "memory", id: characterId, worldId }`.
 """
 
 from __future__ import annotations
@@ -169,8 +170,9 @@ class MemoryStore:
                     created.append(mid)
                     if isinstance(op, Supersede):
                         await conn.execute(update(t.memory_items).where(M.id.in_(op.old_ids)).values(superseded_by=mid))
-                elif isinstance(op, Reinforce):
-                    await conn.execute(update(t.memory_items).where(M.id == op.id).values(importance=float(op.importance)))
+                elif isinstance(op, Reinforce):   # M13 (doc 09 M4): a confirmed fact is fresh again in the ranking
+                    await conn.execute(update(t.memory_items).where(M.id == op.id).values(
+                        importance=float(op.importance), last_recalled_at=now))
                 elif isinstance(op, Touch):
                     await conn.execute(update(t.memory_items).where(M.id.in_(op.ids)).values(
                         last_recalled_at=now, recall_count=M.recall_count + 1))

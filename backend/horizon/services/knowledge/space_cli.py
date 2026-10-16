@@ -52,9 +52,10 @@ async def _run(cfg: Config, spec: SpaceSpec, yes: bool, ask: Callable[[str], str
         plan = await plan_build(rt, spec)
         period = rt.clock.pricing_period()
         out(f"horizon: build {spec.id} (from {active.id})")
-        out(f"  embed {plan.chunks} passages and {plan.memories} memories: {plan.tokens:,} tokens, "
-            f"about ${plan.cost_usd:.6f} ({period} prices)")
-        out(f"  copy {plan.copy_chunks} passage and {plan.copy_memories} memory vectors (no request, no cost)")
+        out(f"  embed {plan.chunks} passages, {plan.memories} memories and {plan.messages} earlier lines: "
+            f"{plan.tokens:,} tokens, about ${plan.cost_usd:.6f} ({period} prices)")
+        out(f"  copy {plan.copy_chunks} passage, {plan.copy_memories} memory and {plan.copy_messages} line vectors "
+            f"(no request, no cost)")
         if not yes:
             if ask is None and not sys.stdin.isatty():
                 out("horizon: nothing was spent. Re-run with --yes to confirm the build.")
@@ -67,8 +68,9 @@ async def _run(cfg: Config, spec: SpaceSpec, yes: bool, ask: Callable[[str], str
             out("horizon: an OpenRouter key is needed to build an embedding space. Set one in Settings first.")
             return 2
         report = await build_space(rt, spec)
-        out(f"horizon: {spec.id} is active ({report.chunks} passages and {report.memories} memories embedded; "
-            f"{report.copied_chunks} and {report.copied_memories} copied)")
+        out(f"horizon: {spec.id} is active ({report.chunks} passages, {report.memories} memories and "
+            f"{report.messages} earlier lines embedded; {report.copied_chunks}, {report.copied_memories} and "
+            f"{report.copied_messages} copied)")
         return 0
     finally:
         await rt.stop()

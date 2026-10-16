@@ -83,6 +83,21 @@ async def test_reinforce_and_touch(api: Api) -> None:
     assert r["importance"] == pytest.approx(0.95) and r["recall_count"] == 2 and r["last_recalled_at"]
 
 
+async def test_reinforce_alone_refreshes_last_recalled(api: Api) -> None:
+    """memory 1.3 (doc 09 M4): a confirm becomes `Reinforce`, which also sets `last_recalled_at`, so a fact the user
+    keeps confirming stays fresh in the memory list's ranking; the recall count is left to `Touch`."""
+    [a] = await api.rt.memory.apply(HANA, SUNNY, [Insert(draft("Hana closes the shop on Mondays."))])
+    async with api.rt.db.read() as conn:
+        before = (await conn.execute(text("SELECT last_recalled_at FROM memory_items WHERE id = :i"),
+                                     {"i": a})).scalar_one()
+    assert before is None
+    await api.rt.memory.apply(HANA, SUNNY, [Reinforce(a, 0.7)])
+    async with api.rt.db.read() as conn:
+        r = (await conn.execute(text("SELECT importance, recall_count, last_recalled_at FROM memory_items WHERE id = :i"),
+                                {"i": a})).mappings().one()
+    assert r["importance"] == pytest.approx(0.7) and r["recall_count"] == 0 and r["last_recalled_at"]
+
+
 async def test_two_sessions_at_once_apply_one_after_the_other(api: Api) -> None:
     [a] = await api.rt.memory.apply(HANA, SUNNY, [Insert(draft("Hana's favourite tea is sencha."))])
     results = await asyncio.gather(
