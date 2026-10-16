@@ -53,6 +53,12 @@ export interface RecallKnobs {
   fallbackKeep: number;
   /** Each recall check's deadline from when it was sent. */
   checkMs: number;
+  /** M13 phase 10: the session's lines are searched by vector only (BM25 only when the message has no vector). */
+  linesDense: boolean;
+  /** M13 phase 10: when nothing reaches `t_recall`, the top candidate is kept if its p ≥ `standoutP` … */
+  standoutP: number;
+  /** … and at least `standoutRatio` × the runner-up's p. */
+  standoutRatio: number;
   /** Both recall headings in the tail together. */
   tailTokens: number;
   /** A line hit and the message before it, each at most this many words. */
@@ -150,7 +156,7 @@ export const RUNTIME: RuntimeConfig = {
       pieceTarget: 300, pieceMax: 400, rewriteMs: 1200, deepCheckMs: 1500, queryEmbedWaitMs: 200,
       // M13 (memory D42): recall's numbers, tuned in phase 10
       recall: { pool: 10, perCorpus: 5, candidates: 6, mmrLambda: 0.7, keep: 3, fallbackKeep: 2, checkMs: 1500,
-        tailTokens: 400, lineWords: 60 },
+        tailTokens: 400, lineWords: 60, linesDense: true, standoutP: 0.25, standoutRatio: 3 },
     },
   },
   persona: { repeatHint: false, moodLine: false },

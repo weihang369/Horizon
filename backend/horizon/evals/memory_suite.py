@@ -182,8 +182,8 @@ def compare_report(base_dev: Path, arm_dev: Path) -> list[str]:
         raise ValueError(f"{arm_dev}: not an arm run (the default run comes first)")
     bd, ad = ([r for r in rows if r.get("part") == "recall" and not r.get("listed")] for rows in (bd, ad))
     metric = ARM_FOCUS[name.partition("=")[0]]
-    out = [f"## Comparison: `{name}` against the default (K3's rule: ≥ {R.WIN_GAIN * 100:.0f} points of {metric} on "
-           "dev with a paired bootstrap interval above 0, then test ≥ 0)"]
+    out = [f"## Comparison: `{name}` against the default (K3's rule: >= {R.WIN_GAIN * 100:.0f} points of {metric} on "
+           "dev with a paired bootstrap interval above 0, then test >= 0)"]
     for kind in ("in_session", "overflow"):
         dev = R.paired(bd, ad, metric, (kind,), "dev")
         test = R.paired(bd, ad, metric, (kind,), "test") or None
@@ -697,17 +697,7 @@ async def load_transcript(env: RunEnv, name: str) -> Scene:
                  earlier=earlier)
 
 
-class _DenseOnly:
-    """A corpus with its keyword search switched off (the `search=dense` arm)."""
-
-    def __init__(self, inner: Any) -> None:
-        self.inner = inner
-
-    async def fts(self, query: str, limit: int) -> list[Any]:
-        return []
-
-    def __getattr__(self, name: str) -> Any:
-        return getattr(self.inner, name)
+_DenseOnly = rc.DenseOnly   # the `search=dense` arm switches both corpora's keyword search off
 
 
 class _ArmIO:
@@ -878,6 +868,19 @@ def duplicates(texts: Sequence[str]) -> int:
     return n
 
 
+RECENT_LINES = 4
+NO_RECENT = "(no earlier lines)"
+
+
+def recent_before(turns: Sequence[Mapping[str, Any]], index: int, name: str, n: int = RECENT_LINES) -> str:
+    """The session's last `n` lines before turn `index` ("Kai: …", "Name: …"), as judge_over_mention v2 sees them."""
+    lines: list[str] = []
+    for tn in turns[:index]:
+        lines.append(f"{USER}: {tn['text']}")
+        lines += [f"{name}: {r['text']}" for r in tn.get("replies") or []]
+    return "\n".join(lines[-n:]) or NO_RECENT
+
+
 async def layer3_pair(env: RunEnv, pair: Mapping[str, Any]) -> dict[str, Any]:
     from horizon.evals.content import drive
 
@@ -899,7 +902,8 @@ async def layer3_pair(env: RunEnv, pair: Mapping[str, Any]) -> dict[str, Any]:
     memories = "\n".join(x for _i, x, _s in mems) or "(nothing)"
     probe_fail: list[bool | None] = []
     over: list[bool | None] = []
-    for tn in turns:
+    name = str((await character_rows(rt, [cid]))[cid]["profile"].get("name") or cid)
+    for k, tn in enumerate(turns):
         reply = "\n".join(r["text"] for r in tn["replies"])
         if not reply:
             continue
@@ -908,6 +912,7 @@ async def layer3_pair(env: RunEnv, pair: Mapping[str, Any]) -> dict[str, Any]:
                                                               "quoted_reply": reply}, str(pair["id"])))
         else:
             over.append(await ask(env, "judge_over_mention", {"quoted_memories": memories,
+                                                              "quoted_recent": recent_before(turns, k, name),
                                                               "quoted_message": tn["text"], "quoted_reply": reply},
                                   str(pair["id"])))
     after = [x for _i, x, _s in await current_texts(rt, cid, world)]

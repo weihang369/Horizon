@@ -130,8 +130,8 @@ def _memory_compare(args: argparse.Namespace) -> int:
         print(f"horizon: {e}", file=sys.stderr)
         return 2
     text = "\n".join(lines) + "\n"
+    (Path(args.arm) / "compare.md").write_text(text, encoding="utf-8")   # first: a console that can't print it
     print(text, end="")
-    (Path(args.arm) / "compare.md").write_text(text, encoding="utf-8")
     return 0
 
 

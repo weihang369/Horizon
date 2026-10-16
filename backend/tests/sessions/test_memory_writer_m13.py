@@ -29,7 +29,7 @@ from tests.helpers.storm import after_storm, park_next_chat, storm
 from tests.sessions.kit import API, command, create, ledger
 
 AMARA, MEI, MERIDIAN = "chr_seedAmara", "chr_seedMei", "wld_seedMeridian"
-FIXTURE = Path(__file__).resolve().parents[1] / "fixtures" / "memory" / "memory-1.prompt.txt"
+FIXTURE = Path(__file__).resolve().parents[1] / "fixtures" / "memory" / "memory-2.prompt.txt"
 
 
 # ── builders ──
@@ -207,7 +207,7 @@ async def test_a_length_answer_splits_the_characters_in_halves(api: Api) -> None
 # ── 3.3 the bank entries ──
 def test_the_new_bank_entries_load_and_are_locked() -> None:
     b = bank()
-    assert b.get("importance").purpose == "importance" and b.get("memory_guard").thresholds["t_keep"] == 0.7
+    assert b.get("importance").purpose == "importance" and b.get("memory_guard").thresholds["t_keep"] == 0.35   # v3
     assert not [p for p in check_lock() if p.startswith(("importance", "memory_guard"))]
     q = b.question("importance", name="Amara", n=2)
     assert isinstance(q, Score) and len(q.levels) == 5 and "line 2" in q.instructions and "Amara" in q.instructions

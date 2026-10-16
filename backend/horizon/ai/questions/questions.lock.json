@@ -72,8 +72,8 @@
     "version": 1
   },
   "judge_memory_lost": {
-    "sha256": "4eb7942220903a35b34f8221acf2ad4da41855a5d8d64196ca39f2c772c28632",
-    "version": 1
+    "sha256": "103d2b5b9dc9a7094cb18e34bc6d3ab16b069da190b891b1e096f75b77972480",
+    "version": 2
   },
   "judge_memory_missed": {
     "sha256": "99b36cc75290f1708c0a2dbb2fa8ad8e70fe0370af419fa75e0031a1e2879340",
@@ -96,8 +96,8 @@
     "version": 1
   },
   "judge_over_mention": {
-    "sha256": "af5647988985994dbf452fe6424c09339391a840815d5a9fd39ef072e653fa07",
-    "version": 1
+    "sha256": "de8b49ebb61c8155183a7ea58e312b7972ee1d4e7182bf7defde0d060573f864",
+    "version": 2
   },
   "judge_pairwise": {
     "sha256": "edca205d7276e97b6d8a094479ea21726478e84ac75debffe64a5c84e2e46bbe",

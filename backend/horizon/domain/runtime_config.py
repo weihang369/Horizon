@@ -124,13 +124,17 @@ class RecallKnobs:
     check_ms: float = 1500.0      # each recall check's deadline from when it was sent
     tail_tokens: int = 400        # both recall headings together
     line_words: int = 60          # a line hit and the message before it, each
+    lines_dense: bool = True      # phase 10 (K3 win): the session's lines by vector only, BM25 only without one
+    standout_p: float = 0.25      # phase 10: nothing at t_recall → keep the top if p ≥ this …
+    standout_ratio: float = 3.0   # … and at least this many times the runner-up's p
 
     @staticmethod
     def from_json(r: dict[str, Any]) -> RecallKnobs:
         return RecallKnobs(pool=int(r["pool"]), per_corpus=int(r["perCorpus"]), candidates=int(r["candidates"]),
                            mmr_lambda=float(r["mmrLambda"]), keep=int(r["keep"]), fallback_keep=int(r["fallbackKeep"]),
                            check_ms=float(r["checkMs"]), tail_tokens=int(r["tailTokens"]),
-                           line_words=int(r["lineWords"]))
+                           line_words=int(r["lineWords"]), lines_dense=bool(r["linesDense"]),
+                           standout_p=float(r["standoutP"]), standout_ratio=float(r["standoutRatio"]))
 
 
 @dataclass(frozen=True)

@@ -148,7 +148,10 @@
             "fallbackKeep": 2,
             "checkMs": 1500,
             "tailTokens": 400,
-            "lineWords": 60
+            "lineWords": 60,
+            "linesDense": true,
+            "standoutP": 0.25,
+            "standoutRatio": 3
           }
         }
       },

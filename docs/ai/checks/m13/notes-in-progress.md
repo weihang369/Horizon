@@ -88,3 +88,28 @@
     - Read by hand: supported 80/81 (the one real case is a perspective leak: Hana's line says the band "moved from
       Fridays", a detail only Rin's list held); lost after guard v3: 3 of 18 unique supersedes (a past event, a
       reaction's severity, the firm).
+20. Recall probes (20261016T113017, $0.0099): in-session hit@3 45/60 (75 %, 0.63–0.84) by search order, Recall@6
+    58/60 (97 %), kept after Jev 56/60 (93 %, 0.84–0.97) ✓. Overflow hit@3 10/40 (25 %), Recall@6 32/40 (80 %), kept
+    18/40 (45 %) ✗. In 14 overflow misses the needed memory was checked and Jev ranked it far above the rest (p
+    0.19–0.44 against ≈ 0.03) but under `t_recall` 0.5, so nothing was kept; at 0.30, 8 more would be (26/40, 65 %).
+    The overflow probes lean on the memory indirectly, and an overflow memory is old and unimportant by construction
+    (its weight ranks it below the distractors in the merge). BM25-only arm (113719, $0): in-session Recall@6 15/60,
+    overflow 11/40: the dense half earns its place.
+21. The comparisons (memory-compare, K3's rule): `search=dense` wins in-session (hit@3 97 % vs 75 %; dev +17.1 points,
+    +7.3 to +29.3; test +31.6) and loses on overflow (−17.9); `search=bm25` loses (in-session −61.0); `mmr=off` and
+    `lambda=0.5` tie. All four arms cost $0 (the store served every embedding).
+22. The user's second round of choices (2026-10-16, ≈ 19:45 KL): dense-only search for the session's lines (BM25 only
+    as the fallback without a vector; overflow stays hybrid); a relative keep rule (when nothing passes `t_recall`,
+    keep the top candidate if p ≥ 0.25 and ≥ 3× the runner-up); keep `t_keep` 0.35 and fix memory-1's perspective
+    leak; reword `judge_memory_lost` and `judge_over_mention` (v2), re-validate and re-judge the saved outputs.
+23. Round 2 built (uncommitted runs pending): memory-2 (the perspective rule), `recall.linesDense` / `standoutP` 0.25 /
+    `standoutRatio` 3, judge_memory_lost v2 and judge_over_mention v2 (sees `quoted_recent`). Instruction arm
+    (113847, $0.00003): the old instruction ties or loses → default stays (K3). B4 for the v2 judges (114550,
+    $0.0025): lost PASS (real 0.94, n 18), over_mention PASS (real 0.90).
+24. NEXT (all already approved): re-judge the saved rewrite (lost) and layer-3 (over-mention, with recent lines)
+    outputs (needs a small `--part rejudge` reading results/judge_states, ≈ $0.003); re-run recall probes (dense
+    lines + standout, ≈ $0.01) and the rewrite suite (memory-2, ≈ $0.02); then the timing runs ALONE: check 2
+    (`memory --part rewrite --latency --limit 10`), the checkMs tail (`memory --part recall --set dev --latency`),
+    check 4 (`latency --part recall`), and `embed-probe --set Nebius,DeepInfra,SiliconFlow`. Open choice: `t_same`
+    (rule gives 0.05; recommend keeping 0.50). Then doc 09 M12/M13 notes, doc 13 W6/W12, m13.md, phase 12.
+    Paid spend so far today ≈ $0.088.

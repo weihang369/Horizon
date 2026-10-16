@@ -101,8 +101,9 @@ def over_mention() -> list[dict[str, Any]]:
         f = EN[i % len(EN)]
         message = unrelated([f.memory, f.said], f.who, 1, start=i)[0]
         reply = ANSWER if i % 2 == 0 else f"{ANSWER} Speaking of which, I keep thinking about how {you(f.memory)}."
-        out.append(row("judge_over_mention", i + 1, {"quoted_memories": f.memory, "quoted_message": message,
-                                                     "quoted_reply": reply}, "no" if i % 2 == 0 else "yes", f))
+        out.append(row("judge_over_mention", i + 1, {"quoted_memories": f.memory, "quoted_recent": "(no earlier lines)",
+                                                     "quoted_message": message, "quoted_reply": reply},
+                       "no" if i % 2 == 0 else "yes", f))
     return out
 
 

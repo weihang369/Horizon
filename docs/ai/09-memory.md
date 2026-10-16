@@ -197,6 +197,8 @@ fewer, more complete lines.
 - **holding runs in the actor's background set:** it keeps the actor from going idle, and deleting the actor
   cancels the run.
 
+*Built in M13 (OpenSpec `memory` D7–D11): `MemoryRuns`, runtime-level `memory_run` tasks through `rt.spawn` (at most 2 at once, one per session, outside `llmConcurrency`), started by the triggers above, cancelled by deletes and resets, and deferred without a usable key. The per-reply `_remember` is removed.*
+
 ### M2. The pause run: checkpoint, re-reads and pieces
 
 **Decision:**
@@ -229,6 +231,8 @@ fewer, more complete lines.
   exists for (a cake flavour, a nickname);
 - **mining old sessions at migration, or a fork's copied history:** a surprise bill, and it would undo the user's
   earlier Forgets.
+
+*Built in M13 (`memory` D5, D9, D19): `sessions.memory_seq`, `memory_reread` and `memory_tries` (Alembic `0005_memory`; existing sessions start at their max, forks at the copied max), and the stretch builder (the settled bound, the heard kinds and their labels, context lines, 8,000-token pieces cut at message boundaries). A lone regenerated reply is below the run minimum; it waits in `memory_reread` for the next run with a user line.*
 
 ### M3. The rewrite call: one DeepSeek JSON call for everyone present (the user's decisions)
 
@@ -293,6 +297,8 @@ character already carries in its prompt, so it costs ~1,000 input tokens per cha
 - **extract, then a Jev compare with the 3 nearest memories** (the first version, superseded by the user's choice):
   it can't merge detail, and it needs a cosine threshold tied to one embedding model.
 
+*Built in M13 (`memory` D13): `memory-1`, one DeepSeek JSON call per piece for everyone present (temperature 0.7, thinking off, `max_tokens` 300 × characters + 200, at most 3,000; a `length` answer splits the characters in halves; a parse failure is retried once). Code checks drop unknown characters, targets, kinds and source lines, cut a line at 40 words, keep at most 5 changes per character (every confirm kept) and merge exact duplicates. Measured: 37 of 37 calls valid, output p50 240 tokens (35 % of the cap), and the 8,000-token piece 294 of 500 ([m13.md](checks/m13.md)). Found: the call sees every present character's list, and once wrote into one character's memory a detail only another's list held (1 of 81 lines).*
+
 ### M4. Importance: a Jev score
 
 **Decision:**
@@ -315,6 +321,8 @@ character already carries in its prompt, so it costs ~1,000 input tokens per cha
 **Rejected:** DeepSeek's own number (an LLM's self-rated importance clusters in the middle; it stays only as the
 fallback); no importance (the prompt's ranking, M8, and the badge, PRF-07, need it).
 
+*Built in M13 (`memory` D14): `importance` (score, five levels, `importance:l{n}`, at most 5 per request); the importance is the answer's position as a unit, and the fallback is the weight hint, (w − 1) / 4, or 0.5. Measured: keep-or-drop balanced accuracy 0.88 dev / 0.87 test, within one level 0.89 / 0.89.*
+
 ### M5. Guarding rewrites and catching duplicates
 
 **Decision:**
@@ -335,6 +343,8 @@ fallback); no importance (the prompt's ranking, M8, and the badge, PRF-07, need 
 
 **Rejected:** applying rewrites with no guard (an LLM rewrite can quietly drop half a fact, and nothing would notice);
 a compare step for every add (the model already saw the top of the list; the cheap duplicate check covers the rest).
+
+*Built in M13 (`memory` D15, D16), amended in phase 10 by the user's choices ([m13.md](checks/m13.md)). The guard (`memory_guard` v3) counts a detail the messages changed as kept: v1 held back 16 of 35 real changes at 0.70, because its set had no changed values. `t_keep` is 0.35 by D40's rule (test: lossy rewrites let through 0.04). The duplicate check is case-folded equality, then a Jev noul, `same_fact`, for an add whose nearest memory is at or above `dupCosine` (0.85, now a pre-filter): no cosine separates a rewording (0.81–0.97) from an extension with a new detail (0.97–0.99). A failed or late check writes the add.*
 
 ### M6. Writing: one transaction with the checkpoint; races and failures
 
@@ -367,6 +377,8 @@ a compare step for every add (the model already saw the top of the list; the che
 internal job row per run (which I mentioned in chat: the checkpoint gives durability, and `memory_tries` is the only
 bookkeeping needed).
 
+*Built in M13 (`memory` D19–D21): `MemoryStore.apply_run` writes every character's ops, the compare-and-set checkpoint and the re-read list in one transaction; a run that lost the race writes nothing; per-character run locks; memory purposes never pause sessions at the cap. A failed piece counts a try, and after `maxTries` (3) it is skipped.*
+
 ### M7. Regenerate, Continue, blocked replies and Forget
 
 **Decision:**
@@ -386,6 +398,8 @@ bookkeeping needed).
 
 **Rejected:** moving the checkpoint back (every later message would be read again: twice the cost, duplicates);
 forgetting the whole chain (destroys older memories from other sessions).
+
+*Built in M13 (`memory` D20, D21): Regenerate and Continue undo what the replaced message produced (its still-current derived memories forgotten through the chain, their predecessors restored) and queue it for a re-read; a blocked reply only undoes. Forget also clears the character's stored query rewrites (`message_ai_meta.rewrites`). Fixed on the way: Forget's vector zeroing failed on vec0 for any memory with a vector (an M5 bug no keyless test could see); it now zeroes one row per statement.*
 
 ### M8. The memory list in the system prompt (the user's decision)
 
@@ -431,6 +445,8 @@ with no gate to get wrong; past that, M9's overflow search covers the rest.
   never sees it;
 - **2,000 tokens:** more to juggle and more over-mentioning for little gain; **500 tokens:** heavy users lose
   memories sooner.
+
+*Built in M13 (`memory` D22–D24): the block is "# What you remember (notes from earlier conversations; bring one up only when it fits the moment; never list them)" between the world and session blocks, ranked and filled as above, each line cut at 40 words. It is frozen for the sitting and dropped through the session's inbox after a Forget or a commit (a generation counter closes the read race). `context.used.memory` counts it.*
 
 ### M9. Recall from earlier: hybrid search over this session's older lines and the memory overflow (the user's decisions)
 
@@ -493,6 +509,8 @@ embedding every message as it is sent (most never leave the window; paid for and
 *M12 (OpenSpec `rag` D12) built the shared pipeline this recall runs on: `retrieval.search(index, bundle,
 SearchParams(pool=10, candidates=6, …))` takes recall's own numbers, so M13 passes them rather than changing code.*
 
+*Built in M13 (`memory` D26–D36), with D3's corrections. (1) Lines are indexed in a new `message_index`, one row per line that left the window, written once after each rolling summary (`message_fts` and `message_vec__{space}` follow it), not an FTS over `messages`, which has no stable integer key. (2) `retrieval.search` was generalised over a corpus (`SessionLines`, `Overflow`, the documents), M12's results unchanged. (3) The gate is "needs something from earlier?" (`earlier:{id}`), asked for candidates with something to search; `t_gate` 0.15 from phase 10 (recall-first, the user's choice). (4) The query embedding follows M12's rule (the early start and a 200 ms wait), not 400 ms. Jev call 2 is one `recall` request per candidate (at most 6), read by `recall.checkMs`; `t_recall` stays 0.5, because the rule's 0.30 didn't hold on test.*
+
 ### M10. The greeting: "last time…"
 
 **Decision:**
@@ -506,6 +524,8 @@ SearchParams(pool=10, candidates=6, …))` takes recall's own numbers, so M13 pa
 
 **Rejected:** waiting up to 4 s for a pending run (the first version): a run takes 5–10 s, so the wait would rarely
 help and always cost time.
+
+*Built in M13 (`memory` D25): a later greeting's tail holds the 2 newest memories from the last 1:1 session, with the cue "If something from last time fits, you may mention it in a short phrase."*
 
 ### M11. Profiles
 
@@ -523,6 +543,8 @@ help and always cost time.
   closes A9's open point).
 - **Isolated comparisons:** to compare the writers, the evaluation runs both with the `agent`'s recall (the existing
   per-port overrides), so a difference comes from the writer alone.
+
+*Built in M13 (`memory` D12, D18): `memory_writer` is in both the `naive` and `agent` port sets. `naive` makes the same call, with the hint's importance, no guard and the exact-duplicate skip; `scripted` writes nothing; test mode with a key and no explicit profile runs the `agent` writer.*
 
 ### M12. Evaluation additions
 

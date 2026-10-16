@@ -16,6 +16,12 @@ most `queryEmbedWaitMs`; without one, BM25 only (`lists.dense == 0`).
 was sent; a 429 falls back at once. Up to `keep` (3) at or above `t_recall` are kept, by p. Every answer missing: the
 top `fallbackKeep` (2) of the merged order, unscored (`fallback`). Some back: only those decide (recall never
 abstains, so partial evidence is safe).
+
+**Phase 10 (the user's choices, m13.md):** the session's lines are searched by vector only when the query has one
+(`recall.linesDense`; BM25 matched chat noise: in-session hit@3 97 % dense-only against 75 % hybrid), and the overflow
+stays hybrid. When nothing reaches `t_recall`, the top candidate is still kept if it stands out: p ≥
+`recall.standoutP` (0.25) and ≥ `recall.standoutRatio` (3) × the runner-up (an indirect question about an overflow
+memory gets p 0.2–0.45 while the rest get ≈ 0.03).
 """
 
 from __future__ import annotations
@@ -50,6 +56,19 @@ class Item:
     order: int                  # its place in its corpus's fused order
     hit: RecallHit
     vector: list[float] | None = None
+
+
+class DenseOnly:
+    """A corpus with its keyword search switched off (the session's lines when the query has a vector)."""
+
+    def __init__(self, inner: Any) -> None:
+        self.inner = inner
+
+    async def fts(self, query: str, limit: int) -> list[Any]:
+        return []
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self.inner, name)
 
 
 @dataclass
@@ -136,7 +155,8 @@ async def find(io: Any, req: DeepRequest, bundle: QueryBundle, knobs: Any, memor
     params = SearchParams(pool=knobs.pool, candidates=knobs.pool, mmr_lambda=1.0)
     lines_c = io.lines(req.session.world.id, req.session.session_id, req.upto_seq, space)
     over_c = io.overflow(req.session.world.id, req.speaker.id, list(req.block_ids), space) if req.has_overflow else None
-    got_lines = await search(lines_c, bundle, params)
+    dense_lines = bool(getattr(knobs, "lines_dense", False)) and bool(bundle.dense.get(space))
+    got_lines = await search(DenseOnly(lines_c) if dense_lines else lines_c, bundle, params)
     got_mem = await search(over_c, bundle, params) if over_c is not None else None
     lists = {"lines_bm25": got_lines.lists.get("bm25", 0), "lines_dense": got_lines.lists.get("dense", 0)}
     line_rows = await lines_c.rows([c.rid for c in got_lines.candidates])
@@ -222,6 +242,14 @@ def keep(picked: Sequence[Item], merged: Sequence[Item], ps: Sequence[float | No
     th = t_recall()
     scored = sorted(((p, i, it) for i, (it, p) in enumerate(zip(picked, ps, strict=True)) if p is not None and p >= th),
                     key=lambda x: (-x[0], x[1]))
+    if not scored:   # phase 10: a clear standout is kept even below t_recall
+        answered = sorted(((p, i, it) for i, (it, p) in enumerate(zip(picked, ps, strict=True)) if p is not None),
+                          key=lambda x: (-x[0], x[1]))
+        ratio = float(getattr(knobs, "standout_ratio", 0.0))
+        if answered and ratio > 0:
+            top, second = answered[0][0], (answered[1][0] if len(answered) > 1 else 0.0)
+            if top >= float(getattr(knobs, "standout_p", 1.0)) and top >= ratio * second:
+                return [answered[0][2].hit.model_copy(update={"p": round(top, 4)})], "jev"
     return [it.hit.model_copy(update={"p": round(p, 4)}) for p, _, it in scored[:knobs.keep]], "jev"
 
 
@@ -240,10 +268,11 @@ def rows(picked: Sequence[Item], ps: Sequence[float | None], kept: Sequence[Reca
                        action="kept by search order" if outcome == "fallback" and it.hit.id in used else "not checked")
         else:
             yes = p >= th
+            standout = not yes and it.hit.id in used   # phase 10: kept below t_recall because it stood out
             row.update(answer="yes" if yes else "no", p=round(p, 4),
                        compared=[{"name": "t_recall", "value": round(p, 4), "threshold": th}],
                        result="used" if it.hit.id in used else "below_threshold",
-                       action="kept" if it.hit.id in used else "dropped")
+                       action="kept (stands out)" if standout else "kept" if it.hit.id in used else "dropped")
         out.append(row)
     return out
 

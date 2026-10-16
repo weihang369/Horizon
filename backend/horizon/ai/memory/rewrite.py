@@ -35,7 +35,7 @@ from horizon.services.memory.stretch import Present, Stretch, StretchLine
 log = logging.getLogger("horizon.memory.rewrite")
 
 PURPOSE = "memory"
-PROMPT_VERSION = "memory-1"
+PROMPT_VERSION = "memory-2"   # phase 10 (the user's choice): a character's lines hold only what it heard
 TOKENS_PER_CHARACTER = 300
 TOKENS_BASE = 200
 TOKENS_MAX = 3_000
@@ -58,6 +58,8 @@ SYSTEM = "\n".join([
     'Rules:',
     "- Write from that character's point of view, about what happened in the room. Never write what "
     'another character privately thought.',
+    "- A character's lines hold only what that character heard in these messages or already remembers. "
+    "Never copy a detail from another character's list.",
     '- One self-contained line per topic, at most 30 words, with names instead of pronouns, in the '
     'language most of the new messages use.',
     '- Keep what lasts: facts about people (work, family, plans, health, likes), notable events, promises'

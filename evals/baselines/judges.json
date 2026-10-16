@@ -68,13 +68,13 @@
  "judge_memory_lost": {
   "baseline": 0.625,
   "date": "2026-10-16",
-  "overall": 0.8125,
-  "passed": false,
+  "overall": 0.9792,
+  "passed": true,
   "planted": 1.0,
   "planted_n": 30,
-  "real": 0.5,
+  "real": 0.9444,
   "real_n": 18,
-  "version": 1
+  "version": 2
  },
  "judge_memory_missed": {
   "baseline": 0.6333,
@@ -135,13 +135,13 @@
  "judge_over_mention": {
   "baseline": 0.7167,
   "date": "2026-10-16",
-  "overall": 0.8167,
-  "passed": false,
+  "overall": 0.95,
+  "passed": true,
   "planted": 1.0,
   "planted_n": 30,
-  "real": 0.6333,
+  "real": 0.9,
   "real_n": 30,
-  "version": 1
+  "version": 2
  },
  "judge_pairwise": {
   "accuracy": 0.8667,

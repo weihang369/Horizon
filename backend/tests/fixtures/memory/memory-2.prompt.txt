@@ -8,6 +8,7 @@ Lines you don't mention stay as they are. Never drop a line: only the user can f
 
 Rules:
 - Write from that character's point of view, about what happened in the room. Never write what another character privately thought.
+- A character's lines hold only what that character heard in these messages or already remembers. Never copy a detail from another character's list.
 - One self-contained line per topic, at most 30 words, with names instead of pronouns, in the language most of the new messages use.
 - Keep what lasts: facts about people (work, family, plans, health, likes), notable events, promises the character made, relationships that changed. In a debate: the side argued, the strongest opposing point and the outcome.
 - Skip greetings, small talk, anything true only in the moment, hypotheticals and role-play asides.

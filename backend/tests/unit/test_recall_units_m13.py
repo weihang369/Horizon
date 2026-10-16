@@ -81,6 +81,66 @@ def test_nothing_to_check_is_none() -> None:
     assert rc.keep([], [], [], K) == ([], "none")
 
 
+# ── phase 10: the standout rule and dense-only lines (the user's choices, m13.md) ──
+def test_a_clear_standout_is_kept_below_t_recall() -> None:
+    picked = [item("memory", i, 1.0 - i / 10) for i in range(4)]
+    kept, outcome = rc.keep(picked, picked, [0.03, 0.43, 0.04, 0.02], K)   # an indirect question's overflow memory
+    assert outcome == "jev" and [(h.id, h.p) for h in kept] == [("mem_1", 0.43)]
+    rows = rc.rows(picked, [0.03, 0.43, 0.04, 0.02], kept, outcome)
+    assert rows[1]["answer"] == "no" and rows[1]["result"] == "used" and rows[1]["action"] == "kept (stands out)"
+
+
+def test_no_standout_when_it_is_weak_or_close_to_the_runner_up() -> None:
+    picked = [item("memory", i, 1.0 - i / 10) for i in range(3)]
+    assert rc.keep(picked, picked, [0.2, 0.03, 0.02], K)[0] == []      # under standoutP 0.25
+    assert rc.keep(picked, picked, [0.44, 0.34, 0.02], K)[0] == []     # not 3× the runner-up
+    assert rc.keep(picked, picked, [0.44, None, 0.14], K)[0][0].id == "mem_0"   # missing answers don't count
+    off = RecallKnobs(standout_ratio=0.0)
+    assert rc.keep(picked, picked, [0.43, 0.03, 0.02], off)[0] == []
+
+
+class _Lines:
+    """A corpus that records which searches ran."""
+
+    space_id = "sp"
+
+    def __init__(self) -> None:
+        self.calls: list[str] = []
+
+    async def fts(self, query: str, limit: int) -> list[object]:
+        self.calls.append("fts")
+        return []
+
+    async def knn(self, vector: list[float], limit: int) -> list[object]:
+        self.calls.append("knn")
+        return []
+
+    async def rows(self, rids: list[int]) -> dict[int, object]:
+        return {}
+
+    async def vectors(self, rids: list[int]) -> dict[int, list[float]]:
+        return {}
+
+    async def texts(self, rids: list[int]) -> dict[int, str]:
+        return {}
+
+
+async def test_the_sessions_lines_are_searched_by_vector_only_when_there_is_one() -> None:
+    from horizon.ai.agent.recall import find, recall_bundle
+
+    for dense, lines_dense, want in (({0: [1.0, 0.0]}, True, ["knn"]), ({}, True, ["fts"]),
+                                     ({0: [1.0, 0.0]}, False, ["fts", "knn"])):
+        lines = _Lines()
+        io = SimpleNamespace(active_space=lambda: "sp", lines=lambda *a, l=lines: l, overflow=lambda *a: None)
+        req = SimpleNamespace(message="What's my dog's name?", earlier=[], message_id=None,
+                              speaker=SimpleNamespace(id="chr_x"), session=SimpleNamespace(
+                                  mode="one_on_one", session_id="ses_x", world=SimpleNamespace(id="wld_x")),
+                              upto_seq=10, block_ids=[], has_overflow=False)
+        bundle = recall_bundle(req, None, dense, "sp")  # type: ignore[arg-type]
+        await find(io, req, bundle, RecallKnobs(lines_dense=lines_dense), MemoryKnobs(), NOW)  # type: ignore[arg-type]
+        assert sorted(set(lines.calls)) == sorted(want), (dense, lines_dense, lines.calls)
+
+
 # ── D35: the tail ──
 def test_the_tail_has_two_headings_lines_with_the_one_before_and_collapses_newlines() -> None:
     hits = [RecallHit(kind="line", id="msg_1", text="Kai: My sister Mia just\nstarted nights.", before="Amara: Hi.",

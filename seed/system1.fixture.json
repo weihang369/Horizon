@@ -215,14 +215,14 @@
       "memory_guard": {
         "purpose": "memory_guard",
         "id": "memory_guard",
-        "version": 2,
+        "version": 3,
         "label": "rewrite keeps the old facts?",
         "p": 0.72,
         "compared": [
           {
             "name": "t_keep",
             "value": 0.72,
-            "threshold": 0.7
+            "threshold": 0.35
           }
         ],
         "result": "used",
