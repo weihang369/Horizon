@@ -1,0 +1,29 @@
+{
+  "id": "same_fact",
+  "version": 1,
+  "purpose": "memory_guard",
+  "type": "noul",
+  "label": "same fact?",
+  "instructions": "Does the new memory in quoted_new say the same thing as the memory in quoted_old, adding nothing?",
+  "true": "Same: quoted_new only rewords quoted_old; it adds no detail and changes no value.",
+  "false": "Different: quoted_new adds a detail, changes a value, or is about something else, even when most of its words match.",
+  "examples": {
+    "true": [
+      "\"Kai likes green tea.\" → \"Green tea is Kai's drink of choice.\""
+    ],
+    "false": [
+      "\"Kai likes green tea.\" → \"Kai likes green tea, unsweetened, in the morning.\""
+    ]
+  },
+  "state": {
+    "quoted_old": "quoted",
+    "quoted_new": "quoted"
+  },
+  "deadline": "memory_guard",
+  "floor": null,
+  "thresholds": {
+    "t_same": 0.5
+  },
+  "fallback": "write",
+  "state_note": "memory D16 as amended in phase 10 (the user's choice): the duplicate check asks Jev for an add whose nearest current memory is at or above memory.dupCosine (a pre-filter); p >= t_same reinforces that memory, below it or failed or late the add is written. t_same by D39's rule (precision >= 95 %)."
+}

@@ -27,14 +27,14 @@
       "earlier": {
         "purpose": "turn_plan",
         "id": "earlier",
-        "version": 1,
+        "version": 2,
         "label": "needs something from earlier?",
         "p": 0.72,
         "compared": [
           {
             "name": "t_gate",
             "value": 0.72,
-            "threshold": 0.4
+            "threshold": 0.15
           }
         ],
         "result": "used",
@@ -215,7 +215,7 @@
       "memory_guard": {
         "purpose": "memory_guard",
         "id": "memory_guard",
-        "version": 1,
+        "version": 2,
         "label": "rewrite keeps the old facts?",
         "p": 0.72,
         "compared": [
@@ -373,6 +373,22 @@
             "name": "margin",
             "value": 0.72,
             "threshold": 0.25
+          }
+        ],
+        "result": "used",
+        "action": "used"
+      },
+      "same_fact": {
+        "purpose": "memory_guard",
+        "id": "same_fact",
+        "version": 1,
+        "label": "same fact?",
+        "p": 0.72,
+        "compared": [
+          {
+            "name": "t_same",
+            "value": 0.72,
+            "threshold": 0.5
           }
         ],
         "result": "used",

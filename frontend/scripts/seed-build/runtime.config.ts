@@ -160,6 +160,6 @@ export const RUNTIME: RuntimeConfig = {
   memory: {
     leaveGraceMs: 30_000, maxConcurrent: 2, pieceTokens: 8000, maxTries: 3, blockTokens: 1000, halfLifeDays: 30,
     recencyFloor: 0.5, modeWeight: { oneOnOne: 1.0, group: 1.0, debate: 0.85, watch: 0.7 }, minImportance: 0.25,
-    dupCosine: 0.92,
+    dupCosine: 0.85,   // M13 phase 10: a pre-filter; an add this close to a memory asks Jev "same fact?"
   },
 };

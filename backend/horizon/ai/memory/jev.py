@@ -8,6 +8,10 @@
 - **The guard** (purpose `memory_guard`, bank entry `memory_guard`): one request per rewrite, asking whether the new
   line keeps every still-true part of the old one. p ≥ `t_keep` → Supersede; below it, or failed or late → the new
   line is inserted beside the old one (the fallback answers 0.0).
+- **Same fact?** (purpose `memory_guard`, bank entry `same_fact`; phase 10, the user's choice): one request per add
+  whose nearest current memory is at or above `memory.dupCosine`. p ≥ `t_same` → that memory is reinforced; below it,
+  or failed or late → the add is written (the fallback answers 0.0: a dropped detail can't be recovered, a duplicate
+  line can be forgotten).
 
 Every request waits for a place in the run's semaphore (at most 10 Jev requests in flight per run, doc 09 M13).
 Cancelling the run cancels the reads; a request already sent still settles and is recorded at its cost.
@@ -27,6 +31,7 @@ from horizon.services.memory.stretch import Present
 
 IMPORTANCE = "importance"
 GUARD = "memory_guard"
+SAME = "same_fact"
 LEVELS = 5
 NO_HINT = 0.5
 LABEL_MAX = 40
@@ -74,6 +79,10 @@ def t_keep() -> float:
     return float(bank().get(GUARD).thresholds.get("t_keep", 0.7))
 
 
+def t_same() -> float:
+    return float(bank().get(SAME).thresholds.get("t_same", 0.5))
+
+
 async def _ask(deps: Any, sem: asyncio.Semaphore, state: Mapping[str, Any], questions: Mapping[str, Question],
                ctx: Any, purpose: str, fallback: Answers) -> tuple[Answers, str | None]:
     decider = deps.decider()
@@ -119,6 +128,19 @@ async def guard(deps: Any, sem: asyncio.Semaphore, run_ctx: Any, character_id: s
                             run_ctx.call(GUARD, character_id=character_id), GUARD,
                             {GUARD: NoulAnswer(p=0.0, source="fallback")})
     a = answers.get(GUARD)
+    if isinstance(a, NoulAnswer):
+        return Scored(float(a.p), a.source)
+    return Scored(0.0, "fallback")
+
+
+async def same_fact(deps: Any, sem: asyncio.Semaphore, run_ctx: Any, character_id: str, old: str,
+                    new: str) -> Scored:
+    """Does the add say what the near memory already says, adding nothing? p, or 0.0 when Jev failed or was late."""
+    state = {"quoted_old": old, "quoted_new": new}
+    answers, _ = await _ask(deps, sem, state, {SAME: bank().question(SAME)},
+                            run_ctx.call(GUARD, character_id=character_id), GUARD,
+                            {SAME: NoulAnswer(p=0.0, source="fallback")})
+    a = answers.get(SAME)
     if isinstance(a, NoulAnswer):
         return Scored(float(a.p), a.source)
     return Scored(0.0, "fallback")

@@ -327,12 +327,44 @@ async def test_a_rate_limited_guard_is_retried_once(api: Api) -> None:
 
 # ── 3.6 the duplicate check ──
 async def test_a_near_duplicate_reinforces(api: Api) -> None:
+    """Phase 10 (the user's choice): near (cosine ≥ dupCosine) asks Jev "same fact?"; yes reinforces."""
     await api.set_key()
     writer = _agent(api)
-    io = FakeIO(near=("mem_near", 0.95, 0.4))
+    assert api.rt.fake is not None
+    api.rt.fake.answer_question("same_fact", {"type": "noul", "noul": 0.9})
+    io = FakeIO(current={AMARA: [("mem_near", "Kai studies law.", 0.4)]}, near=("mem_near", 0.95, 0.4))
     _canned(api, _answer({"for": 1, "op": "add", "kind": "fact", "text": "Kai is studying law.", "source": 1}))
+    before = api.rt.fake.counts["decisions"]
     res = await writer.on_stretch(_stretch(), await _ctx(api, io))
     assert res.ops[AMARA] == [Reinforce("mem_near", 0.45)] and res.vectors == {}
+    assert api.rt.fake.counts["decisions"] - before == 2   # importance, then same fact?
+    assert "memory_guard" in await _purposes(api)
+
+
+async def test_a_near_line_with_a_new_detail_is_written(api: Api) -> None:
+    """Cosine can't tell an extension from a rewording (m13.md): Jev says "different", so the add is written."""
+    await api.set_key()
+    writer = _agent(api)
+    assert api.rt.fake is not None
+    api.rt.fake.answer_question("same_fact", {"type": "noul", "noul": 0.1})
+    io = FakeIO(current={AMARA: [("mem_near", "Kai studies law.", 0.4)]}, near=("mem_near", 0.98, 0.4))
+    _canned(api, _answer({"for": 1, "op": "add", "kind": "fact", "text": "Kai studies law at UM, in his final year.",
+                          "source": 1}))
+    res = await writer.on_stretch(_stretch(), await _ctx(api, io))
+    assert [type(o) for o in res.ops[AMARA]] == [Insert]
+    log = [x for x in res.log if x["step"] == "duplicate"]
+    assert log and log[0]["why"] == "near, but not the same fact: written" and log[0]["p"] == 0.1
+
+
+async def test_a_far_add_asks_no_same_fact_question(api: Api) -> None:
+    await api.set_key()
+    writer = _agent(api)
+    assert api.rt.fake is not None
+    io = FakeIO(near=("mem_far", 0.84, 0.4))   # below the 0.85 pre-filter
+    _canned(api, _answer({"for": 1, "op": "add", "kind": "fact", "text": "Kai plays the cello.", "source": 1}))
+    before = api.rt.fake.counts["decisions"]
+    res = await writer.on_stretch(_stretch(), await _ctx(api, io))
+    assert [type(o) for o in res.ops[AMARA]] == [Insert] and api.rt.fake.counts["decisions"] - before == 1
 
 
 async def test_a_case_folded_duplicate_reinforces_without_an_embedding(api: Api) -> None:

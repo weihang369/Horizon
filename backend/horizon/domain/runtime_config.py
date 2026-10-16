@@ -181,7 +181,7 @@ class MemoryKnobs:
     mode_weight: dict[str, float] = field(default_factory=lambda: {
         "one_on_one": 1.0, "group": 1.0, "debate": 0.85, "watch": 0.7})   # D-71's down-weighting
     min_importance: float = 0.25         # doc 09 M4: an add under this is dropped
-    dup_cosine: float = 0.92             # doc 09 M5: an add this close to a current memory reinforces it instead
+    dup_cosine: float = 0.85             # doc 09 M5 (phase 10): an add this close to a memory asks Jev "same fact?"
 
     def weight(self, mode: str | None) -> float:
         """The mode weight of a memory's source mode; a seed or unknown mode weighs 1.0."""

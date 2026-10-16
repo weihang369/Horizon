@@ -114,7 +114,8 @@ def test_earlier_is_asked_only_with_something_to_search_and_not_when_dropped() -
     res = DecisionResult(answers={"earlier:a": NoulAnswer(0.55)})
     got = gates.read_recall(res, ["a"])
     assert got["a"].p == 0.55 and gates.recalls(got["a"]) and gates.branch(None, got["a"]) == "deep"
-    assert gates.branch(GateAnswer(p=0.1), GateAnswer(p=0.39)) == "quick"
+    assert gates.branch(GateAnswer(p=0.1), GateAnswer(p=0.14)) == "quick"   # both below their gates (earlier v2: 0.15)
+    assert gates.branch(GateAnswer(p=0.1), GateAnswer(p=0.15)) == "deep"
     assert gates.fallbacks(qs) == {"earlier:a": NoulAnswer(0.0)}
     row = gates.recall_row("a", got["a"], purpose="turn_plan")
     assert row["id"] == "earlier" and row["result"] == "used" and row["action"] == "search earlier lines"

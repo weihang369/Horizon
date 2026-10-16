@@ -4,8 +4,9 @@ port reads a stretch").
 Both make the same `memory-1` call (D13). What they do with its changes differs:
 
 - **add.** `naive`: importance from the weight hint, and an exact (case-folded) duplicate of a current memory is
-  skipped. `agent`: Jev's importance; under `minImportance` it is dropped; a case-folded or near duplicate (cosine ≥
-  `dupCosine`, D16) reinforces that memory instead.
+  skipped. `agent`: Jev's importance; under `minImportance` it is dropped; a case-folded duplicate reinforces that
+  memory instead, and so does a near one (cosine ≥ `dupCosine`, D16) that Jev calls the same fact (`same_fact`,
+  phase 10: cosine alone can't tell a rewording from an extension with a new detail).
 - **rewrite.** `naive`: Supersede, importance the higher of old and hint. `agent`: Jev's importance (the higher of
   old and new) and the guard: p ≥ `t_keep` → Supersede, else Insert beside.
 - **confirm.** Both: Reinforce(importance + 0.05).
@@ -308,7 +309,15 @@ class AgentMemoryWriter(_Base):
                     if hit is None and c.text in vec_of:
                         near = await ctx.io.nearest(cid, space_id, vec_of[c.text])
                         if near is not None and near[1] >= float(knobs.dup_cosine):
-                            hit = (near[0], near[2])
+                            old = next((t for m, t, _ in currents[cid] if m == near[0]), "")
+                            s_ = await jev.same_fact(self.deps, sem, ctx, cid, old, c.text)
+                            if s_.value >= jev.t_same():
+                                hit = (near[0], near[2])
+                            else:
+                                why = "near, but not the same fact: written" if s_.source != "fallback" else \
+                                    "near; the same-fact check failed or was late: written"
+                                plan.log.append({"step": "duplicate", "characterId": cid, "why": why, "text": c.text,
+                                                 "memoryId": near[0], "cosine": round(near[1], 4), "p": s_.value})
                     if hit is not None:
                         plan.log.append({"step": "duplicate", "characterId": cid, "why": "duplicate: reinforced",
                                          "text": c.text, "memoryId": hit[0]})

@@ -42,7 +42,7 @@ def test_the_four_sets_build_to_their_counts_and_match_the_committed_files() -> 
     prof = b.docs_build.profiles()
     docs = b.docs_build.titles(prof)
     sets = {"importance": b.build_importance(prof), "memory_guard": b.build_guard(prof),
-            "earlier": b.build_earlier(prof, docs), "recall": b.build_recall(prof)}
+            "earlier": b.build_earlier(prof, docs), "recall": b.build_recall(prof), "same_fact": b.build_same_fact()}
     assert b.problems(sets) == []
     for name, rows in sets.items():
         assert (DATASETS / name / f"{name}.jsonl").read_text(encoding="utf-8") == _lines(rows)
@@ -51,6 +51,13 @@ def test_the_four_sets_build_to_their_counts_and_match_the_committed_files() -> 
     assert len(imp) == 100 and sum(1 for r in imp if int(r["label"]) <= 1) >= 30
     guard = sets["memory_guard"]
     assert len(guard) >= 110 and sum(1 for r in guard if r["label"] == "no") >= 60
+    # v2 (phase 10): the conversation's changes, faithful (yes) and lossy (no), with the change in the source
+    changed = [r for r in guard if r["kind"] in ("changed", "changed_lossy")]
+    assert {r["label"] for r in changed if r["kind"] == "changed"} == {"yes"} and len(changed) >= 25
+    assert {r["label"] for r in changed if r["kind"] == "changed_lossy"} == {"no"}
+    same = sets["same_fact"]
+    assert sum(r["label"] == "yes" for r in same) == 22 and {r["kind"] for r in same if r["label"] == "no"} == {
+        "extended", "other", "changed"}
     for name in ("earlier", "recall"):
         assert len(sets[name]) >= 110 and sum(1 for r in sets[name] if r["label"] == "yes") >= 60
     assert all(r["item"]["key"].startswith("earlier:") for r in sets["earlier"])
@@ -62,6 +69,9 @@ def test_the_threshold_rules_on_fixture_answers() -> None:
     lossy = [(0.1 * i, False) for i in range(1, 8)]          # 0.1 … 0.7
     good = [(0.9, True)] * 10
     assert m13_sets.choose_t_keep([*lossy, *good]) == pytest.approx(0.75)
+    # t_same: the lowest threshold with precision ≥ 95 % on "same fact"
+    same = [(0.9, True)] * 19 + [(0.7, False)] + [(0.3, False)] * 10
+    assert m13_sets.choose_t_same(same) == pytest.approx(0.35)   # 19/20 = 95 % from 0.35
     # t_recall: the lowest threshold with precision ≥ 85 %
     rows = [(0.9, True)] * 17 + [(0.6, False)] * 5 + [(0.4, True)] * 2   # 19/24 below 0.4, 17/22 to 0.6
     assert m13_sets.choose_t_recall(rows) == pytest.approx(0.65)
@@ -75,7 +85,7 @@ async def test_decisions_runs_the_four_sets_under_their_live_keys(tmp_path: Path
     from horizon.evals.suites import Decisions
 
     items: list[dict[str, Any]] = []
-    for name in ("importance", "memory_guard", "earlier", "recall"):
+    for name in ("importance", "memory_guard", "earlier", "recall", "same_fact"):
         rows = [json.loads(x) for x in (DATASETS / name / f"{name}.jsonl").read_text(encoding="utf-8").splitlines()]
         items += [r for r in rows if r["split"] == "dev"][:4] + [r for r in rows if r["split"] == "test"][:4]
     seen: list[str] = []
@@ -94,11 +104,11 @@ async def test_decisions_runs_the_four_sets_under_their_live_keys(tmp_path: Path
                           opts=Options("decisions"), run_dir=run_dir, over_budget=no)
     res = await Decisions().run(env, Plan(items=items, estimate_usd=0.0, expected_s=1.0, paid=False))  # type: ignore[arg-type]
     assert len(res.rows) == len(items)
-    assert {k.split(":")[0] for k in seen} == {"importance", "memory_guard", "earlier", "recall"}
+    assert {k.split(":")[0] for k in seen} == {"importance", "memory_guard", "earlier", "recall", "same_fact"}
     assert any(k.startswith("earlier:chr_") for k in seen) and any(k.startswith("recall:") for k in seen)
     text_ = "\n".join(res.summary)
     for head in ("Rewrite guard (memory_guard)", "Needs something from earlier? (earlier)",
-                 "Earlier line helps? (recall)"):
+                 "Earlier line helps? (recall)", "Same fact? (same_fact)"):
         assert head in text_
 
 
@@ -214,7 +224,8 @@ def test_every_overflow_probe_ranks_its_needed_memory_below_the_list() -> None:
 
 def test_the_dup_pairs_and_the_chosen_cosine() -> None:
     pairs = MS.dup_pairs()
-    assert sum(p["same"] for p in pairs) == 40 and len(pairs) > 100 and {p["split"] for p in pairs} == {"dev", "test"}
+    assert sum(p["same"] for p in pairs) == sum(1 for f in MS.facts() if f.reword) == 22
+    assert len(pairs) > 100 and {p["split"] for p in pairs} == {"dev", "test"} and all(p["a"] and p["b"] for p in pairs)
     rows = [{"split": "dev", "same": True, "cosine": 0.95}] * 19 + [{"split": "dev", "same": False, "cosine": 0.93}] \
         + [{"split": "dev", "same": False, "cosine": 0.85}] * 10
     assert MS.choose_dup(rows) == pytest.approx(0.86)   # 19/20 = 95 % at 0.86

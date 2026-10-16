@@ -9,6 +9,8 @@ are chosen here on dev by D40's rules, then scored once on test; English is scor
 - **`earlier`** (noul, per candidate as `earlier:{id}`): `t_gate` by B5's gate rule, the highest threshold with recall
   ≥ 90 %, as `docs`.
 - **`recall`** (noul, per candidate): `t_recall` = the lowest threshold with precision ≥ 85 %, with its recall beside.
+- **`same_fact`** (noul; phase 10, the user's choice): the duplicate check's question. `t_same` = the lowest threshold
+  with precision ≥ 95 % on "same fact" (D39's rule for `dupCosine`, carried to the question that replaced it).
 """
 
 from __future__ import annotations
@@ -24,6 +26,7 @@ KEEP_ACCURACY = 0.85
 WITHIN_ONE = 0.80
 LOSSY_THROUGH = 0.05
 RECALL_PRECISION = 0.85
+SAME_PRECISION = 0.95
 
 
 # ── importance ──
@@ -81,10 +84,16 @@ def guard_report(rows: Sequence[Mapping[str, Any]]) -> list[str]:
         return ["## Rewrite guard (memory_guard): no threshold lets ≤ 5 % of dev lossy rewrites through — reworded "
                 "(B5)"]
     lt, kept = through(test, t)
+    kinds = []
+    for kind in ("changed", "changed_lossy"):   # v2: the conversation's changes, faithful and lossy (test)
+        m = [(float(r["p"]), str(r["label"]) == "yes") for r in rows
+             if r.get("kind") == kind and r.get("p") is not None and r.get("split") == "test"]
+        if m:
+            kinds.append(f"{kind} {sum(1 for p, _ in m if p >= t)}/{len(m)} supersede")
     return [f"## Rewrite guard (memory_guard): t_keep {t:.2f} (the lowest letting ≤ 0.05 of dev lossy rewrites "
             "through)",
             f"- English test: lossy let through {lt:.2f}; faithful rewrites superseding {kept:.2f} (the rest are kept "
-            "beside their old line)",
+            "beside their old line)" + (f"; {', '.join(kinds)}" if kinds else ""),
             "- dev table: " + ", ".join(f"{x:.2f}: L {through(dev, x)[0]:.2f} K {through(dev, x)[1]:.2f}"
                                         for x in GRID[::2])]
 
@@ -136,10 +145,35 @@ def recall_report(rows: Sequence[Mapping[str, Any]]) -> list[str]:
     return out
 
 
+# ── same fact? ──
+def choose_t_same(rows: Sequence[tuple[float, bool]]) -> float | None:
+    ok = [t for t in GRID if _rates(rows, t)[1] >= SAME_PRECISION and any(p >= t for p, _ in rows)]
+    return min(ok) if ok else None
+
+
+def same_fact_report(rows: Sequence[Mapping[str, Any]]) -> list[str]:
+    dev, test = _pl(rows, "dev"), _pl(rows, "test")
+    if not dev or not test:
+        return [f"## Same fact? (same_fact): needs dev and test items (dev {len(dev)}, test {len(test)})"]
+    t = choose_t_same(dev)
+    if t is None:
+        return ["## Same fact? (same_fact): no threshold reaches precision 0.95 on dev — reworded (B5)"]
+    rec, prec = _rates(test, t)
+    out = [f"## Same fact? (same_fact): t_same {t:.2f} (the lowest with precision ≥ 0.95 on dev)",
+           f"- English test: precision {prec:.2f}, recall {rec:.2f}"]
+    for kind in ("extended", "changed", "other"):   # the "no" kinds: how many would be dropped as duplicates (test)
+        m = [float(r["p"]) for r in rows if r.get("kind") == kind and r.get("p") is not None and r.get("split") == "test"]
+        if m:
+            out.append(f"- {kind} (test): {sum(1 for p in m if p >= t)}/{len(m)} called the same")
+    out.append("- dev table: " + ", ".join(f"{x:.2f}: R {_rates(dev, x)[0]:.2f} P {_rates(dev, x)[1]:.2f}"
+                                           for x in GRID[::2]))
+    return out
+
+
 def reports(rows: Sequence[Mapping[str, Any]]) -> list[str]:
     out: list[str] = []
     for qid, fn in (("importance", importance_report), ("memory_guard", guard_report),
-                    ("earlier", earlier_report), ("recall", recall_report)):
+                    ("earlier", earlier_report), ("recall", recall_report), ("same_fact", same_fact_report)):
         mine = [r for r in rows if r["question_id"] == qid]
         if mine:
             out += fn(mine)

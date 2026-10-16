@@ -149,7 +149,8 @@ def dup_pairs(rewrite_rows: Sequence[Mapping[str, Any]] | None = None) -> list[d
         out.append({"id": pid, "split": split_for(pid), "a": a, "b": b, "same": same, "why": why})
 
     for f in fs:
-        add(f.memory, f.reword, True, f"{f.id} reworded")
+        if f.reword:   # 22 of the 40 facts carry a rewording (the same fact); the rest only their other pairs
+            add(f.memory, f.reword, True, f"{f.id} reworded")
         add(f.memory, f.extend, False, f"{f.id} extended")
         nxt = next((g for g in fs[fs.index(f) + 1:] + fs if g.who == f.who and g.id != f.id), None)
         if nxt is not None:

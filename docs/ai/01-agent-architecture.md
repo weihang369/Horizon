@@ -242,7 +242,7 @@ probabilities for Insight.
   other candidates' rows are `not_used`, a dropped gate or a fallback is quick, and the debate's gate is used if back
   by the turn's start. The grown requests' sizes are in [m12.md](checks/m12.md).*
   *Built in M13 (OpenSpec `memory` D26–D28): "needs memories?" is replaced by "needs something from earlier?"
-  (`earlier:{characterId}`, `t_gate` 0.4), asked in the same plan requests about each candidate with something to
+  (`earlier:{characterId}`, `t_gate` 0.15 from phase 10's run, recall-first), asked in the same plan requests about each candidate with something to
   search: everyone when the session has indexed lines up to its latest summary, else the candidates whose memories
   overflow their list. Either gate's "yes" makes the speaker's turn deep. A long debate state cuts its arguments
   (each member's latest to 30 words, then the last opposing one to 120 tokens) before X9 drops any gate. An `earlier`

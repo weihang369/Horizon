@@ -51,4 +51,4 @@ def test_the_memory_knobs_load() -> None:   # M13 (memory task 2.2; doc 09 M1, M
     assert (m.block_tokens, m.half_life_days, m.recency_floor) == (1000, 30, 0.5)
     assert m.mode_weight == {"one_on_one": 1.0, "group": 1.0, "debate": 0.85, "watch": 0.7}
     assert m.weight("watch") == 0.7 and m.weight(None) == 1.0 and m.weight("seed") == 1.0
-    assert (m.min_importance, m.dup_cosine) == (0.25, 0.92)
+    assert (m.min_importance, m.dup_cosine) == (0.25, 0.85)   # M13 phase 10: dupCosine is Jev's pre-filter

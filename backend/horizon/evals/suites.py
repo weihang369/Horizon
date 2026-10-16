@@ -349,7 +349,7 @@ class Decisions:
             res.summary += m12_sets.reports(res.rows)   # M12: docs, standalone, english and D9's re-ask
             from horizon.evals import m13_sets
 
-            res.summary += m13_sets.reports(res.rows)   # M13: importance, memory_guard, earlier, recall
+            res.summary += m13_sets.reports(res.rows)   # M13: importance, memory_guard, earlier, recall, same_fact
         n_policy = sum(1 for r in res.rows if isinstance(r["label"], dict) and not r.get("invalid"))
         if self.smoke:
             res.summary.append(f"## Decisions (smoke only: {total + n_policy} item(s), never a measurement)")

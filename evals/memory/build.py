@@ -27,7 +27,7 @@ ROOT = HERE.parents[1]
 sys.path.insert(0, str(ROOT / "backend"))
 sys.path.insert(0, str(ROOT / "evals" / "datasets" / "earlier"))
 
-from facts import FACTS, SMALL_TALK, Fact, unrelated  # noqa: E402
+from facts import CHANGES, FACTS, SMALL_TALK, Fact, unrelated  # noqa: E402
 
 from horizon.evals.datachecks import split_for  # noqa: E402
 
@@ -37,50 +37,6 @@ WORLD = {"amara": "wld_seedMeridian", "mei": "wld_seedMeridian", "victor": "wld_
          "hana": "wld_seedSunnyHollow", "rin": "wld_seedSunnyHollow", "takeshi": "wld_seedSunnyHollow"}
 CAST = {"wld_seedMeridian": ["amara", "mei", "victor"], "wld_seedSunnyHollow": ["hana", "rin", "takeshi"]}
 BY_ID = {f.id: f for f in FACTS}
-
-# A planted fact changed by the stretch: Kai's line, and the line the list should end with.
-CHANGES: dict[str, tuple[str, str]] = {
-    "f04": ("I've moved my runs to evenings now, Tuesdays and Thursdays at seven.",
-            "Kai runs on Tuesdays and Thursdays at 7 p.m. after work."),
-    "f06": ("Small update: I dropped to the 10K at the Penang race, my knee wasn't having it.",
-            "Kai switched to the 10K at the Penang race in November because of his knee."),
-    "f09": ("The flat fund is at fifty thousand now, my bonus came in.",
-            "Kai is saving for a flat in Bangsar and has about RM50,000 so far."),
-    "f11": ("Mum decided: the kopitiam closes on Mondays and Tuesdays now.",
-            "Kai's mum's kopitiam in Ipoh now closes on Mondays and Tuesdays."),
-    "f13": ("I took the Singapore bank job in the end. Start in two months.",
-            "Kai took the job at a Singapore bank over his start-up and starts in two months."),
-    "f15": ("Good news, HR confirmed my non-compete is only six months, not twelve.",
-            "Kai's non-compete at his current firm is 6 months, not 12."),
-    "f18": ("The moot got moved to Sunday, and I'm arguing for the prosecution now.",
-            "Kai's Law Society moot moved to Sunday, and he argues for the prosecution."),
-    "f19": ("Grandma's party moved to the fourteenth, still white peonies though.",
-            "Kai's grandma's 80th party is on the 14th, and she loves white peonies."),
-    "f22": ("I moved flats, my new balcony faces north and gets almost no sun.",
-            "Kai's new balcony faces north and gets almost no sun."),
-    "f24": ("Mochi is on a special diet now and leaves the flowers alone, thank goodness.",
-            "Kai's cat Mochi used to chew his bouquets but now leaves the flowers alone."),
-    "f26": ("The festival moved my mural to the riverside wall instead of the school one.",
-            "Kai's Ipoh street art festival mural is now on the riverside wall."),
-    "f27": ("The cast came off early, after four weeks, I'm drawing again.",
-            "Kai broke his wrist skateboarding; the cast came off after four weeks and he draws again."),
-    "f28": ("Lantern Road moved to Saturday nights at the Old Town café.",
-            "Kai's band Lantern Road plays at the Old Town café on Saturday nights."),
-    "f31": ("I've gone fully vegetarian now, no fish on weekends either.",
-            "Kai is now fully vegetarian, fish included."),
-    "f32": ("We're twelve for the anniversary dinner now, is the back room still okay?",
-            "Kai booked the back room for his anniversary dinner with Sara on the 4th, now for 12 people."),
-    "f35": ("The stall opening slipped to April, Wei's still in.",
-            "Kai is opening a small hawker stall in April with his cousin Wei."),
-    "f03": ("I caved and went back to one coffee a day, the headaches are gone though.",
-            "Kai went back to one coffee a day after quitting; the headaches are gone."),
-    "f08": ("The four-day week pilot got extended to the whole company!",
-            "Kai's company extended its four-day week pilot to the whole company."),
-    "f14": ("My landlord returned half the deposit after I showed him the photos.",
-            "Kai's landlord returned half of the RM2,000 deposit after seeing the photos."),
-    "f20": ("Allergy test says it's only stargazer lilies, the others are fine.",
-            "Kai is allergic to stargazer lilies only, not other lilies."),
-}
 
 # The stretches: (mode, who has lists, the changed fact, the confirmed fact, the new fact, language)
 STRETCHES: list[tuple[str, list[str], str, str, str, str]] = [
