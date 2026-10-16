@@ -197,6 +197,11 @@ Why these temperatures:
 text, thinking off). Its instruction is `rewrite-2`, the last user message (D32.8): sent as a system message, it lost to
 the persona and DeepSeek replied in character. Measured on dev: 953 ms on average, and 1 of 26 past `rewriteMs`.*
 
+*Built in M13 (OpenSpec `memory` D13): the `memory` row is read by `memory-1` (temperature 0.7, JSON, thinking off).
+Its `max_tokens` is computed per call: 300 × the characters it writes for + 200, at most 3,000. A `length` answer splits
+those characters in halves, one more call each, and a parse failure is retried once. Check 1's sizes are in
+[m13.md](checks/m13.md).*
+
 ### C2. Thinking is off everywhere, including deep turns, behind a switch
 
 **Decision:** every call sends `reasoning: {enabled: false}`. Each row in C1 has a `thinking` field (`off | low |
@@ -523,7 +528,8 @@ existing `model.provider`. Prices come from the bundled config. `modelOverrides`
 - ~~The debate argument and host prompts (task 8).~~ Resolved by doc 08 V4, V6 and V8. *Built in M11 (`debate` D10,
   D11, D13): the per-phase debate cue (prompt labels `agent-7`/`agent-8`), the host lines and the verdict prose.*
 - ~~The summary and memory-extraction prompts and schemas (task 9).~~ Resolved by doc 05 X3 (summary) and doc 09 M3
-  (memory extraction).
+  (memory extraction). *Built in M13 (`memory` D13): `memory-1`, one call per pause piece rewriting every present
+  character's list, with doc 09 M3's never-store rules in its system prompt.*
 - ~~Whether a multi-document deep question should ever think (task 10, with eval data).~~ Resolved by doc 10 K14:
   off, revisited only on eval data. *M12 (`rag`) keeps thinking off on deep replies and on the rewrite. Its suites
   score retrieval and the Not-found reply, not multi-document answers, so the question stays with M15's

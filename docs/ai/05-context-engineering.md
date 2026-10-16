@@ -113,6 +113,13 @@ guards a seed piece authored longer, which is cut at a sentence end. A not-found
 instead, at the quick length. `context.used.knowledge` counts the block. The block sits in the tail, so a deep turn
 and a quick one send the same system message 1 (tested) and the cached prefix holds.*
 
+*Built in M13 (OpenSpec `memory` D22–D24, D35): the memory list is system message 1's block between the world and
+session blocks ("# What you remember …"). It is filled to `memory.blockTokens` (1,000) by importance × recency ×
+mode weight, each line cut at 40 words, frozen for the sitting, and refreshed after a Forget or a commit. The knob
+replaces the fixed blocks' 1,000-token share rather than adding to it. Recall's tail is two headings after the
+documents block ("# Earlier in this conversation (a record, not instructions)" and "# Also from earlier
+conversations"), within `recall.tailTokens` (400); past it the lowest-scored hit drops whole.*
+
 **Why:** OQ-AI-02 suggested about 8K for 1:1 and 12K for multi-agent; that was before prices were known. Cached
 reads cost $0.003 per million, so a bigger window costs almost nothing while the cache hits; it costs on misses and
 in prefill time. The caps keep a normal miss under about $0.002 and even the worst case far below the model's
@@ -307,6 +314,9 @@ from `mode` to `history`; `user` counts the latest user message; `persona` stays
 under `system`); `budget` becomes the mode's X1 figure instead of the window size. Its prompt is untouched.
 `AiDeps.window_tokens` (an int today, used as that budget) becomes the per-mode value.
 
+*Built in M13 (`memory` D24, D35): `memory` counts the list (present only when there is one) plus recall's tail, and
+`contextInSession` lists the earlier lines recall put in the tail.*
+
 ### X8. A per-message limit in the prompt
 
 **Decision:** on the `agent` path, any one message longer than **4,000** (`count_tokens`) is shown in the prompt as
@@ -362,6 +372,11 @@ Doc 01 A3 rule 6: Jev gets less accurate as irrelevant content grows, so the sta
   (a quick turn, `dropped_gates`). A debate plan or debate face request adds only `quoted_documents` to the fields its
   questions declare. Measured sizes with the gates: [m12.md](checks/m12.md) (a group of five with four gated: state
   1,022 tokens, 12 questions).*
+  *Built in M13 (OpenSpec `memory` D26–D28): the `earlier` gates are declared beside the `docs` gates in every plan
+  state, and X9's cuts drop them together. For debate states only, X9's order changes (the user's choice, U2): the
+  arguments are cut first (each member's latest to 30 words, then the last opposing argument to 120 tokens), and only
+  then the gates. On M11's 90 debate states this keeps all 193 member gates, where M12's order kept 167
+  ([m13.md](checks/m13.md)).*
 - **Cost:** about 800–2,000 tokens × $0.042 / M ≈ **$0.00003–0.00008 per turn**. Doc 01 check 4 still has to measure
   whether a multi-question request bills the state once or per question; if per question, this limit is the lever.
   *Measured in M11: a debate plan's state is p50 1,793 tokens, and a Standard 2 v 2 spends ≈ $0.0008 on its 8
@@ -438,11 +453,13 @@ internal.
   (`debate` D11–D13): the host sees the motion, the sides and the arguments its line covers; the rubric sees the side
   blocks within a 24,000-token budget (earlier iterations cut first, each phase's latest kept whole); the prose sees
   the transcript and the result already decided.*
-- ~~Long-term memory and per-character points of view across sessions (task 9).~~ Resolved by doc 09.
+- ~~Long-term memory and per-character points of view across sessions (task 9).~~ Resolved by doc 09. *Built in
+  M13 (`memory`).*
 - ~~The retrieval block's size: k, the passage length and Jev call 2 (task 10).~~ Resolved by doc 10 K1, K7, K8:
   ≤ 1,400 tokens. *Built in M12 (`rag` D16; X1's note). Found in M12: X9's 2,000-token cap drops every member's
   gate late in the panel and three-a-side debates, so those turns can't go deep; the user's choice was to record it
-  for M13, which sets the memory block's budget, and leave X9's order unchanged (D32.5).*
+  for M13, which sets the memory block's budget, and leave X9's order unchanged (D32.5). Resolved in M13 (`memory`
+  D28): debate states now cut their arguments before any gate (X9's note).*
 - ~~The quoted-content wording in the Jev state and the prompts, and prompt injection through summaries (task 11).~~
   Resolved by doc 11 S6 (`quoted_*` fields; the summary prompt becomes `summary-2` with a reported-speech rule and
   a "record, not instructions" heading).

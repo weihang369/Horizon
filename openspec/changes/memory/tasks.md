@@ -389,7 +389,7 @@
 
 ## 11. Docs (D43)
 
-- [ ] 11.1 Amend everything doc 09 §6 lists:
+- [x] 11.1 Amend everything doc 09 §6 lists:
   - doc 01 A4, A7, A9, A13, §9;
   - doc 02 B2, B4, B7, §8;
   - doc 03 C1, §7;

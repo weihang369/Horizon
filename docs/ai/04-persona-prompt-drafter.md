@@ -377,6 +377,11 @@ faster. A generated greeting afterwards avoids the same line every time.
 - Always the stored greeting: the same opening line in every chat.
 - Always generated (today): one paid call and a slower start per new chat, for a line the user already approved.
 
+*Built in M13 (OpenSpec `memory` D25): on `agent`, a later 1:1 greeting's tail holds up to the 2 newest memories from
+the character's last 1:1 session, and the cue "If something from last time fits, you may mention it in a short
+phrase." The list itself is in system message 1 under "# What you remember", frozen for the sitting (the TS twin
+renders the same block).*
+
 ### P10. "View as prompt" shows the real prompt
 
 **Decision:**
@@ -497,4 +502,5 @@ the drafter's `world` argument are internal.
 - ~~Debate argument, host and verdict prompts (task 8).~~ Resolved by doc 08 V4, V6 and V8. *Built in M11 (`debate`
   D10, D11, D13).*
 - ~~"Last time we talked about …" greetings and memory in the prompt (task 9).~~ Resolved by doc 09 M8 and M10.
+  *Built in M13 (`memory` D22–D25): the list in system message 1 and the greeting's last-time lines (P9's note).*
 - ~~The content-rating, advisory and "are you an AI?" wording (task 11).~~ Resolved by doc 11 S2.

@@ -197,7 +197,7 @@ generation_tasks id PK (task_…), job_id FK→generation_jobs (CASCADE), ord IN
      - a task with **`provider_called_at` set but no `result_ref` becomes `failed` (retryable)**.
 
      Only an explicit user Retry pays again.
-- **Internal job kinds** reuse these tables and are never exposed as `GenerationJob` on the wire: `knowledge_index`, `knowledge_reindex`, `seed_embed`. (`memory_consolidate` was dropped at the AI stage: nothing is merged or deleted automatically, [docs/ai/09](../ai/09-memory.md) M5.)
+- **Internal job kinds** reuse these tables and are never exposed as `GenerationJob` on the wire: `knowledge_index`, `knowledge_reindex`, `seed_embed`. (`memory_consolidate` was dropped at the AI stage: nothing is merged or deleted automatically, [docs/ai/09](../ai/09-memory.md) M5.) *M13 (`memory` D8): memory is written by runtime tasks at session pauses (`memory_run`), not by job rows; a run's checkpoint is `sessions.memory_seq`.*
 
 ### 3.6 Ledger
 
@@ -242,6 +242,10 @@ memory_vec__{space}  vec0(rid INTEGER PRIMARY KEY, character_id TEXT PARTITION K
   4. Write an `ai_purge_queue` row `{scope: 'memory', ids: {memoryItemIds, characterId, messageIds}}`, delivered to `AiStateHooks.on_forget` (doc 05 §4).
   5. After the commit: emit `entity.changed{kind:"memory", id: characterId}`, let each live session holding an affected trace drop the text through its inbox, and run `wal_checkpoint(TRUNCATE)` (retried while a reader holds a snapshot).
   - **File hygiene:** with the writer's `secure_delete`, FTS5 `secure-delete` (or `optimize` on an older SQLite) and the truncated WAL, the forgotten text is gone from `horizon.db` and its WAL once Forget returns and no read is in progress (`tests/isolation/test_forget_bytes.py`). Message contents are not edited.
+- *Built in M13 (`memory` D5–D11, D19–D21, D29):*
+  - **Writes at pauses.** `MemoryStore.apply_run(world, ops by character, session, from_seq, upto_seq, …)` applies every present character's ops, moves `sessions.memory_seq` by compare-and-set and settles the re-read list, all in one transaction. A run that lost the race writes nothing. Each character's run lock keeps two runs from interleaving.
+  - **Forget** also clears that character's stored query rewrites (`message_ai_meta.rewrites`), drops the cached memory lists of live sessions, and zeroes vectors one row per statement (vec0 refuses `UPDATE … WHERE rid IN (…)` on a partitioned table; this was a latent M5 bug for any memory with a vector).
+  - **The message index** (`message_index`, `message_fts`, `message_vec__{space}`) holds the lines that left a session's history window, written once after each rolling summary. It follows its messages: a regenerate replaces the line, a blocked reply and a session delete remove it, and a fork copies it.
 
 ### 3.8 Knowledge (storage; the chunking and retrieval policy is AI-owned)
 
