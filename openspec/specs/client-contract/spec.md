@@ -190,3 +190,10 @@ Rev 1.4 SHALL add one optional field, `TurnTrace.system1`, with the shape in the
 #### Scenario: Scripted and mock rows validate
 - **WHEN** the scripted backend and the MockClient each produce a group turn's trace
 - **THEN** both traces' `system1` sections pass the exported schema, and the schema-export and fixture checks pass
+
+### Requirement: Both clients hide a dangling memory source
+The MockClient SHALL apply the same read-time rule as the backend: a memory whose source session no longer exists SHALL be listed without `sourceSessionId`. The portable contract suite SHALL check it on both clients.
+
+#### Scenario: Portable check
+- **WHEN** the portable suite deletes a session that is a memory's source and lists the character's memories
+- **THEN** on both clients that memory has no `sourceSessionId`

@@ -107,7 +107,7 @@ When a reply's paid call is recorded, the backend SHALL drain the speaker's ener
 - **THEN** an `energy` event with `spent: 4` follows its `turn.end`, and the character's energy read afterwards is 4 points lower than before the turn, net of regeneration
 
 ### Requirement: Daily cap pauses live sessions
-When recorded spend reaches the daily cap, or a session's paid call is refused by it, every active live session SHALL pause with `pausedReason: "daily_budget"`, after letting a reply already streaming finish. A refused turn SHALL leave no message. Any further command that would spend in that session SHALL be rejected with `daily_budget_exceeded` until spend is below the cap again, for example after the day rolls over or the cap is raised.
+When recorded spend reaches the daily cap, or a session's paid call is refused by it, every active live session SHALL pause with `pausedReason: "daily_budget"`, after letting a reply already streaming finish. A refused turn SHALL leave no message. Any further command that would spend in that session SHALL be rejected with `daily_budget_exceeded` until spend is below the cap again, for example after the day rolls over or the cap is raised. Spend or a refusal from memory pause runs and window-drop indexing SHALL NOT pause any session.
 
 #### Scenario: Cap reached by the greeting
 - **WHEN** the daily cap is $0.00005 and a character's second new 1:1 session generates its greeting
@@ -116,6 +116,10 @@ When recorded spend reaches the daily cap, or a session's paid call is refused b
 #### Scenario: The first chat's greeting costs nothing
 - **WHEN** the daily cap is $0.00005 with nothing spent today, and a character's first new 1:1 session opens
 - **THEN** the approved greeting completes, no `budget.reached` is sent, and the session stays `active`
+
+#### Scenario: A pause run crosses the cap
+- **WHEN** a pause run's `memory` call takes spend over the daily cap while another session is active
+- **THEN** that session stays active until its own next paid call meets the cap
 
 ### Requirement: Discarded prefetches still drain energy
 Opening turns generated ahead of their speaking slot (at most 2 at a time) SHALL be held back unsequenced and released at speaking pace. When Stop discards them, their spend SHALL stay in the ledger with no message ID and SHALL drain each speaker's energy (D-77). Nothing from a discarded prefetch SHALL appear in the session's events.
@@ -146,15 +150,19 @@ At `turn.end`, the backend SHALL keep only the citations whose marker `[n]` appe
 - **THEN** `turn.end.citations` holds only citation 1, and one `message_citations` row exists for the message
 
 ### Requirement: A blocked reply is scrubbed
-When the output guardrail blocks a reply after it has streamed, the backend SHALL end the turn with `status: "error"` and `content_refused`. It SHALL remove the reply's text from the stored message and from its stored `token` events, and SHALL exclude the reply from memory: the reply SHALL NOT be passed to the memory writer, and any memory derived from it SHALL be forgotten in the same way as a user Forget.
+When the output guardrail blocks a reply after it has streamed, the backend SHALL end the turn with `status: "error"` and `content_refused`. It SHALL remove the reply's text from the stored message and from its stored `token` events, and SHALL exclude the reply from memory: no pause run SHALL read the reply, and any still-current memory derived from that message SHALL be undone as a changed read message is (see `long-term-memory`), so memories it only superseded become current again.
 
 #### Scenario: Blocked after streaming
 - **WHEN** the output guardrail blocks a completed reply
 - **THEN** `turn.end` has `status: "error"`, the `error` event has `content_refused`, and neither the message content nor any stored `token` event contains the reply's text
 
 #### Scenario: Blocked reply leaves no memory
-- **WHEN** a memory writer that would remember every reply is attached and the output guardrail blocks a reply
-- **THEN** the memory writer is not called for that reply, and no memory has that message as its source
+- **WHEN** a reply is blocked and the session then pauses
+- **THEN** the run's input does not hold the reply, and no memory has that message as its source
+
+#### Scenario: Blocked regenerate keeps older memories
+- **WHEN** memory B, sourced from a read reply, superseded memory A, and a regenerate of that reply is blocked
+- **THEN** B is gone and A is current again
 
 ### Requirement: The reply cap is chosen after the plan
 The runtime SHALL choose a reply's `max_tokens` after retrieval and after the turn's plan is known, from the mode and whether the plan made the turn deep. With no plan, or a plan that made the turn quick (every plan in M9), the turn SHALL use the quick cap. Prefetched turns SHALL follow the same rule.
@@ -190,7 +198,7 @@ After a turn that did not end in error, the runtime SHALL ask the session's summ
 - **THEN** the next speaker's `turn.next` follows the turn gap (or, for a follow plan's second reply, the follow plan's answer), whether or not the summary call has returned
 
 ### Requirement: After-turn tasks are named and cancellable
-Work started after a turn (reactions, the face check, the watch plan made ahead, the rolling summary, the memory writer) SHALL run as named tasks owned by the session's actor. `clear()` (Stop, leave, a cap pause, Summarise, the session's end) SHALL cancel the session's pending reactions, face checks and plans made ahead, and SHALL leave the rolling summary and the memory writer running.
+Work started after a turn (reactions, the face check, the watch plan made ahead, the rolling summary and the indexing of the lines it drops) SHALL run as named tasks owned by the session's actor. `clear()` (Stop, leave, a cap pause, Summarise, the session's end) SHALL cancel the session's pending reactions, face checks and plans made ahead, and SHALL leave the rolling summary and its indexing running. Memory pause runs SHALL NOT be actor tasks (see `long-term-memory`).
 
 #### Scenario: Stop cancels reactions and the check
 - **WHEN** Stop is sent while a reaction and a face check are pending and a rolling summary is running
@@ -199,6 +207,10 @@ Work started after a turn (reactions, the face check, the watch plan made ahead,
 #### Scenario: Stop cancels the plan made ahead
 - **WHEN** Stop is sent in an `agent` watch while the next turn's plan is being made ahead
 - **THEN** that plan's ledger row has outcome `cancelled`, and no later turn uses it
+
+#### Scenario: A pause run doesn't hold the actor
+- **WHEN** a session's pause run is in flight and the session has no subscriber and no other work for 10 minutes of clock time
+- **THEN** the session's actor is released, and the run still commits
 
 ### Requirement: A turn announces itself only for the current reply epoch
 Each user message in a group or a Step in SHALL start a new reply epoch, under the writer lock, before the message is appended. A turn queued for an earlier epoch SHALL append its `turn.next` only if no newer epoch exists at that moment, checked under the same lock. A turn that fails the check SHALL emit nothing, and its plan and prefetch SHALL be discarded (their spend and drain stand).
@@ -231,3 +243,10 @@ When a mode passes a frozen per-turn plan with a turn, the runtime SHALL use it 
 #### Scenario: A planned group reply
 - **WHEN** an `agent` group reply runs with the cast plan's per-turn plan
 - **THEN** its turn context holds that plan, no second `turn_plan` request is made for it, and no retrieval runs
+
+### Requirement: The runtime keeps each sitting's memory list
+The runtime SHALL read each `agent` speaker's memory list once per sitting, when it first builds that speaker's view, and reuse it for every later turn of the sitting. It SHALL drop it when one of its memories is forgotten or when a pause run commits memories for that character, so the next turn reads it again.
+
+#### Scenario: Run commits in another tab
+- **WHEN** a run in session A commits a memory for Amara while session B with Amara is live
+- **THEN** B's next Amara turn shows the new memory in its list, and the turn after it sends the same system message
