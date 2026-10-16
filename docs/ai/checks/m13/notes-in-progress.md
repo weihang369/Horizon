@@ -69,3 +69,22 @@
     - `dupCosine`: no cosine separates a reworded fact (0.81–0.97) from an extension (0.97–0.99); at 0.92 only 34 %
       of dev hits are true duplicates. **Choice: Jev decides** ("same fact?" for an add whose nearest memory is
       at or above the cosine pre-filter), validated on the labelled pairs.
+19. Runs 2026-10-16 (19:13–19:35 KL), all off-peak, folders `.keep`:
+    - decisions: importance (20261016T111255, $0.0024), memory_guard v1 (111343, $0.0023), earlier (111456, $0.0030),
+      recall (111559, $0.0022); memory_guard v2 (113017, $0.0031) → `t_keep` 0.35 (v3): test lossy through 0.04,
+      changed 7/7 and faithful 1.00 supersede; same_fact (113154, $0.0022): "different" pairs p 0.01–0.03, rewordings
+      0.25–0.95, policy 121/122; the literal rule gives `t_same` 0.05 (grid bottom) — goes to the user.
+    - rewrite (111302, $0.0156): 37/37 valid, no `length`; output p50 240 / max 697 tokens (35 % / 63 % of the cap);
+      the 8,000-token piece ≈ 8,985 in, 294 out of 500. Rewritten, not duplicated 35/40 (88 %, 0.74–0.95); untouched
+      503/503; secrets 0/6; small talk 0/6 over one line; guard kept beside 16 (v1 at 0.70).
+    - rewrite again with guard v3 (113323, $0.0009: every memory-1 call served by the store): kept beside 6.
+    - dup sweep (111646, $0.00002 after the empty-reword fix; the first try (111558) failed on an empty text, no
+      spend): no cosine reaches 95 % precision (rewordings 0.81–0.97, extensions 0.97–0.99).
+    - layer 3 (111309, $0.0416): probe use 37/40 (92 %, 0.80–0.97) ✓; 67 memories written, 0 duplicates; over-mention
+      20/40 by an unvalidated judge.
+    - B4 for the four new judges (113432, $0.0022; real items labelled from the states, `m13_real.json`):
+      missed PASS (real 0.90), unsupported PASS (0.90), lost FAIL (0.50, n 18: it counts the conversation's own
+      changes as losses), over_mention FAIL (0.63: it can't see the recent lines, and counts the character's own life).
+    - Read by hand: supported 80/81 (the one real case is a perspective leak: Hana's line says the band "moved from
+      Fridays", a detail only Rin's list held); lost after guard v3: 3 of 18 unique supersedes (a past event, a
+      reaction's severity, the firm).

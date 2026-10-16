@@ -106,14 +106,34 @@ def over_mention() -> list[dict[str, Any]]:
     return out
 
 
+REAL = HERE / "m13_real.json"
+
+
+def real(qid: str) -> list[dict[str, Any]]:
+    """B4's real items: states saved by the first paid memory run (`judge_states.jsonl`), labelled by hand in
+    `m13_real.json` from the state alone (`evals/reviews/m13-review.md` says which answers had been seen)."""
+    if not REAL.is_file():
+        return []
+    out = []
+    for r in json.loads(REAL.read_text(encoding="utf-8")):
+        if r["question_id"] != qid:
+            continue
+        item_id = f"{qid}-real-{len(out) + 1:03d}"
+        out.append({"id": item_id, "question_id": qid, "split": split_for(item_id), "item": {"state": r["state"]},
+                    "label": r["label"], "planted": False, "source": r["source"]})
+    return out
+
+
 def main() -> int:
     sets = {"judge_memory_missed": missed(), "judge_memory_unsupported": unsupported(), "judge_memory_lost": lost(),
             "judge_over_mention": over_mention()}
+    sets = {qid: [*rows, *real(qid)] for qid, rows in sets.items()}
     for qid, rows in sets.items():
         path = HERE / f"{qid}.jsonl"
         path.write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows), encoding="utf-8")
         yes = sum(r["label"] == "yes" for r in rows)
-        print(f"{qid}: {len(rows)} planted ({yes} yes) -> {path.relative_to(ROOT).as_posix()}")
+        n_real = sum(1 for r in rows if not r["planted"])
+        print(f"{qid}: {len(rows) - n_real} planted + {n_real} real ({yes} yes) -> {path.relative_to(ROOT).as_posix()}")
     return 0
 
 

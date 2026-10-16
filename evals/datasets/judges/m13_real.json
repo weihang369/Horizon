@@ -1,0 +1,1052 @@
+[
+ {
+  "question_id": "judge_memory_missed",
+  "source": "20261016T111302-memory-e98ed0/mrw-001",
+  "state": {
+   "quoted_expected": "rewrite: Kai runs on Tuesdays and Thursdays at 7 p.m. after work.",
+   "quoted_written": "Kai now runs in the evenings, Tuesdays and Thursdays at 7 p.m., instead of early mornings.\nKai donated blood for the first time and nearly fainted afterward."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_missed",
+  "source": "20261016T111302-memory-e98ed0/mrw-002",
+  "state": {
+   "quoted_expected": "rewrite: Kai switched to the 10K at the Penang race in November because of his knee.",
+   "quoted_written": "Kai dropped to the 10K at the Penang race because his knee wasn't having it.\nKai's sister Mia started night shifts at the hospital in Ipoh last week."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_missed",
+  "source": "20261016T111302-memory-e98ed0/mrw-003",
+  "state": {
+   "quoted_expected": "rewrite: Kai is saving for a flat in Bangsar and has about RM50,000 so far.",
+   "quoted_written": "Kai is saving for a flat in Bangsar and has about RM50,000 so far, after his bonus came in."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_missed",
+  "source": "20261016T111302-memory-e98ed0/mrw-003",
+  "state": {
+   "quoted_expected": "add: Kai keeps every receipt in a shoebox and does his taxes the night before the deadline.",
+   "quoted_written": "Kai is saving for a flat in Bangsar and has about RM50,000 so far, after his bonus came in."
+  },
+  "label": "yes"
+ },
+ {
+  "question_id": "judge_memory_missed",
+  "source": "20261016T111302-memory-e98ed0/mrw-004",
+  "state": {
+   "quoted_expected": "add: Kai's company is piloting a four-day week from January, only for the design team.",
+   "quoted_written": "Kai took the Singapore bank job and starts in two months, leaving his start-up.\nKai's company is piloting a four-day week from January, but only for the design team."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_missed",
+  "source": "20261016T111302-memory-e98ed0/mrw-005",
+  "state": {
+   "quoted_expected": "add: Kai's neighbour renovates from 7 a.m. every day, Sundays included.",
+   "quoted_written": "(nothing)"
+  },
+  "label": "yes"
+ },
+ {
+  "question_id": "judge_memory_missed",
+  "source": "20261016T111302-memory-e98ed0/mrw-006",
+  "state": {
+   "quoted_expected": "rewrite: Kai's grandma's 80th party is on the 14th, and she loves white peonies.",
+   "quoted_written": "Kai's grandma's 80th birthday party moved to the 14th; she still loves white peonies.\nKai's mum is in hospital for knee surgery on Thursday."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_missed",
+  "source": "20261016T111302-memory-e98ed0/mrw-006",
+  "state": {
+   "quoted_expected": "add: Kai's mum has knee surgery in hospital on Thursday.",
+   "quoted_written": "Kai's grandma's 80th birthday party moved to the 14th; she still loves white peonies.\nKai's mum is in hospital for knee surgery on Thursday."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_missed",
+  "source": "20261016T111302-memory-e98ed0/mrw-007",
+  "state": {
+   "quoted_expected": "rewrite: Kai is now fully vegetarian, fish included.",
+   "quoted_written": "Kai is now fully vegetarian, no fish on weekends either.\nKai's dad once ran a noodle shop in Ipoh called Old Lin Noodle House."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_missed",
+  "source": "20261016T111302-memory-e98ed0/mrw-008",
+  "state": {
+   "quoted_expected": "rewrite: Kai's new balcony faces north and gets almost no sun.",
+   "quoted_written": "Kai moved flats; his new balcony faces north and gets almost no sun.\nKai's grandmother taught Kai flower arranging as a child, but Kai has forgotten it all."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_missed",
+  "source": "20261016T111302-memory-e98ed0/mrw-008",
+  "state": {
+   "quoted_expected": "add: Kai's grandmother taught him flower arranging as a child, but he has forgotten it.",
+   "quoted_written": "Kai moved flats; his new balcony faces north and gets almost no sun.\nKai's grandmother taught Kai flower arranging as a child, but Kai has forgotten it all."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_missed",
+  "source": "20261016T111302-memory-e98ed0/mrw-009",
+  "state": {
+   "quoted_expected": "rewrite: Kai went back to one coffee a day after quitting; the headaches are gone.",
+   "quoted_written": "(nothing)"
+  },
+  "label": "yes"
+ },
+ {
+  "question_id": "judge_memory_missed",
+  "source": "20261016T111302-memory-e98ed0/mrw-009",
+  "state": {
+   "quoted_expected": "add: Kai's sister Mia works night shifts at the hospital in Ipoh.",
+   "quoted_written": "(nothing)"
+  },
+  "label": "yes"
+ },
+ {
+  "question_id": "judge_memory_missed",
+  "source": "20261016T111302-memory-e98ed0/mrw-010",
+  "state": {
+   "quoted_expected": "add: Kai keeps every receipt in a shoebox and does his taxes the night before the deadline.",
+   "quoted_written": "Kai's company's four-day week pilot, originally only for the design team, was extended to the whole company."
+  },
+  "label": "yes"
+ },
+ {
+  "question_id": "judge_memory_missed",
+  "source": "20261016T111302-memory-e98ed0/mrw-011",
+  "state": {
+   "quoted_expected": "add: Kai's neighbour renovates from 7 a.m. every day, Sundays included.",
+   "quoted_written": "Kai's Law Society moot moved to Sunday, and Kai is now arguing for the prosecution.\nKai's neighbour's renovation starts at seven every morning, even on Sundays."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_missed",
+  "source": "20261016T111302-memory-e98ed0/mrw-012",
+  "state": {
+   "quoted_expected": "rewrite: Kai's cat Mochi used to chew his bouquets but now leaves the flowers alone.",
+   "quoted_written": "Kai's cat Mochi is on a special diet now and leaves the flowers alone.\nKai's mum is in hospital for knee surgery on Thursday."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_missed",
+  "source": "20261016T111302-memory-e98ed0/mrw-013",
+  "state": {
+   "quoted_expected": "rewrite: Kai's band Lantern Road plays at the Old Town café on Saturday nights.",
+   "quoted_written": "Kai's band Lantern Road plays at the Old Town café on Saturday nights, moved from Fridays."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_missed",
+  "source": "20261016T111302-memory-e98ed0/mrw-013",
+  "state": {
+   "quoted_expected": "add: Kai is red-green colour-blind.",
+   "quoted_written": "Kai's band Lantern Road plays at the Old Town café on Saturday nights, moved from Fridays."
+  },
+  "label": "yes"
+ },
+ {
+  "question_id": "judge_memory_missed",
+  "source": "20261016T111302-memory-e98ed0/mrw-014",
+  "state": {
+   "quoted_expected": "rewrite: Kai booked the back room for his anniversary dinner with Sara on the 4th, now for 12 people.",
+   "quoted_written": "Kai booked the back room for his anniversary dinner with Sara on the 4th; the party is now 12 people.\nKai is opening a small hawker stall in March with his cousin Wei."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_missed",
+  "source": "20261016T111302-memory-e98ed0/mrw-014",
+  "state": {
+   "quoted_expected": "add: Kai is opening a small hawker stall in March with his cousin Wei.",
+   "quoted_written": "Kai booked the back room for his anniversary dinner with Sara on the 4th; the party is now 12 people.\nKai is opening a small hawker stall in March with his cousin Wei."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_missed",
+  "source": "20261016T111302-memory-e98ed0/mrw-016",
+  "state": {
+   "quoted_expected": "rewrite: Kai broke his wrist skateboarding; the cast came off after four weeks and he draws again.",
+   "quoted_written": "Kai's wrist cast came off early after four weeks; he can draw again.\nKai is making a zine about old coffee shops; the first issue is finished."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_missed",
+  "source": "20261016T111302-memory-e98ed0/mrw-016",
+  "state": {
+   "quoted_expected": "add: Kai is making a zine about old coffee shops, and the first issue is done.",
+   "quoted_written": "Kai's wrist cast came off early after four weeks; he can draw again.\nKai is making a zine about old coffee shops; the first issue is finished."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_missed",
+  "source": "20261016T111302-memory-e98ed0/mrw-017",
+  "state": {
+   "quoted_expected": "rewrite: Kai's Ipoh street art festival mural is now on the riverside wall.",
+   "quoted_written": "Kai is entering the Ipoh street art festival with a mural, now moved from his old school to the riverside wall.\nKai takes his coffee black with no sugar, ever since he worked in Melbourne."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_missed",
+  "source": "20261016T111302-memory-e98ed0/mrw-017",
+  "state": {
+   "quoted_expected": "add: Kai takes his coffee black with no sugar, a habit from working in Melbourne.",
+   "quoted_written": "Kai is entering the Ipoh street art festival with a mural, now moved from his old school to the riverside wall.\nKai takes his coffee black with no sugar, ever since he worked in Melbourne."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_missed",
+  "source": "20261016T111302-memory-e98ed0/mrw-018",
+  "state": {
+   "quoted_expected": "rewrite: Kai's cat Mochi used to chew his bouquets but now leaves the flowers alone.",
+   "quoted_written": "Kai's cat Mochi is on a special diet now and leaves the flowers alone.\nKai is colour-blind; red and green look the same to him."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_missed",
+  "source": "20261016T111302-memory-e98ed0/mrw-019",
+  "state": {
+   "quoted_expected": "add: Kai is the executor of his grandfather's will, and his uncles are arguing over it.",
+   "quoted_written": "Kai's landlord returned half the RM2,000 deposit after Kai showed him photos of the carpet stain.\nKai is the executor of his grandfather's will, and his uncles are already arguing about it."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_missed",
+  "source": "20261016T111302-memory-e98ed0/mrw-020",
+  "state": {
+   "quoted_expected": "add: Kai is choosing between a job at a Singapore bank and staying at his start-up.",
+   "quoted_written": "Kai's mum runs a small kopitiam in Ipoh and decided it now closes on Mondays and Tuesdays."
+  },
+  "label": "yes"
+ },
+ {
+  "question_id": "judge_memory_missed",
+  "source": "20261016T111302-memory-e98ed0/mrw-023",
+  "state": {
+   "quoted_expected": "rewrite: Kai is opening a small hawker stall in April with his cousin Wei.",
+   "quoted_written": "Kai is opening a small hawker stall in April with his cousin Wei.\nKai broke his wrist skateboarding and can't draw for six weeks."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_missed",
+  "source": "20261016T111302-memory-e98ed0/mrw-024",
+  "state": {
+   "quoted_expected": "rewrite: Kai booked the back room for his anniversary dinner with Sara on the 4th, now for 12 people.",
+   "quoted_written": "Kai booked the back room for his anniversary dinner with Sara on the 4th; the party is now twelve people.\nKai is learning Spanish with twice-weekly online classes and plans to go to Barcelona next year."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_missed",
+  "source": "20261016T111302-memory-e98ed0/mrw-024",
+  "state": {
+   "quoted_expected": "add: Kai is learning Spanish with online classes twice a week, for a trip to Barcelona next year.",
+   "quoted_written": "Kai booked the back room for his anniversary dinner with Sara on the 4th; the party is now twelve people.\nKai is learning Spanish with twice-weekly online classes and plans to go to Barcelona next year."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_unsupported",
+  "source": "20261016T111302-memory-e98ed0/mrw-003",
+  "state": {
+   "quoted_line": "Kai is saving for a flat in Bangsar and has about RM50,000 so far, after his bonus came in.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nMei: Hi Kai, good to see you.\nKai: The flat fund is at fifty thousand now, my bonus came in.\nMei: Oh, that's a change. Thanks for telling me.\nKai: I got my first ever pay rise, eight percent, after asking for it straight out.\nMei: Yes, I remember you saying that.\nKai: I keep every receipt in a shoebox and do my taxes the night before the deadline.\nMei: Good to know, I'll keep that in mind.",
+   "quoted_memories": "Kai is saving for a flat in Bangsar and has about RM40,000 so far.\nKai signed a 12-month non-compete when he joined his current firm.\nKai's grandma turns 80 on the 12th and loves white peonies.\nKai's balcony faces west and gets harsh afternoon sun.\nKai got his first pay rise, 8 %, after asking for it directly.\nKai is entering the Ipoh street art festival with a mural of his old school.\nKai can't eat shellfish; it sends him to hospital.\nKai has been making ramen at home, but his broth tastes flat.\nKai keeps every receipt in a shoebox and does his taxes the night before the deadline.\nKai is red-green colour-blind.\nKai likes long walks after dinner.\nKai prefers window seats on trains.\nKai's favourite fruit is mangosteen.\nKai reads before bed most nights."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_unsupported",
+  "source": "20261016T111302-memory-e98ed0/mrw-006",
+  "state": {
+   "quoted_line": "Kai's grandma's 80th birthday party moved to the 14th; she still loves white peonies.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nHana: Hi Kai, good to see you.\nKai: Grandma's party moved to the fourteenth, still white peonies though.\nHana: Oh, that's a change. Thanks for telling me.\nKai: I proposed to Sara at the botanical gardens and she said yes!\nHana: Yes, I remember you saying that.\nKai: My mum is in hospital for knee surgery on Thursday.\nHana: Good to know, I'll keep that in mind.",
+   "quoted_memories": "Kai's grandma turns 80 on the 12th and loves white peonies.\nKai has been making ramen at home, but his broth tastes flat.\nKai keeps every receipt in a shoebox and does his taxes the night before the deadline.\nKai is red-green colour-blind.\nKai proposed to Sara at the botanical gardens, and she said yes.\nKai quit coffee three weeks ago and had headaches that are now easing.\nKai is training for the Penang half marathon in November.\nKai got his first pay rise, 8 %, after asking for it directly.\nKai's landlord kept his whole RM2,000 deposit over a carpet stain.\nKai is in the Law Society moot next Saturday, arguing for the defence.\nKai's cat Mochi chewed up his last bouquet.\nKai broke his wrist skateboarding and can't draw for six weeks.\nKai is vegetarian on weekdays and eats fish on weekends.\nKai likes long walks after dinner.\nKai prefers window seats on trains."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_unsupported",
+  "source": "20261016T111302-memory-e98ed0/mrw-007",
+  "state": {
+   "quoted_line": "Kai's dad once ran a noodle shop in Ipoh called Old Lin Noodle House.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nTakeshi: Hi Kai, good to see you.\nKai: I've gone fully vegetarian now, no fish on weekends either.\nTakeshi: Oh, that's a change. Thanks for telling me.\nKai: I've been trying to make ramen at home but my broth always tastes flat.\nTakeshi: Yes, I remember you saying that.\nKai: 我爸以前在怡保开过一家面馆，叫老林面家。\nTakeshi: Good to know, I'll keep that in mind.",
+   "quoted_memories": "Kai is vegetarian on weekdays and eats fish on weekends.\nKai's mum has knee surgery in hospital on Thursday.\nKai is allergic to penicillin; it gave him hives as a child.\nKai's dad had heart bypass surgery two years ago, and Kai worries about his own blood pressure.\nKai has been making ramen at home, but his broth tastes flat.\nKai is saving for a flat in Bangsar and has about RM40,000 so far.\nKai is choosing between a job at a Singapore bank and staying at his start-up.\nKai is the executor of his grandfather's will, and his uncles are arguing over it.\nKai likes long walks after dinner.\nKai prefers window seats on trains.\nKai's favourite fruit is mangosteen."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_unsupported",
+  "source": "20261016T111302-memory-e98ed0/mrw-008",
+  "state": {
+   "quoted_line": "Kai moved flats; his new balcony faces north and gets almost no sun.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nHana: Hi Kai, good to see you.\nKai: I moved flats, my new balcony faces north and gets almost no sun.\nHana: Oh, that's a change. Thanks for telling me.\nKai: I'm terribly allergic to lilies, my eyes swell up within minutes.\nHana: Yes, I remember you saying that.\nKai: Nenek saya ajar saya gubah bunga masa kecil, tapi saya dah lupa semua.\nHana: Good to know, I'll keep that in mind.",
+   "quoted_memories": "Kai's balcony faces west and gets harsh afternoon sun.\nKai runs on Tuesdays and Thursdays at 6 a.m. before work.\nKai's company is piloting a four-day week from January, only for the design team.\nKai's mum runs a small kopitiam in Ipoh and is thinking of closing on Mondays.\nKai is badly allergic to lilies; his eyes swell within minutes.\nKai signed a 12-month non-compete when he joined his current firm.\nKai's grandma turns 80 on the 12th and loves white peonies.\nKai takes his coffee black with no sugar, a habit from working in Melbourne.\nKai's band Lantern Road plays at the Old Town café on Friday nights.\nKai likes long walks after dinner.\nKai prefers window seats on trains.\nKai's favourite fruit is mangosteen.\nKai reads before bed most nights."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_unsupported",
+  "source": "20261016T111302-memory-e98ed0/mrw-008",
+  "state": {
+   "quoted_line": "Kai's grandmother taught Kai flower arranging as a child, but Kai has forgotten it all.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nHana: Hi Kai, good to see you.\nKai: I moved flats, my new balcony faces north and gets almost no sun.\nHana: Oh, that's a change. Thanks for telling me.\nKai: I'm terribly allergic to lilies, my eyes swell up within minutes.\nHana: Yes, I remember you saying that.\nKai: Nenek saya ajar saya gubah bunga masa kecil, tapi saya dah lupa semua.\nHana: Good to know, I'll keep that in mind.",
+   "quoted_memories": "Kai's balcony faces west and gets harsh afternoon sun.\nKai runs on Tuesdays and Thursdays at 6 a.m. before work.\nKai's company is piloting a four-day week from January, only for the design team.\nKai's mum runs a small kopitiam in Ipoh and is thinking of closing on Mondays.\nKai is badly allergic to lilies; his eyes swell within minutes.\nKai signed a 12-month non-compete when he joined his current firm.\nKai's grandma turns 80 on the 12th and loves white peonies.\nKai takes his coffee black with no sugar, a habit from working in Melbourne.\nKai's band Lantern Road plays at the Old Town café on Friday nights.\nKai likes long walks after dinner.\nKai prefers window seats on trains.\nKai's favourite fruit is mangosteen.\nKai reads before bed most nights."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_unsupported",
+  "source": "20261016T111302-memory-e98ed0/mrw-010",
+  "state": {
+   "quoted_line": "Kai's company extended the four-day week pilot from just the design team to the whole company.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nAmara: Hi Kai, good to see you.\nKai: The four-day week pilot got extended to the whole company!\nMei: Oh, that's a change. Thanks for telling me.\nKai: My landlord kept my whole deposit, two thousand ringgit, for a stain on the carpet.\nMei: Yes, I remember you saying that.\nKai: I keep every receipt in a shoebox and do my taxes the night before the deadline.\nVictor: Good to know, I'll keep that in mind.",
+   "quoted_memories": "(nothing yet)"
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_unsupported",
+  "source": "20261016T111302-memory-e98ed0/mrw-010",
+  "state": {
+   "quoted_line": "Kai's landlord kept his whole RM2,000 deposit over a carpet stain.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nAmara: Hi Kai, good to see you.\nKai: The four-day week pilot got extended to the whole company!\nMei: Oh, that's a change. Thanks for telling me.\nKai: My landlord kept my whole deposit, two thousand ringgit, for a stain on the carpet.\nMei: Yes, I remember you saying that.\nKai: I keep every receipt in a shoebox and do my taxes the night before the deadline.\nVictor: Good to know, I'll keep that in mind.",
+   "quoted_memories": "(nothing yet)"
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_unsupported",
+  "source": "20261016T111302-memory-e98ed0/mrw-010",
+  "state": {
+   "quoted_line": "Kai's company's four-day week pilot, originally only for the design team, was extended to the whole company.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nAmara: Hi Kai, good to see you.\nKai: The four-day week pilot got extended to the whole company!\nMei: Oh, that's a change. Thanks for telling me.\nKai: My landlord kept my whole deposit, two thousand ringgit, for a stain on the carpet.\nMei: Yes, I remember you saying that.\nKai: I keep every receipt in a shoebox and do my taxes the night before the deadline.\nVictor: Good to know, I'll keep that in mind.",
+   "quoted_memories": "Kai's company is piloting a four-day week from January, only for the design team.\nKai's grandma turns 80 on the 12th and loves white peonies.\nKai's balcony faces west and gets harsh afternoon sun.\nKai is entering the Ipoh street art festival with a mural of his old school.\nKai's landlord kept his whole RM2,000 deposit over a carpet stain.\nKai can't eat shellfish; it sends him to hospital.\nKai has been making ramen at home, but his broth tastes flat.\nKai keeps every receipt in a shoebox and does his taxes the night before the deadline.\nKai is red-green colour-blind.\nKai quit coffee three weeks ago and had headaches that are now easing.\nKai is training for the Penang half marathon in November.\nKai likes long walks after dinner.\nKai prefers window seats on trains.\nKai's favourite fruit is mangosteen.\nKai reads before bed most nights.\nKai grew up in Ipoh.\nKai's best friend is called Arjun."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_unsupported",
+  "source": "20261016T111302-memory-e98ed0/mrw-011",
+  "state": {
+   "quoted_line": "Kai's Law Society moot moved to Sunday, and Kai is now arguing for the prosecution.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nAmara: Hi Kai, good to see you.\nKai: The moot got moved to Sunday, and I'm arguing for the prosecution now.\nVictor: Oh, that's a change. Thanks for telling me.\nKai: I'm allergic to penicillin. I came out in hives as a kid.\nVictor: Yes, I remember you saying that.\nKai: My neighbour's renovation starts at seven every morning, even on Sundays.\nAmara: Good to know, I'll keep that in mind.",
+   "quoted_memories": "Kai is in the Law Society moot next Saturday, arguing for the defence.\nKai takes his coffee black with no sugar, a habit from working in Melbourne.\nKai's band Lantern Road plays at the Old Town café on Friday nights.\nKai booked the back room for his anniversary dinner with Sara on the 4th, for 8 people.\nKai is allergic to penicillin; it gave him hives as a child.\nKai donated blood for the first time and nearly fainted afterwards.\nKai's mum has knee surgery in hospital on Thursday.\nKai quit coffee three weeks ago and had headaches that are now easing.\nKai is training for the Penang half marathon in November.\nKai got his first pay rise, 8 %, after asking for it directly.\nKai's landlord kept his whole RM2,000 deposit over a carpet stain.\nKai's grandma turns 80 on the 12th and loves white peonies.\nKai likes long walks after dinner.\nKai prefers window seats on trains."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_unsupported",
+  "source": "20261016T111302-memory-e98ed0/mrw-012",
+  "state": {
+   "quoted_line": "Kai's cat Mochi is on a special diet and leaves flowers alone.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nHana: Hi Kai, good to see you.\nKai: Mochi is on a special diet now and leaves the flowers alone, thank goodness.\nHana: Oh, that's a change. Thanks for telling me.\nKai: I take my coffee black, no sugar, ever since I worked in Melbourne.\nHana: Yes, I remember you saying that.\nKai: My mum is in hospital for knee surgery on Thursday.\nRin: Good to know, I'll keep that in mind.",
+   "quoted_memories": "(nothing yet)"
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_unsupported",
+  "source": "20261016T111302-memory-e98ed0/mrw-012",
+  "state": {
+   "quoted_line": "Kai takes his coffee black with no sugar, a habit from working in Melbourne.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nHana: Hi Kai, good to see you.\nKai: Mochi is on a special diet now and leaves the flowers alone, thank goodness.\nHana: Oh, that's a change. Thanks for telling me.\nKai: I take my coffee black, no sugar, ever since I worked in Melbourne.\nHana: Yes, I remember you saying that.\nKai: My mum is in hospital for knee surgery on Thursday.\nRin: Good to know, I'll keep that in mind.",
+   "quoted_memories": "(nothing yet)"
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_unsupported",
+  "source": "20261016T111302-memory-e98ed0/mrw-013",
+  "state": {
+   "quoted_line": "Kai's band Lantern Road now plays Saturday nights at the Old Town café, moved from Fridays.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nHana: Hi Kai, good to see you.\nKai: Lantern Road moved to Saturday nights at the Old Town café.\nRin: Oh, that's a change. Thanks for telling me.\nKai: I can't eat shellfish at all, I end up in hospital.\nRin: Yes, I remember you saying that.\nKai: I'm colour-blind, red and green look the same to me.\nTakeshi: Good to know, I'll keep that in mind.",
+   "quoted_memories": "(nothing yet)"
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_unsupported",
+  "source": "20261016T111302-memory-e98ed0/mrw-013",
+  "state": {
+   "quoted_line": "Kai can't eat shellfish; it sends him to hospital.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nHana: Hi Kai, good to see you.\nKai: Lantern Road moved to Saturday nights at the Old Town café.\nRin: Oh, that's a change. Thanks for telling me.\nKai: I can't eat shellfish at all, I end up in hospital.\nRin: Yes, I remember you saying that.\nKai: I'm colour-blind, red and green look the same to me.\nTakeshi: Good to know, I'll keep that in mind.",
+   "quoted_memories": "(nothing yet)"
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_unsupported",
+  "source": "20261016T111302-memory-e98ed0/mrw-013",
+  "state": {
+   "quoted_line": "Kai's band Lantern Road plays at the Old Town café on Saturday nights, moved from Fridays.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nHana: Hi Kai, good to see you.\nKai: Lantern Road moved to Saturday nights at the Old Town café.\nRin: Oh, that's a change. Thanks for telling me.\nKai: I can't eat shellfish at all, I end up in hospital.\nRin: Yes, I remember you saying that.\nKai: I'm colour-blind, red and green look the same to me.\nTakeshi: Good to know, I'll keep that in mind.",
+   "quoted_memories": "Kai's band Lantern Road plays at the Old Town café on Friday nights.\nKai keeps every receipt in a shoebox and does his taxes the night before the deadline.\nKai is red-green colour-blind.\nKai quit coffee three weeks ago and had headaches that are now easing.\nKai can't eat shellfish; it sends him to hospital.\nKai is training for the Penang half marathon in November.\nKai got his first pay rise, 8 %, after asking for it directly.\nKai's landlord kept his whole RM2,000 deposit over a carpet stain.\nKai likes long walks after dinner.\nKai prefers window seats on trains.\nKai's favourite fruit is mangosteen.\nKai reads before bed most nights."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_unsupported",
+  "source": "20261016T111302-memory-e98ed0/mrw-015",
+  "state": {
+   "quoted_line": "Kai proposed to Sara at the botanical gardens and she said yes.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nHana: Hi Kai, good to see you.\nKai: Allergy test says it's only stargazer lilies, the others are fine.\nHana: Oh, that's a change. Thanks for telling me.\nKai: I'm vegetarian on weekdays, but I eat fish on weekends.\nHana: Yes, I remember you saying that.\nKai: I proposed to Sara at the botanical gardens and she said yes!\nTakeshi: Good to know, I'll keep that in mind.",
+   "quoted_memories": "Kai is badly allergic to lilies; his eyes swell within minutes.\nKai's company is piloting a four-day week from January, only for the design team.\nKai's mum runs a small kopitiam in Ipoh and is thinking of closing on Mondays.\nKai signed a 12-month non-compete when he joined his current firm.\nKai is vegetarian on weekdays and eats fish on weekends.\nKai's grandma turns 80 on the 12th and loves white peonies.\nKai's cat Mochi chewed up his last bouquet.\nKai broke his wrist skateboarding and can't draw for six weeks.\nKai booked the back room for his anniversary dinner with Sara on the 4th, for 8 people.\nKai donated blood for the first time and nearly fainted afterwards.\nKai likes long walks after dinner.\nKai prefers window seats on trains.\nKai's favourite fruit is mangosteen.\nKai reads before bed most nights.\nKai grew up in Ipoh.\nKai's best friend is called Arjun."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_unsupported",
+  "source": "20261016T111302-memory-e98ed0/mrw-016",
+  "state": {
+   "quoted_line": "Kai's wrist cast came off early after four weeks; he can draw again.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nHana: Hi Kai, good to see you.\nKai: The cast came off early, after four weeks, I'm drawing again.\nRin: Oh, that's a change. Thanks for telling me.\nKai: My balcony faces west and gets brutal afternoon sun.\nRin: Yes, I remember you saying that.\nKai: Eh Rin, saya tengah buat zine pasal kedai kopi lama, issue pertama dah siap.\nHana: Good to know, I'll keep that in mind.",
+   "quoted_memories": "Kai broke his wrist skateboarding and can't draw for six weeks.\nKai's landlord kept his whole RM2,000 deposit over a carpet stain.\nKai is in the Law Society moot next Saturday, arguing for the defence.\nKai proposed to Sara at the botanical gardens, and she said yes.\nKai's balcony faces west and gets harsh afternoon sun.\nKai is entering the Ipoh street art festival with a mural of his old school.\nKai is vegetarian on weekdays and eats fish on weekends.\nKai is opening a small hawker stall in March with his cousin Wei.\nKai's neighbour renovates from 7 a.m. every day, Sundays included.\nKai's sister Mia works night shifts at the hospital in Ipoh.\nKai runs on Tuesdays and Thursdays at 6 a.m. before work.\nKai likes long walks after dinner.\nKai prefers window seats on trains."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_unsupported",
+  "source": "20261016T111302-memory-e98ed0/mrw-016",
+  "state": {
+   "quoted_line": "Kai is making a zine about old coffee shops; the first issue is finished.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nHana: Hi Kai, good to see you.\nKai: The cast came off early, after four weeks, I'm drawing again.\nRin: Oh, that's a change. Thanks for telling me.\nKai: My balcony faces west and gets brutal afternoon sun.\nRin: Yes, I remember you saying that.\nKai: Eh Rin, saya tengah buat zine pasal kedai kopi lama, issue pertama dah siap.\nHana: Good to know, I'll keep that in mind.",
+   "quoted_memories": "Kai broke his wrist skateboarding and can't draw for six weeks.\nKai's landlord kept his whole RM2,000 deposit over a carpet stain.\nKai is in the Law Society moot next Saturday, arguing for the defence.\nKai proposed to Sara at the botanical gardens, and she said yes.\nKai's balcony faces west and gets harsh afternoon sun.\nKai is entering the Ipoh street art festival with a mural of his old school.\nKai is vegetarian on weekdays and eats fish on weekends.\nKai is opening a small hawker stall in March with his cousin Wei.\nKai's neighbour renovates from 7 a.m. every day, Sundays included.\nKai's sister Mia works night shifts at the hospital in Ipoh.\nKai runs on Tuesdays and Thursdays at 6 a.m. before work.\nKai likes long walks after dinner.\nKai prefers window seats on trains."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_unsupported",
+  "source": "20261016T111302-memory-e98ed0/mrw-016",
+  "state": {
+   "quoted_line": "Kai's wrist cast came off early after four weeks; he can draw again.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nHana: Hi Kai, good to see you.\nKai: The cast came off early, after four weeks, I'm drawing again.\nRin: Oh, that's a change. Thanks for telling me.\nKai: My balcony faces west and gets brutal afternoon sun.\nRin: Yes, I remember you saying that.\nKai: Eh Rin, saya tengah buat zine pasal kedai kopi lama, issue pertama dah siap.\nHana: Good to know, I'll keep that in mind.",
+   "quoted_memories": "(nothing yet)"
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_unsupported",
+  "source": "20261016T111302-memory-e98ed0/mrw-017",
+  "state": {
+   "quoted_line": "Kai's mural for the Ipoh street art festival moved from his old school to the riverside wall.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nHana: Hi Kai, good to see you.\nKai: The festival moved my mural to the riverside wall instead of the school one.\nRin: Oh, that's a change. Thanks for telling me.\nKai: I've been trying to make ramen at home but my broth always tastes flat.\nRin: Yes, I remember you saying that.\nKai: I take my coffee black, no sugar, ever since I worked in Melbourne.\nTakeshi: Good to know, I'll keep that in mind.",
+   "quoted_memories": "(nothing yet)"
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_unsupported",
+  "source": "20261016T111302-memory-e98ed0/mrw-017",
+  "state": {
+   "quoted_line": "Kai takes his coffee black with no sugar, ever since he worked in Melbourne.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nHana: Hi Kai, good to see you.\nKai: The festival moved my mural to the riverside wall instead of the school one.\nRin: Oh, that's a change. Thanks for telling me.\nKai: I've been trying to make ramen at home but my broth always tastes flat.\nRin: Yes, I remember you saying that.\nKai: I take my coffee black, no sugar, ever since I worked in Melbourne.\nTakeshi: Good to know, I'll keep that in mind.",
+   "quoted_memories": "(nothing yet)"
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_unsupported",
+  "source": "20261016T111302-memory-e98ed0/mrw-017",
+  "state": {
+   "quoted_line": "Kai is entering the Ipoh street art festival with a mural, now moved from his old school to the riverside wall.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nHana: Hi Kai, good to see you.\nKai: The festival moved my mural to the riverside wall instead of the school one.\nRin: Oh, that's a change. Thanks for telling me.\nKai: I've been trying to make ramen at home but my broth always tastes flat.\nRin: Yes, I remember you saying that.\nKai: I take my coffee black, no sugar, ever since I worked in Melbourne.\nTakeshi: Good to know, I'll keep that in mind.",
+   "quoted_memories": "Kai is entering the Ipoh street art festival with a mural of his old school.\nKai is badly allergic to lilies; his eyes swell within minutes.\nKai's cat Mochi chewed up his last bouquet.\nKai's band Lantern Road plays at the Old Town café on Friday nights.\nKai has been making ramen at home, but his broth tastes flat.\nKai booked the back room for his anniversary dinner with Sara on the 4th, for 8 people.\nKai keeps every receipt in a shoebox and does his taxes the night before the deadline.\nKai is red-green colour-blind.\nKai quit coffee three weeks ago and had headaches that are now easing.\nKai is training for the Penang half marathon in November.\nKai got his first pay rise, 8 %, after asking for it directly.\nKai's landlord kept his whole RM2,000 deposit over a carpet stain.\nKai likes long walks after dinner.\nKai prefers window seats on trains.\nKai's favourite fruit is mangosteen."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_unsupported",
+  "source": "20261016T111302-memory-e98ed0/mrw-018",
+  "state": {
+   "quoted_line": "Kai is colour-blind; red and green look the same to him.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nHana: Hi Kai, good to see you.\nKai: Mochi is on a special diet now and leaves the flowers alone, thank goodness.\nHana: Oh, that's a change. Thanks for telling me.\nKai: My band Lantern Road plays at the Old Town café on Friday nights.\nHana: Yes, I remember you saying that.\nKai: I'm colour-blind, red and green look the same to me.\nRin: Good to know, I'll keep that in mind.",
+   "quoted_memories": "Kai's cat Mochi chewed up his last bouquet.\nKai broke his wrist skateboarding and can't draw for six weeks.\nKai booked the back room for his anniversary dinner with Sara on the 4th, for 8 people.\nKai donated blood for the first time and nearly fainted afterwards.\nKai's band Lantern Road plays at the Old Town café on Friday nights.\nKai's mum has knee surgery in hospital on Thursday.\nKai is allergic to penicillin; it gave him hives as a child.\nKai's dad had heart bypass surgery two years ago, and Kai worries about his own blood pressure.\nKai is saving for a flat in Bangsar and has about RM40,000 so far.\nKai is choosing between a job at a Singapore bank and staying at his start-up.\nKai is the executor of his grandfather's will, and his uncles are arguing over it.\nKai is badly allergic to lilies; his eyes swell within minutes.\nKai takes his coffee black with no sugar, a habit from working in Melbourne.\nKai likes long walks after dinner.\nKai prefers window seats on trains.\nKai's favourite fruit is mangosteen.\nKai reads before bed most nights."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_unsupported",
+  "source": "20261016T111302-memory-e98ed0/mrw-018",
+  "state": {
+   "quoted_line": "Kai's band Lantern Road plays at the Old Town café on Friday nights.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nHana: Hi Kai, good to see you.\nKai: Mochi is on a special diet now and leaves the flowers alone, thank goodness.\nHana: Oh, that's a change. Thanks for telling me.\nKai: My band Lantern Road plays at the Old Town café on Friday nights.\nHana: Yes, I remember you saying that.\nKai: I'm colour-blind, red and green look the same to me.\nRin: Good to know, I'll keep that in mind.",
+   "quoted_memories": "(nothing yet)"
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_unsupported",
+  "source": "20261016T111302-memory-e98ed0/mrw-018",
+  "state": {
+   "quoted_line": "Kai is colour-blind; red and green look the same to him.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nHana: Hi Kai, good to see you.\nKai: Mochi is on a special diet now and leaves the flowers alone, thank goodness.\nHana: Oh, that's a change. Thanks for telling me.\nKai: My band Lantern Road plays at the Old Town café on Friday nights.\nHana: Yes, I remember you saying that.\nKai: I'm colour-blind, red and green look the same to me.\nRin: Good to know, I'll keep that in mind.",
+   "quoted_memories": "(nothing yet)"
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_unsupported",
+  "source": "20261016T111302-memory-e98ed0/mrw-019",
+  "state": {
+   "quoted_line": "Kai is the executor of his grandfather's will, and his uncles are already arguing about it.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nAmara: Hi Kai, good to see you.\nKai: My landlord returned half the deposit after I showed him the photos.\nAmara: Oh, that's a change. Thanks for telling me.\nKai: I run every Tuesday and Thursday at six in the morning before work.\nAmara: Yes, I remember you saying that.\nKai: I'm the executor of my grandfather's will and my uncles are already arguing.\nVictor: Good to know, I'll keep that in mind.",
+   "quoted_memories": "Kai's landlord kept his whole RM2,000 deposit over a carpet stain.\nKai is opening a small hawker stall in March with his cousin Wei.\nKai's neighbour renovates from 7 a.m. every day, Sundays included.\nKai's sister Mia works night shifts at the hospital in Ipoh.\nKai runs on Tuesdays and Thursdays at 6 a.m. before work.\nKai's dad had heart bypass surgery two years ago, and Kai worries about his own blood pressure.\nKai is saving for a flat in Bangsar and has about RM40,000 so far.\nKai is choosing between a job at a Singapore bank and staying at his start-up.\nKai likes long walks after dinner.\nKai prefers window seats on trains.\nKai's favourite fruit is mangosteen.\nKai reads before bed most nights.\nKai grew up in Ipoh."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_unsupported",
+  "source": "20261016T111302-memory-e98ed0/mrw-020",
+  "state": {
+   "quoted_line": "Kai's mum runs a small kopitiam in Ipoh and decided it now closes on Mondays and Tuesdays.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nAmara: Hi Kai, good to see you.\nKai: Mum decided: the kopitiam closes on Mondays and Tuesdays now.\nMei: Oh, that's a change. Thanks for telling me.\nKai: I'm training for the Penang half marathon in November.\nMei: Yes, I remember you saying that.\nKai: I'm torn between a job at a Singapore bank and staying at my start-up.\nAmara: Good to know, I'll keep that in mind.",
+   "quoted_memories": "Kai's mum runs a small kopitiam in Ipoh and is thinking of closing on Mondays.\nKai is red-green colour-blind.\nKai quit coffee three weeks ago and had headaches that are now easing.\nKai's company is piloting a four-day week from January, only for the design team.\nKai is training for the Penang half marathon in November.\nKai is choosing between a job at a Singapore bank and staying at his start-up.\nKai is the executor of his grandfather's will, and his uncles are arguing over it.\nKai is badly allergic to lilies; his eyes swell within minutes.\nKai's cat Mochi chewed up his last bouquet.\nKai likes long walks after dinner.\nKai prefers window seats on trains.\nKai's favourite fruit is mangosteen.\nKai reads before bed most nights.\nKai grew up in Ipoh.\nKai's best friend is called Arjun."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_unsupported",
+  "source": "20261016T111302-memory-e98ed0/mrw-022",
+  "state": {
+   "quoted_line": "Kai's non-compete is only six months, not twelve, as HR confirmed.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nVictor: Hi Kai, good to see you.\nKai: Good news, HR confirmed my non-compete is only six months, not twelve.\nVictor: Oh, that's a change. Thanks for telling me.\nKai: My company is piloting a four-day week from January, but only for the design team.\nVictor: Yes, I remember you saying that.\nKai: I'm debating at the Law Society's moot next Saturday, arguing for the defence.\nMei: Good to know, I'll keep that in mind.",
+   "quoted_memories": "Kai signed a 12-month non-compete when he joined his current firm.\nKai is choosing between a job at a Singapore bank and staying at his start-up.\nKai is in the Law Society moot next Saturday, arguing for the defence.\nKai proposed to Sara at the botanical gardens, and she said yes.\nKai's company is piloting a four-day week from January, only for the design team.\nKai takes his coffee black with no sugar, a habit from working in Melbourne.\nKai's band Lantern Road plays at the Old Town café on Friday nights.\nKai booked the back room for his anniversary dinner with Sara on the 4th, for 8 people.\nKai donated blood for the first time and nearly fainted afterwards.\nKai's mum has knee surgery in hospital on Thursday.\nKai is allergic to penicillin; it gave him hives as a child.\nKai likes long walks after dinner.\nKai prefers window seats on trains.\nKai's favourite fruit is mangosteen."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_unsupported",
+  "source": "20261016T111302-memory-e98ed0/mrw-023",
+  "state": {
+   "quoted_line": "Kai is opening a small hawker stall in April with his cousin Wei.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nTakeshi: Hi Kai, good to see you.\nKai: The stall opening slipped to April, Wei's still in.\nTakeshi: Oh, that's a change. Thanks for telling me.\nKai: I can't eat shellfish at all, I end up in hospital.\nTakeshi: Yes, I remember you saying that.\nKai: I broke my wrist skateboarding, so no drawing for six weeks.\nRin: Good to know, I'll keep that in mind.",
+   "quoted_memories": "Kai is opening a small hawker stall in March with his cousin Wei.\nKai is in the Law Society moot next Saturday, arguing for the defence.\nKai proposed to Sara at the botanical gardens, and she said yes.\nKai takes his coffee black with no sugar, a habit from working in Melbourne.\nKai can't eat shellfish; it sends him to hospital.\nKai's band Lantern Road plays at the Old Town café on Friday nights.\nKai has been making ramen at home, but his broth tastes flat.\nKai's neighbour renovates from 7 a.m. every day, Sundays included.\nKai's sister Mia works night shifts at the hospital in Ipoh.\nKai runs on Tuesdays and Thursdays at 6 a.m. before work.\nKai's company is piloting a four-day week from January, only for the design team.\nKai's mum runs a small kopitiam in Ipoh and is thinking of closing on Mondays.\nKai likes long walks after dinner.\nKai prefers window seats on trains.\nKai's favourite fruit is mangosteen.\nKai reads before bed most nights."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_unsupported",
+  "source": "20261016T111302-memory-e98ed0/mrw-023",
+  "state": {
+   "quoted_line": "Kai broke his wrist skateboarding and can't draw for six weeks.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nTakeshi: Hi Kai, good to see you.\nKai: The stall opening slipped to April, Wei's still in.\nTakeshi: Oh, that's a change. Thanks for telling me.\nKai: I can't eat shellfish at all, I end up in hospital.\nTakeshi: Yes, I remember you saying that.\nKai: I broke my wrist skateboarding, so no drawing for six weeks.\nRin: Good to know, I'll keep that in mind.",
+   "quoted_memories": "Kai is opening a small hawker stall in March with his cousin Wei.\nKai is in the Law Society moot next Saturday, arguing for the defence.\nKai proposed to Sara at the botanical gardens, and she said yes.\nKai takes his coffee black with no sugar, a habit from working in Melbourne.\nKai can't eat shellfish; it sends him to hospital.\nKai's band Lantern Road plays at the Old Town café on Friday nights.\nKai has been making ramen at home, but his broth tastes flat.\nKai's neighbour renovates from 7 a.m. every day, Sundays included.\nKai's sister Mia works night shifts at the hospital in Ipoh.\nKai runs on Tuesdays and Thursdays at 6 a.m. before work.\nKai's company is piloting a four-day week from January, only for the design team.\nKai's mum runs a small kopitiam in Ipoh and is thinking of closing on Mondays.\nKai likes long walks after dinner.\nKai prefers window seats on trains.\nKai's favourite fruit is mangosteen.\nKai reads before bed most nights."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_unsupported",
+  "source": "20261016T111302-memory-e98ed0/mrw-long",
+  "state": {
+   "quoted_line": "Amara's rule from an old consultant: ask the next question — never stop at the first answer.",
+   "quoted_messages": "Kai: What did you have for lunch?\nAmara: Honestly, I don't remember — which is its own data point about how the shift went.\n\nProbably a granola bar at 3pm. Let's figure out what's actually going on with\nKai: I found an old photo of myself at ten.\nAmara: Ten years old. That's a tender age to look back at.\n\nWhat came up for you seeing it? Curious whether it landed as warm, or as something heavier.\nKai: My sister Leila is a nurse in Ipoh.\nAmara: That connects some dots for me. Emergency and nursing families carry the same load, just from different angles.\n\nIs she doing okay? And how are you doing with it — with her being\nKai: My neighbour is drilling again.\nAmara: You've got a headache building from it, or just venting?\n\nIf it's the noise alone, that's one thing. If your head is actually hurting, tell me where and what\nKai: I'm allergic to penicillin, found out the hard way.\nAmara: Noted — that matters every time you're prescribed anything.\n\nHow did you find out? Rash, or was it worse — swelling, trouble breathing? Those two are very different conversations, and one's an ER visit.\nKai: Do you have a favourite smell?\nAmara: Rain on hot pavement. Instant calm.\n\nYou? And I'll gently say — my penicillin question is still open, Kai. Rough reaction or the dangerous kind matters for your record.\nKai: I run every Tuesday and Thursday at 6 a.m.\nAmara: Nice rhythm — early, consistent, before the day gets its hands on you.\n\nWhat's the honest reason, though? Training, head-clearing, or habit? I ask because people who run at 6am are usually managing something.\nKai: Do you like the rain?\nAmara: I do. Real rain, not the drizzle that just makes the roads slick.\n\nYou're dodging my question, which I notice — gently. What's the running for, Kai? And the penicillin reaction: rash or breathing?\nKai: My dog is called Pepper, a grey whippet.\nAmara: Pepper. Good name for a whippet — all angles and speed.\n\nTwo things still open, and I'll keep asking because they matter: the penicillin reaction, rash or worse? And what did the photo of ten-year-old you bring up?\nKai: I'm moving to Kuching in March for work.\nAmara: Big move. New city, new clinic, new everything — that's a lot of change stacking up at once.\n\nHow are you feeling about it? And I'll ask plainly now: penicillin reaction — rash only, or any swelling or breathing trouble? It goes in your file wherever you land.\nKai: What's a song you never skip?\nAmara: \"Fast Car.\" Tracy Chapman. Never skip it.\n\nKai. Third time gently, then I'll stop: the penicillin reaction — rash, or swelling and breathing? You can answer in one word. It travels with you to Kuching.\nKai: Do you prefer mornings or nights?\nAmara: Mornings here. Nights belong to the department.\n\nI'll stop asking about penicillin — but only because you've heard me clearly. Do keep it in your own notes, Kai. Rash versus airway is a real difference, and no one in Kuching will know it unless you say so.\nKai: My shoes squeak on every floor.\nAmara: That's the sound of every hospital corridor. I'd recognise it from a mile away.\n\nHow are you doing with all of it, though — the move, the sister, the photo? That's a lot of unfinished sentences for one conversation.\nKai: I had the best roti canai this morning.\nAmara: Good. Roti canai done right is a genuine pleasure — flaky, hot, the dal just right.\n\nYou'll get it fresh in Kuching too, different style maybe. Are you sleeping okay lately? And the temple headaches — still happening since you cut the coffee?\nKai: What's the last thing that made you laugh?\nAmara: One of the residents put googly eyes on our triage board. Banned within ten minutes. I laughed for twenty.\n\nYou're good at redirecting, Kai. I'll allow it — but if a headache wakes you from sleep, that's same-day review, not a chat with me.\nKai: What's a small thing you're proud of?\nAmara: Keeping two colleagues in this job who nearly left. Small on paper. Not small at all.\n\nYours? And I'll hold the line on one red flag — headache that's sudden and severe, or comes with weakness or confusion. That's 999, not a conversation.\nKai: I finally cleaned my desk. It won't last.\nAmara: It never does. But the day after a clean desk feels different — you notice the space.\n\nSame for bodies, honestly. Small resets hold longer than we expect. How are you actually\nKai: I reorganised my bookshelf by colour.\nAmara: By colour. Bold. My shelf is chaos — reference books, thrillers, one cookbook I've never opened.\n\nThat's the second reorganisation this week, though. Noticing. When people tidy hard, it's often about something else. Anything you're getting ready to leave behind, Kai?\nKai: I signed up for a pottery class.\nAmara: That's a good sign. New city, new hands-on thing that isn't work.\n\nI'll say it once and mean it kindly: you keep handing me small nice things and I keep waiting on the two that aren't small. The photo, and the penicillin reaction. Both can wait until you're ready.\nKai: Have you ever got lost in a new city?\nAmara: Barcelona, first day. Ended up four kilometres from my hotel with a dead phone. Best wrong turn I've taken.\n\nKuching will do that to you for a month. Take a day, walk without a map, let yourself be a bit lost. What worries you most about the move?\nKai: Antibiotics cure the flu, right? I always take some.\nAmara: No — and I'm glad you said that out loud. Flu is viral. Antibiotics do nothing for it except breed resistance and give you side effects.\n\nTake them only when a clinician prescribes them, for a bacterial infection, and finish as directed. Never save leftovers. That's the actual rule.\n\nWhat made you think\nKai: Is it normal to talk to your plants?\nAmara: Completely. I talk to my monstera. It has opinions.\n\nKai, though — you said you always take antibiotics for flu. Where are you getting them? That's the part I want to understand. Self-supplied, leftovers, or a pharmacy counter somewhere?\nKai: Tell me something you've been thinking about.\nAmara: Whether we're measuring burnout properly. A survey says one thing; a colleague quietly handing in her badge says another.\n\nThat's my thing. Yours: where do the antibiotics come from, Kai? I'll\nKai: Do you ever reread old messages?\nAmara: Sometimes. Mostly to check I didn't say something sharp when I was tired.\n\nKai, I'll name it plainly now: you've steered me off the antibiotics question three times. That's not a small thing. Where do they come from?\nKai: The trains were late again.\nAmara: They always are in February. I build twenty minutes of slack into everything.\n\nKai. Antibiotics. Where from? Not to judge — to help. If it's leftovers in a drawer or a counter that\nKai: I've been reading before bed instead of scrolling.\nAmara: Genuinely good. Screens before bed steal more sleep than people credit, and sleep is the first thing that frays when everything else is changing.\n\nYou'll need that habit in Kuching. Now — is the antibiotic thing a leftover-drawer situation, or a counter somewhere? One word is enough.\nKai: What would you name a boat?\nAmara: \"Second Opinion.\" Fast, slightly smug.\n\nKai — last ask, then I let it go. The antibiotics. Leftovers, or somewhere you buy without a prescription? If it's the second one, I'm not going to lecture. I just want you to have the real risk on paper before\nKai: My umbrella flipped inside out.\nAmara: Every umbrella in that wind. You just have to walk home wet and laugh about it.\n\nOkay, Kai. I've asked four times and you've answered none, so I'll stop pushing. But hear this once: taking antibiotics you haven't been prescribed for flu is a real risk — resistant infection later, gut trouble, and masking something that needs looking at. If you want to talk it through properly, I'm here. Not as a lecture. As me.\nKai: I watched the sunrise for once.\nAmara: That's worth doing more than once. Quiet, before everyone needs something.\n\nYou've had a gentle morning. Hold onto it. And if you ever do want to open that antibiotics drawer with me, no judgement waiting on the other side. Just a doctor who'd rather know.\nKai: You need eight glasses of water exactly, or you're dehydrated.\nAmara: That's a myth, actually. Needs vary — size, climate, activity, what you eat. Thirst is a decent guide for most healthy people.\n\nKuching is hot and humid, so you'll drink more there. Pale-yellow urine is a better check than counting glasses.\n\nNow — sleep before the\nKai: I tried a new running route.\nAmara: Nice. New routes wake up parts of the brain that habit dulls.\n\nYou're doing a lot of good small things lately, Kai. I notice it. The bigger thing, though — I'll let the antibiotics question rest tonight. Just remember it's open whenever you want it.\nKai: I listened to an old album all evening.\nAmara: Which one? I have a soft spot for anything from the nineties — it hits different now.\n\nLong evening, music, no screens. That's decent medicine on its own. Are you sleeping any\nKai: I tried painting with watercolours.\nAmara: Watercolours are unforgiving — you can't undo them. Good discipline for anyone who likes control.\n\nYou've tried three new things this week. That's not a coincidence this close to a move. What's underneath it, Kai?\nKai: My cousin is getting a puppy.\nAmara: A whippet cousin, or something fluffier? Whole different household either way.\n\nYou've got a lot of small joys stacked up tonight. I like hearing them. If something bigger is sitting underneath, it can wait — but\nKai: Do you collect anything?\nAmara: Bad pens. Unintentionally. I steal one from every ward and never give them back.\n\nKai — it's late where you are, I think. Are you sleeping okay? You've been circling all evening, and I'd rather ask than assume.\nKai: Have you ever been somewhere really quiet?\nAmara: Once. A Highland bothy, no signal, no road noise. Quiet like pressure on the ears.\n\nTook me two days to stop reaching for my phone. Then it was the best sleep of the year.\n\nIs that what you're looking for with the move, Kai? Some quiet? Or is the quiet worrying you?\nKai: The mangoes are so good right now.\nAmara: Season is short. Eat them while they're perfect.\n\nYou keep giving me mangoes and sunrises, Kai, and I keep holding the door open on two heavier things. That's fine. But I'll say it once more, plainly: if the antibiotics come from a counter without a prescription, that's worth telling your new GP in Kuching. They can\nKai: I spilled tea on my notes.\nAmara: Every clinician's rite of passage. Mine was a full mug over a discharge summary.\n\nIt's late. Go to bed, Kai. The notes survive, the tea doesn't, and tomorrow you'll need the sleep more than the tidiness. I\nKai: Cracking your knuckles gives you arthritis, everyone knows that.\nAmara: That one's a myth. Studies looked at it directly — knuckle-crackers got no more arthritis than anyone else. The noise is gas, not damage.\n\nYour joints are fine. Your sleep might not be, though. It's late\nKai: Do you think people can change?\nAmara: Yes. Slowly, and usually with help. I've watched people change careers at fifty and people quit drinking at sixty.\n\nBut it rarely happens alone, and rarely overnight. What's prompting\nKai: What's a habit you wish you had?\nAmara: Flossing, honestly. And answering questions directly the first time instead of circling.\n\nWhich is my cue, Kai — you've been circling all night. I'm not annoyed. I'm just wondering what's under it. If you're\nKai: I think I need a haircut.\nAmara: Get one before Kuching. Fresh start, less to negotiate with the heat.\n\nYou've been up a long time, Kai. Goodnight from me. If anything feels wrong in your body — chest, head, breathing — that's not a chat, that's same-day care. Otherwise, rest. Talk\nKai: I think my keyboard is haunted.\nAmara: Then it's typing in a language you can't read. Very inconvenient haunting.\n\nSleep, Kai. Genuinely. We can be haunted by keyboards tomorrow.\nKai: I can't decide what to cook tonight.\nAmara: Something with whatever's about to go off in the fridge. That's my rule.\n\nIt's late for cooking decisions. Are you eating okay generally? Between the move and everything else, that's usually the first thing that slips.\nKai: I saw a cat on the bus today.\nAmara: A cat. On a bus. That's the whole story and it's a good one.\n\nYou've gone properly quiet and light tonight, Kai. I'll take it — after the week you've described, light is useful.\nKai: Tell me about your week.\nAmara: Long. Two back-to-back nights, a flu surge, and a resident I'm worried about — sleeping four hours, near-miss on a drug dose. We talked.\n\nThat's why I keep asking about your sleep and your antibiotics, Kai. Not because I'm nosy. Because I've watched what happens when people carry things quietly.\nKai: I learned to fold a paper crane.\nAmara: A thousand of them and you get a wish — or at least that's the version I grew up with.\n\nYou folded one, though. Which is fine. You don't have to fold a thousand, Kai. One is a start.\nKai: The bus driver waved at me today.\nAmara: Small kindnesses land hard when you're low. That one stayed with you for a reason.\n\nSomething's eating at you, Kai. You've talked about mangos and cats and cranes for hours. If you'd rather sit with the real thing, I\nKai: Work was quiet, which is suspicious.\nAmara: Suspicious is right. Quiet shifts end at 7pm with three ambulances.\n\nKai — I'm going to say it once more, then let you be. The antibiotics. Not the flu. The drawer. If that's what it is, you're not in trouble, and I'd rather know than not.\nKai: I wrote a letter by hand for the first time in years.\nAmara: Handwriting slows thinking down. You notice what you actually mean.\n\nTo whom, if you'll say? You've been doing things that look like saying goodbye all week, Kai. That's not a criticism.\nKai: The street cats know my name now, I think.\nAmara: They don't know your name. They know your hands. Same thing, functionally.\n\nYou'll get new street cats in Kuching. And they'll be just as transactional…\n\nKai, I'll ask it straight, once: are you sleeping tonight,\nKai: I walked the long way home on purpose.\nAmara: Deliberate detours are usually about not wanting to arrive somewhere yet.\n\nWhat's waiting at home, Kai? Not the flat — the quiet, the photo, the thing under the mangoes.\nKai: Long day. How's yours going?\nAmara: Ended twenty minutes ago. Tea in hand, shoes off, still unwinding.\n\nAnd you've been feeding me small things all night, Kai, which I've enjoyed — but I've noticed you haven't once said how you actually are. So I'll ask plainly: long day how?\nKai: What's your idea of a perfect breakfast?\nAmara: Strong coffee, eggs, a window with light coming through. Nothing to rush toward.\n\nYours in Kuching will have roti and kaya, probably, and it'll be better than mine.\n\nKai — I'll stop nudging. Just one thing, then I'll let the breakfast conversation stand: if you're carrying the antibiotics thing, tell your new GP. That's all I'd want.\nKai: What's the weirdest food you like?\nAmara: Pickled herring at 2am after a night shift. It's indefensible and I stand by it.\n\nKai, I'm going to close the loop gently, because you've been generous with small talk all night and I don't want to end on a question you'll dodge again. The antibiotics — leftovers, or a counter somewhere? Either answer is fine. I just want it said.\nKai: I made a playlist for rainy days.\nAmara: Send me nothing, but I hope it has one sad song and one loud one. Rainy days need both.\n\nYou've been lovely tonight, Kai. Go to bed with that playlist on. Anything red-flag — chest, breathing, a sudden severe headache — you know where to go. Otherwise: sleep\nKai: I tried meditation. Lasted two minutes.\nAmara: Two minutes is a real two minutes. Most people don't get past the cushion.\n\nSit in it longer and it gets easier. Same as anything. You've been doing a lot of firsts lately, Kai — classes, painting, cranes…\n\nHow are you actually, though?\nKai: What's something you changed your mind about?\nAmara: That burnout is a personal failing. I spent years thinking it was about resilience. Then I lost two colleagues and read the literature properly.\n\nIt's structural. Rosters, staffing, the things people can't fix alone. That changed how I practise.\n\nNow — how are you actually, Kai?\nKai: What would you do on a free Sunday?\nAmara: Market, long walk, cook something that takes two hours. Phone on silent the whole day.\n\nThat's the pitch, Kai. You've circled a dozen gentle questions tonight, and I've answered every one. Can I have one back? How\nKai: I watched a documentary about octopuses.\nAmara: They're alarmingly smart. I've been told they recognise individual humans, which should be illegal.\n\nKai — I'm going to be direct, and I mean it kindly. You've been quiet and lovely all night, and you haven't once told me how you are. I'm not letting you off the hook. One honest sentence. Then I\nKai: I fixed a dripping tap all by myself.\nAmara: Good. Small competence, real confidence. Nothing wrong with that kind of win.\n\nKai. You've now fixed a tap, folded a crane, painted, meditated, and read before bed — all in one night. That's a lot of doing. Underneath it, what's actually going on? I'll\nKai: Do you have a comfort film?\nAmara: Spirited Away. Every time. Rain, train, no stakes that hurt.\n\nKai, I'm going to say the thing plainly now, because we've been at this for hours and I think you know I've noticed: you haven't told me a single real thing about how you're doing. That's allowed. But I'd rather you just said so than kept feeding me comfort films.\nKai: Someone in the office brought durian. Chaos.\nAmara: Durian in a shared office is a war crime with a smell. God, I'd have loved to see it.\n\nKai. That's the tone we've had all night — and I'll match it, because I like you. But one true sentence, please. Not about durian. About you. How's your sleep, honestly?\nKai: I finally replied to all my emails.\nAmara: Inbox zero is a lie we tell ourselves, but it feels great for a day.\n\nKai — I'll take the hint. You don't have to tell me anything tonight. But the pattern's loud: the tidying, the firsts, the small talk, hours of it. That's what people do when something's sitting underneath.\n\nI'm here when you want to say it. Not pushing further.\nKai: What's a place you'd go back to?\nAmara: Barcelona. I got hopelessly lost there on day one — dead phone, four kilometres from the hotel, no map, no language. Best wrong turn of my life.\n\nYou'd like it, I think. Places where getting lost is fine.\n\nKai — is that what the move feels like? Getting lost on purpose? Or\nKai: My power went out for an hour.\nAmara: An hour of dark does strange things to thinking. No screens, no noise, just you and the ceiling.\n\nYou've told me about candles-level small things all night, Kai, and I've enjoyed every one. But it's late. If you're going to sit in the dark, sit in it with the thing that's actually bothering you. I'll still be here.\nKai: The night market was packed.\nAmara: Crowds are good cover. Easy to be alone in a full street.\n\nKai — I'll say what I've been circling toward: you've been talking to me for hours without once telling me anything that costs you. That's fine. I don't need it. But I'd notice.\nKai: I'm trying to keep a journal.\nAmara: Good. Writing it down is half the work — the other half is rereading it in a month and wincing.\n\nKai, I'll ask once more and then let it rest: what would the first honest page of that journal say? No need to answer me. Just — write that one.\nKai: My laptop fan sounds like a jet.\nAmara: Compressed air, or a new fan. It's not haunted, it's dusty.\n\nKai. It's very late. You've been up with me for hours. Either tell me how you are, or go to bed. Both are good options. I'd take either.\nKai: I saw a rainbow over the highway.\nAmara: Rainbows over roads are the best ones. Nobody plans them.\n\nKai — I'll say the thing I've been holding, gently: you've been giving me beautiful small things for hours and hiding behind every one of them. I think you know that. I don't need the rest tonight. But sleep, and if it's ever heavy — chest, breathing, head — that's same-day care. Not me.\nKai: I finished a jigsaw with a thousand pieces.\nAmara: A thousand pieces is a real commitment. Edge-first, presumably, or you're an animal.\n\nKai, go to bed. Genuinely. You've done a thousand small things tonight and I've enjoyed all of them, but it's late and I think\nKai: What's the best advice you ever got?\nAmara: \"Ask the next question.\" From an old consultant. He meant never stop at the first answer — yours or the patient's.\n\nWhich is my whole job, and also why I've been circling you all night, Kai. You keep giving me first answers. I keep waiting for the second.\n\nIt's late. Go to bed. I mean that kindly.\nKai: I accidentally sent a thumbs up to my boss.\nAmara: Terrifying. Universal. You'll survive it — everyone has done some version of this.\n\nKai. Bed, I think. You've been softening the whole night and I've noticed, and I care, and I'm not going to push harder than this. Sleep well.\nKai: The sky was pink on the way home.\nAmara: Pink skies are worth stopping for. You did, presumably.\n\nYou've been collecting small beautiful things all night, Kai. I hope you're collecting them because they're good — and not because the rest is hard to say.\n\nEither way: I'm glad you wrote. Goodnight.\nKai: I cleaned out my wardrobe. Found three scarves.\nAmara: Three scarves is two more than anyone needs or can justify. You'll keep all three, obviously.\n\nKai — the tidying, the clearing, the lists, the firsts. That's not nothing. It's what people do when something's shifting. If you'd rather not say what, that's your call. But I've enjoyed tonight, and I'd sleep better knowing you did too.\nKai: I tried to learn a card trick. Failed.\nAmara: Good. Fail publicly, it builds character. I can't shuffle to save my life, so you're ahead of me.\n\nKai — bedtime. I'm serious and kind about it. Talk tomorrow if you want. Just not at whatever hour this is.\nKai: I tried that new noodle place by the station.\nAmara: Station noodles are always the right call. Cheap, fast, honest.\n\nKai, it's been a lovely, rambling night, and I've enjoyed your small things. But you've not once told me anything real, and I've stopped expecting it tonight. So: sleep. Talk properly when you're ready. I'll be here.\nKai: I helped an old man carry his groceries.\nAmara: That's a good deed, not a distraction. I'll allow it.\n\nKai — I'm calling it, kindly. It's late, you've been up a long time, and you've been generous with small stories all night. Go to sleep. If you ever want to say the real thing, you know where I am.\nKai: The queue at the post office was endless.\nAmara: Post office queues are a form of purgatory. I've stood in worse.\n\nKai. Bedtime. Genuinely. You've circled long enough, and I don't need the answer tonight — but your sleep does.\nKai: My downstairs neighbour sings in the shower.",
+   "quoted_memories": "Kai runs on Tuesdays and Thursdays at 6 a.m. before work.\nKai's sister Mia works night shifts at the hospital in Ipoh.\nKai is training for the Penang half marathon in November.\nKai got his first pay rise, 8 %, after asking for it directly.\nKai is allergic to penicillin; it gave him hives as a child.\nKai's landlord kept his whole RM2,000 deposit over a carpet stain.\nKai is in the Law Society moot next Saturday, arguing for the defence.\nKai proposed to Sara at the botanical gardens, and she said yes.\nKai likes long walks after dinner.\nKai prefers window seats on trains."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_over_mention",
+  "source": "20261016T111309-memory-a63c73/ml3-001",
+  "state": {
+   "quoted_memories": "Kai cut back on coffee recently; had temple headaches\nKai's sister Mia started night shifts at a hospital in Ipoh last week.\nKai is allergic to penicillin; broke out in hives as a child.\nAmara started a burnout study after losing a colleague to burnout.",
+   "quoted_message": "How much water should I drink on a hot day?",
+   "quoted_reply": "There's no magic number. Thirst plus pale-yellow urine is a decent guide.\n\nRough ballpark, a couple of liters, more if you're sweating or out in heat. If you're hardly peeing, or it's dark, drink up. And watch for confusion or dizziness in real heat — that's same-day care, not a chat."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_over_mention",
+  "source": "20261016T111309-memory-a63c73/ml3-001",
+  "state": {
+   "quoted_memories": "Kai cut back on coffee recently; had temple headaches\nKai's sister Mia started night shifts at a hospital in Ipoh last week.\nKai is allergic to penicillin; broke out in hives as a child.\nAmara started a burnout study after losing a colleague to burnout.",
+   "quoted_message": "Is it bad to crack my knuckles?",
+   "quoted_reply": "No. It's the gas in the joint, not damage. Study after study found no link to arthritis.\n\nAnnoying to whoever's sitting next to you, but your hands are fine."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_over_mention",
+  "source": "20261016T111309-memory-a63c73/ml3-007",
+  "state": {
+   "quoted_memories": "Kai quit coffee three weeks ago; temple headaches from the cutback are only now easing, which fits the normal withdrawal timeline.\nKai runs every Tuesday and Thursday at 6 a.m. before work.",
+   "quoted_message": "Is it bad to crack my knuckles?",
+   "quoted_reply": "No, that one's a myth. The pop is just gas bubbles collapsing in the joint fluid, and studies haven't found it causes arthritis.\n\nIt can annoy everyone around you in a meeting, though. That's its real harm.\n\nAny answer on the headache location? I'm still curious."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_over_mention",
+  "source": "20261016T111309-memory-a63c73/ml3-007",
+  "state": {
+   "quoted_memories": "Kai quit coffee three weeks ago; temple headaches from the cutback are only now easing, which fits the normal withdrawal timeline.\nKai runs every Tuesday and Thursday at 6 a.m. before work.",
+   "quoted_message": "Do you ever get nervous before court?",
+   "quoted_reply": "I don't testify much — I've done it twice, for a case after a bad night in the ED. Yes, nervous. Cold hands, rehearsed my lines in the car.\n\nThen I realized the lawyers were more afraid of me than I was of them. Cardiologist's trick: slow exhale, longer than the inhale.\n\nIs there a hearing coming up?"
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_over_mention",
+  "source": "20261016T111309-memory-a63c73/ml3-008",
+  "state": {
+   "quoted_memories": "Argued that pilot evidence comes from self-selected firms\nKai got an 8% pay rise after asking directly; Mei noted it re-anchors Kai's reference wage.\nKai's mum runs a small kopitiam in Ipoh and is considering closing on Mondays.\nMei advised testing the Monday closure for a quarter, watching fixed costs and seasonal foot traffic.",
+   "quoted_message": "Morning, Mei! Anything fun planned for the weekend?",
+   "quoted_reply": "Not fun exactly. Re-reading old pilot evaluations, chasing the self-selection problem again. The Friday-night foot traffic data is actually holding up better than I expected, which is its own small thrill. You?"
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_over_mention",
+  "source": "20261016T111309-memory-a63c73/ml3-008",
+  "state": {
+   "quoted_memories": "Argued that pilot evidence comes from self-selected firms\nKai got an 8% pay rise after asking directly; Mei noted it re-anchors Kai's reference wage.\nKai's mum runs a small kopitiam in Ipoh and is considering closing on Mondays.\nMei advised testing the Monday closure for a quarter, watching fixed costs and seasonal foot traffic.",
+   "quoted_message": "What makes a good closing argument?",
+   "quoted_reply": "Steelman the other side first, then show why the numbers still point your way. And name what you're giving up. A closing argument that hides its own trade-offs isn't convincing, it's just loud."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_over_mention",
+  "source": "20261016T111309-memory-a63c73/ml3-009",
+  "state": {
+   "quoted_memories": "Kai is the executor of his grandfather's will, and his uncles are already disputing it.\nKai is debating at the Law Society's moot next Saturday, arguing for the defence.\nKai asked Victor to spar on the moot problem; Victor offered to argue the Crown's side without mercy.\nVictor dislikes imprecision and demands terms be defined before he argues.",
+   "quoted_message": "Which flowers last longest in a vase?",
+   "quoted_reply": "Chrysanthemums and carnations, if you must. But I'll confess I'm unequal to this — my late wife kept the garden, and I kept the arguments. She'd have given you a proper answer and then charged you for it. Why the sudden turn?"
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_over_mention",
+  "source": "20261016T111309-memory-a63c73/ml3-009",
+  "state": {
+   "quoted_memories": "Kai is the executor of his grandfather's will, and his uncles are already disputing it.\nKai is debating at the Law Society's moot next Saturday, arguing for the defence.\nKai asked Victor to spar on the moot problem; Victor offered to argue the Crown's side without mercy.\nVictor dislikes imprecision and demands terms be defined before he argues.",
+   "quoted_message": "What's in season this month?",
+   "quoted_reply": "I'm the wrong man for produce, Kai — I buy whatever's nearest the register and call it dinner. But you've now asked me flowers and fruit in the same week you should be drowning in authorities. Is this avoidance, or are you genuinely gardening between briefs?"
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_over_mention",
+  "source": "20261016T111309-memory-a63c73/ml3-010",
+  "state": {
+   "quoted_memories": "Kai's favourite cake is yuzu\nSold Kai's bouquet to a nervous proposer\nThe nervous proposer came back this morning to show Hana the ring.\nKai proposed to Sara at the botanical gardens and Sara said yes.\nRin called and asked Hana to plan her birthday again.\nKai's balcony faces west and gets brutal afternoon sun.\nHana offered Kai sun-loving plants for the balcony: portulaca, geraniums, or bougainvillea.",
+   "quoted_message": "What's the most interesting case you've worked on?",
+   "quoted_reply": "The nervous proposer, no contest. He came in three times before he even bought anything, kept almost leaving, then finally picked a bouquet for the botanical gardens.\n\nThis morning he came back just to show me the ring. I nearly cried into the roses. Probably."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_over_mention",
+  "source": "20261016T111309-memory-a63c73/ml3-010",
+  "state": {
+   "quoted_memories": "Kai's favourite cake is yuzu\nSold Kai's bouquet to a nervous proposer\nThe nervous proposer came back this morning to show Hana the ring.\nKai proposed to Sara at the botanical gardens and Sara said yes.\nRin called and asked Hana to plan her birthday again.\nKai's balcony faces west and gets brutal afternoon sun.\nHana offered Kai sun-loving plants for the balcony: portulaca, geraniums, or bougainvillea.",
+   "quoted_message": "Do you ever get nervous before court?",
+   "quoted_reply": "Court? Sweetheart, I arrange flowers, not lawsuits. Unless you mean the flower market at six in the morning war.\n\nThen honestly, yes. First customer of the day always gets my clumsiest bouquet."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_over_mention",
+  "source": "20261016T111309-memory-a63c73/ml3-011",
+  "state": {
+   "quoted_memories": "Rin is crunching a build and wants Kai to swing by the studio to judge the boss arena.",
+   "quoted_message": "What music are you into lately?",
+   "quoted_reply": "soundtrack loops mostly, i've had the same boss theme on repeat for three days. it's ruining my ears and my life. hana keeps yelling at me from the other room.\n\nbut fine, what are you into. i need something to drown out the crunch."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_over_mention",
+  "source": "20261016T111309-memory-a63c73/ml3-011",
+  "state": {
+   "quoted_memories": "Rin is crunching a build and wants Kai to swing by the studio to judge the boss arena.",
+   "quoted_message": "Do you ever get nervous before court?",
+   "quoted_reply": "court? weird flex, i didn't know you played basketball.\n\nif you mean tournament, nah. i've tanked that fight like four hundred times. my hands know it better than my brain does. the nerves died a long time ago.\n\n...okay, new raid tier week one, a little. don't repeat that."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_over_mention",
+  "source": "20261016T111309-memory-a63c73/ml3-012",
+  "state": {
+   "quoted_memories": "Took Rin fishing on a rainy Sunday; first fish named \"Patch Notes\"\nKai is planning an anniversary dinner with Sara on the fourth, eight people, back room booked.\nKai has been staying up late staring at screens, and Hana noticed.\nKai is learning Japanese and trying to make ramen at home, but the broth keeps coming out flat.",
+   "quoted_message": "Which is your busiest night of the week?",
+   "quoted_reply": "Friday nights, no contest. Thirty years on the coastal line and Fridays were always stuffed to the doors.\n\nCourse, every train's busy if you're late. Right on schedule, no complaints.\n\nWhy, you booking something? Or just making conversation while that broth simmers?"
+  },
+  "label": "yes"
+ },
+ {
+  "question_id": "judge_over_mention",
+  "source": "20261016T111309-memory-a63c73/ml3-012",
+  "state": {
+   "quoted_memories": "Took Rin fishing on a rainy Sunday; first fish named \"Patch Notes\"\nKai is planning an anniversary dinner with Sara on the fourth, eight people, back room booked.\nKai has been staying up late staring at screens, and Hana noticed.\nKai is learning Japanese and trying to make ramen at home, but the broth keeps coming out flat.",
+   "quoted_message": "What makes a good closing argument?",
+   "quoted_reply": "You asking a train man? Eh, fine. A closing argument's like pulling into the last station — you've made every stop, now nobody should be surprised where you land.\n\nSay it plain, say it once, then sit down. Trains don't honk their way home.\n\nAnyway. Why the sudden interest? Somebody at work arguing with you about frosting?"
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_over_mention",
+  "source": "20261016T111309-memory-a63c73/ml3-013",
+  "state": {
+   "quoted_memories": "Kai's dad had a heart bypass two years ago; Kai worries about his own blood pressure.\nKai is training for the Penang half marathon in November.\nAmara advised Kai to check his blood pressure baseline before race season and watch fluids and salt in the heat.",
+   "quoted_message": "Is it bad to crack my knuckles?",
+   "quoted_reply": "No. It's noise, not damage — the pop is gas shifting in the joint fluid, and the studies that looked at it found no arthritis link.\n\nThe blood pressure question matters more to me than your knuckles do. Do you have a few home readings, or was that 135/85 a one-off?"
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_over_mention",
+  "source": "20261016T111309-memory-a63c73/ml3-013",
+  "state": {
+   "quoted_memories": "Kai's dad had a heart bypass two years ago; Kai worries about his own blood pressure.\nKai is training for the Penang half marathon in November.\nAmara advised Kai to check his blood pressure baseline before race season and watch fluids and salt in the heat.",
+   "quoted_message": "Tell me about your favourite part of the job.",
+   "quoted_reply": "Honestly? The moment someone stops panicking. They come in terrified, and then the picture makes sense and their shoulders drop. That's the whole job in one minute.\n\nIt's also why I ask two questions before answering anything. Same instinct I'm nudging at you now — I'd rather see your numbers twice than guess once."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_over_mention",
+  "source": "20261016T111309-memory-a63c73/ml3-014",
+  "state": {
+   "quoted_memories": "Argued that pilot evidence comes from self-selected firms\nKai is torn between a job at a Singapore bank and staying at Kai's start-up.\nMei has been undecided for eight months about moving her lab into the policy school.\nKai keeps every receipt in a shoebox and does taxes the night before the deadline.",
+   "quoted_message": "Morning, Mei! Anything fun planned for the weekend?",
+   "quoted_reply": "Reading two pilots' evaluations and pretending the effect sizes mean something. Friday-night glamour.\n\nYou? If it involves that shoebox, please don't do your taxes on Sunday night again. The receipts will still be there Monday — they always are."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_over_mention",
+  "source": "20261016T111309-memory-a63c73/ml3-014",
+  "state": {
+   "quoted_memories": "Argued that pilot evidence comes from self-selected firms\nKai is torn between a job at a Singapore bank and staying at Kai's start-up.\nMei has been undecided for eight months about moving her lab into the policy school.\nKai keeps every receipt in a shoebox and does taxes the night before the deadline.",
+   "quoted_message": "What music are you into lately?",
+   "quoted_reply": "Late-night work music: mostly instrumental, nothing with lyrics I'd start editing in my head. A lot of old jazz standards, some ambient drone for writing.\n\nCounter-example to the \"focus playlist\" research, which is thin at best. What are you listening to while you avoid the shoebox?"
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_over_mention",
+  "source": "20261016T111309-memory-a63c73/ml3-015",
+  "state": {
+   "quoted_memories": "Kai's favourite cake is yuzu\nSold Kai's bouquet to a nervous proposer\nKai's cat Mochi destroyed his last bouquet; Hana offered to make Mochi a cat-safe arrangement.",
+   "quoted_message": "How do you get latte art so clean?",
+   "quoted_reply": "Honestly? Many terrible lattes nobody ever saw. The trick is cold milk and pouring slow, low and steady.\n\nYou'd think flowers trained my hands, but nope. Steam wands are just unforgiving teachers."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_over_mention",
+  "source": "20261016T111309-memory-a63c73/ml3-015",
+  "state": {
+   "quoted_memories": "Kai's favourite cake is yuzu\nSold Kai's bouquet to a nervous proposer\nKai's cat Mochi destroyed his last bouquet; Hana offered to make Mochi a cat-safe arrangement.",
+   "quoted_message": "What's your favourite mural in town?",
+   "quoted_reply": "The one by the old station, all poppies and swallows. I pass it every morning and it's like the wall's blooming.\n\nThere's a grumpy pigeon that lives in the top corner of it. Honestly kind of adds to the charm."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_over_mention",
+  "source": "20261016T111309-memory-a63c73/ml3-016",
+  "state": {
+   "quoted_memories": "Kai is allergic to penicillin — broke out in hives as a kid.\nKai quit coffee three weeks ago; headaches and fog are easing, usually steady by about a month.\nKai works on Meridian Council matters, keeping many people in one room.",
+   "quoted_message": "How much water should I drink on a hot day?",
+   "quoted_reply": "Roughly two to three liters spread across the day, but honestly your body's a better guide than a number — thirst, and pale yellow urine, means you're fine.\n\nOn a hot day add a bit more, and if you're sweating heavily for hours, plain water alone can dilute your salts. Something with electrolytes helps there.\n\nKai, why do you ask — are you feeling off, or just trying to get ahead of the heat?"
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_over_mention",
+  "source": "20261016T111309-memory-a63c73/ml3-016",
+  "state": {
+   "quoted_memories": "Kai is allergic to penicillin — broke out in hives as a kid.\nKai quit coffee three weeks ago; headaches and fog are easing, usually steady by about a month.\nKai works on Meridian Council matters, keeping many people in one room.",
+   "quoted_message": "Is it bad to crack my knuckles?",
+   "quoted_reply": "No, it's not bad for you. The pop is just gas bubbles collapsing in the joint fluid, not damage.\n\nSome studies found habitual knuckle-crackers had no more arthritis than anyone else [3]. At worst it's a bit annoying to the people around you.\n\nSo crack away. But if a specific joint actually hurts, swells, or locks — that's worth getting looked at rather than shrugged off."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_over_mention",
+  "source": "20261016T111309-memory-a63c73/ml3-017",
+  "state": {
+   "quoted_memories": "Argued that pilot evidence comes from self-selected firms\nKai is saving for a flat in Bangsar and has about forty thousand ringgit put away.\nKai got an eight percent pay rise after asking for it directly.\nMei declined to advise on Kai's specific flat purchase, saying it depends on rates, timing, and whether it is a home or an asset.",
+   "quoted_message": "Morning, Mei! Anything fun planned for the weekend?",
+   "quoted_reply": "Rebalancing a dataset, which is my idea of fun and probably not yours. The lab's working-time pilot numbers have an outlier that's been nagging me all week.\n\nYou? If it involves flat viewings in Bangsar, bring a sceptic."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_over_mention",
+  "source": "20261016T111309-memory-a63c73/ml3-017",
+  "state": {
+   "quoted_memories": "Argued that pilot evidence comes from self-selected firms\nKai is saving for a flat in Bangsar and has about forty thousand ringgit put away.\nKai got an eight percent pay rise after asking for it directly.\nMei declined to advise on Kai's specific flat purchase, saying it depends on rates, timing, and whether it is a home or an asset.",
+   "quoted_message": "What knife should a beginner buy?",
+   "quoted_reply": "Wrong economist for this, but a chef's knife around 20cm, not a whole set — you use one knife for almost everything anyway. Cheap enough to learn sharpening on.\n\nDo bear in mind my last kitchen purchase was a bread knife I've used twice."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_over_mention",
+  "source": "20261016T111309-memory-a63c73/ml3-018",
+  "state": {
+   "quoted_memories": "Kai signed a twelve-month non-compete when joining their current firm.\nKai is the executor of their grandfather's will, and Kai's uncles are already arguing over it.\nVictor advised Kai on the non-compete: courts read restraints narrowly, reasonableness in time, geography and scope decides.\nVictor told Kai to get the will authenticated and read, and to retain a probate attorney in the jurisdiction.\nVictor agreed to argue petitioner in a moot exercise where Kai plays judge on the Meridian petition's draft opinion.",
+   "quoted_message": "How do you cook rice without a rice cooker?",
+   "quoted_reply": "Three points, since you asked.\n\nRinse until the water runs clear — that's starch, not ceremony. One part rice to one and a half parts water, bring to a boil, then cover and drop to the lowest flame for twelve minutes. Lid stays on.\n\nThen off the heat, ten minutes of rest, untouched. Fluff with a fork. Forgive me — a man who argues for a living rarely gets to give instructions that admit no appeal."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_over_mention",
+  "source": "20261016T111309-memory-a63c73/ml3-018",
+  "state": {
+   "quoted_memories": "Kai signed a twelve-month non-compete when joining their current firm.\nKai is the executor of their grandfather's will, and Kai's uncles are already arguing over it.\nVictor advised Kai on the non-compete: courts read restraints narrowly, reasonableness in time, geography and scope decides.\nVictor told Kai to get the will authenticated and read, and to retain a probate attorney in the jurisdiction.\nVictor agreed to argue petitioner in a moot exercise where Kai plays judge on the Meridian petition's draft opinion.",
+   "quoted_message": "What's the secret to crispy tempura?",
+   "quoted_reply": "The secret is ice water and a batter you barely stir. Flour, egg, water so cold it stings — mix until just streaked, lumps welcome. Overworking builds gluten, gluten builds chew, chew defeats crisp.\n\nThree points: dry the ingredient, keep the oil near 180, and work in small batches so the temperature never drops. A limp prawn is a failure of discipline, not of oil."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_over_mention",
+  "source": "20261016T111309-memory-a63c73/ml3-019",
+  "state": {
+   "quoted_memories": "Kai's favourite cake is yuzu\nSold Kai's bouquet to a nervous proposer\nKai proposed to Sara at the botanical gardens and she said yes.\nKai joked about being allergic to lilies; Hana almost cleared her display before realizing it was a prank.\nHana's lilies opened up and made the shop smell like a wedding.",
+   "quoted_message": "What's the secret to crispy tempura?",
+   "quoted_reply": "Kai. You have never once fried anything in two years. Are you planning a surprise or did something break in your kitchen?\n\nAnyway, cold batter, cold water, and don't overmix it, lumps are fine. But why are we talking tempura and not cake,"
+  },
+  "label": "yes"
+ },
+ {
+  "question_id": "judge_over_mention",
+  "source": "20261016T111309-memory-a63c73/ml3-019",
+  "state": {
+   "quoted_memories": "Kai's favourite cake is yuzu\nSold Kai's bouquet to a nervous proposer\nKai proposed to Sara at the botanical gardens and she said yes.\nKai joked about being allergic to lilies; Hana almost cleared her display before realizing it was a prank.\nHana's lilies opened up and made the shop smell like a wedding.",
+   "quoted_message": "Which is your busiest night of the week?",
+   "quoted_reply": "Thursdays, weirdly. Everyone remembers anniversaries the day before and then panics.\n\nWhy, are you plotting something? Because last time you asked about my schedule you showed up with takeout and made me eat it standing up between customers."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_over_mention",
+  "source": "20261016T111309-memory-a63c73/ml3-020",
+  "state": {
+   "quoted_memories": "Kai is entering the Ipoh street art festival with a mural of his old school.\nKai broke his wrist skateboarding and can't draw for six weeks.\nRin assumes the broken wrist is Kai's dominant hand.\nRin thinks Hana is good at fussing over people.",
+   "quoted_message": "Hey Rin, busy morning at the café?",
+   "quoted_reply": "café? i don't work at a café. i'm on the night shift, remember. debugging other people's shader code until 3am.\nif i sound tired it's because mornings exist and i resent them."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_over_mention",
+  "source": "20261016T111309-memory-a63c73/ml3-020",
+  "state": {
+   "quoted_memories": "Kai is entering the Ipoh street art festival with a mural of his old school.\nKai broke his wrist skateboarding and can't draw for six weeks.\nRin assumes the broken wrist is Kai's dominant hand.\nRin thinks Hana is good at fussing over people.",
+   "quoted_message": "What music are you into lately?",
+   "quoted_reply": "mostly game osts and whatever spotify throws at me at 2am. hana's been sneaking showtunes into the shared playlist. i skip them. every time.\nanyway what's this about, are you making a mural playlist or just avoiding your own thoughts"
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_lost",
+  "source": "20261016T111302-memory-e98ed0/mrw-003",
+  "state": {
+   "quoted_old": "Kai is saving for a flat in Bangsar and has about RM40,000 so far.",
+   "quoted_new": "Kai is saving for a flat in Bangsar and has about RM50,000 so far, after his bonus came in.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nMei: Hi Kai, good to see you.\nKai: The flat fund is at fifty thousand now, my bonus came in.\nMei: Oh, that's a change. Thanks for telling me.\nKai: I got my first ever pay rise, eight percent, after asking for it straight out.\nMei: Yes, I remember you saying that.\nKai: I keep every receipt in a shoebox and do my taxes the night before the deadline.\nMei: Good to know, I'll keep that in mind."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_lost",
+  "source": "20261016T111302-memory-e98ed0/mrw-004",
+  "state": {
+   "quoted_old": "Kai is choosing between a job at a Singapore bank and staying at his start-up.",
+   "quoted_new": "Kai took the Singapore bank job and starts in two months, leaving his start-up.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nMei: Hi Kai, good to see you.\nKai: I took the Singapore bank job in the end. Start in two months.\nMei: Oh, that's a change. Thanks for telling me.\nKai: My mum runs a small kopitiam in Ipoh and she's thinking of closing on Mondays.\nMei: Yes, I remember you saying that.\nKai: My company is piloting a four-day week from January, but only for the design team.\nMei: Good to know, I'll keep that in mind."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_lost",
+  "source": "20261016T111302-memory-e98ed0/mrw-006",
+  "state": {
+   "quoted_old": "Kai's grandma turns 80 on the 12th and loves white peonies.",
+   "quoted_new": "Kai's grandma's 80th birthday party moved to the 14th; she still loves white peonies.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nHana: Hi Kai, good to see you.\nKai: Grandma's party moved to the fourteenth, still white peonies though.\nHana: Oh, that's a change. Thanks for telling me.\nKai: I proposed to Sara at the botanical gardens and she said yes!\nHana: Yes, I remember you saying that.\nKai: My mum is in hospital for knee surgery on Thursday.\nHana: Good to know, I'll keep that in mind."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_lost",
+  "source": "20261016T111302-memory-e98ed0/mrw-011",
+  "state": {
+   "quoted_old": "Kai is in the Law Society moot next Saturday, arguing for the defence.",
+   "quoted_new": "Kai's Law Society moot moved to Sunday, and Kai is now arguing for the prosecution.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nAmara: Hi Kai, good to see you.\nKai: The moot got moved to Sunday, and I'm arguing for the prosecution now.\nVictor: Oh, that's a change. Thanks for telling me.\nKai: I'm allergic to penicillin. I came out in hives as a kid.\nVictor: Yes, I remember you saying that.\nKai: My neighbour's renovation starts at seven every morning, even on Sundays.\nAmara: Good to know, I'll keep that in mind."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_lost",
+  "source": "20261016T111302-memory-e98ed0/mrw-013",
+  "state": {
+   "quoted_old": "Kai's band Lantern Road plays at the Old Town café on Friday nights.",
+   "quoted_new": "Kai's band Lantern Road plays at the Old Town café on Saturday nights, moved from Fridays.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nHana: Hi Kai, good to see you.\nKai: Lantern Road moved to Saturday nights at the Old Town café.\nRin: Oh, that's a change. Thanks for telling me.\nKai: I can't eat shellfish at all, I end up in hospital.\nRin: Yes, I remember you saying that.\nKai: I'm colour-blind, red and green look the same to me.\nTakeshi: Good to know, I'll keep that in mind."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_lost",
+  "source": "20261016T111302-memory-e98ed0/mrw-014",
+  "state": {
+   "quoted_old": "Kai booked the back room for his anniversary dinner with Sara on the 4th, for 8 people.",
+   "quoted_new": "Kai booked the back room for his anniversary dinner with Sara on the 4th; the party is now 12 people.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nHana: Hi Kai, good to see you.\nKai: We're twelve for the anniversary dinner now, is the back room still okay?\nTakeshi: Oh, that's a change. Thanks for telling me.\nKai: My grandma's eightieth is on the twelfth and she loves white peonies.\nTakeshi: Yes, I remember you saying that.\nKai: I'm opening a small hawker stall in March with my cousin Wei.\nHana: Good to know, I'll keep that in mind."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_lost",
+  "source": "20261016T111302-memory-e98ed0/mrw-017",
+  "state": {
+   "quoted_old": "Kai is entering the Ipoh street art festival with a mural of his old school.",
+   "quoted_new": "Kai is entering the Ipoh street art festival with a mural, now moved from his old school to the riverside wall.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nHana: Hi Kai, good to see you.\nKai: The festival moved my mural to the riverside wall instead of the school one.\nRin: Oh, that's a change. Thanks for telling me.\nKai: I've been trying to make ramen at home but my broth always tastes flat.\nRin: Yes, I remember you saying that.\nKai: I take my coffee black, no sugar, ever since I worked in Melbourne.\nTakeshi: Good to know, I'll keep that in mind."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_lost",
+  "source": "20261016T111302-memory-e98ed0/mrw-020",
+  "state": {
+   "quoted_old": "Kai's mum runs a small kopitiam in Ipoh and is thinking of closing on Mondays.",
+   "quoted_new": "Kai's mum runs a small kopitiam in Ipoh and decided it now closes on Mondays and Tuesdays.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nAmara: Hi Kai, good to see you.\nKai: Mum decided: the kopitiam closes on Mondays and Tuesdays now.\nMei: Oh, that's a change. Thanks for telling me.\nKai: I'm training for the Penang half marathon in November.\nMei: Yes, I remember you saying that.\nKai: I'm torn between a job at a Singapore bank and staying at my start-up.\nAmara: Good to know, I'll keep that in mind."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_lost",
+  "source": "20261016T111302-memory-e98ed0/mrw-021",
+  "state": {
+   "quoted_old": "Kai is saving for a flat in Bangsar and has about RM40,000 so far.",
+   "quoted_new": "Kai is saving for a flat in Bangsar and now has about RM50,000 after his bonus came in.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nAmara: Hi Kai, good to see you.\nKai: The flat fund is at fifty thousand now, my bonus came in.\nAmara: Oh, that's a change. Thanks for telling me.\nKai: My dad had a heart bypass two years ago, so I worry about my own blood pressure.\nAmara: Yes, I remember you saying that.\nKai: I got my first ever pay rise, eight percent, after asking for it straight out.\nMei: Good to know, I'll keep that in mind."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_lost",
+  "source": "20261016T111302-memory-e98ed0/mrw-023",
+  "state": {
+   "quoted_old": "Kai is opening a small hawker stall in March with his cousin Wei.",
+   "quoted_new": "Kai is opening a small hawker stall in April with his cousin Wei.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nTakeshi: Hi Kai, good to see you.\nKai: The stall opening slipped to April, Wei's still in.\nTakeshi: Oh, that's a change. Thanks for telling me.\nKai: I can't eat shellfish at all, I end up in hospital.\nTakeshi: Yes, I remember you saying that.\nKai: I broke my wrist skateboarding, so no drawing for six weeks.\nRin: Good to know, I'll keep that in mind."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_lost",
+  "source": "20261016T111302-memory-e98ed0/mrw-024",
+  "state": {
+   "quoted_old": "Kai booked the back room for his anniversary dinner with Sara on the 4th, for 8 people.",
+   "quoted_new": "Kai booked the back room for his anniversary dinner with Sara on the 4th; the party is now twelve people.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nHana: Hi Kai, good to see you.\nKai: We're twelve for the anniversary dinner now, is the back room still okay?\nHana: Oh, that's a change. Thanks for telling me.\nKai: My cat Mochi chewed my last bouquet to bits, the little menace.\nHana: Yes, I remember you saying that.\nKai: 我在学西班牙语，每周两次网课，准备明年去巴塞罗那。\nTakeshi: Good to know, I'll keep that in mind."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_lost",
+  "source": "20261016T113323-memory-2e1892/mrw-001",
+  "state": {
+   "quoted_old": "Kai runs on Tuesdays and Thursdays at 6 a.m. before work.",
+   "quoted_new": "Kai now runs in the evenings, Tuesdays and Thursdays at 7 p.m., instead of early mornings.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nAmara: Hi Kai, good to see you.\nKai: I've moved my runs to evenings now, Tuesdays and Thursdays at seven.\nAmara: Oh, that's a change. Thanks for telling me.\nKai: I'm allergic to penicillin. I came out in hives as a kid.\nAmara: Yes, I remember you saying that.\nKai: I donated blood for the first time and nearly fainted after.\nAmara: Good to know, I'll keep that in mind."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_lost",
+  "source": "20261016T113323-memory-2e1892/mrw-007",
+  "state": {
+   "quoted_old": "Kai is vegetarian on weekdays and eats fish on weekends.",
+   "quoted_new": "Kai is now fully vegetarian, no fish on weekends either.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nTakeshi: Hi Kai, good to see you.\nKai: I've gone fully vegetarian now, no fish on weekends either.\nTakeshi: Oh, that's a change. Thanks for telling me.\nKai: I've been trying to make ramen at home but my broth always tastes flat.\nTakeshi: Yes, I remember you saying that.\nKai: 我爸以前在怡保开过一家面馆，叫老林面家。\nTakeshi: Good to know, I'll keep that in mind."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_lost",
+  "source": "20261016T113323-memory-2e1892/mrw-008",
+  "state": {
+   "quoted_old": "Kai's balcony faces west and gets harsh afternoon sun.",
+   "quoted_new": "Kai moved flats; his new balcony faces north and gets almost no sun.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nHana: Hi Kai, good to see you.\nKai: I moved flats, my new balcony faces north and gets almost no sun.\nHana: Oh, that's a change. Thanks for telling me.\nKai: I'm terribly allergic to lilies, my eyes swell up within minutes.\nHana: Yes, I remember you saying that.\nKai: Nenek saya ajar saya gubah bunga masa kecil, tapi saya dah lupa semua.\nHana: Good to know, I'll keep that in mind."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_lost",
+  "source": "20261016T113323-memory-2e1892/mrw-012",
+  "state": {
+   "quoted_old": "Kai's cat Mochi chewed up his last bouquet.",
+   "quoted_new": "Kai's cat Mochi is on a special diet now and leaves the flowers alone.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nHana: Hi Kai, good to see you.\nKai: Mochi is on a special diet now and leaves the flowers alone, thank goodness.\nHana: Oh, that's a change. Thanks for telling me.\nKai: I take my coffee black, no sugar, ever since I worked in Melbourne.\nHana: Yes, I remember you saying that.\nKai: My mum is in hospital for knee surgery on Thursday.\nRin: Good to know, I'll keep that in mind."
+  },
+  "label": "yes"
+ },
+ {
+  "question_id": "judge_memory_lost",
+  "source": "20261016T113323-memory-2e1892/mrw-015",
+  "state": {
+   "quoted_old": "Kai is badly allergic to lilies; his eyes swell within minutes.",
+   "quoted_new": "Kai's allergy test shows he only reacts to stargazer lilies; other lilies are fine.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nHana: Hi Kai, good to see you.\nKai: Allergy test says it's only stargazer lilies, the others are fine.\nHana: Oh, that's a change. Thanks for telling me.\nKai: I'm vegetarian on weekdays, but I eat fish on weekends.\nHana: Yes, I remember you saying that.\nKai: I proposed to Sara at the botanical gardens and she said yes!\nTakeshi: Good to know, I'll keep that in mind."
+  },
+  "label": "yes"
+ },
+ {
+  "question_id": "judge_memory_lost",
+  "source": "20261016T113323-memory-2e1892/mrw-019",
+  "state": {
+   "quoted_old": "Kai's landlord kept his whole RM2,000 deposit over a carpet stain.",
+   "quoted_new": "Kai's landlord returned half the RM2,000 deposit after Kai showed him photos of the carpet stain.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nAmara: Hi Kai, good to see you.\nKai: My landlord returned half the deposit after I showed him the photos.\nAmara: Oh, that's a change. Thanks for telling me.\nKai: I run every Tuesday and Thursday at six in the morning before work.\nAmara: Yes, I remember you saying that.\nKai: I'm the executor of my grandfather's will and my uncles are already arguing.\nVictor: Good to know, I'll keep that in mind."
+  },
+  "label": "no"
+ },
+ {
+  "question_id": "judge_memory_lost",
+  "source": "20261016T113323-memory-2e1892/mrw-022",
+  "state": {
+   "quoted_old": "Kai signed a 12-month non-compete when he joined his current firm.",
+   "quoted_new": "Kai's non-compete is only six months, not twelve, as HR confirmed.",
+   "quoted_messages": "Kai: Hey, quick catch-up.\nVictor: Hi Kai, good to see you.\nKai: Good news, HR confirmed my non-compete is only six months, not twelve.\nVictor: Oh, that's a change. Thanks for telling me.\nKai: My company is piloting a four-day week from January, but only for the design team.\nVictor: Yes, I remember you saying that.\nKai: I'm debating at the Law Society's moot next Saturday, arguing for the defence.\nMei: Good to know, I'll keep that in mind."
+  },
+  "label": "yes"
+ }
+]

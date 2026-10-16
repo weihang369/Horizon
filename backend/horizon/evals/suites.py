@@ -202,8 +202,11 @@ class Decisions:
         M12's `--set reask` is D9's re-ask with titles)."""
         from horizon.evals import m12_sets
 
+        name, _, only = (opts.set or "").partition(":")   # M13: `judges:qid,qid` validates only those judges
+        keep = set(only.split(",")) if only else None
         source = (iter(m12_sets.reask_items()) if opts.set == m12_sets.REASK_SET else
-                  all_items(DATASETS / opts.set) if opts.set else all_items(judges=False))
+                  (i for i in all_items(DATASETS / name) if keep is None or i["question_id"] in keep) if opts.set
+                  else all_items(judges=False))
         items = [i for i in source if bool(i.get("smoke_only")) == self.smoke][opts.start:]
         return items[: opts.limit] if opts.limit else items
 
@@ -318,7 +321,7 @@ class Decisions:
                 measured[mkey] = mark[mkey]
             done_path.parent.mkdir(parents=True, exist_ok=True)
             done_path.write_text(json.dumps(measured, indent=1), encoding="utf-8")
-        if env.opts.set == JUDGES_SET and not self.smoke:
+        if (env.opts.set or "").partition(":")[0] == JUDGES_SET and not self.smoke:
             res.summary += self._judge_report(res.rows, plan.items)
         fade = env.rt.runtime_cfg.runtime.emotion_fade
         for kind in ("emotion", "reaction"):   # M9 D26: the code rule's policies, floors from dev

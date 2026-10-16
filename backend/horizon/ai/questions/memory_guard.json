@@ -1,6 +1,6 @@
 {
   "id": "memory_guard",
-  "version": 2,
+  "version": 3,
   "purpose": "memory_guard",
   "type": "noul",
   "label": "rewrite keeps the old facts?",
@@ -24,8 +24,8 @@
   "deadline": "memory_guard",
   "floor": null,
   "thresholds": {
-    "t_keep": 0.7
+    "t_keep": 0.35
   },
   "fallback": "keep_both",
-  "state_note": "memory D15: one request per rewrite; p >= t_keep supersedes, else the new line is inserted beside the old one. v2 (phase 10, the user's choice): a changed detail counts as kept; t_keep is set by D40's rule on the set with changed values."
+  "state_note": "memory D15: one request per rewrite; p >= t_keep supersedes, else the new line is inserted beside the old one. v2 (phase 10, the user's choice): a changed detail counts as kept. v3: t_keep 0.35 by D40's rule on the set with changed values (test: lossy through 0.04, changed values 7/7 supersede; m13.md)."
 }
