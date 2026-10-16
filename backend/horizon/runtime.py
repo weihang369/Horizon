@@ -171,6 +171,7 @@ class Runtime:
         self.embed_slots = Slots(2)
         self._ingest: Any = None
         self._memory: Any = None
+        self._memory_runs: Any = None   # M13 (memory D8): the pause runs
         self._key_status = "missing"
 
     # ── accessors ──
@@ -236,6 +237,13 @@ class Runtime:
         if self._memory is None:
             raise RuntimeError("runtime not started")
         return self._memory
+
+    @property
+    def memory_runs(self) -> Any:
+        """The MemoryRuns scheduler (`horizon.services.memory.runs`, M13)."""
+        if self._memory_runs is None:
+            raise RuntimeError("runtime not started")
+        return self._memory_runs
 
     @property
     def ingest(self) -> Any:
@@ -361,12 +369,17 @@ class Runtime:
 
     def _build_m5(self) -> None:
         from horizon.services.knowledge.worker import IngestionWorker
+        from horizon.services.memory.runs import MemoryRuns
         from horizon.services.memory.store import MemoryStore
 
         self._ingest = IngestionWorker(self)
         self._memory = MemoryStore(self)
+        self._memory_runs = MemoryRuns(self)
 
     async def _stop_m5(self) -> None:
+        if self._memory_runs is not None:   # M13: never waits on DeepSeek; the next start-up sweep reads the lines
+            await self._memory_runs.stop()
+        self._memory_runs = None
         if self._ingest is not None and hasattr(self._ingest, "stop"):
             await self._ingest.stop()
         self._ingest = None
@@ -470,6 +483,8 @@ class Runtime:
         self._build_m5()
         await self.jobs.recover()  # step 6, before the first request is served
         await self._recover_m5()
+        self.memory_runs.start()          # M13 (memory D7): the stream-left grace and the triggers
+        await self.memory_runs.sweep()    # trigger 6: after close_interrupted_streams
         await self.corrector.scan()
         await asyncio.to_thread(sweep, cfg.data_dir, self.referenced_files_sync())
         self.capture.start()
@@ -524,6 +539,8 @@ class Runtime:
             await self._jobs.before_reset({c["id"] for c in data.characters}, {j["id"] for j in data.jobs})
         if self._ingest is not None:  # M5: seed sources are replaced (back to keyword_only, design D11)
             await self._ingest.cancel_for(source_ids=[k["id"] for k in data.knowledge])
+        if self._memory_runs is not None:  # M13 (memory D8): both resets cancel running pause runs
+            self._memory_runs.cancel_all()
         async with self.db.write() as tx:
             sids = await seeding.apply_seed(tx.conn, data, energy_day=self.energy_day, local_day=self.local_day)
             if sids:
@@ -556,6 +573,8 @@ class Runtime:
             world_ids = (await conn.execute(select(t.worlds.c.id))).scalars().all()
         for job_id in jobs:
             await self.jobs.cancel(job_id)
+        if self._memory_runs is not None:
+            self._memory_runs.cancel_all()
         for world_id in world_ids:
             await self.ingest.cancel_for(world_id=world_id)
             async with self.db.write() as tx:

@@ -88,14 +88,14 @@
 
 ## 2. The pause run without a writer (D7–D11)
 
-- [ ] 2.1 Add an `on_drained` hook to `EventBus`. The runtime registers it for session channels: a grace timer of
+- [x] 2.1 Add an `on_drained` hook to `EventBus`. The runtime registers it for session channels: a grace timer of
   `memory.leaveGraceMs` on the runtime clock, cancelled by a new subscribe. Verify, on the virtual clock:
   - two subscribers, one leaves: no timer;
   - the last one leaves: the timer starts;
   - a reconnect at 5 s: no run.
-- [ ] 2.2 Add `memory.*` to `runtime_config.py` and `runtime.config.ts` (D42), then rebuild the seed. Verify:
+- [x] 2.2 Add `memory.*` to `runtime_config.py` and `runtime.config.ts` (D42), then rebuild the seed. Verify:
   `seed:check`, and a config test reading every knob.
-- [ ] 2.3 Build `MemoryRuns` (D8):
+- [x] 2.3 Build `MemoryRuns` (D8):
   - high and normal queues, `maxConcurrent` 2, one run per session with merge and `again`;
   - registration by session, character and world, with cancel APIs, and `drain()` for tests.
 
@@ -103,7 +103,7 @@
   - three requests run two at a time;
   - a request during a run queues exactly one more;
   - high priority goes first.
-- [ ] 2.4 Wire the triggers (D7):
+- [x] 2.4 Wire the triggers (D7):
   - `leave`, `end`, the debate verdict, watch's `turn_cap`;
   - the re-request at a kept turn's `turn.end`;
   - trigger 5 at create and actor start (other sessions sharing a participant with unread lines, at high priority);
@@ -112,14 +112,14 @@
 
   Remove `_remember` and its call. Verify: one test per trigger that a run is requested, and a test that ten
   completed replies in an open session make no memory call.
-- [ ] 2.5 Add the start checks (D8):
+- [x] 2.5 Add the start checks (D8):
   - seed sessions skip;
   - an explicitly `scripted` profile advances the checkpoint with no call;
   - with no usable key the run is deferred (no move, no try), with "falls back for lack of a key" told apart through
     `profile.choose`.
 
   Verify: tests for each.
-- [ ] 2.6 Write `build_stretch` (D9):
+- [x] 2.6 Write `build_stretch` (D9):
   - the settled bound, kinds and labels, the debate and watch header;
   - 6 context lines, re-reads with their two context lines;
   - who is present, numbering, 8,000-token pieces;
@@ -131,7 +131,7 @@
   - debate moderator lines are labelled;
   - a 20,000-token stretch makes three pieces;
   - 2 character lines make no call.
-- [ ] 2.7 Write `MemoryStore.apply_run` (D10):
+- [x] 2.7 Write `MemoryStore.apply_run` (D10):
   - sorted run locks held from the list read to the commit;
   - one transaction with the compare-and-set, the re-read update and `memory_tries = 0`;
   - the variant check, the Forget-race drop, and Touch of recall-used memories;
@@ -142,21 +142,21 @@
   - Forget of a target mid-run: the change is dropped and the rest commits;
   - a regenerated source variant: the draft is dropped;
   - two sessions sharing a character serialise.
-- [ ] 2.8 Add the failure path:
+- [x] 2.8 Add the failure path:
   - a failed call counts a try and keeps the checkpoint;
   - 3 tries skip the piece with a warning;
   - a failed commit retries once with no second call;
   - a cap refusal is not a try.
 
   Verify: tests for each, with a writer stub.
-- [ ] 2.9 Add `CallContext.pauses_sessions` (D11):
+- [x] 2.9 Add `CallContext.pauses_sessions` (D11):
   - runs and window-drop indexing set `False`;
   - `_preflight` publishes with `sessions=False` for them;
   - `on_spend` skips `pause_all_for_cap()` for them.
 
   Verify: a run's call crossing the cap leaves an active session active, and a reply's crossing still pauses it.
   Spec: session-runtime "Daily cap pauses live sessions".
-- [ ] 2.10 Flip phase 2's storm tests to passing:
+- [x] 2.10 Flip phase 2's storm tests to passing:
   - delete, character delete, world delete and Reset demo, each during a stubbed writer call and inside
     `apply_run`;
   - shutdown with runs pending, then a restart sweep reads the same lines.

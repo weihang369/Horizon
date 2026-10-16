@@ -51,6 +51,9 @@ class LiveSessionManager:
             actor = SessionActor(self.rt, self, writer)
             self.actors[sid] = actor
             actor.start()
+            runs = self.rt._memory_runs
+            if runs is not None and runs.started:   # M13 (memory D7 trigger 5): a shared character's other sitting
+                self.rt.spawn(f"memory_opened:{sid}", runs.opened(sid))
             return actor
 
     def peek(self, sid: str) -> SessionActor | None:
@@ -102,7 +105,10 @@ class LiveSessionManager:
         return spent >= cap - 1e-9
 
     def on_spend(self, ctx: CallContext, res: RecordResult) -> None:
-        """Gateway hook after every recorded call: crossing the daily cap pauses the live sessions."""
+        """Gateway hook after every recorded call: crossing the daily cap pauses the live sessions, unless the call was
+        background memory work (M13, memory D11): then the next reply meets the cap itself and pauses there."""
+        if not ctx.pauses_sessions:
+            return
         cap = self.rt.caps().daily_cap_usd
         if res.spent_before < cap - 1e-9 <= res.spent_after:
             self.pause_all_for_cap()

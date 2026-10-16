@@ -284,6 +284,12 @@ async def apply_seed(conn: AsyncConnection, data: SeedData, *, energy_day: Calla
 
     # Memory: seed rows replaced; user-earned memories (is_seed = 0) survive.
     await conn.execute(delete(t.memory_items).where(t.memory_items.c.is_seed.is_(True)))
+    # M13 (memory D5): an imported recording's history is never mined, like a migrated session's (doc 09 M2), so each
+    # starts its memory checkpoint at its last message (the test-mode mock sessions are imported as non-seed)
+    for s in data.sessions:
+        top = max((int(m["seq"]) for m in s.messages), default=0)
+        await conn.execute(update(t.sessions).where(t.sessions.c.id == s.session["id"]).values(
+            memory_seq=top, memory_tries=0, memory_reread=[]))
     modes = {s.session["id"]: s.session["mode"] for s in data.sessions}
     await _insert(conn, t.memory_items, [mp.memory_row(m, is_seed=True, source_mode=modes.get(m.get("sourceSessionId") or ""))
                                          for m in data.memory])

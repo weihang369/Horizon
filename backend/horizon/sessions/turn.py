@@ -580,8 +580,6 @@ class TurnRunner:
             start_reactions(rt, actor, info, ctx, key_set=self.key_set())   # M9 D18-D20: predicted inside the task
         if status == "complete" and not scrub and ctx is not None and not verbatim:   # M9 D24 (doc 13 W2)
             start_face_check(rt, actor, info, ctx, key_set=self.key_set())
-        if status == "complete" and not scrub and ctx is not None and not verbatim:
-            self._remember(actor, info, ctx)
         if status != "error":   # M8 (docs/ai/05 X2, X3): fold the window after the reply, never before it
             check_summary(actor)
         return status
@@ -634,24 +632,6 @@ class TurnRunner:
             chain = chain_of(str(mem_id), [(str(a), b) for a, b in items])
             done |= chain
             await forget_chain(self.rt, conn, character_id=str(character_id), world_id=str(world_id), chain=chain)
-
-    def _remember(self, actor: SessionActor, info: TurnInfo, ctx: TurnContext) -> None:
-        """The post-turn memory queue (M5 design D17): after a complete, unblocked reply, the memory writer proposes ops
-        from the speaker's perspective and `MemoryStore.apply` writes them (serialised per character). A failure is
-        logged and never touches the session. Interrupted, failed and blocked replies never get here."""
-        rt = self.rt
-        writer = rt.ai.memory_writer(self.key_set())
-        mid = info.message_id
-
-        async def job() -> None:
-            try:
-                ops = await writer.after_turn(ctx, info.character_id, mid)
-                if ops:
-                    await rt.memory.apply(info.character_id, ctx.session.world.id, ops)
-            except Exception:
-                log.exception("the memory writer failed after message %s (ignored)", mid)
-
-        actor.background("memory", job())
 
     # ── Stop ──
     async def close_interrupted(self, actor: SessionActor, info: TurnInfo, *, by: str = "user") -> None:

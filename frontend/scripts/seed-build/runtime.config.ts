@@ -37,6 +37,30 @@ export interface AgentRetrieval {
   queryEmbedWaitMs: number;
 }
 
+/** M13 (docs/ai/09 M1, M2, M4–M8; doc 13 W12; memory design D42): pause runs and the memory list. AI-stage
+ *  tunables; the guard's `t_keep` lives in the question bank. The mock never writes memories. */
+export interface MemoryKnobs {
+  /** Doc 09 M1 trigger 1: the session stream left with nobody back this long starts a pause run. */
+  leaveGraceMs: number;
+  /** Pause runs at once (never the reply slots). */
+  maxConcurrent: number;
+  /** Doc 09 M2: a longer stretch runs in pieces of this many tokens. */
+  pieceTokens: number;
+  /** Doc 09 M6: failed tries on one checkpoint before the piece is skipped. */
+  maxTries: number;
+  /** Doc 09 M8: the memory list in system message 1, filled to this many tokens. */
+  blockTokens: number;
+  /** Recency = max(recencyFloor, 0.5 ^ (days / halfLifeDays)). */
+  halfLifeDays: number;
+  recencyFloor: number;
+  /** D-71's down-weighting by the memory's source mode. */
+  modeWeight: { oneOnOne: number; group: number; debate: number; watch: number };
+  /** Doc 09 M4: an added line scored under this is dropped. */
+  minImportance: number;
+  /** Doc 09 M5: an added line this close (cosine) to a current memory reinforces it instead. */
+  dupCosine: number;
+}
+
 export interface RuntimeConfig {
   /** Per-mode reply caps (`max_tokens`), a safety net about 1.5–2× the prompt's length target (docs/ai/03 C4);
    *  `one_on_one_deep` is used once a turn plan says the turn is deep (M9); debate by turn length. */
@@ -70,6 +94,8 @@ export interface RuntimeConfig {
   /** M11 (doc 08 V6; debate D11): how long the Auto host's written line may hold the debate: the welcome until Start +
    *  this, every other line until its banner + this; then the fixed sentence shows. The mock's host is instant. */
   debate: { hostWelcomeWaitMs: number; hostBannerWaitMs: number };
+  /** M13: pause runs and the memory list. */
+  memory: MemoryKnobs;
 }
 
 export const RUNTIME: RuntimeConfig = {
@@ -106,4 +132,9 @@ export const RUNTIME: RuntimeConfig = {
   context: { voiceReminder: false },
   emotion: { fade: ["surprised", "embarrassed"] },   // M9 (turn-plan-emotion D13): moments, not moods
   debate: { hostWelcomeWaitMs: 3000, hostBannerWaitMs: 1500 },
+  memory: {
+    leaveGraceMs: 30_000, maxConcurrent: 2, pieceTokens: 8000, maxTries: 3, blockTokens: 1000, halfLifeDays: 30,
+    recencyFloor: 0.5, modeWeight: { oneOnOne: 1.0, group: 1.0, debate: 0.85, watch: 0.7 }, minImportance: 0.25,
+    dupCosine: 0.92,
+  },
 };

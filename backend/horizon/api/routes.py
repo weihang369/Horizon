@@ -195,6 +195,7 @@ async def update_world(request: Request, world_id: str, body: WorldPatch) -> Res
 async def delete_world(request: Request, world_id: str) -> Response:
     rt = rt_of(request)
     await rt.ingest.cancel_for(world_id=world_id)  # M5 design D18: indexing stops before its rows go
+    rt.memory_runs.cancel(world=world_id)   # M13 (memory D8)
     async with rt.db.write() as tx:
         await worlds_svc.delete_world(tx, world_id, now=rt.now_iso())
     worlds_svc.remove_world_files(rt.cfg.data_dir, world_id)

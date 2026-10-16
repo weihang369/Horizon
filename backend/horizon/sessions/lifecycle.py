@@ -243,6 +243,7 @@ async def delete_session(rt: Runtime, sid: str) -> None:
     actor = rt.sessions.peek(sid)
     if actor is not None:
         await rt.sessions.release(sid, actor)
+    rt.memory_runs.cancel(session=sid)   # M13 (memory D8): its pause run writes nothing
     await rt.gateway.drain_background()
     async with rt.db.write() as tx:
         await tx.conn.execute(delete(t.sessions).where(t.sessions.c.id == sid))

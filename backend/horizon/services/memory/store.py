@@ -13,14 +13,27 @@ per character"; knowledge-memory-storage design D17).
 4. applies everything in **one** transaction: rows (FTS by trigger), vectors, `superseded_by`, `importance`,
    `last_recalled_at`/`recall_count` (M13: `Reinforce` refreshes `last_recalled_at` too); then announces
    `entity.changed { kind: "memory", id: characterId, worldId }`.
+
+M13 (memory design D10; long-term-memory "A run commits its memories with its checkpoint"): `apply_run` is a pause
+run's commit. The run already holds every present character's lock (`run_locks`, taken in sorted order before it
+read their lists), and in ONE transaction it:
+- moves the session's checkpoint only if it is still where the run started (compare-and-set; otherwise nothing is
+  written and the run reports it lost the race), clears the try count and removes the re-read messages it handled;
+- drops a draft whose source variant is no longer its message's active one (a regenerate during the run queued that
+  message to be read again);
+- drops, rather than fails on, a rewrite or confirm whose target is gone or no longer current (the Forget race: its
+  text came from the forgotten line). Adds are unaffected. This is where it differs from `apply`;
+- writes the ops, and Touches the recall-used memories still current.
 """
 
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import logging
-from collections.abc import Sequence
-from typing import TYPE_CHECKING
+from collections.abc import AsyncIterator, Sequence
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING, Any
 
 import sqlite_vec
 from sqlalchemy import and_, select, text, update
@@ -74,6 +87,19 @@ def drafts_of(ops: Sequence[MemoryOp]) -> list[MemoryDraft]:
     return [op.draft for op in ops if isinstance(op, Insert | Supersede)]
 
 
+@dataclass
+class RunCommit:
+    """What `apply_run` wrote: the memories created per character, and what it dropped (and why)."""
+
+    created: dict[str, list[str]] = field(default_factory=dict)
+    dropped: list[dict[str, Any]] = field(default_factory=list)
+    changed: list[str] = field(default_factory=list)   # characters whose memories changed
+
+
+class LostRace(Exception):
+    """The checkpoint moved since the run started: nothing was written."""
+
+
 class MemoryStore:
     def __init__(self, rt: Runtime) -> None:
         self.rt = rt
@@ -81,6 +107,176 @@ class MemoryStore:
 
     def lock(self, character_id: str) -> asyncio.Lock:
         return self._locks.setdefault(character_id, asyncio.Lock())
+
+    @contextlib.asynccontextmanager
+    async def run_locks(self, character_ids: Sequence[str]) -> AsyncIterator[None]:
+        """M13 (D10): every present character's lock, in sorted id order (no deadlock between two runs), held from
+        reading their lists until the commit, so no two runs rewrite one list from stale copies."""
+        async with contextlib.AsyncExitStack() as stack:
+            for cid in sorted(set(character_ids)):
+                await stack.enter_async_context(self.lock(cid))
+            yield
+
+    async def apply_run(self, world_id: str, ops_by_character: dict[str, list[MemoryOp]], *, session_id: str,
+                        from_seq: int, upto_seq: int, reread_done: Sequence[str] = (),
+                        vectors: dict[str, dict[str, list[float]]] | None = None,
+                        touched: Sequence[str] = ()) -> RunCommit:
+        """A pause run's commit (D10). The caller holds `run_locks` for every character in `ops_by_character`.
+        `vectors`: draft text → {space id: vector} already computed (the duplicate check's), reused here. Raises
+        `LostRace` when the checkpoint moved."""
+        result = RunCommit()
+        kept: dict[str, list[MemoryOp]] = {}
+        for cid, ops in ops_by_character.items():
+            good: list[MemoryOp] = []
+            for op in ops:
+                try:
+                    if isinstance(op, Insert | Supersede):
+                        _check_draft(op.draft)
+                    elif isinstance(op, Reinforce):
+                        _check_unit(op.importance, "importance")
+                    elif not isinstance(op, Touch):
+                        raise MemoryOpError(f"unknown memory op {type(op).__name__}")
+                except MemoryOpError as e:
+                    result.dropped.append({"characterId": cid, "op": type(op).__name__, "why": str(e)})
+                    continue
+                good.append(op)
+            kept[cid] = good
+        texts = [d.text for ops in kept.values() for d in drafts_of(ops)]
+        given = vectors or {}
+        need = [x for x in dict.fromkeys(texts)]
+        computed = await self._embed_missing(world_id, need, given)
+        rt = self.rt
+        now = rt.now_iso()
+        async with rt.db.write() as tx:
+            conn = tx.conn
+            moved = await conn.execute(update(t.sessions).where(and_(
+                t.sessions.c.id == session_id, t.sessions.c.memory_seq == from_seq)).values(
+                memory_seq=upto_seq, memory_tries=0))
+            if not moved.rowcount:
+                raise LostRace(session_id)
+            if reread_done:
+                cur = (await conn.execute(select(t.sessions.c.memory_reread).where(
+                    t.sessions.c.id == session_id))).scalar_one()
+                left = [i for i in (cur or []) if i not in set(reread_done)]
+                await conn.execute(update(t.sessions).where(t.sessions.c.id == session_id).values(memory_reread=left))
+            active = await self._active_variants(conn, [d for ops in kept.values() for d in drafts_of(ops)])
+            for cid, ops in kept.items():
+                ops = await self._still_valid(conn, cid, world_id, ops, active, result)
+                if not ops:
+                    continue
+                created = await self._write_ops(conn, cid, world_id, ops, computed, now)
+                result.created[cid] = created
+                result.changed.append(cid)
+            if touched:
+                rows = (await conn.execute(select(M.id, M.character_id).where(and_(
+                    M.id.in_(list(touched)), M.world_id == world_id, M.superseded_by.is_(None))))).all()
+                if rows:
+                    await conn.execute(update(t.memory_items).where(M.id.in_([r[0] for r in rows])).values(
+                        last_recalled_at=now, recall_count=M.recall_count + 1))
+                    for _, cid in rows:
+                        if cid not in result.changed:
+                            result.changed.append(str(cid))
+            for cid in result.changed:
+                tx.publish(GLOBAL, {"type": "entity.changed", "kind": "memory", "id": cid, "worldId": world_id})
+        return result
+
+    async def _embed_missing(self, world_id: str, texts: list[str],
+                             given: dict[str, dict[str, list[float]]]) -> dict[str, dict[str, list[float]]]:
+        """Vectors per text per non-retired space: the ones given, and the rest embedded now (outside the writer)."""
+        out: dict[str, dict[str, list[float]]] = {x: dict(given.get(x, {})) for x in texts}
+        rt = self.rt
+        if not texts or rt.keys.status() != "set":
+            return out
+        async with rt.db.read() as conn:
+            targets = await spaces.non_retired(conn)
+        embedder = rt.ai.embedder(True)
+        ctx = call_ctx("embed_doc", world_id=world_id, pauses_sessions=False)
+        for space in targets:
+            missing = [x for x in texts if space.id not in out[x]]
+            if not missing:
+                continue
+            try:
+                async with rt.embed_slots.slot():
+                    got = (await embedder.embed(missing, kind="document", space=space, ctx=ctx)).vectors
+            except ProviderError as e:
+                log.info("run memories stay keyword-only in %s: embedding failed (%s)", space.id, e.code)
+                continue
+            for x, v in zip(missing, got, strict=True):
+                out[x][space.id] = v
+        return out
+
+    @staticmethod
+    async def _active_variants(conn: Any, drafts: list[MemoryDraft]) -> dict[str, str]:
+        ids = list({d.source_message_id for d in drafts if d.source_message_id})
+        if not ids:
+            return {}
+        rows = (await conn.execute(select(t.messages.c.id, t.messages.c.active_variant_id).where(
+            t.messages.c.id.in_(ids)))).all()
+        return {str(i): str(v or f"{i}_v1") for i, v in rows}
+
+    async def _still_valid(self, conn: Any, character_id: str, world_id: str, ops: list[MemoryOp],
+                           active: dict[str, str], result: RunCommit) -> list[MemoryOp]:
+        """Inside the transaction: drop what a delete, a Forget or a regenerate made stale (D10)."""
+        ch = (await conn.execute(select(t.characters.c.world_id, t.characters.c.deleted_at)
+                                 .where(t.characters.c.id == character_id))).first()
+        if ch is None or ch[0] != world_id or ch[1] is not None:
+            result.dropped.append({"characterId": character_id, "why": "character deleted"})
+            return []
+        refs = referenced_ids(ops)
+        current = set((await conn.execute(select(M.id).where(and_(
+            M.id.in_(refs), M.character_id == character_id, M.world_id == world_id,
+            M.superseded_by.is_(None))))).scalars()) if refs else set()
+        out: list[MemoryOp] = []
+        for op in ops:
+            if isinstance(op, Insert | Supersede):
+                d = op.draft
+                if d.source_message_id and d.source_variant_id \
+                        and active.get(d.source_message_id, d.source_variant_id) != d.source_variant_id:
+                    result.dropped.append({"characterId": character_id, "op": type(op).__name__,
+                                           "why": "source variant replaced"})
+                    continue
+            if isinstance(op, Supersede) and not set(op.old_ids) <= current:
+                result.dropped.append({"characterId": character_id, "op": "Supersede", "why": "target forgotten"})
+                continue
+            if isinstance(op, Reinforce) and op.id not in current:
+                result.dropped.append({"characterId": character_id, "op": "Reinforce", "why": "target forgotten"})
+                continue
+            if isinstance(op, Touch):
+                ids = [i for i in op.ids if i in current]
+                if not ids:
+                    continue
+                op = Touch(ids)
+            out.append(op)
+        return out
+
+    async def _write_ops(self, conn: Any, character_id: str, world_id: str, ops: Sequence[MemoryOp],
+                         vectors: dict[str, dict[str, list[float]]], now: str) -> list[str]:
+        created: list[str] = []
+        for op in ops:
+            if isinstance(op, Insert | Supersede):
+                d = op.draft
+                mid = new_id("mem")
+                res = await conn.execute(t.memory_items.insert().values(
+                    id=mid, character_id=character_id, world_id=world_id, kind=d.kind, text=d.text.strip(),
+                    importance=float(d.importance), source_session_id=d.source_session_id,
+                    source_message_id=d.source_message_id, source_variant_id=d.source_variant_id,
+                    source_mode=d.source_mode, about_character_id=d.about_character_id, created_at=now,
+                    last_recalled_at=None, recall_count=0, superseded_by=None, is_seed=False))
+                rid = res.inserted_primary_key[0] if res.inserted_primary_key else None
+                for space_id, vec in vectors.get(d.text, {}).items():
+                    mem, _ = spaces.vec_tables(space_id)
+                    await conn.execute(text(f"INSERT INTO {mem}(rid, character_id, embedding) VALUES (:r, :c, :e)"),
+                                       {"r": rid, "c": character_id, "e": sqlite_vec.serialize_float32(vec)})
+                created.append(mid)
+                if isinstance(op, Supersede):
+                    await conn.execute(update(t.memory_items).where(M.id.in_(op.old_ids)).values(superseded_by=mid))
+            elif isinstance(op, Reinforce):
+                await conn.execute(update(t.memory_items).where(M.id == op.id).values(
+                    importance=float(op.importance), last_recalled_at=now))
+            elif isinstance(op, Touch):
+                await conn.execute(update(t.memory_items).where(M.id.in_(op.ids)).values(
+                    last_recalled_at=now, recall_count=M.recall_count + 1))
+        return created
 
     async def apply(self, character_id: str, world_id: str, ops: Sequence[MemoryOp]) -> list[str]:
         """Apply `ops` for one character; returns the IDs of the memories it created, in op order."""

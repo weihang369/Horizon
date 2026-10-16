@@ -1,12 +1,13 @@
-"""The post-turn memory queue and the memory side of a blocked reply (knowledge-memory-storage task 6.6;
-long-term-memory "Replies feed the memory writer after they end"; session-runtime "A blocked reply is scrubbed")."""
+"""The memory side of a reply and of a blocked reply (knowledge-memory-storage task 6.6; session-runtime "A blocked
+reply is scrubbed").
+
+M13 (memory design D7; doc 09 M1) removed the post-turn queue: memories are written by pause runs, never after a
+reply (tests/sessions/test_memory_runs_m13.py), so the per-reply writer tests went with it."""
 
 from __future__ import annotations
 
-import logging
 from typing import Any
 
-import pytest
 from sqlalchemy import text
 
 from horizon.ai.contexts import TurnContext
@@ -32,11 +33,6 @@ class RememberEverything:
                                    source_mode=ctx.session.mode))]
 
 
-class Broken:
-    async def after_turn(self, ctx: TurnContext, perspective: str, message_id: str) -> list[Any]:
-        raise RuntimeError("the writer broke")
-
-
 async def memory_ids(api: Api) -> list[str]:
     return [m["id"] for m in (await api.client.get(f"{API}/characters/{AMARA}/memory")).json()]
 
@@ -56,27 +52,6 @@ async def test_default_writer_remembers_nothing(api: Api) -> None:
     sid = await one_reply(api)
     assert chars(await messages(api, sid))[-1]["status"] == "complete"
     assert await memory_ids(api) == before
-
-
-async def test_a_writer_sees_complete_replies_and_its_memories_land(api: Api) -> None:
-    w = RememberEverything()
-    api.rt.ai.override("memory_writer", w)
-    sid = await one_reply(api)
-    # P9 (persona-context D19): the first chat's verbatim greeting never reaches the memory writer
-    replies = [m["id"] for m in chars(await messages(api, sid)) if m["status"] == "complete"][1:]
-    assert w.calls == replies
-    async with api.rt.db.read() as conn:
-        sources = set((await conn.execute(text("SELECT source_message_id FROM memory_items WHERE character_id = :c AND "
-                                               "is_seed = 0"), {"c": AMARA})).scalars())
-    assert sources == set(replies)
-
-
-async def test_failing_writer_leaves_the_session_alone(api: Api, caplog: pytest.LogCaptureFixture) -> None:
-    api.rt.ai.override("memory_writer", Broken())
-    with caplog.at_level(logging.ERROR, logger="horizon.sessions"):
-        sid = await one_reply(api)
-    assert [m["status"] for m in chars(await messages(api, sid))] == ["complete", "complete"]
-    assert any("memory writer failed" in r.getMessage() for r in caplog.records)
 
 
 async def test_blocked_reply_leaves_no_memory(api: Api) -> None:

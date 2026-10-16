@@ -143,6 +143,39 @@ class AgentRetrieval:
 
 
 @dataclass(frozen=True)
+class MemoryKnobs:
+    """M13 (docs/ai/09 M1, M2, M4–M8; doc 13 W12; memory design D42): pause runs and the memory list. AI-stage
+    tunables; the guard's `t_keep` lives in the question bank."""
+
+    leave_grace_ms: float = 30000.0      # doc 09 M1 trigger 1: the session stream left this long starts a run
+    max_concurrent: int = 2              # runs at once (never the reply slots)
+    piece_tokens: int = 8000             # doc 09 M2: a longer stretch runs in pieces of this many tokens
+    max_tries: int = 3                   # doc 09 M6: failed tries on one checkpoint before the piece is skipped
+    block_tokens: int = 1000             # doc 09 M8: the memory list in system message 1
+    half_life_days: float = 30.0         # recency = max(floor, 0.5 ** (days / half_life))
+    recency_floor: float = 0.5
+    mode_weight: dict[str, float] = field(default_factory=lambda: {
+        "one_on_one": 1.0, "group": 1.0, "debate": 0.85, "watch": 0.7})   # D-71's down-weighting
+    min_importance: float = 0.25         # doc 09 M4: an add under this is dropped
+    dup_cosine: float = 0.92             # doc 09 M5: an add this close to a current memory reinforces it instead
+
+    def weight(self, mode: str | None) -> float:
+        """The mode weight of a memory's source mode; a seed or unknown mode weighs 1.0."""
+        return float(self.mode_weight.get(mode or "", 1.0))
+
+    @staticmethod
+    def from_json(m: dict[str, Any]) -> MemoryKnobs:
+        w = m["modeWeight"]
+        return MemoryKnobs(leave_grace_ms=float(m["leaveGraceMs"]), max_concurrent=int(m["maxConcurrent"]),
+                           piece_tokens=int(m["pieceTokens"]), max_tries=int(m["maxTries"]),
+                           block_tokens=int(m["blockTokens"]), half_life_days=float(m["halfLifeDays"]),
+                           recency_floor=float(m["recencyFloor"]),
+                           mode_weight={"one_on_one": float(w["oneOnOne"]), "group": float(w["group"]),
+                                        "debate": float(w["debate"]), "watch": float(w["watch"])},
+                           min_importance=float(m["minImportance"]), dup_cosine=float(m["dupCosine"]))
+
+
+@dataclass(frozen=True)
 class RuntimeKnobs:
     reply_max_tokens: ReplyCaps
     window_tokens: WindowSizes
@@ -157,6 +190,7 @@ class RuntimeKnobs:
     emotion_fade: frozenset[str] = frozenset({"surprised", "embarrassed"})   # M9 (docs/ai/06 E3; design D13)
     host_welcome_wait_ms: float = 3000.0   # M11 (doc 08 V6; debate D11): Start + this for the welcome
     host_banner_wait_ms: float = 1500.0    # every other host line: its banner + this
+    memory: MemoryKnobs = field(default_factory=MemoryKnobs)   # M13 (memory D42)
 
     def switch(self, name: str) -> bool:
         """A dynamic-tail switch (docs/ai/04 P8, 05 X5; doc 13 W12): off unless the table turns it on."""
@@ -213,7 +247,8 @@ class RuntimeConfig:
                           "context.voiceReminder": bool((r.get("context") or {}).get("voiceReminder", False))},
                 emotion_fade=frozenset(str(x) for x in r["emotion"]["fade"]),
                 host_welcome_wait_ms=float(r["debate"]["hostWelcomeWaitMs"]),
-                host_banner_wait_ms=float(r["debate"]["hostBannerWaitMs"])),
+                host_banner_wait_ms=float(r["debate"]["hostBannerWaitMs"]),
+                memory=MemoryKnobs.from_json(r["memory"])),
             jobs=JobTiming(
                 profile_draft_ms=float(t["profileDraftMs"]), field_regenerate_ms=float(t["fieldRegenerateMs"]),
                 portrait_ms=float(t["portraitMs"]), portrait_parallel=int(t["portraitParallel"]),
