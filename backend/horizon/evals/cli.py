@@ -187,7 +187,9 @@ def register(sub: Any) -> None:
                            ("deep-check", "doc 10 check 5: deep_check on 20 passages, the set check on 5 pairs, the two "
                                           "nouls on 20 messages (paid, M12)"),
                            ("memory", "the memory suite: rewrite, recall (in-session, overflow; --arm), layer 3, the "
-                                      "dupCosine sweep (--part dup) (paid, M13; --profile agent)")):
+                                      "dupCosine sweep (--part dup) (paid, M13; --profile agent)"),
+                           ("embed-probe", "query embeddings on each named OpenRouter provider of the active space's "
+                                           "model, timed, store-bypassed (paid, M13 U3; --set A,B)")):
         s = esub.add_parser(name, help=helptext)
         s.add_argument("--profile", default="naive", choices=["scripted", "naive", "agent"])
         s.add_argument("--limit", type=int, default=None)
@@ -219,7 +221,7 @@ def register(sub: Any) -> None:
                                                                   "end (the tail for recall.checkMs); rewrite times "
                                                                   "each run (doc 09 check 2)")
         if name in ("decisions", "long", "transcript", "drafter", "watch-history", "summary", "debate-history",
-                    "debate-plant", "debate-quality", "retrieval", "notfound", "memory"):
+                    "debate-plant", "debate-quality", "retrieval", "notfound", "memory", "embed-probe"):
             s.add_argument("--set", default=None, help="decisions: one dataset folder (`judges`); long, transcript: "
                                                        "one script id; drafter: a seed file in evals/drafter/")
         s.set_defaults(fn=_suite)

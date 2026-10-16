@@ -277,6 +277,39 @@ async def test_the_memory_suite_runs_offline_on_the_fake(tmp_path: Path) -> None
     assert (folder / "judge_states.jsonl").is_file()
 
 
+def test_check_1s_long_piece_fills_the_piece_size() -> None:
+    from horizon.domain.pricing import count_tokens
+
+    item = MS.long_piece_item()
+    said = sum(count_tokens(f"{x['speaker']}: {x['text']}") + 2 for x in item["lines"])
+    assert 7000 < said <= MS.LONG_TOKENS and item["kind"] == "long" and not item["expected"]
+    assert MS.Memory()._items(Options("memory", profile="agent", part="rewrite"))[-1][1]["id"] == "mrw-long"
+
+
+async def test_check_1_reads_each_call_from_the_ledger(tmp_path: Path) -> None:
+    r, out = _runner(tmp_path)
+    n = len(MS.load("rewrite"))
+    assert await r.run(Options("memory", profile="agent", part="rewrite", start=n - 1, yes=True)) == 0, out
+    folder = _run_folder(tmp_path)
+    rows = [json.loads(x) for x in (folder / "results.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert [x["id"] for x in rows] == [MS.load("rewrite")[-1]["id"], "mrw-long"]
+    assert all(x["memory_calls"] and x["memory_calls"][0]["cap"] == 500 for x in rows)
+    rep = (folder / "report.md").read_text(encoding="utf-8")
+    assert "### Check 1: the `memory-1` calls" in rep and "the 8000-token piece (`mrw-long`)" in rep
+
+
+async def test_the_provider_probe_runs_store_bypassed(tmp_path: Path) -> None:
+    r, out = _runner(tmp_path)
+    assert "--set" in (MS.EmbedProbe().refuse(Options("embed-probe")) or "")
+    assert await r.run(Options("embed-probe", set="Nebius,DeepInfra", yes=True)) == 0, out
+    folder = _run_folder(tmp_path).parent
+    sub = next(p for p in folder.iterdir() if p.is_dir())
+    rows = [json.loads(x) for x in (sub / "results.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert len(rows) == 20 and {x["provider"] for x in rows} == {"Nebius", "DeepInfra"}
+    rep = (sub / "report.md").read_text(encoding="utf-8")
+    assert "## Embedding provider probe (U3)" in rep and "- Nebius: 10/10 ok" in rep
+
+
 async def test_check_2_times_the_runs_store_bypassed(tmp_path: Path) -> None:
     r, out = _runner(tmp_path)
     assert await r.run(Options("memory", profile="agent", part="rewrite", limit=2, latency=True, yes=True)) == 0, out

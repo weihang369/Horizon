@@ -50,3 +50,12 @@
 15. Check 4 and D33's timing: `horizon eval latency --part recall` (10 recall-only turns asking for an overflow
     memory, then 50 turns with both gates; the corpus loaded and each corpus character given a 50-memory overflow).
     Check 2: `horizon eval memory --part rewrite --latency --limit 10` (each writer run timed, store-bypassed).
+16. Full backend suite on eb9df14 (2026-10-16, 51 min, e2e and eval runs beside it): **1979 passed, 3 failed**,
+    10 deselected. (a) `test_eval_m12` gate sets: `dcs-109` under D28 (item 12, fixed in 936dbe4); (b)
+    `test_decider::test_timeouts_from_config` still expected `importance` at the 3 s default (D42 gave it and
+    `memory_guard` 30 s, background); the test now says so; (c) the load-sensitive keyword-search guard (p99 54.2 ms
+    under load; 34–35 ms alone, passing twice), as M12 recorded.
+17. Phase 10's runs approved by the user (2026-10-16, before 18:00 KL; run off-peak): decisions ≈ $0.012, rewrite
+    ≈ $0.079, dup ≈ $0.001, check 2 ≈ $0.021, recall ≈ $0.027, arms ≤ $0.045, checkMs tail ≈ $0.019, check 4 + D33
+    ≈ $0.047, layer 3 ≈ $0.120, the provider probe ≈ $0.0001 (with one free GET of the provider list). Total ≤ $0.37
+    (D41 ≈ $0.27: the arms' fixed transcript embeddings and check 4's both-gates turns priced in full here).

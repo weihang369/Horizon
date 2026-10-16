@@ -467,7 +467,8 @@ async def rewrite_item(env: RunEnv, item: Mapping[str, Any]) -> dict[str, Any]:
     out = await writer.graph.ainvoke({"stretch": stretch, "ctx": ctx, "path": []}, config={"recursion_limit": 10})
     run_ms = round((time.perf_counter() - started) * 1000, 1)
     row = await score_rewrite(env, item, out["rewrite"], out["result"])
-    return {**row, "run_ms": run_ms, "latency": bool(env.opts.latency), "calls": out["rewrite"].calls}
+    return {**row, "run_ms": run_ms, "latency": bool(env.opts.latency), "calls": out["rewrite"].calls,
+            "session": sid, "present": len(present), "in_tokens": stretch_tokens(stretch)}
 
 
 def transcript_text(item: Mapping[str, Any]) -> str:
@@ -565,6 +566,83 @@ async def score_rewrite(env: RunEnv, item: Mapping[str, Any], call: Any, result:
     if item["kind"] == "small_talk" and any(n > 1 for n in row["written_per"].values()):
         fails.append(f"small talk wrote {row['written_per']}")
     return row
+
+
+# ── doc 09 check 1: the rewrite calls' shape and size ──
+LONG_TRANSCRIPT = "long_one_on_one_en"
+LONG_TOKENS = 8000
+
+
+def long_piece_item(tokens: int = LONG_TOKENS) -> dict[str, Any]:
+    """An 8,000-token piece (`memory.pieceTokens`) of the long 1:1 transcript, Amara holding the first stretch's
+    planted list: check 1's longest call. It has no expected changes; the call's validity and size are read."""
+    from horizon.domain.pricing import count_tokens
+
+    d = json.loads((TRANSCRIPTS / f"{LONG_TRANSCRIPT}.json").read_text(encoding="utf-8"))
+    cid = str(d["cast"][0])
+    lines: list[dict[str, str]] = []
+    used = 0
+    for turn in d["turns"]:
+        for who, said in [("you", str(turn["user"])), *[("amara", str(r["text"])) for r in turn["replies"]]]:
+            cost = count_tokens(f"{who}: {said}") + 2
+            if used + cost > tokens:
+                break
+            lines.append({"speaker": who, "text": said})
+            used += cost
+        else:
+            continue
+        break
+    first = load("rewrite")[0]
+    return {"id": "mrw-long", "split": "dev", "kind": "long", "mode": "one_on_one", "lang": "en",
+            "world": str(d["world"]), "present": [cid], "lists": {cid: first["lists"][cid]}, "header": "",
+            "lines": lines, "expected": [], "untouched": {}, "source": f"check 1: {tokens} tokens of {LONG_TRANSCRIPT}"}
+
+
+def stretch_tokens(stretch: Any) -> int:
+    from horizon.ai.memory import rewrite as mem1
+    from horizon.domain.pricing import count_tokens
+
+    return int(count_tokens(mem1.SYSTEM) + count_tokens(mem1.user_message(stretch)))
+
+
+async def add_calls(env: RunEnv, rows: list[dict[str, Any]]) -> None:
+    """Each item's `memory` calls from the ledger: tokens out, the finish reason, and the cap they ran under."""
+    from horizon.ai.memory import rewrite as mem1
+
+    U = t.usage_records.c
+    sids = [str(r["session"]) for r in rows if r.get("session")]
+    if not sids:
+        return
+    async with env.rt.db.read() as conn:
+        got = (await conn.execute(select(U.session_id, U.tokens_in, U.tokens_out, U.finish_reason, U.latency_ms)
+                                  .where(U.purpose == "memory", U.session_id.in_(sids)).order_by(U.at))).all()
+    for r in rows:
+        r["memory_calls"] = [{"in": a, "out": b, "finish": f, "ms": ms, "cap": mem1.max_tokens(int(r["present"]))}
+                             for s, a, b, f, ms in got if s == r.get("session")]
+
+
+def check1_report(rows: Sequence[Mapping[str, Any]]) -> list[str]:
+    calls = [c for r in rows for c in r.get("memory_calls") or []]
+    if not calls:
+        return []
+    outs = [float(c["out"]) for c in calls if c.get("out") is not None]
+    share = [float(c["out"]) / float(c["cap"]) for c in calls if c.get("out") is not None and c.get("cap")]
+    failed_ = [r["id"] for r in rows if r.get("failed")]
+    parse = sum(1 for r in rows for x in r.get("log") or [] if "parse" in str(x.get("why", "")).lower())
+    out = [f"### Check 1: the `memory-1` calls ({len(calls)} across {len(rows)} items)",
+           f"- valid answers: {len(rows) - len(failed_)}/{len(rows)} items"
+           + (f" (failed: {', '.join(failed_)})" if failed_ else "") + f"; parse retries logged: {parse}",
+           f"- finish `length`: {sum(1 for c in calls if c.get('finish') == 'length')}",
+           f"- output tokens: p50 {_pct(outs, 0.5):.0f}, max {max(outs):.0f}; share of the cap: p50 "
+           f"{_pct(share, 0.5):.0%}, max {max(share):.0%} (pass: well under)" if outs and share else
+           "- output tokens: not in the ledger"]
+    for r in rows:
+        if r["kind"] == "long":
+            c = (r.get("memory_calls") or [{}])[0]
+            out.append(f"- the {LONG_TOKENS}-token piece (`{r['id']}`): ≈ {r.get('in_tokens')} tokens in, "
+                       f"{c.get('out')} out of a {c.get('cap')} cap, finish {c.get('finish')}, written "
+                       f"{sum(len(v) for v in (r.get('written') or {}).values())} line(s)")
+    return out
 
 
 # ── the recall part ──
@@ -865,7 +943,10 @@ class Memory:
             if part == "dup":
                 out += [("dup", r) for r in _take(dup_pairs(), Options(suite=self.name, start=opts.start))]
                 continue
-            out += [(part, r) for r in _take(load({"recall": "probes"}.get(part, part)), opts)]
+            rows = load({"recall": "probes"}.get(part, part))
+            if part == "rewrite":
+                rows = [*rows, long_piece_item()]   # doc 09 check 1's 8,000-token piece, last
+            out += [(part, r) for r in _take(rows, opts)]
         return out
 
     def plan(self, opts: Options, prices: Any, *, paid: bool) -> Plan:
@@ -913,8 +994,9 @@ class Memory:
                     res.status = "incomplete"
                     break
                 rows.append(await rewrite_item(env, item))
+            await add_calls(env, rows)
             res.rows += [{"part": "rewrite", **r} for r in rows]
-            res.summary += rewrite_report(rows)
+            res.summary += rewrite_report([r for r in rows if r["kind"] != "long"]) + check1_report(rows)
         if "recall" in by_part and res.status != "incomplete":
             rows = await recall_part(env, by_part["recall"], arm, res)
             res.rows += [{"part": "recall", **r} for r in rows]
@@ -936,6 +1018,64 @@ class Memory:
             res.summary.append(f"- the judges' states for labelling the 30 real items: `{env.run_dir.name}/"
                                "judge_states.jsonl` (B4)")
         return res
+
+
+# ── U3: the embedding provider probe ──
+PROBE_PER_PROVIDER = 10
+
+
+class EmbedProbe:
+    """`horizon eval embed-probe --set ProviderA,ProviderB` (memory D39, U3): 10 query embeddings per OpenRouter
+    provider of the active space's model, one at a time, timed; store-bypassed (the runner never gives it a store).
+    A faster provider gets its own space only after the user's OK."""
+
+    name = "embed-probe"
+
+    def refuse(self, opts: Options) -> str | None:
+        if not opts.set:
+            return "horizon: name the providers to compare: --set Nebius,OtherProvider"
+        return None
+
+    def plan(self, opts: Options, prices: Any, *, paid: bool) -> Plan:
+        providers = [p.strip() for p in (opts.set or "").split(",") if p.strip()]
+        probes = [str(p["probe"]) for p in load("probes")]
+        items = [{"provider": pv, "text": probes[(k * PROBE_PER_PROVIDER + i) % len(probes)]}
+                 for k, pv in enumerate(providers) for i in range(PROBE_PER_PROVIDER)]
+        est = len(items) * 40 * prices.embedding.input_per_m / 1e6
+        return Plan(items=items, estimate_usd=est, expected_s=10 + 2.0 * len(items), paid=paid)
+
+    async def run(self, env: RunEnv, plan: Plan) -> Result:
+        rt = env.rt
+        res = Result()
+        async with rt.db.read() as conn:
+            active = await spaces.active(conn)
+        for it in plan.items:
+            space = dataclasses.replace(active, id=f"{active.id}~{it['provider']}", provider=it["provider"])
+            started = time.perf_counter()
+            try:
+                await rt.ai.embedder(True).embed([it["text"]], kind="query", space=space,
+                                                 ctx=call_ctx("query_embed", pauses_sessions=False))
+                ok, err = True, None
+            except Exception as e:   # a provider that refuses the model: recorded, not fatal
+                ok, err = False, getattr(e, "code", type(e).__name__)
+            res.rows.append({"provider": it["provider"], "text": it["text"], "ok": ok, "error": err,
+                             "wall_ms": round((time.perf_counter() - started) * 1000, 1)})
+        res.summary += probe_report(res.rows, active)
+        return res
+
+
+def probe_report(rows: Sequence[Mapping[str, Any]], active: Any) -> list[str]:
+    out = [f"## Embedding provider probe (U3): `{active.model}`, query embeddings one at a time, store-bypassed",
+           f"- active space `{active.id}` (provider {active.provider})"]
+    for pv in dict.fromkeys(str(r["provider"]) for r in rows):
+        mine = [r for r in rows if r["provider"] == pv]
+        ms = [float(r["wall_ms"]) for r in mine if r["ok"]]
+        bad = [str(r["error"]) for r in mine if not r["ok"]]
+        out.append(f"- {pv}: {len(ms)}/{len(mine)} ok" + (f", p50 {_pct(ms, 0.5):.0f} ms, p90 {_pct(ms, 0.9):.0f} ms, "
+                                                         f"max {max(ms):.0f} ms" if ms else "")
+                   + (f"; errors {sorted(set(bad))}" if bad else ""))
+    out.append("- a faster provider gets its own space and a `horizon space build` only after the user's OK")
+    return out
 
 
 async def dup_part(env: RunEnv, pairs: list[dict[str, Any]]) -> list[dict[str, Any]]:
