@@ -420,5 +420,5 @@
   - the docs link check.
 
   Verify: the table is in m13.md.
-- [ ] 12.2 Ask the user how to finish (archive and squash into dev; no push unless asked). Verify: their answer is
+- [x] 12.2 Ask the user how to finish (archive and squash into dev; no push unless asked). Verify: their answer is
   recorded in m13.md.
