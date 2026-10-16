@@ -468,7 +468,8 @@ memory writer" requirement goes with them.
     before it.
 - **Code checks** (doc 09 M3):
   - `for` is present;
-  - `op`, `kind` and `about` are valid;
+  - `op`, `kind` and `about` are valid (phase 10, the user's choice: an `about` naming no one present, such as the
+    0 the call writes for the user, reads as the user and keeps the line);
   - `target` is in that character's list (rewrite and confirm only);
   - `source` is a numbered line;
   - the text is non-empty, newline-collapsed and cut at 40 words;

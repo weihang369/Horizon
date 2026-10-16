@@ -214,7 +214,7 @@ def register(sub: Any) -> None:
             s.add_argument("--arm", default=None, help="space=<id> | piece=200|300|400[:kept] | lambda=0.5|0.7|1.0 | "
                                                        "rewrite=off")
         if name == "memory":
-            s.add_argument("--part", choices=["rewrite", "recall", "layer3", "dup"], default=None)
+            s.add_argument("--part", choices=["rewrite", "recall", "layer3", "dup", "rejudge"], default=None)
             s.add_argument("--arm", default=None, help="recall only: search=bm25|dense | mmr=off | lambda=0.5|0.7|1.0 | "
                                                        "space=<id>")
             s.add_argument("--latency", action="store_true", help="store-bypassed: recall reads every check to its "

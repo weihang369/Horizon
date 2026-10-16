@@ -113,3 +113,11 @@
     check 4 (`latency --part recall`), and `embed-probe --set Nebius,DeepInfra,SiliconFlow`. Open choice: `t_same`
     (rule gives 0.05; recommend keeping 0.50). Then doc 09 M12/M13 notes, doc 13 W6/W12, m13.md, phase 12.
     Paid spend so far today ≈ $0.088.
+25. Done 2026-10-16 (20:35–21:05 KL, off-peak): `--part rejudge` built (saved states, the judges' current versions,
+    over-mention gains its turn's recent lines) and run ($0.0003); recall round 2 ($0.0027); rewrite on memory-2
+    ($0.0140); check 2 ($0.0039); the checkMs tail ($0.0068); check 4 + D33 ($0.0355); the provider probe ($0.00002).
+    Found: the rewrite call writes `"about": 0` for the user and D13 dropped those lines (8 a memory-1 run, all 5 of
+    memory-2's long piece). The user's third round: `t_same` 0.50; `checkMs` 1,500; D33's 939 ms tail accepted;
+    over-mention accepted; lost details and leaks accepted; overflow recall carried to M14; an `about` naming no one
+    present reads as the user (built, rewrite re-run $0.0006). Total M13 spend $0.1518 over 26 runs. Written up in
+    m13.md (phase 10, the choices, "What M13 found", "What M14 inherits").

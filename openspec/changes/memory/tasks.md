@@ -368,24 +368,24 @@
 
 ## 10. The paid runs (D41; each asked for separately)
 
-- [ ] 10.1 Ask the user for each run with its estimate (D41), off-peak, through the store where W10 allows. Mark every
+- [x] 10.1 Ask the user for each run with its estimate (D41), off-peak, through the store where W10 allows. Mark every
   paid run folder `.keep`, and check `ps` for leftover batches first. Verify: the user's OK is recorded per run in
   m13.md.
-- [ ] 10.2 Run the decisions slices, then choose `t_keep`, the earlier `t_gate` and `t_recall` on dev, and confirm
+- [x] 10.2 Run the decisions slices, then choose `t_keep`, the earlier `t_gate` and `t_recall` on dev, and confirm
   once on test. Verify: the per-item results go in `docs/ai/checks/m13/`, and any threshold change goes to the user as
   a choice.
-- [ ] 10.3 Run the rewrite suite (check 1's 6 calls among them) and the `dupCosine` sweep. Verify: per-item results,
+- [x] 10.3 Run the rewrite suite (check 1's 6 calls among them) and the `dupCosine` sweep. Verify: per-item results,
   targets with intervals, and every failure read.
-- [ ] 10.4 Run the recall probes, the arms and the comparisons (instruction, λ). Verify: per-item results; a change to
+- [x] 10.4 Run the recall probes, the arms and the comparisons (instruction, λ). Verify: per-item results; a change to
   the instruction or λ goes to the user as a choice.
-- [ ] 10.5 Run layer 3 (20 pairs). Verify: probe use and over-mention with intervals; a miss goes to the user as a
+- [x] 10.5 Run layer 3 (20 pairs). Verify: probe use and over-mention with intervals; a miss goes to the user as a
   prompt choice.
-- [ ] 10.6 Run check 2 (10 pause runs, timed, store-bypassed) and check 4 with D33's timing (50 deep turns with both
+- [x] 10.6 Run check 2 (10 pause runs, timed, store-bypassed) and check 4 with D33's timing (50 deep turns with both
   gates: slowest-of-14 vs slowest-of-8, 429s, first word). Verify: the results are in m13.md; any deadline change, or
   a tail over 200 ms at p90, goes to the user as a choice.
-- [ ] 10.7 Run the embedding provider probe (U3 approved): 20 queries, store-bypassed, off-peak. Verify: the result is in m13.md; a space switch goes
+- [x] 10.7 Run the embedding provider probe (U3 approved): 20 queries, store-bypassed, off-peak. Verify: the result is in m13.md; a space switch goes
   only with the user's OK.
-- [ ] 10.8 Record the spend in m13.md against D41's ≈ $0.27. Verify: the spend table matches the ledger.
+- [x] 10.8 Record the spend in m13.md against D41's ≈ $0.27. Verify: the spend table matches the ledger.
 
 ## 11. Docs (D43)
 
@@ -399,9 +399,9 @@
   - 02-storage §3.7 and its job kinds.
 
   Verify: the docs link check reports 0 broken.
-- [ ] 11.2 Add built notes to doc 09 (with D3's corrections), and update doc 13 W6's M13 row (spend) and W12's rows
+- [x] 11.2 Add built notes to doc 09 (with D3's corrections), and update doc 13 W6's M13 row (spend) and W12's rows
   (knobs found). Verify: the link check.
-- [ ] 11.3 Write m13.md's "What M13 found" and "What M14 inherits":
+- [x] 11.3 Write m13.md's "What M13 found" and "What M14 inherits":
   - the importance seam and S7's filter;
   - the over-mention result;
   - any recall-latency choice.

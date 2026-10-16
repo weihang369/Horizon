@@ -132,14 +132,16 @@ def test_the_code_checks_drop_what_is_invalid() -> None:
         {"for": "one", "op": "add", "kind": "fact", "text": "x", "source": 1},          # bad for
         {"for": 1, "op": "rewrite", "target": "m9", "kind": "fact", "text": "x", "source": 1},   # unknown target
         {"for": 1, "op": "add", "kind": "feeling", "text": "x", "source": 1},           # bad kind
-        {"for": 1, "op": "add", "kind": "fact", "about": 7, "text": "x", "source": 1},  # bad about
+        {"for": 1, "op": "add", "kind": "fact", "about": 0, "text": "y", "source": 1},  # no one: the user, kept
         {"for": 1, "op": "add", "kind": "fact", "text": "x", "source": 99},             # unknown source line
         {"for": 1, "op": "add", "kind": "fact", "text": "  ", "source": 1},             # empty
         {"for": 1, "op": "delete", "target": "m1", "source": 1},                        # bad op
         {"for": 1, "op": "add", "kind": "event", "about": "user", "text": long_text, "source": 2, "weight": 4},
     ], s)
-    assert len(out.changes) == 1 and len(out.log) == 8
-    c = out.changes[0]
+    assert len(out.changes) == 2 and len(out.log) == 8
+    assert out.changes[0].text == "y" and out.changes[0].about_character_id is None
+    assert sum(1 for x in out.log if x["why"].startswith("about names no one")) == 1
+    c = out.changes[1]
     assert c.text.split()[:40] == long_text.split()[:40] and c.text.split()[40:] == ["…"]
     assert c.line.message_id == "msg_2" and c.about_character_id is None and c.weight == 4
 

@@ -5,7 +5,7 @@
 dev|test` one split; `--limit N` the first N items of each part.
 
 - **rewrite** (24 stretches, 6 secrets, 6 small-talk): each item's present characters get exactly its planted lists,
-  then the `agent` writer's graph runs on the stretch as a pause run would (memory-1, Jev's importance and guard, the
+  then the `agent` writer's graph runs on the stretch as a pause run would (the rewrite call, Jev's importance and guard, the
   duplicate check). Nothing is applied: the run's changes and ops are read. Targets (doc 09 M12): expected changes
   covered ≥ 80 % (`judge_memory_missed`; a confirm is covered when its line stays current), written lines supported
   ≥ 95 % (`judge_memory_unsupported`), changed facts rewritten rather than duplicated ≥ 80 %, still-true facts lost
@@ -21,6 +21,9 @@ dev|test` one split; `--limit N` the first N items of each part.
 - **layer3** (20 pairs): session 1 plants two facts among small talk and ends; its pause run writes; session 2 asks
   both probes and two unrelated things. Probe use (`judge_recall`, doc 05's noul) ≥ 80 % and over-mention
   (`judge_over_mention`) ≤ 10 %, with intervals; duplicates left in the tab are counted.
+- **rejudge** (`--part rejudge --set RUN[,RUN]`): the saved `judge_memory_lost` and `judge_over_mention` states of
+  earlier runs asked again with the judges' current versions (an over-mention state gains its turn's recent lines from
+  the run's saved turns). Nothing is generated again; the report shows the saved answers beside the new ones.
 - **dup** (`--part dup`): the `dupCosine` sweep on planted pairs: a fact and its rewording (the same fact) against the
   fact and its extension, its changed value, and another fact of the same character. Dev picks the lowest cosine with
   ≥ 95 % precision on "same fact"; test confirms it.
@@ -62,11 +65,13 @@ TRANSCRIPTS = EVALS_DIR / "transcripts"
 FACTS_PY = EVALS_DIR / "datasets" / "earlier" / "facts.py"
 USER = "Kai"
 PARTS = ("rewrite", "recall", "layer3")
-ALL_PARTS = (*PARTS, "dup")
+ALL_PARTS = (*PARTS, "dup", "rejudge")
 TARGETS = {"covered": 0.80, "supported": 0.95, "rewritten": 0.80, "lost": 0.05, "untouched": 0.90, "probe": 0.80,
            "over": 0.10, "hit3": 0.80}
 DUP_PRECISION = 0.95
 DUP_GRID = tuple(round(0.80 + 0.01 * i, 2) for i in range(20))
+RUNS_DIR = EVALS_DIR.parent / "data" / "evals"
+REJUDGE = ("judge_memory_lost", "judge_over_mention")
 LATENCY_CHECK_MS = 10_000.0
 MEMORY_WAIT_S = 300.0
 
@@ -298,7 +303,7 @@ def rewrite_report(rows: Sequence[Mapping[str, Any]]) -> list[str]:
     if timed:   # doc 09 check 2: expectations only, nothing waits on a run
         out.append(f"### Check 2: pause-run time, store-bypassed ({len(timed)} runs)")
         out.append(f"- p50 {_pct(timed, 0.5):.0f} ms, p90 {_pct(timed, 0.9):.0f} ms, max {max(timed):.0f} ms "
-                   "(memory-1, Jev's importance and guard, the duplicate check's embedding; the commit is one local "
+                   "(the rewrite call, Jev's importance and guard, the duplicate check's embedding; the commit is one local "
                    "transaction)")
     fails = [f"- `{r['id']}` {f}" for r in rows for f in r.get("failures") or []]
     if fails:
@@ -464,7 +469,7 @@ async def rewrite_item(env: RunEnv, item: Mapping[str, Any]) -> dict[str, Any]:
     ctx = RunContext(world_id=world, session_id=sid, now=rt.clock.now, knobs=rt.runtime_cfg.runtime.memory,
                      io=RunIO(rt, world))
     writer = rt.ai.memory_writer(True)
-    started = time.perf_counter()   # check 2: the run's own time (memory-1, Jev, the embedding); the commit is local
+    started = time.perf_counter()   # check 2: the run's own time (the rewrite call, Jev, the embedding); the commit is local
     out = await writer.graph.ainvoke({"stretch": stretch, "ctx": ctx, "path": []}, config={"recursion_limit": 10})
     run_ms = round((time.perf_counter() - started) * 1000, 1)
     row = await score_rewrite(env, item, out["rewrite"], out["result"])
@@ -623,6 +628,8 @@ async def add_calls(env: RunEnv, rows: list[dict[str, Any]]) -> None:
 
 
 def check1_report(rows: Sequence[Mapping[str, Any]]) -> list[str]:
+    from horizon.ai.memory import rewrite as mem1
+
     calls = [c for r in rows for c in r.get("memory_calls") or []]
     if not calls:
         return []
@@ -630,7 +637,7 @@ def check1_report(rows: Sequence[Mapping[str, Any]]) -> list[str]:
     share = [float(c["out"]) / float(c["cap"]) for c in calls if c.get("out") is not None and c.get("cap")]
     failed_ = [r["id"] for r in rows if r.get("failed")]
     parse = sum(1 for r in rows for x in r.get("log") or [] if "parse" in str(x.get("why", "")).lower())
-    out = [f"### Check 1: the `memory-1` calls ({len(calls)} across {len(rows)} items)",
+    out = [f"### Check 1: the `{mem1.PROMPT_VERSION}` calls ({len(calls)} across {len(rows)} items)",
            f"- valid answers: {len(rows) - len(failed_)}/{len(rows)} items"
            + (f" (failed: {', '.join(failed_)})" if failed_ else "") + f"; parse retries logged: {parse}",
            f"- finish `length`: {sum(1 for c in calls if c.get('finish') == 'length')}",
@@ -921,6 +928,90 @@ async def layer3_pair(env: RunEnv, pair: Mapping[str, Any]) -> dict[str, Any]:
             "duplicates": duplicates(after)}
 
 
+# ── re-judging saved outputs (a judge's new version on outputs already paid for) ──
+def _jsonl(path: Path) -> list[dict[str, Any]]:
+    return [json.loads(x) for x in path.read_text(encoding="utf-8").splitlines() if x.strip()]
+
+
+def run_folder(name: str, root: Path = RUNS_DIR) -> Path:
+    """A saved run's `agent` folder, from its path, its name or a unique prefix (`20261016T111302`)."""
+    p = Path(name)
+    if not p.is_dir():
+        hits = [d for d in root.iterdir() if d.is_dir() and d.name.startswith(name)] if root.is_dir() else []
+        if len(hits) != 1:
+            raise ValueError(f"no single saved run matches {name!r}")
+        p = hits[0]
+    return p / "agent" if (p / "agent").is_dir() else p
+
+
+def rejudge_items(names: Sequence[str], root: Path = RUNS_DIR) -> list[dict[str, Any]]:
+    """The named runs' saved states for the re-judged questions. An over-mention state without recent lines carries the
+    saved turns before its own (matched by message and reply), for `recent_before`."""
+    out: list[dict[str, Any]] = []
+    for name in names:
+        d = run_folder(name, root)
+        source = d.parent.name if d.name == "agent" else d.name
+        pairs = {r["id"]: r for r in _jsonl(d / "results.jsonl") if r.get("part") == "layer3"}
+        used: set[tuple[str, int]] = set()
+        for s in _jsonl(d / "judge_states.jsonl"):
+            qid = str(s["question_id"])
+            if qid not in REJUDGE:
+                continue
+            item: dict[str, Any] = {"split": "-", "source": source, "id": s["id"], "question_id": qid,
+                                    "state": dict(s["state"]), "p_before": s.get("p")}
+            if qid == "judge_over_mention" and "quoted_recent" not in item["state"]:
+                pair = pairs[s["id"]]
+                turns = pair["turns"]
+                k = next(k for k, tn in enumerate(turns) if (s["id"], k) not in used and tn["kind"] != "probe"
+                         and tn["text"] == s["state"]["quoted_message"]
+                         and "\n".join(r["text"] for r in tn["replies"]) == s["state"]["quoted_reply"])
+                used.add((s["id"], k))
+                item.update(speaker=pair["speaker"], before_turns=turns[:k])
+            out.append(item)
+    return out
+
+
+async def rejudge_part(env: RunEnv, items: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
+    names: dict[str, str] = {}
+    rows: list[dict[str, Any]] = []
+    for it in items:
+        if await env.over_budget():
+            break
+        state = dict(it["state"])
+        if it.get("before_turns") is not None:
+            sp = str(it["speaker"])
+            if sp not in names:
+                names[sp] = str((await character_rows(env.rt, [sp]))[sp]["profile"].get("name") or sp)
+            state["quoted_recent"] = recent_before(it["before_turns"], len(it["before_turns"]), names[sp])
+        qid = str(it["question_id"])
+        rows.append({"source": it["source"], "id": it["id"], "question_id": qid, "state": state,
+                     "p_before": it["p_before"], "before": failed(it["p_before"], qid),
+                     "after": await ask(env, qid, state, str(it["id"]))})
+    return rows
+
+
+def rejudge_report(rows: Sequence[Mapping[str, Any]]) -> list[str]:
+    from horizon.ai.questions import bank
+
+    out = ["## Re-judged saved outputs (the judges' current versions)"]
+    for src, qid in sorted({(str(r["source"]), str(r["question_id"])) for r in rows}):
+        rs = [r for r in rows if r["source"] == src and r["question_id"] == qid]
+        target = TARGETS["lost" if qid == "judge_memory_lost" else "over"]
+        out.append(f"### `{src}`: {qid} ({len(rs)} states)")
+        out.append(rate("the saved answers", [r["before"] for r in rs], target=target, upper=True))
+        out.append(rate(f"now (v{bank().get(qid).version})", [r["after"] for r in rs], target=target, upper=True,
+                        qid=qid))
+        flips = sum(1 for r in rs if None not in (r["before"], r["after"]) and r["before"] != r["after"])
+        out.append(f"- answers changed: {flips}")
+        for r in rs:
+            if r["after"]:
+                st = r["state"]
+                shown = (f"{st['quoted_old']!r} -> {st['quoted_new']!r}" if qid == "judge_memory_lost"
+                         else f"{st['quoted_message']!r} -> {st['quoted_reply'][:160]!r}")
+                out.append(f"  - `{r['id']}` {shown}")
+    return out
+
+
 # ── the suite ──
 class Memory:
     name = "memory"
@@ -936,6 +1027,14 @@ class Memory:
             return f"horizon: {e}"
         if arm and opts.part != "recall":
             return "horizon: the arms compare recall's order; pass --part recall"
+        if opts.part == "rejudge":
+            if not opts.set:
+                return "horizon: --part rejudge needs --set RUN[,RUN] (saved run folders)"
+            try:
+                for name in opts.set.split(","):
+                    run_folder(name.strip())
+            except ValueError as e:
+                return f"horizon: {e}"
         if arm.get("space"):
             from horizon.evals.retrieval_suite import ARM_SPACES
 
@@ -948,6 +1047,10 @@ class Memory:
         for part in parts_of(opts):
             if part == "dup":
                 out += [("dup", r) for r in _take(dup_pairs(), Options(suite=self.name, start=opts.start))]
+                continue
+            if part == "rejudge":
+                rows = rejudge_items([x.strip() for x in str(opts.set).split(",")])[opts.start:]
+                out += [("rejudge", r) for r in (rows[: opts.limit] if opts.limit else rows)]
                 continue
             rows = load({"recall": "probes"}.get(part, part))
             if part == "rewrite":
@@ -970,7 +1073,10 @@ class Memory:
         emb = 200 * prices.embedding.input_per_m / 1e6
         est, secs = 0.0, 0.0
         for part, _row in items:
-            if part == "rewrite":
+            if part == "rejudge":
+                est += judge_estimate(prices, _row["question_id"], {**_row["state"], "quoted_recent": "x" * 400})
+                secs += 1
+            elif part == "rewrite":
                 est += mem1 + 4 * jev + 8 * judge_ + 40 * emb
                 secs += 15
             elif part == "recall":
@@ -1016,6 +1122,12 @@ class Memory:
                 rows.append(await layer3_pair(env, pair))
             res.rows += [{"part": "layer3", **r} for r in rows]
             res.summary += layer3_report(rows)
+        if "rejudge" in by_part:
+            rows = await rejudge_part(env, by_part["rejudge"])
+            if len(rows) < len(by_part["rejudge"]):
+                res.status = "incomplete"
+            res.rows += [{"part": "rejudge", **r} for r in rows]
+            res.summary += rejudge_report(rows)
         if "dup" in by_part and res.status != "incomplete":
             rows = await dup_part(env, by_part["dup"])
             res.rows += [{"part": "dup", **r} for r in rows]

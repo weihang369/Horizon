@@ -14,6 +14,7 @@ from typing import Any
 
 import pytest
 
+from horizon.ai.memory.rewrite import PROMPT_VERSION
 from horizon.evals import m13_sets
 from horizon.evals import memory_suite as MS
 from horizon.evals.runner import Options, Plan, Runner
@@ -117,8 +118,9 @@ def test_the_planted_judge_sets_match_the_committed_files() -> None:
     b = _load("m13_judges_build", DATASETS / "judges" / "m13_build.py")
     for qid, rows in {"judge_memory_missed": b.missed(), "judge_memory_unsupported": b.unsupported(),
                       "judge_memory_lost": b.lost(), "judge_over_mention": b.over_mention()}.items():
-        assert (DATASETS / "judges" / f"{qid}.jsonl").read_text(encoding="utf-8") == _lines(rows)
+        assert (DATASETS / "judges" / f"{qid}.jsonl").read_text(encoding="utf-8") == _lines([*rows, *b.real(qid)])
         assert len(rows) == 30 and sum(r["label"] == "yes" for r in rows) == 15 and all(r["planted"] for r in rows)
+        assert b.real(qid) and not any(r["planted"] for r in b.real(qid))   # B4's hand-labelled real items
 
 
 def test_an_unvalidated_judge_reads_not_counted(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -278,7 +280,7 @@ async def test_the_memory_suite_runs_offline_on_the_fake(tmp_path: Path) -> None
     assert await r.run(Options("memory", profile="agent", limit=2, yes=True)) == 0, out
     folder = _run_folder(tmp_path)
     rep = (folder / "report.md").read_text(encoding="utf-8")
-    assert "## Rewrite" in rep and "## Recall" in rep and "## Layer 3" in rep and "NOT COUNTED" in rep
+    assert "## Rewrite" in rep and "## Recall" in rep and "## Layer 3" in rep   # NOT COUNTED: its own unit test
     rows = [json.loads(x) for x in (folder / "results.jsonl").read_text(encoding="utf-8").splitlines()]
     assert [x["part"] for x in rows] == ["rewrite"] * 2 + ["recall"] * 2 + ["layer3"] * 2
     recall = [x for x in rows if x["part"] == "recall"]
@@ -306,7 +308,7 @@ async def test_check_1_reads_each_call_from_the_ledger(tmp_path: Path) -> None:
     assert [x["id"] for x in rows] == [MS.load("rewrite")[-1]["id"], "mrw-long"]
     assert all(x["memory_calls"] and x["memory_calls"][0]["cap"] == 500 for x in rows)
     rep = (folder / "report.md").read_text(encoding="utf-8")
-    assert "### Check 1: the `memory-1` calls" in rep and "the 8000-token piece (`mrw-long`)" in rep
+    assert f"### Check 1: the `{PROMPT_VERSION}` calls" in rep and "the 8000-token piece (`mrw-long`)" in rep
 
 
 async def test_the_provider_probe_runs_store_bypassed(tmp_path: Path) -> None:
@@ -359,6 +361,26 @@ async def test_the_dup_sweep_runs_offline(tmp_path: Path) -> None:
     rows = [json.loads(x) for x in (folder / "results.jsonl").read_text(encoding="utf-8").splitlines()]
     assert len(rows) == len(MS.dup_pairs()) and all(-1.0 <= x["cosine"] <= 1.0 for x in rows)
     assert "## dupCosine (D39)" in (folder / "report.md").read_text(encoding="utf-8")
+
+
+async def test_a_saved_run_is_rejudged_with_its_recent_lines(tmp_path: Path) -> None:
+    r, out = _runner(tmp_path)
+    assert "--set" in (MS.Memory().refuse(Options("memory", profile="agent", part="rejudge")) or "")
+    assert await r.run(Options("memory", profile="agent", part="layer3", limit=1, yes=True)) == 0, out
+    first = _run_folder(tmp_path)
+    saved = [json.loads(x) for x in (first / "judge_states.jsonl").read_text(encoding="utf-8").splitlines()]
+    for s in saved:   # a v1 state: no recent lines
+        s["state"].pop("quoted_recent", None)
+    (first / "judge_states.jsonl").write_text(_lines(saved), encoding="utf-8")
+    items = MS.rejudge_items([str(first.parent)])
+    assert len(items) == sum(s["question_id"] == "judge_over_mention" for s in saved) == 2
+    assert [len(i["before_turns"]) for i in items] == [1, 3]
+    assert await r.run(Options("memory", profile="agent", part="rejudge", set=str(first.parent), yes=True)) == 0, out
+    (folder,) = [p / "agent" for p in (tmp_path / "evals").iterdir() if p.is_dir() and p != first.parent]
+    rows = [json.loads(x) for x in (folder / "results.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert [x["part"] for x in rows] == ["rejudge"] * 2
+    assert rows[0]["state"]["quoted_recent"].startswith("Kai: ") and rows[0]["state"]["quoted_recent"].count("\n") == 1
+    assert "## Re-judged saved outputs" in (folder / "report.md").read_text(encoding="utf-8")
 
 
 # ── 10.6's instrument: check 4 and D33's timing ──

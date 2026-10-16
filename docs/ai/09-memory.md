@@ -297,7 +297,7 @@ character already carries in its prompt, so it costs ~1,000 input tokens per cha
 - **extract, then a Jev compare with the 3 nearest memories** (the first version, superseded by the user's choice):
   it can't merge detail, and it needs a cosine threshold tied to one embedding model.
 
-*Built in M13 (`memory` D13): `memory-1`, one DeepSeek JSON call per piece for everyone present (temperature 0.7, thinking off, `max_tokens` 300 × characters + 200, at most 3,000; a `length` answer splits the characters in halves; a parse failure is retried once). Code checks drop unknown characters, targets, kinds and source lines, cut a line at 40 words, keep at most 5 changes per character (every confirm kept) and merge exact duplicates. Measured: 37 of 37 calls valid, output p50 240 tokens (35 % of the cap), and the 8,000-token piece 294 of 500 ([m13.md](checks/m13.md)). Found: the call sees every present character's list, and once wrote into one character's memory a detail only another's list held (1 of 81 lines).*
+*Built in M13 (`memory` D13): `memory-1` (now `memory-2`: phase 10 added the perspective rule, the user's choice), one DeepSeek JSON call per piece for everyone present (temperature 0.7, thinking off, `max_tokens` 300 × characters + 200, at most 3,000; a `length` answer splits the characters in halves; a parse failure is retried once). Code checks drop unknown characters, targets, kinds and source lines, cut a line at 40 words, keep at most 5 changes per character (every confirm kept) and merge exact duplicates. Measured: 37 of 37 calls valid, output p50 240 tokens (35 % of the cap), and the 8,000-token piece 294 of 500 ([m13.md](checks/m13.md)). Found: the call writes `"about": 0` for the user (8 lines a run under memory-1 were dropped as invalid until phase 10, by the user's choice, read an `about` naming no one present as the user); and it sees every present character's list, so a line sometimes carries a detail only another character's list held (3 of 89 lines read by hand under `memory-2`, whose perspective rule didn't measurably change it; accepted).*
 
 ### M4. Importance: a Jev score
 
@@ -509,7 +509,7 @@ embedding every message as it is sent (most never leave the window; paid for and
 *M12 (OpenSpec `rag` D12) built the shared pipeline this recall runs on: `retrieval.search(index, bundle,
 SearchParams(pool=10, candidates=6, …))` takes recall's own numbers, so M13 passes them rather than changing code.*
 
-*Built in M13 (`memory` D26–D36), with D3's corrections. (1) Lines are indexed in a new `message_index`, one row per line that left the window, written once after each rolling summary (`message_fts` and `message_vec__{space}` follow it), not an FTS over `messages`, which has no stable integer key. (2) `retrieval.search` was generalised over a corpus (`SessionLines`, `Overflow`, the documents), M12's results unchanged. (3) The gate is "needs something from earlier?" (`earlier:{id}`), asked for candidates with something to search; `t_gate` 0.15 from phase 10 (recall-first, the user's choice). (4) The query embedding follows M12's rule (the early start and a 200 ms wait), not 400 ms. Jev call 2 is one `recall` request per candidate (at most 6), read by `recall.checkMs`; `t_recall` stays 0.5, because the rule's 0.30 didn't hold on test.*
+*Built in M13 (`memory` D26–D36), with D3's corrections. (1) Lines are indexed in a new `message_index`, one row per line that left the window, written once after each rolling summary (`message_fts` and `message_vec__{space}` follow it), not an FTS over `messages`, which has no stable integer key. (2) `retrieval.search` was generalised over a corpus (`SessionLines`, `Overflow`, the documents), M12's results unchanged. (3) The gate is "needs something from earlier?" (`earlier:{id}`), asked for candidates with something to search; `t_gate` 0.15 from phase 10 (recall-first, the user's choice). (4) The query embedding follows M12's rule (the early start and a 200 ms wait), not 400 ms. Jev call 2 is one `recall` request per candidate (at most 6), read by `recall.checkMs`; `t_recall` stays 0.5, because the rule's 0.30 didn't hold on test. (5) Phase 10, by the user's choices: the session's lines are searched by vector only when the query has one (`recall.linesDense`; in-session hit@3 97 % against 75 % hybrid), and when nothing reaches `t_recall` a clear standout is kept (p ≥ `standoutP` 0.25 and ≥ `standoutRatio` 3 × the runner-up; overflow kept 45 % → 62 %). `checkMs` stays 1,500 (the store-bypassed tail is p90 1.6 s, p99 3.2 s), and recall ending after the documents chain (939 ms at p90) is accepted and recorded. Live, the query vector rarely arrives within the 200 ms wait (missing in 49 of 59 timed turns; no OpenRouter provider of the model is faster), so recall mostly runs on keywords; [m13.md](checks/m13.md).*
 
 ### M10. The greeting: "last time…"
 
@@ -582,6 +582,8 @@ follow B2's rules):
   `all` becomes **≈ $0.98 off-peak, ≈ $1.48 at peak, ≈ $0.68 once cached** (doc 10 K14 later makes these
   $1.01 / $1.53 / $0.71, and doc 11 S10 $1.08 / $1.65 / $0.78).
 
+*Built in M13 (`memory` D37–D41; [m13.md](checks/m13.md)): the four decision sets (`importance` 100, `memory_guard` 152 with changed-value items, `earlier` 120, `recall` 120) plus `same_fact` (122 pairs, phase 10); `horizon eval memory` with `--part rewrite | recall | layer3 | dup | rejudge` and the recall arms; the four judges `judge_memory_missed`, `judge_memory_unsupported`, `judge_memory_lost` (v2) and `judge_over_mention` (v2, which sees the session's last lines), all past B4. Measured on `agent`: covered 87 %, rewritten not duplicated 92 %, untouched 503/503, secrets 0/6, small talk 0/6; supported ≈ 95 % and still-true details lost ≈ 11–17 % by hand (the judges say 84 % and 25 %); in-session recall kept 93 %, overflow 62 %; layer 3 probe use 92 %, over-mention ≈ 12 % by hand (judge 22 %). The misses were accepted by the user and are carried to M14.*
+
 ### M13. Speed and cost in one place
 
 - **Nothing on the reply path waits for memory writing.** The memory list is read once per sitting; in-session recall
@@ -606,6 +608,8 @@ follow B2's rules):
   the Memory tab lists all (unpaginated
   today, fine into the hundreds; pagination: [doc 13](13-wrap-up.md) W8).
 
+*Built in M13 ([m13.md](checks/m13.md)): a pause run is p50 2.5 s, p90 5.2 s (10 runs, store-bypassed), well under the 5–10 s above; the whole phase-10 evaluation cost $0.152 against D41's ≈ $0.27.*
+
 ## 5. Checks before this is locked
 
 Collected for the paid-check step after all 13 tasks (the user's rule), not run now:
@@ -616,6 +620,8 @@ Collected for the paid-check step after all 13 tasks (the user's rule), not run 
 | 2 | **10 pause runs end to end**: time from the trigger to the commit | p90 recorded | it sets expectations only; nothing waits on a run (M10) |
 | 3 | Doc 01 check 4 (extended): Jev `importance` and `memory_guard` on 20 items each; billing per request or per question; the score's weighted position runs 1–5 | recorded | the cost table and M4's mapping follow the real scale |
 | 4 | Doc 01 check 3 (extended): **10 in-session recall turns**: time from the gate's "yes" to the kept lines (query embedding, hybrid search, MMR, Jev call 2) | within doc 01's deep-path budget | keep Jev; the deadline follows the measured p90, and the result is reported (doc 07 G2) |
+
+*Run in M13 ([m13.md](checks/m13.md)): (1) 37 of 37 calls valid, output p50 237–240 tokens; the 8,000-token piece lost its lines to `"about": 0` until phase 10 (the user's choice). (2) p90 5.2 s. (3) `importance` and `memory_guard` billed per request as `decision`; the score's position runs 1–5. (4) 10 recall-only turns: recall end to end p50 958 ms, p90 1,721 ms; with both gates p50 767 ms, p90 1,716 ms; Jev kept, deadline unchanged (the user's choice).*
 
 ## 6. Changes this design needs (each approved at its OpenSpec change)
 

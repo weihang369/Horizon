@@ -236,10 +236,11 @@ def check(raw: Sequence[Any], stretch: Stretch, writing: Sequence[Present] | Non
             about = None
         else:
             other = everyone.get(_int(about_raw) or -1)
-            if other is None:
-                drop(item, "bad about")
-                continue
-            about = other.character_id
+            if other is None:   # phase 10 (the user's choice): the call writes 0 for the user; keep the line
+                out.log.append({"step": "rewrite", "why": "about names no one present: read as the user",
+                                "change": item})
+            else:
+                about = other.character_id
         text = item.get("text")
         line = one_line(text) if isinstance(text, str) else ""
         if not line:
