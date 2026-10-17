@@ -191,7 +191,7 @@ async def test_a_prefetch_held_for_its_check_is_discarded_unseen(api: Api, cut: 
     assert fake is not None
     held = fake.park_questions("output_rules", 3)
     await command(api, sid, "send", {"text": "What did everyone do this weekend?"})
-    for _ in range(800):   # cut while a check is held (a held check would fail open at its 700 ms deadline)
+    for _ in range(800):   # cut while a check is held (a held check would fail open at its 800 ms deadline)
         await api.drive(5)
         if fake.decision_parked.is_set() and any(
                 "output_rules" in json.loads(r.content).get("questions", {}) for r in fake.requests

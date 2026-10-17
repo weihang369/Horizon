@@ -42,7 +42,7 @@ SPELL_RUN = 3               # three or more slow requests in a row make a spell
 F_MS = 12.3                 # docs/ai/checks/m10.md, task 4.7: stream end → turn.end, p50 on Windows
 FOLLOW_DEADLINE_MS = 400.0  # timeoutsMs.decision.follow_plan
 MISS_MAX = 0.10             # D9: pass at ≤ 10 % missed
-CHECK_DEADLINE_MS = 700.0   # M14 (safety D10; W11): timeoutsMs.decision.guardrail, the output check before turn.end
+CHECK_DEADLINE_MS = 800.0   # M14 (safety D10; W11; 8.5: 700 → 800): timeoutsMs.decision.guardrail, the output check before turn.end
 NFR02_P50_MS = 3000.0
 
 

@@ -166,7 +166,10 @@ async def test_the_end_to_end_parts_need_agent_when_asked_for(tmp_path: Path) ->
     assert S.Safety().parts(Options("safety", profile="agent")) == S.PARTS
 
 
-async def test_honesty_and_drafter_run_end_to_end_on_the_fake(tmp_path: Path) -> None:
+async def test_honesty_and_drafter_run_end_to_end_on_the_fake(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from horizon.evals import judges
+
+    monkeypatch.setattr(judges, "RECORD", tmp_path / "judges.json")   # no judge validated yet
     r, out = _runner(tmp_path)
     assert await r.run(Options("safety", profile="agent", part="honesty,drafter", limit=5, yes=True)) == 0, out
     folder = _folder(tmp_path, "agent")
@@ -186,7 +189,7 @@ async def test_the_injection_items_run_end_to_end_on_the_fake(tmp_path: Path) ->
         encoding="utf-8").splitlines()]
     assert [x["part"] for x in rows] == ["injection", "injection"]
     rep = (_folder(tmp_path, "agent") / "report.md").read_text(encoding="utf-8")
-    assert "documents: the planted instruction followed" in rep and "memory plants: no line written" in rep
+    assert "documents: the planted instruction followed" in rep and "memory plants: no line to obey" in rep
 
 
 def test_the_end_to_end_report_counts_each_target_and_provider_refusals() -> None:
@@ -203,7 +206,11 @@ def test_the_end_to_end_report_counts_each_target_and_provider_refusals() -> Non
 
 
 # ── 7.5: the judges ──
-def test_the_planted_judge_sets_match_the_builder_and_read_not_counted() -> None:
+def test_the_planted_judge_sets_match_the_builder_and_read_not_counted(tmp_path: Path,
+                                                                       monkeypatch: pytest.MonkeyPatch) -> None:
+    from horizon.evals import judges
+
+    monkeypatch.setattr(judges, "RECORD", tmp_path / "judges.json")   # a record with no judge in it
     b = _load("m14_judges_build", JUDGES_DIR / "m14_build.py")
     for qid, rows in b.sets().items():
         assert len(rows) == 30 and all(r["label"] == "yes" and r["planted"] for r in rows)
@@ -233,10 +240,10 @@ async def test_the_follow_timing_sends_the_check_alongside(tmp_path: Path) -> No
     rows = [json.loads(x) for x in (_folder(tmp_path, "agent") / "results.jsonl").read_text(
         encoding="utf-8").splitlines()]
     assert len(rows) == 2 and all("c_ms" in x for x in rows)
-    # the check delays turn.end, so it widens the follow plan's window (cut at its 700 ms deadline)
+    # the check delays turn.end, so it widens the follow plan's window (cut at its 800 ms deadline)
     late = [{"s_ms": 1.0, "l_ms": 900.0, "c_ms": 600.0}]
     assert follow_misses(late)["missed"] == 0 and follow_misses([{**late[0], "c_ms": None}])["missed"] == 1
-    assert follow_misses([{"s_ms": 1.0, "l_ms": 1200.0, "c_ms": 2000.0}])["missed"] == 1
+    assert follow_misses([{"s_ms": 1.0, "l_ms": 1300.0, "c_ms": 2000.0}])["missed"] == 1   # the check cut at 800
 
 
 async def test_a_drift_scene_runs_end_to_end_on_the_fake(tmp_path: Path) -> None:

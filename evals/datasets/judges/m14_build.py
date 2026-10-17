@@ -227,7 +227,7 @@ def sets() -> dict[str, list[dict[str, Any]]]:
 
 def main() -> None:
     real = json.loads((HERE / "m14_real.json").read_text(encoding="utf-8")) if (HERE / "m14_real.json").is_file() else []
-    for qid, planted in sets().items():
+    for qid, planted in {**sets(), "judge_breaks_rules": []}.items():   # its planted set is private (D22)
         rows = list(planted)
         for k, r in enumerate([x for x in real if x["question_id"] == qid], start=1):
             item_id = f"{qid}-real-{k:03d}"

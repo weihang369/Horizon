@@ -274,7 +274,7 @@
   private text. Verify:
   - a test that a private run never touches `data/cache/`;
   - a results-writer test (no private text).
-- [ ] 7.5 The six judge entries and their B4 validation sets (30 real + 30 planted each). Verify: the bank lock, and
+- [x] 7.5 The six judge entries and their B4 validation sets (30 real + 30 planted each). Verify: the bank lock, and
   "unvalidated" shown until each passes.
 - [x] 7.6 `latency --part output` (50 hand-built states), with `--part follow` and `--part debate` timing those plans
   with the check in place, all store-bypassed. Verify offline with the fake.
@@ -283,26 +283,26 @@
   `HORIZON_TEST=1 uv run horizon eval safety --yes` and the smoke gate.
 - [x] 7.8 Prove D6's claim offline: the M13 layer-3 items' `agent` request hashes with M14 equal M13's when no cue
   fires. Record it in `m14.md` (no layer-3 re-run needed).
-- [ ] 7.9 Phase 7 gates green. Checkpoint commit.
+- [x] 7.9 Phase 7 gates green. Checkpoint commit.
 
 ## 8. The paid runs (design D20, D21, D25)
 
 Each run is asked for separately with its estimate, off-peak, after a `ps` check, with its folder marked `.keep`.
-- [ ] 8.1 The Jev parts: input, care, output, motion, image, song (≈ 390 requests, ≈ $0.008–0.016), through the
+- [x] 8.1 The Jev parts: input, care, output, motion, image, song (≈ 390 requests, ≈ $0.008–0.016), through the
   private store. Verify: the report and the per-item results in `docs/ai/checks/m14/`.
-- [ ] 8.2 Judge validation (≈ 360 requests, ≈ $0.008). Verify: each judge's B4 result recorded per version.
-- [ ] 8.3 The end-to-end parts: care_method, injection, honesty, drafter, drift (≈ $0.045–0.06). Verify:
+- [x] 8.2 Judge validation (≈ 360 requests, ≈ $0.008). Verify: each judge's B4 result recorded per version.
+- [x] 8.3 The end-to-end parts: care_method, injection, honesty, drafter, drift (≈ $0.045–0.06). Verify:
   - the report, with every failure read;
   - provider refusals counted.
-- [ ] 8.4 Doc 11 check 2 (output timing, ≈ $0.0015), and the follow and debate re-measure (≈ $0.002), all
+- [x] 8.4 Doc 11 check 2 (output timing, ≈ $0.0015), and the follow and debate re-measure (≈ $0.002), all
   store-bypassed. Verify: p50 and p90 against 700 / 483 / 651 recorded in `m14.md`.
-- [ ] 8.5 **Bring the findings to the user as choices:**
+- [x] 8.5 **Bring the findings to the user as choices:**
   - threshold moves from W12's values;
   - any deadline change (output, follow, debate);
   - any wording change.
 
   Apply only what the user chooses, bumping versions and re-validating as needed.
-- [ ] 8.6 Record the spend table against D25's estimate and `spend.jsonl` in `m14.md`.
+- [x] 8.6 Record the spend table against D25's estimate and `spend.jsonl` in `m14.md`.
 
 ## 9. Docs and the final gates (design D26)
 

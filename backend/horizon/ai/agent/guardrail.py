@@ -2,7 +2,7 @@
 check reads every reply", "The output check blocks, flags or passes").
 
 One `guardrail` request per checked text, question `output_rules` ("reply breaks the rules?"), deadline
-`timeoutsMs.decision.guardrail` (700 ms):
+`timeoutsMs.decision.guardrail` (800 ms; 700 until M14's debate timing, 8.5):
 - **the state:** the speaker's name and role (labels), `care` (the reply's care cue), `quoted_message` (what the
   reply answers: the user's line; a debate argument's motion and the line before it; a scene's last line) and
   `quoted_reply` (the text as stored). At most 1,500 tokens with the question: `quoted_message` is cut from its start,
