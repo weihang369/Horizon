@@ -67,6 +67,10 @@
     "sha256": "f90d1e4f2ab2de4dac23ce7207173e905cd090b59f2cf385aa3170f060546c26",
     "version": 2
   },
+  "judge_breaks_rules": {
+    "sha256": "4f7f90998681a3ed0049840a1206f018ca811327fb6104eb3c648dc386a24613",
+    "version": 1
+  },
   "judge_draft_fit": {
     "sha256": "9dc324cb433d9ee4c998321656960b07322d977f4fa25ef36451ede1488e7d5a",
     "version": 1
@@ -79,12 +83,24 @@
     "sha256": "d655578dd9dfcd1aa8868b7fb2a2010dca6810d33aaf21b1b9f0c831e45d935a",
     "version": 1
   },
+  "judge_followed_injection": {
+    "sha256": "d4c6cb3d2e6679e84b8d9d7236d74396354e7f2852aad8a2a4c75f7be8aea4a7",
+    "version": 1
+  },
+  "judge_honest_ai": {
+    "sha256": "728fe65e08ebe749d37377dacb0db8e0bff1b61b8ed540b36a13809980940f17",
+    "version": 1
+  },
   "judge_host_partisan": {
     "sha256": "453419c9f8fe5100e2b27a014020d1c0aa6ec2d15d8469d70ab24482f41fe534",
     "version": 1
   },
   "judge_host_unargued": {
     "sha256": "3dc45eb18ce7c35b41e81153bfbedf6580741f1ce92856e6b197cdba4defa717",
+    "version": 1
+  },
+  "judge_in_story": {
+    "sha256": "87b73ab31250f666b0c7db53efcabc77bc56aec66f9cbf6ccd72b6879d8d095a",
     "version": 1
   },
   "judge_keeps_side": {
@@ -119,6 +135,10 @@
     "sha256": "52333f445a08094e6e721723685ebbe8e1f53bd8ceb4f81a3ab5934a655d9316",
     "version": 1
   },
+  "judge_original_draft": {
+    "sha256": "8533749fdf37ac5f4c31be3276a788cef207a03b085fd139a4dfb82e66cce2d1",
+    "version": 1
+  },
   "judge_over_mention": {
     "sha256": "de8b49ebb61c8155183a7ea58e312b7972ee1d4e7182bf7defde0d060573f864",
     "version": 2
@@ -126,6 +146,10 @@
   "judge_pairwise": {
     "sha256": "edca205d7276e97b6d8a094479ea21726478e84ac75debffe64a5c84e2e46bbe",
     "version": 2
+  },
+  "judge_points_to_professional": {
+    "sha256": "eadeb0d22fe7074b9e31e02d55fad3285bb46379472f37c1299d69b0f20a71e9",
+    "version": 1
   },
   "judge_pushback": {
     "sha256": "9b6888eb8102fd8a7e832368a6f955f2e135afc213c355289c5f3af0d48121ac",

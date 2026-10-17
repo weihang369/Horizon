@@ -42,6 +42,7 @@ if TYPE_CHECKING:
     from horizon.runtime import Runtime
 
 EVALS_DIR = REPO_ROOT / "evals"
+SAFETY_CACHE = REPO_ROOT / "private" / "evals" / "cache"   # M14 (safety D23): the safety suite's own store
 KEEP_RUNS = 20
 BYPASS_SUITES = frozenset({"canary", "capture", "import", "latency", "embed-probe"})   # M9 D31: timing never uses the store
 PAID_ONLY = frozenset({"canary", "decisions"})
@@ -69,6 +70,7 @@ class Options:
     messages: int | None = None           # M10 freerun --mode group: user lines per session
     part: str | None = None               # M10 latency: follow | watch (None: M9's 1:1 part)
     arm: str | None = None                # M12 retrieval: one comparison arm (rag D23), e.g. `piece=200`
+    recut: str | None = None              # M14 safety: re-score and re-cut a saved run (safety D23), no call
 
 
 @dataclass
@@ -114,6 +116,8 @@ def store_for(opts: Options, data_dir: Path, fingerprint: str | None, *, test_mo
     (persona-context 10.2 found `smoke` had done exactly that)."""
     if test_mode or opts.suite in BYPASS_SUITES or opts.latency or opts.repeat:
         return None
+    if opts.suite == "safety":   # M14 (safety D23, W10): its private items never enter `data/cache/`
+        return ResponseStore.eval_view(SAFETY_CACHE, fingerprint)
     return ResponseStore.eval_view(data_dir / "cache", fingerprint)
 
 

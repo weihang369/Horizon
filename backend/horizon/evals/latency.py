@@ -107,6 +107,14 @@ class Latency:
             from horizon.evals import recall_timing
 
             return recall_timing.plan(opts, prices, paid=paid)
+        if opts.part == "output":   # M14 (safety D21; doc 11 check 2): the output check alone, 50 states
+            from horizon.ai.decider import wire_question
+            from horizon.evals.safety_suite import OUTPUT_N, output_states
+
+            n = opts.limit or OUTPUT_N
+            per = sum(decision_estimate(prices, st, {k: wire_question(q) for k, q in qs.items()})
+                      for st, qs in output_states(n)) / n
+            return Plan(items=[{"part": "output", "n": n}], estimate_usd=n * per, expected_s=n * 1.2, paid=paid)
         if opts.part == "debate":   # M11 (debate D9, D22): 30 plans, 10 bridges and 5 verdicts
             n = opts.limit or DEBATE_PLANS
             per = decision_estimate(prices, {"quoted_arguments": "x" * 7000}, {"q": {"instructions": "x" * 2400}})
@@ -141,6 +149,12 @@ class Latency:
             return res
         if env.opts.part == "watch":
             await self.watch_part(env, plan, res)
+            return res
+        if env.opts.part == "output":
+            from horizon.evals.watch_suites import output_report, output_timing
+
+            res.rows = await output_timing(env, plan.items[0]["n"])
+            res.summary += output_report(res.rows)
             return res
         if env.opts.part == "debate":
             from horizon.evals.debate_suites import debate_timing

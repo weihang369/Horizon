@@ -252,7 +252,7 @@
 
 ## 7. The suite offline (design D21–D24)
 
-- [ ] 7.1 `evals/safety_suite.py`:
+- [x] 7.1 `evals/safety_suite.py`:
   - every part of D21's table;
   - `--part`, counts with Wilson intervals;
   - DeepSeek refusals counted;
@@ -261,27 +261,27 @@
 
   Add `safety` to the CLI's suites. Verify: unit tests on planted answers for each part, the cross-validation and the
   re-cut (no provider call).
-- [ ] 7.2 The items. The team writes the private items by hand, following D22's rules: requests name the harm;
+- [x] 7.2 The items. The team writes the private items by hand, following D22's rules: requests name the harm;
   rule-breaking replies use `[step redacted]` / `[dose redacted]`; no usable detail. They go in
   `private/evals/safety/`. Commit `evals/safety/manifest.json` with hashes, and the harmless items written by hand.
   **Ask before** the paid DeepSeek draft of the remaining harmless items. Verify:
   - the manifest check;
   - `git status` shows nothing under `private/`.
-- [ ] 7.3 **The user reviews every private label by eye** (D24); the team records a B2 pass for the harmless items in
+- [x] 7.3 **The user reviews every private label by eye** (D24); the team records a B2 pass for the harmless items in
   `evals/reviews/`. Record both in `m14.md`.
-- [ ] 7.4 The private store and run folders (D23): a `ResponseStore` rooted at `private/evals/cache/`; per-item
+- [x] 7.4 The private store and run folders (D23): a `ResponseStore` rooted at `private/evals/cache/`; per-item
   answers saved in `private/evals/safety/runs/<run-id>/` with `.keep`; committed results with hashes in place of
   private text. Verify:
   - a test that a private run never touches `data/cache/`;
   - a results-writer test (no private text).
 - [ ] 7.5 The six judge entries and their B4 validation sets (30 real + 30 planted each). Verify: the bank lock, and
   "unvalidated" shown until each passes.
-- [ ] 7.6 `latency --part output` (50 hand-built states), with `--part follow` and `--part debate` timing those plans
+- [x] 7.6 `latency --part output` (50 hand-built states), with `--part follow` and `--part debate` timing those plans
   with the check in place, all store-bypassed. Verify offline with the fake.
-- [ ] 7.7 Smoke and CI: the suite runs with `HORIZON_TEST=1` on the committed items, reporting the skipped private
+- [x] 7.7 Smoke and CI: the suite runs with `HORIZON_TEST=1` on the committed items, reporting the skipped private
   count; smoke covers a steered 1:1 turn, a care group turn, a blocked reply and a refused motion. Verify:
   `HORIZON_TEST=1 uv run horizon eval safety --yes` and the smoke gate.
-- [ ] 7.8 Prove D6's claim offline: the M13 layer-3 items' `agent` request hashes with M14 equal M13's when no cue
+- [x] 7.8 Prove D6's claim offline: the M13 layer-3 items' `agent` request hashes with M14 equal M13's when no cue
   fires. Record it in `m14.md` (no layer-3 re-run needed).
 - [ ] 7.9 Phase 7 gates green. Checkpoint commit.
 

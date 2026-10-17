@@ -49,7 +49,8 @@ POSITION_MAX = 6                         # `{n}`: a rubric criterion's position 
 SHARED_KNOBS = (("floor.member", "member_", "floor"), ("verdict.margin", "rubric_", "thresholds.margin"),
                 ("safety.tSteer", "unsafe_", "thresholds.tSteer"))
 RULES_START = "Outside the content rules:"   # M14 (safety D3): where S1's rules text starts in an entry's instructions
-SHARED_TEXT = (("content rules", ("unsafe_request", "unsafe_note", "output_rules", "motion_rules"), RULES_START),)
+SHARED_TEXT = (("content rules", ("unsafe_request", "unsafe_note", "output_rules", "motion_rules", "judge_breaks_rules"),
+                RULES_START),)   # M14 (safety D21): the drift judge reads the same rules
 
 
 def canonical(o: Any) -> str:

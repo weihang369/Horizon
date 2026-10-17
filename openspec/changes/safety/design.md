@@ -687,6 +687,17 @@ from asking about the same line.
     in the repo or under `private/`.
   - Sexual-content items state the request or the reply's direction without explicit description.
   - The team writes the private items by hand. DeepSeek drafts only harmless items (a paid call, asked for).
+  - **Amended during apply (the user's choices, 2026-10-17):**
+    - The team cannot author the harmful items. It writes the mild ones: likeness, gore and weapons, a childlike look,
+      and song copying (40). The 244 harmless items are written by hand too, so no DeepSeek draft is needed.
+    - The rest come from **MIT-licensed benchmarks only**: HarmBench and AdvBench, licences checked upstream and
+      downloaded with the user's OK into `private/evals/safety/sources/`. `evals/safety/private_build.py` selects them
+      by committed rules (no text). The rule-breaking replies are AdvBench strings with no step, number, amount or
+      ingredient, so D22's "no usable detail" holds.
+    - **Unmeasured in M14, by these choices:**
+      - the 20 indirect at-risk items (no MIT source). Care recall uses the 5 self-harm "how" requests left after
+        `care_method`'s 6.
+      - `image_nudity`'s refusals (skipped; its false refusals are still measured).
 - **CI and test mode:** only the committed items and the manifest are loaded. The private items are reported as a
   skipped count (W14).
 

@@ -42,6 +42,7 @@ SPELL_RUN = 3               # three or more slow requests in a row make a spell
 F_MS = 12.3                 # docs/ai/checks/m10.md, task 4.7: stream end → turn.end, p50 on Windows
 FOLLOW_DEADLINE_MS = 400.0  # timeoutsMs.decision.follow_plan
 MISS_MAX = 0.10             # D9: pass at ≤ 10 % missed
+CHECK_DEADLINE_MS = 700.0   # M14 (safety D10; W11): timeoutsMs.decision.guardrail, the output check before turn.end
 NFR02_P50_MS = 3000.0
 
 
@@ -524,10 +525,12 @@ def in_spell(i: int, sp: Sequence[tuple[int, int]]) -> bool:
 
 def follow_misses(rows: Sequence[dict[str, Any]], f_ms: float = F_MS,
                   deadline_ms: float = FOLLOW_DEADLINE_MS) -> dict[str, Any]:
-    """D9: a miss is S + L > F + 400, with and without the slow spells."""
+    """D9: a miss is S + L > F + 400, with and without the slow spells. M14 (safety D20): with the output check in
+    place, turn.end waits for it too (`c_ms`, cut at its 700 ms deadline), so F grows by the check's time."""
     lat = [float(r["l_ms"]) for r in rows]
     sp = spells(lat)
-    miss = [float(r["s_ms"]) + float(r["l_ms"]) > f_ms + deadline_ms for r in rows]
+    miss = [float(r["s_ms"]) + float(r["l_ms"]) > f_ms + min(float(r.get("c_ms") or 0.0), CHECK_DEADLINE_MS)
+            + deadline_ms for r in rows]
     outside = [m for i, m in enumerate(miss) if not in_spell(i, sp)]
     return {"n": len(rows), "missed": sum(miss), "rate": sum(miss) / len(rows) if rows else 0.0,
             "spells": sp, "rate_without_spells": sum(outside) / len(outside) if outside else 0.0,
@@ -538,6 +541,7 @@ def follow_report(rows: Sequence[dict[str, Any]]) -> list[str]:
     if not rows:
         return ["## Follow-plan timing: no requests"]
     m = follow_misses(rows)
+    checks = [float(r["c_ms"]) for r in rows if r.get("c_ms") is not None]
     s = [float(r["s_ms"]) for r in rows]
     lat = [float(r["l_ms"]) for r in rows]
     out = [f"## Follow-plan timing (D9): {m['missed']}/{m['n']} missed ({m['rate']:.0%}; pass ≤ 10 %) → "
@@ -545,6 +549,9 @@ def follow_report(rows: Sequence[dict[str, Any]]) -> list[str]:
            f"- a miss is S + L > F + 400 ms, with F = {F_MS} ms (m10.md, 4.7)",
            f"- S (state assembly) p50 {percentile(s, 0.5):.1f} ms, p90 {percentile(s, 0.9):.1f} ms",
            f"- L (Jev) p50 {percentile(lat, 0.5):.0f} ms, p90 {percentile(lat, 0.9):.0f} ms",
+           *([f"- C (the output check, sent alongside; M14) p50 {percentile(checks, 0.5):.0f} ms, p90 "
+              f"{percentile(checks, 0.9):.0f} ms: turn.end waits for it (cut at {CHECK_DEADLINE_MS:.0f} ms)"]
+             if checks else []),
            f"- S + L − F p90 {percentile([a + b - F_MS for a, b in zip(s, lat, strict=True)], 0.9):.0f} ms "
            "(the deadline G2 would set)"]
     if m["spells"]:
@@ -570,7 +577,7 @@ async def follow_timing(env: RunEnv, limit: int | None = None) -> list[dict[str,
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     reqs = [(i, r) for i, split, r in mod.second_requests() if split == "dev"][: limit or 50]
-    rows = []
+    rows: list[dict[str, Any]] = []
     for item_id, req in reqs:
         if await env.over_budget():
             break
@@ -578,11 +585,58 @@ async def follow_timing(env: RunEnv, limit: int | None = None) -> list[dict[str,
         st = follow_state(req)
         s_ms = (time.perf_counter() - t0) * 1000
         qs, _ = FollowSteps.questions(req)
-        t1 = time.perf_counter()
-        await env.rt.gateway.decide(st.state, {k: wire_question(q) for k, q in qs.items()}, call_ctx("follow_plan"))
-        rows.append({"id": item_id, "s_ms": round(s_ms, 3), "l_ms": round((time.perf_counter() - t1) * 1000, 1),
-                     "tokens": st.tokens})
+        follow = timed(env.rt.gateway.decide(st.state, {k: wire_question(q) for k, q in qs.items()},
+                                             call_ctx("follow_plan")))
+        l_ms, c_ms = await asyncio.gather(follow, output_check(env, len(rows)))   # M14 (D20): both at stream end
+        rows.append({"id": item_id, "s_ms": round(s_ms, 3), "l_ms": l_ms, "c_ms": c_ms, "tokens": st.tokens})
     return rows
+
+
+async def timed(call: Any) -> float:
+    t = time.perf_counter()
+    await call
+    return round((time.perf_counter() - t) * 1000, 1)
+
+
+async def output_check(env: RunEnv, k: int) -> float:
+    """M14 (safety D20): one output check on a hand-built state, as the live turn sends it at stream end; its wall
+    time (no store: timing runs bypass it)."""
+    from horizon.ai.decider import wire_question
+    from horizon.evals.safety_suite import output_states
+    from horizon.gateway.context import call_ctx
+
+    states = output_states()
+    state, qs = states[k % len(states)]
+    return await timed(env.rt.gateway.decide(state, {q: wire_question(v) for q, v in qs.items()},
+                                             call_ctx("guardrail")))
+
+
+async def output_timing(env: RunEnv, n: int) -> list[dict[str, Any]]:
+    """M14 (safety D21; doc 11 check 2): the output check alone on `n` hand-built states, one at a time."""
+    rows = []
+    for k in range(n):
+        if await env.over_budget():
+            break
+        rows.append({"k": k, "c_ms": await output_check(env, k)})
+    return rows
+
+
+def output_report(rows: Sequence[dict[str, Any]]) -> list[str]:
+    """Pass at p90 ≤ 700 ms; otherwise a deadline from the data goes to the user as a choice (D21)."""
+    if not rows:
+        return ["## Output-check timing (doc 11 check 2): no requests"]
+    ms = [float(r["c_ms"]) for r in rows]
+    p90 = percentile(ms, 0.9)
+    late = sum(1 for x in ms if x > CHECK_DEADLINE_MS)
+    ok = p90 <= CHECK_DEADLINE_MS
+    out = [f"## Output-check timing (doc 11 check 2): p90 {p90:.0f} ms against {CHECK_DEADLINE_MS:.0f} ms → "
+           + ("PASS" if ok else f"FAIL: a deadline from the data ({p90:.0f} ms, the p90) goes to the user as a choice"),
+           f"- p50 {percentile(ms, 0.5):.0f} ms; the deadline would have fired on {late}/{len(ms)} "
+           f"({late / len(ms):.0%}), each a pass with a flag (fail open)"]
+    sp = spells(ms)
+    if sp:
+        out.append(f"- slow spells: {'; '.join(f'requests {a + 1}–{b + 1}' for a, b in sp)}")
+    return out
 
 
 def watch_timing_report(gaps_next: Sequence[float], gaps_token: Sequence[float], plans: Sequence[tuple[float, str]],

@@ -26,6 +26,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import copy
 import json
 from collections.abc import Sequence
@@ -37,7 +38,7 @@ from typing import Any
 from horizon.domain.pricing import estimate_chat
 from horizon.evals.content import budget_code, wait_idle
 from horizon.evals.runner import EVALS_DIR, Options, Plan, Result, RunEnv
-from horizon.evals.watch_suites import API, advance, seed_profiles
+from horizon.evals.watch_suites import API, advance, output_check, seed_profiles, timed
 
 DEBATES_DIR = EVALS_DIR / "debates"
 SCRIPTS = DEBATES_DIR / "scripts"
@@ -1106,7 +1107,7 @@ async def plan_timing(env: RunEnv, reqs: Sequence[tuple[str, Any]]) -> list[dict
     from horizon.ai.decider import wire_question
     from horizon.gateway.context import call_ctx
 
-    rows = []
+    rows: list[dict[str, Any]] = []
     for item_id, req in reqs:
         if await env.over_budget():
             break
@@ -1114,10 +1115,12 @@ async def plan_timing(env: RunEnv, reqs: Sequence[tuple[str, Any]]) -> list[dict
         qs, _, _ = DebateSteps.questions(req)
         st = DebateSteps.state_for(req, qs)
         s_ms = (time.perf_counter() - t0) * 1000
-        t1 = time.perf_counter()
-        await env.rt.gateway.decide(st.state, {k: wire_question(q) for k, q in qs.items()}, call_ctx("debate_plan"))
-        rows.append({"id": item_id, "s_ms": round(s_ms, 3), "l_ms": round((time.perf_counter() - t1) * 1000, 1),
-                     "tokens": st.tokens})
+        plan = timed(env.rt.gateway.decide(st.state, {k: wire_question(q) for k, q in qs.items()},
+                                           call_ctx("debate_plan")))
+        # M14 (safety D20): the last argument's output check runs while the next plan is asked (the parallel load
+        # m11.md blamed for the live misses); the plan's own rule is unchanged
+        l_ms, c_ms = await asyncio.gather(plan, output_check(env, len(rows)))
+        rows.append({"id": item_id, "s_ms": round(s_ms, 3), "l_ms": l_ms, "c_ms": c_ms, "tokens": st.tokens})
     return rows
 
 
@@ -1129,12 +1132,15 @@ def plan_timing_report(rows: Sequence[dict[str, Any]]) -> list[str]:
     if not rows:
         return ["## Debate-plan timing (D9): no states (build the member slice first, 10.3)"]
     total = [r["s_ms"] + r["l_ms"] for r in rows]
+    checks = [float(r["c_ms"]) for r in rows if r.get("c_ms") is not None]
     miss = [t > PLAN_DEADLINE_MS for t in total]
     rate = sum(miss) / len(rows)
     ok = rate <= PLAN_MISS_MAX
     p90 = percentile(total, 0.9)
     out = [f"## Debate-plan timing (D9): {sum(miss)}/{len(rows)} past {PLAN_DEADLINE_MS:.0f} ms ({rate:.0%}; pass at "
            f"≤ {PLAN_MISS_MAX:.0%}) → {'PASS' if ok else 'FAIL'}",
+           *([f"- the output check alongside (M14): p50 {percentile(checks, 0.5):.0f} ms, p90 "
+              f"{percentile(checks, 0.9):.0f} ms"] if checks else []),
            f"- S + L: p50 {percentile(total, 0.5):.0f} ms, p90 {p90:.0f} ms; S p90 "
            f"{percentile([r['s_ms'] for r in rows], 0.9):.1f} ms; tokens p50 "
            f"{percentile([float(r['tokens']) for r in rows], 0.5):.0f}"]
