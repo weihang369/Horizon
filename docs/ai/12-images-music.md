@@ -296,6 +296,16 @@ doing only once there are real seed portraits, which is a v2 question.
 
 **Rejected:** an automated image eval with a vision model: D-88.
 
+*Built in M14 (OpenSpec `safety` D17; [m14.md](checks/m14.md)):*
+- *`check_prompt` asks the four image nouls in one request at job start, or `song_copy` on the brief the song task
+  sends.*
+- *It has an LRU cache of Jev's answers; a fail-open pass is never kept.*
+- *A refused job answers 451 before any hold or row. A refused brief gets the procedural theme with its own note, and
+  no Lyria call.*
+- *Measured: likeness, gore and a childlike look refused 10/10 each; songs 10/10; hard-safe falsely refused 0/60 and
+  0/20. Every starting threshold is kept.*
+- *Nudity has no items (the MIT-only source choice). `image_nudity` is measured on false refusals only.*
+
 ### I8. Lyria licence and provenance
 
 **Decision (launch checklist, free):**

@@ -194,6 +194,10 @@ took p50 443 ms / p90 495 ms (our state assembly: p90 0.5 ms; no slow spells). B
 for the optional `turn.next`. In the group free runs 6 of 36 follow plans were still late at 483 ms (17 %). Measured
 again after M14 (D9); [m10.md](checks/m10.md) 10.7.*
 
+*Measured again in M14 ([m14.md](checks/m14.md) 8.4): with the output check before `turn.end`, `turn.end` comes
+after the check (p50 ≈ 450 ms), so the follow plan has its head start back: 1 of 50 missed at 400 ms. By the
+user's choice `follow_plan` is **400 ms** again and the NFR-02 exception is dropped.*
+
 *Beside the output check (M14, OpenSpec `safety` D10; doc 11 S5): the follow plan still starts at the first reply's
 stream end, in parallel with that reply's output check, and its deadline still counts from `turn.end`. A block cancels
 it, so no second reply starts even when its pick lands before the block (doc 11 check 3, run offline).*

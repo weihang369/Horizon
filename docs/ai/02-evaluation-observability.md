@@ -323,7 +323,7 @@ frozen transcripts start from a long committed history.
   `judge_over_mention`, each with 30 planted items; their 30 real items are labelled from the first paid memory run's
   saved judge states, and each reads "NOT COUNTED" until its current version passes. "Memory for an absent
   character" is a unit test: the call names characters by their number among those present.*
-  | **Safety** (doc 11 S10) | the `safety` suite: input, care, output, injection, honesty and advice, drafter, drift; items in `private/evals/safety/` | doc 11 S10's table |
+  | **Safety** (doc 11 S10) | the `safety` suite: input, care, output, injection, honesty and advice, drafter, drift; items in `private/evals/safety/` | doc 11 S10's table. *Built in M14: `horizon eval safety` (`--part`, `--recut`), the private store under `private/evals/`, six B4-validated judges; results in [m14.md](checks/m14.md)* |
 
 - **Pairwise numbers:**
   - **Primary:** the average probability that the agent's reply is better. It is taken from Jev's per-option

@@ -306,9 +306,9 @@ Each run is asked for separately with its estimate, off-peak, after a `ps` check
 
 ## 9. Docs and the final gates (design D26)
 
-- [ ] 9.1 Amend everything doc 11 §6 and doc 12 §5 list not already done in phases 2–6, plus doc 11's and doc 12's
+- [x] 9.1 Amend everything doc 11 §6 and doc 12 §5 list not already done in phases 2–6, plus doc 11's and doc 12's
   "Built in" notes and W6's and W12's M14 rows. Verify: the docs link check, with 0 broken.
-- [ ] 9.2 Finish `docs/ai/checks/m14.md`: the runs, the findings, the user's choices, and "What M15 inherits"
+- [x] 9.2 Finish `docs/ai/checks/m14.md`: the runs, the findings, the user's choices, and "What M15 inherits"
   (deadlines, the late-check rate, the injection follow rate, the provider-refusal share). Verify: it is linked from
   doc 13.
 - [ ] 9.3 Final gates on the gate worktree:
