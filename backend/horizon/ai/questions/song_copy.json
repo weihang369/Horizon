@@ -1,0 +1,20 @@
+{
+  "id": "song_copy",
+  "version": 1,
+  "purpose": "guardrail",
+  "type": "noul",
+  "label": "copies an artist or piece?",
+  "instructions": "Does the music brief in quoted_text ask to copy or imitate a named real artist, band, composer or existing song, film score or game soundtrack?",
+  "true": "Yes: it names a real artist, band, composer or existing piece to copy or sound like.",
+  "false": "No: it describes genre, era, mood or instruments without naming an artist or a piece; \"80s synthwave\", \"baroque\" or \"Celtic folk\" are fine.",
+  "state": {
+    "quoted_text": "quoted"
+  },
+  "deadline": "guardrail_prompt",
+  "floor": null,
+  "thresholds": {
+    "tSong": 0.6
+  },
+  "fallback": "call_lyria",
+  "state_note": "doc 12 I4, safety D17: asked inside the song task before the Lyria call, over the brief it sends. p >= tSong takes the procedural theme (brief_refused); late or failed calls Lyria."
+}

@@ -38,7 +38,7 @@ def test_migrate_twice_and_no_drift(tmp_path: Path) -> None:
         names = set(conn.execute(text("SELECT name FROM sqlite_master WHERE type='table'")).scalars())
     engine.dispose()
     assert diff == [], diff
-    assert version == "0005"  # M13: the memory run columns and message_index
+    assert version == "0006"  # M14: message_ai_meta.safety
     assert {"message_ai_meta", "message_index"} <= names
     assert {"memory_fts", "knowledge_fts", "message_fts"} <= names
     assert not any("_vec__" in n for n in names)  # vec tables belong to the SpaceManager
@@ -148,6 +148,56 @@ def test_0005_memory_up_and_down(tmp_path: Path) -> None:
     assert set(inspect(eng).get_table_names()) == before
     assert {c["name"] for c in inspect(eng).get_columns("sessions")} == before_cols
     eng.dispose()
+
+
+def test_0006_safety_up_and_down(tmp_path: Path) -> None:
+    """safety 1.4 (data-storage "The safety migration"): an M13 database's `message_ai_meta` rows read `safety` NULL
+    (not flagged), the column takes the stored answers, and the downgrade drops it with the rewrites unchanged."""
+    from alembic import command
+    from sqlalchemy import inspect
+
+    from horizon.db.migrate import alembic_config
+
+    db = tmp_path / "m13.db"
+    command.upgrade(alembic_config(db), "0005")
+    now = "2026-10-17T03:00:00.000Z"
+    conn = sqlite3.connect(db)
+    conn.execute("INSERT INTO worlds(id, name, cover, is_seed, created_at, updated_at, last_active_at) "
+                 "VALUES ('wld_a', 'A', '{}', 0, ?, ?, ?)", (now, now, now))
+    conn.execute("INSERT INTO sessions(id, world_id, title, title_is_custom, mode, status, emotion_mode, "
+                 "music_policy, readable_mode, is_seed, cost_usd, message_count, created_at, updated_at) "
+                 "VALUES ('ses_a', 'wld_a', 'T', 0, 'one_on_one', 'active', 'auto', 'off', 0, 0, 0, 0, ?, ?)",
+                 (now, now))
+    for i in (1, 2):
+        conn.execute("INSERT INTO messages(id, session_id, seq, author_type, kind, content, status, created_at) "
+                     "VALUES (?, 'ses_a', ?, 'user', 'chat', 'hi', 'complete', ?)", (f"msg_{i}", i, now))
+    rewrites = json.dumps({"chr_a": {"text": "night shift rest days", "at": now}})
+    conn.execute("INSERT INTO message_ai_meta(message_id, rewrites, updated_at) VALUES ('msg_1', ?, ?)", (rewrites, now))
+    conn.commit()
+    conn.close()
+    upgrade_head(db)
+    conn = sqlite3.connect(db)
+    try:
+        conn.execute("PRAGMA foreign_keys = ON")
+        assert conn.execute("SELECT safety FROM message_ai_meta").fetchall() == [(None,)]   # old rows: not flagged
+        flags = json.dumps({"steer": True, "care": False, "pInput": 0.93, "pCare": 0.02, "at": now,
+                            "v": {"unsafe_request": 1, "at_risk": 1}})
+        conn.execute("INSERT INTO message_ai_meta(message_id, safety, updated_at) VALUES ('msg_2', ?, ?)", (flags, now))
+        assert json.loads(conn.execute("SELECT safety FROM message_ai_meta WHERE message_id = 'msg_2'").fetchone()[0])["steer"]
+        conn.execute("DELETE FROM messages WHERE id = 'msg_2'")              # the row cascades
+        assert conn.execute("SELECT count(*) FROM message_ai_meta").fetchone() == (1,)
+        conn.commit()
+    finally:
+        conn.close()
+    command.downgrade(alembic_config(db), "0005")
+    eng = create_engine(f"sqlite:///{db.as_posix()}")
+    assert "safety" not in {c["name"] for c in inspect(eng).get_columns("message_ai_meta")}
+    eng.dispose()
+    conn = sqlite3.connect(db)
+    try:
+        assert conn.execute("SELECT message_id, rewrites FROM message_ai_meta").fetchall() == [("msg_1", rewrites)]
+    finally:
+        conn.close()
 
 
 def test_0002_keeps_rows_of_an_m4_database(tmp_path: Path) -> None:

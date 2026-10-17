@@ -1,4 +1,8 @@
 {
+  "at_risk": {
+    "sha256": "e55d28d80918c21a05d415f101d854e864fbe84967579b74aedda1c27d4ea2c5",
+    "version": 1
+  },
   "docs": {
     "sha256": "8a63e2214ac5af07756144b82542b7c89151c122d91c91afd8e24a6e721ab132",
     "version": 2
@@ -35,8 +39,28 @@
     "sha256": "4709bc69e08b6debce18d397c5cd950b137a92eef94543773907f8cec1c8acea",
     "version": 1
   },
+  "image_gore": {
+    "sha256": "cdbb0185c48b6d257604759066f2cec53ef0f920f389425f35bfcd222f58c630",
+    "version": 1
+  },
+  "image_likeness": {
+    "sha256": "78a7aa1911672ac50c7bb77f6438d09059047ec894dbbbe41903048d39a9ba26",
+    "version": 1
+  },
+  "image_nudity": {
+    "sha256": "0080f53a0f2e8ddd9fdd6cb202cba84211f10046d95e1c1bc0df64b92060c690",
+    "version": 1
+  },
+  "image_young": {
+    "sha256": "55fa5ca3a3d1595464c736d2ffc7601a61a01248ee61cab84d41ebc4b0ed45bf",
+    "version": 1
+  },
   "importance": {
     "sha256": "fd6bf130c776368f2a71547831210ac49d9deef245292715cbc99663a1a54adc",
+    "version": 1
+  },
+  "instruction": {
+    "sha256": "99c000b242c784e6415424ce97678f3ffb31d46d3bfcefeb906d5adde0b99a88",
     "version": 1
   },
   "judge_assistant_voice": {
@@ -171,6 +195,14 @@
     "sha256": "cf6f9fbc3a0c5b2b06eee63239aa0c2ff52e44dfc68db5cf107ab88fb025b427",
     "version": 3
   },
+  "motion_rules": {
+    "sha256": "a7439dcc60f7c8a8e48641f45644eb21bc6d379be5dcd9d8b03c53ea58c2fbb1",
+    "version": 1
+  },
+  "output_rules": {
+    "sha256": "6001254d3bfb23a8990783f77d310885404da5f187648a1fe77e3e0ae1cb899b",
+    "version": 1
+  },
   "passage": {
     "sha256": "9be7b756a0b94f1342364816327f260f3b70083470d62a13cf24c547680a223b",
     "version": 2
@@ -215,6 +247,10 @@
     "sha256": "51cf8bf55e568f009471a16c7af60d3e6f3ed287dabbd57300d247f3463472b9",
     "version": 1
   },
+  "song_copy": {
+    "sha256": "e3d1f964d911d03da346930d04d1ada81db6f5b7afab0442c6592e2b7dc6d656",
+    "version": 1
+  },
   "standalone": {
     "sha256": "61eaa95dd32e9b9dff5b7bb8768c85ea7d605928e797714ee58000e24f99116e",
     "version": 2
@@ -222,6 +258,14 @@
   "talk_finished": {
     "sha256": "915d45afb5fadde6baf2c2d569507a4a203d2b89458f27130f509ec52643a749",
     "version": 3
+  },
+  "unsafe_note": {
+    "sha256": "bf0b704dc8addeec8a9d4a2ee88ec0dce5d80bc7a1a1c81566e7c4f3bcff414e",
+    "version": 1
+  },
+  "unsafe_request": {
+    "sha256": "73681bd0b265b928219fec17d76bfba2f42e39e033708b42754bcbeec8c608b3",
+    "version": 1
   },
   "who_first": {
     "sha256": "0601f2ba8882bff56e7fc92a92fb6bfb0e3935a9504b16d1a7ddc54e77013182",

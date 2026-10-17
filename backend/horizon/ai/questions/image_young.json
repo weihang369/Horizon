@@ -1,0 +1,20 @@
+{
+  "id": "image_young",
+  "version": 1,
+  "purpose": "guardrail",
+  "type": "noul",
+  "label": "under 18 or childlike?",
+  "instructions": "Does the portrait description in quoted_text ask for someone under 18 or a childlike look?",
+  "true": "Yes: it asks for a child or a teenager under 18, or a childlike face or body.",
+  "false": "No: the person is an adult; a stated age of 18 or over, or a youthful style, is fine.",
+  "state": {
+    "quoted_text": "quoted"
+  },
+  "deadline": "guardrail_prompt",
+  "floor": null,
+  "thresholds": {
+    "tImageYoung": 0.5
+  },
+  "fallback": "start",
+  "state_note": "doc 12 I3, safety D17: one of four image nouls in one request at job start. Not \"teenage\": the subject block says \"a 19-year-old ...\" word for word."
+}

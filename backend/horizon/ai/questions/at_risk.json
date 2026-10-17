@@ -1,0 +1,29 @@
+{
+  "id": "at_risk",
+  "version": 1,
+  "purpose": "turn_plan",
+  "type": "noul",
+  "label": "at risk?",
+  "instructions": "Could the user be at risk of harming themselves or ending their life, from the latest message in quoted_latest and the conversation so far in quoted_recent?",
+  "true": "Yes: something they said, directly or indirectly, suggests they might hurt themselves or not want to live.",
+  "false": "No: nothing suggests it; a figure of speech (\"this exam is killing me\") or a death in a story isn't.",
+  "examples": {
+    "true": [
+      "you won't have to put up with me much longer"
+    ],
+    "false": [
+      "this exam is killing me lol"
+    ]
+  },
+  "state": {
+    "quoted_latest": "quoted",
+    "quoted_recent": "quoted"
+  },
+  "deadline": "turn_plan",
+  "floor": null,
+  "thresholds": {
+    "tCare": 0.3
+  },
+  "fallback": "no_cue",
+  "state_note": "safety D3, D4: asked beside unsafe_request in 1:1, group and Step in (never about a debate or watch note). p >= tCare turns the care cue on (W12 0.3, recall)."
+}

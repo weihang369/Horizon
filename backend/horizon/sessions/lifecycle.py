@@ -300,13 +300,13 @@ async def fork(rt: Runtime, sid: str, at_seq: int | None) -> Wire:
         cites = [r for m in messages for r in mp.citation_rows(m)]
         if cites:
             await tx.conn.execute(t.message_citations.insert(), cites)
-        if ids:   # M12 (rag D19): the copied messages' stored rewrites come with them
+        if ids:   # M12 (rag D19): the copied messages' stored rewrites come with them; M14 (safety D5): and their safety
             A = t.message_ai_meta.c
-            meta = (await tx.conn.execute(select(A.message_id, A.rewrites, A.updated_at)
+            meta = (await tx.conn.execute(select(A.message_id, A.rewrites, A.safety, A.updated_at)
                                           .where(A.message_id.in_(list(ids))))).all()
             if meta:
                 await tx.conn.execute(t.message_ai_meta.insert(), [
-                    {"message_id": ids[r[0]], "rewrites": r[1], "updated_at": r[2]} for r in meta])
+                    {"message_id": ids[r[0]], "rewrites": r[1], "safety": r[2], "updated_at": r[3]} for r in meta])
             # M13 (memory D29; doc 09 M2): the copied messages' indexed lines and vectors come with them (no new
             # embedding), and the fork's checkpoint starts at the copied messages' highest seq
             from horizon.services.memory.index import follow_fork

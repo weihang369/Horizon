@@ -1,0 +1,20 @@
+{
+  "id": "image_nudity",
+  "version": 1,
+  "purpose": "guardrail",
+  "type": "noul",
+  "label": "nudity or underwear?",
+  "instructions": "Does the portrait description in quoted_text ask for nudity, underwear, swimwear or sexual content?",
+  "true": "Yes: it asks for the person to be nude, in underwear or swimwear, or shown sexually.",
+  "false": "No: the clothing and pose it asks for are ordinary.",
+  "state": {
+    "quoted_text": "quoted"
+  },
+  "deadline": "guardrail_prompt",
+  "floor": null,
+  "thresholds": {
+    "tImageNudity": 0.5
+  },
+  "fallback": "start",
+  "state_note": "doc 12 I3, safety D17: one of four image nouls in one request at job start."
+}
