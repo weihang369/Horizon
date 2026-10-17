@@ -11,6 +11,8 @@ deep when the speaker's gate is at or above `t_gate`. A generated greeting asks 
   late, failed, refused or oversized call is a fallback at once; a late answer is still billed and then discarded
   (W11). Cancelling the plan (Stop) detaches the readers and lets the request settle (D8).
 - **decide:** `decide_face` per candidate, and one System 1 row each; the gate rows (D20).
+- M14 (safety D4–D6): a reply to a user line with no stored safety answer also asks "unsafe request?" and "at risk?"
+  in the same request; the frozen plan carries the cue (`TurnPlan.safety`), stored answers included.
 """
 
 from __future__ import annotations
@@ -21,6 +23,7 @@ from datetime import timedelta
 from typing import Any
 
 from horizon.ai.agent import gates
+from horizon.ai.agent import safety as sf
 from horizon.ai.agent.emotion import decide_face, emotion_row
 from horizon.ai.agent.persona import first_name
 from horizon.ai.agent.plan_graph import Branch, build_plan_graph, run_plan
@@ -101,6 +104,7 @@ def answered_message(session: SessionContext) -> tuple[str | None, list[str], st
 
 class JevTurnPlanner:
     decides_retrieval = True   # M10 (group-watch D18): a planned turn's retrieval follows the plan's branch
+    asks_safety = True         # M14 (safety D4): every plan asks the safety questions about a new user line
 
     def __init__(self, deps: Any) -> None:
         self.deps = deps
@@ -181,7 +185,9 @@ class JevTurnPlanner:
             qid = QUESTION[req.kind]
             entry = bank().get(qid)
             row = emotion_row(face, qid=qid, version=entry.version, label=entry.label, about=req.speaker_id)
-            return TurnPlan(seed=self.seed(req), kind=req.kind, branch="quick", emotion=face, rows=[row])
+            cue = sf.decide(req.safety, None)   # M14: a bug is a failed answer: no cue, flagged, nothing stored
+            return TurnPlan(seed=self.seed(req), kind=req.kind, branch="quick", emotion=face,
+                            rows=[row, *sf.rows(cue, purpose=PURPOSE)], safety=cue)
         branch = plan.branch if plan.branch is not None else self.route(req, plan)
         out: TurnPlan = plan.model_copy(update={"graph_path": [*path, *plan.graph_path], "branch": branch})
         return out
@@ -199,7 +205,8 @@ class JevTurnPlanner:
         gated = gates.gated([cid], req.documents, state.dropped_gates) if req.kind == "reply" else []
         # M13 (memory D26): "needs something from earlier?" only with something to search, and not dropped by X9
         recalling = gates.recall_asked([cid], req.recallable, state.dropped_gates) if req.kind == "reply" else []
-        qs = {key: q, **gates.questions({cid: name}, gated, nouls=True, recall=recalling)}
+        qs = {key: q, **gates.questions({cid: name}, gated, nouls=True, recall=recalling),
+              **sf.questions(req.safety)}   # M14 (safety D4): about the user line, when no answer is stored
         if gated or recalling:   # rag 11.5 (M13 D32: widened): the query embedding starts with Jev call 1
             from horizon.ai.agent import rewrite as rw
             from horizon.ai.agent.deep import start_early_embedding
@@ -212,11 +219,11 @@ class JevTurnPlanner:
                                                       message_id=req.message_id, max_tokens=1), req.latest, mid)
 
         async def fallback() -> Answers:
-            return {key: ChoiceAnswer("none"), **gates.fallbacks(qs)}
+            return {key: ChoiceAnswer("none"), **gates.fallbacks(qs), **sf.fallbacks(qs)}
 
         decider = self.deps.decider()
         ctx = req.session.call_ctx(PURPOSE, character_id=cid, message_id=req.message_id)
-        call = decider.start(state.state, qs, ctx, purpose=PURPOSE, fallback=fallback)
+        call = decider.start({**state.state, **sf.state_extra(req.safety)}, qs, ctx, purpose=PURPOSE, fallback=fallback)
         try:
             res: DecisionResult = await call.by(req.started_at + timedelta(seconds=decider.timeout_for(PURPOSE)))
         except asyncio.CancelledError:
@@ -244,9 +251,11 @@ class JevTurnPlanner:
         gate, rgate = found.get(req.speaker_id), recall.get(req.speaker_id)
         rows = [row, *gates.speaker_rows(req.speaker_id, found, nouls, purpose=PURPOSE, kind=req.kind,
                                          recall_gates=recall)]
+        cue = sf.decide(req.safety, res)   # M14 (safety D4, D19): its rows are shared by the reply
+        rows += sf.rows(cue, purpose=PURPOSE)
         return TurnPlan(seed=self.seed(req), kind=req.kind, emotion=face, rows=rows, calls=calls,
                         state_tokens=state.tokens, dropped_gates=list(state.dropped_gates), gate=gate,
-                        abstain_ok=gates.abstain_allowed(gate, req.kind), nouls=nouls, recall_gate=rgate)
+                        abstain_ok=gates.abstain_allowed(gate, req.kind), nouls=nouls, recall_gate=rgate, safety=cue)
 
     def route(self, req: PlanRequest, plan: TurnPlan) -> Branch:
         """M12 (rag D8): deep when the speaker's own gate is at or above `t_gate`. M13 (D26): or its "needs something

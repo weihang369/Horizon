@@ -43,7 +43,7 @@
 
 ## 0. The base and the storms (design D2)
 
-- [ ] 0.1 Confirm M13's gates on 4f696ad in the gate worktree:
+- [x] 0.1 Confirm M13's gates on 4f696ad in the gate worktree:
   - backend pytest (2009 + the absent-character test fixed in f892374, 10 deselected), ruff, mypy;
   - frontend 550 / http 63;
   - e2e 66 (2 skipped);
@@ -83,7 +83,7 @@
 
 ## 2. Input and care in every plan (design D4, D6, D7, D8)
 
-- [ ] 2.1 New `ai/agent/safety.py`:
+- [x] 2.1 New `ai/agent/safety.py`:
   - the questions for a line;
   - reading the answers (p, or fallback and why);
   - the cue decision from stored flags, with D7's stay rule over the last 3 user lines;
@@ -91,15 +91,15 @@
   - `SafetyCue` on `TurnPlan`.
 
   Verify unit tests for each rule (steer at ≥ `tSteer`, care at ≥ `tCare`, the stay, missing rows as no).
-- [ ] 2.2 Ride the nouls in Jev call 1 (1:1), and write the flags right after the plan returns. Verify:
+- [x] 2.2 Ride the nouls in Jev call 1 (1:1), and write the flags right after the plan returns. Verify:
   - a 1:1 test: the request holds `unsafe_request` and `at_risk`;
   - a regenerate's request holds neither and uses the stored answer;
   - a failed plan stores nothing and the next plan asks again.
-- [ ] 2.3 Ride them in the cast plan for `group_first`, `group_mentioned`, `everyone`, Everyone answer and Next
+- [x] 2.3 Ride them in the cast plan for `group_first`, `group_mentioned`, `everyone`, Everyone answer and Next
   speaker (only without stored flags), and `step_in` (input + care: U1). Add the per-actor in-flight set. Verify:
   - group and Step in tests;
   - two parallel plans ask once.
-- [ ] 2.4 Ride `unsafe_request` alone:
+- [x] 2.4 Ride `unsafe_request` alone:
   - in the `debate_ask` face plan, with the Ask as `quoted_latest` (U3);
   - `unsafe_note` (U4) in the next debate plan, or the opening's face plan, for an unchecked Interject;
   - `unsafe_note` in watch's `scene` plan and the plan made ahead for an unchecked director's note.
@@ -107,9 +107,9 @@
   Keep the moderator line through X9's cap, cutting arguments first. Verify:
   - debate and watch tests;
   - the over-cap debate test keeps the line and the noul.
-- [ ] 2.5 Time the grown requests with the fake and pin D4's question counts per request kind. Record sizes and build
+- [x] 2.5 Time the grown requests with the fake and pin D4's question counts per request kind. Record sizes and build
   times in `m14.md`. Verify: the pinning test.
-- [ ] 2.6 Add the cue sentences (S3 chat and note wordings, S4's care paragraph) to `ai/agent/persona.py` and the
+- [x] 2.6 Add the cue sentences (S3 chat and note wordings, S4's care paragraph) to `ai/agent/persona.py` and the
   agent engine's `cue()`:
   - before every other cue line;
   - care replacing G3's "next" and watch-steer sentences;
@@ -119,15 +119,15 @@
   - the cue fixtures in Python and TS;
   - a byte-identical system message for a steered and an unsteered request;
   - label tests.
-- [ ] 2.7 One voice (D7) in group (every policy, Everyone answer) and Step in: cut to one speaker after the plan, skip
+- [x] 2.7 One voice (D7) in group (every policy, Everyone answer) and Step in: cut to one speaker after the plan, skip
   the follow plan, discard started prefetches, and set `routing.reason`. Verify group tests for each row of D7's table.
-- [ ] 2.8 The care face map after every face path, with the emotion row's action, and no reactions task on a care
+- [x] 2.8 The care face map after every face path, with the emotion row's action, and no reactions task on a care
   reply (D8). Verify:
   - speaker-emotion tests (Jev's pick, kept face, Jev failed);
   - a listener-reactions test (no `reaction` request).
-- [ ] 2.9 Turn the storm tests for the plan paths from 0.2 green: the nouls on Stop and a superseding send, and the
+- [x] 2.9 Turn the storm tests for the plan paths from 0.2 green: the nouls on Stop and a superseding send, and the
   safety write on a cancelled turn, a fork and a regenerate.
-- [ ] 2.10 Update `docs/ai/01` A4 (the questions and the fallback row), `docs/ai/06` E3 and E5, and `docs/ai/07` G2's
+- [x] 2.10 Update `docs/ai/01` A4 (the questions and the fallback row), `docs/ai/06` E3 and E5, and `docs/ai/07` G2's
   one-voice note. Verify: the docs link check.
 - [ ] 2.11 Phase 2 gates green. Checkpoint commit.
 

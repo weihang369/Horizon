@@ -33,6 +33,7 @@ from horizon.ai.agent.persona import (
     first_name,
     mood_line,
     persona_input,
+    safety_cue_lines,
     turn_cue_sentence,
 )
 from horizon.ai.contexts import MessageView, TurnContext
@@ -150,7 +151,8 @@ class AgentTurnEngine(NaiveTurnEngine):
         base = self._base_version(ctx)
         block = self.block(ctx) if ctx is not None else None
         label = getattr(block, "label", None)
-        return f"{base}+{label}-1" if label else base
+        safety = ctx.plan.safety if ctx is not None and ctx.plan is not None else None
+        return (f"{base}+{label}-1" if label else base) + (safety.label if safety is not None else "")  # M14 (D6)
 
     def block(self, ctx: TurnContext) -> Any:
         """M12 (rag D16): the documents block from the frozen plan, never a retriever (ai-ports)."""
@@ -176,7 +178,17 @@ class AgentTurnEngine(NaiveTurnEngine):
         """G3's sentence for this turn (a follow-plan second reply, a group Next speaker, a steered scene), if any."""
         plan = ctx.plan
         you = str((ctx.session.world.you or {}).get("displayName") or "") or None
+        if plan is not None and plan.safety is not None and plan.safety.care and plan.cue in ("next", "steer"):
+            return None   # M14 (doc 11 S4): the care paragraph replaces "move the talk on" and the watch steer
         return turn_cue_sentence(plan.cue, plan.answered, you) if plan is not None else None
+
+    @staticmethod
+    def safety_lines(ctx: TurnContext) -> list[str]:
+        """M14 (doc 11 S3, S4; safety D6): the care paragraph and the steer sentence, before every other cue line."""
+        cue = ctx.plan.safety if ctx.plan is not None else None
+        if cue is None:
+            return []
+        return safety_cue_lines(steer=cue.steer, care=cue.care, wording=cue.wording)
 
     @staticmethod
     def debate_line(ctx: TurnContext) -> str | None:
@@ -199,10 +211,11 @@ class AgentTurnEngine(NaiveTurnEngine):
             if ctx.line.last_time:   # M13 (memory D25; doc 09 M10): the newest memories from the last 1:1
                 cue = "\n".join([f"{cue} {LAST_TIME_CUE}", "From last time:", *(f"- {x}" for x in ctx.line.last_time)])
             return cue
+        safety = self.safety_lines(ctx)
         debate = self.debate_line(ctx)
         if debate is not None:
-            return debate
-        lines = [x for x in (turn_cue(ctx), self.sentence(ctx)) if x]
+            return "\n".join([*safety, debate])
+        lines = [*safety, *(x for x in (turn_cue(ctx), self.sentence(ctx)) if x)]
         return "\n".join(lines) if lines else None
 
     def mood(self, ctx: TurnContext) -> str | None:

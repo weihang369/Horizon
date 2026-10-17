@@ -242,6 +242,51 @@ class PlannedFace(Frozen):
 CueKind = Literal["second", "next", "steer"]
 KnowledgeOutcome = Literal["found", "partly", "not_found", "fallback"]
 
+# ── M14 (safety design D4–D7): the safety questions about the user-written line a plan answers ──
+SafetyWording = Literal["chat", "debate", "scene"]   # S3: the chat sentence, or the note sentence naming what to keep
+SafetyOutcome = Literal["jev", "stored", "late", "fallback", "pending"]   # pending: another plan is asking it now
+
+
+class SafetyLine(Frozen):
+    """The user-written line a plan may ask about (D4), as the runtime read it: its stored answers (D5), whether this
+    plan asks ("unsafe request?" / "unsafe note?", and "at risk?" where care applies), and the care stay (D7)."""
+
+    message_id: str
+    note: bool = False                              # a debate Interject or a watch director's note: `unsafe_note` (U4)
+    text: str = ""                                  # the note's text (`quoted_note`); a chat line is `quoted_latest`
+    care: bool = True                               # "at risk?" applies: 1:1, group and Step in
+    stored: dict[str, Any] | None = None            # Jev's stored answers (StoredSafety JSON): reused, never asked
+    ask: bool = True                                # False: another plan is asking about this line now (in flight)
+    stay: bool = False                              # one of the 2 user lines before it had a stored care yes
+    wording: SafetyWording = "chat"
+
+
+class SafetyCue(Frozen):
+    """The safety decision a reply got (D6), frozen in its plan so a turn replays with no Jev call (A9)."""
+
+    message_id: str
+    wording: SafetyWording = "chat"
+    question: str = "unsafe_request"                # or `unsafe_note`
+    steer: bool = False
+    care: bool = False                              # the care cue is on: this line's yes, or the stay
+    stay: bool = False                              # on by the stay alone
+    p_input: float | None = None
+    p_care: float | None = None
+    input_outcome: SafetyOutcome = "jev"
+    care_outcome: SafetyOutcome | None = None       # None: "at risk?" doesn't apply to this line
+    asked: bool = False                             # this plan's request asked (the runtime stores Jev's answers)
+    versions: dict[str, int] = {}
+
+    @property
+    def on(self) -> bool:
+        """One voice, no follow plan, no reactions on care (D7, D8): any cue at all."""
+        return self.steer or self.care
+
+    @property
+    def label(self) -> str:
+        """The prompt label's suffix (D6): `+care-1`, `+steer-1` or both."""
+        return ("+care-1" if self.care else "") + ("+steer-1" if self.steer else "")
+
 
 class DeepRequest(Frozen):
     """One speaker's deep work (M12: doc 10 K4–K9; rag design D10, D15), built by the planner or the runtime once the
@@ -358,6 +403,7 @@ class TurnPlan(Frozen):
     recall_gate: GateAnswer | None = None
     recall: list[RecallHit] = []
     recall_outcome: RecallOutcome | None = None
+    safety: SafetyCue | None = None                 # M14 (safety D6): the safety decision for the line answered
 
     @property
     def deep(self) -> bool:
@@ -396,6 +442,7 @@ class PlanRequest(Frozen):
     upto_seq: int = 0                               # M13 (D34): the session's indexed lines up to this seq
     block_ids: list[str] = []                       # M13 (D34): the speaker's memory list (never a recall candidate)
     has_overflow: bool = False                      # M13 (D34): the speaker has current memories past its list
+    safety: SafetyLine | None = None                # M14 (safety D4): the user line the safety questions are about
 
 
 # ── The cast plan and the follow plan (M10: doc 07 G1–G8; group-watch design D3, D8, D22) ──
@@ -461,6 +508,7 @@ class CastRequest(Frozen):
     documents: dict[str, list[str]] = {}            # M12 (rag D6): searchable sources' titles, by character
     message_id: str | None = None                   # M12: the user message being answered (the nouls are about it)
     recallable: list[str] = []                      # M13 (memory D26): candidates with something earlier to search
+    safety: SafetyLine | None = None                # M14 (safety D4): the user line the safety questions are about
 
 
 class CastPlan(Frozen):
@@ -480,6 +528,7 @@ class CastPlan(Frozen):
     gates: dict[str, GateAnswer] = {}               # M12 (rag D8): "needs documents?" per candidate asked
     nouls: MessageNouls | None = None               # M12: "standalone?" / "English?" when a group message is answered
     recall_gates: dict[str, GateAnswer] = {}        # M13 (memory D26): "needs something from earlier?" per candidate
+    safety: SafetyCue | None = None                 # M14 (safety D4): shared by every reply the plan starts
 
     @property
     def steer(self) -> bool:
@@ -500,12 +549,15 @@ class CastPlan(Frozen):
         gate, rgate = self.gates.get(cid), self.recall_gates.get(cid)
         rows += g.speaker_rows(cid, self.gates, self.nouls, purpose="turn_plan", kind=self.kind,
                                everyone=self.kind == "everyone", recall_gates=self.recall_gates)
+        from horizon.ai.agent import safety as sf
+
+        rows += sf.rows(self.safety, purpose="turn_plan")
         return TurnPlan(seed=self.seed, kind="reply", branch=g.branch(gate, rgate),
                         emotion=self.faces.get(cid), rows=rows, calls=list(self.calls),
                         graph_path=list(self.graph_path), state_tokens=self.state_tokens,
                         cue="steer" if self.steer and cue is None else cue, answered=answered, gate=gate,
                         abstain_ok=g.abstain_allowed(gate, self.kind), nouls=self.nouls, source_kind=self.kind,
-                        recall_gate=rgate)
+                        recall_gate=rgate, safety=self.safety)
 
 
 class FollowRequest(Frozen):
@@ -597,6 +649,7 @@ class DebateRequest(Frozen):
     started_at: datetime                            # the `turn.end` it starts at
     documents: dict[str, list[str]] = {}            # M12 (rag D6): searchable sources' titles, by character
     recallable: list[str] = []                      # M13 (memory D26): candidates with something earlier to search
+    safety: SafetyLine | None = None                # M14 (safety D4, U4): an Interject newer than the last argument
 
 
 DebateOutcome = Literal["jev", "below_floor", "late", "fallback", "single", "cancelled"]
@@ -618,6 +671,7 @@ class DebatePlan(Frozen):
     state_tokens: int = 0
     gates: dict[str, GateAnswer] = {}               # M12 (rag D8): used if back by the turn's start, else fallback
     recall_gates: dict[str, GateAnswer] = {}        # M13 (memory D26): the same rule
+    safety: SafetyCue | None = None                 # M14 (safety D4, U4): "unsafe note?" about an Interject
 
     def for_speaker(self, cid: str) -> TurnPlan:
         from horizon.ai.agent import gates as g
@@ -628,10 +682,13 @@ class DebatePlan(Frozen):
         gate, rgate = self.gates.get(cid), self.recall_gates.get(cid)
         rows += g.speaker_rows(cid, self.gates, None, purpose="debate_plan", kind="debate",
                                recall_gates=self.recall_gates)
+        from horizon.ai.agent import safety as sf
+
+        rows += sf.rows(self.safety, purpose="debate_plan")
         return TurnPlan(seed=self.seed, kind="reply", branch=g.branch(gate, rgate),
                         emotion=self.faces.get(cid), rows=rows, calls=list(self.calls),
                         graph_path=list(self.graph_path), state_tokens=self.state_tokens, gate=gate,
-                        source_kind="debate", recall_gate=rgate)
+                        source_kind="debate", recall_gate=rgate, safety=self.safety)
 
 
 class ListenerView(Frozen):

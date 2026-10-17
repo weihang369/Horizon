@@ -26,6 +26,13 @@ AMARA, MEI, VICTOR = "chr_seedAmara", "chr_seedMei", "chr_seedVictor"
 TRIO = [AMARA, MEI, VICTOR]
 PREMISE = "A storm traps everyone at the inn."
 
+SAFETY_KEYS = frozenset({"unsafe_request", "unsafe_note", "at_risk"})   # M14: the safety questions ride every plan
+
+
+def unsafe_free(keys: Any) -> list[str]:
+    """A request's question keys without M14's safety questions (their own tests pin those)."""
+    return [k for k in keys if k not in SAFETY_KEYS]
+
 
 def jev(api: Api, fn: Callable[[dict[str, Any]], dict[str, Any]]) -> None:
     """Patch the fake's decisions: `fn(body)` returns answers to put in place of the fake's defaults."""
@@ -274,7 +281,9 @@ async def test_a_directors_note_in_the_gap_redoes_the_plan(api: Api) -> None:
     release.set()
     await api.drive(2000)
     bodies = plan_bodies(api)
-    assert [sorted(b["questions"]) for b in bodies[1:3]] == [sorted(bodies[1]["questions"])] * 2   # ahead, then redone
+    ahead_redone = [sorted(unsafe_free(b["questions"])) for b in bodies[1:3]]
+    assert ahead_redone == [sorted(unsafe_free(bodies[1]["questions"]))] * 2   # ahead, then redone
+    assert "unsafe_note" in bodies[2]["questions"]   # M14 (U4): the redone plan checks the note
     # the stored plan was never used: it ran out at the due time (`late`), the moment the turn found it stale
     finish = [r["finish_reason"] for r in await ledger(api) if r["purpose"] == "turn_plan"]
     assert finish.count("late") == 1 and "cancelled" not in finish

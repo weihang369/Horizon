@@ -323,6 +323,7 @@ async def plan_slot(actor: SessionActor, idx: int, side: str | None, target: tup
                     cid = stored.member.member
                 dp = await stored.call.faces(deadline)
                 debate_plan.finish_with(actor, stored)
+                await settle(actor, None, dp.safety)   # M14 (safety D5): Jev's answer about the Interject is stored
                 return cid, dp.for_speaker(cid), member_routing(stored.member, cid), stored
         return cid, await plan_face(actor, cid, target), None, None
     if stored.member is None:   # the phase's first slot, planned at the last phase's end: the member is fixed now
@@ -334,6 +335,7 @@ async def plan_slot(actor: SessionActor, idx: int, side: str | None, target: tup
     if fresh:
         dp = await stored.call.faces(actor.rt.clock.now())
         debate_plan.finish_with(actor, stored)
+        await settle(actor, None, dp.safety)   # M14 (safety D5): Jev's answer about the Interject is stored
         return cid, dp.for_speaker(cid), routing, stored
     debate_plan.drop(actor)   # the stored faces are stale (V2): the member stays, the face is asked again
     again = await plan_face(actor, cid, target)
@@ -342,6 +344,12 @@ async def plan_slot(actor: SessionActor, idx: int, side: str | None, target: tup
         plan = again.model_copy(update={"rows": [*member.shared_rows, *again.rows],
                                         "calls": [*member.calls, *again.calls]})
     return cid, plan, routing, None
+
+
+async def settle(actor: SessionActor, line: Any, cue: Any) -> None:
+    from horizon.sessions import safety as ss
+
+    await ss.settle(actor, line, cue)
 
 
 def member_routing(member: Any, cid: str) -> Wire | None:

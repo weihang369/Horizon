@@ -65,7 +65,9 @@ async def answer_then_follow(actor: SessionActor, first: TurnSpec, message: str,
     that supersedes the job (G5) ends the wait at once and cancels the follow plan (its ledger row: `cancelled`)."""
     rt = actor.rt
     epoch = first.epoch
-    first.follow = follow_hook(actor, message, first.plan.nouls if first.plan is not None else None)
+    cue = first.plan.safety if first.plan is not None else None
+    if cue is None or not cue.on:   # M14 (safety D7): a steered or care line gets one voice, so no follow plan
+        first.follow = follow_hook(actor, message, first.plan.nouls if first.plan is not None else None)
     out = await runner(actor).run(actor, first)
     turn_gap = rt.runtime_cfg.timing.turn_gap_ms / 1000
     if out.status not in ("complete", "interrupted", "error"):
@@ -88,6 +90,8 @@ async def answer_then_follow(actor: SessionActor, first: TurnSpec, message: str,
     name = character_view(first_name).first_name if first_name is not None else first.speaker
     second = second_spec(plan, plan.second, name)
     second.epoch = epoch
+    if cue is not None and second.plan is not None:   # M14 (S3, S4): every reply to the line carries its checks
+        second.plan = second.plan.model_copy(update={"safety": cue})
     return await speak_then(actor, second)
 
 

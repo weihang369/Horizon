@@ -258,6 +258,10 @@ sad or angry face while the topic continues looks right.
   its TS twin, so "View as prompt" shows it.
 - **Measured, not assumed:** E8's on/off run decides whether the line stays.
 
+*M14 (OpenSpec `safety` D8; doc 11 S4): while a reply's care cue is on, code maps the face from every path (Jev's
+pick, the kept face, the Jev-failed path) into neutral, sad or thinking; any other face becomes neutral, with source
+`default`, and the emotion row's action reads "care: face kept calm".*
+
 **Rejected:**
 - **a bare label** ("Mood: angry"): shortest, but it invites overacting;
 - **no mood line from the start:** the face and the words would agree only by luck; E8 measures whether the line
@@ -334,6 +338,9 @@ sad or angry face while the topic continues looks right.
 - **reactions to the user's own message:** the speakers already react through E1; listeners react to the reply.
   Unchanged from today;
 - **DeepSeek writing reactions:** slower, costlier, and no probabilities.
+
+*M14 (OpenSpec `safety` D8; doc 11 S4): a reply whose care cue is on starts no reactions task, so no listener smiles
+or gasps at someone's crisis. Debate and watch never have care, except a watch Step in line (the user's U1).*
 
 ### E6. A reaction never changes the face of the character who is speaking
 

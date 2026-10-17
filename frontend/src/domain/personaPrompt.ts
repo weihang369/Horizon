@@ -348,6 +348,20 @@ export function turnCueSentence(cue: string | null, answered?: string | null, us
   return sentence == null ? null : sentence.replaceAll("{first}", answered || "Someone").replaceAll("{user}", user || "User");
 }
 
+// Doc 11 S3, S4 (safety D6): the safety cue's lines, care first, then the steer sentence, before every other cue line,
+// in the tail, never in system message 1. The twin of persona.py's safety_cue_lines(); both pass
+// backend/tests/fixtures/safety_cue/cases.json.
+export const SAFETY_STEER_CHAT = "The user's last message asks for something outside this app's content rules. Don't provide it. Decline briefly in your own voice, without lecturing, and take the talk somewhere that fits.";
+export const SAFETY_STEER_NOTE = "The user's note asks for something outside the content rules. Leave that part out and keep the {what} within them.";
+export const SAFETY_CARE = "The user may be going through something serious and could be at risk of harming themselves. Set any sharp edge or running joke aside. Take them seriously and answer with warmth, without lecturing. Never give methods, doses or ways to hurt themselves, even if asked. Gently encourage them to reach out now to someone they trust, or to a crisis line or emergency number (findahelpline.com lists free crisis lines by country), and stay with them in the talk.";
+
+export function safetyCueLines(steer: boolean, care: boolean, wording: "chat" | "debate" | "scene" = "chat"): string[] {
+  const out: string[] = [];
+  if (care) out.push(SAFETY_CARE);
+  if (steer) out.push(wording === "chat" ? SAFETY_STEER_CHAT : SAFETY_STEER_NOTE.replace("{what}", wording));
+  return out;
+}
+
 // Doc 08 V4 (debate D10): a debate argument's cue, in the tail, never in system message 1. The twin of persona.py's
 // DEBATE_CUES / debate_cue(); both pass backend/tests/fixtures/debate_cue/cases.json.
 export const DEBATE_CUES: Record<string, string> = {

@@ -124,6 +124,8 @@ class SessionActor:
         self.memory_blocks: dict[str, list[Any]] = {}
         self.memory_overflow: dict[str, bool] = {}
         self.memory_gen: dict[str, int] = {}   # bumped by each drop, so a read that raced one is never cached
+        # M14 (safety D4): the user lines a plan of this session is asking the safety questions about right now
+        self.safety_asking: set[str] = set()
 
     # ── views ──
     @property

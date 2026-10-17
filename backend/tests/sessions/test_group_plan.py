@@ -16,6 +16,13 @@ from tests.sessions.kit import API, assert_reduces, chars, command, ledger, mess
 from tests.sessions.test_turn_plan import agent
 
 AMARA, MEI, VICTOR = "chr_seedAmara", "chr_seedMei", "chr_seedVictor"
+
+SAFETY_KEYS = frozenset({"unsafe_request", "unsafe_note", "at_risk"})   # M14: the safety questions ride every plan
+
+
+def unsafe_free(keys: Any) -> list[str]:
+    """A request's question keys without M14's safety questions (their own tests pin those)."""
+    return [k for k in keys if k not in SAFETY_KEYS]
 TRIO = [AMARA, MEI, VICTOR]
 
 
@@ -97,7 +104,7 @@ async def test_the_plan_call_is_listed_and_unsure_takes_the_least_recent_of_the_
     unsure_who(api)
     replies = await send(api, sid, "Anyone around?")
     body = plan_requests(api)[0]                                # call 1 (the follow plan's request comes after it)
-    assert set(body["questions"]) == {"who_first", *(f"emotion_reply:{c}" for c in TRIO), *gate_keys(*TRIO)}
+    assert set(unsafe_free(body["questions"])) == {"who_first", *(f"emotion_reply:{c}" for c in TRIO), *gate_keys(*TRIO)}
     assert "none" not in body["questions"]["who_first"]["criteria"]
     assert len(replies) == 1
     tr = replies[0]["trace"]
@@ -115,7 +122,7 @@ async def test_one_eligible_character_is_not_asked_who_but_its_face_is(api: Api)
     replies = await send(api, sid, "Just us two, then.")
     assert [m["author"]["characterId"] for m in replies] == [AMARA]
     (body,) = plan_requests(api)
-    assert list(body["questions"]) == [f"emotion_reply:{AMARA}", *gate_keys(AMARA)]
+    assert unsafe_free(body["questions"]) == [f"emotion_reply:{AMARA}", *gate_keys(AMARA)]
     assert "question" not in (replies[0]["trace"].get("routing") or {})
 
 
@@ -123,7 +130,7 @@ async def test_one_mention_asks_only_its_face(api: Api) -> None:
     sid = await agent(api, "group", TRIO)
     replies = await send(api, sid, "Victor, thoughts?", [VICTOR])
     assert replies[0]["author"]["characterId"] == VICTOR and replies[0]["forcedSpeaker"] is True
-    assert list(plan_requests(api)[0]["questions"]) == [f"emotion_reply:{VICTOR}", *gate_keys(VICTOR)]
+    assert unsafe_free(plan_requests(api)[0]["questions"]) == [f"emotion_reply:{VICTOR}", *gate_keys(VICTOR)]
     assert replies[0]["trace"]["routing"]["forcedBy"] == "mention"
 
 
@@ -132,7 +139,7 @@ async def test_two_mentions_answer_in_order_from_one_request(api: Api) -> None:
     replies = await send(api, sid, "Mei and Victor, settle this.", [MEI, VICTOR], ms=40000)
     assert [m["author"]["characterId"] for m in replies] == [MEI, VICTOR]
     (body,) = plan_requests(api)
-    assert set(body["questions"]) == {f"emotion_reply:{MEI}", f"emotion_reply:{VICTOR}", *gate_keys(MEI, VICTOR)}
+    assert set(unsafe_free(body["questions"])) == {f"emotion_reply:{MEI}", f"emotion_reply:{VICTOR}", *gate_keys(MEI, VICTOR)}
 
 
 async def test_policy_everyone_follows_jevs_order(api: Api) -> None:

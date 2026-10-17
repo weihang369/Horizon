@@ -194,6 +194,11 @@ took p50 443 ms / p90 495 ms (our state assembly: p90 0.5 ms; no slow spells). B
 for the optional `turn.next`. In the group free runs 6 of 36 follow plans were still late at 483 ms (17 %). Measured
 again after M14 (D9); [m10.md](checks/m10.md) 10.7.*
 
+*One voice (M14, OpenSpec `safety` D7; doc 11 S3, S4): when a message's steer or care cue is on, code cuts the reply
+list to one speaker after the plan (the first mentioned, else Jev's first pick; Everyone and Everyone answer: the
+first in the plan's order), starts no follow plan and no prefetch, and writes `routing.reason` "one voice: the
+message was steered" (or "answered with care"). Step in follows the same rule.*
+
 **Rejected:**
 - **choosing the second replier up front (today's way):** never late, but blind to the first reply (finding 2); it
   is not a fallback for a slow Jev either (the user's rule above);

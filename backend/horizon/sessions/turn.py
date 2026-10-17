@@ -213,6 +213,10 @@ class TurnRunner:
                 plan = merged
             if plan is not None and plan.rewrite and plan.rewrite_for:   # M12 (D19): its own small write
                 await self._store_rewrite(plan.rewrite_for, spec.speaker, plan.rewrite)
+            if plan is not None:   # M14 (safety D8): a care reply's face is calm on every path
+                from horizon.ai.agent.safety import calm
+
+                plan = calm(plan)
             if spec.line.verbatim:   # M8 (docs/ai/04 P9, persona-context D19): no retrieval, no model call
                 ctx = TurnContext(session=sctx, speaker=await speaker_view(rt, actor, row), message_id=mid, variant_id=vid,
                                   prompt=spec.prompt, line=spec.line, turn_index=actor.mode.turn, max_tokens=1)
@@ -322,11 +326,27 @@ class TurnRunner:
 
             recall = {"recallable": await recallable(rt, actor, [spec.speaker]),
                       **await recall_scope(rt, actor, spec.speaker)}
+        # M14 (safety D4, D5, D7): the user line this reply answers, its stored answers and the care stay; this plan
+        # asks about it when nothing is stored, and Jev's answers are written right after the plan returns
+        from horizon.sessions import safety as ss
+
+        line = None
+        if kind == "reply" and getattr(planner, "asks_safety", False):
+            from horizon.ai.agent.planner import answered_message
+
+            answered = answered_message(sctx)[0]
+            line = await ss.line(actor, actor.state["messages"].get(answered) if answered else None, care=True)
         req = PlanRequest(session=sctx, speaker_id=spec.speaker, cast=[await speaker_view(rt, actor, row)], message_id=mid,
                           kind=kind, latest=spec.prompt.removesuffix(REGENERATE_SUFFIX), turn_index=actor.mode.turn,
                           base_face=base, manual=manual, started_at=started, documents=docs, stored_rewrite=stored,
-                          **recall)
-        return sctx, await planner.plan(req)
+                          safety=line, **recall)
+        try:
+            plan = await planner.plan(req)
+        except BaseException:
+            ss.release(actor, line)   # Stop or a newer send during the plan: nothing is stored for the line
+            raise
+        await ss.settle(actor, line, plan.safety if plan is not None else None)
+        return sctx, plan
 
     async def _stream(self, actor: SessionActor, spec: TurnSpec, info: TurnInfo, ctx: TurnContext, t0: float,
                       started_iso: str, *, prefetch: Prefetch | None = None) -> TurnOutcome:
@@ -586,7 +606,9 @@ class TurnRunner:
                                          "status": status,
                                          "routingFallback": (spec.routing or {}).get("reason") == "fallback",
                                          "deciderFallback": any(bool(c.get("fallback")) for c in spec.calls)})
-        if status == "complete" and spec.reactions and ctx is not None and actor.session["emotionMode"] != "user":
+        care = ctx is not None and ctx.plan is not None and ctx.plan.safety is not None and ctx.plan.safety.care
+        if status == "complete" and spec.reactions and ctx is not None and actor.session["emotionMode"] != "user" \
+                and not care:   # M14 (safety D8): nobody reacts to a care reply
             start_reactions(rt, actor, info, ctx, key_set=self.key_set())   # M9 D18-D20: predicted inside the task
         if status == "complete" and not scrub and ctx is not None and not verbatim:   # M9 D24 (doc 13 W2)
             start_face_check(rt, actor, info, ctx, key_set=self.key_set())

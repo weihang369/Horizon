@@ -248,6 +248,15 @@ probabilities for Insight.
   (each member's latest to 30 words, then the last opposing one to 120 tokens) before X9 drops any gate. An `earlier`
   question is 227 tokens as sent, not ≈ 90; the grown requests stay far under the size check
   ([m13.md](checks/m13.md)).*
+  *Built in M14 (OpenSpec `safety` D4–D7, U1, U3, U4): "input safe?" is `unsafe_request` ("unsafe request?") and
+  "at risk?" is `at_risk`, asked with no `about` once about a user-written line in every plan request that sees it
+  until Jev's answer is stored (`message_ai_meta.safety`): Jev call 1 in 1:1; the cast plan for a group message,
+  Everyone answer and Step in (both questions); a debate Ask's own face plan (`unsafe_request` only). A debate
+  Interject and a watch director's note are asked `unsafe_note` ("unsafe note?", the note as `quoted_note`, sharing
+  `safety.tSteer`) in the next debate plan, opening face plan, scene plan or plan made ahead, because `quoted_latest`
+  there is the last character line. A stored answer is reused with no question (a regenerate, a later plan); a
+  fallback stores nothing, so the next plan asks again. The two questions add ≈ 513 tokens to a request (D4 estimated
+  ≈ 330; one note question ≈ 349), far under the size check ([m14.md](checks/m14.md)).*
 - **Size check.** The `Decider` checks the whole request (state + all questions) against the real limit of the
   OpenRouter endpoint, as well as state + the longest question. Check 4 finds that limit.
 - **Confidence floors** apply to every choice and score answer. A noul has no confidence, so its probability is used
@@ -262,7 +271,7 @@ probabilities for Insight.
 | which debate member | the next member in today's fixed order | the same |
 | needs documents / earlier lines | **no: a quick reply** (no retrieval without Jev to check it; long-term memory is in the system prompt anyway, doc 09 M8) | treat as yes; Jev call 2 then decides. A noul has no confidence, so "unsure" is built into its threshold `t_gate`, set low enough for recall (02 B5) |
 | emotion | **keep the previous face** (amended by doc 04 P7: the `agent` prompt has no emotion tag); a kept surprised or embarrassed face becomes neutral (doc 06 E3) — built in M9 (`turn-plan-emotion` D13) | the same; DeepSeek's mood line follows the face shown (doc 06 E4) |
-| input safe, at risk (doc 11 S3, S4) | no cue, with a flag in Insight | a noul has no confidence: `safety.tSteer` and `safety.tCare` decide |
+| input safe, at risk (doc 11 S3, S4) | no cue, with a flag in Insight; nothing stored, so the next plan asks again (M14) | a noul has no confidence: `safety.tSteer` and `safety.tCare` decide |
 | talk finished | no (the turn caps still bound watch mode) | no |
 
 - Every fallback is marked in the trace and shown in Insight.

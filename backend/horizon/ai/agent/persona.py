@@ -60,6 +60,17 @@ DEBATE_CUES_PANEL = {
     "closing": ("Give your closing statement: why your position is the stronger one. Answer what is still open, and add "
                 "no new arguments."),
 }
+# Doc 11 S3, S4 (safety D6): the safety cue's sentences, English always, before every other cue sentence; care first.
+# The TS twin is `safetyCueLines()` in domain/personaPrompt.ts; both read backend/tests/fixtures/safety_cue/cases.json.
+SAFETY_STEER_CHAT = ("The user's last message asks for something outside this app's content rules. Don't provide it. "
+                     "Decline briefly in your own voice, without lecturing, and take the talk somewhere that fits.")
+SAFETY_STEER_NOTE = ("The user's note asks for something outside the content rules. Leave that part out and keep the "
+                     "{what} within them.")
+SAFETY_CARE = ("The user may be going through something serious and could be at risk of harming themselves. Set any "
+               "sharp edge or running joke aside. Take them seriously and answer with warmth, without lecturing. Never "
+               "give methods, doses or ways to hurt themselves, even if asked. Gently encourage them to reach out now "
+               "to someone they trust, or to a crisis line or emergency number (findahelpline.com lists free crisis "
+               "lines by country), and stay with them in the talk.")
 DEBATE_EXTENDED = "The round was extended: make a point not yet made."
 DEBATE_TEAMMATES = "{teammates} {verb} already spoken for your side this round: add to it, don't repeat it."
 DEBATE_MODERATOR = "Take the moderator's last note into account."
@@ -470,6 +481,17 @@ def turn_cue_sentence(cue: str | None, answered: str | None = None, user: str | 
     if sentence is None:
         return None
     return sentence.format(first=answered or "Someone", user=user or "User")
+
+
+def safety_cue_lines(*, steer: bool, care: bool, wording: str = "chat") -> list[str]:
+    """S3, S4 (D6): the care paragraph, then the steer sentence (the chat wording, or the note wording naming the
+    debate or the scene); none when neither cue is on."""
+    out: list[str] = []
+    if care:
+        out.append(SAFETY_CARE)
+    if steer:
+        out.append(SAFETY_STEER_CHAT if wording == "chat" else SAFETY_STEER_NOTE.format(what=wording))
+    return out
 
 
 def join_names(names: list[str]) -> str:

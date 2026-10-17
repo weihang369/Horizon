@@ -18,6 +18,13 @@ from tests.sessions.kit import API, chars, command, create, events, messages
 
 AMARA, MEI, VICTOR = "chr_seedAmara", "chr_seedMei", "chr_seedVictor"
 HANA, RIN, TAKESHI = "chr_seedHana", "chr_seedRin", "chr_seedTakeshi"
+
+SAFETY_KEYS = frozenset({"unsafe_request", "unsafe_note", "at_risk"})   # M14: the safety questions ride every plan
+
+
+def unsafe_free(keys: Any) -> list[str]:
+    """A request's question keys without M14's safety questions (their own tests pin those)."""
+    return [k for k in keys if k not in SAFETY_KEYS]
 MERIDIAN, SUNNY = "wld_seedMeridian", "wld_seedSunnyHollow"
 
 
@@ -85,7 +92,7 @@ async def test_a_one_on_one_request_holds_the_three_gate_questions(api: Api) -> 
     sid = await agent(api, "one_on_one", [AMARA])
     await send(api, sid, "What does the review say about rest days?")
     [body] = [b for b in decisions(api) if f"emotion_reply:{AMARA}" in b["questions"]]
-    assert list(body["questions"]) == [f"emotion_reply:{AMARA}", f"docs:{AMARA}", "standalone", "english"]
+    assert unsafe_free(body["questions"]) == [f"emotion_reply:{AMARA}", f"docs:{AMARA}", "standalone", "english"]
     assert body["state"]["quoted_documents"] == {"Amara Okafor": ["ED triage guidelines",
                                                                   "Meridian Shift Fatigue Review 2025"]}
     instructions = body["questions"][f"docs:{AMARA}"]["instructions"]
@@ -132,7 +139,7 @@ async def test_a_character_without_sources_gets_no_gate(api: Api) -> None:
     sid = await agent(api, "one_on_one", [RIN], world=SUNNY)
     [reply] = await send(api, sid, "What does the guide say?")
     [body] = [b for b in decisions(api) if f"emotion_reply:{RIN}" in b["questions"]]
-    assert list(body["questions"]) == [f"emotion_reply:{RIN}"] and "quoted_documents" not in body["state"]
+    assert unsafe_free(body["questions"]) == [f"emotion_reply:{RIN}"] and "quoted_documents" not in body["state"]
     assert not rows(reply, "docs") and not rows(reply, "standalone")
 
 

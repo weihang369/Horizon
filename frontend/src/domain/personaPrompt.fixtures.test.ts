@@ -3,7 +3,7 @@
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { compilePersona, cutTo, debateCue, moodLine, PROMPT_VERSION, turnCueSentence, type PersonaInput, type PersonaPrompt } from "./personaPrompt";
+import { compilePersona, cutTo, debateCue, moodLine, PROMPT_VERSION, safetyCueLines, turnCueSentence, type PersonaInput, type PersonaPrompt } from "./personaPrompt";
 import { countTokens } from "./tokens";
 
 interface Fixture { name: string; doc: string; input: PersonaInput; expected: PersonaPrompt }
@@ -71,6 +71,18 @@ describe("debateCue (shared with persona.py's debate_cue)", () => {
   for (const c of DEBATE.cases) {
     it(`${c.phase}${c.panel ? " panel" : ""}${c.extended ? " extended" : ""} ${c.teammates.join("+")}${c.afterInterject ? " interject" : ""}`, () => {
       expect(debateCue(c.phase, { panel: c.panel, extended: c.extended, teammates: c.teammates, afterInterject: c.afterInterject })).toBe(c.cue);
+    });
+  }
+});
+
+// M14 (safety D6): doc 11 S3, S4's cue lines, shared with persona.py's safety_cue_lines().
+interface SafetyCueCase { steer: boolean; care: boolean; wording: "chat" | "debate" | "scene"; lines: string[] }
+const SAFETY = JSON.parse(readFileSync(path.resolve(__dirname, "../../../backend/tests/fixtures/safety_cue/cases.json"), "utf8")) as { cases: SafetyCueCase[] };
+
+describe("safetyCueLines (shared with persona.py's safety_cue_lines)", () => {
+  for (const c of SAFETY.cases) {
+    it(`steer ${c.steer} care ${c.care} ${c.wording}`, () => {
+      expect(safetyCueLines(c.steer, c.care, c.wording)).toEqual(c.lines);
     });
   }
 });

@@ -247,6 +247,11 @@ async def _planned_step_in(actor: SessionActor, text: str, awake: list[str], epo
             routing["candidates"] = who.candidates
         if who.source in ("fallback", "late"):
             routing["reason"] = "fallback"
+    from horizon.sessions.safety import one_voice
+
+    reason = one_voice(plan)   # M14 (safety D7, U1): a steered or care Step in line gets one voice
+    if reason is not None:
+        routing = {**(routing or {"selected": plan.order[0]}), "reason": reason}
     first = TurnSpec(speaker=plan.order[0], prompt=text, routing=routing, plan=plan.for_speaker(plan.order[0]),
                      epoch=epoch)
     await answer_then_follow(actor, first, text, lambda fp, cid, name: second_reply(fp, cid, name, prompt=text))

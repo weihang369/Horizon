@@ -116,7 +116,7 @@ the drafter rule would re-version `memory-2` and the drafter and re-pay their su
 
 | Path | Cancelled by | Must hold |
 |---|---|---|
-| the safety nouls inside a plan request | Stop, a superseding send | no flags written for a superseded line's plan; the request settles and is billed (D8 of turn-plan) |
+| the safety nouls inside a plan request | Stop, a superseding send | Stop cancels the plan: no flags written, the line released, the request settles and is billed (D8 of turn-plan). A superseding send doesn't cut a running plan (G5): its Jev answer is about its own line and is stored (found during apply) |
 | the output check in flight | Stop, End, cap pause, leave, delete, Reset demo | Stop and End hand the call to the after-the-fact task (D10); delete and Reset cancel it; the writer stays free |
 | a finished prefetch held for its check | Stop, leave, cap pause | the prefetch is discarded; its drain stands |
 | a host line or verdict prose held for its check | Extend, Skip, `clear()` | the fixed line or the prose fallback; nothing shown twice |

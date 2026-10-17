@@ -77,8 +77,22 @@ async def cast_request(actor: SessionActor, kind: CastKind, candidates: Sequence
 
 
 async def plan_cast(actor: SessionActor, req: CastRequest) -> CastPlan | None:
+    """M14 (safety D4, D5): a planner that asks the safety questions gets the user line this kind of plan answers (its
+    stored answers, the care stay, whether this plan asks), and Jev's answers are stored as soon as the plan returns."""
+    from horizon.sessions import safety as ss
+
     planner = actor.rt.ai.planner(actor.rt.keys.status() == "set")
-    plan: CastPlan | None = await planner.plan_cast(req)
+    line = None
+    if getattr(planner, "asks_safety", False) and req.safety is None:
+        line = await ss.line_for_cast(actor, req)
+        if line is not None:
+            req = req.model_copy(update={"safety": line})
+    try:
+        plan: CastPlan | None = await planner.plan_cast(req)
+    except BaseException:
+        ss.release(actor, line)   # Stop or a newer send during the plan: nothing is stored for the line
+        raise
+    await ss.settle(actor, line, plan.safety if plan is not None else None)
     return plan
 
 
