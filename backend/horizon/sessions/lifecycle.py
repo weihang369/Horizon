@@ -8,6 +8,7 @@ queues the AI purge and announces the change.
 
 from __future__ import annotations
 
+import logging
 import re
 from typing import TYPE_CHECKING, Any
 
@@ -23,6 +24,8 @@ from horizon.sessions.context import characters, energy_of
 from horizon.sessions.modes import debate, one_on_one, watch
 from horizon.sessions.modes.common import message_event, note
 from horizon.sessions.preconditions import check_generating, check_no_other_live
+
+log = logging.getLogger("horizon.sessions")
 
 if TYPE_CHECKING:
     from horizon.runtime import Runtime
@@ -88,6 +91,8 @@ async def create(rt: Runtime, body: Wire) -> Wire:
             problems = rt.schema.errors(cfg_def, session["config"])
             if problems:
                 raise validation(f"Invalid {mode} config.", {"field": "config", "problems": problems[:3]})
+        if mode in ("debate", "watch"):   # M14 (safety D14): the motion or premise, before any row is written
+            await check_motion(rt, mode, str(w["id"]), session["config"] or {})
         now = session["createdAt"]
         srow, prows = mp.session_rows(session, is_seed=False)
         async with rt.db.write() as tx:
@@ -117,6 +122,30 @@ async def create(rt: Runtime, body: Wire) -> Wire:
 
         await actor.submit(open_session)
         return await snapshot(rt, session["id"])
+
+
+async def check_motion(rt: Runtime, mode: str, world_id: str, config: Wire) -> None:
+    """M14 (safety D14; session-lifecycle "Create a session"): under `agent`, Jev reads the motion or premise once.
+    At or above `safety.tMotion` creation fails with `content_refused` and nothing is stored; late or failed, the
+    session starts with a warning logged. Skipped when a session in this world already has exactly that text (a
+    rematch from the verdict screen is never refused). `naive` and `scripted` check nothing."""
+    check = getattr(rt.ai.guardrail(rt.keys.status() == "set"), "check_motion", None)
+    text = str(config.get("motion" if mode == "debate" else "premise") or "").strip()
+    if check is None or not text:
+        return
+    S = t.sessions.c
+    async with rt.db.read() as conn:
+        rows = (await conn.execute(select(S.config).where(S.world_id == world_id, S.mode == mode))).scalars().all()
+    if any(str((c or {}).get("motion" if mode == "debate" else "premise") or "").strip() == text for c in rows):
+        return
+    from horizon.ai.agent.guardrail import MOTION_REFUSED
+
+    res = await check(world_id, mode, text)
+    if res.fallback:
+        log.warning("the %s check failed or was late; the session starts", "motion" if mode == "debate" else "premise")
+        return
+    if res.verdict == "block":
+        raise HorizonHTTPError("content_refused", MOTION_REFUSED)
 
 
 def _new_session(rt: Runtime, body: Wire, w: Any, cast: list[Any]) -> Wire:

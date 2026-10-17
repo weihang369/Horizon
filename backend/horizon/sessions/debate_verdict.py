@@ -100,7 +100,8 @@ def start(actor: SessionActor) -> Work:
     discard(actor)
 
     async def run() -> Assessment:
-        a: Assessment = await _host(actor).assess(await request(actor))
+        req = await request(actor)
+        a: Assessment = await checked(actor, req, await _host(actor).assess(req))
         if actor.mode.picked is not None and not a.refused:
             actor.enqueue(lambda: deliver(actor))   # You decide: the click came first
         return a
@@ -108,6 +109,31 @@ def start(actor: SessionActor) -> Work:
     work = Work(fp=fp, task=actor.background(NAME, run()))
     actor.mode.verdict_work = work
     return work
+
+
+async def checked(actor: SessionActor, req: VerdictRequest, a: Assessment) -> Assessment:
+    """M14 (safety D10): the prose is checked inside the work, after it is written (≤ 0.7 s on a screen that already
+    waits). A block takes the existing "failed prose" fallback: the scores and the winner stay, each side's first
+    sentences are quoted, and the note says so. Late or failed: the prose stands."""
+    from horizon.ai.naive.verdict import NOTE_PROSE, quoted_summary
+
+    if a.refused or a.simulated is not None or NOTE_PROSE in a.notes:
+        return a
+    texts = [p for s in a.summary for p in (s.get("points") or [])] + [x for x in (a.key_disagreement, a.rationale) if x]
+    if not texts:
+        return a
+    rt = actor.rt
+    check = getattr(rt.ai.guardrail(rt.keys.status() == "set"), "check_text", None)
+    if check is None:
+        return a
+    motion = str((actor.session.get("config") or {}).get("motion", ""))
+    res = await check(req.session, "\n".join(str(t) for t in texts), name="The arbiter", role="debate arbiter",
+                      message=f"Motion: {motion}" if motion else "")
+    if res.verdict != "block":
+        return a
+    out: Assessment = a.model_copy(update={"summary": quoted_summary(req), "key_disagreement": None, "rationale": None,
+                                           "notes": [*a.notes, NOTE_PROSE]})
+    return out
 
 
 def refused(work: Work) -> bool:

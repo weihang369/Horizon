@@ -79,7 +79,7 @@
   `answer_question`, `park_question(s)` or `refuse_question`. Verify:
   - a fake test;
   - the full backend suite is unchanged in outcome.
-- [ ] 1.8 Phase 1 gates green. Checkpoint commit.
+- [x] 1.8 Phase 1 gates green. Checkpoint commit.
 
 ## 2. Input and care in every plan (design D4, D6, D7, D8)
 
@@ -129,66 +129,67 @@
   safety write on a cancelled turn, a fork and a regenerate.
 - [x] 2.10 Update `docs/ai/01` A4 (the questions and the fallback row), `docs/ai/06` E3 and E5, and `docs/ai/07` G2's
   one-voice note. Verify: the docs link check.
-- [ ] 2.11 Phase 2 gates green. Checkpoint commit.
+- [x] 2.11 Phase 2 gates green. Checkpoint commit.
 
 ## 3. The output check (design D9–D12, D19)
 
-- [ ] 3.1 New `AgentGuardrail` (`ai/agent/guardrail.py`):
+- [x] 3.1 New `AgentGuardrail` (`ai/agent/guardrail.py`):
   - D9's state (name, role, care, `quoted_message` cut from its start, `quoted_reply` never cut, ≤ 1,500 tokens);
   - `output_rules`;
   - outcomes at `tFlag` / `tBlock`, failing open with a flag and no `p`;
   - the hot-path 429 policy.
 
   Wire it to `agent` in `ai/profile.py`. Verify unit tests for each outcome, the cut, and the size cap.
-- [ ] 3.2 `finish()`:
+- [x] 3.2 `finish()`:
   - carry the `input` and `care` checks on every reply's turn spec;
   - merge `guardrail.checks` by name;
   - emit `insight` for a blocked reply;
   - write the `output_rules` row.
 
   Verify: a blocked-reply test showing all three checks and the block's `p`; the turn event order test.
-- [ ] 3.3 Doc 11 check 3 offline: a group turn with a forced block and `DeciderFixtures`, the follow plan's pick
+- [x] 3.3 Doc 11 check 3 offline: a group turn with a forced block and `DeciderFixtures`, the follow plan's pick
   landing before the block. Verify: no second reply and no `turn.next` for it.
-- [ ] 3.4 Prefetches: check a finished prefetch before release (in parallel with its wait), discard it on a block,
+- [x] 3.4 Prefetches: check a finished prefetch before release (in parallel with its wait), discard it on a block,
   carry the result into `finish()` so it isn't checked twice; a prefetch still streaming at its slot is checked as
   live. Verify:
   - an Everyone test and a debate-opening test;
   - one `guardrail` row per reply.
-- [ ] 3.5 Host lines inside the `host_line` task and verdict prose inside the `verdict` work, with their existing
+- [x] 3.5 Host lines inside the `host_line` task and verdict prose inside the `verdict` work, with their existing
   fallbacks on a block. Verify: a debate-host test (the fixed line) and a debate-verdict test (the failed-prose
   fallback).
-- [ ] 3.6 The after-the-fact check:
+- [x] 3.6 The after-the-fact check:
   - `close_interrupted` keeps `info.ctx`;
   - a named after-turn task `output_check` reuses an in-flight `DecisionCall` through `final()`;
-  - it survives Stop, End, a cap pause and leave, and is cancelled by deletes, Reset demo and shutdown;
+  - it survives Stop, End, a cap pause, leave and Reset demo (user sessions survive it), and is cancelled by deletes
+    and shutdown;
   - a block scrubs and sets status `error` (U2).
 
   Verify:
   - a Stop-during-check test with one ledger row;
   - a delete-cancels test;
   - the storm tests from 0.2.
-- [ ] 3.7 The waits after a turn count from the stream's end (D10). Verify:
+- [x] 3.7 The waits after a turn count from the stream's end (D10). Verify:
   - a watch `paceMs` test and a debate `pauseMs` test, with a 500 ms check hidden;
   - the follow and debate member deadlines still count from `turn.end`.
-- [ ] 3.8 The reducer rule in both languages (D11): an `error` with `content_refused` and a `messageId` empties the
+- [x] 3.8 The reducer rule in both languages (D11): an `error` with `content_refused` and a `messageId` empties the
   message or variant and sets status `error`, with no cost change. Clear the StreamingText buffer in the TS client.
   Verify:
   - shared reducer fixtures (live block, after the fact, blocked variant);
   - the served message equals the reduced one.
-- [ ] 3.9 `NaiveGuardrail` (pass, no checks; `guardrail` joins `NAIVE_PORTS`), and the scripted guardrail and trace
+- [x] 3.9 `NaiveGuardrail` (pass, no checks; `guardrail` joins `NAIVE_PORTS`), and the scripted guardrail and trace
   with one `output: pass` check in `ai/scripted/ports.py` and `mock/script/turnScript.ts`. Rebuild with
   `npm run seed:build` and `npm run fixtures:build`, and regenerate `rev12/messages.json` and
   `reducer/seed-dinner-seq25.json`. Verify:
   - `seed:check` and `fixtures:check`;
   - a diff showing only guardrail checks changed;
   - the profile-selection test.
-- [ ] 3.10 Update `docs/ai/01` A13 and the risk table, `docs/ai/07` G2 (the follow plan beside the check), and
+- [x] 3.10 Update `docs/ai/01` A13 and the risk table, `docs/ai/07` G2 (the follow plan beside the check), and
   `docs/backend/05-ai-seams.md`'s guardrail section. Verify: the docs link check.
-- [ ] 3.11 Phase 3 gates green, plus `npm run e2e`. Checkpoint commit.
+- [x] 3.11 Phase 3 gates green, plus `npm run e2e`. Checkpoint commit.
 
 ## 4. The motion and premise check (design D14)
 
-- [ ] 4.1 In `sessions/lifecycle.create` for debate and watch:
+- [x] 4.1 In `sessions/lifecycle.create` for debate and watch:
   - `motion_rules` at `guardrail_prompt`;
   - 451 `content_refused` with S3's message and no row;
   - the exact same-text skip within the world;
@@ -197,14 +198,14 @@
   Verify:
   - lifecycle tests (refused, rematch skipped, Jev down starts);
   - an HTTP test for the 451 envelope.
-- [ ] 4.2 The setup screen keeps the typed text and shows the toast on 451. Verify: a frontend test with the HTTP
+- [x] 4.2 The setup screen keeps the typed text and shows the toast on 451. Verify: a frontend test with the HTTP
   client's error (no new UI).
-- [ ] 4.3 The storm test for an abandoned creation request. Verify it passes.
-- [ ] 4.4 Phase 4 gates green. Checkpoint commit.
+- [x] 4.3 The storm test for an abandoned creation request. Verify it passes.
+- [x] 4.4 Phase 4 gates green. Checkpoint commit.
 
 ## 5. Memory (design D15, D16)
 
-- [ ] 5.1 Add `instruction:l{n}` to the importance request through `extra_questions`:
+- [x] 5.1 Add `instruction:l{n}` to the importance request through `extra_questions`:
   - drop and log a line at or above `memory.tInstruction`;
   - a missing answer fails the piece as a try.
 
@@ -212,42 +213,42 @@
   - writer tests (dropped, kept preference);
   - the "Jev down" test is now a failed try, then a skip after 3;
   - `importance` keeps its version.
-- [ ] 5.2 S7's code filter in `services/memory/stretch.py`: drop user lines whose cue was on (stored flags and the stay
+- [x] 5.2 S7's code filter in `services/memory/stretch.py`: drop user lines whose cue was on (stored flags and the stay
   rule) and their reply lines, from numbered lines, context lines and re-reads. Count the minimum after the filter;
   keep lines without a row. Verify stretch tests:
   - a care talk writes nothing and moves the checkpoint;
   - a steered request and its reply are absent;
   - old sessions are unchanged.
-- [ ] 5.3 Turn the failed-noul storm test from 0.2 green.
-- [ ] 5.4 Update `docs/ai/09` M3 and M4 and doc 11 S6's built note. Verify: the docs link check.
-- [ ] 5.5 Phase 5 gates green. Checkpoint commit.
+- [x] 5.3 Turn the failed-noul storm test from 0.2 green.
+- [x] 5.4 Update `docs/ai/09` M3 and M4 and doc 11 S6's built note. Verify: the docs link check.
+- [x] 5.5 Phase 5 gates green. Checkpoint commit.
 
 ## 6. Images, songs and the notice (design D17, D18)
 
-- [ ] 6.1 `Guardrail.check_prompt(ctx, kind, text)`:
+- [x] 6.1 `Guardrail.check_prompt(ctx, kind, text)`:
   - `agent`: four image nouls in one request, or `song_copy`, at `guardrail_prompt`, with the SHA-256 LRU cache (512)
     of Jev answers only;
   - `naive` and scripted pass with no call.
 
   Verify: unit tests (cache hit, fail-open not cached).
-- [ ] 6.2 `JobScheduler.start`: compile and check after the active-job check and before the hold, with I3's two
+- [x] 6.2 `JobScheduler.start`: compile and check after the active-job check and before the hold, with I3's two
   messages; start on failure with a log line. Verify:
   - jobs tests (tweak refused, base refused, edits not checked, Jev down starts, no hold or row on refusal);
   - an HTTP 451 test.
-- [ ] 6.3 `call_song`: check the brief before `before_send`; on refusal return `SongFallback("brief_refused")`.
+- [x] 6.3 `call_song`: check the brief before `before_send`; on refusal return `SongFallback("brief_refused")`.
   `commit_song` picks the note by reason in `services/theme.py`. Verify song tests:
   - `brief_refused` makes no music request and uses its note;
   - a Lyria refusal gets its note;
   - other faults keep `FALLBACK_NOTE`;
   - the check's ledger row carries the job ID.
-- [ ] 6.4 The storm tests for `check_prompt` at start and in the song task. Verify they pass.
-- [ ] 6.5 S8's two notice lines in `features/settings/ConnectionTab.tsx` and `features/profile/tabs.tsx` (shared by
+- [x] 6.4 The storm tests for `check_prompt` at start and in the song task. Verify they pass.
+- [x] 6.5 S8's two notice lines in `features/settings/ConnectionTab.tsx` and `features/profile/tabs.tsx` (shared by
   both clients), and the README's privacy section (what is sent where, D-80, switching to `deny`). Verify:
   - a frontend render test in the mock and HTTP clients;
   - the README link check.
-- [ ] 6.6 Record doc 12 check 4 as "open until the first real Seedream refusal" in `m14.md` (no image paid to provoke
+- [x] 6.6 Record doc 12 check 4 as "open until the first real Seedream refusal" in `m14.md` (no image paid to provoke
   one).
-- [ ] 6.7 Phase 6 gates green. Checkpoint commit.
+- [x] 6.7 Phase 6 gates green. Checkpoint commit.
 
 ## 7. The suite offline (design D21–D24)
 

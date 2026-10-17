@@ -61,6 +61,7 @@ log = logging.getLogger("horizon.sessions")
 
 Wire = dict[str, Any]
 STATUS_BY_CODE = {"content_refused": "error"}
+OUTPUT_CHECK = "output_check"   # M14 (safety D10): the after-the-fact check's named after-turn task
 REGENERATE_SUFFIX = " (again)"   # regenerate's prompt marker (one_on_one.regenerate); the plan reads the plain line
 _MARKER = re.compile(r"\[(\d+)\]")
 
@@ -93,9 +94,10 @@ class TurnSpec:
 @dataclass
 class TurnOutcome:
     message_id: str | None
-    status: str          # complete | interrupted | error | refused | asleep | missing | superseded
+    status: str          # complete | interrupted | error | refused | asleep | missing | superseded | blocked
     follow: Any = None   # M10: the follow plan's handle, started at the stream's end (D8)
     ended_at: datetime | None = None   # when turn.end was appended: the follow plan's deadline counts from here
+    stream_end: datetime | None = None   # M14 (safety D10): when the stream ended; the waits after a turn count from here
 
 
 def deep_merge(base: dict[str, Any], patch: Mapping[str, Any]) -> dict[str, Any]:
@@ -106,6 +108,23 @@ def deep_merge(base: dict[str, Any], patch: Mapping[str, Any]) -> dict[str, Any]
         else:
             out[k] = v
     return out
+
+
+def merge_checks(*lists: Any) -> list[dict[str, Any]]:
+    """M14 (safety D11): guardrail checks merged by `name`, later ones replacing earlier ones in place, so `output`
+    never wipes `input` or `care` (`deep_merge` replaces the whole list)."""
+    out: dict[str, dict[str, Any]] = {}
+    for checks in lists:
+        for c in checks or []:
+            out[str(c.get("name"))] = dict(c)
+    return list(out.values())
+
+
+def safety_checks(ctx: TurnContext | None) -> list[dict[str, Any]]:
+    """S3, S4: the line's `input` and `care` results ride every reply to it."""
+    from horizon.ai.agent.safety import checks
+
+    return checks(ctx.plan.safety) if ctx is not None and ctx.plan is not None else []
 
 
 def merge_patch(trace: dict[str, Any], patch: Mapping[str, Any]) -> dict[str, Any]:
@@ -156,6 +175,10 @@ class TurnRunner:
             return TurnOutcome(None, "missing")
         if prefetch is None and float(energy_of(rt, row)["current"]) < rt.est_reply_points():
             return TurnOutcome(None, "asleep")
+        if prefetch is not None and getattr(await prefetch.check(), "verdict", None) == "block":
+            # M14 (safety D10): checked while it waited; a block discards it unseen and the next speaker follows
+            await prefetch.discard()
+            return TurnOutcome(None, "blocked")
         existing = actor.state["messages"].get(spec.variant_of) if spec.variant_of else None
         mid = prefetch.message_id if prefetch is not None else spec.variant_of or new_id("msg")
         # The mock's rule: `${messageId}_v${(variants.length || 1) + 1}`.
@@ -455,8 +478,10 @@ class TurnRunner:
             raise
         await settle_timer()
         await flush()
+        info.stream_end = rt.clock.now()   # M14 (D10): the waits after this turn count from here
         if prefetch is not None:
             await prefetch.link()
+            info.checked = prefetch.checked   # M14 (D10): checked before release; never checked twice
         status = "complete"
         if err is not None:
             status = STATUS_BY_CODE.get(err.code, "interrupted")
@@ -480,7 +505,7 @@ class TurnRunner:
         if follow is not None and status != "complete":   # a blocked reply (M14's check) has no follow plan
             follow.cancel()
             follow = None
-        return TurnOutcome(info.message_id, status, follow=follow, ended_at=rt.clock.now())
+        return TurnOutcome(info.message_id, status, follow=follow, ended_at=rt.clock.now(), stream_end=info.stream_end)
 
     @staticmethod
     def _emotion_event(info: TurnInfo, ev: Emotion) -> Wire:
@@ -512,13 +537,22 @@ class TurnRunner:
         total_ms = to_ms(rt.clock.now()) - t0
         scrub = False
         verbatim = getattr(engine, "name", None) == VerbatimEngine.name   # P9: the approved line, no model call
+        # M14 (safety D9–D11): the line's `input` / `care` checks, then the output check, merged by name
+        checks = merge_checks((trace.get("guardrail") or {}).get("checks"), [] if verbatim else safety_checks(ctx))
+        guard_rows: list[dict[str, Any]] = []
+        after: Any = None   # an interrupted reply's check, run after the fact (D10)
         if status == "complete" and ctx is not None and not verbatim:
-            check = await rt.ai.guardrail(self.key_set()).check(ctx, info.content)
-            if check.checks:
-                trace = deep_merge(trace, {"guardrail": {"checks": check.checks}})
+            check = info.checked if info.checked is not None else await self._output_check(info, ctx)
+            checks = merge_checks(checks, check.checks)
+            guard_rows = list(check.rows)
             if check.verdict == "block":
                 status, scrub = "error", True
                 err = ProviderError("content_refused", "The reply was blocked by the safety check.")
+        elif status == "interrupted" and ctx is not None and not verbatim and info.content.strip():
+            after = info.guard if info.guard is not None else self._start_guard(ctx, info.content)
+        info.guard = None
+        if checks:
+            trace = {**trace, "guardrail": {**(trace.get("guardrail") or {}), "checks": checks}}
         ledger = rt.ledger
         since = started_iso or None   # a released prefetch's row was recorded before its slot
         usage = await ledger.reply_usage(mid, since=since)
@@ -553,7 +587,7 @@ class TurnRunner:
             if energy.get("fullAt"):
                 ev["fullAt"] = energy["fullAt"]
             events.append({"type": "energy", "payload": ev})
-        if status != "error":
+        if status != "error" or scrub:   # M14 (D11): a blocked reply keeps its trace, so its p is visible
             full = {"messageId": mid, **trace}
             prices = rt.prices
             if not verbatim:   # P9: a verbatim line made no model call, so Insight claims none
@@ -581,13 +615,13 @@ class TurnRunner:
             plan = ctx.plan if ctx is not None else None
             if plan is not None and plan.graph_path:   # A12: the plan graph's node path, written once (D3)
                 full["graph"] = {"path": list(plan.graph_path)}
-            if spec.system1 or info.system1:   # D24: rows appended mid-stream merge by key, never replace
+            if spec.system1 or info.system1 or guard_rows:   # D24: rows appended mid-stream merge by key, never replace
                 base = dict(spec.system1 or {})
                 if base.get("questions"):   # M9 D25: the scripted emotion row's answer is the face the reply showed
                     base["questions"] = [{**q, "answer": info.face or "neutral"}
                                          if q.get("purpose") == "turn_plan" and q.get("answer") == PLANNED_FACE else q
                                          for q in base["questions"]]
-                full["system1"] = system1_section(base, info.system1, seed=base.get("seed"))
+                full["system1"] = system1_section(base, [*info.system1, *guard_rows], seed=base.get("seed"))
             events.append({"type": "insight", "payload": {"messageId": mid, "trace": full}})
         label = getattr(engine, "prompt_version_for", None)   # M10 D10: the label follows this turn's bytes
         meta = TraceMeta(engine=getattr(engine, "name", None), engine_version=getattr(engine, "version", None),
@@ -599,6 +633,8 @@ class TurnRunner:
         info.closed = True
         if actor.current is info:
             actor.current = None
+        if after is not None:   # D10: survives Stop, End, a cap pause and leave; a delete, Reset demo or shutdown cancels it
+            actor.background(OUTPUT_CHECK, self._check_after(actor, info, after))
         if rt.capture.enabled and ctx is not None and not verbatim:   # ai-foundation D27: the turn row (queued)
             rt.capture.on_turn(world_id=actor.session.get("worldId"), session_id=actor.sid,
                                character_id=info.character_id, message_id=mid, request=ctx.model_dump(mode="json"),
@@ -657,9 +693,58 @@ class TurnRunner:
 
         await undo_derived(self.rt, conn, message_id)
 
+    # ── the output check (M14, safety D9, D10) ──
+    def _start_guard(self, ctx: TurnContext, text: str) -> Any:
+        """The `agent` guardrail's handle, or None for a guardrail with no live check (`naive`, scripted)."""
+        start = getattr(self.rt.ai.guardrail(self.key_set()), "start", None)
+        return start(ctx, text) if start is not None else None
+
+    async def _output_check(self, info: TurnInfo, ctx: TurnContext) -> Any:
+        """At the stream's end, before `turn.end`. The handle is kept on the turn until it answers, so a Stop during
+        the wait hands it to the after-the-fact check, which reads the same request (`final()`): nothing is paid
+        twice."""
+        g = self.rt.ai.guardrail(self.key_set())
+        call = self._start_guard(ctx, info.content)
+        if call is None:
+            return await g.check(ctx, info.content)
+        info.guard = call
+        res = await call.by(call.deadline())
+        info.guard = None
+        return res
+
+    async def _check_after(self, actor: SessionActor, info: TurnInfo, call: Any) -> None:
+        """An interrupted reply's check (D10, U2): its row and check join the trace (a later `insight`); a block scrubs
+        the text and turns the row into a blocked one (`error` with `content_refused`, Regenerate only)."""
+        res = await call.final()
+        mid = info.message_id
+
+        async def run() -> None:
+            import copy
+
+            msg = actor.state["messages"].get(mid)
+            if msg is None or msg.get("status") != "interrupted":
+                return   # deleted, or regenerated meanwhile: the check is about text no longer shown
+            if (msg.get("activeVariantId") or f"{mid}_v1") != (info.variant_id or f"{mid}_v1"):
+                return
+            trace = copy.deepcopy(msg.get("trace") or {})
+            trace["guardrail"] = {**(trace.get("guardrail") or {}),
+                                  "checks": merge_checks((trace.get("guardrail") or {}).get("checks"), res.checks)}
+            trace["system1"] = system1_section(trace.get("system1"), res.rows)
+            insight: Wire = {"type": "insight", "payload": {"messageId": mid, "trace": trace}}
+            if res.verdict == "block":
+                err: Wire = {"type": "error", "payload": {
+                    "code": "content_refused", "message": "The reply was blocked by the safety check.",
+                    "retryable": DEFAULT_RETRYABLE.get("content_refused", True), "messageId": mid}}
+                await actor.emit_with([err, insight], self._scrubber(actor, info))
+            else:
+                await actor.emit(insight)
+
+        await actor.submit(run)
+
     # ── Stop ──
     async def close_interrupted(self, actor: SessionActor, info: TurnInfo, *, by: str = "user") -> None:
-        """Close a turn cut by Stop (design D3): the streamed text is kept, its spend (the estimate) stays."""
+        """Close a turn cut by Stop (design D3): the streamed text is kept, its spend (the estimate) stays. M14 (safety
+        D10): the turn's context is kept, so the after-the-fact check has its state."""
         if actor.current is info:
             actor.current = None
         if info.closed:
@@ -668,6 +753,6 @@ class TurnRunner:
             info.closed = True
             return
         spec = info.spec if isinstance(info.spec, TurnSpec) else TurnSpec(speaker=info.character_id)
-        await self.finish(actor, info, spec, None, status="interrupted", err=None, trace=dict(info.trace),
+        await self.finish(actor, info, spec, info.ctx, status="interrupted", err=None, trace=dict(info.trace),
                           citations=info.citations, first_token_ms=info.first_token_ms, t0=info.t0_ms,
                           started_iso=info.started_iso, engine=info.engine, interrupted_by=by)

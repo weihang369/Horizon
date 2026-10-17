@@ -211,7 +211,8 @@ export function buildLineScript(spec: LineSpec, timing: TimingConfig, pricing: P
         history: spec.historyTokens, user, mode,
       },
     },
-    guardrail: { checks: [{ name: "sfw", verdict: "pass", p: r3(rng.range(0.95, 0.995)) }, { name: "advice_scope", verdict: "pass" }] },
+    // M14 (safety D12): the one check `agent` runs, shown passing with a low p (one draw, as `sfw` took)
+    guardrail: { checks: [{ name: "output", verdict: "pass", p: r3(rng.range(0.005, 0.05)) }] },
     // rev 1.3: every paid call behind the turn. The group router's Jev call is charged by the group engine.
     calls: [
       ...(spec.routing?.candidates?.length

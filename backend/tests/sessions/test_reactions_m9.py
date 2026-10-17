@@ -113,8 +113,8 @@ async def test_muted_listener_gets_no_question_and_fades(api: Api) -> None:
 async def test_late_answer_and_next_speaker_not_delayed(api: Api) -> None:
     sid = await group(api)
     assert api.rt.fake is not None
-    n0 = api.rt.fake.counts["decisions"]
-    release = api.rt.fake.park_decision(n0 + 2)                            # the plan, then Amara's reaction request
+    release = api.rt.fake.park_question("reaction:")   # Amara's reaction request (M14: the output check also starts at
+    #                                                  stream end, so a count no longer finds it)
     await command(api, sid, "send", {"text": "We won the grant!", "mentions": [AMARA, MEI]})
     await api.drive(3000)
     evs = await events(api, sid)

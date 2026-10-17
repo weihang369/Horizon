@@ -101,13 +101,9 @@
         "guardrail": {
           "checks": [
             {
-              "name": "sfw",
+              "name": "output",
               "verdict": "pass",
-              "p": 0.955
-            },
-            {
-              "name": "advice_scope",
-              "verdict": "pass"
+              "p": 0.01
             }
           ]
         },
@@ -209,13 +205,9 @@
         "guardrail": {
           "checks": [
             {
-              "name": "sfw",
+              "name": "output",
               "verdict": "pass",
-              "p": 0.979
-            },
-            {
-              "name": "advice_scope",
-              "verdict": "pass"
+              "p": 0.034
             }
           ]
         },
@@ -329,13 +321,9 @@
         "guardrail": {
           "checks": [
             {
-              "name": "sfw",
+              "name": "output",
               "verdict": "pass",
-              "p": 0.96
-            },
-            {
-              "name": "advice_scope",
-              "verdict": "pass"
+              "p": 0.015
             }
           ]
         },
@@ -437,13 +425,9 @@
         "guardrail": {
           "checks": [
             {
-              "name": "sfw",
+              "name": "output",
               "verdict": "pass",
-              "p": 0.97
-            },
-            {
-              "name": "advice_scope",
-              "verdict": "pass"
+              "p": 0.025
             }
           ]
         },

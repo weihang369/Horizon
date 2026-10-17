@@ -224,9 +224,12 @@ class AgentMemoryWriter(_Base):
 
     async def on_stretch(self, stretch: Stretch, ctx: Any) -> WriterResult:
         guard_ = contextlib.nullcontext() if TRACER.enabled else no_trace()
-        with guard_:
-            out: MemoryRun = await self.graph.ainvoke({"stretch": stretch, "ctx": ctx, "path": []},
-                                                      config={"recursion_limit": 10})
+        try:
+            with guard_:
+                out: MemoryRun = await self.graph.ainvoke({"stretch": stretch, "ctx": ctx, "path": []},
+                                                          config={"recursion_limit": 10})
+        except jev.Held as e:   # M14 (safety D15): an unchecked line is held: the piece is a failed try
+            return WriterResult(log=[{"step": "instruction", "why": f"held: {e}"}], failed=True)
         result: WriterResult = out["result"]
         return result
 
@@ -282,8 +285,14 @@ class AgentMemoryWriter(_Base):
             score_of = {id(c): s for c, s in zip(writes, scores, strict=True)}
             guard_of = {id(c): g for c, g in zip([c for c in cs if c.op == "rewrite" and c.target is not None], guards,
                                                   strict=True)}
+            t_ins = jev.t_instruction()
             for c in cs:
                 s = score_of.get(id(c))
+                if s is not None and s.instruction is not None and s.instruction >= t_ins:
+                    # M14 (safety D15; doc 11 S6): it reads as a rule or an order to the character: never written
+                    plan.log.append({"step": "instruction", "characterId": cid, "why": "tries to change the rules: dropped",
+                                     "text": c.text, "p": round(s.instruction, 4)})
+                    continue
                 if s is not None and s.source == "fallback":
                     plan.log.append({"step": "importance", "characterId": cid, "why": "Jev failed or late: the hint",
                                      "text": c.text, "importance": s.value})

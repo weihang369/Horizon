@@ -530,6 +530,13 @@ the same transaction as the run's writes; `data/graph.db` is still unused.*
 - **The output guardrail** stays where it is today, just before `turn.end`, because a blocked reply must be refused
   before it ends. Doc 11 S5: a Jev noul with a 700 ms deadline that fails open with a flag; in group, the follow plan
   starts at the stream's end alongside it.
+  *Built in M14 (OpenSpec `safety` D9–D11): `AgentGuardrail` asks `output_rules` once per shown text: a live reply at
+  its stream's end; a prefetch (Everyone, the debate opening) that finished before its slot while it waits, discarded
+  unseen on a block; a debate host line inside its `host_line` task and verdict prose inside the `verdict` work (their
+  existing fallbacks on a block); an interrupted reply after the fact, in the named after-turn task `output_check`,
+  which reads the same request (`final()`). The waits after a turn (the turn gap, `pauseMs`, `paceMs`) count from the
+  stream's end, so a check shorter than them adds nothing to the cadence; the follow plan's and the debate member's
+  deadlines still count from `turn.end`. A blocked reply keeps its `insight`, its checks merged by name.*
 - ~~**Interrupted replies also get the citation check**~~ Withdrawn by doc 10 K10: the citation check is evaluation
   only in v1.
 - **Deep-only work runs only when Jev call 1 says deep.** A little speed is traded for not paying on quick turns.
@@ -589,6 +596,7 @@ were still late. `floor.member` is **0.5**: 0.71 on the member slice's test spli
 | Jev outage, slowness or uncertainty | **Covered** by the fallbacks and confidence floors (A4) |
 | Choice bias toward the first option | **Covered** by shuffling every choice's options (A3 rule 4) |
 | A refused reply leaving a face change behind | **Covered:** the face is shown only after the reply's preflight (A5) |
+| Unsafe output drifting onto the screen (a public demo) | **Doc 11 S3–S5, built in M14:** the input and care nouls ride every plan and steer in character; the output check reads every shown text and blocks at `safety.tBlock`, failing open with a flag when Jev is late; a live reply can be read for up to the check's deadline before it is cleared (S5's honest limit) |
 
 ## 7. Checks before this is locked
 

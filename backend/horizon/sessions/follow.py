@@ -18,7 +18,7 @@ from typing import TYPE_CHECKING, Any
 from horizon.ai.contexts import FollowPlan, FollowRequest, MessageNouls
 from horizon.domain import vclock
 from horizon.sessions.context import character_view, characters, document_titles, recallable, session_context
-from horizon.sessions.modes.common import gap, is_asleep, runner, speak_then
+from horizon.sessions.modes.common import checked_s, gap, is_asleep, runner, speak_then
 from horizon.sessions.plans import base_faces, manual, turns_since
 from horizon.sessions.turn import TurnOutcome, TurnSpec
 
@@ -73,7 +73,7 @@ async def answer_then_follow(actor: SessionActor, first: TurnSpec, message: str,
     if out.status not in ("complete", "interrupted", "error"):
         return out
     if out.follow is None or out.ended_at is None:
-        await gap(actor, epoch)
+        await gap(actor, epoch, max(0.0, turn_gap - checked_s(out)))   # M14 (D10): from the stream's end
         return out
     deadline = out.ended_at + timedelta(seconds=rt.decider.timeout_for(PURPOSE))
     plan = await _wait_follow(actor, out.follow, deadline, epoch)
@@ -82,7 +82,8 @@ async def answer_then_follow(actor: SessionActor, first: TurnSpec, message: str,
     if plan.second is None:
         if out.message_id is not None:
             await actor.append_system1(out.message_id, None, plan.rows_for_first(), plan.calls)
-        left = (out.ended_at + timedelta(seconds=turn_gap) - rt.clock.now()).total_seconds()
+        # M14 (D10): what is left of the turn gap counts from the stream's end (the follow deadline from turn.end)
+        left = ((out.stream_end or out.ended_at) + timedelta(seconds=turn_gap) - rt.clock.now()).total_seconds()
         if left > 0:
             await gap(actor, epoch, left)
         return out

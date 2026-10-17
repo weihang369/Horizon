@@ -650,13 +650,9 @@
       "guardrail": {
        "checks": [
         {
-         "name": "sfw",
+         "name": "output",
          "verdict": "pass",
-         "p": 0.987
-        },
-        {
-         "name": "advice_scope",
-         "verdict": "pass"
+         "p": 0.042
         }
        ]
       },
@@ -1298,13 +1294,9 @@
       "guardrail": {
        "checks": [
         {
-         "name": "sfw",
+         "name": "output",
          "verdict": "pass",
-         "p": 0.982
-        },
-        {
-         "name": "advice_scope",
-         "verdict": "pass"
+         "p": 0.037
         }
        ]
       },
@@ -1893,13 +1885,9 @@
       "guardrail": {
        "checks": [
         {
-         "name": "sfw",
+         "name": "output",
          "verdict": "pass",
-         "p": 0.965
-        },
-        {
-         "name": "advice_scope",
-         "verdict": "pass"
+         "p": 0.02
         }
        ]
       },
@@ -3249,13 +3237,9 @@
      "guardrail": {
       "checks": [
        {
-        "name": "sfw",
+        "name": "output",
         "verdict": "pass",
-        "p": 0.987
-       },
-       {
-        "name": "advice_scope",
-        "verdict": "pass"
+        "p": 0.042
        }
       ]
      },
@@ -3437,13 +3421,9 @@
      "guardrail": {
       "checks": [
        {
-        "name": "sfw",
+        "name": "output",
         "verdict": "pass",
-        "p": 0.982
-       },
-       {
-        "name": "advice_scope",
-        "verdict": "pass"
+        "p": 0.037
        }
       ]
      },
@@ -3616,13 +3596,9 @@
      "guardrail": {
       "checks": [
        {
-        "name": "sfw",
+        "name": "output",
         "verdict": "pass",
-        "p": 0.965
-       },
-       {
-        "name": "advice_scope",
-        "verdict": "pass"
+        "p": 0.02
        }
       ]
      },

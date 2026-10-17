@@ -255,6 +255,9 @@ async def call_song(sched: JobScheduler, run: Run, a: Attempt, task: dict[str, A
     async with rt.db.read() as conn:
         brief = await song_brief(sched, conn, run, ch)
     job = SongJob(task_id=task["id"], model=model, brief=brief, title=theme.theme_title(str(ch["profile"].get("name", ""))))
+    if await brief_refused(sched, run, ch, job):   # M14 (safety D17; doc 12 I4): no Lyria call for a named artist
+        log.info("task %s: the brief names an artist or a piece; using the procedural theme", task["id"])
+        return SongFallback("brief_refused")
     try:
         async with Slot(rt.music_slots):
             await song.generate(task_ctx(sched, run, ch, "theme_song"), job, hooks_for(sched, run, a, task, ch))
@@ -264,6 +267,21 @@ async def call_song(sched: JobScheduler, run: Run, a: Attempt, task: dict[str, A
         log.info("task %s: the music model failed (%s); using the procedural theme (D-87)", task["id"], e.code)
         return SongFallback(e.code)
     return None
+
+
+async def brief_refused(sched: JobScheduler, run: Run, ch: Mapping[str, Any], job: SongJob) -> bool:
+    """M14 (safety D17; doc 12 I4): Jev reads the brief this call sends (edited or drafted), before `before_send`. Its
+    spend carries the job's ID, so it comes out of the song task's hold. Late or failed: Lyria is called as before."""
+    from horizon.ai.naive.creation import song_prompt
+    from horizon.gateway.context import call_ctx
+
+    check = getattr(sched.rt.ai.guardrail(True), "check_prompt", None)
+    if check is None:
+        return False
+    cctx = call_ctx("guardrail", world_id=run.world_id, character_id=run.character_id, job_id=run.job_id,
+                    creation=ch["status"] != "approved")
+    res = await check(cctx, "song", song_prompt(job.brief, job.title))
+    return bool(not res.fallback and res.verdict == "block")
 
 
 class Slot:
@@ -506,7 +524,8 @@ async def commit_song(sched: JobScheduler, conn: AsyncConnection, run: Run, ch: 
         u = t.usage_records.c
         billed = (await conn.execute(select(func.coalesce(func.sum(u.cost_usd), 0.0)).where(u.job_id == run.job_id))).scalar()
         return await ap.apply_theme(conn, ch, spec=spec, brief=brief, assets_dir=rt.cfg.assets_dir, job_id=run.job_id,
-                                    now=now, license_note=theme.FALLBACK_NOTE, cost_usd=float(billed or 0.0))
+                                    now=now, license_note=theme.fallback_note(payload.reason),   # M14 (D17): by reason
+                                    cost_usd=float(billed or 0.0))
     return await ap.apply_theme(conn, ch, spec=spec, brief=brief, assets_dir=rt.cfg.assets_dir, job_id=run.job_id, now=now)
 
 

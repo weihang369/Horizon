@@ -396,7 +396,10 @@ from asking about the same line.
   - the `DecisionCall` is handed to `output_check`, which reads it with `final()` (W11), so nothing is paid twice;
   - `close_interrupted` keeps the turn context (`info.ctx`), so the after-the-fact check has its state.
 - **`output_check` survives** Stop, End, a cap pause and leave. Its whole point is the text the user just stopped.
-  - It is cancelled by a session, character or world delete, by Reset demo and by shutdown.
+  - It is cancelled by a session, character or world delete and by shutdown (each stops the session's actor).
+  - Reset demo releases only the seed sessions' actors and keeps user data, so a user reply's check still finishes:
+    the text it is about still exists (found during apply; End, a cap pause and leave let a streaming turn finish, so
+    their check runs live).
   - A shutdown loses the check, and the text stays: it fails open, as a Jev failure does. This is recorded as a
     limit.
 

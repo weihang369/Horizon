@@ -14,6 +14,7 @@ import { Tape } from "../../ui/Tape";
 import { CheckIcon, KeyIcon } from "../../ui/icons";
 import { maskKey, readKeyHint, saveKeyHint } from "../shell/keyHint";
 import { Row, Section } from "./parts";
+import { CONNECTION_NOTICE } from "./privacyNotice";
 import s from "./Settings.module.css";
 
 type TestState = { kind: "idle" } | { kind: "busy" } | { kind: "ok"; r: ConnectionResult } | { kind: "fail"; message: string; code?: string };
@@ -108,6 +109,7 @@ export function ConnectionTab({ settings }: { settings: AppSettings }) {
             <Button type="submit" icon={<KeyIcon />} disabled={busy}>{busy ? "Saving…" : "Save key"}</Button>
           </div>
         </form>
+        <p className={s.sectionDesc}>{CONNECTION_NOTICE}</p>
       </Section>
 
       <Section title="Check it">

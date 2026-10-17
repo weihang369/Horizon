@@ -212,7 +212,8 @@ async def test_turn_plan_and_face_check_rows_and_only_the_reply_drains(api: Api)
     await command(api, sid, "send", {"text": "My dog died."})
     await api.drive(12000)
     new = (await ledger(api))[before:]
-    assert sorted(r["purpose"] for r in new if r["category"] == "decision") == ["face_check", "turn_plan"]
+    # M14 (safety D9): the output check is the reply's third decision row; it never drains on its own either
+    assert sorted(r["purpose"] for r in new if r["category"] == "decision") == ["face_check", "guardrail", "turn_plan"]
     reply = chars(await messages(api, sid))[-1]
     drains = [e["payload"] for e in (await events(api, sid))[seen:] if e["type"] == "energy"]
     assert [d["spent"] for d in drains] == [reply["usage"]["energySpent"]]       # only the reply drains

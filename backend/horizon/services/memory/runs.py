@@ -56,6 +56,7 @@ from horizon.services.memory.stretch import (
     WriterResult,
     build_stretch,
     debate_header,
+    flagged_lines,
     watch_header,
 )
 
@@ -367,9 +368,10 @@ class MemoryRuns:
             run.characters = set(present_ids)
             run.world_id = str(srow["world_id"])
         async with rt.memory.run_locks(present_ids):
-            pieces, upto, from_seq = await self._stretch(srow, parts)
+            pieces, upto, from_seq, emptied = await self._stretch(srow, parts)
             if not pieces:
-                if (str(srow["status"]) == "ended" or mode == "scripted") and upto > from_seq:
+                # M14 (safety D16): a stretch emptied by the flagged-talk filter moves past it too (it was read)
+                if (str(srow["status"]) == "ended" or mode == "scripted" or emptied) and upto > from_seq:
                     await self._advance(sid, from_seq, upto, list(srow["memory_reread"] or []))
                     self._note(sid, "advanced", upto=upto)
                 else:
@@ -485,7 +487,7 @@ class MemoryRuns:
         self.log.append({"sessionId": sid, "outcome": outcome, "at": self.rt.now_iso(), **extra})
         del self.log[:-200]
 
-    async def _stretch(self, srow: Any, parts: Sequence[Any]) -> tuple[list[Stretch], int, int]:
+    async def _stretch(self, srow: Any, parts: Sequence[Any]) -> tuple[list[Stretch], int, int, bool]:
         rt = self.rt
         sid = str(srow["id"])
         world_id = str(srow["world_id"])
@@ -530,8 +532,15 @@ class MemoryRuns:
             header = debate_header(config, sides, verdict)
         elif mode == "watch":
             header = watch_header(config)
-        pieces, upto = build_stretch(session_id=sid, world_id=world_id, world_name=str(w[0]) if w else "",
-                                     user_name=user_name, mode=mode, header=header, msgs=msgs, from_seq=from_seq,
-                                     reread_ids=reread, present=present, names=names,
-                                     piece_tokens=int(self.knobs.piece_tokens))
-        return pieces, upto, from_seq
+        # M14 (safety D16; doc 11 S7): the user lines whose steer or care cue was on, from their stored answers
+        from horizon.services.ai_meta import stored_safety_many
+
+        user_lines = [(m.id, m.kind) for m in msgs if m.author_type == "user"]
+        flagged = flagged_lines(user_lines, await stored_safety_many(rt, [i for i, _ in user_lines]))
+        args: dict[str, Any] = {"session_id": sid, "world_id": world_id, "world_name": str(w[0]) if w else "",
+                                "user_name": user_name, "mode": mode, "header": header, "msgs": msgs,
+                                "from_seq": from_seq, "reread_ids": reread, "present": present, "names": names,
+                                "piece_tokens": int(self.knobs.piece_tokens)}
+        pieces, upto = build_stretch(**args, flagged=flagged)
+        emptied = bool(flagged) and not pieces and bool(build_stretch(**args)[0])
+        return pieces, upto, from_seq, emptied

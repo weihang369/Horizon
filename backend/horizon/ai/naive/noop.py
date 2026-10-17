@@ -16,8 +16,10 @@ from horizon.ai.contexts import (
     FollowRequest,
     PlanRequest,
     SessionContext,
+    TurnContext,
     TurnPlan,
 )
+from horizon.ai.ports import GuardrailResult
 
 
 class NoPlanner:
@@ -40,3 +42,14 @@ class NoFaceCheck:
     async def check(self, ctx: SessionContext, message_id: str, speaker_id: str, face: str,
                     text: str) -> tuple[dict[str, Any], dict[str, Any] | None] | None:
         return None
+
+
+class NoGuardrail:
+    """M14 (safety D12; doc 11 S5 "the other profiles"): `naive` checks nothing, so its trace shows no checks that never
+    ran (before M14 it fell back to the scripted guardrail's fixed `sfw` and `advice_scope`)."""
+
+    async def check(self, ctx: TurnContext, text: str) -> GuardrailResult:
+        return GuardrailResult("pass", [])
+
+    async def check_prompt(self, cctx: Any, kind: str, text: str) -> GuardrailResult:
+        return GuardrailResult("pass", [])   # D17: the yardstick checks no prompt

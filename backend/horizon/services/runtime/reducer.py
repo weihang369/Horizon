@@ -331,8 +331,14 @@ def _apply(s: State, evt: Event) -> None:
         s["errors"] = [*s["errors"], err]
         mid = p.get("messageId")
         if mid and mid in s["messages"]:
-            s["messages"][mid] = {**s["messages"][mid],
-                                  "error": {"code": p["code"], "message": p["message"], "retryable": p["retryable"]}}
+            m = {**s["messages"][mid], "error": {"code": p["code"], "message": p["message"], "retryable": p["retryable"]}}
+            if p["code"] == "content_refused":   # M14 (safety D11): a blocked reply leaves the screen, live or after Stop
+                m["content"] = ""
+                m["status"] = "error"
+                active = m.get("activeVariantId")
+                if active and m.get("variants"):
+                    m["variants"] = [{**v, "content": ""} if v["id"] == active else v for v in m["variants"]]
+            s["messages"][mid] = m
         return
 
     if t == "message":

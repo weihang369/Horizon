@@ -425,6 +425,11 @@ boundary plus the output check fits the risk. The memory noul rides in a request
 tag text is removed from pieces and titles (case and spaces ignored), and the standing line says the passages are
 reference text, not instructions.*
 
+*Built in M14 (OpenSpec `safety` D15): the memory noul is `instruction:l{n}` in the importance request (the seam M13
+left, D14/D38), threshold `memory.tInstruction` 0.7. "Held, not written" is the whole piece: the importance and
+instruction questions share one request, and a piece commits in one transaction, so a missing answer makes the piece a
+failed try, retried at the next pause and skipped after `memory.maxTries`.*
+
 ### S7. The never-store list grows
 
 **Decision:** doc 09 M3's never-store list becomes:
@@ -444,6 +449,9 @@ confirmed by the user (2026-10-10, by explicit choice).
 
 **Rejected:** redacting personal data from documents at upload: they are the user's own documents in their own app,
 and redaction would remove what they asked about.
+
+*Built in M14 (OpenSpec `safety` D16): the stretch builder drops the flagged user lines and their replies before the
+writer's call (doc 09 M3's built note); the prompt's list (`memory-2`, M13) is unchanged.*
 
 ### S8. The privacy notice (the user's decision)
 

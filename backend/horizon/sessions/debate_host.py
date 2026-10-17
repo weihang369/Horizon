@@ -69,11 +69,25 @@ def request(actor: SessionActor, key: HostKey) -> None:
     async def write() -> str | None:
         sctx = await session_context(actor.rt, actor, recent=1000)
         out: str | None = await _host(actor).narration(sctx, key, finish=pending.finish)
-        return out
+        return await checked(actor, sctx, out)
 
     pending = Pending(key=key, task=None)  # type: ignore[arg-type]
     pending.task = actor.background(NAME, write())
     actor.mode.host_line = pending
+
+
+async def checked(actor: SessionActor, sctx: Any, text: str | None) -> str | None:
+    """M14 (safety D10): the line is checked right after it is written, inside this task (it is made ahead, so the check
+    adds no wait); a block shows the fixed line for that moment instead. Late or failed: the line stands."""
+    if not text:
+        return text
+    rt = actor.rt
+    check = getattr(rt.ai.guardrail(rt.keys.status() == "set"), "check_text", None)
+    if check is None:
+        return text
+    motion = str((actor.session.get("config") or {}).get("motion", ""))
+    res = await check(sctx, text, name="The host", role="debate host", message=f"Motion: {motion}" if motion else "")
+    return None if res.verdict == "block" else text
 
 
 def drop(actor: SessionActor) -> None:

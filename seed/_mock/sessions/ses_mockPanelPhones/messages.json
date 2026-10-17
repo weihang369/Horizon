@@ -100,13 +100,9 @@
         "guardrail": {
           "checks": [
             {
-              "name": "sfw",
+              "name": "output",
               "verdict": "pass",
-              "p": 0.966
-            },
-            {
-              "name": "advice_scope",
-              "verdict": "pass"
+              "p": 0.021
             }
           ]
         },
@@ -215,13 +211,9 @@
         "guardrail": {
           "checks": [
             {
-              "name": "sfw",
+              "name": "output",
               "verdict": "pass",
-              "p": 0.972
-            },
-            {
-              "name": "advice_scope",
-              "verdict": "pass"
+              "p": 0.027
             }
           ]
         },
@@ -330,13 +322,9 @@
         "guardrail": {
           "checks": [
             {
-              "name": "sfw",
+              "name": "output",
               "verdict": "pass",
-              "p": 0.986
-            },
-            {
-              "name": "advice_scope",
-              "verdict": "pass"
+              "p": 0.041
             }
           ]
         },
@@ -457,13 +445,9 @@
         "guardrail": {
           "checks": [
             {
-              "name": "sfw",
+              "name": "output",
               "verdict": "pass",
-              "p": 0.96
-            },
-            {
-              "name": "advice_scope",
-              "verdict": "pass"
+              "p": 0.015
             }
           ]
         },
@@ -564,13 +548,9 @@
         "guardrail": {
           "checks": [
             {
-              "name": "sfw",
+              "name": "output",
               "verdict": "pass",
-              "p": 0.954
-            },
-            {
-              "name": "advice_scope",
-              "verdict": "pass"
+              "p": 0.009
             }
           ]
         },
@@ -671,13 +651,9 @@
         "guardrail": {
           "checks": [
             {
-              "name": "sfw",
+              "name": "output",
               "verdict": "pass",
-              "p": 0.983
-            },
-            {
-              "name": "advice_scope",
-              "verdict": "pass"
+              "p": 0.038
             }
           ]
         },

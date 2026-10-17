@@ -18,7 +18,7 @@ A live character turn SHALL emit, in order, `turn.next`, `turn.thinking`, `turn.
 ## ADDED Requirements
 
 ### Requirement: An interrupted reply is checked after the fact
-Under `agent`, a reply ended by Stop (including Stop during its check) SHALL be checked by a named after-turn task that reuses any check already in flight, so nothing is paid twice. The task SHALL survive Stop, End, a cap pause and leave, and SHALL be cancelled by a session, character or world delete, by Reset demo and by shutdown. A block SHALL scrub the reply as a live block does.
+Under `agent`, a reply ended by Stop (including Stop during its check) SHALL be checked by a named after-turn task that reuses any check already in flight, so nothing is paid twice. The task SHALL survive Stop, End, a cap pause, leave and Reset demo (which keeps user sessions), and SHALL be cancelled by a session, character or world delete and by shutdown. A block SHALL scrub the reply as a live block does.
 
 #### Scenario: Stop during the check
 - **WHEN** the user presses Stop while a finished reply's output check is in flight, and the check then answers p 0.95

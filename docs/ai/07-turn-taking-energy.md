@@ -194,6 +194,10 @@ took p50 443 ms / p90 495 ms (our state assembly: p90 0.5 ms; no slow spells). B
 for the optional `turn.next`. In the group free runs 6 of 36 follow plans were still late at 483 ms (17 %). Measured
 again after M14 (D9); [m10.md](checks/m10.md) 10.7.*
 
+*Beside the output check (M14, OpenSpec `safety` D10; doc 11 S5): the follow plan still starts at the first reply's
+stream end, in parallel with that reply's output check, and its deadline still counts from `turn.end`. A block cancels
+it, so no second reply starts even when its pick lands before the block (doc 11 check 3, run offline).*
+
 *One voice (M14, OpenSpec `safety` D7; doc 11 S3, S4): when a message's steer or care cue is on, code cuts the reply
 list to one speaker after the plan (the first mentioned, else Jev's first pick; Everyone and Everyone answer: the
 first in the plan's order), starts no follow plan and no prefetch, and writes `routing.reason` "one voice: the

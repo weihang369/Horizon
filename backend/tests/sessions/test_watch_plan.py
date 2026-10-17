@@ -247,7 +247,8 @@ async def test_hidden_by_the_pace(api: Api) -> None:
     """MANUAL (no reactions, no face check), so the only decisions are plans: call 1 opens, call 2 is made ahead."""
     sid = await agent_watch(api, manual=True, maxTurns=10, paceMs=1500)
     assert api.rt.fake is not None
-    release = api.rt.fake.park_decision(api.rt.fake.counts["decisions"] + 2)
+    # M14 (safety D10): call 1, the output check, then the plan made ahead
+    release = api.rt.fake.park_decision(api.rt.fake.counts["decisions"] + 3)
     end = await _until_turn_end(api, sid, 1)
     t_end = ms_from_iso(end["at"])
     await api.drive(1200 - (ms_from_iso(api.rt.now_iso()) - t_end))
@@ -273,7 +274,8 @@ async def test_a_directors_note_in_the_gap_redoes_the_plan(api: Api) -> None:
     plans again, and uses that plan (its call is no fallback)."""
     sid = await agent_watch(api, manual=True, maxTurns=10, paceMs=1500)
     assert api.rt.fake is not None
-    release = api.rt.fake.park_decision(api.rt.fake.counts["decisions"] + 2)   # the plan made ahead
+    # M14 (safety D10): call 1, the output check, then the plan made ahead
+    release = api.rt.fake.park_decision(api.rt.fake.counts["decisions"] + 3)
     await _until_turn_end(api, sid, 1)
     await api.drive(100)
     await command(api, sid, "watch/direct", {"text": "The lights go out."})
@@ -296,7 +298,8 @@ async def test_stop_during_the_gap_cancels_the_plan_made_ahead(api: Api) -> None
 
     sid = await agent_watch(api, manual=True, maxTurns=10, paceMs=1500)
     assert api.rt.fake is not None
-    release = api.rt.fake.park_decision(api.rt.fake.counts["decisions"] + 2)
+    # M14 (safety D10): call 1, the output check, then the plan made ahead
+    release = api.rt.fake.park_decision(api.rt.fake.counts["decisions"] + 3)
     await _until_turn_end(api, sid, 1)
     await api.drive(100)
     await command(api, sid, "stop")

@@ -18,6 +18,7 @@ from horizon.sessions.context import session_context
 from horizon.sessions.follow import answer_then_follow, second_reply
 from horizon.sessions.modes.common import (
     asleep_note,
+    checked_s,
     gap,
     is_asleep,
     message_event,
@@ -145,17 +146,20 @@ def turn(actor: SessionActor, manual: bool = False) -> None:
             return
         taken = int(state_of(actor)["turnsTaken"]) + 1
         ended = taken >= int(state_of(actor)["turnLimit"])
+        # M14 (safety D10): the turn gap and `paceMs` count from the stream's end, so the output check is hidden in them
+        timing = actor.rt.runtime_cfg.timing
+        gap_s, pace_s, check_s = timing.turn_gap_ms / 1000, float(cfg_of(actor).get("paceMs", 1500)) / 1000, checked_s(out)
         if (planned and not manual and not ended and not actor.held and out.ended_at is not None
                 and actor.session.get("status") == "active"):
-            timing = actor.rt.runtime_cfg.timing
-            due = out.ended_at + timedelta(milliseconds=timing.turn_gap_ms + float(cfg_of(actor).get("paceMs", 1500)))
+            start = out.stream_end or out.ended_at
+            due = max(out.ended_at, start + timedelta(seconds=gap_s + pace_s))
             await start_plan_ahead(actor, due)   # G8: the next plan runs during the wait, never the next reply
-        await gap(actor, None)
+        await gap(actor, None, max(0.0, gap_s - check_s))
         await actor.emit(*watch_state(actor, {"turnsTaken": taken, "status": "ended" if ended else state_of(actor)["status"]}))
         if ended:
             await actor.emit({"type": "session.paused", "payload": {"reason": "turn_cap"}})
         if not ended and not manual and not actor.held:
-            actor.after(float(cfg_of(actor).get("paceMs", 1500)), lambda: turn(actor))
+            actor.after(max(0.0, pace_s - max(0.0, check_s - gap_s)) * 1000, lambda: turn(actor))
 
     actor.enqueue(job)
 

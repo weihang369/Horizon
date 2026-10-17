@@ -66,6 +66,9 @@ class TurnInfo:
     spec: Any = None
     ctx: Any = None
     engine: Any = None
+    guard: Any = None              # M14 (safety D10): the output check in flight, handed to `output_check` on Stop
+    checked: Any = None            # M14 (D10): a released prefetch's check result, so it isn't checked twice
+    stream_end: Any = None         # M14 (D10): when the stream ended (the waits after a turn count from here)
 
 
 @dataclass

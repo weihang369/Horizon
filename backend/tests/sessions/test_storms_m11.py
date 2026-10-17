@@ -20,7 +20,8 @@ async def test_the_storm_helpers_on_the_watch_plan_made_ahead(api: Api) -> None:
 
     sid = await agent_watch(api, manual=True, maxTurns=10, paceMs=1500)
     assert api.rt.fake is not None
-    release = api.rt.fake.park_decision(api.rt.fake.counts["decisions"] + 2)
+    # M14 (safety D10): call 1, the output check, then the plan made ahead
+    release = api.rt.fake.park_decision(api.rt.fake.counts["decisions"] + 3)
     await _until_turn_end(api, sid, 1)
     await api.drive(100)
     actor: SessionActor = await api.rt.sessions.get(sid)

@@ -29,7 +29,7 @@ from sqlalchemy import and_, func, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncConnection
 
-from horizon.api.errors import conflict, not_found, validation
+from horizon.api.errors import HorizonHTTPError, conflict, not_found, validation
 from horizon.db import tables as t
 from horizon.domain.ids import new_id
 from horizon.domain.timeutil import ms_from_iso
@@ -43,6 +43,11 @@ if TYPE_CHECKING:
     from horizon.runtime import Runtime
 
 log = logging.getLogger("horizon.jobs")
+# M14 (safety D17; doc 12 I3): what a refused image text check answers, by where the text was written
+TWEAK_REFUSED = ("Tweaks can't make a portrait look like a real person or an existing character, or add nudity, gore, "
+                 "weapons or a childlike look. Change the wording and try again.")
+BASE_REFUSED = ("This character's description asks for a real person's or an existing character's likeness, nudity, "
+                "gore, weapons or a childlike look. Edit the Profile or Look step and try again.")
 
 J = t.generation_jobs.c
 T = t.generation_tasks.c
@@ -179,6 +184,7 @@ class JobScheduler:
         if active is not None:
             raise conflict("This character already has a generation job running.", {"activeJobId": active[0]})
         plan = self.plan(job_input)
+        await self._check_prompt(ch, job_input, plan)   # M14 (safety D17): before any hold or row
         job_id = new_id("job")
         await self._reserve(ch, job_id, plan.estimate, existing=False)
         try:
@@ -196,6 +202,37 @@ class JobScheduler:
             self.rt.spawn(f"music-probe:{job_id}", self._probe_music())
         async with self.rt.db.read() as conn:
             return await self._job_wire(conn, job_id)
+
+    async def _check_prompt(self, ch: Mapping[str, Any], job_input: Mapping[str, Any], plan: Any) -> None:
+        """M14 (safety D17; doc 12 I3): the user-written text the job will compile, checked by Jev before anything is
+        stored: the subject block (and the API-only note) for portrait candidates and the expression sheet, the compiled
+        tweak for a tweak. Edits and `emotion_regenerate` aren't checked. A refusal answers 451 `content_refused`; a
+        late or failed check lets the job start (logged)."""
+        from horizon.gateway.context import call_ctx
+
+        kind = str(job_input["kind"])
+        sheet = any(tp.type == "expression_sheet" for tp in plan.tasks)
+        if kind not in ("portrait_candidates", "portrait_tweak") and not sheet:
+            return
+        check = getattr(self.rt.ai.guardrail(True), "check_prompt", None)
+        if check is None:
+            return
+        compiler = self.rt.prompt_compiler
+        profile, appearance = ch["profile"] or {}, ch["appearance"] or {}
+        if kind == "portrait_tweak":
+            text = compiler.tweak(profile, str(job_input.get("prompt") or "")).prompt
+        else:
+            text = compiler.subject(profile, appearance)
+            note = " ".join(str(job_input.get("prompt") or "").split())[:300] if kind == "portrait_candidates" else ""
+            if note:
+                text = f"{text} Also: {note}"
+        cctx = call_ctx("guardrail", world_id=str(ch["world_id"]), character_id=str(ch["id"]),
+                        creation=ch["status"] != "approved")
+        res = await check(cctx, "image", text)
+        if res.fallback:
+            log.info("the image text check for %s failed or was late; the job starts", ch["id"])
+        elif res.verdict == "block":
+            raise HorizonHTTPError("content_refused", TWEAK_REFUSED if kind == "portrait_tweak" else BASE_REFUSED)
 
     async def _probe_music(self) -> None:
         """A free check that the configured music model is listed, logged once per Lyria song job start (D-87). It

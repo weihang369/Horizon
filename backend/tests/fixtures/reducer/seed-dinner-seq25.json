@@ -388,13 +388,9 @@
           "guardrail": {
             "checks": [
               {
-                "name": "sfw",
+                "name": "output",
                 "verdict": "pass",
-                "p": 0.961
-              },
-              {
-                "name": "advice_scope",
-                "verdict": "pass"
+                "p": 0.016
               }
             ]
           },
@@ -634,13 +630,9 @@
           "guardrail": {
             "checks": [
               {
-                "name": "sfw",
+                "name": "output",
                 "verdict": "pass",
-                "p": 0.961
-              },
-              {
-                "name": "advice_scope",
-                "verdict": "pass"
+                "p": 0.016
               }
             ]
           },

@@ -31,7 +31,7 @@
         "tokensIn": 1977,
         "tokensCached": 1681,
         "tokensOut": 27,
-        "costUsd": 0.000066,
+        "costUsd": 6.6e-05,
         "energySpent": 1,
         "firstTokenMs": 1567,
         "totalMs": 2372
@@ -49,7 +49,7 @@
           "tokensIn": 1977,
           "tokensCached": 1681,
           "tokensOut": 27,
-          "costUsd": 0.000066
+          "costUsd": 6.6e-05
         },
         "energy": {
           "characterId": "chr_seedHana",
@@ -94,13 +94,9 @@
         "guardrail": {
           "checks": [
             {
-              "name": "sfw",
+              "name": "output",
               "verdict": "pass",
-              "p": 0.987
-            },
-            {
-              "name": "advice_scope",
-              "verdict": "pass"
+              "p": 0.013
             }
           ]
         }
@@ -136,7 +132,7 @@
         "tokensIn": 1962,
         "tokensCached": 1658,
         "tokensOut": 25,
-        "costUsd": 0.000066,
+        "costUsd": 6.6e-05,
         "energySpent": 1,
         "firstTokenMs": 1616,
         "totalMs": 2396
@@ -154,7 +150,7 @@
           "tokensIn": 1962,
           "tokensCached": 1658,
           "tokensOut": 25,
-          "costUsd": 0.000066
+          "costUsd": 6.6e-05
         },
         "energy": {
           "characterId": "chr_seedHana",
@@ -199,13 +195,9 @@
         "guardrail": {
           "checks": [
             {
-              "name": "sfw",
+              "name": "output",
               "verdict": "pass",
-              "p": 0.968
-            },
-            {
-              "name": "advice_scope",
-              "verdict": "pass"
+              "p": 0.032
             }
           ]
         }
@@ -241,7 +233,7 @@
         "tokensIn": 2048,
         "tokensCached": 1742,
         "tokensOut": 45,
-        "costUsd": 0.000078,
+        "costUsd": 7.8e-05,
         "energySpent": 1,
         "firstTokenMs": 1372,
         "totalMs": 2652
@@ -259,7 +251,7 @@
           "tokensIn": 2048,
           "tokensCached": 1742,
           "tokensOut": 45,
-          "costUsd": 0.000078
+          "costUsd": 7.8e-05
         },
         "energy": {
           "characterId": "chr_seedHana",
@@ -304,13 +296,9 @@
         "guardrail": {
           "checks": [
             {
-              "name": "sfw",
+              "name": "output",
               "verdict": "pass",
-              "p": 0.958
-            },
-            {
-              "name": "advice_scope",
-              "verdict": "pass"
+              "p": 0.042
             }
           ]
         }

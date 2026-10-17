@@ -20,6 +20,7 @@ import { KnowledgeCard } from "./KnowledgeCard";
 import { useKnowledgeProgress } from "./useKnowledgeProgress";
 import s from "./profile.module.css";
 import k from "./knowledge.module.css";
+import { KNOWLEDGE_NOTICE } from "../settings/privacyNotice";
 
 // ── Profile ─────────────────────────────────────────────────────────────────
 export function ProfileTabView({ c }: { c: Character }) {
@@ -250,6 +251,7 @@ export function KnowledgeTab({ c }: { c: Character }) {
       <span className={k.dropText}>
         <b>{docs.length ? `Drop more documents to teach ${first}` : `Drop documents to teach ${first}.`}</b>
         <span>PDF, DOCX, MD or TXT · click to pick a file · or paste text</span>
+        <span>{KNOWLEDGE_NOTICE}</span>
       </span>
     </button>
   );

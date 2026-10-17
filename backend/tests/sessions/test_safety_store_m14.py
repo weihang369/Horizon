@@ -20,6 +20,8 @@ async def a_line(api: Api) -> tuple[str, str]:
     sid = await agent(api, "one_on_one", [AMARA])
     await send(api, sid, "Tell me something about nights.")
     user = next(m for m in await messages(api, sid) if m["author"]["type"] == "user")
+    async with api.rt.db.write() as tx:   # the plan stored its own answers (D5); these tests start from none
+        await tx.conn.execute(text("UPDATE message_ai_meta SET safety = NULL WHERE message_id = :m"), {"m": user["id"]})
     return sid, str(user["id"])
 
 

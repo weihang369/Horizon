@@ -142,13 +142,23 @@ class Controller {
     let rt = this.runtime;
     if (!rt) return;
     const touched = new Set<string>();
+    const refused: string[] = [];
     for (const e of events) {
       rt = applyEvent(rt, e);
       if (e.type === "token" || e.type === "turn.end" || e.type === "turn.start") touched.add((e.payload as { messageId: string }).messageId);
+      // M14 (safety D11): a blocked reply's streamed text leaves the StreamingText buffer too
+      if (e.type === "error") {
+        const { code, messageId } = e.payload as { code: string; messageId?: string };
+        if (code === "content_refused" && messageId) refused.push(messageId);
+      }
     }
     for (const id of touched) {
       const m: Message | undefined = rt.messages[id];
       if (m) setStreamTarget(id, m.content, m.status !== "streaming");
+    }
+    for (const id of refused) {
+      setStreamTarget(id, "", true);
+      clearStream([id]);
     }
     patchSlot(this.key, { runtime: rt, ...(this.player ? { player: this.playerInfo(rt.lastSeq) } : {}) });
   }
