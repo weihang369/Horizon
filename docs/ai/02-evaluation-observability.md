@@ -291,6 +291,13 @@ frozen transcripts start from a long committed history.
   *Built in M10 (`group-watch` D23): `horizon eval freerun --mode watch|group`, signals only, with follow-plan
   timeouts counted apart from `none` and every steered line printed for reading.*
 
+*Built in M15 (OpenSpec `images-music` D10, D11; [m15.md](checks/m15.md)):*
+- *The 20 frozen transcripts: 9 cut from the committed histories (4 debates, 5 watch windows), 7 short scripts generated
+  once by `naive` (4 × 1:1, 3 groups; 13 non-English lines, 12 planted wrong claims, 7 documents questions), and the
+  4 long ones already committed. Splits are by transcript, a third of each mode on test.*
+- *`horizon eval conversations --profile agent` runs both profiles on every unit from the same stored history, judges
+  them, and saves every judge state for re-judging.*
+
 **Rejected:**
 - **fixed user lines with live character replies:** from turn 2 on, the two profiles answer different conversations,
   so a "better reply" can't be told apart from "a different history", and errors compound.
@@ -323,6 +330,14 @@ frozen transcripts start from a long committed history.
   `judge_over_mention`, each with 30 planted items; their 30 real items are labelled from the first paid memory run's
   saved judge states, and each reads "NOT COUNTED" until its current version passes. "Memory for an absent
   character" is a unit test: the call names characters by their number among those present.*
+
+  *Built in M15 (OpenSpec `images-music` D12; [m15.md](checks/m15.md) 8.5): "stays in character" is four nouls
+  combined in code: `judge_voice` v4, `judge_persona_fact`, `judge_answers_last`, and M14's in-story noul
+  `judge_in_story` for "never says it is an AI" (it steps out of the story unasked; the recent lines show whether a
+sincere ask came first). `judge_voice`,
+  `judge_persona_fact`, `judge_sentence_supported` and `judge_pairwise` v3 passed B4. `judge_answers_last` failed its
+  planted items twice (0.77, the second time after its one rewording), so it reads NOT COUNTED. The composite is
+  tagged NOT COUNTED too, beside a "stays (without judge_answers_last)" row over the three validated nouls.*
   | **Safety** (doc 11 S10) | the `safety` suite: input, care, output, injection, honesty and advice, drafter, drift; items in `private/evals/safety/` | doc 11 S10's table. *Built in M14: `horizon eval safety` (`--part`, `--recut`), the private store under `private/evals/`, six B4-validated judges; results in [m14.md](checks/m14.md)* |
 
 - **Pairwise numbers:**
