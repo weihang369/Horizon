@@ -86,6 +86,10 @@ class Reaction:
 class GuardrailResult:
     verdict: str                                         # pass | flag | block
     checks: list[dict[str, Any]] = field(default_factory=list)
+    # M14 (safety D9, D19): the System 1 row (agent only), Jev's p, and whether the check fell back (late or failed)
+    rows: list[dict[str, Any]] = field(default_factory=list)
+    p: float | None = None
+    fallback: bool = False
 
 
 class TurnEngine(Protocol):

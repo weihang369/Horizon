@@ -1,0 +1,20 @@
+{
+  "id": "image_gore",
+  "version": 1,
+  "purpose": "guardrail",
+  "type": "noul",
+  "label": "blood, wounds or weapons?",
+  "instructions": "Does the portrait description in quoted_text ask for blood, open wounds or weapons?",
+  "true": "Yes: it asks for blood, an open wound or a weapon in the picture.",
+  "false": "No: nothing in it asks for blood, wounds or weapons; a healed scar or a uniform is fine.",
+  "state": {
+    "quoted_text": "quoted"
+  },
+  "deadline": "guardrail_prompt",
+  "floor": null,
+  "thresholds": {
+    "tImageGore": 0.5
+  },
+  "fallback": "start",
+  "state_note": "doc 12 I3, safety D17: one of four image nouls in one request at job start."
+}

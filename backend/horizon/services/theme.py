@@ -15,7 +15,16 @@ from typing import Any
 LICENSE_NOTE = "Procedural theme rendered in the app from the brief (D-83): it costs nothing."
 FALLBACK_NOTE = ("The music model was unavailable, so this is the procedural theme rendered in the app from the brief. "
                  "Regenerate to try again.")
+# M14 (safety D17; doc 12 I4): the note by why the song fell back
+BRIEF_REFUSED_NOTE = ("The brief names an artist or an existing piece, so this is the procedural theme rendered in the "
+                      "app. Edit the brief and compose again for a recorded one.")
+DECLINED_NOTE = "The music model declined this brief, so this is the procedural theme rendered in the app."
 MODEL = "procedural"
+
+
+def fallback_note(reason: str) -> str:
+    """`brief_refused` (Jev's check), a Lyria `content_refused`, or any other fault (`FALLBACK_NOTE`)."""
+    return {"brief_refused": BRIEF_REFUSED_NOTE, "content_refused": DECLINED_NOTE}.get(reason, FALLBACK_NOTE)
 CLIP_SECONDS = 30.0   # a Lyria 3 Clip's length, used when the MP3's frames can't be read
 
 

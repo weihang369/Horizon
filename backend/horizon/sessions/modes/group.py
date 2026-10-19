@@ -29,6 +29,7 @@ from horizon.sessions.modes.common import (
 from horizon.sessions.plans import cast_request, plan_cast, plans_cast
 from horizon.sessions.prefetch import Prefetch
 from horizon.sessions.retrieve import start_query
+from horizon.sessions.safety import one_voice
 from horizon.sessions.turn import TurnSpec
 
 if TYPE_CHECKING:
@@ -104,7 +105,17 @@ def _spec(cid: str, i: int, prompt: str, forced: set[str], forced_by: str | None
 def _planned_spec(cid: str, i: int, prompt: str, is_forced: bool, forced_by: str | None, skipped: list[Wire] | None,
                   plan: CastPlan, cue: CueKind | None = None) -> TurnSpec:
     """A reply started by a cast plan (M10, group-watch D5, D22): the plan's routing and its per-turn plan. The plan's
-    call and rows travel in that per-turn plan (`TurnRunner` lists them), so the spec carries neither."""
+    call and rows travel in that per-turn plan (`TurnRunner` lists them), so the spec carries neither. M14 (safety
+    D7): a steered or care line's one reply says why it is the only one."""
+    spec = _planned_spec_routing(cid, i, prompt, is_forced, forced_by, skipped, plan, cue)
+    reason = one_voice(plan)
+    if reason is not None:
+        spec.routing = {**(spec.routing or {"selected": cid}), "reason": reason}
+    return spec
+
+
+def _planned_spec_routing(cid: str, i: int, prompt: str, is_forced: bool, forced_by: str | None,
+                          skipped: list[Wire] | None, plan: CastPlan, cue: CueKind | None = None) -> TurnSpec:
     who = plan.who
     routing: Wire | None = None
     if who is not None and who.question:
@@ -208,8 +219,9 @@ async def _planned(actor: SessionActor, text: str, mentions: list[str], epoch: i
         if plan is None:
             return False
         order = [*mentions, *(c for c in plan.order if c not in mentions)]
-        await run_speakers(actor, order, text, forced=set(mentions), skipped=skipped, cast_plan=plan, prefetch=True,
-                           reply_epoch=epoch)
+        voice = one_voice(plan) is not None   # M14 (D7): the first in the plan's order (mentions first), no prefetch
+        await run_speakers(actor, order[:1] if voice else order, text, forced=set(mentions), skipped=skipped,
+                           cast_plan=plan, prefetch=not voice, reply_epoch=epoch)
         return True
     if mentions or policy == "mentioned":
         if not mentions:
@@ -221,8 +233,9 @@ async def _planned(actor: SessionActor, text: str, mentions: list[str], epoch: i
         if policy == "auto" and len(mentions) == 1:   # G1: one mention may get a second voice from the follow plan
             await _with_follow(actor, _planned_spec(mentions[0], 0, text, True, "mention", skipped, plan), text, epoch)
             return True
-        await run_speakers(actor, mentions, text, forced=set(mentions), skipped=skipped, cast_plan=plan,
-                           reply_epoch=epoch)
+        voice = one_voice(plan) is not None   # M14 (D7): the first mentioned answers alone
+        await run_speakers(actor, mentions[:1] if voice else mentions, text, forced=set(mentions), skipped=skipped,
+                           cast_plan=plan, reply_epoch=epoch)
         return True
     if not rest:
         return True
@@ -253,7 +266,9 @@ def everyone_answer(actor: SessionActor) -> None:
             plan = await plan_cast(actor, await cast_request(actor, "everyone", awake, latest=prompt)) if awake else None
             if plan is not None:
                 order = [*plan.order, *(c for c in speakers if c not in awake)]
-                await run_speakers(actor, order, prompt, prefetch=True, cast_plan=plan, reply_epoch=epoch)
+                voice = one_voice(plan) is not None   # M14 (D7): Everyone answer to a steered or care line: one voice
+                await run_speakers(actor, order[:1] if voice else order, prompt, prefetch=not voice, cast_plan=plan,
+                                   reply_epoch=epoch)
                 return
         await run_speakers(actor, speakers, prompt, prefetch=True, reply_epoch=epoch)
 

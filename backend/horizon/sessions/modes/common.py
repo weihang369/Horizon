@@ -66,11 +66,19 @@ async def asleep_note(actor: SessionActor, character_id: str, *, skipping: bool,
 
 
 async def speak_then(actor: SessionActor, spec: TurnSpec, *, prefetch: Any = None) -> TurnOutcome:
-    """One turn, then the turn gap before the next queued turn (the mock's `speakThen`)."""
+    """One turn, then the turn gap before the next queued turn (the mock's `speakThen`). M14 (safety D10): the gap
+    counts from the stream's end, so the output check's time is hidden in it."""
     out = await runner(actor).run(actor, spec, prefetch=prefetch)
     if out.status in ("complete", "interrupted", "error"):
-        await gap(actor, spec.epoch)
+        await gap(actor, spec.epoch, max(0.0, actor.rt.runtime_cfg.timing.turn_gap_ms / 1000 - checked_s(out)))
     return out
+
+
+def checked_s(out: Any) -> float:
+    """M14 (safety D10): the seconds between a turn's stream end and its `turn.end` (the output check), taken off the
+    waits after it, so a check shorter than the wait adds nothing to the cadence."""
+    end, done = getattr(out, "stream_end", None), getattr(out, "ended_at", None)
+    return max(0.0, (done - end).total_seconds()) if end is not None and done is not None else 0.0
 
 
 async def gap(actor: SessionActor, epoch: int | None, seconds: float | None = None) -> None:

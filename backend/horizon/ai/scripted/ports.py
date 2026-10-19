@@ -238,8 +238,8 @@ class ScriptedTurnEngine:
             "emotion": {"chosen": line.emotion, "source": "llm", "candidates": emotion_candidates(line.emotion, rng)},
             "context": {"budget": 12000, "cacheHitPct": js_round(100 * spec.tokens_cached / max(1, spec.tokens_in)),
                         "used": {**used, "memory": 0}},
-            "guardrail": {"checks": [{"name": "sfw", "verdict": "pass", "p": r3(rng.uniform(0.95, 0.995))},
-                                     {"name": "advice_scope", "verdict": "pass"}]},
+            # M14 (safety D12): the one check `agent` runs, shown passing with a low p (one draw, as `sfw` took)
+            "guardrail": {"checks": [{"name": "output", "verdict": "pass", "p": r3(rng.uniform(0.005, 0.05))}]},
         }
         if cited is not None:
             patch["knowledge"] = cited[2]
@@ -510,8 +510,14 @@ class ScriptedSummariser:
 
 
 class ScriptedGuardrail:
+    """M14 (safety D12): passes with no call; the scripted engine's trace already shows `output: pass` with its p, and
+    the runtime merges checks by name, so nothing here would add anything."""
+
     async def check(self, ctx: TurnContext, text: str) -> GuardrailResult:
-        return GuardrailResult("pass", [{"name": "sfw", "verdict": "pass"}, {"name": "advice_scope", "verdict": "pass"}])
+        return GuardrailResult("pass", [])
+
+    async def check_prompt(self, cctx: Any, kind: str, text: str) -> GuardrailResult:
+        return GuardrailResult("pass", [])   # D17: no call
 
 
 __all__ = ["ScriptedDebateHost", "ScriptedGuardrail", "ScriptedReactions", "ScriptedRouter",

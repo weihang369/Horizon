@@ -10,6 +10,10 @@ ledger row starts with `message_id` NULL (the drain still happens: the purpose i
   then linked to the message (`LedgerWriter.link_message`), so usage and `TurnTrace.calls` work unchanged.
 - **Discard.** Stop, leave, a cap pause or the end of the run cancels a prefetch. Its rows keep `message_id` NULL and
   their drain stands; nothing from it reaches the session's events.
+- **The output check** (M14, safety D10): a prefetch that finishes streaming before its slot starts its check at once,
+  while the previous speaker is on screen; at its slot the runner waits for it (at most the check's deadline from its
+  start). A block discards it unseen; any other result rides into `finish()`, so it is never checked twice. A prefetch
+  still streaming at its slot is checked as a live reply.
 """
 
 from __future__ import annotations
@@ -50,6 +54,8 @@ class Prefetch:
         self.planning: asyncio.Task[TurnPlan | None] | None = None   # M11: its own face plan (debate D8)
         self._planned: asyncio.Task[TurnPlan | None] | None = None   # M12: the plan with its deep work merged
         self.released = False
+        self.guard: Any = None        # M14 (safety D10): its output check, started when it finished before release
+        self.checked: Any = None   # M14 (safety D10): the output check's result, read before release
 
     @classmethod
     async def start(cls, actor: SessionActor, spec: TurnSpec,
@@ -101,13 +107,20 @@ class Prefetch:
         token = RECORDED_SINK.set(self.rows.append)
         try:
             await self.planned()
+            text: list[str] = []
             async with rt.llm_slots.slot():
                 agen: Any = self.engine.run(self.ctx)
                 try:
                     async for ev in agen:
+                        if isinstance(ev, Token):
+                            text.append(ev.delta)
                         self.channel.put((float(to_ms(rt.clock.now())), ev))
                 finally:
                     await agen.aclose()
+            if not self.released and "".join(text).strip():   # M14 (D10): checked before release, in the background
+                start = getattr(rt.ai.guardrail(rt.keys.status() == "set"), "start", None)
+                if start is not None:
+                    self.guard = start(self.ctx, "".join(text))
         except ProviderError as e:
             self.error = e
         finally:
@@ -156,6 +169,15 @@ class Prefetch:
             "knowledge": list(merged.knowledge) if merged.branch == "deep" else [],
             "query": merged.query if merged.branch == "deep" else None})
         return merged
+
+    async def check(self) -> Any:
+        """At its slot (D10): the check of a prefetch that finished before release, waited for until its deadline; None
+        when it is still streaming (it is then checked as a live reply)."""
+        if self.task is None or not self.task.done() or self.guard is None:
+            return None
+        if self.checked is None:
+            self.checked = await self.guard.by(self.guard.deadline())   # counted from when it was sent
+        return self.checked
 
     async def replay(self) -> AsyncIterator[TurnEvent]:
         """The buffered events at speaking pace: everything before the first token at once, then the original gaps."""

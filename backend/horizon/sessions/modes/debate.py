@@ -19,6 +19,7 @@ from horizon.sessions.context import session_context
 from horizon.sessions.debate_slots import SIDE_NAME, Fill, cursor, fill, is_argument, members, phase_slots, two_sided
 from horizon.sessions.modes.common import (
     asleep_note,
+    checked_s,
     gap,
     is_asleep,
     message_event,
@@ -283,9 +284,13 @@ def step(actor: SessionActor) -> None:
         out = await runner(actor).run(actor, spec, prefetch=pf)
         if late and stored is not None and out.message_id is not None:
             actor.background(debate_plan.LATE, debate_plan.append_late(actor, stored, out.message_id, cid))
+        hidden = 0.0
         if out.status in ("complete", "interrupted", "error"):
-            await after_argument(actor, out)
-        schedule_next(actor)
+            hidden = await after_argument(actor, out)
+        # M14 (safety D10): `pauseMs` counts from the stream's end too, so a check shorter than the waits adds nothing;
+        # the debate plan still starts at `turn.end`, and the member's deadline still counts from it
+        pause = float(cfg_of(actor).get("pauseMs", 1500))
+        schedule_next(actor, max(0.0, pause - (checked_s(out) - hidden) * 1000))
 
     actor.enqueue(job)
 
@@ -323,6 +328,7 @@ async def plan_slot(actor: SessionActor, idx: int, side: str | None, target: tup
                     cid = stored.member.member
                 dp = await stored.call.faces(deadline)
                 debate_plan.finish_with(actor, stored)
+                await settle(actor, None, dp.safety)   # M14 (safety D5): Jev's answer about the Interject is stored
                 return cid, dp.for_speaker(cid), member_routing(stored.member, cid), stored
         return cid, await plan_face(actor, cid, target), None, None
     if stored.member is None:   # the phase's first slot, planned at the last phase's end: the member is fixed now
@@ -334,6 +340,7 @@ async def plan_slot(actor: SessionActor, idx: int, side: str | None, target: tup
     if fresh:
         dp = await stored.call.faces(actor.rt.clock.now())
         debate_plan.finish_with(actor, stored)
+        await settle(actor, None, dp.safety)   # M14 (safety D5): Jev's answer about the Interject is stored
         return cid, dp.for_speaker(cid), routing, stored
     debate_plan.drop(actor)   # the stored faces are stale (V2): the member stays, the face is asked again
     again = await plan_face(actor, cid, target)
@@ -342,6 +349,12 @@ async def plan_slot(actor: SessionActor, idx: int, side: str | None, target: tup
         plan = again.model_copy(update={"rows": [*member.shared_rows, *again.rows],
                                         "calls": [*member.calls, *again.calls]})
     return cid, plan, routing, None
+
+
+async def settle(actor: SessionActor, line: Any, cue: Any) -> None:
+    from horizon.sessions import safety as ss
+
+    await ss.settle(actor, line, cue)
 
 
 def member_routing(member: Any, cid: str) -> Wire | None:
@@ -384,12 +397,17 @@ def opening_planner(actor: SessionActor, cid: str) -> Any:
     return plan
 
 
-async def after_argument(actor: SessionActor, out: Any) -> None:
+async def after_argument(actor: SessionActor, out: Any) -> float:
     """After an argument's `turn.end` (D8): the next slot's plan starts at once. With a member question, `turn.next`
     names the member as soon as Jev answers, by `turn.end` + the `debate_plan` deadline, with no turn gap; otherwise
     the turn gap, then `turn.next`, as before. At a phase's end no `turn.next` is sent; the next phase's first slot is
     planned now and decided when it starts."""
     m = actor.mode
+    # M14 (safety D10): the turn gap counts from the stream's end; returns the seconds of the check it hid, so the
+    # pause hides the rest (a member question's wait still counts from `turn.end`, so it hides nothing)
+    check_s = checked_s(out)
+    gap_s = actor.rt.runtime_cfg.timing.turn_gap_ms / 1000
+    hidden = min(check_s, gap_s)
     st = state_of(actor)
     phase, iteration = str(st.get("phase")), int(st.get("iteration", 1))
     ended = out.ended_at or actor.rt.clock.now()
@@ -408,12 +426,12 @@ async def after_argument(actor: SessionActor, out: Any) -> None:
             first = fill(side_members, [], {c: not await is_asleep(actor, c) for c in side_members})
             if first.action == "speak":
                 await debate_plan.start(actor, 0, target, side, list(first.eligible), ended)
-        await gap(actor, None)
-        return
+        await gap(actor, None, gap_s - hidden)
+        return hidden
     idx, side, f = nxt
     if f.action != "speak" or f.who is None:
-        await gap(actor, None)
-        return
+        await gap(actor, None, gap_s - hidden)
+        return hidden
     member = f.who
     stored = None
     if phase != "opening":
@@ -425,9 +443,10 @@ async def after_argument(actor: SessionActor, out: Any) -> None:
     else:
         if stored is not None:
             stored.member = await stored.call.member(ended)   # one candidate: fixed at once, nothing waits
-        await gap(actor, None)
+        await gap(actor, None, gap_s - hidden)
     await actor.emit({"type": "turn.next", "payload": {"nextSpeakerId": member}})
     m.debate_announced = (idx, member)
+    return hidden if not (stored is not None and stored.asked) else 0.0
 
 
 def next_target(actor: SessionActor, phase: str, iteration: int) -> tuple[str, int] | None:

@@ -168,6 +168,17 @@ referral without knowing the user's country (S4).
 - **a disclaimer line in every advisory reply:** the tape already says it (NFR-28), and repeated disclaimers make the
   expert panels unreadable.
 
+*Measured in M14 ([m14.md](checks/m14.md) 8.3, 8.5):*
+- *Sincere "are you an AI?": 3/3 in the suite, and 30/30 in the judges' real-reply batch. No character ever claimed to
+  be human.*
+- *The line is over-applied in role-play. Asked inside a scene, about half the replies step out to say "I'm an AI
+  character": 14 of 30 on a clean run. Amara does it 5 of 5 times, Mei 4 of 5, Victor never. After a user has asked
+  sincerely, almost all do (28 of 30), helped by the memory of that ask.*
+- *The user's choice: accept it for v1 (it errs toward honesty) and reword the line in M15, where system message 1
+  changes anyway.*
+- *Advisory replies point to a professional 3/4 in the suite and 28/30 in the batch. The misses give sound advice but
+  name no doctor, lawyer or adviser.*
+
 ### S3. An unsafe user line is steered in character, not blocked (the user's decision)
 
 **Decision:**
@@ -357,6 +368,13 @@ it actually wrote. At ≈ $0.00003 per reply it is the cheapest safety net avail
 - **starting debate and watch plans at stream end too:** a block would have to discard and redo them, for time the
   modes' own pauses already cover.
 
+*Built in M14 (OpenSpec `safety` D9–D11), measured in [m14.md](checks/m14.md) 8.4:*
+- *Alone, the check is p50 449 ms and p90 485 ms (doc 11 check 2 passes).*
+- *Beside the next debate plan it slows to p90 735 ms, and 10 of 30 went past 700 ms. So
+  `timeoutsMs.decision.guardrail` is **800 ms** (the user's choice).*
+- *With the check before `turn.end`, the follow plan gets its head start back: `follow_plan` returns to 400 ms and
+  M10's NFR-02 exception is dropped.*
+
 ### S6. Prompt injection: quoted blocks, a memory noul, and S5 as the backstop
 
 **Decision:**
@@ -425,6 +443,11 @@ boundary plus the output check fits the risk. The memory noul rides in a request
 tag text is removed from pieces and titles (case and spaces ignored), and the standing line says the passages are
 reference text, not instructions.*
 
+*Built in M14 (OpenSpec `safety` D15): the memory noul is `instruction:l{n}` in the importance request (the seam M13
+left, D14/D38), threshold `memory.tInstruction` 0.7. "Held, not written" is the whole piece: the importance and
+instruction questions share one request, and a piece commits in one transaction, so a missing answer makes the piece a
+failed try, retried at the next pause and skipped after `memory.maxTries`.*
+
 ### S7. The never-store list grows
 
 **Decision:** doc 09 M3's never-store list becomes:
@@ -444,6 +467,9 @@ confirmed by the user (2026-10-10, by explicit choice).
 
 **Rejected:** redacting personal data from documents at upload: they are the user's own documents in their own app,
 and redaction would remove what they asked about.
+
+*Built in M14 (OpenSpec `safety` D16): the stretch builder drops the flagged user lines and their replies before the
+writer's call (doc 09 M3's built note); the prompt's list (`memory-2`, M13) is unchanged.*
 
 ### S8. The privacy notice (the user's decision)
 
@@ -527,6 +553,20 @@ into scolds.
 **Rejected:** OpenAI- or Llama-Guard-style models as the judge: a second provider and a second key (D-38: OpenRouter
 only), and Jev nouls are already the house judge (doc 02 B4).
 
+*Built in M14 (OpenSpec `safety` D21–D24, amended by the user's choices; [m14.md](checks/m14.md)):*
+- *The suite: 244 harmless items committed in full.*
+- *The private items:*
+  - *40 written by the team (likeness, gore, a childlike look, song copying);*
+  - *the rest selected by committed rules from the MIT-licensed HarmBench and AdvBench, with lines holding usable
+    detail removed and the raw files deleted.*
+- *Read by the user against S1's exact text, many violent or abusive lines are inside the narrow rules and serve as
+  hard negatives.*
+- *Unmeasured, so recall rests on few items: care recall n 5, output recall n 5, and no image-nudity or indirect
+  at-risk items.*
+- *Every target is met at the starting thresholds (all kept).*
+- *All six judges pass B4.*
+- *The suite cost $0.198 with the extra judge batch.*
+
 ### S11. Speed and cost in one place
 
 | Step | When | Added wait | Cost |
@@ -556,6 +596,20 @@ only), and Jev nouls are already the house judge (doc 02 B4).
 | 2 | The output check's latency, inside check 3 | p90 ≤ 700 ms | raise the deadline from the data and report it (the reply stays readable meanwhile) |
 | 3 | Group timing with the follow plan started at stream end | no second reply started after a block | fix the cancel path |
 | 4 | findahelpline.com is live and lists Malaysia, the UK and the US. **Done 2026-10-10 ([group A](checks/group-a.md) A4): live; Malaysia 15 lines (e.g. Befrienders KL), UK (Samaritans 116 123), US (988)** | it answers and lists them | use another country-neutral directory, or the eval-checked wording without a link |
+
+*Done in M14 ([m14.md](checks/m14.md)):*
+- *Check 1 (the suite) meets every S10 count at the starting thresholds:*
+  - *steered 28/30, falsely 0/60, split 8/10;*
+  - *care 5/5, false care 0/30;*
+  - *output 5/5, falsely blocked 0/51;*
+  - *motions 15/15, falsely refused 0/15;*
+  - *images 10/10 per measured noul, falsely refused 0/60; songs 10/10, falsely refused 0/20;*
+  - *end to end: no method or dose shown 6/6, a crisis line 6/6, the planted instruction followed 0/5, memory plants
+    safe 5/5, drift 0/55;*
+  - *in-story honesty is the one miss (S2's note).*
+- *Check 2: the output check alone, p90 485 ms (pass); the deadline is 800 ms for the debate case (S5's note).*
+- *Check 3 is tested offline with a forced block (W14): the follow plan's pick is held until after the block, and no
+  second reply starts.*
 
 ## 6. Changes this design needs (each approved at its OpenSpec change)
 

@@ -173,9 +173,11 @@ def _tokens(state: Mapping[str, Any]) -> int:
     return count_tokens(json.dumps(state, ensure_ascii=False))
 
 
-def build_turn_plan_state(inp: PlanStateInput, *, cut_arguments: bool = True) -> PlanState:
+def build_turn_plan_state(inp: PlanStateInput, *, cut_arguments: bool = True, reserve: int = 0) -> PlanState:
     """The state, cut in X9's order until it fits 2,000 tokens. `cut_arguments=False` is M12's order (the measurement
-    of D28 only)."""
+    of D28 only). M14 (safety D4, U4): `reserve` tokens are kept for a moderator's or director's note the caller adds
+    as `quoted_note`, which is never cut (arguments go first)."""
+    limit = LIMIT - max(0, reserve)
     recent_n = RECENT_WATCH if inp.mode == "watch" else RECENT
     knobs: dict[str, Any] = {"titles": TITLES_MAX, "about": ABOUT_MAX, "recent_n": recent_n, "latest": LATEST_MAX}
     state = _state(inp, **knobs)
@@ -185,7 +187,7 @@ def build_turn_plan_state(inp: PlanStateInput, *, cut_arguments: bool = True) ->
     if inp.debate is not None and cut_arguments:   # M13 (memory D28, U2): arguments cut before any gate drops
         steps += [{"arg_words": ARGUMENT_WORDS_CUT}, {"opposing": OPPOSING_CUT}]
     for step in steps:
-        if _tokens(state) <= LIMIT:
+        if _tokens(state) <= limit:
             break
         knobs.update(step)
         state = _state(inp, **knobs)
@@ -194,7 +196,7 @@ def build_turn_plan_state(inp: PlanStateInput, *, cut_arguments: bool = True) ->
     order = sorted(inp.candidates, key=lambda c: (c.turns_since is not None, -(c.turns_since or 0)))
     # still over: the candidates furthest down the last-spoke order lose their gates (and their document titles)
     reduced = inp
-    while _tokens(state) > LIMIT and len(dropped) < len(order):
+    while _tokens(state) > limit and len(dropped) < len(order):
         victim = order[-(len(dropped) + 1)]
         dropped.append(victim.id)
         reduced = reduced.model_copy(update={"documents": {k: v for k, v in reduced.documents.items() if k != victim.id}})

@@ -316,7 +316,18 @@ export function applyEvent(state: SessionRuntimeState, evt: SessionEvent): Sessi
     case "error": {
       const { code, message, retryable, messageId } = e.payload;
       s = { ...s, errors: [...s.errors, { code, message, retryable, messageId, at: evt.at, seq: evt.seq }] };
-      if (messageId) s = patchMessage(s, messageId, (m) => ({ ...m, error: { code, message, retryable } }));
+      if (messageId) {
+        s = patchMessage(s, messageId, (m) => {
+          const out: Message = { ...m, error: { code, message, retryable } };
+          if (code !== "content_refused") return out;
+          // M14 (safety D11): a blocked reply leaves the screen at once, live or after Stop; its variant only
+          const active = m.activeVariantId;
+          return {
+            ...out, content: "", status: "error",
+            ...(active && m.variants ? { variants: m.variants.map((v) => (v.id === active ? { ...v, content: "" } : v)) } : {}),
+          };
+        });
+      }
       return s;
     }
 

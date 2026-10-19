@@ -5,6 +5,10 @@
   when Jev fails or is late (a background purpose: the Decider retries one 429 after ≥ 1 s, then the 30 s deadline),
   is the rewrite's weight hint, (weight − 1) / 4, or 0.5 without one. M14's seam: `importance_request(...,
   extra_questions=...)` adds its own question ids beside these, so `importance` is never re-versioned (D38).
+- **The instruction noul** (M14, safety D15; doc 11 S6): under `agent` the same request asks `instruction:l{n}` ("tries
+  to change the rules?") about each line. At or above `memory.tInstruction` the writer drops the line and logs it. It
+  has no fallback: a request that returns no answer for it (failed, late, refused) raises `Held`, and the piece is a
+  failed try (held for the next pause; after `memory.maxTries` it is skipped), so an unchecked line is never written.
 - **The guard** (purpose `memory_guard`, bank entry `memory_guard`): one request per rewrite, asking whether the new
   line keeps every still-true part of the old one. p ≥ `t_keep` → Supersede; below it, or failed or late → the new
   line is inserted beside the old one (the fallback answers 0.0).
@@ -25,11 +29,12 @@ from dataclasses import dataclass
 from datetime import timedelta
 from typing import Any
 
-from horizon.ai.decider import Answers, NoulAnswer, Question, ScoreAnswer
+from horizon.ai.decider import Answers, DecisionUnavailable, NoulAnswer, Question, ScoreAnswer
 from horizon.ai.questions import bank
 from horizon.services.memory.stretch import Present
 
 IMPORTANCE = "importance"
+INSTRUCTION = "instruction"   # M14 (safety D15): beside importance:l{n}, through the seam
 GUARD = "memory_guard"
 SAME = "same_fact"
 LEVELS = 5
@@ -41,6 +46,16 @@ LABEL_MAX = 40
 class Scored:
     value: float
     source: str                 # jev | fallback | fixture
+    instruction: float | None = None   # M14 (D15): Jev's "tries to change the rules?" p (asked under `agent`)
+
+
+class Held(Exception):
+    """M14 (safety D15): the importance request returned no answer for an instruction question, so the line can't be
+    written unchecked: the whole piece is a failed try."""
+
+
+def t_instruction() -> float:
+    return float(bank().get(INSTRUCTION).thresholds.get("tInstruction", 0.7))
 
 
 def hint(weight: int | None) -> float:
@@ -105,18 +120,27 @@ async def importance(deps: Any, sem: asyncio.Semaphore, run_ctx: Any, p: Present
     """One request for this character: `lines` are (text, weight hint), ≤ 5. Returns one score per line, in order."""
     if not lines:
         return []
-    state, questions = importance_request(p, user_name, [x for x, _ in lines])
+    b = bank()
+    extra = {f"{INSTRUCTION}:l{i}": b.question(INSTRUCTION, name=_label(p.name), n=i)
+             for i in range(1, len(lines) + 1)}   # M14 (D15): no fallback, so a missing answer holds the piece
+    state, questions = importance_request(p, user_name, [x for x, _ in lines], extra_questions=extra)
     fallback = {f"{IMPORTANCE}:l{i}": ScoreAnswer(score=hint(w) * (LEVELS - 1), source="fallback")
                 for i, (_, w) in enumerate(lines, 1)}
-    answers, _ = await _ask(deps, sem, state, questions, run_ctx.call(IMPORTANCE, character_id=p.character_id),
-                            IMPORTANCE, fallback)
+    try:
+        answers, _ = await _ask(deps, sem, state, questions, run_ctx.call(IMPORTANCE, character_id=p.character_id),
+                                IMPORTANCE, fallback)
+    except DecisionUnavailable as e:
+        raise Held(f"{p.character_id}: {e}") from e
     out: list[Scored] = []
     for i, (_, w) in enumerate(lines, 1):
         a = answers.get(f"{IMPORTANCE}:l{i}")
+        ins = answers.get(f"{INSTRUCTION}:l{i}")
+        if not isinstance(ins, NoulAnswer) or ins.source == "fallback":
+            raise Held(f"{p.character_id}: no answer for {INSTRUCTION}:l{i}")
         if isinstance(a, ScoreAnswer):
-            out.append(Scored(round(a.unit(LEVELS), 4), a.source))
+            out.append(Scored(round(a.unit(LEVELS), 4), a.source, float(ins.p)))
         else:
-            out.append(Scored(hint(w), "fallback"))
+            out.append(Scored(hint(w), "fallback", float(ins.p)))
     return out
 
 

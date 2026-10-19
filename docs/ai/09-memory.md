@@ -299,6 +299,13 @@ character already carries in its prompt, so it costs ~1,000 input tokens per cha
 
 *Built in M13 (`memory` D13): `memory-1` (now `memory-2`: phase 10 added the perspective rule, the user's choice), one DeepSeek JSON call per piece for everyone present (temperature 0.7, thinking off, `max_tokens` 300 × characters + 200, at most 3,000; a `length` answer splits the characters in halves; a parse failure is retried once). Code checks drop unknown characters, targets, kinds and source lines, cut a line at 40 words, keep at most 5 changes per character (every confirm kept) and merge exact duplicates. Measured: 37 of 37 calls valid, output p50 240 tokens (35 % of the cap), and the 8,000-token piece 294 of 500 ([m13.md](checks/m13.md)). Found: the call writes `"about": 0` for the user (8 lines a run under memory-1 were dropped as invalid until phase 10, by the user's choice, read an `about` naming no one present as the user); and it sees every present character's list, so a line sometimes carries a detail only another character's list held (3 of 89 lines read by hand under `memory-2`, whose perspective rule didn't measurably change it; accepted).*
 
+*Built in M14 (OpenSpec `safety` D16; doc 11 S7): before the call, code drops each user line whose steer or care cue
+was on (from its stored safety answers, care's 2-line stay included) and the replies to it (in 1:1 and group, the
+character lines up to the next user line; in debate and watch, the one reply that answered it). They are no numbered
+line, no context line and no re-read; the minimum counts what is left, and a stretch emptied by the filter still moves
+the checkpoint. Lines with no stored answer (before M14, or a fallback) are kept; `memory-2`'s never-store list still
+covers them.*
+
 ### M4. Importance: a Jev score
 
 **Decision:**
@@ -322,6 +329,12 @@ character already carries in its prompt, so it costs ~1,000 input tokens per cha
 fallback); no importance (the prompt's ranking, M8, and the badge, PRF-07, need it).
 
 *Built in M13 (`memory` D14): `importance` (score, five levels, `importance:l{n}`, at most 5 per request); the importance is the answer's position as a unit, and the fallback is the weight hint, (w − 1) / 4, or 0.5. Measured: keep-or-drop balanced accuracy 0.88 dev / 0.87 test, within one level 0.89 / 0.89.*
+
+*Built in M14 (OpenSpec `safety` D15; doc 11 S6): the same request also asks `instruction:l{n}` ("tries to change the
+rules?") about each line, through the `extra_questions` seam, so `importance` keeps its version. At or above
+`memory.tInstruction` (0.7) the line is dropped and logged. The instruction noul has no fallback, so a request that
+returns no answer for it makes the piece a failed try (held for the next pause, skipped after `memory.maxTries`); under
+`agent` the weight hint is therefore no longer reached through a failed request.*
 
 ### M5. Guarding rewrites and catching duplicates
 

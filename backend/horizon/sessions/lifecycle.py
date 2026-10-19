@@ -8,6 +8,7 @@ queues the AI purge and announces the change.
 
 from __future__ import annotations
 
+import logging
 import re
 from typing import TYPE_CHECKING, Any
 
@@ -23,6 +24,8 @@ from horizon.sessions.context import characters, energy_of
 from horizon.sessions.modes import debate, one_on_one, watch
 from horizon.sessions.modes.common import message_event, note
 from horizon.sessions.preconditions import check_generating, check_no_other_live
+
+log = logging.getLogger("horizon.sessions")
 
 if TYPE_CHECKING:
     from horizon.runtime import Runtime
@@ -88,6 +91,8 @@ async def create(rt: Runtime, body: Wire) -> Wire:
             problems = rt.schema.errors(cfg_def, session["config"])
             if problems:
                 raise validation(f"Invalid {mode} config.", {"field": "config", "problems": problems[:3]})
+        if mode in ("debate", "watch"):   # M14 (safety D14): the motion or premise, before any row is written
+            await check_motion(rt, mode, str(w["id"]), session["config"] or {})
         now = session["createdAt"]
         srow, prows = mp.session_rows(session, is_seed=False)
         async with rt.db.write() as tx:
@@ -117,6 +122,30 @@ async def create(rt: Runtime, body: Wire) -> Wire:
 
         await actor.submit(open_session)
         return await snapshot(rt, session["id"])
+
+
+async def check_motion(rt: Runtime, mode: str, world_id: str, config: Wire) -> None:
+    """M14 (safety D14; session-lifecycle "Create a session"): under `agent`, Jev reads the motion or premise once.
+    At or above `safety.tMotion` creation fails with `content_refused` and nothing is stored; late or failed, the
+    session starts with a warning logged. Skipped when a session in this world already has exactly that text (a
+    rematch from the verdict screen is never refused). `naive` and `scripted` check nothing."""
+    check = getattr(rt.ai.guardrail(rt.keys.status() == "set"), "check_motion", None)
+    text = str(config.get("motion" if mode == "debate" else "premise") or "").strip()
+    if check is None or not text:
+        return
+    S = t.sessions.c
+    async with rt.db.read() as conn:
+        rows = (await conn.execute(select(S.config).where(S.world_id == world_id, S.mode == mode))).scalars().all()
+    if any(str((c or {}).get("motion" if mode == "debate" else "premise") or "").strip() == text for c in rows):
+        return
+    from horizon.ai.agent.guardrail import MOTION_REFUSED
+
+    res = await check(world_id, mode, text)
+    if res.fallback:
+        log.warning("the %s check failed or was late; the session starts", "motion" if mode == "debate" else "premise")
+        return
+    if res.verdict == "block":
+        raise HorizonHTTPError("content_refused", MOTION_REFUSED)
 
 
 def _new_session(rt: Runtime, body: Wire, w: Any, cast: list[Any]) -> Wire:
@@ -300,13 +329,13 @@ async def fork(rt: Runtime, sid: str, at_seq: int | None) -> Wire:
         cites = [r for m in messages for r in mp.citation_rows(m)]
         if cites:
             await tx.conn.execute(t.message_citations.insert(), cites)
-        if ids:   # M12 (rag D19): the copied messages' stored rewrites come with them
+        if ids:   # M12 (rag D19): the copied messages' stored rewrites come with them; M14 (safety D5): and their safety
             A = t.message_ai_meta.c
-            meta = (await tx.conn.execute(select(A.message_id, A.rewrites, A.updated_at)
+            meta = (await tx.conn.execute(select(A.message_id, A.rewrites, A.safety, A.updated_at)
                                           .where(A.message_id.in_(list(ids))))).all()
             if meta:
                 await tx.conn.execute(t.message_ai_meta.insert(), [
-                    {"message_id": ids[r[0]], "rewrites": r[1], "updated_at": r[2]} for r in meta])
+                    {"message_id": ids[r[0]], "rewrites": r[1], "safety": r[2], "updated_at": r[3]} for r in meta])
             # M13 (memory D29; doc 09 M2): the copied messages' indexed lines and vectors come with them (no new
             # embedding), and the fork's checkpoint starts at the copied messages' highest seq
             from horizon.services.memory.index import follow_fork

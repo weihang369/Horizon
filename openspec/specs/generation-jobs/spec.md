@@ -39,6 +39,7 @@ Each job kind SHALL expand into ordered tasks as the MockClient does:
 - a usable key (`missing_key` / `invalid_key`);
 - the character exists and is not a tombstone (`not_found`);
 - no non-terminal job for the character (`conflict`);
+- under `agent`, for `portrait_candidates`, `portrait_tweak` and an expression sheet, the compiled user-written text passes the image text check (`content_refused`);
 - the whole estimate fits the caps (402).
 
 On success it SHALL store the job as `queued`, set the character's `activeJobId`, reserve the estimate and return the `GenerationJob` (201).
@@ -54,6 +55,14 @@ On success it SHALL store the job as `queued`, set the character's `activeJobId`
 #### Scenario: Same Idempotency-Key after a restart
 - **WHEN** `POST /jobs` succeeds, the backend restarts, and the same request is sent again with the same `Idempotency-Key`
 - **THEN** the stored response is replayed, and no second job is created
+
+#### Scenario: A likeness tweak is refused
+- **WHEN** an `agent` `portrait_tweak` starts with "make him look like Henry Cavill" and Jev answers the likeness question p 0.93
+- **THEN** it rejects with `content_refused` and "Tweaks can't make a portrait look like a real person or an existing character, or add nudity, gore, weapons or a childlike look. Change the wording and try again.", no job row or hold exists, and no image request is sent
+
+#### Scenario: Jev down lets the job start
+- **WHEN** the image text check's request fails
+- **THEN** the job starts, and the skip is logged
 
 ### Requirement: Naive edits need a raster base
 With the naive image generator, `jobs.start` for an `emotion_set`, `emotion_regenerate` or `portrait_tweak` job SHALL reject with `validation`, before anything is stored or reserved, when the character has no locked base (`details.reason: "no_base"`) or when its base is a vector placeholder (`details.reason: "base_not_raster"`). The client SHALL show `base_not_raster` as "Generate a portrait first", with an action that opens the character's portrait step.
@@ -149,3 +158,10 @@ In test mode, `image_fail_partial` SHALL make the second image task of the next 
 #### Scenario: Partial failure then retry
 - **WHEN** `image_fail_partial` is applied, Standard mode is set, and a `portrait_candidates` job runs
 - **THEN** the job ends `partial`, and after retrying the failed task it ends `succeeded`
+
+### Requirement: What the image text check reads
+The check SHALL read the compiled text the job would send: the subject block (and the API-only note) for portrait candidates and the expression sheet, and the compiled tweak for a tweak. Emotion edits and `emotion_regenerate` SHALL NOT be checked. Its spend SHALL carry the character's ID and no job ID.
+
+#### Scenario: Edits are not checked
+- **WHEN** an `agent` `emotion_set` with edits starts
+- **THEN** no `guardrail` decision request is made

@@ -66,6 +66,9 @@ class TurnInfo:
     spec: Any = None
     ctx: Any = None
     engine: Any = None
+    guard: Any = None              # M14 (safety D10): the output check in flight, handed to `output_check` on Stop
+    checked: Any = None            # M14 (D10): a released prefetch's check result, so it isn't checked twice
+    stream_end: Any = None         # M14 (D10): when the stream ended (the waits after a turn count from here)
 
 
 @dataclass
@@ -124,6 +127,8 @@ class SessionActor:
         self.memory_blocks: dict[str, list[Any]] = {}
         self.memory_overflow: dict[str, bool] = {}
         self.memory_gen: dict[str, int] = {}   # bumped by each drop, so a read that raced one is never cached
+        # M14 (safety D4): the user lines a plan of this session is asking the safety questions about right now
+        self.safety_asking: set[str] = set()
 
     # ── views ──
     @property

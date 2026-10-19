@@ -31,6 +31,9 @@ gateway code with no socket ever opened.
   `docs:…` is, so a session with something to recall stays quick by default.
 - memory (M13 design D19): purpose `memory` answers `{"changes": []}` unless a canned set is loaded (the
   `memory-writes` set: one add, one rewrite and one confirm for Amara and Kai).
+- safety (M14 design D13): the eleven safety questions (`unsafe_request`, `unsafe_note`, `at_risk`, `output_rules`, `motion_rules`, the
+  four `image_*`, `song_copy` and `instruction:l{n}`) are answered p 0.02 unless a test sets them, so no agent test
+  steers, cares, flags or refuses by accident (the 0.5 default sits at or above `tCare`, `tFlag` and `tImage*`).
 
 The response shapes follow the recorded fixtures in `tests/fixtures/openrouter/` (unverified until the live run).
 """
@@ -97,6 +100,19 @@ def _wants_audio(request: httpx.Request) -> bool:
         return "audio" in (json.loads(request.content).get("modalities") or [])
     except (ValueError, AttributeError):
         return False
+
+
+SAFETY_QUESTIONS = ("unsafe_request", "unsafe_note", "at_risk", "output_rules", "motion_rules", "image_likeness", "image_nudity",
+                    "image_gore", "image_young", "song_copy", "instruction")
+SAFETY_DEFAULT_P = 0.02   # M14 (safety D13): below every safety threshold
+
+
+def _noul_default(key: str) -> float:
+    if key.startswith(("docs:", "earlier:")):
+        return 0.0
+    if key.split(":", 1)[0] in SAFETY_QUESTIONS:
+        return SAFETY_DEFAULT_P
+    return 0.5
 
 
 class _Stall(httpx.AsyncByteStream):
@@ -399,7 +415,7 @@ class FakeOpenRouter:
                 answers[key] = {"type": "choice", "choice": opts[0] if opts else None, "confidence": p,
                                 "probabilities": dict.fromkeys(opts, p)}
             elif kind == "noul":
-                answers[key] = {"type": "noul", "noul": 0.0 if key.startswith(("docs:", "earlier:")) else 0.5}
+                answers[key] = {"type": "noul", "noul": _noul_default(key)}
             elif kind == "score":
                 levels = list(crit or [])
                 mid = (len(levels) - 1) / 2

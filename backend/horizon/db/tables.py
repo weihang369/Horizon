@@ -276,6 +276,8 @@ message_ai_meta = Table(
     Column("message_id", Text, _fk("messages.id", "CASCADE"), primary_key=True),
     Column("rewrites", J, nullable=False, server_default=text("'{}'")),
     Column("updated_at", Text, nullable=True),
+    # M14 (safety D5; migration 0006): the stored safety answers for this user line; NULL = not flagged
+    Column("safety", J, nullable=True),
 )
 
 # M13 (memory D5, D29): one row per line that has left the window, for recall. Its own integer `rid` keys the FTS5 and

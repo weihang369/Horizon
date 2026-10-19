@@ -15,6 +15,10 @@ lines once", "Below the minimum nothing moves").
 - **Pieces:** past `pieceTokens` (8,000) the lines are cut at message boundaries; each piece commits its own checkpoint.
 - **The minimum:** at least one line the user said in the scene, or at least 4 character lines; else no piece (an
   ended session still advances: the caller does that).
+- **Flagged talk** (M14, safety D16; doc 11 S7): `flagged` user lines (their steer or care cue was on, the care stay
+  included) are dropped before anything else, with the replies to them: in 1:1 and group, the character lines up to
+  the next user line; in debate and watch, the one reply that answered it. They are no numbered line, no context line
+  and no re-read; the minimum counts what is left (the caller still moves the checkpoint past them).
 """
 
 from __future__ import annotations
@@ -130,14 +134,34 @@ def _line_text(speaker: str, text: str) -> str:
     return f"{speaker}: {' '.join(text.split())}"
 
 
+def unflagged(kept: list[Msg], flagged: frozenset[str], mode: str) -> list[Msg]:
+    """M14 (D16): `kept` without the flagged user lines and the replies to them."""
+    if not flagged:
+        return kept
+    out: list[Msg] = []
+    dropping = 0   # character lines still to drop after a flagged user line (-1: up to the next user line)
+    for m in kept:
+        if m.author_type == "user":
+            dropping = 0
+            if m.id in flagged:
+                dropping = -1 if mode in ("one_on_one", "group") else 1
+                continue
+        elif dropping:
+            dropping = dropping - 1 if dropping > 0 else -1
+            continue
+        out.append(m)
+    return out
+
+
 def build_stretch(*, session_id: str, world_id: str, world_name: str, user_name: str, mode: str, header: str,
                   msgs: list[Msg], from_seq: int, reread_ids: list[str], present: list[Present],
-                  names: dict[str, str], piece_tokens: int) -> tuple[list[Stretch], int]:
+                  names: dict[str, str], piece_tokens: int,
+                  flagged: frozenset[str] = frozenset()) -> tuple[list[Stretch], int]:
     """The pieces to run, and the settled bound. No pieces: below the minimum (or nothing new)."""
     upto = settled_upto(msgs)
     if upto <= from_seq and not reread_ids:
         return [], max(upto, from_seq)
-    kept = sorted([m for m in msgs if heard(m)], key=lambda m: m.seq)
+    kept = unflagged(sorted([m for m in msgs if heard(m)], key=lambda m: m.seq), flagged, mode)
     new = [m for m in kept if from_seq < m.seq <= upto]
     by_id = {m.id: m for m in kept}
     rereads = [by_id[i] for i in reread_ids if i in by_id and by_id[i].seq <= upto]
@@ -186,6 +210,24 @@ def build_stretch(*, session_id: str, world_id: str, world_name: str, user_name:
                               if i == 0 else {}))
         start = end
     return pieces, upto
+
+
+def flagged_lines(user_lines: list[tuple[str, str]], stored: dict[str, Any]) -> frozenset[str]:
+    """M14 (D16, D7): the user lines whose cue was on, from their stored answers: steered, or answered with care (its
+    own yes, or one of the 2 chat lines before it). `user_lines` are (id, kind) in order; a line with no stored answer
+    counts as no."""
+    out: set[str] = set()
+    chat: list[str] = []
+    for mid, kind in user_lines:
+        s = stored.get(mid)
+        if kind == "chat":
+            chat.append(mid)
+            care = any(stored.get(x) is not None and stored[x].care for x in chat[-3:])
+            if care or (s is not None and s.steer):
+                out.add(mid)
+        elif s is not None and s.steer:
+            out.add(mid)
+    return frozenset(out)
 
 
 def reread_context(msgs: list[Msg], target: Msg, names: dict[str, str], user_name: str, mode: str) -> list[str]:

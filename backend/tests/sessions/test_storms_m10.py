@@ -239,14 +239,14 @@ async def test_a_storm_on_step_ins_follow_plan_leaves_the_writer_free(api: Api) 
 
 # ── M10 phase 6 (task 6.6): the watch's plan made ahead ──
 async def _watch_with_a_parked_plan_ahead(api: Api, *extra: int) -> tuple[str, SessionActor, list[Any]]:
-    """An `agent` watch in MANUAL (so every decision is a plan): call 1 opens, call 2 is made ahead (parked), and any
-    `extra` calls after it are parked too."""
+    """An `agent` watch in MANUAL: call 1 opens, the output check reads its reply (M14, safety D10), the plan made
+    ahead is the third decision (parked), and any `extra` calls after it are parked too."""
     from tests.sessions.test_watch_plan import _until_turn_end, agent_watch
 
     sid = await agent_watch(api, manual=True, maxTurns=10, paceMs=1500)
     assert api.rt.fake is not None
     n = api.rt.fake.counts["decisions"]
-    releases = [api.rt.fake.park_decision(n + k) for k in (2, *extra)]
+    releases = [api.rt.fake.park_decision(n + k) for k in (3, *extra)]
     await _until_turn_end(api, sid, 1)
     await api.drive(100)
     return sid, await api.rt.sessions.get(sid), releases
@@ -305,14 +305,14 @@ async def test_a_storm_in_the_turn_count_write_after_the_plan_ahead_starts(api: 
 
 
 async def test_a_storm_during_the_redo_after_a_fingerprint_change(api: Api) -> None:
-    sid, actor, releases = await _watch_with_a_parked_plan_ahead(api, 3)
+    sid, actor, releases = await _watch_with_a_parked_plan_ahead(api, 4)
     await command(api, sid, "watch/direct", {"text": "The lights go out."})
     assert api.rt.fake is not None
-    for _ in range(400):                                   # until the redo (call 3) is parked
-        if api.rt.fake.counts["decisions"] >= 3:
+    for _ in range(400):                                   # until the redo (decision 4) is parked
+        if api.rt.fake.counts["decisions"] >= 4:
             break
         await api.drive(25)
-    assert api.rt.fake.counts["decisions"] >= 3
+    assert api.rt.fake.counts["decisions"] >= 4
     worker = actor._worker
     assert worker is not None and not worker.done()
     await storm(worker)

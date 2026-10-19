@@ -72,9 +72,9 @@
         "decision": {
           "route": 400,
           "turn_plan": 700,
-          "follow_plan": 483,
+          "follow_plan": 400,
           "debate_plan": 651,
-          "guardrail": 700,
+          "guardrail": 800,
           "guardrail_prompt": 1500,
           "reaction": 1500,
           "face_check": 1500,

@@ -272,3 +272,62 @@ def test_the_reworded_steer_is_agent5_and_names_the_watcher(mood: bool, label: s
     assert make(MOOD_ON if mood else None).prompt_version_for(c) == label
     assert dump(c)["messages"][-1]["content"].endswith("Don't wrap up, say goodbye or wait for Kai to decide.")
     assert make().prompt_version_for(cued(cases()["group"], "next")) == "agent-3"
+
+
+# ── M14 (safety tasks 2.6; design D6): the safety cue, its labels, and the prefix proof ──
+SAFETY_CUE = json.loads((FIX.parent / "safety_cue" / "cases.json").read_text(encoding="utf-8"))["cases"]
+S3_CHAT = ("The user's last message asks for something outside this app's content rules. Don't provide it. Decline "
+           "briefly in your own voice, without lecturing, and take the talk somewhere that fits.")
+
+
+def safety_cued(base: TurnContext, *, steer: bool, care: bool, wording: str = "chat", cue: str | None = None,
+                face: str = "neutral") -> TurnContext:
+    from horizon.ai.contexts import SafetyCue
+
+    c = cued(base, cue, face=face)
+    assert c.plan is not None
+    sc = SafetyCue(message_id="msg_3", wording=wording, steer=steer, care=care,  # type: ignore[arg-type]
+                   p_input=0.93 if steer else 0.02, p_care=0.82 if care else 0.02)
+    return c.model_copy(update={"plan": c.plan.model_copy(update={"safety": sc})})
+
+
+@pytest.mark.parametrize("case", SAFETY_CUE, ids=lambda c: f"{c['steer']}-{c['care']}-{c['wording']}")
+def test_the_shared_safety_cue_table(case: dict[str, Any]) -> None:
+    from horizon.ai.agent.persona import safety_cue_lines
+
+    assert safety_cue_lines(steer=case["steer"], care=case["care"], wording=case["wording"]) == case["lines"]
+
+
+def test_the_safety_sentences_are_doc_11s() -> None:
+    from horizon.ai.agent.persona import SAFETY_CARE, SAFETY_STEER_CHAT, SAFETY_STEER_NOTE
+
+    assert SAFETY_STEER_CHAT == S3_CHAT
+    assert SAFETY_STEER_NOTE.format(what="scene").endswith("keep the scene within them.")
+    assert "findahelpline.com" in SAFETY_CARE and not any(ch.isdigit() for ch in SAFETY_CARE)
+
+
+@pytest.mark.parametrize(("steer", "care", "label"), [(True, False, "agent-1+steer-1"), (False, True, "agent-1+care-1"),
+                                                       (True, True, "agent-1+care-1+steer-1")])
+def test_a_safety_cue_changes_only_the_tail_and_labels_the_bytes(steer: bool, care: bool, label: str) -> None:
+    """D6: system message 1 and the history are byte-identical; only the tail's cue line differs."""
+    from horizon.ai.agent.persona import safety_cue_lines
+
+    plain = dump(planned(cases()["one_on_one"], "neutral"))   # a reply to the user's line: no tail at all
+    c = safety_cued(cases()["one_on_one"], steer=steer, care=care)
+    flagged = dump(c)
+    assert flagged["messages"][:-1] == plain["messages"] and plain["messages"][-1]["role"] == "user"
+    assert flagged["messages"][-1] == {"role": "system", "content": "\n".join(safety_cue_lines(steer=steer, care=care))}
+    assert engine().prompt_version_for(c) == label
+
+
+def test_care_replaces_the_next_and_steer_sentences() -> None:
+    from horizon.ai.agent.persona import SAFETY_CARE
+
+    nxt = dump(safety_cued(cases()["group"], steer=False, care=True, cue="next"))
+    tail = nxt["messages"][-1]["content"]
+    assert tail.startswith(SAFETY_CARE) and "Nobody asked you directly" not in tail
+    assert engine().prompt_version_for(safety_cued(cases()["group"], steer=False, care=True, cue="next")) == \
+        "agent-1+care-1"
+    scene = dump(safety_cued(cases()["scene"], steer=True, care=False, wording="scene", cue="steer"))
+    t = scene["messages"][-1]["content"]
+    assert t.startswith("The user's note asks for something outside the content rules.") and STEER in t   # steer stays

@@ -86,7 +86,7 @@ A `song` job SHALL produce a `ThemeSong` from the character's brief (or the edit
 - **THEN** `characters.song(id)` returns a ready song whose URL ends in `.mp3` with `format: "mp3"` and a positive `durationSec`, the provider's original is kept, and exactly one ledger row with `category: "music"` and `purpose: "song"` carries the job's `job_id`
 
 ### Requirement: Procedural fallback for a failed song
-When the naive music call fails because the provider could not make the song (a provider error, a timeout, a refusal, a rate limit, or audio that is not a usable MP3), the theme-song task SHALL still succeed with the free procedural theme, and its `licenseNote` SHALL say the music model was unavailable. Any charge the provider may have made SHALL still be recorded. A missing or invalid key, insufficient credits or a reached cap SHALL fail the task as for any other paid task, with no fallback.
+When the naive music call fails because the provider could not make the song (a provider error, a timeout, a refusal, a rate limit, or audio that is not a usable MP3), the theme-song task SHALL still succeed with the free procedural theme. Its `licenseNote` SHALL say the music model declined the brief after a provider refusal, and that the music model was unavailable otherwise. Any charge the provider may have made SHALL still be recorded. A missing or invalid key, insufficient credits or a reached cap SHALL fail the task as for any other paid task, with no fallback.
 
 #### Scenario: Provider error falls back
 - **WHEN** a naive `song` job runs and the provider answers the music call with a 5xx error
@@ -100,9 +100,24 @@ When the naive music call fails because the provider could not make the song (a 
 - **WHEN** the daily cap is reached between the job start and the music call's preflight
 - **THEN** the theme-song task is `failed` with `daily_budget_exceeded`, the character's song is unchanged, and no provider request is sent
 
+#### Scenario: A provider refusal says so
+- **WHEN** the music call is refused by the provider
+- **THEN** the job is `succeeded` with the procedural theme, and its `licenseNote` reads "The music model declined this brief, so this is the procedural theme rendered in the app."
+
 ### Requirement: Orphaned files are swept
 At startup the backend SHALL delete temporary files, and generated files under `assets/gen/` that no record references and that are older than one hour. It SHALL NOT delete originals that a task still references.
 
 #### Scenario: Leftover temp file
 - **WHEN** a `.tmp` file is left under `data/assets/gen/` and the backend starts
 - **THEN** the file no longer exists
+
+### Requirement: A brief naming an artist gets the procedural theme
+Under `agent`, the song task SHALL check the brief it would send before the music call. At or above `safety.tSong` it SHALL make no music call and SHALL succeed with the procedural theme, whose `licenseNote` names the reason. A late or failed check SHALL call the music model as before. The check's spend SHALL carry the job's ID.
+
+#### Scenario: A named band
+- **WHEN** an `agent` song job's brief says "sounds like Coldplay's Yellow" and Jev answers p 0.95
+- **THEN** no music request is sent, the job is `succeeded`, and the `licenseNote` reads "The brief names an artist or an existing piece, so this is the procedural theme rendered in the app. Edit the brief and compose again for a recorded one."
+
+#### Scenario: A genre brief
+- **WHEN** the brief says "warm British indie rock, chiming guitars" and Jev answers p 0.06
+- **THEN** the music model is called

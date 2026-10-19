@@ -24,8 +24,9 @@ test("live: set a key, “Continue live” on a replay, send a message, a stream
   await expect(reply).toHaveCount(1);
   await expect(reply).toContainText("Amara");
   // The scripted line is picked by the session's createdAt (wall time here), and some open with a short sentence
-  // ("That's genuinely good to hear."): every line's last paragraph is a full one.
-  await expect(reply.getByRole("paragraph").last()).toHaveText(/\w+(\s+\w+){5,}/);
+  // ("That's genuinely good to hear."): every line's last paragraph is a full one. Words may be joined by punctuation
+  // ("Tea's getting cold, though. Keep going." failed the plain-space pattern when the clock picked it).
+  await expect(reply.getByRole("paragraph").last()).toHaveText(/\w+([\s,.;:'!?]+\w+){5,}/);
   await expect(input).toHaveValue("");
 });
 

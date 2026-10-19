@@ -233,12 +233,14 @@ async def test_importance_reads_jev_and_falls_back_to_the_hint(api: Api) -> None
     fx.set("importance", "importance:l1", ScoreAnswer(score=3))
     p = _present(1, AMARA, "Amara")
     got = await jev.importance(api.rt.ai.deps, asyncio.Semaphore(10), ctx, p, "Kai", [("a", 2)])
-    assert got == [jev.Scored(0.75, "fixture")]
+    assert got == [jev.Scored(0.75, "fixture", 0.02)]   # M14: the instruction noul rides beside it (the fake's 0.02)
     fx.clear()
     assert jev.hint(2) == 0.25 and jev.hint(None) == 0.5 and jev.hint(5) == 1.0
 
 
-async def test_importance_late_takes_the_hint(api: Api) -> None:
+async def test_importance_late_holds_the_piece(api: Api) -> None:
+    """M14 (safety D15): the request also carries the instruction noul, which has no fallback, so a late request no
+    longer takes the weight hint: the piece is held (a failed try)."""
     await api.set_key()
     _agent(api)
     ctx = await _ctx(api)
@@ -247,10 +249,10 @@ async def test_importance_late_takes_the_hint(api: Api) -> None:
     task = asyncio.ensure_future(jev.importance(api.rt.ai.deps, asyncio.Semaphore(10), ctx,
                                                 _present(1, AMARA, "Amara"), "Kai", [("a", 4), ("b", None)]))
     await api.drive(31_000)
-    got = await task
+    with pytest.raises(jev.Held):
+        await task
     ev.set()
     await api.drive(10)
-    assert got == [jev.Scored(0.75, "fallback"), jev.Scored(0.5, "fallback")]
 
 
 def test_an_extra_question_rides_beside_importance_which_keeps_its_version() -> None:
@@ -298,6 +300,7 @@ async def test_a_late_guard_keeps_both(api: Api) -> None:
     await api.set_key()
     writer = _agent(api)
     api.rt.decider.fixtures.set("importance", "importance:l1", ScoreAnswer(score=2))
+    api.rt.decider.fixtures.set("importance", "instruction:l1", NoulAnswer(p=0.02))   # M14: it rides beside
     _canned(api, _answer({"for": 2, "op": "rewrite", "target": "m1", "kind": "fact", "source": 1,
                           "text": "Kai's sister is a nurse."}))
     assert api.rt.fake is not None
@@ -315,6 +318,7 @@ async def test_a_rate_limited_guard_is_retried_once(api: Api) -> None:
     await api.set_key()
     writer = _agent(api)
     api.rt.decider.fixtures.set("importance", "importance:l1", ScoreAnswer(score=2))
+    api.rt.decider.fixtures.set("importance", "instruction:l1", NoulAnswer(p=0.02))   # M14: it rides beside
     assert api.rt.fake is not None
     api.rt.fake.refuse_question("memory_guard")
     api.rt.fake.answer_question("memory_guard", {"type": "noul", "noul": 0.95})

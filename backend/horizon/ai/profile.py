@@ -55,11 +55,13 @@ NAIVE_PORTS = frozenset({"turn", "router", "drafter", "image", "song", "embedder
                          "memory_retriever", "converter", "summariser",   # M8: the DeepSeek rolling summary (X3)
                          "planner", "face_check",   # M9 (design D5): naive's own no-ops, never the scripted stand-ins
                          "host",   # M11 (debate D11): the DeepSeek host lines
-                         "memory_writer"})   # M13 (memory D18): the one rewrite call, no Jev
+                         "memory_writer",   # M13 (memory D18): the one rewrite call, no Jev
+                         "guardrail"})   # M14 (safety D12): naive's own guardrail: pass, no checks (the yardstick)
 KEYLESS_PORTS = frozenset({"converter"})   # chosen by availability, not by the profile or the key (D-96)
 AGENT_PORTS = frozenset({"turn", "planner", "reactions", "face_check",   # `agent` implementations (M8 turn; M9 the rest)
                          "host",   # M11 (debate D11): the same host lines; its verdict half differs (D14)
-                         "memory_writer"})   # M13 (memory D17): the graph, with Jev's importance and guard
+                         "memory_writer",   # M13 (memory D17): the graph, with Jev's importance and guard
+                         "guardrail"})   # M14 (safety D9): the live Jev output check
 ENV_PROFILE = "HORIZON_AI_PROFILE"
 
 
@@ -156,6 +158,9 @@ class AiPorts:
             if port == "memory_writer":
                 from horizon.ai.memory.writers import AgentMemoryWriter
                 return AgentMemoryWriter(d)
+            if port == "guardrail":
+                from horizon.ai.agent.guardrail import AgentGuardrail
+                return AgentGuardrail(d)
             raise KeyError(f"no agent implementation for port {port!r}")
         if impl == "naive":
             if port == "turn":
@@ -198,6 +203,9 @@ class AiPorts:
             if port == "memory_writer":
                 from horizon.ai.memory.writers import NaiveMemoryWriter
                 return NaiveMemoryWriter(d)
+            if port == "guardrail":
+                from horizon.ai.naive.noop import NoGuardrail
+                return NoGuardrail()
             raise KeyError(f"no naive implementation for port {port!r}")
         builders: dict[str, Callable[[], Any]] = {
             "turn": lambda: ScriptedTurnEngine(d), "router": lambda: ScriptedRouter(d),

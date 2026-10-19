@@ -18,7 +18,7 @@ from typing import TYPE_CHECKING, Any
 from horizon.ai.contexts import FollowPlan, FollowRequest, MessageNouls
 from horizon.domain import vclock
 from horizon.sessions.context import character_view, characters, document_titles, recallable, session_context
-from horizon.sessions.modes.common import gap, is_asleep, runner, speak_then
+from horizon.sessions.modes.common import checked_s, gap, is_asleep, runner, speak_then
 from horizon.sessions.plans import base_faces, manual, turns_since
 from horizon.sessions.turn import TurnOutcome, TurnSpec
 
@@ -65,13 +65,15 @@ async def answer_then_follow(actor: SessionActor, first: TurnSpec, message: str,
     that supersedes the job (G5) ends the wait at once and cancels the follow plan (its ledger row: `cancelled`)."""
     rt = actor.rt
     epoch = first.epoch
-    first.follow = follow_hook(actor, message, first.plan.nouls if first.plan is not None else None)
+    cue = first.plan.safety if first.plan is not None else None
+    if cue is None or not cue.on:   # M14 (safety D7): a steered or care line gets one voice, so no follow plan
+        first.follow = follow_hook(actor, message, first.plan.nouls if first.plan is not None else None)
     out = await runner(actor).run(actor, first)
     turn_gap = rt.runtime_cfg.timing.turn_gap_ms / 1000
     if out.status not in ("complete", "interrupted", "error"):
         return out
     if out.follow is None or out.ended_at is None:
-        await gap(actor, epoch)
+        await gap(actor, epoch, max(0.0, turn_gap - checked_s(out)))   # M14 (D10): from the stream's end
         return out
     deadline = out.ended_at + timedelta(seconds=rt.decider.timeout_for(PURPOSE))
     plan = await _wait_follow(actor, out.follow, deadline, epoch)
@@ -80,7 +82,8 @@ async def answer_then_follow(actor: SessionActor, first: TurnSpec, message: str,
     if plan.second is None:
         if out.message_id is not None:
             await actor.append_system1(out.message_id, None, plan.rows_for_first(), plan.calls)
-        left = (out.ended_at + timedelta(seconds=turn_gap) - rt.clock.now()).total_seconds()
+        # M14 (D10): what is left of the turn gap counts from the stream's end (the follow deadline from turn.end)
+        left = ((out.stream_end or out.ended_at) + timedelta(seconds=turn_gap) - rt.clock.now()).total_seconds()
         if left > 0:
             await gap(actor, epoch, left)
         return out
@@ -88,6 +91,8 @@ async def answer_then_follow(actor: SessionActor, first: TurnSpec, message: str,
     name = character_view(first_name).first_name if first_name is not None else first.speaker
     second = second_spec(plan, plan.second, name)
     second.epoch = epoch
+    if cue is not None and second.plan is not None:   # M14 (S3, S4): every reply to the line carries its checks
+        second.plan = second.plan.model_copy(update={"safety": cue})
     return await speak_then(actor, second)
 
 

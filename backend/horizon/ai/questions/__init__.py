@@ -21,6 +21,9 @@ Every Jev question is one JSON file here, `<id>.json`, loaded once into an immut
   a criterion's position (1–6). Entries without them compile exactly as before.
 - **Shared knobs** (M11, D7, D12): `floor.member` is the `floor` of every `member_*` entry and `verdict.margin` the
   `margin` threshold of every `rubric_*` entry; the loader refuses a bank where they differ.
+- **Shared text** (M14, safety D3): the content rules (doc 11 S1's two lists) are fixed text at the end of the
+  instructions of `unsafe_request`, `unsafe_note`, `output_rules` and `motion_rules`, never a state field; the loader
+  refuses a bank where the copies differ. `safety.tSteer` is the `tSteer` of both `unsafe_*` entries (a shared knob).
 """
 
 from __future__ import annotations
@@ -43,7 +46,11 @@ FIELD_KINDS = frozenset({"quoted", "label", "number", "id", "bool", "list_label"
 NAME = "{name}"   # the one placeholder an entry's instructions may hold (design D11)
 SIDES = ("Proposition", "Opposition")   # M11 (debate D7): the only values `{side}` / `{other}` take
 POSITION_MAX = 6                         # `{n}`: a rubric criterion's position (the contract allows 2–6 criteria)
-SHARED_KNOBS = (("floor.member", "member_", "floor"), ("verdict.margin", "rubric_", "thresholds.margin"))
+SHARED_KNOBS = (("floor.member", "member_", "floor"), ("verdict.margin", "rubric_", "thresholds.margin"),
+                ("safety.tSteer", "unsafe_", "thresholds.tSteer"))
+RULES_START = "Outside the content rules:"   # M14 (safety D3): where S1's rules text starts in an entry's instructions
+SHARED_TEXT = (("content rules", ("unsafe_request", "unsafe_note", "output_rules", "motion_rules", "judge_breaks_rules"),
+                RULES_START),)   # M14 (safety D21): the drift judge reads the same rules
 
 
 def canonical(o: Any) -> str:
@@ -267,6 +274,7 @@ def load_bank(root: Path = HERE) -> QuestionBank:
             continue
         entries[p.stem] = _entry(_load_json(p), p.stem)
     _check_shared(entries)
+    _check_shared_text(entries)
     return QuestionBank(entries=entries, conventions=conventions)
 
 
@@ -280,6 +288,17 @@ def _check_shared(entries: Mapping[str, BankEntry]) -> None:
         values = {qid: _knob(e, where) for qid, e in sorted(entries.items()) if qid.startswith(prefix)}
         if len(set(values.values())) > 1:
             raise BankError(f"{knob} differs across its entries: {values}")
+
+
+def _check_shared_text(entries: Mapping[str, BankEntry]) -> None:
+    """M14 (safety D3): fixed text held by several entries must be one text, as a shared knob is one value."""
+    for what, ids, start in SHARED_TEXT:
+        present = {qid: entries[qid].instructions for qid in ids if qid in entries}
+        if not present:
+            continue
+        texts = {qid: (t[t.find(start):].strip() if start in t else None) for qid, t in present.items()}
+        if len(set(texts.values())) > 1 or None in texts.values():
+            raise BankError(f"the {what} text differs across {', '.join(sorted(texts))}")
 
 
 @lru_cache(maxsize=1)

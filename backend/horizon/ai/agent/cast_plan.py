@@ -10,6 +10,9 @@ One `turn_plan` request per plan, on the M9 plan graph (`state → ask → decid
 - M12 (rag D6–D8): **"needs documents?"** about each candidate asked who has a searchable source, plus
   **"standalone?" and "English?"** once when a group message is answered (`group_first`, `group_mentioned`,
   `everyone`). `for_speaker` takes the speaker's own gate; the others are `not_used`.
+- M14 (safety D4, U1, U3, U4): **"unsafe request?"** (and **"at risk?"** for a group message or Step in) about a user
+  line with no stored answer; a debate Ask's own face plan asks it about the Ask; a director's note or an Interject is
+  asked **"unsafe note?"** with the note as `quoted_note`. The cue is shared by every reply the plan starts.
 
 Code then applies the floors and G1's fallbacks: unsure → the least recently spoken of Jev's top 2; failed or late →
 the least recently spoken. Energy never reaches Jev (G9): the runtime gives only awake, unmuted candidates.
@@ -26,6 +29,7 @@ from typing import Any
 from sqlalchemy import select
 
 from horizon.ai.agent import gates
+from horizon.ai.agent import safety as sf
 from horizon.ai.agent.emotion import decide_face, emotion_row, merges
 from horizon.ai.agent.plan_graph import Branch
 from horizon.ai.agent.plan_state import (
@@ -213,7 +217,11 @@ class CastSteps:
         return f"{req.session.seed}:{req.turn_index}"
 
     async def state(self, req: CastRequest) -> PlanState:
-        built = build_turn_plan_state(state_input(req))
+        extra = sf.state_extra(req.safety)   # M14 (U4): a note rides as `quoted_note`, never cut by X9's cap
+        built = build_turn_plan_state(state_input(req), reserve=_tokens(extra) if extra else 0)
+        if extra:
+            built = PlanState(state={**built.state, **extra}, tokens=_tokens({**built.state, **extra}),
+                              dropped_gates=list(built.dropped_gates))
         if req.kind not in DEBATE_KINDS:
             return built
         # M11 (doc 01 A3 rule 6; debate D7): a debate turn's face question sees only the fields it declares; M12 adds
@@ -260,6 +268,7 @@ class CastSteps:
         meta["recalling"] = recalling
         qs.update(gates.questions({c: names[c].name if c in names else c for c in [*who_gated, *recalling]},
                                   who_gated, nouls=meta["nouls"], recall=recalling))
+        qs.update(sf.questions(req.safety))   # M14 (safety D4): about the user line, when no answer is stored
         return qs, meta
 
     async def ask(self, req: CastRequest, state: PlanState) -> tuple[DecisionResult, dict[str, Any]]:
@@ -268,7 +277,7 @@ class CastSteps:
         meta["dropped"] = [c for c in gates.gated(asked_about(req), req.documents) if c in state.dropped_gates]
         meta["recall_dropped"] = [c for c in gates.recall_asked(asked_about(req), req.recallable)
                                   if c in state.dropped_gates]
-        nouls = gates.fallbacks(qs)
+        nouls = {**gates.fallbacks(qs), **sf.fallbacks(qs)}
 
         async def fallback() -> Answers:
             out: dict[str, Any] = {}
@@ -368,7 +377,7 @@ class CastSteps:
         recall.update(gates.dropped(meta.get("recall_dropped", [])))
         return CastPlan(seed=self.seed(req), kind=req.kind, order=order, who=who, faces=faces, face_rows=face_rows,
                         shared_rows=shared, talk=talk, calls=calls, state_tokens=state.tokens, gates=found,
-                        nouls=nouls, recall_gates=recall)
+                        nouls=nouls, recall_gates=recall, safety=sf.decide(req.safety, res))
 
     def route(self, req: CastRequest, plan: CastPlan) -> Branch:
         return "quick"   # M12 adds "deep"
@@ -383,4 +392,5 @@ def fallback_plan(req: CastRequest, deps: Any) -> CastPlan:
     if req.kind == "everyone":
         order = list(req.candidates)
     who = WhoPick(pick=order[0], source="fallback", reason="fallback") if order else None
-    return CastPlan(seed=CastSteps.seed(req), kind=req.kind, order=order, who=who, faces=faces)
+    return CastPlan(seed=CastSteps.seed(req), kind=req.kind, order=order, who=who, faces=faces,
+                    safety=sf.decide(req.safety, None))   # M14: a bug is a failed answer: no cue, flagged

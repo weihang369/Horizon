@@ -159,6 +159,27 @@ Horizon/
 
 The UI talks only to the typed `HorizonClient` interface. `frontend/src/client/index.ts` picks the `MockClient` by default (and on Vercel) or the `HttpClient` when built with `VITE_HORIZON_CLIENT=http`.
 
+## Privacy
+
+Horizon runs on your machine; what leaves it goes through your own OpenRouter key:
+
+- **Chat** (replies, summaries, drafts, verdicts, memory writing) goes through OpenRouter to **DeepSeek**, or, if it is
+  unavailable, another full-precision provider (`allow_fallbacks`). Requests are routed with data collection
+  **allowed** (D-80), which DeepSeek's own endpoint needs: these providers may use what they receive for training,
+  including your messages, passages from your documents that a character uses, and memories.
+- **Jev** (TypeSafe, through OpenRouter) answers Horizon's yes/no and choice questions: who speaks, a face, whether a
+  document is needed, and the safety checks. It reads short excerpts of the conversation.
+- **Embeddings:** each document you add is sent once to the embedding provider (Nebius) to be indexed, and each
+  message you search with is embedded too.
+- **Images and music:** portrait and expression prompts go to the image model, and a song brief to the music model.
+- **Everything else stays in `data/`** on your machine (NFR-13): sessions, memories, documents, the cost ledger and
+  your key.
+
+The app says this in two places: under the key field in Settings → Connection, and in each character's Knowledge drop
+zone. To keep your text away from providers that train on it, set `data.gateway.routing.data_collection` to `"deny"` in
+`seed/pricing.json` and restart the backend. DeepSeek's own endpoint then won't take the requests, so they go to
+third-party hosts, which may be slower or cost more.
+
 ## Roadmap
 
 1. **Requirements (BA).** Done. See [`docs/requirements/`](docs/requirements/).

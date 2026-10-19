@@ -39,7 +39,17 @@ def _suite(args: argparse.Namespace) -> int:
                    seed_dir=args.seed_dir, force=getattr(args, "force", False), mode=getattr(args, "mode", None),
                    runs=getattr(args, "runs", None), turns=getattr(args, "turns", None),
                    messages=getattr(args, "messages", None), part=getattr(args, "part", None),
-                   arm=getattr(args, "arm", None), latency=getattr(args, "latency", False))
+                   arm=getattr(args, "arm", None), latency=getattr(args, "latency", False),
+                   recut=getattr(args, "recut", None))
+    if opts.recut:   # M14 (safety D23): from the saved answers, no provider call and no run folder
+        from horizon.evals.safety_suite import recut_run
+
+        try:
+            print("\n".join(recut_run(opts.recut)))
+        except FileNotFoundError as e:
+            print(f"horizon: {e}")
+            return 2
+        return 0
     return asyncio.run(Runner(load_config()).run(opts))
 
 
@@ -188,6 +198,9 @@ def register(sub: Any) -> None:
                                           "nouls on 20 messages (paid, M12)"),
                            ("memory", "the memory suite: rewrite, recall (in-session, overflow; --arm), layer 3, the "
                                       "dupCosine sweep (--part dup) (paid, M13; --profile agent)"),
+                           ("safety", "the safety suite: input, care, output, motion, image, song (Jev); care_method, "
+                                      "injection, honesty, drafter, drift (end to end, --profile agent); --recut <run> "
+                                      "re-cuts a saved run for free (paid, M14)"),
                            ("embed-probe", "query embeddings on each named OpenRouter provider of the active space's "
                                            "model, timed, store-bypassed (paid, M13 U3; --set A,B)")):
         s = esub.add_parser(name, help=helptext)
@@ -209,7 +222,11 @@ def register(sub: Any) -> None:
             s.add_argument("--turns", type=int, default=30)
             s.add_argument("--messages", type=int, default=12)
         if name == "latency":
-            s.add_argument("--part", choices=["follow", "watch", "debate", "deep", "recall"], default=None)
+            s.add_argument("--part", choices=["follow", "watch", "debate", "deep", "recall", "output"], default=None)
+        if name == "safety":
+            s.add_argument("--part", default=None, help="comma-separated: input, care, output, motion, image, song, "
+                                                        "care_method, injection, honesty, drafter, drift")
+            s.add_argument("--recut", default=None, help="a saved run's id: re-score and re-cut its thresholds, no call")
         if name == "retrieval":
             s.add_argument("--arm", default=None, help="space=<id> | piece=200|300|400[:kept] | lambda=0.5|0.7|1.0 | "
                                                        "rewrite=off")

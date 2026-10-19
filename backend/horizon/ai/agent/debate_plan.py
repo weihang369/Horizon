@@ -23,6 +23,7 @@ from datetime import datetime
 from typing import Any
 
 from horizon.ai.agent import gates
+from horizon.ai.agent import safety as sf
 from horizon.ai.agent.cast_plan import candidate_views, ledger_call, recent_lines
 from horizon.ai.agent.emotion import decide_face, emotion_row, merges
 from horizon.ai.agent.plan_graph import Branch, build_plan_graph, run_plan
@@ -115,6 +116,7 @@ class DebateSteps:
         recalling = gates.recall_asked(req.candidates, req.recallable)   # M13 (memory D26, D27): each member
         qs.update(gates.questions({c: names[c].name if c in names else c for c in [*who, *recalling]}, who,
                                   nouls=False, recall=recalling))
+        qs.update(sf.questions(req.safety))   # M14 (safety D4, U4): "unsafe note?" about an unchecked Interject
         return qs, keys, qid
 
     @staticmethod
@@ -131,12 +133,14 @@ class DebateSteps:
                                                 last_opposing=f.last_opposing,
                                                 latest_by_candidate=dict(f.latest_by_candidate)),
                              last_spoke=False)
-        built = build_turn_plan_state(inp)
+        extra = sf.state_extra(req.safety)   # M14 (U4): the Interject as `quoted_note`, never cut (arguments go first)
+        built = build_turn_plan_state(inp, reserve=_tokens(extra) if extra else 0)
         # M12: the titles a gate reads are added to what the member and face questions declare, and nothing else
         state = only_declared(dict(built.state), {k: q for k, q in questions.items()
                                                   if not k.startswith(("docs:", "earlier:"))})
         if "quoted_documents" in built.state:
             state["quoted_documents"] = built.state["quoted_documents"]
+        state.update(extra)
         return PlanState(state=state, tokens=_tokens(state), dropped_gates=list(built.dropped_gates))
 
     def start(self, planner: Any, req: DebateRequest) -> JevDebateCall:
@@ -145,7 +149,7 @@ class DebateSteps:
         for cid in state.dropped_gates:   # X9's cap dropped their titles: no gate, a quick turn
             qs.pop(gates.gate_key(cid), None)
             qs.pop(gates.earlier_key(cid), None)   # M13 (D26): X9's dropped gates drop `earlier` too
-        nouls = gates.fallbacks(qs)
+        nouls = {**gates.fallbacks(qs), **sf.fallbacks(qs)}
 
         async def fallback() -> Answers:
             return {k: nouls.get(k, ChoiceAnswer(req.candidates[0] if k == qid else "none")) for k in qs}
@@ -302,7 +306,8 @@ class JevDebateCall:
                           faces=faces if not late else {}, face_rows=face_rows, shared_rows=shared, calls=calls,
                           state_tokens=self.state.tokens,
                           graph_path=list(member.graph_path) if member is not None else [],
-                          gates=found if not late else {}, recall_gates=recall if not late else {})
+                          gates=found if not late else {}, recall_gates=recall if not late else {},
+                          safety=sf.decide(req.safety, res) if not late else None)   # M14 (U4)
 
     @staticmethod
     def _answered_after(res: DecisionResult, member: DebatePlan) -> bool:

@@ -101,8 +101,10 @@ def test_agent_resolves_like_naive() -> None:
         want = "agent" if p in AGENT_PORTS else naive_.choose(p, key_set=True)
         assert agent.choose(p, key_set=True) == want, p
         assert agent.choose(p, key_set=False) == "scripted" or p == "converter", p
-    # M9 (turn-plan-emotion D5, D18, D23) adds the planner, reactions and the face check; M11 (debate) the host
-    assert AGENT_PORTS == frozenset({"turn", "planner", "reactions", "face_check", "host", "memory_writer"})
+    # M9 (turn-plan-emotion D5, D18, D23) adds the planner, reactions and the face check; M11 (debate) the host;
+    # M14 (safety D9) the guardrail
+    assert AGENT_PORTS == frozenset({"turn", "planner", "reactions", "face_check", "host", "memory_writer",
+                                     "guardrail"})
 
 
 def test_agent_from_env() -> None:

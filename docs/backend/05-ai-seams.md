@@ -67,7 +67,7 @@ TurnEvent = (
 | `KnowledgeIndexer` | `chunk(doc) → [Section{text, heading_path, pages, children[{text, locator, heading, offsets}]}]` + `tokenizer_id` | Heading split + fixed windows | Same (sizes are AI-stage tunables) | OQ-AI-03. **Built in M12:** `pack@2` ([docs/ai/10](../ai/10-rag.md) K1): ≈ 300-token pieces under one heading path, headings carried forward, never over 400 |
 | `KnowledgeRetriever` | `retrieve(index: ScopedIndex, query: QueryBundle, k) → [KnowledgeHit{chunk_id, source_id, title, type, locator, text, section_text, score}]`; `uses_vectors` gates the query embedding | FTS5 top k | FTS5 20 ∪ vector KNN 20, RRF (k = 60), score in [0, 1] | OQ-AI-03 (MMR, Jev rerank) |
 | `Embedder` | `embed(texts, kind: "query"\|"document", space: EmbeddingSpace, ctx, hooks?) → Embedded{vectors, cached}` (LRU keyed by `(space.id, kind, sha256(text))`; per-batch hooks store vectors in the ledger row's transaction) | Hash → unit vector, billed as simulated spend (D-81) | **Qwen3 Embedding 8B** with the active space's model and dimensions (D-95); query instruction from the space; truncate + renormalise | D-64 |
-| `Guardrail` | `check_input(text, ctx)` / `check_output(text, ctx) → [Check{name, verdict, p}]` | Pass | **Jev noul**, fail-open with a flag | OQ-AI-08 |
+| `Guardrail` | `check(ctx, text) → GuardrailResult{verdict, checks[{name, verdict, p}]}`; M14 adds `start(ctx, text)` (the handle the runtime waits on and hands to the after-the-fact check), `check_text` (host lines, verdict prose) and `check_prompt(ctx, kind, text)` (images and songs) | `scripted`: pass, no call (the scripted trace shows `output: pass`); `naive`: pass with no checks | **Jev noul** `output_rules`, fail-open with a flag (built in M14) | OQ-AI-08 |
 
 ```python
 MemoryOp = Insert(draft) | Supersede(old_ids: list[str], draft) | Reinforce(id, importance) | Touch(ids)
@@ -87,7 +87,7 @@ ScopedIndex  # services/knowledge/index.py: read-only, built by the RUNTIME per 
 
 **Retrieval runs in the runtime (D-92).** Before a turn's engine runs, the runtime builds the `ScopedIndex`, calls the configured `MemoryRetriever` and `KnowledgeRetriever` (k from `retrieval.knowledgeK` / `retrieval.memoryK`, 5 and 3) and freezes the hits into `TurnContext.knowledge` / `.memory` (with `.query`, the text used). Engines receive plain data and never query storage, so a context still round-trips through JSON and an evaluation harness can replay a turn with exactly the passages it saw.
 
-**Guardrail block after streaming** (backend rule): `turn.end` with `status:"error"` and `content_refused`. The content and its persisted `token` events are scrubbed (the Forget path, by `message_id`), and the reply is excluded from memory.
+**Guardrail block after streaming** (backend rule): `turn.end` with `status:"error"` and `content_refused`. The content and its persisted `token` events are scrubbed (the Forget path, by `message_id`), and the reply is excluded from memory. *M14 (OpenSpec `safety` D10, D11): the `error` comes before `turn.end` for a live block, and after an `interrupted` `turn.end` for a reply checked after Stop; in both cases both reducers empty that message (or its streaming variant) and set its status to `error`, and the blocked reply still emits its `insight`, with the `input`, `care` and `output` checks merged by name.*
 
 ## 3. Decider (Jev)
 

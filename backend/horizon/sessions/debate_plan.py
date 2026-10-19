@@ -117,10 +117,15 @@ async def start(actor: SessionActor, slot: int, target: tuple[str, int], side: s
     f, latest = facts(actor, sctx, target[0], side, candidates)
     rows = await characters(rt, candidates)
     docs = await document_titles(rt, sctx.world.id, candidates) if getattr(planner, "decides_retrieval", False) else {}
+    line = None   # M14 (safety D4, U4): an Interject newer than the last argument is asked "unsafe note?" here
+    if getattr(planner, "asks_safety", False):
+        from horizon.sessions import safety as ss
+
+        line = await ss.line(actor, ss.unchecked_interject(actor), care=False, wording="debate", note=True, mark=False)
     req = DebateRequest(session=sctx, phase=target[0], iteration=target[1], side=side, candidates=candidates,
                         cast=[character_view(rows[c]) for c in candidates if c in rows], facts=f, latest=latest,
                         turn_index=actor.mode.turn, base_faces=base_faces(actor, sctx, candidates), manual=manual(actor),
-                        started_at=started_at, documents=docs,
+                        started_at=started_at, documents=docs, safety=line,
                         recallable=await recallable(rt, actor, candidates))   # M13 (memory D26)
     call = planner.start_debate(req)
     if call is None:

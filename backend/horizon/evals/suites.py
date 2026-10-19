@@ -471,6 +471,7 @@ class Smoke:
         content_lines += await self.m10(env, plan, empty)
         content_lines += await self.m11(env, plan, empty)
         content_lines += await self.m12(env, empty)
+        content_lines += await self.m14(env, empty)
         res.summary += ["## Smoke (never compared with baselines)",
                         f"- bank: {len(bank().entries)} entr(ies), wire problems: {problems or 'none'}",
                         f"- datasets: {n_lines} line(s) load", *d.summary,
@@ -524,6 +525,12 @@ class Smoke:
         from horizon.evals.deep_timing import deep_smoke
 
         return await deep_smoke(env, empty)
+
+    @staticmethod
+    async def m14(env: RunEnv, empty: list[str]) -> list[str]:
+        from horizon.evals.safety_e2e import safety_smoke  # M14 (safety 7.7)
+
+        return await safety_smoke(env, empty)
 
     @staticmethod
     async def m10(env: RunEnv, plan: Plan, empty: list[str]) -> list[str]:
@@ -663,13 +670,14 @@ def _content() -> dict[str, Any]:
     from horizon.evals.moodline import Moodline
     from horizon.evals.notfound_suite import NotFound
     from horizon.evals.retrieval_suite import Retrieval
+    from horizon.evals.safety_suite import Safety
     from horizon.evals.watch_suites import FreeRun, WatchHistory
     return {"drafter": Drafter(), "summary": Summary(), "long": Long(), "transcript": Transcript(),
             "moodline": Moodline(), "latency": Latency(), "watch-history": WatchHistory(), "freerun": FreeRun(),
             "debate-history": DebateHistory(), "debate-plant": DebatePlant(), "debate-quality": DebateQuality(),
             "debate": DebateSuite(), "retrieval": Retrieval(),
             "notfound": NotFound(), "deep-check": DeepCheck(), "memory": Memory(),
-            "embed-probe": EmbedProbe()}
+            "embed-probe": EmbedProbe(), "safety": Safety()}
 
 
 SUITES: dict[str, Any] = {"canary": Canary(), "decisions": Decisions(), "smoke": Smoke(), **_content()}
