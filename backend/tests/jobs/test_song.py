@@ -115,6 +115,7 @@ async def test_no_name_in_the_song_prompt_and_the_title_is_kept(api: Api) -> Non
 
 
 async def test_the_brief_check_reads_what_is_sent(api: Api) -> None:
+    from horizon.ai.naive.creation import SONG_CONSTRAINTS
     from tests.jobs.kit import start
 
     fake = await naive_profile(api)
@@ -125,7 +126,8 @@ async def test_the_brief_check_reads_what_is_sent(api: Api) -> None:
     [prompt] = music_prompts(fake)[sent:]
     checked = [json.loads(r.content)["state"]["quoted_text"] for r in fake.requests
                if r.url.path.endswith("/alpha/decisions") and "song_copy" in json.loads(r.content)["questions"]]
-    assert checked[-1] == prompt
+    # images-music 8.3: the sent prompt without our constant constraint lines (they halve Jev's p on copies)
+    assert prompt.endswith(" " + SONG_CONSTRAINTS) and checked[-1] == prompt.removesuffix(" " + SONG_CONSTRAINTS)
 
 
 async def test_naive_profile_selects_lyria_and_the_override_keeps_procedural(api: Api) -> None:

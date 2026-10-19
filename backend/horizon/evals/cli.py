@@ -76,7 +76,11 @@ def _all(args: argparse.Namespace) -> int:
                     continue
                 said: list[str] = []
                 r = Runner(cfg, out=said.append)
-                code = await r.run(Options(suite=name, profile=profile, probe=True, yes=True, limit=args.limit))
+                try:
+                    code = await r.run(Options(suite=name, profile=profile, probe=True, yes=True, limit=args.limit))
+                except Exception as e:   # one suite's crash is its own row, never the end of the table (8.2)
+                    rows.append(f"| {name} | {profile} | — | — | — | not probed: crashed ({type(e).__name__}: {e}) |")
+                    continue
                 p = r.last_probe
                 if p is None:
                     why = (said[-1] if said else f"exit {code}").removeprefix("horizon: ")

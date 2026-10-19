@@ -337,6 +337,12 @@ class Runner:
                                              "ran before it"])
                 else:
                     raise
+            except TimeoutError as e:
+                if not opts.probe:
+                    raise
+                # a probe answers misses empty, so a chained session may never settle (found in 8.2: a free debate);
+                # its misses already price it whole (D13)
+                result = Result(summary=[f"the suite stopped: {e}; the counts cover what ran before it"])
             spent = await env.spent()
             self.store_hits = store.hits if store is not None else 0
             if opts.probe:

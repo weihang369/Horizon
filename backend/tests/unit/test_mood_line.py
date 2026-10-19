@@ -22,4 +22,4 @@ def test_phrase_per_face(case: dict[str, object]) -> None:
 
 def test_every_face_but_neutral_has_a_phrase_and_the_versions() -> None:
     assert set(MOOD_PHRASES) == set(EMOTIONS) - {"neutral"}
-    assert (PROMPT_VERSION, PROMPT_VERSION_MOOD) == ("agent-9", "agent-10")   # D40: the line is off by default
+    assert (PROMPT_VERSION, PROMPT_VERSION_MOOD) == ("agent-1", "agent-2")   # D40: the line is off by default

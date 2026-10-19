@@ -294,8 +294,8 @@ async def test_a_forked_copy_reuses_the_rewrite(api: Api) -> None:
 
 # ── 8.2 the labels ──
 @pytest.mark.parametrize(("cue", "mood", "label"), [
-    (None, False, "agent-9+docs-1"), (None, True, "agent-10+docs-1"),
-    ("second", False, "agent-11+docs-1"), ("steer", False, "agent-13+docs-1"),
+    (None, False, "agent-1+docs-1"), (None, True, "agent-2+docs-1"),
+    ("second", False, "agent-3+docs-1"), ("steer", False, "agent-5+docs-1"),
 ])
 def test_the_docs_label_follows_the_bytes(api: Api, cue: str | None, mood: bool, label: str,
                                           monkeypatch: pytest.MonkeyPatch) -> None:

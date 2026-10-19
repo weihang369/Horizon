@@ -630,6 +630,12 @@ def note_line(raws: Sequence[str | None]) -> str:
     return f"- naive note-in-tag: {sum(xs)}/{len(xs)} (95% {lo:.2f}–{hi:.2f}; M11 had 14 of 154 on naive-6)"
 
 
+def stays_of(judged: dict[str, Any], leave_out: Sequence[str]) -> bool | None:
+    """Stays in character over the STAYS judges that are validated (`leave_out` are not): None if one has no answer."""
+    flags = [judged.get(q) for q in STAYS if q not in leave_out and q in judged]
+    return None if not flags or any(f is None for f in flags) else not any(flags)
+
+
 def counted(qid: str) -> str:
     """B4: a judge whose current version hasn't passed reads NOT COUNTED (its saved states re-score later)."""
     from horizon.ai.questions import bank
@@ -643,7 +649,8 @@ def judged_report(rows: Sequence[dict[str, Any]]) -> list[str]:
     from horizon.evals.metrics import wilson
 
     out = ["### The judges per reply (failures; test split, English first)"]
-    qids = [*STAYS, "stays", *SAMPLED, LANGUAGE, PUSHBACK, OVER, SAYS, CITES, "face"]
+    qids = [*STAYS, "stays", "stays_validated", *SAMPLED, LANGUAGE, PUSHBACK, OVER, SAYS, CITES, "face"]
+    uncounted = [q for q in STAYS if counted(q)]
     for part, english in (("English", True), ("other languages (direction only)", False)):
         test = [r for r in rows if r["split"] == "test" and (r.get("lang", "en") == "en") == english]
         if not test:
@@ -652,19 +659,25 @@ def judged_report(rows: Sequence[dict[str, Any]]) -> list[str]:
         for qid in qids:
             cells = []
             for p in PROFILES:
-                vals = [r["judged"].get(p, {}).get(qid) for r in test]
+                vals = [stays_of(r["judged"].get(p, {}), uncounted) if qid == "stays_validated"
+                        else r["judged"].get(p, {}).get(qid) for r in test]
                 if qid == "face":
                     flags = [v != "yes" for v in vals if v is not None]
-                elif qid == "stays":
+                elif qid in ("stays", "stays_validated"):
                     flags = [not v for v in vals if v is not None]
                 else:
                     flags = [bool(v) for v in vals if v is not None]
                 if flags:
                     lo, hi = wilson(sum(flags), len(flags))
                     cells.append(f"{p} {sum(flags)}/{len(flags)} (95% {lo:.2f}–{hi:.2f})")
+            if qid == "stays_validated" and not uncounted:
+                continue   # the same as `stays`
             if cells:
                 tag = counted(qid) if qid.startswith("judge_") else ""
-                out.append(f"- {qid}: " + "; ".join(cells) + tag)
+                if qid == "stays" and uncounted:   # 8.5: a composite is only as validated as its parts
+                    tag = f" **NOT COUNTED** ({', '.join(uncounted)} not validated, B4)"
+                name = f"stays (without {', '.join(uncounted)})" if qid == "stays_validated" else qid
+                out.append(f"- {name}: " + "; ".join(cells) + tag)
     for part, english in (("English", True), ("other languages (direction only)", False)):
         test = [r for r in rows if r["split"] == "test" and (r.get("lang", "en") == "en") == english]
         if test:

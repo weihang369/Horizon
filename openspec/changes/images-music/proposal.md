@@ -78,7 +78,8 @@ the code it measures is final.
 **Prompts, as the user's choices (design D5, D10)**
 - The S2 honesty line reworded so a question asked inside the story is answered in the story. The candidate
   wordings and their re-measure come to the user before anything is paid. The new bytes move `agent-1`…`agent-8`
-  to `agent-9`…`agent-16`.
+  to `agent-9`…`agent-16`. **Reverted in 8.6 (task 4.3):** wording B kept only 10/30 in-story asks in the story,
+  against M14's 15/30, so the line, the labels and the fixtures are a570f5f's again (m15.md).
 - `naive`'s emotion-tag line forbids notes inside the tag (m11 D31.3), as `naive-9`…`naive-12` (every `naive` label moves by 4), if the user chooses it.
 
 **The default (doc 01 A12, doc 02 B12; design D3, D4)**
@@ -130,7 +131,8 @@ None. Every behaviour here belongs to an existing capability.
   - `naive`'s tag line (if chosen).
 - `generation-jobs`: a hinted `emotion_regenerate` compiles the identity edit, and never reads the hint's text.
 - `asset-credits`: `ASSETS.md` names SynthID and the Lyria terms.
-- `persona-prompt`: the honesty line answers in-story questions in the story; the prompt labels follow the new bytes.
+- ~~`persona-prompt`: the honesty line answers in-story questions in the story; the prompt labels follow the new
+  bytes.~~ Dropped with the revert in 8.6 (task 4.3); `persona-prompt` is unchanged by M15.
 - `response-store`: a reversed option order gets its own key; a probe never sends.
 - `evaluation-harness`:
   - the `conversations` suite and its frozen transcripts;
@@ -153,8 +155,8 @@ None. Every behaviour here belongs to an existing capability.
     - `store.py` (the order salt, the probe);
     - `runner.py`, `cli.py`, `latency.py` (`--part blended`), `judges.py`, `debate_suites.py`, `memory_suite.py`,
       `retrieval_suite.py`, `stats.py`.
-- **Frontend:** `domain/personaPrompt.ts` (the twin's honesty line and labels) and the shared persona fixtures. No UI
-  change; the mock is unaffected.
+- **Frontend:** ~~`domain/personaPrompt.ts` (the twin's honesty line and labels) and the shared persona fixtures~~
+  (reverted in 8.6, so unchanged). No UI change; the mock is unaffected.
 - **Data:** `evals/transcripts/` gains 16 frozen transcripts (9 cut from committed histories, 7 generated);
   `evals/datasets/judges/` the rebuilt pairwise set and the faithfulness set; `evals/datasets/emotion/` 40 items;
   `evals/baselines/` the request manifest.

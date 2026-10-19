@@ -6,6 +6,7 @@ from __future__ import annotations
 import json
 import sqlite3
 from pathlib import Path
+from typing import Any
 
 from horizon.evals import conversations as cv
 from horizon.evals import frozen
@@ -93,7 +94,13 @@ async def test_faithfulness_limit_1_on_the_fake(tmp_path: Path) -> None:
     assert await r.run(Options("faithfulness", profile="agent", limit=1, yes=True)) == 0, out
     (run,) = [p for p in (tmp_path / "evals").iterdir() if p.is_dir()]
     rep = (run / "agent" / "report.md").read_text(encoding="utf-8")
-    assert "## Sentence faithfulness: 1 two-passage deep turn(s)" in rep and "NOT COUNTED" in rep
+    assert "## Sentence faithfulness: 1 two-passage deep turn(s)" in rep
+    # NOT COUNTED follows the committed baseline: judge_sentence_supported v1 passed B4 in 8.5
+    from horizon.ai.questions import bank
+    from horizon.evals import judges
+
+    validated = judges.validated("judge_sentence_supported", bank().get("judge_sentence_supported").version)
+    assert ("NOT COUNTED" in rep) == (not validated)
 
 
 # ── 6.3: the free runs ──
@@ -106,3 +113,17 @@ async def test_free_runs_limit_1_on_the_fake_both_profiles(tmp_path: Path) -> No
     for mode in cv.MODES:
         assert f"- {mode}:" in rep
     assert "cost per turn" in rep and "repeated opener" in rep
+
+
+def test_stays_is_not_counted_while_a_part_is_unvalidated_and_a_validated_row_is_added(monkeypatch: Any) -> None:
+    """images-music 8.5: `judge_answers_last` failed B4 twice, so `stays` (all four) reads NOT COUNTED, and a row over
+    the validated three keeps a counted figure."""
+    monkeypatch.setattr("horizon.evals.judges.validated", lambda qid, v, record=None: qid != cv.ANSWERS)
+    judged = {cv.VOICE: False, cv.FACT: False, cv.ANSWERS: True, cv.IN_STORY: False, "stays": False}
+    rows = [{"split": "test", "lang": "en", "judged": {"agent": judged, "naive": judged}}]
+    rep = cv.judged_report(rows)
+    stays = next(x for x in rep if x.startswith("- stays:"))
+    kept = next(x for x in rep if x.startswith("- stays (without judge_answers_last):"))
+    assert "NOT COUNTED" in stays and "1/1" in stays
+    assert "NOT COUNTED" not in kept and "agent 0/1" in kept
+    assert cv.stays_of(judged, [cv.ANSWERS]) is True and cv.stays_of({cv.VOICE: None}, []) is None

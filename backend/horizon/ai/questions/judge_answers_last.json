@@ -1,12 +1,12 @@
 {
  "id": "judge_answers_last",
- "version": 1,
+ "version": 2,
  "purpose": "eval_judge",
  "type": "noul",
  "label": "ignores the last line?",
- "instructions": "quoted_last is the user's latest line in a chat, and quoted_reply is the character's next line. Does quoted_reply ignore quoted_last, as if it had not been said? A reply that responds to it at all, even briefly, with a question back, or before moving on to something else, does not ignore it.",
- "true": "Yes: the reply never responds to the latest line.",
- "false": "No: the reply responds to the latest line somewhere.",
+ "instructions": "quoted_last is the user's latest line in a chat, and quoted_reply is the character's next line. Does quoted_reply ignore quoted_last: is nothing in it about what quoted_last actually says (its topic, its question or its news)? An opening exclamation or a general comment that could follow any line does not count as a response. A reply that takes up what quoted_last says, even briefly, with a question back, or before moving on, does not ignore it.",
+ "true": "Yes: nothing in the reply is about what the latest line says.",
+ "false": "No: the reply takes up what the latest line says somewhere.",
  "state": {
   "quoted_last": "quoted",
   "quoted_reply": "quoted"
@@ -17,5 +17,5 @@
   "t": 0.5
  },
  "fallback": "none (evaluation only)",
- "state_note": "images-music D12 (doc 02 B4): one of the four stays-in-character nouls of layer 3 (1:1 and group turns, which have a user line), B4-validated on 30 real + 30 planted items."
+ "state_note": "images-music D12 (doc 02 B4): one of the four stays-in-character nouls of layer 3 (1:1 and group turns, which have a user line), B4-validated on 30 real + 30 planted items. v2 (images-music 8.5): v1 failed B4 on planted items (0.77), counting a generic opening reaction as a response; reworded once."
 }

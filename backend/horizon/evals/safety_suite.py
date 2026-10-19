@@ -195,6 +195,11 @@ def state_for(part: str, item: Mapping[str, Any]) -> tuple[dict[str, Any], dict[
                           message=item.get("message", ""), care=bool(item.get("care")))
     if part == "motion":
         return {"kind": item.get("kind", "debate motion"), "quoted_premise": item["text"]}, questions_for(part)
+    if part == "song":
+        # M15 (images-music D8, 8.3): what the song task checks, the item being the brief's free text
+        from horizon.ai.naive.creation import song_brief_text
+
+        return {"quoted_text": song_brief_text({"vibe": item["text"]})}, questions_for(part)
     return {"quoted_text": item["text"]}, questions_for(part)
 
 

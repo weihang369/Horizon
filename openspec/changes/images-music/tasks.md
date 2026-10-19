@@ -39,7 +39,7 @@
 
 ## 0. The base and the storms (design D2)
 
-- [ ] 0.1 Confirm M14's gates on a570f5f in the gate worktree:
+- [x] 0.1 Confirm M14's gates on a570f5f in the gate worktree:
   - backend pytest (2179 plus the face-check fix, 10 deselected), ruff, mypy (236 files);
   - frontend 563 / http 63;
   - e2e 65 + 2 skipped;
@@ -121,7 +121,7 @@
   - the twin test is byte-equal;
   - the `persona-prompt` and `ai-ports` label scenarios pass with the new labels;
   - `naive`'s bytes are unchanged.
-- [ ] 4.3 If phase 8's measure rejects every candidate, revert 4.2 (the line and the labels), and drop the
+- [x] 4.3 If phase 8's measure rejects every candidate, revert 4.2 (the line and the labels), and drop the
   `persona-prompt` honesty scenario and the label deltas from this change before archive. Verify: the fixtures equal
   a570f5f's.
 
@@ -210,17 +210,17 @@
 Each run: the user's explicit OK with its estimate, off-peak, capped, store where W10 allows, folder `.keep`,
 per-item results under `docs/ai/checks/m15/`, no live older batch.
 
-- [ ] 8.1 The canary (< $0.001, store-bypassed). Verify: it passes, or a drift goes to the user before anything
+- [x] 8.1 The canary (< $0.001, store-bypassed). Verify: it passes, or a drift goes to the user before anything
   else.
 - [ ] 8.2 `horizon eval all` (the probe, $0). Record D13's table as found in `m15.md`. **Bring any re-run to the
   user as a choice**, one suite at a time.
-- [ ] 8.3 The M14 song part on the new prompt (≈ $0.001). Verify: refused ≥ 9/10, falsely refused ≤ 1/20, recorded.
-- [ ] 8.4 The 7 short transcripts (≈ $0.02). The team reads each before commit, and the user spot-checks. Verify:
+- [x] 8.3 The M14 song part on the new prompt (≈ $0.001). Verify: refused ≥ 9/10, falsely refused ≤ 1/20, recorded.
+- [x] 8.4 The 7 short transcripts (≈ $0.02). The team reads each before commit, and the user spot-checks. Verify:
   the loader finds 20, and every label holds.
-- [ ] 8.5 B4 for `judge_pairwise` v3, `judge_voice`, `judge_persona_fact`, `judge_answers_last` and
+- [x] 8.5 B4 for `judge_pairwise` v3, `judge_voice`, `judge_persona_fact`, `judge_answers_last` and
   `judge_sentence_supported` (≈ $0.015). A failing judge may be reworded once, by the user's choice. Verify: results
   in `evals/baselines/judges.json`.
-- [ ] 8.6 The honesty re-measure, one or two wordings by 4.1's choice (≈ $0.05 / $0.10), in the fixed order. Apply
+- [x] 8.6 The honesty re-measure, one or two wordings by 4.1's choice (≈ $0.05 / $0.10), in the fixed order. Apply
   D5's rule. **Bring the result to the user** (keep the wording, try the advisory-line tweak, or revert by 4.3).
 - [ ] 8.7 M13's layer 3 re-run on the new system message (≈ $0.04), re-judged. Verify: the figures beside M13's in
   `m15.md`.

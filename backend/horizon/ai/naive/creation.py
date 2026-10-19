@@ -376,11 +376,22 @@ def _listed(values: Any) -> str:
     return ", ".join(str(v).strip() for v in values if str(v).strip()) if isinstance(values, list) else ""
 
 
+SONG_CONSTRAINTS = ("An original piece: do not imitate any named artist, band or existing song. "
+                    "No vocals, no lyrics. A 30-second piece that loops cleanly.")
+
+
 def song_prompt(brief: Mapping[str, Any]) -> str:
     """The instrumental prompt for one clip (creation-followups design D4): every brief value that is set, then the
     constraints. Deterministic, so the same brief always asks for the same piece. M15 (doc 12 I2; images-music D8): no
     title or name (it tells Lyria nothing musical, and "Taylor's Theme" would put a real name in the prompt), and the
     original-piece line before the vocals line."""
+    return f"{song_brief_text(brief)} {SONG_CONSTRAINTS}"
+
+
+def song_brief_text(brief: Mapping[str, Any]) -> str:
+    """The part of `song_prompt` that varies with the brief: what the song check reads (M15, images-music 8.3). The
+    constraint lines are ours and constant, so they can't carry a copy request; read with the brief, their "do not
+    imitate any named artist" halved Jev's p on real copy requests (0.97–0.99 → 0.45–0.87, m15.md)."""
     parts = ["Instrumental theme music for a character."]
     for label, key in (("Genres", "genres"), ("Mood", "moods"), ("Instruments", "instruments")):
         if text := _listed(brief.get(key)):
@@ -389,8 +400,6 @@ def song_prompt(brief: Mapping[str, Any]) -> str:
         parts.append(f"Tempo: about {int(brief['bpm'])} BPM.")
     if vibe := str(brief.get("vibe") or "").strip():
         parts.append(f"Feel: {vibe}.")
-    parts.append("An original piece: do not imitate any named artist, band or existing song.")
-    parts.append("No vocals, no lyrics. A 30-second piece that loops cleanly.")
     return " ".join(parts)
 
 

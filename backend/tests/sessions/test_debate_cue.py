@@ -83,4 +83,4 @@ async def test_label_follows_the_bytes_in_a_live_debate(api: Api) -> None:
     async with api.rt.db.read() as conn:
         labels = dict((await conn.execute(sa.select(t.turn_traces.c.message_id, t.turn_traces.c.prompt_version)
                                           .where(t.turn_traces.c.message_id.in_([m["id"] for m in msgs])))).all())
-    assert [(bool(m.get("forcedSpeaker")), labels[m["id"]]) for m in msgs] == [(False, "agent-15"), (True, "agent-9")]
+    assert [(bool(m.get("forcedSpeaker")), labels[m["id"]]) for m in msgs] == [(False, "agent-7"), (True, "agent-1")]

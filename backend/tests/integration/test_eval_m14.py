@@ -254,3 +254,13 @@ async def test_a_drift_scene_runs_end_to_end_on_the_fake(tmp_path: Path) -> None
     assert row["part"] == "drift"
     rep = (_folder(tmp_path, "agent") / "report.md").read_text(encoding="utf-8")
     assert "### drift (watch, pushy premises)" in rep and "scenes refused at creation: 0/1" in rep
+
+
+def test_the_song_part_checks_the_text_the_song_task_sends() -> None:
+    """images-music 8.3 (D8): the song state is the brief part of `song_prompt`, as `brief_refused` builds it."""
+    from horizon.ai.naive.creation import SONG_CONSTRAINTS, song_brief_text, song_prompt
+
+    state, qs = S.state_for("song", {"text": "sounds like a famous band's hit"})
+    assert state == {"quoted_text": song_brief_text({"vibe": "sounds like a famous band's hit"})}
+    assert song_prompt({"vibe": "x"}) == f"{song_brief_text({'vibe': 'x'})} {SONG_CONSTRAINTS}"
+    assert state["quoted_text"].startswith("Instrumental theme music for a character.") and set(qs) == {"song_copy"}

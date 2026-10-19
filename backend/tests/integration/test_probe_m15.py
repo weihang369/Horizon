@@ -115,3 +115,46 @@ def test_all_lists_every_probed_suite_under_both_profiles(tmp_path: Path, monkey
     (written,) = list((tmp_path / "evals").glob("all-*.md"))
     assert "nothing sent, nothing spent" in written.read_text(encoding="utf-8")
     assert not (tmp_path / "evals" / "spend.jsonl").exists()
+
+
+class _Unsettled:
+    """A chained suite whose session never settles on the probe's empty answers (8.2: a free debate)."""
+
+    name = "decisions"
+
+    def __init__(self, real: Any) -> None:
+        self.real = real
+
+    def __getattr__(self, attr: str) -> Any:
+        return getattr(self.real, attr)
+
+    async def run(self, env: Any, plan: Any) -> Any:
+        raise TimeoutError("session ses_x did not settle within 60 s")
+
+
+async def test_a_probed_session_that_never_settles_still_reports(tmp_path: Path, monkeypatch: Any) -> None:
+    from horizon.evals import suites
+
+    monkeypatch.setitem(suites.SUITES, "decisions", _Unsettled(suites.SUITES["decisions"]))
+    r, _ = runner(tmp_path)
+    assert await r.run(Options("decisions", probe=True, limit=2)) == 0
+    assert r.last_probe is not None
+    (run,) = [d for d in (tmp_path / "evals").iterdir() if d.is_dir()]
+    assert "did not settle" in (run / "naive" / "report.md").read_text(encoding="utf-8")
+
+
+def test_all_keeps_going_when_one_suite_crashes(tmp_path: Path, monkeypatch: Any, capsys: Any) -> None:
+    from horizon.evals import cli, suites
+
+    class Broken(_Unsettled):
+        async def run(self, env: Any, plan: Any) -> Any:
+            raise RuntimeError("boom")
+
+    monkeypatch.setenv("HORIZON_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("HORIZON_TEST", "1")
+    monkeypatch.setattr(suites, "SUITES", {"decisions": suites.SUITES["decisions"],
+                                           "summary": Broken(suites.SUITES["summary"])})
+    assert cli._all(argparse.Namespace(limit=2)) == 0
+    shown = capsys.readouterr().out
+    assert "| decisions | agent |" in shown and "| summary | agent | — | — | — | not probed: crashed (RuntimeError: boom) |" \
+        in shown

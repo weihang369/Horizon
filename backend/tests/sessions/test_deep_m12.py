@@ -70,7 +70,7 @@ async def test_a_deep_one_on_one_reply_carries_its_passages(api: Api) -> None:
     k = tr["knowledge"]
     assert k["trigger"] == "gated" and k["query"] == QUESTION and len(k["retrieved"]) == len(checks(api))
     assert next(r for r in k["retrieved"] if r["chunkId"] == "kch_amaraFat02")["n"] == 1
-    assert await trace_version(api, reply["id"]) == "agent-9+docs-1"
+    assert await trace_version(api, reply["id"]) == "agent-1+docs-1"
     passages = rows(reply, "passage")
     assert len(passages) == len(checks(api)) and {r["result"] for r in passages} <= {"used", "below_threshold"}
     assert tr["context"]["used"]["knowledge"] > 0
@@ -85,7 +85,7 @@ async def test_a_confident_not_found_says_so_at_the_quick_length(api: Api) -> No
     body = chats(api, "reply")[-1]
     assert body["messages"][-1]["content"].startswith(f"# Your documents\n{NOT_FOUND}")
     assert body["max_tokens"] == api.rt.runtime_cfg.runtime.reply_max_tokens.one_on_one
-    assert not reply.get("citations") and await trace_version(api, reply["id"]) == "agent-9+nodocs-1"
+    assert not reply.get("citations") and await trace_version(api, reply["id"]) == "agent-1+nodocs-1"
     assert all(not r["cited"] for r in reply["trace"]["knowledge"]["retrieved"])
 
 
@@ -97,7 +97,7 @@ async def test_an_unsure_not_found_is_a_plain_quick_reply(api: Api) -> None:
     [reply] = await send(api, sid, "What does the review say about night-shift pay?")
     tail = chats(api, "reply")[-1]["messages"][-1]["content"]
     assert "# Your documents" not in tail and "# From your documents" not in tail
-    assert await trace_version(api, reply["id"]) == "agent-9"
+    assert await trace_version(api, reply["id"]) == "agent-1"
 
 
 async def test_a_deep_and_a_quick_turn_share_system_message_one(api: Api) -> None:

@@ -36,9 +36,9 @@ def test_every_real_item_is_labelled_blind_by_a_written_rule() -> None:
 
 
 def test_the_new_judges_are_in_the_bank_and_locked() -> None:
-    for qid in ("judge_persona_fact", "judge_answers_last", "judge_sentence_supported"):
-        q = bank().get(qid)
-        assert q.version == 1 and q.purpose == "eval_judge"
+    for qid, version in (("judge_persona_fact", 1), ("judge_answers_last", 2), ("judge_sentence_supported", 1)):
+        q = bank().get(qid)   # judge_answers_last v2: reworded once after B4 (images-music 8.5)
+        assert q.version == version and q.purpose == "eval_judge"
     assert check_lock() == []
 
 

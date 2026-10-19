@@ -272,7 +272,7 @@ async def call_song(sched: JobScheduler, run: Run, a: Attempt, task: dict[str, A
 async def brief_refused(sched: JobScheduler, run: Run, ch: Mapping[str, Any], job: SongJob) -> bool:
     """M14 (safety D17; doc 12 I4): Jev reads the brief this call sends (edited or drafted), before `before_send`. Its
     spend carries the job's ID, so it comes out of the song task's hold. Late or failed: Lyria is called as before."""
-    from horizon.ai.naive.creation import song_prompt
+    from horizon.ai.naive.creation import song_brief_text
     from horizon.gateway.context import call_ctx
 
     check = getattr(sched.rt.ai.guardrail(True), "check_prompt", None)
@@ -280,7 +280,8 @@ async def brief_refused(sched: JobScheduler, run: Run, ch: Mapping[str, Any], jo
         return False
     cctx = call_ctx("guardrail", world_id=run.world_id, character_id=run.character_id, job_id=run.job_id,
                     creation=ch["status"] != "approved")
-    res = await check(cctx, "song", song_prompt(job.brief))   # M15 (D8): the text sent, no title
+    # M15 (D8, 8.3): the text sent, no title, without our constant constraint lines (they halve Jev's p on copies)
+    res = await check(cctx, "song", song_brief_text(job.brief))
     return bool(not res.fallback and res.verdict == "block")
 
 

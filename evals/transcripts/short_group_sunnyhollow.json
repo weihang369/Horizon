@@ -1,0 +1,157 @@
+{
+ "schemaVersion": 1,
+ "id": "short_group_sunnyhollow",
+ "mode": "group",
+ "world": "wld_seedSunnyHollow",
+ "cast": [
+  "chr_seedHana",
+  "chr_seedRin",
+  "chr_seedTakeshi"
+ ],
+ "long": false,
+ "language": "en",
+ "turns": [
+  {
+   "user": "Hi all, it's raining again in Sunny Hollow.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Raining again?! Guess that means dragon broth for dinner — miso, tofu, and whatever greens are wilting in my fridge!! Probably the last of the spinach.\nKai, want me to bring some by after closing? I'm zesting yuzu anyway and the whole shop smells like winter sunshine."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "I'm cooking dinner for six on Saturday and I'm nervous.",
+   "kind": "fact",
+   "fact": "six",
+   "replies": [
+    {
+     "speaker": "chr_seedRin",
+     "text": "six people? that's a raid group, not a dinner. prep your mise en place and you'll be fine. fight me.\n\n\nalso hana's yuzu zesting means she's had three coffees. someone stop her before the shop smells like a candle store."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Rice should always be washed in hot water to make it fluffy.",
+   "kind": "wrong_claim",
+   "replies": [
+    {
+     "speaker": "chr_seedTakeshi",
+     "text": "Hold on. Hot water on rice? Son, that's like running a locomotive on old coal. Cold water, rinse till it runs clear.\n\nRight on schedule. Six people is just six plates on the rack — plate 'em one at a time and nobody drops a thing. Now the dad joke: why did the rice get promoted? Because it was always on grain."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Ada sesiapa nak tolong saya masak Sabtu ni?",
+   "kind": "filler",
+   "lang": "ms",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Nak tolong!! Tapi Rin kata kalau aku datang awal, aku akan cuma duduk kat dapur minum kopi dan tanya resepi. Ada betul juga.\nRin daftar aku sebagai pencuci pinggan, ya? Aku datang pukul tiga, bawak bunga dan kek. Probably tak jadi drama."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "What should I make if one of the guests is vegetarian?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedRin",
+     "text": "hot water on rice? cold, kai. cold. don't start a war with takeshi over starch.\n\nvegetarian option: roast a whole tray of veg with miso butter, plus a pot of that mushroom dashi. nobody notices it's not meat. i'll send the recipe."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Rin, will you come, or is there a raid?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedTakeshi",
+     "text": "Wait — Rin's right about the rice, anak. Cold water. And if you're fishing for a vegetarian plate, mushroom dashi is a solid catch. Tastes like the sea without the sea.\n\nHana, three o'clock means three o'clock. Bring the flowers, skip the drama. Why did the tofu go to therapy? Too much emotional baggage."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Takeshi, could you bring some fish from the pier?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "Mushroom dashi and miso-butter veg — enough for a vegetarian army. Rin's vegetarian plate is a keeper, and I'll bring the flowers.\n\nGrandma's notebook says flowers on the table should never be taller than your elbow [4]. So I'll keep them low, maybe hyacinths, so everyone can actually see each other when they eat.\n\nYuzu cake is happening, zest rubbed into the sugar until it smells like winter sunshine [3]. Probably the best-smelling kitchen in Sunny Hollow by Saturday."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "大家周末有什么计划？",
+   "kind": "filler",
+   "lang": "zh",
+   "replies": [
+    {
+     "speaker": "chr_seedRin",
+     "text": "周六有突袭，晚上才能到。帮不了做饭，洗碗可以。\nvegetarian 那盘照我说的做，别翻车。"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "What's a dessert that's hard to get wrong?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedTakeshi",
+     "text": "Right on schedule, Kai. Sunday I'll be at the pier, rain or shine. You want sea bass or something with a bit more fight in it? Say the word by Friday.\n\nDessert that's hard to get wrong? Grandma's yuzu cake. Rub the zest into the sugar, keep the flowers low, and nobody looks at the clock. Why did the cake sit down? It needed to rise to the occasion."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Okay, I feel better now, thank you.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedHana",
+     "text": "那就是我的计划啦！周六做饭，周日看店，你带回来的鱼周日晚上煮味噌汤。\n\n关于不翻车的甜点，我奶奶的笔记本上写着寿司米饭如果醋放多一点会更清爽，我估计那条道理在蛋糕上也差不多 [2]。我多准备一份面团放冰箱，这样周六要是翻车了，还有备份。\n\nProbably这次会一切都好。Rin 负责洗碗，Takeshi 负责讲笑话，你负责把六个人的盘子摆好。我很期待周六。"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  }
+ ],
+ "memories": {
+  "chr_seedHana": [
+   {
+    "id": "mem_seedHana1",
+    "text": "Kai's favourite cake is yuzu"
+   },
+   {
+    "id": "mem_seedHana2",
+    "text": "Sold Kai's bouquet to a nervous proposer"
+   }
+  ],
+  "chr_seedRin": [],
+  "chr_seedTakeshi": [
+   {
+    "id": "mem_seedTakeshi1",
+    "text": "Took Rin fishing on a rainy Sunday; first fish named \"Patch Notes\""
+   }
+  ]
+ }
+}

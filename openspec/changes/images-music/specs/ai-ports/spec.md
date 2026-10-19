@@ -99,30 +99,7 @@ The song generator SHALL turn a brief into a theme song. The brief comes from th
 
 #### Scenario: The brief check reads what is sent
 - **WHEN** an `agent` song task checks its brief before the music call
-- **THEN** the text checked equals the prompt the provider receives
-
-### Requirement: Agent reply engine
-The `agent` turn engine SHALL make one streamed call to the pinned chat model with the same settings rows, caps, stop sequences, held face and empty-reply retry as the naive engine, and send the `agent` request (see `persona-prompt`). Its prompt version SHALL follow the bytes sent. From M15 (the reworded honesty line): `agent-9`; `agent-11` with a "second" or "next" turn-cue sentence; `agent-13` with the steer sentence; `agent-15` for a debate argument with the debate cue; and one higher (`agent-10`, `-12`, `-14`, `-16`) with the mood line on. Before M15 the same eight were `agent-1` to `agent-8`. It SHALL NOT ask for an emotion tag, and a tag in its output SHALL never change the face. When the turn has a plan, the face SHALL be the plan's, with the plan's source; without a plan, the speaker's previous face SHALL be kept with source `default`.
-
-#### Scenario: Face kept
-- **WHEN** Amara's face is `thinking` and an unplanned `agent` reply (its plan fell back with no face) streams "<e:happy>Sure"
-- **THEN** the reply's emotion event is `thinking` with source `default`, and the content is "Sure"
-
-#### Scenario: Face from the plan
-- **WHEN** a planned `agent` 1:1 reply's plan chose `sad` from Jev and the model streams "<e:happy>Oh."
-- **THEN** the reply's emotion event is `sad` with source `classifier`, and the content is "Oh."
-
-#### Scenario: Context X-ray on agent
-- **WHEN** an `agent` 1:1 reply completes
-- **THEN** its trace's `context.used.persona` counts the card, `context.used.user` counts the latest user message, and `context.budget` is 11,680
-
-#### Scenario: Label follows the bytes
-- **WHEN** an `agent` group's first reply and its follow-plan second reply are sent with the mood line off
-- **THEN** the first request's prompt version is `agent-9` and the second's is `agent-11`
-
-#### Scenario: Steer and debate labels
-- **WHEN** a watch turn steers and an `agent` rebuttal is generated, both with the mood line off
-- **THEN** their prompt versions are `agent-13` and `agent-15`
+- **THEN** the text checked equals the prompt the provider receives without its constant closing constraint lines (the original-piece line and the vocals line), which carry no user text
 
 ## ADDED Requirements
 

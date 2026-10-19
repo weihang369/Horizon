@@ -140,8 +140,7 @@ class AgentTurnEngine(NaiveTurnEngine):
 
     @property
     def prompt_version(self) -> str:  # type: ignore[override]   # dynamic: it follows the live switch (D40)
-        """`agent-9`, or `agent-10` while the mood line is switched on (D16, D40; M15 D5 moved every label by 8): the
-        label follows the bytes sent."""
+        """`agent-1`, or `agent-2` while the mood line is switched on (D16, D40): the label follows the bytes sent."""
         return PROMPT_VERSION_MOOD if self.deps.switch("persona.moodLine") else PROMPT_VERSION
 
     def prompt_version_for(self, ctx: TurnContext | None) -> str:

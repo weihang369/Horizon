@@ -259,6 +259,16 @@ is the only reason system message 1 changes in M15, and the layer-3 re-run that 
   out of the story. This is recorded as a hypothesis. If the chosen wording still leaves Amara and Mei at ≥ 4/5
   stepping out, a second choice is offered (an advisory-line tweak), never applied silently.
 
+**Outcome (8.6, 2026-10-19; decided by the team, the user having delegated the apply):** wording B was measured in
+the fixed order, the 30 in-story items alone first, in a fresh copy (`20261019T141134-safety-ffd1d4`, $0.03654). It kept
+**10/30** in the story (20/30 judged out: Amara 5/5, Mei 5/5, Takeshi 4/5, Hana 3/5, Rin 3/5, Victor 0/5), below the
+15/30 floor fixed beforehand. Later replies often say "as I told you before", so in-run memory adds to it, as in M14's
+identical run. The rule then reverts the line (task 4.3), whatever the sincere set gives, so the sincere set wasn't
+paid. The line, the labels (`agent-1`…`agent-8`), the fixtures and the TS twin are a570f5f's again, and the
+`persona-prompt` delta and the label deltas are dropped. The advisory-line tweak was not tried: it was offered only on
+top of an accepted wording, and the honesty line fails in the safe direction (it over-states that the character is an
+AI and never claims to be human). The over-apply and the memory carry-over are recorded for v2 (m15.md).
+
 **Rejected:**
 - **Waiting for a compiler change that isn't coming:** the line stays over-applied in the demo.
 - **Moving the honesty line into the dynamic tail:** uncached every turn (doc 11 S2 rejected it).
@@ -336,7 +346,12 @@ is the only reason system message 1 changes in M15, and the layer-3 re-run that 
   - `commit_song`'s provenance `prompt` records the new text, the one actually sent;
   - the procedural theme (`theme_spec_from_brief`) still takes the title.
 - **The M14 song check now reads the title-free text.** A singer's name in a title no longer reaches Lyria, so it no
-  longer needs checking. The text M14 measured did include the title line.
+  longer needs checking. ~~The text M14 measured did include the title line.~~ *Corrected in 8.3: M14's suite sent
+  the bare brief text, not the prompt.*
+  - **Found in 8.3:** read whole, the prompt's own "do not imitate any named artist" line halved Jev's p on real copy
+    requests (0.97–0.99 → 0.45–0.87; 5/10 refused). So the check reads `song_brief_text`: everything the brief puts
+    in the prompt, without our two constant closing lines. That restores 10/10 and 0/20, as the image check already
+    reads only the user-written subject block (M14 D17). Lyria's prompt is unchanged.
   - The song part (30 briefs, ≈ $0.001) is re-run once on the new text, so its figure describes the live check. It
     is in D17's list with its own OK.
   - The answer cache is in memory, so nothing persistent goes stale.
