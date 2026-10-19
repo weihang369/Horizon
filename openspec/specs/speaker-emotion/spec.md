@@ -28,7 +28,8 @@ watch's first turn SHALL use `emotion_opening`. Each question SHALL name its can
 ### Requirement: The face rule
 The face sent SHALL be Jev's pick when it is not `none` and Jev's confidence reaches the question's floor (0.6 to
 start). Otherwise the base face SHALL be kept, except that a kept `surprised` or `embarrassed` face SHALL become
-`neutral` (the `emotion.fade` set in the runtime config).
+`neutral` (the `emotion.fade` set in the runtime config). While the reply's care cue is on, the face from any of these
+paths SHALL be `neutral`, `sad` or `thinking`, and any other face SHALL become `neutral`.
 
 #### Scenario: Confident pick
 - **WHEN** Jev picks `sad` with confidence 0.74 for a character whose face is `happy`
@@ -45,6 +46,14 @@ start). Otherwise the base face SHALL be kept, except that a kept `surprised` or
 #### Scenario: Jev failed
 - **WHEN** the `turn_plan` request fails for a character whose face is `embarrassed`
 - **THEN** the reply's face is `neutral` with source `default`, and the row's result is `fallback`
+
+#### Scenario: Care keeps the face calm
+- **WHEN** Jev picks `happy` with confidence 0.9 for a reply whose care cue is on
+- **THEN** the reply's face is `neutral`, and the emotion row's action says the care cue kept it calm
+
+#### Scenario: Care keeps a sad pick
+- **WHEN** Jev picks `sad` with confidence 0.8 for a reply whose care cue is on
+- **THEN** the reply's face is `sad`
 
 ### Requirement: Neutral and none are one answer on a neutral face
 When the base face is `neutral`, code SHALL add the probabilities of `neutral` and `none` together as `neutral` before

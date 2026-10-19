@@ -336,3 +336,14 @@ A knowledge upload whose declared length is over 10 MB SHALL be refused before i
 #### Scenario: Source session deleted
 - **WHEN** a memory's source session is deleted and the character's memories are listed
 - **THEN** that memory has no `sourceSessionId`, and its other fields are unchanged
+
+### Requirement: Content refusals at creation and job start
+`POST /sessions` (debate and watch) and `POST /jobs` (portrait candidates, tweak and the expression sheet) SHALL answer HTTP 451 with the standard error envelope, code `content_refused` and `retryable: true`, when the motion check or the image text check refuses, and SHALL store nothing.
+
+#### Scenario: Refused motion
+- **WHEN** `POST /sessions` creates an `agent` debate whose motion is refused
+- **THEN** the response is 451 with `{ error: { code: "content_refused", … } }`, and `GET /sessions` lists no new session
+
+#### Scenario: Reworded and sent again
+- **WHEN** a tweak refused with 451 is sent again as a new request with reworded text that Jev passes
+- **THEN** the response is 201 with the job
