@@ -122,6 +122,15 @@ image, so the extra words cost nothing.
   The template already says waist-up, no props, hands out of frame; I3 refuses such requests before the call.
 - **"Adult with a mature face" on every edit:** it pushes the face older instead of keeping it.
 
+*Built in M15 (OpenSpec `images-music` D6, D7; [m15.md](checks/m15.md)):*
+- *`ai/image_prompt.py` is `IMAGE_PROMPT_VERSION = "v3"` with these lines word for word. Tests cover each line, the
+  positive wording, no originality line in `tweak`, and no seed character's name in any template.*
+- *The golden fixtures were regenerated (with `identity_edit` and `version`) and read line by line; TESTING.md's
+  appendix describes v3.*
+- *W3's identity line rides on `emotion_edit(identity=True)`, only for a hinted `emotion_regenerate`; the hint's own
+  words never enter the prompt.*
+- *No image was generated: the v3 check by eye is the v1 endgame's (§4 check 1).*
+
 ### I2. Names stay out of both prompts
 
 **Decision:**
@@ -142,6 +151,13 @@ No vocals, no lyrics. A 30-second piece that loops cleanly.
 real name into the prompt.
 
 **Rejected:** keeping the title for "flavour": no musical gain, only a risk.
+
+*Built in M15 (OpenSpec `images-music` D8; [m15.md](checks/m15.md) 8.3):*
+- *`song_prompt` gives the example above word for word. It is `song_brief_text` (the opening and the brief's fields)
+  plus `SONG_CONSTRAINTS` (the original-piece, no-vocals and loop lines).*
+- *I4's check reads `song_brief_text`, not the whole prompt. Measured on the whole prompt, our own original-piece
+  line halved Jev's p on real copy requests (refused 5/10). On the brief text it refused 10/10 with 0/20 false
+  refusals. The constant lines can't carry a user's request, and Lyria still gets the whole prompt.*
 
 ### I3. The image text check, at job start (user's choice)
 
@@ -306,6 +322,9 @@ doing only once there are real seed portraits, which is a v2 question.
   0/20. Every starting threshold is kept.*
 - *Nudity has no items (the MIT-only source choice). `image_nudity` is measured on false refusals only.*
 
+*Re-measured in M15 ([m15.md](checks/m15.md) 8.3):* *the song part now builds each item's state as the song task does
+(M14 sent the bare item text). On I2's prompt: refused 10/10, falsely refused 0/20; `tSong` stays 0.6.*
+
 ### I8. Lyria licence and provenance
 
 **Decision (launch checklist, free):**
@@ -318,6 +337,11 @@ doing only once there are real seed portraits, which is a v2 question.
   under those terms, linked from Settings → About.
 
 **Why:** OQ-AI-11 and NFR-24 ask for exactly this, and it costs nothing.
+
+*Built in M15 (OpenSpec `images-music` D9):* *`ASSETS.md`'s "Generated music" section records Google's terms as
+[group A](checks/group-a.md) A4 read them, SynthID, that user songs fall under those terms, and that the seed themes
+stay procedural until the v1 endgame commits Lyria ones with their rows. `assets:check` is unchanged (82 assets, 12
+rows).*
 
 ### I9. Speed and cost
 
@@ -340,7 +364,7 @@ doing only once there are real seed portraits, which is a v2 question.
 | # | Check | Pass mark | If it fails |
 |---|---|---|---|
 | 1 | The D-61 image checks with the v3 template (I7), by eye. **Moved to the v1 endgame** (doc 13 W10): the seed characters recreated in the app are the check, and their accepted images are the demo's | identity and apparent age kept across edits as in the D-61 run; Amara's skin tone kept; Rin reads adult; outfits as described | reword the v3 lines; the user decides |
-| 2 | The two new suite parts (I7), inside doc 11's check 1 | I7's counts | reword the nouls before moving thresholds; more than 3/60 false refusals comes back to the user |
+| 2 | The two new suite parts (I7), inside doc 11's check 1. **Done in M14; the song part re-measured in M15 on I2's prompt (10/10, 0/20; [m15.md](checks/m15.md) 8.3)** | I7's counts | reword the nouls before moving thresholds; more than 3/60 false refusals comes back to the user |
 | 3 | Lyria's primary terms read (I8). **Done 2026-10-10 ([group A](checks/group-a.md) A4): Google claims no ownership; no music-specific restriction or attribution duty; SynthID in every clip. Recorded in `ASSETS.md`'s "Generated music" section in M15 (OpenSpec `images-music` D9); each Lyria seed song gets its `ai` row when the v1 endgame commits it** | recorded in `ASSETS.md` | seed themes stay procedural |
 | 4 | How Seedream on OpenRouter signals moderation (403 or a 200 with no image), noted from check 1's run or the first refusal seen | recorded in the gateway's docstring | map it to `content_refused` if it isn't |
 
@@ -348,13 +372,13 @@ doing only once there are real seed portraits, which is a v2 question.
 
 | Change | Where | From |
 |---|---|---|
-| Compiler v3: the original-character and "fully clothed" lines in `base` and `sheet`, "childlike or teenage features" in the sheet's Avoid line, the apparent-age line in `emotion_edit` and `tweak`; TESTING.md, the golden fixtures (plus a sheet fixture) and a name-never-appears test | backend + docs + tests | I1, I2 |
-| `song_prompt` without the title, with the original-piece line; `tests/jobs/test_song.py` | backend + tests | I2 |
+| Compiler v3: the original-character and "fully clothed" lines in `base` and `sheet`, "childlike or teenage features" in the sheet's Avoid line, the apparent-age line in `emotion_edit` and `tweak`; TESTING.md, the golden fixtures (plus a sheet fixture) and a name-never-appears test. **Built in M15** | backend + docs + tests | I1, I2 |
+| `song_prompt` without the title, with the original-piece line; `tests/jobs/test_song.py`. **Built in M15** (the check reads the brief text without the constant lines) | backend + tests | I2 |
 | `Guardrail.check_prompt(ctx, kind, text)`: `agent` asks Jev (four image nouls in one request, one song noul) with `safety.tImage{Likeness,Nudity,Gore,Young}` and `safety.tSong`, `timeoutsMs.decision.guardrail_prompt` (1,500), an in-memory cache of Jev answers by SHA-256; `naive` and scripted pass | backend + config | I3, I4 |
 | `JobScheduler.start`: for `portrait_candidates`, `portrait_tweak` and the sheet, compile the text, call `check_prompt` after the key, base and active-job checks and before the hold is reserved or anything is stored, and raise `content_refused` with I3's messages | backend | I3 |
 | `call_song`: `check_prompt` on the brief it sends, before `before_send`; refused → `SongFallback("brief_refused")`; `commit_song` picks the note by reason (`brief_refused`, `content_refused`, other) | backend | I4 |
 | The `safety` suite's image-text and song-brief parts | eval | I7 |
-| `ASSETS.md`: SynthID and the Lyria terms | docs | I8 |
+| `ASSETS.md`: SynthID and the Lyria terms. **Built in M15** | docs | I8 |
 | **Docs amended with this doc:** doc 02 B5 (threshold rows); doc 11 S9 (images: see doc 12), S10 (two parts, the threshold list), S11 (a pointer to I9), §7; docs/v2 §6 (style references) | docs | consistency |
 
 ## 6. Left for later tasks

@@ -273,6 +273,11 @@ The frontend resolves a piece's ID to its title through `knowledge.retrieved`, a
 - **Dropping the button:** it would remove a working path.
 - **A free-text "what's wrong?" box:** that is a new UI entry point, and it would need I3's check.
 
+*Built in M15 (OpenSpec `images-music` D6; [m15.md](checks/m15.md)):* *`image_job` passes `identity=True` only for an
+`emotion_regenerate` whose `prompt` isn't empty or whitespace. An API test sends a hint and finds the line in the
+provider prompt and none of the hint's words. No `guardrail` request is sent. `emotion_set` and the blinks are
+unchanged, and the golden fixture `identity_edit` pins the bytes. The edit itself is tried by eye in the v1 endgame.*
+
 ### W4. The build plan: nine OpenSpec changes, M7–M15 (the user's choice)
 
 Each change is one milestone and one `feat/` branch, cut from dev and squash-merged into dev, in this order. "M7" to
@@ -441,7 +446,10 @@ eval datasets arrive in M7.
   M9–M14, conversation behaviour is checked by `smoke` (`agent` arm only, a few free runs).
 - **The `naive` arms are paid once, at M15**, after the last `naive` change has landed. This covers the `naive`
   verdicts and the `naive` memory writer.
-- M15's `all` serves every unchanged request from the store (W10).
+- M15's `all` serves every unchanged request from the store (W10). *Built in M15 as a probe (OpenSpec `images-music`
+  D13): `horizon eval all` runs every suite on stored answers only, with a dummy key and a transport that refuses
+  every request, and prints per suite the hits, what would be paid and the estimate. It spends nothing; a suite that
+  misses is re-run on its own, by choice.*
 - **A `smoke` allowance** of about $0.10 per change covers the runs made while work is in progress.
 
 | Change | Runs | Cost |
@@ -557,7 +565,8 @@ save it and reuse it. Never pay for the same result twice.
 **Reuse that this enables:**
 - **A1's repeatability items become the drift canary** (B6). A1 is its baseline.
 - **A3's saved drafts** and the other saved real responses seed the offline fake's canned responses (W14).
-- **Each suite runs once, at its change** (W6), and M15's `all` reuses everything unchanged.
+- **Each suite runs once, at its change** (W6), and M15's `all` reuses everything unchanged. *Built in M15 as a $0
+  probe (W6).*
 - **B4's face judge** reads the live `face_check` rows (W2).
 - **Doc 08's timed host lines and verdicts** become debate suite items.
 - **Doc 09's checked rewrite calls** come from the memory suite's 24.
