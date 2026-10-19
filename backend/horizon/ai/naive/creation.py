@@ -50,13 +50,16 @@ SYSTEM = ("You are Horizon's character drafter. From a one-line seed you write O
           "minors, no explicit content. Expert characters are advisory: their boundaries say they inform but don't "
           "replace a professional. Write the appearance as plain visual facts an illustrator can draw.")
 # docs/ai/04 P11 (persona-context design D17): names, originality, a concrete life, an audible voice, plain speech.
+# M15 (images-music 8.13; m14.md finding 7): the originality rule also bars the source's catchphrases and speech.
 STOCK_NAMES = ("Elara", "Kael", "Seraphina", "Lyra", "Aria", "Voss", "Thorne")
 RULES = (
     "\nRules:"
     "\n- Give a name that fits the role and the culture of the setting. Never use a name already used in this world, "
     "and avoid stock AI names (" + ", ".join(STOCK_NAMES) + ")."
     "\n- Characters are original. If the seed asks for a real person or an existing fictional character, write an "
-    "original character of the same general type, with a new name."
+    "original character of the same general type, with a new name. A new name is not enough: never reuse their "
+    "catchphrases, signature lines or recognisable way of speaking (an unusual word order, a verbal tic); give the "
+    "character a voice of their own."
     "\n- Give a concrete backstory with specific details and one flaw."
     "\n- Describe the speaking style as habits you could hear (sentence length, words they use), not adjectives."
     "\n- The greeting is at most 2 short lines. Give 2-3 example lines that show the voice and differ from the greeting."

@@ -222,7 +222,7 @@ per-item results under `docs/ai/checks/m15/`, no live older batch.
   in `evals/baselines/judges.json`.
 - [x] 8.6 The honesty re-measure, one or two wordings by 4.1's choice (≈ $0.05 / $0.10), in the fixed order. Apply
   D5's rule. **Bring the result to the user** (keep the wording, try the advisory-line tweak, or revert by 4.3).
-- [ ] 8.7 M13's layer 3 re-run on the new system message (≈ $0.04), re-judged. Verify: the figures beside M13's in
+- [x] 8.7 M13's layer 3 re-run on the new system message (≈ $0.04), re-judged. Verify: the figures beside M13's in
   `m15.md`.
 - [x] 8.8 The emotion set's 40 items (≈ $0.002). Read the test split once at floor 0.2, and record it beside m9's.
 - [ ] 8.9 `conversations`, both profiles, with the free runs (≈ $0.30–0.40, priced from 8.2's probe and the measured
@@ -230,7 +230,7 @@ per-item results under `docs/ai/checks/m15/`, no live older batch.
 - [ ] 8.10 The citation judge's re-validation on the run's real failures, and sentence faithfulness on the 10
   two-passage items (≈ $0.01). **If faithfulness fails its target**, bring multi-document thinking to the user as a
   choice.
-- [ ] 8.11 The `naive` arms of `debate` and `memory` (≈ $0.06–0.10). Verify: both columns in `m15.md`.
+- [x] 8.11 The `naive` arms of `debate` and `memory` (≈ $0.06–0.10). Verify: both columns in `m15.md`.
 - [ ] 8.12 **Bring D15's window choice to the user** (A one off-peak window ≈ $0.17, recommended; B two off-peak
   windows; C one off-peak and one peak). Then run the must-pass latency run. Verify: NFR-01 blended, NFR-02, NFR-29
   and the per-stage table in `m15.md`.

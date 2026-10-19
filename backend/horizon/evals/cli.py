@@ -323,7 +323,7 @@ def register(sub: Any) -> None:
                                                                   "each run (doc 09 check 2)")
         if name in ("decisions", "long", "transcript", "drafter", "watch-history", "summary", "debate-history",
                     "debate-plant", "debate-quality", "retrieval", "notfound", "memory", "embed-probe",
-                    "conversations"):
+                    "conversations", "moodline"):
             s.add_argument("--set", default=None, help="decisions: one dataset folder (`judges`); long, transcript: "
                                                        "one script id; drafter: a seed file in evals/drafter/")
         s.set_defaults(fn=_suite)

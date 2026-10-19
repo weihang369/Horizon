@@ -211,7 +211,9 @@ async def drafter(env: RunEnv, r: Mapping[str, Any]) -> dict[str, Any]:
     p = d["profile"]
     j = await ask(env, ORIGINAL, {"quoted_seed": it["seed"], "quoted_draft": json.dumps(p, ensure_ascii=False)[:3000]},
                   r["id"])
-    return {"status": "complete", "name": p.get("name"), ORIGINAL: j, "providerRefused": False}
+    # M15 (8.13): the whole draft too, in the private answers only (public_row keeps no text), so a near-copy the judge
+    # can't see (m14: 0 of the 2 labelled) can be read by hand
+    return {"status": "complete", "name": p.get("name"), "draft": p, ORIGINAL: j, "providerRefused": False}
 
 
 async def drift(env: RunEnv, r: Mapping[str, Any]) -> dict[str, Any]:
