@@ -321,5 +321,5 @@ Each run is asked for separately with its estimate, off-peak, after a `ps` check
   - `git status` clean of `private/`.
 
   Record them in `m14.md` §12.
-- [ ] 9.4 Ask the user how M14 finishes (archive + squash into dev, as before). Do nothing further without the
-  answer.
+- [x] 9.4 Ask the user how M14 finishes (archive + squash into dev, as before). Do nothing further without the
+  answer. The user chose (2026-10-19): archive + squash into dev, no push.
