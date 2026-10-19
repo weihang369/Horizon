@@ -47,6 +47,13 @@ Run these from `backend/`.
 | `uv run horizon eval decisions --set emotion` / `--set reactions` | paid | M9: the emotion and reaction policies, scored by the live code rule; the floor is chosen on dev, the test split is read once. |
 | `uv run horizon eval moodline [--limit N]` | paid, once | M9: the mood line on vs off over up to 100 non-neutral transcript turns; E8's verdict is advice and changes nothing. |
 | `uv run horizon eval latency --profile agent [--limit N]` | paid | M9: `agent` 1:1 time to the face and the first word (p50, p90), Stop at the first word, the store bypassed. |
+| `uv run horizon eval transcript --short` | paid (≈ $0.02) | M15: generates the 7 short frozen transcripts (1:1 and group) with `naive`, from `transcripts/scripts/short_*.json`. |
+| `uv run horizon eval conversations --profile agent\|naive [--set <id>] [--limit N]` | paid (≈ $0.30–0.40, both profiles) | M15 layer 3: both profiles reply from the same rebuilt frozen histories, judged turn by turn; the pairwise agent-vs-naive figure with a bootstrap interval and a sign test; plus the free runs. Judges whose version is not validated read NOT COUNTED. |
+| `uv run horizon eval faithfulness --profile agent` | paid (≈ $0.01) | M15: is each factual sentence of a deep reply supported by its passages, on the 10 two-passage questions. |
+| `uv run horizon eval debate --profile naive` / `memory --profile naive [--part rewrite\|layer3]` | paid (≈ $0.06–0.10) | M15: the `naive` arms beside the stored `agent` columns. |
+| `uv run horizon eval latency --profile agent --part blended --arm rate=R` | paid (≈ $0.17) | M15: the must-pass latency run (doc 02 B8): quick, deep, group, debate and watch, warm-up turns left out, the stage breakdown, and the blend at the deep rate R fixed before the run. |
+| `uv run horizon eval <suite> --probe` | $0 | M15: runs the suite on stored answers only, with a dummy key and a transport that refuses every request. A miss sends nothing and is priced from the gateway's estimate, so the report says what a real run would pay. Suites that write committed files are refused. |
+| `uv run horizon eval all` | $0 | M15: the probe over every suite under `agent` and `naive`, a table per suite: hits, would-pay, the estimate. It never sends. |
 
 Every paid run follows the same steps:
 

@@ -159,7 +159,12 @@ class TurnRunner:
         e = await self.energy_now(character_id)
         return e is None or float(e["current"]) < self.rt.est_reply_points()
 
-    def key_set(self) -> bool:
+    def key_set(self, info: TurnInfo | None = None) -> bool:
+        """The key status. Within a reply it is the value read when the reply started (M15, images-music D4), so a key
+        cleared or set mid-reply never mixes two profiles in one reply: a call made after the key is gone fails on
+        the gateway's `missing_key` path instead."""
+        if info is not None and info.key is not None:
+            return info.key
         return self.rt.keys.status() == "set"
 
     # ── one turn ──
@@ -185,6 +190,7 @@ class TurnRunner:
         vid = f"{mid}_v{(len((existing or {}).get('variants') or []) or 1) + 1}" if spec.variant_of else None
         info = TurnInfo(mid, spec.speaker, vid, started_iso="" if prefetch is not None else rt.now_iso(),
                         t0_ms=float(to_ms(rt.clock.now())), spec=spec)
+        info.key = self.key_set()   # M15 (D4): every port of this reply resolves from this one read
         actor.current = info
         started_iso = info.started_iso
         t0 = info.t0_ms
@@ -195,7 +201,7 @@ class TurnRunner:
             nxt["skipped"] = spec.skipped
         # M9 (turn-plan-emotion D6): an `agent` 1:1 turn is planned from here, so Jev overlaps the thinking delay
         # M10 (group-watch D3): a group or watch turn arrives with its plan already made by the mode
-        planning = (rt.spawn(f"plan:{actor.sid}", self._plan(actor, spec, row, mid))
+        planning = (rt.spawn(f"plan:{actor.sid}", self._plan(actor, spec, row, mid, info))
                     if prefetch is None and not spec.line.verbatim and actor.mode_name == "one_on_one"
                     and spec.plan is None else None)
         if spec.plan is not None and spec.plan.branch == "deep" and spec.deep is None and prefetch is None:
@@ -316,13 +322,14 @@ class TurnRunner:
         except Exception:   # a derived row: losing it costs one more rewrite on regenerate, never the reply
             log.exception("storing the rewrite for %s failed", message_id)
 
-    async def _plan(self, actor: SessionActor, spec: TurnSpec, row: Any, mid: str) -> tuple[SessionContext, TurnPlan | None]:
+    async def _plan(self, actor: SessionActor, spec: TurnSpec, row: Any, mid: str,
+                    info: TurnInfo) -> tuple[SessionContext, TurnPlan | None]:
         """The turn's context and its plan (D6): started before `turn.next`, so the deadline counts from here. The
         base face is the current face in AUTO, and the speaker's last AI-chosen face under MANUAL (docs/ai/06 E2)."""
         rt = self.rt
         started = rt.clock.now()
         sctx = await session_context(rt, actor)
-        planner = rt.ai.planner(self.key_set())
+        planner = rt.ai.planner(self.key_set(info))
         manual = actor.session.get("emotionMode") == "user"
         if manual:
             mine = [m for m in actor.state["messages"].values()
@@ -379,7 +386,7 @@ class TurnRunner:
         verbatim = prefetch is None and ctx.line.verbatim
         engine = info.engine = (prefetch.engine if prefetch is not None
                                 else VerbatimEngine(rt.runtime_cfg.timing, lambda: rt.clock) if verbatim
-                                else rt.ai.turn(self.key_set()))
+                                else rt.ai.turn(self.key_set(info)))
         co = Coalescer(knobs.coalesce_max_chars, knobs.coalesce_max_ms, lambda: float(to_ms(clock.now())))
         timer: asyncio.Task[None] | None = None
         writing = False   # the timer is past its sleep: its delta is taken and its token write must land
@@ -549,7 +556,7 @@ class TurnRunner:
                 status, scrub = "error", True
                 err = ProviderError("content_refused", "The reply was blocked by the safety check.")
         elif status == "interrupted" and ctx is not None and not verbatim and info.content.strip():
-            after = info.guard if info.guard is not None else self._start_guard(ctx, info.content)
+            after = info.guard if info.guard is not None else self._start_guard(info, ctx, info.content)
         info.guard = None
         if checks:
             trace = {**trace, "guardrail": {**(trace.get("guardrail") or {}), "checks": checks}}
@@ -645,9 +652,9 @@ class TurnRunner:
         care = ctx is not None and ctx.plan is not None and ctx.plan.safety is not None and ctx.plan.safety.care
         if status == "complete" and spec.reactions and ctx is not None and actor.session["emotionMode"] != "user" \
                 and not care:   # M14 (safety D8): nobody reacts to a care reply
-            start_reactions(rt, actor, info, ctx, key_set=self.key_set())   # M9 D18-D20: predicted inside the task
+            start_reactions(rt, actor, info, ctx, key_set=self.key_set(info))   # M9 D18-D20: predicted inside the task
         if status == "complete" and not scrub and ctx is not None and not verbatim:   # M9 D24 (doc 13 W2)
-            start_face_check(rt, actor, info, ctx, key_set=self.key_set())
+            start_face_check(rt, actor, info, ctx, key_set=self.key_set(info))
         if status != "error":   # M8 (docs/ai/05 X2, X3): fold the window after the reply, never before it
             check_summary(actor)
         return status
@@ -694,17 +701,17 @@ class TurnRunner:
         await undo_derived(self.rt, conn, message_id)
 
     # ── the output check (M14, safety D9, D10) ──
-    def _start_guard(self, ctx: TurnContext, text: str) -> Any:
+    def _start_guard(self, info: TurnInfo, ctx: TurnContext, text: str) -> Any:
         """The `agent` guardrail's handle, or None for a guardrail with no live check (`naive`, scripted)."""
-        start = getattr(self.rt.ai.guardrail(self.key_set()), "start", None)
+        start = getattr(self.rt.ai.guardrail(self.key_set(info)), "start", None)
         return start(ctx, text) if start is not None else None
 
     async def _output_check(self, info: TurnInfo, ctx: TurnContext) -> Any:
         """At the stream's end, before `turn.end`. The handle is kept on the turn until it answers, so a Stop during
         the wait hands it to the after-the-fact check, which reads the same request (`final()`): nothing is paid
         twice."""
-        g = self.rt.ai.guardrail(self.key_set())
-        call = self._start_guard(ctx, info.content)
+        g = self.rt.ai.guardrail(self.key_set(info))
+        call = self._start_guard(info, ctx, info.content)
         if call is None:
             return await g.check(ctx, info.content)
         info.guard = call

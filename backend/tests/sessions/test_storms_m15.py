@@ -10,6 +10,7 @@ placeholder with the real storm, so no path is forgotten.
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -137,17 +138,150 @@ async def test_a_latency_run_stopped_between_and_inside_a_turn_is_incomplete(tmp
             assert "## Blended latency" in report and (code == 0) == ("incomplete" not in report.splitlines()[0])
 
 
-# ── phase 7 (task 7.2): the key read once per reply ──
-@_todo("7.2")
+# ── phase 7 (task 7.2; design D4): the key read once per reply ──
+def _simulated(row: dict) -> bool:
+    """A scripted port's priced row (`simulated_call`): the scripted provider, no generation id."""
+    from horizon.gateway.pipeline import SCRIPTED_PROVIDER
+
+    return bool(row["provider"] == SCRIPTED_PROVIDER and row["generation_id"] is None)
+
+
+async def _clear_key(api: Api) -> None:
+    assert (await api.client.put(f"{API}/settings/key", json={"key": None})).status_code == 200
+
+
 async def test_the_key_cleared_while_call_1_is_held_errors_the_reply(api: Api) -> None:
-    raise NotImplementedError
+    """Jev call 1 parked, the key cleared, released: the reply ends on `missing_key` and no scripted text is stored
+    (before D4 the reply engine resolved `scripted` after an `agent` plan)."""
+    from tests.helpers.storm import park_next_decision
+    from tests.sessions.kit import command, events, messages
+    from tests.sessions.test_gates_m12 import AMARA, agent
+
+    sid = await agent(api, "one_on_one", [AMARA])
+    fake = api.rt.fake
+    assert fake is not None
+    held = park_next_decision(api.rt)
+    before = len(await messages(api, sid))
+    await command(api, sid, "send", {"text": "How was your shift?"})
+    for _ in range(400):
+        await api.drive(10)
+        if fake.decision_parked.is_set():
+            break
+    assert fake.decision_parked.is_set()
+    await _clear_key(api)
+    held.set()
+    await api.drive(20000)
+    new = (await messages(api, sid))[before:]
+    assert [m["author"]["type"] for m in new] == ["user"]           # no character line, scripted or other
+    errors = [e for e in await events(api, sid) if e["type"] == "error"]
+    assert errors and errors[-1]["payload"]["code"] == "missing_key"
+    await assert_writer_free(api.rt.db)
 
 
-@_todo("7.2")
 async def test_the_key_cleared_while_the_output_check_is_held_mixes_no_profile(api: Api) -> None:
-    raise NotImplementedError
+    """The output check parked, the key cleared, released: the reply keeps its `agent` rows only. The face check
+    after it is `agent` too (its call fails on the missing key), never a scripted stand-in recording simulated spend."""
+    from tests.sessions.kit import ledger
+    from tests.sessions.test_storms_m14 import checking, reply_of
+
+    sid, held = await checking(api)
+    fake = api.rt.fake
+    assert fake is not None
+    fake.answer_question("output_rules", {"type": "noul", "noul": 0.02})
+    sent = len(await ledger(api))
+    asked: list[tuple[str, bool]] = []   # each port the rest of the reply resolves, with the key value it used
+    for port in ("guardrail", "face_check", "reactions", "turn", "planner"):
+        real = getattr(api.rt.ai, port)
+
+        def spy(key_set: bool, port: str = port, real: Any = real) -> Any:
+            asked.append((port, key_set))
+            return real(key_set)
+
+        setattr(api.rt.ai, port, spy)
+    await _clear_key(api)
+    held.set()
+    await api.drive(20000)
+    assert ("face_check", True) in asked and all(k for _, k in asked)     # the key read at the reply's start, not now
+    reply = await reply_of(api, sid)
+    assert reply["status"] == "complete"
+    trace = reply["trace"]
+    assert [c["purpose"] for c in trace["calls"]] == ["query_rewrite", "turn_plan", "reply", "guardrail"]
+    assert {"name": "output", "verdict": "pass", "p": 0.02} in trace["guardrail"]["checks"]   # Jev's answer, not 'pass' with no p
+    later = (await ledger(api))[sent:]
+    assert later and not any(_simulated(r) for r in later)                # no scripted stand-in after the key went
+    await assert_writer_free(api.rt.db)
 
 
-@_todo("7.2")
+async def test_a_key_set_mid_reply_leaves_that_reply_scripted_and_the_next_one_agent(
+        api: Api, monkeypatch: pytest.MonkeyPatch) -> None:
+    """`agent` with no key resolves `scripted`; the key arrives while that reply streams. A send is refused without
+    a key, so the command's key guard is waved through here to start a reply with none. The reply finishes scripted
+    (no Jev output check joins it), and the next reply is `agent`."""
+    from horizon.sessions import commands
+    from tests.sessions.kit import command, ledger, messages
+    from tests.sessions.test_gates_m12 import AMARA, agent
+
+    sid = await agent(api, "one_on_one", [AMARA])
+    sent = len(await ledger(api))
+    status = api.rt.keys.status
+
+    async def live(manager: object, status: str) -> None:
+        return None
+
+    monkeypatch.setattr(commands, "key_problem", lambda status: None)
+    monkeypatch.setattr(commands, "check_generating", live)
+    monkeypatch.setattr(api.rt.keys, "status", lambda: "missing")
+    await command(api, sid, "send", {"text": "How was your shift?"})
+    for _ in range(400):
+        await api.drive(5)
+        if any(m["author"]["type"] == "character" and m.get("status") == "streaming" for m in await messages(api, sid)):
+            break
+    monkeypatch.setattr(api.rt.keys, "status", status)                   # the key is back while the reply streams
+    await api.drive(15000)
+    rows = (await ledger(api))[sent:]
+    assert rows and all(_simulated(r) for r in rows)                      # the whole reply is scripted: no real call
+    assert [m for m in await messages(api, sid) if m["author"]["type"] == "character"][-1]["status"] == "complete"
+    sent = len(await ledger(api))
+    await command(api, sid, "send", {"text": "And the night before?"})
+    await api.drive(15000)
+    real = {r["purpose"] for r in (await ledger(api))[sent:] if not _simulated(r)}
+    assert {"turn_plan", "reply", "guardrail"} <= real
+    await assert_writer_free(api.rt.db)
+
+
 async def test_the_key_cleared_during_a_pause_run_holds_the_line(api: Api) -> None:
-    raise NotImplementedError
+    """A pause run reads the key at its own start (D4). The rewrite call parked, the key cleared, released: Jev's
+    importance call fails on the missing key, so the piece writes nothing, keeps its checkpoint and counts a try."""
+    from sqlalchemy import text
+
+    from horizon.ai.profile import ProfileSpec
+    from tests.helpers.storm import park_next_chat
+    from tests.sessions.kit import command, create
+
+    await api.set_key()
+    api.rt.set_profile(ProfileSpec(profile="agent", test_mode=True))
+    sid = (await create(api, "one_on_one", ["chr_seedAmara"]))["session"]["id"]
+    await api.drive(6000)
+    for i in range(2):
+        await command(api, sid, "send", {"text": f"I can't sleep before exams, part {i}."})
+        await api.drive(15_000)
+    assert (await api.post(f"{API}/_test/canned", {"purpose": "memory", "set": "memory-writes"})).status_code == 204
+    fake = api.rt.fake
+    assert fake is not None
+    held = park_next_chat(api.rt, "memory")
+    api.rt.memory_runs.request(sid)
+    for _ in range(400):
+        await api.drive(10)
+        if fake.chat_parked.is_set():
+            break
+    assert fake.chat_parked.is_set()
+    await _clear_key(api)
+    held.set()
+    await api.rt.memory_runs.drain()
+    async with api.rt.db.read() as conn:
+        row = (await conn.execute(text("SELECT memory_seq, memory_tries FROM sessions WHERE id = :s"), {"s": sid})).first()
+        n = (await conn.execute(text("SELECT count(*) FROM memory_items WHERE source_session_id = :s"),
+                                {"s": sid})).scalar_one()
+    assert row is not None and tuple(row) == (0, 1) and n == 0
+    assert api.rt.memory_runs.log[-1]["outcome"] == "failed"
+    await assert_writer_free(api.rt.db)

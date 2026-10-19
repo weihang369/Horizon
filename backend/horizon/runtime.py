@@ -359,6 +359,9 @@ class Runtime:
         # ai-foundation design D12: say what each port resolves to, so an opt-in `agent` profile can't hide what runs.
         log.info("AI profile %s; ports: %s", self.profile.profile or "default",
                  ", ".join(f"{p}={i}" for p, i in self._ai.resolved(key_set=self.keys.status() == "set").items()))
+        if self.profile.profile is None:   # M15 (images-music D3): name the default and the way back to the baseline
+            log.info("AI profile: %s", "agent (default with a key; set HORIZON_AI_PROFILE=naive for the baseline)"
+                     if self.keys.status() == "set" else "scripted (default without a key)")
         self._purge = PurgeWorker(self.db, self.hooks, self.now_iso)
         self._purge.start()
 

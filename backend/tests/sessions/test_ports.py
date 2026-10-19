@@ -64,7 +64,8 @@ def test_contexts_round_trip_through_json_and_are_frozen() -> None:
 
 @pytest.mark.parametrize(("env", "key_set", "turn", "router", "host"), [
     ({}, False, "scripted", "scripted", "scripted"),
-    ({}, True, "naive", "naive", "naive"),          # M11 (debate D11): the host joins NAIVE_PORTS
+    ({}, True, "agent", "naive", "agent"),          # M15 (images-music D3): the default with a key is `agent`
+    ({"HORIZON_AI_PROFILE": "naive"}, True, "naive", "naive", "naive"),   # M11 (debate D11): the host joins NAIVE_PORTS
     ({"HORIZON_AI_PROFILE": "scripted"}, True, "scripted", "scripted", "scripted"),
     ({"HORIZON_AI_PROFILE": "naive", "HORIZON_AI_TURN": "scripted"}, True, "scripted", "naive", "naive"),
     ({"HORIZON_AI_PROFILE": "naive", "HORIZON_AI_HOST": "scripted"}, True, "naive", "naive", "scripted"),

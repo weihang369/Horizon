@@ -780,7 +780,7 @@ record which wording produced which result.
 
   It never compares with `evals/baselines`. `--profile agent` joins CI with M9's `TurnPlanner` ([doc 13](13-wrap-up.md) W4) and its scripted
   twin.
-- **`agent` is the default** whenever a key is set (A12), from M15; it is opt-in while it is built ([doc 13](13-wrap-up.md) W4). A missed target is fixed in the task that owns it, never by
+- **`agent` is the default** whenever a key is set (A12), from M15; it was opt-in while it was built ([doc 13](13-wrap-up.md) W4). *Switched in M15 (`images-music` D3), before M15's paid runs, so the latency run measures the shipped default.* A missed target is fixed in the task that owns it, never by
   switching back to `naive`:
   - rewrite a question;
   - move a threshold;

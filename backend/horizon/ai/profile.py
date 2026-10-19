@@ -1,15 +1,16 @@
 """AI profile selection (doc 05 §1; ai-ports "AI profile selection"; design OQ-3, OQ-14; ai-foundation design D12).
 
-`HORIZON_AI_PROFILE` (`scripted` | `naive` | `agent`) selects every port; without it the profile is `naive` when a key is set and
-`scripted` otherwise. `HORIZON_AI_<PORT>` overrides one port. The turn engine, the router (M3), the profile drafter,
-the image generator (M4) and the song generator (Lyria 3 Clip, D-87) have naive implementations; every other port is
-scripted in both profiles. The scripted song is the free procedural theme (D-83). The creation port is called
-`drafter`, not `profile`, because `HORIZON_AI_PROFILE` is the selector itself. In test mode, `POST /_test/ai-profile`
+`HORIZON_AI_PROFILE` (`scripted` | `naive` | `agent`) selects every port; without it the profile is `agent` when a key is
+set and `scripted` otherwise (M15, images-music D3; `naive` was the default until then). `HORIZON_AI_<PORT>` overrides
+one port. The turn engine, the router (M3), the profile drafter, the image generator (M4) and the song generator
+(Lyria 3 Clip, D-87) have naive implementations; every other port is scripted in both profiles. The scripted song is
+the free procedural theme (D-83). The creation port is called `drafter`, not `profile`, because `HORIZON_AI_PROFILE`
+is the selector itself. In test mode, `POST /_test/ai-profile`
 replaces the selection at runtime.
 
-M7 (ai-foundation design D12): `agent`, the AI stage's profile, is opt-in until M15. Each port uses its `agent`
+M7 (ai-foundation design D12): `agent`, the AI stage's profile, was opt-in until M15. Each port uses its `agent`
 implementation when one exists (`AGENT_PORTS`), else its naive one, else its scripted one; without a key every port is
-scripted, as for `naive`. `resolved()` (shown in /health and every eval report) says what actually ran.
+scripted, as for `naive`. `resolved()` (in the start-up log and every eval report) says what actually ran.
 M8 (persona-context design D1): `AGENT_PORTS` gains `turn` (the `agent` persona prompt); routing, retrieval, the
 guardrail and the memory writer stay what `naive` resolves to. M9 (turn-plan-emotion D5): `planner` (Jev call 1 in
 1:1), `reactions` (Jev, design D18, D19) and `face_check` (doc 13 W2, D23, D24); `naive` gets explicit no-op planner
@@ -17,7 +18,7 @@ and face check so the scripted stand-ins never bill it.
 
 M5 (knowledge-memory-storage design D4, D7, D17): the `embedder` and the memory and knowledge retrievers have naive
 implementations. M13 (memory D18): the `memory_writer` is `naive` (the one rewrite call) and `agent` (the graph with
-Jev); in test mode with a key and no explicit profile it is the `agent` writer, on canned answers. The document
+Jev); M15 (D3) dropped its test-mode special case, since the default now gives the `agent` writer. The document
 `converter` does not follow the profile or the key (conversion is local and free, D-62): it is the real converter
 unless overridden, and in test mode it defaults to the deterministic scripted one, so CI never starts a conversion
 process.
@@ -97,9 +98,7 @@ class ProfileSpec:
     def choose(self, port: str, *, key_set: bool) -> Impl:
         if port in KEYLESS_PORTS:
             return self.overrides.get(port) or ("scripted" if self.test_mode else "naive")
-        impl: Impl = self.overrides.get(port) or self.profile or ("naive" if key_set else "scripted")
-        if port == "memory_writer" and self.test_mode and key_set and not self.overrides.get(port)                 and self.profile is None:
-            impl = "agent"   # M13 (memory D18): test mode runs the `agent` writer on canned answers
+        impl: Impl = self.overrides.get(port) or self.profile or ("agent" if key_set else "scripted")   # M15 (D3)
         if impl == "agent":
             if not key_set:
                 return "scripted"

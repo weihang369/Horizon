@@ -322,7 +322,7 @@ first calls it:**
 | M12 | same | + needs documents?, standalone?, English? | doc 10, D-100 | none | + passage tags |
 | M13 | same | + needs something from earlier? | same | doc 09 | same |
 | M14 | same | + unsafe request?, at risk? | same | same | doc 11's checks, doc 12 I3–I4 |
-| M15 | same | same | same | same | same; **`agent` is the default with a key** |
+| M15 | same | same | same | same | same; **`agent` is the default with a key** (built: `images-music` D3, D4) |
 
 **The default switch at M15** follows doc 02 B12: the evaluation measures `agent` but never decides whether to keep it.
 A missed target is fixed in the change that owns it, never by switching back to `naive`.

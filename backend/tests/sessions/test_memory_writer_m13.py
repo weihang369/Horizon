@@ -105,7 +105,8 @@ async def _purposes(api: Api) -> list[str]:
     ("scripted", True, True, NoMemoryWriter), ("naive", True, True, NaiveMemoryWriter),
     ("agent", True, True, AgentMemoryWriter), ("agent", False, True, NoMemoryWriter),
     ("naive", False, False, NaiveMemoryWriter), (None, True, True, AgentMemoryWriter),
-    (None, True, False, NaiveMemoryWriter), (None, False, True, NoMemoryWriter)])
+    (None, True, False, AgentMemoryWriter),   # M15 (images-music D3): the default with a key is `agent`
+    (None, False, True, NoMemoryWriter)])
 async def test_the_memory_writer_port_resolves_per_profile(api: Api, profile: Any, key: bool, test_mode: bool,
                                                            want: type) -> None:
     api.rt.set_profile(ProfileSpec(profile=profile, test_mode=test_mode))

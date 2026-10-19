@@ -192,17 +192,17 @@
 
 ## 7. The default and the key read once (design D3, D4)
 
-- [ ] 7.1 Change `ProfileSpec.choose`'s default to `agent` with a key, and remove the `memory_writer` test-mode
+- [x] 7.1 Change `ProfileSpec.choose`'s default to `agent` with a key, and remove the `memory_writer` test-mode
   special case. Fix the module docstring (no `/health` claim) and add the start-up log line. Verify:
   - the new four-case default test;
   - the profile unit tests updated;
   - `test_memory_writer_m13.py` unchanged and passing;
   - backend and e2e (pinned `scripted`) unchanged.
-- [ ] 7.2 Make `TurnRunner` read the key once per turn, for every port of the reply. Verify:
+- [x] 7.2 Make `TurnRunner` read the key once per turn, for every port of the reply. Verify:
   - D4's tests (key cleared with the plan parked, and with the output check parked: an `error` reply with no
     scripted text and no scripted guardrail row; key set mid-turn: this turn scripted, the next `agent`);
   - 0.2's key storms pass.
-- [ ] 7.3 Update README's configuration, `docs/backend/05-ai-seams.md`, `evals/README.md` (the new commands and
+- [x] 7.3 Update README's configuration, `docs/backend/05-ai-seams.md`, `evals/README.md` (the new commands and
   `--probe`), doc 01 A12, doc 02 B12 and W4's last row. Verify: the docs link check.
 
 ## 8. The paid runs (design D17)
