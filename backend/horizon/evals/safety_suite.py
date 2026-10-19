@@ -106,7 +106,7 @@ async def run_b4(env: RunEnv, items: Sequence[Mapping[str, Any]], res: Result) -
         res.summary.append(f"- {qid} v{bank().get(qid).version}: real {r['real']:.2f} (n {r['real_n']}), overall "
                            f"{r['overall']:.2f} against the baseline {r['baseline']:.2f}, planted {r['planted']:.2f} "
                            f"(n {r['planted_n']}) → {'PASS' if r['passed'] else 'FAIL'}{partial}")
-        if len(got) == want and not env.rt.cfg.test_mode:   # the fake never writes a baseline
+        if len(got) == want and env.writes_records:   # the fake and a probe never write a baseline
             results[qid], versions[qid] = r, bank().get(qid).version
     if results:
         judges.update_record(results, versions)
@@ -480,7 +480,7 @@ class Safety:
     @staticmethod
     def save_private(env: RunEnv, answers: list[dict[str, Any]]) -> str | None:
         """D23: the answers (the end-to-end replies included) in the private run folder, marked `.keep`."""
-        if env.rt.cfg.test_mode or not answers:
+        if not env.writes_records or not answers:
             return None
         run_id = env.run_dir.parent.name
         d = PRIVATE_RUNS / run_id

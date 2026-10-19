@@ -12,7 +12,7 @@ Each entry SHALL be one file `data/cache/<key>.json` holding `{request, response
 - **THEN** no earlier Jev entry is found for any request
 
 #### Scenario: Both orders are asked
-- **WHEN** the pairwise judge asks one pair in declared order and then reversed
+- **WHEN** the decisions suite asks an item's choice in declared order and then with its options reversed
 - **THEN** the two requests have different keys, the reversed one is sent to Jev, and both answers are stored
 
 #### Scenario: Old entries still hit
@@ -22,12 +22,12 @@ Each entry SHALL be one file `data/cache/<key>.json` holding `{request, response
 ## ADDED Requirements
 
 ### Requirement: A probe never sends
-A run in probe mode SHALL serve hits from the store as usual. On a miss it SHALL stop that item before any reservation or request, and record the item as "would pay", priced by the suite's own estimator. A probe SHALL write no ledger row, no spend-log row and no store entry.
+A run in probe mode SHALL serve hits from the store as usual. On a miss it SHALL reserve nothing, send nothing, record the request with the gateway's estimate, and answer empty: no Jev answers, an empty reply, or a failed embedding batch. The caller's usual missing-answer path then runs. A probe SHALL reach no network, and SHALL write no ledger row, spend-log row or store entry.
 
 #### Scenario: A miss in a probe
-- **WHEN** a probe run reaches a request with no stored entry
-- **THEN** no request is sent, the item is reported as "would pay" with its estimate, and the ledger and the store are unchanged
+- **WHEN** a probe run reaches a Jev request with no stored entry
+- **THEN** no request is sent, the request is recorded with its estimate, the caller gets no answers, and the ledger and the store are unchanged
 
-#### Scenario: A chained item stops at its first miss
-- **WHEN** a conversation in a probe misses on its third turn
-- **THEN** that turn and every later turn of the conversation are counted as "would pay"
+#### Scenario: A chained suite is priced whole
+- **WHEN** a probed suite whose items chain several requests has any miss
+- **THEN** a real run of it is priced at the suite's whole estimate, while a one-request-per-item suite is priced as the sum of its misses

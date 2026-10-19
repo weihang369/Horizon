@@ -46,7 +46,7 @@ describe("moodLine (shared with persona.py's mood_line)", () => {
     });
   }
   it("names the agent-1 prompt (the mood line is off by default, D40)", () => {
-    expect(PROMPT_VERSION).toBe("agent-1");
+    expect(PROMPT_VERSION).toBe("agent-9");
   });
 });
 

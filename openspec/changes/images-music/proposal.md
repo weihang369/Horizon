@@ -28,8 +28,9 @@ once. The AI stage then hands its saved requests to the Jev 1.14 comparison and 
   committed watch and debate histories (M10, M11) can supply 9 of the 20; 7 short 1:1 and group transcripts are
   generated once with `naive` (design D9).
 - **The pairwise judge never passed B4** (M9: 26/30 against 0.90). It is layer 3's main measure, so its set is
-  rebuilt and validated first. The store key also serves a reversed-order request with the first order's answer,
-  so "both orders" was never really asked (design D11).
+  rebuilt and validated first (its two orders swap the replies in the state, so each is a request of its own).
+  Separately, the store key serves `decisions`' reversed-option request with the first order's answer, so M9's order
+  bias was never measured (m9.md 9.1; design D13).
 - **The honesty line isn't part of compiler v3.** m14.md assumed "system message 1 changes there anyway (compiler
   v3)". But compiler v3 is the image prompt compiler (`ai/image_prompt.py`). System message 1 is the persona
   prompt's standing lines (`ai/agent/persona.py`, with its TS twin). So the rewording is its own change of those
@@ -78,7 +79,7 @@ the code it measures is final.
 - The S2 honesty line reworded so a question asked inside the story is answered in the story. The candidate
   wordings and their re-measure come to the user before anything is paid. The new bytes move `agent-1`…`agent-8`
   to `agent-9`…`agent-16`.
-- `naive`'s emotion-tag line forbids notes inside the tag (m11 D31.3), as `naive-6`, if the user chooses it.
+- `naive`'s emotion-tag line forbids notes inside the tag (m11 D31.3), as `naive-9`…`naive-12` (every `naive` label moves by 4), if the user chooses it.
 
 **The default (doc 01 A12, doc 02 B12; design D3, D4)**
 - Without `HORIZON_AI_PROFILE`, the profile is `agent` when a key is set and `scripted` otherwise. `naive` stays
@@ -94,7 +95,7 @@ the code it measures is final.
   - A paired bootstrap runs over whole conversations.
   - It adds the four free runs per profile and folds in the parked measures: the Not-found rate, the live group
     rewrite, V11's debate targets, the memory list, voice drift and the citation judge's real failures.
-- The pairwise judge's set is rebuilt and validated (B4). The store key keeps a reversed option order.
+- The pairwise judge's set is rebuilt and validated (B4). The store key keeps a reversed option order (for `decisions`' order-bias rows).
 - `horizon eval all` becomes a free probe: it runs every suite against the store, sends nothing, and reports per
   suite what would be paid. Re-paying a suite is a choice for the user.
 - The `naive` arms of the `debate` and `memory` suites.

@@ -1,7 +1,7 @@
 ## MODIFIED Requirements
 
 ### Requirement: Suites and options
-`horizon eval <suite>` SHALL accept every suite the harness defines: `canary`, `decisions`, `smoke`, `drafter`, `summary`, `long`, `transcript`, `moodline`, `latency`, `watch-history`, `freerun`, `debate-history`, `debate-plant`, `debate-quality`, `debate`, `retrieval`, `notfound`, `deep-check`, `memory`, `safety`, `embed-probe`, and from M15 `conversations` and `all`. It SHALL accept the options `--profile`, `--limit N`, `--start N`, `--set NAME`, `--max-usd`, `--yes`, `--allow-peak` and, from M15, `--probe`. An unknown suite SHALL exit non-zero and list the known ones. `--profile` SHALL keep its default of `naive`, whatever the app's default profile is.
+`horizon eval <suite>` SHALL accept every suite the harness defines: `canary`, `decisions`, `smoke`, `drafter`, `summary`, `long`, `transcript`, `moodline`, `latency`, `watch-history`, `freerun`, `debate-history`, `debate-plant`, `debate-quality`, `debate`, `retrieval`, `notfound`, `deep-check`, `memory`, `safety`, `embed-probe`, and from M15 `conversations`, `faithfulness` and `all`. It SHALL accept the options `--profile`, `--limit N`, `--start N`, `--set NAME`, `--max-usd`, `--yes`, `--allow-peak` and, from M15, `--probe`. An unknown suite SHALL exit non-zero and list the known ones. `--profile` SHALL keep its default of `naive`, whatever the app's default profile is.
 
 #### Scenario: Unknown suite
 - **WHEN** `horizon eval everything` is run
@@ -141,7 +141,7 @@ The pairwise judge's 30 known-winner pairs SHALL each set a real reply against a
 - **THEN** it is served entirely from the store, spends $0 and reproduces its accepted figures
 
 ### Requirement: The naive arms of debate and memory
-`horizon eval debate --profile naive` SHALL score the `naive` single-call verdict on the 12 debates, balanced and planted, with the side blocks swapped, beside the `agent` column. `horizon eval memory --profile naive` SHALL run the `naive` writer on the rewrite stretches and the two-session pairs, beside the `agent` column. Both SHALL report the note-in-tag rate of `naive` arguments.
+`horizon eval debate --profile naive` SHALL score the `naive` single-call verdict on the 12 debates, balanced and planted, with the side blocks swapped, beside the `agent` column. `horizon eval memory --profile naive` SHALL run the `naive` writer on the rewrite stretches and the two-session pairs, beside the `agent` column. `conversations` SHALL report the note-in-tag rate of `naive`'s replies, read on their raw text (the debate arm writes no argument, only verdicts, and its report says where the rate is read).
 
 #### Scenario: Debate columns
 - **WHEN** the `naive` debate arm ends
@@ -162,7 +162,7 @@ The emotion decision set SHALL gain 40 items, labelled blind and split by the ha
 - **THEN** it holds 140 items, the 40 new ones labelled before the run that reads them
 
 ### Requirement: The Jev request manifest
-`horizon eval manifest` SHALL write `evals/baselines/jev-1.13-requests.json` from the store, at no cost. For each Jev set, it SHALL record the SHA-256 of every request body (state and questions) that the accepted runs sent, the bank versions and the canary fingerprint. Private items SHALL appear only as hashes. A later model comparison SHALL check each body against the manifest before sending.
+`horizon eval manifest` SHALL write `evals/baselines/jev-1.13-requests.json` at no cost, sending nothing. For each Jev set (every decisions folder with the judges, the canary, deep-check, and safety's Jev parts), it SHALL record the SHA-256 of every request body (state and questions, without the model) as the suite compiles it, and how many have a stored jev-1.13 answer. It SHALL also record the bank versions and the canary fingerprint. Private items SHALL appear only as hashes. A later model comparison (`--against-manifest`) SHALL refuse any Jev body the manifest doesn't list.
 
 #### Scenario: A body that changed
 - **WHEN** a comparison run builds a request whose body hash is not in the manifest

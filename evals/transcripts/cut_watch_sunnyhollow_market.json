@@ -1,0 +1,499 @@
+{
+ "schemaVersion": 1,
+ "id": "cut_watch_sunnyhollow_market",
+ "mode": "watch",
+ "world": "wld_seedSunnyHollow",
+ "cast": [
+  "chr_seedHana",
+  "chr_seedRin",
+  "chr_seedTakeshi"
+ ],
+ "language": "en",
+ "source": {
+  "history": "watch/sunnyhollow_market.json",
+  "id": "sunnyhollow_market",
+  "from_seq": 41,
+  "to_seq": 52
+ },
+ "premise": "On a rainy Saturday the family runs a stall at the night market: Hana sells bouquets, Rin demos her game on a borrowed screen, and Takeshi has a plan to catch the last train home with everything packed.",
+ "memories": {
+  "chr_seedHana": [
+   {
+    "id": "mem_seedHana1",
+    "text": "Kai's favourite cake is yuzu"
+   },
+   {
+    "id": "mem_seedHana2",
+    "text": "Sold Kai's bouquet to a nervous proposer"
+   }
+  ],
+  "chr_seedRin": [],
+  "chr_seedTakeshi": [
+   {
+    "id": "mem_seedTakeshi1",
+    "text": "Took Rin fishing on a rainy Sunday; first fish named \"Patch Notes\""
+   }
+  ]
+ },
+ "lines": [
+  {
+   "seq": 2,
+   "kind": "line",
+   "speaker": "chr_seedHana",
+   "text": "Rain's actually perfect for us — every bouquet looks ten times more dramatic under wet lights!! Kai, hold this one while I sort the yuzu ones, they smell like winter sunshine today.\nRin's game is drawing a crowd, which is great, and Dad's already timing the last train like it's a military operation. Probably.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 3,
+   "kind": "line",
+   "speaker": "chr_seedRin",
+   "text": "yo kai, hold the screen steady, some kid just beat my tutorial boss with a cheese strat. i'm either proud or filing a bug report. fight me.\ndad's been doing train math on a napkin for twenty minutes. we're leaving at 9:12 whether the flowers sell or not.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 4,
+   "kind": "line",
+   "speaker": "chr_seedTakeshi",
+   "text": "Right on schedule. Nine-twelve, no delays, no excuses. Rain just means fewer umbrellas to dodge on the platform.\nHana, that bouquet's dripping on my shoes—good, that means it's fresh. Rin, if a kid cheeses your boss, that's free playtesting. Now who's buying the last three bunches?",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 5,
+   "kind": "line",
+   "speaker": "chr_seedHana",
+   "text": "Nine-twelve it is!! Dad's been planning this since Tuesday, I swear — I saw the napkin before we even packed.\nLast three bunches, half price, and I'll throw in my best ribbon. Rin, cheese strats are just unofficial tutorials. Probably!!",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 6,
+   "kind": "line",
+   "speaker": "chr_seedRin",
+   "text": "napkin schedule confirmed. dad runs a tighter op than our raid guild.\nfine. half price bouquets, one more demo run, then we pack. nine-twelve or we're sleeping on a platform bench. fight me.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 7,
+   "kind": "line",
+   "speaker": "chr_seedTakeshi",
+   "text": "Three bunches gone—good. Rain's letting up, which is worse; now people stop to chat instead of hurrying home. Punctual beats polite on a Saturday night.\nRin, pack the screen first, cables wound clockwise. Always clockwise. Hana, count the ribbons twice. A train doesn't wait, and neither does",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 8,
+   "kind": "line",
+   "speaker": "chr_seedHana",
+   "text": "Cables clockwise?! Dad, that's a family rule now, apparently. Counted the ribbons twice — twenty-six, plus the one in my hair, so twenty-seven.\nKai, last bunch is yours if you want it. Yuzu-scented, and you already know why I saved it. Probably!",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 9,
+   "kind": "line",
+   "speaker": "chr_seedRin",
+   "text": "cables clockwise, ribbons counted, dad's napkin prophecy fulfilled. this family runs smoother than my dev sprint board.\nyeah kai, take the yuzu one. hana saved it, that means something. i said",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 10,
+   "kind": "line",
+   "speaker": "chr_seedTakeshi",
+   "text": "Why did the yuzu bouquet ride the express? Because it had no time to be bitter. Take the flower, Kai. Two years and you're still standing. That's a good track record.\nNine-oh-five. Grab your coats. We catch the last train home with every box packed and every daughter dry.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 11,
+   "kind": "line",
+   "speaker": "chr_seedHana",
+   "text": "That joke was terrible, Dad, and somehow I'm still laughing!! Two years and counting, apparently.\nKai, hold the yuzu one like it's a small bird. Salt your hands, not the petals. Packing time",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 12,
+   "kind": "line",
+   "speaker": "chr_seedRin",
+   "text": "wow. dad made a pun. recorded for posterity, used as evidence later.\nnine-oh-five, coats on. kai, hold the bird-flower, don't crush it. move.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 13,
+   "kind": "line",
+   "speaker": "chr_seedTakeshi",
+   "text": "Bird-holding technique, noted. Now move like you mean it. Boxes in the cart, cart to the door, door to the rain.\nNine-oh-seven. Right on schedule. Whoever's last on the platform buys breakfast tomorrow—and I will win, because I always do.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 14,
+   "kind": "line",
+   "speaker": "chr_seedHana",
+   "text": "Cart's loaded and I'm not last, I'm never last!! Dad, you cheated, you started before nine-oh-five, I saw you.\nCareful at the crossing, Rin, the tiles get slick. Two minutes left and I'm not buying anyone breakfast. Probably!!",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 15,
+   "kind": "line",
+   "speaker": "chr_seedRin",
+   "text": "i'm not last, i'm tanking the rear. someone's gotta cover the squishies.\ncrossing handled. two minutes. breakfast is a dad problem. fight me.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 16,
+   "kind": "line",
+   "speaker": "chr_seedTakeshi",
+   "text": "Slick tiles, wet cart, two minutes—this is where engineers earn their pay. Straighten up, Rin, you're tanking fine.\nNine-eleven. Doors at nine-twelve. First one through gets the window seat and bragging rights till next Sunday. Right on schedule.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 17,
+   "kind": "line",
+   "speaker": "chr_seedHana",
+   "text": "Window seat's mine, I called it at the market!! Kai, hold the yuzu all the way home, it'll smell like us.\nNine-eleven, on the platform, doors opening — Dad, you're a legend and I'm never telling you that again. Probably!!",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 18,
+   "kind": "line",
+   "speaker": "chr_seedRin",
+   "text": "window seat to hana, obviously. she called it, that's binding.\nboarded. flowers accounted for, one kai, no squishes. nine-twelve, right on schedule.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 19,
+   "kind": "line",
+   "speaker": "chr_seedTakeshi",
+   "text": "Doors closing. Everyone dry, every box aboard, and the last train didn't leave without us. That's the whole job.\nHana, that seat's yours by law. Rin, screen's on your lap, not the floor. Kai—hold the flower steady. Status update at the pier tomorrow, weather permitting.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 20,
+   "kind": "line",
+   "speaker": "chr_seedHana",
+   "text": "Homeward, everybody dry, yuzu still intact!! Dad's actually smiling, don't tell him I noticed.\nRin, screen off the floor before I put it on your head. Kai, sit with me — window seat's big enough for two, and that's final. Probably!!",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 21,
+   "kind": "line",
+   "speaker": "chr_seedRin",
+   "text": "screen's on my lap, noted. hana's got the window, kai's got the yuzu, dad's got a face that's almost smiling. anomaly detected.\ngood night run. logging it. fight me.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 22,
+   "kind": "line",
+   "speaker": "chr_seedTakeshi",
+   "text": "Not smiling. That's rain in my eyes. Train windows do that.\nBut logged is right. Good run, good crew, nobody left behind. Sleep in tomorrow—Sunday fishing's at six, rain or shine. Right on schedule.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 23,
+   "kind": "line",
+   "speaker": "chr_seedHana",
+   "text": "Rain in your eyes, sure, Dad. Six a.m. fishing, I heard nothing, my one day off is sacred.\nRin, log it as a perfect run. Kai — lean a little closer, window's cold. I'll forgive the rain for that. Probably!!",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 24,
+   "kind": "line",
+   "speaker": "chr_seedRin",
+   "text": "\"rain in my eyes.\" sure, dad.\nlogging it. perfect run, one yuzu, zero squishes. six a.m. fishing is fiction, i'm sleeping till noon. fight me.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 25,
+   "kind": "line",
+   "speaker": "chr_seedTakeshi",
+   "text": "Fiction at six, noon sleeper. We'll see which one the sun argues with.\nKai. You did good tonight—steady hands, quiet feet. That's worth more than a window seat. Rest up. Right on schedule.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 26,
+   "kind": "line",
+   "speaker": "chr_seedHana",
+   "text": "Dad praising Kai in public, mark the calendar!! Steady hands, quiet feet — he's right though, that's you.\nTwo years and you still show up for rainy markets and terrible puns. That's the whole",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 27,
+   "kind": "note",
+   "speaker": "director",
+   "text": "The market manager announces the last train is cancelled; the replacement bus leaves at 22:40.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 28,
+   "kind": "line",
+   "speaker": "chr_seedRin",
+   "text": "that's the whole thing, kai. show up, hold the flower, don't drop the screen. you pass.\nokay i'm done being sincere, it's weird. hana, window's yours, going quiet. fight me.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 29,
+   "kind": "line",
+   "speaker": "chr_seedTakeshi",
+   "text": "Hold on. Cancelled? We're already aboard—check the platform clock. Trains don't just vanish; schedules don't lie, people do.\nConductor's walking this way. Everybody stay put until we hear it straight. If it's a bus, it's a bus. Twenty-two-forty. We adapt.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 30,
+   "kind": "line",
+   "speaker": "chr_seedHana",
+   "text": "Twenty-two-forty?! But we're already on, that doesn't make any sense, we packed for nine-twelve!!\nDad's doing the calm voice, which means he's already replanning in his head. Kai, hold my hand a sec — the yuzu one's yours",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 31,
+   "kind": "line",
+   "speaker": "chr_seedRin",
+   "text": "dad's calm voice means we're fine, just rerouted. conductor incoming, we listen.\nbus at twenty-two-forty, fine. i'll tank the walk if it's far. hana, breathe. fight me.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 32,
+   "kind": "line",
+   "speaker": "chr_seedTakeshi",
+   "text": "Rerouted, not ruined. Different track, same destination. Conductor's here—let him talk.\n[conductor explains: signal outage down the line; trains terminate here, bus 22:40 to Sunny Hollow station.]\nThere it is. Signal fault, nobody's fault. We",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 33,
+   "kind": "line",
+   "speaker": "chr_seedHana",
+   "text": "Signal fault, not our fault. Fine, Dad, I'm calm, I'm calm!! Mostly.\nTwenty-two-forty bus, we've got an hour — might as well sell the last bouquets on the platform. Rin, want to demo one more round for bored travelers?",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 34,
+   "kind": "line",
+   "speaker": "chr_seedRin",
+   "text": "signal fault, so nobody's fault. dad's napkin survives on a technicality.\none more demo round on the platform, sure. if a bored traveler cheeses my boss again i'm charging admission. fight me.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 35,
+   "kind": "line",
+   "speaker": "chr_seedTakeshi",
+   "text": "One more round, no charge. Old man behind the bench is our first customer—he's been waiting since six. Hana, sell him the yuzu one at full price. Sentiment's for family.\nBus at twenty-two-forty. We arrive together, same as always. Right on schedule—just a different kind.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 36,
+   "kind": "line",
+   "speaker": "chr_seedHana",
+   "text": "Full price for the stranger, yuzu stays in the family. On it, Dad!! Sir, this one's fresh off the stall, wrapped in my best ribbon.\nRin, demo that boss fight, and Kai — promise me the last seat on the bus. Probably!!",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 37,
+   "kind": "line",
+   "speaker": "chr_seedRin",
+   "text": "old man waited since six, full price, fair. hana's running sales like a raid leader. proud or filing a report.\nlast seat's yours, kai. i'll stand and hold the screen. demo round, going live. fight me.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 38,
+   "kind": "line",
+   "speaker": "chr_seedTakeshi",
+   "text": "Sold. Old man's smiling, which means Hana's ribbon did the work. Now pack while he plays—seven minutes, idle hands.\nKai, last seat's between Hana and the window. Take it. Don't argue with a schedule or a daughter.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 39,
+   "kind": "line",
+   "speaker": "chr_seedHana",
+   "text": "Seven minutes, packing. Kai, I already called the window, so it's you and me, and the yuzu, and rain on the glass.\nOld man's clapping at Rin's boss fight. Best night market we've ever had. Probably!!",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 40,
+   "kind": "line",
+   "speaker": "chr_seedRin",
+   "text": "old man's clapping, that's the review i actually wanted. seven minutes, packing down.\nwindow, hana, kai, yuzu. that's the whole manifest. boarding a bus like it's endgame content. fight me.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 41,
+   "kind": "line",
+   "speaker": "chr_seedTakeshi",
+   "text": "Seven minutes down to two. Old man's taxi first—walk him to the curb, Hana. Never let a customer out into rain unescorted.\nBus rolling in. Headlights up. Everybody grab a box. Last leg home, and I wouldn't gamble this crew against any schedule.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 42,
+   "kind": "line",
+   "speaker": "chr_seedHana",
+   "text": "Walking him out — sir, umbrella's yours, keep the ribbon. There, curb safe, back to the group!!\nBus's here, headlights and all. Boxes up, Kai's got the yuzu, I've got the window. Dad, say it one more time for luck?",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 43,
+   "kind": "line",
+   "speaker": "chr_seedRin",
+   "text": "customer escorted, ribbon gifted, class act. okay i take it back, proud or filing a report — proud. mostly.\nbus here. boxes up. dad, say the thing.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 44,
+   "kind": "line",
+   "speaker": "chr_seedTakeshi",
+   "text": "Right on schedule. Different wheels, same family.\nBoard up, everyone. Bags overhead, screen in Rin's lap, yuzu in Kai's hands, Hana at the window. Twenty-two-forty, and the last bus waits for nobody. Roll out.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 45,
+   "kind": "line",
+   "speaker": "chr_seedHana",
+   "text": "Right on schedule — different wheels, same family. I'm putting that on a card someday, Dad!!\nBoarded, window claimed, yuzu intact. Kai, the rain's slowing down like even the sky's calling it a night.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 46,
+   "kind": "line",
+   "speaker": "chr_seedRin",
+   "text": "boarded. screen's on my lap, bags overhead, no squishes. hana's got window rights and a card someday.\nbus rolling, rain clocking out. good run. logging it. fight me.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 47,
+   "kind": "line",
+   "speaker": "chr_seedTakeshi",
+   "text": "Log it. Rain's quitting, bus is rolling, and every box made it home's worth of distance.\nHana—card's fine, but keep it short. A card should read like a timetable. Kai, get some sleep. Pier at six, and I don't fish with tired men.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 48,
+   "kind": "line",
+   "speaker": "chr_seedHana",
+   "text": "Short card, timetable style — \"Right on schedule. Different wheels, same family. Probably.\" There, done.\nSleep, Dad? On this bus? Bold. Kai, your shoulder's softer than the window anyway. Wake me at the pier, or don't. Probably!!",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 49,
+   "kind": "line",
+   "speaker": "chr_seedRin",
+   "text": "\"probably\" in the timetable, hana. that's the whole family in one word.\nsix a.m. pier stays fiction, dad. shoulder's not on the menu either. good night,",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 50,
+   "kind": "line",
+   "speaker": "chr_seedTakeshi",
+   "text": "Sleep's optional. Arriving's not. Driver says Sunny Hollow in twenty—same stop, same hill, same porch light.\nKai. You held the flower and the seat. That's the job. Welcome aboard, for good. Now rest—dad's orders. Right on schedule.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 51,
+   "kind": "line",
+   "speaker": "chr_seedHana",
+   "text": "Same stop, same hill, same porch light, twenty minutes out!!\n...Kai, he said \"for good.\" Dad never says stuff like that out loud. Don't cry on the yuzu, I'll cry",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 52,
+   "kind": "line",
+   "speaker": "chr_seedRin",
+   "text": "\"for good.\" dad said a real sentence in public, mark the calendar twice.\ntwenty minutes to the porch light. everyone rest, that's an order. i'm closing the log. fight me.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  }
+ ]
+}

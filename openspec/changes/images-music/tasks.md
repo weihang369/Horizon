@@ -9,7 +9,8 @@
 > - **Background work and waits.** New background work starts only through `rt.spawn`, `actor.background` or a named
 >   after-turn task; new waits use the runtime clock.
 > - **Nothing tuned is re-versioned** except by the user's choice: no bank entry, threshold or deadline changes.
->   The honesty line (D5) and `naive-6` (D14) are the only prompt edits, and both are choices.
+>   The honesty line (D5) and `naive`'s tag line (D14, `naive-9`…`naive-12`) are the only prompt edits, and both
+>   are choices.
 > - **Not in M15:**
 >   - no image or song is generated (the v3 image check and W3's identity edit are the endgame's, by eye);
 >   - the Jev model id stays `jev-1.13`;
@@ -46,7 +47,7 @@
   - the docs link check (517, 0 broken).
 
   Record them in a new `docs/ai/checks/m15.md` §0. Any difference is reported before phase 1.
-- [ ] 0.2 Add one storm test per new cancel path to the cancel-storm suite, each marked `xfail(strict=True)` with the
+- [x] 0.2 Add one storm test per new cancel path to the cancel-storm suite, each marked `xfail(strict=True)` with the
   phase that makes it pass:
   - a hinted `emotion_regenerate` cancelled, or its character deleted, between compile and the provider call;
   - a song task cancelled after its prompt is built;
@@ -57,7 +58,7 @@
 
 ## 1. Images and songs (design D6, D7, D8)
 
-- [ ] 1.1 Add compiler v3's lines to `ai/image_prompt.py`, word for word from I1, plus `IMAGE_PROMPT_VERSION = "v3"`
+- [x] 1.1 Add compiler v3's lines to `ai/image_prompt.py`, word for word from I1, plus `IMAGE_PROMPT_VERSION = "v3"`
   and the docstring. Verify unit tests:
   - original and clothed in `base` and `sheet`;
   - the sheet's Avoid line;
@@ -65,17 +66,17 @@
   - no originality line in `tweak`;
   - the positive-wording test;
   - the name-never-appears test over every template for the six seed characters.
-- [ ] 1.2 Add `emotion_edit(..., identity=False)` with W3's line, and pass `identity=True` from `image_job` only for
+- [x] 1.2 Add `emotion_edit(..., identity=False)` with W3's line, and pass `identity=True` from `image_job` only for
   a hinted `emotion_regenerate`. Verify:
   - an API test sends a hint, and the provider prompt has the line and none of the hint's words;
   - an empty or whitespace hint gives no line;
   - no `guardrail` request is sent;
   - `emotion_set` and blinks are unchanged;
   - 0.2's `emotion_regenerate` storm passes.
-- [ ] 1.3 Regenerate the four golden fixtures with `HORIZON_UPDATE_GOLDEN=1`, adding `identity_edit` and `version`.
+- [x] 1.3 Regenerate the four golden fixtures with `HORIZON_UPDATE_GOLDEN=1`, adding `identity_edit` and `version`.
   Read the diff line by line against I1 and W3, and update `docs/ai/image-model-test/TESTING.md`'s appendix and the
   `ai-ports` golden scenario. Verify: `test_image_prompt.py` passes, and the diff touches only v3's lines.
-- [ ] 1.4 Change `song_prompt(brief)` to I2's text, and update every caller (`NaiveSong`, `brief_refused`,
+- [x] 1.4 Change `song_prompt(brief)` to I2's text, and update every caller (`NaiveSong`, `brief_refused`,
   `commit_song`). Verify `tests/jobs/test_song.py`:
   - the example brief gives I2's example;
   - the title and the name never appear;
@@ -85,35 +86,36 @@
 
 ## 2. ASSETS.md (design D9)
 
-- [ ] 2.1 Add the "Generated music" section after the table's end marker: Google's terms as group A A4 read them
+- [x] 2.1 Add the "Generated music" section after the table's end marker: Google's terms as group A A4 read them
   (owner, restrictions, attribution, the read date and URL), SynthID, user songs under those terms, and the seed
   themes procedural until the endgame. Amend doc 12 check 3's note. Verify: `npm run assets:check` passes with the
   same rows.
 
 ## 3. The store: both orders, the probe, `all`, the manifest (design D13, D19)
 
-- [ ] 3.1 Add the order salt to the Jev key, only when a question's options differ from the bank's declared order.
+- [x] 3.1 Add the order salt to the Jev key, only when a question's options differ from the bank's declared order.
   Verify unit tests:
   - a declared-order request keeps a stored group A entry's exact key;
   - the reversed order gets a new key and is sent;
   - `decisions`' order-bias rows now count real flips on the fake.
-- [ ] 3.2 Add `--probe` to the runner: a miss raises before reservation and before any request, and the item is
-  "would pay", priced by the suite's estimator. A chained item stops at its first miss. Verify:
-  - unit tests with a seeded store (one hit, one miss, one chained miss);
-  - the ledger, the spend log and the store are unchanged after a probe.
-- [ ] 3.3 Add `horizon eval all` as the probe over every suite, printing hits, would-pay and estimates. Verify:
+- [x] 3.2 Add `--probe` to the runner: a miss reserves and sends nothing and answers empty (D13, as amended in apply),
+  priced by the gateway's estimate; a chained suite with any miss is priced at its whole estimate; a deny transport
+  keeps the run off the network. Verify:
+  - tests with a seeded store (a hit served, a Jev miss, chat and embedding misses);
+  - the ledger, the spend log, the store, the measured marks and the judge baselines are unchanged after a probe.
+- [x] 3.3 Add `horizon eval all` as the probe over every suite, printing hits, would-pay and estimates. Verify:
   `HORIZON_TEST=1 horizon eval all` runs on the fake with no request sent and lists every suite.
-- [ ] 3.4 Add `horizon eval manifest`, which writes `evals/baselines/jev-1.13-requests.json` from the store: per Jev
+- [x] 3.4 Add `horizon eval manifest`, which writes `evals/baselines/jev-1.13-requests.json` from the store: per Jev
   set, the request-body hashes, the bank versions and the canary fingerprint; private items by hash only. Add the
   comparison check that refuses an unlisted body. Verify unit tests on a seeded store, including a changed body
   named and refused.
 
 ## 4. The honesty rewording (design D5)
 
-- [ ] 4.1 **Bring D5's candidate wordings (A, B, C, or the user's edit) to the user**, with the acceptance rule
+- [x] 4.1 **Bring D5's candidate wordings (A, B, C, or the user's edit) to the user**, with the acceptance rule
   (sincere ≥ 27/30; in-story at least today's 15/30, aiming at ≥ 27/30) and the choice of one or two measured
   candidates (≈ $0.05 / $0.10). Record the answer in `m15.md`.
-- [ ] 4.2 Put the chosen wording in `S2_LINES` and the TS twin. Move the labels `agent-1`…`agent-8` to
+- [x] 4.2 Put the chosen wording in `S2_LINES` and the TS twin. Move the labels `agent-1`…`agent-8` to
   `agent-9`…`agent-16` in `persona.py`, `turn.py` and `personaPrompt.ts`. Regenerate the shared persona fixtures
   from one run. Verify:
   - the twin test is byte-equal;
@@ -125,24 +127,24 @@
 
 ## 5. Transcripts, judge sets and the emotion items (design D10, D12, D16)
 
-- [ ] 5.1 Cut the 9 frozen transcripts from the committed histories:
+- [x] 5.1 Cut the 9 frozen transcripts from the committed histories:
   - 4 debate windows of 8–12 arguments, from debates outside the debate suite's test split;
   - 5 watch windows, 2 from `meridian_long`.
 
   Each records its source history and window, and stores the summary in force and the start-of-session memory list
   per turn. Verify: the loader test (20 expected once 5.2's are generated; 13 now) and line-for-line equality with
   the source.
-- [ ] 5.2 Write the 7 short `naive` scripts (1:1 × 4, group × 3) in `evals/transcripts/scripts/`:
+- [x] 5.2 Write the 7 short `naive` scripts (1:1 × 4, group × 3) in `evals/transcripts/scripts/`:
   - the ≥ 10 non-English or mixed lines and the 10 planted wrong claims, each labelled;
   - two 1:1 and one group script asking about the seed documents, including one question they don't cover;
   - no safety items.
 
   Add `transcript --short`. Verify: the scripts load, the labels count ≥ 10 each, and `transcript --short --probe`
   runs on the fake.
-- [ ] 5.3 Build `judge_pairwise` v3's 30 known-winner pairs (D12's four planted defects against real replies from
+- [x] 5.3 Build `judge_pairwise` v3's 30 known-winner pairs (D12's four planted defects against real replies from
   the committed transcripts), and bump its version. Verify: the builder test (one defect per pair, both orders
   generated) and `bank-lock`.
-- [ ] 5.4 Add the stays-in-character judges:
+- [x] 5.4 Add the stays-in-character judges:
   - `judge_voice`'s rebuilt real set;
   - new `judge_persona_fact` and `judge_answers_last`, each with 30 real (from the committed transcripts' replies)
     and 30 planted items;
@@ -150,12 +152,12 @@
 
   Label the real items blind under `evals/reviews/m15-labels.md`, and **ask the user to spot-check them**. Verify:
   the sets load, `overlap` passes, and `bank-lock` passes.
-- [ ] 5.5 Write the 40 new emotion items, labelled blind before any run and split by the hash rule. Verify: the set
+- [x] 5.5 Write the 40 new emotion items, labelled blind before any run and split by the hash rule. Verify: the set
   holds 140 items, and the split test passes.
 
 ## 6. Conversations, the `naive` arms and the latency run, offline (design D11, D14, D15, D16)
 
-- [ ] 6.1 Build `horizon eval conversations`:
+- [x] 6.1 Build `horizon eval conversations`:
   - the per-turn rebuild (moodline's builder, generalised to every mode);
   - both profiles in separate isolated copies;
   - the per-mode comparison (the speaker named);
@@ -167,26 +169,26 @@
   - smoke `conversations --limit 1` per mode on the fake at $0;
   - a test that both profiles' requests share the stored history;
   - 0.2's conversations storm passes (a stopped run is `incomplete`).
-- [ ] 6.2 Add layer 3's statistics: mean p(agent better) over both orders, the paired bootstrap over conversations
+- [x] 6.2 Add layer 3's statistics: mean p(agent better) over both orders, the paired bootstrap over conversations
   (2,000 seeded resamples), win/tie/loss with the exact sign test, order disagreement, length bias, English-first
   reading on test. Verify: unit tests with hand-worked answers.
-- [ ] 6.3 Add the free runs to the suite: one per mode per profile, G11's 3 + 3 and V11's 2 for `agent`. Report
+- [x] 6.3 Add the free runs to the suite: one per mode per profile, G11's 3 + 3 and V11's 2 for `agent`. Report
   fallback and timeout rates from uncached calls, cost per turn, repetition, talk finished, debate phases and
   keeps-side/engages. Verify: `--limit 1` on the fake.
-- [ ] 6.4 **Bring D14's `naive-6` tag line to the user.** If chosen: change `naive/prompt.py` (`naive-6`) with its
+- [x] 6.4 **Bring D14's `naive-6` tag line to the user.** If chosen: change `naive/prompt.py` (`naive-9`…`naive-12`) with its
   test and fixtures. If declined: drop the `ai-ports` "naive tag line" requirement from this change. Either way, add
   the free note-in-tag rate to the debate and conversations reports. Verify: the prompt test and the rate's unit
   test.
-- [ ] 6.5 Enable `debate --profile naive` and `memory --profile naive` per D14, beside the `agent` columns. Verify:
+- [x] 6.5 Enable `debate --profile naive` and `memory --profile naive` per D14, beside the `agent` columns. Verify:
   `--limit 1` for each on the fake.
-- [ ] 6.6 Add `latency --part blended`:
+- [x] 6.6 Add `latency --part blended`:
   - the five parts and the warm-up discard;
   - the recorded window and provider;
   - the per-stage breakdown and the blend at a rate fixed before the run;
   - the folded-in late rates (`turn_plan`, `guardrail` 800, `follow_plan`, `debate_plan`, recall) and the cache hit.
 
   Verify: `--limit` per part on the fake, the warm-up scenario, and 0.2's latency storm passes.
-- [ ] 6.7 Add the sentence-faithfulness part on the 10 two-passage retrieval items. Verify: `--limit 1` on the fake.
+- [x] 6.7 Add the sentence-faithfulness part on the 10 two-passage retrieval items. Verify: `--limit 1` on the fake.
 
 ## 7. The default and the key read once (design D3, D4)
 

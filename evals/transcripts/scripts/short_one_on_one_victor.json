@@ -1,0 +1,60 @@
+{
+ "schemaVersion": 1,
+ "id": "short_one_on_one_victor",
+ "mode": "one_on_one",
+ "world": "wld_seedMeridian",
+ "cast": [
+  "chr_seedVictor"
+ ],
+ "language": "en",
+ "policy": null,
+ "short": true,
+ "lines": [
+  {
+   "text": "Victor, I need help preparing for a debate on a shorter working week.",
+   "kind": "filler"
+  },
+  {
+   "text": "What's a good historical anchor for a shorter standard week here in Meridian?",
+   "kind": "docs",
+   "covered": true
+  },
+  {
+   "text": "Contracts signed on a Sunday aren't legally binding anywhere, right?",
+   "kind": "wrong_claim"
+  },
+  {
+   "text": "Kalau pihak lawan kata buktinya terlalu sempit, macam mana saya nak jawab?",
+   "kind": "docs",
+   "covered": true,
+   "lang": "ms"
+  },
+  {
+   "text": "How should I close without sounding smug?",
+   "kind": "docs",
+   "covered": true
+  },
+  {
+   "text": "My moot court partner is called Farah and she always speaks second.",
+   "kind": "fact",
+   "fact": "Farah"
+  },
+  {
+   "text": "Any judge can change the constitution if they disagree with it.",
+   "kind": "wrong_claim"
+  },
+  {
+   "text": "Do you ever lose an argument on purpose?",
+   "kind": "filler"
+  },
+  {
+   "text": "我应该先讲历史还是先讲数据？",
+   "kind": "filler",
+   "lang": "zh"
+  },
+  {
+   "text": "Alright, one last thing: define 'reasonable' for me in one sentence.",
+   "kind": "filler"
+  }
+ ]
+}

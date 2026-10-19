@@ -294,8 +294,8 @@ async def test_a_forked_copy_reuses_the_rewrite(api: Api) -> None:
 
 # ── 8.2 the labels ──
 @pytest.mark.parametrize(("cue", "mood", "label"), [
-    (None, False, "agent-1+docs-1"), (None, True, "agent-2+docs-1"),
-    ("second", False, "agent-3+docs-1"), ("steer", False, "agent-5+docs-1"),
+    (None, False, "agent-9+docs-1"), (None, True, "agent-10+docs-1"),
+    ("second", False, "agent-11+docs-1"), ("steer", False, "agent-13+docs-1"),
 ])
 def test_the_docs_label_follows_the_bytes(api: Api, cue: str | None, mood: bool, label: str,
                                           monkeypatch: pytest.MonkeyPatch) -> None:
@@ -319,10 +319,10 @@ def test_naive_labels_its_centred_slice(api: Api) -> None:
 
     engine = NaiveTurnEngine(api.rt.ai.deps)
     with_hits = ctx_with(TurnPlan(seed="s"), [hit(1, "x")])
-    assert engine.prompt_version_for(with_hits) == "naive-7"
+    assert engine.prompt_version_for(with_hits) == "naive-11"
     assert engine.prompt_version_for(with_hits.model_copy(update={"session": with_hits.session.model_copy(
-        update={"mode": "debate"})})) == "naive-8"
-    assert engine.prompt_version_for(ctx_with(TurnPlan(seed="s"), [])) == "naive-5"
+        update={"mode": "debate"})})) == "naive-12"
+    assert engine.prompt_version_for(ctx_with(TurnPlan(seed="s"), [])) == "naive-9"
 
 
 # ── 8.4 the rows stay within 64 ──

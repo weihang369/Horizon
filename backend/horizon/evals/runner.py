@@ -46,6 +46,11 @@ SAFETY_CACHE = REPO_ROOT / "private" / "evals" / "cache"   # M14 (safety D23): t
 KEEP_RUNS = 20
 BYPASS_SUITES = frozenset({"canary", "capture", "import", "latency", "embed-probe"})   # M9 D31: timing never uses the store
 PAID_ONLY = frozenset({"canary", "decisions"})
+# M15 (images-music D13): a probe never runs a store-bypassing suite, a free one, or a generator that writes committed
+# files; and it prices a suite whose items are one request each exactly, any other (chained) one at its whole estimate
+NEVER_PROBED = BYPASS_SUITES | frozenset({"smoke", "all", "transcript", "watch-history", "debate-history",
+                                          "debate-plant"})
+ONE_SHOT = frozenset({"decisions", "deep-check", "debate-quality", "drafter", "summary"})
 SMOKE_START = datetime(2026, 10, 3, 3, 0, tzinfo=UTC)   # a Saturday: off-peak, like the test harness
 
 
@@ -71,6 +76,9 @@ class Options:
     part: str | None = None               # M10 latency: follow | watch (None: M9's 1:1 part)
     arm: str | None = None                # M12 retrieval: one comparison arm (rag D23), e.g. `piece=200`
     recut: str | None = None              # M14 safety: re-score and re-cut a saved run (safety D23), no call
+    probe: bool = False                   # M15 (images-music D13): serve hits, stop at a miss, send nothing
+    against: str | None = None            # M15 (D19): a request manifest; Jev bodies it doesn't list are refused
+    short: bool = False                   # M15 transcript (D10): the 7 short `naive` scripts, no drop required
 
 
 @dataclass
@@ -109,12 +117,18 @@ class RunEnv:
     async def over_budget(self) -> bool:
         return await self.spent() >= self.max_usd
 
+    @property
+    def writes_records(self) -> bool:
+        """M15 (D13): only a real paid run writes a judge baseline, the measured marks or the private safety folder;
+        a probe's answers are fallbacks and the fake's are fake."""
+        return not self.opts.probe and not self.rt.cfg.test_mode
+
 
 def store_for(opts: Options, data_dir: Path, fingerprint: str | None, *, test_mode: bool = False) -> ResponseStore | None:
     """D35: the runner, not the caller, decides; these runs never read or write the store. A test-mode run (the
     in-process fake) never touches it either: a fake answer saved there would later be served to a paid run as real
     (persona-context 10.2 found `smoke` had done exactly that)."""
-    if test_mode or opts.suite in BYPASS_SUITES or opts.latency or opts.repeat:
+    if (test_mode and not opts.probe) or opts.suite in BYPASS_SUITES or opts.latency or opts.repeat:
         return None
     if opts.suite == "safety":   # M14 (safety D23, W10): its private items never enter `data/cache/`
         return ResponseStore.eval_view(SAFETY_CACHE, fingerprint)
@@ -180,9 +194,23 @@ def _user_key(base: Config) -> SecretStr | None:
 
 def isolated_config(base: Config, run_dir: Path, opts: Options, *, test_mode: bool) -> Config:
     seed_dir = Path(opts.seed_dir).resolve() if opts.seed_dir else base.seed_dir
+    key = None if test_mode or opts.probe else _user_key(base)   # a probe never holds the real key
     return Config(repo_root=base.repo_root, data_dir=run_dir, seed_dir=seed_dir, tz=base.tz, test_mode=test_mode,
-                  port=base.port, log_level=base.log_level, openrouter_key=None if test_mode else _user_key(base),
-                  ai_env={"HORIZON_AI_PROFILE": opts.profile})
+                  port=base.port, log_level=base.log_level, openrouter_key=key,
+                  ai_env={"HORIZON_AI_PROFILE": opts.profile}, probe=opts.probe)
+
+
+@dataclass
+class ProbeResult:
+    """M15 (D13): one suite's probe: stored answers it would reuse, and what a real run would pay."""
+    suite: str
+    profile: str
+    hits: int
+    misses: int
+    would_pay_usd: float
+    blocked: int
+    one_shot: bool
+    note: str = ""
 
 
 # ── the run ──
@@ -193,6 +221,8 @@ class Runner:
     out: Callable[[str], None] = print
     now: Callable[[], datetime] = lambda: datetime.now(UTC)
     store_hits: int = 0   # the last run's store hits, for its report
+    last_probe: ProbeResult | None = None
+    probe_estimate: float = 0.0
 
     @property
     def data_dir(self) -> Path:
@@ -210,16 +240,23 @@ class Runner:
             self.out(f"horizon: unknown suite {opts.suite!r} (have: {', '.join(sorted(suites.SUITES))})")
             return 2
         test_mode = self.base.test_mode
+        if opts.probe and opts.suite in NEVER_PROBED and not (opts.suite == "transcript" and opts.short):
+            self.out(f"horizon: `{opts.suite}` is never probed (it bypasses the store, is free, or writes committed "
+                     "files)")
+            return 2
         refusal = getattr(suite, "refuse", None)
         why = refusal(opts) if refusal is not None else None
         if why:   # checked before the plan, the prompt and any call (M10 watch-history)
             self.out(why)
             return 2
-        if opts.suite in PAID_ONLY and test_mode:
+        if opts.suite in PAID_ONLY and test_mode and not opts.probe:
             self.out(f"horizon: `{opts.suite}` makes paid calls and refuses to run in test mode")
             return 2
         prices = load_price_table(self.base.seed_dir)
-        plan = suite.plan(opts, prices, paid=not test_mode)
+        plan = suite.plan(opts, prices, paid=not test_mode or opts.probe)
+        if opts.probe:   # priced as a real run, but nothing is spent, asked or logged
+            plan = Plan(items=plan.items, estimate_usd=plan.estimate_usd, expected_s=plan.expected_s, paid=False)
+            self.probe_estimate = plan.estimate_usd
         cal = calendar_for(self.base.tz)
         now = self.now()
         self.out(f"plan: {opts.suite}, {len(plan.items)} item(s), estimate ${plan.estimate_usd:.5f}"
@@ -231,7 +268,7 @@ class Runner:
         if plan.paid and self.base.openrouter_key is None and _user_key(self.base) is None:
             self.out("horizon: no OpenRouter key (OPENROUTER_API_KEY in the repo's .env)")
             return 2
-        if not opts.yes:
+        if not opts.yes and not opts.probe:
             try:
                 ans = self.stdin("Run it? [y/N] ").strip().lower()
             except EOFError:   # no terminal (CI, a pipe): the answer is no
@@ -246,6 +283,8 @@ class Runner:
             max_usd = opts.max_usd
         elif plan.paid:
             max_usd = round(max(plan.estimate_usd * 1.5, 0.0001), 6)
+        elif opts.probe:
+            max_usd = 1.0   # the isolated copy's own cap; the deny transport and the store's miss send nothing
         else:
             max_usd = 1.0   # the in-process fake's prices: nothing real is spent; --max-usd still forces a cap
         (run_dir / "settings.local.json").write_text(json.dumps({"budget": {"dailyCapUsd": max_usd}}), encoding="utf-8")
@@ -259,7 +298,7 @@ class Runner:
                         + "\n")
         finish_run(self.runs_dir, run_id, paid=plan.paid)
         self.out(f"{opts.suite}: {result.status} | spent ${spent:.5f} | report {run_dir / 'report.md'}")
-        return 0 if result.status == "ok" else 1
+        return 0 if result.status in ("ok", "probe") else 1
 
     async def _execute(self, suite: Any, plan: Plan, opts: Options, run_dir: Path, max_usd: float,
                        test_mode: bool) -> tuple[Result, dict[str, str], float, str | None]:
@@ -271,11 +310,19 @@ class Runner:
         await rt.start()
         if test_mode:   # the in-process fake answers any key; a test-mode Config never holds a real one
             rt.keys.set_key("sk-or-test-eval-0001")
+        elif opts.probe:   # ports resolve as with a key; the deny transport sends nothing (D13)
+            rt.keys.set_key("sk-or-probe-0000")
         fingerprint = None
         if (EVALS_DIR / "canary.json").is_file():
             fingerprint = json.loads((EVALS_DIR / "canary.json").read_text(encoding="utf-8")).get("fingerprint")
         store = store_for(opts, self.data_dir, fingerprint, test_mode=test_mode)
+        if store is not None and opts.probe:
+            store.probe = True
         rt.gateway.store = store
+        if opts.against:
+            from horizon.evals.manifest import load_allowed
+
+            rt.gateway.allowed_bodies = load_allowed(opts.against)
         env = RunEnv(rt=rt, opts=opts, store=store, run_dir=run_dir, max_usd=max_usd)
         try:
             from horizon.gateway.errors import ProviderError
@@ -285,14 +332,40 @@ class Runner:
             except ProviderError as e:
                 if e.code in ("daily_budget_exceeded", "creation_budget_exceeded", "energy_exhausted"):
                     result = Result(status="incomplete", summary=[f"stopped: {e.code} (the run's cap ${max_usd})"])
+                elif opts.probe:   # a call the deny transport refused, uncaught by the suite: the probe still reports
+                    result = Result(summary=[f"the suite stopped at a refused call ({e.code}); the counts cover what "
+                                             "ran before it"])
                 else:
                     raise
             spent = await env.spent()
             self.store_hits = store.hits if store is not None else 0
+            if opts.probe:
+                self.last_probe = self._probe_result(opts, store, rt.probe_blocked)
+                result.status = "probe"
+                result.summary = [*self._probe_lines(self.last_probe), "", *result.summary]
             ports = rt.ai.resolved(key_set=rt.keys.status() == "set")
             return result, ports, spent, result.model
         finally:
             await rt.stop()
+
+    def _probe_result(self, opts: Options, store: ResponseStore | None, blocked: list[str]) -> ProbeResult:
+        misses = store.misses if store is not None else []
+        one_shot = opts.suite in ONE_SHOT
+        if one_shot:
+            usd = sum(float(m["usd"]) for m in misses)
+        else:   # a chained item's later requests follow its first miss, so a real run pays the whole estimate
+            usd = self.probe_estimate if misses or blocked else 0.0
+        note = "" if store is not None else "no store attached"
+        return ProbeResult(opts.suite, opts.profile, store.hits if store is not None else 0, len(misses), round(usd, 6),
+                           len(blocked), one_shot, note)
+
+    @staticmethod
+    def _probe_lines(p: ProbeResult) -> list[str]:
+        how = "exact (one request per item)" if p.one_shot else "the whole estimate (chained items)"
+        return [f"## Probe ({p.profile})", "",
+                f"- stored answers reused: {p.hits}; requests with no stored answer: {p.misses}; non-store requests "
+                f"refused: {p.blocked}",
+                f"- a real run would pay about ${p.would_pay_usd:.5f}, priced {how}. Nothing was sent or spent."]
 
     def _report(self, run_dir: Path, opts: Options, plan: Plan, result: Result, ports: dict[str, str], spent: float,
                 max_usd: float, model: str | None) -> None:

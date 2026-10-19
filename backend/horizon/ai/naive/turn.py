@@ -85,9 +85,10 @@ class NaiveTurnEngine:
         self._prefix: dict[tuple[str, str], str] = {}
 
     def prompt_version_for(self, ctx: TurnContext | None) -> str | None:
-        """The label of the bytes this turn sent (M9 D40's principle): a debate request is `naive-6` since M11 named
-        teammates apart from opponents (debate design D10); every other request keeps `naive-5`. M12 (rag D18): a
-        request carrying passages reads each as its section's centred slice: `naive-7` (`naive-8` in debate)."""
+        """The label of the bytes this turn sent (M9 D40's principle): a debate request is `naive-10` since M11 named
+        teammates apart from opponents (debate design D10); every other request is `naive-9`. M12 (rag D18): a
+        request carrying passages reads each as its section's centred slice: `naive-11` (`naive-12` in debate). M15
+        (D14) moved every label by 4 with the tag line."""
         if ctx is not None and ctx.knowledge:
             return PROMPT_VERSION_SLICE_DEBATE if ctx.session.mode == "debate" else PROMPT_VERSION_SLICE
         if ctx is not None and ctx.session.mode == "debate":

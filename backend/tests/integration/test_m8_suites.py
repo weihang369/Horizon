@@ -127,7 +127,8 @@ def test_suite_inputs_load_with_pinned_splits() -> None:
         first_fact = kinds.index("fact")
         assert 2 <= first_fact and max(i for i, k in enumerate(kinds) if k == "fact") <= 9   # turns 3–10
         assert min(i for i, k in enumerate(kinds) if k == "probe") >= len(kinds) - 20       # the last 20 turns
-    assert len(list((content.TRANSCRIPTS / "scripts").glob("*.json"))) == 4
+    scripts = [json.loads(p.read_text(encoding="utf-8")) for p in (content.TRANSCRIPTS / "scripts").glob("*.json")]
+    assert sum(not s.get("short") for s in scripts) == 4                  # + M15's 7 short ones (test_frozen_m15)
 
 
 def test_splits_never_change_from_the_committed_files() -> None:
@@ -191,3 +192,25 @@ async def test_drafter_suite_counts_a_draft_that_stays_broken(tmp_path: Path, mo
     assert await r.run(Options("drafter", limit=1, yes=True)) == 0
     rep = report(tmp_path, "drafter")
     assert "valid draft after C7's one retry: 0/1" in rep and "The draft is missing" in rep   # D33 closed the JSON
+
+
+# ── M15 (images-music D10, task 5.2): `transcript --short` ──
+async def test_transcript_short_probe_runs_on_the_fake_and_writes_nothing(tmp_path: Path) -> None:
+    before = sorted(p.name for p in (EVALS_DIR / "transcripts").glob("*.json"))
+    r, _ = runner(tmp_path)
+    assert await r.run(Options("transcript", short=True, probe=True, set="short_one_on_one_mei", limit=2,
+                               yes=True)) == 0
+    assert sorted(p.name for p in (EVALS_DIR / "transcripts").glob("*.json")) == before
+    assert r.last_probe is not None
+
+
+async def test_transcript_short_smoke_keeps_the_labels(tmp_path: Path) -> None:
+    r, _ = runner(tmp_path)
+    assert await r.run(Options("transcript", short=True, set="short_one_on_one_victor", limit=4, yes=True)) == 0
+    rep = report(tmp_path, "transcript")
+    assert "## Transcript short_one_on_one_victor: 4 turns" in rep and "NOT past a drop" not in rep
+
+
+async def test_plain_transcript_probe_is_still_refused(tmp_path: Path) -> None:
+    r, _ = runner(tmp_path)
+    assert await r.run(Options("transcript", probe=True, yes=True)) == 2

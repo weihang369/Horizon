@@ -352,6 +352,17 @@ def persona_text(profile: dict[str, Any]) -> str:
             f"Quirks: {'; '.join(style.get('quirks') or [])}. Sounds like: {examples}")
 
 
+def persona_facts(profile: dict[str, Any]) -> str:
+    """The stated facts `judge_persona_fact` reads (images-music D12): who the character is, not how they talk."""
+    head = ", ".join(str(x) for x in (profile.get("name"), profile.get("age"), profile.get("role")) if x)
+    parts = [f"{head}.", str(profile.get("backstory") or "")]
+    if profile.get("expertise"):
+        parts.append(f"Knows about: {', '.join(profile['expertise'])}.")
+    if profile.get("relationshipToUser"):
+        parts.append(f"To the user: {profile['relationshipToUser']}.")
+    return " ".join(p for p in parts if p.strip())
+
+
 # ── long ──
 class Long:
     name = "long"
@@ -430,6 +441,9 @@ class Long:
 
 
 # ── transcript ──
+LABELS = ("fact", "lang", "covered")     # a short script's line labels, kept on the turn (images-music D10)
+
+
 def load_transcript(path: Path) -> dict[str, Any]:
     """The loader's check (D31): a transcript marked long must have dropped at least once."""
     t: dict[str, Any] = json.loads(path.read_text(encoding="utf-8"))
@@ -443,6 +457,7 @@ class Transcript:
 
     def plan(self, opts: Options, prices: Any, *, paid: bool) -> Plan:
         scripts = [json.loads(p.read_text(encoding="utf-8")) for p in sorted((TRANSCRIPTS / "scripts").glob("*.json"))]
+        scripts = [s for s in scripts if bool(s.get("short")) == opts.short]   # M15: `--short` runs only the short 7
         if opts.set:
             scripts = [s for s in scripts if s["id"] == opts.set]
         if opts.limit:
@@ -463,11 +478,17 @@ class Transcript:
                 active = [s for s in sums if s["upto_seq"] < last]
                 cur = active[-1] if active else None
                 out_turns.append({"user": t["text"], "kind": t["kind"],
+                                  **{k: t[k] for k in LABELS if k in t and script.get("short")},
                                   "replies": [{"speaker": r["speaker"], "text": r["text"]} for r in t["replies"]],
                                   "summary_upto": cur["upto_seq"] if cur else None, "summary": cur["text"] if cur else None})
             doc = {"schemaVersion": 1, "id": script["id"], "mode": script["mode"], "world": script["world"],
-                   "cast": script["cast"], "long": True, "language": script["language"], "turns": out_turns}
-            if not env.opts.limit:   # smoke never writes a committed file
+                   "cast": script["cast"], "long": not script.get("short"), "language": script["language"],
+                   "turns": out_turns}
+            if script.get("short"):   # the start-of-session memory list (B3); a short run has no pause
+                from horizon.evals.frozen import seed_memories
+
+                doc["memories"] = seed_memories(script["cast"])
+            if not env.opts.limit and not env.opts.probe:   # smoke and the probe never write a committed file
                 path = TRANSCRIPTS / f"{script['id']}.json"
                 path.write_text(json.dumps(doc, ensure_ascii=False, indent=1) + "\n", encoding="utf-8", newline="\n")
             short = len(out_turns) < len(script["lines"])
@@ -475,7 +496,7 @@ class Transcript:
                 res.status = "incomplete"
             res.rows.append({"script": script["id"], "turns": len(out_turns), "drops": len(sums)})
             res.summary.append(f"## Transcript {script['id']}: {len(out_turns)} turns, {len(sums)} drop(s)"
-                               + ("" if sums else " (NOT past a drop yet)")
+                               + ("" if sums or script.get("short") else " (NOT past a drop yet)")
                                + (f" (stopped at the cap after {len(out_turns)} of {len(script['lines'])} lines)"
                                   if short else ""))
             if short:

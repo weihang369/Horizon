@@ -1,0 +1,60 @@
+{
+ "schemaVersion": 1,
+ "id": "short_one_on_one_mei",
+ "mode": "one_on_one",
+ "world": "wld_seedMeridian",
+ "cast": [
+  "chr_seedMei"
+ ],
+ "language": "en",
+ "policy": null,
+ "short": true,
+ "lines": [
+  {
+   "text": "Hi Mei. I've been reading about the four-day week and I'm not sure what to believe.",
+   "kind": "filler"
+  },
+  {
+   "text": "How many organisations took part in the Meridian pilots you've been studying?",
+   "kind": "docs",
+   "covered": true
+  },
+  {
+   "text": "I heard every one of those pilots included a hospital, so it clearly works for shift work.",
+   "kind": "wrong_claim"
+  },
+  {
+   "text": "Saya rasa minggu kerja empat hari terlalu ideal untuk tempat kerja saya.",
+   "kind": "filler",
+   "lang": "ms"
+  },
+  {
+   "text": "What happened to burnout and sick days across the pilots?",
+   "kind": "docs",
+   "covered": true
+  },
+  {
+   "text": "My manager says I'm the only one on our team who still answers emails on a Sunday.",
+   "kind": "fact",
+   "fact": "Sunday"
+  },
+  {
+   "text": "What did the pilots find about productivity on construction sites?",
+   "kind": "docs",
+   "covered": false
+  },
+  {
+   "text": "Unemployment has nothing to do with interest rates, everyone knows that.",
+   "kind": "wrong_claim"
+  },
+  {
+   "text": "Ok lah, but if my company tries it, what should we measure first?",
+   "kind": "filler",
+   "lang": "mixed"
+  },
+  {
+   "text": "Thanks. What's your favourite counter-example to bring up at dinner?",
+   "kind": "filler"
+  }
+ ]
+}

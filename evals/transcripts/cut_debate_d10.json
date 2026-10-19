@@ -1,0 +1,287 @@
+{
+ "schemaVersion": 1,
+ "id": "cut_debate_d10",
+ "mode": "debate",
+ "world": "wld_seedSunnyHollow",
+ "cast": [
+  "chr_evalAiko",
+  "chr_seedTakeshi",
+  "chr_evalBram",
+  "chr_seedRin",
+  "chr_seedHana"
+ ],
+ "language": "en",
+ "source": {
+  "history": "debates/d10.json",
+  "id": "d10",
+  "from_seq": 5,
+  "to_seq": 18
+ },
+ "motion": "This house would ban video games for under-twelves on school nights",
+ "format": "two_sided",
+ "roundsPreset": "standard",
+ "phases": [
+  "opening",
+  "rebuttal",
+  "closing"
+ ],
+ "sides": {
+  "prop": [
+   "chr_evalAiko",
+   "chr_seedTakeshi",
+   "chr_evalBram"
+  ],
+  "opp": [
+   "chr_seedRin",
+   "chr_seedHana"
+  ]
+ },
+ "memories": {
+  "chr_evalAiko": [],
+  "chr_seedTakeshi": [
+   {
+    "id": "mem_seedTakeshi1",
+    "text": "Took Rin fishing on a rainy Sunday; first fish named \"Patch Notes\""
+   }
+  ],
+  "chr_evalBram": [],
+  "chr_seedRin": [],
+  "chr_seedHana": [
+   {
+    "id": "mem_seedHana1",
+    "text": "Kai's favourite cake is yuzu"
+   },
+   {
+    "id": "mem_seedHana2",
+    "text": "Sold Kai's bouquet to a nervous proposer"
+   }
+  ]
+ },
+ "lines": [
+  {
+   "seq": 2,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_evalAiko",
+   "name": "Aiko Fujita",
+   "text": "Let me tell you who lives there. A boy, ten, on the Wakahara side of the hill, whose mother works nights at the care home and whose father is on the rigs. He plays until two in the morning, sleeps through the bus, and his teacher tells me he's \"drifting.\" I'm not against games. I'm against what fills the gap when no one is home to close it. On school nights, under twelve, that gap needs a rule, not a hope. His mother can't enforce bedtime from across town at 3 a.m. She can enforce a console that isn't switched on. That isn't cruelty to children; it's a handrail on a steep stair. Health isn't a statistic when you've held the hand of a child who fell down it.",
+   "emotion": "thinking",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 3,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedRin",
+   "name": "Rin Morisaki",
+   "text": "ok so a blanket ban on school nights for under-twelves. my sister has the data on this, but here's my design-brain take: games are just a medium. ban the medium and you ban the good with the bad. most kids' actual problems are school-night sleep and homework habits, and you don't fix a habit by making the thing a forbidden fruit you can only chase on weekends. that's how you get binge behavior, which is worse. also, parents already have the off switch. the house can hold the remote and set limits per kid, because age twelve means nothing. fight me, but the real fix is household rules and teaching kids to self-regulate, not a law that pretends one number fits everybody.",
+   "emotion": "thinking",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 4,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_seedTakeshi",
+   "name": "Takeshi Morisaki",
+   "text": "Right on schedule. I drove the coastal line thirty years, Kai, and I learned one thing: you don't let a kid stay on the platform during a storm. School nights are the tracks, and video games are the storm. Now, I'm not saying ban the hobby — I fish every Sunday, rain or shine, so I know a good thing when I see it. But midnight runs with no brakes? That's how you derail a young mind. Sleep, homework, dinner with the family — those are the rails. Games can wait for the weekend, same as my bass. So yes, ban them under twelve on school nights. Why? Because a tired kid is like a caboose full of grumpy cats — nobody wants that train arriving at the station.",
+   "emotion": "neutral",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 5,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedHana",
+   "name": "Hana Morisaki",
+   "text": "Oh, Aiko's going for the heart straightaway, and honestly, I get it. But Kai and I have been over this a dozen times, so here we go. Our position is simple: banning video games for under-twelves on school nights punishes the many for the choices of a few, and it hands parents a rule instead of a relationship. That boy on the hill doesn't need a console locked away; he needs someone to close the gap at home, and a blanket ban won't do that, it'll just make gaming the forbidden fruit and push it into sneaky hours. Games are where kids learn to fail safely, collaborate, and unwind, the same way my family unwinds over dinner. And like Grandma wrote, even leftovers become tomorrow's onigiri if you handle them gently [2]. Give families tools, not prohibitions. Probably.",
+   "emotion": "thinking",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 6,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_evalBram",
+   "name": "Bram de Vries",
+   "text": "I'll grant you the boy, Aiko. I've got a farmhand whose lad is the same story, and I've seen what a tired ten-year-old looks like at six in the morning. But let me talk plain about this motion, because I think it's the wrong tool aimed at the wrong ditch. You don't fix a broken fence by banning the whole field. A console in a house with a parent coming home at three is a symptom, not the cause. My neighbour's girl, same age, plays an hour after her chores and does fine. Now you tell me what it costs a small family to enforce a rule a government decided in town. It's the parents who pay it, in arguments and guilt, while the real problem goes unaddressed. So I'm with the proposition on the principle that school nights need protecting, but I want to hear why a blanket ban and not a bedtime the household actually keeps.",
+   "emotion": "neutral",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 8,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_evalAiko",
+   "name": "Aiko Fujita",
+   "text": "Let me tell you who lives there. Mrs. Okada, eighty-one, whose grandson visits on Tuesdays with a handheld and a bad grade, and she tells me the machine is the only thing that stays quiet with him. I hear you, Rin — but a handrail isn't forbidden fruit. It's the same as the seatbelt I buckle without a tantrum. And Bram, you're right the fence is broken. So we fix two fences: one at home, one in law. Because the parents who most need the bedtime are the ones too exhausted to hold it, and a rule that stands behind them is lighter, not heavier, than a guilt they carry alone. Age twelve is imperfect, yes. So is every speed limit. We don't abolish them because some drivers are careful. Health isn't a statistic when you've held the hand of a child who couldn't stay awake in class.",
+   "emotion": "thinking",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 9,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedRin",
+   "name": "Rin Morisaki",
+   "text": "Surprised. Aiko, speed limits apply to everyone equally, but a ban assumes every under-twelve is the same kid, same house, same sleep schedule. My sister and I grew up on games and turned out functional-ish. You keep saying \"handrail,\" but you're describing a padlocked door. Bram's right, the fence is broken, so fix the fence, don't bulldoze the field. Want the real fix? Default parental controls, sleep-mode consoles after nine, schools teaching media literacy. That's a handrail. A blanket ban is just a sign that reads \"we gave up.\"",
+   "emotion": "sad",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 10,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_seedTakeshi",
+   "name": "Takeshi Morisaki",
+   "text": "Now hold your horses, Rin. You're telling me a speed limit and a padlocked door are the same? No, ma'am, they are not, and you know it. A speed limit is on the books for every driver, but the officer still uses judgment — and so does the parent. My point isn't that every kid is identical; it's that when the engine's running at midnight and nobody's at the switch, somebody has to throw the brake. Right on schedule, that's the law's job. Aiko's right: the parents who need the rail most can't hold it alone. So I'll take the ban, and I'll take your parental controls too — belt and suspenders, like a good conductor. Why did the train refuse to play video games? Because it had enough on its plate. Two rails, one track, and a kid who shows up rested. That's the whole crossing.",
+   "emotion": "angry",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 11,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedHana",
+   "name": "Hana Morisaki",
+   "text": "Aiko, you went and got Mrs. Okada's grandson in on this! But listen, a seatbelt clicks in one second and protects everyone equally, while a ban lands on every under-twelve like it's one kid with one bedtime, and it just isn't!! Look, I run a shop, I know about individual care, some flowers need shade and some need full sun, right? And Bram, you asked the exact question I wanted to answer, so thank you, because the real fix isn't a law, it's default sleep-mode controls after nine, console timers built in at the factory, and parents who get to decide per child. Here's my worry, though, and it's the same worry as that boy on the hill: if we make games forbidden fruit on school nights, kids just chase them harder, sneakier, worse, like bingeing on cake after a diet. My family's rule was never a padlock, it was a plate shared at seven [3]. Give the exhausted parent a handrail, yes, but make it a rail they hold, not a door the law locks from town. Honestly, I just want to see each other when we eat. Probably.",
+   "emotion": "thinking",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 12,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_evalBram",
+   "name": "Bram de Vries",
+   "text": "Right, let me put this straight, because I've been chewing on it since round one. Rin, Hana, you both keep saying \"fix the fence,\" and I agree the fence is broken. But you're telling me the household rule is the handrail, and I'm telling you I've watched that handrail snap for the families with no one home at bedtime. Aiko's speed limit comparison lands with me more than yours does, because a limit stands behind the tired parent instead of asking them to be a hero at three in the morning. My worry isn't the careful families, mine included. My worry is the boy whose mother carries enough guilt already; a rule behind her is lighter, not heavier. So I'll take the proposition on school nights, with parental controls alongside it, not instead of it. Belt and suspenders, like Takeshi says. Cows don't care about your timetable, but a tired kid can't set his own. I'm voting for.",
+   "emotion": "thinking",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 14,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_evalAiko",
+   "name": "Aiko Fujita",
+   "text": "Let me tell you who lives there. Not a number, a boy. Mrs. Okada's grandson, who told me last winter he's tired all the time, and couldn't say why. School nights are where childhood health gets built or spent, and under twelve the child cannot hold that rail alone. So we stand behind the parent: not a padlock, a speed limit — judged, imperfect, real. You've argued for controls, sleep-mode, media literacy. I want those too. I want them, and the floor beneath them. Because a family given tools with no rule beneath still carries the guilt alone at three in the morning. Health isn't a statistic when you've held the hand of a child who fell through the gap. Tonight, on school nights, I'm still holding it.",
+   "emotion": "surprised",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 15,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedRin",
+   "name": "Rin Morisaki",
+   "text": "aiko, i get the boy, i do. but here's the thing about defaults: nobody has to argue for a floor that's already built in. mandatory sleep-mode after nine, factory parental timers, schools teaching kids how media works on them — that's a handrail every tired parent gets for free, no guilt, no police, no three a.m. enforcement fight. your ban says one number fits every kid, and it doesn't. some ten-year-olds raid with their dad and sleep fine, some need the screen off at seven, and only the house knows which. laws can't see houses. i'd rather build the rail into the machine than lock the door from town. so vote no — not because games are sacred, but because better floors beat blanket bans. probably.",
+   "emotion": "thinking",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 16,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_seedTakeshi",
+   "name": "Takeshi Morisaki",
+   "text": "Right on schedule, Kai, closing time. Aiko said it plain: a boy, tired all the time, can't tell you why. That's the picture I keep in the cab, and no factory timer reaches him at three in the morning when his mother's still at the care home. You all keep telling me to build the rail into the machine — fine, build it. But a rail the tired parent still has to hold is a rail that snaps on the nights it matters most. The law isn't a padlock; it's the switchman standing behind them, throwing the brake when nobody's home. I drove the coast thirty years and never once trusted a signal that only worked when the driver felt like it. So vote for the motion. Why? Because a kid who sleeps through the bus is a caboose with a flat wheel — and no train runs right on a flat wheel. That's the whole crossing.",
+   "emotion": "neutral",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 17,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedHana",
+   "name": "Hana Morisaki",
+   "text": "Sad. Okay, closing this properly, because Aiko and Takeshi keep painting that tired boy, and I keep thinking about him too, I really do. But here's the thing my grandmother knew: you don't heal a wilting plant by banning the whole garden, you change the light it stands in [1]. Bram, you said the household rail snaps for families with no one home, and that broke my heart a little, but a law doesn't sit in that kitchen at three a.m. either, it just hands a worried mother a guilt she now breaks on paper. The factories are already building sleep-mode, the schools can teach media literacy, and parents can set timers per child, per night, because kids aren't seed packets. So vote no, not because games are sacred, but because the real fix sits closer to the people who love those kids. And Kai, I saved you the last yuzu slice. Probably.",
+   "emotion": "angry",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 18,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_evalBram",
+   "name": "Bram de Vries",
+   "text": "Decided in town, paid for on the farm — that's what I keep coming back to, and I've heard both sides now. Aiko and Takeshi, you gave me the boy who can't say why he's tired, and that picture stays with me. But Hana, you asked the question I couldn't answer from the barn: who actually holds the rail at three in the morning? A law doesn't sit in that kitchen either, and a mother of three now breaks a rule on paper as well as in her heart. So here's where I land, and I'll be plain: I want the floor built into the machine, factory sleep-mode and timers, so the tired parent gets it free and doesn't have to fight for it. That, not a ban, is the handrail. I respect the work you've all done. Against the motion.",
+   "emotion": "neutral",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  }
+ ]
+}

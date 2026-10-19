@@ -95,7 +95,7 @@ The song generator SHALL turn a brief into a theme song. The brief comes from th
 
 #### Scenario: No name in the song prompt
 - **WHEN** a song job runs for "Taylor" with the stored title "Taylor's Theme"
-- **THEN** the provider prompt contains neither "Taylor" nor the title, ends with the original-piece line followed by "No vocals, no lyrics. A 30-second piece that loops cleanly.", and the stored theme keeps its title
+- **THEN** the provider prompt contains neither "Taylor" nor the title, ends with the original-piece line followed by "No vocals, no lyrics. A 30-second piece that loops cleanly.", the song's provenance prompt equals the text sent, and the procedural theme is still built with the title
 
 #### Scenario: The brief check reads what is sent
 - **WHEN** an `agent` song task checks its brief before the music call
@@ -138,8 +138,8 @@ Every port a reply uses SHALL be resolved from the key status read once when the
 - **THEN** that reply stays scripted, and the next turn resolves to `agent`
 
 ### Requirement: The naive tag line allows no notes
-The `naive` reply prompt (`naive-6`) SHALL tell the model to write the emotion tag on its own, like `<e:thinking>`, with nothing inside it and no closing tag. This requirement applies only if the user chooses the fix (design D14). Otherwise `naive-5` stays and this requirement is dropped before archive.
+The `naive` reply prompt SHALL tell the model to write the emotion tag on its own, like `<e:thinking>`, with nothing inside it and no closing tag. The line reaches every `naive` request, so each label moves by 4: `naive-9` (a reply), `naive-10` (a debate request), `naive-11` and `naive-12` (the same with sliced passages). The user chose the fix (design D14).
 
 #### Scenario: The tag line
 - **WHEN** a `naive` reply request is built
-- **THEN** its system message says to write only the tag itself with nothing inside it and no closing tag, and its prompt version is `naive-6`
+- **THEN** its system message says to write only the tag itself with nothing inside it and no closing tag, and its prompt version is `naive-9` (`naive-10` in a debate)

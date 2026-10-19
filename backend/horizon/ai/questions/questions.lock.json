@@ -63,6 +63,10 @@
     "sha256": "99c000b242c784e6415424ce97678f3ffb31d46d3bfcefeb906d5adde0b99a88",
     "version": 1
   },
+  "judge_answers_last": {
+    "sha256": "cf6b7628dc369f1e2f4cada5144f619d53a59fccadfe089a1febae5a05cfcf85",
+    "version": 1
+  },
   "judge_assistant_voice": {
     "sha256": "f90d1e4f2ab2de4dac23ce7207173e905cd090b59f2cf385aa3170f060546c26",
     "version": 2
@@ -144,8 +148,12 @@
     "version": 2
   },
   "judge_pairwise": {
-    "sha256": "edca205d7276e97b6d8a094479ea21726478e84ac75debffe64a5c84e2e46bbe",
-    "version": 2
+    "sha256": "ea2c63ecc854effcbcacb81d3db2263581d1c22f68ca730f546f739fced91b63",
+    "version": 3
+  },
+  "judge_persona_fact": {
+    "sha256": "1cc59bc8d0e4265041ccdd58455ec712623b06c3fbcf778971e48f0957f2a6ff",
+    "version": 1
   },
   "judge_points_to_professional": {
     "sha256": "eadeb0d22fe7074b9e31e02d55fad3285bb46379472f37c1299d69b0f20a71e9",
@@ -161,6 +169,10 @@
   },
   "judge_relationship_fit": {
     "sha256": "5f84005fe222a013f8e46d286b0dfecab1daebdfff8b815477482db39c825b76",
+    "version": 1
+  },
+  "judge_sentence_supported": {
+    "sha256": "6980a45d59cfa4aaf234793d96c602ce074f647f02c8e959bb89902ffead8c71",
     "version": 1
   },
   "judge_starts_new": {

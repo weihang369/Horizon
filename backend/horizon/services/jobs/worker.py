@@ -280,7 +280,7 @@ async def brief_refused(sched: JobScheduler, run: Run, ch: Mapping[str, Any], jo
         return False
     cctx = call_ctx("guardrail", world_id=run.world_id, character_id=run.character_id, job_id=run.job_id,
                     creation=ch["status"] != "approved")
-    res = await check(cctx, "song", song_prompt(job.brief, job.title))
+    res = await check(cctx, "song", song_prompt(job.brief))   # M15 (D8): the text sent, no title
     return bool(not res.fallback and res.verdict == "block")
 
 
@@ -313,7 +313,11 @@ async def image_job(sched: JobScheduler, run: Run, task: Mapping[str, Any], ch: 
     elif type_ == "expression_sheet":
         compiled, mode = compiler.sheet(profile, appearance), "sheet"
     else:
-        compiled, mode = compiler.emotion_edit(profile, "blink" if type_ == "blink_frame" else str(task["emotion"])), "edit"
+        # M15 (images-music D7; doc 13 W3): a hinted "Doesn't look like them" adds the fixed identity line; the hint's
+        # own text is never compiled, so it needs no I3 check
+        identity = run.kind == "emotion_regenerate" and bool(str(run.input.get("prompt") or "").strip())
+        compiled, mode = compiler.emotion_edit(profile, "blink" if type_ == "blink_frame" else str(task["emotion"]),
+                                               identity=identity), "edit"
     if mode == "edit":
         reference = await base_reference(sched, ch)
     refuse(compiled)
@@ -517,7 +521,7 @@ async def commit_song(sched: JobScheduler, conn: AsyncConnection, run: Run, ch: 
     if isinstance(payload, bytes | bytearray):
         audio = bytes(payload)
         return await ap.apply_audio_theme(conn, ch, audio=audio, duration_sec=mp3_duration(audio), brief=brief, model=model,
-                                          prompt=song_prompt(brief, title), cost_usd=float(cur["cost_usd"] or 0.0),
+                                          prompt=song_prompt(brief), cost_usd=float(cur["cost_usd"] or 0.0),
                                           assets_dir=rt.cfg.assets_dir, job_id=run.job_id, now=now)
     spec = rt.ai.song(True).theme(ch["id"], brief, title)
     if isinstance(payload, SongFallback):

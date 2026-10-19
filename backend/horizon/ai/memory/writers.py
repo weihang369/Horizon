@@ -139,7 +139,10 @@ class NaiveMemoryWriter(_Base):
     name = "naive"
 
     async def on_stretch(self, stretch: Stretch, ctx: Any) -> WriterResult:
-        out = await self._rewrite(stretch, ctx)
+        return await self.apply(stretch, ctx, await self._rewrite(stretch, ctx))
+
+    async def apply(self, stretch: Stretch, ctx: Any, out: CallOutcome) -> WriterResult:
+        """The ops from the rewrite call's outcome (M15: the memory suite's `naive` arm scores both, D14)."""
         if out.failed:
             return WriterResult(log=out.log, failed=True)
         knobs = _knobs(ctx)

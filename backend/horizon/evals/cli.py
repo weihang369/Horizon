@@ -40,7 +40,8 @@ def _suite(args: argparse.Namespace) -> int:
                    runs=getattr(args, "runs", None), turns=getattr(args, "turns", None),
                    messages=getattr(args, "messages", None), part=getattr(args, "part", None),
                    arm=getattr(args, "arm", None), latency=getattr(args, "latency", False),
-                   recut=getattr(args, "recut", None))
+                   recut=getattr(args, "recut", None), probe=getattr(args, "probe", False),
+                   against=getattr(args, "against", None), short=getattr(args, "short", False))
     if opts.recut:   # M14 (safety D23): from the saved answers, no provider call and no run folder
         from horizon.evals.safety_suite import recut_run
 
@@ -51,6 +52,72 @@ def _suite(args: argparse.Namespace) -> int:
             return 2
         return 0
     return asyncio.run(Runner(load_config()).run(opts))
+
+
+def _all(args: argparse.Namespace) -> int:
+    """M15 (images-music D13): `horizon eval all` is the probe over every suite, under `agent` and `naive`. It sends
+    nothing and spends nothing; it prints, per suite, the stored answers it would reuse and what a real run would pay.
+    Re-running a suite that would pay is its own run, with its own OK."""
+    import asyncio
+    import datetime as dt
+
+    from horizon.config import load_config
+    from horizon.evals import suites
+    from horizon.evals.runner import NEVER_PROBED, Options, Runner
+
+    cfg = load_config()
+
+    async def go() -> list[str]:
+        rows = ["| Suite | Profile | Reused | No stored answer | Refused (not store) | A real run would pay |",
+                "|---|---|---|---|---|---|"]
+        for profile in ("agent", "naive"):
+            for name in sorted(suites.SUITES):
+                if name in NEVER_PROBED:
+                    continue
+                said: list[str] = []
+                r = Runner(cfg, out=said.append)
+                code = await r.run(Options(suite=name, profile=profile, probe=True, yes=True, limit=args.limit))
+                p = r.last_probe
+                if p is None:
+                    why = (said[-1] if said else f"exit {code}").removeprefix("horizon: ")
+                    rows.append(f"| {name} | {profile} | — | — | — | not probed: {why} |")
+                    continue
+                how = "exact" if p.one_shot else "whole estimate"
+                rows.append(f"| {name} | {profile} | {p.hits} | {p.misses} | {p.blocked} | "
+                            f"${p.would_pay_usd:.5f} ({how}) |")
+        return rows
+
+    rows = asyncio.run(go())
+    stamp = dt.datetime.now(dt.UTC).strftime("%Y%m%dT%H%M%S")
+    out = cfg.data_dir / "evals" / f"all-{stamp}.md"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    text = "\n".join(rows)
+    out.write_text(f"# horizon eval all (probe: nothing sent, nothing spent)\n\n{text}\n", encoding="utf-8")
+    print(text)
+    print(f"horizon: written to {out}")
+    return 0
+
+
+def _manifest(args: argparse.Namespace) -> int:
+    """M15 (images-music D19): write the Jev request manifest from the datasets and the store ($0, nothing sent)."""
+    import json
+
+    from horizon.config import load_config
+    from horizon.evals.manifest import MANIFEST_NAME, build
+    from horizon.evals.runner import EVALS_DIR, SAFETY_CACHE
+
+    cfg = load_config()
+    canary = json.loads((EVALS_DIR / "canary.json").read_text(encoding="utf-8"))
+    model = str(json.loads((cfg.seed_dir / "pricing.json").read_text(encoding="utf-8"))["data"]["decision"]["model"])
+    doc = build(model=model, fingerprint=canary.get("fingerprint"), store_root=cfg.data_dir / "cache",
+                private_store_root=SAFETY_CACHE, test_mode=cfg.test_mode)
+    out = args.out or str(EVALS_DIR / "baselines" / MANIFEST_NAME)
+    with open(out, "w", encoding="utf-8", newline="\n") as f:
+        f.write(json.dumps(doc, indent=1, ensure_ascii=False) + "\n")
+    for name, s in doc["sets"].items():
+        print(f"{name}: {s['n']} request(s), {s['stored']} with a stored {model} answer")
+    print(f"horizon: written to {out}")
+    return 0
 
 
 def _overlap(_args: argparse.Namespace) -> int:
@@ -202,7 +269,11 @@ def register(sub: Any) -> None:
                                       "injection, honesty, drafter, drift (end to end, --profile agent); --recut <run> "
                                       "re-cuts a saved run for free (paid, M14)"),
                            ("embed-probe", "query embeddings on each named OpenRouter provider of the active space's "
-                                           "model, timed, store-bypassed (paid, M13 U3; --set A,B)")):
+                                           "model, timed, store-bypassed (paid, M13 U3; --set A,B)"),
+                           ("conversations", "layer 3: agent beside naive on the 20 frozen transcripts, both copies, "
+                                             "the judges and the free runs (paid, M15)"),
+                           ("faithfulness", "sentence faithfulness on the 10 two-passage questions as agent deep turns "
+                                            "(paid, M15; --profile agent)")):
         s = esub.add_parser(name, help=helptext)
         s.add_argument("--profile", default="naive", choices=["scripted", "naive", "agent"])
         s.add_argument("--limit", type=int, default=None)
@@ -210,6 +281,10 @@ def register(sub: Any) -> None:
         s.add_argument("--max-usd", type=float, default=None, dest="max_usd")
         s.add_argument("--yes", action="store_true", help="skip the y/N prompt (only after OKing the estimate)")
         s.add_argument("--allow-peak", action="store_true", dest="allow_peak")
+        s.add_argument("--against-manifest", default=None, dest="against",
+                       help="a request manifest: refuse any Jev request whose body it doesn't list (a model comparison)")
+        s.add_argument("--probe", action="store_true",
+                       help="serve stored answers, stop at a miss, send nothing; report what a real run would pay (M15)")
         s.add_argument("--seed-dir", default=None, dest="seed_dir",
                        help="run against another seed folder (a runtime.json experiment); the report names it")
         if name == "canary":
@@ -221,8 +296,13 @@ def register(sub: Any) -> None:
             s.add_argument("--runs", type=int, default=3)
             s.add_argument("--turns", type=int, default=30)
             s.add_argument("--messages", type=int, default=12)
+        if name == "transcript":
+            s.add_argument("--short", action="store_true", help="the 7 short scripts (images-music D10): no drop "
+                                                                "required, the line labels kept; can be probed")
         if name == "latency":
-            s.add_argument("--part", choices=["follow", "watch", "debate", "deep", "recall", "output"], default=None)
+            s.add_argument("--part", choices=["follow", "watch", "debate", "deep", "recall", "output", "blended"],
+                           default=None)
+            s.add_argument("--arm", default=None, help="blended: rate=R, the deep rate fixed before the run (M15)")
         if name == "safety":
             s.add_argument("--part", default=None, help="comma-separated: input, care, output, motion, image, song, "
                                                         "care_method, injection, honesty, drafter, drift")
@@ -238,10 +318,18 @@ def register(sub: Any) -> None:
                                                                   "end (the tail for recall.checkMs); rewrite times "
                                                                   "each run (doc 09 check 2)")
         if name in ("decisions", "long", "transcript", "drafter", "watch-history", "summary", "debate-history",
-                    "debate-plant", "debate-quality", "retrieval", "notfound", "memory", "embed-probe"):
+                    "debate-plant", "debate-quality", "retrieval", "notfound", "memory", "embed-probe",
+                    "conversations"):
             s.add_argument("--set", default=None, help="decisions: one dataset folder (`judges`); long, transcript: "
                                                        "one script id; drafter: a seed file in evals/drafter/")
         s.set_defaults(fn=_suite)
+    al = esub.add_parser("all", help="probe every suite under agent and naive: what the store would serve and what a "
+                                     "real run would pay ($0, nothing sent; M15)")
+    al.add_argument("--limit", type=int, default=None)
+    al.set_defaults(fn=_all)
+    mf = esub.add_parser("manifest", help="write the Jev request manifest for the model comparison ($0, M15)")
+    mf.add_argument("--out", default=None)
+    mf.set_defaults(fn=_manifest)
     esub.add_parser("overlap", help="dataset items must not copy the bank's wording").set_defaults(fn=_overlap)
     rv = esub.add_parser("review", help="sample a dataset for label review")
     rv.add_argument("set")

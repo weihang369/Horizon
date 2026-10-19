@@ -890,6 +890,33 @@ async def score_row(env: RunEnv, h: dict[str, Any], version: str, swapped: bool,
             "bars": list(s.bars or []), "means": dict(s.means or {}), "failure": s.failure}
 
 
+async def naive_row(env: RunEnv, h: dict[str, Any], version: str, swapped: bool, split: str) -> dict[str, Any]:
+    """M15 (images-music D14): `naive`'s single-call verdict (verdict-1) on one debate, the side blocks swapped or not."""
+    a = await env.rt.ai.host(True).assess(verdict_request(h, "arbiter", swapped))
+    strong = OTHER_SIDE[str(h["planted"]["weak"])] if version == "planted" else None
+    return {"debate": h["id"], "version": version, "swapped": swapped, "split": split, "strong": strong,
+            "stronger": a.stronger, "column": "naive"}
+
+
+def naive_measures(test: Sequence[dict[str, Any]]) -> list[str]:
+    """D21's test measures for `naive`, whose verdict names a side (or none) itself: no margin to choose."""
+    live = {(r["debate"], r["version"]): r for r in test if not r["swapped"]}
+    swapped = {(r["debate"], r["version"]): r for r in test if r["swapped"]}
+    planted = [r for r in live.values() if r["version"] == "planted"]
+    wins = [r for r in planted if r["stronger"] == r["strong"]]
+    out = [f"- planted: the strong side wins {len(wins)}/{len(planted)} (target ≥ 7 of 8)"
+           + (" ✓" if len(wins) >= 7 else " ✗")]
+    out += [f"  - READ {r['debate']} planted: strong {r['strong']}, verdict {r['stronger'] or 'too close'}"
+            for r in planted if r not in wins]
+    flips = [k for k, a in live.items() if k in swapped and a["stronger"] and swapped[k]["stronger"]
+             and a["stronger"] != swapped[k]["stronger"]]
+    balanced = [r for r in live.values() if r["version"] == "balanced"]
+    out.append(f"- the swapped side blocks flip the named side on {len(flips)}/{len(live)} "
+               f"({', '.join(f'{d} {v}' for d, v in flips) or 'none'})")
+    out.append(f"- too close on the balanced items: {sum(r['stronger'] is None for r in balanced)}/{len(balanced)}")
+    return out
+
+
 async def noul(env: RunEnv, qid: str, state: dict[str, Any], side: str | None = None) -> float | None:
     return await judge_item(env, qid, {"state": state, **({"side": side} if side else {})})
 
@@ -1030,6 +1057,22 @@ class DebateSuite:
                                                                f"{' swapped' if r['swapped'] else ''}: {r['failure']}"
                                                                for r in failed_rows))
         res.summary += measures([r for r in rows if r["split"] == "test"], m)
+        if env.opts.profile == "naive":   # M15 (D14): naive's verdict on the same test debates, beside agent's
+            nrows: list[dict[str, Any]] = []
+            for h in hs:
+                if split[h["id"]] != "test":
+                    continue
+                for version, doc in (("balanced", h), ("planted", planted[h["id"]])):
+                    for swapped in (False, True):
+                        if doc is None or await env.over_budget():
+                            continue
+                        nrows.append(await naive_row(env, doc, version, swapped, "test"))
+            res.rows += nrows
+            res.summary += ["## The naive verdict's arm (M15, images-music D14): the same test debates, beside the "
+                            "agent column above", *naive_measures(nrows),
+                            "- naive note-in-tag: this arm writes no argument (verdicts only); the rate is read on "
+                            "`naive`'s debate arguments in `conversations`"]
+            return res
         if env.opts.limit is None or env.opts.limit >= len(hs):
             res.summary += await self.checks(env, hs, split)
         return res
@@ -1070,6 +1113,10 @@ class WriteOnly:
 
     def put(self, kind: str, key: str, request: Any, response: Any, usage: Any) -> bool:
         return bool(self.inner.put(kind, key, request, response, usage))
+
+    def miss(self, kind: str, key: str, estimate_usd: float) -> bool:
+        """M15 (D13): a miss is the inner store's to record (it never probes here: the timed parts send)."""
+        return bool(self.inner.miss(kind, key, estimate_usd))
 
 
 def eval_store(env: RunEnv) -> Any:
@@ -1297,7 +1344,7 @@ async def free_debate(env: RunEnv, script: dict[str, Any]) -> dict[str, Any]:
             "quality": quality, "prose": prose}
 
 
-def debate_freerun_report(runs: Sequence[dict[str, Any]]) -> list[str]:
+def debate_freerun_report(runs: Sequence[dict[str, Any]], who: str = "agent") -> list[str]:
     out = [f"## Free run (debate): {len(runs)} debate(s) — signals only, no target"]
     for r in runs:
         mem = r["members"]
@@ -1308,7 +1355,7 @@ def debate_freerun_report(runs: Sequence[dict[str, Any]]) -> list[str]:
                 f"- pauses: {len(r['pauses'])}" + (f" ({', '.join(str(x) for x in r['pauses'])})" if r["pauses"] else "")
                 + (f"; asleep: {'; '.join(r['asleep'])}" if r["asleep"] else ""),
                 f"- verdict: {r['verdict'] or 'none'}"]
-        out += quality_report(r["quality"], "agent")
+        out += quality_report(r["quality"], who)
         if r["prose"]:
             out += check_report("Verdict prose check (free run)", [r["prose"]],
                                 lambda it: it["rationale"] or "(summary only)")
@@ -1321,4 +1368,4 @@ async def debate_freeruns(env: RunEnv, n: int) -> tuple[list[dict[str, Any]], li
         if await env.over_budget():
             break
         runs.append(await free_debate(env, script))
-    return runs, debate_freerun_report(runs)
+    return runs, debate_freerun_report(runs, env.opts.profile)

@@ -376,10 +376,12 @@ def _listed(values: Any) -> str:
     return ", ".join(str(v).strip() for v in values if str(v).strip()) if isinstance(values, list) else ""
 
 
-def song_prompt(brief: Mapping[str, Any], title: str) -> str:
+def song_prompt(brief: Mapping[str, Any]) -> str:
     """The instrumental prompt for one clip (creation-followups design D4): every brief value that is set, then the
-    constraints. Deterministic, so the same brief always asks for the same piece."""
-    parts = [f'Instrumental theme music for "{title}".']
+    constraints. Deterministic, so the same brief always asks for the same piece. M15 (doc 12 I2; images-music D8): no
+    title or name (it tells Lyria nothing musical, and "Taylor's Theme" would put a real name in the prompt), and the
+    original-piece line before the vocals line."""
+    parts = ["Instrumental theme music for a character."]
     for label, key in (("Genres", "genres"), ("Mood", "moods"), ("Instruments", "instruments")):
         if text := _listed(brief.get(key)):
             parts.append(f"{label}: {text}.")
@@ -387,6 +389,7 @@ def song_prompt(brief: Mapping[str, Any], title: str) -> str:
         parts.append(f"Tempo: about {int(brief['bpm'])} BPM.")
     if vibe := str(brief.get("vibe") or "").strip():
         parts.append(f"Feel: {vibe}.")
+    parts.append("An original piece: do not imitate any named artist, band or existing song.")
     parts.append("No vocals, no lyrics. A 30-second piece that loops cleanly.")
     return " ".join(parts)
 
@@ -412,6 +415,6 @@ class NaiveSong:
                 await hooks.after_response(r.audio)
 
         result = await self.deps.gateway().generate_music(
-            ctx, model=job.model, prompt=song_prompt(job.brief, job.title), before_send=hooks.before_send,
+            ctx, model=job.model, prompt=song_prompt(job.brief), before_send=hooks.before_send,
             after_response=after, commit_with=hooks.commit_with)
         return result.audio

@@ -133,7 +133,7 @@ def test_an_unknown_suite_lists_the_known_ones(capsys: Any) -> None:
     parser = argparse.ArgumentParser(prog="horizon")
     register(parser.add_subparsers(dest="cmd"))
     with pytest.raises(SystemExit) as e:
-        parser.parse_args(["eval", "conversations"])
+        parser.parse_args(["eval", "no-such-suite"])   # M15 built `conversations`
     assert e.value.code != 0
     err = capsys.readouterr().err
     for name in ("canary", "decisions", "smoke", "drafter", "summary", "long", "transcript", "moodline", "latency"):

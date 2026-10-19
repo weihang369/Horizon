@@ -243,4 +243,4 @@ async def test_a_second_replys_request_names_the_first_replier_and_is_labelled_a
     async with api.rt.db.read() as conn:
         labels = dict((await conn.execute(sa.select(t.turn_traces.c.message_id, t.turn_traces.c.prompt_version)
                                           .where(t.turn_traces.c.message_id.in_([m["id"] for m in replies])))).all())
-    assert [labels[m["id"]] for m in replies] == ["agent-1", "agent-3"]
+    assert [labels[m["id"]] for m in replies] == ["agent-9", "agent-11"]

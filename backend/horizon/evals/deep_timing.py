@@ -80,7 +80,8 @@ class Recorder:
     """What the patched seams saw: one row per deep run, the 429s, the set checks and the gates that weren't back."""
 
     arm: str = ""
-    standalone: float = 0.9
+    standalone: float | None = 0.9     # M15 (D15): None leaves the rewrite to the live decision
+    force: bool = True                 # M15 (D15): False leaves the gates live (the blended quick parts)
     runs: list[dict[str, Any]] = field(default_factory=list)
     open: dict[int, dict[str, Any]] = field(default_factory=dict)
     rate_limited: Counter[str] = field(default_factory=Counter)
@@ -112,10 +113,13 @@ def instrumented(env: RunEnv, rec: Recorder) -> Iterator[None]:
 
     def forced(res: Any, who: Sequence[str], *, nouls: bool, message_id: str | None = None) -> Any:
         found, msg = real_read(res, who, nouls=nouls, message_id=message_id)
+        if not rec.force:
+            return found, msg
         rec.gates_not_back[rec.arm] += sum(1 for g in found.values() if g.outcome != "jev")
         found = {c: GateAnswer(p=FORCED_GATE, outcome="jev") for c in found}
         if msg is not None:
-            msg = msg.model_copy(update={"standalone": rec.standalone, "english": ENGLISH_P, "outcome": "jev"})
+            live = {} if rec.standalone is None else {"standalone": rec.standalone}
+            msg = msg.model_copy(update={**live, "english": ENGLISH_P, "outcome": "jev"})
         return found, msg
 
     D = deep.DeepSteps

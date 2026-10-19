@@ -425,7 +425,7 @@ them past one drop, with at least 10 non-English or mixed user lines and 10 plan
   - stays in character, four nouls combined in code (D12);
   - the reply rules: the free code checks on every reply, plus `judge_assistant_voice` and `judge_flattery` on a
     100-reply sample, `judge_language` on the non-English lines and `judge_pushback` on the planted claims;
-  - agent vs naive, `judge_pairwise` in both orders (D12, D13);
+  - agent vs naive, `judge_pairwise` in both orders (D12);
   - face and words agree: `agent` reads its `face_check` row from the trace, and only `naive` replies are asked
     (W2);
   - citation support on every cited reply (doc 10 K10), and the Not-found rate on documents questions the documents
@@ -472,7 +472,8 @@ them past one drop, with at least 10 non-English or mixed user lines and 10 plan
   - another character's real reply to this exact line;
   - a reply that contradicts a stated persona fact.
 
-  Both orders are asked (D13 makes that real). Pass at ≥ 0.90.
+  Both orders are asked. They swap the two replies in the state, so each order is its own request and store key
+  (`judges.swapped`). Pass at ≥ 0.90.
 - **Stays in character = four nouls** (B4):
   - `judge_voice` (v4 failed on real 0.83) gets a rebuilt real set from the committed transcripts' replies, labelled
     blind;
@@ -491,25 +492,35 @@ them past one drop, with at least 10 non-English or mixed user lines and 10 plan
 - **Rewording `judge_pairwise` again:** v2 was already a rewording, and the failures were in the set.
 - **Keeping "never says it is an AI" as a noul:** it would fail every honest reply to a sincere ask.
 
-### D13. The store: both orders really asked, and `all` as a free probe
+### D13. The store: the reversed options really asked, and `all` as a free probe
 
 **The order fix:**
-- A Jev request's options travel as a mapping, so a reversed order canonicalises to the same key. The key gains
-  `"order": [option ids]` **only when the order differs from the question's declared order** (the bank's).
+- A choice's options travel as a mapping (`criteria`), so `decisions`' reversed-option ask (`reordered()`, the
+  order-bias rows) canonicalises to the same key as the first order. The pairwise judge is not affected: its second
+  order swaps the replies in the state. The key gains `"order": [option ids]` **only when the caller asks with an
+  order other than the declared one**: `gateway.decide(..., order=...)`, passed only by the reversed ask.
 - Every key ever written is canonical order, so every stored answer still hits, and the reversed asks become new
   entries.
-- A test asserts both properties. Tested on the pairwise judge, the order-bias rows in `decisions` and moodline.
+- A test asserts both properties, on the order-bias rows in `decisions`.
 - **Rejected:** salting every key with the order, which would invalidate the whole store.
 
 **The probe:**
-- `--probe` on any suite runs it in test-safe mode against the eval store:
+- `--probe` on any suite runs it in its isolated copy with the real config, a dummy key held in memory, the eval store,
+  and a deny transport (`gateway.fake.deny_transport`), so nothing can leave the process:
   - a hit is served as usual;
-  - a miss raises before the reservation and before any request, and that item ends "would pay", with the suite's
-    own estimator pricing it.
+  - a miss records the request with the gateway's own estimate, reserves nothing, sends nothing, and answers empty
+    (no Jev answers, an empty reply, a failed embedding batch). So the caller's usual missing-answer path runs, and no
+    suite needs to know it is probed (found in apply: raising instead stopped suites that don't catch provider errors);
+  - anything outside the store kinds (images, music, cost lookups) is refused by the transport and counted;
+  - a probe writes no ledger row, spend-log line, store entry, `.keep`, judge baseline, measured mark or private
+    safety folder (`RunEnv.writes_records`), and it never runs a generator suite that writes committed files
+    (`transcript`, `watch-history`, `debate-history`, `debate-plant`), a store-bypassing one, or `smoke`.
 - **What it can count exactly:**
-  - one-shot suites are exact (`decisions`, `deep-check`, `safety`'s Jev parts, the judge sets);
-  - a chained item (a conversation, a free run) stops at its first miss, and everything after it counts as would-pay;
-    that is an upper bound, which is the safe direction for an estimate.
+  - one-shot suites are exact: `decisions`, `deep-check`, `debate-quality`, `drafter`, `summary`, each priced as the
+    sum of its misses;
+  - any other suite chains requests (a conversation, a free run, a deep turn), and its later requests follow the
+    answers that were missing. A real run would differ from the first miss on, so a chained suite with any miss is
+    priced at its whole estimate: an upper bound, the safe direction.
 - **`horizon eval all`** is the probe over every suite, with a table per suite: hits, would-pay, the estimate. It never
   sends. W10's "M15's `all` serves every unchanged request from the store" is kept in the only form that can't pay
   by accident.
@@ -555,11 +566,13 @@ The committed histories made with `naive-5` are frozen data and are unaffected b
 **The tag notes (m11 D31.3), the user's choice before the `naive` debate arm and `conversations` are paid:**
 - **Proposed:** `naive`'s tag line becomes "Begin every reply with exactly one emotion tag <e:LABEL>, … Write only the
   tag itself, like <e:thinking>, with nothing inside it and no closing tag. Never write tags anywhere else." The
-  prompt becomes `naive-6`.
+  prompt's labels move by 4: `naive-6` was already M11's debate request, and `naive-7`/`naive-8` M12's sliced
+  passages, so the new line makes them `naive-9` (the reply), `naive-10` (debate), `naive-11` and `naive-12` (found
+  during apply; the label follows the bytes sent, as the agent labels in D5).
 - **Measured for free:** the note-in-tag rate is a code check over every `naive` debate argument in the arm and in
   `conversations`. M11 had 14 of 154.
 - **If declined:** `naive-5` stays, the parser keeps stripping `</e:…>`, and the rate is reported as is.
-- **The trade-off:** `naive-6` changes every `naive` reply's bytes, but no `naive` reply is stored for the M15 runs, so
+- **The trade-off:** the new line changes every `naive` reply's bytes, but no `naive` reply is stored for the M15 runs, so
   nothing is paid twice.
 - **Rejected:** leaving the fix unmeasured again, or a parser change that hides notes before the tag.
 
@@ -672,7 +685,7 @@ figures are from their measured costs, so they should hold to within the usual 1
 - v3 changes the content of `generation.prompt`, an existing string field, not its type.
 - W3 reads the existing `StartJobInput.prompt`. The button and hint exist (`EmotionLightbox.tsx`).
 - I8 is documentation; `ThemeSong.licenseNote` is unchanged.
-- The persona labels (`agent-9`…) and `naive-6` appear only in the ledger and eval reports. `TurnTrace`'s
+- The persona labels (`agent-9`…) and `naive-9`… appear only in the ledger and eval reports. `TurnTrace`'s
   `promptVersion`, if shown in Insight, is an existing string.
 - **W4 lists `asset-credits`** for `ASSETS.md`'s content, which changes no check (D9). No new method, field, enum
   value, event or UI entry point is needed. If apply finds one, it stops and asks.
@@ -744,8 +757,8 @@ figures are from their measured costs, so they should hold to within the usual 1
   passing version re-scores for free. The pairwise figure is then reported "unvalidated", never as a win.
 - **[Self-preference: Jev judges a system whose decisions Jev made]** → The planted pairs, the order swap and the
   length-bias split (B4). Stated beside every agent-vs-naive figure.
-- **[The probe under-reports a chained suite's cost]** → It stops at the first miss and counts the rest as
-  would-pay, an upper bound.
+- **[The probe under-reports a chained suite's cost]** → A chained suite with any miss is priced at its whole
+  estimate, an upper bound.
 - **[The latency run lands in a slow provider spell]** → It is recorded with its window and provider. A clear outlier
   spell (M10's `spells()` helper) is reported, and a re-run of that part only is a choice.
 - **[Re-paying everything "for completeness"]** → Ruled out. A suite with misses keeps its accepted figure;
@@ -765,7 +778,7 @@ figures are from their measured costs, so they should hold to within the usual 1
   which this change doesn't alter except the persona twin's bytes.
 - **Rollback:**
   - `HORIZON_AI_PROFILE=naive` restores the old default without a code change;
-  - the honesty line and `naive-6` are one-line reverts with their fixtures;
+  - the honesty line and the `naive` tag line are one-line reverts with their fixtures;
   - v3's goldens revert with the compiler.
 
 ## Open Questions
@@ -773,7 +786,7 @@ figures are from their measured costs, so they should hold to within the usual 1
 None that change the specs, the approach or the tasks. These choices are scheduled inside apply, each with its own
 question to the user:
 - the honesty wording (D5);
-- `naive-6` (D14);
+- `naive-9`…`naive-12` (D14);
 - the latency windows (D15);
 - any deadline (D15);
 - the optional m9/m14 items (D16);

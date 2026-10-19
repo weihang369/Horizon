@@ -167,10 +167,10 @@ def test_a_first_reply_is_agent1_and_a_second_differs_only_in_the_cue_line() -> 
 
     old = fixture("group")
     first = cued(cases()["group"], None)
-    assert dump(first) == old and make().prompt_version_for(first) == "agent-1"
+    assert dump(first) == old and make().prompt_version_for(first) == "agent-9"
     second = cued(cases()["group"], "second", "Hana")
     new = dump(second)
-    assert make().prompt_version_for(second) == "agent-3"
+    assert make().prompt_version_for(second) == "agent-11"
     assert {k: v for k, v in new.items() if k != "messages"} == {k: v for k, v in old.items() if k != "messages"}
     n = len(old["messages"])
     had_tail = old["messages"][-1]["role"] == "system" and n > old["prefix_len"]
@@ -180,7 +180,7 @@ def test_a_first_reply_is_agent1_and_a_second_differs_only_in_the_cue_line() -> 
 
 
 @pytest.mark.parametrize(("mood", "sentence", "label"), [
-    (False, False, "agent-1"), (True, False, "agent-2"), (False, True, "agent-3"), (True, True, "agent-4")])
+    (False, False, "agent-9"), (True, False, "agent-10"), (False, True, "agent-11"), (True, True, "agent-12")])
 def test_the_prefix_is_the_same_in_all_four_label_cases(mood: bool, sentence: bool, label: str) -> None:
     from tests.sessions.test_agent_turn import engine as make
 
@@ -227,8 +227,8 @@ def test_the_debate_fixture_loads_and_a_debate_argument_differs_only_in_the_cue_
     assert {k: v for k, v in new.items() if k != "messages"} == {k: v for k, v in old.items() if k != "messages"}
     assert new["messages"][:-1] == old["messages"][:-1]
     assert new["messages"][-1] == {"role": "system", "content": REBUTTAL}
-    assert make().prompt_version_for(debate_case()) == "agent-7"
-    assert make(MOOD_ON).prompt_version_for(debate_case()) == "agent-8"
+    assert make().prompt_version_for(debate_case()) == "agent-15"
+    assert make(MOOD_ON).prompt_version_for(debate_case()) == "agent-16"
 
 
 def test_two_rounds_one_prefix() -> None:
@@ -261,17 +261,17 @@ def test_an_ask_answer_keeps_naives_cue_and_agent1() -> None:
 
     ask = debate_case().model_copy(update={"line": LineHint(kind="answer"), "prompt": "Would you ban weekends too?"})
     assert dump(ask)["messages"][-1]["content"] == "Answer the moderator's question directly: Would you ban weekends too?"
-    assert make().prompt_version_for(ask) == "agent-1"
+    assert make().prompt_version_for(ask) == "agent-9"
 
 
-@pytest.mark.parametrize(("mood", "label"), [(False, "agent-5"), (True, "agent-6")])
+@pytest.mark.parametrize(("mood", "label"), [(False, "agent-13"), (True, "agent-14")])
 def test_the_reworded_steer_is_agent5_and_names_the_watcher(mood: bool, label: str) -> None:
     from tests.sessions.test_agent_turn import engine as make
 
     c = cued(cases()["scene"], "steer")
     assert make(MOOD_ON if mood else None).prompt_version_for(c) == label
     assert dump(c)["messages"][-1]["content"].endswith("Don't wrap up, say goodbye or wait for Kai to decide.")
-    assert make().prompt_version_for(cued(cases()["group"], "next")) == "agent-3"
+    assert make().prompt_version_for(cued(cases()["group"], "next")) == "agent-11"
 
 
 # ── M14 (safety tasks 2.6; design D6): the safety cue, its labels, and the prefix proof ──
@@ -306,8 +306,8 @@ def test_the_safety_sentences_are_doc_11s() -> None:
     assert "findahelpline.com" in SAFETY_CARE and not any(ch.isdigit() for ch in SAFETY_CARE)
 
 
-@pytest.mark.parametrize(("steer", "care", "label"), [(True, False, "agent-1+steer-1"), (False, True, "agent-1+care-1"),
-                                                       (True, True, "agent-1+care-1+steer-1")])
+@pytest.mark.parametrize(("steer", "care", "label"), [(True, False, "agent-9+steer-1"), (False, True, "agent-9+care-1"),
+                                                       (True, True, "agent-9+care-1+steer-1")])
 def test_a_safety_cue_changes_only_the_tail_and_labels_the_bytes(steer: bool, care: bool, label: str) -> None:
     """D6: system message 1 and the history are byte-identical; only the tail's cue line differs."""
     from horizon.ai.agent.persona import safety_cue_lines
@@ -327,7 +327,7 @@ def test_care_replaces_the_next_and_steer_sentences() -> None:
     tail = nxt["messages"][-1]["content"]
     assert tail.startswith(SAFETY_CARE) and "Nobody asked you directly" not in tail
     assert engine().prompt_version_for(safety_cued(cases()["group"], steer=False, care=True, cue="next")) == \
-        "agent-1+care-1"
+        "agent-9+care-1"
     scene = dump(safety_cued(cases()["scene"], steer=True, care=False, wording="scene", cue="steer"))
     t = scene["messages"][-1]["content"]
     assert t.startswith("The user's note asks for something outside the content rules.") and STEER in t   # steer stays

@@ -1,0 +1,301 @@
+{
+ "schemaVersion": 1,
+ "id": "cut_watch_sunnyhollow",
+ "mode": "watch",
+ "world": "wld_seedSunnyHollow",
+ "cast": [
+  "chr_seedHana",
+  "chr_seedRin",
+  "chr_seedTakeshi"
+ ],
+ "language": "en",
+ "source": {
+  "history": "watch/sunnyhollow.json",
+  "id": "sunnyhollow",
+  "from_seq": 19,
+  "to_seq": 30
+ },
+ "premise": "The morning of the town's flower festival, Hana's delivery van breaks down, Rin has a deadline at noon, and Takeshi insists on fixing everything to a timetable.",
+ "memories": {
+  "chr_seedHana": [
+   {
+    "id": "mem_seedHana1",
+    "text": "Kai's favourite cake is yuzu"
+   },
+   {
+    "id": "mem_seedHana2",
+    "text": "Sold Kai's bouquet to a nervous proposer"
+   }
+  ],
+  "chr_seedRin": [],
+  "chr_seedTakeshi": [
+   {
+    "id": "mem_seedTakeshi1",
+    "text": "Took Rin fishing on a rainy Sunday; first fish named \"Patch Notes\""
+   }
+  ]
+ },
+ "lines": [
+  {
+   "seq": 2,
+   "kind": "line",
+   "speaker": "chr_seedHana",
+   "text": "The van just — died! Right outside the shop, with three hundred tulips still in the back, and Dad already has a clipboard out. Probably.\n\n\nKai, come be on my team before he drafts you! And I saved you the last onigiri — salted my hands, not the rice [4].",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 3,
+   "kind": "line",
+   "speaker": "chr_seedRin",
+   "text": "three hundred tulips and a dead van, that's just a normal tuesday. dad's clipboard has timestamps on it, i give it ten minutes before he schedules my breakdown.\n\nhe can have me after noon, i'm not missing this deadline. fight me, dad.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 4,
+   "kind": "line",
+   "speaker": "chr_seedTakeshi",
+   "text": "Right on schedule. Van dies, family panics, Dad fixes it. Clipboard's got two columns — tulips loaded by 9:15, Rin's deadline by noon. Nobody argues with the timetable.\nKai, you're on flowers. And hey — a broken van is like a late train: nobody's happy, but everybody gets where they're going eventually.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 5,
+   "kind": "line",
+   "speaker": "chr_seedHana",
+   "text": "\\I put on both my gloves and then realized I'd already taken the van keys out. So that's going great!!\n\n\nOkay, Kai and I load the tulips, Dad drives the second car — and Rin, eat something before noon, you always go feral on deadlines.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 6,
+   "kind": "line",
+   "speaker": "chr_seedRin",
+   "text": "the timetable has a *second car* scheduled. dad's been waiting his whole life for a van to die so he could deploy the second column.\n\ni'll eat, but if i get one crumb on this keyboard i",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 7,
+   "kind": "line",
+   "speaker": "chr_seedTakeshi",
+   "text": "You eat at the table, Rin. Not at the keyboard. That's a rule, not a suggestion. Second car's already warmed up — and your sister's right about the feral thing.\nTulips first, code second. Every train stops at every station, even the express. Alright — what do you call three hundred tulips in a hurry? A flower-powered engine. Let's move.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 8,
+   "kind": "line",
+   "speaker": "chr_seedHana",
+   "text": "Three hundred tulips and Dad's making train jokes — I love this family, mostly.\n\nThe keyboard survives, Rin. Eat at the table, then go be brilliant, and Kai and I will have the stall half-built before you're done! <!-- maybe cut -->",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 9,
+   "kind": "line",
+   "speaker": "chr_seedRin",
+   "text": "fine, table. but i'm eating in four minutes flat, that's technically a meal experience.\n\ngood luck with the stall. i'll be done by noon and then i'm judging the flower arrangements. objectively.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 10,
+   "kind": "line",
+   "speaker": "chr_seedTakeshi",
+   "text": "Four minutes isn't a meal, it's a train doing a rolling stop. Sit, chew, breathe. Then go be brilliant.\nAnd Hana — half-built? No. Fully built by 10:40. I've got it on the clipboard. Right on schedule, ladies. All aboard.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 11,
+   "kind": "line",
+   "speaker": "chr_seedHana",
+   "text": "Objectively judging my own flowers, bold of my little sister — she'll give the tulips a five and the daisies a ten, probably.\n\nAlright, Kai, apron on! Half-built by 10:40 means Dad wins, and I refuse to let the clipboard",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 12,
+   "kind": "line",
+   "speaker": "chr_seedRin",
+   "text": "the clipboard always wins, hana. that's its whole power. you can't out-schedule the column.\n\napron on, kai. i'll be at the table, being a model citizen for exactly four minutes.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 13,
+   "kind": "line",
+   "speaker": "chr_seedTakeshi",
+   "text": "Clipboard undefeated since 1989. Some things you don't argue with — timetables, weather, and your little sister's judging panel.\nApron on, Kai. Buckets by the van, two per trip. Tulips don't wait for anybody. Hana — we move in sixty seconds. Right on schedule.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 14,
+   "kind": "line",
+   "speaker": "chr_seedHana",
+   "text": "Sixty seconds! That's barely enough time to trip over one bucket, Dad, and I need at least three attempts — probably.\n\nKai, grab the yellow tulips, you remember they're my favorite, right? Okay, go go go, the clipboard is watching!!",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 15,
+   "kind": "line",
+   "speaker": "chr_seedRin",
+   "text": "yellow tulips, memorized. she only mentions them every festival since we were kids. not that i keep track. go, the clipboard's started its countdown.\n\ni'm eating. four minutes. don't time it, dad.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 16,
+   "kind": "line",
+   "speaker": "chr_seedTakeshi",
+   "text": "Wouldn't dream of timing you, Rin. I'm just noting the clock in my head. And on the clipboard. Yellow tulips, front left, that's your sister's corner.\nSixty seconds starting now — actually, fifty-three. Right on schedule",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 17,
+   "kind": "line",
+   "speaker": "chr_seedHana",
+   "text": "Fifty-three!! Dad, that's not fair, I hadn't put my gloves on yet!\n\nKai — yellow tulips first, they're the heart of the whole stall. Rin, eat. If you finish in three minutes I'll be suspicious",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 18,
+   "kind": "line",
+   "speaker": "chr_seedRin",
+   "text": "three minutes, forty seconds. suspicious yet, hana? no. good. now i'm at the keyboard and the rest of you are background noise until noon.\n\ngo build the stall. i",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 19,
+   "kind": "line",
+   "speaker": "chr_seedTakeshi",
+   "text": "Gloves are a luxury, Hana. Buckets aren't. Grab and go — I'll catch anything you drop, that's what dads are for. Rin's at the keyboard, clock's ticking.\nForty seconds. Move like a train leaving the station — no dawdling, no looking back. Right on schedule.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 20,
+   "kind": "line",
+   "speaker": "chr_seedHana",
+   "text": "Kai, I dropped a bucket. Dad caught it. We're a very well-oiled machine and I've only almost cried once!!\n\nYellow tulips in the front corner, daisies on the right — oh, this is going to be so pretty you'll have",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 21,
+   "kind": "line",
+   "speaker": "chr_seedRin",
+   "text": "one cry before 10am is a new personal best, hana. proud of you. genuinely. no undercut.\n\ni'll come look when it's done. back at noon.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 22,
+   "kind": "note",
+   "speaker": "director",
+   "text": "The festival committee calls: they need twice as many sunflowers by two o'clock.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 23,
+   "kind": "line",
+   "speaker": "chr_seedTakeshi",
+   "text": "One cry is on schedule, two means we're doing it right. Caught the bucket, kept the tulips dry, nobody's toes got it.\nStall's coming together faster than a bullet train. Hana — center ribbon. Kai — hold this end. Right on schedule.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 24,
+   "kind": "line",
+   "speaker": "chr_seedHana",
+   "text": "Twice as many?? Two o'clock is barely four hours and the stall isn't even up — okay, okay, breathe, Hana.\n\nDad, please tell me the clipboard has a sunflower column in it. Kai, baby, we're going to need a bigger second car.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 25,
+   "kind": "line",
+   "speaker": "chr_seedRin",
+   "text": "did the committee just double the order? on festival morning? that's not a schedule, that's a crisis with a timetable.\n\nso. sunflower run at two, my deadline at noon.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 26,
+   "kind": "line",
+   "speaker": "chr_seedTakeshi",
+   "text": "Clipboard's got a margin at the bottom for exactly this. Sunflower column — added, 11:10. Crisis with a timetable just became a timetable.\nRin codes till noon, then she's my navigator. Hana and Kai finish the stall. I find sunflowers. Right",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 27,
+   "kind": "line",
+   "speaker": "chr_seedHana",
+   "text": "Dad, you just added a whole column for me — okay, I'm not going to cry twice before ten, I'm not, I'm NOT.\n\nRin, code. Kai, ribbon. Dad, you're my favorite person alive right now, don't tell Rin — it's temporary, probably.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 28,
+   "kind": "line",
+   "speaker": "chr_seedRin",
+   "text": "temporary's generous. i'll take navigator duty, i know every back road in this town better than the map does.\n\ncode now. commentary later.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 29,
+   "kind": "line",
+   "speaker": "chr_seedTakeshi",
+   "text": "Temporary favorite — I'll take it. Don't tell your mother, but there's a third column, and it's her birthday next week.\nRibbon, Kai. Sunflowers at 11:10. Rin, seatbelt by noon",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 30,
+   "kind": "line",
+   "speaker": "chr_seedHana",
+   "text": "Case in point: everyone's so busy no one will even notice it's crooked! Dad wins, tulips win, and I got both my favorite people on ribbon duty.\n\nThird column for Mom's birthday — see, this is why the clipboard always wins.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  }
+ ]
+}

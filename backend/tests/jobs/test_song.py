@@ -3,6 +3,7 @@ song"; ai-ports "Song generator"; design D3–D7). The provider is the in-proces
 
 from __future__ import annotations
 
+import json
 from typing import Any
 
 from sqlalchemy import select
@@ -73,14 +74,58 @@ async def test_audio_file_exists_before_the_row_commits(api: Api) -> None:
 def test_prompt_states_every_brief_value() -> None:
     from horizon.ai.naive.creation import song_prompt
 
+    # M15 (doc 12 I2's worked example): no title, and the original-piece line before the vocals line
     p = song_prompt({"genres": ["lo-fi", "jazz"], "moods": ["warm"], "bpm": 84, "instruments": ["piano", "brushes"],
-                     "vibe": "late-night clinic"}, "Sarah's Theme")
-    assert p == ('Instrumental theme music for "Sarah\'s Theme". Genres: lo-fi, jazz. Mood: warm. '
-                 "Instruments: piano, brushes. Tempo: about 84 BPM. Feel: late-night clinic. "
+                     "vibe": "rainy-day café"})
+    assert p == ("Instrumental theme music for a character. Genres: lo-fi, jazz. Mood: warm. "
+                 "Instruments: piano, brushes. Tempo: about 84 BPM. Feel: rainy-day café. "
+                 "An original piece: do not imitate any named artist, band or existing song. "
                  "No vocals, no lyrics. A 30-second piece that loops cleanly.")
-    bare = song_prompt({"genres": [], "moods": [" "], "bpm": 120, "instruments": [], "vibe": ""}, "X's Theme")
-    assert bare == 'Instrumental theme music for "X\'s Theme". Tempo: about 120 BPM. No vocals, no lyrics. ' \
-                   "A 30-second piece that loops cleanly."
+    bare = song_prompt({"genres": [], "moods": [" "], "bpm": 120, "instruments": [], "vibe": ""})
+    assert bare == ("Instrumental theme music for a character. Tempo: about 120 BPM. An original piece: do not imitate "
+                    "any named artist, band or existing song. No vocals, no lyrics. A 30-second piece that loops cleanly.")
+
+
+def music_prompts(fake: Any) -> list[str]:
+    out = []
+    for r in fake.requests:
+        if r.url.path.endswith("/chat/completions") and b'"modalities"' in r.content:
+            body = json.loads(r.content)
+            if "audio" in (body.get("modalities") or []):
+                out.append(" ".join(str(m["content"]) for m in body["messages"]))
+    return out
+
+
+async def test_no_name_in_the_song_prompt_and_the_title_is_kept(api: Api) -> None:
+    from horizon.ai.naive.creation import song_prompt
+    from tests.jobs.kit import start
+
+    fake = await naive_profile(api)
+    sent = len(music_prompts(fake))
+    j = await start(api, {"characterId": "chr_seedHana", "kind": "song"})
+    assert (await settle(api, j["id"]))["status"] == "succeeded"
+    [prompt] = music_prompts(fake)[sent:]
+    s = await song(api, "chr_seedHana")
+    assert "Hana" not in prompt and "Morisaki" not in prompt and theme.theme_title("Hana Morisaki") not in prompt
+    # the procedural theme still takes the title (its spec is built from it; an audio song has no title field)
+    assert theme.theme_spec_from_brief("chr_seedHana", s["brief"], "Hana's Theme")["title"] == "Hana's Theme"
+    assert prompt.endswith("An original piece: do not imitate any named artist, band or existing song. "
+                           "No vocals, no lyrics. A 30-second piece that loops cleanly.")
+    assert s["generation"]["prompt"] == prompt == song_prompt(s["brief"])       # provenance is the text sent
+
+
+async def test_the_brief_check_reads_what_is_sent(api: Api) -> None:
+    from tests.jobs.kit import start
+
+    fake = await naive_profile(api)
+    assert (await api.post(f"{API}/_test/ai-profile", {"profile": "agent"})).status_code == 204
+    sent = len(music_prompts(fake))
+    j = await start(api, {"characterId": "chr_seedHana", "kind": "song"})
+    assert (await settle(api, j["id"]))["status"] == "succeeded"
+    [prompt] = music_prompts(fake)[sent:]
+    checked = [json.loads(r.content)["state"]["quoted_text"] for r in fake.requests
+               if r.url.path.endswith("/alpha/decisions") and "song_copy" in json.loads(r.content)["questions"]]
+    assert checked[-1] == prompt
 
 
 async def test_naive_profile_selects_lyria_and_the_override_keeps_procedural(api: Api) -> None:

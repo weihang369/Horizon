@@ -33,3 +33,12 @@ Where every asset Horizon ships comes from, and under which licence. Settings â†
 | `npm:@fontsource-variable/inter` | Body font | font | Inter by Rasmus Andersson, via Fontsource | OFL-1.1 |
 | `npm:@fontsource-variable/jetbrains-mono` | Monospace font | font | JetBrains Mono by JetBrains, via Fontsource | OFL-1.1 |
 <!-- assets:end -->
+
+## Generated music
+
+Theme songs made with Lyria 3 Clip (through OpenRouter) are AI output under Google's terms, read 2026-10-10 ([doc 12](docs/ai/12-images-music.md) I8, [group A](docs/ai/checks/group-a.md) A4):
+
+- **The terms.** These are the [Gemini API Additional Terms](https://ai.google.dev/gemini-api/terms) (effective 2026-03-23). Google claims no ownership of what you generate, and it may generate the same or similar content for others. You are responsible for how you use the output and for complying with the law. The terms set no music-specific restriction and no attribution duty. OpenRouter passes the provider's terms through.
+- **The watermark.** Every Lyria clip carries Google's inaudible **SynthID** watermark ([music generation docs](https://ai.google.dev/gemini-api/docs/music-generation), updated 2026-10-01).
+- **Your songs.** A song you generate in Horizon is under those terms. It lives under `data/` and isn't shipped, so it has no row above.
+- **The seed themes stay procedural** (the SKETCH rows above) until real seed songs are committed. Each committed Lyria song gets an `ai` row with `model=`, `date=`, `prompt=` and `technique=`.
