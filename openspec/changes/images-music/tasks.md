@@ -224,7 +224,7 @@ per-item results under `docs/ai/checks/m15/`, no live older batch.
   D5's rule. **Bring the result to the user** (keep the wording, try the advisory-line tweak, or revert by 4.3).
 - [ ] 8.7 M13's layer 3 re-run on the new system message (≈ $0.04), re-judged. Verify: the figures beside M13's in
   `m15.md`.
-- [ ] 8.8 The emotion set's 40 items (≈ $0.002). Read the test split once at floor 0.2, and record it beside m9's.
+- [x] 8.8 The emotion set's 40 items (≈ $0.002). Read the test split once at floor 0.2, and record it beside m9's.
 - [ ] 8.9 `conversations`, both profiles, with the free runs (≈ $0.30–0.40, priced from 8.2's probe and the measured
   per-turn costs). Verify: the report, every saved state, and the run folder `.keep`.
 - [ ] 8.10 The citation judge's re-validation on the run's real failures, and sentence faithfulness on the 10

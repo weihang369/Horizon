@@ -237,7 +237,9 @@ def test_emotion_options_are_shuffled_by_seed() -> None:
 def test_the_reaction_entry_compiles_about_a_named_listener() -> None:
     q = bank().question("reaction", seed="s1:3:react:chr_seedRin", name="Rin", about="chr_seedRin")
     assert isinstance(q, Choice) and set(q.options) == EMOTIONS | {"none"}
-    assert q.instructions.startswith("How does Rin react to quoted_line? Choose none when they show no visible reaction.")
+    # M15 (images-music 8.13): v3 says what usually shows on a face; `none` only when the line doesn't touch them
+    assert q.instructions.startswith("How does Rin visibly react to quoted_line as they hear it? A line aimed at Rin")
+    assert "Choose none only when the line doesn't touch them" in q.instructions and bank().get("reaction").version == 3
     assert q.meta is not None and (q.meta.purpose, q.meta.label, q.meta.deadline) == ("reaction", "reaction", "reaction")
     e = bank().get("reaction")
     assert e.floor == 0.2 and set(e.state) == {"mode", "quoted_line", "quoted_before", "quoted_listeners"}   # 9.3 (D39)
