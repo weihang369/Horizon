@@ -311,7 +311,7 @@ Each run is asked for separately with its estimate, off-peak, after a `ps` check
 - [x] 9.2 Finish `docs/ai/checks/m14.md`: the runs, the findings, the user's choices, and "What M15 inherits"
   (deadlines, the late-check rate, the injection follow rate, the provider-refusal share). Verify: it is linked from
   doc 13.
-- [ ] 9.3 Final gates on the gate worktree:
+- [x] 9.3 Final gates on the gate worktree:
   - backend pytest, ruff, mypy;
   - frontend typecheck, lint, test, http;
   - `seed:check`, `fixtures:check`, `export-schema:check`;

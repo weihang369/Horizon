@@ -185,8 +185,8 @@ async def test_the_next_turn_does_not_cancel_a_group_check(api: Api) -> None:
     # M10: two speakers from one send under `agent` means policy `everyone` (one plan, then every reply in order)
     await command(api, sid, "set-responder-policy", {"policy": "everyone"})
     assert api.rt.fake is not None
-    n = api.rt.fake.counts["decisions"]
-    held = [api.rt.fake.park_decision(n + 2), api.rt.fake.park_decision(n + 3)]   # after the plan: the reaction, the check
+    # by question key: the output check (M14) also starts at stream end, and holding it would hold turn.end
+    held = [api.rt.fake.park_question("reaction:"), api.rt.fake.park_question("face_check")]
     await command(api, sid, "send", {"text": "What do you think?", "mentions": [AMARA]})
     await api.drive(800)                                                        # the next turn starts at ~+520 ms
     evs = await events(api, sid)
