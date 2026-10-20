@@ -233,4 +233,4 @@
 - [x] 11.2 Add the comparison's spend row to `docs/ai/13-wrap-up.md` W6 and update the milestone memory. Offer the user
   a draft of the LinkedIn post and its infographic (dropped: the user chose not to show the comparison on
   LinkedIn, 2026-10-20).
-- [ ] 11.3 Ask the user about the archive and the squash into local dev (as for M7–M15). Nothing is pushed.
+- [x] 11.3 *(The user asked for the squash into local dev on 2026-10-20.)* Ask the user about the archive and the squash into local dev (as for M7–M15). Nothing is pushed.
