@@ -66,6 +66,7 @@ async def session_stream(request: Request, session_id: str, sinceSeq: int = 0) -
         await reads.session_row(conn, session_id)  # 404 before the stream opens
     start = max(sinceSeq, _parse_last_event_id(request))
     sub = rt.bus.subscribe(session_channel(session_id))  # register the live queue before replaying
+    rt.spawn("gateway:warm", rt.gateway.warm())  # open OpenRouter connections before the first turn (HttpCore.warm)
 
     def frame(e: dict[str, Any]) -> dict[str, str]:
         check(rt, "SessionEvent", e)

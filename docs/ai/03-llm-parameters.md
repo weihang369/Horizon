@@ -45,7 +45,8 @@ From the code:
   Today `parse_usage` drops `completion_tokens_details.reasoning_tokens`. The stream raises only on refusals
   (`REFUSALS`); any other finish reason ends the reply as complete.
 - **Every request** carries the pinned routing block from `seed/pricing.json`:
-  - provider order `["DeepSeek"]`;
+  - provider order `["DeepSeek", "Relace", "Alibaba", "Together"]` (D-101: DeepSeek's own endpoint stopped being listed
+    for V4.1 Flash on 2026-10-20; the rest is the measured order);
   - `require_parameters: true`;
   - `allow_fallbacks: true`;
   - quantizations `bf16, fp16, fp32, unknown`;

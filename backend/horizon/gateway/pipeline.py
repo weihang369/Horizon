@@ -228,6 +228,10 @@ class Gateway:
                                            timeout_s=t.embedding)
         self.meta = MetaClient(self.core, t.meta)
 
+    async def warm(self) -> None:
+        """Warm the connection pool before a session's first turn (HttpCore.warm): the decision model's public page."""
+        await self.core.warm(f"/v1/models/{self.decision_model}/endpoints")
+
     def _store_for(self, kind: str, store_ok: bool = False) -> Any:
         """W10/D31: which store may serve this call. A hit sends nothing, reserves nothing and writes no ledger row."""
         if self.store is not None and self.store.serves(kind):

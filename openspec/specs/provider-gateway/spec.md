@@ -44,7 +44,7 @@ Chat requests to the main LLM SHALL send the pinned provider preferences: DeepSe
 
 #### Scenario: Request body
 - **WHEN** a chat completion is sent
-- **THEN** the outgoing body has `provider.order: ["DeepSeek"]`, `provider.require_parameters: true`, `provider.data_collection: "allow"` and `usage.include: true`, and no `models` field
+- **THEN** the outgoing body has `provider.order` starting with `"DeepSeek"` (then the measured fallbacks of D-101), `provider.require_parameters: true`, `provider.data_collection: "allow"` and `usage.include: true`, and no `models` field
 
 #### Scenario: Served elsewhere
 - **WHEN** a recorded response reports provider `"Chutes"`
