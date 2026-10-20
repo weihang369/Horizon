@@ -30,6 +30,18 @@ START = datetime(2026, 10, 3, 3, 0, tzinfo=UTC)
 SEED_DIR = Path(__file__).resolve().parents[2] / "seed"
 
 
+@pytest.fixture(autouse=True)
+def _judges_record_copy(tmp_path_factory: pytest.TempPathFactory, monkeypatch: pytest.MonkeyPatch) -> None:
+    """jev-comparison: a test that runs the pinned model's judge set on the fake would write the committed B4 record
+    (it happened twice). Every test reads and writes a copy instead; a test that sets its own record keeps it."""
+    from horizon.evals import judges
+
+    copy = tmp_path_factory.mktemp("judges-record") / "judges.json"
+    if judges.RECORD.is_file():
+        copy.write_bytes(judges.RECORD.read_bytes())
+    monkeypatch.setattr(judges, "RECORD", copy)
+
+
 @dataclass
 class Api:
     client: httpx.AsyncClient

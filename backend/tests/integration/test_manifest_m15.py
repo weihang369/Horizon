@@ -94,6 +94,9 @@ async def test_every_body_the_decisions_suite_sends_is_listed(api: Api, tmp_path
         (root / rel).parent.mkdir(parents=True, exist_ok=True)
         (root / rel).write_text("\n".join(lines) + "\n", encoding="utf-8")
     monkeypatch.setattr(suites, "DATASETS", root)
+    from horizon.evals import judges
+
+    monkeypatch.setattr(judges, "RECORD", tmp_path / "judges.json")   # the pinned model's B4 run writes it
     api.rt.gateway.allowed_bodies = frozenset(body_hash(s, q) for _n, s, q, _o in decisions_bodies())
     d = suites.Decisions()
     for opts in (Options("decisions", against="m.json"), Options("decisions", set="judges", against="m.json")):
