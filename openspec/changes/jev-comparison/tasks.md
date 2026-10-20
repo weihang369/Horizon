@@ -169,7 +169,7 @@
 - [x] 6.5 Step `sets` on the candidate: decisions with the judges, deep-check, and safety's Jev parts (expect
   ≈ $0.20). Record the run ids and spend; resume with `--start` if the run stops.
 - [x] 6.6 Step `repeat` (≈ $0.003). Record.
-- [ ] 6.7 Steps `timing-a` and `timing-b`, ≥ 3 h apart, one may be daytime (≈ $0.05). Record the windows and the
+- [x] 6.7 *(Window A only: after keeping 1.13, the user dropped window B, 2026-10-20.)* Steps `timing-a` and `timing-b`, ≥ 3 h apart, one may be daytime (≈ $0.05). Record the windows and the
   local clocks.
 - [x] 6.8 Re-run `compare-models --step probe` to confirm everything now hits (a re-run is free). Add the spend
   table against D15 to jev-comparison.md.

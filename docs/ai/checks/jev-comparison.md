@@ -125,8 +125,8 @@ typesafe/jev-1.14 --report-only`), with `figures.json` and the per-item rows (`*
 - **1.14 is 15–60 ms slower at p50 and up to ~150 ms at p90**, measured side by side. Both handled 25k without a 429.
 - **The hour matters more than the model:** M15's latency run (07:35 KL) had 1.13 at ≈ 440 ms p50; at 20:45 KL it
   was ≈ 700 ms. So the projected deadline misses in the report (e.g. turn_plan 700 ms: 1.13 0.58, 1.14 0.77) describe
-  the evening only. Window B (≥ 23:45 KL, or a morning) is still to run (the user's choice: report now, add window B
-  later with a $0 re-cut); it can only change the timing table.
+  the evening only. Window B was dropped after the gate (the user, 2026-10-20: 1.13 kept, no LinkedIn post); M15's
+  morning run already shows the hour effect.
 
 ### The judges (information only, D13)
 
@@ -153,7 +153,7 @@ judge_answers_last / judge_breaks_rules fail on both). See finding F3.
 - **F7. Known gap:** the retrieval suite's passage thresholds (`t_keep`, `t_found`) weren't compared (D8); deep-check
   agrees 44/45 on direction on both models.
 
-## Spend so far (all Jev)
+## Spend (all Jev)
 
 | Run | Spent | D15 estimate |
 |---|---|---|
@@ -164,7 +164,7 @@ judge_answers_last / judge_breaks_rules fail on both). See finding F3.
 | 1.14's sets | $0.16380 | ≈ $0.201 (recomputed) |
 | Repeat probe | $0.00268 | ≈ $0.003 |
 | Timing window A | $0.02209 | ≈ $0.03 |
-| **Total so far** | **$0.21862** | ≈ $0.30 with window B |
+| **Total** | **$0.21862** | ≈ $0.30 (window B dropped) |
 
 ## §5 The offline gates (2026-10-20, on ab7d80d, phases 0–4)
 
