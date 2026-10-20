@@ -45,7 +45,11 @@ def _stored(root: Path, model: str, state: Any, questions: Mapping[str, Any], fi
 
 
 def _decisions_items() -> Iterable[tuple[str, str, Any, dict[str, Any], dict[str, list[str]] | None]]:
-    from horizon.ai.decider import Choice, wire_question
+    """Every body `Decisions.run` sends, exactly as it sends it (jev-comparison D20 found two that M15's builder got
+    wrong): a noul or a levelled score under the item's live key (`docs:{id}`, `earlier:{id}`, …); the pairwise judge's
+    two asks, the second with the replies swapped in the state; a choice in its seeded order and reversed."""
+    from horizon.ai.decider import Choice, Noul, Score, wire_question
+    from horizon.evals import judges
     from horizon.evals.suites import DATASETS, dataset_files, item_question, load_dataset, reordered
 
     for path in dataset_files():
@@ -53,13 +57,19 @@ def _decisions_items() -> Iterable[tuple[str, str, Any, dict[str, Any], dict[str
         for i in load_dataset(path):
             if i.get("smoke_only"):
                 continue
-            q = item_question(i, seed=i["id"])
-            qid = str(i["question_id"])
-            yield name, str(i["id"]), i["item"]["state"], {qid: wire_question(q)}, None
-            if isinstance(q, Choice) and not i.get("reask"):
-                r = reordered(q)
-                assert isinstance(r, Choice)
-                yield name, str(i["id"]), i["item"]["state"], {qid: wire_question(r)}, {qid: list(r.options)}
+            q = item_question(i)   # the item's own seed, as the suite compiles it
+            qid, iid, state = str(i["question_id"]), str(i["id"]), i["item"]["state"]
+            if isinstance(q, Noul) or (isinstance(q, Score) and isinstance(i["label"], int)):
+                yield name, iid, state, {str(i["item"].get("key") or qid): wire_question(q)}, None
+            elif qid == judges.PAIRWISE:
+                yield name, iid, state, {qid: wire_question(q)}, None
+                yield name, iid, judges.swapped(state), {qid: wire_question(q)}, None
+            else:
+                yield name, iid, state, {qid: wire_question(q)}, None
+                if isinstance(q, Choice) and not i.get("reask"):
+                    r = reordered(q)
+                    assert isinstance(r, Choice)
+                    yield name, iid, state, {qid: wire_question(r)}, {qid: list(r.options)}
 
 
 def decisions_bodies() -> Iterable[tuple[str, Any, dict[str, Any], dict[str, list[str]] | None]]:

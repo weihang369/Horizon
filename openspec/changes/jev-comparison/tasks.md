@@ -163,7 +163,7 @@
     1.13.
 
   Record both.
-- [ ] 6.3 Step `probe`: both models' exact misses and cost per set. Recompute D15's estimates at the verified price
+- [x] 6.3 Step `probe`: both models' exact misses and cost per set. Recompute D15's estimates at the verified price
   and record them.
 - [ ] 6.4 Step `sets` on 1.13: its ≈ 1,281 misses (expect ≈ $0.05). Record the run id, spend and any refused body.
 - [ ] 6.5 Step `sets` on the candidate: decisions with the judges, deep-check, and safety's Jev parts (expect

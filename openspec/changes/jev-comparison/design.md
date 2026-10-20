@@ -431,6 +431,11 @@ data change (the model id and its price). `export-schema:check` must stay green 
   request by set. Deep-check and safety are priced from their runs' ledgers.
 - **The paired probes are two suites** (`compare-timing`, `compare-repeat`), store-bypassed, Jev only. They ask both
   models in one run, alternating, through `Gateway.decide(model=)`.
+- **M15's manifest builder listed 491 bodies wrongly** (found by the first probe, 6.3): keyed nouls and scores under
+  the bare question id instead of the live key (docs, earlier, recall, importance: 461), and the pairwise judge's
+  second ask with reversed options instead of swapped replies (30). The builder now mirrors `Decisions.run`, and the
+  1.13 manifest was rebuilt: the same 4,965 bodies in count, **4,404 stored** (not 3,684), so 1.13's side pays
+  for 541 bodies (≈ $0.035), not 1,261. The Context table above keeps M15's figures as they were recorded.
 - **Pruning:** comparison runs are paid, so they are marked `.keep` from the start (D15); the probe step's runs are
   free and pruned like any other.
 

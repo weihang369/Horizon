@@ -74,3 +74,52 @@ What phase 4 found and settled (design D10's padded top-ups, the user's choice; 
 - a test that ran the pinned model's judge set on the fake wrote `evals/baselines/judges.json`; the file was restored
   from git and the test now writes a temporary record. Through the CLI this can't happen (`decisions` refuses test
   mode).
+
+## §6 The paid runs (all Jev)
+
+### 6.2 The canaries (2026-10-20 19:42 KL, $0.0009)
+
+| Run | Model returned | Result |
+|---|---|---|
+| `20261020T114150-canary-3e6e90` | `typesafe/jev-1.13-20260917` | **20/20** on its own baseline: no drift since the stored answers were recorded |
+| `20261020T114201-canary-05be15` | `typesafe/jev-1.14-20261014` | first run, **18/20** within tolerance of 1.13's answers; written as `evals/canary/typesafe__jev-1.14.json` (fingerprint `c27e1e1e…`) |
+
+1.14's two differences from 1.13 (the comparison's first finding):
+- `emotion-2` (`emotion:chr_seedAmara`): choice **neutral → thinking**; p(neutral) 0.62 → 0.42;
+- `message-18` (`standalone`): p 0.16 → 0.05 (over the 0.10 tolerance; both read "not standalone" at 0.35).
+
+### 6.3 The probe, and a fix to M15's manifest ($0)
+
+The first probe found **491 bodies refused on both models**: the comparison's manifest guard working as meant, on
+an error in M15's manifest builder (D20):
+- **461 keyed asks** (docs 121, earlier 120, recall 120, importance 100): the suite asks them under the live key
+  (`docs:chr_seedMei`, …); the builder hashed them under the bare question id;
+- **30 pairwise-judge asks:** the suite's second ask swaps the two replies in the state; the builder listed a reversed
+  option order instead, which hashes the same as the first ask.
+
+The builder now mirrors `Decisions.run` exactly (with a test: a decisions run against a manifest built from the same
+datasets refuses nothing), and `evals/baselines/jev-1.13-requests.json` was rebuilt ($0). Still 4,965 bodies in 22
+sets; **4,404 have a stored 1.13 answer, not M15's 3,684**:
+- docs, earlier, importance and recall are fully stored. M15 8.14's "bodies changed after their milestones" was the
+  builder's error, not a change;
+- emotion 400/520 and reactions 180/180 (the builder had compiled the reversed asks with the wrong seed, so their
+  order salt missed the stored key);
+- unstored: the canary 20 (never stored), docs 1, and the reversed asks of who_speaks 330, debate_member 90 and
+  emotion 120.
+
+The probe on the corrected manifest (0 refused on either model):
+
+| Model | Step | Stored | To pay | Would pay |
+|---|---|---|---|---|
+| typesafe/jev-1.13 | decisions | 1,994 | 541 | $0.03487 |
+| typesafe/jev-1.13 | decisions --set judges | 2,024 | 0 | $0 |
+| typesafe/jev-1.13 | deep-check | 45 | 0 | $0 |
+| typesafe/jev-1.13 | safety (Jev parts) | 341 | 0 | $0 |
+| typesafe/jev-1.14 | decisions | 0 | 2,535 | $0.11976 |
+| typesafe/jev-1.14 | decisions --set judges | 0 | 2,024 | $0.06819 |
+| typesafe/jev-1.14 | deep-check | 0 | 45 | $0.00129 |
+| typesafe/jev-1.14 | safety (Jev parts) | 0 | 341 | $0.01163 |
+
+D15 recomputed at the verified price ($0.042 per million, both models): the canaries $0.0009 (spent); 1.13's
+misses **$0.035**; the candidate's sets **$0.201**; the repeat probe ≈ $0.003; the timing probe ≈ $0.06 (two
+windows). **Total ≈ $0.30**, as planned.

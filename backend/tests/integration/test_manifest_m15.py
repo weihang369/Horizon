@@ -76,3 +76,31 @@ async def test_a_comparison_counts_a_rate_limit_and_goes_on(api: Api) -> None:
     r = await api.rt.gateway.decide(state, q, call_ctx("eval_judge"))
     assert r.answers == {} and api.rt.gateway.comparison_errors == [{"code": "rate_limited", "status": 429,
                                                                      "questions": ["q"]}]
+
+
+async def test_every_body_the_decisions_suite_sends_is_listed(api: Api, tmp_path: Path,
+                                                              monkeypatch: pytest.MonkeyPatch) -> None:
+    """jev-comparison (D20): the builder mirrors `Decisions.run`. M15's listed keyed nouls under the bare question id
+    and the pairwise judge's second ask with its options reversed, so 491 of a comparison's bodies were refused."""
+    from horizon.evals import suites
+    from horizon.evals.runner import Options, RunEnv
+
+    await api.set_key()
+    real = EVALS_DIR / "datasets"
+    root = tmp_path / "datasets"
+    for rel in ("docs/docs.jsonl", "importance/importance.jsonl", "judges/judge_pairwise.jsonl",
+                "who_speaks/who_first.jsonl", "emotion/emotion.jsonl"):
+        lines = [ln for ln in (real / rel).read_text(encoding="utf-8").splitlines() if ln.strip()][:4]
+        (root / rel).parent.mkdir(parents=True, exist_ok=True)
+        (root / rel).write_text("\n".join(lines) + "\n", encoding="utf-8")
+    monkeypatch.setattr(suites, "DATASETS", root)
+    api.rt.gateway.allowed_bodies = frozenset(body_hash(s, q) for _n, s, q, _o in decisions_bodies())
+    d = suites.Decisions()
+    for opts in (Options("decisions", against="m.json"), Options("decisions", set="judges", against="m.json")):
+        run_dir = tmp_path / "evals" / f"run-{opts.set}" / "naive"
+        run_dir.mkdir(parents=True)
+        await d.run(RunEnv(rt=api.rt, opts=opts, store=None, run_dir=run_dir, max_usd=1.0),
+                    d.plan(opts, api.rt.prices, paid=True))
+    assert api.rt.gateway.manifest_refused == []
+    fake = api.rt.fake
+    assert fake is not None and fake.counts["decisions"] > 0
