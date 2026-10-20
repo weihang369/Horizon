@@ -104,10 +104,10 @@
 
 ## 4. `compare-models`: the runs, the probes and the report (D7–D11)
 
-- [ ] 4.1 Name the manifest by model (`jev-<version>-requests.json` from the pinned id, D11). Verify with a test:
+- [x] 4.1 Name the manifest by model (`jev-<version>-requests.json` from the pinned id, D11). Verify with a test:
   1.13 still gives `jev-1.13-requests.json`, and the committed file is byte-for-byte unchanged by
   `horizon eval manifest`.
-- [ ] 4.2 Add `horizon eval compare-models --base --new --manifest [--step …] [--report-only RUN…]` (new
+- [x] 4.2 Add `horizon eval compare-models --base --new --manifest [--step …] [--report-only RUN…]` (new
   `horizon/evals/compare.py`):
   - each step is a normal `Runner` run;
   - the run ids go to `data/evals/compare-<base>-vs-<new>.json`, and a step resumes from it;
@@ -115,17 +115,17 @@
 
   Verify with an integration test on the fake: the full sequence runs; a body missing from a trimmed manifest is
   named and sent on neither side; the ledgers hold only `decision` rows.
-- [ ] 4.3 Pair the rows and score them drop-in and re-tuned (D8): pair on (set, id, order, part); drop-in at the
+- [x] 4.3 Pair the rows and score them drop-in and re-tuned (D8): pair on (set, id, order, part); drop-in at the
   live values; re-tuned through each set's existing chooser (the D8 table), with the chosen values written before
   test is scored. Verify with unit tests:
   - the paired McNemar example from the spec (b 2, c 6);
   - a noul set's threshold is chosen from dev rows only (test rows altered → the same threshold);
   - a set with no rule repeats drop-in and says so.
-- [ ] 4.4 Add the behaviour figures (D9): calibration bins and ECE per noul set; flip, first-option per order and
+- [x] 4.4 Add the behaviour figures (D9): calibration bins and ECE per noul set; flip, first-option per order and
   both-orders rates; invalid, 429 and 529 rates excluding store hits; cost per request by set; and the cost per 1:1
   reply computed from the M15 latency run's per-turn Jev tokens. Verify with unit tests on hand-made rows, including
   the spec's first-option scenario.
-- [ ] 4.5 Add the paired timing probe (D10):
+- [x] 4.5 Add the paired timing probe (D10):
   - bodies from the manifest's stored bodies in the buckets <1k, 1k–2.5k, 2.5k–4k (30 each) plus 5 near 10k and 5
     near 25k;
   - alternate which model goes first, store bypassed, discard 5 warm-up requests per model per window;
@@ -134,12 +134,12 @@
   - the projected deadline-miss rate per live purpose.
 
   Verify with tests on the fake's fixed latencies: warm-up excluded and counted; two windows reported apart.
-- [ ] 4.6 Add the repeat probe (D11): the canary's 20 items × 3 per model, store bypassed; report changed choices and
+- [x] 4.6 Add the repeat probe (D11): the canary's 20 items × 3 per model, store bypassed; report changed choices and
   the largest p and score moves beside group A's 1.13 figure. Verify with a unit test on fixed answers.
-- [ ] 4.7 Write the report (`report.md`, per-item `*.jsonl` with safety hashes only, `figures.json`) from saved rows
+- [x] 4.7 Write the report (`report.md`, per-item `*.jsonl` with safety hashes only, `figures.json`) from saved rows
   only. `--report-only` sends nothing. Verify with a test: re-cutting two saved fake runs writes the same report with
   zero requests and $0.
-- [ ] 4.8 Document "Comparing a new Jev" in `evals/README.md` (D17), with each step's command as run. Verify that
+- [x] 4.8 Document "Comparing a new Jev" in `evals/README.md` (D17), with each step's command as run. Verify that
   `--help` matches the doc. Commit phase 4 at green.
 
 ## 5. Offline gates

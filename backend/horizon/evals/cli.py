@@ -108,21 +108,56 @@ def _manifest(args: argparse.Namespace) -> int:
     import json
 
     from horizon.config import load_config
-    from horizon.evals.manifest import MANIFEST_NAME, build
-    from horizon.evals.runner import EVALS_DIR, SAFETY_CACHE
+    from horizon.evals import canary as canary_mod
+    from horizon.evals import runner
+    from horizon.evals.manifest import build, manifest_name
 
     cfg = load_config()
-    canary = json.loads((EVALS_DIR / "canary.json").read_text(encoding="utf-8"))
     model = str(json.loads((cfg.seed_dir / "pricing.json").read_text(encoding="utf-8"))["data"]["decision"]["model"])
-    doc = build(model=model, fingerprint=canary.get("fingerprint"), store_root=cfg.data_dir / "cache",
-                private_store_root=SAFETY_CACHE, test_mode=cfg.test_mode)
-    out = args.out or str(EVALS_DIR / "baselines" / MANIFEST_NAME)
+    # jev-comparison (D5, D11): the pinned model's own canary salt, and the file named after the model
+    doc = build(model=model, fingerprint=canary_mod.fingerprint_for(runner.EVALS_DIR, model),
+                store_root=cfg.data_dir / "cache", private_store_root=runner.SAFETY_CACHE, test_mode=cfg.test_mode)
+    out = args.out or str(runner.EVALS_DIR / "baselines" / manifest_name(model))
     with open(out, "w", encoding="utf-8", newline="\n") as f:
         f.write(json.dumps(doc, indent=1, ensure_ascii=False) + "\n")
     for name, s in doc["sets"].items():
         print(f"{name}: {s['n']} request(s), {s['stored']} with a stored {model} answer")
     print(f"horizon: written to {out}")
     return 0
+
+
+def _compare_models(args: argparse.Namespace) -> int:
+    """jev-comparison (D7): the candidate Jev against the pinned one, step by step; `--report-only` sends nothing."""
+    import asyncio
+    import json
+
+    from horizon.config import load_config
+    from horizon.evals import compare
+    from horizon.evals.manifest import manifest_name
+    from horizon.evals.runner import EVALS_DIR, Runner
+
+    cfg = load_config()
+    base = args.base or str(json.loads((cfg.seed_dir / "settings.json").read_text(encoding="utf-8"))["data"]["models"]
+                            ["decision"])
+    manifest = args.manifest or str(EVALS_DIR / "baselines" / manifest_name(base))
+    for model in (base, args.new):
+        if "latest" in model:
+            print(f"horizon: compare-models takes pinned ids, never an alias ({model})", file=sys.stderr)
+            return 2
+    if args.report_only is not None:
+        try:
+            state = (compare.report_only_state(cfg.data_dir, base, args.new, manifest, args.report_only)
+                     if args.report_only else
+                     compare.load_state(compare.state_path(cfg.data_dir, base, args.new), base, args.new, manifest))
+        except (FileNotFoundError, ValueError) as e:
+            print(f"horizon: {e}", file=sys.stderr)
+            return 2
+        lines = compare.write_report(cfg.data_dir, state)
+        print("\n".join(lines))
+        print(f"horizon: written to {compare.out_dir(cfg.data_dir, base, args.new)} (nothing was sent)")
+        return 0
+    c = compare.Comparison(cfg.data_dir, base, args.new, manifest, runner_for=lambda: Runner(cfg), yes=args.yes)
+    return asyncio.run(c.step(args.step) if args.step else c.all_steps())
 
 
 def _overlap(_args: argparse.Namespace) -> int:
@@ -341,6 +376,19 @@ def register(sub: Any) -> None:
     mf = esub.add_parser("manifest", help="write the Jev request manifest for the model comparison ($0, M15)")
     mf.add_argument("--out", default=None)
     mf.set_defaults(fn=_manifest)
+    cm = esub.add_parser("compare-models", help="a candidate Jev against the pinned one on the manifest's requests, "
+                                                "step by step; all Jev, any hour (jev-comparison)")
+    cm.add_argument("--base", default=None, help="the pinned Jev id (default: seed/settings.json models.decision)")
+    cm.add_argument("--new", required=True, help="the candidate Jev id, e.g. typesafe/jev-1.14")
+    cm.add_argument("--manifest", default=None,
+                    help="the request manifest (default: evals/baselines/jev-<base version>-requests.json)")
+    cm.add_argument("--step", default=None, choices=["canary", "probe", "sets", "repeat", "timing-a", "timing-b",
+                                                     "report"],
+                    help="one step; without it, every step not yet done, in order")
+    cm.add_argument("--report-only", nargs="*", default=None, dest="report_only", metavar="RUN",
+                    help="write the report from saved rows only ($0): the recorded runs, or the RUN ids named")
+    cm.add_argument("--yes", action="store_true", help="skip each run's y/N prompt")
+    cm.set_defaults(fn=_compare_models)
     esub.add_parser("overlap", help="dataset items must not copy the bank's wording").set_defaults(fn=_overlap)
     rv = esub.add_parser("review", help="sample a dataset for label review")
     rv.add_argument("set")

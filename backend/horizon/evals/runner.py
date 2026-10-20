@@ -47,7 +47,8 @@ if TYPE_CHECKING:
 EVALS_DIR = REPO_ROOT / "evals"
 SAFETY_CACHE = REPO_ROOT / "private" / "evals" / "cache"   # M14 (safety D23): the safety suite's own store
 KEEP_RUNS = 20
-BYPASS_SUITES = frozenset({"canary", "capture", "import", "latency", "embed-probe"})   # M9 D31: timing never uses the store
+BYPASS_SUITES = frozenset({"canary", "capture", "import", "latency", "embed-probe",   # M9 D31: timing never uses the store
+                           "compare-timing", "compare-repeat"})   # jev-comparison D10, D11: the paired probes
 PAID_ONLY = frozenset({"canary", "decisions"})
 # M15 (images-music D13): a probe never runs a store-bypassing suite, a free one, or a generator that writes committed
 # files; and it prices a suite whose items are one request each exactly, any other (chained) one at its whole estimate
@@ -83,6 +84,7 @@ class Options:
     against: str | None = None            # M15 (D19): a request manifest; Jev bodies it doesn't list are refused
     short: bool = False                   # M15 transcript (D10): the 7 short `naive` scripts, no drop required
     decision_model: str | None = None     # jev-comparison (D3): ask this Jev model instead of the seed's pinned one
+    pair: tuple[str, str] | None = None   # jev-comparison (D10, D11): the two models a paired probe alternates
 
 
 @dataclass
@@ -292,6 +294,8 @@ class Runner:
     out: Callable[[str], None] = print
     now: Callable[[], datetime] = lambda: datetime.now(UTC)
     store_hits: int = 0   # the last run's store hits, for its report
+    last_meta: dict[str, Any] = field(default_factory=dict)   # jev-comparison (D20): the last run's `run.json` extras
+    last_run_id: str | None = None                             # jev-comparison (D7): the last run's folder
     last_probe: ProbeResult | None = None
     probe_estimate: float = 0.0
 
@@ -352,6 +356,7 @@ class Runner:
         run_id = f"{now.strftime('%Y%m%dT%H%M%S')}-{opts.suite}-{uuid.uuid4().hex[:6]}"
         run_dir = self.runs_dir / run_id / opts.profile
         run_dir.mkdir(parents=True, exist_ok=True)
+        self.last_run_id = run_id
         if plan.paid:   # jev-comparison (D15): marked at the start, so a run that dies mid-way is never pruned
             keep_run(self.runs_dir, run_id)
         if opts.max_usd is not None:
@@ -363,6 +368,7 @@ class Runner:
         else:
             max_usd = 1.0   # the in-process fake's prices: nothing real is spent; --max-usd still forces a cap
         (run_dir / "settings.local.json").write_text(json.dumps({"budget": {"dailyCapUsd": max_usd}}), encoding="utf-8")
+        self.last_meta = {}
         result, ports, spent, model = await self._execute(suite, plan, opts, run_dir, max_usd, test_mode)
         self._report(run_dir, opts, plan, result, ports, spent, max_usd, model)
         if plan.paid:
@@ -423,6 +429,9 @@ class Runner:
                 result = Result(summary=[f"the suite stopped: {e}; the counts cover what ran before it"])
             spent = await env.spent()
             self.store_hits = store.hits if store is not None else 0
+            self.last_meta = {"decision_model": str(rt.gateway.decision_model), "candidate": env.candidate,
+                              "manifest_refused": list(rt.gateway.manifest_refused),
+                              "errors": list(rt.gateway.comparison_errors)}
             if opts.probe:
                 self.last_probe = self._probe_result(opts, store, rt.probe_blocked)
                 result.status = "probe"
@@ -461,12 +470,35 @@ class Runner:
                  f"- profile: `{opts.profile}`; ports: " + ", ".join(f"{k}={v}" for k, v in sorted(ports.items())),
                  f"- items: {len(plan.items)}; estimate ${plan.estimate_usd:.5f}; spent ${spent:.5f}; cap ${max_usd:.5f}",
                  f"- provider: {'paid' if plan.paid else 'in-process fake ($0)'}; store hits: {hits}",
-                 *( [f"- decision model asked: `{opts.decision_model}` (not the pinned one)"]
-                    if opts.decision_model else []),
+                 *( [f"- decision model asked: `{opts.decision_model}` ("
+                     + ("a candidate: the pinned records are never written)" if self.last_meta.get("candidate")
+                        else "the pinned one)")] if opts.decision_model else []),
                  *( [f"- model: `{model}`"] if model else []),
                  *( [f"- seed folder: `{opts.seed_dir}` (a config experiment)"] if opts.seed_dir else []),
-                 "", *result.summary, ""]
+                 *self._comparison_lines(), "", *result.summary, ""]
         (run_dir / "report.md").write_text("\n".join(lines), encoding="utf-8")
+        # jev-comparison (D20): what the comparison report needs to know about this run, read back at $0
+        meta = {"run": run_dir.parent.name, "suite": opts.suite, "profile": opts.profile, "set": opts.set,
+                "part": opts.part, "against": opts.against, "pair": list(opts.pair) if opts.pair else None,
+                "status": result.status, "paid": plan.paid, "estimate_usd": plan.estimate_usd,
+                "spent_usd": round(spent, 6), "store_hits": hits, "returned_model": model, **self.last_meta}
+        (run_dir / "run.json").write_text(json.dumps(meta, indent=1) + "\n", encoding="utf-8")
+
+    def _comparison_lines(self) -> list[str]:
+        refused = self.last_meta.get("manifest_refused") or []
+        errors = self.last_meta.get("errors") or []
+        out = []
+        if refused:
+            out.append(f"- not in the manifest, so not sent: {len(refused)} body(ies) (hashes and questions in "
+                       "`run.json`)")
+        if errors:
+            codes: dict[str, int] = {}
+            for e in errors:
+                k = f"{e['code']} {e.get('status') or ''}".strip()
+                codes[k] = codes.get(k, 0) + 1
+            out.append("- provider errors counted, their items left unanswered: "
+                       + ", ".join(f"{k} × {v}" for k, v in sorted(codes.items())))
+        return out
 
 
 def decision_estimate(prices: Any, state: Any, questions: dict[str, Any]) -> float:

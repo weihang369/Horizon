@@ -54,6 +54,25 @@ async def test_a_comparison_refuses_an_unlisted_body_and_names_it(api: Api) -> N
     assert fake is not None
     await api.rt.gateway.decide(state, listed, call_ctx("eval_judge"))
     sent = fake.counts["decisions"]
-    with pytest.raises(ProviderError) as e:
-        await api.rt.gateway.decide(state, other, call_ctx("eval_judge"))
-    assert "other_q" in e.value.message and fake.counts["decisions"] == sent == 1
+    # jev-comparison (D20): not sent, named, and answered with nothing, so the suite goes on with the next item
+    r = await api.rt.gateway.decide(state, other, call_ctx("eval_judge"))
+    assert r.answers == {} and r.generation_id == "not_in_manifest"
+    assert api.rt.gateway.manifest_refused == [f"{body_hash(state, other)} other_q"]
+    assert fake.counts["decisions"] == sent == 1
+
+
+async def test_a_comparison_counts_a_rate_limit_and_goes_on(api: Api) -> None:
+    """jev-comparison (D20): a 429 on a comparison run is counted, the item reads unanswered; live calls still raise."""
+    await api.set_key()
+    state = {"quoted_message": "hi"}
+    q = {"q": {"type": "noul", "instructions": "listed?", "criteria": {"true": "yes", "false": "no"}}}
+    fake = api.rt.fake
+    assert fake is not None
+    fake.refuse_question("q", 429)
+    with pytest.raises(ProviderError):
+        await api.rt.gateway.decide(state, q, call_ctx("eval_judge"))   # no manifest: the error stands
+    api.rt.gateway.allowed_bodies = frozenset({body_hash(state, q)})
+    fake.refuse_question("q", 429)
+    r = await api.rt.gateway.decide(state, q, call_ctx("eval_judge"))
+    assert r.answers == {} and api.rt.gateway.comparison_errors == [{"code": "rate_limited", "status": 429,
+                                                                     "questions": ["q"]}]

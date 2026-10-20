@@ -257,11 +257,23 @@ class Decisions:
             return model + (f"{m12_sets.REASK_SET}:{qid}" if reask else qid)
 
         mark = {mark_key(k): v for k, v in measured_marks(plan.items).items()}
+        cur: list[dict[str, Any]] = [{}]   # the item being asked
+
+        async def ask(state: Any, qs: dict[str, Any], ctx: Any, **kw: Any) -> Any:
+            """jev-comparison (D9): a row records its requests that reached Jev and their cost (store hits: none)."""
+            r = await env.rt.gateway.decide(state, qs, ctx, **kw)
+            if getattr(r, "generation_id", None) not in (None, "store", "probe", "not_in_manifest", "error"):
+                usage = getattr(r, "usage", None)   # a stub answer in a test may carry neither
+                cur[0]["sent"] = cur[0].get("sent", 0) + 1
+                cur[0]["usd"] = round(cur[0].get("usd", 0.0) + (float(usage.cost_usd or 0.0) if usage else 0.0), 8)
+            return r
+
         for item in plan.items:
             qid = str(item["question_id"])
             mkey = mark_key(qid)
             version = bank().get(qid).version
-            if not self.smoke and measured.get(mkey) == mark[mkey]:
+            # jev-comparison (D7): a comparison run (against a manifest) asks every item; the store serves the stored
+            if not self.smoke and not env.opts.against and measured.get(mkey) == mark[mkey]:
                 skipped.add(qid)
                 continue
             if await env.over_budget():
@@ -274,9 +286,10 @@ class Decisions:
                                    **({"kind": item["kind"]} if item.get("kind") else {}),
                                    **({"fresh": True} if item.get("fresh") else {}),   # M11: scored apart (D17)
                                    **({"reask": True} if item.get("reask") else {})}   # M12 D9
+            cur[0] = row
             if isinstance(q, Noul):   # D27: asked once; "yes" when p reaches the entry's threshold
                 key = str(item["item"].get("key") or qid)   # M12: the gate is asked under its live key, `docs:{id}`
-                r = await env.rt.gateway.decide(item["item"]["state"], {key: wire_question(q)}, call_ctx("eval_judge"))
+                r = await ask(item["item"]["state"], {key: wire_question(q)}, call_ctx("eval_judge"))
                 ans = validate(q, r.answers.get(key))
                 if isinstance(ans, NoulAnswer):
                     th = bank().get(qid).thresholds   # M10: talk_finished's threshold is `t_end` (re-chosen on dev)
@@ -293,7 +306,7 @@ class Decisions:
                 continue
             if isinstance(q, Score) and isinstance(item["label"], int):   # M13 (memory D40): importance, levels 1–n
                 key = str(item["item"].get("key") or qid)
-                r = await env.rt.gateway.decide(item["item"]["state"], {key: wire_question(q)}, call_ctx("eval_judge"))
+                r = await ask(item["item"]["state"], {key: wire_question(q)}, call_ctx("eval_judge"))
                 sa = validate(q, r.answers.get(key))
                 if isinstance(sa, ScoreAnswer):
                     level = round(sa.score) + 1
@@ -306,7 +319,7 @@ class Decisions:
             if qid == judges.PAIRWISE:   # M9 D29: both orders = the two replies swapped (its options never shuffle)
                 probs = []
                 for st in (item["item"]["state"], judges.swapped(item["item"]["state"])):
-                    r = await env.rt.gateway.decide(st, {qid: wire_question(q)}, call_ctx("eval_judge"))
+                    r = await ask(st, {qid: wire_question(q)}, call_ctx("eval_judge"))
                     ans = validate(q, r.answers.get(qid))
                     probs.append(dict(ans.probabilities or {ans.choice: ans.confidence or 0.0})
                                  if isinstance(ans, ChoiceAnswer) else None)
@@ -325,7 +338,7 @@ class Decisions:
             for order in (q,) if item.get("reask") else (q, reordered(q)):
                 # M15 (D13): the reversed ask keys on its own order, so the store never serves it the first answer
                 salt = {qid: list(order.options)} if order is not q and isinstance(order, Choice) else None
-                r = await env.rt.gateway.decide(item["item"]["state"], {qid: wire_question(order)}, call_ctx("eval_judge"),
+                r = await ask(item["item"]["state"], {qid: wire_question(order)}, call_ctx("eval_judge"),
                                                 order=salt)
                 answers.append(validate(order, r.answers.get(qid)))
             a, b = answers if len(answers) == 2 else (answers[0], answers[0])
@@ -696,6 +709,7 @@ async def planned_group_send(env: RunEnv) -> int:
 
 
 def _content() -> dict[str, Any]:
+    from horizon.evals.compare_probes import RepeatProbe, TimingProbe
     from horizon.evals.content import Drafter, Long, Summary, Transcript
     from horizon.evals.conversations import Conversations
     from horizon.evals.debate_suites import DebateHistory, DebatePlant, DebateQuality, DebateSuite
@@ -714,7 +728,8 @@ def _content() -> dict[str, Any]:
             "debate": DebateSuite(), "retrieval": Retrieval(),
             "notfound": NotFound(), "deep-check": DeepCheck(), "memory": Memory(),
             "embed-probe": EmbedProbe(), "safety": Safety(), "conversations": Conversations(),
-            "faithfulness": Faithfulness()}
+            "faithfulness": Faithfulness(),
+            "compare-timing": TimingProbe(), "compare-repeat": RepeatProbe()}   # jev-comparison D10, D11
 
 
 SUITES: dict[str, Any] = {"canary": Canary(), "decisions": Decisions(), "smoke": Smoke(), **_content()}

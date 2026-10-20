@@ -261,6 +261,13 @@ someone runs a single suite by hand with `--decision-model`.
     `guardrail` under 1k);
   - near 10k and near 25k: 5 bodies each, as a limit check. They are only there to see the large end and the
     oversize behaviour, never to set a deadline.
+  - **Found in phase 4, the user's choice (2026-10-20): padded top-ups.** The manifest holds only 9 distinct bodies
+    over 2.5k (emotion asks; a choice's two orders hash alike), one near 10k (an 8.2k judge body) and none near 25k.
+    The manifest's bodies fill each bucket first; 2.5k–4k, ~10k and ~25k are then topped up with *padded* bodies: a
+    manifest body whose longest text field repeats its own lines up to the target (3.2k, 10k, 25k). Both models get
+    the identical body, so it stays paired. Padded bodies are timing-only: never scored, never stored, labelled in
+    every row and counted in the report. The bodies are compiled from the datasets (the manifest's hashes), not read
+    from the store, and private safety items are left out.
 - **The order:** each body is sent on both models back to back, alternating which model goes first. The first 5
   requests per model per window are warm-up and are discarded.
 - **The windows:** two, ≥ 3 h apart. One may be daytime (D6).
@@ -404,6 +411,28 @@ baseline stays reachable (D5).
 
 No API, event or frontend behaviour changes before the gate. On a switch, only the mock pricing config and the seed
 data change (the model id and its price). `export-schema:check` must stay green either way.
+
+### D20. What a comparison run does differently (found in phase 4)
+
+- **A body the manifest doesn't list is named, not raised.** M15's gateway raised on it, which would end a whole
+  suite at its first changed item. On a run with `--against-manifest` the gateway now answers it with nothing (the
+  item reads unanswered), records its hash and questions, and the run goes on. The runner writes them to the run's
+  `run.json` and report; the comparison report lists the items by set and id, from the datasets at $0.
+- **Provider errors are counted, not fatal**, on comparison runs only: a 429, a 5xx or a timeout (after the client's
+  one retry) is recorded and its item reads unanswered, so the 429 and 529 rates (D9) come from the same runs. Live
+  calls and other runs raise as before. A budget stop still ends the run.
+- **`decisions` asks every item on a comparison run.** Its "already measured" marks would skip the base model's
+  questions measured in M9–M15, leaving nothing to pair. Against a manifest, the marks are ignored for skipping; the
+  store serves every stored answer, so the base side still costs only its misses.
+- **`run.json`** in each run folder: the suite, options, decision model asked, whether it was a candidate, the
+  status and spend, and the refusals and errors above. The report reads it to place each run, so
+  `--report-only RUN…` needs no other record.
+- **Each decisions row records its own sends and cost** (`sent`, `usd`; store hits send nothing), for D9's cost per
+  request by set. Deep-check and safety are priced from their runs' ledgers.
+- **The paired probes are two suites** (`compare-timing`, `compare-repeat`), store-bypassed, Jev only. They ask both
+  models in one run, alternating, through `Gateway.decide(model=)`.
+- **Pruning:** comparison runs are paid, so they are marked `.keep` from the start (D15); the probe step's runs are
+  free and pruned like any other.
 
 ## Risks / Trade-offs
 
