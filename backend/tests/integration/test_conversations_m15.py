@@ -115,6 +115,23 @@ async def test_free_runs_limit_1_on_the_fake_both_profiles(tmp_path: Path) -> No
     assert "cost per turn" in rep and "repeated opener" in rep
 
 
+def test_part_units_prices_and_times_no_free_runs() -> None:
+    """M15 8.9: a store-backed slice of the units; the live free runs are left for the whole run, priced and timed."""
+    from horizon.domain.pricing import load_price_table
+
+    full, units_only = Options("conversations", limit=2), Options("conversations", limit=2, part="units")
+    prices = load_price_table(Path(__file__).resolve().parents[3] / "seed")
+    a, b = cv.Conversations().plan(full, prices, paid=True), cv.Conversations().plan(units_only, prices, paid=True)
+    assert a.items == b.items and b.estimate_usd < a.estimate_usd and a.expected_s - b.expected_s == 2400
+
+
+async def test_part_units_is_a_slice_without_the_free_runs(tmp_path: Path) -> None:
+    r, out = runner(tmp_path)
+    assert await r.run(Options("conversations", set="long_one_on_one_en", limit=1, part="units", yes=True)) == 0, out
+    rep = (run_dir(tmp_path) / "naive" / "report.md").read_text(encoding="utf-8")
+    assert "## Conversations: 1 of 1 unit(s)" in rep and "## Free runs" not in rep
+
+
 def test_stays_is_not_counted_while_a_part_is_unvalidated_and_a_validated_row_is_added(monkeypatch: Any) -> None:
     """images-music 8.5: `judge_answers_last` failed B4 twice, so `stays` (all four) reads NOT COUNTED, and a row over
     the validated three keeps a counted figure."""

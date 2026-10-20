@@ -314,6 +314,9 @@ def register(sub: Any) -> None:
         if name == "retrieval":
             s.add_argument("--arm", default=None, help="space=<id> | piece=200|300|400[:kept] | lambda=0.5|0.7|1.0 | "
                                                        "rewrite=off")
+        if name == "conversations":
+            s.add_argument("--part", choices=["units"], default=None,
+                           help="units: the compared units only, no free runs (a store-backed slice, M15 8.9)")
         if name == "memory":
             s.add_argument("--part", choices=["rewrite", "recall", "layer3", "dup", "rejudge"], default=None)
             s.add_argument("--arm", default=None, help="recall only: search=bm25|dense | mmr=off | lambda=0.5|0.7|1.0 | "
