@@ -245,7 +245,7 @@ per-item results under `docs/ai/checks/m15/`, no live older batch.
 
 ## 9. Docs and the final gates (design D19, D20)
 
-- [ ] 9.1 Amend everything D20 lists not already done: doc 12's §5, I7, §4 and "Built in M15" notes; doc 13's W3,
+- [x] 9.1 Amend everything D20 lists not already done: doc 12's §5, I7, §4 and "Built in M15" notes; doc 13's W3,
   W4, W6, W10 and W12 rows; doc 02 B3, B4 and B8; doc 11 S2's note. Verify: the docs link check, with 0 broken.
 - [ ] 9.2 Finish `docs/ai/checks/m15.md`: the runs, the findings, the user's choices, and **"What the AI stage
   leaves"** (D19: the manifest and how the Jev 1.14 comparison uses it; the endgame list; the LinkedIn figures and
