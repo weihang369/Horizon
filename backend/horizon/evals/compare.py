@@ -72,9 +72,14 @@ def save_state(path: Path, state: Mapping[str, Any]) -> None:
 
 
 def run_folder(data_dir: Path, run_id: str) -> Path | None:
-    """A run's profile folder (`data/evals/<run>/<profile>/`)."""
+    """A run's profile folder (`data/evals/<run>/<profile>/`): the one with `run.json`, or for a run from before it
+    (M15's latency run), the one with a ledger."""
     root = data_dir / "evals" / run_id
-    return next((p for p in sorted(root.iterdir()) if (p / "run.json").is_file()), None) if root.is_dir() else None
+    if not root.is_dir():
+        return None
+    folders = [p for p in sorted(root.iterdir()) if p.is_dir()]
+    return next((p for p in folders if (p / "run.json").is_file()),
+                next((p for p in folders if (p / "horizon.db").is_file()), None))
 
 
 def run_meta(data_dir: Path, run_id: str) -> dict[str, Any]:
@@ -163,7 +168,7 @@ class Comparison:
         seed = self.runner_for().base.seed_dir
         if name == "report":
             lines = write_report(self.data_dir, self.state)
-            self.out("\n".join(lines[:40]))
+            self.out(f"horizon: {len(lines)} report lines")   # the file only: a Windows console can't print "→"
             self.out(f"horizon: the report is in {out_dir(self.data_dir, self.base, self.new)}")
             return 0
         if name == "canary":
@@ -649,6 +654,22 @@ def repeat_figures(rows: Sequence[Row]) -> dict[str, Any]:
 
 
 # ── the report (D8, D9, D18) ──
+def _shown(path: str) -> str:
+    """A path as the committed report shows it: relative to the repo when it is inside it (no local user folder)."""
+    try:
+        return Path(path).resolve().relative_to(REPO_ROOT).as_posix()
+    except ValueError:
+        return Path(path).name
+
+
+def _local(run_id: str) -> str:
+    """A run id's UTC start, in Kuala Lumpur time."""
+    from zoneinfo import ZoneInfo
+
+    at = dt.datetime.strptime(run_id[:15], "%Y%m%dT%H%M%S").replace(tzinfo=dt.UTC)
+    return at.astimezone(ZoneInfo("Asia/Kuala_Lumpur")).strftime("%Y-%m-%d %H:%M")
+
+
 def _ms_ci(c: tuple[float, float] | None) -> str:
     return f"{c[0]:.0f}–{c[1]:.0f}" if c else "—"
 
@@ -711,7 +732,7 @@ def build_report(data_dir: Path,
     manifest = json.loads(Path(str(state["manifest"])).read_text(encoding="utf-8"))
     figures: dict[str, Any] = {"base": base, "new": new, "generated": dt.datetime.now(dt.UTC).isoformat()}
     lines = [f"# Jev comparison: {base} vs {new}", "",
-             f"- manifest `{state['manifest']}`; base runs {', '.join(_runs(state, 'sets:base:')) or '—'}; candidate "
+             f"- manifest `{_shown(str(state['manifest']))}`; base runs {', '.join(_runs(state, 'sets:base:')) or '—'}; candidate "
              f"runs {', '.join(_runs(state, 'sets:new:')) or '—'}",
              "- b: items only the base got right; c: only the candidate. A set **moves** only at McNemar p < 0.05.",
              "- English items are scored (the English-first rule). Re-tuned: the candidate's value chosen on its dev "
@@ -867,7 +888,11 @@ def build_report(data_dir: Path,
         figures["timing"] = {**tf, "deadline_misses": misses, "weights_source": source}
         lines += ["## Timing (paired probe; store bypassed)", "",
                   f"- warm-up requests excluded: {tf['warmup_excluded']}; padded bodies measured: {tf['padded']} "
-                  "(timing only, never scored)", "",
+                  "(timing only, never scored)",
+                  *[f"- window {w[-1]}: run `{state['runs'][w]}`, started {_local(str(state['runs'][w]))} KL"
+                    for w in ("timing-a", "timing-b") if state.get("runs", {}).get(w)],
+                  "- Jev's latency moves with the hour (M15's run at 07:35 KL: 1.13 p50 ≈ 440 ms); compare the two "
+                  "models within a window, and read the projected misses as that hour's only", "",
                   "| Model | Bucket | Window | n | p50 (CI) | p90 (CI) | p99 |", "|---|---|---|---|---|---|---|"]
         for m, by in sorted(tf["stats"].items()):
             for b, wins in by.items():

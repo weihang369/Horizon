@@ -35,6 +35,13 @@ Whether to switch is the user's decision (task 8.1).
 - **0.3: the expected id and price were right** (`typesafe/jev-1.14`, $0.042 per million), so the conditional
   `decider` and `demo-data` deltas stand as written, and D3's per-model price isn't needed (same price).
 
+### 0.4 The 1.13 keys after the per-model salt (task 2.3, $0)
+
+With the salt now taken from each model's own canary baseline (design D5), the manifest was rebuilt in memory from
+`data/cache/` and `private/evals/cache/`. **3,684 of 3,684** bodies still find their stored jev-1.13 answer, and all
+22 sets list the same body hashes as the committed `jev-1.13-requests.json`. Nothing paid is lost.
+  *(Superseded by §6.3: M15's builder had listed 491 bodies wrongly; rebuilt, 4,404 are stored.)*
+
 ### 0.5 The parse check (task 6.1, 2026-10-20 19:41 KL, $0.00003)
 
 `horizon eval canary --decision-model typesafe/jev-1.14 --limit 1` (run `20261020T114123-canary-4c1658`): canary item
@@ -46,11 +53,105 @@ Whether to switch is the user's decision (task 8.1).
 - The answer was within tolerance of 1.13's: `neutral` both, p 0.60 against 0.62. The run was sliced, so no
   baseline was written (a guard added before this run: a `--limit` or `--start` canary never writes one).
 
-### 0.4 The 1.13 keys after the per-model salt (task 2.3, $0)
+## The result (for the gate, task 8.1)
 
-With the salt now taken from each model's own canary baseline (design D5), the manifest was rebuilt in memory from
-`data/cache/` and `private/evals/cache/`. **3,684 of 3,684** bodies still find their stored jev-1.13 answer, and all
-22 sets list the same body hashes as the committed `jev-1.13-requests.json`. Nothing paid is lost.
+**In one line:** jev-1.14 is **not measurably better or worse** than jev-1.13 on Horizon's own requests. Same price,
+same answer shape, same order bias and errors; a little better calibrated; a little slower at the same hour; less
+steady on a few judges. Nothing in the sets moves at p < 0.05.
+
+The full table is `jev-comparison/report.md` (re-cut from the saved rows: `horizon eval compare-models --new
+typesafe/jev-1.14 --report-only`), with `figures.json` and the per-item rows (`*.jsonl`; safety by hash only).
+
+### Accuracy (paired, English test items)
+
+- **Pooled over every decision set, drop-in:** 1.13 **447/565**, 1.14 **443/565**; b 26 (only 1.13 right), c 22
+  (only 1.14 right); McNemar p **0.67**. No difference shown.
+- **No set moves**, drop-in or re-tuned. The leans, none significant (each n could show only ≥ 0.11–0.32):
+
+  | Set | 1.13 | 1.14 | b / c | p | Lean |
+  |---|---|---|---|---|---|
+  | debate member | 22/31 | 19/31 | 3 / 0 | 0.25 | 1.13 |
+  | memory_guard | 47/48 | 45/48 | 2 / 0 | 0.50 | 1.13 |
+  | importance (exact level) | 15/27 | 13/27 | 2 / 0 | 0.50 | 1.13 |
+  | who_scene | 46/75 | 45/75 | 3 / 2 | 1.00 | — |
+  | talk_finished | 31/33 | 30/33 | 3 / 2 | 1.00 | — |
+  | earlier (t_gate 0.15) | 21/36 | 26/36 | 5 / 10 | 0.30 | 1.14 |
+  | emotion, reactions, who_first/second/next, docs, standalone, english, recall, same_fact | equal | | | 1.00 | — |
+  | deep-check (direction) | 44/45 | 44/45 | 0 / 0 | 1.00 | — |
+  | safety, every knob drop-in | within 2 items | | | ≥ 0.50 | — |
+
+- **Re-tuned** (1.14's values chosen on its dev rows): no decision set improves. One safety knob reads "moves":
+  `tFlag` at 0.8, 1.14 gets 54/56 against 1.13's 45/56 at the live 0.5 (p 0.012). **That is the threshold, not the
+  model:** 1.13 at 0.8 also gets 54/56 (1.14 55/56). See finding F4.
+- By mode (drop-in): one_on_one 97 vs 98 of 133, group 81 vs 82 of 93, watch 110 vs 109 of 153, debate 38 vs 35
+  of 55 (b 3, c 0, p 0.25). Nothing moves.
+
+### Behaviour
+
+| | jev-1.13 | jev-1.14 |
+|---|---|---|
+| Order flip (770 choices asked both ways) | 0.122 | 0.121 |
+| First option in both orders (position-driven) | 0.047 | 0.045 |
+| Errors (429, 5xx), unanswered rows | 0, 0 of 4,145 | 0, 0 of 4,145 (4,923 requests sent) |
+| Calibration ECE, lower is better | docs 0.131, memory_guard 0.142, recall 0.133, talk_finished 0.130, output_rules 0.230, standalone 0.207, earlier 0.232, same_fact 0.053 | docs 0.116, memory_guard 0.102, recall 0.106, talk_finished 0.073, output_rules 0.178, standalone 0.190, earlier **0.274**, same_fact 0.058 |
+| Price | $0.042 / M input | $0.042 / M input |
+| Jev cost per 1:1 reply (M15's 3,675 input tokens per turn) | $0.000154 | $0.000154 |
+| Repeat (canary 20 × 3) | 0 of 20 changed; p ±0.06 (group A's figure exactly) | **1 of 20** changed; p ±0.07; score ±0.04 |
+| Canary against 1.13's answers | — | 18/20 (`emotion-2` neutral → thinking; `message-18` standalone p 0.16 → 0.05) |
+
+### Timing (window A, 2026-10-20 20:45 KL; paired, store bypassed)
+
+| Bucket | 1.13 p50 / p90 ms | 1.14 p50 / p90 ms |
+|---|---|---|
+| < 1k | 672 / 719 | 719 / 828 |
+| 1k–2.5k | 703 / 781 | 766 / 938 |
+| 2.5k–4k | 750 / 797 | 765 / 844 |
+| ~10k (5) | 859 / 906 | 859 / 860 |
+| ~25k (5, padded) | 922 / 968 | 953 / 1,062 |
+
+- **1.14 is 15–60 ms slower at p50 and up to ~150 ms at p90**, measured side by side. Both handled 25k without a 429.
+- **The hour matters more than the model:** M15's latency run (07:35 KL) had 1.13 at ≈ 440 ms p50; at 20:45 KL it
+  was ≈ 700 ms. So the projected deadline misses in the report (e.g. turn_plan 700 ms: 1.13 0.58, 1.14 0.77) describe
+  the evening only. Window B (≥ 23:45 KL, or a morning) is still to run (the user's choice: report now, add window B
+  later with a $0 re-cut); it can only change the timing table.
+
+### The judges (information only, D13)
+
+The judges stay on 1.13. On 1.14 six judges that pass B4 on 1.13 would fail it: judge_engages, judge_keeps_side
+(58 → 49 of 60, **p 0.004**), judge_relationship_fit, judge_starts_new, judge_summary_unsupported, judge_voice (and
+judge_answers_last / judge_breaks_rules fail on both). See finding F3.
+
+## What the comparison found
+
+- **F1. No accuracy reason to switch.** Pooled 447 vs 443 of 565 (p 0.67); no set moves; the leans are small and
+  split (debate member, memory_guard, importance toward 1.13; earlier toward 1.14).
+- **F2. 1.14 is a little slower at the same hour** (+15–60 ms p50) and a little less repeatable (1 of 20 canary
+  choices flipped across 3 asks; 1.13 none). It is a little better calibrated on six of eight noul sets.
+- **F3. A switch would need the judges pinned to 1.13.** Judges ask the pinned decision model; on 1.14 six lose
+  their B4 pass (judge_keeps_side significantly). Switching would need an eval-only judge model setting (a new
+  setting, so a choice for the user) or a re-validation of those judges.
+- **F4. tFlag 0.5 looks low for both models** (output check): at 0.8 both reach 54–55/56 against 45/56 at 0.5 on
+  the 56 output items, by leave-one-out. A finding for the audit or v2, not for this change (a threshold change is
+  the user's choice).
+- **F5. Jev's latency depends on the hour** (≈ 440 ms morning, ≈ 700 ms evening, KL) for both models; deadlines set
+  from a morning run (M15) will miss more in the evening. For the audit or the E2E test stage.
+- **F6. M15's manifest had 491 bodies wrong** (§6.3), and its "docs, earlier, importance, recall bodies changed"
+  note was mistaken: their 1.13 answers were stored all along. Fixed in this change.
+- **F7. Known gap:** the retrieval suite's passage thresholds (`t_keep`, `t_found`) weren't compared (D8); deep-check
+  agrees 44/45 on direction on both models.
+
+## Spend so far (all Jev)
+
+| Run | Spent | D15 estimate |
+|---|---|---|
+| Parse check | $0.00003 | < $0.001 |
+| Both canaries | $0.00090 | ≈ $0.001 |
+| Probes (twice) | $0 | $0 |
+| 1.13's misses (sets) | $0.02912 | ≈ $0.035 (recomputed) |
+| 1.14's sets | $0.16380 | ≈ $0.201 (recomputed) |
+| Repeat probe | $0.00268 | ≈ $0.003 |
+| Timing window A | $0.02209 | ≈ $0.03 |
+| **Total so far** | **$0.21862** | ≈ $0.30 with window B |
 
 ## §5 The offline gates (2026-10-20, on ab7d80d, phases 0–4)
 

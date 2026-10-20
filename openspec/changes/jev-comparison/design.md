@@ -271,6 +271,10 @@ someone runs a single suite by hand with `--decision-model`.
 - **The order:** each body is sent on both models back to back, alternating which model goes first. The first 5
   requests per model per window are warm-up and are discarded.
 - **The windows:** two, ≥ 3 h apart. One may be daytime (D6).
+  - **The user's choice (2026-10-20): report now, window B later.** The report, the write-up and the gate go ahead
+    on window A (20:45 KL); window B runs when convenient and is added by a $0 re-cut (`--report-only`). It can only
+    change the timing table. Window A showed the hour matters more than the model (1.13 ≈ 700 ms at 20:45 KL against
+    ≈ 440 ms in M15's 07:35 KL run), so window B is best taken in a morning.
 - **The report:** p50, p90 and p99 with `percentile_ci` per model, bucket and window. Also each live purpose's
   projected deadline-miss rate: the share of its bucket above the purpose's deadline, e.g. `turn_plan` 700,
   `guardrail` 800.

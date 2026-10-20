@@ -152,8 +152,8 @@ def _compare_models(args: argparse.Namespace) -> int:
         except (FileNotFoundError, ValueError) as e:
             print(f"horizon: {e}", file=sys.stderr)
             return 2
-        lines = compare.write_report(cfg.data_dir, state)
-        print("\n".join(lines))
+        lines = compare.write_report(cfg.data_dir, state)   # the file only: a Windows console can't print "→"
+        print(f"horizon: {len(lines)} report lines")
         print(f"horizon: written to {compare.out_dir(cfg.data_dir, base, args.new)} (nothing was sent)")
         return 0
     c = compare.Comparison(cfg.data_dir, base, args.new, manifest, runner_for=lambda: Runner(cfg), yes=args.yes)

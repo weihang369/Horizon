@@ -168,7 +168,7 @@
 - [x] 6.4 Step `sets` on 1.13: its ≈ 1,281 misses (expect ≈ $0.05). Record the run id, spend and any refused body.
 - [x] 6.5 Step `sets` on the candidate: decisions with the judges, deep-check, and safety's Jev parts (expect
   ≈ $0.20). Record the run ids and spend; resume with `--start` if the run stops.
-- [ ] 6.6 Step `repeat` (≈ $0.003). Record.
+- [x] 6.6 Step `repeat` (≈ $0.003). Record.
 - [ ] 6.7 Steps `timing-a` and `timing-b`, ≥ 3 h apart, one may be daytime (≈ $0.05). Record the windows and the
   local clocks.
 - [ ] 6.8 Re-run `compare-models --step probe` to confirm everything now hits (a re-run is free). Add the spend
@@ -176,9 +176,9 @@
 
 ## 7. The report and the findings
 
-- [ ] 7.1 Step `report`; copy the per-item rows and `figures.json` to `docs/ai/checks/jev-comparison/`. Verify that
+- [x] 7.1 Step `report`; copy the per-item rows and `figures.json` to `docs/ai/checks/jev-comparison/`. Verify that
   `git status` shows no private text (safety rows as hashes).
-- [ ] 7.2 Write `docs/ai/checks/jev-comparison.md`:
+- [x] 7.2 Write `docs/ai/checks/jev-comparison.md`:
   - §0 the facts;
   - the per-set table (drop-in, re-tuned, McNemar, by mode where available);
   - calibration, order and first-option figures; errors; cost per request and per 1:1 reply;
@@ -186,7 +186,7 @@
   - the judges' information table;
   - the known gaps (the retrieval suite's passage thresholds);
   - "What the comparison found", with each finding's rows.
-- [ ] 7.3 Append the findings to `private/launch/findings-log.md` (not committed). Keep the figures' data for a
+- [x] 7.3 Append the findings to `private/launch/findings-log.md` (not committed). Keep the figures' data for a
   LinkedIn post. Commit the docs at green.
 
 ## 8. The gate: the user decides
