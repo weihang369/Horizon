@@ -166,14 +166,14 @@
   "version": 2
  },
  "judge_notfound_cites": {
-  "baseline": 0.6259,
+  "baseline": 0.6301,
   "date": "2026-10-20",
-  "overall": 0.898,
+  "overall": 0.8973,
   "passed": true,
   "planted": 0.9333,
   "planted_n": 30,
-  "real": 0.8889,
-  "real_n": 117,
+  "real": 0.8879,
+  "real_n": 116,
   "version": 1
  },
  "judge_notfound_says": {

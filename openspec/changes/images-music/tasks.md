@@ -250,7 +250,7 @@ per-item results under `docs/ai/checks/m15/`, no live older batch.
 - [x] 9.2 Finish `docs/ai/checks/m15.md`: the runs, the findings, the user's choices, and **"What the AI stage
   leaves"** (D19: the manifest and how the Jev 1.14 comparison uses it; the endgame list; the LinkedIn figures and
   good-emotion cases). Verify: it is linked from doc 13.
-- [ ] 9.3 Final gates on the gate worktree:
+- [x] 9.3 Final gates on the gate worktree:
   - backend pytest, ruff, mypy;
   - frontend typecheck, lint, test, http;
   - `seed:check`, `fixtures:check`, `export-schema:check`, `assets:check`;
