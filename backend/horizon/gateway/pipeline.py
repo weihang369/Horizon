@@ -502,6 +502,11 @@ class Gateway:
         skey = chat_key(self.chat.body(req, stream=False)) if store is not None else ""
         if store is not None and (hit := store.get("chat", skey)) is not None:
             msg = ((hit["response"].get("choices") or [{}])[0].get("message") or {})
+            if self.capture_bodies:   # M15 8.9: a replayed reply is captured too, so an eval reads its raw text (D14)
+                await self._hook(ctx, {"kind": "chat_stream", "model": req.model, "purpose": ctx.purpose,
+                                       "body": {"request": {"messages": req.messages},
+                                                "response": {"text": str(msg.get("content") or "")}}},
+                                 {"provider": "store", "costUsd": 0.0})
             yield ChatChunk(generation_id="store", content=str(msg.get("content") or ""), provider="store")
             yield ChatChunk(generation_id="store", finish_reason="stop", provider="store")
             return

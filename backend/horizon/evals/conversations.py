@@ -577,7 +577,9 @@ class Conversations:
             for e in envs.values():
                 await quiet(e)
                 await install_cast(e)           # the debates' eval cast (D30.1), in the copies only
-            envs["naive"].rt.capture.enabled = True   # the raw replies, for the note-in-tag rate (D14); this copy only
+            nv = envs["naive"].rt   # the raw replies, for the note-in-tag rate (D14); this copy only. M15 8.9: the
+            nv.capture.enabled = True   # gateway's hook too, as HORIZON_CAPTURE_AI_CALLS=1 wires it at start-up
+            nv.gateway.capture_bodies, nv.gateway.on_call = True, nv.capture.on_call
             from horizon.gateway.errors import ProviderError
 
             path, states = env.run_dir / "replies.jsonl", env.run_dir / "judge_states.jsonl"

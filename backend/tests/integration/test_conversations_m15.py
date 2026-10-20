@@ -31,6 +31,7 @@ async def test_smoke_one_unit_per_mode_both_profiles_at_0(tmp_path: Path) -> Non
     assert sorted(x["mode"] for x in rows) == ["debate", "group", "one_on_one", "watch"]
     assert all("text" in x["replies"][p] for x in rows for p in cv.PROFILES)
     assert all(x["judged"].get("p_agent_better") is not None for x in rows)
+    assert all(x["replies"]["naive"].get("raw") for x in rows)               # the gateway hook is wired (M15 8.9)
     states = lines(run / "naive" / "judge_states.jsonl")
     assert {s["question_id"] for s in states} >= {cv.VOICE, cv.FACT, cv.IN_STORY, cv.PAIRWISE}
     report = (run / "naive" / "report.md").read_text(encoding="utf-8")
