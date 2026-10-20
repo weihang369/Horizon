@@ -206,6 +206,7 @@ async def delete_world(request: Request, world_id: str) -> Response:
     async with rt.db.write() as tx:
         await worlds_svc.delete_world(tx, world_id, now=rt.now_iso())
     worlds_svc.remove_world_files(rt.cfg.data_dir, world_id)
+    rt.purge.notify()   # v1 test stage (audit 01-06): the queued purge ran only at the next restart before
     return Response(status_code=204)
 
 

@@ -558,6 +558,8 @@ class Runtime:
                 await tx.conn.execute(t.ai_purge_queue.insert().values(scope="session", ids=sids, created_at=self.now_iso(),
                                                                        attempts=0, done_at=None))
             tx.publish(GLOBAL, {"type": "mock.reset"})
+        if sids and self._purge is not None:
+            self._purge.notify()   # audit 01-06: the replaced seed sessions' AI rows are purged now, not at the next start
         if self._jobs is not None:
             await self._jobs.recover()
 
@@ -591,6 +593,8 @@ class Runtime:
             async with self.db.write() as tx:
                 await worlds_svc.delete_world(tx, world_id, now=self.now_iso())
             worlds_svc.remove_world_files(self.cfg.data_dir, world_id)
+        if world_ids and self._purge is not None:
+            self._purge.notify()   # audit 01-06
         self.publish(GLOBAL, {"type": "mock.reset"})
 
     async def factory_reset(self) -> None:

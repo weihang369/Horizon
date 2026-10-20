@@ -58,12 +58,21 @@ export function formatRoute(r: Route): string {
   }
 }
 
+/** A malformed escape (a stray `%`) stays as typed instead of throwing a URIError before the app has mounted. */
+function decodeSegment(s: string): string {
+  try {
+    return decodeURIComponent(s);
+  } catch {
+    return s;
+  }
+}
+
 /** Parse a hash ("#/w/x?tab=sessions") or path. Unknown paths fall back to the title. */
 export function parseRoute(hash: string): Route {
   const raw = hash.replace(/^#/, "") || "/";
   const [path, query = ""] = raw.split("?");
   const q = new URLSearchParams(query);
-  const seg = path.split("/").filter(Boolean).map(decodeURIComponent);
+  const seg = path.split("/").filter(Boolean).map(decodeSegment);
   const step = (v?: string) => oneOf(v, CREATION_STEPS);
   if (seg.length === 0) return { name: "title" };
   if (seg[0] === "onboarding") return { name: "onboarding", ...(seg[1] ? { card: Number(seg[1]) || 1 } : {}) };

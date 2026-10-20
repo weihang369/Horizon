@@ -6,6 +6,7 @@ import { formatRoute } from "../../router/routes";
 import { Button } from "../../ui/Button";
 import { Modal } from "../../ui/Panels";
 import { KeyIcon } from "../../ui/icons";
+import { NO_BACKEND, RUN_LOCALLY_URL } from "./onlineDemo";
 import s from "./Overlays.module.css";
 
 export function KeyRequired({ close, reason }: OverlayComponentProps<"O05">) {
@@ -27,6 +28,12 @@ export function KeyRequired({ close, reason }: OverlayComponentProps<"O05">) {
         <div>
           <p className={s.keyLead}>{reason ?? "Horizon needs your OpenRouter key to think."}</p>
           <p className={s.keyNote}>Recordings, profiles and Insight still work without one. Your key stays on this machine.</p>
+          {NO_BACKEND && (
+            <p className={s.keyNote}>
+              This online demo never calls an AI: any key starting with sk-or- unlocks its scripted replies, so don't use
+              your real one. For real AI, <a href={RUN_LOCALLY_URL} target="_blank" rel="noreferrer">run Horizon on your own computer ↗</a>.
+            </p>
+          )}
         </div>
       </div>
     </Modal>

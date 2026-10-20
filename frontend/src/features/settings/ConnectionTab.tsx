@@ -13,6 +13,7 @@ import { ErrorTape } from "../../ui/Panels";
 import { Tape } from "../../ui/Tape";
 import { CheckIcon, KeyIcon } from "../../ui/icons";
 import { maskKey, readKeyHint, saveKeyHint } from "../shell/keyHint";
+import { NO_BACKEND, ONLINE_DEMO_NOTICE, RUN_LOCALLY_URL } from "../shell/onlineDemo";
 import { Row, Section } from "./parts";
 import { CONNECTION_NOTICE } from "./privacyNotice";
 import s from "./Settings.module.css";
@@ -49,7 +50,14 @@ export function ConnectionTab({ settings }: { settings: AppSettings }) {
     }
   };
   const clear = async () => {
-    await client.settings.setKey(null);
+    setError(null);
+    try {
+      await client.settings.setKey(null);
+    } catch (e) {
+      // Audit 02-07: a key from OPENROUTER_API_KEY (.env) answers 409 with how to remove it; show that, don't swallow it.
+      setError((e as HorizonErrorShape)?.message ?? "Couldn't clear the key.");
+      return;
+    }
     saveKeyHint(null);
     setHint(null);
     setTest({ kind: "idle" });
@@ -71,6 +79,14 @@ export function ConnectionTab({ settings }: { settings: AppSettings }) {
 
   return (
     <>
+      {NO_BACKEND && (
+        <ErrorTape
+          tone="warn"
+          label="ONLINE DEMO"
+          className={s.demoNotice}
+          message={<>{ONLINE_DEMO_NOTICE} <a className={s.link} href={RUN_LOCALLY_URL} target="_blank" rel="noreferrer">How to run it locally ↗</a></>}
+        />
+      )}
       <div className={s.status} data-status={status}>
         {status === "set" ? (
           <>
