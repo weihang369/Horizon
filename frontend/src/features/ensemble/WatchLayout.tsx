@@ -4,7 +4,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import type { CSSProperties } from "react";
 import type { WatchConfig, WatchState } from "../../contract/types";
-import { openOverlay } from "../../app/layers";
+import { closeOverlay, openOverlay } from "../../app/layers";
 import { EnergyBar, NamePlate } from "../../character";
 import { PaletteScope } from "../../theme";
 import { RansomText, Tape, cx } from "../../ui";
@@ -40,6 +40,10 @@ export function WatchLayout({ rt, replay }: LayoutProps) {
     offered.current = true;
     if (ended && session.status !== "ended") openOverlay("O17", { sessionId: session.id });
   }, [replay, ended, rt.session, session.id, session.status]);
+
+  // The card belongs to this scene: leaving it (hub, back, another session) takes the card away too (v1 walkthrough:
+  // it stayed open over the next screen).
+  useEffect(() => () => closeOverlay("O17"), []);
 
   const onAir = status === "playing" && !rt.paused;
 

@@ -11,6 +11,7 @@ import type { GenerationJob, GenerationTask } from "@/contract/types";
 import { formatDuration } from "@/domain/format";
 import { Button, HalftoneDevelop, Tape, TextField } from "@/ui";
 import { cx } from "@/ui/cx";
+import { isPlaceholderUrl } from "@/vfx/shadow";
 import { ActionBar } from "../ActionBar";
 import { useWizard } from "../context";
 import { isRunning, retryJobTask, startGeneration, useEstimate } from "../generate";
@@ -122,7 +123,7 @@ export function PortraitStep() {
                       </div>
                     )}
                     {cand.selected && <span className={s.lockBadge}>🔒 BASE</span>}
-                    {cand.url && !generating && !failed && <span className={s.candPh}>Placeholder · candidate {i + 1}</span>}
+                    {cand.url && !generating && !failed && <span className={s.candPh}>{isPlaceholderUrl(cand.url) ? "Placeholder · " : ""}candidate {i + 1}</span>}
                   </div>
                   <div className={s.candActions}>
                     {cand.status === "ready" && !cand.selected && (

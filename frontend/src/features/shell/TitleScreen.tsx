@@ -11,10 +11,12 @@ import { ui } from "../../stores/ui";
 import { waitForFonts } from "../../styles/fonts";
 import { RansomText } from "../../ui/RansomText";
 import { playMainTheme, useHouseScreen } from "./house";
+import { NO_BACKEND } from "./onlineDemo";
 import s from "./Title.module.css";
 
 const IGNORED_KEYS = new Set(["Shift", "Control", "Alt", "Meta", "Tab", "CapsLock", "Fn", "OS", "ContextMenu", "Escape"]);
-export const APP_VERSION = "v0.1 · UI PREVIEW";
+// v1.0: the first release with the backend (the mock build is the online demo).
+export const APP_VERSION = NO_BACKEND ? "v1.0 · ONLINE DEMO" : "v1.0";
 
 export function TitleScreen() {
   useHouseScreen({ music: false });

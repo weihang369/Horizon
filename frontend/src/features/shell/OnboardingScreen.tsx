@@ -24,7 +24,8 @@ import s from "./Onboarding.module.css";
 
 interface Card { id: string; word: string; lead: string; body: string; art: () => ReactNode }
 
-const portrait = (id: string, emotion = "neutral") => `/assets/placeholder/portraits/${id}/${emotion}.svg`;
+// The seed ships real portraits since v1 (seed/assets/portraits, ASSETS.md); the cards show the seed cast.
+const portrait = (id: string, emotion = "neutral") => `/assets/portraits/${id}/${emotion}.webp`;
 
 const CARDS: Card[] = [
   { id: "worlds", word: "WORLDS", lead: "Worlds", body: "separate universes. Nothing crosses between them.", art: () => <WorldsArt /> },
@@ -216,7 +217,6 @@ function CharactersArt() {
       <div className={s.arrow}>AI DRAFTS ▸</div>
       <figure className={s.cardFig}>
         <img src={portrait("chr_seedAmara", "happy")} alt="" />
-        <Tape tone="paper" size="sm" className={s.placeholderTape}>PLACEHOLDER · HAPPY</Tape>
         <Tape tone="brand" size="lg" className={s.summon}>SUMMONED</Tape>
       </figure>
     </div>

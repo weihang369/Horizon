@@ -6,7 +6,10 @@
 .paste { margin-left: auto; }
 
 .grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 12px; }
-.card { position: relative; animation: cardIn var(--t-base) var(--ease-out) both; animation-delay: calc(var(--i) * 50ms); }
+/* A flex column, so a keyword-only note under the card body stays inside the card (v1 walkthrough: it overlapped the
+   drop zone below when the body took 100% of the row's height). */
+.card { position: relative; display: flex; flex-direction: column; animation: cardIn var(--t-base) var(--ease-out) both; animation-delay: calc(var(--i) * 50ms); }
+.card > .hit { flex: 1 1 auto; height: auto; }
 @keyframes cardIn { from { opacity: 0; transform: translateY(10px); } }
 :root[data-motion="reduced"] .card { animation: none; }
 
