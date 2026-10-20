@@ -240,7 +240,7 @@ per-item results under `docs/ai/checks/m15/`, no live older batch.
   - the optional D16 items (the reaction rewording, the mood-line re-test, the drafter catchphrase fix).
 
   Apply only what is chosen, re-measuring only the part it touches.
-- [ ] 8.14 Run `horizon eval manifest` and commit `evals/baselines/jev-1.13-requests.json`. Record the spend table
+- [x] 8.14 Run `horizon eval manifest` and commit `evals/baselines/jev-1.13-requests.json`. Record the spend table
   against D17 and `spend.jsonl` in `m15.md`.
 
 ## 9. Docs and the final gates (design D19, D20)
