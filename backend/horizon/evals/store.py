@@ -9,6 +9,7 @@ One paid answer is reused by every later check, evaluation and demo run that sen
   |------------|----------------------|-------------------------------------------------|-----------------------|
   | chat       | the routing block    | the body minus messages/model/provider/stream   | `{messages}`          |
   | jev        | "TypeSafe"           | `{}`                                            | `{state, questions}` + `canary` |
+  (the canary is the fingerprint of the asked model's own accepted baseline; jev-comparison D5)
   | embeddings | the routing block    | `{dimensions}`                                  | `{input}`             |
 
 - writes are atomic (tmp → fsync → replace) and the first write wins;

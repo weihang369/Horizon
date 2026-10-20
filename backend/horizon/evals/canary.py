@@ -7,6 +7,9 @@ refused rather than silently re-keying the store.
 
 **Pass rule** (B6, group A): every choice equals the baseline; every probability (choice options, a noul's p, score
 levels) moves by ≤ 0.10; every raw score (0 … n−1) moves by ≤ 0.15. The canary always bypasses the store (D35).
+
+**Per model** (jev-comparison D5): each Jev model has its own baseline, and its fingerprint salts that model's stored
+answers (`baseline_path`, `fingerprint_for`). A candidate's first full run becomes its baseline (`first_baseline`).
 """
 
 from __future__ import annotations
@@ -87,6 +90,35 @@ def compare(base: Mapping[str, Any], new: Mapping[str, Any]) -> list[str]:
     return out
 
 
+def baseline_path(evals_dir: Path, model: str) -> Path:
+    """jev-comparison (D5): each decision model has its own accepted baseline. `canary.json` is the one of the model it
+    names (the pinned one); any other model's is `canary/<id with "/" → "__">.json`."""
+    main = evals_dir / "canary.json"
+    if main.is_file() and json.loads(main.read_text(encoding="utf-8")).get("model") == model:
+        return main
+    return evals_dir / "canary" / f"{model.replace('/', '__')}.json"
+
+
+def fingerprint_for(evals_dir: Path, model: str) -> str | None:
+    """The fingerprint that salts `model`'s stored Jev answers: its own baseline's, or None while it has none. For the
+    pinned model this is `canary.json`'s, so every key stored before the comparison is unchanged."""
+    path = baseline_path(evals_dir, model)
+    return load_baseline(path).fingerprint if path.is_file() else None
+
+
+def first_baseline(path: Path, items: list[dict[str, Any]], model: str, recorded: str, against: str) -> str:
+    """A candidate model's first complete canary run becomes its baseline (D5); returns its fingerprint."""
+    doc = {"model": model, "recorded": recorded, "fingerprint": fingerprint(items),
+           "note": f"jev-comparison D5: this model's first canary run; its drift against {against} was reported, "
+                   "not accepted",
+           "items": items}
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(".tmp")
+    tmp.write_text(json.dumps(doc, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+    tmp.replace(path)
+    return str(doc["fingerprint"])
+
+
 def accept(path: Path, items: list[dict[str, Any]], model: str, recorded: str) -> str:
     """Rewrite the baseline with new answers (after a drift the user has seen); returns the new fingerprint."""
     doc = json.loads(path.read_text(encoding="utf-8"))
@@ -97,4 +129,5 @@ def accept(path: Path, items: list[dict[str, Any]], model: str, recorded: str) -
     return str(doc["fingerprint"])
 
 
-__all__ = ["Baseline", "BaselineError", "accept", "canonical", "compare", "fingerprint", "load_baseline", "rounded"]
+__all__ = ["Baseline", "BaselineError", "accept", "baseline_path", "canonical", "compare", "fingerprint",
+           "fingerprint_for", "first_baseline", "load_baseline", "rounded"]

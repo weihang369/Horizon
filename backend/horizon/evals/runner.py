@@ -3,7 +3,9 @@ spec; ai-foundation design D33–D35; tasks 7.3, 7.5–7.7).
 
 The run lifecycle:
 1. **Plan and estimate** from the suite's planned requests, and print today's eval spend (`data/evals/spend.jsonl`).
-2. **Off-peak check:** a paid run that would overlap DeepSeek's peak by its expected end refuses unless `--allow-peak`.
+2. **Off-peak check:** a paid run whose plan sends any chat (DeepSeek) request and would overlap DeepSeek's peak by its
+   expected end refuses unless `--allow-peak`. A plan of Jev requests only (`Plan.calls_chat` False: the canary,
+   decisions, deep-check, safety's Jev parts) runs at any hour: the peak price is DeepSeek's alone (jev-comparison D6).
 3. **Ask** `y/N` on stdin (`--yes` skips it, used only after the user OKs the estimate in chat). Declining sends
    nothing and leaves no folder.
 4. **Isolation:** `data/evals/<run-id>/<profile>/` gets a fresh Config. `HORIZON_AI_*`, `HORIZON_TEST` and
@@ -13,8 +15,9 @@ The run lifecycle:
 5. **Run** through the isolated runtime's gateway, so every call is priced in that run's ledger. The runner stops
    itself when the run's ledger reaches `--max-usd`; a budget refusal ends the run `incomplete`, never a wrong answer.
 6. **Report:** `report.md` and `results.jsonl` in the run folder; the spend appended to `spend.jsonl`; the newest 20
-   run folders kept. M12 (rag D31.4): a paid run's folder is marked `.keep` when it finishes, so a paid output is never
-   pruned (M11 lost a source run that way); free smoke runs still are.
+   run folders kept. M12 (rag D31.4): a paid run's folder is marked `.keep`, so a paid output is never pruned (M11 lost
+   a source run that way); free smoke runs still are. Since jev-comparison (D15) the mark is written when the folder is
+   created, so a run that dies mid-way keeps its folder too.
 
 Paid suites refuse in test mode. `smoke` runs in either mode: in test mode on the in-process fake ($0).
 **The store (D35)** is never attached to the canary, latency or repeatability runs, `capture` or `import`.
@@ -26,7 +29,7 @@ import json
 import shutil
 import uuid
 from collections.abc import Callable
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
@@ -35,7 +38,7 @@ from pydantic import SecretStr
 
 from horizon.config import REPO_ROOT, Config
 from horizon.domain.clock import FrozenClock, PricingCalendar, calendar_for
-from horizon.domain.pricing import estimate_decision_request, load_price_table
+from horizon.domain.pricing import PriceTable, estimate_decision_request, load_price_table
 from horizon.evals.store import ResponseStore
 
 if TYPE_CHECKING:
@@ -44,7 +47,8 @@ if TYPE_CHECKING:
 EVALS_DIR = REPO_ROOT / "evals"
 SAFETY_CACHE = REPO_ROOT / "private" / "evals" / "cache"   # M14 (safety D23): the safety suite's own store
 KEEP_RUNS = 20
-BYPASS_SUITES = frozenset({"canary", "capture", "import", "latency", "embed-probe"})   # M9 D31: timing never uses the store
+BYPASS_SUITES = frozenset({"canary", "capture", "import", "latency", "embed-probe",   # M9 D31: timing never uses the store
+                           "compare-timing", "compare-repeat"})   # jev-comparison D10, D11: the paired probes
 PAID_ONLY = frozenset({"canary", "decisions"})
 # M15 (images-music D13): a probe never runs a store-bypassing suite, a free one, or a generator that writes committed
 # files; and it prices a suite whose items are one request each exactly, any other (chained) one at its whole estimate
@@ -79,6 +83,8 @@ class Options:
     probe: bool = False                   # M15 (images-music D13): serve hits, stop at a miss, send nothing
     against: str | None = None            # M15 (D19): a request manifest; Jev bodies it doesn't list are refused
     short: bool = False                   # M15 transcript (D10): the 7 short `naive` scripts, no drop required
+    decision_model: str | None = None     # jev-comparison (D3): ask this Jev model instead of the seed's pinned one
+    pair: tuple[str, str] | None = None   # jev-comparison (D10, D11): the two models a paired probe alternates
 
 
 @dataclass
@@ -87,6 +93,9 @@ class Plan:
     estimate_usd: float
     expected_s: float
     paid: bool
+    # jev-comparison (D6): whether the plan sends any chat (DeepSeek) request; only such a plan is held to DeepSeek's
+    # peak window. A suite that can't tell keeps the default, so a chat run never slips through.
+    calls_chat: bool = True
 
 
 @dataclass
@@ -118,10 +127,68 @@ class RunEnv:
         return await self.spent() >= self.max_usd
 
     @property
+    def decision_model(self) -> str:
+        return str(self.rt.gateway.decision_model)
+
+    @property
+    def candidate(self) -> bool:
+        """jev-comparison (D4): a run on a Jev model other than the seed's pinned one. It never writes the pinned
+        model's records: the judges' B4 record, its "already measured" marks, its canary baseline."""
+        return self.decision_model != pinned_model(self.rt.seed_settings)
+
+    @property
     def writes_records(self) -> bool:
         """M15 (D13): only a real paid run writes a judge baseline, the measured marks or the private safety folder;
         a probe's answers are fallbacks and the fake's are fake."""
         return not self.opts.probe and not self.rt.cfg.test_mode
+
+
+def pinned_model(seed_settings: dict[str, Any]) -> str:
+    return str(seed_settings["models"]["decision"])
+
+
+def alias_refusal(model: str | None) -> str | None:
+    if model is not None and "latest" in model:
+        return f"horizon: --decision-model must be a pinned id, never an alias ({model})"
+    return None
+
+
+def priced_for(prices: PriceTable, model: str | None, seed_dir: Path) -> PriceTable:
+    """jev-comparison (D3): a candidate model's own Jev price, when `pricing.json` lists one under `decisionPrices`
+    (keyed by model id, read only here); otherwise the pinned model's price, which is right when the two are equal."""
+    if not model or model == prices.decision.model:
+        return prices
+    own = json.loads((seed_dir / "pricing.json").read_text(encoding="utf-8"))["data"].get("decisionPrices", {}).get(model)
+    d = prices.decision
+    if own is None:
+        return replace(prices, decision=replace(d, model=model))
+    return replace(prices, decision=replace(d, model=model, input_per_m=float(own["inputPerM"]),
+                                            cached_input_per_m=float(own.get("cachedInputPerM", own["inputPerM"])),
+                                            output_per_m=float(own.get("outputPerM", 0.0))))
+
+
+def set_decision_model(rt: Runtime, model: str, prices: PriceTable) -> None:
+    """D3: every Jev request of this isolated runtime goes to `model`; nothing on disk changes."""
+    rt.gateway.decision_model = model
+    rt.gateway.decisions.model = model
+    rt.gateway.prices = prices
+    if rt.fake is not None:   # the in-process fake lists the model too (it answers any model already)
+        rt.fake.models.add(model)
+
+
+def candidate_refusal(opts: Options, seed_dir: Path) -> str | None:
+    """D5: a candidate model's answers can't be stored before its canary baseline exists (they'd carry no salt and be
+    lost to it), so every other suite on it waits for the canary."""
+    from horizon.evals import canary as canary_mod
+
+    if not opts.decision_model or opts.suite == "canary":
+        return None
+    seed_dir = Path(opts.seed_dir).resolve() if opts.seed_dir else seed_dir
+    pinned = json.loads((seed_dir / "settings.json").read_text(encoding="utf-8"))["data"]["models"]["decision"]
+    if opts.decision_model == pinned or canary_mod.fingerprint_for(EVALS_DIR, opts.decision_model) is not None:
+        return None
+    return (f"horizon: {opts.decision_model} has no canary baseline yet; run "
+            f"`horizon eval canary --decision-model {opts.decision_model}` first (nothing was sent)")
 
 
 def store_for(opts: Options, data_dir: Path, fingerprint: str | None, *, test_mode: bool = False) -> ResponseStore | None:
@@ -166,10 +233,16 @@ def prune_runs(runs_dir: Path, keep: int = KEEP_RUNS) -> list[str]:
     return [p.name for p in gone]
 
 
+def keep_run(runs_dir: Path, run_id: str) -> None:
+    """M12 (rag D31.4): a paid run's folder is never pruned."""
+    if (runs_dir / run_id).is_dir():
+        (runs_dir / run_id / ".keep").write_text("paid run: never pruned (rag D31.4)\n", encoding="utf-8")
+
+
 def finish_run(runs_dir: Path, run_id: str, *, paid: bool) -> list[str]:
     """M12 (rag D31.4): mark a paid run's folder `.keep`, then prune the unmarked ones past `KEEP_RUNS`."""
-    if paid and (runs_dir / run_id).is_dir():
-        (runs_dir / run_id / ".keep").write_text("paid run: never pruned (rag D31.4)\n", encoding="utf-8")
+    if paid:
+        keep_run(runs_dir, run_id)
     return prune_runs(runs_dir)
 
 
@@ -221,6 +294,8 @@ class Runner:
     out: Callable[[str], None] = print
     now: Callable[[], datetime] = lambda: datetime.now(UTC)
     store_hits: int = 0   # the last run's store hits, for its report
+    last_meta: dict[str, Any] = field(default_factory=dict)   # jev-comparison (D20): the last run's `run.json` extras
+    last_run_id: str | None = None                             # jev-comparison (D7): the last run's folder
     last_probe: ProbeResult | None = None
     probe_estimate: float = 0.0
 
@@ -245,24 +320,26 @@ class Runner:
                      "files)")
             return 2
         refusal = getattr(suite, "refuse", None)
-        why = refusal(opts) if refusal is not None else None
+        why = (alias_refusal(opts.decision_model)
+               or candidate_refusal(opts, self.base.seed_dir)
+               or (refusal(opts) if refusal is not None else None))
         if why:   # checked before the plan, the prompt and any call (M10 watch-history)
             self.out(why)
             return 2
         if opts.suite in PAID_ONLY and test_mode and not opts.probe:
             self.out(f"horizon: `{opts.suite}` makes paid calls and refuses to run in test mode")
             return 2
-        prices = load_price_table(self.base.seed_dir)
+        prices = priced_for(load_price_table(self.base.seed_dir), opts.decision_model, self.base.seed_dir)
         plan = suite.plan(opts, prices, paid=not test_mode or opts.probe)
         if opts.probe:   # priced as a real run, but nothing is spent, asked or logged
-            plan = Plan(items=plan.items, estimate_usd=plan.estimate_usd, expected_s=plan.expected_s, paid=False)
+            plan = replace(plan, paid=False)
             self.probe_estimate = plan.estimate_usd
         cal = calendar_for(self.base.tz)
         now = self.now()
         self.out(f"plan: {opts.suite}, {len(plan.items)} item(s), estimate ${plan.estimate_usd:.5f}"
                  f"{' (fake provider, $0)' if not plan.paid else ''}; eval spend today "
                  f"${spent_today(self.data_dir, cal, now):.5f}")
-        if plan.paid and not opts.allow_peak and overlaps_peak(cal, now, plan.expected_s):
+        if plan.paid and plan.calls_chat and not opts.allow_peak and overlaps_peak(cal, now, plan.expected_s):
             self.out("horizon: the run would overlap DeepSeek's peak pricing; run off-peak or pass --allow-peak")
             return 2
         if plan.paid and self.base.openrouter_key is None and _user_key(self.base) is None:
@@ -279,6 +356,9 @@ class Runner:
         run_id = f"{now.strftime('%Y%m%dT%H%M%S')}-{opts.suite}-{uuid.uuid4().hex[:6]}"
         run_dir = self.runs_dir / run_id / opts.profile
         run_dir.mkdir(parents=True, exist_ok=True)
+        self.last_run_id = run_id
+        if plan.paid:   # jev-comparison (D15): marked at the start, so a run that dies mid-way is never pruned
+            keep_run(self.runs_dir, run_id)
         if opts.max_usd is not None:
             max_usd = opts.max_usd
         elif plan.paid:
@@ -288,6 +368,7 @@ class Runner:
         else:
             max_usd = 1.0   # the in-process fake's prices: nothing real is spent; --max-usd still forces a cap
         (run_dir / "settings.local.json").write_text(json.dumps({"budget": {"dailyCapUsd": max_usd}}), encoding="utf-8")
+        self.last_meta = {}
         result, ports, spent, model = await self._execute(suite, plan, opts, run_dir, max_usd, test_mode)
         self._report(run_dir, opts, plan, result, ports, spent, max_usd, model)
         if plan.paid:
@@ -312,9 +393,12 @@ class Runner:
             rt.keys.set_key("sk-or-test-eval-0001")
         elif opts.probe:   # ports resolve as with a key; the deny transport sends nothing (D13)
             rt.keys.set_key("sk-or-probe-0000")
-        fingerprint = None
-        if (EVALS_DIR / "canary.json").is_file():
-            fingerprint = json.loads((EVALS_DIR / "canary.json").read_text(encoding="utf-8")).get("fingerprint")
+        if opts.decision_model:   # jev-comparison (D3)
+            set_decision_model(rt, opts.decision_model, priced_for(rt.prices, opts.decision_model, cfg.seed_dir))
+        from horizon.evals import canary as canary_mod
+
+        # jev-comparison (D5): the asked model's own baseline salts its stored answers (the pinned one: canary.json's)
+        fingerprint = canary_mod.fingerprint_for(EVALS_DIR, str(rt.gateway.decision_model))
         store = store_for(opts, self.data_dir, fingerprint, test_mode=test_mode)
         if store is not None and opts.probe:
             store.probe = True
@@ -345,6 +429,9 @@ class Runner:
                 result = Result(summary=[f"the suite stopped: {e}; the counts cover what ran before it"])
             spent = await env.spent()
             self.store_hits = store.hits if store is not None else 0
+            self.last_meta = {"decision_model": str(rt.gateway.decision_model), "candidate": env.candidate,
+                              "manifest_refused": list(rt.gateway.manifest_refused),
+                              "errors": list(rt.gateway.comparison_errors)}
             if opts.probe:
                 self.last_probe = self._probe_result(opts, store, rt.probe_blocked)
                 result.status = "probe"
@@ -383,10 +470,35 @@ class Runner:
                  f"- profile: `{opts.profile}`; ports: " + ", ".join(f"{k}={v}" for k, v in sorted(ports.items())),
                  f"- items: {len(plan.items)}; estimate ${plan.estimate_usd:.5f}; spent ${spent:.5f}; cap ${max_usd:.5f}",
                  f"- provider: {'paid' if plan.paid else 'in-process fake ($0)'}; store hits: {hits}",
+                 *( [f"- decision model asked: `{opts.decision_model}` ("
+                     + ("a candidate: the pinned records are never written)" if self.last_meta.get("candidate")
+                        else "the pinned one)")] if opts.decision_model else []),
                  *( [f"- model: `{model}`"] if model else []),
                  *( [f"- seed folder: `{opts.seed_dir}` (a config experiment)"] if opts.seed_dir else []),
-                 "", *result.summary, ""]
+                 *self._comparison_lines(), "", *result.summary, ""]
         (run_dir / "report.md").write_text("\n".join(lines), encoding="utf-8")
+        # jev-comparison (D20): what the comparison report needs to know about this run, read back at $0
+        meta = {"run": run_dir.parent.name, "suite": opts.suite, "profile": opts.profile, "set": opts.set,
+                "part": opts.part, "against": opts.against, "pair": list(opts.pair) if opts.pair else None,
+                "status": result.status, "paid": plan.paid, "estimate_usd": plan.estimate_usd,
+                "spent_usd": round(spent, 6), "store_hits": hits, "returned_model": model, **self.last_meta}
+        (run_dir / "run.json").write_text(json.dumps(meta, indent=1) + "\n", encoding="utf-8")
+
+    def _comparison_lines(self) -> list[str]:
+        refused = self.last_meta.get("manifest_refused") or []
+        errors = self.last_meta.get("errors") or []
+        out = []
+        if refused:
+            out.append(f"- not in the manifest, so not sent: {len(refused)} body(ies) (hashes and questions in "
+                       "`run.json`)")
+        if errors:
+            codes: dict[str, int] = {}
+            for e in errors:
+                k = f"{e['code']} {e.get('status') or ''}".strip()
+                codes[k] = codes.get(k, 0) + 1
+            out.append("- provider errors counted, their items left unanswered: "
+                       + ", ".join(f"{k} × {v}" for k, v in sorted(codes.items())))
+        return out
 
 
 def decision_estimate(prices: Any, state: Any, questions: dict[str, Any]) -> float:

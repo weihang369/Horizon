@@ -202,6 +202,10 @@ class Gateway:
     store: Any = None        # M7 (D31): the eval view (chat, Jev, embeddings), attached only by `horizon eval` runs
     seed_store: Any = None   # M7 (D31): the seed view (embeddings only), used only when a caller passes store_ok
     allowed_bodies: frozenset[str] | None = None   # M15 (D19): `--against-manifest`, a model comparison's Jev bodies
+    # jev-comparison (D20): on a comparison run (`allowed_bodies` set), the bodies refused for not being listed, and the
+    # provider errors (429, 5xx, timeouts) counted instead of ending the run; each such item reads as unanswered
+    manifest_refused: list[str] = field(default_factory=list)
+    comparison_errors: list[dict[str, Any]] = field(default_factory=list)
     # M3: the session manager's view of spend (cap pause on crossing; budget events of a session's call).
     on_spend: Callable[[CallContext, RecordResult], None] = lambda _ctx, _res: None
     on_budget: Callable[[dict[str, Any], CallContext], None] = lambda _ev, _ctx: None
@@ -631,8 +635,10 @@ class Gateway:
         if self.allowed_bodies is not None:   # M15 (D19): a comparison sends only the manifest's bodies
             from horizon.evals.manifest import body_hash
 
-            if body_hash(state, questions) not in self.allowed_bodies:
-                raise ProviderError("provider_error", f"Not in the request manifest, so not sent: {', '.join(questions)}")
+            h = body_hash(state, questions)
+            if h not in self.allowed_bodies:   # jev-comparison (D20): named, not sent, and the run goes on
+                self.manifest_refused.append(f"{h} {', '.join(questions)}")
+                return DecisionsResponse(generation_id="not_in_manifest", answers={}, usage=None, model=m)
         store = self._store_for("jev")
         skey = jev_key(m, state, dict(questions), store.fingerprint, order) if store is not None else ""
         if store is not None and (hit := store.get("jev", skey)) is not None:
@@ -659,7 +665,13 @@ class Gateway:
         if body is not None:
             summary["body"] = body
         with TRACER.traced(f"decision:{ctx.purpose}", {"model": m, "state": state, "questions": dict(questions)}) as out:
-            r = await self.paid(ctx, est, send, model=m, summary=summary, finish=finish)
+            try:
+                r = await self.paid(ctx, est, send, model=m, summary=summary, finish=finish)
+            except ProviderError as e:   # jev-comparison (D20): a comparison counts the provider's errors and goes on
+                if self.allowed_bodies is None or e.code not in ("rate_limited", "provider_error", "timeout"):
+                    raise
+                self.comparison_errors.append({"code": e.code, "status": e.status, "questions": sorted(questions)})
+                return DecisionsResponse(generation_id="error", answers={}, usage=None, model=m)
             out["answers"] = dict(r.answers)
         return r
 

@@ -1121,10 +1121,11 @@ class WriteOnly:
 
 def eval_store(env: RunEnv) -> Any:
     """The eval store the paid suites read (the runner's `store_for`), under this run's data folder."""
+    from horizon.evals import canary as canary_mod
     from horizon.evals.store import ResponseStore
 
-    canary = EVALS_DIR / "canary.json"
-    fingerprint = json.loads(canary.read_text(encoding="utf-8")).get("fingerprint") if canary.is_file() else None
+    # jev-comparison (D5): salted by the asked model's own canary baseline, as the runner's store is
+    fingerprint = canary_mod.fingerprint_for(EVALS_DIR, str(env.rt.gateway.decision_model))
     return ResponseStore.eval_view(env.run_dir.parents[2] / "cache", fingerprint)
 
 

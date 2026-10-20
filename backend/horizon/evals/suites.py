@@ -143,12 +143,18 @@ class Canary:
         items = b.items[opts.start:]
         items = items[: opts.limit] if opts.limit else items
         est = sum(decision_estimate(prices, i["state"], i["questions"]) for i in items)
-        return Plan(items=items, estimate_usd=est, expected_s=len(items) * 3.0, paid=paid)
+        return Plan(items=items, estimate_usd=est, expected_s=len(items) * 3.0, paid=paid, calls_chat=False)
 
     async def run(self, env: RunEnv, plan: Plan) -> Result:
         res = Result()
         new_items: list[dict[str, Any]] = []
         drift_n = 0
+        # jev-comparison (D5): compared against the asked model's own baseline; a candidate's first run, having none,
+        # is compared against the pinned one's answers (a finding) and becomes its baseline
+        model = getattr(env, "decision_model", "") or ""
+        path = canary_mod.baseline_path(EVALS_DIR, model) if model else EVALS_DIR / "canary.json"
+        first = not path.is_file()
+        against = {} if first else {i["id"]: i["answers"] for i in canary_mod.load_baseline(path).items}
         for item in plan.items:
             if await env.over_budget():
                 res.status = "incomplete"
@@ -156,20 +162,35 @@ class Canary:
                 break
             r = await env.rt.gateway.decide(item["state"], item["questions"], call_ctx("eval_judge"))
             res.model = r.model or res.model
-            drift = canary_mod.compare(item["answers"], r.answers)
+            drift = canary_mod.compare(against.get(item["id"], item["answers"]), r.answers)
             drift_n += bool(drift)
             res.rows.append({"id": item["id"], "drift": drift, "model": r.model, "answers": dict(r.answers)})
             new_items.append({**item, "answers": dict(r.answers)})
+        # a baseline holds all 20 items: a sliced run (`--start`, `--limit`, e.g. jev-comparison's parse check) never
+        # writes or accepts one
+        complete = len(new_items) == len(plan.items) and not env.opts.start and not env.opts.limit
+        if first:
+            pinned = canary_mod.load_baseline(EVALS_DIR / "canary.json").model
+            res.summary.append(f"## Canary, {model}'s first run: {len(res.rows) - drift_n}/{len(res.rows)} within "
+                               f"tolerance of {pinned}'s answers (a finding, not a failure)")
+            res.summary += [f"- {r['id']}: " + "; ".join(r["drift"]) for r in res.rows if r["drift"]]
+            if complete and res.status == "ok":
+                fp = canary_mod.first_baseline(path, new_items, model, dt.datetime.now(dt.UTC).isoformat(), pinned)
+                res.summary.append(f"- written as {model}'s baseline `{path.name}` (fingerprint {fp[:12]}…); "
+                                   f"{pinned}'s baseline is unchanged")
+            else:
+                res.summary.append("- incomplete, so no baseline is written: run the canary again in full")
+            return res
         if res.status == "ok" and drift_n:
             res.status = "drift"
         res.summary.append(f"## Canary: {len(res.rows) - drift_n}/{len(res.rows)} within tolerance "
                            f"(choices equal, p ±{canary_mod.P_TOL}, scores ±{canary_mod.SCORE_TOL})")
         res.summary += [f"- {r['id']}: " + "; ".join(r["drift"]) for r in res.rows if r["drift"]]
-        if env.opts.accept and res.status == "drift" and len(new_items) == len(plan.items) and not env.opts.start:
-            fp = canary_mod.accept(EVALS_DIR / "canary.json", new_items, res.model or "",
-                                   dt.datetime.now(dt.UTC).isoformat())
-            res.summary.append(f"- accepted as the new baseline (fingerprint {fp[:12]}…); every stored Jev answer is "
-                               "now stale")
+        if env.opts.accept and res.status == "drift" and complete:   # the asked model's own baseline only
+            # the asked id, not the returned one: the baseline is looked up by the id a run asks (D5)
+            fp = canary_mod.accept(path, new_items, model or res.model or "", dt.datetime.now(dt.UTC).isoformat())
+            res.summary.append(f"- accepted as the new baseline `{path.name}` (fingerprint {fp[:12]}…); every stored "
+                               f"Jev answer of {model or 'this model'} is now stale")
             res.status = "ok"
         return res
 
@@ -218,7 +239,7 @@ class Decisions:
             # a noul has no option order to reverse (D27); M12 D9's re-ask compares the live order only
             asks = 2 if isinstance(q, Choice) and not i.get("reask") else 1
             est += asks * decision_estimate(prices, i["item"]["state"], {i["question_id"]: wire_question(q)})
-        return Plan(items=items, estimate_usd=est, expected_s=len(items) * 4.0, paid=paid)
+        return Plan(items=items, estimate_usd=est, expected_s=len(items) * 4.0, paid=paid, calls_chat=False)
 
     async def run(self, env: RunEnv, plan: Plan) -> Result:
         res = Result()
@@ -230,12 +251,31 @@ class Decisions:
         from horizon.evals import m12_sets
 
         reask = env.opts.set == m12_sets.REASK_SET   # M12 D9: measured apart, so a re-ask never hides the live set
-        mark = {(f"{m12_sets.REASK_SET}:{k}" if reask else k): v for k, v in measured_marks(plan.items).items()}
+        # jev-comparison (D4): a candidate model's marks are its own; the pinned model keeps its bare keys
+        candidate = getattr(env, "candidate", False)   # a stub env in a test is the pinned model
+        model = f"{env.decision_model}|" if candidate else ""
+
+        def mark_key(qid: str) -> str:
+            return model + (f"{m12_sets.REASK_SET}:{qid}" if reask else qid)
+
+        mark = {mark_key(k): v for k, v in measured_marks(plan.items).items()}
+        cur: list[dict[str, Any]] = [{}]   # the item being asked
+
+        async def ask(state: Any, qs: dict[str, Any], ctx: Any, **kw: Any) -> Any:
+            """jev-comparison (D9): a row records its requests that reached Jev and their cost (store hits: none)."""
+            r = await env.rt.gateway.decide(state, qs, ctx, **kw)
+            if getattr(r, "generation_id", None) not in (None, "store", "probe", "not_in_manifest", "error"):
+                usage = getattr(r, "usage", None)   # a stub answer in a test may carry neither
+                cur[0]["sent"] = cur[0].get("sent", 0) + 1
+                cur[0]["usd"] = round(cur[0].get("usd", 0.0) + (float(usage.cost_usd or 0.0) if usage else 0.0), 8)
+            return r
+
         for item in plan.items:
             qid = str(item["question_id"])
-            mkey = f"{m12_sets.REASK_SET}:{qid}" if reask else qid
+            mkey = mark_key(qid)
             version = bank().get(qid).version
-            if not self.smoke and measured.get(mkey) == mark[mkey]:
+            # jev-comparison (D7): a comparison run (against a manifest) asks every item; the store serves the stored
+            if not self.smoke and not env.opts.against and measured.get(mkey) == mark[mkey]:
                 skipped.add(qid)
                 continue
             if await env.over_budget():
@@ -248,9 +288,10 @@ class Decisions:
                                    **({"kind": item["kind"]} if item.get("kind") else {}),
                                    **({"fresh": True} if item.get("fresh") else {}),   # M11: scored apart (D17)
                                    **({"reask": True} if item.get("reask") else {})}   # M12 D9
+            cur[0] = row
             if isinstance(q, Noul):   # D27: asked once; "yes" when p reaches the entry's threshold
                 key = str(item["item"].get("key") or qid)   # M12: the gate is asked under its live key, `docs:{id}`
-                r = await env.rt.gateway.decide(item["item"]["state"], {key: wire_question(q)}, call_ctx("eval_judge"))
+                r = await ask(item["item"]["state"], {key: wire_question(q)}, call_ctx("eval_judge"))
                 ans = validate(q, r.answers.get(key))
                 if isinstance(ans, NoulAnswer):
                     th = bank().get(qid).thresholds   # M10: talk_finished's threshold is `t_end` (re-chosen on dev)
@@ -267,7 +308,7 @@ class Decisions:
                 continue
             if isinstance(q, Score) and isinstance(item["label"], int):   # M13 (memory D40): importance, levels 1–n
                 key = str(item["item"].get("key") or qid)
-                r = await env.rt.gateway.decide(item["item"]["state"], {key: wire_question(q)}, call_ctx("eval_judge"))
+                r = await ask(item["item"]["state"], {key: wire_question(q)}, call_ctx("eval_judge"))
                 sa = validate(q, r.answers.get(key))
                 if isinstance(sa, ScoreAnswer):
                     level = round(sa.score) + 1
@@ -280,7 +321,7 @@ class Decisions:
             if qid == judges.PAIRWISE:   # M9 D29: both orders = the two replies swapped (its options never shuffle)
                 probs = []
                 for st in (item["item"]["state"], judges.swapped(item["item"]["state"])):
-                    r = await env.rt.gateway.decide(st, {qid: wire_question(q)}, call_ctx("eval_judge"))
+                    r = await ask(st, {qid: wire_question(q)}, call_ctx("eval_judge"))
                     ans = validate(q, r.answers.get(qid))
                     probs.append(dict(ans.probabilities or {ans.choice: ans.confidence or 0.0})
                                  if isinstance(ans, ChoiceAnswer) else None)
@@ -299,7 +340,7 @@ class Decisions:
             for order in (q,) if item.get("reask") else (q, reordered(q)):
                 # M15 (D13): the reversed ask keys on its own order, so the store never serves it the first answer
                 salt = {qid: list(order.options)} if order is not q and isinstance(order, Choice) else None
-                r = await env.rt.gateway.decide(item["item"]["state"], {qid: wire_question(order)}, call_ctx("eval_judge"),
+                r = await ask(item["item"]["state"], {qid: wire_question(order)}, call_ctx("eval_judge"),
                                                 order=salt)
                 answers.append(validate(order, r.answers.get(qid)))
             a, b = answers if len(answers) == 2 else (answers[0], answers[0])
@@ -320,12 +361,15 @@ class Decisions:
             res.rows.append(row)
         if not self.smoke and not env.opts.probe:   # M15 (D13): a probe never marks items measured
             for qid in {r["question_id"] for r in res.rows}:
-                mkey = f"{m12_sets.REASK_SET}:{qid}" if reask else qid
-                measured[mkey] = mark[mkey]
+                measured[mark_key(qid)] = mark[mark_key(qid)]
             done_path.parent.mkdir(parents=True, exist_ok=True)
             done_path.write_text(json.dumps(measured, indent=1), encoding="utf-8")
         if (env.opts.set or "").partition(":")[0] == JUDGES_SET and not self.smoke:
-            res.summary += self._judge_report(res.rows, plan.items, record=not env.opts.probe)
+            # jev-comparison (D4, D13): a candidate's B4 figures are information only, never the record; and a
+            # comparison run (against a manifest) re-judges nothing, on either model
+            res.summary += self._judge_report(res.rows, plan.items,
+                                              record=not env.opts.probe and not candidate and not env.opts.against,
+                                              candidate=env.decision_model if candidate else None)
         fade = env.rt.runtime_cfg.runtime.emotion_fade
         for kind in ("emotion", "reaction"):   # M9 D26: the code rule's policies, floors from dev
             mine = [r for r in res.rows if isinstance(r["label"], dict) and policies.kind_of(r["question_id"]) == kind]
@@ -372,9 +416,13 @@ class Decisions:
 
 
     @staticmethod
-    def _judge_report(rows: list[dict[str, Any]], items: list[dict[str, Any]], *, record: bool = True) -> list[str]:
+    def _judge_report(rows: list[dict[str, Any]], items: list[dict[str, Any]], *, record: bool = True,
+                      candidate: str | None = None) -> list[str]:
         """B4 per judge; the record is updated only for a judge whose every item was asked in this run."""
         out = ["## Judge validation (B4: real ≥ 85 %, overall above the commonest-answer baseline, planted ≥ 90 %)"]
+        if candidate:
+            out.append(f"- candidate `{candidate}`, information only: no judge is validated by these figures, and "
+                       "the record is unchanged")
         results: dict[str, dict[str, Any]] = {}
         versions: dict[str, int] = {}
         for qid in sorted({r["question_id"] for r in rows}):
@@ -665,6 +713,7 @@ async def planned_group_send(env: RunEnv) -> int:
 
 
 def _content() -> dict[str, Any]:
+    from horizon.evals.compare_probes import RepeatProbe, TimingProbe
     from horizon.evals.content import Drafter, Long, Summary, Transcript
     from horizon.evals.conversations import Conversations
     from horizon.evals.debate_suites import DebateHistory, DebatePlant, DebateQuality, DebateSuite
@@ -683,7 +732,8 @@ def _content() -> dict[str, Any]:
             "debate": DebateSuite(), "retrieval": Retrieval(),
             "notfound": NotFound(), "deep-check": DeepCheck(), "memory": Memory(),
             "embed-probe": EmbedProbe(), "safety": Safety(), "conversations": Conversations(),
-            "faithfulness": Faithfulness()}
+            "faithfulness": Faithfulness(),
+            "compare-timing": TimingProbe(), "compare-repeat": RepeatProbe()}   # jev-comparison D10, D11
 
 
 SUITES: dict[str, Any] = {"canary": Canary(), "decisions": Decisions(), "smoke": Smoke(), **_content()}

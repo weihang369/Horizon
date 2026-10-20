@@ -26,7 +26,11 @@ from typing import Any
 
 from horizon.evals.store import sha
 
-MANIFEST_NAME = "jev-1.13-requests.json"
+
+def manifest_name(model: str) -> str:
+    """jev-comparison (D11): the manifest of a pinned model is named after it (`typesafe/jev-1.13` gives
+    `jev-1.13-requests.json`), so a switch writes a new one beside the old."""
+    return f"{model.rsplit('/', 1)[-1]}-requests.json"
 
 
 def body_hash(state: Any, questions: Mapping[str, Any]) -> str:
@@ -40,9 +44,12 @@ def _stored(root: Path, model: str, state: Any, questions: Mapping[str, Any], fi
     return (root / f"{jev_key(model, state, dict(questions), fingerprint, order)}.json").is_file()
 
 
-def decisions_bodies() -> Iterable[tuple[str, Any, dict[str, Any], dict[str, list[str]] | None]]:
-    """(set, state, wire questions, order salt) for every decisions item, in both option orders for a choice."""
-    from horizon.ai.decider import Choice, wire_question
+def _decisions_items() -> Iterable[tuple[str, str, Any, dict[str, Any], dict[str, list[str]] | None]]:
+    """Every body `Decisions.run` sends, exactly as it sends it (jev-comparison D20 found two that M15's builder got
+    wrong): a noul or a levelled score under the item's live key (`docs:{id}`, `earlier:{id}`, …); the pairwise judge's
+    two asks, the second with the replies swapped in the state; a choice in its seeded order and reversed."""
+    from horizon.ai.decider import Choice, Noul, Score, wire_question
+    from horizon.evals import judges
     from horizon.evals.suites import DATASETS, dataset_files, item_question, load_dataset, reordered
 
     for path in dataset_files():
@@ -50,31 +57,59 @@ def decisions_bodies() -> Iterable[tuple[str, Any, dict[str, Any], dict[str, lis
         for i in load_dataset(path):
             if i.get("smoke_only"):
                 continue
-            q = item_question(i, seed=i["id"])
-            qid = str(i["question_id"])
-            yield name, i["item"]["state"], {qid: wire_question(q)}, None
-            if isinstance(q, Choice) and not i.get("reask"):
-                r = reordered(q)
-                assert isinstance(r, Choice)
-                yield name, i["item"]["state"], {qid: wire_question(r)}, {qid: list(r.options)}
+            q = item_question(i)   # the item's own seed, as the suite compiles it
+            qid, iid, state = str(i["question_id"]), str(i["id"]), i["item"]["state"]
+            if isinstance(q, Noul) or (isinstance(q, Score) and isinstance(i["label"], int)):
+                yield name, iid, state, {str(i["item"].get("key") or qid): wire_question(q)}, None
+            elif qid == judges.PAIRWISE:
+                yield name, iid, state, {qid: wire_question(q)}, None
+                yield name, iid, judges.swapped(state), {qid: wire_question(q)}, None
+            else:
+                yield name, iid, state, {qid: wire_question(q)}, None
+                if isinstance(q, Choice) and not i.get("reask"):
+                    r = reordered(q)
+                    assert isinstance(r, Choice)
+                    yield name, iid, state, {qid: wire_question(r)}, {qid: list(r.options)}
 
 
-def other_bodies(*, test_mode: bool) -> Iterable[tuple[str, Any, dict[str, Any]]]:
-    """(set, state, wire questions) for the canary, deep-check and the safety suite's Jev parts."""
+def decisions_bodies() -> Iterable[tuple[str, Any, dict[str, Any], dict[str, list[str]] | None]]:
+    """(set, state, wire questions, order salt) for every decisions item, in both option orders for a choice."""
+    for name, _id, state, qs, order in _decisions_items():
+        yield name, state, qs, order
+
+
+def item_hashes(*, test_mode: bool) -> dict[tuple[str, str], list[str]]:
+    """jev-comparison (D8): (set, item id) → the body hashes its run asks (a choice in both orders), so the comparison
+    report names each item whose body the manifest doesn't list. Built from the datasets at $0."""
+    out: dict[tuple[str, str], list[str]] = {}
+    for name, iid, state, qs, _order in _decisions_items():
+        out.setdefault((name, iid), []).append(body_hash(state, qs))
+    for name, iid, state, qs in _other_items(test_mode=test_mode):
+        out.setdefault((name, iid), []).append(body_hash(state, qs))
+    return out
+
+
+def _other_items(*, test_mode: bool) -> Iterable[tuple[str, str, Any, dict[str, Any]]]:
     from horizon.ai.decider import wire_question
     from horizon.evals import deep_check_suite, safety_suite
     from horizon.evals.runner import EVALS_DIR
 
     canary = json.loads((EVALS_DIR / "canary.json").read_text(encoding="utf-8"))
     for it in canary["items"]:
-        yield "canary", it["state"], dict(it["questions"])
+        yield "canary", str(it["id"]), it["state"], dict(it["questions"])
     for it in deep_check_suite.items():
         state, qs, _purpose = deep_check_suite.request(it)
-        yield "deep-check", state, qs
+        yield "deep-check", str(it["id"]), state, qs
     for r in safety_suite.load_items(test_mode=test_mode).items:
         if r["part"] in safety_suite.JEV_PARTS:
             state, qs = safety_suite.state_for(r["part"], r["item"])
-            yield f"safety:{r['part']}", state, {k: wire_question(q) for k, q in qs.items()}
+            yield f"safety:{r['part']}", str(r["id"]), state, {k: wire_question(q) for k, q in qs.items()}
+
+
+def other_bodies(*, test_mode: bool) -> Iterable[tuple[str, Any, dict[str, Any]]]:
+    """(set, state, wire questions) for the canary, deep-check and the safety suite's Jev parts."""
+    for name, _id, state, qs in _other_items(test_mode=test_mode):
+        yield name, state, qs
 
 
 def build(*, model: str, fingerprint: str | None, store_root: Path, private_store_root: Path,

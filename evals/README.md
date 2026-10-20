@@ -32,7 +32,7 @@ Run these from `backend/`.
 | Command | Cost | What it does |
 |---|---|---|
 | `uv run horizon eval smoke [--limit N]` | $0 with `HORIZON_TEST=1` | Checks that bank entries compile to valid wire questions and datasets load. Runs decisions over the smoke items and one conversation per mode. CI runs it. |
-| `uv run horizon eval canary [--accept]` | < $0.001 | Sends the 20 canary items with the store bypassed. Passes when every choice matches, p moves ≤ 0.10 and scores move ≤ 0.15. `--accept` rewrites the baseline after a drift you have seen. |
+| `uv run horizon eval canary [--accept] [--decision-model <id>]` | < $0.001 | Sends the 20 canary items with the store bypassed. Passes when every choice matches the asked model's own baseline, p moves ≤ 0.10 and scores move ≤ 0.15. `--accept` rewrites that model's baseline after a drift you have seen. A model's first run writes its baseline (see "The store"). |
 | `uv run horizon eval decisions [--limit N]` | paid | Policy accuracy with Wilson intervals, a calibration table and order bias (both option orders). Re-runs only questions whose bank version changed. |
 | `uv run horizon eval overlap` | $0 | Fails when a dataset item copies a 6-word phrase from the bank's wording. |
 | `uv run horizon eval review <set>` | $0 | Prints a seeded sample of max(15, ⌈n/5⌉) items and records it in `reviews/<set>.json`. Two or more disagreements fail the set. |
@@ -54,15 +54,22 @@ Run these from `backend/`.
 | `uv run horizon eval latency --profile agent --part blended --arm rate=R` | paid (≈ $0.17) | M15: the must-pass latency run (doc 02 B8): quick, deep, group, debate and watch, warm-up turns left out, the stage breakdown, and the blend at the deep rate R fixed before the run. |
 | `uv run horizon eval <suite> --probe` | $0 | M15: runs the suite on stored answers only, with a dummy key and a transport that refuses every request. A miss sends nothing and is priced from the gateway's estimate, so the report says what a real run would pay. Suites that write committed files are refused. |
 | `uv run horizon eval all` | $0 | M15: the probe over every suite under `agent` and `naive`, a table per suite: hits, would-pay, the estimate. It never sends. |
-| `uv run horizon eval manifest` | $0 | M15: writes `evals/baselines/jev-1.13-requests.json`, the hash of every Jev request body the evaluation asks, and whether its jev-1.13 answer is stored. |
-| `uv run horizon eval <suite> --against-manifest <file>` | paid | The Jev model comparison: the gateway refuses any Jev request whose body the manifest doesn't list, so only the model changes. |
+| `uv run horizon eval manifest` | $0 | M15: writes `evals/baselines/jev-<version>-requests.json` (named after the pinned model, e.g. `jev-1.13-requests.json`), the hash of every Jev request body the evaluation asks, and whether its answer on that model is stored. |
+| `uv run horizon eval <suite> --against-manifest <file>` | paid | The Jev model comparison: the gateway sends no Jev body the manifest doesn't list (the item reads unanswered and its hash is named in the run's `run.json` and report), so only the model changes. On such a run a provider error (429, 5xx, timeout) is counted and the run goes on, and `decisions` asks every item whatever its "already measured" marks say (the store serves the stored ones). |
+| `uv run horizon eval compare-models --new <id> [--step S] [--report-only [RUN…]] [--yes]` | paid, ≈ $0.30 all Jev | jev-comparison: the candidate Jev against the pinned one, step by step. See "Comparing a new Jev" below. |
+| `uv run horizon eval <suite> --decision-model <id>` | paid | jev-comparison: every Jev request of the run asks `<id>` instead of the seed's pinned model, in the run's isolated copy only (an alias is refused). A *candidate* run (any model but the pinned one) never writes the pinned model's records: the judges' B4 record (its figures are printed "information only"), the decisions suite's "already measured" marks (a candidate keeps its own, keyed `<model>\|<question>`), and the canary baseline. The estimate uses the candidate's price from `pricing.json` `decisionPrices` when one is listed, else the pinned price. |
 
 Every paid run follows the same steps:
 
 1. It prints the plan and estimate, plus today's eval spend.
-2. It refuses to overlap DeepSeek's peak hours unless you pass `--allow-peak`.
+2. If its plan sends any DeepSeek (chat) request, it refuses to overlap DeepSeek's peak hours unless you pass
+   `--allow-peak`. A plan of Jev requests only runs at any hour, because the peak price is DeepSeek's alone: the
+   canary, `decisions`, `deep-check`, and `safety` when every part is a Jev part (`input`, `care`, `output`, `motion`,
+   `image`, `song`). A suite that doesn't say is treated as calling DeepSeek (jev-comparison D6).
 3. It asks `y/N`. `--yes` skips the prompt.
-4. It runs in an isolated copy under `data/evals/<run-id>/<profile>/`. Your own database is never opened.
+4. It runs in an isolated copy under `data/evals/<run-id>/<profile>/`. Your own database is never opened. A paid
+   run's folder gets `.keep` as soon as it is created, so a run that stops mid-way is never pruned with the newest-20
+   rule.
 5. It stops itself at `--max-usd`, which defaults to 1.5 × the estimate. A budget stop ends the run `incomplete`, never with a wrong answer.
 
 ## The store
@@ -73,5 +80,53 @@ Paid answers are saved in `data/cache/<sha256>.json` and reused ("pay once"). Th
 - Only `horizon eval` runs read chat and Jev answers from the store.
 - The live app stores only seed embeddings: seed knowledge and seed memories.
 - These never read or write the store: the canary, latency and repeatability runs, `capture`, `import`, and private items.
-- Accepting a new canary baseline changes the fingerprint, so every stored Jev answer becomes stale at once.
+- Accepting a new canary baseline changes the fingerprint, so every stored Jev answer of that model becomes stale at once.
+- jev-comparison: each Jev model has its own canary baseline, and its stored answers are salted with that baseline's
+  fingerprint. The pinned model's is `canary.json` (the one whose `model` it names), so every key stored before the
+  comparison is unchanged. Any other model's is `canary/<id with "/" → "__">.json`, written by its first full canary
+  run (`canary --decision-model <id>`), which reports its drift against the pinned answers as a finding. Every other
+  suite on that model refuses until it exists. **Never `--accept` during a comparison**: accepting re-keys the model's
+  stored answers, so they'd be paid again. A switch swaps the two files instead (design D5).
 - A factory reset deletes `data/cache/`.
+
+## Comparing a new Jev
+
+The runbook for the next Jev version (OpenSpec change `jev-comparison`, design D7–D11, D17). Only the decision model
+changes: DeepSeek, every prompt, every bank question, the state builders and the judges stay as they are. Every step
+is Jev only, so it runs at any hour. Whether to switch is the user's decision, made after the report. Run these from
+`backend/`, with the candidate's pinned id (never an alias) in place of `<id>`.
+
+1. **The manifest of the pinned model.** `uv run horizon eval manifest` writes
+   `evals/baselines/jev-<version>-requests.json` ($0). Commit it before the comparison starts: its bodies are what both
+   models get.
+2. **Check the candidate first** ($0): its id, price, limits and answer shape from OpenRouter and docs.typesafe.ai.
+   If its price differs from the pinned one, add it to `seed/pricing.json` under `data.decisionPrices["<id>"]`
+   (`inputPerM`) so the estimates and caps use it.
+3. **The steps**, one at a time (`--yes` skips each run's prompt; each run's cap is max(1.5 × estimate, $0.01)):
+
+   | Step | Command | What it does |
+   |---|---|---|
+   | canary | `uv run horizon eval compare-models --new <id> --step canary` | the pinned model's canary (a drift stops the comparison and goes to the user), then the candidate's first canary, which writes `evals/canary/<id with "/" → "__">.json` and reports its drift against the pinned answers |
+   | probe | `… --step probe` | both models' exact misses and cost per set, from the store; sends nothing |
+   | sets | `… --step sets` | on each model, against the manifest: `decisions`, `decisions --set judges`, `deep-check`, `safety --part input,care,output,motion,image,song`. The pinned side is mostly stored answers |
+   | repeat | `… --step repeat` | the canary's 20 items × 3 on each model, store bypassed |
+   | timing-a, timing-b | `… --step timing-a`, then `… --step timing-b` ≥ 3 h later | the paired timing probe: 30 bodies each under 1k, 1k–2.5k and 2.5k–4k, 5 near 10k and 5 near 25k (topped up with padded bodies where the manifest runs short), 5 warm-up requests per model excluded |
+   | report | `… --step report` | from the saved rows only ($0): `data/evals/compare-<base>-vs-<new>/report.md`, `figures.json` and `rows/*.jsonl` (safety items by hash only) |
+
+   Without `--step`, every step not yet done runs in order, stopping where one can't run yet (the second timing
+   window). A step whose runs finished is skipped; an unfinished run re-runs, and the store serves every answer it
+   already paid for. The run ids are kept in `data/evals/compare-<base>-vs-<new>.json`.
+   `… --report-only` re-writes the report from those runs; `… --report-only RUN…` from the runs named.
+4. **The gate.** The report gives each set drop-in (every rule at its live value) and re-tuned (the candidate's value
+   chosen on dev by the set's own rule, read on test once), with McNemar on the same items; the order, calibration,
+   error and cost figures; the timing with each live purpose's projected deadline misses; and the repeat. The user
+   chooses: switch with the re-tuned values (one choice per moved knob), switch with the drop-in values, or keep the
+   pinned model. **Never `canary --accept` during a comparison.**
+5. **On a switch** (design D16): swap the canary files (the old pinned one to `evals/canary/<old id>.json`, the
+   candidate's to `evals/canary.json`), change the id and price in `seed/pricing.json`, `seed/settings.json` and
+   `frontend/src/mock/pricing.config.ts`, regenerate the seed sessions and ledger, rebuild the manifest for the new
+   pinned id, then the must-pass latency run off-peak (it calls DeepSeek) and every deadline put to the user. No paid
+   answer goes stale: each model's answers stay salted with its own baseline's fingerprint.
+
+The next comparison pays only the new model's requests: the pinned model's answers are stored, and its canary
+baseline stays reachable.
