@@ -40,3 +40,26 @@ Whether to switch is the user's decision (task 8.1).
 With the salt now taken from each model's own canary baseline (design D5), the manifest was rebuilt in memory from
 `data/cache/` and `private/evals/cache/`. **3,684 of 3,684** bodies still find their stored jev-1.13 answer, and all
 22 sets list the same body hashes as the committed `jev-1.13-requests.json`. Nothing paid is lost.
+
+## §5 The offline gates (2026-10-20, on ab7d80d, phases 0–4)
+
+| Gate | Result |
+| --- | --- |
+| Backend `pytest` (gate worktree) | **2314 passed**, 0 failed, 10 deselected (41 min). M15's 2280 plus this change's 34. This machine's keyword-p99 test passed this time |
+| `ruff` / `mypy` | clean / clean (243 files) |
+| Frontend typecheck / lint | clean / warnings only, exit 0 (unchanged: the frontend isn't touched) |
+| Frontend test / http | 563 passed, 2 skipped / 63 passed |
+| `seed:check` / `fixtures:check` / `export-schema:check` / `assets:check` | 153 files match / 37 files match / schema matches (56 definitions) / 82 shipped assets covered |
+| Smoke (`HORIZON_TEST=1 horizon eval smoke --limit 5 --yes`) | ok (the in-process fake) |
+| `openspec validate jev-comparison --strict` | valid |
+| `private/`, `6 RAG.pdf` | 0 files tracked |
+
+What phase 4 found and settled (design D10's padded top-ups, the user's choice; D20):
+- the manifest has only 9 distinct bodies over 2.5k and none near 25k, so the timing probe tops up 2.5k–4k, ~10k
+  and ~25k with padded bodies (timing only; ≈ $0.03 per window for both models);
+- `horizon eval manifest` rebuilt from the store is **byte-identical** to the committed `jev-1.13-requests.json`;
+- on a comparison run an unlisted body is named and not sent, a provider error is counted, and `decisions` asks every
+  item (the store serves the stored ones);
+- a test that ran the pinned model's judge set on the fake wrote `evals/baselines/judges.json`; the file was restored
+  from git and the test now writes a temporary record. Through the CLI this can't happen (`decisions` refuses test
+  mode).

@@ -144,7 +144,7 @@
 
 ## 5. Offline gates
 
-- [ ] 5.1 Run the gates:
+- [x] 5.1 Run the gates:
   - backend `pytest` in the gate worktree, `ruff`, `mypy`;
   - frontend typecheck, lint, test and http (unchanged expected);
   - `seed:check`, `fixtures:check`, `export-schema:check`;
