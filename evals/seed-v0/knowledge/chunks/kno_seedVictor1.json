@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "data": [
+    {
+      "id": "kch_victorMoot01",
+      "sourceId": "kno_seedVictor1",
+      "index": 0,
+      "locator": "¶ 1",
+      "text": "Expect the opposition to say the evidence base is narrow. Concede scope early, then shift the burden: the status quo is also a policy and has to justify itself."
+    },
+    {
+      "id": "kch_victorMoot02",
+      "sourceId": "kno_seedVictor1",
+      "index": 1,
+      "locator": "¶ 2",
+      "text": "Historical anchor: the Meridian Working Hours Act 1931 made the two-day weekend the default. It gave agriculture and shipping a ten-year transition and exempted continuous services."
+    },
+    {
+      "id": "kch_victorMoot03",
+      "sourceId": "kno_seedVictor1",
+      "index": 2,
+      "locator": "¶ 3",
+      "text": "Continuous-coverage sectors already run on shift rules under Part IV of the Working Time Code: rest periods, a cap on consecutive shifts, and averaging over a reference period. A shorter standard week sits inside that structure."
+    },
+    {
+      "id": "kch_victorMoot04",
+      "sourceId": "kno_seedVictor1",
+      "index": 3,
+      "locator": "¶ 4",
+      "text": "Phase-in precedent: sector-by-sector timetables, collective agreements first, the public sector as model employer. Courts have upheld staged duties where the end point is clear."
+    },
+    {
+      "id": "kch_victorMoot05",
+      "sourceId": "kno_seedVictor1",
+      "index": 4,
+      "locator": "¶ 5",
+      "text": "Watch for the \"speed, not direction\" turn. Once the opposition accepts the goal, the debate is about implementation, and the side with a timetable wins it."
+    },
+    {
+      "id": "kch_victorMoot06",
+      "sourceId": "kno_seedVictor1",
+      "index": 5,
+      "locator": "¶ 6",
+      "text": "Closing options: res ipsa loquitur; \"the destination is agreed\". Don't sound triumphant. Judges reward conceding a fair point gracefully."
+    }
+  ]
+}

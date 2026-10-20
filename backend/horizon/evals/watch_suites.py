@@ -230,10 +230,10 @@ def recap_context(h: dict[str, Any], k: int, profiles: dict[str, Any], window: i
 
 
 def seed_profiles() -> dict[str, Any]:
-    from horizon.config import REPO_ROOT
+    from horizon.evals.runner import EVAL_SEED
 
     out = {}
-    for p in sorted((REPO_ROOT / "seed" / "characters").glob("*.json")):
+    for p in sorted((EVAL_SEED / "characters").glob("*.json")):
         d = json.loads(p.read_text(encoding="utf-8"))["data"]
         out[d["id"]] = d["profile"]
     return out

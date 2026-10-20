@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "data": {
+    "id": "ses_mockNoScoresRemote",
+    "worldId": "wld_seedMeridian",
+    "title": "Debate: Remote work",
+    "titleIsCustom": false,
+    "mode": "debate",
+    "participants": [
+      {
+        "characterId": "chr_seedVictor",
+        "role": "debater",
+        "side": "prop",
+        "currentEmotion": "thinking",
+        "mutedByUser": false
+      },
+      {
+        "characterId": "chr_seedMei",
+        "role": "debater",
+        "side": "opp",
+        "currentEmotion": "neutral",
+        "mutedByUser": false
+      }
+    ],
+    "emotionMode": "llm",
+    "musicPolicy": "arena",
+    "readableMode": false,
+    "config": {
+      "motion": "This house believes remote work does more harm than good",
+      "format": "two_sided",
+      "roundsPreset": "quick",
+      "phases": [
+        "opening",
+        "closing"
+      ],
+      "turnLength": "short",
+      "moderator": "user",
+      "verdictBy": "arbiter",
+      "rubric": [
+        {
+          "id": "evidence",
+          "label": "Evidence"
+        },
+        {
+          "id": "rebuttal",
+          "label": "Rebuttal"
+        },
+        {
+          "id": "clarity",
+          "label": "Clarity"
+        },
+        {
+          "id": "persuasion",
+          "label": "Persuasion"
+        }
+      ],
+      "autoAdvance": true,
+      "pauseMs": 1500,
+      "sides": {
+        "prop": [
+          "chr_seedVictor"
+        ],
+        "opp": [
+          "chr_seedMei"
+        ]
+      }
+    },
+    "isSeed": false,
+    "status": "ended",
+    "state": {
+      "phase": "ended",
+      "round": 3,
+      "iteration": 1,
+      "verdict": {
+        "decidedBy": "arbiter",
+        "strongerCase": "opp",
+        "summary": [
+          {
+            "subjectId": "prop",
+            "points": [
+              "Remote work erodes mentoring for juniors."
+            ]
+          },
+          {
+            "subjectId": "opp",
+            "points": [
+              "Productivity data favours hybrid work.",
+              "Commute time returned to workers is a real gain."
+            ]
+          }
+        ],
+        "keyDisagreement": "Whether mentoring losses outweigh productivity gains."
+      }
+    },
+    "costUsd": 0.000461,
+    "messageCount": 7,
+    "createdAt": "2026-09-20T10:10:00Z",
+    "updatedAt": "2026-09-20T10:10:23.981Z",
+    "lastMessageAt": "2026-09-20T10:10:22.471Z"
+  }
+}

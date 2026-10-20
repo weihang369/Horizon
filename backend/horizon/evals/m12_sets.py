@@ -31,7 +31,7 @@ from typing import Any
 from horizon.ai.questions import bank
 from horizon.evals import policies, who_policies
 from horizon.evals.metrics import wilson
-from horizon.evals.runner import EVALS_DIR
+from horizon.evals.runner import EVAL_SEED, EVALS_DIR
 
 GRID = tuple(round(0.05 * i, 2) for i in range(1, 20))
 GATE_RECALL = 0.90
@@ -41,7 +41,7 @@ ENGLISH_ACCURACY = 0.95
 SETS = ("docs", "standalone", "english")
 REASK_SET = "reask"
 REASK_FROM = ("who_speaks", "emotion", "debate_member")
-SEED = EVALS_DIR.parent / "seed"
+SEED = EVAL_SEED
 CHECKS = EVALS_DIR.parent / "docs" / "ai" / "checks"
 SEARCHABLE = ("indexed", "keyword_only")
 

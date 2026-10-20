@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "data": [
+    {
+      "id": "kch_meiPilot01",
+      "sourceId": "kno_seedMei2",
+      "index": 0,
+      "locator": "p. 1",
+      "text": "This compendium summarises fourteen four-day week pilots run in Meridian between 2023 and 2025, covering 212 organisations and about 9,800 workers. Every participating organisation volunteered."
+    },
+    {
+      "id": "kch_meiPilot02",
+      "sourceId": "kno_seedMei2",
+      "index": 1,
+      "locator": "p. 3",
+      "text": "Seventy-one percent of participating organisations were in professional services, software, marketing or the non-profit sector. Only nine provided round-the-clock or shift-based services."
+    },
+    {
+      "id": "kch_meiPilot03",
+      "sourceId": "kno_seedMei2",
+      "index": 2,
+      "locator": "p. 5",
+      "text": "Across all pilots, self-reported burnout fell by an average of 32% and sick days by 21%. Revenue stayed broadly flat, but fewer than half of the firms tracked output with a consistent measure."
+    },
+    {
+      "id": "kch_meiPilot04",
+      "sourceId": "kno_seedMei2",
+      "index": 3,
+      "locator": "p. 7",
+      "text": "Firms with the biggest gains had halved their meetings and redesigned workflows before the trial began. Firms that simply removed a day without redesign saw smaller benefits and more overtime."
+    },
+    {
+      "id": "kch_meiPilot05",
+      "sourceId": "kno_seedMei2",
+      "index": 4,
+      "locator": "p. 9",
+      "text": "None of the pilots included an acute hospital, a public transport operator or a residential care provider. The authors flag this as the main gap in the evidence."
+    },
+    {
+      "id": "kch_meiPilot06",
+      "sourceId": "kno_seedMei2",
+      "index": 5,
+      "locator": "p. 12",
+      "text": "In the nine shift-based organisations, holding coverage constant took between 18% and 27% more staffed hours, met through new hires, overtime or agency workers."
+    },
+    {
+      "id": "kch_meiPilot07",
+      "sourceId": "kno_seedMei2",
+      "index": 6,
+      "locator": "p. 14",
+      "text": "Ninety-two percent of organisations kept the four-day week after the pilot. Participants were not randomly selected, so the authors warn against reading this as a national estimate."
+    },
+    {
+      "id": "kch_meiPilot08",
+      "sourceId": "kno_seedMei2",
+      "index": 7,
+      "locator": "p. 17",
+      "text": "Worker retention improved in most pilots: voluntary resignations fell from 6.1% to 4.3% on average over the trial period."
+    },
+    {
+      "id": "kch_meiPilot09",
+      "sourceId": "kno_seedMei2",
+      "index": 8,
+      "locator": "p. 20",
+      "text": "The authors recommend sector-specific trials in health, transport and care, with independent measurement of output and service quality, before any national standard is set."
+    },
+    {
+      "id": "kch_meiPilot10",
+      "sourceId": "kno_seedMei2",
+      "index": 9,
+      "locator": "p. 22",
+      "text": "Results come from employee surveys at the start, midpoint and end of each pilot, alongside finance data reported by each organisation. Survey response fell from 74% to 58% by the final wave."
+    }
+  ]
+}

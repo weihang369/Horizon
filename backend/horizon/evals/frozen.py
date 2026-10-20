@@ -24,9 +24,8 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
-from horizon.config import REPO_ROOT
 from horizon.evals.datachecks import split_for
-from horizon.evals.runner import EVALS_DIR
+from horizon.evals.runner import EVAL_SEED, EVALS_DIR
 
 TRANSCRIPTS = EVALS_DIR / "transcripts"
 KEPT = ("long_one_on_one_en", "long_one_on_one_ms", "long_group_meridian", "long_group_sunnyhollow")
@@ -52,7 +51,7 @@ SOURCE_KEYS = {"debate": ("motion", "format", "roundsPreset", "phases", "sides")
 
 def seed_memories(cast: Sequence[str], seed_dir: Path | None = None) -> dict[str, list[dict[str, str]]]:
     """The start-of-session memory list per cast member: the seed memories (a character with none has an empty list)."""
-    root = seed_dir or REPO_ROOT / "seed"
+    root = seed_dir or EVAL_SEED
     out: dict[str, list[dict[str, str]]] = {}
     for cid in cast:
         p = root / "memory" / f"{cid}.json"

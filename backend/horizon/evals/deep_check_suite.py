@@ -26,10 +26,10 @@ from horizon.ai.decider import NoulAnswer, ScoreAnswer, validate, wire_question
 from horizon.ai.embedder import strip_extension
 from horizon.ai.questions import bank
 from horizon.evals import retrieval as R
-from horizon.evals.runner import EVALS_DIR, Options, Plan, Result, RunEnv, decision_estimate
+from horizon.evals.runner import EVAL_SEED, Options, Plan, Result, RunEnv, decision_estimate
 from horizon.gateway.context import call_ctx
 
-SEED = EVALS_DIR.parent / "seed" / "knowledge"
+SEED = EVAL_SEED / "knowledge"
 N_ANSWERS, N_PARTLY, N_NONE = 7, 6, 7
 N_SET_YES, N_SET_NO = 3, 2
 N_NOULS = 10   # from each of the two sets

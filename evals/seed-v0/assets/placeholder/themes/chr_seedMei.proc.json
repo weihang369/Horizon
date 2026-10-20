@@ -1,0 +1,22 @@
+{
+  "kind": "horizon.theme",
+  "version": 1,
+  "seed": "chr_seedMei",
+  "title": "Mei's Theme",
+  "brief": {
+    "genres": [
+      "jazz hip-hop"
+    ],
+    "moods": [
+      "calm",
+      "playful"
+    ],
+    "bpm": 90,
+    "instruments": [
+      "bass",
+      "drums",
+      "vinyl crackle"
+    ],
+    "vibe": "Jazzy hip-hop, upright bass, vinyl crackle"
+  }
+}

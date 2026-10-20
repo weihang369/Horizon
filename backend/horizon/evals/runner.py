@@ -45,6 +45,10 @@ if TYPE_CHECKING:
     from horizon.runtime import Runtime
 
 EVALS_DIR = REPO_ROOT / "evals"
+# v1 test stage: the seed the evals were labelled on (seed/ at 36b51f4, before the demo was recorded for real), so
+# re-recording the shipped demo never moves a gold span or a stored request body. pricing.json and settings.json
+# follow the repo's (a unit test compares them). `--seed-dir` still points a run at another seed.
+EVAL_SEED = EVALS_DIR / "seed-v0"
 SAFETY_CACHE = REPO_ROOT / "private" / "evals" / "cache"   # M14 (safety D23): the safety suite's own store
 KEEP_RUNS = 20
 BYPASS_SUITES = frozenset({"canary", "capture", "import", "latency", "embed-probe",   # M9 D31: timing never uses the store
@@ -266,7 +270,7 @@ def _user_key(base: Config) -> SecretStr | None:
 
 
 def isolated_config(base: Config, run_dir: Path, opts: Options, *, test_mode: bool) -> Config:
-    seed_dir = Path(opts.seed_dir).resolve() if opts.seed_dir else base.seed_dir
+    seed_dir = Path(opts.seed_dir).resolve() if opts.seed_dir else EVAL_SEED
     key = None if test_mode or opts.probe else _user_key(base)   # a probe never holds the real key
     return Config(repo_root=base.repo_root, data_dir=run_dir, seed_dir=seed_dir, tz=base.tz, test_mode=test_mode,
                   port=base.port, log_level=base.log_level, openrouter_key=key,

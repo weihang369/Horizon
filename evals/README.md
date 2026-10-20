@@ -16,6 +16,7 @@ The evaluation harness's committed data. The code is `backend/horizon/evals/`. T
 | `datasets/judges/` | B4's 60 validation items per judge (30 real, hand-labelled; 30 planted by code); `m9_build.py` builds M9's names-the-feeling set and the pairwise judge's 30 known-winner pairs. |
 | `datasets/emotion/`, `datasets/reactions/` | M9's speaker-emotion (100) and listener-reaction (90) sets, each with its `build.py`; labelled under `reviews/m9-labels.md`. |
 | `corpus/` | Public-domain US federal documents as Markdown, with `SOURCES.md` (URL, retrieval date) and `LICENSE`. |
+| `seed-v0/` | The seed every eval runs on by default: `seed/` at 36b51f4, the scripted demo the sets were labelled on (v1 test stage). The shipped `seed/` is now real recordings, so gold spans and stored request bodies stay put. `pricing.json`, `settings.json` and `runtime.json` must match `seed/` (a unit test checks); `--seed-dir` points a run at another seed. |
 | `baselines/` | Accepted metric baselines. Smoke never compares with them. |
 | `reviews/<set>.json` | Label-review samples and the disagreements found. |
 

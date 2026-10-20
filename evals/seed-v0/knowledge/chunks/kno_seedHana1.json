@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "data": [
+    {
+      "id": "kch_hanaRecipe01",
+      "sourceId": "kno_seedHana1",
+      "index": 0,
+      "locator": "p. 2",
+      "text": "Yuzu cake: zest two yuzu into the sugar first and rub it with your fingers until it smells like winter sunshine. Don't skip this. The juice goes in the glaze, never the batter."
+    },
+    {
+      "id": "kch_hanaRecipe02",
+      "sourceId": "kno_seedHana1",
+      "index": 1,
+      "locator": "p. 5",
+      "text": "Sushi rice for a crowd: three cups of rice and a splash more vinegar than you think. A spoon of pineapple juice in the vinegar keeps it bright when the fish is rich. Your grandfather never noticed."
+    },
+    {
+      "id": "kch_hanaRecipe03",
+      "sourceId": "kno_seedHana1",
+      "index": 2,
+      "locator": "p. 8",
+      "text": "Rainy-day soup: miso, tofu and whatever greens are wilting. If a child refuses it, call it \"dragon broth\" and serve it in the good bowls."
+    },
+    {
+      "id": "kch_hanaRecipe04",
+      "sourceId": "kno_seedHana1",
+      "index": 3,
+      "locator": "p. 11",
+      "text": "Flowers on the table should never be taller than your elbow. People want to see each other when they eat."
+    },
+    {
+      "id": "kch_hanaRecipe05",
+      "sourceId": "kno_seedHana1",
+      "index": 4,
+      "locator": "p. 14",
+      "text": "Leftover rice becomes tomorrow's onigiri. Salt your hands, not the rice, and press as if you were holding a small bird."
+    }
+  ]
+}

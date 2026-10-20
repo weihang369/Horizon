@@ -1,0 +1,194 @@
+{
+  "schemaVersion": 1,
+  "data": {
+    "timing": {
+      "thinkingMs": 60,
+      "firstTokenMs": 1500,
+      "tokensPerSec": 40,
+      "charsPerToken": 4,
+      "tokensPerEvent": 3,
+      "turnGapMs": 400,
+      "reactionDelayMs": [
+        300,
+        800
+      ],
+      "reactionChance": 0.7,
+      "emotionTiming": {
+        "before": 0.7,
+        "early": 0.25,
+        "late": 0.05
+      },
+      "lateEmotionMs": 1200,
+      "profileDraftMs": 4000,
+      "fieldRegenerateMs": 2000,
+      "portraitMs": 20000,
+      "portraitParallel": 2,
+      "emotionMs": 15000,
+      "emotionParallel": 2,
+      "sheetMs": 30000,
+      "songMs": 40000,
+      "jobTickMs": 250,
+      "debateStartMs": 1600,
+      "watchStartMs": 800,
+      "greetingMs": 300,
+      "faceCheckMs": 300
+    },
+    "runtime": {
+      "replyMaxTokens": {
+        "one_on_one": 200,
+        "one_on_one_deep": 300,
+        "group": 150,
+        "watch": 150,
+        "debate": {
+          "short": 200,
+          "medium": 320,
+          "long": 480
+        }
+      },
+      "llm": {
+        "calls": {
+          "reply.chat": {
+            "thinking": "off",
+            "temperature": 1,
+            "output": "stream"
+          },
+          "reply.debate": {
+            "thinking": "off",
+            "temperature": 1,
+            "output": "stream"
+          },
+          "host": {
+            "thinking": "off",
+            "temperature": 1,
+            "output": "text",
+            "maxTokens": 120
+          },
+          "verdict": {
+            "thinking": "off",
+            "temperature": 0.7,
+            "output": "json",
+            "maxTokens": 1200
+          },
+          "summary": {
+            "thinking": "off",
+            "temperature": 0.7,
+            "output": "text",
+            "maxTokens": 600
+          },
+          "episode": {
+            "thinking": "off",
+            "temperature": 0.7,
+            "output": "text",
+            "maxTokens": 400
+          },
+          "memory": {
+            "thinking": "off",
+            "temperature": 0.7,
+            "output": "json"
+          },
+          "query_rewrite": {
+            "thinking": "off",
+            "temperature": 0,
+            "output": "text",
+            "maxTokens": 60
+          },
+          "profile": {
+            "thinking": "off",
+            "temperature": 1,
+            "output": "json",
+            "maxTokens": 2400
+          },
+          "probe": {
+            "thinking": "off",
+            "temperature": null,
+            "output": "text",
+            "maxTokens": 1
+          }
+        }
+      },
+      "windowTokens": {
+        "one_on_one": 6000,
+        "group": 9000,
+        "watch": 9000,
+        "debate": 9000
+      },
+      "coalesce": {
+        "maxChars": 48,
+        "maxMs": 50
+      },
+      "idleReleaseMs": 600000,
+      "prefetchMax": 2,
+      "llmConcurrency": 4,
+      "retrieval": {
+        "knowledgeK": 5,
+        "memoryK": 3,
+        "queryEmbedWaitMs": 400,
+        "agent": {
+          "pool": 20,
+          "candidates": 8,
+          "blockTokens": 1400,
+          "mmrLambda": 1,
+          "k": {
+            "oneOnOne": 3,
+            "group": 2,
+            "watch": 2,
+            "debate": 2
+          },
+          "pieceTarget": 300,
+          "pieceMax": 400,
+          "rewriteMs": 1200,
+          "deepCheckMs": 1500,
+          "queryEmbedWaitMs": 200,
+          "recall": {
+            "pool": 10,
+            "perCorpus": 5,
+            "candidates": 6,
+            "mmrLambda": 0.7,
+            "keep": 3,
+            "fallbackKeep": 2,
+            "checkMs": 1500,
+            "tailTokens": 400,
+            "lineWords": 60,
+            "linesDense": true,
+            "standoutP": 0.25,
+            "standoutRatio": 3
+          }
+        }
+      },
+      "persona": {
+        "repeatHint": false,
+        "moodLine": false
+      },
+      "context": {
+        "voiceReminder": false
+      },
+      "emotion": {
+        "fade": [
+          "surprised",
+          "embarrassed"
+        ]
+      },
+      "debate": {
+        "hostWelcomeWaitMs": 3000,
+        "hostBannerWaitMs": 1500
+      },
+      "memory": {
+        "leaveGraceMs": 30000,
+        "maxConcurrent": 2,
+        "pieceTokens": 8000,
+        "maxTries": 3,
+        "blockTokens": 1000,
+        "halfLifeDays": 30,
+        "recencyFloor": 0.5,
+        "modeWeight": {
+          "oneOnOne": 1,
+          "group": 1,
+          "debate": 0.85,
+          "watch": 0.7
+        },
+        "minImportance": 0.25,
+        "dupCosine": 0.85
+      }
+    }
+  }
+}
