@@ -560,7 +560,8 @@ class Conversations:
                    * (reply + 2 * plan_call) for counts in FREE.values() for mode, n in counts.items()) \
             if not opts.limit else len(PROFILES) * len(MODES) * opts.limit * (reply + 2 * plan_call)
         free += sum(FREE[p]["debate"] for p in PROFILES) * (12 * (reply + 3 * plan_call) + 0.004)
-        return Plan(items=us, estimate_usd=len(us) * per_unit + free, expected_s=len(us) * 30.0 + 2400, paid=paid)
+        # M15 8.9: 20 s a unit, from the first paid run's measured 14 s (147 units in 34.6 min) with a margin
+        return Plan(items=us, estimate_usd=len(us) * per_unit + free, expected_s=len(us) * 20.0 + 2400, paid=paid)
 
     async def run(self, env: RunEnv, plan: Plan) -> Result:
         res = Result()
