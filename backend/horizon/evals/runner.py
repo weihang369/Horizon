@@ -26,7 +26,7 @@ import json
 import shutil
 import uuid
 from collections.abc import Callable
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
@@ -35,7 +35,7 @@ from pydantic import SecretStr
 
 from horizon.config import REPO_ROOT, Config
 from horizon.domain.clock import FrozenClock, PricingCalendar, calendar_for
-from horizon.domain.pricing import estimate_decision_request, load_price_table
+from horizon.domain.pricing import PriceTable, estimate_decision_request, load_price_table
 from horizon.evals.store import ResponseStore
 
 if TYPE_CHECKING:
@@ -79,6 +79,7 @@ class Options:
     probe: bool = False                   # M15 (images-music D13): serve hits, stop at a miss, send nothing
     against: str | None = None            # M15 (D19): a request manifest; Jev bodies it doesn't list are refused
     short: bool = False                   # M15 transcript (D10): the 7 short `naive` scripts, no drop required
+    decision_model: str | None = None     # jev-comparison (D3): ask this Jev model instead of the seed's pinned one
 
 
 @dataclass
@@ -118,10 +119,53 @@ class RunEnv:
         return await self.spent() >= self.max_usd
 
     @property
+    def decision_model(self) -> str:
+        return str(self.rt.gateway.decision_model)
+
+    @property
+    def candidate(self) -> bool:
+        """jev-comparison (D4): a run on a Jev model other than the seed's pinned one. It never writes the pinned
+        model's records: the judges' B4 record, its "already measured" marks, its canary baseline."""
+        return self.decision_model != pinned_model(self.rt.seed_settings)
+
+    @property
     def writes_records(self) -> bool:
         """M15 (D13): only a real paid run writes a judge baseline, the measured marks or the private safety folder;
         a probe's answers are fallbacks and the fake's are fake."""
         return not self.opts.probe and not self.rt.cfg.test_mode
+
+
+def pinned_model(seed_settings: dict[str, Any]) -> str:
+    return str(seed_settings["models"]["decision"])
+
+
+def alias_refusal(model: str | None) -> str | None:
+    if model is not None and "latest" in model:
+        return f"horizon: --decision-model must be a pinned id, never an alias ({model})"
+    return None
+
+
+def priced_for(prices: PriceTable, model: str | None, seed_dir: Path) -> PriceTable:
+    """jev-comparison (D3): a candidate model's own Jev price, when `pricing.json` lists one under `decisionPrices`
+    (keyed by model id, read only here); otherwise the pinned model's price, which is right when the two are equal."""
+    if not model or model == prices.decision.model:
+        return prices
+    own = json.loads((seed_dir / "pricing.json").read_text(encoding="utf-8"))["data"].get("decisionPrices", {}).get(model)
+    d = prices.decision
+    if own is None:
+        return replace(prices, decision=replace(d, model=model))
+    return replace(prices, decision=replace(d, model=model, input_per_m=float(own["inputPerM"]),
+                                            cached_input_per_m=float(own.get("cachedInputPerM", own["inputPerM"])),
+                                            output_per_m=float(own.get("outputPerM", 0.0))))
+
+
+def set_decision_model(rt: Runtime, model: str, prices: PriceTable) -> None:
+    """D3: every Jev request of this isolated runtime goes to `model`; nothing on disk changes."""
+    rt.gateway.decision_model = model
+    rt.gateway.decisions.model = model
+    rt.gateway.prices = prices
+    if rt.fake is not None:   # the in-process fake lists the model too (it answers any model already)
+        rt.fake.models.add(model)
 
 
 def store_for(opts: Options, data_dir: Path, fingerprint: str | None, *, test_mode: bool = False) -> ResponseStore | None:
@@ -245,14 +289,14 @@ class Runner:
                      "files)")
             return 2
         refusal = getattr(suite, "refuse", None)
-        why = refusal(opts) if refusal is not None else None
+        why = alias_refusal(opts.decision_model) or (refusal(opts) if refusal is not None else None)
         if why:   # checked before the plan, the prompt and any call (M10 watch-history)
             self.out(why)
             return 2
         if opts.suite in PAID_ONLY and test_mode and not opts.probe:
             self.out(f"horizon: `{opts.suite}` makes paid calls and refuses to run in test mode")
             return 2
-        prices = load_price_table(self.base.seed_dir)
+        prices = priced_for(load_price_table(self.base.seed_dir), opts.decision_model, self.base.seed_dir)
         plan = suite.plan(opts, prices, paid=not test_mode or opts.probe)
         if opts.probe:   # priced as a real run, but nothing is spent, asked or logged
             plan = Plan(items=plan.items, estimate_usd=plan.estimate_usd, expected_s=plan.expected_s, paid=False)
@@ -312,6 +356,8 @@ class Runner:
             rt.keys.set_key("sk-or-test-eval-0001")
         elif opts.probe:   # ports resolve as with a key; the deny transport sends nothing (D13)
             rt.keys.set_key("sk-or-probe-0000")
+        if opts.decision_model:   # jev-comparison (D3)
+            set_decision_model(rt, opts.decision_model, priced_for(rt.prices, opts.decision_model, cfg.seed_dir))
         fingerprint = None
         if (EVALS_DIR / "canary.json").is_file():
             fingerprint = json.loads((EVALS_DIR / "canary.json").read_text(encoding="utf-8")).get("fingerprint")
@@ -383,6 +429,8 @@ class Runner:
                  f"- profile: `{opts.profile}`; ports: " + ", ".join(f"{k}={v}" for k, v in sorted(ports.items())),
                  f"- items: {len(plan.items)}; estimate ${plan.estimate_usd:.5f}; spent ${spent:.5f}; cap ${max_usd:.5f}",
                  f"- provider: {'paid' if plan.paid else 'in-process fake ($0)'}; store hits: {hits}",
+                 *( [f"- decision model asked: `{opts.decision_model}` (not the pinned one)"]
+                    if opts.decision_model else []),
                  *( [f"- model: `{model}`"] if model else []),
                  *( [f"- seed folder: `{opts.seed_dir}` (a config experiment)"] if opts.seed_dir else []),
                  "", *result.summary, ""]

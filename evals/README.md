@@ -56,6 +56,7 @@ Run these from `backend/`.
 | `uv run horizon eval all` | $0 | M15: the probe over every suite under `agent` and `naive`, a table per suite: hits, would-pay, the estimate. It never sends. |
 | `uv run horizon eval manifest` | $0 | M15: writes `evals/baselines/jev-1.13-requests.json`, the hash of every Jev request body the evaluation asks, and whether its jev-1.13 answer is stored. |
 | `uv run horizon eval <suite> --against-manifest <file>` | paid | The Jev model comparison: the gateway refuses any Jev request whose body the manifest doesn't list, so only the model changes. |
+| `uv run horizon eval <suite> --decision-model <id>` | paid | jev-comparison: every Jev request of the run asks `<id>` instead of the seed's pinned model, in the run's isolated copy only (an alias is refused). A *candidate* run (any model but the pinned one) never writes the pinned model's records: the judges' B4 record (its figures are printed "information only"), the decisions suite's "already measured" marks (a candidate keeps its own, keyed `<model>\|<question>`), and the canary baseline. The estimate uses the candidate's price from `pricing.json` `decisionPrices` when one is listed, else the pinned price. |
 
 Every paid run follows the same steps:
 

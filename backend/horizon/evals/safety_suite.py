@@ -106,7 +106,8 @@ async def run_b4(env: RunEnv, items: Sequence[Mapping[str, Any]], res: Result) -
         res.summary.append(f"- {qid} v{bank().get(qid).version}: real {r['real']:.2f} (n {r['real_n']}), overall "
                            f"{r['overall']:.2f} against the baseline {r['baseline']:.2f}, planted {r['planted']:.2f} "
                            f"(n {r['planted_n']}) → {'PASS' if r['passed'] else 'FAIL'}{partial}")
-        if len(got) == want and env.writes_records:   # the fake and a probe never write a baseline
+        # the fake and a probe never write a baseline; nor does a candidate model (jev-comparison D4)
+        if len(got) == want and env.writes_records and not env.candidate:
             results[qid], versions[qid] = r, bank().get(qid).version
     if results:
         judges.update_record(results, versions)

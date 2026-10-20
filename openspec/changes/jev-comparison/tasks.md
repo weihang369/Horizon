@@ -29,45 +29,45 @@
 
 ## 0. Baseline and the candidate's facts
 
-- [ ] 0.1 Confirm the base:
+- [x] 0.1 Confirm the base:
   - check `git log origin/dev -1` and the branch (`feat/jev-comparison` from dev 33a68ec);
   - take M15's final gates as the baseline (backend 2280 passed; `test_search_on_a_loaded_database_is_fast` is
     this machine's known keyword-p99 failure);
   - run `ruff` and `mypy` clean on the branch tip.
 
   Record the result in `docs/ai/checks/jev-comparison.md` §0.
-- [ ] 0.2 Verify the candidate (design D2, $0):
+- [x] 0.2 Verify the candidate (design D2, $0):
   - from OpenRouter's model page or list and docs.typesafe.ai: the newest Jev id and its dated snapshot, the price,
     the context and question limits, any API or answer-shape change, and whether `typesafe/jev-1.13` is still served
     and until when;
   - record each fact with its source and date in §0;
   - if anything newer than 1.14 exists, tell the user before phase 1.
-- [ ] 0.3 Make the conditional deltas match the verified facts: if the id or price differ from `typesafe/jev-1.14` at
+- [x] 0.3 Make the conditional deltas match the verified facts: if the id or price differ from `typesafe/jev-1.14` at
   $0.042 per million, update `specs/decider/spec.md`, `specs/demo-data/spec.md` and design D2/D15. Verify with
   `openspec validate jev-comparison --strict`.
 
 ## 1. The decision-model override and the guards (D3, D4)
 
-- [ ] 1.1 Add `--decision-model ID` to `horizon eval` (`cli.py`, `Options.decision_model`):
+- [x] 1.1 Add `--decision-model ID` to `horizon eval` (`cli.py`, `Options.decision_model`):
   - the runner sets the isolated runtime's `gateway.decision_model` and `gateway.decisions.model` after `start()`;
   - an alias is refused before the plan;
   - the report shows the model asked and the model returned.
 
   Verify with tests: in test mode with the fake, every Jev request of a run names the override; `seed/settings.json`
   is untouched; `~typesafe/jev-latest` exits non-zero and sends nothing.
-- [ ] 1.2 Make the in-process fake (`gateway/fake.py`) answer the override model. Verify that the existing fake
+- [x] 1.2 Make the in-process fake (`gateway/fake.py`) answer the override model. Verify that the existing fake
   tests still pass and a new test asks a second model id.
-- [ ] 1.3 Price the candidate per D3: when its verified price differs, read a `decisionPrices` entry keyed by model
+- [x] 1.3 Price the candidate per D3: when its verified price differs, read a `decisionPrices` entry keyed by model
   for the estimate and the cap; otherwise nothing is added. Verify with a unit test of the estimate at two prices.
-- [ ] 1.4 Key the measured marks by model (D4): `<model>|<qid>` for a non-pinned model, bare keys for the pinned one.
+- [x] 1.4 Key the measured marks by model (D4): `<model>|<qid>` for a non-pinned model, bare keys for the pinned one.
   Verify with tests:
   - after a pinned run, a candidate run asks every item;
   - the pinned run's marks are byte-for-byte unchanged;
   - a second candidate run sends nothing.
-- [ ] 1.5 Guard the judges' record (D4): a candidate run prints B4 marked "candidate, information only" and never
+- [x] 1.5 Guard the judges' record (D4): a candidate run prints B4 marked "candidate, information only" and never
   calls `update_record`. Verify with a test that `judges.json` is unchanged after a full candidate `--set judges` run
   on the fake.
-- [ ] 1.6 Update `evals/README.md` with the option and the guards. Commit phase 1 at green.
+- [x] 1.6 Update `evals/README.md` with the option and the guards. Commit phase 1 at green.
 
 ## 2. Canary baselines per model and the store's salt (D5)
 

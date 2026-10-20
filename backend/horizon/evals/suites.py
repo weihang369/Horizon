@@ -230,10 +230,17 @@ class Decisions:
         from horizon.evals import m12_sets
 
         reask = env.opts.set == m12_sets.REASK_SET   # M12 D9: measured apart, so a re-ask never hides the live set
-        mark = {(f"{m12_sets.REASK_SET}:{k}" if reask else k): v for k, v in measured_marks(plan.items).items()}
+        # jev-comparison (D4): a candidate model's marks are its own; the pinned model keeps its bare keys
+        candidate = getattr(env, "candidate", False)   # a stub env in a test is the pinned model
+        model = f"{env.decision_model}|" if candidate else ""
+
+        def mark_key(qid: str) -> str:
+            return model + (f"{m12_sets.REASK_SET}:{qid}" if reask else qid)
+
+        mark = {mark_key(k): v for k, v in measured_marks(plan.items).items()}
         for item in plan.items:
             qid = str(item["question_id"])
-            mkey = f"{m12_sets.REASK_SET}:{qid}" if reask else qid
+            mkey = mark_key(qid)
             version = bank().get(qid).version
             if not self.smoke and measured.get(mkey) == mark[mkey]:
                 skipped.add(qid)
@@ -320,12 +327,13 @@ class Decisions:
             res.rows.append(row)
         if not self.smoke and not env.opts.probe:   # M15 (D13): a probe never marks items measured
             for qid in {r["question_id"] for r in res.rows}:
-                mkey = f"{m12_sets.REASK_SET}:{qid}" if reask else qid
-                measured[mkey] = mark[mkey]
+                measured[mark_key(qid)] = mark[mark_key(qid)]
             done_path.parent.mkdir(parents=True, exist_ok=True)
             done_path.write_text(json.dumps(measured, indent=1), encoding="utf-8")
         if (env.opts.set or "").partition(":")[0] == JUDGES_SET and not self.smoke:
-            res.summary += self._judge_report(res.rows, plan.items, record=not env.opts.probe)
+            # jev-comparison (D4, D13): a candidate's B4 figures are information only, never the record
+            res.summary += self._judge_report(res.rows, plan.items, record=not env.opts.probe and not candidate,
+                                              candidate=env.decision_model if candidate else None)
         fade = env.rt.runtime_cfg.runtime.emotion_fade
         for kind in ("emotion", "reaction"):   # M9 D26: the code rule's policies, floors from dev
             mine = [r for r in res.rows if isinstance(r["label"], dict) and policies.kind_of(r["question_id"]) == kind]
@@ -372,9 +380,13 @@ class Decisions:
 
 
     @staticmethod
-    def _judge_report(rows: list[dict[str, Any]], items: list[dict[str, Any]], *, record: bool = True) -> list[str]:
+    def _judge_report(rows: list[dict[str, Any]], items: list[dict[str, Any]], *, record: bool = True,
+                      candidate: str | None = None) -> list[str]:
         """B4 per judge; the record is updated only for a judge whose every item was asked in this run."""
         out = ["## Judge validation (B4: real ≥ 85 %, overall above the commonest-answer baseline, planted ≥ 90 %)"]
+        if candidate:
+            out.append(f"- candidate `{candidate}`, information only: no judge is validated by these figures, and "
+                       "the record is unchanged")
         results: dict[str, dict[str, Any]] = {}
         versions: dict[str, int] = {}
         for qid in sorted({r["question_id"] for r in rows}):

@@ -41,7 +41,8 @@ def _suite(args: argparse.Namespace) -> int:
                    messages=getattr(args, "messages", None), part=getattr(args, "part", None),
                    arm=getattr(args, "arm", None), latency=getattr(args, "latency", False),
                    recut=getattr(args, "recut", None), probe=getattr(args, "probe", False),
-                   against=getattr(args, "against", None), short=getattr(args, "short", False))
+                   against=getattr(args, "against", None), short=getattr(args, "short", False),
+                   decision_model=getattr(args, "decision_model", None))
     if opts.recut:   # M14 (safety D23): from the saved answers, no provider call and no run folder
         from horizon.evals.safety_suite import recut_run
 
@@ -287,6 +288,9 @@ def register(sub: Any) -> None:
         s.add_argument("--allow-peak", action="store_true", dest="allow_peak")
         s.add_argument("--against-manifest", default=None, dest="against",
                        help="a request manifest: refuse any Jev request whose body it doesn't list (a model comparison)")
+        s.add_argument("--decision-model", default=None, dest="decision_model",
+                       help="ask this pinned Jev id instead of the seed's (a model comparison; the pinned records "
+                            "are never written)")
         s.add_argument("--probe", action="store_true",
                        help="serve stored answers, stop at a miss, send nothing; report what a real run would pay (M15)")
         s.add_argument("--seed-dir", default=None, dest="seed_dir",
