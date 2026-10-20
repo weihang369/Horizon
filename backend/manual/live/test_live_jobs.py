@@ -11,8 +11,8 @@ pasted into chat; this test only checks that a key is present and never prints i
 It asserts the image response shape (an image and a provider-reported `usage.cost`), WebP files of at most 250 KB,
 `actualCostUsd` equal to the job's ledger rows, and a total of less than $0.05.
 
-    PowerShell:  $env:HORIZON_LIVE=1; uv run pytest -m live -s tests/live/test_live_jobs.py
-    bash:        HORIZON_LIVE=1 uv run pytest -m live -s tests/live/test_live_jobs.py
+    PowerShell:  $env:HORIZON_LIVE=1; uv run pytest -m live -s manual/live/test_live_jobs.py
+    bash:        HORIZON_LIVE=1 uv run pytest -m live -s manual/live/test_live_jobs.py
 """
 
 from __future__ import annotations
@@ -122,7 +122,7 @@ async def test_live_song(tmp_path: Path) -> None:
     """creation-followups task 7.2, design D9: one naive `song` job (one Lyria 3 Clip call, $0.04) for a seed character,
     under a daily cap of today's spend + $0.05. Prints only the shape: chunks, bytes, format, duration, latency, cost.
 
-        PowerShell:  $env:HORIZON_LIVE=1; uv run pytest -m live -s tests/live/test_live_jobs.py -k song
+        PowerShell:  $env:HORIZON_LIVE=1; uv run pytest -m live -s manual/live/test_live_jobs.py -k song
     """
     from horizon.gateway.errors import ProviderError
     from horizon.gateway.music import MusicResult

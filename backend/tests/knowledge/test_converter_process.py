@@ -1,7 +1,7 @@
 """The conversion subprocess (knowledge-memory-storage tasks 4.5, 5.1, 5.2; document-conversion "Conversions are
 bounded and cancellable", "Unavailable conversion fails with a next step"; local-backend "Reset during a conversion").
 
-A stub worker stands in for Docling, so these run in CI; the real worker is exercised by `pytest -m docling`.
+A stub worker stands in for Docling, so these run in CI; the real worker is exercised by the manual check `uv run pytest manual/docling`.
 """
 
 from __future__ import annotations

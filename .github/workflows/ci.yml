@@ -22,7 +22,9 @@ jobs:
   ci:
     name: Gates, E2E on both clients, fresh-clone boot
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    # 2026-10-20: the backend suite alone reached ~43 min (M13-M15 added ~1,500 tests) and the run was cancelled at 45.
+    # The whole job takes ~60 min; 90 leaves room without hiding a hang.
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v5
 
@@ -63,7 +65,7 @@ jobs:
           uv run ruff check .
           uv run mypy
 
-      # pytest's addopts already exclude the `live` and `docling` markers.
+      # The live and Docling checks are manual scripts under backend/manual/, outside pytest's test paths.
       - name: Backend tests
         working-directory: backend
         run: uv run pytest -q

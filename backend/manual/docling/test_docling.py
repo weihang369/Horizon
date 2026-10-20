@@ -1,7 +1,7 @@
 """Real Docling conversions (knowledge-memory-storage task 5.4; document-conversion spec). Marker `docling`: needs
 `npm run setup:docling` and `horizon models fetch` on this machine, never runs in CI.
 
-    uv run pytest -m docling tests/knowledge/test_docling.py
+    uv run pytest -m docling manual/docling/test_docling.py
 """
 
 from __future__ import annotations
@@ -21,7 +21,7 @@ from tests import docs_kit
 
 pytestmark = pytest.mark.docling
 MODELS = load_config().models_dir
-NO_NET = Path(__file__).with_name("_no_network_worker.py")
+NO_NET = Path(__file__).resolve().parents[2] / "tests" / "knowledge" / "_no_network_worker.py"
 
 
 @pytest.fixture(autouse=True)

@@ -12,7 +12,7 @@ These are the recorded HTTP responses for the gateway's respx tests. CI makes no
 
 `"verified": false` means the shape was written from the OpenRouter docs or the Jev reference, not captured from the live API.
 
-The manual live run (`backend/tests/live/`, M2 task 13) checks each shape. After that run:
+The manual live run (`backend/manual/live/`, M2 task 13) checks each shape. After that run:
 
 - set `"verified": true` only on shapes the run confirmed;
 - if the run finds a difference, fix the parser and the file in the same change.

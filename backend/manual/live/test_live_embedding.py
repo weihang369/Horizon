@@ -8,8 +8,8 @@ sends ONE batch of 3 short texts through `QwenEmbedder` in the active embedding 
 - exactly one `embedding` ledger row, with the space's model;
 - a recorded cost above $0 and below $0.001 (Qwen3 Embedding 8B is about $0.01 per million tokens).
 
-    PowerShell:  $env:HORIZON_LIVE=1; uv run pytest -m live -s tests/live/test_live_embedding.py
-    bash:        HORIZON_LIVE=1 uv run pytest -m live -s tests/live/test_live_embedding.py
+    PowerShell:  $env:HORIZON_LIVE=1; uv run pytest -m live -s manual/live/test_live_embedding.py
+    bash:        HORIZON_LIVE=1 uv run pytest -m live -s manual/live/test_live_embedding.py
 """
 
 from __future__ import annotations

@@ -1,0 +1,4 @@
+# The evaluation corpus is data with character offsets into it (evals/datasets/retrieval/retrieval.jsonl spans): every
+# checkout must hold the same bytes, so it is LF on every platform (a Windows autocrlf checkout once shifted every span
+# and failed CI on Linux).
+evals/corpus/** text eol=lf

@@ -5,8 +5,8 @@ pasted into chat). With a key and no `HORIZON_AI_PROFILE`, the profile is `naive
 TurnEngine, then one group send routed by the Jev router, on the real clock. It prints the summed `cost_usd` of the
 run's ledger rows (`is_seed = 0`) and asserts it is ≤ $0.05.
 
-    PowerShell:  $env:HORIZON_LIVE=1; uv run pytest -m live -s tests/live/test_live_sessions.py
-    bash:        HORIZON_LIVE=1 uv run pytest -m live -s tests/live/test_live_sessions.py
+    PowerShell:  $env:HORIZON_LIVE=1; uv run pytest -m live -s manual/live/test_live_sessions.py
+    bash:        HORIZON_LIVE=1 uv run pytest -m live -s manual/live/test_live_sessions.py
 """
 
 from __future__ import annotations

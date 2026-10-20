@@ -3,7 +3,7 @@
 This one test talks to the real OpenRouter API through the real gateway. It confirms the response shapes that the recorded fixtures in `tests/fixtures/openrouter/` assume (M2 design OQ-C).
 
 - CI never runs it.
-- A normal `uv run pytest` deselects it.
+- A normal `uv run pytest` never collects it: it lives under `manual/`, outside the test paths.
 - It is skipped unless you opt in.
 
 ## What it checks
@@ -24,13 +24,13 @@ This one test talks to the real OpenRouter API through the real gateway. It conf
    PowerShell:
 
    ```
-   $env:HORIZON_LIVE=1; uv run pytest -m live -s
+   $env:HORIZON_LIVE=1; uv run pytest manual/live -s
    ```
 
    bash:
 
    ```
-   HORIZON_LIVE=1 uv run pytest -m live -s
+   HORIZON_LIVE=1 uv run pytest manual/live -s
    ```
 
 3. Read the redacted report the run prints. A copy is saved as `data/live-report.json`, which is git-ignored. The report holds only keys, types and flags: no content, and never the key.

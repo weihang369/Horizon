@@ -37,8 +37,12 @@ def split_for(item_id: str) -> str:
 
 
 def split_problems(rows: Iterable[Mapping[str, Any]]) -> list[str]:
-    """The hash rule; M11's fresh cuts (`fresh: true`, debate D17) are held out, so they are all test."""
+    """The hash rule; M11's fresh cuts (`fresh: true`, debate D17) are held out, so they are all test. M15's judge items
+    taken from a conversation run (`source: "conversations:…"`, m15.md 8.10) keep their unit's own split, so a judge
+    never trains on a reply from a test conversation; `split_changes` still holds them to the committed split."""
     def want(r: Mapping[str, Any]) -> str:
+        if str(r.get("source", "")).startswith("conversations:"):
+            return str(r.get("split"))
         return "test" if r.get("fresh") else split_for(str(r["id"]))
     return [f"{r['id']}: split {r['split']} but the rule says {want(r)}" for r in rows if r.get("split") != want(r)]
 

@@ -4,8 +4,8 @@ Runs only with `HORIZON_LIVE=1` and an OpenRouter key in the environment or the 
 pasted into chat). It checks the response shapes the recorded fixtures assume, through the real gateway, and writes a
 redacted report to `data/live-report.json` (git-ignored). Total spend is asserted ≤ $0.05 from the ledger.
 
-    PowerShell:  $env:HORIZON_LIVE=1; uv run pytest -m live -s
-    bash:        HORIZON_LIVE=1 uv run pytest -m live -s
+    PowerShell:  $env:HORIZON_LIVE=1; uv run pytest manual/live -s
+    bash:        HORIZON_LIVE=1 uv run pytest manual/live -s
 """
 
 from __future__ import annotations
