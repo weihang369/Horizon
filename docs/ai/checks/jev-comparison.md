@@ -53,6 +53,19 @@ With the salt now taken from each model's own canary baseline (design D5), the m
 - The answer was within tolerance of 1.13's: `neutral` both, p 0.60 against 0.62. The run was sliced, so no
   baseline was written (a guard added before this run: a `--limit` or `--start` canary never writes one).
 
+## The decision (task 8.1, 2026-10-20): keep jev-1.13
+
+**The user kept `typesafe/jev-1.13`.** Why, from the figures below:
+- the accuracy is tied (447 vs 443 of 565, p 0.67): there is no gain to buy;
+- every threshold, floor and deadline was tuned on 1.13, and the judges are validated on it; on 1.14 six judges lose
+  their B4 pass, so a switch would also need a judge-model setting or a re-validation;
+- 1.14 is a little slower side by side and a little less repeatable;
+- a switch costs the swap tasks, a DeepSeek latency run (≈ $0.15) and every deadline put to the user again.
+
+What stays for the next Jev (task 10.1): the tooling (`compare-models`), this report, 1.14's canary baseline
+(`evals/canary/typesafe__jev-1.14.json`) and its 4,945 stored answers. The conditional `decider` and `demo-data`
+deltas were deleted from the change. **The comparison is not shown on LinkedIn** (the user's call, 2026-10-20).
+
 ## The result (for the gate, task 8.1)
 
 **In one line:** jev-1.14 is **not measurably better or worse** than jev-1.13 on Horizon's own requests. Same price,

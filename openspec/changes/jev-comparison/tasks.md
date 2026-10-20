@@ -191,11 +191,13 @@
 
 ## 8. The gate: the user decides
 
-- [ ] 8.1 Put the choice to the user with the figures (D16): **switch with the re-tuned values** (one choice per moved
+- [x] 8.1 Put the choice to the user with the figures (D16): **switch with the re-tuned values** (one choice per moved
   knob), **switch with the drop-in values**, or **keep 1.13**. Record the decision and its date in jev-comparison.md
   and the milestone memory. Then do phase 9 or phase 10, not both.
 
 ## 9. If the user switches
+
+> Not run: the user kept jev-1.13 (8.1, 2026-10-20).
 
 - [ ] 9.1 Swap the canary files (D5): 1.13's to `evals/canary/typesafe__jev-1.13.json`, the candidate's to
   `evals/canary.json`. Verify with a test that both models' stored answers are still found (spec "A switch keeps the
@@ -220,7 +222,7 @@
 
 ## 10. If the user keeps 1.13
 
-- [ ] 10.1 Delete `specs/decider/spec.md` and `specs/demo-data/spec.md` from this change. Record "kept 1.13" and why in
+- [x] 10.1 Delete `specs/decider/spec.md` and `specs/demo-data/spec.md` from this change. Record "kept 1.13" and why in
   jev-comparison.md. Leave the candidate's canary baseline and stored answers in place for the next comparison.
   Verify with `openspec validate jev-comparison --strict`. Commit.
 
@@ -229,5 +231,6 @@
 - [ ] 11.1 Final gates: phase 5's list again on the tip, plus `npm run e2e` in the main tree if phase 9 ran. Record the
   table.
 - [ ] 11.2 Add the comparison's spend row to `docs/ai/13-wrap-up.md` W6 and update the milestone memory. Offer the user
-  a draft of the LinkedIn post and its infographic.
+  a draft of the LinkedIn post and its infographic (dropped: the user chose not to show the comparison on
+  LinkedIn, 2026-10-20).
 - [ ] 11.3 Ask the user about the archive and the squash into local dev (as for M7–M15). Nothing is pushed.
