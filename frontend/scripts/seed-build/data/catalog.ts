@@ -4,7 +4,8 @@ import type {
 } from "../../../src/contract/types";
 import { EST_REPLY_POINTS } from "../../../src/domain/energy";
 import { MODELS } from "../../../src/mock/pricing.config";
-import { themeUrl } from "../assets";
+import { placeholderFile, themeUrl } from "../assets";
+import { RECORDED_SONGS } from "../recorded";
 import type { CharacterDef } from "./characters";
 
 export const DEFAULT_SETTINGS: AppSettings = {
@@ -64,24 +65,31 @@ export function songsFor(defs: CharacterDef[]): { song: ThemeSong; mock: boolean
   for (const d of defs) {
     if (!d.song) continue;
     const { bpm } = d.song.brief;
-    const durationSec = Math.round(((8 * 4 * 60) / bpm) * 10) / 10;
+    const url = themeUrl(d.character.id);
+    const real = placeholderFile(url) ? undefined : RECORDED_SONGS[d.character.id];
+    const base = { id: d.song.id, characterId: d.character.id, status: "ready" as const, url, brief: d.song.brief, instrumental: true };
     out.push({
       mock: d.mock,
-      song: {
-        id: d.song.id,
-        characterId: d.character.id,
-        status: "ready",
-        url: themeUrl(d.character.id),
-        durationSec,
-        brief: d.song.brief,
-        instrumental: true,
-        generation: {
-          model: MODELS.music,
-          prompt: `Instrumental theme: ${d.song.brief.vibe}. ${d.song.brief.genres.join(", ")}; ${d.song.brief.moods.join(", ")}; ${bpm} BPM; ${d.song.brief.instruments.join(", ")}.`,
-          costUsd: 0.04,
-        },
-        licenseNote: "Placeholder: procedural WebAudio sketch (D-52). The real theme comes from Google Lyria 3 Clip via OpenRouter (provider terms apply).",
-      },
+      song: real
+        ? {
+            ...base,
+            durationSec: real.durationSec,
+            format: "mp3",
+            ...(real.bytes ? { bytes: real.bytes } : {}),
+            // The job that made it lives in the app it was exported from, not in the seed.
+            generation: real.generation && { model: real.generation.model, prompt: real.generation.prompt, costUsd: real.generation.costUsd },
+            licenseNote: real.licenseNote,
+          }
+        : {
+            ...base,
+            durationSec: Math.round(((8 * 4 * 60) / bpm) * 10) / 10,
+            generation: {
+              model: MODELS.music,
+              prompt: `Instrumental theme: ${d.song.brief.vibe}. ${d.song.brief.genres.join(", ")}; ${d.song.brief.moods.join(", ")}; ${bpm} BPM; ${d.song.brief.instruments.join(", ")}.`,
+              costUsd: 0.04,
+            },
+            licenseNote: "Placeholder: procedural WebAudio sketch (D-52). The real theme comes from Google Lyria 3 Clip via OpenRouter (provider terms apply).",
+          },
     });
   }
   return out;
@@ -96,6 +104,8 @@ export const MEMORY: MemoryItem[] = [
 ];
 /** Victor and Rin deliberately have no memories (empty state, doc 06 §5). */
 export const MEMORY_OWNERS = ["chr_seedAmara", "chr_seedVictor", "chr_seedMei", "chr_seedHana", "chr_seedTakeshi", "chr_seedRin"];
+/** The recorded demo keeps the empty state too: whatever the app wrote for them is left out. */
+export const EMPTY_MEMORY_OWNERS = ["chr_seedVictor", "chr_seedRin"];
 
 /** D-59: sources and their passages live in ./knowledge (chunks + citedCount are filled by the build). */
 export { KNOWLEDGE_SOURCES as KNOWLEDGE } from "./knowledge";

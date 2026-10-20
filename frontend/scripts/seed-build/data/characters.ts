@@ -2,7 +2,7 @@
 import type { Appearance, Character, CharacterProfile, Emotion, EmotionAssetRef, SongBrief, VfxPreset } from "../../../src/contract/types";
 import { EMOTIONS } from "../../../src/contract/types";
 import { makeEnergy } from "../../../src/domain/energy";
-import { portraitUrl, ASSET_SOURCE } from "../assets";
+import { portraitUrl } from "../assets";
 
 export const VFX_BY_EMOTION: Record<Emotion, VfxPreset> = {
   neutral: "none", happy: "sparkle", sad: "rain", angry: "anger", surprised: "shock", thinking: "ponder", embarrassed: "blush",
@@ -13,7 +13,7 @@ const CREATED = "2026-09-14T09:00:00Z";
 
 export interface CharacterDef {
   character: Character;
-  /** Emotions to render as placeholder files ("blink" and "cand-2" included when set). */
+  /** Emotions the character shows; the build draws a placeholder for each one without a real file. */
   renderEmotions: Emotion[];
   renderBlink: boolean;
   renderCandidate2: boolean;
@@ -87,7 +87,7 @@ function build(d: Def): CharacterDef {
   };
   return {
     character,
-    renderEmotions: ASSET_SOURCE === "placeholder" ? present : [],
+    renderEmotions: present,
     renderBlink: Boolean(d.blink),
     renderCandidate2: Boolean(d.candidate2),
     song: songId && d.song ? { id: songId, brief: d.song } : undefined,
@@ -227,7 +227,7 @@ export const CHARACTERS: CharacterDef[] = [
       name: "Takeshi Morisaki", role: "Retired train engineer", age: 58, pronouns: "he/him",
       tagline: "Every problem looks smaller from a fishing pier.",
       personality: { summary: "Gruff exterior, soft heart, terrible puns, punctual to a fault, fiercely proud of his daughters.", traits: ["gruff", "kind", "punny", "punctual", "proud"] },
-      backstory: "Drove the coastal line for thirty years. Hana's father (profile text). Fishes every Sunday, rain or shine.",
+      backstory: "Drove the coastal line for thirty years. Hana's father. Fishes every Sunday, rain or shine.",
       speakingStyle: {
         summary: "Short sentences, train and fishing metaphors, ends serious advice with a dad joke.", tone: "gruff", formality: "casual",
         quirks: ["train metaphors", "dad jokes"], catchphrases: ["Right on schedule."],
@@ -256,7 +256,7 @@ export const CHARACTERS: CharacterDef[] = [
       name: "Rin Morisaki", role: "Game-design grad student & junior game developer", age: 22, pronouns: "she/her",
       tagline: "I'm not antisocial, I'm in a raid.",
       personality: { summary: "Deadpan, sarcastic, competitive gamer, secretly protective of Hana, hates mornings.", traits: ["deadpan", "sarcastic", "competitive", "protective"] },
-      backstory: "Hana's younger sister (profile text). Grad student by day, junior dev on an indie studio's night shift, raid tank always.",
+      backstory: "Hana's younger sister. Grad student by day, junior dev on an indie studio's night shift, raid tank always.",
       speakingStyle: {
         summary: "Short replies in lowercase, gamer slang used sparingly, an occasional sincere moment she immediately undercuts.", tone: "deadpan", formality: "casual",
         quirks: ["all lowercase", "undercuts sincerity"], catchphrases: ["fight me."],

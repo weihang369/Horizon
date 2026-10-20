@@ -4,7 +4,7 @@
 // Deterministic: no wall-clock time, seeded randomness only.
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import type { Emotion } from "../../src/contract/types";
+import type { Emotion, MemoryItem } from "../../src/contract/types";
 import { SCHEMA_VERSION } from "../../src/contract/types";
 import { PRICING } from "../../src/mock/pricing.config";
 import { DEFAULT_TIMING } from "../../src/mock/timing.config";
@@ -13,15 +13,18 @@ import { PALETTES } from "../../src/theme/palettes";
 import { themeSpecFromBrief } from "../../src/audio/synth/spec";
 import { compileScreenplay } from "./compile";
 import type { CompiledSession } from "./compile";
-import { ASSET_SOURCE, placeholderFile, portraitUrl } from "./assets";
+import { assetSource, placeholderFile, portraitUrl, themeUrl } from "./assets";
 import type { PortraitVariant } from "./assets";
 import { CHARACTERS } from "./data/characters";
 import {
-  DEFAULT_SETTINGS, JOBS, KNOWLEDGE, MEMORY, MEMORY_OWNERS, STYLE_PRESETS, SYSTEM_TRACKS, VARIANTS, WORLDS, songsFor,
+  DEFAULT_SETTINGS, EMPTY_MEMORY_OWNERS, JOBS, KNOWLEDGE, MEMORY, MEMORY_OWNERS, STYLE_PRESETS, SYSTEM_TRACKS, VARIANTS, WORLDS, songsFor,
 } from "./data/catalog";
-import { KNOWLEDGE_CHUNKS } from "./data/knowledge";
+import { KNOWLEDGE_CHUNKS, KNOWLEDGE_IDS } from "./data/knowledge";
 import { ledgerFor } from "./ledger";
 import { RUNTIME } from "./runtime.config";
+import { RECORDED_MEMORY, recordedSession } from "./recorded";
+import { compileRecorded, rewrite } from "./recordedCompile";
+import type { RecordingMap } from "./recordedCompile";
 import { MOCK_SCREENPLAYS } from "./screenplays/mock";
 import { SEED_SCREENPLAYS } from "./screenplays/seed";
 import { system1Fixture } from "./system1";
@@ -71,8 +74,18 @@ export async function buildSeed(): Promise<{ outputs: Outputs; warnings: string[
   // ── Sessions ──
   const endEnergy = Object.fromEntries(CHARACTERS.map((d) => [d.character.id, d.character.energy.current]));
   const compiled: { c: CompiledSession; mock: boolean }[] = [];
+  const recordings: RecordingMap[] = [];   // shipped (non-mock) sessions only: their memories go into seed/memory
   for (const sp of [...SEED_SCREENPLAYS, ...MOCK_SCREENPLAYS]) {
-    const c = compileScreenplay(sp, endEnergy);
+    // The real demo: a session recorded in the app (horizon demo export --session) replaces its screenplay.
+    const rec = recordedSession(sp.session.id);
+    let c: CompiledSession;
+    if (rec) {
+      const r = compileRecorded(sp, rec, endEnergy, KNOWLEDGE_IDS);
+      c = r.compiled;
+      if (!sp.mock) recordings.push(r.map);
+    } else {
+      c = compileScreenplay(sp, endEnergy);
+    }
     compiled.push({ c, mock: sp.mock });
     const dir = `${sp.mock ? "_mock/" : ""}sessions/${sp.session.id}`;
     put(`${dir}/session.json`, json(c.session));
@@ -81,7 +94,8 @@ export async function buildSeed(): Promise<{ outputs: Outputs; warnings: string[
   }
 
   // ── Memory, knowledge, ledger, jobs, variants ──
-  for (const owner of MEMORY_OWNERS) put(`memory/${owner}.json`, json(MEMORY.filter((m) => m.characterId === owner)));
+  const memory = RECORDED_MEMORY ? recordedMemory(RECORDED_MEMORY, recordings) : MEMORY;
+  for (const owner of MEMORY_OWNERS) put(`memory/${owner}.json`, json(memory.filter((m) => m.characterId === owner)));
   // D-59: citedCount = citation markers across the shipped (non-mock) sessions; chunks per source.
   const citedCount: Record<string, number> = {};
   for (const { c, mock } of compiled) {
@@ -108,42 +122,60 @@ export async function buildSeed(): Promise<{ outputs: Outputs; warnings: string[
   for (const j of JOBS) put(`_mock/jobs/${j.id}.json`, json(j));
   for (const v of VARIANTS) put(`_mock/variants/${v.id}.json`, json(v));
 
-  // ── Placeholder assets ──
-  if (ASSET_SOURCE === "placeholder") {
-    const shadow = await loadShadow();
-    for (const d of CHARACTERS) {
-      const c = d.character;
-      const variants: PortraitVariant[] = [...d.renderEmotions];
-      if (d.renderBlink) variants.push("blink");
-      if (d.renderCandidate2) variants.push("cand-2");
-      for (const v of variants) {
-        const file = placeholderFile(portraitUrl(c.id, v));
-        if (!file) continue;
-        if (!shadow) {
-          warnings.push(`missing renderer: ${file}`);
-          continue;
-        }
-        const emotion: Emotion = v === "blink" || v === "cand-2" ? "neutral" : v;
-        const spec = shadow.specFromAppearance(c.appearance, c.paletteId, emotion, v === "blink" ? "blink" : "default", {
-          characterId: c.id, candidate: v === "cand-2" ? 2 : 1,
-        });
-        put(`assets/${file}`, shadow.renderShadowSvg(spec));
+  // ── Placeholder assets: drawn only for the variants that have no real file yet ──
+  const shadow = await loadShadow();
+  const assetUrls: string[] = [];
+  for (const d of CHARACTERS) {
+    const c = d.character;
+    const variants: PortraitVariant[] = [...d.renderEmotions];
+    if (d.renderBlink) variants.push("blink");
+    if (d.renderCandidate2) variants.push("cand-2");
+    for (const v of variants) {
+      const url = portraitUrl(c.id, v);
+      assetUrls.push(url);
+      const file = placeholderFile(url);
+      if (!file) continue;
+      if (!shadow) {
+        warnings.push(`missing renderer: ${file}`);
+        continue;
       }
+      const emotion: Emotion = v === "blink" || v === "cand-2" ? "neutral" : v;
+      const spec = shadow.specFromAppearance(c.appearance, c.paletteId, emotion, v === "blink" ? "blink" : "default", {
+        characterId: c.id, candidate: v === "cand-2" ? 2 : 1,
+      });
+      put(`assets/${file}`, shadow.renderShadowSvg(spec));
     }
-    for (const d of CHARACTERS) {
-      if (!d.song) continue;
-      const spec = themeSpecFromBrief(d.character.id, d.song.brief, `${d.character.profile.name.split(" ")[0]}'s Theme`);
-      put(`assets/placeholder/themes/${d.character.id}.proc.json`, `${JSON.stringify(spec, null, 2)}\n`);
-    }
+  }
+  for (const d of CHARACTERS) {
+    if (!d.song) continue;
+    const url = themeUrl(d.character.id);
+    assetUrls.push(url);
+    if (!placeholderFile(url)) continue;
+    const spec = themeSpecFromBrief(d.character.id, d.song.brief, `${d.character.profile.name.split(" ")[0]}'s Theme`);
+    put(`assets/placeholder/themes/${d.character.id}.proc.json`, `${JSON.stringify(spec, null, 2)}\n`);
   }
 
   // ── Manifest (fixture hash keys the mock's localStorage snapshot) ──
   const keys = [...out.keys()].sort();
   let acc = "";
   for (const k of keys) acc += `${k}:${hashString(out.get(k)!)};`;
-  put("manifest.json", json({ hash: hashString(acc).toString(36), files: keys.length, assetSource: ASSET_SOURCE }));
+  put("manifest.json", json({ hash: hashString(acc).toString(36), files: keys.length, assetSource: assetSource(assetUrls) }));
 
   return { outputs: out, warnings };
+}
+
+/** Memories the recorded sessions produced: seed ids (`mem_<character key><n>`), their session and message ids mapped. */
+function recordedMemory(items: MemoryItem[], recordings: RecordingMap[]): MemoryItem[] {
+  const count: Record<string, number> = {};
+  const out: MemoryItem[] = [];
+  for (const m of items) {
+    const rec = recordings.find((r) => r.sourceSessionId === m.sourceSessionId);
+    if (!rec || EMPTY_MEMORY_OWNERS.includes(m.characterId)) continue;
+    const key = m.characterId.replace(/^chr_/, "");
+    count[key] = (count[key] ?? 0) + 1;
+    out.push({ ...rewrite(m, { ...rec.messageIds, [rec.sourceSessionId]: rec.seedSessionId }, rec.shiftMs), id: `mem_${key}${count[key]}` });
+  }
+  return out;
 }
 
 // ── CLI ──

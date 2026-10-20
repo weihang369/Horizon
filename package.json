@@ -8,6 +8,7 @@
     "dev": "concurrently --kill-others --names api,web --prefix-colors blue,magenta \"uv run --project backend horizon serve --reload\" \"npm run dev --prefix frontend -- --mode http\"",
     "dev:mock": "npm run dev --prefix frontend",
     "demo": "npm run build --prefix frontend -- --mode http && uv run --project backend horizon serve --static frontend/dist",
+    "demo:assets": "uv run --project backend horizon demo export --assets && npm run seed:build --prefix frontend",
     "test": "uv run --project backend pytest -q && npm test --prefix frontend && npm run test:http --prefix frontend"
   },
   "devDependencies": {

@@ -163,8 +163,10 @@ def main(argv: list[str] | None = None) -> int:
     build.add_argument("--space", default=None, help="the space to build (default: the current default space)")
     build.add_argument("--yes", action="store_true", help="build without asking")
     build.set_defaults(fn=_space_build)
+    from horizon.demo_export import register as register_demo
     from horizon.evals.cli import register as register_eval
 
+    register_demo(sub)
     register_eval(sub)
     args = p.parse_args(argv)
     return int(args.fn(args))
