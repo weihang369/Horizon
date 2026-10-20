@@ -166,7 +166,9 @@ class Canary:
             drift_n += bool(drift)
             res.rows.append({"id": item["id"], "drift": drift, "model": r.model, "answers": dict(r.answers)})
             new_items.append({**item, "answers": dict(r.answers)})
-        complete = len(new_items) == len(plan.items) and not env.opts.start
+        # a baseline holds all 20 items: a sliced run (`--start`, `--limit`, e.g. jev-comparison's parse check) never
+        # writes or accepts one
+        complete = len(new_items) == len(plan.items) and not env.opts.start and not env.opts.limit
         if first:
             pinned = canary_mod.load_baseline(EVALS_DIR / "canary.json").model
             res.summary.append(f"## Canary, {model}'s first run: {len(res.rows) - drift_n}/{len(res.rows)} within "

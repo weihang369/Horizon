@@ -370,3 +370,18 @@ async def test_a_paid_run_that_dies_keeps_its_folder(tmp_path: Path, monkeypatch
         (tmp_path / "evals" / f"20261004T0300{i:02d}-smoke-x").mkdir()
     runner.prune_runs(tmp_path / "evals")
     assert run.is_dir()
+
+
+# ── 6.1's guard: a sliced canary run never writes a baseline ──
+async def test_a_limited_canary_never_writes_a_baseline(api: Api, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    await api.set_key()
+    d = evals_dir(tmp_path, monkeypatch, candidate=False)
+    api.rt.gateway.decision_model = CANDIDATE
+    c = suites.Canary()
+    for k, opts in enumerate((Options("canary", limit=1), Options("canary", start=19))):
+        run_dir = tmp_path / str(k) / "evals" / "run" / "naive"
+        run_dir.mkdir(parents=True)
+        res = await c.run(RunEnv(rt=api.rt, opts=opts, store=None, run_dir=run_dir, max_usd=1.0),
+                          c.plan(opts, api.rt.prices, paid=True))
+        assert len(res.rows) == 1 and any("no baseline is written" in s for s in res.summary)
+    assert not (d / "canary").exists()
