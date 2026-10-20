@@ -31,6 +31,7 @@ from horizon.ai.agent.budget import planned_input
 from horizon.ai.contexts import TurnContext
 from horizon.ai.language import language_cue
 from horizon.ai.llm import llm_request
+from horizon.ai.naive.markers import MarkerFilter
 from horizon.ai.naive.prompt import (
     PROMPT_VERSION,
     PROMPT_VERSION_DEBATE,
@@ -143,11 +144,13 @@ class NaiveTurnEngine:
         pending_map = CitationMap(block.citations()) if block is not None and block.passages else None
         said: list[str] = []
         chosen: ParsedEmotion | None = None
+        listed = set(block.passages) if block is not None else set()
         for attempt in (1, 2):
             if attempt == 2:
                 req, _ = self.request(ctx, block, force_cue=True)
             estimate = gw.chat_estimate(req, warm=warm, prefix_tokens=count_tokens(prefix_text))
             parser = self.parser(ctx, previous, names)
+            markers = MarkerFilter(listed)   # a `[n]` for a passage this reply wasn't given never shows
             held: ParsedEmotion | None = None
             stream: Any = gw.chat_stream(req, ctx.call_ctx("reply"), estimate=estimate)
             try:
@@ -158,7 +161,8 @@ class NaiveTurnEngine:
                         if isinstance(p, ParsedEmotion):
                             held = p   # D17: the face waits for the first word, so an empty reply shows nothing
                             continue
-                        if not p.text:
+                        text = markers.feed(p.text) if p.text else ""
+                        if not text:
                             continue
                         if pending_map is not None:
                             yield pending_map
@@ -166,22 +170,25 @@ class NaiveTurnEngine:
                         if held is not None:
                             chosen, held = held, None
                             yield Emotion(chosen.emotion, chosen.source)
-                        said.append(p.text)
-                        yield Token(p.text)
+                        said.append(text)
+                        yield Token(text)
             finally:
                 await stream.aclose()
-            for p in parser.close():
-                if isinstance(p, ParsedEmotion):
-                    held = p
-                elif p.text:
-                    if pending_map is not None:
-                        yield pending_map
-                        pending_map = None
-                    if held is not None:
-                        chosen, held = held, None
-                        yield Emotion(chosen.emotion, chosen.source)
-                    said.append(p.text)
-                    yield Token(p.text)
+            for last in [*parser.close(), None]:   # None: the end, where the marker filter lets go of what it held
+                if isinstance(last, ParsedEmotion):
+                    held = last
+                    continue
+                text = markers.close() if last is None else markers.feed(last.text) if last.text else ""
+                if not text:
+                    continue
+                if pending_map is not None:
+                    yield pending_map
+                    pending_map = None
+                if held is not None:
+                    chosen, held = held, None
+                    yield Emotion(chosen.emotion, chosen.source)
+                said.append(text)
+                yield Token(text)
             if said:
                 break
             if attempt == 2:
