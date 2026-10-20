@@ -212,7 +212,7 @@ per-item results under `docs/ai/checks/m15/`, no live older batch.
 
 - [x] 8.1 The canary (< $0.001, store-bypassed). Verify: it passes, or a drift goes to the user before anything
   else.
-- [ ] 8.2 `horizon eval all` (the probe, $0). Record D13's table as found in `m15.md`. **Bring any re-run to the
+- [x] 8.2 `horizon eval all` (the probe, $0). Record D13's table as found in `m15.md`. **Bring any re-run to the
   user as a choice**, one suite at a time.
 - [x] 8.3 The M14 song part on the new prompt (≈ $0.001). Verify: refused ≥ 9/10, falsely refused ≤ 1/20, recorded.
 - [x] 8.4 The 7 short transcripts (≈ $0.02). The team reads each before commit, and the user spot-checks. Verify:
