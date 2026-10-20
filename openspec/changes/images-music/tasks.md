@@ -260,5 +260,5 @@ per-item results under `docs/ai/checks/m15/`, no live older batch.
   - `git status` clean of `private/`.
 
   Record them in `m15.md`.
-- [ ] 9.4 Ask the user how M15 finishes (archive + squash into dev, as before). Do nothing further without the
+- [x] 9.4 Ask the user how M15 finishes (archive + squash into dev, as before). Do nothing further without the
   answer.
