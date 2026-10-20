@@ -149,6 +149,12 @@ class Canary:
         res = Result()
         new_items: list[dict[str, Any]] = []
         drift_n = 0
+        # jev-comparison (D5): compared against the asked model's own baseline; a candidate's first run, having none,
+        # is compared against the pinned one's answers (a finding) and becomes its baseline
+        model = getattr(env, "decision_model", "") or ""
+        path = canary_mod.baseline_path(EVALS_DIR, model) if model else EVALS_DIR / "canary.json"
+        first = not path.is_file()
+        against = {} if first else {i["id"]: i["answers"] for i in canary_mod.load_baseline(path).items}
         for item in plan.items:
             if await env.over_budget():
                 res.status = "incomplete"
@@ -156,20 +162,33 @@ class Canary:
                 break
             r = await env.rt.gateway.decide(item["state"], item["questions"], call_ctx("eval_judge"))
             res.model = r.model or res.model
-            drift = canary_mod.compare(item["answers"], r.answers)
+            drift = canary_mod.compare(against.get(item["id"], item["answers"]), r.answers)
             drift_n += bool(drift)
             res.rows.append({"id": item["id"], "drift": drift, "model": r.model, "answers": dict(r.answers)})
             new_items.append({**item, "answers": dict(r.answers)})
+        complete = len(new_items) == len(plan.items) and not env.opts.start
+        if first:
+            pinned = canary_mod.load_baseline(EVALS_DIR / "canary.json").model
+            res.summary.append(f"## Canary, {model}'s first run: {len(res.rows) - drift_n}/{len(res.rows)} within "
+                               f"tolerance of {pinned}'s answers (a finding, not a failure)")
+            res.summary += [f"- {r['id']}: " + "; ".join(r["drift"]) for r in res.rows if r["drift"]]
+            if complete and res.status == "ok":
+                fp = canary_mod.first_baseline(path, new_items, model, dt.datetime.now(dt.UTC).isoformat(), pinned)
+                res.summary.append(f"- written as {model}'s baseline `{path.name}` (fingerprint {fp[:12]}…); "
+                                   f"{pinned}'s baseline is unchanged")
+            else:
+                res.summary.append("- incomplete, so no baseline is written: run the canary again in full")
+            return res
         if res.status == "ok" and drift_n:
             res.status = "drift"
         res.summary.append(f"## Canary: {len(res.rows) - drift_n}/{len(res.rows)} within tolerance "
                            f"(choices equal, p ±{canary_mod.P_TOL}, scores ±{canary_mod.SCORE_TOL})")
         res.summary += [f"- {r['id']}: " + "; ".join(r["drift"]) for r in res.rows if r["drift"]]
-        if env.opts.accept and res.status == "drift" and len(new_items) == len(plan.items) and not env.opts.start:
-            fp = canary_mod.accept(EVALS_DIR / "canary.json", new_items, res.model or "",
-                                   dt.datetime.now(dt.UTC).isoformat())
-            res.summary.append(f"- accepted as the new baseline (fingerprint {fp[:12]}…); every stored Jev answer is "
-                               "now stale")
+        if env.opts.accept and res.status == "drift" and complete:   # the asked model's own baseline only
+            # the asked id, not the returned one: the baseline is looked up by the id a run asks (D5)
+            fp = canary_mod.accept(path, new_items, model or res.model or "", dt.datetime.now(dt.UTC).isoformat())
+            res.summary.append(f"- accepted as the new baseline `{path.name}` (fingerprint {fp[:12]}…); every stored "
+                               f"Jev answer of {model or 'this model'} is now stale")
             res.status = "ok"
         return res
 

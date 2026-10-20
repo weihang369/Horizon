@@ -44,16 +44,34 @@ class AsksJev:
         return res
 
 
+def evals_dir(tmp: Path, monkeypatch: pytest.MonkeyPatch, *, candidate: bool) -> Path:
+    """A copy of `evals/canary.json` (and, when asked, a candidate baseline) that the runner and the suites read."""
+    from horizon.evals import runner
+
+    d = tmp / "evals-dir"
+    d.mkdir()
+    main = json.loads((EVALS_DIR / "canary.json").read_text(encoding="utf-8"))
+    (d / "canary.json").write_text(json.dumps(main), encoding="utf-8")
+    if candidate:
+        (d / "canary").mkdir()
+        (d / "canary" / f"{CANDIDATE.replace('/', '__')}.json").write_text(json.dumps({**main, "model": CANDIDATE}),
+                                                                           encoding="utf-8")
+    monkeypatch.setattr(runner, "EVALS_DIR", d)
+    monkeypatch.setattr(suites, "EVALS_DIR", d)
+    return d
+
+
 # ── 1.1, 1.2: the override reaches every Jev request; the seed is untouched; an alias is refused ──
 async def test_the_override_reaches_every_jev_request(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setitem(suites.SUITES, "asks_jev", AsksJev())
+    evals_dir(tmp_path, monkeypatch, candidate=True)
     before = (SEED / "settings.json").read_bytes()
     out: list[str] = []
-    r = Runner(base(tmp_path), stdin=lambda _p: "y", out=out.append, now=lambda: SATURDAY)
+    r = Runner(base(tmp_path / "data"), stdin=lambda _p: "y", out=out.append, now=lambda: SATURDAY)
     assert await r.run(Options("asks_jev", yes=True, decision_model=CANDIDATE)) == 0, out
     assert AsksJev.seen and all(b["model"] == CANDIDATE for b in AsksJev.seen)
     assert (SEED / "settings.json").read_bytes() == before
-    (run,) = [p for p in (tmp_path / "evals").iterdir() if p.is_dir()]
+    (run,) = [p for p in (tmp_path / "data" / "evals").iterdir() if p.is_dir()]
     report = (run / "naive" / "report.md").read_text(encoding="utf-8")
     assert f"decision model asked: `{CANDIDATE}`" in report and f"model: `{CANDIDATE}`" in report   # the fake echoes it
     assert "candidate=True" in report
@@ -157,3 +175,107 @@ async def test_a_candidate_never_writes_the_judges_record(api: Api, tmp_path: Pa
     assert any("judge_flattery" in s and "PASS" in s for s in res.summary)
     assert any("information only" in s for s in res.summary)
     assert record.read_text(encoding="utf-8") == '{"keep": "me"}\n'
+
+
+# ── 2.1: a canary baseline per model ──
+async def test_the_candidate_canary_writes_its_own_baseline(api: Api, tmp_path: Path,
+                                                            monkeypatch: pytest.MonkeyPatch) -> None:
+    import copy
+
+    from horizon.evals import canary as canary_mod
+    from horizon.gateway.decisions import DecisionsResponse
+
+    d = evals_dir(tmp_path, monkeypatch, candidate=False)
+    main_before = (d / "canary.json").read_bytes()
+    base_items = canary_mod.load_baseline(d / "canary.json").items
+    canned = [copy.deepcopy(i["answers"]) for i in base_items]
+    flip = next(i for i, a in enumerate(canned) if any("choice" in x for x in a.values()))
+    a = next(v for v in canned[flip].values() if "choice" in v)
+    a["choice"] = next(k for k in a["probabilities"] if k != a["choice"])   # the candidate answers one item otherwise
+    calls = iter(range(10_000))
+
+    async def decide(state: Any, questions: Any, ctx: Any, **_kw: Any) -> Any:
+        return DecisionsResponse("gen-c", copy.deepcopy(canned[next(calls) % len(canned)]), None, CANDIDATE)
+
+    monkeypatch.setattr(api.rt.gateway, "decide", decide)
+    api.rt.gateway.decision_model = CANDIDATE
+    c = suites.Canary()
+    plan = c.plan(Options("canary"), api.rt.prices, paid=True)
+
+    def env(sub: str, **kw: Any) -> RunEnv:
+        run_dir = tmp_path / sub / "evals" / "run" / "naive"
+        run_dir.mkdir(parents=True)
+        return RunEnv(rt=api.rt, opts=Options("canary", **kw), store=None, run_dir=run_dir, max_usd=1.0)
+
+    first = await c.run(env("1"), plan)
+    own = d / "canary" / f"{CANDIDATE.replace('/', '__')}.json"
+    assert first.status == "ok" and own.is_file()                         # a finding, not a failure
+    assert any("first run" in s and "19/20" in s for s in first.summary)
+    assert any(base_items[flip]["id"] in s for s in first.summary)
+    assert (d / "canary.json").read_bytes() == main_before
+    written = canary_mod.load_baseline(own)
+    assert written.model == CANDIDATE and canary_mod.fingerprint_for(d, CANDIDATE) == written.fingerprint
+    assert canary_mod.fingerprint_for(d, PINNED) == canary_mod.load_baseline(d / "canary.json").fingerprint
+    a["choice"] = next(k for k in a["probabilities"] if k != a["choice"])  # a later drift on the candidate
+    own_before = own.read_bytes()
+    second = await c.run(env("2"), plan)
+    assert second.status == "drift" and own.read_bytes() == own_before
+    third = await c.run(env("3", accept=True), plan)                       # accepting writes the candidate's file only
+    assert third.status == "ok" and own.read_bytes() != own_before
+    assert (d / "canary.json").read_bytes() == main_before
+    assert canary_mod.load_baseline(own).model == CANDIDATE
+
+
+# ── 2.2: a candidate with no baseline waits for its canary; its stored answers are found again ──
+async def test_a_candidate_without_a_baseline_is_refused(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setitem(suites.SUITES, "asks_jev", AsksJev())
+    evals_dir(tmp_path, monkeypatch, candidate=False)
+    AsksJev.seen = []
+    out: list[str] = []
+    r = Runner(base(tmp_path / "data"), stdin=lambda _p: "y", out=out.append, now=lambda: SATURDAY)
+    assert await r.run(Options("asks_jev", yes=True, decision_model=CANDIDATE)) == 2
+    assert AsksJev.seen == [] and any("canary --decision-model" in s for s in out)
+    assert await r.run(Options("asks_jev", yes=True, decision_model=PINNED)) == 0   # the pinned model needs nothing
+
+
+async def test_a_candidates_stored_answer_is_found_under_its_own_salt(api: Api, tmp_path: Path,
+                                                                     monkeypatch: pytest.MonkeyPatch) -> None:
+    from horizon.evals import canary as canary_mod
+    from horizon.evals.store import ResponseStore
+
+    await api.set_key()
+    d = evals_dir(tmp_path, monkeypatch, candidate=True)
+    own = d / "canary" / f"{CANDIDATE.replace('/', '__')}.json"
+    doc = json.loads(own.read_text(encoding="utf-8"))
+    doc["items"][0]["answers"] = {"x": {"noul": 0.11}}                     # the candidate's own baseline, its own salt
+    doc["fingerprint"] = canary_mod.fingerprint(doc["items"])
+    own.write_text(json.dumps(doc), encoding="utf-8")
+    fp_c, fp_p = canary_mod.fingerprint_for(d, CANDIDATE), canary_mod.fingerprint_for(d, PINNED)
+    assert fp_c and fp_p and fp_c != fp_p
+    fake = api.rt.fake
+    assert fake is not None
+    it = canary_item()
+    api.rt.gateway.decision_model = CANDIDATE
+    api.rt.gateway.store = ResponseStore.eval_view(tmp_path / "cache", fp_c)
+    await api.rt.gateway.decide(it["state"], it["questions"], call_ctx("eval_judge"))
+    n = fake.counts["decisions"]
+    await api.rt.gateway.decide(it["state"], it["questions"], call_ctx("eval_judge"))
+    assert fake.counts["decisions"] == n                                   # found again: nothing sent
+    api.rt.gateway.store = ResponseStore.eval_view(tmp_path / "cache", fp_p)   # the pinned salt doesn't find it
+    await api.rt.gateway.decide(it["state"], it["questions"], call_ctx("eval_judge"))
+    assert fake.counts["decisions"] == n + 1
+
+
+# ── 2.3: the pinned model's salt is the one every stored 1.13 answer was keyed with ──
+def test_the_pinned_salt_is_unchanged() -> None:
+    from horizon.evals import canary as canary_mod
+    from horizon.evals.store import jev_key
+
+    fp = canary_mod.fingerprint_for(EVALS_DIR, PINNED)
+    assert fp == json.loads((EVALS_DIR / "canary.json").read_text(encoding="utf-8"))["fingerprint"]
+    fix = Path(__file__).resolve().parents[1] / "fixtures" / "store"
+    name = "03f58c0f98e05d2c116783f47f90a7d4a5b921712609641d2bb7fa6586f2c089.json"   # group A's, with the salt
+    req = json.loads((fix / name).read_text(encoding="utf-8"))["request"]
+    assert jev_key(PINNED, req["state"], req["questions"], fp) + ".json" == name
+    assert canary_mod.baseline_path(EVALS_DIR, PINNED) == EVALS_DIR / "canary.json"
+    assert canary_mod.baseline_path(EVALS_DIR, CANDIDATE).parent == EVALS_DIR / "canary"

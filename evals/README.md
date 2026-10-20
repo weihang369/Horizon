@@ -32,7 +32,7 @@ Run these from `backend/`.
 | Command | Cost | What it does |
 |---|---|---|
 | `uv run horizon eval smoke [--limit N]` | $0 with `HORIZON_TEST=1` | Checks that bank entries compile to valid wire questions and datasets load. Runs decisions over the smoke items and one conversation per mode. CI runs it. |
-| `uv run horizon eval canary [--accept]` | < $0.001 | Sends the 20 canary items with the store bypassed. Passes when every choice matches, p moves ≤ 0.10 and scores move ≤ 0.15. `--accept` rewrites the baseline after a drift you have seen. |
+| `uv run horizon eval canary [--accept] [--decision-model <id>]` | < $0.001 | Sends the 20 canary items with the store bypassed. Passes when every choice matches the asked model's own baseline, p moves ≤ 0.10 and scores move ≤ 0.15. `--accept` rewrites that model's baseline after a drift you have seen. A model's first run writes its baseline (see "The store"). |
 | `uv run horizon eval decisions [--limit N]` | paid | Policy accuracy with Wilson intervals, a calibration table and order bias (both option orders). Re-runs only questions whose bank version changed. |
 | `uv run horizon eval overlap` | $0 | Fails when a dataset item copies a 6-word phrase from the bank's wording. |
 | `uv run horizon eval review <set>` | $0 | Prints a seeded sample of max(15, ⌈n/5⌉) items and records it in `reviews/<set>.json`. Two or more disagreements fail the set. |
@@ -74,5 +74,11 @@ Paid answers are saved in `data/cache/<sha256>.json` and reused ("pay once"). Th
 - Only `horizon eval` runs read chat and Jev answers from the store.
 - The live app stores only seed embeddings: seed knowledge and seed memories.
 - These never read or write the store: the canary, latency and repeatability runs, `capture`, `import`, and private items.
-- Accepting a new canary baseline changes the fingerprint, so every stored Jev answer becomes stale at once.
+- Accepting a new canary baseline changes the fingerprint, so every stored Jev answer of that model becomes stale at once.
+- jev-comparison: each Jev model has its own canary baseline, and its stored answers are salted with that baseline's
+  fingerprint. The pinned model's is `canary.json` (the one whose `model` it names), so every key stored before the
+  comparison is unchanged. Any other model's is `canary/<id with "/" → "__">.json`, written by its first full canary
+  run (`canary --decision-model <id>`), which reports its drift against the pinned answers as a finding. Every other
+  suite on that model refuses until it exists. **Never `--accept` during a comparison**: accepting re-keys the model's
+  stored answers, so they'd be paid again. A switch swaps the two files instead (design D5).
 - A factory reset deletes `data/cache/`.

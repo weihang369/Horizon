@@ -168,6 +168,21 @@ def set_decision_model(rt: Runtime, model: str, prices: PriceTable) -> None:
         rt.fake.models.add(model)
 
 
+def candidate_refusal(opts: Options, seed_dir: Path) -> str | None:
+    """D5: a candidate model's answers can't be stored before its canary baseline exists (they'd carry no salt and be
+    lost to it), so every other suite on it waits for the canary."""
+    from horizon.evals import canary as canary_mod
+
+    if not opts.decision_model or opts.suite == "canary":
+        return None
+    seed_dir = Path(opts.seed_dir).resolve() if opts.seed_dir else seed_dir
+    pinned = json.loads((seed_dir / "settings.json").read_text(encoding="utf-8"))["data"]["models"]["decision"]
+    if opts.decision_model == pinned or canary_mod.fingerprint_for(EVALS_DIR, opts.decision_model) is not None:
+        return None
+    return (f"horizon: {opts.decision_model} has no canary baseline yet; run "
+            f"`horizon eval canary --decision-model {opts.decision_model}` first (nothing was sent)")
+
+
 def store_for(opts: Options, data_dir: Path, fingerprint: str | None, *, test_mode: bool = False) -> ResponseStore | None:
     """D35: the runner, not the caller, decides; these runs never read or write the store. A test-mode run (the
     in-process fake) never touches it either: a fake answer saved there would later be served to a paid run as real
@@ -289,7 +304,9 @@ class Runner:
                      "files)")
             return 2
         refusal = getattr(suite, "refuse", None)
-        why = alias_refusal(opts.decision_model) or (refusal(opts) if refusal is not None else None)
+        why = (alias_refusal(opts.decision_model)
+               or candidate_refusal(opts, self.base.seed_dir)
+               or (refusal(opts) if refusal is not None else None))
         if why:   # checked before the plan, the prompt and any call (M10 watch-history)
             self.out(why)
             return 2
@@ -358,9 +375,10 @@ class Runner:
             rt.keys.set_key("sk-or-probe-0000")
         if opts.decision_model:   # jev-comparison (D3)
             set_decision_model(rt, opts.decision_model, priced_for(rt.prices, opts.decision_model, cfg.seed_dir))
-        fingerprint = None
-        if (EVALS_DIR / "canary.json").is_file():
-            fingerprint = json.loads((EVALS_DIR / "canary.json").read_text(encoding="utf-8")).get("fingerprint")
+        from horizon.evals import canary as canary_mod
+
+        # jev-comparison (D5): the asked model's own baseline salts its stored answers (the pinned one: canary.json's)
+        fingerprint = canary_mod.fingerprint_for(EVALS_DIR, str(rt.gateway.decision_model))
         store = store_for(opts, self.data_dir, fingerprint, test_mode=test_mode)
         if store is not None and opts.probe:
             store.probe = True

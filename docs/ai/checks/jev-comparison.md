@@ -34,3 +34,9 @@ Whether to switch is the user's decision (task 8.1).
   at 8.1.
 - **0.3: the expected id and price were right** (`typesafe/jev-1.14`, $0.042 per million), so the conditional
   `decider` and `demo-data` deltas stand as written, and D3's per-model price isn't needed (same price).
+
+### 0.4 The 1.13 keys after the per-model salt (task 2.3, $0)
+
+With the salt now taken from each model's own canary baseline (design D5), the manifest was rebuilt in memory from
+`data/cache/` and `private/evals/cache/`. **3,684 of 3,684** bodies still find their stored jev-1.13 answer, and all
+22 sets list the same body hashes as the committed `jev-1.13-requests.json`. Nothing paid is lost.

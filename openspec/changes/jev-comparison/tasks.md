@@ -71,7 +71,7 @@
 
 ## 2. Canary baselines per model and the store's salt (D5)
 
-- [ ] 2.1 Load the baseline by model (`canary.py`):
+- [x] 2.1 Load the baseline by model (`canary.py`):
   - `evals/canary.json` when its `model` equals the run's model, else `evals/canary/<id with "/" → "__">.json`;
   - a candidate's first complete canary run writes its baseline and reports drift against the pinned baseline as a
     finding;
@@ -79,14 +79,14 @@
 
   Verify with tests: first run writes the candidate file; `evals/canary.json` is unchanged; a second run with one
   changed choice reports drift and leaves both files unchanged.
-- [ ] 2.2 Salt each Jev store key with its own model's baseline fingerprint (runner, `store_for`, gateway lookup). A
+- [x] 2.2 Salt each Jev store key with its own model's baseline fingerprint (runner, `store_for`, gateway lookup). A
   non-canary suite on a model with no baseline refuses and names the canary step. Verify with tests: the refusal sends
   nothing; a stored candidate answer is found again after its baseline exists.
-- [ ] 2.3 Prove that the 1.13 keys are unchanged. Add a test that recomputes the key of every manifest body recorded
+- [x] 2.3 Prove that the 1.13 keys are unchanged. Add a test that recomputes the key of every manifest body recorded
   as stored and asserts that each one still hits the store. It runs against the committed store fixtures in test
   mode, and as a one-off script over `data/cache` and `private/evals/cache`, with its result (3,684 of 3,684) recorded
   in §0.
-- [ ] 2.4 Update `evals/README.md` (the canary per model, never accept during a comparison) and the store
+- [x] 2.4 Update `evals/README.md` (the canary per model, never accept during a comparison) and the store
   description. Commit phase 2 at green.
 
 ## 3. The peak check per plan, and `.keep` from the start (D6, D15)
