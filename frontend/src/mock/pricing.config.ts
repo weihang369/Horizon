@@ -44,7 +44,7 @@ export const PRICING: PricingTable = {
       // Jev deadlines (docs/ai/13 W12, measured by group A A2 from Malaysia: Jev ≈ 420 ms p50 / 500 p99).
       decision: {
         // M14 (safety 8.5, the user's choices): follow_plan 483 → 400 with the check before turn.end; guardrail 700 → 800
-        route: 400, turn_plan: 700, follow_plan: 400, debate_plan: 651, guardrail: 800, guardrail_prompt: 1_500,
+        route: 400, turn_plan: 700, follow_plan: 400, debate_plan: 735, guardrail: 800, guardrail_prompt: 1_500,
         reaction: 1_500, face_check: 1_500, default: 3_000,
         rubric: 10_000, // M11 (debate D12): a background purpose; a fallback costs the whole score
         importance: 30_000, // M13 (memory D14): a background purpose; doc 09 M13 bounds only the run

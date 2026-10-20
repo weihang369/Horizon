@@ -656,6 +656,14 @@ with itself only about 64 % of the time, so that rule mixes up ordinary noise wi
   missed 400 ms on 50/50 (Jev p50 443 / p90 495 ms; `S` p90 0.5 ms), so its deadline is 483 ms by G2's rule; watch at
   Fast pace met NFR-02 (`turn.end` to the next first token p50 1,711 ms), the plan made ahead used on 54 of 62 turns;
   no slow spells in either run.*
+- *Built in M15 (OpenSpec `images-music` D15) as `latency --part blended`, the must-pass run ([m15.md](checks/m15.md)
+  8.12): 100 quick and 100 deep 1:1 turns, 50 group, 50 debate and 25 deep watch, 5 warm-up turns per part left out,
+  one off-peak window (the user's choice; peak is not measured), on a loaded database, $0.123. **NFR-01 met:**
+  blended p50 951 / p90 1,479 ms at the deep rate fixed before the run; deep turns alone p50 1,710 / p90 2,211 ms, so
+  no rate can miss it. **NFR-02 met** in group (p50 1.7 s), watch (1.4 s) and debate (2.4 s, its exception).
+  **NFR-29 met:** the face came at or before the first word on 250/250 turns. The output check was late 0/374 at
+  800 ms; `debate_plan` moved to 735 ms. The group `turn.next` rule can't be timed when each reply is stopped at its
+  first word (no follow plan runs), so it stays `latency --part follow`'s.*
 - **NFR-29 (the face within 800 ms of the first word)** is measured **at the HTTP client**, from the event timestamps of
   the M6 portable client:
   - face time minus first-word time;

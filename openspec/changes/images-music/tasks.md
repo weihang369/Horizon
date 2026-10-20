@@ -231,10 +231,10 @@ per-item results under `docs/ai/checks/m15/`, no live older batch.
   two-passage items (≈ $0.01). **If faithfulness fails its target**, bring multi-document thinking to the user as a
   choice.
 - [x] 8.11 The `naive` arms of `debate` and `memory` (≈ $0.06–0.10). Verify: both columns in `m15.md`.
-- [ ] 8.12 **Bring D15's window choice to the user** (A one off-peak window ≈ $0.17, recommended; B two off-peak
+- [x] 8.12 **Bring D15's window choice to the user** (A one off-peak window ≈ $0.17, recommended; B two off-peak
   windows; C one off-peak and one peak). Then run the must-pass latency run. Verify: NFR-01 blended, NFR-02, NFR-29
   and the per-stage table in `m15.md`.
-- [ ] 8.13 **Bring the findings to the user as choices:**
+- [x] 8.13 **Bring the findings to the user as choices:**
   - any deadline from 8.12's distributions;
   - any NFR miss's fix (D15);
   - the optional D16 items (the reaction rewording, the mood-line re-test, the drafter catchphrase fix).

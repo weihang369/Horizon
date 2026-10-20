@@ -73,7 +73,7 @@
           "route": 400,
           "turn_plan": 700,
           "follow_plan": 400,
-          "debate_plan": 651,
+          "debate_plan": 735,
           "guardrail": 800,
           "guardrail_prompt": 1500,
           "reaction": 1500,

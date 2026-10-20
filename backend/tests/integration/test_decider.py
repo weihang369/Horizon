@@ -153,7 +153,7 @@ async def test_context_must_match_purpose(api: Api) -> None:
 def test_timeouts_from_config() -> None:
     t = gateway_config().timeouts
     assert (t.for_decision("route"), t.for_decision("turn_plan"), t.for_decision("follow_plan"),
-            t.for_decision("debate_plan")) == (0.4, 0.7, 0.4, 0.651)   # M14: follow_plan back to 400 (8.5)
+            t.for_decision("debate_plan")) == (0.4, 0.7, 0.4, 0.735)   # M15 8.13: debate_plan 735
     assert (t.for_decision("guardrail"), t.for_decision("guardrail_prompt"), t.for_decision("reaction"),
             t.for_decision("face_check")) == (0.8, 1.5, 1.5, 1.5)   # M14 8.5: guardrail 700 → 800
     assert t.for_decision("importance") == t.for_decision("memory_guard") == 30.0   # M13 (memory D42): background

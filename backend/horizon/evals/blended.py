@@ -199,21 +199,45 @@ async def quick(env: RunEnv, c: Any, n: int, res: Result) -> list[str]:
     return list(sessions.values())
 
 
+def follow_gaps(evs: Sequence[dict[str, Any]]) -> list[float | None]:
+    """Per `turn.end`: ms to the next `turn.next`, or None when a user line came between (M15 8.12).
+
+    G2's rule times a follow plan after a reply ends. A reply stopped at its first word ends the round, so the next
+    `turn.next` answers the next user line (Jev call 1), which is a different gap."""
+    from horizon.domain.timeutil import ms_from_iso
+
+    out: list[float | None] = []
+    for i, end in enumerate(evs):
+        if end["type"] != "turn.end":
+            continue
+        gap: float | None = None
+        for e in evs[i + 1:]:
+            if e["type"] == "message":
+                break
+            if e["type"] == "turn.next":
+                gap = float(ms_from_iso(e["at"]) - ms_from_iso(end["at"]))
+                break
+        out.append(gap)
+    return out
+
+
 async def next_gaps(env: RunEnv, sids: list[str], res: Result, before: int) -> list[str]:
     """Group: `turn.end` → the next `turn.next` within 500 ms (G-rule), per turn, onto the rows."""
-    from horizon.domain.timeutil import ms_from_iso
     from horizon.evals.latency import Latency
 
+    gaps: list[float | None] = []
     for sid in sids:
-        evs = await Latency.events(env, sid)
-        gaps = []
-        for end in (e for e in evs if e["type"] == "turn.end"):
-            nxt = next((e for e in evs if e["type"] == "turn.next" and e["seq"] > end["seq"]), None)
-            if nxt is not None:
-                gaps.append(float(ms_from_iso(nxt["at"]) - ms_from_iso(end["at"])))
-        for r, g in zip(res.rows[before:], gaps, strict=False):
-            r["next_ms"] = g
+        gaps += follow_gaps(await Latency.events(env, sid))
+    for r, g in zip(res.rows[before:], gaps, strict=False):
+        r["next_ms"] = g
     return []
+
+
+def face_lead(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
+    """NFR-29: face time minus first-word time over every measured turn (≤ 0 is the face first)."""
+    d = [float(r["to_face_ms"]) - float(r["to_token_ms"]) for r in rows
+         if not r.get("warmup") and r.get("to_face_ms") is not None and r.get("to_token_ms") is not None]
+    return {"n": len(d), "after": sum(1 for x in d if x > 0), "p90": percentile(d, 0.9) if d else None}
 
 
 async def debate(env: RunEnv, n: int, res: Result) -> list[str]:
@@ -291,9 +315,16 @@ def report(env: RunEnv, rows: Sequence[dict[str, Any]], rec: Any, led: Sequence[
     nxt = measured(rows, "group", "next_ms")
     out += [f"- group, send → first word: {q(group_tok)} (NFR-02 3 s p50"
             + (f": {'✓' if percentile(group_tok, 0.5) <= NFR02_P50 else '✗'})" if group_tok else ")"),
-            f"- group, `turn.next` within {NEXT_MS:.0f} ms: {sum(x <= NEXT_MS for x in nxt)}/{len(nxt)}",
+            (f"- group, `turn.next` within {NEXT_MS:.0f} ms of a reply's end: {sum(x <= NEXT_MS for x in nxt)}/"
+             f"{len(nxt)}" if nxt else
+             f"- group, `turn.next` within {NEXT_MS:.0f} ms: not measurable here (each reply is stopped at its first "
+             "word, so no follow plan runs; G2's figure is `latency --part follow`)"),
             f"- debate, turn.end → next first word: {q(measured(rows, 'debate', 'gap_ms'))}",
             f"- watch (deep), turn.end → next first word: {q(measured(rows, 'watch', 'gap_ms'))}"]
+    lead = face_lead(rows)
+    if lead["n"]:
+        out.append(f"- NFR-29, face − first word: p90 {lead['p90']:.0f} ms; the face after the word on "
+                   f"{lead['after']}/{lead['n']} turns ({'✓' if lead['p90'] <= 800 else '✗'} ≤ 800 ms)")
     out.append("### Per stage (the deep runs, `deep_timing`'s recorder)")
     runs = [r for r in rec.runs]
     out += [f"- the embedding wait and gather: {q([float(r['gather_ms']) for r in runs if 'gather_ms' in r])}",
