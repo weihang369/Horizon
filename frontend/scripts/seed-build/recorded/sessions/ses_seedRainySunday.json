@@ -1,0 +1,5881 @@
+{
+  "source": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+  "exportedAt": "2026-10-20",
+  "session": {
+    "id": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+    "worldId": "wld_seedSunnyHollow",
+    "title": "Rainy Sunday",
+    "titleIsCustom": false,
+    "mode": "watch",
+    "status": "paused",
+    "pausedReason": "turn_cap",
+    "participants": [
+      {
+        "characterId": "chr_seedTakeshi",
+        "role": "speaker",
+        "currentEmotion": "angry",
+        "mutedByUser": false
+      },
+      {
+        "characterId": "chr_seedRin",
+        "role": "speaker",
+        "currentEmotion": "angry",
+        "mutedByUser": false
+      }
+    ],
+    "emotionMode": "llm",
+    "musicPolicy": "follow_speaker",
+    "readableMode": false,
+    "config": {
+      "premise": "Rainy Sunday. Takeshi wants to take Rin fishing; Rin is mid-raid.",
+      "maxTurns": 10,
+      "paceMs": 1500,
+      "openingSpeaker": "chr_seedTakeshi"
+    },
+    "state": {
+      "status": "ended",
+      "turnsTaken": 10,
+      "turnLimit": 10,
+      "nextSpeakerId": "chr_seedRin"
+    },
+    "isSeed": false,
+    "costUsd": 0.000616,
+    "messageCount": 12,
+    "createdAt": "2026-10-20T16:55:35.442Z",
+    "updatedAt": "2026-10-20T16:56:16.902Z",
+    "lastMessageAt": "2026-10-20T16:56:15.563Z"
+  },
+  "events": [
+    {
+      "id": "evt_01M5D3TS972VZ7EENDH861P5JR",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 1,
+      "at": "2026-10-20T16:55:35.463Z",
+      "type": "session.state",
+      "payload": {
+        "status": "active",
+        "state": {
+          "status": "paused",
+          "turnsTaken": 0,
+          "turnLimit": 10
+        },
+        "participants": [
+          {
+            "characterId": "chr_seedTakeshi",
+            "role": "speaker",
+            "currentEmotion": "neutral",
+            "mutedByUser": false
+          },
+          {
+            "characterId": "chr_seedRin",
+            "role": "speaker",
+            "currentEmotion": "neutral",
+            "mutedByUser": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "evt_01M5D3TS972VZ7EENDH861P5JS",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 2,
+      "at": "2026-10-20T16:55:35.463Z",
+      "type": "energy",
+      "payload": {
+        "characterId": "chr_seedTakeshi",
+        "current": 993,
+        "max": 1000,
+        "state": "active"
+      }
+    },
+    {
+      "id": "evt_01M5D3TS972VZ7EENDH861P5JT",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 3,
+      "at": "2026-10-20T16:55:35.463Z",
+      "type": "energy",
+      "payload": {
+        "characterId": "chr_seedRin",
+        "current": 988,
+        "max": 1000,
+        "state": "active"
+      }
+    },
+    {
+      "id": "evt_01M5D3TT1Y8EGZR3Z6TT5S44ZG",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 4,
+      "at": "2026-10-20T16:55:36.254Z",
+      "type": "message",
+      "payload": {
+        "message": {
+          "id": "msg_01M5D3TT1Y8EGZR3Z6TT5S44ZF",
+          "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+          "seq": 1,
+          "author": {
+            "type": "system"
+          },
+          "kind": "direction",
+          "content": "Rainy Sunday. Takeshi wants to take Rin fishing; Rin is mid-raid.",
+          "status": "complete",
+          "createdAt": "2026-10-20T16:55:36.254Z"
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3TT1Y8EGZR3Z6TT5S44ZH",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 5,
+      "at": "2026-10-20T16:55:36.254Z",
+      "type": "watch.state",
+      "payload": {
+        "status": "playing",
+        "paceMs": 1500,
+        "turnsTaken": 0,
+        "turnLimit": 10
+      }
+    },
+    {
+      "id": "evt_01M5D3TT1Y8EGZR3Z6TT5S44ZJ",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 6,
+      "at": "2026-10-20T16:55:36.254Z",
+      "type": "session.state",
+      "payload": {
+        "state": {
+          "status": "playing",
+          "turnsTaken": 0,
+          "turnLimit": 10
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3TTNHXCTZA61FRSHHNBZF",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 7,
+      "at": "2026-10-20T16:55:36.881Z",
+      "type": "turn.next",
+      "payload": {
+        "nextSpeakerId": "chr_seedTakeshi",
+        "forcedBy": "nudge"
+      }
+    },
+    {
+      "id": "evt_01M5D3TTQDSZ0SG6G9CHYS8935",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 8,
+      "at": "2026-10-20T16:55:36.941Z",
+      "type": "turn.thinking",
+      "payload": {
+        "characterId": "chr_seedTakeshi"
+      }
+    },
+    {
+      "id": "evt_01M5D3TV8D3YJ81E0K63D01G9N",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 9,
+      "at": "2026-10-20T16:55:37.485Z",
+      "type": "turn.start",
+      "payload": {
+        "messageId": "msg_01M5D3TTNHXCTZA61FRSHHNBZE",
+        "author": {
+          "type": "character",
+          "characterId": "chr_seedTakeshi"
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3TV8D3YJ81E0K63D01G9P",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 10,
+      "at": "2026-10-20T16:55:37.485Z",
+      "type": "emotion",
+      "payload": {
+        "messageId": "msg_01M5D3TTNHXCTZA61FRSHHNBZE",
+        "characterId": "chr_seedTakeshi",
+        "emotion": "sad",
+        "source": "classifier"
+      }
+    },
+    {
+      "id": "evt_01M5D3TVA12M2NKZVB1BTH1BC8",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 11,
+      "at": "2026-10-20T16:55:37.537Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3TTNHXCTZA61FRSHHNBZE",
+        "delta": "Rain"
+      }
+    },
+    {
+      "id": "evt_01M5D3TVCEF8FJ2SP4HHFTG5AX",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 12,
+      "at": "2026-10-20T16:55:37.614Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3TTNHXCTZA61FRSHHNBZE",
+        "delta": "'s coming down steady, Rin. Best kind"
+      }
+    },
+    {
+      "id": "evt_01M5D3TVERHS1M43QHV6YVM18S",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 13,
+      "at": "2026-10-20T16:55:37.688Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3TTNHXCTZA61FRSHHNBZE",
+        "delta": " of weather — fish"
+      }
+    },
+    {
+      "id": "evt_01M5D3TVN3KB2FC9PCR62TJZ0H",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 14,
+      "at": "2026-10-20T16:55:37.891Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3TTNHXCTZA61FRSHHNBZE",
+        "delta": " bite like they're mad at somebody.\n\nGear's already in the truck"
+      }
+    },
+    {
+      "id": "evt_01M5D3TVR981X0AWWGYYVFVBJH",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 15,
+      "at": "2026-10-20T16:55:37.993Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3TTNHXCTZA61FRSHHNBZE",
+        "delta": ". You can finish that raid when the tide's out."
+      }
+    },
+    {
+      "id": "evt_01M5D3TWCGP0H2P1SAX56VPNEQ",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 16,
+      "at": "2026-10-20T16:55:38.640Z",
+      "type": "turn.end",
+      "payload": {
+        "messageId": "msg_01M5D3TTNHXCTZA61FRSHHNBZE",
+        "status": "complete",
+        "usage": {
+          "tokensIn": 733,
+          "tokensCached": 256,
+          "tokensOut": 42,
+          "costUsd": 5.6e-05,
+          "energySpent": 1,
+          "firstTokenMs": 615.0,
+          "totalMs": 1147.0
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3TWCGP0H2P1SAX56VPNER",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 17,
+      "at": "2026-10-20T16:55:38.640Z",
+      "type": "energy",
+      "payload": {
+        "characterId": "chr_seedTakeshi",
+        "current": 992,
+        "max": 1000,
+        "state": "active",
+        "spent": 1,
+        "fullAt": "2026-10-20T17:05:46.847Z"
+      }
+    },
+    {
+      "id": "evt_01M5D3TWCGP0H2P1SAX56VPNES",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 18,
+      "at": "2026-10-20T16:55:38.640Z",
+      "type": "insight",
+      "payload": {
+        "messageId": "msg_01M5D3TTNHXCTZA61FRSHHNBZE",
+        "trace": {
+          "messageId": "msg_01M5D3TTNHXCTZA61FRSHHNBZE",
+          "context": {
+            "budget": 14680,
+            "used": {
+              "persona": 261,
+              "system": 614,
+              "mode": 104,
+              "history": 26,
+              "user": 0,
+              "memory": 0,
+              "knowledge": 0
+            }
+          },
+          "emotion": {
+            "chosen": "sad",
+            "source": "classifier",
+            "candidates": [
+              {
+                "label": "sad",
+                "p": 0.37
+              },
+              {
+                "label": "neutral",
+                "p": 0.25
+              },
+              {
+                "label": "angry",
+                "p": 0.25
+              }
+            ]
+          },
+          "guardrail": {
+            "checks": [
+              {
+                "name": "output",
+                "verdict": "pass",
+                "p": 0.05
+              }
+            ]
+          },
+          "model": {
+            "id": "deepseek/deepseek-v4.1-flash",
+            "provider": "Relace",
+            "pricePeriod": "off_peak",
+            "latencyMs": {
+              "firstToken": 615.0,
+              "total": 1147.0
+            },
+            "tokensIn": 733,
+            "tokensOut": 42,
+            "costUsd": 5.6e-05,
+            "tokensCached": 256
+          },
+          "energy": {
+            "characterId": "chr_seedTakeshi",
+            "spent": 1,
+            "remaining": 992,
+            "max": 1000
+          },
+          "routing": {
+            "selected": "chr_seedTakeshi",
+            "forcedBy": "nudge"
+          },
+          "calls": [
+            {
+              "purpose": "turn_plan",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 3.7e-05,
+              "latencyMs": 578
+            },
+            {
+              "purpose": "reply",
+              "model": "deepseek/deepseek-v4.1-flash",
+              "costUsd": 5.6e-05,
+              "latencyMs": 1032
+            },
+            {
+              "purpose": "guardrail",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.4e-05,
+              "latencyMs": 578
+            }
+          ],
+          "graph": {
+            "path": [
+              "state",
+              "ask",
+              "decide",
+              "route"
+            ]
+          },
+          "system1": {
+            "seed": "2026-10-20T16:55:35.442Z|watch|chr_seedTakeshi,chr_seedRin:0",
+            "questions": [
+              {
+                "purpose": "turn_plan",
+                "id": "emotion_opening",
+                "version": 2,
+                "label": "emotion",
+                "about": "chr_seedTakeshi",
+                "answer": "sad",
+                "p": 0.37,
+                "compared": [
+                  {
+                    "name": "confidence",
+                    "value": 0.28,
+                    "threshold": 0.2
+                  }
+                ],
+                "confidence": 0.28,
+                "result": "used",
+                "action": "shown"
+              },
+              {
+                "purpose": "guardrail",
+                "id": "output_rules",
+                "version": 1,
+                "label": "reply breaks the rules?",
+                "answer": "no",
+                "p": 0.05,
+                "compared": [
+                  {
+                    "name": "tFlag",
+                    "value": 0.05,
+                    "threshold": 0.5
+                  },
+                  {
+                    "name": "tBlock",
+                    "value": 0.05,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "used",
+                "action": "pass"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3TWD5GSBVT0234QB6V3YX",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 19,
+      "at": "2026-10-20T16:55:38.661Z",
+      "type": "watch.state",
+      "payload": {
+        "status": "playing",
+        "paceMs": 1500,
+        "turnsTaken": 1,
+        "turnLimit": 10
+      }
+    },
+    {
+      "id": "evt_01M5D3TWD5GSBVT0234QB6V3YY",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 20,
+      "at": "2026-10-20T16:55:38.661Z",
+      "type": "session.state",
+      "payload": {
+        "state": {
+          "status": "playing",
+          "turnsTaken": 1,
+          "turnLimit": 10,
+          "nextSpeakerId": "chr_seedTakeshi"
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3TWTCWWASVXHSJQD36ER6",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 21,
+      "at": "2026-10-20T16:55:39.084Z",
+      "type": "insight",
+      "payload": {
+        "messageId": "msg_01M5D3TTNHXCTZA61FRSHHNBZE",
+        "trace": {
+          "messageId": "msg_01M5D3TTNHXCTZA61FRSHHNBZE",
+          "context": {
+            "budget": 14680,
+            "used": {
+              "persona": 261,
+              "system": 614,
+              "mode": 104,
+              "history": 26,
+              "user": 0,
+              "memory": 0,
+              "knowledge": 0
+            }
+          },
+          "emotion": {
+            "chosen": "sad",
+            "source": "classifier",
+            "candidates": [
+              {
+                "label": "sad",
+                "p": 0.37
+              },
+              {
+                "label": "neutral",
+                "p": 0.25
+              },
+              {
+                "label": "angry",
+                "p": 0.25
+              }
+            ]
+          },
+          "guardrail": {
+            "checks": [
+              {
+                "name": "output",
+                "verdict": "pass",
+                "p": 0.05
+              }
+            ]
+          },
+          "model": {
+            "id": "deepseek/deepseek-v4.1-flash",
+            "provider": "Relace",
+            "pricePeriod": "off_peak",
+            "latencyMs": {
+              "firstToken": 615.0,
+              "total": 1147.0
+            },
+            "tokensIn": 733,
+            "tokensOut": 42,
+            "costUsd": 5.6e-05,
+            "tokensCached": 256
+          },
+          "energy": {
+            "characterId": "chr_seedTakeshi",
+            "spent": 1,
+            "remaining": 992,
+            "max": 1000
+          },
+          "routing": {
+            "selected": "chr_seedTakeshi",
+            "forcedBy": "nudge"
+          },
+          "calls": [
+            {
+              "purpose": "turn_plan",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 3.7e-05,
+              "latencyMs": 578
+            },
+            {
+              "purpose": "reply",
+              "model": "deepseek/deepseek-v4.1-flash",
+              "costUsd": 5.6e-05,
+              "latencyMs": 1032
+            },
+            {
+              "purpose": "guardrail",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.4e-05,
+              "latencyMs": 578
+            },
+            {
+              "purpose": "face_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 3.2e-05,
+              "latencyMs": 422
+            }
+          ],
+          "graph": {
+            "path": [
+              "state",
+              "ask",
+              "decide",
+              "route"
+            ]
+          },
+          "system1": {
+            "seed": "2026-10-20T16:55:35.442Z|watch|chr_seedTakeshi,chr_seedRin:0",
+            "questions": [
+              {
+                "purpose": "turn_plan",
+                "id": "emotion_opening",
+                "version": 2,
+                "label": "emotion",
+                "about": "chr_seedTakeshi",
+                "answer": "sad",
+                "p": 0.37,
+                "compared": [
+                  {
+                    "name": "confidence",
+                    "value": 0.28,
+                    "threshold": 0.2
+                  }
+                ],
+                "confidence": 0.28,
+                "result": "used",
+                "action": "shown"
+              },
+              {
+                "purpose": "guardrail",
+                "id": "output_rules",
+                "version": 1,
+                "label": "reply breaks the rules?",
+                "answer": "no",
+                "p": 0.05,
+                "compared": [
+                  {
+                    "name": "tFlag",
+                    "value": 0.05,
+                    "threshold": 0.5
+                  },
+                  {
+                    "name": "tBlock",
+                    "value": 0.05,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "used",
+                "action": "pass"
+              },
+              {
+                "purpose": "face_check",
+                "id": "face_check",
+                "version": 1,
+                "label": "face and words agree?",
+                "answer": "clash",
+                "p": 0.0,
+                "compared": [],
+                "result": "shown_only"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3TXP69ZAE5ZPV63GZ8566",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 22,
+      "at": "2026-10-20T16:55:39.974Z",
+      "type": "turn.next",
+      "payload": {
+        "nextSpeakerId": "chr_seedRin"
+      }
+    },
+    {
+      "id": "evt_01M5D3TXQXAW3CT1P29Q0EAT8M",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 23,
+      "at": "2026-10-20T16:55:40.029Z",
+      "type": "turn.thinking",
+      "payload": {
+        "characterId": "chr_seedRin"
+      }
+    },
+    {
+      "id": "evt_01M5D3TYYQ3ADAXFN1WDJXMDTF",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 24,
+      "at": "2026-10-20T16:55:41.271Z",
+      "type": "turn.start",
+      "payload": {
+        "messageId": "msg_01M5D3TXP69ZAE5ZPV63GZ8565",
+        "author": {
+          "type": "character",
+          "characterId": "chr_seedRin"
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3TYYQ3ADAXFN1WDJXMDTG",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 25,
+      "at": "2026-10-20T16:55:41.271Z",
+      "type": "emotion",
+      "payload": {
+        "messageId": "msg_01M5D3TXP69ZAE5ZPV63GZ8565",
+        "characterId": "chr_seedRin",
+        "emotion": "angry",
+        "source": "classifier"
+      }
+    },
+    {
+      "id": "evt_01M5D3TZ01WF3CEFK2QXSTM0NJ",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 26,
+      "at": "2026-10-20T16:55:41.313Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3TXP69ZAE5ZPV63GZ8565",
+        "delta": "dad, i'm mid-pull. the tide'll still be out in twenty,"
+      }
+    },
+    {
+      "id": "evt_01M5D3TZ1P8XMT0K6A87FXZ7JN",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 27,
+      "at": "2026-10-20T16:55:41.366Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3TXP69ZAE5ZPV63GZ8565",
+        "delta": " the fish can hate me later"
+      }
+    },
+    {
+      "id": "evt_01M5D3TZA041XX617WDJQ86YG3",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 28,
+      "at": "2026-10-20T16:55:41.632Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3TXP69ZAE5ZPV63GZ8565",
+        "delta": ".\n\nbesides, it's raining"
+      }
+    },
+    {
+      "id": "evt_01M5D3TZKSHHFRKYAB4982ES6M",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 29,
+      "at": "2026-10-20T16:55:41.945Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3TXP69ZAE5ZPV63GZ8565",
+        "delta": ". i'd rather tank"
+      }
+    },
+    {
+      "id": "evt_01M5D3TZP6P02744YYV7Q8FEMQ",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 30,
+      "at": "2026-10-20T16:55:42.022Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3TXP69ZAE5ZPV63GZ8565",
+        "delta": " drowned gods than sit in a wet boat."
+      }
+    },
+    {
+      "id": "evt_01M5D3V05V08ER0P4T6YXWJA5D",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 31,
+      "at": "2026-10-20T16:55:42.523Z",
+      "type": "turn.end",
+      "payload": {
+        "messageId": "msg_01M5D3TXP69ZAE5ZPV63GZ8565",
+        "status": "complete",
+        "usage": {
+          "tokensIn": 796,
+          "tokensCached": 256,
+          "tokensOut": 45,
+          "costUsd": 6.2e-05,
+          "energySpent": 1,
+          "firstTokenMs": 1297.0,
+          "totalMs": 2074.0
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3V05V08ER0P4T6YXWJA5E",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 32,
+      "at": "2026-10-20T16:55:42.523Z",
+      "type": "energy",
+      "payload": {
+        "characterId": "chr_seedRin",
+        "current": 988,
+        "max": 1000,
+        "state": "active",
+        "spent": 1,
+        "fullAt": "2026-10-20T17:12:57.177Z"
+      }
+    },
+    {
+      "id": "evt_01M5D3V05V08ER0P4T6YXWJA5F",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 33,
+      "at": "2026-10-20T16:55:42.523Z",
+      "type": "insight",
+      "payload": {
+        "messageId": "msg_01M5D3TXP69ZAE5ZPV63GZ8565",
+        "trace": {
+          "messageId": "msg_01M5D3TXP69ZAE5ZPV63GZ8565",
+          "context": {
+            "budget": 14680,
+            "used": {
+              "persona": 292,
+              "system": 614,
+              "mode": 97,
+              "history": 102,
+              "user": 0,
+              "memory": 0,
+              "knowledge": 0
+            }
+          },
+          "emotion": {
+            "chosen": "angry",
+            "source": "classifier",
+            "candidates": [
+              {
+                "label": "angry",
+                "p": 0.43
+              },
+              {
+                "label": "neutral",
+                "p": 0.36
+              },
+              {
+                "label": "thinking",
+                "p": 0.19
+              }
+            ]
+          },
+          "guardrail": {
+            "checks": [
+              {
+                "name": "output",
+                "verdict": "pass",
+                "p": 0.06
+              }
+            ]
+          },
+          "model": {
+            "id": "deepseek/deepseek-v4.1-flash",
+            "provider": "Relace",
+            "pricePeriod": "off_peak",
+            "latencyMs": {
+              "firstToken": 1297.0,
+              "total": 2074.0
+            },
+            "tokensIn": 796,
+            "tokensOut": 45,
+            "costUsd": 6.2e-05,
+            "tokensCached": 256
+          },
+          "energy": {
+            "characterId": "chr_seedRin",
+            "spent": 1,
+            "remaining": 988,
+            "max": 1000
+          },
+          "routing": {
+            "selected": "chr_seedRin"
+          },
+          "calls": [
+            {
+              "purpose": "turn_plan",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 4.4e-05,
+              "latencyMs": 469
+            },
+            {
+              "purpose": "reply",
+              "model": "deepseek/deepseek-v4.1-flash",
+              "costUsd": 6.2e-05,
+              "latencyMs": 1984
+            },
+            {
+              "purpose": "guardrail",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.7e-05,
+              "latencyMs": 438
+            }
+          ],
+          "graph": {
+            "path": [
+              "state",
+              "ask",
+              "decide",
+              "route"
+            ]
+          },
+          "system1": {
+            "seed": "2026-10-20T16:55:35.442Z|watch|chr_seedTakeshi,chr_seedRin:1",
+            "questions": [
+              {
+                "purpose": "turn_plan",
+                "id": "talk_finished",
+                "version": 3,
+                "label": "is the talk finished?",
+                "answer": "no",
+                "p": 0.08,
+                "compared": [
+                  {
+                    "name": "t_end",
+                    "value": 0.08,
+                    "threshold": 0.5
+                  }
+                ],
+                "result": "used",
+                "action": "no steer"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "emotion_line",
+                "version": 3,
+                "label": "emotion",
+                "about": "chr_seedRin",
+                "answer": "angry",
+                "p": 0.43,
+                "compared": [
+                  {
+                    "name": "confidence",
+                    "value": 0.35,
+                    "threshold": 0.2
+                  }
+                ],
+                "confidence": 0.35,
+                "result": "used",
+                "action": "shown"
+              },
+              {
+                "purpose": "guardrail",
+                "id": "output_rules",
+                "version": 1,
+                "label": "reply breaks the rules?",
+                "answer": "no",
+                "p": 0.06,
+                "compared": [
+                  {
+                    "name": "tFlag",
+                    "value": 0.06,
+                    "threshold": 0.5
+                  },
+                  {
+                    "name": "tBlock",
+                    "value": 0.06,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "used",
+                "action": "pass"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3V066PWEEYVQCNMMZVYKF",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 34,
+      "at": "2026-10-20T16:55:42.534Z",
+      "type": "watch.state",
+      "payload": {
+        "status": "playing",
+        "paceMs": 1500,
+        "turnsTaken": 2,
+        "turnLimit": 10
+      }
+    },
+    {
+      "id": "evt_01M5D3V066PWEEYVQCNMMZVYKG",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 35,
+      "at": "2026-10-20T16:55:42.534Z",
+      "type": "session.state",
+      "payload": {
+        "state": {
+          "status": "playing",
+          "turnsTaken": 2,
+          "turnLimit": 10,
+          "nextSpeakerId": "chr_seedRin"
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3V0NJERXXA1H52PXYE9FT",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 36,
+      "at": "2026-10-20T16:55:43.026Z",
+      "type": "insight",
+      "payload": {
+        "messageId": "msg_01M5D3TXP69ZAE5ZPV63GZ8565",
+        "trace": {
+          "messageId": "msg_01M5D3TXP69ZAE5ZPV63GZ8565",
+          "context": {
+            "budget": 14680,
+            "used": {
+              "persona": 292,
+              "system": 614,
+              "mode": 97,
+              "history": 102,
+              "user": 0,
+              "memory": 0,
+              "knowledge": 0
+            }
+          },
+          "emotion": {
+            "chosen": "angry",
+            "source": "classifier",
+            "candidates": [
+              {
+                "label": "angry",
+                "p": 0.43
+              },
+              {
+                "label": "neutral",
+                "p": 0.36
+              },
+              {
+                "label": "thinking",
+                "p": 0.19
+              }
+            ]
+          },
+          "guardrail": {
+            "checks": [
+              {
+                "name": "output",
+                "verdict": "pass",
+                "p": 0.06
+              }
+            ]
+          },
+          "model": {
+            "id": "deepseek/deepseek-v4.1-flash",
+            "provider": "Relace",
+            "pricePeriod": "off_peak",
+            "latencyMs": {
+              "firstToken": 1297.0,
+              "total": 2074.0
+            },
+            "tokensIn": 796,
+            "tokensOut": 45,
+            "costUsd": 6.2e-05,
+            "tokensCached": 256
+          },
+          "energy": {
+            "characterId": "chr_seedRin",
+            "spent": 1,
+            "remaining": 988,
+            "max": 1000
+          },
+          "routing": {
+            "selected": "chr_seedRin"
+          },
+          "calls": [
+            {
+              "purpose": "turn_plan",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 4.4e-05,
+              "latencyMs": 469
+            },
+            {
+              "purpose": "reply",
+              "model": "deepseek/deepseek-v4.1-flash",
+              "costUsd": 6.2e-05,
+              "latencyMs": 1984
+            },
+            {
+              "purpose": "guardrail",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.7e-05,
+              "latencyMs": 438
+            },
+            {
+              "purpose": "face_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 3.2e-05,
+              "latencyMs": 484
+            }
+          ],
+          "graph": {
+            "path": [
+              "state",
+              "ask",
+              "decide",
+              "route"
+            ]
+          },
+          "system1": {
+            "seed": "2026-10-20T16:55:35.442Z|watch|chr_seedTakeshi,chr_seedRin:1",
+            "questions": [
+              {
+                "purpose": "turn_plan",
+                "id": "talk_finished",
+                "version": 3,
+                "label": "is the talk finished?",
+                "answer": "no",
+                "p": 0.08,
+                "compared": [
+                  {
+                    "name": "t_end",
+                    "value": 0.08,
+                    "threshold": 0.5
+                  }
+                ],
+                "result": "used",
+                "action": "no steer"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "emotion_line",
+                "version": 3,
+                "label": "emotion",
+                "about": "chr_seedRin",
+                "answer": "angry",
+                "p": 0.43,
+                "compared": [
+                  {
+                    "name": "confidence",
+                    "value": 0.35,
+                    "threshold": 0.2
+                  }
+                ],
+                "confidence": 0.35,
+                "result": "used",
+                "action": "shown"
+              },
+              {
+                "purpose": "guardrail",
+                "id": "output_rules",
+                "version": 1,
+                "label": "reply breaks the rules?",
+                "answer": "no",
+                "p": 0.06,
+                "compared": [
+                  {
+                    "name": "tFlag",
+                    "value": 0.06,
+                    "threshold": 0.5
+                  },
+                  {
+                    "name": "tBlock",
+                    "value": 0.06,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "used",
+                "action": "pass"
+              },
+              {
+                "purpose": "face_check",
+                "id": "face_check",
+                "version": 1,
+                "label": "face and words agree?",
+                "answer": "no (words read: neutral)",
+                "p": 0.36,
+                "compared": [],
+                "result": "shown_only"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3V0TAW728GTN0T0KQ6KYV",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 37,
+      "at": "2026-10-20T16:55:43.178Z",
+      "type": "reaction",
+      "payload": {
+        "messageId": "msg_01M5D3TXP69ZAE5ZPV63GZ8565",
+        "characterId": "chr_seedTakeshi",
+        "emotion": "angry",
+        "source": "classifier",
+        "p": 0.3
+      }
+    },
+    {
+      "id": "evt_01M5D3V20JENZXN4A7BWZGGMTR",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 38,
+      "at": "2026-10-20T16:55:44.402Z",
+      "type": "turn.next",
+      "payload": {
+        "nextSpeakerId": "chr_seedTakeshi"
+      }
+    },
+    {
+      "id": "evt_01M5D3V22ZG53HJ7PQDQS5SDKT",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 39,
+      "at": "2026-10-20T16:55:44.479Z",
+      "type": "turn.thinking",
+      "payload": {
+        "characterId": "chr_seedTakeshi"
+      }
+    },
+    {
+      "id": "evt_01M5D3V2Q7TJZCA5HK0J0C3XFH",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 40,
+      "at": "2026-10-20T16:55:45.127Z",
+      "type": "turn.start",
+      "payload": {
+        "messageId": "msg_01M5D3V20JENZXN4A7BWZGGMTQ",
+        "author": {
+          "type": "character",
+          "characterId": "chr_seedTakeshi"
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3V2Q7TJZCA5HK0J0C3XFJ",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 41,
+      "at": "2026-10-20T16:55:45.127Z",
+      "type": "emotion",
+      "payload": {
+        "messageId": "msg_01M5D3V20JENZXN4A7BWZGGMTQ",
+        "characterId": "chr_seedTakeshi",
+        "emotion": "angry",
+        "source": "classifier"
+      }
+    },
+    {
+      "id": "evt_01M5D3V2QGC3Q25B86P0KSKEA4",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 42,
+      "at": "2026-10-20T16:55:45.136Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3V20JENZXN4A7BWZGGMTQ",
+        "delta": "Twenty minutes. I'll hold the boat like a good brak"
+      }
+    },
+    {
+      "id": "evt_01M5D3V2S69MP28MS49NKZGDYE",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 43,
+      "at": "2026-10-20T16:55:45.190Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3V20JENZXN4A7BWZGGMTQ",
+        "delta": "eman holds a platform.\n\nBut mark my"
+      }
+    },
+    {
+      "id": "evt_01M5D3V2XHPMHVMB6ESTHK2JHQ",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 44,
+      "at": "2026-10-20T16:55:45.329Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3V20JENZXN4A7BWZGGMTQ",
+        "delta": " words, the big one"
+      }
+    },
+    {
+      "id": "evt_01M5D3V39PZ04RS081Z3XKXQE3",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 45,
+      "at": "2026-10-20T16:55:45.718Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3V20JENZXN4A7BWZGGMTQ",
+        "delta": "'s on a schedule, and so am"
+      }
+    },
+    {
+      "id": "evt_01M5D3V3B617XND3JYFY4CCFP1",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 46,
+      "at": "2026-10-20T16:55:45.766Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3V20JENZXN4A7BWZGGMTQ",
+        "delta": " I. Rain's just water with ambition"
+      }
+    },
+    {
+      "id": "evt_01M5D3V3BWRFJNMK24WP62V72H",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 47,
+      "at": "2026-10-20T16:55:45.788Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3V20JENZXN4A7BWZGGMTQ",
+        "delta": "."
+      }
+    },
+    {
+      "id": "evt_01M5D3V3TBEEQRJ2BBVMF2V9W2",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 48,
+      "at": "2026-10-20T16:55:46.251Z",
+      "type": "turn.end",
+      "payload": {
+        "messageId": "msg_01M5D3V20JENZXN4A7BWZGGMTQ",
+        "status": "complete",
+        "usage": {
+          "tokensIn": 840,
+          "tokensCached": 256,
+          "tokensOut": 43,
+          "costUsd": 6.4e-05,
+          "energySpent": 1,
+          "firstTokenMs": 733.0,
+          "totalMs": 1386.0
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3V3TBEEQRJ2BBVMF2V9W3",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 49,
+      "at": "2026-10-20T16:55:46.251Z",
+      "type": "energy",
+      "payload": {
+        "characterId": "chr_seedTakeshi",
+        "current": 992,
+        "max": 1000,
+        "state": "active",
+        "spent": 1,
+        "fullAt": "2026-10-20T17:07:13.247Z"
+      }
+    },
+    {
+      "id": "evt_01M5D3V3TBEEQRJ2BBVMF2V9W4",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 50,
+      "at": "2026-10-20T16:55:46.251Z",
+      "type": "insight",
+      "payload": {
+        "messageId": "msg_01M5D3V20JENZXN4A7BWZGGMTQ",
+        "trace": {
+          "messageId": "msg_01M5D3V20JENZXN4A7BWZGGMTQ",
+          "context": {
+            "budget": 14680,
+            "used": {
+              "persona": 261,
+              "system": 614,
+              "mode": 104,
+              "history": 151,
+              "user": 0,
+              "memory": 0,
+              "knowledge": 0
+            }
+          },
+          "emotion": {
+            "chosen": "angry",
+            "source": "classifier",
+            "candidates": [
+              {
+                "label": "angry",
+                "p": 0.66
+              },
+              {
+                "label": "neutral",
+                "p": 0.05
+              },
+              {
+                "label": "happy",
+                "p": 0.05
+              }
+            ]
+          },
+          "guardrail": {
+            "checks": [
+              {
+                "name": "output",
+                "verdict": "pass",
+                "p": 0.05
+              }
+            ]
+          },
+          "model": {
+            "id": "deepseek/deepseek-v4.1-flash",
+            "provider": "Relace",
+            "pricePeriod": "off_peak",
+            "latencyMs": {
+              "firstToken": 733.0,
+              "total": 1386.0
+            },
+            "tokensIn": 840,
+            "tokensOut": 43,
+            "costUsd": 6.4e-05,
+            "tokensCached": 256
+          },
+          "energy": {
+            "characterId": "chr_seedTakeshi",
+            "spent": 1,
+            "remaining": 992,
+            "max": 1000
+          },
+          "routing": {
+            "selected": "chr_seedTakeshi"
+          },
+          "calls": [
+            {
+              "purpose": "turn_plan",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 4.6e-05,
+              "latencyMs": 406
+            },
+            {
+              "purpose": "reply",
+              "model": "deepseek/deepseek-v4.1-flash",
+              "costUsd": 6.4e-05,
+              "latencyMs": 1313
+            },
+            {
+              "purpose": "guardrail",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.6e-05,
+              "latencyMs": 437
+            }
+          ],
+          "graph": {
+            "path": [
+              "state",
+              "ask",
+              "decide",
+              "route"
+            ]
+          },
+          "system1": {
+            "seed": "2026-10-20T16:55:35.442Z|watch|chr_seedTakeshi,chr_seedRin:2",
+            "questions": [
+              {
+                "purpose": "turn_plan",
+                "id": "talk_finished",
+                "version": 3,
+                "label": "is the talk finished?",
+                "answer": "no",
+                "p": 0.14,
+                "compared": [
+                  {
+                    "name": "t_end",
+                    "value": 0.14,
+                    "threshold": 0.5
+                  }
+                ],
+                "result": "used",
+                "action": "no steer"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "emotion_line",
+                "version": 3,
+                "label": "emotion",
+                "about": "chr_seedTakeshi",
+                "answer": "angry",
+                "p": 0.66,
+                "compared": [
+                  {
+                    "name": "confidence",
+                    "value": 0.61,
+                    "threshold": 0.2
+                  }
+                ],
+                "confidence": 0.61,
+                "result": "used",
+                "action": "shown"
+              },
+              {
+                "purpose": "guardrail",
+                "id": "output_rules",
+                "version": 1,
+                "label": "reply breaks the rules?",
+                "answer": "no",
+                "p": 0.05,
+                "compared": [
+                  {
+                    "name": "tFlag",
+                    "value": 0.05,
+                    "threshold": 0.5
+                  },
+                  {
+                    "name": "tBlock",
+                    "value": 0.05,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "used",
+                "action": "pass"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3V3TVRS0P4Z84RHEKCBKB",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 51,
+      "at": "2026-10-20T16:55:46.267Z",
+      "type": "watch.state",
+      "payload": {
+        "status": "playing",
+        "paceMs": 1500,
+        "turnsTaken": 3,
+        "turnLimit": 10
+      }
+    },
+    {
+      "id": "evt_01M5D3V3TVRS0P4Z84RHEKCBKC",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 52,
+      "at": "2026-10-20T16:55:46.267Z",
+      "type": "session.state",
+      "payload": {
+        "state": {
+          "status": "playing",
+          "turnsTaken": 3,
+          "turnLimit": 10,
+          "nextSpeakerId": "chr_seedTakeshi"
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3V48YM3W873GH5CM91VY8",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 53,
+      "at": "2026-10-20T16:55:46.718Z",
+      "type": "insight",
+      "payload": {
+        "messageId": "msg_01M5D3V20JENZXN4A7BWZGGMTQ",
+        "trace": {
+          "messageId": "msg_01M5D3V20JENZXN4A7BWZGGMTQ",
+          "context": {
+            "budget": 14680,
+            "used": {
+              "persona": 261,
+              "system": 614,
+              "mode": 104,
+              "history": 151,
+              "user": 0,
+              "memory": 0,
+              "knowledge": 0
+            }
+          },
+          "emotion": {
+            "chosen": "angry",
+            "source": "classifier",
+            "candidates": [
+              {
+                "label": "angry",
+                "p": 0.66
+              },
+              {
+                "label": "neutral",
+                "p": 0.05
+              },
+              {
+                "label": "happy",
+                "p": 0.05
+              }
+            ]
+          },
+          "guardrail": {
+            "checks": [
+              {
+                "name": "output",
+                "verdict": "pass",
+                "p": 0.05
+              }
+            ]
+          },
+          "model": {
+            "id": "deepseek/deepseek-v4.1-flash",
+            "provider": "Relace",
+            "pricePeriod": "off_peak",
+            "latencyMs": {
+              "firstToken": 733.0,
+              "total": 1386.0
+            },
+            "tokensIn": 840,
+            "tokensOut": 43,
+            "costUsd": 6.4e-05,
+            "tokensCached": 256
+          },
+          "energy": {
+            "characterId": "chr_seedTakeshi",
+            "spent": 1,
+            "remaining": 992,
+            "max": 1000
+          },
+          "routing": {
+            "selected": "chr_seedTakeshi"
+          },
+          "calls": [
+            {
+              "purpose": "turn_plan",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 4.6e-05,
+              "latencyMs": 406
+            },
+            {
+              "purpose": "reply",
+              "model": "deepseek/deepseek-v4.1-flash",
+              "costUsd": 6.4e-05,
+              "latencyMs": 1313
+            },
+            {
+              "purpose": "guardrail",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.6e-05,
+              "latencyMs": 437
+            },
+            {
+              "purpose": "face_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 3.2e-05,
+              "latencyMs": 438
+            }
+          ],
+          "graph": {
+            "path": [
+              "state",
+              "ask",
+              "decide",
+              "route"
+            ]
+          },
+          "system1": {
+            "seed": "2026-10-20T16:55:35.442Z|watch|chr_seedTakeshi,chr_seedRin:2",
+            "questions": [
+              {
+                "purpose": "turn_plan",
+                "id": "talk_finished",
+                "version": 3,
+                "label": "is the talk finished?",
+                "answer": "no",
+                "p": 0.14,
+                "compared": [
+                  {
+                    "name": "t_end",
+                    "value": 0.14,
+                    "threshold": 0.5
+                  }
+                ],
+                "result": "used",
+                "action": "no steer"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "emotion_line",
+                "version": 3,
+                "label": "emotion",
+                "about": "chr_seedTakeshi",
+                "answer": "angry",
+                "p": 0.66,
+                "compared": [
+                  {
+                    "name": "confidence",
+                    "value": 0.61,
+                    "threshold": 0.2
+                  }
+                ],
+                "confidence": 0.61,
+                "result": "used",
+                "action": "shown"
+              },
+              {
+                "purpose": "guardrail",
+                "id": "output_rules",
+                "version": 1,
+                "label": "reply breaks the rules?",
+                "answer": "no",
+                "p": 0.05,
+                "compared": [
+                  {
+                    "name": "tFlag",
+                    "value": 0.05,
+                    "threshold": 0.5
+                  },
+                  {
+                    "name": "tBlock",
+                    "value": 0.05,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "used",
+                "action": "pass"
+              },
+              {
+                "purpose": "face_check",
+                "id": "face_check",
+                "version": 1,
+                "label": "face and words agree?",
+                "answer": "clash",
+                "p": 0.06,
+                "compared": [],
+                "result": "shown_only"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3V58TK0W9Q1TPFVB59S6T",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 54,
+      "at": "2026-10-20T16:55:47.738Z",
+      "type": "turn.next",
+      "payload": {
+        "nextSpeakerId": "chr_seedRin"
+      }
+    },
+    {
+      "id": "evt_01M5D3V5B4RP4C6A1K96P2YF7S",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 55,
+      "at": "2026-10-20T16:55:47.812Z",
+      "type": "turn.thinking",
+      "payload": {
+        "characterId": "chr_seedRin"
+      }
+    },
+    {
+      "id": "evt_01M5D3V6209TTQEBPGMPTB78F9",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 56,
+      "at": "2026-10-20T16:55:48.544Z",
+      "type": "turn.start",
+      "payload": {
+        "messageId": "msg_01M5D3V58TK0W9Q1TPFVB59S6S",
+        "author": {
+          "type": "character",
+          "characterId": "chr_seedRin"
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3V6209TTQEBPGMPTB78FA",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 57,
+      "at": "2026-10-20T16:55:48.544Z",
+      "type": "emotion",
+      "payload": {
+        "messageId": "msg_01M5D3V58TK0W9Q1TPFVB59S6S",
+        "characterId": "chr_seedRin",
+        "emotion": "angry",
+        "source": "classifier"
+      }
+    },
+    {
+      "id": "evt_01M5D3V63MBH7CXFVNFNTN1ND0",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 58,
+      "at": "2026-10-20T16:55:48.596Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3V58TK0W9Q1TPFVB59S6S",
+        "delta": "you're really gonna compare a boat"
+      }
+    },
+    {
+      "id": "evt_01M5D3V6D1WRM6YCCAWHQN74AN",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 59,
+      "at": "2026-10-20T16:55:48.897Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3V58TK0W9Q1TPFVB59S6S",
+        "delta": " to a"
+      }
+    },
+    {
+      "id": "evt_01M5D3V6E4WWT8XGDRKD0EEH07",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 60,
+      "at": "2026-10-20T16:55:48.932Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3V58TK0W9Q1TPFVB59S6S",
+        "delta": " train platform. okay, station master.\n\nnineteen minutes. then"
+      }
+    },
+    {
+      "id": "evt_01M5D3V6EMGPRRANW5T50DTHNX",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 61,
+      "at": "2026-10-20T16:55:48.948Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3V58TK0W9Q1TPFVB59S6S",
+        "delta": " i'm legally yours."
+      }
+    },
+    {
+      "id": "evt_01M5D3V6ZTCJ2TY38HRGPP6273",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 62,
+      "at": "2026-10-20T16:55:49.498Z",
+      "type": "turn.end",
+      "payload": {
+        "messageId": "msg_01M5D3V58TK0W9Q1TPFVB59S6S",
+        "status": "complete",
+        "usage": {
+          "tokensIn": 908,
+          "tokensCached": 512,
+          "tokensOut": 28,
+          "costUsd": 4.6e-05,
+          "energySpent": 1,
+          "firstTokenMs": 808.0,
+          "totalMs": 1210.0
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3V6ZTCJ2TY38HRGPP6274",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 63,
+      "at": "2026-10-20T16:55:49.498Z",
+      "type": "energy",
+      "payload": {
+        "characterId": "chr_seedRin",
+        "current": 987,
+        "max": 1000,
+        "state": "active",
+        "spent": 1,
+        "fullAt": "2026-10-20T17:14:23.577Z"
+      }
+    },
+    {
+      "id": "evt_01M5D3V6ZTCJ2TY38HRGPP6275",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 64,
+      "at": "2026-10-20T16:55:49.498Z",
+      "type": "insight",
+      "payload": {
+        "messageId": "msg_01M5D3V58TK0W9Q1TPFVB59S6S",
+        "trace": {
+          "messageId": "msg_01M5D3V58TK0W9Q1TPFVB59S6S",
+          "context": {
+            "budget": 14680,
+            "used": {
+              "persona": 292,
+              "system": 614,
+              "mode": 97,
+              "history": 229,
+              "user": 0,
+              "memory": 0,
+              "knowledge": 0
+            }
+          },
+          "emotion": {
+            "chosen": "angry",
+            "source": "classifier",
+            "candidates": [
+              {
+                "label": "angry",
+                "p": 0.6
+              },
+              {
+                "label": "neutral",
+                "p": 0.01
+              },
+              {
+                "label": "happy",
+                "p": 0.01
+              }
+            ]
+          },
+          "guardrail": {
+            "checks": [
+              {
+                "name": "output",
+                "verdict": "pass",
+                "p": 0.09
+              }
+            ]
+          },
+          "model": {
+            "id": "deepseek/deepseek-v4.1-flash",
+            "provider": "Relace",
+            "pricePeriod": "off_peak",
+            "latencyMs": {
+              "firstToken": 808.0,
+              "total": 1210.0
+            },
+            "tokensIn": 908,
+            "tokensOut": 28,
+            "costUsd": 4.6e-05,
+            "tokensCached": 512
+          },
+          "energy": {
+            "characterId": "chr_seedRin",
+            "spent": 1,
+            "remaining": 987,
+            "max": 1000
+          },
+          "routing": {
+            "selected": "chr_seedRin"
+          },
+          "calls": [
+            {
+              "purpose": "turn_plan",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 4.9e-05,
+              "latencyMs": 812
+            },
+            {
+              "purpose": "reply",
+              "model": "deepseek/deepseek-v4.1-flash",
+              "costUsd": 4.6e-05,
+              "latencyMs": 1110
+            },
+            {
+              "purpose": "guardrail",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.6e-05,
+              "latencyMs": 500
+            }
+          ],
+          "graph": {
+            "path": [
+              "state",
+              "ask",
+              "decide",
+              "route"
+            ]
+          },
+          "system1": {
+            "seed": "2026-10-20T16:55:35.442Z|watch|chr_seedTakeshi,chr_seedRin:3",
+            "questions": [
+              {
+                "purpose": "turn_plan",
+                "id": "talk_finished",
+                "version": 3,
+                "label": "is the talk finished?",
+                "answer": "no",
+                "p": 0.16,
+                "compared": [
+                  {
+                    "name": "t_end",
+                    "value": 0.16,
+                    "threshold": 0.5
+                  }
+                ],
+                "result": "used",
+                "action": "no steer"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "emotion_line",
+                "version": 3,
+                "label": "emotion",
+                "about": "chr_seedRin",
+                "answer": "angry",
+                "p": 0.6,
+                "compared": [
+                  {
+                    "name": "confidence",
+                    "value": 0.54,
+                    "threshold": 0.2
+                  }
+                ],
+                "confidence": 0.54,
+                "result": "used",
+                "action": "shown"
+              },
+              {
+                "purpose": "guardrail",
+                "id": "output_rules",
+                "version": 1,
+                "label": "reply breaks the rules?",
+                "answer": "no",
+                "p": 0.09,
+                "compared": [
+                  {
+                    "name": "tFlag",
+                    "value": 0.09,
+                    "threshold": 0.5
+                  },
+                  {
+                    "name": "tBlock",
+                    "value": 0.09,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "used",
+                "action": "pass"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3V70PPHF6B8PHNJK55V7J",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 65,
+      "at": "2026-10-20T16:55:49.526Z",
+      "type": "watch.state",
+      "payload": {
+        "status": "playing",
+        "paceMs": 1500,
+        "turnsTaken": 4,
+        "turnLimit": 10
+      }
+    },
+    {
+      "id": "evt_01M5D3V70PPHF6B8PHNJK55V7K",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 66,
+      "at": "2026-10-20T16:55:49.526Z",
+      "type": "session.state",
+      "payload": {
+        "state": {
+          "status": "playing",
+          "turnsTaken": 4,
+          "turnLimit": 10,
+          "nextSpeakerId": "chr_seedRin"
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3V7CKRJNK3VPF7K61G8AQ",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 67,
+      "at": "2026-10-20T16:55:49.907Z",
+      "type": "message",
+      "payload": {
+        "message": {
+          "id": "msg_01M5D3V7CKRJNK3VPF7K61G8AP",
+          "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+          "seq": 6,
+          "author": {
+            "type": "user"
+          },
+          "kind": "direction",
+          "content": "The rain suddenly stops and the sun comes out.",
+          "status": "complete",
+          "createdAt": "2026-10-20T16:55:49.907Z"
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3V7DQ3WA46MV9VWWZDCRS",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 68,
+      "at": "2026-10-20T16:55:49.943Z",
+      "type": "insight",
+      "payload": {
+        "messageId": "msg_01M5D3V58TK0W9Q1TPFVB59S6S",
+        "trace": {
+          "messageId": "msg_01M5D3V58TK0W9Q1TPFVB59S6S",
+          "context": {
+            "budget": 14680,
+            "used": {
+              "persona": 292,
+              "system": 614,
+              "mode": 97,
+              "history": 229,
+              "user": 0,
+              "memory": 0,
+              "knowledge": 0
+            }
+          },
+          "emotion": {
+            "chosen": "angry",
+            "source": "classifier",
+            "candidates": [
+              {
+                "label": "angry",
+                "p": 0.6
+              },
+              {
+                "label": "neutral",
+                "p": 0.01
+              },
+              {
+                "label": "happy",
+                "p": 0.01
+              }
+            ]
+          },
+          "guardrail": {
+            "checks": [
+              {
+                "name": "output",
+                "verdict": "pass",
+                "p": 0.09
+              }
+            ]
+          },
+          "model": {
+            "id": "deepseek/deepseek-v4.1-flash",
+            "provider": "Relace",
+            "pricePeriod": "off_peak",
+            "latencyMs": {
+              "firstToken": 808.0,
+              "total": 1210.0
+            },
+            "tokensIn": 908,
+            "tokensOut": 28,
+            "costUsd": 4.6e-05,
+            "tokensCached": 512
+          },
+          "energy": {
+            "characterId": "chr_seedRin",
+            "spent": 1,
+            "remaining": 987,
+            "max": 1000
+          },
+          "routing": {
+            "selected": "chr_seedRin"
+          },
+          "calls": [
+            {
+              "purpose": "turn_plan",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 4.9e-05,
+              "latencyMs": 812
+            },
+            {
+              "purpose": "reply",
+              "model": "deepseek/deepseek-v4.1-flash",
+              "costUsd": 4.6e-05,
+              "latencyMs": 1110
+            },
+            {
+              "purpose": "guardrail",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.6e-05,
+              "latencyMs": 500
+            },
+            {
+              "purpose": "face_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 3.1e-05,
+              "latencyMs": 422
+            }
+          ],
+          "graph": {
+            "path": [
+              "state",
+              "ask",
+              "decide",
+              "route"
+            ]
+          },
+          "system1": {
+            "seed": "2026-10-20T16:55:35.442Z|watch|chr_seedTakeshi,chr_seedRin:3",
+            "questions": [
+              {
+                "purpose": "turn_plan",
+                "id": "talk_finished",
+                "version": 3,
+                "label": "is the talk finished?",
+                "answer": "no",
+                "p": 0.16,
+                "compared": [
+                  {
+                    "name": "t_end",
+                    "value": 0.16,
+                    "threshold": 0.5
+                  }
+                ],
+                "result": "used",
+                "action": "no steer"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "emotion_line",
+                "version": 3,
+                "label": "emotion",
+                "about": "chr_seedRin",
+                "answer": "angry",
+                "p": 0.6,
+                "compared": [
+                  {
+                    "name": "confidence",
+                    "value": 0.54,
+                    "threshold": 0.2
+                  }
+                ],
+                "confidence": 0.54,
+                "result": "used",
+                "action": "shown"
+              },
+              {
+                "purpose": "guardrail",
+                "id": "output_rules",
+                "version": 1,
+                "label": "reply breaks the rules?",
+                "answer": "no",
+                "p": 0.09,
+                "compared": [
+                  {
+                    "name": "tFlag",
+                    "value": 0.09,
+                    "threshold": 0.5
+                  },
+                  {
+                    "name": "tBlock",
+                    "value": 0.09,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "used",
+                "action": "pass"
+              },
+              {
+                "purpose": "face_check",
+                "id": "face_check",
+                "version": 1,
+                "label": "face and words agree?",
+                "answer": "yes",
+                "p": 0.75,
+                "compared": [],
+                "result": "shown_only"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3V8VTZHZVSWVCHZ7WCCFR",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 69,
+      "at": "2026-10-20T16:55:51.418Z",
+      "type": "turn.next",
+      "payload": {
+        "nextSpeakerId": "chr_seedTakeshi"
+      }
+    },
+    {
+      "id": "evt_01M5D3V8X2K6TAG0APK08WS0ZF",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 70,
+      "at": "2026-10-20T16:55:51.458Z",
+      "type": "turn.thinking",
+      "payload": {
+        "characterId": "chr_seedTakeshi"
+      }
+    },
+    {
+      "id": "evt_01M5D3V99RMYWHZ2EZZQ5JQ79R",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 71,
+      "at": "2026-10-20T16:55:51.864Z",
+      "type": "turn.start",
+      "payload": {
+        "messageId": "msg_01M5D3V8VTZHZVSWVCHZ7WCCFQ",
+        "author": {
+          "type": "character",
+          "characterId": "chr_seedTakeshi"
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3V99RMYWHZ2EZZQ5JQ79S",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 72,
+      "at": "2026-10-20T16:55:51.864Z",
+      "type": "emotion",
+      "payload": {
+        "messageId": "msg_01M5D3V8VTZHZVSWVCHZ7WCCFQ",
+        "characterId": "chr_seedTakeshi",
+        "emotion": "happy",
+        "source": "classifier"
+      }
+    },
+    {
+      "id": "evt_01M5D3V9C4RGZKJMX7FKQYRPS9",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 73,
+      "at": "2026-10-20T16:55:51.940Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3V8VTZHZVSWVCHZ7WCCFQ",
+        "delta": "Hah. Sky heard"
+      }
+    },
+    {
+      "id": "evt_01M5D3V9F5PAV796PP050HNS14",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 74,
+      "at": "2026-10-20T16:55:52.037Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3V8VTZHZVSWVCHZ7WCCFQ",
+        "delta": " me and pulled the brake. Sun's out — tell your"
+      }
+    },
+    {
+      "id": "evt_01M5D3V9HGZXMHGM4AEX0KZZVK",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 75,
+      "at": "2026-10-20T16:55:52.112Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3V8VTZHZVSWVCHZ7WCCFQ",
+        "delta": " raid the weather changed without"
+      }
+    },
+    {
+      "id": "evt_01M5D3V9MP0S4PQGT6AD9V6DB4",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 76,
+      "at": "2026-10-20T16:55:52.214Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3V8VTZHZVSWVCHZ7WCCFQ",
+        "delta": " a permit.\n\nEighteen minutes, station master's counting"
+      }
+    },
+    {
+      "id": "evt_01M5D3V9QCVADPK9NTC4SR9HKP",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 77,
+      "at": "2026-10-20T16:55:52.300Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3V8VTZHZVSWVCHZ7WCCFQ",
+        "delta": ". I'll go check the worms. Rain or"
+      }
+    },
+    {
+      "id": "evt_01M5D3V9WF3V7BZ3CWN8XVBDCY",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 78,
+      "at": "2026-10-20T16:55:52.463Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3V8VTZHZVSWVCHZ7WCCFQ",
+        "delta": " shine, that's the deal I made with the fish."
+      }
+    },
+    {
+      "id": "evt_01M5D3VAF7NKXR6QSG526ST383",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 79,
+      "at": "2026-10-20T16:55:53.063Z",
+      "type": "turn.end",
+      "payload": {
+        "messageId": "msg_01M5D3V8VTZHZVSWVCHZ7WCCFQ",
+        "status": "complete",
+        "usage": {
+          "tokensIn": 956,
+          "tokensCached": 512,
+          "tokensOut": 56,
+          "costUsd": 6.3e-05,
+          "energySpent": 1,
+          "firstTokenMs": 457.0,
+          "totalMs": 1048.0
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3VAF7NKXR6QSG526ST384",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 80,
+      "at": "2026-10-20T16:55:53.063Z",
+      "type": "energy",
+      "payload": {
+        "characterId": "chr_seedTakeshi",
+        "current": 991,
+        "max": 1000,
+        "state": "active",
+        "spent": 1,
+        "fullAt": "2026-10-20T17:08:39.647Z"
+      }
+    },
+    {
+      "id": "evt_01M5D3VAF7NKXR6QSG526ST385",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 81,
+      "at": "2026-10-20T16:55:53.063Z",
+      "type": "insight",
+      "payload": {
+        "messageId": "msg_01M5D3V8VTZHZVSWVCHZ7WCCFQ",
+        "trace": {
+          "messageId": "msg_01M5D3V8VTZHZVSWVCHZ7WCCFQ",
+          "context": {
+            "budget": 14680,
+            "used": {
+              "persona": 261,
+              "system": 614,
+              "mode": 123,
+              "history": 263,
+              "user": 16,
+              "memory": 0,
+              "knowledge": 0
+            }
+          },
+          "emotion": {
+            "chosen": "happy",
+            "source": "classifier",
+            "candidates": [
+              {
+                "label": "happy",
+                "p": 0.45
+              },
+              {
+                "label": "angry",
+                "p": 0.21
+              },
+              {
+                "label": "neutral",
+                "p": 0.04
+              }
+            ]
+          },
+          "guardrail": {
+            "checks": [
+              {
+                "name": "input",
+                "verdict": "pass",
+                "p": 0.06
+              },
+              {
+                "name": "output",
+                "verdict": "pass",
+                "p": 0.06
+              }
+            ]
+          },
+          "model": {
+            "id": "deepseek/deepseek-v4.1-flash",
+            "provider": "Relace",
+            "pricePeriod": "off_peak",
+            "latencyMs": {
+              "firstToken": 457.0,
+              "total": 1048.0
+            },
+            "tokensIn": 956,
+            "tokensOut": 56,
+            "costUsd": 6.3e-05,
+            "tokensCached": 512
+          },
+          "energy": {
+            "characterId": "chr_seedTakeshi",
+            "spent": 1,
+            "remaining": 991,
+            "max": 1000
+          },
+          "routing": {
+            "selected": "chr_seedTakeshi"
+          },
+          "calls": [
+            {
+              "purpose": "turn_plan",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 6.3e-05,
+              "latencyMs": 469
+            },
+            {
+              "purpose": "reply",
+              "model": "deepseek/deepseek-v4.1-flash",
+              "costUsd": 6.3e-05,
+              "latencyMs": 969
+            },
+            {
+              "purpose": "guardrail",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.5e-05,
+              "latencyMs": 579
+            }
+          ],
+          "graph": {
+            "path": [
+              "state",
+              "ask",
+              "decide",
+              "route"
+            ]
+          },
+          "system1": {
+            "seed": "2026-10-20T16:55:35.442Z|watch|chr_seedTakeshi,chr_seedRin:4",
+            "questions": [
+              {
+                "purpose": "turn_plan",
+                "id": "talk_finished",
+                "version": 3,
+                "label": "is the talk finished?",
+                "answer": "no",
+                "p": 0.22,
+                "compared": [
+                  {
+                    "name": "t_end",
+                    "value": 0.22,
+                    "threshold": 0.5
+                  }
+                ],
+                "result": "used",
+                "action": "no steer"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "emotion_line",
+                "version": 3,
+                "label": "emotion",
+                "about": "chr_seedTakeshi",
+                "answer": "happy",
+                "p": 0.45,
+                "compared": [
+                  {
+                    "name": "confidence",
+                    "value": 0.37,
+                    "threshold": 0.2
+                  }
+                ],
+                "confidence": 0.37,
+                "result": "used",
+                "action": "shown"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "unsafe_note",
+                "version": 1,
+                "label": "unsafe note?",
+                "answer": "no",
+                "p": 0.06,
+                "compared": [
+                  {
+                    "name": "tSteer",
+                    "value": 0.06,
+                    "threshold": 0.7
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "no cue"
+              },
+              {
+                "purpose": "guardrail",
+                "id": "output_rules",
+                "version": 1,
+                "label": "reply breaks the rules?",
+                "answer": "no",
+                "p": 0.06,
+                "compared": [
+                  {
+                    "name": "tFlag",
+                    "value": 0.06,
+                    "threshold": 0.5
+                  },
+                  {
+                    "name": "tBlock",
+                    "value": 0.06,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "used",
+                "action": "pass"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3VAFTGYXK23636E94JPYG",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 82,
+      "at": "2026-10-20T16:55:53.082Z",
+      "type": "watch.state",
+      "payload": {
+        "status": "playing",
+        "paceMs": 1500,
+        "turnsTaken": 5,
+        "turnLimit": 10
+      }
+    },
+    {
+      "id": "evt_01M5D3VAFTGYXK23636E94JPYH",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 83,
+      "at": "2026-10-20T16:55:53.082Z",
+      "type": "session.state",
+      "payload": {
+        "state": {
+          "status": "playing",
+          "turnsTaken": 5,
+          "turnLimit": 10,
+          "nextSpeakerId": "chr_seedTakeshi"
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3VB2RTCXQAF9TMTTQ24F8",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 84,
+      "at": "2026-10-20T16:55:53.688Z",
+      "type": "insight",
+      "payload": {
+        "messageId": "msg_01M5D3V8VTZHZVSWVCHZ7WCCFQ",
+        "trace": {
+          "messageId": "msg_01M5D3V8VTZHZVSWVCHZ7WCCFQ",
+          "context": {
+            "budget": 14680,
+            "used": {
+              "persona": 261,
+              "system": 614,
+              "mode": 123,
+              "history": 263,
+              "user": 16,
+              "memory": 0,
+              "knowledge": 0
+            }
+          },
+          "emotion": {
+            "chosen": "happy",
+            "source": "classifier",
+            "candidates": [
+              {
+                "label": "happy",
+                "p": 0.45
+              },
+              {
+                "label": "angry",
+                "p": 0.21
+              },
+              {
+                "label": "neutral",
+                "p": 0.04
+              }
+            ]
+          },
+          "guardrail": {
+            "checks": [
+              {
+                "name": "input",
+                "verdict": "pass",
+                "p": 0.06
+              },
+              {
+                "name": "output",
+                "verdict": "pass",
+                "p": 0.06
+              }
+            ]
+          },
+          "model": {
+            "id": "deepseek/deepseek-v4.1-flash",
+            "provider": "Relace",
+            "pricePeriod": "off_peak",
+            "latencyMs": {
+              "firstToken": 457.0,
+              "total": 1048.0
+            },
+            "tokensIn": 956,
+            "tokensOut": 56,
+            "costUsd": 6.3e-05,
+            "tokensCached": 512
+          },
+          "energy": {
+            "characterId": "chr_seedTakeshi",
+            "spent": 1,
+            "remaining": 991,
+            "max": 1000
+          },
+          "routing": {
+            "selected": "chr_seedTakeshi"
+          },
+          "calls": [
+            {
+              "purpose": "turn_plan",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 6.3e-05,
+              "latencyMs": 469
+            },
+            {
+              "purpose": "reply",
+              "model": "deepseek/deepseek-v4.1-flash",
+              "costUsd": 6.3e-05,
+              "latencyMs": 969
+            },
+            {
+              "purpose": "guardrail",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.5e-05,
+              "latencyMs": 579
+            },
+            {
+              "purpose": "face_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 3.2e-05,
+              "latencyMs": 594
+            }
+          ],
+          "graph": {
+            "path": [
+              "state",
+              "ask",
+              "decide",
+              "route"
+            ]
+          },
+          "system1": {
+            "seed": "2026-10-20T16:55:35.442Z|watch|chr_seedTakeshi,chr_seedRin:4",
+            "questions": [
+              {
+                "purpose": "turn_plan",
+                "id": "talk_finished",
+                "version": 3,
+                "label": "is the talk finished?",
+                "answer": "no",
+                "p": 0.22,
+                "compared": [
+                  {
+                    "name": "t_end",
+                    "value": 0.22,
+                    "threshold": 0.5
+                  }
+                ],
+                "result": "used",
+                "action": "no steer"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "emotion_line",
+                "version": 3,
+                "label": "emotion",
+                "about": "chr_seedTakeshi",
+                "answer": "happy",
+                "p": 0.45,
+                "compared": [
+                  {
+                    "name": "confidence",
+                    "value": 0.37,
+                    "threshold": 0.2
+                  }
+                ],
+                "confidence": 0.37,
+                "result": "used",
+                "action": "shown"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "unsafe_note",
+                "version": 1,
+                "label": "unsafe note?",
+                "answer": "no",
+                "p": 0.06,
+                "compared": [
+                  {
+                    "name": "tSteer",
+                    "value": 0.06,
+                    "threshold": 0.7
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "no cue"
+              },
+              {
+                "purpose": "guardrail",
+                "id": "output_rules",
+                "version": 1,
+                "label": "reply breaks the rules?",
+                "answer": "no",
+                "p": 0.06,
+                "compared": [
+                  {
+                    "name": "tFlag",
+                    "value": 0.06,
+                    "threshold": 0.5
+                  },
+                  {
+                    "name": "tBlock",
+                    "value": 0.06,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "used",
+                "action": "pass"
+              },
+              {
+                "purpose": "face_check",
+                "id": "face_check",
+                "version": 1,
+                "label": "face and words agree?",
+                "answer": "yes",
+                "p": 0.83,
+                "compared": [],
+                "result": "shown_only"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3VBRT6EFYY6TXNM73VYFF",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 85,
+      "at": "2026-10-20T16:55:54.394Z",
+      "type": "turn.next",
+      "payload": {
+        "nextSpeakerId": "chr_seedRin"
+      }
+    },
+    {
+      "id": "evt_01M5D3VBTRK9NS56QHSBGKYV4C",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 86,
+      "at": "2026-10-20T16:55:54.456Z",
+      "type": "turn.thinking",
+      "payload": {
+        "characterId": "chr_seedRin"
+      }
+    },
+    {
+      "id": "evt_01M5D3VCBJYVATZSMZQ0QZATFB",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 87,
+      "at": "2026-10-20T16:55:54.994Z",
+      "type": "turn.start",
+      "payload": {
+        "messageId": "msg_01M5D3VBRT6EFYY6TXNM73VYFE",
+        "author": {
+          "type": "character",
+          "characterId": "chr_seedRin"
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3VCBJYVATZSMZQ0QZATFC",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 88,
+      "at": "2026-10-20T16:55:54.994Z",
+      "type": "emotion",
+      "payload": {
+        "messageId": "msg_01M5D3VBRT6EFYY6TXNM73VYFE",
+        "characterId": "chr_seedRin",
+        "emotion": "angry",
+        "source": "default"
+      }
+    },
+    {
+      "id": "evt_01M5D3VCC5SM7C45H6VF00Y678",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 89,
+      "at": "2026-10-20T16:55:55.013Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VBRT6EFYY6TXNM73VYFE",
+        "delta": "sun's out and you're still on the worms. dedication"
+      }
+    },
+    {
+      "id": "evt_01M5D3VCC6GT3X3YC0DJFP1ZRY",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 90,
+      "at": "2026-10-20T16:55:55.014Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VBRT6EFYY6TXNM73VYFE",
+        "delta": ". hope the fish know what they're signing up for.\n\nse"
+      }
+    },
+    {
+      "id": "evt_01M5D3VCDTQVEF1FFQ864VR9QR",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 91,
+      "at": "2026-10-20T16:55:55.066Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VBRT6EFYY6TXNM73VYFE",
+        "delta": "venteen. if the pug wipes again"
+      }
+    },
+    {
+      "id": "evt_01M5D3VCFD9401WQMQCV7ZJT2K",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 92,
+      "at": "2026-10-20T16:55:55.117Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VBRT6EFYY6TXNM73VYFE",
+        "delta": " i'm farming this without you, old man."
+      }
+    },
+    {
+      "id": "evt_01M5D3VD3621HY4PYRBEWCW876",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 93,
+      "at": "2026-10-20T16:55:55.750Z",
+      "type": "turn.end",
+      "payload": {
+        "messageId": "msg_01M5D3VBRT6EFYY6TXNM73VYFE",
+        "status": "complete",
+        "usage": {
+          "tokensIn": 1041,
+          "tokensCached": 512,
+          "tokensOut": 46,
+          "costUsd": 6.4e-05,
+          "energySpent": 1,
+          "firstTokenMs": 618.0,
+          "totalMs": 744.0
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3VD3621HY4PYRBEWCW877",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 94,
+      "at": "2026-10-20T16:55:55.750Z",
+      "type": "energy",
+      "payload": {
+        "characterId": "chr_seedRin",
+        "current": 986,
+        "max": 1000,
+        "state": "active",
+        "spent": 1,
+        "fullAt": "2026-10-20T17:15:49.977Z"
+      }
+    },
+    {
+      "id": "evt_01M5D3VD3621HY4PYRBEWCW878",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 95,
+      "at": "2026-10-20T16:55:55.750Z",
+      "type": "insight",
+      "payload": {
+        "messageId": "msg_01M5D3VBRT6EFYY6TXNM73VYFE",
+        "trace": {
+          "messageId": "msg_01M5D3VBRT6EFYY6TXNM73VYFE",
+          "context": {
+            "budget": 14680,
+            "used": {
+              "persona": 292,
+              "system": 614,
+              "mode": 116,
+              "history": 365,
+              "user": 16,
+              "memory": 0,
+              "knowledge": 0
+            }
+          },
+          "emotion": {
+            "chosen": "angry",
+            "source": "default",
+            "candidates": [
+              {
+                "label": "angry",
+                "p": 0.32
+              },
+              {
+                "label": "surprised",
+                "p": 0.27
+              },
+              {
+                "label": "neutral",
+                "p": 0.05
+              }
+            ]
+          },
+          "guardrail": {
+            "checks": [
+              {
+                "name": "input",
+                "verdict": "pass",
+                "p": 0.06
+              },
+              {
+                "name": "output",
+                "verdict": "pass",
+                "p": 0.07
+              }
+            ]
+          },
+          "model": {
+            "id": "deepseek/deepseek-v4.1-flash",
+            "provider": "Relace",
+            "pricePeriod": "off_peak",
+            "latencyMs": {
+              "firstToken": 618.0,
+              "total": 744.0
+            },
+            "tokensIn": 1041,
+            "tokensOut": 46,
+            "costUsd": 6.4e-05,
+            "tokensCached": 512
+          },
+          "energy": {
+            "characterId": "chr_seedRin",
+            "spent": 1,
+            "remaining": 986,
+            "max": 1000
+          },
+          "routing": {
+            "selected": "chr_seedRin"
+          },
+          "calls": [
+            {
+              "purpose": "turn_plan",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 5.6e-05,
+              "latencyMs": 953
+            },
+            {
+              "purpose": "reply",
+              "model": "deepseek/deepseek-v4.1-flash",
+              "costUsd": 6.4e-05,
+              "latencyMs": 641
+            },
+            {
+              "purpose": "guardrail",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.7e-05,
+              "latencyMs": 594
+            }
+          ],
+          "graph": {
+            "path": [
+              "state",
+              "ask",
+              "decide",
+              "route"
+            ]
+          },
+          "system1": {
+            "seed": "2026-10-20T16:55:35.442Z|watch|chr_seedTakeshi,chr_seedRin:5",
+            "questions": [
+              {
+                "purpose": "turn_plan",
+                "id": "talk_finished",
+                "version": 3,
+                "label": "is the talk finished?",
+                "answer": "no",
+                "p": 0.21,
+                "compared": [
+                  {
+                    "name": "t_end",
+                    "value": 0.21,
+                    "threshold": 0.5
+                  }
+                ],
+                "result": "used",
+                "action": "no steer"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "emotion_line",
+                "version": 3,
+                "label": "emotion",
+                "about": "chr_seedRin",
+                "answer": "none",
+                "p": 0.32,
+                "compared": [
+                  {
+                    "name": "confidence",
+                    "value": 0.22,
+                    "threshold": 0.2
+                  }
+                ],
+                "confidence": 0.22,
+                "result": "used",
+                "action": "kept"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "unsafe_note",
+                "version": 1,
+                "label": "unsafe note?",
+                "answer": "no",
+                "p": 0.06,
+                "compared": [
+                  {
+                    "name": "tSteer",
+                    "value": 0.06,
+                    "threshold": 0.7
+                  }
+                ],
+                "result": "used",
+                "action": "no cue (stored)"
+              },
+              {
+                "purpose": "guardrail",
+                "id": "output_rules",
+                "version": 1,
+                "label": "reply breaks the rules?",
+                "answer": "no",
+                "p": 0.07,
+                "compared": [
+                  {
+                    "name": "tFlag",
+                    "value": 0.07,
+                    "threshold": 0.5
+                  },
+                  {
+                    "name": "tBlock",
+                    "value": 0.07,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "used",
+                "action": "pass"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3VD3SFPCWFN0PCN65DJVJ",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 96,
+      "at": "2026-10-20T16:55:55.768Z",
+      "type": "watch.state",
+      "payload": {
+        "status": "playing",
+        "paceMs": 1500,
+        "turnsTaken": 6,
+        "turnLimit": 10
+      }
+    },
+    {
+      "id": "evt_01M5D3VD3SFPCWFN0PCN65DJVK",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 97,
+      "at": "2026-10-20T16:55:55.768Z",
+      "type": "session.state",
+      "payload": {
+        "state": {
+          "status": "playing",
+          "turnsTaken": 6,
+          "turnLimit": 10,
+          "nextSpeakerId": "chr_seedRin"
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3VDKS5C77XFC1R53ZTNVP",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 98,
+      "at": "2026-10-20T16:55:56.281Z",
+      "type": "insight",
+      "payload": {
+        "messageId": "msg_01M5D3VBRT6EFYY6TXNM73VYFE",
+        "trace": {
+          "messageId": "msg_01M5D3VBRT6EFYY6TXNM73VYFE",
+          "context": {
+            "budget": 14680,
+            "used": {
+              "persona": 292,
+              "system": 614,
+              "mode": 116,
+              "history": 365,
+              "user": 16,
+              "memory": 0,
+              "knowledge": 0
+            }
+          },
+          "emotion": {
+            "chosen": "angry",
+            "source": "default",
+            "candidates": [
+              {
+                "label": "angry",
+                "p": 0.32
+              },
+              {
+                "label": "surprised",
+                "p": 0.27
+              },
+              {
+                "label": "neutral",
+                "p": 0.05
+              }
+            ]
+          },
+          "guardrail": {
+            "checks": [
+              {
+                "name": "input",
+                "verdict": "pass",
+                "p": 0.06
+              },
+              {
+                "name": "output",
+                "verdict": "pass",
+                "p": 0.07
+              }
+            ]
+          },
+          "model": {
+            "id": "deepseek/deepseek-v4.1-flash",
+            "provider": "Relace",
+            "pricePeriod": "off_peak",
+            "latencyMs": {
+              "firstToken": 618.0,
+              "total": 744.0
+            },
+            "tokensIn": 1041,
+            "tokensOut": 46,
+            "costUsd": 6.4e-05,
+            "tokensCached": 512
+          },
+          "energy": {
+            "characterId": "chr_seedRin",
+            "spent": 1,
+            "remaining": 986,
+            "max": 1000
+          },
+          "routing": {
+            "selected": "chr_seedRin"
+          },
+          "calls": [
+            {
+              "purpose": "turn_plan",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 5.6e-05,
+              "latencyMs": 953
+            },
+            {
+              "purpose": "reply",
+              "model": "deepseek/deepseek-v4.1-flash",
+              "costUsd": 6.4e-05,
+              "latencyMs": 641
+            },
+            {
+              "purpose": "guardrail",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.7e-05,
+              "latencyMs": 594
+            },
+            {
+              "purpose": "face_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 3.2e-05,
+              "latencyMs": 516
+            }
+          ],
+          "graph": {
+            "path": [
+              "state",
+              "ask",
+              "decide",
+              "route"
+            ]
+          },
+          "system1": {
+            "seed": "2026-10-20T16:55:35.442Z|watch|chr_seedTakeshi,chr_seedRin:5",
+            "questions": [
+              {
+                "purpose": "turn_plan",
+                "id": "talk_finished",
+                "version": 3,
+                "label": "is the talk finished?",
+                "answer": "no",
+                "p": 0.21,
+                "compared": [
+                  {
+                    "name": "t_end",
+                    "value": 0.21,
+                    "threshold": 0.5
+                  }
+                ],
+                "result": "used",
+                "action": "no steer"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "emotion_line",
+                "version": 3,
+                "label": "emotion",
+                "about": "chr_seedRin",
+                "answer": "none",
+                "p": 0.32,
+                "compared": [
+                  {
+                    "name": "confidence",
+                    "value": 0.22,
+                    "threshold": 0.2
+                  }
+                ],
+                "confidence": 0.22,
+                "result": "used",
+                "action": "kept"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "unsafe_note",
+                "version": 1,
+                "label": "unsafe note?",
+                "answer": "no",
+                "p": 0.06,
+                "compared": [
+                  {
+                    "name": "tSteer",
+                    "value": 0.06,
+                    "threshold": 0.7
+                  }
+                ],
+                "result": "used",
+                "action": "no cue (stored)"
+              },
+              {
+                "purpose": "guardrail",
+                "id": "output_rules",
+                "version": 1,
+                "label": "reply breaks the rules?",
+                "answer": "no",
+                "p": 0.07,
+                "compared": [
+                  {
+                    "name": "tFlag",
+                    "value": 0.07,
+                    "threshold": 0.5
+                  },
+                  {
+                    "name": "tBlock",
+                    "value": 0.07,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "used",
+                "action": "pass"
+              },
+              {
+                "purpose": "face_check",
+                "id": "face_check",
+                "version": 1,
+                "label": "face and words agree?",
+                "answer": "clash",
+                "p": 0.39,
+                "compared": [],
+                "result": "shown_only"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3VECAX75H65V4HGKEACQC",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 99,
+      "at": "2026-10-20T16:55:57.066Z",
+      "type": "turn.next",
+      "payload": {
+        "nextSpeakerId": "chr_seedTakeshi"
+      }
+    },
+    {
+      "id": "evt_01M5D3VEE398GHT64V9N1EFA3N",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 100,
+      "at": "2026-10-20T16:55:57.123Z",
+      "type": "turn.thinking",
+      "payload": {
+        "characterId": "chr_seedTakeshi"
+      }
+    },
+    {
+      "id": "evt_01M5D3VFHRVZ5ZFD5JK9MKJ19J",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 101,
+      "at": "2026-10-20T16:55:58.264Z",
+      "type": "turn.start",
+      "payload": {
+        "messageId": "msg_01M5D3VECAX75H65V4HGKEACQB",
+        "author": {
+          "type": "character",
+          "characterId": "chr_seedTakeshi"
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3VFHRVZ5ZFD5JK9MKJ19K",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 102,
+      "at": "2026-10-20T16:55:58.264Z",
+      "type": "emotion",
+      "payload": {
+        "messageId": "msg_01M5D3VECAX75H65V4HGKEACQB",
+        "characterId": "chr_seedTakeshi",
+        "emotion": "happy",
+        "source": "classifier"
+      }
+    },
+    {
+      "id": "evt_01M5D3VFKTD3V0Z6G073RKCM6N",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 103,
+      "at": "2026-10-20T16:55:58.330Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VECAX75H65V4HGKEACQB",
+        "delta": "Old"
+      }
+    },
+    {
+      "id": "evt_01M5D3VFWYB82XHBV1EC7KC1PM",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 104,
+      "at": "2026-10-20T16:55:58.622Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VECAX75H65V4HGKEACQB",
+        "delta": " man still"
+      }
+    },
+    {
+      "id": "evt_01M5D3VG0RZK6SYHN8A6CGCZTC",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 105,
+      "at": "2026-10-20T16:55:58.744Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VECAX75H65V4HGKEACQB",
+        "delta": " out"
+      }
+    },
+    {
+      "id": "evt_01M5D3VGH4SDW1ZSAKJ2SQNG8X",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 106,
+      "at": "2026-10-20T16:55:59.268Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VECAX75H65V4HGKEACQB",
+        "delta": "-f"
+      }
+    },
+    {
+      "id": "evt_01M5D3VGTD2Y10T2566N877HJF",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 107,
+      "at": "2026-10-20T16:55:59.565Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VECAX75H65V4HGKEACQB",
+        "delta": "ishes a p"
+      }
+    },
+    {
+      "id": "evt_01M5D3VHBAP6F43ZZFHRBCN3QJ",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 108,
+      "at": "2026-10-20T16:56:00.106Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VECAX75H65V4HGKEACQB",
+        "delta": "ug every"
+      }
+    },
+    {
+      "id": "evt_01M5D3VHM85CHHKANBSEKT9WWS",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 109,
+      "at": "2026-10-20T16:56:00.392Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VECAX75H65V4HGKEACQB",
+        "delta": " Sunday"
+      }
+    },
+    {
+      "id": "evt_01M5D3VJDD27DEA8JSZRYJGPX6",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 110,
+      "at": "2026-10-20T16:56:01.197Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VECAX75H65V4HGKEACQB",
+        "delta": ","
+      }
+    },
+    {
+      "id": "evt_01M5D3VJG9TKFHKREAXW0WA8MF",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 111,
+      "at": "2026-10-20T16:56:01.289Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VECAX75H65V4HGKEACQB",
+        "delta": " and you know it"
+      }
+    },
+    {
+      "id": "evt_01M5D3VJTJ66CN29KEFBNPB4JT",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 112,
+      "at": "2026-10-20T16:56:01.618Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VECAX75H65V4HGKEACQB",
+        "delta": "."
+      }
+    },
+    {
+      "id": "evt_01M5D3VK495SJ5WYQSP2V99G8S",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 113,
+      "at": "2026-10-20T16:56:01.929Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VECAX75H65V4HGKEACQB",
+        "delta": " That's not"
+      }
+    },
+    {
+      "id": "evt_01M5D3VKTG0H1JXN3JB839HWG4",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 114,
+      "at": "2026-10-20T16:56:02.640Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VECAX75H65V4HGKEACQB",
+        "delta": " trash"
+      }
+    },
+    {
+      "id": "evt_01M5D3VM37W7XQR8K001PRXX0N",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 115,
+      "at": "2026-10-20T16:56:02.919Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VECAX75H65V4HGKEACQB",
+        "delta": " talk, that's just"
+      }
+    },
+    {
+      "id": "evt_01M5D3VMCZ294M5CGR4PGVCT8S",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 116,
+      "at": "2026-10-20T16:56:03.231Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VECAX75H65V4HGKEACQB",
+        "delta": " my catch"
+      }
+    },
+    {
+      "id": "evt_01M5D3VMT421M64PJB1JHFWFA2",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 117,
+      "at": "2026-10-20T16:56:03.652Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VECAX75H65V4HGKEACQB",
+        "delta": " log"
+      }
+    },
+    {
+      "id": "evt_01M5D3VN003MWFJ2TMTE5HDMV1",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 118,
+      "at": "2026-10-20T16:56:03.840Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VECAX75H65V4HGKEACQB",
+        "delta": ".\n\nSe"
+      }
+    },
+    {
+      "id": "evt_01M5D3VN2WSD1A0WJD0VBRTTMG",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 119,
+      "at": "2026-10-20T16:56:03.932Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VECAX75H65V4HGKEACQB",
+        "delta": "venteen minutes,"
+      }
+    },
+    {
+      "id": "evt_01M5D3VNERQAC7RWPZTRK4FTYE",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 120,
+      "at": "2026-10-20T16:56:04.312Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VECAX75H65V4HGKEACQB",
+        "delta": " then I"
+      }
+    },
+    {
+      "id": "evt_01M5D3VNRTANZTDPFD285JEAVJ",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 121,
+      "at": "2026-10-20T16:56:04.634Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VECAX75H65V4HGKEACQB",
+        "delta": " unplug the router"
+      }
+    },
+    {
+      "id": "evt_01M5D3VP6G8ZYD5Y5BCZFRKFDR",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 122,
+      "at": "2026-10-20T16:56:05.072Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VECAX75H65V4HGKEACQB",
+        "delta": " myself"
+      }
+    },
+    {
+      "id": "evt_01M5D3VPGVVHKPR34HAAH98CJ9",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 123,
+      "at": "2026-10-20T16:56:05.403Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VECAX75H65V4HGKEACQB",
+        "delta": ". K"
+      }
+    },
+    {
+      "id": "evt_01M5D3VPN3GSF6T3GBATT7CK3C",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 124,
+      "at": "2026-10-20T16:56:05.539Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VECAX75H65V4HGKEACQB",
+        "delta": "idding"
+      }
+    },
+    {
+      "id": "evt_01M5D3VQ1RKRAGVDT1NM2JZHYH",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 125,
+      "at": "2026-10-20T16:56:05.944Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VECAX75H65V4HGKEACQB",
+        "delta": ". Part"
+      }
+    },
+    {
+      "id": "evt_01M5D3VQ9WRCWVQN7RJKD3PC6D",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 126,
+      "at": "2026-10-20T16:56:06.204Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VECAX75H65V4HGKEACQB",
+        "delta": "ly"
+      }
+    },
+    {
+      "id": "evt_01M5D3VQAM1HB3V9RMEXFMT1CN",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 127,
+      "at": "2026-10-20T16:56:06.228Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VECAX75H65V4HGKEACQB",
+        "delta": "."
+      }
+    },
+    {
+      "id": "evt_01M5D3VQRNY7BETTKCJRRAAQK6",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 128,
+      "at": "2026-10-20T16:56:06.677Z",
+      "type": "turn.end",
+      "payload": {
+        "messageId": "msg_01M5D3VECAX75H65V4HGKEACQB",
+        "status": "complete",
+        "usage": {
+          "tokensIn": 1065,
+          "tokensCached": 512,
+          "tokensOut": 50,
+          "costUsd": 6.8e-05,
+          "energySpent": 1,
+          "firstTokenMs": 1214.0,
+          "totalMs": 9166.0
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3VQRNY7BETTKCJRRAAQK7",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 129,
+      "at": "2026-10-20T16:56:06.677Z",
+      "type": "energy",
+      "payload": {
+        "characterId": "chr_seedTakeshi",
+        "current": 990,
+        "max": 1000,
+        "state": "active",
+        "spent": 1,
+        "fullAt": "2026-10-20T17:10:06.047Z"
+      }
+    },
+    {
+      "id": "evt_01M5D3VQRNY7BETTKCJRRAAQK8",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 130,
+      "at": "2026-10-20T16:56:06.677Z",
+      "type": "insight",
+      "payload": {
+        "messageId": "msg_01M5D3VECAX75H65V4HGKEACQB",
+        "trace": {
+          "messageId": "msg_01M5D3VECAX75H65V4HGKEACQB",
+          "context": {
+            "budget": 14680,
+            "used": {
+              "persona": 261,
+              "system": 614,
+              "mode": 104,
+              "history": 412,
+              "user": 16,
+              "memory": 0,
+              "knowledge": 0
+            }
+          },
+          "emotion": {
+            "chosen": "happy",
+            "source": "classifier",
+            "candidates": [
+              {
+                "label": "happy",
+                "p": 0.76
+              },
+              {
+                "label": "angry",
+                "p": 0.06
+              },
+              {
+                "label": "neutral",
+                "p": 0.01
+              }
+            ]
+          },
+          "guardrail": {
+            "checks": [
+              {
+                "name": "output",
+                "verdict": "pass",
+                "p": 0.07
+              }
+            ]
+          },
+          "model": {
+            "id": "deepseek/deepseek-v4.1-flash",
+            "provider": "Relace",
+            "pricePeriod": "off_peak",
+            "latencyMs": {
+              "firstToken": 1214.0,
+              "total": 9166.0
+            },
+            "tokensIn": 1065,
+            "tokensOut": 50,
+            "costUsd": 6.8e-05,
+            "tokensCached": 512
+          },
+          "energy": {
+            "characterId": "chr_seedTakeshi",
+            "spent": 1,
+            "remaining": 990,
+            "max": 1000
+          },
+          "routing": {
+            "selected": "chr_seedTakeshi"
+          },
+          "calls": [
+            {
+              "purpose": "turn_plan",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 5.8e-05,
+              "latencyMs": 922
+            },
+            {
+              "purpose": "reply",
+              "model": "deepseek/deepseek-v4.1-flash",
+              "costUsd": 6.8e-05,
+              "latencyMs": 9062
+            },
+            {
+              "purpose": "guardrail",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.7e-05,
+              "latencyMs": 438
+            }
+          ],
+          "graph": {
+            "path": [
+              "state",
+              "ask",
+              "decide",
+              "route"
+            ]
+          },
+          "system1": {
+            "seed": "2026-10-20T16:55:35.442Z|watch|chr_seedTakeshi,chr_seedRin:6",
+            "questions": [
+              {
+                "purpose": "turn_plan",
+                "id": "talk_finished",
+                "version": 3,
+                "label": "is the talk finished?",
+                "answer": "no",
+                "p": 0.15,
+                "compared": [
+                  {
+                    "name": "t_end",
+                    "value": 0.15,
+                    "threshold": 0.5
+                  }
+                ],
+                "result": "used",
+                "action": "no steer"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "emotion_line",
+                "version": 3,
+                "label": "emotion",
+                "about": "chr_seedTakeshi",
+                "answer": "happy",
+                "p": 0.76,
+                "compared": [
+                  {
+                    "name": "confidence",
+                    "value": 0.73,
+                    "threshold": 0.2
+                  }
+                ],
+                "confidence": 0.73,
+                "result": "used",
+                "action": "shown"
+              },
+              {
+                "purpose": "guardrail",
+                "id": "output_rules",
+                "version": 1,
+                "label": "reply breaks the rules?",
+                "answer": "no",
+                "p": 0.07,
+                "compared": [
+                  {
+                    "name": "tFlag",
+                    "value": 0.07,
+                    "threshold": 0.5
+                  },
+                  {
+                    "name": "tBlock",
+                    "value": 0.07,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "used",
+                "action": "pass"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3VQSAGNAK7VVP4SPT820C",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 131,
+      "at": "2026-10-20T16:56:06.698Z",
+      "type": "watch.state",
+      "payload": {
+        "status": "playing",
+        "paceMs": 1500,
+        "turnsTaken": 7,
+        "turnLimit": 10
+      }
+    },
+    {
+      "id": "evt_01M5D3VQSAGNAK7VVP4SPT820D",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 132,
+      "at": "2026-10-20T16:56:06.698Z",
+      "type": "session.state",
+      "payload": {
+        "state": {
+          "status": "playing",
+          "turnsTaken": 7,
+          "turnLimit": 10,
+          "nextSpeakerId": "chr_seedTakeshi"
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3VR8WXV88563TT6VZ3YH5",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 133,
+      "at": "2026-10-20T16:56:07.196Z",
+      "type": "insight",
+      "payload": {
+        "messageId": "msg_01M5D3VECAX75H65V4HGKEACQB",
+        "trace": {
+          "messageId": "msg_01M5D3VECAX75H65V4HGKEACQB",
+          "context": {
+            "budget": 14680,
+            "used": {
+              "persona": 261,
+              "system": 614,
+              "mode": 104,
+              "history": 412,
+              "user": 16,
+              "memory": 0,
+              "knowledge": 0
+            }
+          },
+          "emotion": {
+            "chosen": "happy",
+            "source": "classifier",
+            "candidates": [
+              {
+                "label": "happy",
+                "p": 0.76
+              },
+              {
+                "label": "angry",
+                "p": 0.06
+              },
+              {
+                "label": "neutral",
+                "p": 0.01
+              }
+            ]
+          },
+          "guardrail": {
+            "checks": [
+              {
+                "name": "output",
+                "verdict": "pass",
+                "p": 0.07
+              }
+            ]
+          },
+          "model": {
+            "id": "deepseek/deepseek-v4.1-flash",
+            "provider": "Relace",
+            "pricePeriod": "off_peak",
+            "latencyMs": {
+              "firstToken": 1214.0,
+              "total": 9166.0
+            },
+            "tokensIn": 1065,
+            "tokensOut": 50,
+            "costUsd": 6.8e-05,
+            "tokensCached": 512
+          },
+          "energy": {
+            "characterId": "chr_seedTakeshi",
+            "spent": 1,
+            "remaining": 990,
+            "max": 1000
+          },
+          "routing": {
+            "selected": "chr_seedTakeshi"
+          },
+          "calls": [
+            {
+              "purpose": "turn_plan",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 5.8e-05,
+              "latencyMs": 922
+            },
+            {
+              "purpose": "reply",
+              "model": "deepseek/deepseek-v4.1-flash",
+              "costUsd": 6.8e-05,
+              "latencyMs": 9062
+            },
+            {
+              "purpose": "guardrail",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.7e-05,
+              "latencyMs": 438
+            },
+            {
+              "purpose": "face_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 3.2e-05,
+              "latencyMs": 500
+            }
+          ],
+          "graph": {
+            "path": [
+              "state",
+              "ask",
+              "decide",
+              "route"
+            ]
+          },
+          "system1": {
+            "seed": "2026-10-20T16:55:35.442Z|watch|chr_seedTakeshi,chr_seedRin:6",
+            "questions": [
+              {
+                "purpose": "turn_plan",
+                "id": "talk_finished",
+                "version": 3,
+                "label": "is the talk finished?",
+                "answer": "no",
+                "p": 0.15,
+                "compared": [
+                  {
+                    "name": "t_end",
+                    "value": 0.15,
+                    "threshold": 0.5
+                  }
+                ],
+                "result": "used",
+                "action": "no steer"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "emotion_line",
+                "version": 3,
+                "label": "emotion",
+                "about": "chr_seedTakeshi",
+                "answer": "happy",
+                "p": 0.76,
+                "compared": [
+                  {
+                    "name": "confidence",
+                    "value": 0.73,
+                    "threshold": 0.2
+                  }
+                ],
+                "confidence": 0.73,
+                "result": "used",
+                "action": "shown"
+              },
+              {
+                "purpose": "guardrail",
+                "id": "output_rules",
+                "version": 1,
+                "label": "reply breaks the rules?",
+                "answer": "no",
+                "p": 0.07,
+                "compared": [
+                  {
+                    "name": "tFlag",
+                    "value": 0.07,
+                    "threshold": 0.5
+                  },
+                  {
+                    "name": "tBlock",
+                    "value": 0.07,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "used",
+                "action": "pass"
+              },
+              {
+                "purpose": "face_check",
+                "id": "face_check",
+                "version": 1,
+                "label": "face and words agree?",
+                "answer": "yes",
+                "p": 0.69,
+                "compared": [],
+                "result": "shown_only"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3VS6YYC2SP2CMQ8BD92TA",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 134,
+      "at": "2026-10-20T16:56:08.158Z",
+      "type": "turn.next",
+      "payload": {
+        "nextSpeakerId": "chr_seedRin"
+      }
+    },
+    {
+      "id": "evt_01M5D3VS9645G56TDYPM2PX6A9",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 135,
+      "at": "2026-10-20T16:56:08.230Z",
+      "type": "turn.thinking",
+      "payload": {
+        "characterId": "chr_seedRin"
+      }
+    },
+    {
+      "id": "evt_01M5D3VT2KQ7HY3ZG1RVPDT8QT",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 136,
+      "at": "2026-10-20T16:56:09.043Z",
+      "type": "turn.start",
+      "payload": {
+        "messageId": "msg_01M5D3VS6YYC2SP2CMQ8BD92T9",
+        "author": {
+          "type": "character",
+          "characterId": "chr_seedRin"
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3VT2KQ7HY3ZG1RVPDT8QV",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 137,
+      "at": "2026-10-20T16:56:09.043Z",
+      "type": "emotion",
+      "payload": {
+        "messageId": "msg_01M5D3VS6YYC2SP2CMQ8BD92T9",
+        "characterId": "chr_seedRin",
+        "emotion": "angry",
+        "source": "classifier"
+      }
+    },
+    {
+      "id": "evt_01M5D3VT3QWEA2SW59THPJS2FJ",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 138,
+      "at": "2026-10-20T16:56:09.079Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VS6YYC2SP2CMQ8BD92T9",
+        "delta": "a catch log is just a spreadsheet with feelings. i"
+      }
+    },
+    {
+      "id": "evt_01M5D3VT5WMK33N7R9F01XWX09",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 139,
+      "at": "2026-10-20T16:56:09.148Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VS6YYC2SP2CMQ8BD92T9",
+        "delta": "'ve seen your spreadsheets.\n\nhit him back. the"
+      }
+    },
+    {
+      "id": "evt_01M5D3VT77V83RC3M6DT3BB08K",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 140,
+      "at": "2026-10-20T16:56:09.191Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VS6YYC2SP2CMQ8BD92T9",
+        "delta": " router threat's real and we both know it."
+      }
+    },
+    {
+      "id": "evt_01M5D3VTVYPFFMPFDKHQC3N3B4",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 141,
+      "at": "2026-10-20T16:56:09.854Z",
+      "type": "turn.end",
+      "payload": {
+        "messageId": "msg_01M5D3VS6YYC2SP2CMQ8BD92T9",
+        "status": "complete",
+        "usage": {
+          "tokensIn": 1148,
+          "tokensCached": 512,
+          "tokensOut": 33,
+          "costUsd": 6.5e-05,
+          "energySpent": 1,
+          "firstTokenMs": 903.0,
+          "totalMs": 1065.0
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3VTVYPFFMPFDKHQC3N3B5",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 142,
+      "at": "2026-10-20T16:56:09.854Z",
+      "type": "energy",
+      "payload": {
+        "characterId": "chr_seedRin",
+        "current": 985,
+        "max": 1000,
+        "state": "active",
+        "spent": 1,
+        "fullAt": "2026-10-20T17:17:16.377Z"
+      }
+    },
+    {
+      "id": "evt_01M5D3VTVYPFFMPFDKHQC3N3B6",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 143,
+      "at": "2026-10-20T16:56:09.854Z",
+      "type": "insight",
+      "payload": {
+        "messageId": "msg_01M5D3VS6YYC2SP2CMQ8BD92T9",
+        "trace": {
+          "messageId": "msg_01M5D3VS6YYC2SP2CMQ8BD92T9",
+          "context": {
+            "budget": 14680,
+            "used": {
+              "persona": 292,
+              "system": 614,
+              "mode": 97,
+              "history": 501,
+              "user": 16,
+              "memory": 0,
+              "knowledge": 0
+            }
+          },
+          "emotion": {
+            "chosen": "angry",
+            "source": "classifier",
+            "candidates": [
+              {
+                "label": "angry",
+                "p": 0.47
+              },
+              {
+                "label": "happy",
+                "p": 0.08
+              },
+              {
+                "label": "neutral",
+                "p": 0.02
+              }
+            ]
+          },
+          "guardrail": {
+            "checks": [
+              {
+                "name": "output",
+                "verdict": "pass",
+                "p": 0.08
+              }
+            ]
+          },
+          "model": {
+            "id": "deepseek/deepseek-v4.1-flash",
+            "provider": "Relace",
+            "pricePeriod": "off_peak",
+            "latencyMs": {
+              "firstToken": 903.0,
+              "total": 1065.0
+            },
+            "tokensIn": 1148,
+            "tokensOut": 33,
+            "costUsd": 6.5e-05,
+            "tokensCached": 512
+          },
+          "energy": {
+            "characterId": "chr_seedRin",
+            "spent": 1,
+            "remaining": 985,
+            "max": 1000
+          },
+          "routing": {
+            "selected": "chr_seedRin"
+          },
+          "calls": [
+            {
+              "purpose": "turn_plan",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 6.1e-05,
+              "latencyMs": 453
+            },
+            {
+              "purpose": "reply",
+              "model": "deepseek/deepseek-v4.1-flash",
+              "costUsd": 6.5e-05,
+              "latencyMs": 937
+            },
+            {
+              "purpose": "guardrail",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.7e-05,
+              "latencyMs": 625
+            }
+          ],
+          "graph": {
+            "path": [
+              "state",
+              "ask",
+              "decide",
+              "route"
+            ]
+          },
+          "system1": {
+            "seed": "2026-10-20T16:55:35.442Z|watch|chr_seedTakeshi,chr_seedRin:7",
+            "questions": [
+              {
+                "purpose": "turn_plan",
+                "id": "talk_finished",
+                "version": 3,
+                "label": "is the talk finished?",
+                "answer": "no",
+                "p": 0.23,
+                "compared": [
+                  {
+                    "name": "t_end",
+                    "value": 0.23,
+                    "threshold": 0.5
+                  }
+                ],
+                "result": "used",
+                "action": "no steer"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "emotion_line",
+                "version": 3,
+                "label": "emotion",
+                "about": "chr_seedRin",
+                "answer": "angry",
+                "p": 0.47,
+                "compared": [
+                  {
+                    "name": "confidence",
+                    "value": 0.39,
+                    "threshold": 0.2
+                  }
+                ],
+                "confidence": 0.39,
+                "result": "used",
+                "action": "shown"
+              },
+              {
+                "purpose": "guardrail",
+                "id": "output_rules",
+                "version": 1,
+                "label": "reply breaks the rules?",
+                "answer": "no",
+                "p": 0.08,
+                "compared": [
+                  {
+                    "name": "tFlag",
+                    "value": 0.08,
+                    "threshold": 0.5
+                  },
+                  {
+                    "name": "tBlock",
+                    "value": 0.08,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "used",
+                "action": "pass"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3VTWGJX09NW9SJJQT3RNN",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 144,
+      "at": "2026-10-20T16:56:09.872Z",
+      "type": "watch.state",
+      "payload": {
+        "status": "playing",
+        "paceMs": 1500,
+        "turnsTaken": 8,
+        "turnLimit": 10
+      }
+    },
+    {
+      "id": "evt_01M5D3VTWGJX09NW9SJJQT3RNP",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 145,
+      "at": "2026-10-20T16:56:09.872Z",
+      "type": "session.state",
+      "payload": {
+        "state": {
+          "status": "playing",
+          "turnsTaken": 8,
+          "turnLimit": 10,
+          "nextSpeakerId": "chr_seedRin"
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3VVCCB3H0T2QP5VNV0B7X",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 146,
+      "at": "2026-10-20T16:56:10.380Z",
+      "type": "reaction",
+      "payload": {
+        "messageId": "msg_01M5D3VS6YYC2SP2CMQ8BD92T9",
+        "characterId": "chr_seedTakeshi",
+        "emotion": "angry",
+        "source": "classifier",
+        "p": 0.7
+      }
+    },
+    {
+      "id": "evt_01M5D3VVCH3JNYTV7QQT1W2GGH",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 147,
+      "at": "2026-10-20T16:56:10.385Z",
+      "type": "insight",
+      "payload": {
+        "messageId": "msg_01M5D3VS6YYC2SP2CMQ8BD92T9",
+        "trace": {
+          "messageId": "msg_01M5D3VS6YYC2SP2CMQ8BD92T9",
+          "context": {
+            "budget": 14680,
+            "used": {
+              "persona": 292,
+              "system": 614,
+              "mode": 97,
+              "history": 501,
+              "user": 16,
+              "memory": 0,
+              "knowledge": 0
+            }
+          },
+          "emotion": {
+            "chosen": "angry",
+            "source": "classifier",
+            "candidates": [
+              {
+                "label": "angry",
+                "p": 0.47
+              },
+              {
+                "label": "happy",
+                "p": 0.08
+              },
+              {
+                "label": "neutral",
+                "p": 0.02
+              }
+            ]
+          },
+          "guardrail": {
+            "checks": [
+              {
+                "name": "output",
+                "verdict": "pass",
+                "p": 0.08
+              }
+            ]
+          },
+          "model": {
+            "id": "deepseek/deepseek-v4.1-flash",
+            "provider": "Relace",
+            "pricePeriod": "off_peak",
+            "latencyMs": {
+              "firstToken": 903.0,
+              "total": 1065.0
+            },
+            "tokensIn": 1148,
+            "tokensOut": 33,
+            "costUsd": 6.5e-05,
+            "tokensCached": 512
+          },
+          "energy": {
+            "characterId": "chr_seedRin",
+            "spent": 1,
+            "remaining": 985,
+            "max": 1000
+          },
+          "routing": {
+            "selected": "chr_seedRin"
+          },
+          "calls": [
+            {
+              "purpose": "turn_plan",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 6.1e-05,
+              "latencyMs": 453
+            },
+            {
+              "purpose": "reply",
+              "model": "deepseek/deepseek-v4.1-flash",
+              "costUsd": 6.5e-05,
+              "latencyMs": 937
+            },
+            {
+              "purpose": "guardrail",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.7e-05,
+              "latencyMs": 625
+            },
+            {
+              "purpose": "face_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 3.1e-05,
+              "latencyMs": 484
+            }
+          ],
+          "graph": {
+            "path": [
+              "state",
+              "ask",
+              "decide",
+              "route"
+            ]
+          },
+          "system1": {
+            "seed": "2026-10-20T16:55:35.442Z|watch|chr_seedTakeshi,chr_seedRin:7",
+            "questions": [
+              {
+                "purpose": "turn_plan",
+                "id": "talk_finished",
+                "version": 3,
+                "label": "is the talk finished?",
+                "answer": "no",
+                "p": 0.23,
+                "compared": [
+                  {
+                    "name": "t_end",
+                    "value": 0.23,
+                    "threshold": 0.5
+                  }
+                ],
+                "result": "used",
+                "action": "no steer"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "emotion_line",
+                "version": 3,
+                "label": "emotion",
+                "about": "chr_seedRin",
+                "answer": "angry",
+                "p": 0.47,
+                "compared": [
+                  {
+                    "name": "confidence",
+                    "value": 0.39,
+                    "threshold": 0.2
+                  }
+                ],
+                "confidence": 0.39,
+                "result": "used",
+                "action": "shown"
+              },
+              {
+                "purpose": "guardrail",
+                "id": "output_rules",
+                "version": 1,
+                "label": "reply breaks the rules?",
+                "answer": "no",
+                "p": 0.08,
+                "compared": [
+                  {
+                    "name": "tFlag",
+                    "value": 0.08,
+                    "threshold": 0.5
+                  },
+                  {
+                    "name": "tBlock",
+                    "value": 0.08,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "used",
+                "action": "pass"
+              },
+              {
+                "purpose": "face_check",
+                "id": "face_check",
+                "version": 1,
+                "label": "face and words agree?",
+                "answer": "yes",
+                "p": 0.97,
+                "compared": [],
+                "result": "shown_only"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3VWNPBDK6T3BWFJWD42WB",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 148,
+      "at": "2026-10-20T16:56:11.702Z",
+      "type": "turn.next",
+      "payload": {
+        "nextSpeakerId": "chr_seedTakeshi"
+      }
+    },
+    {
+      "id": "evt_01M5D3VWQNH56BM387N5MJGZ6V",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 149,
+      "at": "2026-10-20T16:56:11.765Z",
+      "type": "turn.thinking",
+      "payload": {
+        "characterId": "chr_seedTakeshi"
+      }
+    },
+    {
+      "id": "evt_01M5D3VXJ030DTCGF54MSKA762",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 150,
+      "at": "2026-10-20T16:56:12.607Z",
+      "type": "turn.start",
+      "payload": {
+        "messageId": "msg_01M5D3VWNPBDK6T3BWFJWD42WA",
+        "author": {
+          "type": "character",
+          "characterId": "chr_seedTakeshi"
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3VXJ030DTCGF54MSKA763",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 151,
+      "at": "2026-10-20T16:56:12.607Z",
+      "type": "emotion",
+      "payload": {
+        "messageId": "msg_01M5D3VWNPBDK6T3BWFJWD42WA",
+        "characterId": "chr_seedTakeshi",
+        "emotion": "angry",
+        "source": "default"
+      }
+    },
+    {
+      "id": "evt_01M5D3VXKVQFV2GY10V1JRMMDR",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 152,
+      "at": "2026-10-20T16:56:12.667Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VWNPBDK6T3BWFJWD42WA",
+        "delta": "A spreadsheet with feelings. That"
+      }
+    },
+    {
+      "id": "evt_01M5D3VXQ1BV3VK31FNZFXV9S5",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 153,
+      "at": "2026-10-20T16:56:12.769Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VWNPBDK6T3BWFJWD42WA",
+        "delta": "'s the girl who named her guild"
+      }
+    },
+    {
+      "id": "evt_01M5D3VXS63KDTZ50CR8FYBE67",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 154,
+      "at": "2026-10-20T16:56:12.838Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VWNPBDK6T3BWFJWD42WA",
+        "delta": " after a steam engine, so"
+      }
+    },
+    {
+      "id": "evt_01M5D3VXVS636FT6KZJSYS42Q4",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 155,
+      "at": "2026-10-20T16:56:12.921Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VWNPBDK6T3BWFJWD42WA",
+        "delta": " I'll take it.\n\nFine, I'll skip the"
+      }
+    },
+    {
+      "id": "evt_01M5D3VXYTMK1M9BTRJ82NR1RE",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 156,
+      "at": "2026-10-20T16:56:13.018Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VWNPBDK6T3BWFJWD42WA",
+        "delta": " router. But the coffee's poured and there's one"
+      }
+    },
+    {
+      "id": "evt_01M5D3VY0QKRN5Y4M6TX6WMG1J",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 157,
+      "at": "2026-10-20T16:56:13.079Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VWNPBDK6T3BWFJWD42WA",
+        "delta": " bucket hat left on the peg"
+      }
+    },
+    {
+      "id": "evt_01M5D3VY3DRSDZBPJERNKZ25CM",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 158,
+      "at": "2026-10-20T16:56:13.165Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VWNPBDK6T3BWFJWD42WA",
+        "delta": ". Rain's gone, fish don't take excuses"
+      }
+    },
+    {
+      "id": "evt_01M5D3VY3ZX0W6HRYFE5R8RFJ7",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 159,
+      "at": "2026-10-20T16:56:13.183Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3VWNPBDK6T3BWFJWD42WA",
+        "delta": "."
+      }
+    },
+    {
+      "id": "evt_01M5D3VYNAMDTHC8NKNJR2HC9T",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 160,
+      "at": "2026-10-20T16:56:13.738Z",
+      "type": "turn.end",
+      "payload": {
+        "messageId": "msg_01M5D3VWNPBDK6T3BWFJWD42WA",
+        "status": "complete",
+        "usage": {
+          "tokensIn": 1169,
+          "tokensCached": 768,
+          "tokensOut": 59,
+          "costUsd": 6.4e-05,
+          "energySpent": 1,
+          "firstTokenMs": 914.0,
+          "totalMs": 1485.0
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3VYNAMDTHC8NKNJR2HC9V",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 161,
+      "at": "2026-10-20T16:56:13.738Z",
+      "type": "energy",
+      "payload": {
+        "characterId": "chr_seedTakeshi",
+        "current": 989,
+        "max": 1000,
+        "state": "active",
+        "spent": 1,
+        "fullAt": "2026-10-20T17:11:32.447Z"
+      }
+    },
+    {
+      "id": "evt_01M5D3VYNAMDTHC8NKNJR2HC9W",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 162,
+      "at": "2026-10-20T16:56:13.738Z",
+      "type": "insight",
+      "payload": {
+        "messageId": "msg_01M5D3VWNPBDK6T3BWFJWD42WA",
+        "trace": {
+          "messageId": "msg_01M5D3VWNPBDK6T3BWFJWD42WA",
+          "context": {
+            "budget": 14680,
+            "used": {
+              "persona": 261,
+              "system": 614,
+              "mode": 104,
+              "history": 532,
+              "user": 16,
+              "memory": 0,
+              "knowledge": 0
+            }
+          },
+          "emotion": {
+            "chosen": "angry",
+            "source": "default",
+            "candidates": [
+              {
+                "label": "angry",
+                "p": 0.38
+              },
+              {
+                "label": "happy",
+                "p": 0.11
+              },
+              {
+                "label": "neutral",
+                "p": 0.07
+              }
+            ]
+          },
+          "guardrail": {
+            "checks": [
+              {
+                "name": "output",
+                "verdict": "pass",
+                "p": 0.07
+              }
+            ]
+          },
+          "model": {
+            "id": "deepseek/deepseek-v4.1-flash",
+            "provider": "Relace",
+            "pricePeriod": "off_peak",
+            "latencyMs": {
+              "firstToken": 914.0,
+              "total": 1485.0
+            },
+            "tokensIn": 1169,
+            "tokensOut": 59,
+            "costUsd": 6.4e-05,
+            "tokensCached": 768
+          },
+          "energy": {
+            "characterId": "chr_seedTakeshi",
+            "spent": 1,
+            "remaining": 989,
+            "max": 1000
+          },
+          "routing": {
+            "selected": "chr_seedTakeshi"
+          },
+          "calls": [
+            {
+              "purpose": "turn_plan",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 6.4e-05,
+              "latencyMs": 500
+            },
+            {
+              "purpose": "reply",
+              "model": "deepseek/deepseek-v4.1-flash",
+              "costUsd": 6.4e-05,
+              "latencyMs": 1391
+            },
+            {
+              "purpose": "guardrail",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.7e-05,
+              "latencyMs": 547
+            }
+          ],
+          "graph": {
+            "path": [
+              "state",
+              "ask",
+              "decide",
+              "route"
+            ]
+          },
+          "system1": {
+            "seed": "2026-10-20T16:55:35.442Z|watch|chr_seedTakeshi,chr_seedRin:8",
+            "questions": [
+              {
+                "purpose": "turn_plan",
+                "id": "talk_finished",
+                "version": 3,
+                "label": "is the talk finished?",
+                "answer": "no",
+                "p": 0.18,
+                "compared": [
+                  {
+                    "name": "t_end",
+                    "value": 0.18,
+                    "threshold": 0.5
+                  }
+                ],
+                "result": "used",
+                "action": "no steer"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "emotion_line",
+                "version": 3,
+                "label": "emotion",
+                "about": "chr_seedTakeshi",
+                "answer": "none",
+                "p": 0.41,
+                "compared": [
+                  {
+                    "name": "confidence",
+                    "value": 0.33,
+                    "threshold": 0.2
+                  }
+                ],
+                "confidence": 0.33,
+                "result": "used",
+                "action": "kept"
+              },
+              {
+                "purpose": "guardrail",
+                "id": "output_rules",
+                "version": 1,
+                "label": "reply breaks the rules?",
+                "answer": "no",
+                "p": 0.07,
+                "compared": [
+                  {
+                    "name": "tFlag",
+                    "value": 0.07,
+                    "threshold": 0.5
+                  },
+                  {
+                    "name": "tBlock",
+                    "value": 0.07,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "used",
+                "action": "pass"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3VYNT3N2DC0NAEZRKJN3Y",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 163,
+      "at": "2026-10-20T16:56:13.754Z",
+      "type": "watch.state",
+      "payload": {
+        "status": "playing",
+        "paceMs": 1500,
+        "turnsTaken": 9,
+        "turnLimit": 10
+      }
+    },
+    {
+      "id": "evt_01M5D3VYNT3N2DC0NAEZRKJN3Z",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 164,
+      "at": "2026-10-20T16:56:13.754Z",
+      "type": "session.state",
+      "payload": {
+        "state": {
+          "status": "playing",
+          "turnsTaken": 9,
+          "turnLimit": 10,
+          "nextSpeakerId": "chr_seedTakeshi"
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3VZ3W8GHG88FV7XFKZ435",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 165,
+      "at": "2026-10-20T16:56:14.204Z",
+      "type": "insight",
+      "payload": {
+        "messageId": "msg_01M5D3VWNPBDK6T3BWFJWD42WA",
+        "trace": {
+          "messageId": "msg_01M5D3VWNPBDK6T3BWFJWD42WA",
+          "context": {
+            "budget": 14680,
+            "used": {
+              "persona": 261,
+              "system": 614,
+              "mode": 104,
+              "history": 532,
+              "user": 16,
+              "memory": 0,
+              "knowledge": 0
+            }
+          },
+          "emotion": {
+            "chosen": "angry",
+            "source": "default",
+            "candidates": [
+              {
+                "label": "angry",
+                "p": 0.38
+              },
+              {
+                "label": "happy",
+                "p": 0.11
+              },
+              {
+                "label": "neutral",
+                "p": 0.07
+              }
+            ]
+          },
+          "guardrail": {
+            "checks": [
+              {
+                "name": "output",
+                "verdict": "pass",
+                "p": 0.07
+              }
+            ]
+          },
+          "model": {
+            "id": "deepseek/deepseek-v4.1-flash",
+            "provider": "Relace",
+            "pricePeriod": "off_peak",
+            "latencyMs": {
+              "firstToken": 914.0,
+              "total": 1485.0
+            },
+            "tokensIn": 1169,
+            "tokensOut": 59,
+            "costUsd": 6.4e-05,
+            "tokensCached": 768
+          },
+          "energy": {
+            "characterId": "chr_seedTakeshi",
+            "spent": 1,
+            "remaining": 989,
+            "max": 1000
+          },
+          "routing": {
+            "selected": "chr_seedTakeshi"
+          },
+          "calls": [
+            {
+              "purpose": "turn_plan",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 6.4e-05,
+              "latencyMs": 500
+            },
+            {
+              "purpose": "reply",
+              "model": "deepseek/deepseek-v4.1-flash",
+              "costUsd": 6.4e-05,
+              "latencyMs": 1391
+            },
+            {
+              "purpose": "guardrail",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.7e-05,
+              "latencyMs": 547
+            },
+            {
+              "purpose": "face_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 3.3e-05,
+              "latencyMs": 438
+            }
+          ],
+          "graph": {
+            "path": [
+              "state",
+              "ask",
+              "decide",
+              "route"
+            ]
+          },
+          "system1": {
+            "seed": "2026-10-20T16:55:35.442Z|watch|chr_seedTakeshi,chr_seedRin:8",
+            "questions": [
+              {
+                "purpose": "turn_plan",
+                "id": "talk_finished",
+                "version": 3,
+                "label": "is the talk finished?",
+                "answer": "no",
+                "p": 0.18,
+                "compared": [
+                  {
+                    "name": "t_end",
+                    "value": 0.18,
+                    "threshold": 0.5
+                  }
+                ],
+                "result": "used",
+                "action": "no steer"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "emotion_line",
+                "version": 3,
+                "label": "emotion",
+                "about": "chr_seedTakeshi",
+                "answer": "none",
+                "p": 0.41,
+                "compared": [
+                  {
+                    "name": "confidence",
+                    "value": 0.33,
+                    "threshold": 0.2
+                  }
+                ],
+                "confidence": 0.33,
+                "result": "used",
+                "action": "kept"
+              },
+              {
+                "purpose": "guardrail",
+                "id": "output_rules",
+                "version": 1,
+                "label": "reply breaks the rules?",
+                "answer": "no",
+                "p": 0.07,
+                "compared": [
+                  {
+                    "name": "tFlag",
+                    "value": 0.07,
+                    "threshold": 0.5
+                  },
+                  {
+                    "name": "tBlock",
+                    "value": 0.07,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "used",
+                "action": "pass"
+              },
+              {
+                "purpose": "face_check",
+                "id": "face_check",
+                "version": 1,
+                "label": "face and words agree?",
+                "answer": "clash",
+                "p": 0.16,
+                "compared": [],
+                "result": "shown_only"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3W01MXBACAH7RYK82B2SK",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 166,
+      "at": "2026-10-20T16:56:15.156Z",
+      "type": "turn.next",
+      "payload": {
+        "nextSpeakerId": "chr_seedRin"
+      }
+    },
+    {
+      "id": "evt_01M5D3W035HKDKG5F78GKAGPXC",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 167,
+      "at": "2026-10-20T16:56:15.205Z",
+      "type": "turn.thinking",
+      "payload": {
+        "characterId": "chr_seedRin"
+      }
+    },
+    {
+      "id": "evt_01M5D3W0EBYFC9QJQADVEHTY69",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 168,
+      "at": "2026-10-20T16:56:15.563Z",
+      "type": "turn.start",
+      "payload": {
+        "messageId": "msg_01M5D3W01MXBACAH7RYK82B2SJ",
+        "author": {
+          "type": "character",
+          "characterId": "chr_seedRin"
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3W0EVA15T2YBV7HTW7JFH",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 169,
+      "at": "2026-10-20T16:56:15.563Z",
+      "type": "emotion",
+      "payload": {
+        "messageId": "msg_01M5D3W01MXBACAH7RYK82B2SJ",
+        "characterId": "chr_seedRin",
+        "emotion": "angry",
+        "source": "classifier"
+      }
+    },
+    {
+      "id": "evt_01M5D3W0GV2WFJ5S0KPSX5NA13",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 170,
+      "at": "2026-10-20T16:56:15.643Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3W01MXBACAH7RYK82B2SJ",
+        "delta": "you leave the steam engine out of this. she was a good"
+      }
+    },
+    {
+      "id": "evt_01M5D3W0HZB40F0S11H883SVQV",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 171,
+      "at": "2026-10-20T16:56:15.679Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3W01MXBACAH7RYK82B2SJ",
+        "delta": " boiler.\n\nraid's done. someone died to the last add"
+      }
+    },
+    {
+      "id": "evt_01M5D3W0K39C3QXS2AZCQNTW8Y",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 172,
+      "at": "2026-10-20T16:56:15.715Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3W01MXBACAH7RYK82B2SJ",
+        "delta": " because of course they did. ten minutes to wrangle"
+      }
+    },
+    {
+      "id": "evt_01M5D3W0NA8CPEPX84TE0DWRB5",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 173,
+      "at": "2026-10-20T16:56:15.786Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3W01MXBACAH7RYK82B2SJ",
+        "delta": " my hoodie and i'm in the truck."
+      }
+    },
+    {
+      "id": "evt_01M5D3W18T69J20264KEDNY2YK",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 174,
+      "at": "2026-10-20T16:56:16.410Z",
+      "type": "turn.end",
+      "payload": {
+        "messageId": "msg_01M5D3W01MXBACAH7RYK82B2SJ",
+        "status": "complete",
+        "usage": {
+          "tokensIn": 1264,
+          "tokensCached": 768,
+          "tokensOut": 47,
+          "costUsd": 6.4e-05,
+          "energySpent": 1,
+          "firstTokenMs": 431.0,
+          "totalMs": 666.0
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3W18T69J20264KEDNY2YM",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 175,
+      "at": "2026-10-20T16:56:16.410Z",
+      "type": "energy",
+      "payload": {
+        "characterId": "chr_seedRin",
+        "current": 984,
+        "max": 1000,
+        "state": "active",
+        "spent": 1,
+        "fullAt": "2026-10-20T17:18:42.777Z"
+      }
+    },
+    {
+      "id": "evt_01M5D3W18T69J20264KEDNY2YN",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 176,
+      "at": "2026-10-20T16:56:16.410Z",
+      "type": "insight",
+      "payload": {
+        "messageId": "msg_01M5D3W01MXBACAH7RYK82B2SJ",
+        "trace": {
+          "messageId": "msg_01M5D3W01MXBACAH7RYK82B2SJ",
+          "context": {
+            "budget": 14680,
+            "used": {
+              "persona": 292,
+              "system": 614,
+              "mode": 97,
+              "history": 645,
+              "user": 16,
+              "memory": 0,
+              "knowledge": 0
+            }
+          },
+          "emotion": {
+            "chosen": "angry",
+            "source": "classifier",
+            "candidates": [
+              {
+                "label": "angry",
+                "p": 0.48
+              },
+              {
+                "label": "happy",
+                "p": 0.2
+              },
+              {
+                "label": "neutral",
+                "p": 0.03
+              }
+            ]
+          },
+          "guardrail": {
+            "checks": [
+              {
+                "name": "output",
+                "verdict": "pass",
+                "p": 0.08
+              }
+            ]
+          },
+          "model": {
+            "id": "deepseek/deepseek-v4.1-flash",
+            "provider": "Relace",
+            "pricePeriod": "off_peak",
+            "latencyMs": {
+              "firstToken": 431.0,
+              "total": 666.0
+            },
+            "tokensIn": 1264,
+            "tokensOut": 47,
+            "costUsd": 6.4e-05,
+            "tokensCached": 768
+          },
+          "energy": {
+            "characterId": "chr_seedRin",
+            "spent": 1,
+            "remaining": 984,
+            "max": 1000
+          },
+          "routing": {
+            "selected": "chr_seedRin"
+          },
+          "calls": [
+            {
+              "purpose": "turn_plan",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 6.7e-05,
+              "latencyMs": 750
+            },
+            {
+              "purpose": "reply",
+              "model": "deepseek/deepseek-v4.1-flash",
+              "costUsd": 6.4e-05,
+              "latencyMs": 547
+            },
+            {
+              "purpose": "guardrail",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.7e-05,
+              "latencyMs": 578
+            }
+          ],
+          "graph": {
+            "path": [
+              "state",
+              "ask",
+              "decide",
+              "route"
+            ]
+          },
+          "system1": {
+            "seed": "2026-10-20T16:55:35.442Z|watch|chr_seedTakeshi,chr_seedRin:9",
+            "questions": [
+              {
+                "purpose": "turn_plan",
+                "id": "talk_finished",
+                "version": 3,
+                "label": "is the talk finished?",
+                "answer": "no",
+                "p": 0.24,
+                "compared": [
+                  {
+                    "name": "t_end",
+                    "value": 0.24,
+                    "threshold": 0.5
+                  }
+                ],
+                "result": "used",
+                "action": "no steer"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "emotion_line",
+                "version": 3,
+                "label": "emotion",
+                "about": "chr_seedRin",
+                "answer": "angry",
+                "p": 0.48,
+                "compared": [
+                  {
+                    "name": "confidence",
+                    "value": 0.41,
+                    "threshold": 0.2
+                  }
+                ],
+                "confidence": 0.41,
+                "result": "used",
+                "action": "shown"
+              },
+              {
+                "purpose": "guardrail",
+                "id": "output_rules",
+                "version": 1,
+                "label": "reply breaks the rules?",
+                "answer": "no",
+                "p": 0.08,
+                "compared": [
+                  {
+                    "name": "tFlag",
+                    "value": 0.08,
+                    "threshold": 0.5
+                  },
+                  {
+                    "name": "tBlock",
+                    "value": 0.08,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "used",
+                "action": "pass"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3W190CQZ6TX9QEDP19TQK",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 177,
+      "at": "2026-10-20T16:56:16.416Z",
+      "type": "watch.state",
+      "payload": {
+        "status": "ended",
+        "paceMs": 1500,
+        "turnsTaken": 10,
+        "turnLimit": 10
+      }
+    },
+    {
+      "id": "evt_01M5D3W190CQZ6TX9QEDP19TQM",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 178,
+      "at": "2026-10-20T16:56:16.416Z",
+      "type": "session.state",
+      "payload": {
+        "state": {
+          "status": "ended",
+          "turnsTaken": 10,
+          "turnLimit": 10,
+          "nextSpeakerId": "chr_seedRin"
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3W196Z39GFE2TVX0AQYPE",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 179,
+      "at": "2026-10-20T16:56:16.422Z",
+      "type": "session.paused",
+      "payload": {
+        "reason": "turn_cap"
+      }
+    },
+    {
+      "id": "evt_01M5D3W1R6WZYTANC8MTYE80NA",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 180,
+      "at": "2026-10-20T16:56:16.902Z",
+      "type": "insight",
+      "payload": {
+        "messageId": "msg_01M5D3W01MXBACAH7RYK82B2SJ",
+        "trace": {
+          "messageId": "msg_01M5D3W01MXBACAH7RYK82B2SJ",
+          "context": {
+            "budget": 14680,
+            "used": {
+              "persona": 292,
+              "system": 614,
+              "mode": 97,
+              "history": 645,
+              "user": 16,
+              "memory": 0,
+              "knowledge": 0
+            }
+          },
+          "emotion": {
+            "chosen": "angry",
+            "source": "classifier",
+            "candidates": [
+              {
+                "label": "angry",
+                "p": 0.48
+              },
+              {
+                "label": "happy",
+                "p": 0.2
+              },
+              {
+                "label": "neutral",
+                "p": 0.03
+              }
+            ]
+          },
+          "guardrail": {
+            "checks": [
+              {
+                "name": "output",
+                "verdict": "pass",
+                "p": 0.08
+              }
+            ]
+          },
+          "model": {
+            "id": "deepseek/deepseek-v4.1-flash",
+            "provider": "Relace",
+            "pricePeriod": "off_peak",
+            "latencyMs": {
+              "firstToken": 431.0,
+              "total": 666.0
+            },
+            "tokensIn": 1264,
+            "tokensOut": 47,
+            "costUsd": 6.4e-05,
+            "tokensCached": 768
+          },
+          "energy": {
+            "characterId": "chr_seedRin",
+            "spent": 1,
+            "remaining": 984,
+            "max": 1000
+          },
+          "routing": {
+            "selected": "chr_seedRin"
+          },
+          "calls": [
+            {
+              "purpose": "turn_plan",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 6.7e-05,
+              "latencyMs": 750
+            },
+            {
+              "purpose": "reply",
+              "model": "deepseek/deepseek-v4.1-flash",
+              "costUsd": 6.4e-05,
+              "latencyMs": 547
+            },
+            {
+              "purpose": "guardrail",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.7e-05,
+              "latencyMs": 578
+            },
+            {
+              "purpose": "face_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 3.2e-05,
+              "latencyMs": 468
+            }
+          ],
+          "graph": {
+            "path": [
+              "state",
+              "ask",
+              "decide",
+              "route"
+            ]
+          },
+          "system1": {
+            "seed": "2026-10-20T16:55:35.442Z|watch|chr_seedTakeshi,chr_seedRin:9",
+            "questions": [
+              {
+                "purpose": "turn_plan",
+                "id": "talk_finished",
+                "version": 3,
+                "label": "is the talk finished?",
+                "answer": "no",
+                "p": 0.24,
+                "compared": [
+                  {
+                    "name": "t_end",
+                    "value": 0.24,
+                    "threshold": 0.5
+                  }
+                ],
+                "result": "used",
+                "action": "no steer"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "emotion_line",
+                "version": 3,
+                "label": "emotion",
+                "about": "chr_seedRin",
+                "answer": "angry",
+                "p": 0.48,
+                "compared": [
+                  {
+                    "name": "confidence",
+                    "value": 0.41,
+                    "threshold": 0.2
+                  }
+                ],
+                "confidence": 0.41,
+                "result": "used",
+                "action": "shown"
+              },
+              {
+                "purpose": "guardrail",
+                "id": "output_rules",
+                "version": 1,
+                "label": "reply breaks the rules?",
+                "answer": "no",
+                "p": 0.08,
+                "compared": [
+                  {
+                    "name": "tFlag",
+                    "value": 0.08,
+                    "threshold": 0.5
+                  },
+                  {
+                    "name": "tBlock",
+                    "value": 0.08,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "used",
+                "action": "pass"
+              },
+              {
+                "purpose": "face_check",
+                "id": "face_check",
+                "version": 1,
+                "label": "face and words agree?",
+                "answer": "yes",
+                "p": 0.83,
+                "compared": [],
+                "result": "shown_only"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "messages": [
+    {
+      "id": "msg_01M5D3TT1Y8EGZR3Z6TT5S44ZF",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 1,
+      "author": {
+        "type": "system"
+      },
+      "kind": "direction",
+      "content": "Rainy Sunday. Takeshi wants to take Rin fishing; Rin is mid-raid.",
+      "status": "complete",
+      "createdAt": "2026-10-20T16:55:36.254Z"
+    },
+    {
+      "id": "msg_01M5D3TTNHXCTZA61FRSHHNBZE",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 2,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedTakeshi"
+      },
+      "kind": "chat",
+      "content": "Rain's coming down steady, Rin. Best kind of weather — fish bite like they're mad at somebody.\n\nGear's already in the truck. You can finish that raid when the tide's out.",
+      "status": "complete",
+      "emotion": "sad",
+      "emotionSource": "classifier",
+      "usage": {
+        "tokensIn": 733,
+        "tokensCached": 256,
+        "tokensOut": 42,
+        "costUsd": 5.6e-05,
+        "energySpent": 1,
+        "firstTokenMs": 615.0,
+        "totalMs": 1147.0
+      },
+      "createdAt": "2026-10-20T16:55:37.485Z"
+    },
+    {
+      "id": "msg_01M5D3TXP69ZAE5ZPV63GZ8565",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 3,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedRin"
+      },
+      "kind": "chat",
+      "content": "dad, i'm mid-pull. the tide'll still be out in twenty, the fish can hate me later.\n\nbesides, it's raining. i'd rather tank drowned gods than sit in a wet boat.",
+      "status": "complete",
+      "emotion": "angry",
+      "emotionSource": "classifier",
+      "reactions": [
+        {
+          "characterId": "chr_seedTakeshi",
+          "emotion": "angry",
+          "p": 0.3,
+          "at": "2026-10-20T16:55:43.178Z"
+        }
+      ],
+      "usage": {
+        "tokensIn": 796,
+        "tokensCached": 256,
+        "tokensOut": 45,
+        "costUsd": 6.2e-05,
+        "energySpent": 1,
+        "firstTokenMs": 1297.0,
+        "totalMs": 2074.0
+      },
+      "createdAt": "2026-10-20T16:55:41.271Z"
+    },
+    {
+      "id": "msg_01M5D3V20JENZXN4A7BWZGGMTQ",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 4,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedTakeshi"
+      },
+      "kind": "chat",
+      "content": "Twenty minutes. I'll hold the boat like a good brakeman holds a platform.\n\nBut mark my words, the big one's on a schedule, and so am I. Rain's just water with ambition.",
+      "status": "complete",
+      "emotion": "angry",
+      "emotionSource": "classifier",
+      "usage": {
+        "tokensIn": 840,
+        "tokensCached": 256,
+        "tokensOut": 43,
+        "costUsd": 6.4e-05,
+        "energySpent": 1,
+        "firstTokenMs": 733.0,
+        "totalMs": 1386.0
+      },
+      "createdAt": "2026-10-20T16:55:45.127Z"
+    },
+    {
+      "id": "msg_01M5D3V58TK0W9Q1TPFVB59S6S",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 5,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedRin"
+      },
+      "kind": "chat",
+      "content": "you're really gonna compare a boat to a train platform. okay, station master.\n\nnineteen minutes. then i'm legally yours.",
+      "status": "complete",
+      "emotion": "angry",
+      "emotionSource": "classifier",
+      "usage": {
+        "tokensIn": 908,
+        "tokensCached": 512,
+        "tokensOut": 28,
+        "costUsd": 4.6e-05,
+        "energySpent": 1,
+        "firstTokenMs": 808.0,
+        "totalMs": 1210.0
+      },
+      "createdAt": "2026-10-20T16:55:48.544Z"
+    },
+    {
+      "id": "msg_01M5D3V7CKRJNK3VPF7K61G8AP",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 6,
+      "author": {
+        "type": "user"
+      },
+      "kind": "direction",
+      "content": "The rain suddenly stops and the sun comes out.",
+      "status": "complete",
+      "createdAt": "2026-10-20T16:55:49.907Z"
+    },
+    {
+      "id": "msg_01M5D3V8VTZHZVSWVCHZ7WCCFQ",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 7,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedTakeshi"
+      },
+      "kind": "chat",
+      "content": "Hah. Sky heard me and pulled the brake. Sun's out — tell your raid the weather changed without a permit.\n\nEighteen minutes, station master's counting. I'll go check the worms. Rain or shine, that's the deal I made with the fish.",
+      "status": "complete",
+      "emotion": "happy",
+      "emotionSource": "classifier",
+      "usage": {
+        "tokensIn": 956,
+        "tokensCached": 512,
+        "tokensOut": 56,
+        "costUsd": 6.3e-05,
+        "energySpent": 1,
+        "firstTokenMs": 457.0,
+        "totalMs": 1048.0
+      },
+      "createdAt": "2026-10-20T16:55:51.864Z"
+    },
+    {
+      "id": "msg_01M5D3VBRT6EFYY6TXNM73VYFE",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 8,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedRin"
+      },
+      "kind": "chat",
+      "content": "sun's out and you're still on the worms. dedication. hope the fish know what they're signing up for.\n\nseventeen. if the pug wipes again i'm farming this without you, old man.",
+      "status": "complete",
+      "emotion": "angry",
+      "emotionSource": "default",
+      "usage": {
+        "tokensIn": 1041,
+        "tokensCached": 512,
+        "tokensOut": 46,
+        "costUsd": 6.4e-05,
+        "energySpent": 1,
+        "firstTokenMs": 618.0,
+        "totalMs": 744.0
+      },
+      "createdAt": "2026-10-20T16:55:54.994Z"
+    },
+    {
+      "id": "msg_01M5D3VECAX75H65V4HGKEACQB",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 9,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedTakeshi"
+      },
+      "kind": "chat",
+      "content": "Old man still out-fishes a pug every Sunday, and you know it. That's not trash talk, that's just my catch log.\n\nSeventeen minutes, then I unplug the router myself. Kidding. Partly.",
+      "status": "complete",
+      "emotion": "happy",
+      "emotionSource": "classifier",
+      "usage": {
+        "tokensIn": 1065,
+        "tokensCached": 512,
+        "tokensOut": 50,
+        "costUsd": 6.8e-05,
+        "energySpent": 1,
+        "firstTokenMs": 1214.0,
+        "totalMs": 9166.0
+      },
+      "createdAt": "2026-10-20T16:55:58.264Z"
+    },
+    {
+      "id": "msg_01M5D3VS6YYC2SP2CMQ8BD92T9",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 10,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedRin"
+      },
+      "kind": "chat",
+      "content": "a catch log is just a spreadsheet with feelings. i've seen your spreadsheets.\n\nhit him back. the router threat's real and we both know it.",
+      "status": "complete",
+      "emotion": "angry",
+      "emotionSource": "classifier",
+      "reactions": [
+        {
+          "characterId": "chr_seedTakeshi",
+          "emotion": "angry",
+          "p": 0.7,
+          "at": "2026-10-20T16:56:10.380Z"
+        }
+      ],
+      "usage": {
+        "tokensIn": 1148,
+        "tokensCached": 512,
+        "tokensOut": 33,
+        "costUsd": 6.5e-05,
+        "energySpent": 1,
+        "firstTokenMs": 903.0,
+        "totalMs": 1065.0
+      },
+      "createdAt": "2026-10-20T16:56:09.043Z"
+    },
+    {
+      "id": "msg_01M5D3VWNPBDK6T3BWFJWD42WA",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 11,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedTakeshi"
+      },
+      "kind": "chat",
+      "content": "A spreadsheet with feelings. That's the girl who named her guild after a steam engine, so I'll take it.\n\nFine, I'll skip the router. But the coffee's poured and there's one bucket hat left on the peg. Rain's gone, fish don't take excuses.",
+      "status": "complete",
+      "emotion": "angry",
+      "emotionSource": "default",
+      "usage": {
+        "tokensIn": 1169,
+        "tokensCached": 768,
+        "tokensOut": 59,
+        "costUsd": 6.4e-05,
+        "energySpent": 1,
+        "firstTokenMs": 914.0,
+        "totalMs": 1485.0
+      },
+      "createdAt": "2026-10-20T16:56:12.607Z"
+    },
+    {
+      "id": "msg_01M5D3W01MXBACAH7RYK82B2SJ",
+      "sessionId": "ses_01M5D3TS8JAEEAP008H7NYRQT5",
+      "seq": 12,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedRin"
+      },
+      "kind": "chat",
+      "content": "you leave the steam engine out of this. she was a good boiler.\n\nraid's done. someone died to the last add because of course they did. ten minutes to wrangle my hoodie and i'm in the truck.",
+      "status": "complete",
+      "emotion": "angry",
+      "emotionSource": "classifier",
+      "usage": {
+        "tokensIn": 1264,
+        "tokensCached": 768,
+        "tokensOut": 47,
+        "costUsd": 6.4e-05,
+        "energySpent": 1,
+        "firstTokenMs": 431.0,
+        "totalMs": 666.0
+      },
+      "createdAt": "2026-10-20T16:56:15.563Z"
+    }
+  ]
+}

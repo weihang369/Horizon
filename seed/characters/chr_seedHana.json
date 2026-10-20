@@ -88,17 +88,17 @@
         "extraDetails": "Pink-tinted chestnut bob, cherry-blossom hairpin, denim apron over a cream sundress."
       },
       "appearanceSummary": "An adult woman with a pink-tinted chestnut bob, green eyes, a cherry-blossom hairpin and a denim apron over a cream sundress.",
-      "basePortraitUrl": "/assets/placeholder/portraits/chr_seedHana/neutral.svg",
+      "basePortraitUrl": "/assets/portraits/chr_seedHana/neutral.webp",
       "candidates": [
         {
           "id": "cand_seedHana1",
-          "url": "/assets/placeholder/portraits/chr_seedHana/neutral.svg",
+          "url": "/assets/portraits/chr_seedHana/neutral.webp",
           "selected": true,
           "status": "ready"
         },
         {
           "id": "cand_seedHana2",
-          "url": "/assets/placeholder/portraits/chr_seedHana/cand-2.svg",
+          "url": "/assets/portraits/chr_seedHana/cand-2.webp",
           "selected": false,
           "status": "ready"
         }
@@ -119,43 +119,43 @@
     "emotions": {
       "neutral": {
         "assetId": "emo_seedHanaNeutral",
-        "url": "/assets/placeholder/portraits/chr_seedHana/neutral.svg",
+        "url": "/assets/portraits/chr_seedHana/neutral.webp",
         "vfxPreset": "none"
       },
       "happy": {
         "assetId": "emo_seedHanaHappy",
-        "url": "/assets/placeholder/portraits/chr_seedHana/happy.svg",
+        "url": "/assets/portraits/chr_seedHana/happy.webp",
         "vfxPreset": "sparkle"
       },
       "sad": {
         "assetId": "emo_seedHanaSad",
-        "url": "/assets/placeholder/portraits/chr_seedHana/sad.svg",
+        "url": "/assets/portraits/chr_seedHana/sad.webp",
         "vfxPreset": "rain"
       },
       "angry": {
         "assetId": "emo_seedHanaAngry",
-        "url": "/assets/placeholder/portraits/chr_seedHana/angry.svg",
+        "url": "/assets/portraits/chr_seedHana/angry.webp",
         "vfxPreset": "anger"
       },
       "surprised": {
         "assetId": "emo_seedHanaSurprised",
-        "url": "/assets/placeholder/portraits/chr_seedHana/surprised.svg",
+        "url": "/assets/portraits/chr_seedHana/surprised.webp",
         "vfxPreset": "shock"
       },
       "thinking": {
         "assetId": "emo_seedHanaThinking",
-        "url": "/assets/placeholder/portraits/chr_seedHana/thinking.svg",
+        "url": "/assets/portraits/chr_seedHana/thinking.webp",
         "vfxPreset": "ponder"
       },
       "embarrassed": {
         "assetId": "emo_seedHanaEmbarrassed",
-        "url": "/assets/placeholder/portraits/chr_seedHana/embarrassed.svg",
+        "url": "/assets/portraits/chr_seedHana/embarrassed.webp",
         "vfxPreset": "blush"
       }
     },
     "blink": {
       "assetId": "emo_seedHanaBlink",
-      "url": "/assets/placeholder/portraits/chr_seedHana/blink.svg",
+      "url": "/assets/portraits/chr_seedHana/blink.webp",
       "vfxPreset": "none"
     },
     "themeSongId": "song_seedHana",

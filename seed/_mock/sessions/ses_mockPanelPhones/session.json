@@ -6,26 +6,27 @@
     "title": "Panel: Phones in schools",
     "titleIsCustom": false,
     "mode": "debate",
+    "status": "ended",
     "participants": [
       {
         "characterId": "chr_seedAmara",
         "role": "debater",
         "side": null,
-        "currentEmotion": "happy",
+        "currentEmotion": "thinking",
         "mutedByUser": false
       },
       {
         "characterId": "chr_seedVictor",
         "role": "debater",
         "side": null,
-        "currentEmotion": "neutral",
+        "currentEmotion": "thinking",
         "mutedByUser": false
       },
       {
         "characterId": "chr_seedMei",
         "role": "debater",
         "side": null,
-        "currentEmotion": "neutral",
+        "currentEmotion": "thinking",
         "mutedByUser": false
       }
     ],
@@ -64,42 +65,51 @@
       "autoAdvance": true,
       "pauseMs": 1500
     },
-    "isSeed": false,
-    "status": "ended",
     "state": {
       "phase": "ended",
       "round": 3,
       "iteration": 1,
       "verdict": {
-        "decidedBy": "arbiter",
-        "strongerCase": null,
         "summary": [
           {
             "subjectId": "chr_seedAmara",
             "points": [
-              "Phones fragment sleep and attention; a school-day ban is a cheap public-health win."
+              "Phones turn school time into a slot machine, harming attention, especially for struggling kids.",
+              "Social pressure to be reachable and performing online never takes a break.",
+              "A ban is enforceable and teachable: clear hours, clear rule, a room to think.",
+              "Concedes a lifeline cost, but pairs ban with school phones, staffed offices, accommodations."
             ]
           },
           {
             "subjectId": "chr_seedVictor",
             "points": [
-              "A blanket ban is overbroad; schools already have the power to set reasonable rules."
+              "A ban is state coercion, not guidance or a norm, and demands an unmet burden of proof.",
+              "A school is not sovereign; blanket prohibition substitutes a rule for teaching judgment.",
+              "The motion forbids the tool, not the distraction; existing confiscation already handles disruption.",
+              "Exceptions are where the discretion he condemns in Mei's proposal lives, laundered through notes."
             ]
           },
           {
             "subjectId": "chr_seedMei",
             "points": [
-              "The evidence is mixed; measure outcomes in a staged rollout before banning nationally."
+              "Evidence on learning is mixed and mostly correlational, with effects near zero to modest.",
+              "Second-order worry: supervision migrates to corridors, canteens, homes, hitting kids whose phones are a lifeline.",
+              "Would regulate use by age and context, not confiscate a device.",
+              "Both colleagues' gains are real but modest; targeted restriction captures attention gain without confiscating the lifeline."
             ]
           }
         ],
-        "keyDisagreement": "Whether a national rule or local discretion should decide."
+        "keyDisagreement": "Whether a blanket ban is justified over targeted regulation that preserves phones as a lifeline and relies on teaching judgment.",
+        "decidedBy": "arbiter",
+        "strongerCase": null,
+        "rationale": "The debate turned on the definitional and enforcement burden of a ban: Amara defended bounded hours with built-in exceptions, while Victor argued those exceptions recreate the discretion he condemns, and Mei pressed the unpriced costs and lifeline loss. No side fully resolved who enforces context or how to weigh modest attention gains against confiscating a lifeline."
       }
     },
-    "costUsd": 0.000741,
-    "messageCount": 9,
-    "createdAt": "2026-09-24T11:00:00Z",
-    "updatedAt": "2026-09-24T11:00:33.599Z",
-    "lastMessageAt": "2026-09-24T11:00:32.089Z"
+    "isSeed": false,
+    "costUsd": 0.000805,
+    "messageCount": 10,
+    "createdAt": "2026-09-24T10:59:59.984Z",
+    "updatedAt": "2026-09-24T11:00:25.960Z",
+    "lastMessageAt": "2026-09-24T11:00:25.960Z"
   }
 }

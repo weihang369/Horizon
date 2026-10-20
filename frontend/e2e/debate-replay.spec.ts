@@ -58,7 +58,7 @@ test("debate replay: “See the verdict” opens the verdict screen @layout", as
   await page.getByRole("button", { name: "See the verdict ▸" }).click();
 
   await expect(page).toHaveURL(/#\/w\/wld_seedMeridian\/s\/ses_seedDebate4Day\/verdict$/);
-  await expect(page.getByText("STRONGER CASE: PROPOSITION")).toBeVisible();
+  await expect(page.getByText("STRONGER CASE: OPPOSITION")).toBeVisible();
   await expect(page.getByRole("region", { name: "Rubric scores" })).toContainText("Evidence");
   await expect(page.getByText("Key disagreement")).toBeVisible();
   for (const name of ["Export Markdown", "Rematch", "Back to Hub", "Continue as group chat ▸"]) {
@@ -76,12 +76,12 @@ test("the first seek after opening a replay sticks (keyboard End on the Seek sli
   // QA-01 (fixed): the first End used to snap back to 0:00 because the native `change` re-seeked to a stale value.
   await open(page, DEBATE);
   const seek = page.getByRole("slider", { name: "Seek" });
-  await expect(seek).toHaveAttribute("aria-valuetext", /of 0:5\d$/);
+  await expect(seek).toHaveAttribute("aria-valuetext", /of 0:48$/);
   await page.keyboard.press("Tab");
   await expect(seek).toBeFocused();
   await page.keyboard.press("End");
   await expect(page.getByText("The arbiter has spoken")).toBeVisible({ timeout: 3_000 });
-  await expect(seek).toHaveAttribute("aria-valuetext", "0:57 of 0:57");
+  await expect(seek).toHaveAttribute("aria-valuetext", "0:48 of 0:48");
 });
 
 test("a replay opens with a Watch call to action that starts playback", async ({ page }) => {

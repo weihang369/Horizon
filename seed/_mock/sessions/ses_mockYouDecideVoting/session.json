@@ -6,19 +6,20 @@
     "title": "Debate: Compulsory voting",
     "titleIsCustom": false,
     "mode": "debate",
+    "status": "paused",
     "participants": [
       {
         "characterId": "chr_seedVictor",
         "role": "debater",
         "side": "prop",
-        "currentEmotion": "neutral",
+        "currentEmotion": "thinking",
         "mutedByUser": false
       },
       {
         "characterId": "chr_seedMei",
         "role": "debater",
         "side": "opp",
-        "currentEmotion": "neutral",
+        "currentEmotion": "thinking",
         "mutedByUser": false
       }
     ],
@@ -28,6 +29,14 @@
     "config": {
       "motion": "This house would make voting compulsory",
       "format": "two_sided",
+      "sides": {
+        "prop": [
+          "chr_seedVictor"
+        ],
+        "opp": [
+          "chr_seedMei"
+        ]
+      },
       "roundsPreset": "quick",
       "phases": [
         "opening",
@@ -55,29 +64,20 @@
         }
       ],
       "autoAdvance": true,
-      "pauseMs": 1500,
-      "sides": {
-        "prop": [
-          "chr_seedVictor"
-        ],
-        "opp": [
-          "chr_seedMei"
-        ]
-      }
+      "pauseMs": 1500
     },
-    "isSeed": false,
-    "status": "paused",
     "state": {
       "phase": "verdict",
       "round": 3,
       "iteration": 1,
       "nextSpeakerId": "chr_seedMei"
     },
-    "costUsd": 0.000475,
+    "isSeed": false,
+    "costUsd": 0.00047,
     "messageCount": 7,
-    "createdAt": "2026-09-25T15:05:00Z",
-    "updatedAt": "2026-09-25T15:05:22.460Z",
+    "createdAt": "2026-09-25T15:04:59.966Z",
+    "updatedAt": "2026-09-25T15:05:59.297Z",
     "pausedReason": "user",
-    "lastMessageAt": "2026-09-25T15:05:20.760Z"
+    "lastMessageAt": "2026-09-25T15:05:17.220Z"
   }
 }

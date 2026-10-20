@@ -6,11 +6,66 @@
       "characterId": "chr_seedAmara",
       "worldId": "wld_seedMeridian",
       "kind": "about_user",
-      "text": "Kai cut back on coffee recently; had temple headaches",
-      "importance": 0.7,
+      "text": "Kai has had a three-day headache, worse at the temples on both sides, after cutting back sharply on coffee last week.",
+      "importance": 0.4675,
       "sourceSessionId": "ses_seedAmaraHeadache",
-      "sourceMessageId": "msg_seedA04",
-      "createdAt": "2026-09-29T21:16:00Z"
+      "sourceMessageId": "msg_seedA02",
+      "createdAt": "2026-09-29T21:15:30.747Z"
+    },
+    {
+      "id": "mem_seedAmara2",
+      "characterId": "chr_seedAmara",
+      "worldId": "wld_seedMeridian",
+      "kind": "event",
+      "text": "Amara advised Kai to hydrate, take a steady small caffeine dose, taper by a quarter every few days, and use a simple painkiller if needed.",
+      "importance": 0.565,
+      "sourceSessionId": "ses_seedAmaraHeadache",
+      "sourceMessageId": "msg_seedA05",
+      "createdAt": "2026-09-29T21:15:30.747Z"
+    },
+    {
+      "id": "mem_seedAmara3",
+      "characterId": "chr_seedAmara",
+      "worldId": "wld_seedMeridian",
+      "kind": "fact",
+      "text": "Amara told Kai red flags needing same-day emergency care: thunderclap headache, fever with neck stiffness, one-sided weakness, confusion, vision changes, or headache waking him at night.",
+      "importance": 0.65,
+      "sourceSessionId": "ses_seedAmaraHeadache",
+      "sourceMessageId": "msg_seedA07",
+      "createdAt": "2026-09-29T21:15:30.747Z"
+    },
+    {
+      "id": "mem_seedAmara4",
+      "characterId": "chr_seedAmara",
+      "worldId": "wld_seedMeridian",
+      "kind": "fact",
+      "text": "Amara argued for a nationwide four-day week: a protected-rest health and safety intervention, citing burnout cuts, better sleep, and stable patient care in pilots.",
+      "importance": 0.6625,
+      "sourceSessionId": "ses_seedDebate4Day",
+      "sourceMessageId": "msg_seedD02",
+      "createdAt": "2026-10-01T09:59:20.540Z"
+    },
+    {
+      "id": "mem_seedAmara5",
+      "characterId": "chr_seedAmara",
+      "worldId": "wld_seedMeridian",
+      "kind": "fact",
+      "text": "Mei's strongest opposing point: holding coverage constant took 18–27% more staffed hours, hitting small shift-based employers hardest.",
+      "importance": 0.6475,
+      "sourceSessionId": "ses_seedDebate4Day",
+      "sourceMessageId": "msg_seedD11",
+      "createdAt": "2026-10-01T09:59:20.540Z"
+    },
+    {
+      "id": "mem_seedAmara6",
+      "characterId": "chr_seedAmara",
+      "worldId": "wld_seedMeridian",
+      "kind": "event",
+      "text": "Debate verdict: the Against side made the stronger case, as neither side closed whether staffed hours rise or turnover savings repay costs.",
+      "importance": 0.54,
+      "sourceSessionId": "ses_seedDebate4Day",
+      "sourceMessageId": "msg_seedD15",
+      "createdAt": "2026-10-01T09:59:20.540Z"
     }
   ]
 }

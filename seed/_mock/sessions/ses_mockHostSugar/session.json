@@ -6,19 +6,20 @@
     "title": "Debate: Sugar tax (auto host)",
     "titleIsCustom": false,
     "mode": "debate",
+    "status": "ended",
     "participants": [
       {
         "characterId": "chr_seedAmara",
         "role": "debater",
         "side": "prop",
-        "currentEmotion": "happy",
+        "currentEmotion": "thinking",
         "mutedByUser": false
       },
       {
         "characterId": "chr_seedVictor",
         "role": "debater",
         "side": "opp",
-        "currentEmotion": "neutral",
+        "currentEmotion": "thinking",
         "mutedByUser": false
       }
     ],
@@ -28,6 +29,14 @@
     "config": {
       "motion": "This house would tax sugary drinks",
       "format": "two_sided",
+      "sides": {
+        "prop": [
+          "chr_seedAmara"
+        ],
+        "opp": [
+          "chr_seedVictor"
+        ]
+      },
       "roundsPreset": "quick",
       "phases": [
         "opening",
@@ -55,23 +64,36 @@
         }
       ],
       "autoAdvance": true,
-      "pauseMs": 1500,
-      "sides": {
-        "prop": [
-          "chr_seedAmara"
-        ],
-        "opp": [
-          "chr_seedVictor"
-        ]
-      }
+      "pauseMs": 1500
     },
-    "isSeed": false,
-    "status": "ended",
     "state": {
       "phase": "ended",
       "round": 3,
       "iteration": 1,
       "verdict": {
+        "summary": [
+          {
+            "subjectId": "prop",
+            "points": [
+              "Taxes change buying; sugary drinks are cheap, everywhere, and marketed to kids and poor areas.",
+              "Health costs land on all through diabetes, amputations, dialysis.",
+              "A tax cuts consumption, nudges reformulation, and raises revenue for those communities.",
+              "Not a ban; soda stays on shelf, just priced honestly.",
+              "Price tag carries hidden bill paid later by same families; regressivity cuts both ways."
+            ]
+          },
+          {
+            "subjectId": "opp",
+            "points": [
+              "A tax is coercion dressed in arithmetic, making the poor pay more for the same bottle.",
+              "Regressivity: the levy lands hardest on those with the least.",
+              "Efficacy: price signal does not create education, time, or alternatives it presumes.",
+              "A levy taxes the purchase, not the outcome; granting a harm is not proving the instrument reaches it.",
+              "The motion says tax; it does not say cure."
+            ]
+          }
+        ],
+        "keyDisagreement": "Whether a tax on sugary drinks actually reduces the health harm or merely relocates the burden onto the poor without curing the outcome.",
         "decidedBy": "arbiter",
         "strongerCase": "prop",
         "scoresBy": "side",
@@ -79,68 +101,52 @@
           {
             "subjectId": "prop",
             "criterionId": "evidence",
-            "value": 7.5
+            "value": 6.4
           },
           {
             "subjectId": "prop",
             "criterionId": "rebuttal",
-            "value": 7
+            "value": 7.8
           },
           {
             "subjectId": "prop",
             "criterionId": "clarity",
-            "value": 8
+            "value": 9.6
           },
           {
             "subjectId": "prop",
             "criterionId": "persuasion",
-            "value": 7.5
+            "value": 6.7
           },
           {
             "subjectId": "opp",
             "criterionId": "evidence",
-            "value": 6.5
+            "value": 4.3
           },
           {
             "subjectId": "opp",
             "criterionId": "rebuttal",
-            "value": 7
+            "value": 8.1
           },
           {
             "subjectId": "opp",
             "criterionId": "clarity",
-            "value": 7.5
+            "value": 9.6
           },
           {
             "subjectId": "opp",
             "criterionId": "persuasion",
-            "value": 6.5
+            "value": 6.2
           }
         ],
-        "summary": [
-          {
-            "subjectId": "prop",
-            "points": [
-              "Sugar taxes shift purchases measurably.",
-              "Revenue can fund school meals."
-            ]
-          },
-          {
-            "subjectId": "opp",
-            "points": [
-              "Regressive for low-income households.",
-              "Industry reformulates around thresholds."
-            ]
-          }
-        ],
-        "keyDisagreement": "Whether regressivity is outweighed by health gains.",
-        "rationale": "Proposition answered the regressivity point with earmarked revenue; Opposition did not rebut it."
+        "rationale": "The Proposition wins because its rebuttal and persuasion scores, while not dominant, are backed by the highest clarity and a coherent link between tax, consumption, and revenue. The Opposition's strong rebuttal and clarity are undercut by weaker evidence and persuasion, leaving its efficacy challenge potent but less fully supported."
       }
     },
-    "costUsd": 0.000487,
+    "isSeed": false,
+    "costUsd": 0.000445,
     "messageCount": 11,
-    "createdAt": "2026-09-22T13:20:00Z",
-    "updatedAt": "2026-09-22T13:20:32.361Z",
-    "lastMessageAt": "2026-09-22T13:20:30.851Z"
+    "createdAt": "2026-09-22T13:19:59.988Z",
+    "updatedAt": "2026-09-22T13:20:25.271Z",
+    "lastMessageAt": "2026-09-22T13:20:25.271Z"
   }
 }

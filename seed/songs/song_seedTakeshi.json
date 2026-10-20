@@ -4,8 +4,7 @@
     "id": "song_seedTakeshi",
     "characterId": "chr_seedTakeshi",
     "status": "ready",
-    "url": "/assets/placeholder/themes/chr_seedTakeshi.proc.json",
-    "durationSec": 20.2,
+    "url": "/assets/themes/chr_seedTakeshi.mp3",
     "brief": {
       "genres": [
         "acoustic folk"
@@ -22,11 +21,14 @@
       "vibe": "Acoustic folk guitar, harmonica, laid-back shuffle"
     },
     "instrumental": true,
+    "durationSec": 30.772,
+    "format": "mp3",
+    "bytes": 744660,
     "generation": {
       "model": "google/lyria-3-clip-preview",
-      "prompt": "Instrumental theme: Acoustic folk guitar, harmonica, laid-back shuffle. acoustic folk; calm, nostalgic; 95 BPM; guitar, harmonica.",
+      "prompt": "Instrumental theme music for a character. Genres: acoustic folk. Mood: calm, nostalgic. Instruments: guitar, harmonica. Tempo: about 95 BPM. Feel: Acoustic folk guitar, harmonica, laid-back shuffle. An original piece: do not imitate any named artist, band or existing song. No vocals, no lyrics. A 30-second piece that loops cleanly.",
       "costUsd": 0.04
     },
-    "licenseNote": "Placeholder: procedural WebAudio sketch (D-52). The real theme comes from Google Lyria 3 Clip via OpenRouter (provider terms apply)."
+    "licenseNote": "Composed by google/lyria-3-clip-preview through OpenRouter (D-87)."
   }
 }

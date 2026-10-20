@@ -6,6 +6,7 @@
     "title": "Debate: Four-day work week",
     "titleIsCustom": false,
     "mode": "debate",
+    "status": "ended",
     "participants": [
       {
         "characterId": "chr_seedAmara",
@@ -18,14 +19,14 @@
         "characterId": "chr_seedVictor",
         "role": "debater",
         "side": "prop",
-        "currentEmotion": "happy",
+        "currentEmotion": "thinking",
         "mutedByUser": false
       },
       {
         "characterId": "chr_seedMei",
         "role": "debater",
         "side": "opp",
-        "currentEmotion": "neutral",
+        "currentEmotion": "thinking",
         "mutedByUser": false
       }
     ],
@@ -74,84 +75,87 @@
       "autoAdvance": true,
       "pauseMs": 1500
     },
-    "isSeed": true,
-    "status": "ended",
     "state": {
       "phase": "ended",
       "round": 4,
       "iteration": 1,
       "verdict": {
+        "summary": [
+          {
+            "subjectId": "prop",
+            "points": [
+              "A four-day week with protected rest is a health-and-safety intervention; local pilots cut burnout and held patient care steady.",
+              "Burnout and resignations are a workforce-sustainability crisis; each replacement costs about four months of salary.",
+              "A statutory default with sector trials and a phase-in is a mechanism, not a headline; the 1931 weekend had a transition.",
+              "The 18–27% extra-hours figure is the cost of doing this badly, without rota redesign.",
+              "The status quo already pays that bill via agency cover; a floor forces the counting and the trial."
+            ]
+          },
+          {
+            "subjectId": "opp",
+            "points": [
+              "Pilots are not a mandate; summaries recommend sector-specific trials before any national standard.",
+              "Gains came from redesign, not the calendar; you cannot legislate workflow redesign across an economy.",
+              "A nationwide standard hits small firms and shift-based services hardest; incidence is regressive.",
+              "Holding coverage constant took 18–27% more staffed hours; only two of nine measured payback.",
+              "Fund sector redesign, publish numbers, revisit; don't commit money before measurement."
+            ]
+          }
+        ],
+        "keyDisagreement": "Whether adopting a nationwide four-day default is the mechanism that generates the missing evidence, or the commitment that makes learning it harder.",
         "decidedBy": "arbiter",
-        "strongerCase": "prop",
+        "strongerCase": "opp",
         "scoresBy": "side",
         "scores": [
           {
             "subjectId": "prop",
             "criterionId": "evidence",
-            "value": 6.5
+            "value": 8.9
           },
           {
             "subjectId": "prop",
             "criterionId": "rebuttal",
-            "value": 7.5
+            "value": 9.3
           },
           {
             "subjectId": "prop",
             "criterionId": "clarity",
-            "value": 8
+            "value": 9.4
           },
           {
             "subjectId": "prop",
             "criterionId": "persuasion",
-            "value": 7.5
+            "value": 6.3
           },
           {
             "subjectId": "opp",
             "criterionId": "evidence",
-            "value": 7.5
+            "value": 9.4
           },
           {
             "subjectId": "opp",
             "criterionId": "rebuttal",
-            "value": 7
+            "value": 9.9
           },
           {
             "subjectId": "opp",
             "criterionId": "clarity",
-            "value": 8.5
+            "value": 9.8
           },
           {
             "subjectId": "opp",
             "criterionId": "persuasion",
-            "value": 7
+            "value": 7.4
           }
         ],
-        "summary": [
-          {
-            "subjectId": "prop",
-            "points": [
-              "Burnout is itself a staffing cost.",
-              "The five-day week is a policy choice, not a law of nature.",
-              "Phased legal implementation addresses coverage sectors."
-            ]
-          },
-          {
-            "subjectId": "opp",
-            "points": [
-              "Pilot evidence comes from self-selected, easier sectors.",
-              "Costs concentrate in health, transport and care.",
-              "Fund sector-specific trials before a national mandate."
-            ]
-          }
-        ],
-        "keyDisagreement": "Whether evidence from voluntary pilots generalises to coverage-based sectors.",
-        "rationale": "Opposition had the stronger evidential framing but conceded direction in closing. Proposition's \"cost of the status quo\" rebuttal went unanswered."
+        "rationale": "The Opposition scored higher on evidence, rebuttal, clarity and persuasion, and its case turned the debate onto the open question of extra staffed hours and unmeasured payback. The Proposition conceded that gap and asked the motion to be judged as the trial that answers it, which left the Opposition's trial-first alternative standing as the stronger case."
       }
     },
-    "costUsd": 0.00176,
-    "messageCount": 15,
-    "createdAt": "2026-10-01T10:02:50.373Z",
-    "updatedAt": "2026-10-01T10:03:48.607Z",
-    "lastMessageAt": "2026-10-01T10:03:47.097Z"
+    "isSeed": true,
+    "costUsd": 0.002063,
+    "messageCount": 17,
+    "createdAt": "2026-10-01T09:57:59.991Z",
+    "updatedAt": "2026-10-01T09:58:57.506Z",
+    "lastMessageAt": "2026-10-01T09:58:57.506Z"
   }
 }

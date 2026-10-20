@@ -11,11 +11,10 @@
       "kind": "system_note",
       "content": "ROUND 1 · OPENING",
       "status": "complete",
-      "createdAt": "2026-09-25T15:05:00.710Z"
+      "createdAt": "2026-09-25T15:05:01.634Z"
     },
     {
       "kind": "chat",
-      "seq": 2,
       "debate": {
         "phase": "opening",
         "round": 1,
@@ -24,110 +23,268 @@
       },
       "id": "msg_mockV02",
       "sessionId": "ses_mockYouDecideVoting",
+      "seq": 2,
       "author": {
         "type": "character",
         "characterId": "chr_seedVictor"
       },
-      "content": "Australia has compelled turnout for a century without tyranny. A duty to show up, with a box for \"none of the above\", is the cheapest legitimacy upgrade a democracy can buy.",
+      "content": "Define the terms and the case largely decides itself: compulsory voting is not compelled speech, not compelled belief, it is compelled attendance at the machinery of self-government. First, a democracy that governs everyone should hear from everyone; voluntary turnout selects the loud, the comfortable and the furious, and calls that the public. Second, low turnout manufactures a legitimacy deficit that partisans rush to fill. Third, attendance is a smaller ask than jury duty or taxation, both already compulsory. Attendance, not agreement.",
       "status": "complete",
-      "createdAt": "2026-09-25T15:05:03.700Z",
-      "emotion": "happy",
-      "emotionSource": "llm",
+      "createdAt": "2026-09-25T15:05:02.847Z",
+      "emotion": "neutral",
+      "emotionSource": "classifier",
       "usage": {
-        "tokensIn": 2304,
-        "tokensCached": 1643,
-        "tokensOut": 43,
-        "costUsd": 0.00013,
+        "tokensIn": 1033,
+        "tokensCached": 0,
+        "tokensOut": 100,
+        "costUsd": 0.000122,
         "energySpent": 2,
-        "firstTokenMs": 1487,
-        "totalMs": 2742
+        "firstTokenMs": 1187,
+        "totalMs": 1648
       },
       "trace": {
         "messageId": "msg_mockV02",
-        "model": {
-          "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "DeepSeek",
-          "pricePeriod": "off_peak",
-          "latencyMs": {
-            "firstToken": 1487,
-            "total": 2742
-          },
-          "tokensIn": 2304,
-          "tokensCached": 1643,
-          "tokensOut": 43,
-          "costUsd": 0.00013
-        },
-        "energy": {
-          "characterId": "chr_seedVictor",
-          "spent": 2,
-          "remaining": 862,
-          "max": 1000
+        "context": {
+          "budget": 14680,
+          "used": {
+            "persona": 351,
+            "system": 694,
+            "mode": 114,
+            "history": 11,
+            "user": 0,
+            "memory": 361,
+            "knowledge": 0
+          }
         },
         "emotion": {
-          "chosen": "happy",
-          "source": "llm",
+          "chosen": "neutral",
+          "source": "classifier",
           "candidates": [
             {
-              "label": "happy",
-              "p": 0.828
-            },
-            {
-              "label": "angry",
-              "p": 0.135
-            },
-            {
               "label": "neutral",
-              "p": 0.022
+              "p": 0.92
+            },
+            {
+              "label": "happy",
+              "p": 0.07
+            },
+            {
+              "label": "thinking",
+              "p": 0.01
             }
           ]
         },
-        "routing": {
-          "selected": "chr_seedVictor",
-          "forcedBy": "round_order"
+        "knowledge": {
+          "query": "This house would make voting compulsory",
+          "trigger": "gated",
+          "retrieved": [
+            {
+              "chunkId": "kch_victorMoot01",
+              "sourceId": "kno_seedVictor1",
+              "title": "Moot court notes",
+              "locator": "¶ 1",
+              "text": "Moot court notes: \"This house would adopt a nationwide four-day work week\" V. Hale, for the Meridian Bar Society exhibition debate. Private notes.\n\n¶ 1. Expect the opposition to say the evidence base is narrow. Concede scope early, then shift the burden: the status quo is also a policy and has to justify itself.\n\n¶ 2. Historical anchor: the Meridian Working Hours Act 1931 made the two-day weekend the default. It gave agriculture and shipping a ten-year transition and exempted continuous services.\n\n¶ 3. Continuous-coverage sectors already run on shift rules under Part IV of the Working Time Code: rest periods, a cap on consecutive shifts, and averaging over a reference period. A shorter standard week sits inside that structure.\n\n¶ 4. Phase-in precedent: sector-by-sector timetables, collective agreements first, the public sector as model employer. Courts have upheld staged duties where the end point is clear.",
+              "score": 0.035,
+              "cited": false
+            }
+          ]
         },
-        "context": {
-          "budget": 12000,
-          "cacheHitPct": 71,
-          "used": {
-            "system": 900,
-            "persona": 740,
-            "memory": 0,
-            "knowledge": 0,
-            "history": 4,
-            "user": 80,
-            "mode": 580
-          }
+        "memory": {
+          "recalled": [
+            {
+              "memoryItemId": "mem_01M5D3B10VY5FAES3WPNP0QRXP",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5D3B11AGM4MBEDCPJ5005RW",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5D3B11AGM4MBEDCPJ5005RX",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5D39V8KH00960Y6HWXM1HBF",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5D39V8X1P4B06WXP1C5Y5JE",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5D39V8Y6GZWMSTTG13EDY56",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5D39V8ZW14QC8E6XA9VYKXB",
+              "text": "(forgotten)"
+            }
+          ]
         },
         "guardrail": {
           "checks": [
             {
               "name": "output",
               "verdict": "pass",
-              "p": 0.048
+              "p": 0.04
             }
           ]
         },
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "Relace",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1187,
+            "total": 1648
+          },
+          "tokensIn": 1033,
+          "tokensOut": 100,
+          "costUsd": 0.000122,
+          "tokensCached": 0
+        },
+        "energy": {
+          "characterId": "chr_seedVictor",
+          "spent": 2,
+          "remaining": 861,
+          "max": 1000
+        },
+        "routing": {
+          "selected": "chr_seedVictor",
+          "forcedBy": "round_order"
+        },
         "calls": [
+          {
+            "purpose": "turn_plan",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000042,
+            "latencyMs": 453
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000027,
+            "latencyMs": 515
+          },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.00013,
-            "latencyMs": 2742
+            "costUsd": 0.000122,
+            "latencyMs": 813
+          },
+          {
+            "purpose": "guardrail",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000027,
+            "latencyMs": 469
           }
-        ]
+        ],
+        "graph": {
+          "path": [
+            "state",
+            "ask",
+            "decide",
+            "route",
+            "gather",
+            "search",
+            "check",
+            "keep"
+          ]
+        },
+        "system1": {
+          "seed": "2026-09-25T15:04:59.966Z|debate|chr_seedVictor,chr_seedMei:0",
+          "questions": [
+            {
+              "purpose": "turn_plan",
+              "id": "emotion_debate_opening",
+              "version": 2,
+              "label": "emotion",
+              "about": "chr_seedVictor",
+              "answer": "neutral",
+              "p": 0.92,
+              "compared": [
+                {
+                  "name": "p_neutral+p_none",
+                  "value": 0.92,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.43,
+              "result": "used",
+              "action": "shown"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "docs",
+              "version": 2,
+              "label": "needs documents?",
+              "about": "chr_seedVictor",
+              "answer": "yes",
+              "p": 0.51,
+              "compared": [
+                {
+                  "name": "t_gate",
+                  "value": 0.51,
+                  "threshold": 0.45
+                }
+              ],
+              "result": "used",
+              "action": "search the documents"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_victorMoot01",
+              "answer": "doesn't help",
+              "p": 0.07,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0.07,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "guardrail",
+              "id": "output_rules",
+              "version": 1,
+              "label": "reply breaks the rules?",
+              "answer": "no",
+              "p": 0.04,
+              "compared": [
+                {
+                  "name": "tFlag",
+                  "value": 0.04,
+                  "threshold": 0.5
+                },
+                {
+                  "name": "tBlock",
+                  "value": 0.04,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "used",
+              "action": "pass"
+            }
+          ]
+        }
       },
       "reactions": [
         {
           "characterId": "chr_seedMei",
           "emotion": "thinking",
-          "p": 0.6,
-          "at": "2026-09-25T15:05:06.651Z"
+          "p": 0.68,
+          "at": "2026-09-25T15:05:04.363Z"
         }
       ]
     },
     {
       "kind": "chat",
-      "seq": 3,
       "debate": {
         "phase": "opening",
         "round": 1,
@@ -136,38 +293,94 @@
       },
       "id": "msg_mockV03",
       "sessionId": "ses_mockYouDecideVoting",
+      "seq": 3,
       "author": {
         "type": "character",
         "characterId": "chr_seedMei"
       },
-      "content": "Turnout goes up, sure. Informed turnout is a different variable. You'd raise the count and maybe lower the signal.",
+      "content": "Compulsion converts a right into an obligation, then fines people for the crime of being uninspired. Turnout would rise, yes, but mostly among the already-engaged and the mildly coerced; the disaffected stay home and pay, which buys legitimacy on paper and resentment underneath. And enforcement falls hardest on the people already stretched thin, so the state manufactures a new petty offence. I'd rather buy turnout with convenience and competition than with penalties.",
       "status": "complete",
-      "createdAt": "2026-09-25T15:05:08.342Z",
-      "emotion": "thinking",
-      "emotionSource": "llm",
+      "createdAt": "2026-09-25T15:05:05.329Z",
+      "emotion": "neutral",
+      "emotionSource": "classifier",
       "usage": {
-        "tokensIn": 2312,
-        "tokensCached": 1683,
-        "tokensOut": 29,
-        "costUsd": 0.000117,
+        "tokensIn": 942,
+        "tokensCached": 0,
+        "tokensOut": 91,
+        "costUsd": 0.000111,
         "energySpent": 2,
-        "firstTokenMs": 1649,
-        "totalMs": 2554
+        "firstTokenMs": 85,
+        "totalMs": 888
       },
       "trace": {
         "messageId": "msg_mockV03",
+        "context": {
+          "budget": 14680,
+          "used": {
+            "persona": 355,
+            "system": 711,
+            "mode": 110,
+            "history": 11,
+            "user": 0,
+            "memory": 202,
+            "knowledge": 0
+          }
+        },
+        "emotion": {
+          "chosen": "neutral",
+          "source": "classifier",
+          "candidates": [
+            {
+              "label": "neutral",
+              "p": 0.94
+            },
+            {
+              "label": "thinking",
+              "p": 0.06
+            },
+            {
+              "label": "happy",
+              "p": 0
+            }
+          ]
+        },
+        "memory": {
+          "recalled": [
+            {
+              "memoryItemId": "mem_01M5D3B11VKJCF5V2CXRHRX5Q9",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5D3B11VKJCF5V2CXRHRX5Q8",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5D3B11AGM4MBEDCPJ5005RY",
+              "text": "(forgotten)"
+            }
+          ]
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "output",
+              "verdict": "pass",
+              "p": 0.05
+            }
+          ]
+        },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "DeepSeek",
+          "provider": "Relace",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 1649,
-            "total": 2554
+            "firstToken": 85,
+            "total": 888
           },
-          "tokensIn": 2312,
-          "tokensCached": 1683,
-          "tokensOut": 29,
-          "costUsd": 0.000117
+          "tokensIn": 942,
+          "tokensOut": 91,
+          "costUsd": 0.000111,
+          "tokensCached": 0
         },
         "energy": {
           "characterId": "chr_seedMei",
@@ -175,65 +388,109 @@
           "remaining": 744,
           "max": 1000
         },
-        "emotion": {
-          "chosen": "thinking",
-          "source": "llm",
-          "candidates": [
-            {
-              "label": "thinking",
-              "p": 0.833
-            },
-            {
-              "label": "surprised",
-              "p": 0.098
-            },
-            {
-              "label": "sad",
-              "p": 0.041
-            }
-          ]
-        },
         "routing": {
           "selected": "chr_seedMei",
           "forcedBy": "round_order"
         },
-        "context": {
-          "budget": 12000,
-          "cacheHitPct": 73,
-          "used": {
-            "system": 900,
-            "persona": 741,
-            "memory": 0,
-            "knowledge": 0,
-            "history": 47,
-            "user": 44,
-            "mode": 580
-          }
-        },
-        "guardrail": {
-          "checks": [
-            {
-              "name": "output",
-              "verdict": "pass",
-              "p": 0.034
-            }
-          ]
-        },
         "calls": [
+          {
+            "purpose": "turn_plan",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000043,
+            "latencyMs": 453
+          },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000117,
-            "latencyMs": 2554
+            "costUsd": 0.000111,
+            "latencyMs": 1062
+          },
+          {
+            "purpose": "guardrail",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000027,
+            "latencyMs": 594
           }
-        ]
+        ],
+        "graph": {
+          "path": [
+            "state",
+            "ask",
+            "decide",
+            "route"
+          ]
+        },
+        "system1": {
+          "seed": "2026-09-25T15:04:59.966Z|debate|chr_seedVictor,chr_seedMei:1",
+          "questions": [
+            {
+              "purpose": "turn_plan",
+              "id": "emotion_debate_opening",
+              "version": 2,
+              "label": "emotion",
+              "about": "chr_seedMei",
+              "answer": "neutral",
+              "p": 0.94,
+              "compared": [
+                {
+                  "name": "p_neutral+p_none",
+                  "value": 0.94,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.53,
+              "result": "used",
+              "action": "shown"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "docs",
+              "version": 2,
+              "label": "needs documents?",
+              "about": "chr_seedMei",
+              "answer": "no",
+              "p": 0.32,
+              "compared": [
+                {
+                  "name": "t_gate",
+                  "value": 0.32,
+                  "threshold": 0.45
+                }
+              ],
+              "result": "used",
+              "action": "quick reply"
+            },
+            {
+              "purpose": "guardrail",
+              "id": "output_rules",
+              "version": 1,
+              "label": "reply breaks the rules?",
+              "answer": "no",
+              "p": 0.05,
+              "compared": [
+                {
+                  "name": "tFlag",
+                  "value": 0.05,
+                  "threshold": 0.5
+                },
+                {
+                  "name": "tBlock",
+                  "value": 0.05,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "used",
+              "action": "pass"
+            }
+          ]
+        }
       },
       "reactions": [
         {
           "characterId": "chr_seedVictor",
-          "emotion": "surprised",
-          "p": 0.51,
-          "at": "2026-09-25T15:05:11.375Z"
+          "emotion": "thinking",
+          "p": 0.46,
+          "at": "2026-09-25T15:05:06.717Z"
         }
       ]
     },
@@ -247,11 +504,10 @@
       "kind": "system_note",
       "content": "ROUND 2 · CLOSING",
       "status": "complete",
-      "createdAt": "2026-09-25T15:05:11.506Z"
+      "createdAt": "2026-09-25T15:05:08.064Z"
     },
     {
       "kind": "chat",
-      "seq": 5,
       "debate": {
         "phase": "closing",
         "round": 2,
@@ -260,38 +516,110 @@
       },
       "id": "msg_mockV05",
       "sessionId": "ses_mockYouDecideVoting",
+      "seq": 5,
       "author": {
         "type": "character",
         "characterId": "chr_seedVictor"
       },
-      "content": "Signal improves when politicians must court everyone, not just the reliable voters.",
+      "content": "Two things remain open, and neither rescues the opposition. First, the objection is drawn from a right converted into a duty; but rights are routinely paired with duties, and jury service is the proof. Second, the fairness objection survives only if the fine is punitive. Draw it as a modest civil penalty, waivable on cause shown, and the stretched-thin household is not punished; nonvoters are counted. Mei prefers incentives. That is a preference, not a rebuttal. Compulsion is the only mechanism that reaches everyone.",
       "status": "complete",
-      "createdAt": "2026-09-25T15:05:14.496Z",
-      "emotion": "neutral",
-      "emotionSource": "llm",
+      "createdAt": "2026-09-25T15:05:10.740Z",
+      "emotion": "thinking",
+      "emotionSource": "classifier",
       "usage": {
-        "tokensIn": 2345,
-        "tokensCached": 1700,
-        "tokensOut": 21,
-        "costUsd": 0.000114,
+        "tokensIn": 1259,
+        "tokensCached": 512,
+        "tokensOut": 109,
+        "costUsd": 0.000111,
         "energySpent": 2,
-        "firstTokenMs": 1287,
-        "totalMs": 1892
+        "firstTokenMs": 638,
+        "totalMs": 1404
       },
       "trace": {
         "messageId": "msg_mockV05",
+        "context": {
+          "budget": 14680,
+          "used": {
+            "persona": 351,
+            "system": 694,
+            "mode": 134,
+            "history": 367,
+            "user": 0,
+            "memory": 361,
+            "knowledge": 0
+          }
+        },
+        "emotion": {
+          "chosen": "thinking",
+          "source": "classifier",
+          "candidates": [
+            {
+              "label": "thinking",
+              "p": 0.74
+            },
+            {
+              "label": "angry",
+              "p": 0.08
+            },
+            {
+              "label": "neutral",
+              "p": 0.03
+            }
+          ]
+        },
+        "memory": {
+          "recalled": [
+            {
+              "memoryItemId": "mem_01M5D3B10VY5FAES3WPNP0QRXP",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5D3B11AGM4MBEDCPJ5005RW",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5D3B11AGM4MBEDCPJ5005RX",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5D39V8KH00960Y6HWXM1HBF",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5D39V8X1P4B06WXP1C5Y5JE",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5D39V8Y6GZWMSTTG13EDY56",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5D39V8ZW14QC8E6XA9VYKXB",
+              "text": "(forgotten)"
+            }
+          ]
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "output",
+              "verdict": "pass",
+              "p": 0.05
+            }
+          ]
+        },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "DeepSeek",
+          "provider": "Relace",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 1287,
-            "total": 1892
+            "firstToken": 638,
+            "total": 1404
           },
-          "tokensIn": 2345,
-          "tokensCached": 1700,
-          "tokensOut": 21,
-          "costUsd": 0.000114
+          "tokensIn": 1259,
+          "tokensOut": 109,
+          "costUsd": 0.000111,
+          "tokensCached": 512
         },
         "energy": {
           "characterId": "chr_seedVictor",
@@ -299,63 +627,130 @@
           "remaining": 860,
           "max": 1000
         },
-        "emotion": {
-          "chosen": "neutral",
-          "source": "llm",
-          "candidates": [
-            {
-              "label": "neutral",
-              "p": 0.605
-            },
-            {
-              "label": "sad",
-              "p": 0.292
-            },
-            {
-              "label": "surprised",
-              "p": 0.058
-            }
-          ]
-        },
         "routing": {
           "selected": "chr_seedVictor",
           "forcedBy": "round_order"
         },
-        "context": {
-          "budget": 12000,
-          "cacheHitPct": 72,
-          "used": {
-            "system": 900,
-            "persona": 728,
-            "memory": 0,
-            "knowledge": 0,
-            "history": 80,
-            "user": 57,
-            "mode": 580
-          }
-        },
-        "guardrail": {
-          "checks": [
-            {
-              "name": "output",
-              "verdict": "pass",
-              "p": 0.041
-            }
-          ]
-        },
         "calls": [
+          {
+            "purpose": "turn_plan",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000051,
+            "latencyMs": 469
+          },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000114,
-            "latencyMs": 1892
+            "costUsd": 0.000111,
+            "latencyMs": 1297
+          },
+          {
+            "purpose": "guardrail",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000032,
+            "latencyMs": 516
+          },
+          {
+            "purpose": "face_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000035,
+            "latencyMs": 453
           }
-        ]
-      }
+        ],
+        "graph": {
+          "path": [
+            "state",
+            "ask",
+            "decide",
+            "route"
+          ]
+        },
+        "system1": {
+          "seed": "2026-09-25T15:04:59.966Z|debate|chr_seedVictor,chr_seedMei:2",
+          "questions": [
+            {
+              "purpose": "turn_plan",
+              "id": "emotion_line",
+              "version": 3,
+              "label": "emotion",
+              "about": "chr_seedVictor",
+              "answer": "thinking",
+              "p": 0.74,
+              "compared": [
+                {
+                  "name": "confidence",
+                  "value": 0.7,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.7,
+              "result": "used",
+              "action": "shown"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "docs",
+              "version": 2,
+              "label": "needs documents?",
+              "about": "chr_seedVictor",
+              "answer": "no",
+              "p": 0.42,
+              "compared": [
+                {
+                  "name": "t_gate",
+                  "value": 0.42,
+                  "threshold": 0.45
+                }
+              ],
+              "result": "used",
+              "action": "quick reply"
+            },
+            {
+              "purpose": "guardrail",
+              "id": "output_rules",
+              "version": 1,
+              "label": "reply breaks the rules?",
+              "answer": "no",
+              "p": 0.05,
+              "compared": [
+                {
+                  "name": "tFlag",
+                  "value": 0.05,
+                  "threshold": 0.5
+                },
+                {
+                  "name": "tBlock",
+                  "value": 0.05,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "used",
+              "action": "pass"
+            },
+            {
+              "purpose": "face_check",
+              "id": "face_check",
+              "version": 1,
+              "label": "face and words agree?",
+              "answer": "no (words read: neutral)",
+              "p": 0.03,
+              "compared": [],
+              "result": "shown_only"
+            }
+          ]
+        }
+      },
+      "reactions": [
+        {
+          "characterId": "chr_seedMei",
+          "emotion": "thinking",
+          "p": 0.74,
+          "at": "2026-09-25T15:05:12.820Z"
+        }
+      ]
     },
     {
       "kind": "chat",
-      "seq": 6,
       "debate": {
         "phase": "closing",
         "round": 2,
@@ -364,38 +759,99 @@
       },
       "id": "msg_mockV06",
       "sessionId": "ses_mockYouDecideVoting",
+      "seq": 6,
       "author": {
         "type": "character",
         "characterId": "chr_seedMei"
       },
-      "content": "Or campaigns get louder and dumber. The evidence on that is honestly thin.",
+      "content": "The two things you leave open both matter, and the modest fine is the weaker half of your case, not its rescue. Waivability means the mechanism reaches the organised, not the stretched-thin: whoever can document cause is already the sort who votes. As for juries, attendance there is tied to a specific public duty doing real, immediate work, not a blank instruction to endorse a ballot you find hollow. Your fairness fix shrinks the harm, it doesn't remove it. Incentives aren't a preference, they're a competing mechanism with fewer second-order costs, and nothing here shows compulsion is the only thing that reaches everyone. That's the stronger side.",
       "status": "complete",
-      "createdAt": "2026-09-25T15:05:18.288Z",
-      "emotion": "neutral",
-      "emotionSource": "llm",
+      "createdAt": "2026-09-25T15:05:14.673Z",
+      "emotion": "thinking",
+      "emotionSource": "classifier",
       "usage": {
-        "tokensIn": 2438,
-        "tokensCached": 1791,
-        "tokensOut": 19,
-        "costUsd": 0.000114,
+        "tokensIn": 1277,
+        "tokensCached": 512,
+        "tokensOut": 137,
+        "costUsd": 0.000126,
         "energySpent": 2,
-        "firstTokenMs": 1282,
-        "totalMs": 1862
+        "firstTokenMs": 668,
+        "totalMs": 1300
       },
       "trace": {
         "messageId": "msg_mockV06",
+        "context": {
+          "budget": 14680,
+          "used": {
+            "persona": 355,
+            "system": 711,
+            "mode": 130,
+            "history": 544,
+            "user": 0,
+            "memory": 202,
+            "knowledge": 0
+          }
+        },
+        "emotion": {
+          "chosen": "thinking",
+          "source": "classifier",
+          "candidates": [
+            {
+              "label": "thinking",
+              "p": 0.62
+            },
+            {
+              "label": "angry",
+              "p": 0.12
+            },
+            {
+              "label": "neutral",
+              "p": 0.01
+            }
+          ]
+        },
+        "knowledge": {
+          "query": "This house would make voting compulsory chr_seedVictor: Two things remain open, and neither rescues the opposition. Fir…",
+          "trigger": "gated",
+          "retrieved": []
+        },
+        "memory": {
+          "recalled": [
+            {
+              "memoryItemId": "mem_01M5D3B11VKJCF5V2CXRHRX5Q9",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5D3B11VKJCF5V2CXRHRX5Q8",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5D3B11AGM4MBEDCPJ5005RY",
+              "text": "(forgotten)"
+            }
+          ]
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "output",
+              "verdict": "pass",
+              "p": 0.05
+            }
+          ]
+        },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "DeepSeek",
+          "provider": "Relace",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 1282,
-            "total": 1862
+            "firstToken": 668,
+            "total": 1300
           },
-          "tokensIn": 2438,
-          "tokensCached": 1791,
-          "tokensOut": 19,
-          "costUsd": 0.000114
+          "tokensIn": 1277,
+          "tokensOut": 137,
+          "costUsd": 0.000126,
+          "tokensCached": 512
         },
         "energy": {
           "characterId": "chr_seedMei",
@@ -403,58 +859,122 @@
           "remaining": 742,
           "max": 1000
         },
-        "emotion": {
-          "chosen": "neutral",
-          "source": "llm",
-          "candidates": [
-            {
-              "label": "neutral",
-              "p": 0.66
-            },
-            {
-              "label": "embarrassed",
-              "p": 0.267
-            },
-            {
-              "label": "thinking",
-              "p": 0.06
-            }
-          ]
-        },
         "routing": {
           "selected": "chr_seedMei",
           "forcedBy": "round_order"
         },
-        "context": {
-          "budget": 12000,
-          "cacheHitPct": 73,
-          "used": {
-            "system": 900,
-            "persona": 801,
-            "memory": 0,
-            "knowledge": 0,
-            "history": 101,
-            "user": 56,
-            "mode": 580
-          }
-        },
-        "guardrail": {
-          "checks": [
-            {
-              "name": "output",
-              "verdict": "pass",
-              "p": 0.02
-            }
-          ]
-        },
         "calls": [
+          {
+            "purpose": "turn_plan",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000057,
+            "latencyMs": 547
+          },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000114,
-            "latencyMs": 1862
+            "costUsd": 0.000126,
+            "latencyMs": 1000
+          },
+          {
+            "purpose": "guardrail",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000034,
+            "latencyMs": 578
+          },
+          {
+            "purpose": "face_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000036,
+            "latencyMs": 546
           }
-        ]
+        ],
+        "graph": {
+          "path": [
+            "state",
+            "ask",
+            "decide",
+            "route",
+            "gather",
+            "search",
+            "check",
+            "keep"
+          ]
+        },
+        "system1": {
+          "seed": "2026-09-25T15:04:59.966Z|debate|chr_seedVictor,chr_seedMei:3",
+          "questions": [
+            {
+              "purpose": "turn_plan",
+              "id": "emotion_line",
+              "version": 3,
+              "label": "emotion",
+              "about": "chr_seedMei",
+              "answer": "thinking",
+              "p": 0.62,
+              "compared": [
+                {
+                  "name": "confidence",
+                  "value": 0.57,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.57,
+              "result": "used",
+              "action": "shown"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "docs",
+              "version": 2,
+              "label": "needs documents?",
+              "about": "chr_seedMei",
+              "answer": "yes",
+              "p": 0.58,
+              "compared": [
+                {
+                  "name": "t_gate",
+                  "value": 0.58,
+                  "threshold": 0.45
+                }
+              ],
+              "result": "used",
+              "action": "search the documents"
+            },
+            {
+              "purpose": "guardrail",
+              "id": "output_rules",
+              "version": 1,
+              "label": "reply breaks the rules?",
+              "answer": "no",
+              "p": 0.05,
+              "compared": [
+                {
+                  "name": "tFlag",
+                  "value": 0.05,
+                  "threshold": 0.5
+                },
+                {
+                  "name": "tBlock",
+                  "value": 0.05,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "used",
+              "action": "pass"
+            },
+            {
+              "purpose": "face_check",
+              "id": "face_check",
+              "version": 1,
+              "label": "face and words agree?",
+              "answer": "no (words read: neutral)",
+              "p": 0.16,
+              "compared": [],
+              "result": "shown_only"
+            }
+          ]
+        }
       }
     },
     {
@@ -465,9 +985,9 @@
         "type": "system"
       },
       "kind": "system_note",
-      "content": "VERDICT · YOUR CALL",
+      "content": "ROUND 3 · VERDICT",
       "status": "complete",
-      "createdAt": "2026-09-25T15:05:20.760Z"
+      "createdAt": "2026-09-25T15:05:17.220Z"
     }
   ]
 }

@@ -4,8 +4,7 @@
     "id": "song_seedRin",
     "characterId": "chr_seedRin",
     "status": "ready",
-    "url": "/assets/placeholder/themes/chr_seedRin.proc.json",
-    "durationSec": 13.7,
+    "url": "/assets/themes/chr_seedRin.mp3",
     "brief": {
       "genres": [
         "chiptune",
@@ -23,11 +22,14 @@
       "vibe": "Chiptune-electro, punchy drums, arpeggiated synth"
     },
     "instrumental": true,
+    "durationSec": 30.772,
+    "format": "mp3",
+    "bytes": 744660,
     "generation": {
       "model": "google/lyria-3-clip-preview",
-      "prompt": "Instrumental theme: Chiptune-electro, punchy drums, arpeggiated synth. chiptune, EDM; energetic, tense; 140 BPM; synth, drums.",
+      "prompt": "Instrumental theme music for a character. Genres: chiptune, EDM. Mood: energetic, tense. Instruments: synth, drums. Tempo: about 140 BPM. Feel: Chiptune-electro, punchy drums, arpeggiated synth. An original piece: do not imitate any named artist, band or existing song. No vocals, no lyrics. A 30-second piece that loops cleanly.",
       "costUsd": 0.04
     },
-    "licenseNote": "Placeholder: procedural WebAudio sketch (D-52). The real theme comes from Google Lyria 3 Clip via OpenRouter (provider terms apply)."
+    "licenseNote": "Composed by google/lyria-3-clip-preview through OpenRouter (D-87)."
   }
 }

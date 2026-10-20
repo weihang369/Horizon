@@ -93,17 +93,17 @@
         "extraDetails": "Round gold-rim glasses, white coat over teal scrubs, gold stud earrings."
       },
       "appearanceSummary": "An adult woman with deep brown skin and short natural black curls, round gold-rim glasses, a white coat over teal scrubs and a stethoscope.",
-      "basePortraitUrl": "/assets/placeholder/portraits/chr_seedAmara/neutral.svg",
+      "basePortraitUrl": "/assets/portraits/chr_seedAmara/neutral.webp",
       "candidates": [
         {
           "id": "cand_seedAmara1",
-          "url": "/assets/placeholder/portraits/chr_seedAmara/neutral.svg",
+          "url": "/assets/portraits/chr_seedAmara/neutral.webp",
           "selected": true,
           "status": "ready"
         },
         {
           "id": "cand_seedAmara2",
-          "url": "/assets/placeholder/portraits/chr_seedAmara/cand-2.svg",
+          "url": "/assets/portraits/chr_seedAmara/cand-2.webp",
           "selected": false,
           "status": "ready"
         }
@@ -124,43 +124,43 @@
     "emotions": {
       "neutral": {
         "assetId": "emo_seedAmaraNeutral",
-        "url": "/assets/placeholder/portraits/chr_seedAmara/neutral.svg",
+        "url": "/assets/portraits/chr_seedAmara/neutral.webp",
         "vfxPreset": "none"
       },
       "happy": {
         "assetId": "emo_seedAmaraHappy",
-        "url": "/assets/placeholder/portraits/chr_seedAmara/happy.svg",
+        "url": "/assets/portraits/chr_seedAmara/happy.webp",
         "vfxPreset": "sparkle"
       },
       "sad": {
         "assetId": "emo_seedAmaraSad",
-        "url": "/assets/placeholder/portraits/chr_seedAmara/sad.svg",
+        "url": "/assets/portraits/chr_seedAmara/sad.webp",
         "vfxPreset": "rain"
       },
       "angry": {
         "assetId": "emo_seedAmaraAngry",
-        "url": "/assets/placeholder/portraits/chr_seedAmara/angry.svg",
+        "url": "/assets/portraits/chr_seedAmara/angry.webp",
         "vfxPreset": "anger"
       },
       "surprised": {
         "assetId": "emo_seedAmaraSurprised",
-        "url": "/assets/placeholder/portraits/chr_seedAmara/surprised.svg",
+        "url": "/assets/portraits/chr_seedAmara/surprised.webp",
         "vfxPreset": "shock"
       },
       "thinking": {
         "assetId": "emo_seedAmaraThinking",
-        "url": "/assets/placeholder/portraits/chr_seedAmara/thinking.svg",
+        "url": "/assets/portraits/chr_seedAmara/thinking.webp",
         "vfxPreset": "ponder"
       },
       "embarrassed": {
         "assetId": "emo_seedAmaraEmbarrassed",
-        "url": "/assets/placeholder/portraits/chr_seedAmara/embarrassed.svg",
+        "url": "/assets/portraits/chr_seedAmara/embarrassed.webp",
         "vfxPreset": "blush"
       }
     },
     "blink": {
       "assetId": "emo_seedAmaraBlink",
-      "url": "/assets/placeholder/portraits/chr_seedAmara/blink.svg",
+      "url": "/assets/portraits/chr_seedAmara/blink.webp",
       "vfxPreset": "none"
     },
     "themeSongId": "song_seedAmara",

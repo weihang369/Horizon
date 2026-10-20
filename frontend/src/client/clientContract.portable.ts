@@ -477,7 +477,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness, opt
       expect(md).toContain("[^1]");
       expect(md).not.toMatch(/[a-z.,]\[\d\]/);
       expect(md).toContain("## Sources");
-      expect(md).toMatch(/\[\^1\]: Meridian Shift Fatigue Review 2025\.pdf, p\. 4\. "/);
+      expect(md).toMatch(/\[\^1\]: Meridian Shift Fatigue Review 2025, p\. 1\. "/);
     });
 
     // ── rev 1.3: error codes (client-contract spec) ─────────────────────────

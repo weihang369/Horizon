@@ -22,7 +22,7 @@
           "protective"
         ]
       },
-      "backstory": "Hana's younger sister (profile text). Grad student by day, junior dev on an indie studio's night shift, raid tank always.",
+      "backstory": "Hana's younger sister. Grad student by day, junior dev on an indie studio's night shift, raid tank always.",
       "speakingStyle": {
         "summary": "Short replies in lowercase, gamer slang used sparingly, an occasional sincere moment she immediately undercuts.",
         "tone": "deadpan",
@@ -86,11 +86,11 @@
         "extraDetails": "Fitted charcoal bomber jacket over a graphic tee, over-ear headphones around her neck, adult proportions."
       },
       "appearanceSummary": "An adult woman with sleek shoulder-length black hair and a teal streak, violet eyes, a charcoal bomber jacket and headphones around her neck.",
-      "basePortraitUrl": "/assets/placeholder/portraits/chr_seedRin/neutral.svg",
+      "basePortraitUrl": "/assets/portraits/chr_seedRin/neutral.webp",
       "candidates": [
         {
           "id": "cand_seedRin1",
-          "url": "/assets/placeholder/portraits/chr_seedRin/neutral.svg",
+          "url": "/assets/portraits/chr_seedRin/neutral.webp",
           "selected": true,
           "status": "ready"
         }
@@ -111,43 +111,43 @@
     "emotions": {
       "neutral": {
         "assetId": "emo_seedRinNeutral",
-        "url": "/assets/placeholder/portraits/chr_seedRin/neutral.svg",
+        "url": "/assets/portraits/chr_seedRin/neutral.webp",
         "vfxPreset": "none"
       },
       "happy": {
         "assetId": "emo_seedRinHappy",
-        "url": "/assets/placeholder/portraits/chr_seedRin/happy.svg",
+        "url": "/assets/portraits/chr_seedRin/happy.webp",
         "vfxPreset": "sparkle"
       },
       "sad": {
         "assetId": "emo_seedRinSad",
-        "url": "/assets/placeholder/portraits/chr_seedRin/sad.svg",
+        "url": "/assets/portraits/chr_seedRin/sad.webp",
         "vfxPreset": "rain"
       },
       "angry": {
         "assetId": "emo_seedRinAngry",
-        "url": "/assets/placeholder/portraits/chr_seedRin/angry.svg",
+        "url": "/assets/portraits/chr_seedRin/angry.webp",
         "vfxPreset": "anger"
       },
       "surprised": {
         "assetId": "emo_seedRinSurprised",
-        "url": "/assets/placeholder/portraits/chr_seedRin/surprised.svg",
+        "url": "/assets/portraits/chr_seedRin/surprised.webp",
         "vfxPreset": "shock"
       },
       "thinking": {
         "assetId": "emo_seedRinThinking",
-        "url": "/assets/placeholder/portraits/chr_seedRin/thinking.svg",
+        "url": "/assets/portraits/chr_seedRin/thinking.webp",
         "vfxPreset": "ponder"
       },
       "embarrassed": {
         "assetId": "emo_seedRinEmbarrassed",
-        "url": "/assets/placeholder/portraits/chr_seedRin/embarrassed.svg",
+        "url": "/assets/portraits/chr_seedRin/embarrassed.webp",
         "vfxPreset": "blush"
       }
     },
     "blink": {
       "assetId": "emo_seedRinBlink",
-      "url": "/assets/placeholder/portraits/chr_seedRin/blink.svg",
+      "url": "/assets/portraits/chr_seedRin/blink.webp",
       "vfxPreset": "none"
     },
     "themeSongId": "song_seedRin",

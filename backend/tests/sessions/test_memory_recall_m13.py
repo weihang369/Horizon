@@ -14,7 +14,7 @@ from horizon.ai.ports import Insert, MemoryDraft
 from horizon.services.memory.corpora import Overflow, SessionLines
 from tests.conftest import Api
 from tests.helpers.storm import after_storm
-from tests.sessions.kit import command, ledger
+from tests.sessions.kit import API, command, ledger
 from tests.sessions.test_deep_m12 import ANSWERS, chats
 from tests.sessions.test_gates_m12 import AMARA, MERIDIAN, agent, gate, send
 from tests.sessions.test_summary import small_windows
@@ -179,6 +179,10 @@ async def test_an_overflow_memory_used_is_touched_at_the_next_pause(api: Api) ->
     rt.runtime_cfg = dataclasses.replace(rt.runtime_cfg, runtime=dataclasses.replace(
         rt.runtime_cfg.runtime, memory=dataclasses.replace(rt.runtime_cfg.runtime.memory, block_tokens=40)))
     await api.set_key()
+    # Only this test's memories: the recorded seed's own (v1 test stage) would join the overflow and move the fused order.
+    items = (await api.json(f"{API}/characters/{AMARA}/memory"))
+    for m in items if isinstance(items, list) else items["items"]:
+        assert (await api.client.delete(f"{API}/memory/{m['id']}")).status_code in (200, 204)
     for i in range(8):
         await rt.memory.apply(AMARA, MERIDIAN, [Insert(MemoryDraft("fact", f"Filler memory number {i} about tea.",
                                                                    0.9))])

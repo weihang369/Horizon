@@ -6,11 +6,12 @@
     "title": "Three-day headache",
     "titleIsCustom": false,
     "mode": "one_on_one",
+    "status": "paused",
     "participants": [
       {
         "characterId": "chr_seedAmara",
         "role": "speaker",
-        "currentEmotion": "neutral",
+        "currentEmotion": "thinking",
         "mutedByUser": false
       }
     ],
@@ -18,14 +19,13 @@
     "musicPolicy": "character_theme",
     "readableMode": false,
     "config": null,
-    "isSeed": true,
-    "status": "paused",
     "state": null,
-    "costUsd": 0.000434,
+    "isSeed": true,
+    "costUsd": 0.000364,
     "messageCount": 7,
-    "createdAt": "2026-09-29T21:14:00Z",
-    "updatedAt": "2026-09-29T21:14:20.223Z",
+    "createdAt": "2026-09-29T21:13:59.984Z",
+    "updatedAt": "2026-09-29T21:15:27.395Z",
     "pausedReason": "navigated_away",
-    "lastMessageAt": "2026-09-29T21:14:16.509Z"
+    "lastMessageAt": "2026-09-29T21:15:01.491Z"
   }
 }

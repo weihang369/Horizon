@@ -501,31 +501,129 @@ draft (wizard: seed → … → theme) ─→ review (APPROVE step) ─(Summon)�
 - Fixtures are validated against this contract (JSON Schema or zod generated from it).
 
 ## 8. Example: debate message (fixture form)
+*A real reply, recorded on the demo instance in the v1 test stage (2026-10-21) and shipped as seed message `msg_seedD09`: Mei answering the moderator's "give us a number" during the rebuttal round. `…` marks text shortened here; the trace shows its main parts (the shipped one also carries `knowledge`, `calls`, `graph` and `system1`).*
 ```json
 {
-  "id": "msg_seedD08", "seq": 8, "sessionId": "ses_seedDebate4Day",
-  "author": { "type": "character", "characterId": "chr_seedMei" },
-  "kind": "chat",
-  "content": "Honestly? Nobody can give you one reliable number…",
-  "status": "complete",
-  "emotion": "thinking", "emotionSource": "llm", "forcedSpeaker": true,
-  "debate": { "phase": "rebuttal", "round": 2, "iteration": 1, "side": "opp" },
-  "reactions": [
-    { "characterId": "chr_seedVictor", "emotion": "thinking", "p": 0.64, "at": "2026-10-01T10:03:20Z" },
-    { "characterId": "chr_seedAmara", "emotion": "thinking", "p": 0.58, "at": "2026-10-01T10:03:20Z" }
-  ],
-  "usage": { "tokensIn": 9800, "tokensCached": 7800, "tokensOut": 168, "costUsd": 0.00042, "energySpent": 5, "firstTokenMs": 1420, "totalMs": 5600 },
-  "trace": {
-    "model": { "id": "deepseek/deepseek-v4.1-flash", "provider": "DeepSeek", "pricePeriod": "off_peak",
-               "latencyMs": { "firstToken": 1420, "total": 5600 }, "tokensIn": 9800, "tokensCached": 7800, "tokensOut": 168, "costUsd": 0.00042 },
-    "energy": { "characterId": "chr_seedMei", "spent": 5, "remaining": 742, "max": 1000 },
-    "emotion": { "chosen": "thinking", "source": "llm", "candidates": [ { "label": "thinking", "p": 0.71 }, { "label": "neutral", "p": 0.18 } ] },
-    "routing": { "selected": "chr_seedMei", "forcedBy": "user_ask" },
-    "contextInSession": [ { "text": "R1: Mei: pilots were voluntary, self-selected firms", "messageId": "msg_seedD03" } ],
-    "context": { "budget": 12000, "cacheHitPct": 80,
-                 "used": { "system": 900, "persona": 700, "memory": 0, "knowledge": 0, "history": 6900, "user": 40, "mode": 580 } }
+  "id": "msg_seedD09",
+  "seq": 9,
+  "sessionId": "ses_seedDebate4Day",
+  "author": {
+    "type": "character",
+    "characterId": "chr_seedMei"
   },
-  "createdAt": "2026-10-01T10:03:14Z"
+  "kind": "chat",
+  "content": "A number, then, with the honest error bars attached. In the nine shift-b…",
+  "status": "complete",
+  "emotion": "thinking",
+  "emotionSource": "classifier",
+  "forcedSpeaker": true,
+  "debate": {
+    "phase": "rebuttal",
+    "round": 2,
+    "iteration": 1,
+    "side": "opp"
+  },
+  "reactions": [
+    {
+      "characterId": "chr_seedVictor",
+      "emotion": "thinking",
+      "p": 0.89,
+      "at": "2026-10-01T09:58:30.424Z"
+    }
+  ],
+  "usage": {
+    "tokensIn": 2030,
+    "tokensCached": 512,
+    "tokensOut": 199,
+    "costUsd": 0.00021,
+    "energySpent": 3,
+    "firstTokenMs": 1532,
+    "totalMs": 2805
+  },
+  "citations": [
+    {
+      "n": 1,
+      "sourceId": "kno_seedMei2",
+      "title": "Four-day week pilot summaries",
+      "type": "file",
+      "chunkId": "kch_meiPilot07",
+      "locator": "p. 6",
+      "quote": "The nine were three private clinics, two call centres, two s…",
+      "score": 0.56
+    }
+  ],
+  "trace": {
+    "messageId": "msg_seedD09",
+    "model": {
+      "id": "deepseek/deepseek-v4.1-flash",
+      "provider": "Relace",
+      "pricePeriod": "off_peak",
+      "latencyMs": {
+        "firstToken": 1532,
+        "total": 2805
+      },
+      "tokensIn": 2030,
+      "tokensOut": 199,
+      "costUsd": 0.00021,
+      "tokensCached": 512
+    },
+    "energy": {
+      "characterId": "chr_seedMei",
+      "spent": 3,
+      "remaining": 746,
+      "max": 1000
+    },
+    "emotion": {
+      "chosen": "thinking",
+      "source": "classifier",
+      "candidates": [
+        {
+          "label": "thinking",
+          "p": 0.74
+        },
+        {
+          "label": "angry",
+          "p": 0.05
+        },
+        {
+          "label": "neutral",
+          "p": 0.02
+        }
+      ]
+    },
+    "routing": {
+      "question": "Mei, give us a number. What does this cost?",
+      "selected": "chr_seedMei",
+      "forcedBy": "user_ask"
+    },
+    "guardrail": {
+      "checks": [
+        {
+          "name": "input",
+          "verdict": "pass",
+          "p": 0.04
+        },
+        {
+          "name": "output",
+          "verdict": "pass",
+          "p": 0.05
+        }
+      ]
+    },
+    "context": {
+      "budget": 14680,
+      "used": {
+        "persona": 355,
+        "system": 716,
+        "mode": 144,
+        "history": 1490,
+        "user": 15,
+        "memory": 0,
+        "knowledge": 327
+      }
+    }
+  },
+  "createdAt": "2026-10-01T09:58:27.569Z"
 }
 ```
-*Cost: 2,000 uncached tokens × $0.15/M + 7,800 cached × $0.003/M + 168 out × $0.60/M ≈ $0.00042 (off-peak, first-party) → 4.2 ⚡, rounded up to 5 ⚡.*
+*Cost: OpenRouter bills the reply ($0.00021: 2,030 tokens in, 512 of them cached, 199 out, served by Relace off-peak). Energy rounds the cost up at 1 ⚡ per $0.0001: 2.10 → 3 ⚡. The price arithmetic is in `domain/cost.ts` and its tests.*

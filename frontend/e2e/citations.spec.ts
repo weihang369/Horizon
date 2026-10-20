@@ -8,11 +8,11 @@ test("1:1 replay: a citation chip opens O28 on the highlighted passage; Esc clos
   await open(page, HEADACHE);
   await seekToEnd(page);
 
-  const chip = page.getByRole("button", { name: "Source 1: ED triage guidelines.pdf, § 2.4. Open source" });
+  const chip = page.getByRole("button", { name: "Source 1: ED triage guidelines, p. 2. Open source" }).first();
   await chip.click();
   const viewer = page.getByRole("dialog", { name: /ED triage guidelines/ });
   await expect(viewer).toBeVisible();
-  const cited = viewer.getByRole("region", { name: "§ 2.4, cited passage" });
+  const cited = viewer.getByRole("region", { name: "p. 2, cited passage" });
   await expect(cited).toBeVisible();
   await expect(cited.locator("mark")).toContainText("Caffeine withdrawal headache");
   await expect(viewer.getByText(/Highlighted: the passage behind \[1\]/)).toBeVisible();
@@ -27,15 +27,15 @@ test("group dinner: Hana's cited line has a Sources strip and its entry opens O2
   await open(page, DINNER);
   await seekToEnd(page);
 
-  const hana = logEntry(page, "Grandma always said");
-  await expect(hana.getByRole("button", { name: /^Source 1: Grandma's recipe notebook, p\. 5/ })).toBeVisible();
+  const hana = logEntry(page, "one dish everybody loves");
+  await expect(hana.getByRole("button", { name: /^Source 1: Grandma's recipe notebook, ¶ 2/ })).toBeVisible();
   const sources = hana.getByRole("group", { name: "Sources" });
   await expect(sources).toBeVisible();
-  await sources.getByRole("button", { name: /^Open Grandma's recipe notebook, p\. 5/ }).click();
+  await sources.getByRole("button", { name: /^Open Grandma's recipe notebook, ¶ 2/ }).click();
 
   const viewer = page.getByRole("dialog", { name: /Grandma's recipe notebook/ });
   await expect(viewer).toBeVisible();
-  await expect(viewer.locator("mark").first()).toContainText("pineapple");
+  await expect(viewer.locator("mark").first()).toContainText("Strawberry daifuku");
   await viewer.getByRole("button", { name: "Close", exact: true }).click();
   await expect(viewer).toBeHidden();
 });
@@ -43,14 +43,14 @@ test("group dinner: Hana's cited line has a Sources strip and its entry opens O2
 test("Insight drawer: Knowledge separates the cited passage from “retrieved · not used”", async ({ page }) => {
   await open(page, DINNER);
   await seekToEnd(page);
-  await logEntry(page, "Grandma always said").getByRole("button", { name: "Open Insight for this message" }).click();
+  await logEntry(page, "one dish everybody loves").getByRole("button", { name: "Open Insight for this message" }).click();
 
   const insight = page.getByRole("complementary", { name: "Insight" });
   await expect(insight).toBeVisible();
   const knowledge = insight.getByRole("region", { name: "Knowledge" });
   await expect(knowledge).toContainText("1/2 cited");
-  await expect(knowledge.getByRole("button", { name: /^Cited \[1\]: Grandma's recipe notebook, p\. 5/ })).toBeVisible();
-  const unused = knowledge.getByRole("button", { name: /^Retrieved, not used: Grandma's recipe notebook, p\. 14/ });
+  await expect(knowledge.getByRole("button", { name: /^Cited \[1\]: Grandma's recipe notebook, ¶ 2/ })).toBeVisible();
+  const unused = knowledge.getByRole("button", { name: /^Retrieved, not used: Grandma's recipe notebook, ¶ 1/ });
   await expect(unused).toBeVisible();
   await expect(unused).toContainText("retrieved · not used");
 
@@ -87,5 +87,5 @@ test("group dinner at 1280×720: with Insight open every speaker stays visible b
     expect(box.x + box.width, `${name} must end left of the Insight drawer`).toBeLessThanOrEqual(drawerLeft + 1);
   }
   // The latest cited line and its Sources strip are still on screen.
-  await expect(logEntry(page, "Grandma always said").getByRole("group", { name: "Sources" })).toBeInViewport();
+  await expect(logEntry(page, "one dish everybody loves").getByRole("group", { name: "Sources" })).toBeInViewport();
 });

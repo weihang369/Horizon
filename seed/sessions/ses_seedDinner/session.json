@@ -6,23 +6,24 @@
     "title": "Dinner's on me",
     "titleIsCustom": true,
     "mode": "group",
+    "status": "paused",
     "participants": [
       {
         "characterId": "chr_seedHana",
         "role": "speaker",
-        "currentEmotion": "happy",
+        "currentEmotion": "neutral",
         "mutedByUser": false
       },
       {
         "characterId": "chr_seedTakeshi",
         "role": "speaker",
-        "currentEmotion": "happy",
+        "currentEmotion": "angry",
         "mutedByUser": false
       },
       {
         "characterId": "chr_seedRin",
         "role": "speaker",
-        "currentEmotion": "embarrassed",
+        "currentEmotion": "angry",
         "mutedByUser": false
       }
     ],
@@ -33,14 +34,13 @@
       "responderPolicy": "auto",
       "maxAutoResponders": 2
     },
-    "isSeed": true,
-    "status": "paused",
     "state": null,
-    "costUsd": 0.000272,
-    "messageCount": 7,
-    "createdAt": "2026-09-30T10:30:00Z",
-    "updatedAt": "2026-09-30T10:30:16.230Z",
+    "isSeed": true,
+    "costUsd": 0.000447,
+    "messageCount": 9,
+    "createdAt": "2026-09-30T10:29:59.986Z",
+    "updatedAt": "2026-09-30T10:32:05.511Z",
     "pausedReason": "navigated_away",
-    "lastMessageAt": "2026-09-30T10:30:13.494Z"
+    "lastMessageAt": "2026-09-30T10:31:44.199Z"
   }
 }

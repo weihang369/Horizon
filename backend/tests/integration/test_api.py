@@ -161,9 +161,9 @@ async def test_keys_survive_a_restart(make_api: Any, tmp_path: Path) -> None:
 
 # ── 5.5 assets ──
 async def test_seed_asset_served_with_type(api: Api) -> None:
-    r = await api.get("/assets/placeholder/portraits/chr_seedHana/neutral.svg")
+    r = await api.get("/assets/portraits/chr_seedHana/neutral.webp")   # the real portrait (v1 test stage)
     assert r.status_code == 200
-    assert r.headers["content-type"].startswith("image/svg+xml")
+    assert r.headers["content-type"].startswith("image/webp")
     assert r.headers["cache-control"] == "no-cache"
 
 

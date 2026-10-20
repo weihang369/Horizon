@@ -6,11 +6,77 @@
       "characterId": "chr_seedTakeshi",
       "worldId": "wld_seedSunnyHollow",
       "kind": "event",
-      "text": "Took Rin fishing on a rainy Sunday; first fish named \"Patch Notes\"",
-      "importance": 0.6,
+      "text": "Rainy Sunday: Takeshi invited Rin fishing; Rin agreed to come after finishing a raid, about ten minutes.",
+      "importance": 0.395,
       "sourceSessionId": "ses_seedRainySunday",
-      "sourceMessageId": "msg_seedW10",
-      "createdAt": "2026-09-27T02:45:00Z"
+      "sourceMessageId": "msg_seedW12",
+      "createdAt": "2026-09-27T02:40:45.769Z"
+    },
+    {
+      "id": "mem_seedTakeshi2",
+      "characterId": "chr_seedTakeshi",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "fact",
+      "text": "Rin named her guild after a steam engine.",
+      "importance": 0.535,
+      "sourceSessionId": "ses_seedRainySunday",
+      "sourceMessageId": "msg_seedW11",
+      "createdAt": "2026-09-27T02:40:45.769Z"
+    },
+    {
+      "id": "mem_seedTakeshi3",
+      "characterId": "chr_seedTakeshi",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "preference",
+      "text": "Rin would rather game than sit in a wet boat in the rain.",
+      "importance": 0.4275,
+      "sourceSessionId": "ses_seedRainySunday",
+      "sourceMessageId": "msg_seedW03",
+      "createdAt": "2026-09-27T02:40:45.769Z"
+    },
+    {
+      "id": "mem_seedTakeshi4",
+      "characterId": "chr_seedTakeshi",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "preference",
+      "text": "Takeshi keeps swearing by a little ramen place as 'the only real one.'",
+      "importance": 0.5375,
+      "sourceSessionId": "ses_seedDinner",
+      "sourceMessageId": "msg_seedC02",
+      "createdAt": "2026-09-30T10:30:44.606Z"
+    },
+    {
+      "id": "mem_seedTakeshi5",
+      "characterId": "chr_seedTakeshi",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "preference",
+      "text": "Takeshi votes ramen from the place by the station; says curry doesn't 'rattle your bones' the same way.",
+      "importance": 0.4225,
+      "sourceSessionId": "ses_seedDinner",
+      "sourceMessageId": "msg_seedC04",
+      "createdAt": "2026-09-30T10:31:13.187Z"
+    },
+    {
+      "id": "mem_seedTakeshi6",
+      "characterId": "chr_seedTakeshi",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "event",
+      "text": "Rin was still in a raid during dinner planning, so Takeshi said to order without her or eat at midnight.",
+      "importance": 0.3675,
+      "sourceSessionId": "ses_seedDinner",
+      "sourceMessageId": "msg_seedC04",
+      "createdAt": "2026-09-30T10:31:13.187Z"
+    },
+    {
+      "id": "mem_seedTakeshi7",
+      "characterId": "chr_seedTakeshi",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "preference",
+      "text": "Takeshi wants a slice of Hana's lemon loaf saved for him.",
+      "importance": 0.4175,
+      "sourceSessionId": "ses_seedDinner",
+      "sourceMessageId": "msg_seedC04",
+      "createdAt": "2026-09-30T10:31:13.187Z"
     }
   ]
 }

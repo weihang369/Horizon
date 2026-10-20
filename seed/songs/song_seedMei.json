@@ -4,8 +4,7 @@
     "id": "song_seedMei",
     "characterId": "chr_seedMei",
     "status": "ready",
-    "url": "/assets/placeholder/themes/chr_seedMei.proc.json",
-    "durationSec": 21.3,
+    "url": "/assets/themes/chr_seedMei.mp3",
     "brief": {
       "genres": [
         "jazz hip-hop"
@@ -23,11 +22,14 @@
       "vibe": "Jazzy hip-hop, upright bass, vinyl crackle"
     },
     "instrumental": true,
+    "durationSec": 29.153,
+    "format": "mp3",
+    "bytes": 705790,
     "generation": {
       "model": "google/lyria-3-clip-preview",
-      "prompt": "Instrumental theme: Jazzy hip-hop, upright bass, vinyl crackle. jazz hip-hop; calm, playful; 90 BPM; bass, drums, vinyl crackle.",
+      "prompt": "Instrumental theme music for a character. Genres: jazz hip-hop. Mood: calm, playful. Instruments: bass, drums, vinyl crackle. Tempo: about 90 BPM. Feel: Jazzy hip-hop, upright bass, vinyl crackle. An original piece: do not imitate any named artist, band or existing song. No vocals, no lyrics. A 30-second piece that loops cleanly.",
       "costUsd": 0.04
     },
-    "licenseNote": "Placeholder: procedural WebAudio sketch (D-52). The real theme comes from Google Lyria 3 Clip via OpenRouter (provider terms apply)."
+    "licenseNote": "Composed by google/lyria-3-clip-preview through OpenRouter (D-87)."
   }
 }

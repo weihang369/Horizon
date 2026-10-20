@@ -109,7 +109,7 @@ async def test_seed_debate_export(api: Api) -> None:
     assert r.status_code == 200 and r.headers["content-type"].startswith("text/markdown")
     md = r.text
     assert "[^1]" in md and "## Sources" in md
-    assert re.search(r'\[\^1\]: Meridian Shift Fatigue Review 2025\.pdf, p\. 4\. "', md)
+    assert re.search(r'\[\^1\]: Meridian Shift Fatigue Review 2025, p\. 1\. "', md)
     assert not re.search(r"[a-z.,]\[\d\]", md)
     assert "sk-or-" not in md
 

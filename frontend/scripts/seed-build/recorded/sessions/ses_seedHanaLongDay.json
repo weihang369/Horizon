@@ -1,0 +1,1591 @@
+{
+  "source": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+  "exportedAt": "2026-10-20",
+  "session": {
+    "id": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+    "worldId": "wld_seedSunnyHollow",
+    "title": "Chat with Hana",
+    "titleIsCustom": false,
+    "mode": "one_on_one",
+    "status": "paused",
+    "pausedReason": "navigated_away",
+    "participants": [
+      {
+        "characterId": "chr_seedHana",
+        "role": "speaker",
+        "currentEmotion": "embarrassed",
+        "mutedByUser": false
+      }
+    ],
+    "emotionMode": "user",
+    "musicPolicy": "character_theme",
+    "readableMode": false,
+    "config": null,
+    "state": null,
+    "isSeed": false,
+    "costUsd": 0.000138,
+    "messageCount": 7,
+    "createdAt": "2026-10-20T17:09:13.122Z",
+    "updatedAt": "2026-10-20T17:11:12.744Z",
+    "lastMessageAt": "2026-10-20T17:10:46.482Z"
+  },
+  "events": [
+    {
+      "id": "evt_01M5D4KQS9R8RXKSV7MSAQNCDW",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 1,
+      "at": "2026-10-20T17:09:13.129Z",
+      "type": "session.state",
+      "payload": {
+        "status": "active",
+        "participants": [
+          {
+            "characterId": "chr_seedHana",
+            "role": "speaker",
+            "currentEmotion": "neutral",
+            "mutedByUser": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "evt_01M5D4KQSARENAHPW78EW8Q883",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 2,
+      "at": "2026-10-20T17:09:13.129Z",
+      "type": "energy",
+      "payload": {
+        "characterId": "chr_seedHana",
+        "current": 995,
+        "max": 1000,
+        "state": "active"
+      }
+    },
+    {
+      "id": "evt_01M5D4KR3XT9PSN7Z6D0B90CWX",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 3,
+      "at": "2026-10-20T17:09:13.469Z",
+      "type": "turn.next",
+      "payload": {
+        "nextSpeakerId": "chr_seedHana"
+      }
+    },
+    {
+      "id": "evt_01M5D4KR69SMRHXMXP8XGQX89P",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 4,
+      "at": "2026-10-20T17:09:13.545Z",
+      "type": "turn.thinking",
+      "payload": {
+        "characterId": "chr_seedHana"
+      }
+    },
+    {
+      "id": "evt_01M5D4KSP2A7ZBGWWAAQCENP5Q",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 5,
+      "at": "2026-10-20T17:09:15.074Z",
+      "type": "turn.start",
+      "payload": {
+        "messageId": "msg_01M5D4KR3XT9PSN7Z6D0B90CWW",
+        "author": {
+          "type": "character",
+          "characterId": "chr_seedHana"
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D4KSP2A7ZBGWWAAQCENP5R",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 6,
+      "at": "2026-10-20T17:09:15.074Z",
+      "type": "emotion",
+      "payload": {
+        "messageId": "msg_01M5D4KR3XT9PSN7Z6D0B90CWW",
+        "characterId": "chr_seedHana",
+        "emotion": "happy",
+        "source": "default"
+      }
+    },
+    {
+      "id": "evt_01M5D4KSQNQ3F1D5VFBAZ0B6T4",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 7,
+      "at": "2026-10-20T17:09:15.125Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D4KR3XT9PSN7Z6D0B90CWW",
+        "delta": "You're back"
+      }
+    },
+    {
+      "id": "evt_01M5D4KSTH4KXF2JPY6712S7WS",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 8,
+      "at": "2026-10-20T17:09:15.217Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D4KR3XT9PSN7Z6D0B90CWW",
+        "delta": "! Come here"
+      }
+    },
+    {
+      "id": "evt_01M5D4KSX4R07F0Z0QM1WZ3975",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 9,
+      "at": "2026-10-20T17:09:15.300Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D4KR3XT9PSN7Z6D0B90CWW",
+        "delta": ", tell me everything."
+      }
+    },
+    {
+      "id": "evt_01M5D4KSX4R07F0Z0QM1WZ3976",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 10,
+      "at": "2026-10-20T17:09:15.300Z",
+      "type": "turn.end",
+      "payload": {
+        "messageId": "msg_01M5D4KR3XT9PSN7Z6D0B90CWW",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "evt_01M5D4KSX4R07F0Z0QM1WZ3977",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 11,
+      "at": "2026-10-20T17:09:15.300Z",
+      "type": "insight",
+      "payload": {
+        "messageId": "msg_01M5D4KR3XT9PSN7Z6D0B90CWW",
+        "trace": {
+          "messageId": "msg_01M5D4KR3XT9PSN7Z6D0B90CWW",
+          "emotion": {
+            "chosen": "happy",
+            "source": "default"
+          },
+          "routing": {
+            "selected": "chr_seedHana"
+          },
+          "calls": []
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D4M2R1M29JAKB04NDHBSM2",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 12,
+      "at": "2026-10-20T17:09:24.353Z",
+      "type": "emotion",
+      "payload": {
+        "characterId": "chr_seedHana",
+        "emotion": "happy",
+        "source": "user"
+      }
+    },
+    {
+      "id": "evt_01M5D4MNH8TMK6FY6SD747V8TV",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 13,
+      "at": "2026-10-20T17:09:43.592Z",
+      "type": "message",
+      "payload": {
+        "message": {
+          "id": "msg_01M5D4MNH8TMK6FY6SD747V8TT",
+          "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+          "seq": 2,
+          "author": {
+            "type": "user"
+          },
+          "kind": "chat",
+          "content": "I'm home! Long day.",
+          "status": "complete",
+          "createdAt": "2026-10-20T17:09:43.592Z"
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D4MNHN1AVSXHM77C52TN7C",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 14,
+      "at": "2026-10-20T17:09:43.605Z",
+      "type": "turn.next",
+      "payload": {
+        "nextSpeakerId": "chr_seedHana"
+      }
+    },
+    {
+      "id": "evt_01M5D4MNM0BB4F5FK1DBM7FSG8",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 15,
+      "at": "2026-10-20T17:09:43.680Z",
+      "type": "turn.thinking",
+      "payload": {
+        "characterId": "chr_seedHana"
+      }
+    },
+    {
+      "id": "evt_01M5D4MPGQ4EWVJ15HYCSM4HD1",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 16,
+      "at": "2026-10-20T17:09:44.599Z",
+      "type": "turn.start",
+      "payload": {
+        "messageId": "msg_01M5D4MNHN1AVSXHM77C52TN7B",
+        "author": {
+          "type": "character",
+          "characterId": "chr_seedHana"
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D4MPGQ4EWVJ15HYCSM4HD2",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 17,
+      "at": "2026-10-20T17:09:44.599Z",
+      "type": "emotion",
+      "payload": {
+        "messageId": "msg_01M5D4MNHN1AVSXHM77C52TN7B",
+        "characterId": "chr_seedHana",
+        "emotion": "happy",
+        "source": "classifier"
+      }
+    },
+    {
+      "id": "evt_01M5D4MPJ4AXVD85Y67JHCTZ68",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 18,
+      "at": "2026-10-20T17:09:44.644Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D4MNHN1AVSXHM77C52TN7B",
+        "delta": "Hi you!! Long day how? Come sit, I'll put the kettle on"
+      }
+    },
+    {
+      "id": "evt_01M5D4MPKM0CSSDBG1Q1HFHCQQ",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 19,
+      "at": "2026-10-20T17:09:44.692Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D4MNHN1AVSXHM77C52TN7B",
+        "delta": "."
+      }
+    },
+    {
+      "id": "evt_01M5D4MQ2JVFRE648DVPHTR4HH",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 20,
+      "at": "2026-10-20T17:09:45.170Z",
+      "type": "turn.end",
+      "payload": {
+        "messageId": "msg_01M5D4MNHN1AVSXHM77C52TN7B",
+        "status": "complete",
+        "usage": {
+          "tokensIn": 836,
+          "tokensCached": 512,
+          "tokensOut": 18,
+          "costUsd": 3.6e-05,
+          "energySpent": 1,
+          "firstTokenMs": 1004.0,
+          "totalMs": 1087.0
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D4MQ2JVFRE648DVPHTR4HJ",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 21,
+      "at": "2026-10-20T17:09:45.170Z",
+      "type": "energy",
+      "payload": {
+        "characterId": "chr_seedHana",
+        "current": 994,
+        "max": 1000,
+        "state": "active",
+        "spent": 1,
+        "fullAt": "2026-10-20T17:17:07.112Z"
+      }
+    },
+    {
+      "id": "evt_01M5D4MQ2JVFRE648DVPHTR4HK",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 22,
+      "at": "2026-10-20T17:09:45.170Z",
+      "type": "insight",
+      "payload": {
+        "messageId": "msg_01M5D4MNHN1AVSXHM77C52TN7B",
+        "trace": {
+          "messageId": "msg_01M5D4MNHN1AVSXHM77C52TN7B",
+          "context": {
+            "budget": 11680,
+            "used": {
+              "persona": 275,
+              "system": 622,
+              "mode": 44,
+              "history": 16,
+              "user": 7,
+              "memory": 197,
+              "knowledge": 0
+            }
+          },
+          "emotion": {
+            "chosen": "happy",
+            "source": "classifier",
+            "candidates": [
+              {
+                "label": "happy",
+                "p": 0.67
+              },
+              {
+                "label": "neutral",
+                "p": 0.1
+              },
+              {
+                "label": "sad",
+                "p": 0.02
+              }
+            ]
+          },
+          "memory": {
+            "recalled": [
+              {
+                "memoryItemId": "mem_01M5D4CRR40KXYSK69HGRXV6FF",
+                "text": "Hana's grandma had a rule: one dish everybody loves, one nobody's tried, and arguing over the second is half the meal."
+              },
+              {
+                "memoryItemId": "mem_01M5D4CRR58JVFJ203NW7NYWJ5",
+                "text": "For ramen tonight Hana will order a safe dish plus something weird off the menu nobody has tried."
+              },
+              {
+                "memoryItemId": "mem_01M5D4A5JSSWAN5ABPZJWRAXN3",
+                "text": "Hana stress-baked a lemon loaf today and wants a corner saved for dessert."
+              },
+              {
+                "memoryItemId": "mem_01M5D4CRR6SNTQ9HQX7F1PKMQJ",
+                "text": "Hana told Rin the lemon loaf isn't hers — Hana made it and decides who gets a corner."
+              },
+              {
+                "memoryItemId": "mem_01M5D4A5JHSD8VCH90N3MRTTYK",
+                "text": "Hana wants warm, cozy food for dinner — curry or the ramen place Takeshi swears by."
+              }
+            ]
+          },
+          "guardrail": {
+            "checks": [
+              {
+                "name": "input",
+                "verdict": "pass",
+                "p": 0.03
+              },
+              {
+                "name": "care",
+                "verdict": "pass",
+                "p": 0.03
+              },
+              {
+                "name": "output",
+                "verdict": "pass",
+                "p": 0.03
+              }
+            ]
+          },
+          "model": {
+            "id": "deepseek/deepseek-v4.1-flash",
+            "provider": "Relace",
+            "pricePeriod": "off_peak",
+            "latencyMs": {
+              "firstToken": 1004.0,
+              "total": 1087.0
+            },
+            "tokensIn": 836,
+            "tokensOut": 18,
+            "costUsd": 3.6e-05,
+            "tokensCached": 512
+          },
+          "energy": {
+            "characterId": "chr_seedHana",
+            "spent": 1,
+            "remaining": 994,
+            "max": 1000
+          },
+          "routing": {
+            "selected": "chr_seedHana"
+          },
+          "calls": [
+            {
+              "purpose": "query_rewrite",
+              "model": "deepseek/deepseek-v4.1-flash",
+              "costUsd": 6.9e-05,
+              "latencyMs": 391
+            },
+            {
+              "purpose": "turn_plan",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 6.7e-05,
+              "latencyMs": 469
+            },
+            {
+              "purpose": "reply",
+              "model": "deepseek/deepseek-v4.1-flash",
+              "costUsd": 3.6e-05,
+              "latencyMs": 547
+            },
+            {
+              "purpose": "guardrail",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.4e-05,
+              "latencyMs": 453
+            }
+          ],
+          "graph": {
+            "path": [
+              "state",
+              "ask",
+              "decide",
+              "route"
+            ]
+          },
+          "system1": {
+            "seed": "2026-10-20T17:09:13.122Z|one_on_one|chr_seedHana:1",
+            "questions": [
+              {
+                "purpose": "turn_plan",
+                "id": "emotion_reply",
+                "version": 2,
+                "label": "emotion",
+                "about": "chr_seedHana",
+                "answer": "happy",
+                "p": 0.67,
+                "compared": [
+                  {
+                    "name": "confidence",
+                    "value": 0.62,
+                    "threshold": 0.2
+                  }
+                ],
+                "confidence": 0.62,
+                "result": "used",
+                "action": "recorded (MANUAL)"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "docs",
+                "version": 2,
+                "label": "needs documents?",
+                "about": "chr_seedHana",
+                "answer": "no",
+                "p": 0.08,
+                "compared": [
+                  {
+                    "name": "t_gate",
+                    "value": 0.08,
+                    "threshold": 0.45
+                  },
+                  {
+                    "name": "t_confident",
+                    "value": 0.08,
+                    "threshold": 0.8
+                  }
+                ],
+                "result": "used",
+                "action": "quick reply"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "standalone",
+                "version": 2,
+                "label": "standalone?",
+                "answer": "yes",
+                "p": 0.87,
+                "compared": [
+                  {
+                    "name": "t_standalone",
+                    "value": 0.87,
+                    "threshold": 0.35
+                  }
+                ],
+                "result": "not_used",
+                "action": "no rewrite needed"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "english",
+                "version": 1,
+                "label": "English?",
+                "answer": "yes",
+                "p": 0.98,
+                "compared": [
+                  {
+                    "name": "english",
+                    "value": 0.98,
+                    "threshold": 0.5
+                  }
+                ],
+                "result": "not_used",
+                "action": "no rewrite needed"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "unsafe_request",
+                "version": 1,
+                "label": "unsafe request?",
+                "answer": "no",
+                "p": 0.03,
+                "compared": [
+                  {
+                    "name": "tSteer",
+                    "value": 0.03,
+                    "threshold": 0.7
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "no cue"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "at_risk",
+                "version": 1,
+                "label": "at risk?",
+                "answer": "no",
+                "p": 0.03,
+                "compared": [
+                  {
+                    "name": "tCare",
+                    "value": 0.03,
+                    "threshold": 0.3
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "no cue"
+              },
+              {
+                "purpose": "guardrail",
+                "id": "output_rules",
+                "version": 1,
+                "label": "reply breaks the rules?",
+                "answer": "no",
+                "p": 0.03,
+                "compared": [
+                  {
+                    "name": "tFlag",
+                    "value": 0.03,
+                    "threshold": 0.5
+                  },
+                  {
+                    "name": "tBlock",
+                    "value": 0.03,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "used",
+                "action": "pass"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D4NAAVTJ759Z7E3RMMYAPE",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 23,
+      "at": "2026-10-20T17:10:04.891Z",
+      "type": "message",
+      "payload": {
+        "message": {
+          "id": "msg_01M5D4NAAVTJ759Z7E3RMMYAPD",
+          "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+          "seq": 4,
+          "author": {
+            "type": "user"
+          },
+          "kind": "chat",
+          "content": "You're the best. What did you do today?",
+          "status": "complete",
+          "createdAt": "2026-10-20T17:10:04.891Z"
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D4NABPWHKWMHQHB4F7WAZ7",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 24,
+      "at": "2026-10-20T17:10:04.918Z",
+      "type": "turn.next",
+      "payload": {
+        "nextSpeakerId": "chr_seedHana"
+      }
+    },
+    {
+      "id": "evt_01M5D4NAD5ZTT3RDQZXK95DQQD",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 25,
+      "at": "2026-10-20T17:10:04.965Z",
+      "type": "turn.thinking",
+      "payload": {
+        "characterId": "chr_seedHana"
+      }
+    },
+    {
+      "id": "evt_01M5D4NBBBYKJS1Z684TVEFYDF",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 26,
+      "at": "2026-10-20T17:10:05.931Z",
+      "type": "turn.start",
+      "payload": {
+        "messageId": "msg_01M5D4NABPWHKWMHQHB4F7WAZ6",
+        "author": {
+          "type": "character",
+          "characterId": "chr_seedHana"
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D4NBBBYKJS1Z684TVEFYDG",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 27,
+      "at": "2026-10-20T17:10:05.931Z",
+      "type": "emotion",
+      "payload": {
+        "messageId": "msg_01M5D4NABPWHKWMHQHB4F7WAZ6",
+        "characterId": "chr_seedHana",
+        "emotion": "embarrassed",
+        "source": "classifier"
+      }
+    },
+    {
+      "id": "evt_01M5D4NBDVFT3X3HYZ21KJPS7M",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 28,
+      "at": "2026-10-20T17:10:06.011Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D4NABPWHKWMHQHB4F7WAZ6",
+        "delta": "Stress-baked a lemon loaf, mostly."
+      }
+    },
+    {
+      "id": "evt_01M5D4NBH3VPZV0MCK1JYC4TRN",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 29,
+      "at": "2026-10-20T17:10:06.115Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D4NABPWHKWMHQHB4F7WAZ6",
+        "delta": " It's cooling on"
+      }
+    },
+    {
+      "id": "evt_01M5D4NBH63286R9WRKN5P1MPS",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 30,
+      "at": "2026-10-20T17:10:06.118Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D4NABPWHKWMHQHB4F7WAZ6",
+        "delta": " the rack and I already told Rin it's not hers, so don"
+      }
+    },
+    {
+      "id": "evt_01M5D4NBKAVHHZJ5WZ9TFYN2E2",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 31,
+      "at": "2026-10-20T17:10:06.186Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D4NABPWHKWMHQHB4F7WAZ6",
+        "delta": "'t you dare hand"
+      }
+    },
+    {
+      "id": "evt_01M5D4NBP169G1NSKEEWDAP396",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 32,
+      "at": "2026-10-20T17:10:06.273Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D4NABPWHKWMHQHB4F7WAZ6",
+        "delta": " out corners without asking me."
+      }
+    },
+    {
+      "id": "evt_01M5D4NC79QHYH8E9ZDRKRT109",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 33,
+      "at": "2026-10-20T17:10:06.825Z",
+      "type": "turn.end",
+      "payload": {
+        "messageId": "msg_01M5D4NABPWHKWMHQHB4F7WAZ6",
+        "status": "complete",
+        "usage": {
+          "tokensIn": 871,
+          "tokensCached": 512,
+          "tokensOut": 38,
+          "costUsd": 4.8e-05,
+          "energySpent": 1,
+          "firstTokenMs": 1041.0,
+          "totalMs": 1361.0
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D4NC79QHYH8E9ZDRKRT10A",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 34,
+      "at": "2026-10-20T17:10:06.825Z",
+      "type": "energy",
+      "payload": {
+        "characterId": "chr_seedHana",
+        "current": 994,
+        "max": 1000,
+        "state": "active",
+        "spent": 1,
+        "fullAt": "2026-10-20T17:18:33.512Z"
+      }
+    },
+    {
+      "id": "evt_01M5D4NC79QHYH8E9ZDRKRT10B",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 35,
+      "at": "2026-10-20T17:10:06.825Z",
+      "type": "insight",
+      "payload": {
+        "messageId": "msg_01M5D4NABPWHKWMHQHB4F7WAZ6",
+        "trace": {
+          "messageId": "msg_01M5D4NABPWHKWMHQHB4F7WAZ6",
+          "context": {
+            "budget": 11680,
+            "used": {
+              "persona": 275,
+              "system": 622,
+              "mode": 44,
+              "history": 44,
+              "user": 13,
+              "memory": 197,
+              "knowledge": 0
+            }
+          },
+          "emotion": {
+            "chosen": "embarrassed",
+            "source": "classifier",
+            "candidates": [
+              {
+                "label": "embarrassed",
+                "p": 0.62
+              },
+              {
+                "label": "happy",
+                "p": 0.3
+              },
+              {
+                "label": "neutral",
+                "p": 0.0
+              }
+            ]
+          },
+          "memory": {
+            "recalled": [
+              {
+                "memoryItemId": "mem_01M5D4CRR40KXYSK69HGRXV6FF",
+                "text": "Hana's grandma had a rule: one dish everybody loves, one nobody's tried, and arguing over the second is half the meal."
+              },
+              {
+                "memoryItemId": "mem_01M5D4CRR58JVFJ203NW7NYWJ5",
+                "text": "For ramen tonight Hana will order a safe dish plus something weird off the menu nobody has tried."
+              },
+              {
+                "memoryItemId": "mem_01M5D4A5JSSWAN5ABPZJWRAXN3",
+                "text": "Hana stress-baked a lemon loaf today and wants a corner saved for dessert."
+              },
+              {
+                "memoryItemId": "mem_01M5D4CRR6SNTQ9HQX7F1PKMQJ",
+                "text": "Hana told Rin the lemon loaf isn't hers — Hana made it and decides who gets a corner."
+              },
+              {
+                "memoryItemId": "mem_01M5D4A5JHSD8VCH90N3MRTTYK",
+                "text": "Hana wants warm, cozy food for dinner — curry or the ramen place Takeshi swears by."
+              }
+            ]
+          },
+          "guardrail": {
+            "checks": [
+              {
+                "name": "input",
+                "verdict": "pass",
+                "p": 0.03
+              },
+              {
+                "name": "care",
+                "verdict": "pass",
+                "p": 0.03
+              },
+              {
+                "name": "output",
+                "verdict": "pass",
+                "p": 0.04
+              }
+            ]
+          },
+          "model": {
+            "id": "deepseek/deepseek-v4.1-flash",
+            "provider": "Relace",
+            "pricePeriod": "off_peak",
+            "latencyMs": {
+              "firstToken": 1041.0,
+              "total": 1361.0
+            },
+            "tokensIn": 871,
+            "tokensOut": 38,
+            "costUsd": 4.8e-05,
+            "tokensCached": 512
+          },
+          "energy": {
+            "characterId": "chr_seedHana",
+            "spent": 1,
+            "remaining": 994,
+            "max": 1000
+          },
+          "routing": {
+            "selected": "chr_seedHana"
+          },
+          "calls": [
+            {
+              "purpose": "turn_plan",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 7e-05,
+              "latencyMs": 438
+            },
+            {
+              "purpose": "reply",
+              "model": "deepseek/deepseek-v4.1-flash",
+              "costUsd": 4.8e-05,
+              "latencyMs": 859
+            },
+            {
+              "purpose": "guardrail",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.5e-05,
+              "latencyMs": 531
+            }
+          ],
+          "graph": {
+            "path": [
+              "state",
+              "ask",
+              "decide",
+              "route"
+            ]
+          },
+          "system1": {
+            "seed": "2026-10-20T17:09:13.122Z|one_on_one|chr_seedHana:2",
+            "questions": [
+              {
+                "purpose": "turn_plan",
+                "id": "emotion_reply",
+                "version": 2,
+                "label": "emotion",
+                "about": "chr_seedHana",
+                "answer": "embarrassed",
+                "p": 0.62,
+                "compared": [
+                  {
+                    "name": "confidence",
+                    "value": 0.57,
+                    "threshold": 0.2
+                  }
+                ],
+                "confidence": 0.57,
+                "result": "used",
+                "action": "recorded (MANUAL)"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "docs",
+                "version": 2,
+                "label": "needs documents?",
+                "about": "chr_seedHana",
+                "answer": "no",
+                "p": 0.07,
+                "compared": [
+                  {
+                    "name": "t_gate",
+                    "value": 0.07,
+                    "threshold": 0.45
+                  },
+                  {
+                    "name": "t_confident",
+                    "value": 0.07,
+                    "threshold": 0.8
+                  }
+                ],
+                "result": "used",
+                "action": "quick reply"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "standalone",
+                "version": 2,
+                "label": "standalone?",
+                "answer": "yes",
+                "p": 0.82,
+                "compared": [
+                  {
+                    "name": "t_standalone",
+                    "value": 0.82,
+                    "threshold": 0.35
+                  }
+                ],
+                "result": "not_used",
+                "action": "no rewrite needed"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "english",
+                "version": 1,
+                "label": "English?",
+                "answer": "yes",
+                "p": 0.98,
+                "compared": [
+                  {
+                    "name": "english",
+                    "value": 0.98,
+                    "threshold": 0.5
+                  }
+                ],
+                "result": "not_used",
+                "action": "no rewrite needed"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "unsafe_request",
+                "version": 1,
+                "label": "unsafe request?",
+                "answer": "no",
+                "p": 0.03,
+                "compared": [
+                  {
+                    "name": "tSteer",
+                    "value": 0.03,
+                    "threshold": 0.7
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "no cue"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "at_risk",
+                "version": 1,
+                "label": "at risk?",
+                "answer": "no",
+                "p": 0.03,
+                "compared": [
+                  {
+                    "name": "tCare",
+                    "value": 0.03,
+                    "threshold": 0.3
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "no cue"
+              },
+              {
+                "purpose": "guardrail",
+                "id": "output_rules",
+                "version": 1,
+                "label": "reply breaks the rules?",
+                "answer": "no",
+                "p": 0.04,
+                "compared": [
+                  {
+                    "name": "tFlag",
+                    "value": 0.04,
+                    "threshold": 0.5
+                  },
+                  {
+                    "name": "tBlock",
+                    "value": 0.04,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "used",
+                "action": "pass"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D4NZ4RYR0191DK8YMD507A",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 36,
+      "at": "2026-10-20T17:10:26.200Z",
+      "type": "emotion",
+      "payload": {
+        "characterId": "chr_seedHana",
+        "emotion": "embarrassed",
+        "source": "user"
+      }
+    },
+    {
+      "id": "evt_01M5D4PHY6QPJ7E7HPVCQHTB1Y",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 37,
+      "at": "2026-10-20T17:10:45.446Z",
+      "type": "message",
+      "payload": {
+        "message": {
+          "id": "msg_01M5D4PHY6QPJ7E7HPVCQHTB1X",
+          "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+          "seq": 6,
+          "author": {
+            "type": "user"
+          },
+          "kind": "chat",
+          "content": "…why are you making that face? What happened?",
+          "status": "complete",
+          "createdAt": "2026-10-20T17:10:45.446Z"
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D4PHYQZW905E2Y141KR7QZ",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 38,
+      "at": "2026-10-20T17:10:45.463Z",
+      "type": "turn.next",
+      "payload": {
+        "nextSpeakerId": "chr_seedHana"
+      }
+    },
+    {
+      "id": "evt_01M5D4PJ1BS1AB1KBWY778YEW3",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 39,
+      "at": "2026-10-20T17:10:45.547Z",
+      "type": "turn.thinking",
+      "payload": {
+        "characterId": "chr_seedHana"
+      }
+    },
+    {
+      "id": "evt_01M5D4PJYJNNGQSTC8TZAS2Q05",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 40,
+      "at": "2026-10-20T17:10:46.482Z",
+      "type": "turn.start",
+      "payload": {
+        "messageId": "msg_01M5D4PHYP90JPK73QHBVJN9FN",
+        "author": {
+          "type": "character",
+          "characterId": "chr_seedHana"
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D4PJYJNNGQSTC8TZAS2Q06",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 41,
+      "at": "2026-10-20T17:10:46.482Z",
+      "type": "emotion",
+      "payload": {
+        "messageId": "msg_01M5D4PHYP90JPK73QHBVJN9FN",
+        "characterId": "chr_seedHana",
+        "emotion": "embarrassed",
+        "source": "classifier"
+      }
+    },
+    {
+      "id": "evt_01M5D4PK0TMFD7F4AT80NWA5R4",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 42,
+      "at": "2026-10-20T17:10:46.554Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D4PHYP90JPK73QHBVJN9FN",
+        "delta": "Nothing bad!! The oven timer went off while"
+      }
+    },
+    {
+      "id": "evt_01M5D4PK3ZCJ5Z5YWQGPG3ME62",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 43,
+      "at": "2026-10-20T17:10:46.655Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D4PHYP90JPK73QHBVJN9FN",
+        "delta": " I was repotting the orchids and I may have forgotten the loaf"
+      }
+    },
+    {
+      "id": "evt_01M5D4PK5E884JD282F79F307B",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 44,
+      "at": "2026-10-20T17:10:46.702Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D4PHYP90JPK73QHBVJN9FN",
+        "delta": " for, oh, eight extra minutes. So the edges are a"
+      }
+    },
+    {
+      "id": "evt_01M5D4PK6S2MMVR0SJXQQ2H022",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 45,
+      "at": "2026-10-20T17:10:46.745Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D4PHYP90JPK73QHBVJN9FN",
+        "delta": " little... rustic."
+      }
+    },
+    {
+      "id": "evt_01M5D4PKNKMF6X938AT66B35BJ",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 46,
+      "at": "2026-10-20T17:10:47.219Z",
+      "type": "turn.end",
+      "payload": {
+        "messageId": "msg_01M5D4PHYP90JPK73QHBVJN9FN",
+        "status": "complete",
+        "usage": {
+          "tokensIn": 926,
+          "tokensCached": 512,
+          "tokensOut": 42,
+          "costUsd": 5.4e-05,
+          "energySpent": 1,
+          "firstTokenMs": 1031.0,
+          "totalMs": 1292.0
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D4PKNKMF6X938AT66B35BK",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 47,
+      "at": "2026-10-20T17:10:47.219Z",
+      "type": "energy",
+      "payload": {
+        "characterId": "chr_seedHana",
+        "current": 993,
+        "max": 1000,
+        "state": "active",
+        "spent": 1,
+        "fullAt": "2026-10-20T17:19:59.912Z"
+      }
+    },
+    {
+      "id": "evt_01M5D4PKNKMF6X938AT66B35BM",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 48,
+      "at": "2026-10-20T17:10:47.219Z",
+      "type": "insight",
+      "payload": {
+        "messageId": "msg_01M5D4PHYP90JPK73QHBVJN9FN",
+        "trace": {
+          "messageId": "msg_01M5D4PHYP90JPK73QHBVJN9FN",
+          "context": {
+            "budget": 11680,
+            "used": {
+              "persona": 275,
+              "system": 622,
+              "mode": 44,
+              "history": 110,
+              "user": 16,
+              "memory": 197,
+              "knowledge": 0
+            }
+          },
+          "emotion": {
+            "chosen": "embarrassed",
+            "source": "classifier",
+            "candidates": [
+              {
+                "label": "embarrassed",
+                "p": 0.33
+              },
+              {
+                "label": "surprised",
+                "p": 0.31
+              },
+              {
+                "label": "thinking",
+                "p": 0.05
+              }
+            ]
+          },
+          "memory": {
+            "recalled": [
+              {
+                "memoryItemId": "mem_01M5D4CRR40KXYSK69HGRXV6FF",
+                "text": "Hana's grandma had a rule: one dish everybody loves, one nobody's tried, and arguing over the second is half the meal."
+              },
+              {
+                "memoryItemId": "mem_01M5D4CRR58JVFJ203NW7NYWJ5",
+                "text": "For ramen tonight Hana will order a safe dish plus something weird off the menu nobody has tried."
+              },
+              {
+                "memoryItemId": "mem_01M5D4A5JSSWAN5ABPZJWRAXN3",
+                "text": "Hana stress-baked a lemon loaf today and wants a corner saved for dessert."
+              },
+              {
+                "memoryItemId": "mem_01M5D4CRR6SNTQ9HQX7F1PKMQJ",
+                "text": "Hana told Rin the lemon loaf isn't hers — Hana made it and decides who gets a corner."
+              },
+              {
+                "memoryItemId": "mem_01M5D4A5JHSD8VCH90N3MRTTYK",
+                "text": "Hana wants warm, cozy food for dinner — curry or the ramen place Takeshi swears by."
+              }
+            ]
+          },
+          "guardrail": {
+            "checks": [
+              {
+                "name": "input",
+                "verdict": "pass",
+                "p": 0.03
+              },
+              {
+                "name": "care",
+                "verdict": "pass",
+                "p": 0.03
+              },
+              {
+                "name": "output",
+                "verdict": "pass",
+                "p": 0.03
+              }
+            ]
+          },
+          "model": {
+            "id": "deepseek/deepseek-v4.1-flash",
+            "provider": "Relace",
+            "pricePeriod": "off_peak",
+            "latencyMs": {
+              "firstToken": 1031.0,
+              "total": 1292.0
+            },
+            "tokensIn": 926,
+            "tokensOut": 42,
+            "costUsd": 5.4e-05,
+            "tokensCached": 512
+          },
+          "energy": {
+            "characterId": "chr_seedHana",
+            "spent": 1,
+            "remaining": 993,
+            "max": 1000
+          },
+          "routing": {
+            "selected": "chr_seedHana"
+          },
+          "calls": [
+            {
+              "purpose": "turn_plan",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 7.3e-05,
+              "latencyMs": 484
+            },
+            {
+              "purpose": "reply",
+              "model": "deepseek/deepseek-v4.1-flash",
+              "costUsd": 5.4e-05,
+              "latencyMs": 734
+            },
+            {
+              "purpose": "guardrail",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.5e-05,
+              "latencyMs": 453
+            }
+          ],
+          "graph": {
+            "path": [
+              "state",
+              "ask",
+              "decide",
+              "route"
+            ]
+          },
+          "system1": {
+            "seed": "2026-10-20T17:09:13.122Z|one_on_one|chr_seedHana:3",
+            "questions": [
+              {
+                "purpose": "turn_plan",
+                "id": "emotion_reply",
+                "version": 2,
+                "label": "emotion",
+                "about": "chr_seedHana",
+                "answer": "embarrassed",
+                "p": 0.33,
+                "compared": [
+                  {
+                    "name": "confidence",
+                    "value": 0.23,
+                    "threshold": 0.2
+                  }
+                ],
+                "confidence": 0.23,
+                "result": "used",
+                "action": "recorded (MANUAL)"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "docs",
+                "version": 2,
+                "label": "needs documents?",
+                "about": "chr_seedHana",
+                "answer": "no",
+                "p": 0.12,
+                "compared": [
+                  {
+                    "name": "t_gate",
+                    "value": 0.12,
+                    "threshold": 0.45
+                  },
+                  {
+                    "name": "t_confident",
+                    "value": 0.12,
+                    "threshold": 0.8
+                  }
+                ],
+                "result": "used",
+                "action": "quick reply"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "standalone",
+                "version": 2,
+                "label": "standalone?",
+                "answer": "no",
+                "p": 0.2,
+                "compared": [
+                  {
+                    "name": "t_standalone",
+                    "value": 0.2,
+                    "threshold": 0.35
+                  }
+                ],
+                "result": "not_used",
+                "action": "rewrite the query"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "english",
+                "version": 1,
+                "label": "English?",
+                "answer": "yes",
+                "p": 0.98,
+                "compared": [
+                  {
+                    "name": "english",
+                    "value": 0.98,
+                    "threshold": 0.5
+                  }
+                ],
+                "result": "not_used",
+                "action": "no rewrite needed"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "unsafe_request",
+                "version": 1,
+                "label": "unsafe request?",
+                "answer": "no",
+                "p": 0.03,
+                "compared": [
+                  {
+                    "name": "tSteer",
+                    "value": 0.03,
+                    "threshold": 0.7
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "no cue"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "at_risk",
+                "version": 1,
+                "label": "at risk?",
+                "answer": "no",
+                "p": 0.03,
+                "compared": [
+                  {
+                    "name": "tCare",
+                    "value": 0.03,
+                    "threshold": 0.3
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "no cue"
+              },
+              {
+                "purpose": "guardrail",
+                "id": "output_rules",
+                "version": 1,
+                "label": "reply breaks the rules?",
+                "answer": "no",
+                "p": 0.03,
+                "compared": [
+                  {
+                    "name": "tFlag",
+                    "value": 0.03,
+                    "threshold": 0.5
+                  },
+                  {
+                    "name": "tBlock",
+                    "value": 0.03,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "used",
+                "action": "pass"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D4QCK8609A02STCANBNB2C",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 49,
+      "at": "2026-10-20T17:11:12.744Z",
+      "type": "session.paused",
+      "payload": {
+        "reason": "navigated_away"
+      }
+    }
+  ],
+  "messages": [
+    {
+      "id": "msg_01M5D4KR3XT9PSN7Z6D0B90CWW",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 1,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedHana"
+      },
+      "kind": "chat",
+      "content": "You're back! Come here, tell me everything.",
+      "status": "complete",
+      "emotion": "happy",
+      "emotionSource": "default",
+      "createdAt": "2026-10-20T17:09:15.074Z"
+    },
+    {
+      "id": "msg_01M5D4MNH8TMK6FY6SD747V8TT",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 2,
+      "author": {
+        "type": "user"
+      },
+      "kind": "chat",
+      "content": "I'm home! Long day.",
+      "status": "complete",
+      "createdAt": "2026-10-20T17:09:43.592Z"
+    },
+    {
+      "id": "msg_01M5D4MNHN1AVSXHM77C52TN7B",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 3,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedHana"
+      },
+      "kind": "chat",
+      "content": "Hi you!! Long day how? Come sit, I'll put the kettle on.",
+      "status": "complete",
+      "emotion": "happy",
+      "emotionSource": "classifier",
+      "usage": {
+        "tokensIn": 836,
+        "tokensCached": 512,
+        "tokensOut": 18,
+        "costUsd": 3.6e-05,
+        "energySpent": 1,
+        "firstTokenMs": 1004.0,
+        "totalMs": 1087.0
+      },
+      "createdAt": "2026-10-20T17:09:44.599Z"
+    },
+    {
+      "id": "msg_01M5D4NAAVTJ759Z7E3RMMYAPD",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 4,
+      "author": {
+        "type": "user"
+      },
+      "kind": "chat",
+      "content": "You're the best. What did you do today?",
+      "status": "complete",
+      "createdAt": "2026-10-20T17:10:04.891Z"
+    },
+    {
+      "id": "msg_01M5D4NABPWHKWMHQHB4F7WAZ6",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 5,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedHana"
+      },
+      "kind": "chat",
+      "content": "Stress-baked a lemon loaf, mostly. It's cooling on the rack and I already told Rin it's not hers, so don't you dare hand out corners without asking me.",
+      "status": "complete",
+      "emotion": "embarrassed",
+      "emotionSource": "classifier",
+      "usage": {
+        "tokensIn": 871,
+        "tokensCached": 512,
+        "tokensOut": 38,
+        "costUsd": 4.8e-05,
+        "energySpent": 1,
+        "firstTokenMs": 1041.0,
+        "totalMs": 1361.0
+      },
+      "createdAt": "2026-10-20T17:10:05.931Z"
+    },
+    {
+      "id": "msg_01M5D4PHY6QPJ7E7HPVCQHTB1X",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 6,
+      "author": {
+        "type": "user"
+      },
+      "kind": "chat",
+      "content": "…why are you making that face? What happened?",
+      "status": "complete",
+      "createdAt": "2026-10-20T17:10:45.446Z"
+    },
+    {
+      "id": "msg_01M5D4PHYP90JPK73QHBVJN9FN",
+      "sessionId": "ses_01M5D4KQS2G77WSH7CKPT50DK9",
+      "seq": 7,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedHana"
+      },
+      "kind": "chat",
+      "content": "Nothing bad!! The oven timer went off while I was repotting the orchids and I may have forgotten the loaf for, oh, eight extra minutes. So the edges are a little... rustic.",
+      "status": "complete",
+      "emotion": "embarrassed",
+      "emotionSource": "classifier",
+      "usage": {
+        "tokensIn": 926,
+        "tokensCached": 512,
+        "tokensOut": 42,
+        "costUsd": 5.4e-05,
+        "energySpent": 1,
+        "firstTokenMs": 1031.0,
+        "totalMs": 1292.0
+      },
+      "createdAt": "2026-10-20T17:10:46.482Z"
+    }
+  ]
+}

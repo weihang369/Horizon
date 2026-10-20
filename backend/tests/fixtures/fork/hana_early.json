@@ -11,7 +11,7 @@
     "id": "evt_forkFixture1e1",
     "sessionId": "ses_forkFixture1",
     "seq": 1,
-    "at": "2026-09-30T19:02:00Z",
+    "at": "2026-09-30T19:02:00.000Z",
     "type": "session.state",
     "payload": {
      "status": "active",
@@ -29,11 +29,11 @@
     "id": "evt_forkFixture1e2",
     "sessionId": "ses_forkFixture1",
     "seq": 2,
-    "at": "2026-09-30T19:02:00.005Z",
+    "at": "2026-09-30T19:02:00.000Z",
     "type": "energy",
     "payload": {
      "characterId": "chr_seedHana",
-     "current": 923,
+     "current": 922,
      "max": 1000,
      "state": "active"
     }
@@ -42,43 +42,91 @@
     "id": "evt_forkFixture1e3",
     "sessionId": "ses_forkFixture1",
     "seq": 3,
-    "at": "2026-09-30T19:02:00.900Z",
-    "type": "emotion",
+    "at": "2026-09-30T19:02:00.340Z",
+    "type": "turn.next",
     "payload": {
-     "characterId": "chr_seedHana",
-     "emotion": "happy",
-     "source": "user"
+     "nextSpeakerId": "chr_seedHana"
     }
    },
    {
     "id": "evt_forkFixture1e4",
     "sessionId": "ses_forkFixture1",
     "seq": 4,
-    "at": "2026-09-30T19:02:02.800Z",
-    "type": "message",
+    "at": "2026-09-30T19:02:00.416Z",
+    "type": "turn.thinking",
     "payload": {
-     "message": {
-      "id": "msg_forkFixture1m0",
-      "sessionId": "ses_forkFixture1",
-      "seq": 1,
-      "author": {
-       "type": "user"
-      },
-      "kind": "chat",
-      "content": "I'm home! Long day.",
-      "status": "complete",
-      "createdAt": "2026-09-30T19:02:02.800Z"
-     }
+     "characterId": "chr_seedHana"
     }
    },
    {
     "id": "evt_forkFixture1e5",
     "sessionId": "ses_forkFixture1",
     "seq": 5,
-    "at": "2026-09-30T19:02:03.050Z",
-    "type": "turn.next",
+    "at": "2026-09-30T19:02:01.945Z",
+    "type": "turn.start",
     "payload": {
-     "nextSpeakerId": "chr_seedHana"
+     "messageId": "msg_forkFixture1m0",
+     "author": {
+      "type": "character",
+      "characterId": "chr_seedHana"
+     }
+    }
+   },
+   {
+    "id": "evt_forkFixture1e6",
+    "sessionId": "ses_forkFixture1",
+    "seq": 6,
+    "at": "2026-09-30T19:02:01.945Z",
+    "type": "emotion",
+    "payload": {
+     "messageId": "msg_forkFixture1m0",
+     "characterId": "chr_seedHana",
+     "emotion": "happy",
+     "source": "default"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e7",
+    "sessionId": "ses_forkFixture1",
+    "seq": 7,
+    "at": "2026-09-30T19:02:01.996Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m0",
+     "delta": "You're back"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e8",
+    "sessionId": "ses_forkFixture1",
+    "seq": 8,
+    "at": "2026-09-30T19:02:02.088Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m0",
+     "delta": "! Come here"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e9",
+    "sessionId": "ses_forkFixture1",
+    "seq": 9,
+    "at": "2026-09-30T19:02:02.171Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m0",
+     "delta": ", tell me everything."
+    }
+   },
+   {
+    "id": "evt_forkFixture1e10",
+    "sessionId": "ses_forkFixture1",
+    "seq": 10,
+    "at": "2026-09-30T19:02:02.171Z",
+    "type": "turn.end",
+    "payload": {
+     "messageId": "msg_forkFixture1m0",
+     "status": "complete"
     }
    }
   ],
@@ -88,11 +136,12 @@
    "title": "Long day · live",
    "titleIsCustom": false,
    "mode": "one_on_one",
+   "status": "active",
    "participants": [
     {
      "characterId": "chr_seedHana",
      "role": "speaker",
-     "currentEmotion": "happy",
+     "currentEmotion": "neutral",
      "mutedByUser": false
     }
    ],
@@ -100,28 +149,30 @@
    "musicPolicy": "character_theme",
    "readableMode": false,
    "config": null,
-   "isSeed": false,
-   "status": "active",
    "state": null,
+   "isSeed": false,
    "costUsd": 0,
    "messageCount": 1,
    "createdAt": "2026-10-03T03:00:00.000Z",
-   "updatedAt": "2026-09-30T19:02:03.050Z",
-   "lastMessageAt": "2026-09-30T19:02:02.800Z",
+   "updatedAt": "2026-09-30T19:02:02.171Z",
+   "lastMessageAt": "2026-09-30T19:02:01.945Z",
    "continuedFrom": "ses_seedHanaLongDay"
   },
   "messages": [
    {
+    "kind": "chat",
     "id": "msg_forkFixture1m0",
     "sessionId": "ses_forkFixture1",
     "seq": 1,
     "author": {
-     "type": "user"
+     "type": "character",
+     "characterId": "chr_seedHana"
     },
-    "kind": "chat",
-    "content": "I'm home! Long day.",
+    "content": "You're back! Come here, tell me everything.",
     "status": "complete",
-    "createdAt": "2026-09-30T19:02:02.800Z"
+    "createdAt": "2026-09-30T19:02:01.945Z",
+    "emotion": "happy",
+    "emotionSource": "default"
    }
   ]
  }

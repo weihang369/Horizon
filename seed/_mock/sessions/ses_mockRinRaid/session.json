@@ -6,11 +6,12 @@
     "title": "Raid night",
     "titleIsCustom": false,
     "mode": "one_on_one",
+    "status": "paused",
     "participants": [
       {
         "characterId": "chr_seedRin",
         "role": "speaker",
-        "currentEmotion": "embarrassed",
+        "currentEmotion": "happy",
         "mutedByUser": false
       }
     ],
@@ -18,14 +19,13 @@
     "musicPolicy": "character_theme",
     "readableMode": false,
     "config": null,
-    "isSeed": false,
-    "status": "paused",
     "state": null,
-    "costUsd": 0.000216,
+    "isSeed": false,
+    "costUsd": 0.000267,
     "messageCount": 5,
-    "createdAt": "2026-09-26T12:15:00Z",
-    "updatedAt": "2026-09-26T12:15:11.603Z",
+    "createdAt": "2026-09-26T17:55:59.995Z",
+    "updatedAt": "2026-09-26T17:57:21.235Z",
     "pausedReason": "navigated_away",
-    "lastMessageAt": "2026-09-26T12:15:08.798Z"
+    "lastMessageAt": "2026-09-26T17:56:47.236Z"
   }
 }

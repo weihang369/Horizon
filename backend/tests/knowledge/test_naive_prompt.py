@@ -138,7 +138,9 @@ async def test_recalled_memory_in_the_trace(api: Api) -> None:
     await api.rt.memory.apply(AMARA, "wld_seedMeridian", [Insert(MemoryDraft("fact", "Kai prefers green tea now.", 0.6))])
     reply = await _naive_turn(api, ["<e:neutral>I remember."], "Do you remember our talk?")
     recalled = reply["trace"]["memory"]["recalled"]
-    assert len(recalled) == 2 and all(m["memoryItemId"].startswith("mem_") and m["text"] for m in recalled)
+    # The two TwoMemories hands back are there (the recorded seed may add one more of Amara's own; v1 test stage).
+    assert 2 <= len(recalled) <= 3 and all(m["memoryItemId"].startswith("mem_") and m["text"] for m in recalled)
+    assert "Kai prefers green tea now." in {m["text"] for m in recalled}
     assert reply["trace"]["context"]["used"]["memory"] > 0
     block = chat_bodies(api)[-1]["messages"][-1]["content"]
     assert all(f"- {m['text']}" in block for m in recalled)

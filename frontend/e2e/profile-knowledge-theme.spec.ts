@@ -11,7 +11,7 @@ test("Knowledge tab: Amara's source cards open the O28 Source viewer", async ({ 
   await card.click();
   const viewer = page.getByRole("dialog", { name: /ED triage guidelines/ });
   await expect(viewer).toBeVisible();
-  await expect(viewer.getByText("End of indexed passages · 6 of 6")).toBeVisible();
+  await expect(viewer.getByText("End of indexed passages · 17 of 17")).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(viewer).toBeHidden();
   await expect(card).toBeFocused();

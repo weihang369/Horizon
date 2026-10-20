@@ -11,11 +11,10 @@
       "kind": "system_note",
       "content": "ROUND 1 · OPENING",
       "status": "complete",
-      "createdAt": "2026-09-24T11:00:00.710Z"
+      "createdAt": "2026-09-24T11:00:01.651Z"
     },
     {
       "kind": "chat",
-      "seq": 2,
       "debate": {
         "phase": "opening",
         "round": 1,
@@ -23,110 +22,218 @@
       },
       "id": "msg_mockP02",
       "sessionId": "ses_mockPanelPhones",
+      "seq": 2,
       "author": {
         "type": "character",
         "characterId": "chr_seedAmara"
       },
-      "content": "From the clinic side: teenagers are sleeping less and reporting more anxiety, and phones are part of that story. A school-day ban is cheap, reversible and gives kids six hours a day of protected attention.",
+      "content": "Schools are where kids spend most of their waking hours, and phones turn that time into a slot machine. I'd ban them during school hours because the evidence on attention is solid: a buzzing phone in a pocket pulls focus even when it's not in use, and that hits the kids who are already struggling hardest. Second, the social pressure to be reachable and performing online never takes a break in a phone-permitted school. Third, this is enforceable and teachable — clear hours, clear rule. That's not punishment. It's giving kids a room where they can actually think.",
       "status": "complete",
-      "createdAt": "2026-09-24T11:00:03.700Z",
+      "createdAt": "2026-09-24T11:00:02.391Z",
       "emotion": "neutral",
-      "emotionSource": "llm",
+      "emotionSource": "classifier",
       "usage": {
-        "tokensIn": 2314,
-        "tokensCached": 1669,
-        "tokensOut": 51,
-        "costUsd": 0.000132,
+        "tokensIn": 993,
+        "tokensCached": 0,
+        "tokensOut": 119,
+        "costUsd": 0.000129,
         "energySpent": 2,
-        "firstTokenMs": 1461,
-        "totalMs": 2941
+        "firstTokenMs": 693,
+        "totalMs": 1246
       },
       "trace": {
         "messageId": "msg_mockP02",
-        "model": {
-          "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "DeepSeek",
-          "pricePeriod": "off_peak",
-          "latencyMs": {
-            "firstToken": 1461,
-            "total": 2941
-          },
-          "tokensIn": 2314,
-          "tokensCached": 1669,
-          "tokensOut": 51,
-          "costUsd": 0.000132
-        },
-        "energy": {
-          "characterId": "chr_seedAmara",
-          "spent": 2,
-          "remaining": 1002,
-          "max": 1000
+        "context": {
+          "budget": 14680,
+          "used": {
+            "persona": 397,
+            "system": 707,
+            "mode": 126,
+            "history": 11,
+            "user": 0,
+            "memory": 217,
+            "knowledge": 0
+          }
         },
         "emotion": {
           "chosen": "neutral",
-          "source": "llm",
+          "source": "classifier",
           "candidates": [
             {
               "label": "neutral",
-              "p": 0.584
+              "p": 0.96
             },
             {
-              "label": "sad",
-              "p": 0.28
+              "label": "thinking",
+              "p": 0.04
             },
             {
-              "label": "surprised",
-              "p": 0.085
+              "label": "happy",
+              "p": 0
             }
           ]
         },
-        "routing": {
-          "selected": "chr_seedAmara",
-          "forcedBy": "round_order"
+        "knowledge": {
+          "query": "This house would ban smartphones in schools",
+          "trigger": "gated",
+          "retrieved": []
         },
-        "context": {
-          "budget": 12000,
-          "cacheHitPct": 72,
-          "used": {
-            "system": 900,
-            "persona": 766,
-            "memory": 0,
-            "knowledge": 0,
-            "history": 4,
-            "user": 64,
-            "mode": 580
-          }
+        "memory": {
+          "recalled": [
+            {
+              "memoryItemId": "mem_01M5D39V7YARWBYBXN1GFS123C",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5D39V87HAKY7MC87DA7G9MY",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5D39V897GGBVX4172BSCZKP",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5D39V8F4AVQ3CX72ZY19ETT",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5D39V8CYTQYKBMSEHBJETNC",
+              "text": "(forgotten)"
+            }
+          ]
         },
         "guardrail": {
           "checks": [
             {
               "name": "output",
               "verdict": "pass",
-              "p": 0.021
+              "p": 0.05
             }
           ]
         },
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "Relace",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 693,
+            "total": 1246
+          },
+          "tokensIn": 993,
+          "tokensOut": 119,
+          "costUsd": 0.000129,
+          "tokensCached": 0
+        },
+        "energy": {
+          "characterId": "chr_seedAmara",
+          "spent": 2,
+          "remaining": 998,
+          "max": 1000
+        },
+        "routing": {
+          "selected": "chr_seedAmara",
+          "forcedBy": "round_order"
+        },
         "calls": [
+          {
+            "purpose": "turn_plan",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000042,
+            "latencyMs": 422
+          },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000132,
-            "latencyMs": 2941
+            "costUsd": 0.000129,
+            "latencyMs": 968
+          },
+          {
+            "purpose": "guardrail",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000028,
+            "latencyMs": 469
           }
-        ]
-      },
-      "reactions": [
-        {
-          "characterId": "chr_seedMei",
-          "emotion": "thinking",
-          "p": 0.57,
-          "at": "2026-09-24T11:00:06.975Z"
+        ],
+        "graph": {
+          "path": [
+            "state",
+            "ask",
+            "decide",
+            "route",
+            "gather",
+            "search",
+            "check",
+            "keep"
+          ]
+        },
+        "system1": {
+          "seed": "2026-09-24T10:59:59.984Z|debate|chr_seedAmara,chr_seedVictor,chr_seedMei:0",
+          "questions": [
+            {
+              "purpose": "turn_plan",
+              "id": "emotion_debate_opening",
+              "version": 2,
+              "label": "emotion",
+              "about": "chr_seedAmara",
+              "answer": "neutral",
+              "p": 0.96,
+              "compared": [
+                {
+                  "name": "p_neutral+p_none",
+                  "value": 0.96,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.46,
+              "result": "used",
+              "action": "shown"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "docs",
+              "version": 2,
+              "label": "needs documents?",
+              "about": "chr_seedAmara",
+              "answer": "yes",
+              "p": 0.46,
+              "compared": [
+                {
+                  "name": "t_gate",
+                  "value": 0.46,
+                  "threshold": 0.45
+                }
+              ],
+              "result": "used",
+              "action": "search the documents"
+            },
+            {
+              "purpose": "guardrail",
+              "id": "output_rules",
+              "version": 1,
+              "label": "reply breaks the rules?",
+              "answer": "no",
+              "p": 0.05,
+              "compared": [
+                {
+                  "name": "tFlag",
+                  "value": 0.05,
+                  "threshold": 0.5
+                },
+                {
+                  "name": "tBlock",
+                  "value": 0.05,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "used",
+              "action": "pass"
+            }
+          ]
         }
-      ]
+      }
     },
     {
       "kind": "chat",
-      "seq": 3,
       "debate": {
         "phase": "opening",
         "round": 1,
@@ -134,38 +241,113 @@
       },
       "id": "msg_mockP03",
       "sessionId": "ses_mockPanelPhones",
+      "seq": 3,
       "author": {
         "type": "character",
         "characterId": "chr_seedVictor"
       },
-      "content": "Two points. One: schools can already confiscate a disruptive device; a statute adds nothing but rigidity. Two: a national ban invites exceptions for medical and safety use that swallow the rule.",
+      "content": "Three points, and I shall keep them tight. First, define your terms: a ban is not guidance, not a norm, not a bell rung at the classroom door; it is state coercion applied to every pupil, and coercion demands a burden of proof its proponents have not carried. Second, a school is not a sovereign: it may regulate conduct within its gates, but a blanket prohibition substitutes a rule for the harder work of teaching judgment, and judgment is the thing phones actually require. Third, and decisively, the motion forbids the tool rather than the distraction. If a device disrupts a lesson, the school may already confiscate it; if it does not, the ban punishes the innocent to inconvenience the guilty. Define your terms, Kai, and the ban collapses under its own breadth.",
       "status": "complete",
-      "createdAt": "2026-09-24T11:00:08.541Z",
-      "emotion": "thinking",
-      "emotionSource": "llm",
+      "createdAt": "2026-09-24T11:00:05.311Z",
+      "emotion": "neutral",
+      "emotionSource": "classifier",
       "usage": {
-        "tokensIn": 2376,
-        "tokensCached": 1728,
-        "tokensOut": 49,
-        "costUsd": 0.000132,
+        "tokensIn": 934,
+        "tokensCached": 0,
+        "tokensOut": 164,
+        "costUsd": 0.000147,
         "energySpent": 2,
-        "firstTokenMs": 1565,
-        "totalMs": 2920
+        "firstTokenMs": 73,
+        "totalMs": 772
       },
       "trace": {
         "messageId": "msg_mockP03",
+        "context": {
+          "budget": 14680,
+          "used": {
+            "persona": 351,
+            "system": 684,
+            "mode": 134,
+            "history": 11,
+            "user": 0,
+            "memory": 184,
+            "knowledge": 0
+          }
+        },
+        "emotion": {
+          "chosen": "neutral",
+          "source": "classifier",
+          "candidates": [
+            {
+              "label": "neutral",
+              "p": 0.89
+            },
+            {
+              "label": "happy",
+              "p": 0.09
+            },
+            {
+              "label": "thinking",
+              "p": 0.02
+            }
+          ]
+        },
+        "knowledge": {
+          "query": "This house would ban smartphones in schools",
+          "trigger": "gated",
+          "retrieved": [
+            {
+              "chunkId": "kch_victorMoot01",
+              "sourceId": "kno_seedVictor1",
+              "title": "Moot court notes",
+              "locator": "¶ 1",
+              "text": "Moot court notes: \"This house would adopt a nationwide four-day work week\" V. Hale, for the Meridian Bar Society exhibition debate. Private notes.\n\n¶ 1. Expect the opposition to say the evidence base is narrow. Concede scope early, then shift the burden: the status quo is also a policy and has to justify itself.\n\n¶ 2. Historical anchor: the Meridian Working Hours Act 1931 made the two-day weekend the default. It gave agriculture and shipping a ten-year transition and exempted continuous services.\n\n¶ 3. Continuous-coverage sectors already run on shift rules under Part IV of the Working Time Code: rest periods, a cap on consecutive shifts, and averaging over a reference period. A shorter standard week sits inside that structure.\n\n¶ 4. Phase-in precedent: sector-by-sector timetables, collective agreements first, the public sector as model employer. Courts have upheld staged duties where the end point is clear.",
+              "score": 0.065,
+              "cited": false
+            }
+          ]
+        },
+        "memory": {
+          "recalled": [
+            {
+              "memoryItemId": "mem_01M5D39V8KH00960Y6HWXM1HBF",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5D39V8X1P4B06WXP1C5Y5JE",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5D39V8Y6GZWMSTTG13EDY56",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5D39V8ZW14QC8E6XA9VYKXB",
+              "text": "(forgotten)"
+            }
+          ]
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "output",
+              "verdict": "pass",
+              "p": 0.04
+            }
+          ]
+        },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "DeepSeek",
+          "provider": "Relace",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 1565,
-            "total": 2920
+            "firstToken": 73,
+            "total": 772
           },
-          "tokensIn": 2376,
-          "tokensCached": 1728,
-          "tokensOut": 49,
-          "costUsd": 0.000132
+          "tokensIn": 934,
+          "tokensOut": 164,
+          "costUsd": 0.000147,
+          "tokensCached": 0
         },
         "energy": {
           "characterId": "chr_seedVictor",
@@ -173,71 +355,134 @@
           "remaining": 862,
           "max": 1000
         },
-        "emotion": {
-          "chosen": "thinking",
-          "source": "llm",
-          "candidates": [
-            {
-              "label": "thinking",
-              "p": 0.784
-            },
-            {
-              "label": "surprised",
-              "p": 0.155
-            },
-            {
-              "label": "neutral",
-              "p": 0.052
-            }
-          ]
-        },
         "routing": {
           "selected": "chr_seedVictor",
           "forcedBy": "round_order"
         },
-        "context": {
-          "budget": 12000,
-          "cacheHitPct": 73,
-          "used": {
-            "system": 900,
-            "persona": 779,
-            "memory": 0,
-            "knowledge": 0,
-            "history": 55,
-            "user": 62,
-            "mode": 580
-          }
-        },
-        "guardrail": {
-          "checks": [
-            {
-              "name": "output",
-              "verdict": "pass",
-              "p": 0.027
-            }
-          ]
-        },
         "calls": [
+          {
+            "purpose": "turn_plan",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000042,
+            "latencyMs": 406
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000027,
+            "latencyMs": 438
+          },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000132,
-            "latencyMs": 2920
+            "costUsd": 0.000147,
+            "latencyMs": 1906
+          },
+          {
+            "purpose": "guardrail",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.00003,
+            "latencyMs": 469
           }
-        ]
-      },
-      "reactions": [
-        {
-          "characterId": "chr_seedAmara",
-          "emotion": "surprised",
-          "p": 0.73,
-          "at": "2026-09-24T11:00:11.787Z"
+        ],
+        "graph": {
+          "path": [
+            "state",
+            "ask",
+            "decide",
+            "route",
+            "gather",
+            "search",
+            "check",
+            "keep"
+          ]
+        },
+        "system1": {
+          "seed": "2026-09-24T10:59:59.984Z|debate|chr_seedAmara,chr_seedVictor,chr_seedMei:2",
+          "questions": [
+            {
+              "purpose": "turn_plan",
+              "id": "emotion_debate_opening",
+              "version": 2,
+              "label": "emotion",
+              "about": "chr_seedVictor",
+              "answer": "neutral",
+              "p": 0.89,
+              "compared": [
+                {
+                  "name": "p_neutral+p_none",
+                  "value": 0.89,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.41,
+              "result": "used",
+              "action": "shown"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "docs",
+              "version": 2,
+              "label": "needs documents?",
+              "about": "chr_seedVictor",
+              "answer": "yes",
+              "p": 0.53,
+              "compared": [
+                {
+                  "name": "t_gate",
+                  "value": 0.53,
+                  "threshold": 0.45
+                }
+              ],
+              "result": "used",
+              "action": "search the documents"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_victorMoot01",
+              "answer": "doesn't help",
+              "p": 0.13,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0.13,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "guardrail",
+              "id": "output_rules",
+              "version": 1,
+              "label": "reply breaks the rules?",
+              "answer": "no",
+              "p": 0.04,
+              "compared": [
+                {
+                  "name": "tFlag",
+                  "value": 0.04,
+                  "threshold": 0.5
+                },
+                {
+                  "name": "tBlock",
+                  "value": 0.04,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "used",
+              "action": "pass"
+            }
+          ]
         }
-      ]
+      }
     },
     {
       "kind": "chat",
-      "seq": 4,
       "debate": {
         "phase": "opening",
         "round": 1,
@@ -245,38 +490,78 @@
       },
       "id": "msg_mockP04",
       "sessionId": "ses_mockPanelPhones",
+      "seq": 4,
       "author": {
         "type": "character",
         "characterId": "chr_seedMei"
       },
-      "content": "The studies people quote are small and mostly correlational. I'd stage it: let some districts ban, measure grades and wellbeing, then decide. It depends, and here's on what: enforcement.",
+      "content": "Banning phones outright is the policy version of a single-number answer, and I don't trust it. The evidence on learning is mixed and mostly correlational: effects cluster around zero to modest, and they look largest for already-disengaged students. My worry is second-order: take phones out of classrooms and supervision migrates into corridors, canteens, and homes, and it lands hardest on kids whose phones are their main lifeline. So I'd regulate use by age and context, not confiscate a device.",
       "status": "complete",
-      "createdAt": "2026-09-24T11:00:13.361Z",
-      "emotion": "thinking",
-      "emotionSource": "llm",
+      "createdAt": "2026-09-24T11:00:08.015Z",
+      "emotion": "neutral",
+      "emotionSource": "classifier",
       "usage": {
-        "tokensIn": 2437,
-        "tokensCached": 1779,
-        "tokensOut": 47,
-        "costUsd": 0.000132,
+        "tokensIn": 835,
+        "tokensCached": 0,
+        "tokensOut": 105,
+        "costUsd": 0.000111,
         "energySpent": 2,
-        "firstTokenMs": 1311,
-        "totalMs": 2641
+        "firstTokenMs": 82,
+        "totalMs": 801
       },
       "trace": {
         "messageId": "msg_mockP04",
+        "context": {
+          "budget": 14680,
+          "used": {
+            "persona": 355,
+            "system": 699,
+            "mode": 130,
+            "history": 11,
+            "user": 0,
+            "memory": 0,
+            "knowledge": 0
+          }
+        },
+        "emotion": {
+          "chosen": "neutral",
+          "source": "classifier",
+          "candidates": [
+            {
+              "label": "neutral",
+              "p": 0.89
+            },
+            {
+              "label": "thinking",
+              "p": 0.11
+            },
+            {
+              "label": "happy",
+              "p": 0
+            }
+          ]
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "output",
+              "verdict": "pass",
+              "p": 0.04
+            }
+          ]
+        },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "DeepSeek",
+          "provider": "Relace",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 1311,
-            "total": 2641
+            "firstToken": 82,
+            "total": 801
           },
-          "tokensIn": 2437,
-          "tokensCached": 1779,
-          "tokensOut": 47,
-          "costUsd": 0.000132
+          "tokensIn": 835,
+          "tokensOut": 105,
+          "costUsd": 0.000111,
+          "tokensCached": 0
         },
         "energy": {
           "characterId": "chr_seedMei",
@@ -284,67 +569,103 @@
           "remaining": 744,
           "max": 1000
         },
-        "emotion": {
-          "chosen": "thinking",
-          "source": "llm",
-          "candidates": [
-            {
-              "label": "thinking",
-              "p": 0.868
-            },
-            {
-              "label": "happy",
-              "p": 0.074
-            },
-            {
-              "label": "embarrassed",
-              "p": 0.045
-            }
-          ]
-        },
         "routing": {
           "selected": "chr_seedMei",
           "forcedBy": "round_order"
         },
-        "context": {
-          "budget": 12000,
-          "cacheHitPct": 73,
-          "used": {
-            "system": 900,
-            "persona": 786,
-            "memory": 0,
-            "knowledge": 0,
-            "history": 104,
-            "user": 67,
-            "mode": 580
-          }
-        },
-        "guardrail": {
-          "checks": [
-            {
-              "name": "output",
-              "verdict": "pass",
-              "p": 0.041
-            }
-          ]
-        },
         "calls": [
+          {
+            "purpose": "turn_plan",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000043,
+            "latencyMs": 453
+          },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000132,
-            "latencyMs": 2641
+            "costUsd": 0.000111,
+            "latencyMs": 1344
+          },
+          {
+            "purpose": "guardrail",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000028,
+            "latencyMs": 812
           }
-        ]
-      },
-      "reactions": [
-        {
-          "characterId": "chr_seedVictor",
-          "emotion": "happy",
-          "p": 0.52,
-          "at": "2026-09-24T11:00:16.582Z"
+        ],
+        "graph": {
+          "path": [
+            "state",
+            "ask",
+            "decide",
+            "route"
+          ]
+        },
+        "system1": {
+          "seed": "2026-09-24T10:59:59.984Z|debate|chr_seedAmara,chr_seedVictor,chr_seedMei:2",
+          "questions": [
+            {
+              "purpose": "turn_plan",
+              "id": "emotion_debate_opening",
+              "version": 2,
+              "label": "emotion",
+              "about": "chr_seedMei",
+              "answer": "neutral",
+              "p": 0.89,
+              "compared": [
+                {
+                  "name": "p_neutral+p_none",
+                  "value": 0.89,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.42,
+              "result": "used",
+              "action": "shown"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "docs",
+              "version": 2,
+              "label": "needs documents?",
+              "about": "chr_seedMei",
+              "answer": "no",
+              "p": 0.4,
+              "compared": [
+                {
+                  "name": "t_gate",
+                  "value": 0.4,
+                  "threshold": 0.45
+                }
+              ],
+              "result": "used",
+              "action": "quick reply"
+            },
+            {
+              "purpose": "guardrail",
+              "id": "output_rules",
+              "version": 1,
+              "label": "reply breaks the rules?",
+              "answer": "no",
+              "p": 0.04,
+              "compared": [
+                {
+                  "name": "tFlag",
+                  "value": 0.04,
+                  "threshold": 0.5
+                },
+                {
+                  "name": "tBlock",
+                  "value": 0.04,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "used",
+              "action": "pass"
+            }
+          ]
         }
-      ]
+      }
     },
     {
       "id": "msg_mockP05",
@@ -356,11 +677,10 @@
       "kind": "system_note",
       "content": "ROUND 2 · CLOSING",
       "status": "complete",
-      "createdAt": "2026-09-24T11:00:16.612Z"
+      "createdAt": "2026-09-24T11:00:10.667Z"
     },
     {
       "kind": "chat",
-      "seq": 6,
       "debate": {
         "phase": "closing",
         "round": 2,
@@ -368,244 +688,83 @@
       },
       "id": "msg_mockP06",
       "sessionId": "ses_mockPanelPhones",
-      "author": {
-        "type": "character",
-        "characterId": "chr_seedAmara"
-      },
-      "content": "I'd take a staged rollout over nothing. Just don't let \"more data\" become \"never\".",
-      "status": "complete",
-      "createdAt": "2026-09-24T11:00:19.602Z",
-      "emotion": "happy",
-      "emotionSource": "llm",
-      "usage": {
-        "tokensIn": 2474,
-        "tokensCached": 1802,
-        "tokensOut": 21,
-        "costUsd": 0.000119,
-        "energySpent": 2,
-        "firstTokenMs": 1649,
-        "totalMs": 2279
-      },
-      "trace": {
-        "messageId": "msg_mockP06",
-        "model": {
-          "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "DeepSeek",
-          "pricePeriod": "off_peak",
-          "latencyMs": {
-            "firstToken": 1649,
-            "total": 2279
-          },
-          "tokensIn": 2474,
-          "tokensCached": 1802,
-          "tokensOut": 21,
-          "costUsd": 0.000119
-        },
-        "energy": {
-          "characterId": "chr_seedAmara",
-          "spent": 2,
-          "remaining": 1000,
-          "max": 1000
-        },
-        "emotion": {
-          "chosen": "happy",
-          "source": "llm",
-          "candidates": [
-            {
-              "label": "happy",
-              "p": 0.793
-            },
-            {
-              "label": "angry",
-              "p": 0.136
-            },
-            {
-              "label": "thinking",
-              "p": 0.054
-            }
-          ]
-        },
-        "routing": {
-          "selected": "chr_seedAmara",
-          "forcedBy": "round_order"
-        },
-        "context": {
-          "budget": 12000,
-          "cacheHitPct": 73,
-          "used": {
-            "system": 900,
-            "persona": 763,
-            "memory": 0,
-            "knowledge": 0,
-            "history": 155,
-            "user": 76,
-            "mode": 580
-          }
-        },
-        "guardrail": {
-          "checks": [
-            {
-              "name": "output",
-              "verdict": "pass",
-              "p": 0.015
-            }
-          ]
-        },
-        "calls": [
-          {
-            "purpose": "reply",
-            "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000119,
-            "latencyMs": 2279
-          }
-        ]
-      }
-    },
-    {
-      "kind": "chat",
-      "seq": 7,
-      "debate": {
-        "phase": "closing",
-        "round": 2,
-        "iteration": 1
-      },
-      "id": "msg_mockP07",
-      "sessionId": "ses_mockPanelPhones",
-      "author": {
-        "type": "character",
-        "characterId": "chr_seedVictor"
-      },
-      "content": "Local rules, clearly drafted, beat a national blunt instrument. The panel rests.",
-      "status": "complete",
-      "createdAt": "2026-09-24T11:00:23.781Z",
-      "emotion": "neutral",
-      "emotionSource": "llm",
-      "usage": {
-        "tokensIn": 2497,
-        "tokensCached": 1841,
-        "tokensOut": 20,
-        "costUsd": 0.000116,
-        "energySpent": 2,
-        "firstTokenMs": 1393,
-        "totalMs": 2023
-      },
-      "trace": {
-        "messageId": "msg_mockP07",
-        "model": {
-          "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "DeepSeek",
-          "pricePeriod": "off_peak",
-          "latencyMs": {
-            "firstToken": 1393,
-            "total": 2023
-          },
-          "tokensIn": 2497,
-          "tokensCached": 1841,
-          "tokensOut": 20,
-          "costUsd": 0.000116
-        },
-        "energy": {
-          "characterId": "chr_seedVictor",
-          "spent": 2,
-          "remaining": 860,
-          "max": 1000
-        },
-        "emotion": {
-          "chosen": "neutral",
-          "source": "llm",
-          "candidates": [
-            {
-              "label": "neutral",
-              "p": 0.727
-            },
-            {
-              "label": "thinking",
-              "p": 0.191
-            },
-            {
-              "label": "angry",
-              "p": 0.065
-            }
-          ]
-        },
-        "routing": {
-          "selected": "chr_seedVictor",
-          "forcedBy": "round_order"
-        },
-        "context": {
-          "budget": 12000,
-          "cacheHitPct": 74,
-          "used": {
-            "system": 900,
-            "persona": 783,
-            "memory": 0,
-            "knowledge": 0,
-            "history": 176,
-            "user": 58,
-            "mode": 580
-          }
-        },
-        "guardrail": {
-          "checks": [
-            {
-              "name": "output",
-              "verdict": "pass",
-              "p": 0.009
-            }
-          ]
-        },
-        "calls": [
-          {
-            "purpose": "reply",
-            "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000116,
-            "latencyMs": 2023
-          }
-        ]
-      }
-    },
-    {
-      "kind": "chat",
-      "seq": 8,
-      "debate": {
-        "phase": "closing",
-        "round": 2,
-        "iteration": 1
-      },
-      "id": "msg_mockP08",
-      "sessionId": "ses_mockPanelPhones",
+      "seq": 6,
       "author": {
         "type": "character",
         "characterId": "chr_seedMei"
       },
-      "content": "Pilot, measure, publish. Then argue.",
+      "content": "What's still open is the thing neither of my colleagues has answered: what a ban actually costs, and who pays. Amara gets a cleaner classroom; Victor gets a narrower rule. Both are real, and both are modest. My position is the stronger one because it survives the comparison — targeted restriction captures most of the attention gain without confiscating the lifeline, and it doesn't pretend a rule substitutes for teaching judgment. If you want one number, you're being sold something. The honest range still favours regulation.",
       "status": "complete",
-      "createdAt": "2026-09-24T11:00:27.704Z",
+      "createdAt": "2026-09-24T11:00:12.892Z",
       "emotion": "neutral",
-      "emotionSource": "llm",
+      "emotionSource": "default",
       "usage": {
-        "tokensIn": 2507,
-        "tokensCached": 1847,
-        "tokensOut": 9,
-        "costUsd": 0.00011,
+        "tokensIn": 1258,
+        "tokensCached": 512,
+        "tokensOut": 106,
+        "costUsd": 0.000109,
         "energySpent": 2,
-        "firstTokenMs": 1480,
-        "totalMs": 1785
+        "firstTokenMs": 683,
+        "totalMs": 1174
       },
       "trace": {
-        "messageId": "msg_mockP08",
+        "messageId": "msg_mockP06",
+        "context": {
+          "budget": 14680,
+          "used": {
+            "persona": 355,
+            "system": 699,
+            "mode": 149,
+            "history": 644,
+            "user": 0,
+            "memory": 0,
+            "knowledge": 0
+          }
+        },
+        "emotion": {
+          "chosen": "neutral",
+          "source": "default",
+          "candidates": [
+            {
+              "label": "neutral",
+              "p": 0.86
+            },
+            {
+              "label": "thinking",
+              "p": 0.12
+            },
+            {
+              "label": "happy",
+              "p": 0.01
+            }
+          ]
+        },
+        "knowledge": {
+          "query": "This house would ban smartphones in schools chr_seedVictor: Three points, and I shall keep them tight. First, define yo…",
+          "trigger": "gated",
+          "retrieved": []
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "output",
+              "verdict": "pass",
+              "p": 0.05
+            }
+          ]
+        },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "DeepSeek",
+          "provider": "Relace",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 1480,
-            "total": 1785
+            "firstToken": 683,
+            "total": 1174
           },
-          "tokensIn": 2507,
-          "tokensCached": 1847,
-          "tokensOut": 9,
-          "costUsd": 0.00011
+          "tokensIn": 1258,
+          "tokensOut": 106,
+          "costUsd": 0.000109,
+          "tokensCached": 512
         },
         "energy": {
           "characterId": "chr_seedMei",
@@ -613,58 +772,738 @@
           "remaining": 742,
           "max": 1000
         },
-        "emotion": {
-          "chosen": "neutral",
-          "source": "llm",
+        "routing": {
+          "question": "who speaks next?",
           "candidates": [
             {
+              "characterId": "chr_seedMei",
+              "p": 0.84
+            },
+            {
+              "characterId": "chr_seedAmara",
+              "p": 0.1
+            },
+            {
+              "characterId": "chr_seedVictor",
+              "p": 0.06
+            }
+          ],
+          "selected": "chr_seedMei",
+          "forcedBy": "round_order",
+          "reason": "Side by the debate order; speaker chosen by Jev"
+        },
+        "calls": [
+          {
+            "purpose": "debate_plan",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000146,
+            "latencyMs": 532
+          },
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000109,
+            "latencyMs": 906
+          },
+          {
+            "purpose": "guardrail",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000035,
+            "latencyMs": 485
+          }
+        ],
+        "graph": {
+          "path": [
+            "state",
+            "ask",
+            "decide",
+            "route",
+            "gather",
+            "search",
+            "check",
+            "keep"
+          ]
+        },
+        "system1": {
+          "seed": "2026-09-24T10:59:59.984Z|debate|chr_seedAmara,chr_seedVictor,chr_seedMei:3:debate",
+          "questions": [
+            {
+              "purpose": "debate_plan",
+              "id": "member_panel",
+              "version": 2,
+              "label": "who speaks next?",
+              "answer": "chr_seedMei",
+              "p": 0.84,
+              "confidence": 0.76,
+              "compared": [
+                {
+                  "name": "confidence",
+                  "value": 0.76,
+                  "threshold": 0.5
+                }
+              ],
+              "result": "used",
+              "action": "speaks"
+            },
+            {
+              "purpose": "debate_plan",
+              "id": "emotion_line",
+              "version": 3,
+              "label": "emotion",
+              "about": "chr_seedAmara",
+              "answer": "angry",
+              "p": 0.37,
+              "compared": [
+                {
+                  "name": "confidence",
+                  "value": 0.28,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.28,
+              "result": "not_used",
+              "action": "shown"
+            },
+            {
+              "purpose": "debate_plan",
+              "id": "emotion_line",
+              "version": 3,
+              "label": "emotion",
+              "about": "chr_seedVictor",
+              "answer": "none",
+              "p": 0.44,
+              "compared": [
+                {
+                  "name": "confidence",
+                  "value": 0.36,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.36,
+              "result": "not_used",
+              "action": "kept"
+            },
+            {
+              "purpose": "debate_plan",
+              "id": "emotion_line",
+              "version": 3,
+              "label": "emotion",
+              "about": "chr_seedMei",
+              "answer": "none",
+              "p": 0.5,
+              "compared": [
+                {
+                  "name": "confidence",
+                  "value": 0.43,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.43,
+              "result": "used",
+              "action": "kept"
+            },
+            {
+              "purpose": "debate_plan",
+              "id": "docs",
+              "version": 2,
+              "label": "needs documents?",
+              "about": "chr_seedAmara",
+              "answer": "yes",
+              "p": 0.62,
+              "compared": [
+                {
+                  "name": "t_gate",
+                  "value": 0.62,
+                  "threshold": 0.45
+                }
+              ],
+              "result": "not_used",
+              "action": "search the documents"
+            },
+            {
+              "purpose": "debate_plan",
+              "id": "docs",
+              "version": 2,
+              "label": "needs documents?",
+              "about": "chr_seedVictor",
+              "answer": "no",
+              "p": 0.4,
+              "compared": [
+                {
+                  "name": "t_gate",
+                  "value": 0.4,
+                  "threshold": 0.45
+                }
+              ],
+              "result": "not_used",
+              "action": "quick reply"
+            },
+            {
+              "purpose": "debate_plan",
+              "id": "docs",
+              "version": 2,
+              "label": "needs documents?",
+              "about": "chr_seedMei",
+              "answer": "yes",
+              "p": 0.67,
+              "compared": [
+                {
+                  "name": "t_gate",
+                  "value": 0.67,
+                  "threshold": 0.45
+                }
+              ],
+              "result": "used",
+              "action": "search the documents"
+            },
+            {
+              "purpose": "guardrail",
+              "id": "output_rules",
+              "version": 1,
+              "label": "reply breaks the rules?",
+              "answer": "no",
+              "p": 0.05,
+              "compared": [
+                {
+                  "name": "tFlag",
+                  "value": 0.05,
+                  "threshold": 0.5
+                },
+                {
+                  "name": "tBlock",
+                  "value": 0.05,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "used",
+              "action": "pass"
+            }
+          ]
+        }
+      },
+      "reactions": [
+        {
+          "characterId": "chr_seedAmara",
+          "emotion": "thinking",
+          "p": 0.77,
+          "at": "2026-09-24T11:00:14.347Z"
+        },
+        {
+          "characterId": "chr_seedVictor",
+          "emotion": "thinking",
+          "p": 0.75,
+          "at": "2026-09-24T11:00:14.361Z"
+        }
+      ]
+    },
+    {
+      "kind": "chat",
+      "debate": {
+        "phase": "closing",
+        "round": 2,
+        "iteration": 1
+      },
+      "id": "msg_mockP07",
+      "sessionId": "ses_mockPanelPhones",
+      "seq": 7,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedAmara"
+      },
+      "content": "Mei's right that I owe an answer on cost, so here it is: I don't get a cleaner classroom without paying for it, and I won't pretend otherwise. Some kids lose a lifeline during school hours. That's a real cost, and it's why I'd pair the ban with working school phones, staffed offices, and accommodation for kids with genuine medical or caregiving needs. But targeted regulation has a cost too, and it's the one Mei hasn't priced: who enforces \"age and context\" at the door, in every corridor, every day? That discretion lands hardest on the same kids. The ban's strength is that it's honest about what it is — bounded hours, clear rule, exceptions built in, no pretending the rule replaces teaching judgment. Let's figure out what's actually going on.",
+      "status": "complete",
+      "createdAt": "2026-09-24T11:00:16.433Z",
+      "emotion": "thinking",
+      "emotionSource": "classifier",
+      "usage": {
+        "tokensIn": 1529,
+        "tokensCached": 512,
+        "tokensOut": 171,
+        "costUsd": 0.000161,
+        "energySpent": 2,
+        "firstTokenMs": 548,
+        "totalMs": 1794
+      },
+      "trace": {
+        "messageId": "msg_mockP07",
+        "context": {
+          "budget": 14680,
+          "used": {
+            "persona": 397,
+            "system": 707,
+            "mode": 145,
+            "history": 828,
+            "user": 0,
+            "memory": 217,
+            "knowledge": 0
+          }
+        },
+        "emotion": {
+          "chosen": "thinking",
+          "source": "classifier",
+          "candidates": [
+            {
+              "label": "thinking",
+              "p": 0.41
+            },
+            {
+              "label": "angry",
+              "p": 0.12
+            },
+            {
               "label": "neutral",
-              "p": 0.858
-            },
-            {
-              "label": "surprised",
-              "p": 0.108
-            },
-            {
-              "label": "sad",
-              "p": 0.031
+              "p": 0.08
             }
           ]
         },
-        "routing": {
-          "selected": "chr_seedMei",
-          "forcedBy": "round_order"
+        "knowledge": {
+          "query": "This house would ban smartphones in schools chr_seedMei: What's still open is the thing neither of my colleagues has an…",
+          "trigger": "gated",
+          "retrieved": []
         },
-        "context": {
-          "budget": 12000,
-          "cacheHitPct": 74,
-          "used": {
-            "system": 900,
-            "persona": 771,
-            "memory": 0,
-            "knowledge": 0,
-            "history": 196,
-            "user": 60,
-            "mode": 580
-          }
+        "memory": {
+          "recalled": [
+            {
+              "memoryItemId": "mem_01M5D39V7YARWBYBXN1GFS123C",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5D39V87HAKY7MC87DA7G9MY",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5D39V897GGBVX4172BSCZKP",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5D39V8F4AVQ3CX72ZY19ETT",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5D39V8CYTQYKBMSEHBJETNC",
+              "text": "(forgotten)"
+            }
+          ]
         },
         "guardrail": {
           "checks": [
             {
               "name": "output",
               "verdict": "pass",
-              "p": 0.038
+              "p": 0.05
             }
           ]
         },
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "Relace",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 548,
+            "total": 1794
+          },
+          "tokensIn": 1529,
+          "tokensOut": 171,
+          "costUsd": 0.000161,
+          "tokensCached": 512
+        },
+        "energy": {
+          "characterId": "chr_seedAmara",
+          "spent": 2,
+          "remaining": 996,
+          "max": 1000
+        },
+        "routing": {
+          "question": "who speaks next?",
+          "candidates": [
+            {
+              "characterId": "chr_seedVictor",
+              "p": 0.59
+            },
+            {
+              "characterId": "chr_seedAmara",
+              "p": 0.41
+            }
+          ],
+          "selected": "chr_seedAmara",
+          "forcedBy": "round_order",
+          "reason": "Side by the debate order; speaker chosen by Jev, next in order: Jev was unsure"
+        },
         "calls": [
+          {
+            "purpose": "debate_plan",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000116,
+            "latencyMs": 453
+          },
+          {
+            "purpose": "turn_plan",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000067,
+            "latencyMs": 485
+          },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.00011,
-            "latencyMs": 1785
+            "costUsd": 0.000161,
+            "latencyMs": 1516
+          },
+          {
+            "purpose": "guardrail",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000035,
+            "latencyMs": 437
+          },
+          {
+            "purpose": "face_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000037,
+            "latencyMs": 422
           }
-        ]
+        ],
+        "graph": {
+          "path": [
+            "state",
+            "ask",
+            "decide",
+            "route",
+            "gather",
+            "search",
+            "check",
+            "keep"
+          ]
+        },
+        "system1": {
+          "seed": "2026-09-24T10:59:59.984Z|debate|chr_seedAmara,chr_seedVictor,chr_seedMei:4",
+          "questions": [
+            {
+              "purpose": "debate_plan",
+              "id": "member_panel",
+              "version": 2,
+              "label": "who speaks next?",
+              "answer": "chr_seedVictor",
+              "p": 0.59,
+              "confidence": 0.18,
+              "compared": [
+                {
+                  "name": "confidence",
+                  "value": 0.18,
+                  "threshold": 0.5
+                }
+              ],
+              "result": "below_threshold",
+              "action": "next in order (unsure)"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "emotion_line",
+              "version": 3,
+              "label": "emotion",
+              "about": "chr_seedAmara",
+              "answer": "thinking",
+              "p": 0.41,
+              "compared": [
+                {
+                  "name": "confidence",
+                  "value": 0.33,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.33,
+              "result": "used",
+              "action": "shown"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "docs",
+              "version": 2,
+              "label": "needs documents?",
+              "about": "chr_seedAmara",
+              "answer": "yes",
+              "p": 0.66,
+              "compared": [
+                {
+                  "name": "t_gate",
+                  "value": 0.66,
+                  "threshold": 0.45
+                }
+              ],
+              "result": "used",
+              "action": "search the documents"
+            },
+            {
+              "purpose": "guardrail",
+              "id": "output_rules",
+              "version": 1,
+              "label": "reply breaks the rules?",
+              "answer": "no",
+              "p": 0.05,
+              "compared": [
+                {
+                  "name": "tFlag",
+                  "value": 0.05,
+                  "threshold": 0.5
+                },
+                {
+                  "name": "tBlock",
+                  "value": 0.05,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "used",
+              "action": "pass"
+            },
+            {
+              "purpose": "face_check",
+              "id": "face_check",
+              "version": 1,
+              "label": "face and words agree?",
+              "answer": "yes",
+              "p": 0.6,
+              "compared": [],
+              "result": "shown_only"
+            }
+          ]
+        }
+      },
+      "reactions": [
+        {
+          "characterId": "chr_seedMei",
+          "emotion": "thinking",
+          "p": 0.92,
+          "at": "2026-09-24T11:00:18.683Z"
+        }
+      ]
+    },
+    {
+      "kind": "chat",
+      "debate": {
+        "phase": "closing",
+        "round": 2,
+        "iteration": 1
+      },
+      "id": "msg_mockP08",
+      "sessionId": "ses_mockPanelPhones",
+      "seq": 8,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedVictor"
+      },
+      "content": "Two things remain open, and neither rescues the ban. First, the enforcement question Amara concedes she owes us: she says \"bounded hours, clear rule, exceptions built in\" — but exceptions are precisely where the discretion she condemns in Mei's proposal lives, now laundered through a nurse's note and an office stamp. Second, and decisive, nobody has met the definitional burden I set in opening: a ban is prohibition, and no one has shown the school's ordinary authority to confiscate a distracting device is insufficient. Strip the rhetoric and you have a narrower, cheaper rule that achieves the same classroom.",
+      "status": "complete",
+      "createdAt": "2026-09-24T11:00:20.858Z",
+      "emotion": "thinking",
+      "emotionSource": "classifier",
+      "usage": {
+        "tokensIn": 1649,
+        "tokensCached": 512,
+        "tokensOut": 128,
+        "costUsd": 0.000148,
+        "energySpent": 2,
+        "firstTokenMs": 666,
+        "totalMs": 1321
+      },
+      "trace": {
+        "messageId": "msg_mockP08",
+        "context": {
+          "budget": 14680,
+          "used": {
+            "persona": 351,
+            "system": 684,
+            "mode": 153,
+            "history": 1085,
+            "user": 0,
+            "memory": 184,
+            "knowledge": 0
+          }
+        },
+        "emotion": {
+          "chosen": "thinking",
+          "source": "classifier",
+          "candidates": [
+            {
+              "label": "thinking",
+              "p": 0.64
+            },
+            {
+              "label": "happy",
+              "p": 0.03
+            },
+            {
+              "label": "neutral",
+              "p": 0.02
+            }
+          ]
+        },
+        "knowledge": {
+          "query": "This house would ban smartphones in schools chr_seedAmara: Mei's right that I owe an answer on cost, so here it is: I d…",
+          "trigger": "gated",
+          "retrieved": []
+        },
+        "memory": {
+          "recalled": [
+            {
+              "memoryItemId": "mem_01M5D39V8KH00960Y6HWXM1HBF",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5D39V8X1P4B06WXP1C5Y5JE",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5D39V8Y6GZWMSTTG13EDY56",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5D39V8ZW14QC8E6XA9VYKXB",
+              "text": "(forgotten)"
+            }
+          ]
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "output",
+              "verdict": "pass",
+              "p": 0.05
+            }
+          ]
+        },
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "Relace",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 666,
+            "total": 1321
+          },
+          "tokensIn": 1649,
+          "tokensOut": 128,
+          "costUsd": 0.000148,
+          "tokensCached": 512
+        },
+        "energy": {
+          "characterId": "chr_seedVictor",
+          "spent": 2,
+          "remaining": 860,
+          "max": 1000
+        },
+        "routing": {
+          "selected": "chr_seedVictor",
+          "forcedBy": "round_order"
+        },
+        "calls": [
+          {
+            "purpose": "turn_plan",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000074,
+            "latencyMs": 500
+          },
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000148,
+            "latencyMs": 1047
+          },
+          {
+            "purpose": "guardrail",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000036,
+            "latencyMs": 532
+          },
+          {
+            "purpose": "face_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000035,
+            "latencyMs": 453
+          }
+        ],
+        "graph": {
+          "path": [
+            "state",
+            "ask",
+            "decide",
+            "route",
+            "gather",
+            "search",
+            "check",
+            "keep"
+          ]
+        },
+        "system1": {
+          "seed": "2026-09-24T10:59:59.984Z|debate|chr_seedAmara,chr_seedVictor,chr_seedMei:5",
+          "questions": [
+            {
+              "purpose": "turn_plan",
+              "id": "emotion_line",
+              "version": 3,
+              "label": "emotion",
+              "about": "chr_seedVictor",
+              "answer": "thinking",
+              "p": 0.64,
+              "compared": [
+                {
+                  "name": "confidence",
+                  "value": 0.59,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.59,
+              "result": "used",
+              "action": "shown"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "docs",
+              "version": 2,
+              "label": "needs documents?",
+              "about": "chr_seedVictor",
+              "answer": "yes",
+              "p": 0.48,
+              "compared": [
+                {
+                  "name": "t_gate",
+                  "value": 0.48,
+                  "threshold": 0.45
+                }
+              ],
+              "result": "used",
+              "action": "search the documents"
+            },
+            {
+              "purpose": "guardrail",
+              "id": "output_rules",
+              "version": 1,
+              "label": "reply breaks the rules?",
+              "answer": "no",
+              "p": 0.05,
+              "compared": [
+                {
+                  "name": "tFlag",
+                  "value": 0.05,
+                  "threshold": 0.5
+                },
+                {
+                  "name": "tBlock",
+                  "value": 0.05,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "used",
+              "action": "pass"
+            },
+            {
+              "purpose": "face_check",
+              "id": "face_check",
+              "version": 1,
+              "label": "face and words agree?",
+              "answer": "no (words read: angry)",
+              "p": 0.03,
+              "compared": [],
+              "result": "shown_only"
+            }
+          ]
+        }
       }
     },
     {
@@ -674,10 +1513,22 @@
       "author": {
         "type": "system"
       },
-      "kind": "verdict",
-      "content": "**Panel summary** (no winner in panel format)",
+      "kind": "system_note",
+      "content": "ROUND 3 · VERDICT",
       "status": "complete",
-      "createdAt": "2026-09-24T11:00:32.089Z"
+      "createdAt": "2026-09-24T11:00:23.425Z"
+    },
+    {
+      "id": "msg_mockP10",
+      "sessionId": "ses_mockPanelPhones",
+      "seq": 10,
+      "author": {
+        "type": "system"
+      },
+      "kind": "verdict",
+      "content": "TOO CLOSE TO CALL",
+      "status": "complete",
+      "createdAt": "2026-09-24T11:00:25.960Z"
     }
   ]
 }

@@ -80,11 +80,11 @@
         ]
       },
       "appearanceSummary": "An adult barista with short curly honey-blonde hair, freckles and an orange apron.",
-      "basePortraitUrl": "/assets/placeholder/portraits/chr_mockMochi/neutral.svg",
+      "basePortraitUrl": "/assets/portraits/chr_mockMochi/neutral.webp",
       "candidates": [
         {
           "id": "cand_mockMochi1",
-          "url": "/assets/placeholder/portraits/chr_mockMochi/neutral.svg",
+          "url": "/assets/portraits/chr_mockMochi/neutral.webp",
           "selected": true,
           "status": "ready"
         }
@@ -105,22 +105,22 @@
     "emotions": {
       "neutral": {
         "assetId": "emo_mockMochiNeutral",
-        "url": "/assets/placeholder/portraits/chr_mockMochi/neutral.svg",
+        "url": "/assets/portraits/chr_mockMochi/neutral.webp",
         "vfxPreset": "none"
       },
       "happy": {
         "assetId": "emo_mockMochiHappy",
-        "url": "/assets/placeholder/portraits/chr_mockMochi/happy.svg",
+        "url": "/assets/portraits/chr_mockMochi/happy.webp",
         "vfxPreset": "sparkle"
       },
       "sad": {
         "assetId": "emo_mockMochiSad",
-        "url": "/assets/placeholder/portraits/chr_mockMochi/sad.svg",
+        "url": "/assets/portraits/chr_mockMochi/sad.webp",
         "vfxPreset": "rain"
       },
       "angry": {
         "assetId": "emo_mockMochiAngry",
-        "url": "/assets/placeholder/portraits/chr_mockMochi/angry.svg",
+        "url": "/assets/portraits/chr_mockMochi/angry.webp",
         "vfxPreset": "anger"
       },
       "surprised": null,

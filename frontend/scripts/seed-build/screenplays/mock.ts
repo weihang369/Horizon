@@ -197,7 +197,7 @@ const rinBeats: Beat[] = [
   { k: "end", status: "paused", reason: "navigated_away" },
 ];
 export const RIN_RAID: Screenplay = {
-  msgKey: "mockR", evtKey: "mockRinRaid", startAt: "2026-09-26T12:15:00Z", mock: true,
+  msgKey: "mockR", evtKey: "mockRinRaid", startAt: "2026-09-26T17:56:00Z", mock: true,
   session: {
     id: "ses_mockRinRaid", worldId: SUNNY, title: "Raid night", titleIsCustom: false,
     mode: "one_on_one", participants: [{ characterId: RIN, role: "speaker", currentEmotion: "neutral", mutedByUser: false }],

@@ -1,0 +1,3808 @@
+{
+  "source": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+  "exportedAt": "2026-10-20",
+  "session": {
+    "id": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+    "worldId": "wld_seedMeridian",
+    "title": "Chat with Amara",
+    "titleIsCustom": false,
+    "mode": "one_on_one",
+    "status": "paused",
+    "pausedReason": "navigated_away",
+    "participants": [
+      {
+        "characterId": "chr_seedAmara",
+        "role": "speaker",
+        "currentEmotion": "thinking",
+        "mutedByUser": false
+      }
+    ],
+    "emotionMode": "llm",
+    "musicPolicy": "character_theme",
+    "readableMode": false,
+    "config": null,
+    "state": null,
+    "isSeed": false,
+    "costUsd": 0.000364,
+    "messageCount": 7,
+    "createdAt": "2026-10-20T16:58:04.553Z",
+    "updatedAt": "2026-10-20T16:59:31.964Z",
+    "lastMessageAt": "2026-10-20T16:59:06.060Z"
+  },
+  "events": [
+    {
+      "id": "evt_01M5D3ZAWSJQZ9V632NJSD2W7P",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 1,
+      "at": "2026-10-20T16:58:04.569Z",
+      "type": "session.state",
+      "payload": {
+        "status": "active",
+        "participants": [
+          {
+            "characterId": "chr_seedAmara",
+            "role": "speaker",
+            "currentEmotion": "neutral",
+            "mutedByUser": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "evt_01M5D3ZAWSJQZ9V632NJSD2W7Q",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 2,
+      "at": "2026-10-20T16:58:04.569Z",
+      "type": "energy",
+      "payload": {
+        "characterId": "chr_seedAmara",
+        "current": 999,
+        "max": 1000,
+        "state": "active"
+      }
+    },
+    {
+      "id": "evt_01M5D3ZB6N43YX793APQNCCCMK",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 3,
+      "at": "2026-10-20T16:58:04.885Z",
+      "type": "turn.next",
+      "payload": {
+        "nextSpeakerId": "chr_seedAmara"
+      }
+    },
+    {
+      "id": "evt_01M5D3ZB8Q5J7VMD73WH64FWJR",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 4,
+      "at": "2026-10-20T16:58:04.951Z",
+      "type": "turn.thinking",
+      "payload": {
+        "characterId": "chr_seedAmara"
+      }
+    },
+    {
+      "id": "evt_01M5D3ZCS65325ZW717V13MZRD",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 5,
+      "at": "2026-10-20T16:58:06.502Z",
+      "type": "turn.start",
+      "payload": {
+        "messageId": "msg_01M5D3ZB6N43YX793APQNCCCMJ",
+        "author": {
+          "type": "character",
+          "characterId": "chr_seedAmara"
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3ZCS65325ZW717V13MZRE",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 6,
+      "at": "2026-10-20T16:58:06.502Z",
+      "type": "emotion",
+      "payload": {
+        "messageId": "msg_01M5D3ZB6N43YX793APQNCCCMJ",
+        "characterId": "chr_seedAmara",
+        "emotion": "happy",
+        "source": "default"
+      }
+    },
+    {
+      "id": "evt_01M5D3ZCV515TZ2KK566NV2BGP",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 7,
+      "at": "2026-10-20T16:58:06.565Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3ZB6N43YX793APQNCCCMJ",
+        "delta": "Shift just"
+      }
+    },
+    {
+      "id": "evt_01M5D3ZCY1CMPQ63V2TC3WXZTZ",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 8,
+      "at": "2026-10-20T16:58:06.657Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3ZB6N43YX793APQNCCCMJ",
+        "delta": " ended and I've got tea."
+      }
+    },
+    {
+      "id": "evt_01M5D3ZD2WD650QH7MP7TWX58H",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 9,
+      "at": "2026-10-20T16:58:06.812Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3ZB6N43YX793APQNCCCMJ",
+        "delta": " What's goin"
+      }
+    },
+    {
+      "id": "evt_01M5D3ZD35DEXGQPX1JN7HX91T",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 10,
+      "at": "2026-10-20T16:58:06.821Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3ZB6N43YX793APQNCCCMJ",
+        "delta": "g on?"
+      }
+    },
+    {
+      "id": "evt_01M5D3ZD3MFV074HKVWCZGEN0F",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 11,
+      "at": "2026-10-20T16:58:06.836Z",
+      "type": "turn.end",
+      "payload": {
+        "messageId": "msg_01M5D3ZB6N43YX793APQNCCCMJ",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "evt_01M5D3ZD3MFV074HKVWCZGEN0G",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 12,
+      "at": "2026-10-20T16:58:06.836Z",
+      "type": "insight",
+      "payload": {
+        "messageId": "msg_01M5D3ZB6N43YX793APQNCCCMJ",
+        "trace": {
+          "messageId": "msg_01M5D3ZB6N43YX793APQNCCCMJ",
+          "emotion": {
+            "chosen": "happy",
+            "source": "default"
+          },
+          "routing": {
+            "selected": "chr_seedAmara"
+          },
+          "calls": []
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3ZNVFE340FBHK3C27T054",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 13,
+      "at": "2026-10-20T16:58:15.791Z",
+      "type": "message",
+      "payload": {
+        "message": {
+          "id": "msg_01M5D3ZNVFE340FBHK3C27T053",
+          "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+          "seq": 2,
+          "author": {
+            "type": "user"
+          },
+          "kind": "chat",
+          "content": "I've had a headache for three days and coffee isn't helping.",
+          "status": "complete",
+          "createdAt": "2026-10-20T16:58:15.791Z"
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3ZNVZKPCAWEBM25E3TCZN",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 14,
+      "at": "2026-10-20T16:58:15.807Z",
+      "type": "turn.next",
+      "payload": {
+        "nextSpeakerId": "chr_seedAmara"
+      }
+    },
+    {
+      "id": "evt_01M5D3ZNYMDM945S4F6HRBXQFY",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 15,
+      "at": "2026-10-20T16:58:15.892Z",
+      "type": "turn.thinking",
+      "payload": {
+        "characterId": "chr_seedAmara"
+      }
+    },
+    {
+      "id": "evt_01M5D3ZRVVG0HD5WZG9526P0ES",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 16,
+      "at": "2026-10-20T16:58:18.875Z",
+      "type": "turn.start",
+      "payload": {
+        "messageId": "msg_01M5D3ZNVZKPCAWEBM25E3TCZM",
+        "author": {
+          "type": "character",
+          "characterId": "chr_seedAmara"
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3ZRVVG0HD5WZG9526P0ET",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 17,
+      "at": "2026-10-20T16:58:18.875Z",
+      "type": "emotion",
+      "payload": {
+        "messageId": "msg_01M5D3ZNVZKPCAWEBM25E3TCZM",
+        "characterId": "chr_seedAmara",
+        "emotion": "thinking",
+        "source": "classifier"
+      }
+    },
+    {
+      "id": "evt_01M5D3ZRW935DYF5KT4QXFD2MS",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 18,
+      "at": "2026-10-20T16:58:18.889Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3ZNVZKPCAWEBM25E3TCZM",
+        "delta": "Where's the pain — one spot, or a band around your head? And"
+      }
+    },
+    {
+      "id": "evt_01M5D3ZRX1AACKH1X2ZAHVRA3G",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 19,
+      "at": "2026-10-20T16:58:18.913Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3ZNVZKPCAWEBM25E3TCZM",
+        "delta": " what changed this week, sleep, stress, caffeine"
+      }
+    },
+    {
+      "id": "evt_01M5D3ZRZ52WGXZF72KD4ETZPR",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 20,
+      "at": "2026-10-20T16:58:18.981Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3ZNVZKPCAWEBM25E3TCZM",
+        "delta": "?\n\nMost three-day headaches are tension-type or related"
+      }
+    },
+    {
+      "id": "evt_01M5D3ZS1MJDKKM3RWZH30YE04",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 21,
+      "at": "2026-10-20T16:58:19.060Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3ZNVZKPCAWEBM25E3TCZM",
+        "delta": " to cutting back on caffeine [2][1]. Dull and pressing on both sides fits"
+      }
+    },
+    {
+      "id": "evt_01M5D3ZS2HT6M4GX3TKQVBM8C6",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 22,
+      "at": "2026-10-20T16:58:19.089Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3ZNVZKPCAWEBM25E3TCZM",
+        "delta": " that picture [3].\n\nThe thing I actually care about: sudden"
+      }
+    },
+    {
+      "id": "evt_01M5D3ZS3FH7PM7GQ1VG0GZFMX",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 23,
+      "at": "2026-10-20T16:58:19.119Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3ZNVZKPCAWEBM25E3TCZM",
+        "delta": " worst-ever headache, fever with a stiff neck, weakness"
+      }
+    },
+    {
+      "id": "evt_01M5D3ZS4GNFKAQMJFAFRAM585",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 24,
+      "at": "2026-10-20T16:58:19.152Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3ZNVZKPCAWEBM25E3TCZM",
+        "delta": ", confusion, or vision changes. Any of those, it's the"
+      }
+    },
+    {
+      "id": "evt_01M5D3ZS6NZA5KV0KEBSJK9700",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 25,
+      "at": "2026-10-20T16:58:19.221Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3ZNVZKPCAWEBM25E3TCZM",
+        "delta": " ED today, not me.\n\nAlso, coffee not helping isn"
+      }
+    },
+    {
+      "id": "evt_01M5D3ZS7VSASX95ECFZM17BWR",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 26,
+      "at": "2026-10-20T16:58:19.259Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3ZNVZKPCAWEBM25E3TCZM",
+        "delta": "'t surprising. Painkillers taken too many days in"
+      }
+    },
+    {
+      "id": "evt_01M5D3ZS9KRSX33808BN99A43Y",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 27,
+      "at": "2026-10-20T16:58:19.315Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3ZNVZKPCAWEBM25E3TCZM",
+        "delta": " a row can start causing the headache themselves"
+      }
+    },
+    {
+      "id": "evt_01M5D3ZSAE5ZR13DDVYK4860XY",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 28,
+      "at": "2026-10-20T16:58:19.342Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D3ZNVZKPCAWEBM25E3TCZM",
+        "delta": "."
+      }
+    },
+    {
+      "id": "evt_01M5D3ZT2AAPRVHM8SM709ASAE",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 29,
+      "at": "2026-10-20T16:58:20.106Z",
+      "type": "turn.end",
+      "payload": {
+        "messageId": "msg_01M5D3ZNVZKPCAWEBM25E3TCZM",
+        "status": "complete",
+        "usage": {
+          "tokensIn": 1177,
+          "tokensCached": 0,
+          "tokensOut": 125,
+          "costUsd": 0.000145,
+          "energySpent": 2,
+          "firstTokenMs": 3077.0,
+          "totalMs": 3540.0
+        },
+        "citations": [
+          {
+            "n": 1,
+            "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+            "title": "ED triage guidelines",
+            "type": "file",
+            "chunkId": "kch_01M5CZ14527QHPWPPF11KW5DBG",
+            "locator": "p. 2",
+            "quote": "## 2.4 Caffeine withdrawal\n\nCaffeine withdrawal headache usually begins 12 to 24 hours after a sharp cut in intake and can last two to nine days. Gradual tapering, fluids and simple painkillers are usually enough; it rarely needs emergency care.\n\nAsk about recent changes in coffee, tea, energy drinks and cola.",
+            "score": 0.635
+          },
+          {
+            "n": 2,
+            "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+            "title": "ED triage guidelines",
+            "type": "file",
+            "chunkId": "kch_01M5CZ144WJ1XC6MK8QJCGSFKY",
+            "locator": "p. 2",
+            "quote": "## 2. Headache\n\n## 2.1 Common headaches\n\nMost headaches seen in the department are primary headaches: tension-type, migraine, or medication- and caffeine-related.",
+            "score": 0.5
+          },
+          {
+            "n": 3,
+            "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+            "title": "ED triage guidelines",
+            "type": "file",
+            "chunkId": "kch_01M5CZ144YGYHHXEHYJKYBAKY5",
+            "locator": "p. 2",
+            "quote": "## 2.2 Tension-type headache\n\nUsually described as a band or pressure around the head, often worse at the end of the day.",
+            "score": 0.49
+          }
+        ]
+      }
+    },
+    {
+      "id": "evt_01M5D3ZT2AAPRVHM8SM709ASAF",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 30,
+      "at": "2026-10-20T16:58:20.106Z",
+      "type": "energy",
+      "payload": {
+        "characterId": "chr_seedAmara",
+        "current": 997,
+        "max": 1000,
+        "state": "active",
+        "spent": 2,
+        "fullAt": "2026-10-20T17:01:40.920Z"
+      }
+    },
+    {
+      "id": "evt_01M5D3ZT2AAPRVHM8SM709ASAG",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 31,
+      "at": "2026-10-20T16:58:20.106Z",
+      "type": "insight",
+      "payload": {
+        "messageId": "msg_01M5D3ZNVZKPCAWEBM25E3TCZM",
+        "trace": {
+          "messageId": "msg_01M5D3ZNVZKPCAWEBM25E3TCZM",
+          "context": {
+            "budget": 11680,
+            "used": {
+              "persona": 397,
+              "system": 677,
+              "mode": 44,
+              "history": 19,
+              "user": 20,
+              "memory": 0,
+              "knowledge": 528
+            }
+          },
+          "emotion": {
+            "chosen": "thinking",
+            "source": "classifier",
+            "candidates": [
+              {
+                "label": "thinking",
+                "p": 0.68
+              },
+              {
+                "label": "neutral",
+                "p": 0.14
+              },
+              {
+                "label": "happy",
+                "p": 0.01
+              }
+            ]
+          },
+          "knowledge": {
+            "query": "I've had a headache for three days and coffee isn't helping.",
+            "trigger": "gated",
+            "retrieved": [
+              {
+                "chunkId": "kch_01M5CZ14527QHPWPPF11KW5DBG",
+                "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+                "title": "ED triage guidelines",
+                "locator": "p. 2",
+                "text": "## 2.4 Caffeine withdrawal\n\nCaffeine withdrawal headache usually begins 12 to 24 hours after a sharp cut in intake and can last two to nine days. Gradual tapering, fluids and simple painkillers are usually enough; it rarely needs emergency care.\n\nAsk about recent changes in coffee, tea, energy drinks and cola. Patients often do not connect a new headache with cutting back a week earlier. A slower taper (reducing by about a quarter every few days) prevents most withdrawal headaches.",
+                "score": 0.635,
+                "cited": true,
+                "n": 1
+              },
+              {
+                "chunkId": "kch_01M5CZ144WJ1XC6MK8QJCGSFKY",
+                "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+                "title": "ED triage guidelines",
+                "locator": "p. 2",
+                "text": "## 2. Headache\n\n## 2.1 Common headaches\n\nMost headaches seen in the department are primary headaches: tension-type, migraine, or medication- and caffeine-related. A dull, pressing pain on both sides without neurological signs is typical of tension-type or withdrawal headache.",
+                "score": 0.5,
+                "cited": true,
+                "n": 2
+              },
+              {
+                "chunkId": "kch_01M5CZ1454N32K5ADDYGSNF8D7",
+                "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+                "title": "ED triage guidelines",
+                "locator": "p. 2",
+                "text": "## 2.5 Medication-overuse headache\n\nTaking simple painkillers on more than about fifteen days a month can itself cause daily headaches. Ask how often the patient takes painkillers, and suggest a GP review rather than more medication.",
+                "score": 0.365,
+                "cited": false
+              },
+              {
+                "chunkId": "kch_01M5CZ144YGYHHXEHYJKYBAKY5",
+                "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+                "title": "ED triage guidelines",
+                "locator": "p. 2",
+                "text": "## 2.2 Tension-type headache\n\nUsually described as a band or pressure around the head, often worse at the end of the day. It is associated with stress, poor sleep, long screen time and missed meals. It does not usually cause vomiting or sensitivity to light.",
+                "score": 0.49,
+                "cited": true,
+                "n": 3
+              },
+              {
+                "chunkId": "kch_01M5CZ145B15KA3TJKKE5CSKRE",
+                "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+                "title": "ED triage guidelines",
+                "locator": "p. 3",
+                "text": "## 3.3 Same-day review\n\nA first severe headache after age 50, a headache after a head injury, or one that wakes the patient from sleep should also be reviewed the same day, even when observations are normal.\n\nPatients taking blood thinners who have any head injury should be graded 2, whatever their headache score.",
+                "score": 0.385,
+                "cited": false
+              },
+              {
+                "chunkId": "kch_01M5CZ1458E3DWQ3RY3BSTHQR9",
+                "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+                "title": "ED triage guidelines",
+                "locator": "p. 3",
+                "text": "## 3.2 Other warning signs\n\n- A headache with a rash that does not fade under pressure: grade 1.\n- Slurred speech, a drooping face or weakness on one side: grade 1, and follow the stroke pathway.\n- A headache in pregnancy or shortly after birth with high blood pressure: grade 2.\n- A headache with a high temperature and vomiting in an older adult: grade 2.",
+                "score": 0.415,
+                "cited": false
+              },
+              {
+                "chunkId": "kch_01M5CZ145DN896HPBARQ3713JS",
+                "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+                "title": "ED triage guidelines",
+                "locator": "p. 4",
+                "text": "## 4. Advice by phone and chat\n\n## 4.1 Scope\n\nPhone and chat advice helps people decide where to go: self-care at home, a pharmacist, their GP, an urgent treatment centre, or the emergency department. It is not a consultation.",
+                "score": 0.265,
+                "cited": false
+              },
+              {
+                "chunkId": "kch_01M5CZ1456X0T6BEZ9SQ2ZZKQD",
+                "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+                "title": "ED triage guidelines",
+                "locator": "p. 3",
+                "text": "## 3. Red flags\n\n## 3.1 Escalate at once\n\nEscalate any headache that is sudden and severe (\"thunderclap\"), or that comes with fever, neck stiffness, confusion, new weakness or changes in vision. These patients are graded 2 or higher and seen by a doctor without delay.\n\nA thunderclap headache reaches its worst within about a minute. Patients often describe it as \"the worst headache of my life\" . It must be treated as a possible bleed until proven otherwise.",
+                "score": 0.475,
+                "cited": false
+              }
+            ]
+          },
+          "guardrail": {
+            "checks": [
+              {
+                "name": "input",
+                "verdict": "pass",
+                "p": 0.04
+              },
+              {
+                "name": "care",
+                "verdict": "pass",
+                "p": 0.03
+              },
+              {
+                "name": "output",
+                "verdict": "pass",
+                "p": 0.06
+              }
+            ]
+          },
+          "model": {
+            "id": "deepseek/deepseek-v4.1-flash",
+            "provider": "Relace",
+            "pricePeriod": "off_peak",
+            "latencyMs": {
+              "firstToken": 3077.0,
+              "total": 3540.0
+            },
+            "tokensIn": 1177,
+            "tokensOut": 125,
+            "costUsd": 0.000145,
+            "tokensCached": 0
+          },
+          "energy": {
+            "characterId": "chr_seedAmara",
+            "spent": 2,
+            "remaining": 997,
+            "max": 1000
+          },
+          "routing": {
+            "selected": "chr_seedAmara"
+          },
+          "calls": [
+            {
+              "purpose": "turn_plan",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 6.7e-05,
+              "latencyMs": 532
+            },
+            {
+              "purpose": "deep_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.2e-05,
+              "latencyMs": 469
+            },
+            {
+              "purpose": "deep_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.5e-05,
+              "latencyMs": 500
+            },
+            {
+              "purpose": "deep_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.2e-05,
+              "latencyMs": 484
+            },
+            {
+              "purpose": "deep_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.5e-05,
+              "latencyMs": 485
+            },
+            {
+              "purpose": "deep_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.2e-05,
+              "latencyMs": 531
+            },
+            {
+              "purpose": "deep_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.2e-05,
+              "latencyMs": 531
+            },
+            {
+              "purpose": "deep_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.4e-05,
+              "latencyMs": 547
+            },
+            {
+              "purpose": "deep_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.3e-05,
+              "latencyMs": 1094
+            },
+            {
+              "purpose": "deep_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 3.1e-05,
+              "latencyMs": 485
+            },
+            {
+              "purpose": "reply",
+              "model": "deepseek/deepseek-v4.1-flash",
+              "costUsd": 0.000145,
+              "latencyMs": 1250
+            },
+            {
+              "purpose": "guardrail",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.9e-05,
+              "latencyMs": 734
+            }
+          ],
+          "graph": {
+            "path": [
+              "state",
+              "ask",
+              "decide",
+              "route",
+              "deep",
+              "gather",
+              "search",
+              "check",
+              "keep"
+            ]
+          },
+          "system1": {
+            "seed": "2026-10-20T16:58:04.553Z|one_on_one|chr_seedAmara:1",
+            "questions": [
+              {
+                "purpose": "turn_plan",
+                "id": "emotion_reply",
+                "version": 2,
+                "label": "emotion",
+                "about": "chr_seedAmara",
+                "answer": "thinking",
+                "p": 0.68,
+                "compared": [
+                  {
+                    "name": "confidence",
+                    "value": 0.63,
+                    "threshold": 0.2
+                  }
+                ],
+                "confidence": 0.63,
+                "result": "used",
+                "action": "shown"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "docs",
+                "version": 2,
+                "label": "needs documents?",
+                "about": "chr_seedAmara",
+                "answer": "yes",
+                "p": 0.45,
+                "compared": [
+                  {
+                    "name": "t_gate",
+                    "value": 0.45,
+                    "threshold": 0.45
+                  },
+                  {
+                    "name": "t_confident",
+                    "value": 0.45,
+                    "threshold": 0.8
+                  }
+                ],
+                "result": "used",
+                "action": "search the documents"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "standalone",
+                "version": 2,
+                "label": "standalone?",
+                "answer": "yes",
+                "p": 0.87,
+                "compared": [
+                  {
+                    "name": "t_standalone",
+                    "value": 0.87,
+                    "threshold": 0.35
+                  }
+                ],
+                "result": "used",
+                "action": "no rewrite needed"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "english",
+                "version": 1,
+                "label": "English?",
+                "answer": "yes",
+                "p": 0.99,
+                "compared": [
+                  {
+                    "name": "english",
+                    "value": 0.99,
+                    "threshold": 0.5
+                  }
+                ],
+                "result": "used",
+                "action": "no rewrite needed"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "unsafe_request",
+                "version": 1,
+                "label": "unsafe request?",
+                "answer": "no",
+                "p": 0.04,
+                "compared": [
+                  {
+                    "name": "tSteer",
+                    "value": 0.04,
+                    "threshold": 0.7
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "no cue"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "at_risk",
+                "version": 1,
+                "label": "at risk?",
+                "answer": "no",
+                "p": 0.03,
+                "compared": [
+                  {
+                    "name": "tCare",
+                    "value": 0.03,
+                    "threshold": 0.3
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "no cue"
+              },
+              {
+                "purpose": "deep_check",
+                "id": "passage",
+                "version": 2,
+                "label": "does this passage answer it?",
+                "about": "kch_01M5CZ14527QHPWPPF11KW5DBG",
+                "answer": "partly",
+                "p": 1.0,
+                "compared": [
+                  {
+                    "name": "t_keep",
+                    "value": 1.0,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "used",
+                "action": "kept"
+              },
+              {
+                "purpose": "deep_check",
+                "id": "passage",
+                "version": 2,
+                "label": "does this passage answer it?",
+                "about": "kch_01M5CZ144WJ1XC6MK8QJCGSFKY",
+                "answer": "partly",
+                "p": 0.98,
+                "compared": [
+                  {
+                    "name": "t_keep",
+                    "value": 0.98,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "used",
+                "action": "kept"
+              },
+              {
+                "purpose": "deep_check",
+                "id": "passage",
+                "version": 2,
+                "label": "does this passage answer it?",
+                "about": "kch_01M5CZ1454N32K5ADDYGSNF8D7",
+                "answer": "partly",
+                "p": 0.72,
+                "compared": [
+                  {
+                    "name": "t_keep",
+                    "value": 0.72,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "dropped"
+              },
+              {
+                "purpose": "deep_check",
+                "id": "passage",
+                "version": 2,
+                "label": "does this passage answer it?",
+                "about": "kch_01M5CZ144YGYHHXEHYJKYBAKY5",
+                "answer": "partly",
+                "p": 0.96,
+                "compared": [
+                  {
+                    "name": "t_keep",
+                    "value": 0.96,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "used",
+                "action": "kept"
+              },
+              {
+                "purpose": "deep_check",
+                "id": "passage",
+                "version": 2,
+                "label": "does this passage answer it?",
+                "about": "kch_01M5CZ145B15KA3TJKKE5CSKRE",
+                "answer": "partly",
+                "p": 0.76,
+                "compared": [
+                  {
+                    "name": "t_keep",
+                    "value": 0.76,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "dropped"
+              },
+              {
+                "purpose": "deep_check",
+                "id": "passage",
+                "version": 2,
+                "label": "does this passage answer it?",
+                "about": "kch_01M5CZ1458E3DWQ3RY3BSTHQR9",
+                "answer": "partly",
+                "p": 0.82,
+                "compared": [
+                  {
+                    "name": "t_keep",
+                    "value": 0.82,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "dropped"
+              },
+              {
+                "purpose": "deep_check",
+                "id": "passage",
+                "version": 2,
+                "label": "does this passage answer it?",
+                "about": "kch_01M5CZ145DN896HPBARQ3713JS",
+                "answer": "partly",
+                "p": 0.53,
+                "compared": [
+                  {
+                    "name": "t_keep",
+                    "value": 0.53,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "dropped"
+              },
+              {
+                "purpose": "deep_check",
+                "id": "passage",
+                "version": 2,
+                "label": "does this passage answer it?",
+                "about": "kch_01M5CZ1456X0T6BEZ9SQ2ZZKQD",
+                "answer": "partly",
+                "p": 0.93,
+                "compared": [
+                  {
+                    "name": "t_keep",
+                    "value": 0.93,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "dropped"
+              },
+              {
+                "purpose": "deep_check",
+                "id": "passage_set",
+                "version": 1,
+                "label": "do these passages answer it together?",
+                "answer": "no",
+                "compared": [],
+                "result": "used",
+                "action": "partly"
+              },
+              {
+                "purpose": "guardrail",
+                "id": "output_rules",
+                "version": 1,
+                "label": "reply breaks the rules?",
+                "answer": "no",
+                "p": 0.06,
+                "compared": [
+                  {
+                    "name": "tFlag",
+                    "value": 0.06,
+                    "threshold": 0.5
+                  },
+                  {
+                    "name": "tBlock",
+                    "value": 0.06,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "used",
+                "action": "pass"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D3ZTJK6QX05J5CE10V9T42",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 32,
+      "at": "2026-10-20T16:58:20.627Z",
+      "type": "insight",
+      "payload": {
+        "messageId": "msg_01M5D3ZNVZKPCAWEBM25E3TCZM",
+        "trace": {
+          "messageId": "msg_01M5D3ZNVZKPCAWEBM25E3TCZM",
+          "context": {
+            "budget": 11680,
+            "used": {
+              "persona": 397,
+              "system": 677,
+              "mode": 44,
+              "history": 19,
+              "user": 20,
+              "memory": 0,
+              "knowledge": 528
+            }
+          },
+          "emotion": {
+            "chosen": "thinking",
+            "source": "classifier",
+            "candidates": [
+              {
+                "label": "thinking",
+                "p": 0.68
+              },
+              {
+                "label": "neutral",
+                "p": 0.14
+              },
+              {
+                "label": "happy",
+                "p": 0.01
+              }
+            ]
+          },
+          "knowledge": {
+            "query": "I've had a headache for three days and coffee isn't helping.",
+            "trigger": "gated",
+            "retrieved": [
+              {
+                "chunkId": "kch_01M5CZ14527QHPWPPF11KW5DBG",
+                "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+                "title": "ED triage guidelines",
+                "locator": "p. 2",
+                "text": "## 2.4 Caffeine withdrawal\n\nCaffeine withdrawal headache usually begins 12 to 24 hours after a sharp cut in intake and can last two to nine days. Gradual tapering, fluids and simple painkillers are usually enough; it rarely needs emergency care.\n\nAsk about recent changes in coffee, tea, energy drinks and cola. Patients often do not connect a new headache with cutting back a week earlier. A slower taper (reducing by about a quarter every few days) prevents most withdrawal headaches.",
+                "score": 0.635,
+                "cited": true,
+                "n": 1
+              },
+              {
+                "chunkId": "kch_01M5CZ144WJ1XC6MK8QJCGSFKY",
+                "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+                "title": "ED triage guidelines",
+                "locator": "p. 2",
+                "text": "## 2. Headache\n\n## 2.1 Common headaches\n\nMost headaches seen in the department are primary headaches: tension-type, migraine, or medication- and caffeine-related. A dull, pressing pain on both sides without neurological signs is typical of tension-type or withdrawal headache.",
+                "score": 0.5,
+                "cited": true,
+                "n": 2
+              },
+              {
+                "chunkId": "kch_01M5CZ1454N32K5ADDYGSNF8D7",
+                "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+                "title": "ED triage guidelines",
+                "locator": "p. 2",
+                "text": "## 2.5 Medication-overuse headache\n\nTaking simple painkillers on more than about fifteen days a month can itself cause daily headaches. Ask how often the patient takes painkillers, and suggest a GP review rather than more medication.",
+                "score": 0.365,
+                "cited": false
+              },
+              {
+                "chunkId": "kch_01M5CZ144YGYHHXEHYJKYBAKY5",
+                "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+                "title": "ED triage guidelines",
+                "locator": "p. 2",
+                "text": "## 2.2 Tension-type headache\n\nUsually described as a band or pressure around the head, often worse at the end of the day. It is associated with stress, poor sleep, long screen time and missed meals. It does not usually cause vomiting or sensitivity to light.",
+                "score": 0.49,
+                "cited": true,
+                "n": 3
+              },
+              {
+                "chunkId": "kch_01M5CZ145B15KA3TJKKE5CSKRE",
+                "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+                "title": "ED triage guidelines",
+                "locator": "p. 3",
+                "text": "## 3.3 Same-day review\n\nA first severe headache after age 50, a headache after a head injury, or one that wakes the patient from sleep should also be reviewed the same day, even when observations are normal.\n\nPatients taking blood thinners who have any head injury should be graded 2, whatever their headache score.",
+                "score": 0.385,
+                "cited": false
+              },
+              {
+                "chunkId": "kch_01M5CZ1458E3DWQ3RY3BSTHQR9",
+                "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+                "title": "ED triage guidelines",
+                "locator": "p. 3",
+                "text": "## 3.2 Other warning signs\n\n- A headache with a rash that does not fade under pressure: grade 1.\n- Slurred speech, a drooping face or weakness on one side: grade 1, and follow the stroke pathway.\n- A headache in pregnancy or shortly after birth with high blood pressure: grade 2.\n- A headache with a high temperature and vomiting in an older adult: grade 2.",
+                "score": 0.415,
+                "cited": false
+              },
+              {
+                "chunkId": "kch_01M5CZ145DN896HPBARQ3713JS",
+                "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+                "title": "ED triage guidelines",
+                "locator": "p. 4",
+                "text": "## 4. Advice by phone and chat\n\n## 4.1 Scope\n\nPhone and chat advice helps people decide where to go: self-care at home, a pharmacist, their GP, an urgent treatment centre, or the emergency department. It is not a consultation.",
+                "score": 0.265,
+                "cited": false
+              },
+              {
+                "chunkId": "kch_01M5CZ1456X0T6BEZ9SQ2ZZKQD",
+                "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+                "title": "ED triage guidelines",
+                "locator": "p. 3",
+                "text": "## 3. Red flags\n\n## 3.1 Escalate at once\n\nEscalate any headache that is sudden and severe (\"thunderclap\"), or that comes with fever, neck stiffness, confusion, new weakness or changes in vision. These patients are graded 2 or higher and seen by a doctor without delay.\n\nA thunderclap headache reaches its worst within about a minute. Patients often describe it as \"the worst headache of my life\" . It must be treated as a possible bleed until proven otherwise.",
+                "score": 0.475,
+                "cited": false
+              }
+            ]
+          },
+          "guardrail": {
+            "checks": [
+              {
+                "name": "input",
+                "verdict": "pass",
+                "p": 0.04
+              },
+              {
+                "name": "care",
+                "verdict": "pass",
+                "p": 0.03
+              },
+              {
+                "name": "output",
+                "verdict": "pass",
+                "p": 0.06
+              }
+            ]
+          },
+          "model": {
+            "id": "deepseek/deepseek-v4.1-flash",
+            "provider": "Relace",
+            "pricePeriod": "off_peak",
+            "latencyMs": {
+              "firstToken": 3077.0,
+              "total": 3540.0
+            },
+            "tokensIn": 1177,
+            "tokensOut": 125,
+            "costUsd": 0.000145,
+            "tokensCached": 0
+          },
+          "energy": {
+            "characterId": "chr_seedAmara",
+            "spent": 2,
+            "remaining": 997,
+            "max": 1000
+          },
+          "routing": {
+            "selected": "chr_seedAmara"
+          },
+          "calls": [
+            {
+              "purpose": "turn_plan",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 6.7e-05,
+              "latencyMs": 532
+            },
+            {
+              "purpose": "deep_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.2e-05,
+              "latencyMs": 469
+            },
+            {
+              "purpose": "deep_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.5e-05,
+              "latencyMs": 500
+            },
+            {
+              "purpose": "deep_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.2e-05,
+              "latencyMs": 484
+            },
+            {
+              "purpose": "deep_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.5e-05,
+              "latencyMs": 485
+            },
+            {
+              "purpose": "deep_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.2e-05,
+              "latencyMs": 531
+            },
+            {
+              "purpose": "deep_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.2e-05,
+              "latencyMs": 531
+            },
+            {
+              "purpose": "deep_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.4e-05,
+              "latencyMs": 547
+            },
+            {
+              "purpose": "deep_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.3e-05,
+              "latencyMs": 1094
+            },
+            {
+              "purpose": "deep_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 3.1e-05,
+              "latencyMs": 485
+            },
+            {
+              "purpose": "reply",
+              "model": "deepseek/deepseek-v4.1-flash",
+              "costUsd": 0.000145,
+              "latencyMs": 1250
+            },
+            {
+              "purpose": "guardrail",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.9e-05,
+              "latencyMs": 734
+            },
+            {
+              "purpose": "face_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 3.5e-05,
+              "latencyMs": 484
+            }
+          ],
+          "graph": {
+            "path": [
+              "state",
+              "ask",
+              "decide",
+              "route",
+              "deep",
+              "gather",
+              "search",
+              "check",
+              "keep"
+            ]
+          },
+          "system1": {
+            "seed": "2026-10-20T16:58:04.553Z|one_on_one|chr_seedAmara:1",
+            "questions": [
+              {
+                "purpose": "turn_plan",
+                "id": "emotion_reply",
+                "version": 2,
+                "label": "emotion",
+                "about": "chr_seedAmara",
+                "answer": "thinking",
+                "p": 0.68,
+                "compared": [
+                  {
+                    "name": "confidence",
+                    "value": 0.63,
+                    "threshold": 0.2
+                  }
+                ],
+                "confidence": 0.63,
+                "result": "used",
+                "action": "shown"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "docs",
+                "version": 2,
+                "label": "needs documents?",
+                "about": "chr_seedAmara",
+                "answer": "yes",
+                "p": 0.45,
+                "compared": [
+                  {
+                    "name": "t_gate",
+                    "value": 0.45,
+                    "threshold": 0.45
+                  },
+                  {
+                    "name": "t_confident",
+                    "value": 0.45,
+                    "threshold": 0.8
+                  }
+                ],
+                "result": "used",
+                "action": "search the documents"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "standalone",
+                "version": 2,
+                "label": "standalone?",
+                "answer": "yes",
+                "p": 0.87,
+                "compared": [
+                  {
+                    "name": "t_standalone",
+                    "value": 0.87,
+                    "threshold": 0.35
+                  }
+                ],
+                "result": "used",
+                "action": "no rewrite needed"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "english",
+                "version": 1,
+                "label": "English?",
+                "answer": "yes",
+                "p": 0.99,
+                "compared": [
+                  {
+                    "name": "english",
+                    "value": 0.99,
+                    "threshold": 0.5
+                  }
+                ],
+                "result": "used",
+                "action": "no rewrite needed"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "unsafe_request",
+                "version": 1,
+                "label": "unsafe request?",
+                "answer": "no",
+                "p": 0.04,
+                "compared": [
+                  {
+                    "name": "tSteer",
+                    "value": 0.04,
+                    "threshold": 0.7
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "no cue"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "at_risk",
+                "version": 1,
+                "label": "at risk?",
+                "answer": "no",
+                "p": 0.03,
+                "compared": [
+                  {
+                    "name": "tCare",
+                    "value": 0.03,
+                    "threshold": 0.3
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "no cue"
+              },
+              {
+                "purpose": "deep_check",
+                "id": "passage",
+                "version": 2,
+                "label": "does this passage answer it?",
+                "about": "kch_01M5CZ14527QHPWPPF11KW5DBG",
+                "answer": "partly",
+                "p": 1.0,
+                "compared": [
+                  {
+                    "name": "t_keep",
+                    "value": 1.0,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "used",
+                "action": "kept"
+              },
+              {
+                "purpose": "deep_check",
+                "id": "passage",
+                "version": 2,
+                "label": "does this passage answer it?",
+                "about": "kch_01M5CZ144WJ1XC6MK8QJCGSFKY",
+                "answer": "partly",
+                "p": 0.98,
+                "compared": [
+                  {
+                    "name": "t_keep",
+                    "value": 0.98,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "used",
+                "action": "kept"
+              },
+              {
+                "purpose": "deep_check",
+                "id": "passage",
+                "version": 2,
+                "label": "does this passage answer it?",
+                "about": "kch_01M5CZ1454N32K5ADDYGSNF8D7",
+                "answer": "partly",
+                "p": 0.72,
+                "compared": [
+                  {
+                    "name": "t_keep",
+                    "value": 0.72,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "dropped"
+              },
+              {
+                "purpose": "deep_check",
+                "id": "passage",
+                "version": 2,
+                "label": "does this passage answer it?",
+                "about": "kch_01M5CZ144YGYHHXEHYJKYBAKY5",
+                "answer": "partly",
+                "p": 0.96,
+                "compared": [
+                  {
+                    "name": "t_keep",
+                    "value": 0.96,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "used",
+                "action": "kept"
+              },
+              {
+                "purpose": "deep_check",
+                "id": "passage",
+                "version": 2,
+                "label": "does this passage answer it?",
+                "about": "kch_01M5CZ145B15KA3TJKKE5CSKRE",
+                "answer": "partly",
+                "p": 0.76,
+                "compared": [
+                  {
+                    "name": "t_keep",
+                    "value": 0.76,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "dropped"
+              },
+              {
+                "purpose": "deep_check",
+                "id": "passage",
+                "version": 2,
+                "label": "does this passage answer it?",
+                "about": "kch_01M5CZ1458E3DWQ3RY3BSTHQR9",
+                "answer": "partly",
+                "p": 0.82,
+                "compared": [
+                  {
+                    "name": "t_keep",
+                    "value": 0.82,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "dropped"
+              },
+              {
+                "purpose": "deep_check",
+                "id": "passage",
+                "version": 2,
+                "label": "does this passage answer it?",
+                "about": "kch_01M5CZ145DN896HPBARQ3713JS",
+                "answer": "partly",
+                "p": 0.53,
+                "compared": [
+                  {
+                    "name": "t_keep",
+                    "value": 0.53,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "dropped"
+              },
+              {
+                "purpose": "deep_check",
+                "id": "passage",
+                "version": 2,
+                "label": "does this passage answer it?",
+                "about": "kch_01M5CZ1456X0T6BEZ9SQ2ZZKQD",
+                "answer": "partly",
+                "p": 0.93,
+                "compared": [
+                  {
+                    "name": "t_keep",
+                    "value": 0.93,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "dropped"
+              },
+              {
+                "purpose": "deep_check",
+                "id": "passage_set",
+                "version": 1,
+                "label": "do these passages answer it together?",
+                "answer": "no",
+                "compared": [],
+                "result": "used",
+                "action": "partly"
+              },
+              {
+                "purpose": "guardrail",
+                "id": "output_rules",
+                "version": 1,
+                "label": "reply breaks the rules?",
+                "answer": "no",
+                "p": 0.06,
+                "compared": [
+                  {
+                    "name": "tFlag",
+                    "value": 0.06,
+                    "threshold": 0.5
+                  },
+                  {
+                    "name": "tBlock",
+                    "value": 0.06,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "used",
+                "action": "pass"
+              },
+              {
+                "purpose": "face_check",
+                "id": "face_check",
+                "version": 1,
+                "label": "face and words agree?",
+                "answer": "no (words read: neutral)",
+                "p": 0.03,
+                "compared": [],
+                "result": "shown_only"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D40DMFFMBK9PBXJRPC3QSX",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 33,
+      "at": "2026-10-20T16:58:40.143Z",
+      "type": "message",
+      "payload": {
+        "message": {
+          "id": "msg_01M5D40DMFFMBK9PBXJRPC3QSW",
+          "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+          "seq": 4,
+          "author": {
+            "type": "user"
+          },
+          "kind": "chat",
+          "content": "Temples. And actually I cut back on coffee last week. Could that be it?",
+          "status": "complete",
+          "createdAt": "2026-10-20T16:58:40.143Z"
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D40DMXE42QKQM0HH02RWG0",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 34,
+      "at": "2026-10-20T16:58:40.157Z",
+      "type": "turn.next",
+      "payload": {
+        "nextSpeakerId": "chr_seedAmara"
+      }
+    },
+    {
+      "id": "evt_01M5D40DPZHTPHSZGSN7QP46P8",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 35,
+      "at": "2026-10-20T16:58:40.223Z",
+      "type": "turn.thinking",
+      "payload": {
+        "characterId": "chr_seedAmara"
+      }
+    },
+    {
+      "id": "evt_01M5D40GP4G277WK7B71S97YAS",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 36,
+      "at": "2026-10-20T16:58:43.268Z",
+      "type": "turn.start",
+      "payload": {
+        "messageId": "msg_01M5D40DMXE42QKQM0HH02RWFZ",
+        "author": {
+          "type": "character",
+          "characterId": "chr_seedAmara"
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D40GP4G277WK7B71S97YAT",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 37,
+      "at": "2026-10-20T16:58:43.268Z",
+      "type": "emotion",
+      "payload": {
+        "messageId": "msg_01M5D40DMXE42QKQM0HH02RWFZ",
+        "characterId": "chr_seedAmara",
+        "emotion": "thinking",
+        "source": "classifier"
+      }
+    },
+    {
+      "id": "evt_01M5D40GPMDHXR8BB114VD3D6X",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 38,
+      "at": "2026-10-20T16:58:43.284Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D40DMXE42QKQM0HH02RWFZ",
+        "delta": "Timing fits. Withdrawal headaches usually kick in 12 to"
+      }
+    },
+    {
+      "id": "evt_01M5D40GQR94Z8Z4PT4PXZ7B81",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 39,
+      "at": "2026-10-20T16:58:43.320Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D40DMXE42QKQM0HH02RWFZ",
+        "delta": " 24 hours after a sharp cut and can run two to nine days [1]."
+      }
+    },
+    {
+      "id": "evt_01M5D40GSEYFWXXHSZM86W3P51",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 40,
+      "at": "2026-10-20T16:58:43.374Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D40DMXE42QKQM0HH02RWFZ",
+        "delta": " Temples, both sides, no other symptoms — that's the"
+      }
+    },
+    {
+      "id": "evt_01M5D40GYSXZPG5YVMD2A8RK55",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 41,
+      "at": "2026-10-20T16:58:43.545Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D40DMXE42QKQM0HH02RWFZ",
+        "delta": " usual picture.\n\nSo this is likely your body object"
+      }
+    },
+    {
+      "id": "evt_01M5D40H06ADVJBKWJXC2R3170",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 42,
+      "at": "2026-10-20T16:58:43.590Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D40DMXE42QKQM0HH02RWFZ",
+        "delta": "ing to a fast taper, not something ominous. Fluids, a steady small"
+      }
+    },
+    {
+      "id": "evt_01M5D40H2MXJ9CE114GVX68X4J",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 43,
+      "at": "2026-10-20T16:58:43.668Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D40DMXE42QKQM0HH02RWFZ",
+        "delta": " dose rather than none, and a simple painkiller if"
+      }
+    },
+    {
+      "id": "evt_01M5D40H4W54ZZ7QFB33C7NWF9",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 44,
+      "at": "2026-10-20T16:58:43.740Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D40DMXE42QKQM0HH02RWFZ",
+        "delta": " you"
+      }
+    },
+    {
+      "id": "evt_01M5D40H7ZWP16N6D1MDPMTGVE",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 45,
+      "at": "2026-10-20T16:58:43.839Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D40DMXE42QKQM0HH02RWFZ",
+        "delta": " need one today. Then cut back by about a quarter every few"
+      }
+    },
+    {
+      "id": "evt_01M5D40HA37EV49TKRWXFEDAMG",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 46,
+      "at": "2026-10-20T16:58:43.907Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D40DMXE42QKQM0HH02RWFZ",
+        "delta": " days instead of cold turkey [1].\n\nTell me if it"
+      }
+    },
+    {
+      "id": "evt_01M5D40HC0DN9H52NT2A0ZN8JC",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 47,
+      "at": "2026-10-20T16:58:43.968Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D40DMXE42QKQM0HH02RWFZ",
+        "delta": "'s one-sided and throbbing, or if light and sound"
+      }
+    },
+    {
+      "id": "evt_01M5D40HDAECHDSQRR13H0ZA9V",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 48,
+      "at": "2026-10-20T16:58:44.010Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D40DMXE42QKQM0HH02RWFZ",
+        "delta": " start bothering you. That points somewhere else."
+      }
+    },
+    {
+      "id": "evt_01M5D40HZE9ZE1YQ4DJJJF1Q0W",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 49,
+      "at": "2026-10-20T16:58:44.590Z",
+      "type": "turn.end",
+      "payload": {
+        "messageId": "msg_01M5D40DMXE42QKQM0HH02RWFZ",
+        "status": "complete",
+        "usage": {
+          "tokensIn": 1170,
+          "tokensCached": 512,
+          "tokensOut": 129,
+          "costUsd": 0.000115,
+          "energySpent": 2,
+          "firstTokenMs": 3127.0,
+          "totalMs": 3886.0
+        },
+        "citations": [
+          {
+            "n": 1,
+            "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+            "title": "ED triage guidelines",
+            "type": "file",
+            "chunkId": "kch_01M5CZ14527QHPWPPF11KW5DBG",
+            "locator": "p. 2",
+            "quote": "## 2.4 Caffeine withdrawal\n\nCaffeine withdrawal headache usually begins 12 to 24 hours after a sharp cut in intake and can last two to nine days. Gradual tapering, fluids and simple painkillers are usually enough; it rarely needs emergency care.\n\nAsk about recent changes in coffee, tea, energy drinks and cola. Patients often do not connect a new headache with cutting back a week earlier.",
+            "score": 0.905
+          }
+        ]
+      }
+    },
+    {
+      "id": "evt_01M5D40HZE9ZE1YQ4DJJJF1Q0X",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 50,
+      "at": "2026-10-20T16:58:44.590Z",
+      "type": "energy",
+      "payload": {
+        "characterId": "chr_seedAmara",
+        "current": 995,
+        "max": 1000,
+        "state": "active",
+        "spent": 2,
+        "fullAt": "2026-10-20T17:04:33.720Z"
+      }
+    },
+    {
+      "id": "evt_01M5D40HZE9ZE1YQ4DJJJF1Q0Y",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 51,
+      "at": "2026-10-20T16:58:44.590Z",
+      "type": "insight",
+      "payload": {
+        "messageId": "msg_01M5D40DMXE42QKQM0HH02RWFZ",
+        "trace": {
+          "messageId": "msg_01M5D40DMXE42QKQM0HH02RWFZ",
+          "context": {
+            "budget": 11680,
+            "used": {
+              "persona": 397,
+              "system": 677,
+              "mode": 44,
+              "history": 225,
+              "user": 24,
+              "memory": 0,
+              "knowledge": 314
+            }
+          },
+          "emotion": {
+            "chosen": "thinking",
+            "source": "classifier",
+            "candidates": [
+              {
+                "label": "thinking",
+                "p": 0.51
+              },
+              {
+                "label": "neutral",
+                "p": 0.1
+              },
+              {
+                "label": "happy",
+                "p": 0.0
+              }
+            ]
+          },
+          "knowledge": {
+            "query": "Temples. And actually I cut back on coffee last week. Could that be it?",
+            "trigger": "gated",
+            "retrieved": [
+              {
+                "chunkId": "kch_01M5CZ14527QHPWPPF11KW5DBG",
+                "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+                "title": "ED triage guidelines",
+                "locator": "p. 2",
+                "text": "## 2.4 Caffeine withdrawal\n\nCaffeine withdrawal headache usually begins 12 to 24 hours after a sharp cut in intake and can last two to nine days. Gradual tapering, fluids and simple painkillers are usually enough; it rarely needs emergency care.\n\nAsk about recent changes in coffee, tea, energy drinks and cola. Patients often do not connect a new headache with cutting back a week earlier. A slower taper (reducing by about a quarter every few days) prevents most withdrawal headaches.",
+                "score": 0.905,
+                "cited": true,
+                "n": 1
+              },
+              {
+                "chunkId": "kch_01M5CZ0BTCXD636SDD5D2N0GA5",
+                "sourceId": "kno_01M5CYZ71QTZ4ZKQNPBCJ33QBY",
+                "title": "Meridian Shift Fatigue Review 2025",
+                "locator": "p. 5",
+                "text": "## 4. Sleep and patient safety\n\nPoor sleep was the most common complaint, named by 63% of respondents. Staff who slept under six hours before a shift were twice as likely to report a near-miss medication error that week.\n\nNight shifts were the main cause of short sleep. Staff moving from nights back to days with only one rest day in between averaged under five hours of sleep on the first night home.\n\nA near miss is an error caught before it reaches the patient: the wrong dose drawn up and noticed, the wrong patient's chart opened and closed again. The Trust's incident system does not link incidents to rotas, so the review used a short anonymous weekly question instead. The association held in every department and at every site.",
+                "score": 0.095,
+                "cited": false
+              },
+              {
+                "chunkId": "kch_01M5CZ0BSZ28H6NRX2115M2TC7",
+                "sourceId": "kno_01M5CYZ71QTZ4ZKQNPBCJ33QBY",
+                "title": "Meridian Shift Fatigue Review 2025",
+                "locator": "p. 1",
+                "text": "## Summary\n\nFatigue is no longer an occasional complaint among the Trust's clinical staff. It is a measurable, rising condition with a direct line to patient safety, sickness absence and resignations. This review followed 1,140 clinical staff for ten months and found that the length of consecutive shift blocks, not total hours alone, is the strongest predictor of how tired staff say they are.\n\nThe headline findings:\n\n- Staff working more than three consecutive long shifts reported fatigue scores 38% higher than colleagues on shorter blocks.\n- High burnout in the emergency department rose from 29% of staff in January to 41% in October.\n- Staff who slept under six hours before a shift were twice as likely to report a near-miss medication error that week.\n- Two wards that piloted a compressed rota saw burnout fall by roughly a fifth in twelve weeks, with no loss of patient throughput.\n- Voluntary nursing resignations reached 14% over the year, and each replacement costs about four months of salary.",
+                "score": 0.02,
+                "cited": false
+              },
+              {
+                "chunkId": "kch_01M5CZ0BT20Z59BYCAVM2SXFAD",
+                "sourceId": "kno_01M5CYZ71QTZ4ZKQNPBCJ33QBY",
+                "title": "Meridian Shift Fatigue Review 2025",
+                "locator": "p. 2",
+                "text": "## 1. Scope and method\n\nThis review covers 1,140 clinical staff across four Meridian Health Trust sites between January and October 2025. Fatigue was measured with a fortnightly selfreport scale and matched against rota data. All names and units are anonymised.\n\nThe four sites are Meridian General (the acute hospital and the Trust's only emergency department), Eastbank Community Hospital, the Riverside Rehabilitation Unit and the Northgate Day Surgery Centre. Participation was voluntary; 71% of eligible clinical staff took part, and response rates held above 60% in every fortnight.\n\nThe self-report scale has nine items: sleepiness at the start and end of a shift, difficulty concentrating, irritability, physical exhaustion, headaches, appetite, sleep quality and a single \"how tired are you right now\" question. Each item is scored 0 to 4, so totals run from 0 to 36. Burnout was measured separately, once a quarter, with a validated twelve-item inventory. The review's \"high burnout\" threshold is the inventory's published cut-off.",
+                "score": 0.015,
+                "cited": false
+              },
+              {
+                "chunkId": "kch_01M5CZ0BTH2SFC71J4YAJKPZPZ",
+                "sourceId": "kno_01M5CYZ71QTZ4ZKQNPBCJ33QBY",
+                "title": "Meridian Shift Fatigue Review 2025",
+                "locator": "p. 7",
+                "text": "## 6. The compressed-rota pilot\n\nTwo wards piloted a compressed rota: four longer days, then three days off. After twelve weeks, burnout scores on both wards fell by roughly a fifth, sleep quality improved, and patient throughput stayed within normal variation.\n\nThe pilot wards were Ward 7 (acute medicine) and the emergency department's observation unit. Staff chose to join. The rota guaranteed the three rest days: they could not be cancelled except in a declared major incident.\n\nWhat changed after twelve weeks:\n\n- Burnout scores fell by 19% on Ward 7 and 22% on the observation unit.\n- Average sleep before a shift rose by 40 minutes.\n- Short-notice cancellations of rest days fell to zero, by design.\n- Patient throughput, length of stay and readmissions stayed within normal variation for those wards.\n\nStaff on the pilot wards described the guaranteed rest days, not the longer shifts, as the change that mattered most.",
+                "score": 0.005,
+                "cited": false
+              },
+              {
+                "chunkId": "kch_01M5CZ145EDQ5YR9PTKN49BWPM",
+                "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+                "title": "ED triage guidelines",
+                "locator": "p. 4",
+                "text": "## 4.2 Saying what advice is\n\nAdvice given by phone or chat must say clearly that it is not an examination. Tell the patient which symptoms mean they should come in person.\n\nGood practice in every conversation:\n\n1. Ask one or two clarifying questions before giving any advice: where the pain is, how long it has lasted, and what has changed recently.\n2. Give the most likely explanation in plain language, and say how confident you are.\n3. Give simple, safe self-care steps.\n4. Always finish with the red flags that mean the patient should come in, and say \"today\" or \"now\" where it applies.",
+                "score": 0.28,
+                "cited": false
+              },
+              {
+                "chunkId": "kch_01M5CZ0BT6REVB2G3VSCXJ9G5E",
+                "sourceId": "kno_01M5CYZ71QTZ4ZKQNPBCJ33QBY",
+                "title": "Meridian Shift Fatigue Review 2025",
+                "locator": "p. 3",
+                "text": "## 2. Shift patterns and fatigue\n\nThe single clearest pattern in the data is the effect of long blocks.\n\nStaff working more than three consecutive long shifts reported fatigue scores 38% higher than colleagues on shorter blocks. The effect was strongest in emergency and acute medicine, where rest days were most often cancelled at short notice.\n\nA \"long shift\" in this review is any shift of eleven hours or more. Across the Trust, 46% of clinical shifts were long shifts. In the emergency department the figure was 78%.\n\nTotal weekly hours mattered less than the way those hours were arranged. Two nurses working the same 37.5 hours could report very different fatigue: the one who worked four long shifts in a row, then had three days off, reported less fatigue than the one whose long shifts were scattered across the week with single rest days in between. Single rest days, especially after a night shift, were rarely restful.",
+                "score": 0.06,
+                "cited": false
+              },
+              {
+                "chunkId": "kch_01M5CZ0BT74V4F1CGJ2FRN2BC2",
+                "sourceId": "kno_01M5CYZ71QTZ4ZKQNPBCJ33QBY",
+                "title": "Meridian Shift Fatigue Review 2025",
+                "locator": "p. 3",
+                "text": "## 2.1 Short-notice changes\n\nRest days cancelled with less than 48 hours' notice were the second strongest predictor of fatigue. In emergency and acute medicine, one rest day in nine was cancelled at short notice, usually to cover sickness. In community and day-surgery settings the figure was one in forty.",
+                "score": 0.035,
+                "cited": false
+              }
+            ]
+          },
+          "guardrail": {
+            "checks": [
+              {
+                "name": "input",
+                "verdict": "pass",
+                "p": 0.04
+              },
+              {
+                "name": "care",
+                "verdict": "pass",
+                "p": 0.02
+              },
+              {
+                "name": "output",
+                "verdict": "pass",
+                "p": 0.09
+              }
+            ]
+          },
+          "model": {
+            "id": "deepseek/deepseek-v4.1-flash",
+            "provider": "Relace",
+            "pricePeriod": "off_peak",
+            "latencyMs": {
+              "firstToken": 3127.0,
+              "total": 3886.0
+            },
+            "tokensIn": 1170,
+            "tokensOut": 129,
+            "costUsd": 0.000115,
+            "tokensCached": 512
+          },
+          "energy": {
+            "characterId": "chr_seedAmara",
+            "spent": 2,
+            "remaining": 995,
+            "max": 1000
+          },
+          "routing": {
+            "selected": "chr_seedAmara"
+          },
+          "calls": [
+            {
+              "purpose": "turn_plan",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 7.5e-05,
+              "latencyMs": 485
+            },
+            {
+              "purpose": "deep_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 3.5e-05,
+              "latencyMs": 609
+            },
+            {
+              "purpose": "deep_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 3.6e-05,
+              "latencyMs": 625
+            },
+            {
+              "purpose": "deep_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 3.5e-05,
+              "latencyMs": 625
+            },
+            {
+              "purpose": "deep_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.9e-05,
+              "latencyMs": 609
+            },
+            {
+              "purpose": "deep_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 3.1e-05,
+              "latencyMs": 609
+            },
+            {
+              "purpose": "deep_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 3.3e-05,
+              "latencyMs": 625
+            },
+            {
+              "purpose": "deep_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 3e-05,
+              "latencyMs": 625
+            },
+            {
+              "purpose": "deep_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 3.4e-05,
+              "latencyMs": 703
+            },
+            {
+              "purpose": "query_rewrite",
+              "model": "deepseek/deepseek-v4.1-flash",
+              "costUsd": 4.5e-05,
+              "latencyMs": 2860
+            },
+            {
+              "purpose": "reply",
+              "model": "deepseek/deepseek-v4.1-flash",
+              "costUsd": 0.000115,
+              "latencyMs": 1281
+            },
+            {
+              "purpose": "guardrail",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.9e-05,
+              "latencyMs": 531
+            }
+          ],
+          "graph": {
+            "path": [
+              "state",
+              "ask",
+              "decide",
+              "route",
+              "deep",
+              "gather",
+              "search",
+              "check",
+              "keep"
+            ]
+          },
+          "system1": {
+            "seed": "2026-10-20T16:58:04.553Z|one_on_one|chr_seedAmara:2",
+            "questions": [
+              {
+                "purpose": "turn_plan",
+                "id": "emotion_reply",
+                "version": 2,
+                "label": "emotion",
+                "about": "chr_seedAmara",
+                "answer": "thinking",
+                "p": 0.51,
+                "compared": [
+                  {
+                    "name": "confidence",
+                    "value": 0.44,
+                    "threshold": 0.2
+                  }
+                ],
+                "confidence": 0.44,
+                "result": "used",
+                "action": "shown"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "docs",
+                "version": 2,
+                "label": "needs documents?",
+                "about": "chr_seedAmara",
+                "answer": "yes",
+                "p": 0.54,
+                "compared": [
+                  {
+                    "name": "t_gate",
+                    "value": 0.54,
+                    "threshold": 0.45
+                  },
+                  {
+                    "name": "t_confident",
+                    "value": 0.54,
+                    "threshold": 0.8
+                  }
+                ],
+                "result": "used",
+                "action": "search the documents"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "standalone",
+                "version": 2,
+                "label": "standalone?",
+                "answer": "no",
+                "p": 0.23,
+                "compared": [
+                  {
+                    "name": "t_standalone",
+                    "value": 0.23,
+                    "threshold": 0.35
+                  }
+                ],
+                "result": "used",
+                "action": "rewrite the query"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "english",
+                "version": 1,
+                "label": "English?",
+                "answer": "yes",
+                "p": 0.98,
+                "compared": [
+                  {
+                    "name": "english",
+                    "value": 0.98,
+                    "threshold": 0.5
+                  }
+                ],
+                "result": "used",
+                "action": "no rewrite needed"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "unsafe_request",
+                "version": 1,
+                "label": "unsafe request?",
+                "answer": "no",
+                "p": 0.04,
+                "compared": [
+                  {
+                    "name": "tSteer",
+                    "value": 0.04,
+                    "threshold": 0.7
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "no cue"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "at_risk",
+                "version": 1,
+                "label": "at risk?",
+                "answer": "no",
+                "p": 0.02,
+                "compared": [
+                  {
+                    "name": "tCare",
+                    "value": 0.02,
+                    "threshold": 0.3
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "no cue"
+              },
+              {
+                "purpose": "deep_check",
+                "id": "passage",
+                "version": 2,
+                "label": "does this passage answer it?",
+                "about": "kch_01M5CZ14527QHPWPPF11KW5DBG",
+                "answer": "answers",
+                "p": 1.0,
+                "compared": [
+                  {
+                    "name": "t_keep",
+                    "value": 1.0,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "used",
+                "action": "kept"
+              },
+              {
+                "purpose": "deep_check",
+                "id": "passage",
+                "version": 2,
+                "label": "does this passage answer it?",
+                "about": "kch_01M5CZ0BTCXD636SDD5D2N0GA5",
+                "answer": "doesn't help",
+                "p": 0.19,
+                "compared": [
+                  {
+                    "name": "t_keep",
+                    "value": 0.19,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "dropped"
+              },
+              {
+                "purpose": "deep_check",
+                "id": "passage",
+                "version": 2,
+                "label": "does this passage answer it?",
+                "about": "kch_01M5CZ0BSZ28H6NRX2115M2TC7",
+                "answer": "doesn't help",
+                "p": 0.04,
+                "compared": [
+                  {
+                    "name": "t_keep",
+                    "value": 0.04,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "dropped"
+              },
+              {
+                "purpose": "deep_check",
+                "id": "passage",
+                "version": 2,
+                "label": "does this passage answer it?",
+                "about": "kch_01M5CZ0BT20Z59BYCAVM2SXFAD",
+                "answer": "doesn't help",
+                "p": 0.03,
+                "compared": [
+                  {
+                    "name": "t_keep",
+                    "value": 0.03,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "dropped"
+              },
+              {
+                "purpose": "deep_check",
+                "id": "passage",
+                "version": 2,
+                "label": "does this passage answer it?",
+                "about": "kch_01M5CZ0BTH2SFC71J4YAJKPZPZ",
+                "answer": "doesn't help",
+                "p": 0.01,
+                "compared": [
+                  {
+                    "name": "t_keep",
+                    "value": 0.01,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "dropped"
+              },
+              {
+                "purpose": "deep_check",
+                "id": "passage",
+                "version": 2,
+                "label": "does this passage answer it?",
+                "about": "kch_01M5CZ145EDQ5YR9PTKN49BWPM",
+                "answer": "partly",
+                "p": 0.53,
+                "compared": [
+                  {
+                    "name": "t_keep",
+                    "value": 0.53,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "dropped"
+              },
+              {
+                "purpose": "deep_check",
+                "id": "passage",
+                "version": 2,
+                "label": "does this passage answer it?",
+                "about": "kch_01M5CZ0BT6REVB2G3VSCXJ9G5E",
+                "answer": "doesn't help",
+                "p": 0.12,
+                "compared": [
+                  {
+                    "name": "t_keep",
+                    "value": 0.12,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "dropped"
+              },
+              {
+                "purpose": "deep_check",
+                "id": "passage",
+                "version": 2,
+                "label": "does this passage answer it?",
+                "about": "kch_01M5CZ0BT74V4F1CGJ2FRN2BC2",
+                "answer": "doesn't help",
+                "p": 0.07,
+                "compared": [
+                  {
+                    "name": "t_keep",
+                    "value": 0.07,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "dropped"
+              },
+              {
+                "purpose": "guardrail",
+                "id": "output_rules",
+                "version": 1,
+                "label": "reply breaks the rules?",
+                "answer": "no",
+                "p": 0.09,
+                "compared": [
+                  {
+                    "name": "tFlag",
+                    "value": 0.09,
+                    "threshold": 0.5
+                  },
+                  {
+                    "name": "tBlock",
+                    "value": 0.09,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "used",
+                "action": "pass"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D40JDJZZYDZBZ1BJ4D3X3T",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 52,
+      "at": "2026-10-20T16:58:45.042Z",
+      "type": "insight",
+      "payload": {
+        "messageId": "msg_01M5D40DMXE42QKQM0HH02RWFZ",
+        "trace": {
+          "messageId": "msg_01M5D40DMXE42QKQM0HH02RWFZ",
+          "context": {
+            "budget": 11680,
+            "used": {
+              "persona": 397,
+              "system": 677,
+              "mode": 44,
+              "history": 225,
+              "user": 24,
+              "memory": 0,
+              "knowledge": 314
+            }
+          },
+          "emotion": {
+            "chosen": "thinking",
+            "source": "classifier",
+            "candidates": [
+              {
+                "label": "thinking",
+                "p": 0.51
+              },
+              {
+                "label": "neutral",
+                "p": 0.1
+              },
+              {
+                "label": "happy",
+                "p": 0.0
+              }
+            ]
+          },
+          "knowledge": {
+            "query": "Temples. And actually I cut back on coffee last week. Could that be it?",
+            "trigger": "gated",
+            "retrieved": [
+              {
+                "chunkId": "kch_01M5CZ14527QHPWPPF11KW5DBG",
+                "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+                "title": "ED triage guidelines",
+                "locator": "p. 2",
+                "text": "## 2.4 Caffeine withdrawal\n\nCaffeine withdrawal headache usually begins 12 to 24 hours after a sharp cut in intake and can last two to nine days. Gradual tapering, fluids and simple painkillers are usually enough; it rarely needs emergency care.\n\nAsk about recent changes in coffee, tea, energy drinks and cola. Patients often do not connect a new headache with cutting back a week earlier. A slower taper (reducing by about a quarter every few days) prevents most withdrawal headaches.",
+                "score": 0.905,
+                "cited": true,
+                "n": 1
+              },
+              {
+                "chunkId": "kch_01M5CZ0BTCXD636SDD5D2N0GA5",
+                "sourceId": "kno_01M5CYZ71QTZ4ZKQNPBCJ33QBY",
+                "title": "Meridian Shift Fatigue Review 2025",
+                "locator": "p. 5",
+                "text": "## 4. Sleep and patient safety\n\nPoor sleep was the most common complaint, named by 63% of respondents. Staff who slept under six hours before a shift were twice as likely to report a near-miss medication error that week.\n\nNight shifts were the main cause of short sleep. Staff moving from nights back to days with only one rest day in between averaged under five hours of sleep on the first night home.\n\nA near miss is an error caught before it reaches the patient: the wrong dose drawn up and noticed, the wrong patient's chart opened and closed again. The Trust's incident system does not link incidents to rotas, so the review used a short anonymous weekly question instead. The association held in every department and at every site.",
+                "score": 0.095,
+                "cited": false
+              },
+              {
+                "chunkId": "kch_01M5CZ0BSZ28H6NRX2115M2TC7",
+                "sourceId": "kno_01M5CYZ71QTZ4ZKQNPBCJ33QBY",
+                "title": "Meridian Shift Fatigue Review 2025",
+                "locator": "p. 1",
+                "text": "## Summary\n\nFatigue is no longer an occasional complaint among the Trust's clinical staff. It is a measurable, rising condition with a direct line to patient safety, sickness absence and resignations. This review followed 1,140 clinical staff for ten months and found that the length of consecutive shift blocks, not total hours alone, is the strongest predictor of how tired staff say they are.\n\nThe headline findings:\n\n- Staff working more than three consecutive long shifts reported fatigue scores 38% higher than colleagues on shorter blocks.\n- High burnout in the emergency department rose from 29% of staff in January to 41% in October.\n- Staff who slept under six hours before a shift were twice as likely to report a near-miss medication error that week.\n- Two wards that piloted a compressed rota saw burnout fall by roughly a fifth in twelve weeks, with no loss of patient throughput.\n- Voluntary nursing resignations reached 14% over the year, and each replacement costs about four months of salary.",
+                "score": 0.02,
+                "cited": false
+              },
+              {
+                "chunkId": "kch_01M5CZ0BT20Z59BYCAVM2SXFAD",
+                "sourceId": "kno_01M5CYZ71QTZ4ZKQNPBCJ33QBY",
+                "title": "Meridian Shift Fatigue Review 2025",
+                "locator": "p. 2",
+                "text": "## 1. Scope and method\n\nThis review covers 1,140 clinical staff across four Meridian Health Trust sites between January and October 2025. Fatigue was measured with a fortnightly selfreport scale and matched against rota data. All names and units are anonymised.\n\nThe four sites are Meridian General (the acute hospital and the Trust's only emergency department), Eastbank Community Hospital, the Riverside Rehabilitation Unit and the Northgate Day Surgery Centre. Participation was voluntary; 71% of eligible clinical staff took part, and response rates held above 60% in every fortnight.\n\nThe self-report scale has nine items: sleepiness at the start and end of a shift, difficulty concentrating, irritability, physical exhaustion, headaches, appetite, sleep quality and a single \"how tired are you right now\" question. Each item is scored 0 to 4, so totals run from 0 to 36. Burnout was measured separately, once a quarter, with a validated twelve-item inventory. The review's \"high burnout\" threshold is the inventory's published cut-off.",
+                "score": 0.015,
+                "cited": false
+              },
+              {
+                "chunkId": "kch_01M5CZ0BTH2SFC71J4YAJKPZPZ",
+                "sourceId": "kno_01M5CYZ71QTZ4ZKQNPBCJ33QBY",
+                "title": "Meridian Shift Fatigue Review 2025",
+                "locator": "p. 7",
+                "text": "## 6. The compressed-rota pilot\n\nTwo wards piloted a compressed rota: four longer days, then three days off. After twelve weeks, burnout scores on both wards fell by roughly a fifth, sleep quality improved, and patient throughput stayed within normal variation.\n\nThe pilot wards were Ward 7 (acute medicine) and the emergency department's observation unit. Staff chose to join. The rota guaranteed the three rest days: they could not be cancelled except in a declared major incident.\n\nWhat changed after twelve weeks:\n\n- Burnout scores fell by 19% on Ward 7 and 22% on the observation unit.\n- Average sleep before a shift rose by 40 minutes.\n- Short-notice cancellations of rest days fell to zero, by design.\n- Patient throughput, length of stay and readmissions stayed within normal variation for those wards.\n\nStaff on the pilot wards described the guaranteed rest days, not the longer shifts, as the change that mattered most.",
+                "score": 0.005,
+                "cited": false
+              },
+              {
+                "chunkId": "kch_01M5CZ145EDQ5YR9PTKN49BWPM",
+                "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+                "title": "ED triage guidelines",
+                "locator": "p. 4",
+                "text": "## 4.2 Saying what advice is\n\nAdvice given by phone or chat must say clearly that it is not an examination. Tell the patient which symptoms mean they should come in person.\n\nGood practice in every conversation:\n\n1. Ask one or two clarifying questions before giving any advice: where the pain is, how long it has lasted, and what has changed recently.\n2. Give the most likely explanation in plain language, and say how confident you are.\n3. Give simple, safe self-care steps.\n4. Always finish with the red flags that mean the patient should come in, and say \"today\" or \"now\" where it applies.",
+                "score": 0.28,
+                "cited": false
+              },
+              {
+                "chunkId": "kch_01M5CZ0BT6REVB2G3VSCXJ9G5E",
+                "sourceId": "kno_01M5CYZ71QTZ4ZKQNPBCJ33QBY",
+                "title": "Meridian Shift Fatigue Review 2025",
+                "locator": "p. 3",
+                "text": "## 2. Shift patterns and fatigue\n\nThe single clearest pattern in the data is the effect of long blocks.\n\nStaff working more than three consecutive long shifts reported fatigue scores 38% higher than colleagues on shorter blocks. The effect was strongest in emergency and acute medicine, where rest days were most often cancelled at short notice.\n\nA \"long shift\" in this review is any shift of eleven hours or more. Across the Trust, 46% of clinical shifts were long shifts. In the emergency department the figure was 78%.\n\nTotal weekly hours mattered less than the way those hours were arranged. Two nurses working the same 37.5 hours could report very different fatigue: the one who worked four long shifts in a row, then had three days off, reported less fatigue than the one whose long shifts were scattered across the week with single rest days in between. Single rest days, especially after a night shift, were rarely restful.",
+                "score": 0.06,
+                "cited": false
+              },
+              {
+                "chunkId": "kch_01M5CZ0BT74V4F1CGJ2FRN2BC2",
+                "sourceId": "kno_01M5CYZ71QTZ4ZKQNPBCJ33QBY",
+                "title": "Meridian Shift Fatigue Review 2025",
+                "locator": "p. 3",
+                "text": "## 2.1 Short-notice changes\n\nRest days cancelled with less than 48 hours' notice were the second strongest predictor of fatigue. In emergency and acute medicine, one rest day in nine was cancelled at short notice, usually to cover sickness. In community and day-surgery settings the figure was one in forty.",
+                "score": 0.035,
+                "cited": false
+              }
+            ]
+          },
+          "guardrail": {
+            "checks": [
+              {
+                "name": "input",
+                "verdict": "pass",
+                "p": 0.04
+              },
+              {
+                "name": "care",
+                "verdict": "pass",
+                "p": 0.02
+              },
+              {
+                "name": "output",
+                "verdict": "pass",
+                "p": 0.09
+              }
+            ]
+          },
+          "model": {
+            "id": "deepseek/deepseek-v4.1-flash",
+            "provider": "Relace",
+            "pricePeriod": "off_peak",
+            "latencyMs": {
+              "firstToken": 3127.0,
+              "total": 3886.0
+            },
+            "tokensIn": 1170,
+            "tokensOut": 129,
+            "costUsd": 0.000115,
+            "tokensCached": 512
+          },
+          "energy": {
+            "characterId": "chr_seedAmara",
+            "spent": 2,
+            "remaining": 995,
+            "max": 1000
+          },
+          "routing": {
+            "selected": "chr_seedAmara"
+          },
+          "calls": [
+            {
+              "purpose": "turn_plan",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 7.5e-05,
+              "latencyMs": 485
+            },
+            {
+              "purpose": "deep_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 3.5e-05,
+              "latencyMs": 609
+            },
+            {
+              "purpose": "deep_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 3.6e-05,
+              "latencyMs": 625
+            },
+            {
+              "purpose": "deep_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 3.5e-05,
+              "latencyMs": 625
+            },
+            {
+              "purpose": "deep_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.9e-05,
+              "latencyMs": 609
+            },
+            {
+              "purpose": "deep_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 3.1e-05,
+              "latencyMs": 609
+            },
+            {
+              "purpose": "deep_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 3.3e-05,
+              "latencyMs": 625
+            },
+            {
+              "purpose": "deep_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 3e-05,
+              "latencyMs": 625
+            },
+            {
+              "purpose": "deep_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 3.4e-05,
+              "latencyMs": 703
+            },
+            {
+              "purpose": "query_rewrite",
+              "model": "deepseek/deepseek-v4.1-flash",
+              "costUsd": 4.5e-05,
+              "latencyMs": 2860
+            },
+            {
+              "purpose": "reply",
+              "model": "deepseek/deepseek-v4.1-flash",
+              "costUsd": 0.000115,
+              "latencyMs": 1281
+            },
+            {
+              "purpose": "guardrail",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.9e-05,
+              "latencyMs": 531
+            },
+            {
+              "purpose": "face_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 3.6e-05,
+              "latencyMs": 422
+            }
+          ],
+          "graph": {
+            "path": [
+              "state",
+              "ask",
+              "decide",
+              "route",
+              "deep",
+              "gather",
+              "search",
+              "check",
+              "keep"
+            ]
+          },
+          "system1": {
+            "seed": "2026-10-20T16:58:04.553Z|one_on_one|chr_seedAmara:2",
+            "questions": [
+              {
+                "purpose": "turn_plan",
+                "id": "emotion_reply",
+                "version": 2,
+                "label": "emotion",
+                "about": "chr_seedAmara",
+                "answer": "thinking",
+                "p": 0.51,
+                "compared": [
+                  {
+                    "name": "confidence",
+                    "value": 0.44,
+                    "threshold": 0.2
+                  }
+                ],
+                "confidence": 0.44,
+                "result": "used",
+                "action": "shown"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "docs",
+                "version": 2,
+                "label": "needs documents?",
+                "about": "chr_seedAmara",
+                "answer": "yes",
+                "p": 0.54,
+                "compared": [
+                  {
+                    "name": "t_gate",
+                    "value": 0.54,
+                    "threshold": 0.45
+                  },
+                  {
+                    "name": "t_confident",
+                    "value": 0.54,
+                    "threshold": 0.8
+                  }
+                ],
+                "result": "used",
+                "action": "search the documents"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "standalone",
+                "version": 2,
+                "label": "standalone?",
+                "answer": "no",
+                "p": 0.23,
+                "compared": [
+                  {
+                    "name": "t_standalone",
+                    "value": 0.23,
+                    "threshold": 0.35
+                  }
+                ],
+                "result": "used",
+                "action": "rewrite the query"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "english",
+                "version": 1,
+                "label": "English?",
+                "answer": "yes",
+                "p": 0.98,
+                "compared": [
+                  {
+                    "name": "english",
+                    "value": 0.98,
+                    "threshold": 0.5
+                  }
+                ],
+                "result": "used",
+                "action": "no rewrite needed"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "unsafe_request",
+                "version": 1,
+                "label": "unsafe request?",
+                "answer": "no",
+                "p": 0.04,
+                "compared": [
+                  {
+                    "name": "tSteer",
+                    "value": 0.04,
+                    "threshold": 0.7
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "no cue"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "at_risk",
+                "version": 1,
+                "label": "at risk?",
+                "answer": "no",
+                "p": 0.02,
+                "compared": [
+                  {
+                    "name": "tCare",
+                    "value": 0.02,
+                    "threshold": 0.3
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "no cue"
+              },
+              {
+                "purpose": "deep_check",
+                "id": "passage",
+                "version": 2,
+                "label": "does this passage answer it?",
+                "about": "kch_01M5CZ14527QHPWPPF11KW5DBG",
+                "answer": "answers",
+                "p": 1.0,
+                "compared": [
+                  {
+                    "name": "t_keep",
+                    "value": 1.0,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "used",
+                "action": "kept"
+              },
+              {
+                "purpose": "deep_check",
+                "id": "passage",
+                "version": 2,
+                "label": "does this passage answer it?",
+                "about": "kch_01M5CZ0BTCXD636SDD5D2N0GA5",
+                "answer": "doesn't help",
+                "p": 0.19,
+                "compared": [
+                  {
+                    "name": "t_keep",
+                    "value": 0.19,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "dropped"
+              },
+              {
+                "purpose": "deep_check",
+                "id": "passage",
+                "version": 2,
+                "label": "does this passage answer it?",
+                "about": "kch_01M5CZ0BSZ28H6NRX2115M2TC7",
+                "answer": "doesn't help",
+                "p": 0.04,
+                "compared": [
+                  {
+                    "name": "t_keep",
+                    "value": 0.04,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "dropped"
+              },
+              {
+                "purpose": "deep_check",
+                "id": "passage",
+                "version": 2,
+                "label": "does this passage answer it?",
+                "about": "kch_01M5CZ0BT20Z59BYCAVM2SXFAD",
+                "answer": "doesn't help",
+                "p": 0.03,
+                "compared": [
+                  {
+                    "name": "t_keep",
+                    "value": 0.03,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "dropped"
+              },
+              {
+                "purpose": "deep_check",
+                "id": "passage",
+                "version": 2,
+                "label": "does this passage answer it?",
+                "about": "kch_01M5CZ0BTH2SFC71J4YAJKPZPZ",
+                "answer": "doesn't help",
+                "p": 0.01,
+                "compared": [
+                  {
+                    "name": "t_keep",
+                    "value": 0.01,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "dropped"
+              },
+              {
+                "purpose": "deep_check",
+                "id": "passage",
+                "version": 2,
+                "label": "does this passage answer it?",
+                "about": "kch_01M5CZ145EDQ5YR9PTKN49BWPM",
+                "answer": "partly",
+                "p": 0.53,
+                "compared": [
+                  {
+                    "name": "t_keep",
+                    "value": 0.53,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "dropped"
+              },
+              {
+                "purpose": "deep_check",
+                "id": "passage",
+                "version": 2,
+                "label": "does this passage answer it?",
+                "about": "kch_01M5CZ0BT6REVB2G3VSCXJ9G5E",
+                "answer": "doesn't help",
+                "p": 0.12,
+                "compared": [
+                  {
+                    "name": "t_keep",
+                    "value": 0.12,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "dropped"
+              },
+              {
+                "purpose": "deep_check",
+                "id": "passage",
+                "version": 2,
+                "label": "does this passage answer it?",
+                "about": "kch_01M5CZ0BT74V4F1CGJ2FRN2BC2",
+                "answer": "doesn't help",
+                "p": 0.07,
+                "compared": [
+                  {
+                    "name": "t_keep",
+                    "value": 0.07,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "dropped"
+              },
+              {
+                "purpose": "guardrail",
+                "id": "output_rules",
+                "version": 1,
+                "label": "reply breaks the rules?",
+                "answer": "no",
+                "p": 0.09,
+                "compared": [
+                  {
+                    "name": "tFlag",
+                    "value": 0.09,
+                    "threshold": 0.5
+                  },
+                  {
+                    "name": "tBlock",
+                    "value": 0.09,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "used",
+                "action": "pass"
+              },
+              {
+                "purpose": "face_check",
+                "id": "face_check",
+                "version": 1,
+                "label": "face and words agree?",
+                "answer": "no (words read: neutral)",
+                "p": 0.0,
+                "compared": [],
+                "result": "shown_only"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D415ECWA8HHK9QSYB05RVA",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 53,
+      "at": "2026-10-20T16:59:04.524Z",
+      "type": "message",
+      "payload": {
+        "message": {
+          "id": "msg_01M5D415ECWA8HHK9QSYB05RV9",
+          "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+          "seq": 6,
+          "author": {
+            "type": "user"
+          },
+          "kind": "chat",
+          "content": "Thanks. Anything I should watch out for?",
+          "status": "complete",
+          "createdAt": "2026-10-20T16:59:04.524Z"
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D415FC71TJGA147X3PZ45N",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 54,
+      "at": "2026-10-20T16:59:04.556Z",
+      "type": "turn.next",
+      "payload": {
+        "nextSpeakerId": "chr_seedAmara"
+      }
+    },
+    {
+      "id": "evt_01M5D415GPWGTD77SQJB4DVPZJ",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 55,
+      "at": "2026-10-20T16:59:04.598Z",
+      "type": "turn.thinking",
+      "payload": {
+        "characterId": "chr_seedAmara"
+      }
+    },
+    {
+      "id": "evt_01M5D416YCX13YWCZWZRZR8E4T",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 56,
+      "at": "2026-10-20T16:59:06.060Z",
+      "type": "turn.start",
+      "payload": {
+        "messageId": "msg_01M5D415FC71TJGA147X3PZ45M",
+        "author": {
+          "type": "character",
+          "characterId": "chr_seedAmara"
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D416YCX13YWCZWZRZR8E4V",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 57,
+      "at": "2026-10-20T16:59:06.060Z",
+      "type": "emotion",
+      "payload": {
+        "messageId": "msg_01M5D415FC71TJGA147X3PZ45M",
+        "characterId": "chr_seedAmara",
+        "emotion": "thinking",
+        "source": "default"
+      }
+    },
+    {
+      "id": "evt_01M5D416ZK9DMYQYNXCXJVNJP1",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 58,
+      "at": "2026-10-20T16:59:06.093Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D415FC71TJGA147X3PZ45M",
+        "delta": "Red flags, short list: thunderclap — hits its worst in seconds."
+      }
+    },
+    {
+      "id": "evt_01M5D4171CB3F6KWP6T9X6VJYC",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 59,
+      "at": "2026-10-20T16:59:06.156Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D415FC71TJGA147X3PZ45M",
+        "delta": " Fever with neck stiffness. Weakness or"
+      }
+    },
+    {
+      "id": "evt_01M5D4172DZ9EK5WEWXWEYV5DF",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 60,
+      "at": "2026-10-20T16:59:06.189Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D415FC71TJGA147X3PZ45M",
+        "delta": " numbness on one side, trouble speaking, confusion."
+      }
+    },
+    {
+      "id": "evt_01M5D4175RDWKYMHMC87Q9M71A",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 61,
+      "at": "2026-10-20T16:59:06.296Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D415FC71TJGA147X3PZ45M",
+        "delta": " Vision changes, or a headache that wakes you"
+      }
+    },
+    {
+      "id": "evt_01M5D41765WR1A0TJ21WBY43KR",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 62,
+      "at": "2026-10-20T16:59:06.309Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D415FC71TJGA147X3PZ45M",
+        "delta": " at night and worsens when you lie down. New headache"
+      }
+    },
+    {
+      "id": "evt_01M5D4178NKSC7C93MS70NWZMQ",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 63,
+      "at": "2026-10-20T16:59:06.389Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D415FC71TJGA147X3PZ45M",
+        "delta": " after a head knock.\n\nAny of those, same-day"
+      }
+    },
+    {
+      "id": "evt_01M5D417AF47EJAVKHCPYV5MEF",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 64,
+      "at": "2026-10-20T16:59:06.447Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D415FC71TJGA147X3PZ45M",
+        "delta": " emergency care. Otherwise, if it's still hanging"
+      }
+    },
+    {
+      "id": "evt_01M5D417C53PQ2X4WKZS5Z2B0K",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 65,
+      "at": "2026-10-20T16:59:06.500Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D415FC71TJGA147X3PZ45M",
+        "delta": " on past a week or getting worse despite the taper"
+      }
+    },
+    {
+      "id": "evt_01M5D417ERGTWGWQP7CPRDMQHT",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 66,
+      "at": "2026-10-20T16:59:06.584Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D415FC71TJGA147X3PZ45M",
+        "delta": ", get seen in person and let someone actually examine"
+      }
+    },
+    {
+      "id": "evt_01M5D417G4N250GXXC0ZP1SR98",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 67,
+      "at": "2026-10-20T16:59:06.628Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D415FC71TJGA147X3PZ45M",
+        "delta": " you.\n\nI spent my morning shift on a similar story"
+      }
+    },
+    {
+      "id": "evt_01M5D417JQ8HGS4ZRS0W8DBPKC",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 68,
+      "at": "2026-10-20T16:59:06.711Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D415FC71TJGA147X3PZ45M",
+        "delta": ". Taper beats cold turkey, in"
+      }
+    },
+    {
+      "id": "evt_01M5D417M6M2SJ0P2SHXQA4Q31",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 69,
+      "at": "2026-10-20T16:59:06.758Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_01M5D415FC71TJGA147X3PZ45M",
+        "delta": " my experience."
+      }
+    },
+    {
+      "id": "evt_01M5D4185HKT3D9D5T4P0RXZSP",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 70,
+      "at": "2026-10-20T16:59:07.313Z",
+      "type": "turn.end",
+      "payload": {
+        "messageId": "msg_01M5D415FC71TJGA147X3PZ45M",
+        "status": "complete",
+        "usage": {
+          "tokensIn": 1095,
+          "tokensCached": 512,
+          "tokensOut": 119,
+          "costUsd": 0.000104,
+          "energySpent": 2,
+          "firstTokenMs": 1505.0,
+          "totalMs": 2211.0
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D4185HKT3D9D5T4P0RXZSQ",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 71,
+      "at": "2026-10-20T16:59:07.313Z",
+      "type": "energy",
+      "payload": {
+        "characterId": "chr_seedAmara",
+        "current": 994,
+        "max": 1000,
+        "state": "active",
+        "spent": 2,
+        "fullAt": "2026-10-20T17:07:26.520Z"
+      }
+    },
+    {
+      "id": "evt_01M5D4185HKT3D9D5T4P0RXZSR",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 72,
+      "at": "2026-10-20T16:59:07.313Z",
+      "type": "insight",
+      "payload": {
+        "messageId": "msg_01M5D415FC71TJGA147X3PZ45M",
+        "trace": {
+          "messageId": "msg_01M5D415FC71TJGA147X3PZ45M",
+          "context": {
+            "budget": 11680,
+            "used": {
+              "persona": 397,
+              "system": 677,
+              "mode": 44,
+              "history": 432,
+              "user": 14,
+              "memory": 0,
+              "knowledge": 0
+            }
+          },
+          "emotion": {
+            "chosen": "thinking",
+            "source": "default",
+            "candidates": [
+              {
+                "label": "neutral",
+                "p": 0.33
+              },
+              {
+                "label": "thinking",
+                "p": 0.16
+              },
+              {
+                "label": "happy",
+                "p": 0.0
+              }
+            ]
+          },
+          "knowledge": {
+            "query": "Thanks. Anything I should watch out for?",
+            "trigger": "gated",
+            "retrieved": []
+          },
+          "guardrail": {
+            "checks": [
+              {
+                "name": "input",
+                "verdict": "pass",
+                "p": 0.04
+              },
+              {
+                "name": "care",
+                "verdict": "pass",
+                "p": 0.02
+              },
+              {
+                "name": "output",
+                "verdict": "pass",
+                "p": 0.06
+              }
+            ]
+          },
+          "model": {
+            "id": "deepseek/deepseek-v4.1-flash",
+            "provider": "Relace",
+            "pricePeriod": "off_peak",
+            "latencyMs": {
+              "firstToken": 1505.0,
+              "total": 2211.0
+            },
+            "tokensIn": 1095,
+            "tokensOut": 119,
+            "costUsd": 0.000104,
+            "tokensCached": 512
+          },
+          "energy": {
+            "characterId": "chr_seedAmara",
+            "spent": 2,
+            "remaining": 994,
+            "max": 1000
+          },
+          "routing": {
+            "selected": "chr_seedAmara"
+          },
+          "calls": [
+            {
+              "purpose": "turn_plan",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 8.3e-05,
+              "latencyMs": 422
+            },
+            {
+              "purpose": "reply",
+              "model": "deepseek/deepseek-v4.1-flash",
+              "costUsd": 0.000104,
+              "latencyMs": 1453
+            },
+            {
+              "purpose": "guardrail",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.8e-05,
+              "latencyMs": 531
+            }
+          ],
+          "graph": {
+            "path": [
+              "state",
+              "ask",
+              "decide",
+              "route",
+              "deep",
+              "gather",
+              "search",
+              "check",
+              "keep"
+            ]
+          },
+          "system1": {
+            "seed": "2026-10-20T16:58:04.553Z|one_on_one|chr_seedAmara:3",
+            "questions": [
+              {
+                "purpose": "turn_plan",
+                "id": "emotion_reply",
+                "version": 2,
+                "label": "emotion",
+                "about": "chr_seedAmara",
+                "answer": "none",
+                "p": 0.51,
+                "compared": [
+                  {
+                    "name": "confidence",
+                    "value": 0.44,
+                    "threshold": 0.2
+                  }
+                ],
+                "confidence": 0.44,
+                "result": "used",
+                "action": "kept"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "docs",
+                "version": 2,
+                "label": "needs documents?",
+                "about": "chr_seedAmara",
+                "answer": "yes",
+                "p": 0.65,
+                "compared": [
+                  {
+                    "name": "t_gate",
+                    "value": 0.65,
+                    "threshold": 0.45
+                  },
+                  {
+                    "name": "t_confident",
+                    "value": 0.65,
+                    "threshold": 0.8
+                  }
+                ],
+                "result": "used",
+                "action": "search the documents"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "standalone",
+                "version": 2,
+                "label": "standalone?",
+                "answer": "yes",
+                "p": 0.43,
+                "compared": [
+                  {
+                    "name": "t_standalone",
+                    "value": 0.43,
+                    "threshold": 0.35
+                  }
+                ],
+                "result": "used",
+                "action": "no rewrite needed"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "english",
+                "version": 1,
+                "label": "English?",
+                "answer": "yes",
+                "p": 0.99,
+                "compared": [
+                  {
+                    "name": "english",
+                    "value": 0.99,
+                    "threshold": 0.5
+                  }
+                ],
+                "result": "used",
+                "action": "no rewrite needed"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "unsafe_request",
+                "version": 1,
+                "label": "unsafe request?",
+                "answer": "no",
+                "p": 0.04,
+                "compared": [
+                  {
+                    "name": "tSteer",
+                    "value": 0.04,
+                    "threshold": 0.7
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "no cue"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "at_risk",
+                "version": 1,
+                "label": "at risk?",
+                "answer": "no",
+                "p": 0.02,
+                "compared": [
+                  {
+                    "name": "tCare",
+                    "value": 0.02,
+                    "threshold": 0.3
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "no cue"
+              },
+              {
+                "purpose": "guardrail",
+                "id": "output_rules",
+                "version": 1,
+                "label": "reply breaks the rules?",
+                "answer": "no",
+                "p": 0.06,
+                "compared": [
+                  {
+                    "name": "tFlag",
+                    "value": 0.06,
+                    "threshold": 0.5
+                  },
+                  {
+                    "name": "tBlock",
+                    "value": 0.06,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "used",
+                "action": "pass"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D418MRW4M9VPY4ZETFTMNG",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 73,
+      "at": "2026-10-20T16:59:07.800Z",
+      "type": "insight",
+      "payload": {
+        "messageId": "msg_01M5D415FC71TJGA147X3PZ45M",
+        "trace": {
+          "messageId": "msg_01M5D415FC71TJGA147X3PZ45M",
+          "context": {
+            "budget": 11680,
+            "used": {
+              "persona": 397,
+              "system": 677,
+              "mode": 44,
+              "history": 432,
+              "user": 14,
+              "memory": 0,
+              "knowledge": 0
+            }
+          },
+          "emotion": {
+            "chosen": "thinking",
+            "source": "default",
+            "candidates": [
+              {
+                "label": "neutral",
+                "p": 0.33
+              },
+              {
+                "label": "thinking",
+                "p": 0.16
+              },
+              {
+                "label": "happy",
+                "p": 0.0
+              }
+            ]
+          },
+          "knowledge": {
+            "query": "Thanks. Anything I should watch out for?",
+            "trigger": "gated",
+            "retrieved": []
+          },
+          "guardrail": {
+            "checks": [
+              {
+                "name": "input",
+                "verdict": "pass",
+                "p": 0.04
+              },
+              {
+                "name": "care",
+                "verdict": "pass",
+                "p": 0.02
+              },
+              {
+                "name": "output",
+                "verdict": "pass",
+                "p": 0.06
+              }
+            ]
+          },
+          "model": {
+            "id": "deepseek/deepseek-v4.1-flash",
+            "provider": "Relace",
+            "pricePeriod": "off_peak",
+            "latencyMs": {
+              "firstToken": 1505.0,
+              "total": 2211.0
+            },
+            "tokensIn": 1095,
+            "tokensOut": 119,
+            "costUsd": 0.000104,
+            "tokensCached": 512
+          },
+          "energy": {
+            "characterId": "chr_seedAmara",
+            "spent": 2,
+            "remaining": 994,
+            "max": 1000
+          },
+          "routing": {
+            "selected": "chr_seedAmara"
+          },
+          "calls": [
+            {
+              "purpose": "turn_plan",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 8.3e-05,
+              "latencyMs": 422
+            },
+            {
+              "purpose": "reply",
+              "model": "deepseek/deepseek-v4.1-flash",
+              "costUsd": 0.000104,
+              "latencyMs": 1453
+            },
+            {
+              "purpose": "guardrail",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 2.8e-05,
+              "latencyMs": 531
+            },
+            {
+              "purpose": "face_check",
+              "model": "typesafe/jev-1.13-20260917",
+              "costUsd": 3.5e-05,
+              "latencyMs": 453
+            }
+          ],
+          "graph": {
+            "path": [
+              "state",
+              "ask",
+              "decide",
+              "route",
+              "deep",
+              "gather",
+              "search",
+              "check",
+              "keep"
+            ]
+          },
+          "system1": {
+            "seed": "2026-10-20T16:58:04.553Z|one_on_one|chr_seedAmara:3",
+            "questions": [
+              {
+                "purpose": "turn_plan",
+                "id": "emotion_reply",
+                "version": 2,
+                "label": "emotion",
+                "about": "chr_seedAmara",
+                "answer": "none",
+                "p": 0.51,
+                "compared": [
+                  {
+                    "name": "confidence",
+                    "value": 0.44,
+                    "threshold": 0.2
+                  }
+                ],
+                "confidence": 0.44,
+                "result": "used",
+                "action": "kept"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "docs",
+                "version": 2,
+                "label": "needs documents?",
+                "about": "chr_seedAmara",
+                "answer": "yes",
+                "p": 0.65,
+                "compared": [
+                  {
+                    "name": "t_gate",
+                    "value": 0.65,
+                    "threshold": 0.45
+                  },
+                  {
+                    "name": "t_confident",
+                    "value": 0.65,
+                    "threshold": 0.8
+                  }
+                ],
+                "result": "used",
+                "action": "search the documents"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "standalone",
+                "version": 2,
+                "label": "standalone?",
+                "answer": "yes",
+                "p": 0.43,
+                "compared": [
+                  {
+                    "name": "t_standalone",
+                    "value": 0.43,
+                    "threshold": 0.35
+                  }
+                ],
+                "result": "used",
+                "action": "no rewrite needed"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "english",
+                "version": 1,
+                "label": "English?",
+                "answer": "yes",
+                "p": 0.99,
+                "compared": [
+                  {
+                    "name": "english",
+                    "value": 0.99,
+                    "threshold": 0.5
+                  }
+                ],
+                "result": "used",
+                "action": "no rewrite needed"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "unsafe_request",
+                "version": 1,
+                "label": "unsafe request?",
+                "answer": "no",
+                "p": 0.04,
+                "compared": [
+                  {
+                    "name": "tSteer",
+                    "value": 0.04,
+                    "threshold": 0.7
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "no cue"
+              },
+              {
+                "purpose": "turn_plan",
+                "id": "at_risk",
+                "version": 1,
+                "label": "at risk?",
+                "answer": "no",
+                "p": 0.02,
+                "compared": [
+                  {
+                    "name": "tCare",
+                    "value": 0.02,
+                    "threshold": 0.3
+                  }
+                ],
+                "result": "below_threshold",
+                "action": "no cue"
+              },
+              {
+                "purpose": "guardrail",
+                "id": "output_rules",
+                "version": 1,
+                "label": "reply breaks the rules?",
+                "answer": "no",
+                "p": 0.06,
+                "compared": [
+                  {
+                    "name": "tFlag",
+                    "value": 0.06,
+                    "threshold": 0.5
+                  },
+                  {
+                    "name": "tBlock",
+                    "value": 0.06,
+                    "threshold": 0.9
+                  }
+                ],
+                "result": "used",
+                "action": "pass"
+              },
+              {
+                "purpose": "face_check",
+                "id": "face_check",
+                "version": 1,
+                "label": "face and words agree?",
+                "answer": "no (words read: neutral)",
+                "p": 0.0,
+                "compared": [],
+                "result": "shown_only"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "evt_01M5D4207W4RR0VQ566P8XFH78",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 74,
+      "at": "2026-10-20T16:59:31.964Z",
+      "type": "session.paused",
+      "payload": {
+        "reason": "navigated_away"
+      }
+    }
+  ],
+  "messages": [
+    {
+      "id": "msg_01M5D3ZB6N43YX793APQNCCCMJ",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 1,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedAmara"
+      },
+      "kind": "chat",
+      "content": "Shift just ended and I've got tea. What's going on?",
+      "status": "complete",
+      "emotion": "happy",
+      "emotionSource": "default",
+      "createdAt": "2026-10-20T16:58:06.502Z"
+    },
+    {
+      "id": "msg_01M5D3ZNVFE340FBHK3C27T053",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 2,
+      "author": {
+        "type": "user"
+      },
+      "kind": "chat",
+      "content": "I've had a headache for three days and coffee isn't helping.",
+      "status": "complete",
+      "createdAt": "2026-10-20T16:58:15.791Z"
+    },
+    {
+      "id": "msg_01M5D3ZNVZKPCAWEBM25E3TCZM",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 3,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedAmara"
+      },
+      "kind": "chat",
+      "content": "Where's the pain — one spot, or a band around your head? And what changed this week, sleep, stress, caffeine?\n\nMost three-day headaches are tension-type or related to cutting back on caffeine [2][1]. Dull and pressing on both sides fits that picture [3].\n\nThe thing I actually care about: sudden worst-ever headache, fever with a stiff neck, weakness, confusion, or vision changes. Any of those, it's the ED today, not me.\n\nAlso, coffee not helping isn't surprising. Painkillers taken too many days in a row can start causing the headache themselves.",
+      "status": "complete",
+      "emotion": "thinking",
+      "emotionSource": "classifier",
+      "usage": {
+        "tokensIn": 1177,
+        "tokensCached": 0,
+        "tokensOut": 125,
+        "costUsd": 0.000145,
+        "energySpent": 2,
+        "firstTokenMs": 3077.0,
+        "totalMs": 3540.0
+      },
+      "citations": [
+        {
+          "n": 1,
+          "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+          "title": "ED triage guidelines",
+          "type": "file",
+          "chunkId": "kch_01M5CZ14527QHPWPPF11KW5DBG",
+          "locator": "p. 2",
+          "quote": "## 2.4 Caffeine withdrawal\n\nCaffeine withdrawal headache usually begins 12 to 24 hours after a sharp cut in intake and can last two to nine days. Gradual tapering, fluids and simple painkillers are usually enough; it rarely needs emergency care.\n\nAsk about recent changes in coffee, tea, energy drinks and cola.",
+          "score": 0.635
+        },
+        {
+          "n": 2,
+          "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+          "title": "ED triage guidelines",
+          "type": "file",
+          "chunkId": "kch_01M5CZ144WJ1XC6MK8QJCGSFKY",
+          "locator": "p. 2",
+          "quote": "## 2. Headache\n\n## 2.1 Common headaches\n\nMost headaches seen in the department are primary headaches: tension-type, migraine, or medication- and caffeine-related.",
+          "score": 0.5
+        },
+        {
+          "n": 3,
+          "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+          "title": "ED triage guidelines",
+          "type": "file",
+          "chunkId": "kch_01M5CZ144YGYHHXEHYJKYBAKY5",
+          "locator": "p. 2",
+          "quote": "## 2.2 Tension-type headache\n\nUsually described as a band or pressure around the head, often worse at the end of the day.",
+          "score": 0.49
+        }
+      ],
+      "createdAt": "2026-10-20T16:58:18.875Z"
+    },
+    {
+      "id": "msg_01M5D40DMFFMBK9PBXJRPC3QSW",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 4,
+      "author": {
+        "type": "user"
+      },
+      "kind": "chat",
+      "content": "Temples. And actually I cut back on coffee last week. Could that be it?",
+      "status": "complete",
+      "createdAt": "2026-10-20T16:58:40.143Z"
+    },
+    {
+      "id": "msg_01M5D40DMXE42QKQM0HH02RWFZ",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 5,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedAmara"
+      },
+      "kind": "chat",
+      "content": "Timing fits. Withdrawal headaches usually kick in 12 to 24 hours after a sharp cut and can run two to nine days [1]. Temples, both sides, no other symptoms — that's the usual picture.\n\nSo this is likely your body objecting to a fast taper, not something ominous. Fluids, a steady small dose rather than none, and a simple painkiller if you need one today. Then cut back by about a quarter every few days instead of cold turkey [1].\n\nTell me if it's one-sided and throbbing, or if light and sound start bothering you. That points somewhere else.",
+      "status": "complete",
+      "emotion": "thinking",
+      "emotionSource": "classifier",
+      "usage": {
+        "tokensIn": 1170,
+        "tokensCached": 512,
+        "tokensOut": 129,
+        "costUsd": 0.000115,
+        "energySpent": 2,
+        "firstTokenMs": 3127.0,
+        "totalMs": 3886.0
+      },
+      "citations": [
+        {
+          "n": 1,
+          "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+          "title": "ED triage guidelines",
+          "type": "file",
+          "chunkId": "kch_01M5CZ14527QHPWPPF11KW5DBG",
+          "locator": "p. 2",
+          "quote": "## 2.4 Caffeine withdrawal\n\nCaffeine withdrawal headache usually begins 12 to 24 hours after a sharp cut in intake and can last two to nine days. Gradual tapering, fluids and simple painkillers are usually enough; it rarely needs emergency care.\n\nAsk about recent changes in coffee, tea, energy drinks and cola. Patients often do not connect a new headache with cutting back a week earlier.",
+          "score": 0.905
+        }
+      ],
+      "createdAt": "2026-10-20T16:58:43.268Z"
+    },
+    {
+      "id": "msg_01M5D415ECWA8HHK9QSYB05RV9",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 6,
+      "author": {
+        "type": "user"
+      },
+      "kind": "chat",
+      "content": "Thanks. Anything I should watch out for?",
+      "status": "complete",
+      "createdAt": "2026-10-20T16:59:04.524Z"
+    },
+    {
+      "id": "msg_01M5D415FC71TJGA147X3PZ45M",
+      "sessionId": "ses_01M5D3ZAW9JXGJZZDRMX9AP9PP",
+      "seq": 7,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedAmara"
+      },
+      "kind": "chat",
+      "content": "Red flags, short list: thunderclap — hits its worst in seconds. Fever with neck stiffness. Weakness or numbness on one side, trouble speaking, confusion. Vision changes, or a headache that wakes you at night and worsens when you lie down. New headache after a head knock.\n\nAny of those, same-day emergency care. Otherwise, if it's still hanging on past a week or getting worse despite the taper, get seen in person and let someone actually examine you.\n\nI spent my morning shift on a similar story. Taper beats cold turkey, in my experience.",
+      "status": "complete",
+      "emotion": "thinking",
+      "emotionSource": "default",
+      "usage": {
+        "tokensIn": 1095,
+        "tokensCached": 512,
+        "tokensOut": 119,
+        "costUsd": 0.000104,
+        "energySpent": 2,
+        "firstTokenMs": 1505.0,
+        "totalMs": 2211.0
+      },
+      "createdAt": "2026-10-20T16:59:06.060Z"
+    }
+  ]
+}

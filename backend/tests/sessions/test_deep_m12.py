@@ -63,7 +63,7 @@ async def test_a_deep_one_on_one_reply_carries_its_passages(api: Api) -> None:
     assert new.index("reply") > max(i for i, p in enumerate(new) if p == "deep_check")
     body = chats(api, "reply")[-1]
     tail = body["messages"][-1]["content"]
-    assert tail.startswith("# From your documents\n<passage>\n[1] Meridian Shift Fatigue Review 2025, p. 3\n")
+    assert tail.startswith("# From your documents\n<passage>\n[1] Meridian Shift Fatigue Review 2025, p. 1\n")
     assert STANDING in tail and body["max_tokens"] == api.rt.runtime_cfg.runtime.reply_max_tokens.one_on_one_deep
     tr = reply["trace"]
     assert tr["graph"]["path"][-4:] == ["gather", "search", "check", "keep"]

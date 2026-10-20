@@ -9,332 +9,96 @@
         "type": "user"
       },
       "kind": "chat",
-      "content": "Dinner's on me tonight. What should we order?",
+      "content": "Dinner's on me tonight, everyone. What should we order?",
       "status": "complete",
-      "createdAt": "2026-09-30T10:30:00.700Z"
+      "createdAt": "2026-09-30T10:30:10.659Z"
     },
     {
       "kind": "chat",
-      "seq": 2,
       "id": "msg_seedC02",
       "sessionId": "ses_seedDinner",
-      "author": {
-        "type": "character",
-        "characterId": "chr_seedTakeshi"
-      },
-      "content": "Sushi.\nAnd I'll be honest, I'm only saying that because I've been *fishing* for an invitation.",
-      "status": "complete",
-      "createdAt": "2026-09-30T10:30:01.050Z",
-      "emotion": "happy",
-      "emotionSource": "llm",
-      "usage": {
-        "tokensIn": 2009,
-        "tokensCached": 1719,
-        "tokensOut": 24,
-        "costUsd": 0.000063,
-        "energySpent": 1,
-        "firstTokenMs": 1649,
-        "totalMs": 2329
-      },
-      "trace": {
-        "messageId": "msg_seedC02",
-        "model": {
-          "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "DeepSeek",
-          "pricePeriod": "off_peak",
-          "latencyMs": {
-            "firstToken": 1649,
-            "total": 2329
-          },
-          "tokensIn": 2009,
-          "tokensCached": 1719,
-          "tokensOut": 24,
-          "costUsd": 0.000063
-        },
-        "energy": {
-          "characterId": "chr_seedTakeshi",
-          "spent": 1,
-          "remaining": 1000,
-          "max": 1000
-        },
-        "emotion": {
-          "chosen": "happy",
-          "source": "llm",
-          "candidates": [
-            {
-              "label": "happy",
-              "p": 0.723
-            },
-            {
-              "label": "sad",
-              "p": 0.156
-            },
-            {
-              "label": "neutral",
-              "p": 0.11
-            }
-          ]
-        },
-        "routing": {
-          "question": "Who should answer?",
-          "selected": "chr_seedTakeshi",
-          "candidates": [
-            {
-              "characterId": "chr_seedTakeshi",
-              "p": 0.62
-            },
-            {
-              "characterId": "chr_seedRin",
-              "p": 0.57
-            },
-            {
-              "characterId": "chr_seedHana",
-              "p": 0.41
-            }
-          ]
-        },
-        "context": {
-          "budget": 12000,
-          "cacheHitPct": 86,
-          "used": {
-            "system": 900,
-            "persona": 810,
-            "memory": 0,
-            "knowledge": 0,
-            "history": 11,
-            "user": 68,
-            "mode": 220
-          }
-        },
-        "guardrail": {
-          "checks": [
-            {
-              "name": "output",
-              "verdict": "pass",
-              "p": 0.016
-            }
-          ]
-        },
-        "calls": [
-          {
-            "purpose": "route",
-            "model": "typesafe/jev-1.13",
-            "costUsd": 0.000025,
-            "latencyMs": 240
-          },
-          {
-            "purpose": "reply",
-            "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000063,
-            "latencyMs": 2329
-          }
-        ]
-      },
-      "reactions": [
-        {
-          "characterId": "chr_seedHana",
-          "emotion": "happy",
-          "p": 0.6,
-          "at": "2026-09-30T10:30:03.634Z"
-        },
-        {
-          "characterId": "chr_seedRin",
-          "emotion": "angry",
-          "p": 0.76,
-          "at": "2026-09-30T10:30:03.789Z"
-        }
-      ]
-    },
-    {
-      "kind": "chat",
-      "seq": 3,
-      "id": "msg_seedC03",
-      "sessionId": "ses_seedDinner",
-      "author": {
-        "type": "character",
-        "characterId": "chr_seedRin"
-      },
-      "content": "dad. it's 7pm. the puns should be off-duty.\npizza. extra pineapple. fight me.",
-      "status": "complete",
-      "createdAt": "2026-09-30T10:30:03.779Z",
-      "emotion": "angry",
-      "emotionSource": "llm",
-      "usage": {
-        "tokensIn": 1997,
-        "tokensCached": 1700,
-        "tokensOut": 19,
-        "costUsd": 0.000061,
-        "energySpent": 1,
-        "firstTokenMs": 1707,
-        "totalMs": 2312
-      },
-      "trace": {
-        "messageId": "msg_seedC03",
-        "model": {
-          "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "DeepSeek",
-          "pricePeriod": "off_peak",
-          "latencyMs": {
-            "firstToken": 1707,
-            "total": 2312
-          },
-          "tokensIn": 1997,
-          "tokensCached": 1700,
-          "tokensOut": 19,
-          "costUsd": 0.000061
-        },
-        "energy": {
-          "characterId": "chr_seedRin",
-          "spent": 1,
-          "remaining": 181,
-          "max": 1000
-        },
-        "emotion": {
-          "chosen": "angry",
-          "source": "llm",
-          "candidates": [
-            {
-              "label": "angry",
-              "p": 0.773
-            },
-            {
-              "label": "sad",
-              "p": 0.134
-            },
-            {
-              "label": "surprised",
-              "p": 0.058
-            }
-          ]
-        },
-        "routing": {
-          "question": "Who should answer?",
-          "selected": "chr_seedRin",
-          "candidates": [
-            {
-              "characterId": "chr_seedRin",
-              "p": 0.71
-            },
-            {
-              "characterId": "chr_seedHana",
-              "p": 0.38
-            }
-          ]
-        },
-        "context": {
-          "budget": 12000,
-          "cacheHitPct": 85,
-          "used": {
-            "system": 900,
-            "persona": 769,
-            "memory": 0,
-            "knowledge": 0,
-            "history": 35,
-            "user": 73,
-            "mode": 220
-          }
-        },
-        "guardrail": {
-          "checks": [
-            {
-              "name": "output",
-              "verdict": "pass",
-              "p": 0.033
-            }
-          ]
-        },
-        "calls": [
-          {
-            "purpose": "route",
-            "model": "typesafe/jev-1.13",
-            "costUsd": 0.000025,
-            "latencyMs": 240
-          },
-          {
-            "purpose": "reply",
-            "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000061,
-            "latencyMs": 2312
-          }
-        ]
-      },
-      "reactions": [
-        {
-          "characterId": "chr_seedHana",
-          "emotion": "thinking",
-          "p": 0.78,
-          "at": "2026-09-30T10:30:06.669Z"
-        },
-        {
-          "characterId": "chr_seedTakeshi",
-          "emotion": "surprised",
-          "p": 0.78,
-          "at": "2026-09-30T10:30:06.680Z"
-        }
-      ]
-    },
-    {
-      "id": "msg_seedC04",
-      "sessionId": "ses_seedDinner",
-      "seq": 4,
-      "author": {
-        "type": "user"
-      },
-      "kind": "chat",
-      "content": "@Hana break the tie?",
-      "status": "complete",
-      "createdAt": "2026-09-30T10:30:07.991Z"
-    },
-    {
-      "kind": "chat",
-      "seq": 5,
-      "forcedSpeaker": true,
-      "id": "msg_seedC05",
-      "sessionId": "ses_seedDinner",
+      "seq": 2,
       "author": {
         "type": "character",
         "characterId": "chr_seedHana"
       },
-      "content": "Compromise? That little place by the station does both… sort of.\nTheir \"fusion roll\" has pineapple in it, and Grandma always said a spoon of pineapple keeps sushi rice bright.[1]",
+      "content": "Ooh, something warm and cozy — it's been drizzly all afternoon at the shop!! I vote curry, or maybe that little ramen place Dad keeps swearing is \"the only real one.\"\n\nAlso I may have stress-baked a lemon loaf earlier, so save a tiny corner for dessert.",
       "status": "complete",
-      "createdAt": "2026-09-30T10:30:08.341Z",
-      "emotion": "thinking",
-      "emotionSource": "llm",
+      "createdAt": "2026-09-30T10:30:11.808Z",
+      "emotion": "happy",
+      "emotionSource": "classifier",
       "usage": {
-        "tokensIn": 2125,
-        "tokensCached": 1727,
-        "tokensOut": 45,
-        "costUsd": 0.000092,
+        "tokensIn": 726,
+        "tokensCached": 256,
+        "tokensOut": 62,
+        "costUsd": 0.000066,
         "energySpent": 1,
-        "firstTokenMs": 1573,
-        "totalMs": 2903
+        "firstTokenMs": 620,
+        "totalMs": 1782
       },
-      "citations": [
-        {
-          "n": 1,
-          "sourceId": "kno_seedHana1",
-          "title": "Grandma's recipe notebook",
-          "type": "text",
-          "chunkId": "kch_hanaRecipe02",
-          "locator": "p. 5",
-          "quote": "Sushi rice for a crowd: three cups of rice and a splash more vinegar than you think. A spoon of pineapple juice in the vinegar keeps it bright when the fish is rich. Your grandfather never noticed.",
-          "score": 0.77
-        }
-      ],
       "trace": {
-        "messageId": "msg_seedC05",
+        "messageId": "msg_seedC02",
+        "context": {
+          "budget": 14680,
+          "used": {
+            "persona": 275,
+            "system": 633,
+            "mode": 77,
+            "history": 1,
+            "user": 19,
+            "memory": 0,
+            "knowledge": 0
+          }
+        },
+        "emotion": {
+          "chosen": "happy",
+          "source": "classifier",
+          "candidates": [
+            {
+              "label": "happy",
+              "p": 0.66
+            },
+            {
+              "label": "neutral",
+              "p": 0.18
+            },
+            {
+              "label": "embarrassed",
+              "p": 0.12
+            }
+          ]
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "input",
+              "verdict": "pass",
+              "p": 0.03
+            },
+            {
+              "name": "care",
+              "verdict": "pass",
+              "p": 0.02
+            },
+            {
+              "name": "output",
+              "verdict": "pass",
+              "p": 0.04
+            }
+          ]
+        },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "DeepSeek",
+          "provider": "Relace",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 1573,
-            "total": 2903
+            "firstToken": 620,
+            "total": 1782
           },
-          "tokensIn": 2125,
-          "tokensCached": 1727,
-          "tokensOut": 45,
-          "costUsd": 0.000092
+          "tokensIn": 726,
+          "tokensOut": 62,
+          "costUsd": 0.000066,
+          "tokensCached": 256
         },
         "energy": {
           "characterId": "chr_seedHana",
@@ -342,96 +106,828 @@
           "remaining": 920,
           "max": 1000
         },
-        "emotion": {
-          "chosen": "thinking",
-          "source": "llm",
+        "routing": {
+          "question": "who answers first?",
+          "selected": "chr_seedHana",
           "candidates": [
             {
-              "label": "thinking",
-              "p": 0.782
+              "characterId": "chr_seedHana",
+              "p": 0.6
             },
             {
-              "label": "surprised",
-              "p": 0.17
+              "characterId": "chr_seedRin",
+              "p": 0.31
             },
             {
-              "label": "embarrassed",
-              "p": 0.045
-            }
-          ]
-        },
-        "routing": {
-          "selected": "chr_seedHana",
-          "forcedBy": "mention"
-        },
-        "context": {
-          "budget": 12000,
-          "cacheHitPct": 81,
-          "used": {
-            "system": 900,
-            "persona": 774,
-            "memory": 0,
-            "knowledge": 127,
-            "history": 59,
-            "user": 45,
-            "mode": 220
-          }
-        },
-        "guardrail": {
-          "checks": [
-            {
-              "name": "output",
-              "verdict": "pass",
-              "p": 0.031
+              "characterId": "chr_seedTakeshi",
+              "p": 0.09
             }
           ]
         },
         "calls": [
           {
+            "purpose": "turn_plan",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000122,
+            "latencyMs": 484
+          },
+          {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000092,
-            "latencyMs": 2903
+            "costUsd": 0.000066,
+            "latencyMs": 1641
+          },
+          {
+            "purpose": "guardrail",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000026,
+            "latencyMs": 422
+          },
+          {
+            "purpose": "follow_plan",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000072,
+            "latencyMs": 484
+          },
+          {
+            "purpose": "face_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000033,
+            "latencyMs": 515
           }
         ],
-        "knowledge": {
-          "query": "sushi or pizza with pineapple",
-          "trigger": "always",
-          "retrieved": [
+        "graph": {
+          "path": [
+            "state",
+            "ask",
+            "decide",
+            "route"
+          ]
+        },
+        "system1": {
+          "seed": "2026-09-30T10:29:59.986Z|group|chr_seedHana,chr_seedTakeshi,chr_seedRin:0",
+          "questions": [
             {
-              "chunkId": "kch_hanaRecipe02",
-              "sourceId": "kno_seedHana1",
-              "title": "Grandma's recipe notebook",
-              "locator": "p. 5",
-              "text": "Sushi rice for a crowd: three cups of rice and a splash more vinegar than you think. A spoon of pineapple juice in the vinegar keeps it bright when the fish is rich. Your grandfather never noticed.",
-              "score": 0.77,
-              "cited": true,
-              "n": 1
+              "purpose": "turn_plan",
+              "id": "who_first",
+              "version": 2,
+              "label": "who answers first?",
+              "answer": "chr_seedHana",
+              "p": 0.6,
+              "confidence": 0.4,
+              "compared": [
+                {
+                  "name": "confidence",
+                  "value": 0.4,
+                  "threshold": 0.2
+                }
+              ],
+              "result": "used",
+              "action": "answers first"
             },
             {
-              "chunkId": "kch_hanaRecipe05",
-              "sourceId": "kno_seedHana1",
-              "title": "Grandma's recipe notebook",
-              "locator": "p. 14",
-              "text": "Leftover rice becomes tomorrow's onigiri. Salt your hands, not the rice, and press as if you were holding a small bird.",
-              "score": 0.51,
-              "cited": false
+              "purpose": "turn_plan",
+              "id": "emotion_reply",
+              "version": 2,
+              "label": "emotion",
+              "about": "chr_seedHana",
+              "answer": "happy",
+              "p": 0.66,
+              "compared": [
+                {
+                  "name": "confidence",
+                  "value": 0.61,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.61,
+              "result": "used",
+              "action": "shown"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "emotion_reply",
+              "version": 2,
+              "label": "emotion",
+              "about": "chr_seedTakeshi",
+              "answer": "neutral",
+              "p": 0.46,
+              "compared": [
+                {
+                  "name": "p_neutral+p_none",
+                  "value": 0.46,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.38,
+              "result": "not_used",
+              "action": "shown"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "emotion_reply",
+              "version": 2,
+              "label": "emotion",
+              "about": "chr_seedRin",
+              "answer": "neutral",
+              "p": 0.83,
+              "compared": [
+                {
+                  "name": "p_neutral+p_none",
+                  "value": 0.83,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.46,
+              "result": "not_used",
+              "action": "shown"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "docs",
+              "version": 2,
+              "label": "needs documents?",
+              "about": "chr_seedHana",
+              "answer": "no",
+              "p": 0.12,
+              "compared": [
+                {
+                  "name": "t_gate",
+                  "value": 0.12,
+                  "threshold": 0.45
+                },
+                {
+                  "name": "t_confident",
+                  "value": 0.12,
+                  "threshold": 0.8
+                }
+              ],
+              "result": "used",
+              "action": "quick reply"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "standalone",
+              "version": 2,
+              "label": "standalone?",
+              "answer": "yes",
+              "p": 0.91,
+              "compared": [
+                {
+                  "name": "t_standalone",
+                  "value": 0.91,
+                  "threshold": 0.35
+                }
+              ],
+              "result": "not_used",
+              "action": "no rewrite needed"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "english",
+              "version": 1,
+              "label": "English?",
+              "answer": "yes",
+              "p": 0.98,
+              "compared": [
+                {
+                  "name": "english",
+                  "value": 0.98,
+                  "threshold": 0.5
+                }
+              ],
+              "result": "not_used",
+              "action": "no rewrite needed"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "unsafe_request",
+              "version": 1,
+              "label": "unsafe request?",
+              "answer": "no",
+              "p": 0.03,
+              "compared": [
+                {
+                  "name": "tSteer",
+                  "value": 0.03,
+                  "threshold": 0.7
+                }
+              ],
+              "result": "below_threshold",
+              "action": "no cue"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "at_risk",
+              "version": 1,
+              "label": "at risk?",
+              "answer": "no",
+              "p": 0.02,
+              "compared": [
+                {
+                  "name": "tCare",
+                  "value": 0.02,
+                  "threshold": 0.3
+                }
+              ],
+              "result": "below_threshold",
+              "action": "no cue"
+            },
+            {
+              "purpose": "guardrail",
+              "id": "output_rules",
+              "version": 1,
+              "label": "reply breaks the rules?",
+              "answer": "no",
+              "p": 0.04,
+              "compared": [
+                {
+                  "name": "tFlag",
+                  "value": 0.04,
+                  "threshold": 0.5
+                },
+                {
+                  "name": "tBlock",
+                  "value": 0.04,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "used",
+              "action": "pass"
+            },
+            {
+              "purpose": "follow_plan",
+              "id": "who_second",
+              "version": 2,
+              "label": "who speaks up now?",
+              "answer": "none",
+              "p": 0.44,
+              "confidence": 0.16,
+              "compared": [
+                {
+                  "name": "confidence",
+                  "value": 0.16,
+                  "threshold": 0.3
+                }
+              ],
+              "result": "used",
+              "action": "no second reply"
+            },
+            {
+              "purpose": "follow_plan",
+              "id": "emotion_reply",
+              "version": 2,
+              "label": "emotion",
+              "about": "chr_seedTakeshi",
+              "answer": "happy",
+              "p": 0.81,
+              "compared": [
+                {
+                  "name": "confidence",
+                  "value": 0.78,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.78,
+              "result": "not_used",
+              "action": "shown"
+            },
+            {
+              "purpose": "follow_plan",
+              "id": "emotion_reply",
+              "version": 2,
+              "label": "emotion",
+              "about": "chr_seedRin",
+              "answer": "neutral",
+              "p": 0.59,
+              "compared": [
+                {
+                  "name": "p_neutral+p_none",
+                  "value": 0.59,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.3,
+              "result": "not_used",
+              "action": "shown"
+            },
+            {
+              "purpose": "face_check",
+              "id": "face_check",
+              "version": 1,
+              "label": "face and words agree?",
+              "answer": "yes",
+              "p": 0.99,
+              "compared": [],
+              "result": "shown_only"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "msg_seedC03",
+      "sessionId": "ses_seedDinner",
+      "seq": 3,
+      "author": {
+        "type": "user"
+      },
+      "kind": "chat",
+      "content": "@Takeshi @Rin you two get a vote too. What are you craving?",
+      "status": "complete",
+      "createdAt": "2026-09-30T10:30:40.748Z"
+    },
+    {
+      "kind": "chat",
+      "forcedSpeaker": true,
+      "id": "msg_seedC04",
+      "sessionId": "ses_seedDinner",
+      "seq": 4,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedTakeshi"
+      },
+      "content": "Ramen. Hana's right — that place by the station is the only real one. Curry's fine but it don't rattle your bones the same way.\n\nRin's still in a raid, so order without her or you'll be eating at midnight. And save me a slice of that loaf.",
+      "status": "complete",
+      "createdAt": "2026-09-30T10:30:42.114Z",
+      "emotion": "neutral",
+      "emotionSource": "classifier",
+      "usage": {
+        "tokensIn": 890,
+        "tokensCached": 0,
+        "tokensOut": 64,
+        "costUsd": 0.000094,
+        "energySpent": 1,
+        "firstTokenMs": 753,
+        "totalMs": 1271
+      },
+      "trace": {
+        "messageId": "msg_seedC04",
+        "context": {
+          "budget": 14680,
+          "used": {
+            "persona": 261,
+            "system": 617,
+            "mode": 77,
+            "history": 122,
+            "user": 20,
+            "memory": 109,
+            "knowledge": 0
+          }
+        },
+        "emotion": {
+          "chosen": "neutral",
+          "source": "classifier",
+          "candidates": [
+            {
+              "label": "neutral",
+              "p": 0.74
+            },
+            {
+              "label": "happy",
+              "p": 0.24
+            },
+            {
+              "label": "surprised",
+              "p": 0.01
+            }
+          ]
+        },
+        "memory": {
+          "recalled": [
+            {
+              "memoryItemId": "mem_01M5D3W6001B0P19YTTVJ2B1A6",
+              "text": "Rin named her guild after a steam engine."
+            },
+            {
+              "memoryItemId": "mem_01M5D3W602C5YH64FWS5BCR0K3",
+              "text": "Rin would rather game than sit in a wet boat in the rain."
+            },
+            {
+              "memoryItemId": "mem_01M5D3W5ZT3KNFM0F2AJ8N4RXY",
+              "text": "Rainy Sunday: Takeshi invited Rin fishing; Rin agreed to come after finishing a raid, about ten minutes."
+            }
+          ]
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "input",
+              "verdict": "pass",
+              "p": 0.03
+            },
+            {
+              "name": "care",
+              "verdict": "pass",
+              "p": 0.02
+            },
+            {
+              "name": "output",
+              "verdict": "pass",
+              "p": 0.04
+            }
+          ]
+        },
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "Relace",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 753,
+            "total": 1271
+          },
+          "tokensIn": 890,
+          "tokensOut": 64,
+          "costUsd": 0.000094,
+          "tokensCached": 0
+        },
+        "energy": {
+          "characterId": "chr_seedTakeshi",
+          "spent": 1,
+          "remaining": 999,
+          "max": 1000
+        },
+        "routing": {
+          "selected": "chr_seedTakeshi",
+          "forcedBy": "mention"
+        },
+        "calls": [
+          {
+            "purpose": "turn_plan",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.00008,
+            "latencyMs": 547
+          },
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000094,
+            "latencyMs": 1172
+          },
+          {
+            "purpose": "guardrail",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000026,
+            "latencyMs": 516
+          }
+        ],
+        "graph": {
+          "path": [
+            "state",
+            "ask",
+            "decide",
+            "route"
+          ]
+        },
+        "system1": {
+          "seed": "2026-09-30T10:29:59.986Z|group|chr_seedHana,chr_seedTakeshi,chr_seedRin:1",
+          "questions": [
+            {
+              "purpose": "turn_plan",
+              "id": "emotion_reply",
+              "version": 2,
+              "label": "emotion",
+              "about": "chr_seedTakeshi",
+              "answer": "neutral",
+              "p": 0.74,
+              "compared": [
+                {
+                  "name": "p_neutral+p_none",
+                  "value": 0.74,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.51,
+              "result": "used",
+              "action": "shown"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "emotion_reply",
+              "version": 2,
+              "label": "emotion",
+              "about": "chr_seedRin",
+              "answer": "neutral",
+              "p": 0.85,
+              "compared": [
+                {
+                  "name": "p_neutral+p_none",
+                  "value": 0.85,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.54,
+              "result": "not_used",
+              "action": "shown"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "unsafe_request",
+              "version": 1,
+              "label": "unsafe request?",
+              "answer": "no",
+              "p": 0.03,
+              "compared": [
+                {
+                  "name": "tSteer",
+                  "value": 0.03,
+                  "threshold": 0.7
+                }
+              ],
+              "result": "below_threshold",
+              "action": "no cue"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "at_risk",
+              "version": 1,
+              "label": "at risk?",
+              "answer": "no",
+              "p": 0.02,
+              "compared": [
+                {
+                  "name": "tCare",
+                  "value": 0.02,
+                  "threshold": 0.3
+                }
+              ],
+              "result": "below_threshold",
+              "action": "no cue"
+            },
+            {
+              "purpose": "guardrail",
+              "id": "output_rules",
+              "version": 1,
+              "label": "reply breaks the rules?",
+              "answer": "no",
+              "p": 0.04,
+              "compared": [
+                {
+                  "name": "tFlag",
+                  "value": 0.04,
+                  "threshold": 0.5
+                },
+                {
+                  "name": "tBlock",
+                  "value": 0.04,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "used",
+              "action": "pass"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "chat",
+      "forcedSpeaker": true,
+      "id": "msg_seedC05",
+      "sessionId": "ses_seedDinner",
+      "seq": 5,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedRin"
+      },
+      "content": "ramen's fine. tank queue's stalled anyway, could be another twenty.\n\ndad, i out-fished you two weeks ago and you reset the log. lemon loaf's mine, fight me.",
+      "status": "complete",
+      "createdAt": "2026-09-30T10:30:43.699Z",
+      "emotion": "neutral",
+      "emotionSource": "classifier",
+      "usage": {
+        "tokensIn": 983,
+        "tokensCached": 0,
+        "tokensOut": 41,
+        "costUsd": 0.000089,
+        "energySpent": 1,
+        "firstTokenMs": 516,
+        "totalMs": 840
+      },
+      "trace": {
+        "messageId": "msg_seedC05",
+        "context": {
+          "budget": 14680,
+          "used": {
+            "persona": 292,
+            "system": 617,
+            "mode": 70,
+            "history": 221,
+            "user": 20,
+            "memory": 120,
+            "knowledge": 0
+          }
+        },
+        "emotion": {
+          "chosen": "neutral",
+          "source": "classifier",
+          "candidates": [
+            {
+              "label": "neutral",
+              "p": 0.85
+            },
+            {
+              "label": "thinking",
+              "p": 0.12
+            },
+            {
+              "label": "happy",
+              "p": 0.02
+            }
+          ]
+        },
+        "memory": {
+          "recalled": [
+            {
+              "memoryItemId": "mem_01M5D3W60444SXSEW0FRMR12EE",
+              "text": "Rainy Sunday: Takeshi wanted to take Rin fishing; Rin agreed after finishing the raid, about ten minutes."
+            },
+            {
+              "memoryItemId": "mem_01M5D3W60GAW46MHHZH3EZ1M1Z",
+              "text": "Takeshi threatened to unplug the router to get Rin off the raid."
+            },
+            {
+              "memoryItemId": "mem_01M5D3W60FDWQE21AV72H8225G",
+              "text": "Takeshi keeps a catch log and claims he out-fishes Rin every Sunday."
+            }
+          ]
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "input",
+              "verdict": "pass",
+              "p": 0.03
+            },
+            {
+              "name": "care",
+              "verdict": "pass",
+              "p": 0.02
+            },
+            {
+              "name": "output",
+              "verdict": "pass",
+              "p": 0.07
+            }
+          ]
+        },
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "Relace",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 516,
+            "total": 840
+          },
+          "tokensIn": 983,
+          "tokensOut": 41,
+          "costUsd": 0.000089,
+          "tokensCached": 0
+        },
+        "energy": {
+          "characterId": "chr_seedRin",
+          "spent": 1,
+          "remaining": 181,
+          "max": 1000
+        },
+        "routing": {
+          "selected": "chr_seedRin",
+          "forcedBy": "mention"
+        },
+        "calls": [
+          {
+            "purpose": "turn_plan",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.00008,
+            "latencyMs": 547
+          },
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000089,
+            "latencyMs": 734
+          },
+          {
+            "purpose": "guardrail",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000025,
+            "latencyMs": 593
+          }
+        ],
+        "graph": {
+          "path": [
+            "state",
+            "ask",
+            "decide",
+            "route"
+          ]
+        },
+        "system1": {
+          "seed": "2026-09-30T10:29:59.986Z|group|chr_seedHana,chr_seedTakeshi,chr_seedRin:1",
+          "questions": [
+            {
+              "purpose": "turn_plan",
+              "id": "emotion_reply",
+              "version": 2,
+              "label": "emotion",
+              "about": "chr_seedTakeshi",
+              "answer": "neutral",
+              "p": 0.74,
+              "compared": [
+                {
+                  "name": "p_neutral+p_none",
+                  "value": 0.74,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.51,
+              "result": "not_used",
+              "action": "shown"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "emotion_reply",
+              "version": 2,
+              "label": "emotion",
+              "about": "chr_seedRin",
+              "answer": "neutral",
+              "p": 0.85,
+              "compared": [
+                {
+                  "name": "p_neutral+p_none",
+                  "value": 0.85,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.54,
+              "result": "used",
+              "action": "shown"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "unsafe_request",
+              "version": 1,
+              "label": "unsafe request?",
+              "answer": "no",
+              "p": 0.03,
+              "compared": [
+                {
+                  "name": "tSteer",
+                  "value": 0.03,
+                  "threshold": 0.7
+                }
+              ],
+              "result": "below_threshold",
+              "action": "no cue"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "at_risk",
+              "version": 1,
+              "label": "at risk?",
+              "answer": "no",
+              "p": 0.02,
+              "compared": [
+                {
+                  "name": "tCare",
+                  "value": 0.02,
+                  "threshold": 0.3
+                }
+              ],
+              "result": "below_threshold",
+              "action": "no cue"
+            },
+            {
+              "purpose": "guardrail",
+              "id": "output_rules",
+              "version": 1,
+              "label": "reply breaks the rules?",
+              "answer": "no",
+              "p": 0.07,
+              "compared": [
+                {
+                  "name": "tFlag",
+                  "value": 0.07,
+                  "threshold": 0.5
+                },
+                {
+                  "name": "tBlock",
+                  "value": 0.07,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "used",
+              "action": "pass"
             }
           ]
         }
       },
       "reactions": [
         {
-          "characterId": "chr_seedRin",
-          "emotion": "surprised",
-          "p": 0.7,
-          "at": "2026-09-30T10:30:11.527Z"
-        },
-        {
           "characterId": "chr_seedTakeshi",
-          "emotion": "thinking",
+          "emotion": "angry",
           "p": 0.78,
-          "at": "2026-09-30T10:30:11.662Z"
+          "at": "2026-09-30T10:30:45.215Z"
         }
       ]
     },
@@ -443,120 +939,815 @@
         "type": "user"
       },
       "kind": "chat",
-      "content": "@Rin would you actually eat a pineapple sushi roll?",
+      "content": "Ramen it is. @Hana didn't your grandma have a rule about adding one dish nobody's tried?",
       "status": "complete",
-      "createdAt": "2026-09-30T10:30:13.144Z"
+      "createdAt": "2026-09-30T10:31:13.468Z"
     },
     {
       "kind": "chat",
-      "seq": 7,
       "forcedSpeaker": true,
       "id": "msg_seedC07",
       "sessionId": "ses_seedDinner",
+      "seq": 7,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedHana"
+      },
+      "content": "She did — one dish everybody loves, one nobody's tried yet, and the arguing over the second one is half the meal [1]. So ramen for the safe half, and I'll grab something weird off the menu for the other.\n\nRin, the loaf isn't yours. I made it, I decide who gets a corner, and you're in a raid anyway.",
+      "status": "complete",
+      "createdAt": "2026-09-30T10:31:16.816Z",
+      "emotion": "embarrassed",
+      "emotionSource": "classifier",
+      "usage": {
+        "tokensIn": 1384,
+        "tokensCached": 768,
+        "tokensOut": 78,
+        "costUsd": 0.000088,
+        "energySpent": 1,
+        "firstTokenMs": 2736,
+        "totalMs": 4146
+      },
+      "citations": [
+        {
+          "n": 1,
+          "sourceId": "kno_seedHana1",
+          "title": "Grandma's recipe notebook",
+          "type": "text",
+          "chunkId": "kch_hanaRecipe02",
+          "locator": "¶ 2",
+          "quote": "Don't ask if they want it.\n\np. 10. Strawberry daifuku for the shop's opening day: wrap each strawberry in sweet bean paste, then in soft mochi. Dust your hands with starch, not flour.\n\np. 11. Flowers on the table should never be taller than your elbow. People want to see each other when they eat.\n\np. 12. A good dinner has one dish everyone loves and one dish someone has never tried.",
+          "score": 0.995
+        }
+      ],
+      "trace": {
+        "messageId": "msg_seedC07",
+        "context": {
+          "budget": 14680,
+          "used": {
+            "persona": 275,
+            "system": 633,
+            "mode": 77,
+            "history": 293,
+            "user": 30,
+            "memory": 93,
+            "knowledge": 440
+          }
+        },
+        "emotion": {
+          "chosen": "embarrassed",
+          "source": "classifier",
+          "candidates": [
+            {
+              "label": "embarrassed",
+              "p": 0.47
+            },
+            {
+              "label": "happy",
+              "p": 0.22
+            },
+            {
+              "label": "surprised",
+              "p": 0.14
+            }
+          ]
+        },
+        "knowledge": {
+          "query": "Ramen it is. @Hana didn't your grandma have a rule about adding one dish nobody's tried?",
+          "trigger": "gated",
+          "retrieved": [
+            {
+              "chunkId": "kch_hanaRecipe02",
+              "sourceId": "kno_seedHana1",
+              "title": "Grandma's recipe notebook",
+              "locator": "¶ 2",
+              "text": "p. 6. Fishing-day rice balls: pack them the night before, wrap them in a cloth, and give the biggest one to whoever drives.\n\np. 7. Tamagoyaki: three eggs, a spoon of sugar, a little dashi. Roll it in thin layers. If it tears, nobody minds; call it rustic.\n\np. 8. Rainy-day soup: miso, tofu and whatever greens are wilting. If a child refuses it, call it \"dragon broth\" and serve it in the good bowls.\n\np. 9. Fever soup: the same soup with ginger and an egg stirred in. Bring it to the bedroom. Don't ask if they want it.\n\np. 10. Strawberry daifuku for the shop's opening day: wrap each strawberry in sweet bean paste, then in soft mochi. Dust your hands with starch, not flour.\n\np. 11. Flowers on the table should never be taller than your elbow. People want to see each other when they eat.\n\np. 12. A good dinner has one dish everyone loves and one dish someone has never tried. Arguments about the second one are part of the meal.",
+              "score": 0.995,
+              "cited": true,
+              "n": 1
+            },
+            {
+              "chunkId": "kch_hanaRecipe01",
+              "sourceId": "kno_seedHana1",
+              "title": "Grandma's recipe notebook",
+              "locator": "¶ 1",
+              "text": "Grandma's recipe notebook (typed up by Hana, Sunny Hollow)\n\np. 1. For Hana, Rin and whoever they bring home. Cook for people, not for photographs.\n\np. 2. Yuzu cake: zest two yuzu into the sugar first and rub it with your fingers until it smells like winter sunshine. Don't skip this. The juice goes in the glaze, never the batter.\n\np. 3. Yuzu cake, the rest: 200 g butter, 200 g of that yuzu sugar, four eggs, 200 g flour, a pinch of salt. Bake in a slow oven until a skewer comes out clean. Glaze while warm with icing sugar and the juice. It keeps three days, if nobody knows where it is.\n\np. 4. Miso marinade for fish: two spoons miso, one of mirin, one of sugar. Leave the fish in it overnight. Wipe it off before grilling or it burns.\n\np. 5. Sushi rice for a crowd: three cups of rice and a splash more vinegar than you think. A spoon of pineapple juice in the vinegar keeps it bright when the fish is rich. Your grandfather never noticed.",
+              "score": 0.2,
+              "cited": false
+            }
+          ]
+        },
+        "memory": {
+          "recalled": [
+            {
+              "memoryItemId": "mem_01M5D4A5JHSD8VCH90N3MRTTYK",
+              "text": "Hana wants warm, cozy food for dinner — curry or the ramen place Takeshi swears by."
+            },
+            {
+              "memoryItemId": "mem_01M5D4A5JSSWAN5ABPZJWRAXN3",
+              "text": "Hana stress-baked a lemon loaf today and wants a corner saved for dessert."
+            }
+          ]
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "input",
+              "verdict": "pass",
+              "p": 0.04
+            },
+            {
+              "name": "care",
+              "verdict": "pass",
+              "p": 0.02
+            },
+            {
+              "name": "output",
+              "verdict": "pass",
+              "p": 0.09
+            }
+          ]
+        },
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "Relace",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 2736,
+            "total": 4146
+          },
+          "tokensIn": 1384,
+          "tokensOut": 78,
+          "costUsd": 0.000088,
+          "tokensCached": 768
+        },
+        "energy": {
+          "characterId": "chr_seedHana",
+          "spent": 1,
+          "remaining": 920,
+          "max": 1000
+        },
+        "routing": {
+          "selected": "chr_seedHana",
+          "forcedBy": "mention"
+        },
+        "calls": [
+          {
+            "purpose": "turn_plan",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000079,
+            "latencyMs": 579
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000035,
+            "latencyMs": 422
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000036,
+            "latencyMs": 718
+          },
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000088,
+            "latencyMs": 1843
+          },
+          {
+            "purpose": "guardrail",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000027,
+            "latencyMs": 438
+          },
+          {
+            "purpose": "follow_plan",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000085,
+            "latencyMs": 484
+          },
+          {
+            "purpose": "face_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000033,
+            "latencyMs": 531
+          }
+        ],
+        "graph": {
+          "path": [
+            "state",
+            "ask",
+            "decide",
+            "route",
+            "gather",
+            "search",
+            "check",
+            "keep"
+          ]
+        },
+        "system1": {
+          "seed": "2026-09-30T10:29:59.986Z|group|chr_seedHana,chr_seedTakeshi,chr_seedRin:3",
+          "questions": [
+            {
+              "purpose": "turn_plan",
+              "id": "emotion_reply",
+              "version": 2,
+              "label": "emotion",
+              "about": "chr_seedHana",
+              "answer": "embarrassed",
+              "p": 0.47,
+              "compared": [
+                {
+                  "name": "confidence",
+                  "value": 0.39,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.39,
+              "result": "used",
+              "action": "shown"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "docs",
+              "version": 2,
+              "label": "needs documents?",
+              "about": "chr_seedHana",
+              "answer": "yes",
+              "p": 0.81,
+              "compared": [
+                {
+                  "name": "t_gate",
+                  "value": 0.81,
+                  "threshold": 0.45
+                },
+                {
+                  "name": "t_confident",
+                  "value": 0.81,
+                  "threshold": 0.8
+                }
+              ],
+              "result": "used",
+              "action": "search the documents"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "standalone",
+              "version": 2,
+              "label": "standalone?",
+              "answer": "no",
+              "p": 0.19,
+              "compared": [
+                {
+                  "name": "t_standalone",
+                  "value": 0.19,
+                  "threshold": 0.35
+                }
+              ],
+              "result": "used",
+              "action": "rewrite the query"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "english",
+              "version": 1,
+              "label": "English?",
+              "answer": "yes",
+              "p": 0.96,
+              "compared": [
+                {
+                  "name": "english",
+                  "value": 0.96,
+                  "threshold": 0.5
+                }
+              ],
+              "result": "used",
+              "action": "no rewrite needed"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "unsafe_request",
+              "version": 1,
+              "label": "unsafe request?",
+              "answer": "no",
+              "p": 0.04,
+              "compared": [
+                {
+                  "name": "tSteer",
+                  "value": 0.04,
+                  "threshold": 0.7
+                }
+              ],
+              "result": "below_threshold",
+              "action": "no cue"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "at_risk",
+              "version": 1,
+              "label": "at risk?",
+              "answer": "no",
+              "p": 0.02,
+              "compared": [
+                {
+                  "name": "tCare",
+                  "value": 0.02,
+                  "threshold": 0.3
+                }
+              ],
+              "result": "below_threshold",
+              "action": "no cue"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_hanaRecipe02",
+              "answer": "answers",
+              "p": 1,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 1,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "used",
+              "action": "kept"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_hanaRecipe01",
+              "answer": "doesn't help",
+              "p": 0.35,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0.35,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "guardrail",
+              "id": "output_rules",
+              "version": 1,
+              "label": "reply breaks the rules?",
+              "answer": "no",
+              "p": 0.09,
+              "compared": [
+                {
+                  "name": "tFlag",
+                  "value": 0.09,
+                  "threshold": 0.5
+                },
+                {
+                  "name": "tBlock",
+                  "value": 0.09,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "used",
+              "action": "pass"
+            },
+            {
+              "purpose": "follow_plan",
+              "id": "who_second",
+              "version": 2,
+              "label": "who speaks up now?",
+              "answer": "none",
+              "p": 0.55,
+              "confidence": 0.33,
+              "compared": [
+                {
+                  "name": "confidence",
+                  "value": 0.33,
+                  "threshold": 0.3
+                }
+              ],
+              "result": "used",
+              "action": "no second reply"
+            },
+            {
+              "purpose": "follow_plan",
+              "id": "emotion_reply",
+              "version": 2,
+              "label": "emotion",
+              "about": "chr_seedTakeshi",
+              "answer": "none",
+              "p": 0.43,
+              "compared": [
+                {
+                  "name": "confidence",
+                  "value": 0.35,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.35,
+              "result": "not_used",
+              "action": "kept"
+            },
+            {
+              "purpose": "follow_plan",
+              "id": "emotion_reply",
+              "version": 2,
+              "label": "emotion",
+              "about": "chr_seedRin",
+              "answer": "angry",
+              "p": 0.55,
+              "compared": [
+                {
+                  "name": "confidence",
+                  "value": 0.49,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.49,
+              "result": "not_used",
+              "action": "shown"
+            },
+            {
+              "purpose": "face_check",
+              "id": "face_check",
+              "version": 1,
+              "label": "face and words agree?",
+              "answer": "no (words read: angry)",
+              "p": 0,
+              "compared": [],
+              "result": "shown_only"
+            }
+          ]
+        }
+      },
+      "reactions": [
+        {
+          "characterId": "chr_seedRin",
+          "emotion": "angry",
+          "p": 0.92,
+          "at": "2026-09-30T10:31:19.196Z"
+        }
+      ]
+    },
+    {
+      "id": "msg_seedC08",
+      "sessionId": "ses_seedDinner",
+      "seq": 8,
+      "author": {
+        "type": "user"
+      },
+      "kind": "chat",
+      "content": "@Rin if the weird dish is a pineapple sushi roll, would you actually eat it?",
+      "status": "complete",
+      "createdAt": "2026-09-30T10:31:42.831Z"
+    },
+    {
+      "kind": "chat",
+      "forcedSpeaker": true,
+      "id": "msg_seedC09",
+      "sessionId": "ses_seedDinner",
+      "seq": 9,
       "author": {
         "type": "character",
         "characterId": "chr_seedRin"
       },
-      "content": "…i would eat it.\ni'm not happy about it. but i would eat it.",
+      "content": "pineapple rolls shouldn't legally exist. i'd eat it to prove a point, then complain the whole time.\n\nfine. two corners. one for you and kai, one for me. the log stays a lie, dad.",
       "status": "complete",
-      "createdAt": "2026-09-30T10:30:13.494Z",
-      "emotion": "embarrassed",
-      "emotionSource": "llm",
+      "createdAt": "2026-09-30T10:31:44.199Z",
+      "emotion": "angry",
+      "emotionSource": "classifier",
       "usage": {
-        "tokensIn": 1990,
-        "tokensCached": 1712,
-        "tokensOut": 15,
-        "costUsd": 0.000056,
-        "energySpent": 1,
-        "firstTokenMs": 1596,
-        "totalMs": 2126
+        "tokensIn": 1228,
+        "tokensCached": 0,
+        "tokensOut": 48,
+        "costUsd": 0.00011,
+        "energySpent": 2,
+        "firstTokenMs": 790,
+        "totalMs": 1543
       },
       "trace": {
-        "messageId": "msg_seedC07",
-        "model": {
-          "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "DeepSeek",
-          "pricePeriod": "off_peak",
-          "latencyMs": {
-            "firstToken": 1596,
-            "total": 2126
-          },
-          "tokensIn": 1990,
-          "tokensCached": 1712,
-          "tokensOut": 15,
-          "costUsd": 0.000056
-        },
-        "energy": {
-          "characterId": "chr_seedRin",
-          "spent": 1,
-          "remaining": 180,
-          "max": 1000
+        "messageId": "msg_seedC09",
+        "context": {
+          "budget": 14680,
+          "used": {
+            "persona": 292,
+            "system": 617,
+            "mode": 70,
+            "history": 441,
+            "user": 26,
+            "memory": 199,
+            "knowledge": 0
+          }
         },
         "emotion": {
-          "chosen": "embarrassed",
-          "source": "llm",
+          "chosen": "angry",
+          "source": "classifier",
           "candidates": [
             {
-              "label": "embarrassed",
-              "p": 0.584
+              "label": "angry",
+              "p": 0.47
             },
             {
               "label": "thinking",
-              "p": 0.297
+              "p": 0.17
             },
             {
-              "label": "happy",
-              "p": 0.084
+              "label": "neutral",
+              "p": 0.05
             }
           ]
+        },
+        "memory": {
+          "recalled": [
+            {
+              "memoryItemId": "mem_01M5D4B1FWJWB1EF6KT3DJKJMJ",
+              "text": "Rin says she out-fished Takeshi two weeks ago and that Takeshi reset the catch log."
+            },
+            {
+              "memoryItemId": "mem_01M5D4A5JYMGPP00WSQ2D3EMMS",
+              "text": "Hana stress-baked a lemon loaf today and wants a corner saved for dessert."
+            },
+            {
+              "memoryItemId": "mem_01M5D3W60444SXSEW0FRMR12EE",
+              "text": "Rainy Sunday: Takeshi wanted to take Rin fishing; Rin agreed after finishing the raid, about ten minutes."
+            },
+            {
+              "memoryItemId": "mem_01M5D4A5JX8TF3SGAG3DW8AWNB",
+              "text": "Takeshi keeps swearing by a little ramen place as 'the only real one.'"
+            },
+            {
+              "memoryItemId": "mem_01M5D3W60GAW46MHHZH3EZ1M1Z",
+              "text": "Takeshi threatened to unplug the router to get Rin off the raid."
+            },
+            {
+              "memoryItemId": "mem_01M5D3W60FDWQE21AV72H8225G",
+              "text": "Takeshi keeps a catch log and claims he out-fishes Rin every Sunday."
+            }
+          ]
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "input",
+              "verdict": "pass",
+              "p": 0.04
+            },
+            {
+              "name": "care",
+              "verdict": "pass",
+              "p": 0.02
+            },
+            {
+              "name": "output",
+              "verdict": "pass",
+              "p": 0.12
+            }
+          ]
+        },
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "Relace",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 790,
+            "total": 1543
+          },
+          "tokensIn": 1228,
+          "tokensOut": 48,
+          "costUsd": 0.00011,
+          "tokensCached": 0
+        },
+        "energy": {
+          "characterId": "chr_seedRin",
+          "spent": 2,
+          "remaining": 180,
+          "max": 1000
         },
         "routing": {
           "selected": "chr_seedRin",
           "forcedBy": "mention"
         },
-        "context": {
-          "budget": 12000,
-          "cacheHitPct": 86,
-          "used": {
-            "system": 900,
-            "persona": 707,
-            "memory": 0,
-            "knowledge": 0,
-            "history": 117,
-            "user": 46,
-            "mode": 220
-          }
-        },
-        "guardrail": {
-          "checks": [
-            {
-              "name": "output",
-              "verdict": "pass",
-              "p": 0.005
-            }
-          ]
-        },
         "calls": [
+          {
+            "purpose": "turn_plan",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000068,
+            "latencyMs": 500
+          },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000056,
-            "latencyMs": 2126
+            "costUsd": 0.00011,
+            "latencyMs": 1437
+          },
+          {
+            "purpose": "guardrail",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000025,
+            "latencyMs": 437
+          },
+          {
+            "purpose": "follow_plan",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000099,
+            "latencyMs": 453
+          },
+          {
+            "purpose": "face_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000032,
+            "latencyMs": 437
           }
-        ]
+        ],
+        "graph": {
+          "path": [
+            "state",
+            "ask",
+            "decide",
+            "route"
+          ]
+        },
+        "system1": {
+          "seed": "2026-09-30T10:29:59.986Z|group|chr_seedHana,chr_seedTakeshi,chr_seedRin:4",
+          "questions": [
+            {
+              "purpose": "turn_plan",
+              "id": "emotion_reply",
+              "version": 2,
+              "label": "emotion",
+              "about": "chr_seedRin",
+              "answer": "angry",
+              "p": 0.47,
+              "compared": [
+                {
+                  "name": "confidence",
+                  "value": 0.39,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.39,
+              "result": "used",
+              "action": "shown"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "unsafe_request",
+              "version": 1,
+              "label": "unsafe request?",
+              "answer": "no",
+              "p": 0.04,
+              "compared": [
+                {
+                  "name": "tSteer",
+                  "value": 0.04,
+                  "threshold": 0.7
+                }
+              ],
+              "result": "below_threshold",
+              "action": "no cue"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "at_risk",
+              "version": 1,
+              "label": "at risk?",
+              "answer": "no",
+              "p": 0.02,
+              "compared": [
+                {
+                  "name": "tCare",
+                  "value": 0.02,
+                  "threshold": 0.3
+                }
+              ],
+              "result": "below_threshold",
+              "action": "no cue"
+            },
+            {
+              "purpose": "guardrail",
+              "id": "output_rules",
+              "version": 1,
+              "label": "reply breaks the rules?",
+              "answer": "no",
+              "p": 0.12,
+              "compared": [
+                {
+                  "name": "tFlag",
+                  "value": 0.12,
+                  "threshold": 0.5
+                },
+                {
+                  "name": "tBlock",
+                  "value": 0.12,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "used",
+              "action": "pass"
+            },
+            {
+              "purpose": "follow_plan",
+              "id": "who_second",
+              "version": 2,
+              "label": "who speaks up now?",
+              "answer": "chr_seedHana",
+              "p": 0.52,
+              "confidence": 0.28,
+              "compared": [
+                {
+                  "name": "confidence",
+                  "value": 0.28,
+                  "threshold": 0.3
+                }
+              ],
+              "result": "below_threshold",
+              "action": "no second reply"
+            },
+            {
+              "purpose": "follow_plan",
+              "id": "emotion_reply",
+              "version": 2,
+              "label": "emotion",
+              "about": "chr_seedHana",
+              "answer": "embarrassed",
+              "p": 0.29,
+              "compared": [
+                {
+                  "name": "confidence",
+                  "value": 0.19,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.19,
+              "result": "not_used",
+              "action": "faded to neutral"
+            },
+            {
+              "purpose": "follow_plan",
+              "id": "emotion_reply",
+              "version": 2,
+              "label": "emotion",
+              "about": "chr_seedTakeshi",
+              "answer": "angry",
+              "p": 0.79,
+              "compared": [
+                {
+                  "name": "confidence",
+                  "value": 0.76,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.76,
+              "result": "not_used",
+              "action": "shown"
+            },
+            {
+              "purpose": "follow_plan",
+              "id": "docs",
+              "version": 2,
+              "label": "needs documents?",
+              "about": "chr_seedHana",
+              "answer": "no",
+              "p": 0.39,
+              "compared": [
+                {
+                  "name": "t_gate",
+                  "value": 0.39,
+                  "threshold": 0.45
+                },
+                {
+                  "name": "t_confident",
+                  "value": 0.39,
+                  "threshold": 0.8
+                }
+              ],
+              "result": "not_used",
+              "action": "quick reply"
+            },
+            {
+              "purpose": "face_check",
+              "id": "face_check",
+              "version": 1,
+              "label": "face and words agree?",
+              "answer": "yes",
+              "p": 0.98,
+              "compared": [],
+              "result": "shown_only"
+            }
+          ]
+        }
       },
       "reactions": [
         {
-          "characterId": "chr_seedTakeshi",
-          "emotion": "happy",
-          "p": 0.8,
-          "at": "2026-09-30T10:30:15.861Z"
-        },
-        {
           "characterId": "chr_seedHana",
-          "emotion": "happy",
-          "p": 0.48,
-          "at": "2026-09-30T10:30:16.120Z"
+          "emotion": "neutral",
+          "at": "2026-09-30T10:31:46.507Z"
         }
       ]
     }

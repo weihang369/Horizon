@@ -4,8 +4,7 @@
     "id": "song_mockElena",
     "characterId": "chr_mockElena",
     "status": "ready",
-    "url": "/assets/placeholder/themes/chr_mockElena.proc.json",
-    "durationSec": 26.7,
+    "url": "/assets/themes/chr_mockElena.mp3",
     "brief": {
       "genres": [
         "piano",
@@ -22,11 +21,14 @@
       "vibe": "Wistful piano over soft strings"
     },
     "instrumental": true,
+    "durationSec": 30.642,
+    "format": "mp3",
+    "bytes": 741526,
     "generation": {
       "model": "google/lyria-3-clip-preview",
-      "prompt": "Instrumental theme: Wistful piano over soft strings. piano, ambient; nostalgic; 72 BPM; piano, strings.",
+      "prompt": "Instrumental theme music for a character. Genres: piano, ambient. Mood: nostalgic. Instruments: piano, strings. Tempo: about 72 BPM. Feel: Wistful piano over soft strings. An original piece: do not imitate any named artist, band or existing song. No vocals, no lyrics. A 30-second piece that loops cleanly.",
       "costUsd": 0.04
     },
-    "licenseNote": "Placeholder: procedural WebAudio sketch (D-52). The real theme comes from Google Lyria 3 Clip via OpenRouter (provider terms apply)."
+    "licenseNote": "Composed by google/lyria-3-clip-preview through OpenRouter (D-87)."
   }
 }

@@ -8,11 +8,11 @@
       "title": "Meridian Shift Fatigue Review 2025.pdf",
       "type": "file",
       "status": "indexed",
-      "bytes": 482113,
-      "pages": 18,
+      "bytes": 94903,
+      "pages": 11,
       "addedAt": "2026-09-18T08:40:00Z",
-      "chunks": 10,
-      "citedCount": 3
+      "chunks": 20,
+      "citedCount": 2
     },
     {
       "id": "kno_seedAmara2",
@@ -21,11 +21,11 @@
       "title": "ED triage guidelines.pdf",
       "type": "file",
       "status": "indexed",
-      "bytes": 214336,
-      "pages": 9,
+      "bytes": 70915,
+      "pages": 5,
       "addedAt": "2026-09-21T19:12:00Z",
-      "chunks": 6,
-      "citedCount": 3
+      "chunks": 17,
+      "citedCount": 4
     }
   ]
 }

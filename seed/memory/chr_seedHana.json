@@ -6,22 +6,66 @@
       "characterId": "chr_seedHana",
       "worldId": "wld_seedSunnyHollow",
       "kind": "preference",
-      "text": "Kai's favourite cake is yuzu",
-      "importance": 0.6,
-      "sourceSessionId": "ses_seedHanaLongDay",
-      "sourceMessageId": "msg_seedH02",
-      "createdAt": "2026-09-30T19:03:00Z"
+      "text": "Hana wants warm, cozy food for dinner — curry or the ramen place Takeshi swears by.",
+      "importance": 0.4725,
+      "sourceSessionId": "ses_seedDinner",
+      "sourceMessageId": "msg_seedC02",
+      "createdAt": "2026-09-30T10:30:44.606Z"
     },
     {
       "id": "mem_seedHana2",
       "characterId": "chr_seedHana",
       "worldId": "wld_seedSunnyHollow",
       "kind": "event",
-      "text": "Sold Kai's bouquet to a nervous proposer",
-      "importance": 0.5,
+      "text": "Hana stress-baked a lemon loaf today and wants a corner saved for dessert.",
+      "importance": 0.59,
+      "sourceSessionId": "ses_seedDinner",
+      "sourceMessageId": "msg_seedC02",
+      "createdAt": "2026-09-30T10:30:44.606Z"
+    },
+    {
+      "id": "mem_seedHana3",
+      "characterId": "chr_seedHana",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "fact",
+      "text": "Hana's grandma had a rule: one dish everybody loves, one nobody's tried, and arguing over the second is half the meal.",
+      "importance": 0.62,
+      "sourceSessionId": "ses_seedDinner",
+      "sourceMessageId": "msg_seedC07",
+      "createdAt": "2026-09-30T10:32:09.774Z"
+    },
+    {
+      "id": "mem_seedHana4",
+      "characterId": "chr_seedHana",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "event",
+      "text": "For ramen tonight Hana will order a safe dish plus something weird off the menu nobody has tried.",
+      "importance": 0.5825,
+      "sourceSessionId": "ses_seedDinner",
+      "sourceMessageId": "msg_seedC07",
+      "createdAt": "2026-09-30T10:32:09.774Z"
+    },
+    {
+      "id": "mem_seedHana5",
+      "characterId": "chr_seedHana",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "event",
+      "text": "Hana told Rin the lemon loaf isn't hers — Hana made it and decides who gets a corner.",
+      "importance": 0.5525,
+      "sourceSessionId": "ses_seedDinner",
+      "sourceMessageId": "msg_seedC07",
+      "createdAt": "2026-09-30T10:32:09.774Z"
+    },
+    {
+      "id": "mem_seedHana6",
+      "characterId": "chr_seedHana",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "event",
+      "text": "Hana left the lemon loaf in the oven eight extra minutes while repotting orchids, so its edges are rustic.",
+      "importance": 0.355,
       "sourceSessionId": "ses_seedHanaLongDay",
-      "sourceMessageId": "msg_seedH06",
-      "createdAt": "2026-09-30T19:05:00Z"
+      "sourceMessageId": "msg_seedH07",
+      "createdAt": "2026-09-30T19:04:01.951Z"
     }
   ]
 }

@@ -46,7 +46,10 @@
     "gateway": {
       "routing": {
         "order": [
-          "DeepSeek"
+          "DeepSeek",
+          "Relace",
+          "Alibaba",
+          "Together"
         ],
         "require_parameters": true,
         "allow_fallbacks": true,

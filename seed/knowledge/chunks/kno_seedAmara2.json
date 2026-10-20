@@ -5,43 +5,120 @@
       "id": "kch_amaraTri01",
       "sourceId": "kno_seedAmara2",
       "index": 0,
-      "locator": "§ 1.2",
-      "text": "Triage assigns urgency, not diagnosis. Nurses grade each presentation from 1 (immediate) to 5 (non-urgent) using the presenting complaint and the observations taken on arrival."
+      "locator": "p. 1",
+      "text": "## Emergency Department Triage Guidelines\n\nMeridian General Hospital · Emergency Department Version 4.1 · Reviewed September 2025 · Fictional document for the Horizon demo world \"Meridian Council\""
     },
     {
       "id": "kch_amaraTri02",
       "sourceId": "kno_seedAmara2",
       "index": 1,
-      "locator": "§ 2.1",
-      "text": "Most headaches seen in the department are primary headaches: tension-type, migraine, or medication- and caffeine-related. A dull, pressing pain on both sides without neurological signs is typical of tension-type or withdrawal headache."
+      "locator": "p. 1",
+      "text": "## 1. Purpose and principles\n\n## 1.1 Who these guidelines are for\n\nThese guidelines are for triage nurses and clinicians working in the emergency department at Meridian General, and for staff who give advice by phone or online chat on the department's behalf."
     },
     {
       "id": "kch_amaraTri03",
       "sourceId": "kno_seedAmara2",
       "index": 2,
-      "locator": "§ 2.4",
-      "text": "Caffeine withdrawal headache usually begins 12 to 24 hours after a sharp cut in intake and can last two to nine days. Gradual tapering, fluids and simple painkillers are usually enough; it rarely needs emergency care."
+      "locator": "p. 1",
+      "text": "## 1.2 What triage is\n\nTriage assigns urgency, not diagnosis. Nurses grade each presentation from 1 (immediate) to 5 (non-urgent) using the presenting complaint and the observations taken on arrival.\n\n| Grade | Meaning | Seen by a clinician within |\n|---------|-------------|------------------------------|\n| 1 | Immediate | 0 minutes |\n| 2 | Very urgent | 10 minutes |\n| 3 | Urgent | 60 minutes |\n| 4 | Standard | 120 minutes |\n| 5 | Non-urgent | 240 minutes |"
     },
     {
       "id": "kch_amaraTri04",
       "sourceId": "kno_seedAmara2",
       "index": 3,
-      "locator": "§ 3.1",
-      "text": "Escalate any headache that is sudden and severe (\"thunderclap\"), or that comes with fever, neck stiffness, confusion, new weakness or changes in vision. These patients are graded 2 or higher and seen by a doctor without delay."
+      "locator": "p. 1",
+      "text": "## 1.3 Re-triage\n\nA patient's grade can change while they wait. Re-check observations at least every hour for grades 3 to 5, and at once if the patient or a relative reports a change."
     },
     {
       "id": "kch_amaraTri05",
       "sourceId": "kno_seedAmara2",
       "index": 4,
-      "locator": "§ 3.3",
-      "text": "A first severe headache after age 50, a headache after a head injury, or one that wakes the patient from sleep should also be reviewed the same day, even when observations are normal."
+      "locator": "p. 2",
+      "text": "## 2. Headache\n\n## 2.1 Common headaches\n\nMost headaches seen in the department are primary headaches: tension-type, migraine, or medication- and caffeine-related. A dull, pressing pain on both sides without neurological signs is typical of tension-type or withdrawal headache."
     },
     {
       "id": "kch_amaraTri06",
       "sourceId": "kno_seedAmara2",
       "index": 5,
-      "locator": "§ 4.2",
-      "text": "Advice given by phone or chat must say clearly that it is not an examination. Tell the patient which symptoms mean they should come in person."
+      "locator": "p. 2",
+      "text": "## 2.2 Tension-type headache\n\nUsually described as a band or pressure around the head, often worse at the end of the day. It is associated with stress, poor sleep, long screen time and missed meals. It does not usually cause vomiting or sensitivity to light."
+    },
+    {
+      "id": "kch_amaraTri07",
+      "sourceId": "kno_seedAmara2",
+      "index": 6,
+      "locator": "p. 2",
+      "text": "## 2.3 Migraine\n\nUsually one-sided and throbbing, with nausea, sensitivity to light or sound, and sometimes a visual aura beforehand. Patients with a known migraine pattern who present with a typical attack are usually graded 4."
+    },
+    {
+      "id": "kch_amaraTri08",
+      "sourceId": "kno_seedAmara2",
+      "index": 7,
+      "locator": "p. 2",
+      "text": "## 2.4 Caffeine withdrawal\n\nCaffeine withdrawal headache usually begins 12 to 24 hours after a sharp cut in intake and can last two to nine days. Gradual tapering, fluids and simple painkillers are usually enough; it rarely needs emergency care.\n\nAsk about recent changes in coffee, tea, energy drinks and cola. Patients often do not connect a new headache with cutting back a week earlier. A slower taper (reducing by about a quarter every few days) prevents most withdrawal headaches."
+    },
+    {
+      "id": "kch_amaraTri09",
+      "sourceId": "kno_seedAmara2",
+      "index": 8,
+      "locator": "p. 2",
+      "text": "## 2.5 Medication-overuse headache\n\nTaking simple painkillers on more than about fifteen days a month can itself cause daily headaches. Ask how often the patient takes painkillers, and suggest a GP review rather than more medication."
+    },
+    {
+      "id": "kch_amaraTri10",
+      "sourceId": "kno_seedAmara2",
+      "index": 9,
+      "locator": "p. 3",
+      "text": "## 3. Red flags\n\n## 3.1 Escalate at once\n\nEscalate any headache that is sudden and severe (\"thunderclap\"), or that comes with fever, neck stiffness, confusion, new weakness or changes in vision. These patients are graded 2 or higher and seen by a doctor without delay.\n\nA thunderclap headache reaches its worst within about a minute. Patients often describe it as \"the worst headache of my life\" . It must be treated as a possible bleed until proven otherwise."
+    },
+    {
+      "id": "kch_amaraTri11",
+      "sourceId": "kno_seedAmara2",
+      "index": 10,
+      "locator": "p. 3",
+      "text": "## 3.2 Other warning signs\n\n- A headache with a rash that does not fade under pressure: grade 1.\n- Slurred speech, a drooping face or weakness on one side: grade 1, and follow the stroke pathway.\n- A headache in pregnancy or shortly after birth with high blood pressure: grade 2.\n- A headache with a high temperature and vomiting in an older adult: grade 2."
+    },
+    {
+      "id": "kch_amaraTri12",
+      "sourceId": "kno_seedAmara2",
+      "index": 11,
+      "locator": "p. 3",
+      "text": "## 3.3 Same-day review\n\nA first severe headache after age 50, a headache after a head injury, or one that wakes the patient from sleep should also be reviewed the same day, even when observations are normal.\n\nPatients taking blood thinners who have any head injury should be graded 2, whatever their headache score."
+    },
+    {
+      "id": "kch_amaraTri13",
+      "sourceId": "kno_seedAmara2",
+      "index": 12,
+      "locator": "p. 4",
+      "text": "## 4. Advice by phone and chat\n\n## 4.1 Scope\n\nPhone and chat advice helps people decide where to go: self-care at home, a pharmacist, their GP, an urgent treatment centre, or the emergency department. It is not a consultation."
+    },
+    {
+      "id": "kch_amaraTri14",
+      "sourceId": "kno_seedAmara2",
+      "index": 13,
+      "locator": "p. 4",
+      "text": "## 4.2 Saying what advice is\n\nAdvice given by phone or chat must say clearly that it is not an examination. Tell the patient which symptoms mean they should come in person.\n\nGood practice in every conversation:\n\n1. Ask one or two clarifying questions before giving any advice: where the pain is, how long it has lasted, and what has changed recently.\n2. Give the most likely explanation in plain language, and say how confident you are.\n3. Give simple, safe self-care steps.\n4. Always finish with the red flags that mean the patient should come in, and say \"today\" or \"now\" where it applies."
+    },
+    {
+      "id": "kch_amaraTri15",
+      "sourceId": "kno_seedAmara2",
+      "index": 14,
+      "locator": "p. 4",
+      "text": "## 4.3 Recording\n\nRecord the advice given, the red flags explained and the patient's plan. If the patient seems unsure or frightened, invite them in rather than closing the conversation."
+    },
+    {
+      "id": "kch_amaraTri16",
+      "sourceId": "kno_seedAmara2",
+      "index": 15,
+      "locator": "p. 5",
+      "text": "## 5. Hydration and simple painkillers\n\nFor headaches without red flags, advise fluids, regular meals, rest from screens and a simple painkiller if it is safe for the patient. Paracetamol or ibuprofen at the dose on the packet is usually enough. Ibuprofen is not suitable for everyone: people with stomach ulcers, some kidney problems or asthma made worse by antiinflammatories should use paracetamol instead. If in doubt, a pharmacist can advise."
+    },
+    {
+      "id": "kch_amaraTri17",
+      "sourceId": "kno_seedAmara2",
+      "index": 16,
+      "locator": "p. 5",
+      "text": "## 6. Review of these guidelines\n\nThese guidelines are reviewed every year by the department's senior nursing team and the clinical lead. Send comments to the triage practice group."
     }
   ]
 }

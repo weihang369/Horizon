@@ -10,6 +10,7 @@ from typing import Any
 
 import httpx
 from PIL import Image
+from sqlalchemy import text
 
 from horizon.ai.naive.creation import QUOTE_RULE, draft_schema
 from horizon.ai.scripted.drafts import draft_from_seed
@@ -81,7 +82,7 @@ async def test_naive_draft_is_schema_valid(api: Api) -> None:
     # the system prompt, and room for a whole draft (one measured 1,229 tokens in the 2026-10-06 live run)
     assert body["response_format"] == {"type": "json_object"}
     assert json.dumps(draft_schema(list(load_palettes(SEED_DIR))), separators=(",", ":")) in body["messages"][0]["content"]
-    assert body["provider"]["order"] == ["DeepSeek"] and body["reasoning"] == {"enabled": False}
+    assert body["provider"]["order"][0] == "DeepSeek" and body["reasoning"] == {"enabled": False}
     assert body["max_tokens"] == 2400
     # persona-context 7.1 (docs/ai/04 P11): the drafter knows the world, the names already used and the You card
     user = body["messages"][1]["content"]
@@ -273,6 +274,12 @@ async def test_emotion_edit_sends_the_base_portrait(api: Api) -> None:
 
 async def test_svg_base_is_rejected_for_naive_edits(api: Api) -> None:
     await naive(api, image="naive")
+    # The seed ships real portraits since v1; an install still on a placeholder drawing is made by pointing the base at
+    # its SVG (the placeholder set the seed shipped before).
+    async with api.rt.db.write() as tx:
+        await tx.conn.execute(text("UPDATE image_assets SET rel_path = 'placeholder/portraits/chr_seedHana/neutral.svg' "
+                              "WHERE character_id = 'chr_seedHana' AND kind = 'emotion' AND emotion = 'neutral' "
+                              "AND variant = 'default' AND is_active = 1"))
     r = await api.post(f"{API}/jobs", {"characterId": "chr_seedHana", "kind": "emotion_regenerate", "emotions": ["happy"]})
     assert r.status_code == 422
     err = r.json()["error"]

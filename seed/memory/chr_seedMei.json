@@ -6,11 +6,44 @@
       "characterId": "chr_seedMei",
       "worldId": "wld_seedMeridian",
       "kind": "fact",
-      "text": "Argued that pilot evidence comes from self-selected firms",
-      "importance": 0.8,
+      "text": "Mei argued against a nationwide four-day week: pilots aren't a mandate, gains came from redesign not the calendar, and small shift-based firms bear the cost.",
+      "importance": 0.6575,
       "sourceSessionId": "ses_seedDebate4Day",
       "sourceMessageId": "msg_seedD03",
-      "createdAt": "2026-10-01T10:00:30Z"
+      "createdAt": "2026-10-01T09:59:20.540Z"
+    },
+    {
+      "id": "mem_seedMei2",
+      "characterId": "chr_seedMei",
+      "worldId": "wld_seedMeridian",
+      "kind": "fact",
+      "text": "Mei's strongest point: in nine shift-based organisations, holding coverage constant took 18–27% more staffed hours, landing on nights, weekends, and care homes.",
+      "importance": 0.7325,
+      "sourceSessionId": "ses_seedDebate4Day",
+      "sourceMessageId": "msg_seedD09",
+      "createdAt": "2026-10-01T09:59:20.540Z"
+    },
+    {
+      "id": "mem_seedMei3",
+      "characterId": "chr_seedMei",
+      "worldId": "wld_seedMeridian",
+      "kind": "fact",
+      "text": "Mei conceded the leak is real—exhaustion billed as sickness absence, agency fees, resignations—but argued that's a case for fixing the leak, not a calendar mandate.",
+      "importance": 0.665,
+      "sourceSessionId": "ses_seedDebate4Day",
+      "sourceMessageId": "msg_seedD10",
+      "createdAt": "2026-10-01T09:59:20.540Z"
+    },
+    {
+      "id": "mem_seedMei4",
+      "characterId": "chr_seedMei",
+      "worldId": "wld_seedMeridian",
+      "kind": "event",
+      "text": "Debate verdict: the Against side made the stronger case, as neither side closed whether staffed hours rise or turnover savings repay costs.",
+      "importance": 0.5075,
+      "sourceSessionId": "ses_seedDebate4Day",
+      "sourceMessageId": "msg_seedD15",
+      "createdAt": "2026-10-01T09:59:20.540Z"
     }
   ]
 }
