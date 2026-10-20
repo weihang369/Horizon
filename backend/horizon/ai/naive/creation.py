@@ -189,6 +189,8 @@ async def complete_json[T](gw: Any, req: ChatRequest, ctx: CallContext, parse: C
 
     first = await gw.chat_complete(req, ctx, before_send=hooks.before_send, after_response=after_first,
                                    commit_with=hooks.commit_with)
+    if not failed and "v" not in out:   # nothing was read: a probe's miss sends nothing (M15 D13), never retried
+        raise ProviderError("provider_error", "No answer to read.")
     if not failed:
         return out["v"]
     retry = replace(req, messages=[*req.messages, {"role": "assistant", "content": first.content},
