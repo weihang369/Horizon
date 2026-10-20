@@ -180,7 +180,7 @@ class DeepCheck:
         its = items()[opts.start:]
         its = its[: opts.limit] if opts.limit else its
         est = sum(decision_estimate(prices, *request(i)[:2]) for i in its)
-        return Plan(items=its, estimate_usd=est, expected_s=len(its) * 2.0, paid=paid)
+        return Plan(items=its, estimate_usd=est, expected_s=len(its) * 2.0, paid=paid, calls_chat=False)
 
     async def run(self, env: RunEnv, plan: Plan) -> Result:
         res = Result()

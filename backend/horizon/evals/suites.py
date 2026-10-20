@@ -143,7 +143,7 @@ class Canary:
         items = b.items[opts.start:]
         items = items[: opts.limit] if opts.limit else items
         est = sum(decision_estimate(prices, i["state"], i["questions"]) for i in items)
-        return Plan(items=items, estimate_usd=est, expected_s=len(items) * 3.0, paid=paid)
+        return Plan(items=items, estimate_usd=est, expected_s=len(items) * 3.0, paid=paid, calls_chat=False)
 
     async def run(self, env: RunEnv, plan: Plan) -> Result:
         res = Result()
@@ -237,7 +237,7 @@ class Decisions:
             # a noul has no option order to reverse (D27); M12 D9's re-ask compares the live order only
             asks = 2 if isinstance(q, Choice) and not i.get("reask") else 1
             est += asks * decision_estimate(prices, i["item"]["state"], {i["question_id"]: wire_question(q)})
-        return Plan(items=items, estimate_usd=est, expected_s=len(items) * 4.0, paid=paid)
+        return Plan(items=items, estimate_usd=est, expected_s=len(items) * 4.0, paid=paid, calls_chat=False)
 
     async def run(self, env: RunEnv, plan: Plan) -> Result:
         res = Result()

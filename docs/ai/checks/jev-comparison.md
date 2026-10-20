@@ -21,7 +21,7 @@ Whether to switch is the user's decision (task 8.1).
 |---|---|---|
 | Newest Jev | **Jev 1.14** (`jev-1.14.0`), "the newest Jev release, available from October 14, 2026" | docs.typesafe.ai/models.md |
 | OpenRouter id | `typesafe/jev-1.14` (listed beside `typesafe/jev-1.13`, `typesafe/jev-router`, `~typesafe/jev-latest`) | openrouter.ai/typesafe |
-| Dated snapshot | none mentioned. OpenRouter's per-model page `openrouter.ai/typesafe/jev-1.14` returned 404 | both |
+| Dated snapshot | none mentioned. OpenRouter's per-model page, [openrouter.ai/typesafe/jev-1.14](https://openrouter.ai/typesafe/jev-1.14), is the OpenRouter source for 1.14; a fetch on 2026-10-20 returned 404 (likely rendered in the browser only), so the facts here come from TypeSafe's docs | both |
 | Price | $0.042 per million input tokens; output free; **the same as 1.13** | docs.typesafe.ai/models.md |
 | Limits | 64k per request and 32k per question by default, **the same as 1.13**. 262k each only with the opt-in `TypeSafe-Danger-Zone-Long-Context` header (unused). Rate limits per organisation; over a limit → 429 | docs.typesafe.ai/models.md |
 | jev-1.13 | still listed under "Current models", **no end date** | docs.typesafe.ai/models.md |

@@ -61,9 +61,14 @@ Run these from `backend/`.
 Every paid run follows the same steps:
 
 1. It prints the plan and estimate, plus today's eval spend.
-2. It refuses to overlap DeepSeek's peak hours unless you pass `--allow-peak`.
+2. If its plan sends any DeepSeek (chat) request, it refuses to overlap DeepSeek's peak hours unless you pass
+   `--allow-peak`. A plan of Jev requests only runs at any hour, because the peak price is DeepSeek's alone: the
+   canary, `decisions`, `deep-check`, and `safety` when every part is a Jev part (`input`, `care`, `output`, `motion`,
+   `image`, `song`). A suite that doesn't say is treated as calling DeepSeek (jev-comparison D6).
 3. It asks `y/N`. `--yes` skips the prompt.
-4. It runs in an isolated copy under `data/evals/<run-id>/<profile>/`. Your own database is never opened.
+4. It runs in an isolated copy under `data/evals/<run-id>/<profile>/`. Your own database is never opened. A paid
+   run's folder gets `.keep` as soon as it is created, so a run that stops mid-way is never pruned with the newest-20
+   rule.
 5. It stops itself at `--max-usd`, which defaults to 1.5 × the estimate. A budget stop ends the run `incomplete`, never with a wrong answer.
 
 ## The store

@@ -452,7 +452,7 @@ class Safety:
                 est += turns * (estimate_chat(prices, prefix_tokens=4000, warm=True, other_in=1200,
                                               expected_out_tokens=160, period="off_peak") + 0.0001)
         return Plan(items=[{"skipped": loaded.skipped}, *items], estimate_usd=est, expected_s=30 + len(items) * 3.0,
-                    paid=paid)
+                    paid=paid, calls_chat=not all(p in JEV_PARTS for p in parts))   # jev-comparison D6
 
     async def run(self, env: RunEnv, plan: Plan) -> Result:
         res = Result()

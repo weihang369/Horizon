@@ -3,6 +3,7 @@ the in-process fake, no network."""
 
 from __future__ import annotations
 
+import datetime as dt
 import json
 from pathlib import Path
 from typing import Any, ClassVar
@@ -159,7 +160,7 @@ async def test_a_candidate_never_writes_the_judges_record(api: Api, tmp_path: Pa
 
     async def decide(state: Any, questions: Any, ctx: Any, **_kw: Any) -> DecisionsResponse:
         row = rows[len(asked)]
-        asked.append(row["id"])
+        asked.append(str(row["id"]))
         return DecisionsResponse("gen-j", {"judge_flattery": {"type": "noul", "noul": 0.9 if row["label"] == "yes"
                                                               else 0.1}}, None, CANDIDATE)
 
@@ -279,3 +280,93 @@ def test_the_pinned_salt_is_unchanged() -> None:
     assert jev_key(PINNED, req["state"], req["questions"], fp) + ".json" == name
     assert canary_mod.baseline_path(EVALS_DIR, PINNED) == EVALS_DIR / "canary.json"
     assert canary_mod.baseline_path(EVALS_DIR, CANDIDATE).parent == EVALS_DIR / "canary"
+
+
+# ── 3.1: the peak check holds only plans that call chat (D6) ──
+MONDAY_1030 = dt.datetime(2026, 10, 5, 2, 30, tzinfo=dt.UTC)   # 10:30 KL: DeepSeek's peak
+
+
+def paid_base(tmp: Path) -> Any:
+    """A normal-mode config with an obviously fake key; every run below is answered `n` or refused, so nothing is sent."""
+    from pydantic import SecretStr
+
+    from tests.conftest import make_config
+
+    return make_config(tmp, test_mode=False, openrouter_key=SecretStr("sk-or-test-peak-0001"))
+
+
+@pytest.mark.parametrize(("opts", "refused"), [
+    (Options("decisions", set="english"), False),
+    (Options("canary"), False),
+    (Options("deep-check"), False),
+    (Options("safety", part="input,care"), False),
+    (Options("latency", profile="agent"), True),
+    (Options("safety", profile="agent", part="honesty"), True),
+])
+async def test_only_a_plan_with_chat_is_held_to_the_peak(tmp_path: Path, opts: Options, refused: bool) -> None:
+    out: list[str] = []
+    asked: list[str] = []
+
+    def no(prompt: str) -> str:
+        asked.append(prompt)
+        return "n"
+
+    r = Runner(paid_base(tmp_path), stdin=no, out=out.append, now=lambda: MONDAY_1030)
+    code = await r.run(opts)
+    peak = any("DeepSeek's peak" in s for s in out)
+    assert peak is refused, out
+    assert (code, bool(asked)) == ((2, False) if refused else (1, True))   # a Jev-only run reaches the y/N prompt
+    assert not (tmp_path / "evals").exists() or not any((tmp_path / "evals").iterdir())
+
+
+async def test_a_jev_only_plan_sends_only_decisions(api: Api, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The suites that declare `calls_chat=False` leave only `decision` rows in the ledger (D6's guard)."""
+    from sqlalchemy import select
+
+    from horizon.db import tables as t
+    from horizon.evals import deep_check_suite, safety_suite
+
+    await api.set_key()
+    cases: list[tuple[Any, Options]] = [(suites.Canary(), Options("canary", limit=3)),
+             (deep_check_suite.DeepCheck(), Options("deep-check", limit=3)),
+             (safety_suite.Safety(), Options("safety", part=",".join(safety_suite.JEV_PARTS))),
+             (suites.Decisions(), Options("decisions"))]
+    for k, (suite, opts) in enumerate(cases):
+        if opts.suite == "decisions":   # deep-check reads the real datasets; decisions a small made-up one
+            monkeypatch.setattr(suites, "DATASETS", tmp_path / "datasets")
+            dataset(tmp_path / "datasets")
+        plan = suite.plan(opts, api.rt.prices, paid=False)
+        assert plan.calls_chat is False, opts.suite
+        run_dir = tmp_path / "evals" / f"run-{k}" / "naive"
+        run_dir.mkdir(parents=True)
+        await suite.run(RunEnv(rt=api.rt, opts=opts, store=None, run_dir=run_dir, max_usd=1.0), plan)
+    async with api.rt.db.read() as conn:
+        cats = {str(c) for c in (await conn.execute(select(t.usage_records.c.category)
+                                                    .where(t.usage_records.c.is_seed.is_(False)))).scalars()}
+    assert cats == {"decision"}
+
+
+# ── 3.2: `.keep` from the start (D15) ──
+async def test_a_paid_run_that_dies_keeps_its_folder(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from horizon.evals import runner
+
+    class Dies(AsksJev):
+        name = "dies"
+
+        async def run(self, env: RunEnv, plan: Plan) -> Result:
+            raise RuntimeError("the provider went away mid-run")
+
+    async def execute(self: Runner, suite: Any, plan: Plan, *_a: Any) -> Any:
+        return await suite.run(None, plan)
+
+    monkeypatch.setitem(suites.SUITES, "dies", Dies())
+    monkeypatch.setattr(runner.Runner, "_execute", execute)   # the paid path up to the call, with nothing sent
+    r = Runner(paid_base(tmp_path), stdin=lambda _p: "y", out=lambda _s: None, now=lambda: SATURDAY)
+    with pytest.raises(RuntimeError):
+        await r.run(Options("dies", yes=True))
+    (run,) = [p for p in (tmp_path / "evals").iterdir() if p.is_dir()]
+    assert (run / ".keep").is_file()
+    for i in range(25):   # newer unmarked runs push past KEEP_RUNS; the dead paid run stays
+        (tmp_path / "evals" / f"20261004T0300{i:02d}-smoke-x").mkdir()
+    runner.prune_runs(tmp_path / "evals")
+    assert run.is_dir()

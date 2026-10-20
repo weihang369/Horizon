@@ -3,7 +3,9 @@ spec; ai-foundation design D33–D35; tasks 7.3, 7.5–7.7).
 
 The run lifecycle:
 1. **Plan and estimate** from the suite's planned requests, and print today's eval spend (`data/evals/spend.jsonl`).
-2. **Off-peak check:** a paid run that would overlap DeepSeek's peak by its expected end refuses unless `--allow-peak`.
+2. **Off-peak check:** a paid run whose plan sends any chat (DeepSeek) request and would overlap DeepSeek's peak by its
+   expected end refuses unless `--allow-peak`. A plan of Jev requests only (`Plan.calls_chat` False: the canary,
+   decisions, deep-check, safety's Jev parts) runs at any hour: the peak price is DeepSeek's alone (jev-comparison D6).
 3. **Ask** `y/N` on stdin (`--yes` skips it, used only after the user OKs the estimate in chat). Declining sends
    nothing and leaves no folder.
 4. **Isolation:** `data/evals/<run-id>/<profile>/` gets a fresh Config. `HORIZON_AI_*`, `HORIZON_TEST` and
@@ -13,8 +15,9 @@ The run lifecycle:
 5. **Run** through the isolated runtime's gateway, so every call is priced in that run's ledger. The runner stops
    itself when the run's ledger reaches `--max-usd`; a budget refusal ends the run `incomplete`, never a wrong answer.
 6. **Report:** `report.md` and `results.jsonl` in the run folder; the spend appended to `spend.jsonl`; the newest 20
-   run folders kept. M12 (rag D31.4): a paid run's folder is marked `.keep` when it finishes, so a paid output is never
-   pruned (M11 lost a source run that way); free smoke runs still are.
+   run folders kept. M12 (rag D31.4): a paid run's folder is marked `.keep`, so a paid output is never pruned (M11 lost
+   a source run that way); free smoke runs still are. Since jev-comparison (D15) the mark is written when the folder is
+   created, so a run that dies mid-way keeps its folder too.
 
 Paid suites refuse in test mode. `smoke` runs in either mode: in test mode on the in-process fake ($0).
 **The store (D35)** is never attached to the canary, latency or repeatability runs, `capture` or `import`.
@@ -88,6 +91,9 @@ class Plan:
     estimate_usd: float
     expected_s: float
     paid: bool
+    # jev-comparison (D6): whether the plan sends any chat (DeepSeek) request; only such a plan is held to DeepSeek's
+    # peak window. A suite that can't tell keeps the default, so a chat run never slips through.
+    calls_chat: bool = True
 
 
 @dataclass
@@ -225,10 +231,16 @@ def prune_runs(runs_dir: Path, keep: int = KEEP_RUNS) -> list[str]:
     return [p.name for p in gone]
 
 
+def keep_run(runs_dir: Path, run_id: str) -> None:
+    """M12 (rag D31.4): a paid run's folder is never pruned."""
+    if (runs_dir / run_id).is_dir():
+        (runs_dir / run_id / ".keep").write_text("paid run: never pruned (rag D31.4)\n", encoding="utf-8")
+
+
 def finish_run(runs_dir: Path, run_id: str, *, paid: bool) -> list[str]:
     """M12 (rag D31.4): mark a paid run's folder `.keep`, then prune the unmarked ones past `KEEP_RUNS`."""
-    if paid and (runs_dir / run_id).is_dir():
-        (runs_dir / run_id / ".keep").write_text("paid run: never pruned (rag D31.4)\n", encoding="utf-8")
+    if paid:
+        keep_run(runs_dir, run_id)
     return prune_runs(runs_dir)
 
 
@@ -316,14 +328,14 @@ class Runner:
         prices = priced_for(load_price_table(self.base.seed_dir), opts.decision_model, self.base.seed_dir)
         plan = suite.plan(opts, prices, paid=not test_mode or opts.probe)
         if opts.probe:   # priced as a real run, but nothing is spent, asked or logged
-            plan = Plan(items=plan.items, estimate_usd=plan.estimate_usd, expected_s=plan.expected_s, paid=False)
+            plan = replace(plan, paid=False)
             self.probe_estimate = plan.estimate_usd
         cal = calendar_for(self.base.tz)
         now = self.now()
         self.out(f"plan: {opts.suite}, {len(plan.items)} item(s), estimate ${plan.estimate_usd:.5f}"
                  f"{' (fake provider, $0)' if not plan.paid else ''}; eval spend today "
                  f"${spent_today(self.data_dir, cal, now):.5f}")
-        if plan.paid and not opts.allow_peak and overlaps_peak(cal, now, plan.expected_s):
+        if plan.paid and plan.calls_chat and not opts.allow_peak and overlaps_peak(cal, now, plan.expected_s):
             self.out("horizon: the run would overlap DeepSeek's peak pricing; run off-peak or pass --allow-peak")
             return 2
         if plan.paid and self.base.openrouter_key is None and _user_key(self.base) is None:
@@ -340,6 +352,8 @@ class Runner:
         run_id = f"{now.strftime('%Y%m%dT%H%M%S')}-{opts.suite}-{uuid.uuid4().hex[:6]}"
         run_dir = self.runs_dir / run_id / opts.profile
         run_dir.mkdir(parents=True, exist_ok=True)
+        if plan.paid:   # jev-comparison (D15): marked at the start, so a run that dies mid-way is never pruned
+            keep_run(self.runs_dir, run_id)
         if opts.max_usd is not None:
             max_usd = opts.max_usd
         elif plan.paid:

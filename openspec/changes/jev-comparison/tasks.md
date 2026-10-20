@@ -91,15 +91,15 @@
 
 ## 3. The peak check per plan, and `.keep` from the start (D6, D15)
 
-- [ ] 3.1 Add `Plan.calls_chat` (default `True`). Set it to `False` for `canary`, `decisions`, `deep-check`,
+- [x] 3.1 Add `Plan.calls_chat` (default `True`). Set it to `False` for `canary`, `decisions`, `deep-check`,
   `safety` when every part is in `JEV_PARTS`, and the comparison's probes. `Runner.run` checks `overlaps_peak` only
   when `calls_chat`. Verify with tests on a frozen clock at 10:30 KL:
   - `decisions` proceeds;
   - `latency` and `safety --part honesty` refuse;
   - each Jev-only plan run in test mode leaves only `decision` ledger rows.
-- [ ] 3.2 Write `.keep` when a paid run's folder is created (not only at finish). Verify with a test that a paid run
+- [x] 3.2 Write `.keep` when a paid run's folder is created (not only at finish). Verify with a test that a paid run
   that raises mid-way leaves a `.keep` folder that `prune_runs` never deletes.
-- [ ] 3.3 Update the runner docstring and `evals/README.md` (peak applies to DeepSeek plans; `.keep` at start).
+- [x] 3.3 Update the runner docstring and `evals/README.md` (peak applies to DeepSeek plans; `.keep` at start).
   Commit phase 3 at green.
 
 ## 4. `compare-models`: the runs, the probes and the report (D7–D11)
