@@ -21,7 +21,7 @@ Whether to switch is the user's decision (task 8.1).
 |---|---|---|
 | Newest Jev | **Jev 1.14** (`jev-1.14.0`), "the newest Jev release, available from October 14, 2026" | docs.typesafe.ai/models.md |
 | OpenRouter id | `typesafe/jev-1.14` (listed beside `typesafe/jev-1.13`, `typesafe/jev-router`, `~typesafe/jev-latest`) | openrouter.ai/typesafe |
-| Dated snapshot | none mentioned. OpenRouter's per-model page, [openrouter.ai/typesafe/jev-1.14](https://openrouter.ai/typesafe/jev-1.14), is the OpenRouter source for 1.14; a fetch on 2026-10-20 returned 404 (likely rendered in the browser only), so the facts here come from TypeSafe's docs | both |
+| Dated snapshot | **`typesafe/jev-1.14-20261014`**, as the provider returned it (the parse check, §0.5); the docs mention none. OpenRouter's per-model page, [openrouter.ai/typesafe/jev-1.14](https://openrouter.ai/typesafe/jev-1.14), is the OpenRouter source for 1.14; a fetch on 2026-10-20 returned 404 (likely rendered in the browser only), so the facts here come from TypeSafe's docs | both |
 | Price | $0.042 per million input tokens; output free; **the same as 1.13** | docs.typesafe.ai/models.md |
 | Limits | 64k per request and 32k per question by default, **the same as 1.13**. 262k each only with the opt-in `TypeSafe-Danger-Zone-Long-Context` header (unused). Rate limits per organisation; over a limit → 429 | docs.typesafe.ai/models.md |
 | jev-1.13 | still listed under "Current models", **no end date** | docs.typesafe.ai/models.md |
@@ -34,6 +34,17 @@ Whether to switch is the user's decision (task 8.1).
   at 8.1.
 - **0.3: the expected id and price were right** (`typesafe/jev-1.14`, $0.042 per million), so the conditional
   `decider` and `demo-data` deltas stand as written, and D3's per-model price isn't needed (same price).
+
+### 0.5 The parse check (task 6.1, 2026-10-20 19:41 KL, $0.00003)
+
+`horizon eval canary --decision-model typesafe/jev-1.14 --limit 1` (run `20261020T114123-canary-4c1658`): canary item
+1 (`emotion:chr_seedAmara`, a 7-option choice) on the candidate.
+- **The answer shape is unchanged:** `type`, `choice`, `probabilities` (one per option), `confidence`, with the same
+  types as 1.13's. The gateway's decisions client parsed it as it parses 1.13's.
+- **The dated snapshot:** the provider returned `typesafe/jev-1.14-20261014`, which matches the 2026-10-14 release.
+  1.13's runs return `typesafe/jev-1.13-…` the same way.
+- The answer was within tolerance of 1.13's: `neutral` both, p 0.60 against 0.62. The run was sliced, so no
+  baseline was written (a guard added before this run: a `--limit` or `--start` canary never writes one).
 
 ### 0.4 The 1.13 keys after the per-model salt (task 2.3, $0)
 

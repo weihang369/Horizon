@@ -155,9 +155,9 @@
 
 ## 6. The paid runs (D15; all Jev)
 
-- [ ] 6.1 The parse check (D2): one known body (canary item 1) on the candidate through the Decider path, < $0.001.
+- [x] 6.1 The parse check (D2): one known body (canary item 1) on the candidate through the Decider path, < $0.001.
   The answer validates unchanged. Record it in §0. If the shape differs, stop and put it to the user.
-- [ ] 6.2 Step `canary`:
+- [x] 6.2 Step `canary`:
   - first 1.13's canary (expect 20/20; a 1.13 drift stops the comparison and goes to the user);
   - then the candidate's first canary, which writes `evals/canary/<candidate>.json` and reports its drift against
     1.13.
