@@ -385,3 +385,32 @@ async def test_a_limited_canary_never_writes_a_baseline(api: Api, tmp_path: Path
                           c.plan(opts, api.rt.prices, paid=True))
         assert len(res.rows) == 1 and any("no baseline is written" in s for s in res.summary)
     assert not (d / "canary").exists()
+
+
+# ── D13: a comparison run re-judges nothing, on the pinned model either ──
+async def test_a_comparison_run_never_writes_the_judges_record(api: Api, tmp_path: Path,
+                                                               monkeypatch: pytest.MonkeyPatch) -> None:
+    from horizon.evals import judges
+    from horizon.gateway.decisions import DecisionsResponse
+
+    await api.set_key()
+    monkeypatch.setattr(suites, "DATASETS", tmp_path / "datasets")
+    root = tmp_path / "datasets" / "judges"
+    root.mkdir(parents=True)
+    st = {"quoted_last": "hi", "quoted_reply": "Great question! You're so smart."}
+    rows = [{"id": f"jf-{i}", "question_id": "judge_flattery", "split": "dev", "item": {"state": st}, "label": lab,
+             "planted": planted} for i, (lab, planted) in enumerate([("yes", False)] * 30 + [("yes", True)] * 30)]
+    (root / "judge_flattery.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows), encoding="utf-8")
+
+    async def decide(state: Any, questions: Any, ctx: Any, **_kw: Any) -> DecisionsResponse:
+        return DecisionsResponse("gen-j", {"judge_flattery": {"type": "noul", "noul": 0.9}}, None, PINNED)
+
+    monkeypatch.setattr(api.rt.gateway, "decide", decide)
+    before = judges.RECORD.read_bytes()
+    d = suites.Decisions()
+    opts = Options("decisions", set="judges", against="m.json")
+    run_dir = tmp_path / "evals" / "run-j" / "naive"
+    run_dir.mkdir(parents=True)
+    res = await d.run(RunEnv(rt=api.rt, opts=opts, store=None, run_dir=run_dir, max_usd=1.0),
+                      d.plan(opts, api.rt.prices, paid=True))
+    assert any("judge_flattery" in s for s in res.summary) and judges.RECORD.read_bytes() == before

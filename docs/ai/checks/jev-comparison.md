@@ -123,3 +123,22 @@ The probe on the corrected manifest (0 refused on either model):
 D15 recomputed at the verified price ($0.042 per million, both models): the canaries $0.0009 (spent); 1.13's
 misses **$0.035**; the candidate's sets **$0.201**; the repeat probe ≈ $0.003; the timing probe ≈ $0.06 (two
 windows). **Total ≈ $0.30**, as planned.
+
+### 6.4–6.5 The sets (2026-10-20 19:50–20:41 KL, $0.193)
+
+| Run | Model | Requests sent | Spent | Errors | Refused |
+|---|---|---|---|---|---|
+| `20261020T115058-decisions-87bccd` | 1.13 | 541 (the rest stored) | $0.02912 | 0 | 0 |
+| `20261020T115511-decisions-531247` (judges) | 1.13 | 0 (all 2,024 stored) | $0 | 0 | 0 |
+| `20261020T115515-deep-check-5010de` | 1.13 | 0 (stored) | $0 | 0 | 0 |
+| `20261020T115516-safety-f53e92` | 1.13 | 0 (stored) | $0 | 0 | 0 |
+| `20261020T115517-decisions-f95225` | 1.14 | 2,533 | $0.10076 | 0 | 0 |
+| `20261020T122058-decisions-e14ef8` (judges) | 1.14 | 2,024 | $0.05316 | 0 | 0 |
+| `20261020T123958-deep-check-798eb8` | 1.14 | 45 | $0.00108 | 0 | 0 |
+| `20261020T124020-safety-5019c8` | 1.14 | 341 | $0.00880 | 0 | 0 |
+
+No 429 or 5xx in about 5,500 requests; 1.14 answered at about 0.5–0.6 s per request, one at a time.
+
+**A guard added after these runs:** the 1.13 judges run (all stored answers) re-wrote `evals/baselines/judges.json`
+with the same figures and today's date on all 32 judges. The file was restored from git, so the dates of each
+judge's real validation stay. A run against a manifest now never writes the judges' record, on either model (D13).

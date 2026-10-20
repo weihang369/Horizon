@@ -165,8 +165,8 @@
   Record both.
 - [x] 6.3 Step `probe`: both models' exact misses and cost per set. Recompute D15's estimates at the verified price
   and record them.
-- [ ] 6.4 Step `sets` on 1.13: its ≈ 1,281 misses (expect ≈ $0.05). Record the run id, spend and any refused body.
-- [ ] 6.5 Step `sets` on the candidate: decisions with the judges, deep-check, and safety's Jev parts (expect
+- [x] 6.4 Step `sets` on 1.13: its ≈ 1,281 misses (expect ≈ $0.05). Record the run id, spend and any refused body.
+- [x] 6.5 Step `sets` on the candidate: decisions with the judges, deep-check, and safety's Jev parts (expect
   ≈ $0.20). Record the run ids and spend; resume with `--start` if the run stops.
 - [ ] 6.6 Step `repeat` (≈ $0.003). Record.
 - [ ] 6.7 Steps `timing-a` and `timing-b`, ≥ 3 h apart, one may be daytime (≈ $0.05). Record the windows and the

@@ -365,8 +365,10 @@ class Decisions:
             done_path.parent.mkdir(parents=True, exist_ok=True)
             done_path.write_text(json.dumps(measured, indent=1), encoding="utf-8")
         if (env.opts.set or "").partition(":")[0] == JUDGES_SET and not self.smoke:
-            # jev-comparison (D4, D13): a candidate's B4 figures are information only, never the record
-            res.summary += self._judge_report(res.rows, plan.items, record=not env.opts.probe and not candidate,
+            # jev-comparison (D4, D13): a candidate's B4 figures are information only, never the record; and a
+            # comparison run (against a manifest) re-judges nothing, on either model
+            res.summary += self._judge_report(res.rows, plan.items,
+                                              record=not env.opts.probe and not candidate and not env.opts.against,
                                               candidate=env.decision_model if candidate else None)
         fade = env.rt.runtime_cfg.runtime.emotion_fade
         for kind in ("emotion", "reaction"):   # M9 D26: the code rule's policies, floors from dev
