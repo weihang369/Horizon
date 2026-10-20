@@ -262,3 +262,20 @@ judge's real validation stay. A run against a manifest now never writes the judg
 After the runs, every request of every set step hits the store on both models: 2,535 decisions, 2,024 judges, 45
 deep-check and 341 safety each, **$0 to pay**. A re-run of the comparison, or the next one's base side, costs nothing
 here.
+
+## §11 The final gates (2026-10-20, on f46bb66 + docs)
+
+| Gate | Result |
+| --- | --- |
+| Backend `pytest` (gate worktree) | **2317 passed**, 0 failed, 10 deselected (`live`, `docling`) (42 min) |
+| `ruff` / `mypy` | clean / clean (243 files) |
+| Frontend typecheck / lint | clean / warnings only, exit 0 |
+| Frontend test / http | 563 passed, 2 skipped / 63 passed |
+| `seed:check` / `fixtures:check` / `export-schema:check` / `assets:check` | 153 files match / 37 files match / schema matches (56 definitions) / 82 shipped assets covered |
+| Smoke (`HORIZON_TEST=1 horizon eval smoke --limit 5 --yes`) | ok |
+| `npm run e2e` | not needed: phase 9 (a switch) didn't run, and the frontend is unchanged |
+| `openspec validate jev-comparison --strict` | valid |
+| `private/`, `6 RAG.pdf` | 0 files tracked |
+
+The 10 deselected backend tests and the 2 skipped frontend tests are settled on the next branch (`feat/code-audit`),
+by the user's release bar: nothing skipped at the end.

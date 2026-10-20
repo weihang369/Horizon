@@ -228,7 +228,7 @@
 
 ## 11. Close
 
-- [ ] 11.1 Final gates: phase 5's list again on the tip, plus `npm run e2e` in the main tree if phase 9 ran. Record the
+- [x] 11.1 Final gates: phase 5's list again on the tip, plus `npm run e2e` in the main tree if phase 9 ran. Record the
   table.
 - [x] 11.2 Add the comparison's spend row to `docs/ai/13-wrap-up.md` W6 and update the milestone memory. Offer the user
   a draft of the LinkedIn post and its infographic (dropped: the user chose not to show the comparison on
