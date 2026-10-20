@@ -14,6 +14,9 @@
   2,000 seeded resamples: the exact-match difference ON − OFF and the mean p(ON better), each with a 95 % interval;
   the ON arm's "names the feeling" pass rate (target ≥ 95 %, every failure listed) and the clash rate (≤ 5 %).
 - **The verdict** is E8's rule, as advice: the report changes no prompt or setting (spec "Verdict is advice").
+- **`--set emotion`** (M15, images-music 8.13; m9.md's "re-test on more emotional turns"): the turns come from the
+  English emotion items set in these three transcripts, each with its own latest line (most are written emotional
+  lines on that turn's history), so far more turns are non-neutral. The default set and its store keys are unchanged.
 """
 
 from __future__ import annotations
@@ -73,6 +76,23 @@ def candidates(per_file: int, root: Path = TRANSCRIPTS) -> list[dict[str, Any]]:
         step = max(1, len(usable) // max(1, per_file))
         for i in usable[::step][:per_file]:
             out.append({"transcript": name, "turn": i, "speaker": turns[i]["replies"][0]["speaker"]})
+    return out
+
+
+def emotional(root: Path = TRANSCRIPTS) -> list[dict[str, Any]]:
+    """`--set emotion`: the English emotion items set in FILES, in dataset order, each a turn with its own latest line
+    and the item's character as the speaker."""
+    import re
+
+    path = root.parent / "datasets" / "emotion" / "emotion.jsonl"
+    out = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        it = json.loads(line)
+        m = re.match(r"transcript:(\w+)#(\d+)", str(it.get("source") or ""))
+        if it["lang"] != "en" or m is None or m.group(1) not in FILES:
+            continue
+        out.append({"transcript": m.group(1), "turn": int(m.group(2)), "speaker": str(it["item"]["seed"]).split(":")[-1],
+                    "latest": str(it["item"]["state"]["quoted_latest"]), "id": str(it["id"])})
     return out
 
 
@@ -171,7 +191,8 @@ class Moodline:
 
     def plan(self, opts: Options, prices: Any, *, paid: bool) -> Plan:
         n = opts.limit or DEFAULT_N
-        cands = take(candidates(per_file=max(4, (n * 3) // len(FILES))), Options(suite=self.name, start=opts.start))
+        pool = emotional() if opts.set == "emotion" else candidates(per_file=max(4, (n * 3) // len(FILES)))
+        cands = take(pool, Options(suite=self.name, start=opts.start))
         reply = estimate_chat(prices, prefix_tokens=4000, warm=True, other_in=600, expected_out_tokens=140,
                               period="off_peak")
         call1 = decision_estimate(prices, {"quoted_latest": "x" * 3000}, {"q": {"instructions": "x" * 1200}})
@@ -217,7 +238,7 @@ class Moodline:
         if key not in self._holders:
             self._holders[key] = await holder_session(env.rt, t, rows, w)
         recent, summary = history(t, c["turn"], names)
-        latest = str(t["turns"][c["turn"]]["user"])
+        latest = str(c.get("latest") or t["turns"][c["turn"]]["user"])
         parts = [ParticipantView(character_id=cid, name=names.get(cid, cid), role="speaker",
                                  character_role=str(rows[cid]["profile"].get("role") or "") if cid in rows else "",
                                  energy={"current": 1000, "max": 1000}) for cid in t["cast"]]
@@ -257,7 +278,8 @@ class Moodline:
         for arm, text in zip(("on", "off"), replies, strict=True):
             p = await judge(env, NAMES_FEELING, {"quoted_reply": text})
             out[f"names_{arm}"] = failed(p, NAMES_FEELING)
-            pick = await self.words(env, text, f"{c['transcript']}:{c['turn']}:{arm}")
+            where = f"{c['id']}:" if c.get("id") else ""   # --set emotion: two items can share a turn
+            pick = await self.words(env, text, f"{where}{c['transcript']}:{c['turn']}:{arm}")
             out[f"pick_{arm}"] = pick
             out[f"exact_{arm}"] = None if pick is None else int(pick == face.face)
             out[f"clash_{arm}"] = None if pick is None else int(face_verdict(face.face, pick) == "clash")

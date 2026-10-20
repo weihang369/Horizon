@@ -45,6 +45,30 @@ async def test_a_jev_hit_sends_nothing_and_writes_no_row(api: Api, tmp_path: Pat
     assert fake.counts["decisions"] == 2
 
 
+def entries(root: Path) -> int:
+    return len(list(root.glob("*.json")))
+
+
+async def test_the_reversed_ask_is_sent_and_stored_apart(api: Api, tmp_path: Path) -> None:
+    """M15 (images-music D13): the decisions suite's reversed-option ask reaches Jev once and is kept under its own key;
+    the declared-order ask still hits its old entry."""
+    await api.set_key()
+    gw = api.rt.gateway
+    gw.store = ResponseStore.eval_view(tmp_path, None)
+    fake = api.rt.fake
+    assert fake is not None
+    q = {"q": {"type": "choice", "instructions": "x?", "criteria": {"a": "A", "b": "B"}}}
+    rev = {"q": {"type": "choice", "instructions": "x?", "criteria": {"b": "B", "a": "A"}}}
+    first = await gw.decide(STATE, q, call_ctx("eval_judge"))
+    second = await gw.decide(STATE, rev, call_ctx("eval_judge"), order={"q": ["b", "a"]})
+    assert fake.counts["decisions"] == 2 and entries(tmp_path) == 2
+    # the fake picks the first option, so a reversed ask that really reached it shows as a flip (M9 saw 0 of 100)
+    assert first.answers["q"]["choice"] == "a" and second.answers["q"]["choice"] == "b"
+    await gw.decide(STATE, q, call_ctx("eval_judge"))
+    await gw.decide(STATE, rev, call_ctx("eval_judge"), order={"q": ["b", "a"]})
+    assert fake.counts["decisions"] == 2                                   # both now served from the store
+
+
 async def test_seed_view_reuses_seed_embeddings_and_never_keeps_user_text(api: Api, tmp_path: Path) -> None:
     store_dir = tmp_path / "cache"
     api.rt.gateway.seed_store = ResponseStore.seed_view(store_dir)
@@ -71,3 +95,23 @@ async def test_seed_view_reuses_seed_embeddings_and_never_keeps_user_text(api: A
     assert (await source(api, user["id"]))["source"]["status"] == "indexed"
     assert fake.counts["embeddings"] > sent                                # user text is always sent…
     assert len(list(store_dir.glob("*.json"))) == stored                    # …and never stored
+
+
+async def test_a_streamed_store_hit_is_captured_with_its_text(api: Api, tmp_path: Path) -> None:
+    """M15 8.9: a replayed reply reaches the capture hook like a live one, so `conversations` reads naive's raw text
+    (the note-in-tag rate, D14) on a run served from the store."""
+    from horizon.gateway.chat import ChatRequest
+
+    await api.set_key()
+    gw = api.rt.gateway
+    gw.store = ResponseStore.eval_view(tmp_path, None)
+    seen: list[tuple[dict, dict]] = []
+    gw.capture_bodies, gw.on_call = True, lambda ctx, summary, outcome: seen.append((summary, outcome))
+    req = ChatRequest(model="deepseek/deepseek-v4.1-flash", messages=[{"role": "user", "content": "hi"}], max_tokens=16)
+    live = "".join([c.content async for c in gw.chat_stream(req, call_ctx("reply", category="chat"))
+                    if c.content])
+    seen.clear()
+    replayed = "".join([c.content async for c in gw.chat_stream(req, call_ctx("reply", category="chat"))
+                        if c.content])
+    assert replayed == live != ""
+    assert [(s["body"]["response"]["text"], o["provider"]) for s, o in seen] == [(live, "store")]

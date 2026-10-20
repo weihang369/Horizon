@@ -319,10 +319,10 @@ def test_naive_labels_its_centred_slice(api: Api) -> None:
 
     engine = NaiveTurnEngine(api.rt.ai.deps)
     with_hits = ctx_with(TurnPlan(seed="s"), [hit(1, "x")])
-    assert engine.prompt_version_for(with_hits) == "naive-7"
+    assert engine.prompt_version_for(with_hits) == "naive-11"
     assert engine.prompt_version_for(with_hits.model_copy(update={"session": with_hits.session.model_copy(
-        update={"mode": "debate"})})) == "naive-8"
-    assert engine.prompt_version_for(ctx_with(TurnPlan(seed="s"), [])) == "naive-5"
+        update={"mode": "debate"})})) == "naive-12"
+    assert engine.prompt_version_for(ctx_with(TurnPlan(seed="s"), [])) == "naive-9"
 
 
 # ── 8.4 the rows stay within 64 ──

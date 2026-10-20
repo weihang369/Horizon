@@ -173,3 +173,12 @@ RULES
 ```
 
 Each backend call also sends up to 3 style reference images plus the base portrait, and records `stylePresetId` and its version (doc 05, `StylePreset`).
+
+**As built (v3, M15).** The backend's compiler is deterministic code, not an LLM: `backend/horizon/ai/image_prompt.py` (`IMAGE_PROMPT_VERSION = "v3"`), with golden fixtures in `backend/tests/fixtures/image_prompt/`. On top of the README's v2 fixes, v3 adds ([doc 12](../12-images-music.md) I1, [doc 13](../13-wrap-up.md) W3), always in positive wording, since Seedream has no negative prompt:
+
+- base and sheet: "An original character design, not based on any real person or existing character." after the adult clause, and the Outfit line ends "Fully clothed in the outfit described.";
+- the sheet's Avoid line adds "childlike or teenage features" (the base's already had it);
+- emotion edits and tweaks: the Keep line ends "Keep the character's apparent adult age exactly as in the original." Tweaks get no originality line;
+- "Doesn't look like them" (`emotion_regenerate` with a hint) adds "The face must be recognisably the same person as in the reference: same face shape, eyes, nose, mouth, eyebrows and apparent age." The hint's own text never enters the prompt.
+
+v1 sends no style reference images (doc 12 I6).

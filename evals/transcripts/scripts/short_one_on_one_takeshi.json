@@ -1,0 +1,57 @@
+{
+ "schemaVersion": 1,
+ "id": "short_one_on_one_takeshi",
+ "mode": "one_on_one",
+ "world": "wld_seedSunnyHollow",
+ "cast": [
+  "chr_seedTakeshi"
+ ],
+ "language": "en",
+ "policy": null,
+ "short": true,
+ "lines": [
+  {
+   "text": "Morning, Takeshi. Did you go fishing this Sunday?",
+   "kind": "filler"
+  },
+  {
+   "text": "Trains in Japan run on time because the drivers never take breaks.",
+   "kind": "wrong_claim"
+  },
+  {
+   "text": "My grandfather drove trains too, on the northern line.",
+   "kind": "fact",
+   "fact": "northern line"
+  },
+  {
+   "text": "Atok saya kata memancing waktu hujan dapat lebih banyak ikan, betul ke?",
+   "kind": "filler",
+   "lang": "ms"
+  },
+  {
+   "text": "What's the best bait for the pier by the station?",
+   "kind": "filler"
+  },
+  {
+   "text": "Tell me your most terrible train pun.",
+   "kind": "filler"
+  },
+  {
+   "text": "The moon has no effect at all on the tides.",
+   "kind": "wrong_claim"
+  },
+  {
+   "text": "I can't decide whether to buy a new rod or fix the old one lah.",
+   "kind": "filler",
+   "lang": "mixed"
+  },
+  {
+   "text": "How do you manage to be so punctual?",
+   "kind": "filler"
+  },
+  {
+   "text": "Say hello to Hana and Rin for me.",
+   "kind": "filler"
+  }
+ ]
+}

@@ -66,6 +66,7 @@ class Config:
     capture_ai_calls: bool = False                         # HORIZON_CAPTURE_AI_CALLS=1 (B10, D27): off by default
     langsmith: bool = False                                # HORIZON_LANGSMITH=1 (B11, D30): opt-in tracing
     langsmith_key: SecretStr | None = None                 # LANGSMITH_API_KEY; only read when opted in
+    probe: bool = False                                    # M15 (images-music D13): `horizon eval --probe`, no network
 
     def __post_init__(self) -> None:
         if self.test_mode and self.openrouter_key is not None:  # holds for CLI/test overrides too

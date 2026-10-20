@@ -54,7 +54,14 @@ def engine(api: Api) -> NaiveTurnEngine:
 
 
 def test_prompt_version_is_v4() -> None:
-    assert PROMPT_VERSION == "naive-5" and NaiveTurnEngine.prompt_version == "naive-5"
+    assert PROMPT_VERSION == "naive-9" and NaiveTurnEngine.prompt_version == "naive-9"
+
+
+def test_the_tag_line_allows_no_notes() -> None:
+    """M15 (images-music D14; ai-ports "The naive tag line allows no notes"): only the tag itself, nothing inside it."""
+    line = next(x for x in system_prompt(ctx()).splitlines() if x.startswith("Begin every reply"))
+    assert ("Write only the tag itself, like <e:thinking>, with nothing inside it and no closing tag. "
+            "Never write tags anywhere else.") in line
 
 
 async def test_no_hits_requests_share_their_prefix_byte_for_byte(api: Api) -> None:
@@ -118,7 +125,7 @@ async def test_cited_passage(api: Api) -> None:
     async with api.rt.db.read() as conn:
         row = (await conn.execute(text("SELECT engine, engine_version, prompt_version FROM turn_traces "
                                        "WHERE message_id = :m"), {"m": reply["id"]})).one()
-    assert tuple(row) == ("naive", "3", "naive-7")   # M12 (rag D18): passages read as their centred slice
+    assert tuple(row) == ("naive", "3", "naive-11")   # M12 (rag D18): passages read as their centred slice
 
 
 class TwoMemories:

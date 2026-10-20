@@ -57,7 +57,7 @@ from horizon.domain.vclock import Slots
 from horizon.evals.store import ResponseStore
 from horizon.events.bus import GLOBAL, EventBus, session_channel
 from horizon.gateway.client import HttpCore
-from horizon.gateway.fake import FakeOpenRouter
+from horizon.gateway.fake import FakeOpenRouter, deny_transport
 from horizon.gateway.pipeline import Caps, Gateway
 from horizon.gateway.reservations import ReservationBook
 from horizon.gateway.types import GatewayConfig
@@ -146,6 +146,7 @@ class Runtime:
         self.test_parks: dict[tuple[str, int], asyncio.Event] = {}   # /_test/park (test mode only)
         self.settings_lock = asyncio.Lock()
         self.fake: FakeOpenRouter | None = None
+        self.probe_blocked: list[str] = []          # M15 (images-music D13): requests a probe refused to send
         # M3 (session-runtime design D1): the pacing table, LLM slots, AI ports, the live sessions and the purge worker.
         self.runtime_cfg: RuntimeConfig = load_runtime_config(cfg.seed_dir)
         self.llm_slots = Slots(self.runtime_cfg.runtime.llm_concurrency)
@@ -309,7 +310,12 @@ class Runtime:
         self._keys = KeyStore(cfg.openrouter_key, cfg.data_dir, on_change=self._settings_changed)
         self.fake = (FakeOpenRouter(models=models.values(), image_cost=self.prices.generation["portrait"])
                      if cfg.test_mode else None)
-        core = HttpCore(self._keys, transport=self.fake.transport() if self.fake else None, label_purpose=cfg.test_mode)
+        transport: Any = self.fake.transport() if self.fake else None
+        if cfg.probe and self.fake is None:
+            # M15 (images-music D13): a probe never reaches the network. Store kinds stop at their miss; anything else
+            # (images, music, cost lookups) is refused here and counted as a request the probe couldn't price
+            transport = deny_transport(self.probe_blocked)
+        core = HttpCore(self._keys, transport=transport, label_purpose=cfg.test_mode)
         ledger = self._ledger = LedgerWriter(self.db, self.clock, self.energy_locks, self.energy_params)
         self.book.clear()
         self._gateway = Gateway(core=core, cfg=GatewayConfig.from_mapping(self.prices.gateway), prices=self.prices,
@@ -353,6 +359,9 @@ class Runtime:
         # ai-foundation design D12: say what each port resolves to, so an opt-in `agent` profile can't hide what runs.
         log.info("AI profile %s; ports: %s", self.profile.profile or "default",
                  ", ".join(f"{p}={i}" for p, i in self._ai.resolved(key_set=self.keys.status() == "set").items()))
+        if self.profile.profile is None:   # M15 (images-music D3): name the default and the way back to the baseline
+            log.info("AI profile: %s", "agent (default with a key; set HORIZON_AI_PROFILE=naive for the baseline)"
+                     if self.keys.status() == "set" else "scripted (default without a key)")
         self._purge = PurgeWorker(self.db, self.hooks, self.now_iso)
         self._purge.start()
 

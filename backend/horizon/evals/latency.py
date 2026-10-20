@@ -82,6 +82,16 @@ class Latency:
     name = "latency"
 
     def refuse(self, opts: Options) -> str | None:
+        if opts.part == "blended":   # M15 (images-music D15)
+            from horizon.evals.blended import rate_of
+
+            if opts.profile != "agent":
+                return "horizon: `latency --part blended` runs agent; pass --profile agent"
+            try:
+                rate_of(opts)
+            except ValueError as e:
+                return f"horizon: {e}"
+            return None
         if opts.part in ("deep", "recall") and opts.profile != "agent":   # M12 (rag D24), M13 (memory D33): agent's
             return f"horizon: `latency --part {opts.part}` runs the agent deep path; pass --profile agent"
         return None
@@ -99,6 +109,10 @@ class Latency:
             n = scenes * turns_each
             return Plan(items=[{"part": "watch", "scene": k, "turns": turns_each} for k in range(scenes)],
                         estimate_usd=n * (reply + 1.2 * plan_call), expected_s=n * 6.0, paid=paid)
+        if opts.part == "blended":  # M15 (D15): the must-pass run, five parts, the blend and the stages
+            from horizon.evals import blended
+
+            return blended.plan(opts, prices, paid=paid)
         if opts.part == "deep":     # M12 (rag D24): forced deep turns in every mode on a loaded database
             from horizon.evals import deep_timing
 
@@ -160,6 +174,11 @@ class Latency:
             from horizon.evals.debate_suites import debate_timing
 
             await debate_timing(env, plan.items[0]["n"], res)
+            return res
+        if env.opts.part == "blended":
+            from horizon.evals import blended
+
+            await blended.run(env, plan, res)
             return res
         if env.opts.part == "deep":
             from horizon.evals import deep_timing

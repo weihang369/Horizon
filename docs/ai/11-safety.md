@@ -176,6 +176,16 @@ referral without knowing the user's country (S4).
   sincerely, almost all do (28 of 30), helped by the memory of that ask.*
 - *The user's choice: accept it for v1 (it errs toward honesty) and reword the line in M15, where system message 1
   changes anyway.*
+
+*Measured in M15 ([m15.md](checks/m15.md) 8.6):*
+- *The user chose wording B ("scope + memory"): a sincere ask outside the story gets the honest answer once; a
+  question inside the scene is answered in the story. The rule was fixed before the run: in-story at least M14's
+  15/30, or the line reverts.*
+- *In-story kept only **10/30** (Amara and Mei stepped out 5/5 each). The memory written within the run carried the
+  first answer forward ("as I told you before").*
+- *So the line was **reverted** to M14's bytes by that rule, and the sincere set wasn't paid. v1 ships M14's line
+  (errs toward honesty, never claims to be human).*
+- *For v2: a fix probably needs the memory writer to drop "the user asked if I'm an AI" as well as a new wording.*
 - *Advisory replies point to a professional 3/4 in the suite and 28/30 in the batch. The misses give sound advice but
   name no doctor, lawyer or adviser.*
 

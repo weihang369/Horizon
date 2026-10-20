@@ -74,6 +74,20 @@ async def test_replay_from_the_store_spends_nothing(api: Api, tmp_path: Path) ->
     assert any(line.startswith("- verdict (advice; nothing was changed)") for line in again.summary)
 
 
+async def test_the_emotion_set_uses_each_items_own_line(api: Api, tmp_path: Path) -> None:
+    """images-music 8.13: `moodline --set emotion` takes English emotion items set in the three transcripts, each turn
+    ending on the item's own (mostly written, emotional) line, spoken to the item's character."""
+    pool = mood.emotional()
+    assert len(pool) >= 60 and {c["transcript"] for c in pool} == set(mood.FILES)
+    assert all(c["speaker"].startswith("chr_seed") and c["latest"] for c in pool)
+    plan = mood.Moodline().plan(Options(suite="moodline", set="emotion", limit=2), api.rt.prices, paid=False)
+    assert plan.items[0] == pool[0]
+    await api.set_key()
+    e = env(api, tmp_path, "moodline", limit=1, set="emotion")
+    _sctx, speaker, latest, recent2 = await mood.Moodline().context(e, pool[0])
+    assert latest == pool[0]["latest"] and speaker.id == pool[0]["speaker"] and recent2[-1] == f"Kai: {latest}"
+
+
 def test_verdict_is_advice_and_follows_e8() -> None:
     assert mood.verdict((0.2, 0.05, 0.35), (0.55, 0.45, 0.65)).startswith("keep")
     assert mood.verdict((0.2, 0.05, 0.35), (0.3, 0.2, 0.45)).startswith("reword")
@@ -133,7 +147,7 @@ def test_an_unknown_suite_lists_the_known_ones(capsys: Any) -> None:
     parser = argparse.ArgumentParser(prog="horizon")
     register(parser.add_subparsers(dest="cmd"))
     with pytest.raises(SystemExit) as e:
-        parser.parse_args(["eval", "conversations"])
+        parser.parse_args(["eval", "no-such-suite"])   # M15 built `conversations`
     assert e.value.code != 0
     err = capsys.readouterr().err
     for name in ("canary", "decisions", "smoke", "drafter", "summary", "long", "transcript", "moodline", "latency"):

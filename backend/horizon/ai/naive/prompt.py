@@ -20,6 +20,11 @@ inside a memory line of the retrieval message collapses to a space, so a memory 
 
 v5 (`naive-5`, persona-context D35): when the latest user line is clearly not English, one last system message says
 which language to reply in (`horizon/ai/language.py`). English turns are byte-identical to v4.
+
+v9 (M15, images-music D14, the user's choice): the tag line says to write only the tag itself, with nothing inside it
+and no closing tag (M11 counted notes written inside the tag on 14 of 154 debate arguments, D31.3). Its bytes reach
+every request, so each label moves by 4 (`naive-5` → `naive-9`, `-6` → `-10`, `-7` → `-11`, `-8` → `-12`), in the same
+order; the label still follows the bytes sent.
 """
 
 from __future__ import annotations
@@ -31,11 +36,11 @@ from typing import Any
 from horizon.ai.contexts import KnowledgeHit, MemoryHit, TurnContext
 from horizon.ai.naive.tag_parser import EMOTIONS
 
-PROMPT_VERSION = "naive-5"
-PROMPT_VERSION_DEBATE = "naive-6"   # M11 (debate design D10): a debate request names its teammates apart
+PROMPT_VERSION = "naive-9"           # M15 (D14): the tag line moved every label by 4
+PROMPT_VERSION_DEBATE = "naive-10"   # M11 (debate design D10): a debate request names its teammates apart
 # M12 (rag D18): a request whose passages are read as the slice of their section centred on the hit
-PROMPT_VERSION_SLICE = "naive-7"
-PROMPT_VERSION_SLICE_DEBATE = "naive-8"
+PROMPT_VERSION_SLICE = "naive-11"
+PROMPT_VERSION_SLICE_DEBATE = "naive-12"
 DEBATE_WORDS = {"short": 80, "medium": 140, "long": 220}
 TRAILING_CUE = "Continue with your next message, in character."
 SECTION_MAX = 1200
@@ -91,6 +96,7 @@ def system_prompt(ctx: TurnContext) -> str:
     else:
         lines.append("Keep everything safe for work.")
     lines.append(f"Begin every reply with exactly one emotion tag <e:LABEL>, where LABEL is one of: {', '.join(EMOTIONS)}. "
+                 "Write only the tag itself, like <e:thinking>, with nothing inside it and no closing tag. "
                  "Never write tags anywhere else. Then reply in character, in plain text.")
     lines.append(length_line(s.mode, (s.config or {}).get("turnLength")))
     return "\n".join(lines)

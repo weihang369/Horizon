@@ -69,6 +69,7 @@ class TurnInfo:
     guard: Any = None              # M14 (safety D10): the output check in flight, handed to `output_check` on Stop
     checked: Any = None            # M14 (D10): a released prefetch's check result, so it isn't checked twice
     stream_end: Any = None         # M14 (D10): when the stream ended (the waits after a turn count from here)
+    key: bool | None = None        # M15 (images-music D4): the key status, read once when the reply starts
 
 
 @dataclass

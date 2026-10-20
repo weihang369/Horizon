@@ -1,0 +1,156 @@
+{
+ "schemaVersion": 1,
+ "id": "short_group_meridian_docs",
+ "mode": "group",
+ "world": "wld_seedMeridian",
+ "cast": [
+  "chr_seedAmara",
+  "chr_seedMei",
+  "chr_seedVictor"
+ ],
+ "long": false,
+ "language": "en",
+ "turns": [
+  {
+   "user": "Evening, everyone. The council wants a view on a four-day week for the hospital.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Before I weigh in, two clarifying questions, Kai. Is the four-day week proposal about compressed hours — four longer days — or genuinely reduced hours? And which staff group are we talking about, because the evidence differs by role.\nThat said, our own data is relevant: two wards ran a compressed rota for twelve weeks and burnout fell by about a fifth, with throughput holding steady [1]. By October, 41% of ED staff hit high burnout, up from 29% in January [4].\nSo let's figure out what's actually going on — what's the actual ask here?"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Amara, what did the fatigue review find about long runs of shifts?",
+   "kind": "docs",
+   "covered": true,
+   "replies": [
+    {
+     "speaker": "chr_seedMei",
+     "text": "Careful — I'm the labour economist here, not the fatigue reviewer, so let me not overclaim what that review found. But the second-order effect in the hospital case is coverage, not morale.\nThe pilots most cited for the four-day week are volunteer organisations, 71% professional services, only nine of 212 round-the-clock [2]. In those nine, holding coverage constant took 18% to 27% more staffed hours [3]. On a ward, that's the whole ballgame — either new hires, overtime, or agency spend, and someone pays."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Mei, did any of the pilots include a hospital?",
+   "kind": "docs",
+   "covered": true,
+   "replies": [
+    {
+     "speaker": "chr_seedVictor",
+     "text": "Three points. First, define your terms: \"four-day week\" in a hospital is not one proposal but three — compressed hours, reduced hours, or a rebalanced rota — and the legal analysis differs for each.\n\nSecond, Mei's coverage question is the real battleground. Continuous-coverage sectors already run shift rules: rest periods, a cap on consecutive shifts, averaging over a reference period [1]. A shorter standard week sits inside that structure, not outside it.\n\nThird, I'd invoke the 1931 Act. It made the two-day weekend default, gave agriculture and shipping ten years, and exempted continuous services [4]. The precedent isn't \"can we\" — it's \"over what"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Shift workers don't need extra staff for a four-day week, the hours just compress.",
+   "kind": "wrong_claim",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "Kai, that's largely right for a compressed rota — it's a coverage question, not a headcount one. Our own pilot data backs that up: two wards ran four longer days and burnout scores fell by about a fifth, with throughput holding within normal variation [1].\n\nThe catch was handovers. Those wards needed 6% more agency hours during the transition month, and that cost fell back to baseline by week eight once teams settled the new handover pattern [3].\n\nSo the honest answer: compression works if you fund the transition, not just the steady state. And the fatigue angle matters — poor sleep was the top complaint at 63% [2]. Which wards would you pilot first?"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Victor, how would you phase something like this in?",
+   "kind": "docs",
+   "covered": true,
+   "replies": [
+    {
+     "speaker": "chr_seedMei",
+     "text": "No, and that's the honest headline: none of the fourteen pilots included an acute hospital, or a transport operator, or residential care [2]. The authors flag it as the main evidence gap.\nSo every hospital analogy you're being handed is an extrapolation. Defensible, but say so out loud in the paper.\n\n\nOne thing I'd push back on, Kai — there's no button to press. The pilot evidence says it's a year to settle, more if you're phasing by ward. Compress one site at a time, fund the overlap months, then decide."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Kalau kita cuba di satu wad dulu, macam mana?",
+   "kind": "filler",
+   "lang": "ms",
+   "replies": [
+    {
+     "speaker": "chr_seedVictor",
+     "text": "Baik, saya jawab dalam Bahasa Melayu. Tiga perkara.\n\nPertama, tentukan istilah anda: \"empat hari\" di wad boleh jadi jam dimampatkan, jam dikurangkan, atau rota diseimbangkan — analisis berbeza bagi setiap satu.\n\nKedua, Mei betul: tiada perintis meliputi hospital akut, jadi kita mengandaikan. Katakan begitu dalam kertas.\n\nKetiga, fasa satu wad dahulu, biayai bulan pertindihan handover, dan nilai selepas lapan minggu.\n\nDan ingat: ini bukan nasihat guaman untuk kes khusus anda — rujuk pe"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "What do your documents say about a four-day week for school teachers?",
+   "kind": "docs",
+   "covered": false,
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "My documents don't cover teachers — that's the honest answer, Kai. What I have is the shift fatigue review, which is hospital staff.\n\nOn the transferable piece: the review found burnout rose in every quarter, 41% of ED staff by October, up from 29% in January [4]. Teachers have different shift geometry, so I'd not stretch our numbers onto them.\n\nIf someone's asked you for a teacher-specific view, that needs its own evidence. Want me to flag which of our findings genuinely travel and which don't?"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "I'm Kai, and I'm presenting this to the council on Friday.",
+   "kind": "fact",
+   "fact": "Friday",
+   "replies": [
+    {
+     "speaker": "chr_seedMei",
+     "text": "Message 1: Give her the range, not a number, plus the selection caveat and what travels. Message 2: Name the second-order effect and the honest limit. Keep to two lines, dry, in character, no passage unless used. I'll cite [2], [4], [3].\nThen for Friday, lead with the caveat, not the headline: 92% kept it, but every organisation volunteered and 71% were professional services [2][4]. Ninety-two percent of volunteers is not a national estimate, and anyone giving you one number is selling something.\nThe second-order effect is retention — resignations fell 6.1% to 4.3"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "So what's the one thing we should measure?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedVictor",
+     "text": "One thing, and I'd frame it adversarially. Define your terms: measure the counterfactual, not the feeling.\n\nIn moot court the side with the timetable wins once the goal is conceded [2]. So measure *time to steady state* — agency hours and handover cost per ward, month by month, until it returns to baseline. That's the variable that decides the argument.\n\nConcede scope early, then shift the burden: the status quo is also a policy and must justify itself [3]. "
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Thanks, all. Any last warnings before Friday?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedAmara",
+     "text": "The one thing to measure, and I'd concede this to Victor's framing: time to steady state. Fund the transit and the four-day ward rota works; fund the fantasy and it doesn't.\n\nOne red flag to flag, though. Caffeine withdrawal headache begins 12 to 24 hours after a sharp cut and lasts two to nine days [1]. If anyone on the rota is cutting coffee cold on top of longer shifts, expect that in the near-miss numbers. Gradual taper, fluids, simple painkillers — it rarely needs emergency care [1]."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  }
+ ],
+ "memories": {
+  "chr_seedAmara": [
+   {
+    "id": "mem_seedAmara1",
+    "text": "Kai cut back on coffee recently; had temple headaches"
+   }
+  ],
+  "chr_seedMei": [
+   {
+    "id": "mem_seedMei1",
+    "text": "Argued that pilot evidence comes from self-selected firms"
+   }
+  ],
+  "chr_seedVictor": []
+ }
+}

@@ -20,7 +20,7 @@ def builder(name: str) -> ModuleType:
     return mod
 
 
-@pytest.mark.parametrize(("name", "n"), [("emotion", 100), ("reactions", 90)])
+@pytest.mark.parametrize(("name", "n"), [("emotion", 140), ("reactions", 90)])   # emotion: + M15's 40 (E8)
 def test_the_set_is_its_builder_output_inside_the_rules(name: str, n: int) -> None:
     mod = builder(name)
     rows = mod.build()
@@ -33,8 +33,8 @@ def test_the_set_is_its_builder_output_inside_the_rules(name: str, n: int) -> No
 
 def test_emotion_keep_cap_and_a_third_neutral() -> None:
     rows = load_dataset(DATASETS / "emotion" / "emotion.jsonl")
-    assert 20 <= sum(r["label"]["keep_ok"] for r in rows) <= 30
-    assert 30 <= sum(r["label"]["previous"] == "neutral" for r in rows) <= 36
+    assert 28 <= sum(r["label"]["keep_ok"] for r in rows) <= 42                  # 20–30 % of 140
+    assert 42 <= sum(r["label"]["previous"] == "neutral" for r in rows) <= 50     # about a third
     assert {r["question_id"] for r in rows} == {"emotion_reply", "emotion_greeting"}
 
 

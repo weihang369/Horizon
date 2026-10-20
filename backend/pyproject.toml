@@ -102,6 +102,9 @@ ignore = ["RUF001", "RUF002", "RUF003"]
 "horizon/evals/memory_suite.py" = ["TID251"]
 "horizon/evals/recall_timing.py" = ["TID251"]   # M13: latency --part recall drives the in-process app too   # M13: layer 3's two sessions drive the in-process app too
 "horizon/evals/safety_e2e.py" = ["TID251"]   # M14: the safety suite's end-to-end parts drive the in-process app too
+"horizon/evals/conversations.py" = ["TID251"]   # M15: conversations replies through the in-process app too
+"horizon/evals/faithfulness.py" = ["TID251"]   # M15: faithfulness drives the deep turns the same way
+"horizon/evals/blended.py" = ["TID251"]   # M15: latency --part blended drives the in-process app too
 
 [tool.mypy]
 python_version = "3.12"

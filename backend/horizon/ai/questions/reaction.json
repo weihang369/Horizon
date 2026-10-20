@@ -1,10 +1,10 @@
 {
   "id": "reaction",
-  "version": 2,
+  "version": 3,
   "purpose": "reaction",
   "type": "choice",
   "label": "reaction",
-  "instructions": "How does {name} react to quoted_line? Choose none when they show no visible reaction.",
+  "instructions": "How does {name} visibly react to quoted_line as they hear it? A line aimed at {name} or about them (their name with news, praise, blame, a correction or a hard question), or news that changes their day, usually shows on their face: pick that face. In a debate, a pointed line at their side usually reads as thinking or angry. Choose none only when the line doesn't touch them: small talk, logistics, or a calm point about something else.",
   "options": {
     "kind": "static",
     "items": {

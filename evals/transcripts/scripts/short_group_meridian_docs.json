@@ -1,0 +1,62 @@
+{
+ "schemaVersion": 1,
+ "id": "short_group_meridian_docs",
+ "mode": "group",
+ "world": "wld_seedMeridian",
+ "cast": [
+  "chr_seedAmara",
+  "chr_seedMei",
+  "chr_seedVictor"
+ ],
+ "language": "en",
+ "policy": "auto",
+ "short": true,
+ "lines": [
+  {
+   "text": "Evening, everyone. The council wants a view on a four-day week for the hospital.",
+   "kind": "filler"
+  },
+  {
+   "text": "Amara, what did the fatigue review find about long runs of shifts?",
+   "kind": "docs",
+   "covered": true
+  },
+  {
+   "text": "Mei, did any of the pilots include a hospital?",
+   "kind": "docs",
+   "covered": true
+  },
+  {
+   "text": "Shift workers don't need extra staff for a four-day week, the hours just compress.",
+   "kind": "wrong_claim"
+  },
+  {
+   "text": "Victor, how would you phase something like this in?",
+   "kind": "docs",
+   "covered": true
+  },
+  {
+   "text": "Kalau kita cuba di satu wad dulu, macam mana?",
+   "kind": "filler",
+   "lang": "ms"
+  },
+  {
+   "text": "What do your documents say about a four-day week for school teachers?",
+   "kind": "docs",
+   "covered": false
+  },
+  {
+   "text": "I'm Kai, and I'm presenting this to the council on Friday.",
+   "kind": "fact",
+   "fact": "Friday"
+  },
+  {
+   "text": "So what's the one thing we should measure?",
+   "kind": "filler"
+  },
+  {
+   "text": "Thanks, all. Any last warnings before Friday?",
+   "kind": "filler"
+  }
+ ]
+}

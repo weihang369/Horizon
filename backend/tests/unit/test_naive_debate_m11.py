@@ -36,6 +36,6 @@ def test_a_panel_lists_fellow_panellists() -> None:
 
 def test_only_debate_requests_change_their_label() -> None:
     eng = NaiveTurnEngine.__new__(NaiveTurnEngine)
-    assert eng.prompt_version_for(ctx()) == PROMPT_VERSION_DEBATE == "naive-6"
-    assert eng.prompt_version_for(ctx(mode="group")) == PROMPT_VERSION == "naive-5"
-    assert eng.prompt_version_for(None) == "naive-5"
+    assert eng.prompt_version_for(ctx()) == PROMPT_VERSION_DEBATE == "naive-10"
+    assert eng.prompt_version_for(ctx(mode="group")) == PROMPT_VERSION == "naive-9"
+    assert eng.prompt_version_for(None) == "naive-9"

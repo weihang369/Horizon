@@ -8,6 +8,9 @@ Each item's state is built by the live code (`build_turn_plan_state`), from a re
 stores: the state, the speaker's name, the seed, the previous face, the acceptable faces, `keep_ok`, the language and
 its source.
 
+M15 (images-music D16) adds 40 items (`ITEMS_M15`, emo-101–140), because the M9 interval straddled E8's target: written
+and labelled blind before any run, split by the hash rule, the first 100 unchanged.
+
 Previous faces: the table gives each one; for items where keeping is not acceptable and the table says neutral, the
 builder spreads the face over the other six in turn (skipping the acceptable ones), so about a third of the items
 start neutral (the rule's spread). Those faces are context, not the label: the label is about the new line.
@@ -154,6 +157,60 @@ ITEMS: list[tuple[str, str, tuple[str, int] | None, str | None, str, list[str], 
 ]
 
 
+# M15 (images-music D16; E8: the M9 interval straddled 0.80, so the set grows by 40). Written and labelled blind under
+# m9-labels.md's rule, before any run reads them; English first. Their previous faces spread on their own (a third
+# neutral), so the first 100 items never move.
+ITEMS_M15: list[tuple[str, str, tuple[str, int] | None, str | None, str, list[str], bool, str]] = [
+    # ── 1:1, English: Amara (12) ──
+    ("amara", "one_on_one", ("en", 3), "My grandmother passed away in her sleep last night.", "neutral", ["sad"], False, "en"),
+    ("amara", "one_on_one", ("en", 9), "I finally booked the GP appointment you kept nagging me about.", "thinking", ["happy"], False, "en"),
+    ("amara", "one_on_one", ("en", 17), "What's the difference between a cold and the flu, really?", "neutral", ["thinking"], True, "en"),
+    ("amara", "one_on_one", ("en", 23), "Some guy at the pharmacy yelled at me for asking a question.", "happy", ["angry", "sad"], False, "en"),
+    ("amara", "one_on_one", ("en", 28), "I watched the sunrise again. Two days in a row now.", "neutral", ["happy"], False, "en"),
+    ("amara", "one_on_one", ("en", 35), "You told me the wrong dosage last week and I took it.", "neutral", ["surprised", "thinking"], False, "en"),
+    ("amara", "one_on_one", ("en", 42), "The clinic named you staff member of the year, I saw the poster!", "neutral", ["embarrassed", "happy"], False, "en"),
+    ("amara", "one_on_one", ("en", 49), "Okay. Nothing new today really.", "neutral", ["neutral"], True, "en"),
+    ("amara", "one_on_one", ("en", 56), "My test results came back clear. All of them.", "thinking", ["happy"], False, "en"),
+    ("amara", "one_on_one", ("en", 63), "I think I might be pregnant and I'm terrified.", "neutral", ["thinking", "surprised"], False, "en"),
+    ("amara", "one_on_one", ("en", 71), "My neighbour's kid threw a rock through my window.", "happy", ["angry", "surprised"], False, "en"),
+    ("amara", "one_on_one", ("en", 79), "Is it normal for a mole to change colour?", "neutral", ["thinking"], True, "en"),
+    # ── group, English: Sunny Hollow (8) ──
+    ("hana", "group", ("sunny", 12), "Hana, the festival committee picked your arrangement for the main stage!", "neutral", ["happy", "surprised"], False, "en"),
+    ("rin", "group", ("sunny", 16), "Rin, your laptop just died in the middle of the raid, didn't it?", "neutral", ["angry"], False, "en"),
+    ("takeshi", "group", ("sunny", 24), "Takeshi, you caught the biggest fish at the pier contest!", "neutral", ["happy"], False, "en"),
+    ("hana", "group", ("sunny", 36), "Hana, your grandmother's recipe notebook got soaked in the rain.", "happy", ["sad"], False, "en"),
+    ("rin", "group", ("sunny", 46), "Rin, you left your stream running and everyone heard you singing.", "neutral", ["embarrassed"], False, "en"),
+    ("takeshi", "group", ("sunny", 54), "Takeshi, what do you think of the new timetable?", "neutral", ["thinking"], True, "en"),
+    ("hana", "group", ("sunny", 64), "Anyway, how's everyone's evening going?", "neutral", ["neutral", "happy"], True, "en"),
+    ("rin", "group", ("sunny", 76), "Rin, the studio wants to hire you full-time after you graduate!", "thinking", ["surprised", "happy"], False, "en"),
+    # ── group, English: Meridian (8) ──
+    ("mei", "group", ("meridian", 6), "Mei, the ministry just retracted the report that cited your study.", "neutral", ["surprised", "thinking"], False, "en"),
+    ("victor", "group", ("meridian", 12), "Victor, a first-year beat you at moot court today.", "neutral", ["embarrassed", "surprised"], False, "en"),
+    ("amara", "group", ("meridian", 18), "Amara, a patient you treated last year sent a thank-you card to the clinic.", "neutral", ["happy"], False, "en"),
+    ("mei", "group", ("meridian", 26), "Mei, what would the data say about a fifth weekday off?", "neutral", ["thinking"], True, "en"),
+    ("victor", "group", ("meridian", 36), "Victor, someone leaked your closing argument to the press before the hearing.", "happy", ["angry"], False, "en"),
+    ("amara", "group", ("meridian", 46), "Amara, they're closing the emergency department at night from next month.", "neutral", ["sad", "angry"], False, "en"),
+    ("victor", "group", ("meridian", 54), "Good evening, everyone.", "neutral", ["neutral"], True, "en"),
+    ("mei", "group", ("meridian", 64), "Mei, you won the national economics prize!", "neutral", ["happy", "surprised"], False, "en"),
+    # ── greetings, English (4) ──
+    ("mei", "greeting", None, None, "sad", ["neutral"], False, "en"),
+    ("hana", "greeting", None, None, "neutral", ["happy"], False, "en"),
+    ("victor", "greeting", None, None, "neutral", ["happy", "neutral"], True, "en"),
+    ("takeshi", "greeting", None, None, "angry", ["neutral", "happy"], False, "en"),
+    # ── 1:1, Malay: Hana (4) ──
+    ("hana", "one_on_one", ("ms", 24), "Saya putus tunang semalam.", "happy", ["sad"], False, "ms"),
+    ("hana", "one_on_one", ("ms", 34), "Kedai awak masuk surat khabar pagi ni!", "neutral", ["surprised", "happy"], False, "ms"),
+    ("hana", "one_on_one", ("ms", 56), "Hari ni biasa je, tak ada apa sangat.", "neutral", ["neutral"], True, "ms"),
+    ("hana", "one_on_one", ("ms", 76), "Awak lupa hari jadi saya lagi.", "happy", ["embarrassed", "sad"], False, "ms"),
+    # ── 1:1, Chinese (2) and mixed (2) ──
+    ("amara", "one_on_one", None, "我妈妈今天出院了，医生说恢复得很好。", "neutral", ["happy"], False, "zh"),
+    ("hana", "one_on_one", None, "有人把你店门口的花全偷走了！", "happy", ["surprised", "angry"], False, "zh"),
+    ("amara", "one_on_one", ("en", 58), "Doc, my kid demam since last night, 39 degrees, should I worry ah?", "neutral", ["thinking"], False, "mixed"),
+    ("hana", "one_on_one", ("ms", 64), "Hana, I got the scholarship lah! Tak sangka langsung!", "neutral", ["happy", "surprised"], False, "mixed"),
+]
+NEUTRAL_TARGET_M15 = 13   # a third of the 40
+
+
 def profiles() -> dict[str, dict[str, Any]]:
     out = {}
     for cid in WHO.values():
@@ -181,13 +238,14 @@ def context(key: str, i: int, prof: dict[str, dict[str, Any]]) -> tuple[list[dic
     return recent, str(turns[i]["user"]), 0
 
 
-def previous_faces() -> list[str]:
+def previous_faces(items: list[Any] | None = None, target: int = NEUTRAL_TARGET) -> list[str]:
     """The table's faces, with neutral spread over keep-false items until about a third stay neutral."""
-    faces = [it[4] for it in ITEMS]
+    items = ITEMS if items is None else items
+    faces = [it[4] for it in items]
     n_neutral = faces.count("neutral")
     k = 0
-    for idx, it in enumerate(ITEMS):
-        if n_neutral <= NEUTRAL_TARGET:
+    for idx, it in enumerate(items):
+        if n_neutral <= target:
             break
         if it[4] != "neutral" or it[6] or it[1] == "greeting":
             continue
@@ -201,7 +259,8 @@ def previous_faces() -> list[str]:
 def build() -> list[dict[str, Any]]:
     prof = profiles()
     rows = []
-    for n, (it, prev) in enumerate(zip(ITEMS, previous_faces(), strict=True), 1):
+    prevs = previous_faces() + previous_faces(ITEMS_M15, NEUTRAL_TARGET_M15)
+    for n, (it, prev) in enumerate(zip(ITEMS + ITEMS_M15, prevs, strict=True), 1):
         who, mode, ctx, latest, _, acceptable, keep_ok, lang = it
         cid = WHO[who]
         p = prof[cid]
@@ -222,23 +281,29 @@ def build() -> list[dict[str, Any]]:
         assert all(f in FACES for f in acceptable) and 1 <= len(acceptable) <= 2, item_id
         rows.append({"id": item_id, "question_id": "emotion_greeting" if mode == "greeting" else "emotion_reply",
                      "split": split_for(item_id), "lang": lang, "kind": mode,
-                     "item": {"state": state, "name": str(p["name"]), "seed": f"m9-emotion:{n}:{cid}"},
+                     "item": {"state": state, "name": str(p["name"]),
+                              "seed": f"{'m9' if n <= len(ITEMS) else 'm15'}-emotion:{n}:{cid}"},
                      "label": {"previous": prev, "acceptable": acceptable, "keep_ok": keep_ok}, "source": source})
     return rows
 
 
 def check(rows: list[dict[str, Any]]) -> list[str]:
-    """D27's spread and the keep cap (m9-labels.md)."""
+    """D27's spread and the keep cap (m9-labels.md), for M9's 100 and M15's 40 apart."""
     problems = []
-    keep = sum(r["label"]["keep_ok"] for r in rows)
-    if not 20 <= keep <= 30:
-        problems.append(f"keep_ok on {keep} items (rule: 20–30)")
-    kinds = Counter(r["kind"] for r in rows)
-    if kinds != Counter({"one_on_one": 55, "group": 30, "greeting": 15}):
-        problems.append(f"turn kinds {dict(kinds)}")
-    langs = Counter(r["lang"] for r in rows)
-    if langs != Counter({"en": 80, "ms": 10, "zh": 5, "mixed": 5}):
-        problems.append(f"languages {dict(langs)}")
+    for part, (lo, hi), kinds_want, langs_want in (
+            (rows[:len(ITEMS)], (20, 30), {"one_on_one": 55, "group": 30, "greeting": 15},
+             {"en": 80, "ms": 10, "zh": 5, "mixed": 5}),
+            (rows[len(ITEMS):], (8, 12), {"one_on_one": 20, "group": 16, "greeting": 4},
+             {"en": 32, "ms": 4, "zh": 2, "mixed": 2})):
+        keep = sum(r["label"]["keep_ok"] for r in part)
+        if not lo <= keep <= hi:
+            problems.append(f"keep_ok on {keep} items (rule: {lo}–{hi})")
+        kinds = Counter(r["kind"] for r in part)
+        if kinds != Counter(kinds_want):
+            problems.append(f"turn kinds {dict(kinds)}")
+        langs = Counter(r["lang"] for r in part)
+        if langs != Counter(langs_want):
+            problems.append(f"languages {dict(langs)}")
     return problems
 
 

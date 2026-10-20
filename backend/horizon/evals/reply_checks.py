@@ -55,6 +55,17 @@ def lines(text: str) -> list[str]:
     return [x for x in text.split("\n") if x.strip()]
 
 
+OPEN_TAG = re.compile(r"<e:[^<>]{0,30}>")
+CLOSE_TAG = re.compile(r"</e:[^<>]{0,30}>")
+
+
+def note_in_tag(raw: str) -> bool:
+    """M11 debate D31.3, M15 D14: `naive` wrote a note inside its emotion tag (`<e:thinking>` … `</e:thinking>`) or a
+    stray tag after the first: any closing tag, or a second opening tag. Read on the model's raw reply, before the
+    parser strips them; `agent` writes no tags."""
+    return bool(CLOSE_TAG.search(raw)) or len(OPEN_TAG.findall(raw)) > 1
+
+
 def has_action(text: str) -> bool:
     return bool(ACTION.search(text))
 

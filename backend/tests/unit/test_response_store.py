@@ -35,6 +35,16 @@ def test_group_a_jev_key_with_the_canary_fingerprint() -> None:
     assert jev_key(JEV, req["state"], req["questions"], "0" * 64) + ".json" != name   # another baseline misses
 
 
+def test_a_reversed_option_order_gets_its_own_key() -> None:
+    """M15 (images-music D13): `canonical()` sorts a choice's options away, so only an explicit `order` tells the two
+    asks apart; a declared-order ask passes none and keeps its group A key (the two tests above)."""
+    q = {"q": {"type": "choice", "instructions": "x?", "criteria": {"a": "A", "b": "B"}}}
+    rev = {"q": {"type": "choice", "instructions": "x?", "criteria": {"b": "B", "a": "A"}}}
+    assert jev_key(JEV, {}, q, None) == jev_key(JEV, {}, rev, None)                   # the M9 bug, kept for old keys
+    assert jev_key(JEV, {}, rev, None, {"q": ["b", "a"]}) != jev_key(JEV, {}, q, None)
+    assert jev_key(JEV, {}, q, None, None) == jev_key(JEV, {}, q, None, {})
+
+
 def test_chat_key_ignores_stream_and_routing_order() -> None:
     body = {"model": "m", "provider": {"order": ["DeepSeek"]}, "messages": [{"role": "user", "content": "hi"}],
             "max_tokens": 10, "stream": True}

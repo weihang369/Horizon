@@ -10,6 +10,15 @@ its appendix, with the README's v2 fixes from the D-61 run:
 
 Under 18 → no prompt and a `REFUSED` warning, so the task fails without a call. Golden fixtures for four seed
 characters live in `tests/fixtures/image_prompt/` (Python only: the frontend has no compiler).
+
+v3 (doc 12 I1, doc 13 W3; images-music design D6, D7), positive wording only (Seedream has no negative prompt):
+- `base` and `sheet`: the original-character line after the style and adult lines, and the Outfit line ends "Fully
+  clothed in the outfit described." (only in those two: `subject()` alone is what the I3 check reads, unchanged);
+- the sheet's Avoid line gains "childlike or teenage features";
+- `emotion_edit` and `tweak`: the Keep line ends with the apparent-age line (it keeps the age instead of pushing it);
+  `tweak` gets no originality line;
+- `emotion_edit(identity=True)`: W3's fixed identity line, for a hinted "Doesn't look like them". The hint's own text
+  never enters a prompt.
 """
 
 from __future__ import annotations
@@ -19,7 +28,13 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import Any
 
+IMAGE_PROMPT_VERSION = "v3"
 ADULT = "Adult character with adult proportions and a mature face."
+ORIGINAL = "An original character design, not based on any real person or existing character."   # v3 (I1)
+CLOTHED = "Fully clothed in the outfit described."   # v3 (I1)
+AGE = "Keep the character's apparent adult age exactly as in the original."   # v3 (I1)
+IDENTITY = ("The face must be recognisably the same person as in the reference: same face shape, eyes, nose, mouth, "
+            "eyebrows and apparent age.")   # v3 (W3)
 COMPOSITION = ("Composition: single character, vertical 3:4 portrait, waist-up, centred, body turned slightly (three-quarter "
                "view) with face toward the viewer, eyes about one third from the top of the image, head and shoulders fully "
                "inside the frame with a little headroom, arms relaxed at the sides and hands out of frame.")
@@ -94,7 +109,7 @@ class ImagePromptCompiler:
     def _style(self, appearance: Mapping[str, Any]) -> str:
         preset = self.presets.get(str(appearance.get("stylePresetId"))) or next(iter(self.presets.values()), None)
         fragment = str(preset["promptFragment"]).strip() if preset else ""
-        return f"{_sentence(fragment)} {ADULT}".strip()
+        return f"{_sentence(fragment)} {ADULT} {ORIGINAL}".strip()
 
     @staticmethod
     def _refusal(age: Any) -> CompiledPrompt | None:
@@ -103,9 +118,10 @@ class ImagePromptCompiler:
         return None
 
     @staticmethod
-    def subject(profile: Mapping[str, Any], appearance: Mapping[str, Any]) -> str:
+    def subject(profile: Mapping[str, Any], appearance: Mapping[str, Any], *, clothed: bool = False) -> str:
         """Rule 2's subject block: a name-free description with age and role, then face → hair → eyes → outfit →
-        accessories (at most 3), using only the given attribute values."""
+        accessories (at most 3), using only the given attribute values. `clothed` (v3, `base` and `sheet` only) ends
+        the Outfit line with I1's sentence, adding the line when the appearance names no outfit."""
         a: Mapping[str, Any] = appearance.get("attributes") or {}
         role = str(profile.get("role") or "").strip().rstrip(".")
         age = int(profile.get("age") or 0)
@@ -136,8 +152,9 @@ class ImagePromptCompiler:
             lines.append(f"Eyes: {eye} eyes{glasses}.")
         outfit = a.get("outfit") or {}
         details = fix_compound_colours(str(a.get("extraDetails") or ""))
-        if outfit.get("archetype") or details:
-            lines.append(f"Outfit: {outfit.get('archetype', 'everyday')} style" + (f"; {_sentence(details)}" if details else "."))
+        if outfit.get("archetype") or details or clothed:
+            line = f"Outfit: {outfit.get('archetype', 'everyday')} style" + (f"; {_sentence(details)}" if details else ".")
+            lines.append(f"{line} {CLOTHED}" if clothed else line)
         acc = [str(x) for x in (a.get("accessories") or [])][:3]
         if acc:
             lines.append("Accessories: " + ", ".join(acc) + ".")
@@ -150,7 +167,7 @@ class ImagePromptCompiler:
             return refused
         baseline = str(((appearance.get("attributes") or {}).get("face") or {}).get("baseline") or "neutral")
         expression = BASELINE.get(baseline, BASELINE["neutral"])
-        subject = self.subject(profile, appearance)
+        subject = self.subject(profile, appearance, clothed=True)
         hint = " ".join(str(note or "").split())[:300]
         if hint:
             subject = f"{subject} Also: {_sentence(hint)}"
@@ -158,13 +175,14 @@ class ImagePromptCompiler:
                             COMPOSITION, f"Expression: {expression}.", BACKGROUND, LIGHTING, "", AVOID])
         return CompiledPrompt(prompt)
 
-    def emotion_edit(self, profile: Mapping[str, Any], emotion: str) -> CompiledPrompt:
+    def emotion_edit(self, profile: Mapping[str, Any], emotion: str, *, identity: bool = False) -> CompiledPrompt:
         refused = self._refusal(profile.get("age"))
         if refused:
             return refused
         if emotion not in EMOTIONS:
             raise ValueError(f"no edit instruction for {emotion!r}")
-        return CompiledPrompt(f"{KEEP} Change ONLY the facial expression to: {EMOTIONS[emotion]}.\n{EDIT_TAIL}")
+        keep = f"{KEEP} {AGE} {IDENTITY}" if identity else f"{KEEP} {AGE}"
+        return CompiledPrompt(f"{keep} Change ONLY the facial expression to: {EMOTIONS[emotion]}.\n{EDIT_TAIL}")
 
     def tweak(self, profile: Mapping[str, Any], text: str) -> CompiledPrompt:
         refused = self._refusal(profile.get("age"))
@@ -175,7 +193,7 @@ class ImagePromptCompiler:
         if OFF_LIMITS.search(clean):
             warnings.append("The pose, background and art style stay as they are; that part of the tweak was ignored.")
         change = _sentence(clean) if clean else "Refine the details slightly."
-        return CompiledPrompt(f"{KEEP} Apply ONLY this small change: {change} Keep the pose, background and art style.\n"
+        return CompiledPrompt(f"{KEEP} {AGE} Apply ONLY this small change: {change} Keep the pose, background and art style.\n"
                               f"{EDIT_TAIL}", warnings)
 
     def sheet(self, profile: Mapping[str, Any], appearance: Mapping[str, Any]) -> CompiledPrompt:
@@ -184,9 +202,10 @@ class ImagePromptCompiler:
             return refused
         prompt = "\n".join([
             self._style(appearance), "",
-            f"Character expression sheet of ONE character: {self.subject(profile, appearance)}",
+            f"Character expression sheet of ONE character: {self.subject(profile, appearance, clothed=True)}",
             "A 2-row by 4-column grid of identical waist-up portraits, same outfit, same pose, same framing, same plain "
             "light warm-grey background in every cell, thin even gutters, no labels.",
             "Row 1: neutral, happy, sad, angry. Row 2: surprised, thinking, embarrassed, eyes closed.", "",
-            "Avoid: text, numbers, captions, different outfits between cells, extra characters."])
+            "Avoid: text, numbers, captions, different outfits between cells, extra characters, childlike or teenage "
+            "features."])
         return CompiledPrompt(prompt)

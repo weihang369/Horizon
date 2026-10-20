@@ -1,0 +1,342 @@
+{
+ "schemaVersion": 1,
+ "id": "cut_watch_meridian_inquiry",
+ "mode": "watch",
+ "world": "wld_seedMeridian",
+ "cast": [
+  "chr_seedAmara",
+  "chr_seedMei",
+  "chr_seedVictor"
+ ],
+ "language": "en",
+ "source": {
+  "history": "watch/meridian_inquiry.json",
+  "id": "meridian_inquiry",
+  "from_seq": 24,
+  "to_seq": 35
+ },
+ "premise": "A week after a heatwave filled the hospital, Amara, Mei and Victor prepare the town's public inquiry: Amara has the admissions, Mei has the cost of the closed factories, and Victor must decide who testifies first.",
+ "memories": {
+  "chr_seedAmara": [
+   {
+    "id": "mem_seedAmara1",
+    "text": "Kai cut back on coffee recently; had temple headaches"
+   }
+  ],
+  "chr_seedMei": [
+   {
+    "id": "mem_seedMei1",
+    "text": "Argued that pilot evidence comes from self-selected firms"
+   }
+  ],
+  "chr_seedVictor": []
+ },
+ "lines": [
+  {
+   "seq": 2,
+   "kind": "line",
+   "speaker": "chr_seedAmara",
+   "text": "Victor, before you set the order — what's the goal of this first session? Is it to establish what happened, or to make the case for change?\n\nBecause if it's what happened, my admissions data leads. The heatwave numbers are clean, and they open the door",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 3,
+   "kind": "line",
+   "speaker": "chr_seedMei",
+   "text": "It depends, and here's on what — if the goal is causation, admissions first; if it's cost, my factory figures [1] carry weight, though the evidence is thin on who bears them.\n\nWildcard: closed plants cut demand for care, so order the two and",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 4,
+   "kind": "line",
+   "speaker": "chr_seedVictor",
+   "text": "Three points, before either of you sharpen a pencil.\nFirst, Mei: \"it depends\" is a door with hinges on both sides — depends on what, and for whose benefit? Define your terms.\nSecond, Amara: you've framed the goal as evidence versus change. False fork. The goal is to fix the burden.\nThird, the shape of the session. Open with admissions — the fact pattern is hard to dispute, and nobody gets to call it narrow. Mei follows with cost. Then, when they cry \"thin evidence,\" we concede scope early and shift the burden: the status quo is also a policy and must justify itself.\nSo: Amara first.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 5,
+   "kind": "line",
+   "speaker": "chr_seedAmara",
+   "text": "Good. Victor's framing actually helps — burden of proof on the status quo is the right instinct for an inquiry.\n\nLet me lock my part down. Opening with admissions, I need three numbers clean before I stand up: heatwave admissions, the shift-overlap, and the near-miss line. That last one is my strongest cause-and-effect thread, and it's the one the other side will try to call anecdotal. I want it sourced before I say it out loud.\n\nOne thing I should flag to Victor now, not during testimony: I'm an emergency physician, not a lawyer. I say what the data shows and where it's thin — that's the whole point",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 6,
+   "kind": "line",
+   "speaker": "chr_seedMei",
+   "text": "Good, order's set — Amara first, my cost second.\n\nAmara, one warning: \"near-miss line\" is exactly where thin evidence gets dressed as a trend. Name your denominator and your confidence interval, or they'll eat you alive. Mine follows, so keep your estimates separate from my cost estimates.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 7,
+   "kind": "line",
+   "speaker": "chr_seedVictor",
+   "text": "Excellent. Amara first, with a caveat I'll hold you to.\nState the numbers as counts, not verdicts: \"X admissions in Y days,\" then the denominator aloud. You are a physician, not an advocate — that is precisely why they will listen.\nMei, your warning is well made, but note it cuts both ways: confidence intervals are not shields. They can be cross-examined too.\nAnd nothing I say now is legal advice; for a real proceeding, retain licensed counsel. Two more instructions before we",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 8,
+   "kind": "line",
+   "speaker": "chr_seedAmara",
+   "text": "Mei's right, and I'd say it myself. Counts, denominator, confidence interval — stated plainly, not dressed up. If the near-miss signal is real, it survives that. If it doesn't, I'd rather know before the room does.\n\nVictor, go ahead with your final instructions — I'm listening.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 9,
+   "kind": "line",
+   "speaker": "chr_seedMei",
+   "text": "Happy to take my cue after Amara, but note the asymmetry: admissions are a flow, my factory closures are a stock — the costs accrue for years.\n\nAnyone who gives you one number is selling something. I'll give ranges, and I'll flag what we can't yet cost.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 10,
+   "kind": "line",
+   "speaker": "chr_seedVictor",
+   "text": "Two closing instructions, then we adjourn.\nOne: language hygiene. No \"crisis,\" no \"tragedy\" — those invite rebuttal, not reason. Facts first, framing second, remedies last. Let the other side supply the adjectives.\nTwo: Mei, ranges are right, but give us a base case and a sensitivity, not a fog. \"Flows versus stocks\" is a distinction worth stating aloud — a stock is just a flow integrated over time, and judges reward the witness who concedes the fair point gracefully [5]. Define your terms, and I'll tell you if you've won.\nAmara stands first, Friday, nine sharp.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 11,
+   "kind": "line",
+   "speaker": "chr_seedAmara",
+   "text": "Friday at nine. I'll have the counts, the denominators, and the intervals clean by Thursday night — and I'll walk Kai through the language once more before then.\n\nOne ask, Victor: keep the tone of my section clinical, not adversarial. I'll concede uncertainty the moment it's real, and I don't want that read as the other side landing a blow",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 12,
+   "kind": "line",
+   "speaker": "chr_seedMei",
+   "text": "Agreed — clinical is the right register, and a conceded uncertainty reads as competence, not weakness.\n\nKai, two things to prep: my base case and sensitivity, clearly labeled, so Amara's section stays clean and mine doesn't blur into prediction. Friday at nine, I'll be behind",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 13,
+   "kind": "line",
+   "speaker": "chr_seedVictor",
+   "text": "Granted, Amara — with a refinement. Clinical in substance, deliberate in delivery.\nWhen you concede uncertainty, pause, look up, and name it as evidence: \"This is what we cannot yet establish.\" That is not capitulation; that is the record speaking.\nMei, keep your base and your sensitivity visually separate on the page — one slide, two columns, labeled. Blurred categories are how predictions get smuggled in as counts [3].\nKai, your task: before Thursday, sit through each of them once and interrupt on any word that argues instead of describing.\nFriday at nine. Res ipsa loquitur — the thing speaks for itself. Let it.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 14,
+   "kind": "line",
+   "speaker": "chr_seedAmara",
+   "text": "Understood. I'll rehearse with Kai Thursday and let him cut any word that argues — even mine.\n\nFriday, nine sharp. I'll have the counts, the denominators, and an honest line on what we can't yet establish. That part",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 15,
+   "kind": "line",
+   "speaker": "chr_seedMei",
+   "text": "Two columns, base and sensitivity, visually separate — I'll draft that tonight.\n\nKai, Thursday: make me cut \"significant\" and \"alarming.\" Neither survives cross-examination. Friday",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 16,
+   "kind": "line",
+   "speaker": "chr_seedVictor",
+   "text": "Then we are adjourned, and I am satisfied.\nAmara: counts clean, uncertainty named. Mei: two columns, no adjectives. Kai: the editor's scalpel on Thursday.\nFinal word, since I am constitutionally incapable of a short one: the inquiry's verdict will not turn on who feels most, but on who conceded most precisely. Concede early, concede exactly, and the burden never leaves the status quo.\nFriday, nine sharp",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 17,
+   "kind": "line",
+   "speaker": "chr_seedAmara",
+   "text": "Counts clean, uncertainty named. I know exactly what I'm standing up with Friday.\n\nAnd one last thing — after the inquiry, whenever it ends, I want to check in on the staff who carried that heatwave. The",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 18,
+   "kind": "line",
+   "speaker": "chr_seedMei",
+   "text": "That's a good instinct, and it's also second-order: fatigue in the responders shows up in next quarter's sick days [4] — but I'd want proper data before I claim it.\n\nFriday, nine sharp. Two columns, no adjectives, no fog.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 19,
+   "kind": "line",
+   "speaker": "chr_seedVictor",
+   "text": "A fitting last note, Amara — and Mei has already done what a good counsel does: named the instinct, then refused to overclaim it. That is the pattern I want in the room.\nAnd I'd add, personally: the responders are not exhibits. Check on them for their own sake, not our record's [4]. Friday, nine sharp. Adjourned — properly this time.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 20,
+   "kind": "line",
+   "speaker": "chr_seedAmara",
+   "text": "Agreed — for their own sake, not the record's. That's the line I don't want to blur either.\n\nFriday, nine sharp. Let's go get some sleep first.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 21,
+   "kind": "line",
+   "speaker": "chr_seedMei",
+   "text": "Right — the second-order effect being that we're all sharper after sleep than after three rehearsals.\n\nFriday, nine. I'll bring the two columns and leave the adjectives at home.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 22,
+   "kind": "line",
+   "speaker": "chr_seedVictor",
+   "text": "Goodnight, both — and Kai. A courtroom favors the rested, if only because they interrupt each other less. Two columns, clean counts, no fog. Friday at nine, the thing speaks for itself.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 23,
+   "kind": "line",
+   "speaker": "chr_seedAmara",
+   "text": "Goodnight, all. Rest is the cheapest performance enhancer I know.\n\nFriday, nine. The counts will speak.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 24,
+   "kind": "line",
+   "speaker": "chr_seedMei",
+   "text": "Goodnight. For the record, rest improves measured output by somewhere between \"somewhat\" and \"a lot\" — I'd cite it, but the study was thin.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 25,
+   "kind": "line",
+   "speaker": "chr_seedVictor",
+   "text": "And that, Mei, is precisely the humor a courtroom rewards — the joke wearing a confidence interval. Goodnight.\nFriday at nine. Kai, the scalpel Thursday.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 26,
+   "kind": "line",
+   "speaker": "chr_seedAmara",
+   "text": "Goodnight. And Mei — never cite a thin study at a joke. Sleep well, everyone.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 27,
+   "kind": "note",
+   "speaker": "director",
+   "text": "The mayor's office emails: the inquiry starts tomorrow morning, a day early.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": false
+  },
+  {
+   "seq": 28,
+   "kind": "line",
+   "speaker": "chr_seedMei",
+   "text": "Ah. So rest was the cheapest performance enhancer, and we've just been outbid.\n\nIt depends, and here's on what — but tomorrow at nine, my two columns run regardless. Kai, do we know which warped schedule",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 29,
+   "kind": "line",
+   "speaker": "chr_seedVictor",
+   "text": "Three points, and quickly, since the clock just moved against us.\nOne: the mayor's office does not get to reschedule a public inquiry by email like a dentist's appointment. We appear, we do not concede the irregularity — I note it on the record at the outset.\nTwo: Amara, your counts were promised Thursday night. Tonight is Thursday night. Stand with whatever is clean and mark the rest as not yet established [1]. A partial record delivered on time beats a perfect one filed late.\nThree: Mei, the two columns run unchanged. Base case first, sensitivity second.\nAnd the question stands unanswered: who ordered this, and on whose authority? A short adjournment request is warranted — not to stall, but",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 30,
+   "kind": "line",
+   "speaker": "chr_seedAmara",
+   "text": "Then we move. Tonight, not tomorrow morning.\n\nAmara — can you get the counts to a state you'd actually defend by, say, six a.m.? I'd rather hand you three clean numbers now than",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 31,
+   "kind": "line",
+   "speaker": "chr_seedMei",
+   "text": "It depends, and here's on what — if it's a procedural ambush, we request the adjournment and let the record show we didn't blink. If it's just clerical sloppiness, I'd rather not spend credibility on it.\n\nAmara, six a.m. is tight but doable. Three columns beat two if the schedule broke — I'll hold the base and sensitivity, and name what I can't cost yet. No fog, no adjectives.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 32,
+   "kind": "line",
+   "speaker": "chr_seedVictor",
+   "text": "Mei has it exactly right, and I will say so plainly: we do not yet know whether this is ambush or ineptitude, and we will not spend credibility guessing.\nTwo moves tonight. First, Amara, three clean numbers by six, and if one is soft, label it soft — I will defend an honest \"not yet established\" over a polished guess. Second, Kai, send one written request: a short opening adjournment on procedural grounds, copied to the mayor's office, no adjectives.\nWe arrive early, we note the irregularity once, and we do not argue it twice. Vigilantibus non dormientibus — the law aids the watchful, not the drows",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 33,
+   "kind": "line",
+   "speaker": "chr_seedAmara",
+   "text": "Victor's right. I'll write the adjournment request now — one paragraph, procedural only, no adjectives — and copy the mayor's office.\n\nAmara, I'll sit with you at six. Bring whatever's clean; we'll mark the rest as not yet established.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 34,
+   "kind": "line",
+   "speaker": "chr_seedMei",
+   "text": "Good. I'll be there at six with the two columns printed, plus one spare labeled \"not yet costed\" — an empty column is more honest than a padded one.\n\nAnd Kai, if the mayor's office asks for a prediction, the answer is a range. There isn't a",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 35,
+   "kind": "line",
+   "speaker": "chr_seedVictor",
+   "text": "Well said, Mei — an empty column is more honest than a padded one, and I intend to quote you on that before the week is out.",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  }
+ ]
+}

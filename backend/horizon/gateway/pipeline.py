@@ -64,10 +64,11 @@ def chat_key(body: Mapping[str, Any]) -> str:
     return k(body)
 
 
-def jev_key(model: str, state: Any, questions: Mapping[str, Any], fingerprint: str | None) -> str:
+def jev_key(model: str, state: Any, questions: Mapping[str, Any], fingerprint: str | None,
+            order: Mapping[str, list[str]] | None = None) -> str:
     from horizon.evals.store import jev_key as k
 
-    return k(model, state, questions, fingerprint)
+    return k(model, state, questions, fingerprint, order)
 
 
 def embeddings_key(body: Mapping[str, Any]) -> str:
@@ -200,6 +201,7 @@ class Gateway:
     capture_bodies: bool = False
     store: Any = None        # M7 (D31): the eval view (chat, Jev, embeddings), attached only by `horizon eval` runs
     seed_store: Any = None   # M7 (D31): the seed view (embeddings only), used only when a caller passes store_ok
+    allowed_bodies: frozenset[str] | None = None   # M15 (D19): `--against-manifest`, a model comparison's Jev bodies
     # M3: the session manager's view of spend (cap pause on crossing; budget events of a session's call).
     on_spend: Callable[[CallContext, RecordResult], None] = lambda _ctx, _res: None
     on_budget: Callable[[dict[str, Any], CallContext], None] = lambda _ev, _ctx: None
@@ -467,6 +469,9 @@ class Gateway:
             if after_response is not None:
                 await after_response(cached)
             return cached
+        if store is not None and store.miss("chat", skey, est):   # M15 (D13): a probe sends nothing; an empty reply
+            return ChatResult(generation_id="probe", content="", finish_reason="stop", usage=None, provider="probe",
+                              model=req.model, provider_warning=None, latency_ms=0)
 
         async def send() -> tuple[ChatResult, Billing]:
             r = await self.chat.complete(req)
@@ -497,8 +502,16 @@ class Gateway:
         skey = chat_key(self.chat.body(req, stream=False)) if store is not None else ""
         if store is not None and (hit := store.get("chat", skey)) is not None:
             msg = ((hit["response"].get("choices") or [{}])[0].get("message") or {})
+            if self.capture_bodies:   # M15 8.9: a replayed reply is captured too, so an eval reads its raw text (D14)
+                await self._hook(ctx, {"kind": "chat_stream", "model": req.model, "purpose": ctx.purpose,
+                                       "body": {"request": {"messages": req.messages},
+                                                "response": {"text": str(msg.get("content") or "")}}},
+                                 {"provider": "store", "costUsd": 0.0})
             yield ChatChunk(generation_id="store", content=str(msg.get("content") or ""), provider="store")
             yield ChatChunk(generation_id="store", finish_reason="stop", provider="store")
+            return
+        if store is not None and store.miss("chat", skey, est):   # M15 (D13)
+            yield ChatChunk(generation_id="probe", finish_reason="stop", provider="probe")
             return
         hold = await self._preflight(ctx, est)
         started = time.monotonic()
@@ -607,18 +620,28 @@ class Gateway:
 
     async def decide(self, state: Any, questions: Mapping[str, Mapping[str, Any]], ctx: CallContext, *,
                      estimate: float | None = None, model: str | None = None,
-                     finish: Callable[[], str | None] | None = None) -> DecisionsResponse:
+                     finish: Callable[[], str | None] | None = None,
+                     order: Mapping[str, list[str]] | None = None) -> DecisionsResponse:
         """One Jev request through the pipeline. `finish()` (the Decider's `DecisionCall.outcome`) is read when the row
-        is recorded, so the ledger says whether the answer was on time, late or cancelled (ai-foundation design D6)."""
+        is recorded, so the ledger says whether the answer was on time, late or cancelled (ai-foundation design D6).
+        `order` (M15, images-music D13): only an ask whose options are not in their declared order passes it, so the
+        store keeps that answer under its own key."""
         est = self.decision_estimate(state, questions) if estimate is None else estimate
         m = model or self.decision_model
+        if self.allowed_bodies is not None:   # M15 (D19): a comparison sends only the manifest's bodies
+            from horizon.evals.manifest import body_hash
+
+            if body_hash(state, questions) not in self.allowed_bodies:
+                raise ProviderError("provider_error", f"Not in the request manifest, so not sent: {', '.join(questions)}")
         store = self._store_for("jev")
-        skey = jev_key(m, state, dict(questions), store.fingerprint) if store is not None else ""
+        skey = jev_key(m, state, dict(questions), store.fingerprint, order) if store is not None else ""
         if store is not None and (hit := store.get("jev", skey)) is not None:
             r0 = hit["response"]
             answers = r0.get("answers", r0.get("results")) or {}
             return DecisionsResponse(generation_id="store", answers={str(k): v for k, v in answers.items()}, usage=None,
                                      model=r0.get("model") or m)
+        if store is not None and store.miss("jev", skey, est):   # M15 (D13): no answers, so each question falls back
+            return DecisionsResponse(generation_id="probe", answers={}, usage=None, model=m)
 
         body: dict[str, Any] | None = ({"request": {"state": state, "questions": dict(questions)}}
                                        if self.capture_bodies else None)
@@ -704,6 +727,8 @@ class Gateway:
                     async with self.ledger.db.write() as tx:  # type: ignore[attr-defined]
                         await commit_with(tx.conn, "")
                 return vectors
+            if store.miss("embeddings", skey, est):   # M15 (D13): a failed batch, as a provider error would leave it
+                raise ProviderError("provider_error", "Probe run: no stored vectors, so nothing was sent.")
 
         async def send() -> tuple[list[list[float]], Billing]:
             r = await self.embeddings.embed_batch(texts, model=model, dimensions=dimensions, provider=provider)

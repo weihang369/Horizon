@@ -26,7 +26,7 @@ import hashlib
 import json
 import os
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Literal
 
@@ -44,11 +44,17 @@ def sha(o: Any) -> str:
     return hashlib.sha256(canonical(o).encode("utf-8")).hexdigest()
 
 
-def jev_key(model: str, state: Any, questions: Mapping[str, Any], fingerprint: str | None) -> str:
+def jev_key(model: str, state: Any, questions: Mapping[str, Any], fingerprint: str | None,
+            order: Mapping[str, list[str]] | None = None) -> str:
+    """M15 (images-music D13): a choice's options are a mapping, so `canonical()` loses their order. A caller asking
+    with an order other than the declared one (the decisions suite's reversed ask) passes `order` = {question id:
+    option ids}, which salts the key. Declared-order requests pass nothing and keep their old key."""
     obj: dict[str, Any] = {"model": model, "provider": "TypeSafe", "parameters": {},
                            "body": {"state": state, "questions": questions}}
     if fingerprint:
         obj["canary"] = fingerprint
+    if order:
+        obj["order"] = {k: list(v) for k, v in order.items()}
     return sha(obj)
 
 
@@ -70,6 +76,8 @@ class ResponseStore:
     fingerprint: str | None = None        # the accepted canary's; salts every Jev key (D32)
     hits: int = 0
     writes: int = 0
+    probe: bool = False                   # M15 (images-music D13): a miss stops the call before anything is sent
+    misses: list[dict[str, Any]] = field(default_factory=list)
 
     @classmethod
     def eval_view(cls, root: Path, fingerprint: str | None) -> ResponseStore:
@@ -95,6 +103,15 @@ class ResponseStore:
             return None
         self.hits += 1
         return entry
+
+    def miss(self, kind: Kind, key: str, estimate_usd: float) -> bool:
+        """The gateway calls this after a lookup found nothing, before it reserves or sends. In a probe it records what
+        the call would have cost and returns True: the gateway then sends nothing and answers empty (no Jev answers,
+        an empty reply), so the caller's usual missing-answer path runs. Otherwise it returns False."""
+        if not self.probe:
+            return False
+        self.misses.append({"kind": kind, "key": key, "usd": float(estimate_usd)})
+        return True
 
     def put(self, kind: Kind, key: str, request: Any, response: Any, usage: Any) -> bool:
         """Atomic, and the first answer stays. Returns whether this call wrote the entry."""

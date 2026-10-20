@@ -161,7 +161,9 @@ def pairwise() -> list[dict[str, Any]]:
 
 
 def main() -> int:
-    for qid, rows in (("judge_names_feeling", names_feeling()), ("judge_pairwise", pairwise())):
+    # M15 (images-music D12): `judge_pairwise.jsonl` is v3's set now, built by m15_build.py; `pairwise()` stays as M9's
+    # record of the set that failed
+    for qid, rows in (("judge_names_feeling", names_feeling()),):
         path = HERE / f"{qid}.jsonl"
         path.write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows), encoding="utf-8", newline="\n")
         print(f"{path.name}: {len(rows)} items, labels {sorted({r['label'] for r in rows})}, "

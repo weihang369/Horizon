@@ -1,0 +1,59 @@
+{
+ "schemaVersion": 1,
+ "id": "short_group_sunnyhollow_festival",
+ "mode": "group",
+ "world": "wld_seedSunnyHollow",
+ "cast": [
+  "chr_seedHana",
+  "chr_seedRin",
+  "chr_seedTakeshi"
+ ],
+ "language": "en",
+ "policy": "auto",
+ "short": true,
+ "lines": [
+  {
+   "text": "The flower festival is next week. Who's helping at the stall?",
+   "kind": "filler"
+  },
+  {
+   "text": "Sunflowers only grow in hot deserts, they'd never survive here.",
+   "kind": "wrong_claim"
+  },
+  {
+   "text": "I'm Kai, and I'm new here. I moved to Sunny Hollow in August.",
+   "kind": "fact",
+   "fact": "August"
+  },
+  {
+   "text": "Takeshi, what time do we need to set up?",
+   "kind": "filler"
+  },
+  {
+   "text": "Boleh tak kita jual onigiri sekali dengan bunga?",
+   "kind": "filler",
+   "lang": "ms"
+  },
+  {
+   "text": "Rin, could you make a little game for the kids?",
+   "kind": "filler"
+  },
+  {
+   "text": "Bees aren't insects, they're closer to spiders.",
+   "kind": "wrong_claim"
+  },
+  {
+   "text": "Hana, which flowers sell best?",
+   "kind": "filler"
+  },
+  {
+   "text": "Can we finish packing by six lah, I need dinner.",
+   "kind": "filler",
+   "lang": "mixed"
+  },
+  {
+   "text": "See you all on Saturday!",
+   "kind": "filler"
+  }
+ ]
+}

@@ -70,3 +70,18 @@ async def test_other_failures_are_never_retried(code: str) -> None:
     with pytest.raises(ProviderError) as e:
         await complete_json(gw, REQ, call_ctx("profile"), parse, PaidHooks())
     assert e.value.code == code and len(gw.sent) == 1
+
+
+async def test_a_call_with_no_answer_read_is_a_provider_error_not_retried() -> None:
+    """M15 8.2: a probe's miss returns an empty reply without `after_response`; the caller's failure path runs."""
+
+    class Probe(Stub):
+        async def chat_complete(self, req: ChatRequest, ctx: Any, **_: Any) -> ChatResult:
+            self.sent.append(req)
+            return ChatResult(generation_id="probe", content="", finish_reason="stop", usage=None, provider="probe",
+                              model=None, provider_warning=None, latency_ms=0)
+
+    gw = Probe()
+    with pytest.raises(ProviderError) as e:
+        await complete_json(gw, REQ, call_ctx("profile"), parse, PaidHooks())
+    assert not isinstance(e.value, InvalidJson) and len(gw.sent) == 1

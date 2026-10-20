@@ -291,6 +291,13 @@ frozen transcripts start from a long committed history.
   *Built in M10 (`group-watch` D23): `horizon eval freerun --mode watch|group`, signals only, with follow-plan
   timeouts counted apart from `none` and every steered line printed for reading.*
 
+*Built in M15 (OpenSpec `images-music` D10, D11; [m15.md](checks/m15.md)):*
+- *The 20 frozen transcripts: 9 cut from the committed histories (4 debates, 5 watch windows), 7 short scripts generated
+  once by `naive` (4 × 1:1, 3 groups; 13 non-English lines, 12 planted wrong claims, 7 documents questions), and the
+  4 long ones already committed. Splits are by transcript, a third of each mode on test.*
+- *`horizon eval conversations --profile agent` runs both profiles on every unit from the same stored history, judges
+  them, and saves every judge state for re-judging.*
+
 **Rejected:**
 - **fixed user lines with live character replies:** from turn 2 on, the two profiles answer different conversations,
   so a "better reply" can't be told apart from "a different history", and errors compound.
@@ -323,6 +330,14 @@ frozen transcripts start from a long committed history.
   `judge_over_mention`, each with 30 planted items; their 30 real items are labelled from the first paid memory run's
   saved judge states, and each reads "NOT COUNTED" until its current version passes. "Memory for an absent
   character" is a unit test: the call names characters by their number among those present.*
+
+  *Built in M15 (OpenSpec `images-music` D12; [m15.md](checks/m15.md) 8.5): "stays in character" is four nouls
+  combined in code: `judge_voice` v4, `judge_persona_fact`, `judge_answers_last`, and M14's in-story noul
+  `judge_in_story` for "never says it is an AI" (it steps out of the story unasked; the recent lines show whether a
+sincere ask came first). `judge_voice`,
+  `judge_persona_fact`, `judge_sentence_supported` and `judge_pairwise` v3 passed B4. `judge_answers_last` failed its
+  planted items twice (0.77, the second time after its one rewording), so it reads NOT COUNTED. The composite is
+  tagged NOT COUNTED too, beside a "stays (without judge_answers_last)" row over the three validated nouls.*
   | **Safety** (doc 11 S10) | the `safety` suite: input, care, output, injection, honesty and advice, drafter, drift; items in `private/evals/safety/` | doc 11 S10's table. *Built in M14: `horizon eval safety` (`--part`, `--recut`), the private store under `private/evals/`, six B4-validated judges; results in [m14.md](checks/m14.md)* |
 
 - **Pairwise numbers:**
@@ -641,6 +656,14 @@ with itself only about 64 % of the time, so that rule mixes up ordinary noise wi
   missed 400 ms on 50/50 (Jev p50 443 / p90 495 ms; `S` p90 0.5 ms), so its deadline is 483 ms by G2's rule; watch at
   Fast pace met NFR-02 (`turn.end` to the next first token p50 1,711 ms), the plan made ahead used on 54 of 62 turns;
   no slow spells in either run.*
+- *Built in M15 (OpenSpec `images-music` D15) as `latency --part blended`, the must-pass run ([m15.md](checks/m15.md)
+  8.12): 100 quick and 100 deep 1:1 turns, 50 group, 50 debate and 25 deep watch, 5 warm-up turns per part left out,
+  one off-peak window (the user's choice; peak is not measured), on a loaded database, $0.123. **NFR-01 met:**
+  blended p50 951 / p90 1,479 ms at the deep rate fixed before the run; deep turns alone p50 1,710 / p90 2,211 ms, so
+  no rate can miss it. **NFR-02 met** in group (p50 1.7 s), watch (1.4 s) and debate (2.4 s, its exception).
+  **NFR-29 met:** the face came at or before the first word on 250/250 turns. The output check was late 0/374 at
+  800 ms; `debate_plan` moved to 735 ms. The group `turn.next` rule can't be timed when each reply is stopped at its
+  first word (no follow plan runs), so it stays `latency --part follow`'s.*
 - **NFR-29 (the face within 800 ms of the first word)** is measured **at the HTTP client**, from the event timestamps of
   the M6 portable client:
   - face time minus first-word time;
@@ -780,7 +803,7 @@ record which wording produced which result.
 
   It never compares with `evals/baselines`. `--profile agent` joins CI with M9's `TurnPlanner` ([doc 13](13-wrap-up.md) W4) and its scripted
   twin.
-- **`agent` is the default** whenever a key is set (A12), from M15; it is opt-in while it is built ([doc 13](13-wrap-up.md) W4). A missed target is fixed in the task that owns it, never by
+- **`agent` is the default** whenever a key is set (A12), from M15; it was opt-in while it was built ([doc 13](13-wrap-up.md) W4). *Switched in M15 (`images-music` D3), before M15's paid runs, so the latency run measures the shipped default.* A missed target is fixed in the task that owns it, never by
   switching back to `naive`:
   - rewrite a question;
   - move a threshold;

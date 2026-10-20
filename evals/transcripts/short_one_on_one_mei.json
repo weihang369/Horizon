@@ -1,0 +1,147 @@
+{
+ "schemaVersion": 1,
+ "id": "short_one_on_one_mei",
+ "mode": "one_on_one",
+ "world": "wld_seedMeridian",
+ "cast": [
+  "chr_seedMei"
+ ],
+ "long": false,
+ "language": "en",
+ "turns": [
+  {
+   "user": "Hi Mei. I've been reading about the four-day week and I'm not sure what to believe.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedMei",
+     "text": "It depends, and here's on what. The headline numbers come from people who volunteered to try it — 212 organisations, all self-selected [2]. Retainment looks decent, resignations down 6.1% to 4.3% [3], but retention isn't productivity.\nSecond-order effect: the firms that gained most redesigned workflows first; the ones that just deleted a day saw overtime creep [5]. And survey response fell to 58%, so the softer measures get shakier [4].\nSo the honest range: real gains where work was restructured, thin evidence for \"four days, same output\" as a general rule."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "How many organisations took part in the Meridian pilots you've been studying?",
+   "kind": "docs",
+   "covered": true,
+   "replies": [
+    {
+     "speaker": "chr_seedMei",
+     "text": "Fourteen pilots, 212 organisations, roughly 9,800 workers — all volunteers [1]. So treat it as a set of case studies, not a sample.\nThat self-selection matters: 71% sat in professional services, software, marketing or non-profit work, and only nine ran shift-based or round-the-clock cover [5].\nThe range I'd quote: 212 organisations is a decent evidence base for \"it can work here.\" It is not a national estimate, and the authors say so [3]."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "I heard every one of those pilots included a hospital, so it clearly works for shift work.",
+   "kind": "wrong_claim",
+   "replies": [
+    {
+     "speaker": "chr_seedMei",
+     "text": "No. The opposite, actually — that's a misreading I'd want to kill quickly.\n\nNone of the pilots included an acute hospital, a public transport operator or a residential care provider [1]. The authors name that as the main gap in the evidence.\n\nOnly nine of the 212 provided round-the-clock or shift-based cover [4]. Fourteen pilots, none in acute care. So \"clearly works for shift work\" is exactly the claim the data can't carry."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Saya rasa minggu kerja empat hari terlalu ideal untuk tempat kerja saya.",
+   "kind": "filler",
+   "lang": "ms",
+   "replies": [
+    {
+     "speaker": "chr_seedMei",
+     "text": "Bergantung — dan ini pada apa. Kalau tempat kerja awak syif bergilir atau perlu liputan 24 jam, buktinya memang nipis: sembilan daripada 212 organisasi sahaja ada liputan syif [4], dan tiada hospital akut [1].\nKesan susulan: kos latihan naik, dan jadual lebih rapuh bila seorang cuti.\nTapi kalau kerja awak bersifat projek, dengan beban puncak yang jelas, ia boleh diuji. Cuba satu pasukan, bukan seluruh organisasi."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "What happened to burnout and sick days across the pilots?",
+   "kind": "docs",
+   "covered": true,
+   "replies": [
+    {
+     "speaker": "chr_seedMei",
+     "text": "Burnout down an average of 32%, sick days down 21% [1]. Those are the eye-catching numbers.\n\nBut hold both caveats. Self-reported, and survey response fell from 74% to 58% by the final wave [2] — so the people who stayed engaged may be the ones who liked it.\n\nRange I'd give: somewhere between \"genuinely better\" and \"better for those still answering.\" The direction is probably real; the size is soft."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "My manager says I'm the only one on our team who still answers emails on a Sunday.",
+   "kind": "fact",
+   "fact": "Sunday",
+   "replies": [
+    {
+     "speaker": "chr_seedMei",
+     "text": "That's a workload-design signal, not a you problem. One person answering on Sunday usually means either boundaries were never specified or the team is quietly understaffed.\n\nSecond-order effect: if you stop and nobody notices, the load was never distributed. If things break, it was. Worth testing rather than deciding alone."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "What did the pilots find about productivity on construction sites?",
+   "kind": "docs",
+   "covered": false,
+   "replies": [
+    {
+     "speaker": "chr_seedMei",
+     "text": "It depends, and here's on what — construction is where the evidence basically runs out.\n\nThe compendium doesn't report construction-site productivity as its own result [1]. The pilots skewed heavily toward office-based work, and only nine of the 212 covered shift or round-the-clock operations [4].\n\nWhere continuous coverage was held constant, holding it took 18% to 27% more staffed hours. A site with fixed plant, cranes and concrete pours looks much more like that than like a software team."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Unemployment has nothing to do with interest rates, everyone knows that.",
+   "kind": "wrong_claim",
+   "replies": [
+    {
+     "speaker": "chr_seedMei",
+     "text": "That's not my documents' territory, but I'll bite.\n\n\"Everyone knows\" is doing a lot of work there. Vacancies and unemployment move with demand, and demand responds to rates with a lag — typically two to four quarters, and the size is genuinely contested.\n\nSo: it depends, and here's on what — how tight the labour market already is, what the central bank expected, and whether you're looking at unemployment or participation. Anyone who gives you one number is selling something."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Ok lah, but if my company tries it, what should we measure first?",
+   "kind": "filler",
+   "lang": "mixed",
+   "replies": [
+    {
+     "speaker": "chr_seedMei",
+     "text": "Measure output before anything else — and define it now, not after. Fewer than half the firms tracked output with a consistent measure [1], so most of the \"it worked\" stories rest on surveys and vibes.\n\nThen pick two things: a hard output metric per team, and a service-quality or customer metric. Retention and sick days are lagging; you'll wait a quarter to see them move.\n\nSecond-order effect: measure the overlap cost too. Someone has to cover the fifth day."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Thanks. What's your favourite counter-example to bring up at dinner?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedMei",
+     "text": "The counter-example I actually enjoy: retention. Voluntary resignations fell from 6.1% to 4.3% [2] — lovely number, until you notice the survey response rate fell from 74% to 58% over the same period [1]. The people most likely to have quit are also the people least likely to fill in the final questionnaire.\n\nSo the improvement is probably real and probably smaller than advertised. That's the dinner line: \"every good result has a denominator problem.\""
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  }
+ ],
+ "memories": {
+  "chr_seedMei": [
+   {
+    "id": "mem_seedMei1",
+    "text": "Argued that pilot evidence comes from self-selected firms"
+   }
+  ]
+ }
+}

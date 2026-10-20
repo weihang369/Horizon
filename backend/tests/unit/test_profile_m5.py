@@ -38,10 +38,13 @@ def test_embedder_follows_the_profile(env: dict[str, str], key_set: bool, expect
 
 
 def test_memory_writer_follows_the_profile() -> None:
-    # M13 (memory D18): naive and agent writers; a key is needed, except an explicit naive override
-    for env in ({}, {"HORIZON_AI_PROFILE": "naive"}, {"HORIZON_AI_MEMORY_WRITER": "naive"}):
+    # M13 (memory D18): naive and agent writers; a key is needed, except an explicit naive override. M15 (D3): the
+    # default with a key is `agent`, in test mode and out of it alike
+    for env in ({"HORIZON_AI_PROFILE": "naive"}, {"HORIZON_AI_MEMORY_WRITER": "naive"}):
         assert ProfileSpec.from_env(env).choose("memory_writer", key_set=True) == "naive"
-    assert ProfileSpec.from_env({"HORIZON_AI_PROFILE": "agent"}).choose("memory_writer", key_set=True) == "agent"
+    for env in ({}, {"HORIZON_AI_PROFILE": "agent"}):
+        for test_mode in (False, True):
+            assert ProfileSpec.from_env(env, test_mode=test_mode).choose("memory_writer", key_set=True) == "agent"
     assert ProfileSpec.from_env({}).choose("memory_writer", key_set=False) == "scripted"
 
 
@@ -69,3 +72,24 @@ async def test_ai_profile_route_takes_the_new_ports(api: object) -> None:
     assert api.rt.ai.impl("knowledge_retriever", key_set=True) == "naive"
     r = await api.client.post("/api/v1/_test/ai-profile", json={"profile": "naive"})
     assert api.rt.ai.impl("converter", key_set=True) == "scripted"  # test mode keeps conversion deterministic
+
+
+# ── images-music 7.1 (design D3): `agent` with a key, `scripted` without ──
+def test_the_default_is_agent_with_a_key_and_scripted_without() -> None:
+    from horizon.ai.profile import AiPorts
+
+    def ports(env: dict[str, str]) -> AiPorts:
+        return AiPorts(deps=object(), spec=ProfileSpec.from_env(env))  # type: ignore[arg-type]
+
+    default = ports({})
+    # no key: every port scripted (the converter is chosen by availability, D-96), and may record simulated spend
+    assert {i for p, i in default.resolved(key_set=False).items() if p not in KEYLESS_PORTS} == {"scripted"}
+    assert default.simulates(key_set=False)
+    # a key: exactly what HORIZON_AI_PROFILE=agent resolves to
+    assert default.resolved(key_set=True) == ports({"HORIZON_AI_PROFILE": "agent"}).resolved(key_set=True)
+    assert default.resolved(key_set=True)["turn"] == "agent"
+    # the baseline is one variable away
+    assert ports({"HORIZON_AI_PROFILE": "naive"}).resolved(key_set=True)["turn"] == "naive"
+    # a per-port override still wins over the default
+    assert ports({"HORIZON_AI_TURN": "naive"}).resolved(key_set=True)["turn"] == "naive"
+    assert ports({"HORIZON_AI_TURN": "naive"}).resolved(key_set=True)["planner"] == "agent"

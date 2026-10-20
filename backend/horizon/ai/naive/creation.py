@@ -50,13 +50,16 @@ SYSTEM = ("You are Horizon's character drafter. From a one-line seed you write O
           "minors, no explicit content. Expert characters are advisory: their boundaries say they inform but don't "
           "replace a professional. Write the appearance as plain visual facts an illustrator can draw.")
 # docs/ai/04 P11 (persona-context design D17): names, originality, a concrete life, an audible voice, plain speech.
+# M15 (images-music 8.13; m14.md finding 7): the originality rule also bars the source's catchphrases and speech.
 STOCK_NAMES = ("Elara", "Kael", "Seraphina", "Lyra", "Aria", "Voss", "Thorne")
 RULES = (
     "\nRules:"
     "\n- Give a name that fits the role and the culture of the setting. Never use a name already used in this world, "
     "and avoid stock AI names (" + ", ".join(STOCK_NAMES) + ")."
     "\n- Characters are original. If the seed asks for a real person or an existing fictional character, write an "
-    "original character of the same general type, with a new name."
+    "original character of the same general type, with a new name. A new name is not enough: never reuse their "
+    "catchphrases, signature lines or recognisable way of speaking (an unusual word order, a verbal tic); give the "
+    "character a voice of their own."
     "\n- Give a concrete backstory with specific details and one flaw."
     "\n- Describe the speaking style as habits you could hear (sentence length, words they use), not adjectives."
     "\n- The greeting is at most 2 short lines. Give 2-3 example lines that show the voice and differ from the greeting."
@@ -186,6 +189,8 @@ async def complete_json[T](gw: Any, req: ChatRequest, ctx: CallContext, parse: C
 
     first = await gw.chat_complete(req, ctx, before_send=hooks.before_send, after_response=after_first,
                                    commit_with=hooks.commit_with)
+    if not failed and "v" not in out:   # nothing was read: a probe's miss sends nothing (M15 D13), never retried
+        raise ProviderError("provider_error", "No answer to read.")
     if not failed:
         return out["v"]
     retry = replace(req, messages=[*req.messages, {"role": "assistant", "content": first.content},
@@ -376,10 +381,23 @@ def _listed(values: Any) -> str:
     return ", ".join(str(v).strip() for v in values if str(v).strip()) if isinstance(values, list) else ""
 
 
-def song_prompt(brief: Mapping[str, Any], title: str) -> str:
+SONG_CONSTRAINTS = ("An original piece: do not imitate any named artist, band or existing song. "
+                    "No vocals, no lyrics. A 30-second piece that loops cleanly.")
+
+
+def song_prompt(brief: Mapping[str, Any]) -> str:
     """The instrumental prompt for one clip (creation-followups design D4): every brief value that is set, then the
-    constraints. Deterministic, so the same brief always asks for the same piece."""
-    parts = [f'Instrumental theme music for "{title}".']
+    constraints. Deterministic, so the same brief always asks for the same piece. M15 (doc 12 I2; images-music D8): no
+    title or name (it tells Lyria nothing musical, and "Taylor's Theme" would put a real name in the prompt), and the
+    original-piece line before the vocals line."""
+    return f"{song_brief_text(brief)} {SONG_CONSTRAINTS}"
+
+
+def song_brief_text(brief: Mapping[str, Any]) -> str:
+    """The part of `song_prompt` that varies with the brief: what the song check reads (M15, images-music 8.3). The
+    constraint lines are ours and constant, so they can't carry a copy request; read with the brief, their "do not
+    imitate any named artist" halved Jev's p on real copy requests (0.97–0.99 → 0.45–0.87, m15.md)."""
+    parts = ["Instrumental theme music for a character."]
     for label, key in (("Genres", "genres"), ("Mood", "moods"), ("Instruments", "instruments")):
         if text := _listed(brief.get(key)):
             parts.append(f"{label}: {text}.")
@@ -387,7 +405,6 @@ def song_prompt(brief: Mapping[str, Any], title: str) -> str:
         parts.append(f"Tempo: about {int(brief['bpm'])} BPM.")
     if vibe := str(brief.get("vibe") or "").strip():
         parts.append(f"Feel: {vibe}.")
-    parts.append("No vocals, no lyrics. A 30-second piece that loops cleanly.")
     return " ".join(parts)
 
 
@@ -412,6 +429,6 @@ class NaiveSong:
                 await hooks.after_response(r.audio)
 
         result = await self.deps.gateway().generate_music(
-            ctx, model=job.model, prompt=song_prompt(job.brief, job.title), before_send=hooks.before_send,
+            ctx, model=job.model, prompt=song_prompt(job.brief), before_send=hooks.before_send,
             after_response=after, commit_with=hooks.commit_with)
         return result.audio

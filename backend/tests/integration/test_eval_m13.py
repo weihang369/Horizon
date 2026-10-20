@@ -258,7 +258,9 @@ def test_a_recall_arm_is_compared_by_k3s_rule_per_probe_kind(tmp_path: Path) -> 
 
 def test_the_arms_and_parts_are_checked() -> None:
     m = MS.Memory()
-    assert "--profile agent" in (m.refuse(Options("memory", profile="naive")) or "")
+    assert m.refuse(Options("memory", profile="naive")) is None                # M15 (D14): the naive writer's arm
+    assert "--part rewrite or layer3" in (m.refuse(Options("memory", profile="naive", part="recall")) or "")
+    assert "--profile agent" in (m.refuse(Options("memory", profile="scripted")) or "")
     assert m.refuse(Options("memory", profile="agent", part="recall", arm="search=bm25")) is None
     assert m.refuse(Options("memory", profile="agent", part="recall", arm="lambda=0.5")) is None
     assert "--part recall" in (m.refuse(Options("memory", profile="agent", arm="mmr=off")) or "")
@@ -416,3 +418,30 @@ def test_d33s_tail_rule_goes_to_the_user_over_200_ms() -> None:
     assert any("the user gets a choice" in x for x in RT.report([], rec, knobs))
     rec.runs = [{**x, "recall_after_docs_ms": 10.0} for x in rec.runs]
     assert not any("the user gets a choice" in x for x in RT.report([], rec, knobs))
+
+
+# ── M15 (images-music D14, task 6.5): the naive writer's arm ──
+async def test_the_naive_arm_scores_naive_beside_agent_on_the_same_stretches(tmp_path: Path) -> None:
+    r, out = _runner(tmp_path)
+    assert await r.run(Options("memory", profile="naive", limit=1, yes=True)) == 0, out
+    (run,) = [p for p in (tmp_path / "evals").iterdir() if p.is_dir()]
+    folder = run / "naive"
+    rows = [json.loads(x) for x in (folder / "results.jsonl").read_text(encoding="utf-8").splitlines()]
+    rewrite = [x for x in rows if x["part"] == "rewrite"]
+    assert [x.get("column") for x in rewrite] == [None, "agent"] and rewrite[0]["id"] == rewrite[1]["id"]
+    assert [x["part"] for x in rows].count("layer3") == 1
+    rep = (folder / "report.md").read_text(encoding="utf-8")
+    assert "The naive writer's arm" in rep and "beside it, the agent writer on the same stretches" in rep
+    assert "beside it, the agent column" in rep and "## Recall" not in rep
+
+
+def test_the_saved_agent_layer3_column_reads_a_kept_run(tmp_path: Path) -> None:
+    d = tmp_path / "20261016T111302-memory-e98ed0"
+    (d / "agent").mkdir(parents=True)
+    (d / ".keep").write_text("", encoding="utf-8")
+    (d / "agent" / "results.jsonl").write_text(json.dumps({"part": "layer3", "id": "p1", "split": "test",
+                                                           "probe_fail": [False], "over": [False], "written": [],
+                                                           "duplicates": 0}) + "\n", encoding="utf-8")
+    lines = MS.saved_agent_layer3(tmp_path)
+    assert lines[0].startswith("### beside it, the agent column: the saved run `20261016T111302-memory-e98ed0`")
+    assert MS.saved_agent_layer3(tmp_path / "none")[0].endswith("no kept agent run with layer 3 in this data folder")

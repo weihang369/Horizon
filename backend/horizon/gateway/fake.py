@@ -442,3 +442,13 @@ class FakeOpenRouter:
             "id": gid, "object": "list", "model": body.get("model"), "provider": "Nebius",
             "data": [{"object": "embedding", "index": i, "embedding": unit_vector(x, dims)} for i, x in enumerate(inputs)],
             "usage": {"prompt_tokens": tokens, "total_tokens": tokens, "cost": cost}})
+
+
+def deny_transport(blocked: list[str]) -> httpx.MockTransport:
+    """M15 (images-music D13): the transport of a `horizon eval --probe` run. Nothing leaves the process: each request
+    is answered 503 and listed in `blocked` (store kinds never get here; they stop at their miss)."""
+    def deny(request: httpx.Request) -> httpx.Response:
+        blocked.append(f"{request.method} {request.url.path}")
+        return httpx.Response(503, json={"error": {"code": 503, "message": "probe run: not sent"}})
+
+    return httpx.MockTransport(deny)

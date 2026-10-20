@@ -45,7 +45,7 @@ import time
 from collections.abc import Mapping, Sequence
 from datetime import timedelta
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 from sqlalchemy import delete, func, select, text
 
@@ -115,8 +115,13 @@ def parse_arm(arm: str | None) -> dict[str, str]:
     return {key: value}
 
 
+NAIVE_PARTS = ("rewrite", "layer3")   # M15 (images-music D14): the `naive` arm; recall and the rest are agent's
+
+
 def parts_of(opts: Options) -> tuple[str, ...]:
-    return (opts.part,) if opts.part else PARTS
+    if opts.part:
+        return (opts.part,)
+    return NAIVE_PARTS if opts.profile == "naive" else PARTS
 
 
 def _take(rows: list[dict[str, Any]], opts: Options) -> list[dict[str, Any]]:
@@ -432,7 +437,9 @@ def _norm(s: str) -> str:
     return re.sub(r"[\s\-]", "", s).casefold()
 
 
-async def rewrite_item(env: RunEnv, item: Mapping[str, Any]) -> dict[str, Any]:
+async def rewrite_item(env: RunEnv, item: Mapping[str, Any], impl: Literal["naive", "agent"] | None = None) -> dict[str, Any]:
+    """`impl` None: the profile's writer; "agent": the agent writer in the naive arm's copy (its calls from the
+    store), for the column beside it (M15, D14)."""
     from horizon.services.memory.block import ListedMemory
     from horizon.services.memory.runs import RunContext, RunIO
     from horizon.services.memory.stretch import Present, Stretch, StretchLine
@@ -468,9 +475,13 @@ async def rewrite_item(env: RunEnv, item: Mapping[str, Any]) -> dict[str, Any]:
                       upto_seq=len(lines), reread_ids=[])
     ctx = RunContext(world_id=world, session_id=sid, now=rt.clock.now, knobs=rt.runtime_cfg.runtime.memory,
                      io=RunIO(rt, world))
-    writer = rt.ai.memory_writer(True)
+    writer = rt.ai._build("memory_writer", impl) if impl else rt.ai.memory_writer(True)
     started = time.perf_counter()   # check 2: the run's own time (the rewrite call, Jev, the embedding); the commit is local
-    out = await writer.graph.ainvoke({"stretch": stretch, "ctx": ctx, "path": []}, config={"recursion_limit": 10})
+    if getattr(writer, "name", "") == "naive":   # M15 (D14): the same rewrite call, then naive's own ops
+        call = await writer._rewrite(stretch, ctx)
+        out = {"rewrite": call, "result": await writer.apply(stretch, ctx, call)}
+    else:
+        out = await writer.graph.ainvoke({"stretch": stretch, "ctx": ctx, "path": []}, config={"recursion_limit": 10})
     run_ms = round((time.perf_counter() - started) * 1000, 1)
     row = await score_rewrite(env, item, out["rewrite"], out["result"])
     return {**row, "run_ms": run_ms, "latency": bool(env.opts.latency), "calls": out["rewrite"].calls,
@@ -928,6 +939,17 @@ async def layer3_pair(env: RunEnv, pair: Mapping[str, Any]) -> dict[str, Any]:
             "duplicates": duplicates(after)}
 
 
+def saved_agent_layer3(root: Path = RUNS_DIR) -> list[str]:
+    """The agent column of layer 3 beside the naive arm: the latest kept agent run's saved pairs (pay once, D14)."""
+    runs = sorted((d for d in root.iterdir() if d.is_dir() and "-memory-" in d.name and (d / ".keep").exists()
+                   and (d / "agent" / "results.jsonl").is_file()), reverse=True) if root.is_dir() else []
+    for d in runs:
+        rows = [r for r in _jsonl(d / "agent" / "results.jsonl") if r.get("part") == "layer3"]
+        if rows:
+            return [f"### beside it, the agent column: the saved run `{d.name}` (no new call)", *layer3_report(rows)]
+    return ["### beside it, the agent column: no kept agent run with layer 3 in this data folder"]
+
+
 # ── re-judging saved outputs (a judge's new version on outputs already paid for) ──
 def _jsonl(path: Path) -> list[dict[str, Any]]:
     return [json.loads(x) for x in path.read_text(encoding="utf-8").splitlines() if x.strip()]
@@ -1017,8 +1039,10 @@ class Memory:
     name = "memory"
 
     def refuse(self, opts: Options) -> str | None:
-        if opts.profile != "agent":
-            return "horizon: `memory` runs the agent writer and recall; pass --profile agent"
+        if opts.profile == "naive" and opts.part not in (None, *NAIVE_PARTS):   # M15 (D14): the naive arm
+            return "horizon: `memory --profile naive` runs the naive writer's arm: --part rewrite or layer3"
+        if opts.profile not in ("agent", "naive"):
+            return "horizon: `memory` runs the agent writer and recall (--profile agent), or the naive arm"
         if opts.part and opts.part not in ALL_PARTS:
             return f"horizon: unknown part {opts.part!r} (have: {', '.join(ALL_PARTS)})"
         try:
@@ -1099,16 +1123,25 @@ class Memory:
         by_part: dict[str, list[dict[str, Any]]] = {}
         for part, row in plan.items:
             by_part.setdefault(part, []).append(row)
+        naive = env.opts.profile == "naive"
         if "rewrite" in by_part:
-            rows = []
+            rows, agent_rows = [], []
             for item in by_part["rewrite"]:
                 if await env.over_budget():
                     res.status = "incomplete"
                     break
                 rows.append(await rewrite_item(env, item))
+                if naive:   # the agent column beside it, on the same stretch (its calls from the store)
+                    agent_rows.append(await rewrite_item(env, item, "agent"))
             await add_calls(env, rows)
             res.rows += [{"part": "rewrite", **r} for r in rows]
+            res.rows += [{"part": "rewrite", "column": "agent", **r} for r in agent_rows]
+            if naive:
+                res.summary += ["## The naive writer's arm (M15, images-music D14): rewrite"]
             res.summary += rewrite_report([r for r in rows if r["kind"] != "long"]) + check1_report(rows)
+            if naive:
+                res.summary += ["### beside it, the agent writer on the same stretches",
+                                *rewrite_report([r for r in agent_rows if r["kind"] != "long"])]
         if "recall" in by_part and res.status != "incomplete":
             rows = await recall_part(env, by_part["recall"], arm, res)
             res.rows += [{"part": "recall", **r} for r in rows]
@@ -1121,7 +1154,11 @@ class Memory:
                     break
                 rows.append(await layer3_pair(env, pair))
             res.rows += [{"part": "layer3", **r} for r in rows]
+            if naive:
+                res.summary += ["## The naive writer's arm (M15, images-music D14): layer 3"]
             res.summary += layer3_report(rows)
+            if naive:
+                res.summary += saved_agent_layer3()
         if "rejudge" in by_part:
             rows = await rejudge_part(env, by_part["rejudge"])
             if len(rows) < len(by_part["rejudge"]):

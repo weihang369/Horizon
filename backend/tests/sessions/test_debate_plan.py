@@ -182,10 +182,10 @@ async def test_a_late_answer_announces_fixed_order_at_the_deadline(api: Api) -> 
     assert api.rt.fake is not None
     release = api.rt.fake.park_question("member_rebuttal")
     end = await first_rebuttal_end(api, sid)
-    await api.drive(700)
+    await api.drive(800)
     nxt = next_after(await events(api, sid), end["seq"])
     assert nxt["payload"]["nextSpeakerId"] == AMARA
-    assert 651 <= ms_from_iso(nxt["at"]) - ms_from_iso(end["at"]) < 661   # the measured deadline (task 10.7, D29.3)
+    assert 735 <= ms_from_iso(nxt["at"]) - ms_from_iso(end["at"]) < 745   # the measured deadline (M15 8.13)
     release.set()
     await api.drive(60000)
     reb = args(await messages(api, sid), "rebuttal")

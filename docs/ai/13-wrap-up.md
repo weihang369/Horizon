@@ -273,6 +273,11 @@ The frontend resolves a piece's ID to its title through `knowledge.retrieved`, a
 - **Dropping the button:** it would remove a working path.
 - **A free-text "what's wrong?" box:** that is a new UI entry point, and it would need I3's check.
 
+*Built in M15 (OpenSpec `images-music` D6; [m15.md](checks/m15.md)):* *`image_job` passes `identity=True` only for an
+`emotion_regenerate` whose `prompt` isn't empty or whitespace. An API test sends a hint and finds the line in the
+provider prompt and none of the hint's words. No `guardrail` request is sent. `emotion_set` and the blinks are
+unchanged, and the golden fixture `identity_edit` pins the bytes. The edit itself is tried by eye in the v1 endgame.*
+
 ### W4. The build plan: nine OpenSpec changes, M7–M15 (the user's choice)
 
 Each change is one milestone and one `feat/` branch, cut from dev and squash-merged into dev, in this order. "M7" to
@@ -322,7 +327,7 @@ first calls it:**
 | M12 | same | + needs documents?, standalone?, English? | doc 10, D-100 | none | + passage tags |
 | M13 | same | + needs something from earlier? | same | doc 09 | same |
 | M14 | same | + unsafe request?, at risk? | same | same | doc 11's checks, doc 12 I3–I4 |
-| M15 | same | same | same | same | same; **`agent` is the default with a key** |
+| M15 | same | same | same | same | same; **`agent` is the default with a key** (built: `images-music` D3, D4) |
 
 **The default switch at M15** follows doc 02 B12: the evaluation measures `agent` but never decides whether to keep it.
 A missed target is fixed in the change that owns it, never by switching back to `naive`.
@@ -375,7 +380,7 @@ Jev's **confidence** against a floor (doc 06 E1).
 | 8 | `turn_plan` | at risk? (noul, 1:1 and group) | same | `safety.tCare` | no cue, flagged | 11 S4 |
 | 9 | `turn_plan` | is the talk finished? (noul, watch) | each watch turn, or planned ahead (G8) | `t_end` | no steer | 07 G7 |
 | 10 | `follow_plan` | who speaks up now? (choice with `none`), plus #2–#4 per candidate | group; starts at the stream's end, deadline `turn.end` + 400 ms | `floor.second` | no second reply | 07 G2, 11 S5 |
-| 11 | `debate_plan` | which member? (choice), plus #2–#4 per member, and #7 once on a new moderator line | each debate `turn.end`; member by + 651 ms (M11), the rest used if back by the turn's start | `floor.member` | the next member in the fixed order | 08 V2 |
+| 11 | `debate_plan` | which member? (choice), plus #2–#4 per member, and #7 once on a new moderator line | each debate `turn.end`; member by + 651 ms (M11), **735 ms (M15)**, the rest used if back by the turn's start | `floor.member` | the next member in the fixed order | 08 V2 |
 | 12 | `deep_check` | does this passage answer the message? (score: answers / partly / doesn't help, per piece, ≤ 8) | deep turns, Jev call 2 | `t_keep` (on p_answers + p_partly), `t_found` (on p_answers) | RRF top k, marked fallback | 10 K6, K7 |
 | 13 | `deep_check` | together, do these passages answer it? (noul, the set check) | no piece found but ≥ 2 usable | `t_set` | partly | 10 K6 |
 | 14 | `deep_check` | does this earlier line or memory help? (noul, per candidate, ≤ 6) | when #3 says yes | `t_recall` | the top 2 by merged order, marked fallback | doc 09 M9 |
@@ -441,7 +446,10 @@ eval datasets arrive in M7.
   M9–M14, conversation behaviour is checked by `smoke` (`agent` arm only, a few free runs).
 - **The `naive` arms are paid once, at M15**, after the last `naive` change has landed. This covers the `naive`
   verdicts and the `naive` memory writer.
-- M15's `all` serves every unchanged request from the store (W10).
+- M15's `all` serves every unchanged request from the store (W10). *Built in M15 as a probe (OpenSpec `images-music`
+  D13): `horizon eval all` runs every suite on stored answers only, with a dummy key and a transport that refuses
+  every request, and prints per suite the hits, what would be paid and the estimate. It spends nothing; a suite that
+  misses is re-run on its own, by choice.*
 - **A `smoke` allowance** of about $0.10 per change covers the runs made while work is in progress.
 
 | Change | Runs | Cost |
@@ -454,7 +462,7 @@ eval datasets arrive in M7.
 | M12 | `retrieval` with the comparisons; 10 rewrites; the standalone and English slice; **doc 10's check 2** (deep-turn and rewrite timing, which tunes `deepCheckMs` and `rewriteMs`). *Spent in M12: **$0.37** over 46 runs, of which $0.074 was a batch run twice by a leftover script, so **$0.30** as approved, against its design's ≈ $0.24; check 2 alone $0.13 ([m12.md](checks/m12.md) 11.10)* | ≈ $0.12 |
 | M13 | the `memory` suite's `agent` part and its `decisions` slice. **Its 6 checked rewrite calls are taken from the suite's 24**; 10 pause runs; 10 recall turns (doc 09). *Spent in M13: **$0.152** over 26 runs, all off-peak and approved, against its design's ≈ $0.27; check 4 with D33's timing alone $0.035 ([m13.md](checks/m13.md) 10.8)* | ≈ $0.16 |
 | M14 | `safety` incl. doc 12's parts; **the output check's timing** (doc 11 check 2). Doc 11's check 3 (no second reply after a block) is tested offline instead (W14). *Spent in M14: **$0.198** over 11 runs, all off-peak and approved: D25's runs $0.070 against ≈ $0.07–0.10, plus the user's later approvals, a real-reply batch for the six judges' B4 items ($0.105), a clean in-story re-measure and two replaced drift scenes ([m14.md](checks/m14.md) 8.6)* | ≈ $0.08 |
-| M15 | **`conversations`** (both profiles, ≈ $0.44); **the `naive` arms** of `debate` and `memory` (≈ $0.10); every other suite from the store; **the one must-pass latency run** (B8, NFR-01/02/29), after safety is in | ≈ $0.55 + latency ≈ $0.11 |
+| M15 | **`conversations`** (both profiles, ≈ $0.44); **the `naive` arms** of `debate` and `memory` (≈ $0.10); every other suite from the store; **the one must-pass latency run** (B8, NFR-01/02/29), after safety is in. *Spent in M15: **≈ $0.74–0.80** over 27 runs, all off-peak and under their caps: D17's rows ≈ $0.61–0.67 against ≈ $0.67–0.86 (conversations ≈ $0.30–0.35, of which ≈ $0.18–0.24 is the interrupted first run, which never reached `spend.jsonl`; latency $0.123), plus $0.13 of the optional items chosen in 8.13 ([m15.md](checks/m15.md) 8.14)* | ≈ $0.55 + latency ≈ $0.11 |
 | v1 endgame | **doc 12's v3 image check (was A4):** the first seed characters recreated in the app (Hana, Amara, Rin, Victor) are judged by eye for identity, skin tone, adult read, detail, age drift and outfits; W3's identity edit is tried once; how Seedream signals moderation is noted (doc 12 checks 1, 4) | none extra: these are the demo's own images (W10) |
 
 The group B runs total about **$1.55**, or **≈ $1.7 with group A**. The `smoke` allowance (≈ $0.9 over nine changes)
@@ -557,7 +565,8 @@ save it and reuse it. Never pay for the same result twice.
 **Reuse that this enables:**
 - **A1's repeatability items become the drift canary** (B6). A1 is its baseline.
 - **A3's saved drafts** and the other saved real responses seed the offline fake's canned responses (W14).
-- **Each suite runs once, at its change** (W6), and M15's `all` reuses everything unchanged.
+- **Each suite runs once, at its change** (W6), and M15's `all` reuses everything unchanged. *Built in M15 as a $0
+  probe (W6).*
 - **B4's face judge** reads the live `face_check` rows (W2).
 - **Doc 08's timed host lines and verdicts** become debate suite items.
 - **Doc 09's checked rewrite calls** come from the memory suite's 24.
@@ -650,8 +659,8 @@ save it and reuse it. Never pay for the same result twice.
 | `safety.tImage*` / `tSong` | bank | 0.5 / 0.6 (M14: **kept**; 10/10 refused per measured noul, 0/60 and 0/20 false; nudity not measured) | M14 |
 | `memory.tInstruction` | bank | 0.7 (M14: **kept, not cross-validated**: 5 memory plants, all safe; the user's choice) | M14 |
 | `verdict.margin` | bank | 0.5 (doc 08). *Found in M11: **0.25**, chosen on the debate suite's dev debates* | M11 |
-| `turn_plan` deadline | pricing | **700** ([group A](checks/group-a.md) A2: p50 ≈ 420, p99 ≈ 500 ms; the user chose p99 over p90, 2026-10-10) | M15 |
-| `follow_plan` / `debate_plan` | pricing | 400 / **500** (A2: the follow plan starts at the stream's end, so 400 after `turn.end` is ample; the debate plan starts at `turn.end`, so 500, with an NFR-02 exception). *Found in M10: `follow_plan` **483** (every request missed 400, Jev p90 495 ms; G2's rule and an NFR-02 exception, [m10.md](checks/m10.md) 10.7)*. *Found in M11: `debate_plan` **651** (every bench plan missed 500, Jev p90 651 ms; V2's rule and an NFR-02 exception, [m11.md](checks/m11.md) 10.7)*. *M14: `follow_plan` back to **400** and M10's exception dropped: with the output check before `turn.end`, 1 of 50 missed (the user's choice); `debate_plan` 651 kept, 2 of 30 past 500 ms ([m14.md](checks/m14.md) 8.4)* | M10, M11, M14 |
+| `turn_plan` deadline | pricing | **700** ([group A](checks/group-a.md) A2: p50 ≈ 420, p99 ≈ 500 ms; the user chose p99 over p90, 2026-10-10). *M15: kept at 700: 3 of 300 late outside watch in the must-pass run, against M12's 29 of 277 deep turns ([m15.md](checks/m15.md) 8.13)* | M15 |
+| `follow_plan` / `debate_plan` | pricing | 400 / **500** (A2: the follow plan starts at the stream's end, so 400 after `turn.end` is ample; the debate plan starts at `turn.end`, so 500, with an NFR-02 exception). *Found in M10: `follow_plan` **483** (every request missed 400, Jev p90 495 ms; G2's rule and an NFR-02 exception, [m10.md](checks/m10.md) 10.7)*. *Found in M11: `debate_plan` **651** (every bench plan missed 500, Jev p90 651 ms; V2's rule and an NFR-02 exception, [m11.md](checks/m11.md) 10.7)*. *M14: `follow_plan` back to **400** and M10's exception dropped: with the output check before `turn.end`, 1 of 50 missed (the user's choice); `debate_plan` 651 kept, 2 of 30 past 500 ms ([m14.md](checks/m14.md) 8.4)*. *M15: `debate_plan` **735** (6 of 15 plans with a deadline missed 651 under the must-pass run's load, p90 735 ms; V2's rule; `follow_plan` 400, `turn_plan` 700 and the output check's 800 kept, [m15.md](checks/m15.md) 8.13)* | M10, M11, M14, M15 |
 | `guardrail` / `guardrail_prompt` | pricing | 700 (A2: p99 ≈ 560) / 1,500. *Found in M14: **800** / 1,500. Alone the check is p90 485 ms, but beside the next debate plan it is p90 735 ms, 10 of 30 past 700; the user's choice ([m14.md](checks/m14.md) 8.4)* | M14 / — |
 | `reaction` / `face_check` | pricing | 1,500 / 1,500 | — |
 | `episode` / `verdict` (`timeoutsMs`, not decisions) | pricing | 30,000 / 30,000 (docs 07, 08). *M11: the verdict's wait p50 3.9 s, max 6.6 s; kept* | — |

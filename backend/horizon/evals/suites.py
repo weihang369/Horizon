@@ -297,7 +297,10 @@ class Decisions:
                 continue
             answers = []
             for order in (q,) if item.get("reask") else (q, reordered(q)):
-                r = await env.rt.gateway.decide(item["item"]["state"], {qid: wire_question(order)}, call_ctx("eval_judge"))
+                # M15 (D13): the reversed ask keys on its own order, so the store never serves it the first answer
+                salt = {qid: list(order.options)} if order is not q and isinstance(order, Choice) else None
+                r = await env.rt.gateway.decide(item["item"]["state"], {qid: wire_question(order)}, call_ctx("eval_judge"),
+                                                order=salt)
                 answers.append(validate(order, r.answers.get(qid)))
             a, b = answers if len(answers) == 2 else (answers[0], answers[0])
             if isinstance(a, ChoiceAnswer) and isinstance(b, ChoiceAnswer) and isinstance(item["label"], dict):
@@ -315,14 +318,14 @@ class Decisions:
             else:
                 row["invalid"] = True
             res.rows.append(row)
-        if not self.smoke:
+        if not self.smoke and not env.opts.probe:   # M15 (D13): a probe never marks items measured
             for qid in {r["question_id"] for r in res.rows}:
                 mkey = f"{m12_sets.REASK_SET}:{qid}" if reask else qid
                 measured[mkey] = mark[mkey]
             done_path.parent.mkdir(parents=True, exist_ok=True)
             done_path.write_text(json.dumps(measured, indent=1), encoding="utf-8")
         if (env.opts.set or "").partition(":")[0] == JUDGES_SET and not self.smoke:
-            res.summary += self._judge_report(res.rows, plan.items)
+            res.summary += self._judge_report(res.rows, plan.items, record=not env.opts.probe)
         fade = env.rt.runtime_cfg.runtime.emotion_fade
         for kind in ("emotion", "reaction"):   # M9 D26: the code rule's policies, floors from dev
             mine = [r for r in res.rows if isinstance(r["label"], dict) and policies.kind_of(r["question_id"]) == kind]
@@ -369,7 +372,7 @@ class Decisions:
 
 
     @staticmethod
-    def _judge_report(rows: list[dict[str, Any]], items: list[dict[str, Any]]) -> list[str]:
+    def _judge_report(rows: list[dict[str, Any]], items: list[dict[str, Any]], *, record: bool = True) -> list[str]:
         """B4 per judge; the record is updated only for a judge whose every item was asked in this run."""
         out = ["## Judge validation (B4: real ≥ 85 %, overall above the commonest-answer baseline, planted ≥ 90 %)"]
         results: dict[str, dict[str, Any]] = {}
@@ -390,7 +393,7 @@ class Decisions:
                            f"(n {r['planted_n']}){fa} → {verdict}{partial}")
             if len(got) == want:
                 results[qid], versions[qid] = r, bank().get(qid).version
-        if results:
+        if results and record:
             judges.update_record(results, versions)
         return out
 
@@ -663,8 +666,10 @@ async def planned_group_send(env: RunEnv) -> int:
 
 def _content() -> dict[str, Any]:
     from horizon.evals.content import Drafter, Long, Summary, Transcript
+    from horizon.evals.conversations import Conversations
     from horizon.evals.debate_suites import DebateHistory, DebatePlant, DebateQuality, DebateSuite
     from horizon.evals.deep_check_suite import DeepCheck
+    from horizon.evals.faithfulness import Faithfulness
     from horizon.evals.latency import Latency
     from horizon.evals.memory_suite import EmbedProbe, Memory
     from horizon.evals.moodline import Moodline
@@ -677,7 +682,8 @@ def _content() -> dict[str, Any]:
             "debate-history": DebateHistory(), "debate-plant": DebatePlant(), "debate-quality": DebateQuality(),
             "debate": DebateSuite(), "retrieval": Retrieval(),
             "notfound": NotFound(), "deep-check": DeepCheck(), "memory": Memory(),
-            "embed-probe": EmbedProbe(), "safety": Safety()}
+            "embed-probe": EmbedProbe(), "safety": Safety(), "conversations": Conversations(),
+            "faithfulness": Faithfulness()}
 
 
 SUITES: dict[str, Any] = {"canary": Canary(), "decisions": Decisions(), "smoke": Smoke(), **_content()}

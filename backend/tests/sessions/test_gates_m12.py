@@ -220,9 +220,9 @@ async def test_a_debate_gate_back_by_the_turns_start_is_used(api: Api) -> None:
     assert api.rt.fake is not None
     release = api.rt.fake.park_question("member_rebuttal")
     end = await first_rebuttal_end(api, sid)
-    await api.drive(700)
+    await api.drive(800)
     nxt = next_after(await events(api, sid), end["seq"])
-    assert 651 <= ms_from_iso(nxt["at"]) - ms_from_iso(end["at"]) < 661     # the member's deadline is unchanged
+    assert 735 <= ms_from_iso(nxt["at"]) - ms_from_iso(end["at"]) < 745     # the member's deadline is unchanged
     release.set()                                                           # after the deadline, before the turn
     await api.drive(60000)
     amara = args(await messages(api, sid), "rebuttal")[1]

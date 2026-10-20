@@ -155,8 +155,9 @@ def test_judges_are_one_condition_nouls_worded_so_yes_is_the_failure() -> None:
     from horizon.ai.questions import bank
 
     judges = [e for e in bank().entries.values() if e.purpose == "eval_judge"]
-    assert len(judges) == 35   # M9 (D28, D29): names the feeling, the pairwise judge; M11 (debate D18, D21): eight more;
-    # M12 (rag D22): the two Not-found judges; M13 (memory D40): the four memory judges; M14 (safety D21): six safety judges
+    assert len(judges) == 38   # M9 (D28, D29): names the feeling, the pairwise judge; M11 (debate D18, D21): eight more;
+    # M12 (rag D22): the two Not-found judges; M13 (memory D40): the four memory judges; M14 (safety D21): six safety judges;
+    # M15 (images-music D12): persona fact, answers the last line, sentence supported
     for e in judges:
         assert e.label.endswith("?") and e.deadline == "default"
         assert all(k.startswith("quoted_") for k, v in e.state.items() if v == "quoted")
@@ -236,7 +237,9 @@ def test_emotion_options_are_shuffled_by_seed() -> None:
 def test_the_reaction_entry_compiles_about_a_named_listener() -> None:
     q = bank().question("reaction", seed="s1:3:react:chr_seedRin", name="Rin", about="chr_seedRin")
     assert isinstance(q, Choice) and set(q.options) == EMOTIONS | {"none"}
-    assert q.instructions.startswith("How does Rin react to quoted_line? Choose none when they show no visible reaction.")
+    # M15 (images-music 8.13): v3 says what usually shows on a face; `none` only when the line doesn't touch them
+    assert q.instructions.startswith("How does Rin visibly react to quoted_line as they hear it? A line aimed at Rin")
+    assert "Choose none only when the line doesn't touch them" in q.instructions and bank().get("reaction").version == 3
     assert q.meta is not None and (q.meta.purpose, q.meta.label, q.meta.deadline) == ("reaction", "reaction", "reaction")
     e = bank().get("reaction")
     assert e.floor == 0.2 and set(e.state) == {"mode", "quoted_line", "quoted_before", "quoted_listeners"}   # 9.3 (D39)

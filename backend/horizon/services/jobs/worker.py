@@ -272,7 +272,7 @@ async def call_song(sched: JobScheduler, run: Run, a: Attempt, task: dict[str, A
 async def brief_refused(sched: JobScheduler, run: Run, ch: Mapping[str, Any], job: SongJob) -> bool:
     """M14 (safety D17; doc 12 I4): Jev reads the brief this call sends (edited or drafted), before `before_send`. Its
     spend carries the job's ID, so it comes out of the song task's hold. Late or failed: Lyria is called as before."""
-    from horizon.ai.naive.creation import song_prompt
+    from horizon.ai.naive.creation import song_brief_text
     from horizon.gateway.context import call_ctx
 
     check = getattr(sched.rt.ai.guardrail(True), "check_prompt", None)
@@ -280,7 +280,8 @@ async def brief_refused(sched: JobScheduler, run: Run, ch: Mapping[str, Any], jo
         return False
     cctx = call_ctx("guardrail", world_id=run.world_id, character_id=run.character_id, job_id=run.job_id,
                     creation=ch["status"] != "approved")
-    res = await check(cctx, "song", song_prompt(job.brief, job.title))
+    # M15 (D8, 8.3): the text sent, no title, without our constant constraint lines (they halve Jev's p on copies)
+    res = await check(cctx, "song", song_brief_text(job.brief))
     return bool(not res.fallback and res.verdict == "block")
 
 
@@ -313,7 +314,11 @@ async def image_job(sched: JobScheduler, run: Run, task: Mapping[str, Any], ch: 
     elif type_ == "expression_sheet":
         compiled, mode = compiler.sheet(profile, appearance), "sheet"
     else:
-        compiled, mode = compiler.emotion_edit(profile, "blink" if type_ == "blink_frame" else str(task["emotion"])), "edit"
+        # M15 (images-music D7; doc 13 W3): a hinted "Doesn't look like them" adds the fixed identity line; the hint's
+        # own text is never compiled, so it needs no I3 check
+        identity = run.kind == "emotion_regenerate" and bool(str(run.input.get("prompt") or "").strip())
+        compiled, mode = compiler.emotion_edit(profile, "blink" if type_ == "blink_frame" else str(task["emotion"]),
+                                               identity=identity), "edit"
     if mode == "edit":
         reference = await base_reference(sched, ch)
     refuse(compiled)
@@ -517,7 +522,7 @@ async def commit_song(sched: JobScheduler, conn: AsyncConnection, run: Run, ch: 
     if isinstance(payload, bytes | bytearray):
         audio = bytes(payload)
         return await ap.apply_audio_theme(conn, ch, audio=audio, duration_sec=mp3_duration(audio), brief=brief, model=model,
-                                          prompt=song_prompt(brief, title), cost_usd=float(cur["cost_usd"] or 0.0),
+                                          prompt=song_prompt(brief), cost_usd=float(cur["cost_usd"] or 0.0),
                                           assets_dir=rt.cfg.assets_dir, job_id=run.job_id, now=now)
     spec = rt.ai.song(True).theme(ch["id"], brief, title)
     if isinstance(payload, SongFallback):

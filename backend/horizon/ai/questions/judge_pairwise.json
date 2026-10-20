@@ -1,6 +1,6 @@
 {
  "id": "judge_pairwise",
- "version": 2,
+ "version": 3,
  "purpose": "eval_judge",
  "type": "choice",
  "label": "better reply?",

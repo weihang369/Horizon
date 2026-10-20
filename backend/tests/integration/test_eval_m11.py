@@ -696,3 +696,37 @@ def test_member_sources_count_a_late_answer_from_its_action() -> None:
     got = ds.member_sources([msg("used", "speaks"), msg("below_threshold", "next in order (unsure)"),
                              msg("fallback", "next in order (Jev answered late)"), msg("fallback", "next in order")])
     assert got == {"Jev": 1, "unsure": 1, "late": 1, "failed": 1}
+
+
+# ── M15 (images-music D14, task 6.5): the naive verdict's arm ──
+async def test_the_naive_arm_scores_the_same_test_debates_beside_agent(api: Api, tmp_path: Path,
+                                                                      monkeypatch: pytest.MonkeyPatch) -> None:
+    from horizon.evals import debate_suites as ds
+    from tests.sessions.kit import API
+
+    await api.set_key()
+    assert (await api.post(f"{API}/_test/ai-profile", {"profile": "naive"})).status_code == 204
+    fixture_suite(monkeypatch)
+    monkeypatch.setattr(ds, "TEST_DEBATES", 2)
+    opts = Options("debate", profile="naive")
+    env = env_for(api, tmp_path, opts)
+    s = ds.DebateSuite()
+    res = await s.run(env, s.plan(opts, api.rt.prices, paid=False))
+    naive = [r for r in res.rows if r.get("column") == "naive"]
+    assert len(naive) == 8 and {r["split"] for r in naive} == {"test"}       # 2 test debates × 2 versions × 2 orders
+    head = next(i for i, x in enumerate(res.summary) if x.startswith("## The naive verdict's arm"))
+    assert res.summary[0].startswith("## Debate verdict (agent)") and head > 0
+    assert any(x.startswith("- planted: the strong side wins") for x in res.summary[head:])
+    assert any("naive note-in-tag" in x for x in res.summary[head:])
+
+
+def test_naive_measures_by_hand() -> None:
+    from horizon.evals import debate_suites as ds
+
+    rows = [{"debate": "d1", "version": "planted", "swapped": False, "strong": "prop", "stronger": "prop"},
+            {"debate": "d1", "version": "planted", "swapped": True, "strong": "prop", "stronger": "opp"},
+            {"debate": "d1", "version": "balanced", "swapped": False, "strong": None, "stronger": None},
+            {"debate": "d1", "version": "balanced", "swapped": True, "strong": None, "stronger": "opp"}]
+    lines = ds.naive_measures(rows)
+    assert lines[0].startswith("- planted: the strong side wins 1/1")
+    assert "flip the named side on 1/2 (d1 planted)" in lines[1] and lines[2].endswith("1/1")
