@@ -171,7 +171,7 @@
 - [x] 6.6 Step `repeat` (≈ $0.003). Record.
 - [ ] 6.7 Steps `timing-a` and `timing-b`, ≥ 3 h apart, one may be daytime (≈ $0.05). Record the windows and the
   local clocks.
-- [ ] 6.8 Re-run `compare-models --step probe` to confirm everything now hits (a re-run is free). Add the spend
+- [x] 6.8 Re-run `compare-models --step probe` to confirm everything now hits (a re-run is free). Add the spend
   table against D15 to jev-comparison.md.
 
 ## 7. The report and the findings
@@ -230,7 +230,7 @@
 
 - [ ] 11.1 Final gates: phase 5's list again on the tip, plus `npm run e2e` in the main tree if phase 9 ran. Record the
   table.
-- [ ] 11.2 Add the comparison's spend row to `docs/ai/13-wrap-up.md` W6 and update the milestone memory. Offer the user
+- [x] 11.2 Add the comparison's spend row to `docs/ai/13-wrap-up.md` W6 and update the milestone memory. Offer the user
   a draft of the LinkedIn post and its infographic (dropped: the user chose not to show the comparison on
   LinkedIn, 2026-10-20).
 - [ ] 11.3 Ask the user about the archive and the squash into local dev (as for M7–M15). Nothing is pushed.

@@ -256,3 +256,9 @@ No 429 or 5xx in about 5,500 requests; 1.14 answered at about 0.5–0.6 s per re
 **A guard added after these runs:** the 1.13 judges run (all stored answers) re-wrote `evals/baselines/judges.json`
 with the same figures and today's date on all 32 judges. The file was restored from git, so the dates of each
 judge's real validation stay. A run against a manifest now never writes the judges' record, on either model (D13).
+
+### 6.8 The re-probe ($0)
+
+After the runs, every request of every set step hits the store on both models: 2,535 decisions, 2,024 judges, 45
+deep-check and 341 safety each, **$0 to pay**. A re-run of the comparison, or the next one's base side, costs nothing
+here.
