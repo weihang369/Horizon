@@ -43,7 +43,7 @@
       ]
     },
     "summary": "An adult woman with lavender twin tails, round glasses and a white pastry-chef jacket.",
-    "exportedAt": "2026-10-20"
+    "exportedAt": "2026-10-21"
   },
   "chr_mockElena": {
     "variants": [
@@ -89,7 +89,7 @@
       ]
     },
     "summary": "A middle-aged woman with wavy silver shoulder-length hair, half-rim glasses and a silk scarf over a navy blazer.",
-    "exportedAt": "2026-10-20"
+    "exportedAt": "2026-10-21"
   },
   "chr_mockKenji": {
     "variants": [
@@ -135,7 +135,7 @@
       ]
     },
     "summary": "An adult man with a black undercut, square glasses and a crisp pale-blue shirt.",
-    "exportedAt": "2026-10-20"
+    "exportedAt": "2026-10-21"
   },
   "chr_mockMochi": {
     "variants": [
@@ -183,7 +183,7 @@
       ]
     },
     "summary": "An adult barista with short curly honey-blonde hair, freckles and an orange apron.",
-    "exportedAt": "2026-10-20"
+    "exportedAt": "2026-10-21"
   },
   "chr_seedAmara": {
     "variants": [
@@ -237,7 +237,7 @@
       "extraDetails": "Round gold-rim glasses, white coat over teal scrubs, gold stud earrings."
     },
     "summary": "An adult woman with deep brown skin and short natural black curls, round gold-rim glasses, a white coat over teal scrubs and a stethoscope.",
-    "exportedAt": "2026-10-20"
+    "exportedAt": "2026-10-21"
   },
   "chr_seedHana": {
     "variants": [
@@ -292,7 +292,7 @@
       "extraDetails": "Pink-tinted chestnut bob, cherry-blossom hairpin, denim apron over a cream sundress."
     },
     "summary": "An adult woman with a pink-tinted chestnut bob, green eyes, a cherry-blossom hairpin and a denim apron over a cream sundress.",
-    "exportedAt": "2026-10-20"
+    "exportedAt": "2026-10-21"
   },
   "chr_seedMei": {
     "variants": [
@@ -346,7 +346,7 @@
       "extraDetails": "A pencil through the bun, rectangular glasses pushed up on her head, oversized mustard cardigan over a striped shirt."
     },
     "summary": "An adult woman with long black hair in a low bun with a pencil through it, amber eyes, glasses pushed up and an oversized mustard cardigan.",
-    "exportedAt": "2026-10-20"
+    "exportedAt": "2026-10-21"
   },
   "chr_seedRin": {
     "variants": [
@@ -400,7 +400,7 @@
       "extraDetails": "Fitted charcoal bomber jacket over a graphic tee, over-ear headphones around her neck, adult proportions."
     },
     "summary": "An adult woman with sleek shoulder-length black hair and a teal streak, violet eyes, a charcoal bomber jacket and headphones around her neck.",
-    "exportedAt": "2026-10-20"
+    "exportedAt": "2026-10-21"
   },
   "chr_seedTakeshi": {
     "variants": [
@@ -452,7 +452,7 @@
       "extraDetails": "Thick moustache, weathered tan, olive fishing vest over a flannel shirt, bucket hat."
     },
     "summary": "An older man with a grey crew cut and thick moustache, an olive fishing vest over a flannel shirt and a bucket hat.",
-    "exportedAt": "2026-10-20"
+    "exportedAt": "2026-10-21"
   },
   "chr_seedVictor": {
     "variants": [
@@ -506,6 +506,6 @@
       "extraDetails": "Three-piece navy suit, gold tie pin, pocket-watch chain."
     },
     "summary": "An adult man with slicked-back black hair and a silver streak, sharp grey eyes, a three-piece navy suit and a gold tie pin.",
-    "exportedAt": "2026-10-20"
+    "exportedAt": "2026-10-21"
   }
 }
