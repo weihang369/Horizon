@@ -52,7 +52,7 @@ BASELINE = {  # v2 fix 1
     "sharp": "composed, slightly intense gaze, mouth closed, eyes looking at the viewer",
 }
 EMOTIONS = {  # TESTING.md A2 with v2 fixes 2 and 3; happy reworded by D-103
-    "happy": "a sweet, gentle smile with the lips slightly parted, cheeks softly rounded and smooth, bright relaxed eyes",
+    "happy": "a joyful smile clearly brighter than in the original, lips parted, cheeks softly rounded and smooth, bright sparkling eyes",
     "sad": "inner brows raised, eyes lowered and slightly glossy, mouth gently downturned",
     "angry": "brows drawn down and together, narrowed eyes, tight mouth",
     "surprised": 'eyebrows high, eyes wide open, mouth in a small open "o"',
