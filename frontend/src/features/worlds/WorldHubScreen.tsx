@@ -99,6 +99,7 @@ export function WorldHubScreen({ route }: { route: Extract<Route, { name: "hub" 
             )}
             <MoreMenu
               label="World options"
+              menuClassName={s.worldMenu}
               items={[
                 { id: "edit", label: "Edit world" },
                 { id: "history", label: "Session history" },

@@ -86,6 +86,20 @@ test("World Hub: Roster and Sessions tabs, then a character card opens the profi
   await expect(page.getByRole("heading", { name: "Amara Okafor", level: 1 })).toBeVisible();
 });
 
+test("World Hub: every World options item can be clicked, below the cover's slanted edge too @layout", async ({ page }) => {
+  await open(page, "/w/wld_seedMeridian");
+  await page.getByRole("button", { name: "World options" }).click();
+  const menu = page.getByRole("menu", { name: "World options" });
+  await expect(menu.getByRole("menuitem")).toHaveText(["Edit world", "Session history", "Delete world…"]);
+  // The header used to clip the menu at its bottom edge: the last item was drawn under it and could not be hit.
+  await menu.getByRole("menuitem", { name: "Delete world…" }).click({ timeout: 3000 });
+  const confirm = page.getByRole("dialog", { name: /Delete Meridian Council\?/ });
+  await expect(confirm).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(confirm).toBeHidden();
+  await expect(page.getByRole("heading", { name: "MERIDIAN COUNCIL", level: 1 })).toBeVisible();
+});
+
 test("Profile: [ and ] step through the six tabs and wrap", async ({ page }) => {
   await open(page, "/w/wld_seedMeridian/c/chr_seedAmara");
   const tabs = page.getByRole("tablist", { name: "Profile sections" });

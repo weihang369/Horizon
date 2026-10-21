@@ -16,19 +16,22 @@
 .missing { height: 100vh; display: grid; place-items: center; }
 
 /* ── Cover header ─────────────────────────────────────────────────────── */
+/* The slant clips the art layers only: clipping the whole header cut off the ⋯ menu's lower items (U-15). The
+ * header sits above the panel's cards so the open menu does too. */
 .cover {
+  --slant: polygon(0 0, 100% 0, 100% calc(100% - 26px), 0 100%);
   position: relative;
-  overflow: hidden;
+  z-index: var(--z-chrome);
   isolation: isolate;
-  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 26px), 0 100%);
   animation: coverIn var(--t-scene) var(--ease-out) both;
 }
 @keyframes coverIn { from { transform: scale(1.04); opacity: 0.4; } to { transform: none; opacity: 1; } }
-.coverArt { position: absolute !important; inset: 0; }
+.coverArt { position: absolute !important; inset: 0; clip-path: var(--slant); }
 .coverLoading { background: var(--ink-700); }
 .coverShade {
   position: absolute;
   inset: 0;
+  clip-path: var(--slant);
   background:
     linear-gradient(0deg, color-mix(in srgb, var(--ink-900) 92%, transparent) 0%, color-mix(in srgb, var(--ink-900) 30%, transparent) 55%, transparent 80%),
     linear-gradient(90deg, color-mix(in srgb, var(--ink-900) 55%, transparent), transparent 55%);
@@ -73,6 +76,8 @@
 .youName { font-weight: 700; }
 .youAbout { color: var(--paper-300); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .coverActions { display: flex; align-items: center; gap: 12px; flex: none; }
+/* Ends past the Roster / Archived chips below instead of 2 px short of them (an orange sliver showed, U-15). */
+.worldMenu { padding: 9px 0; }
 .watchCta { animation: global(hz-pop) 380ms var(--ease-slam) 520ms both; }
 
 /* ── Tab row ──────────────────────────────────────────────────────────── */
