@@ -2,8 +2,8 @@
 fields that are computed per request.
 
 Computed: `spentTodayUsd` (today's ledger in HORIZON_TZ), `pricing` (the Clock), `energy.estReplyPoints` and
-`models.embedding` (config-owned; a local override can't move them), and `openRouterKeyStatus`/`demoMode` from the
-key store (M2, openrouter-key spec). The key itself is never part of AppSettings.
+`models.embedding` (config-owned; a local override can't move them), and `openRouterKeyStatus`/`demoMode` (plus
+`openRouterKeySource` when there is a key, D-106) from the key store (M2, openrouter-key spec). The key itself is never part of AppSettings.
 """
 
 from __future__ import annotations
@@ -64,12 +64,14 @@ async def spent_today(conn: AsyncConnection, clock: Clock) -> float:
 
 
 async def app_settings(conn: AsyncConnection, *, seed: dict[str, Any], local: dict[str, Any], clock: Clock,
-                       key_status: str = "missing") -> dict[str, Any]:
+                       key_status: str = "missing", key_source: str | None = None) -> dict[str, Any]:
     s = deep_merge(seed, local)
     s["models"] = {**s["models"], "embedding": seed["models"]["embedding"]}
     s["energy"] = {**s["energy"], "estReplyPoints": dict(seed["energy"]["estReplyPoints"])}
     s["openRouterKeyStatus"] = key_status
     s["demoMode"] = key_status != "set"
+    if key_source is not None:
+        s["openRouterKeySource"] = "env" if key_source == "env" else "app"
     s["spentTodayUsd"] = await spent_today(conn, clock)
     s["pricing"] = {"period": clock.pricing_period(), "nextChangeAt": to_iso(clock.next_change_at())}
     return s
@@ -77,7 +79,7 @@ async def app_settings(conn: AsyncConnection, *, seed: dict[str, Any], local: di
 
 # ── PATCH /settings (http-api "Settings update", design D12) ─────────────────────
 # Computed or config-owned: ignored when a patch carries them (the portable contract test expects "ignored", OQ-E).
-IGNORED_TOP = ("openRouterKeyStatus", "demoMode", "spentTodayUsd", "pricing", "models")
+IGNORED_TOP = ("openRouterKeyStatus", "openRouterKeySource", "demoMode", "spentTodayUsd", "pricing", "models")
 IGNORED_ENERGY = ("estReplyPoints",)
 
 

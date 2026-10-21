@@ -89,6 +89,7 @@ type DebatePhase = "setup" | "opening" | "rebuttal" | "closing" | "verdict" | "e
 ```ts
 AppSettings {
   openRouterKeyStatus: "missing" | "set" | "invalid";   // the key itself is NEVER sent to the frontend
+  openRouterKeySource?: "env" | "app";   // D-106: OPENROUTER_API_KEY (.env) or saved in Settings; absent without a key
   demoMode: boolean;                                     // true when no key is set
   models: { chat: string; decision: string; image: string; music: string; embedding: string };  // config defaults (embedding: rev 1.3)
   modelOverrides?: Partial<AppSettings["models"]>;      // local, git-ignored

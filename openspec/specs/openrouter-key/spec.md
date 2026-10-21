@@ -54,6 +54,17 @@ While the effective key comes from the environment or `.env`, `PUT /settings/key
 - **WHEN** `OPENROUTER_API_KEY` is set and the UI saves a different key
 - **THEN** the request rejects with `conflict`, `details.source: "env"`, and `data/secrets.local.json` is not written
 
+### Requirement: Settings report where the key comes from
+When there is a key, `AppSettings.openRouterKeySource` SHALL be `env` for a key from `OPENROUTER_API_KEY` (environment or `.env`) and `app` for a key saved through `PUT /settings/key`; without a key it SHALL be absent (D-106). For an `env` key, Settings → Connection SHALL show that it comes from `.env` and how to change it, instead of the key field, Save and Clear (which the backend refuses for it); Test connection SHALL stay.
+
+#### Scenario: Key from .env
+- **WHEN** `OPENROUTER_API_KEY` is set and Settings → Connection opens
+- **THEN** settings report `openRouterKeySource: "env"`, and the tab shows "from .env" with no key field, Save or Clear
+
+#### Scenario: Key saved in the app
+- **WHEN** a key was saved through `PUT /settings/key` and no environment key is set
+- **THEN** settings report `openRouterKeySource: "app"`, and the key field, Save and Clear show
+
 ### Requirement: Key status and demo mode
 `openRouterKeyStatus` SHALL be:
 - `missing` when there is no key;

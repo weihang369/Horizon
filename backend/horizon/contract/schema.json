@@ -284,6 +284,13 @@
           ],
           "type": "object"
         },
+        "openRouterKeySource": {
+          "enum": [
+            "env",
+            "app"
+          ],
+          "type": "string"
+        },
         "openRouterKeyStatus": {
           "enum": [
             "missing",

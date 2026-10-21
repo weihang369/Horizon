@@ -30,6 +30,9 @@ export type Side = "prop" | "opp";
 export interface ModelSet { chat: string; decision: string; image: string; music: string; embedding: string }
 export interface AppSettings {
   openRouterKeyStatus: "missing" | "set" | "invalid";
+  /** Where the key comes from when there is one (D-106): `env` = OPENROUTER_API_KEY in the environment or .env, which
+   * Settings can't change; `app` = saved in Settings. Absent without a key (and on the MockClient). */
+  openRouterKeySource?: "env" | "app";
   demoMode: boolean;
   models: ModelSet;
   modelOverrides?: Partial<ModelSet>;

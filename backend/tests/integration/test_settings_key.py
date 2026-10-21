@@ -41,6 +41,18 @@ async def test_normal_mode_reads_the_env_key(make_api: Any, tmp_path: Path) -> N
     assert s["openRouterKeyStatus"] == "set" and s["demoMode"] is False
 
 
+async def test_settings_report_where_the_key_comes_from(make_api: Any, tmp_path: Path) -> None:
+    """D-106: `openRouterKeySource` is `app` for a key saved in Settings, `env` for OPENROUTER_API_KEY, absent without."""
+    a: Api = await make_api(test_mode=False, data_dir=tmp_path / "src")
+    assert "openRouterKeySource" not in await a.json("/api/v1/settings")
+    a.rt.keys.set_key(KEY)   # as PUT /settings/key stores it, without the network check
+    assert (await a.json("/api/v1/settings"))["openRouterKeySource"] == "app"
+    a.rt.keys._env_key = SecretStr(KEY)
+    assert (await a.json("/api/v1/settings"))["openRouterKeySource"] == "env"
+    r = await a.client.patch("/api/v1/settings", json={"openRouterKeySource": "app"})
+    assert r.status_code == 200 and r.json()["openRouterKeySource"] == "env"   # computed: a patch can't move it
+
+
 async def test_energy_regenerates_only_with_a_key(api: Api) -> None:
     async with api.rt.db.write() as tx:
         await tx.conn.execute(text("UPDATE characters SET energy_current = 100, energy_as_of = '2026-10-03T02:00:00.000Z' "

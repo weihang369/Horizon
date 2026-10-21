@@ -53,6 +53,7 @@ const ModelSetSchema = so({ chat: z.string(), decision: z.string(), image: z.str
 const unit = z.number().min(0).max(1);
 export const AppSettingsSchema = so({
   openRouterKeyStatus: z.enum(["missing", "set", "invalid"]),
+  openRouterKeySource: z.enum(["env", "app"]).optional(),
   demoMode: z.boolean(),
   models: ModelSetSchema,
   modelOverrides: ModelSetSchema.partial().optional(),

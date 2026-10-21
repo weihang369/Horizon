@@ -67,7 +67,7 @@ def _dump(m: BaseModel | None) -> dict[str, Any] | None:
 async def settings_body(rt: Runtime) -> dict[str, Any]:
     async with rt.db.read() as conn:
         return await settings_svc.app_settings(conn, seed=rt.seed_settings, local=rt.local_settings(), clock=rt.clock,
-                                               key_status=rt.keys.status())
+                                               key_status=rt.keys.status(), key_source=rt.keys.source())
 
 
 @router.get("/settings")
