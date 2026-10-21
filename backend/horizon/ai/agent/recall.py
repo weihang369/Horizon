@@ -134,17 +134,25 @@ def mmr(items: Sequence[Item], n: int, lam: float) -> list[Item]:
     return picked
 
 
-def recall_bundle(req: DeepRequest, docs: QueryBundle | None, dense: dict[int, list[float]], space_id: str) -> QueryBundle:
-    """D32: the documents' bundle when that branch ran; else the message and, with its earlier lines, its words."""
-    if docs is not None:   # its own vector when the documents' search had none (no indexed documents)
-        return docs if docs.dense.get(space_id) or not dense else replace(docs, dense={space_id: dense})
-    texts = [req.message, "\n".join([*req.earlier, req.message])] if req.earlier else [req.message]
+def _terms(texts: Sequence[str]) -> tuple[str, ...]:
+    """Recall's BM25 terms: the texts' words in order, de-duplicated, ≤ 24 (never ranked against the documents)."""
     terms: list[str] = []
     for t_ in texts:
         terms += [w for w in q.words(t_) if w not in terms]
+    return tuple(terms[:q.MAX_TERMS_REWRITTEN])
+
+
+def recall_bundle(req: DeepRequest, docs: QueryBundle | None, dense: dict[int, list[float]], space_id: str) -> QueryBundle:
+    """D32: the documents' texts and vectors when that branch ran; else the message and, with its earlier lines, its
+    words. The documents' own terms are not reused: they are ranked against the speaker's documents and leave out
+    words no passage holds (U-34), which are often what recall looks for ("my sister")."""
+    if docs is not None:   # its own vector when the documents' search had none (no indexed documents)
+        out = docs if docs.dense.get(space_id) or not dense else replace(docs, dense={space_id: dense})
+        return replace(out, terms=_terms([t for t in (docs.rewrite, docs.message or docs.text) if t]))
+    texts = [req.message, "\n".join([*req.earlier, req.message])] if req.earlier else [req.message]
     return QueryBundle(text=req.message, message_id=req.message_id, speaker_id=req.speaker.id,
                        mode=req.session.mode, source="as_written", message=req.message, earlier=tuple(req.earlier),
-                       dense_texts=tuple(texts), terms=tuple(terms[:q.MAX_TERMS_REWRITTEN]),
+                       dense_texts=tuple(texts), terms=_terms(texts),
                        dense={space_id: dense} if dense else {}, display=q.display(req.message))
 
 
