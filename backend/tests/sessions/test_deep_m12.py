@@ -237,6 +237,18 @@ async def test_a_usable_passage_that_lost_on_rank_says_not_in_top_k(api: Api) ->
     assert set(actions) == {"kept", "not in top 3"}
 
 
+async def test_each_passage_row_shows_the_found_line_after_the_usable_line(api: Api) -> None:
+    """U-36: a row compares p_partly + p_answers with t_keep, then p_answers alone with t_found."""
+    sid = await agent(api, "one_on_one", [AMARA])
+    gate(api, AMARA, 0.9)
+    assert api.rt.fake is not None
+    api.rt.fake.answer_question("passage:*", ANSWERS)
+    [reply] = await send(api, sid, QUESTION)
+    for r in rows(reply, "passage"):
+        assert [(c["name"], c["value"], c["threshold"]) for c in r["compared"]] == [
+            ("t_keep", 0.95, 0.9), ("t_found", 0.9, 0.5)]
+
+
 # ── 7.1 Jev call 2 ──
 async def test_one_check_rate_limited_falls_back_for_that_passage(api: Api) -> None:
     sid = await agent(api, "one_on_one", [AMARA])

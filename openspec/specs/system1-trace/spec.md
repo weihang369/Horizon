@@ -198,7 +198,11 @@ A reply whose plan asked "needs documents?" SHALL carry one row per candidate as
 - **THEN** its trace has a `docs` row with `result: "used"`, and a `standalone` row whose answer is "no" with `result: "used"`
 
 ### Requirement: Passage rows
-A deep reply SHALL carry one `deep_check` row per checked candidate, about that passage's chunk id, with the level Jev chose, comparing p(answers) + p(partly) against `t_keep`: `used` when kept, `below_threshold` when dropped, `fallback` when its answer was missing. A set check SHALL add one row. The rows SHALL be grouped as "passages" with the slowest check's latency.
+A deep reply SHALL carry one `deep_check` row per checked candidate, about that passage's chunk id, with the level Jev chose, comparing p(answers) + p(partly) against `t_keep` and then p(answers) against `t_found`: `used` when kept, `below_threshold` when dropped, `fallback` when its answer was missing. A set check SHALL add one row. The rows SHALL be grouped as "passages" with the slowest check's latency. Insight SHALL label the two comparisons "usable" and "answers", draw the row's meter and tone from the first, and head the group with the outcome the keep rule reached (found, found together, partly, not found or fallback) and how many passages the reply got.
+
+#### Scenario: Usable but not found
+- **WHEN** a kept passage scored p(answers) 0.30 and p(partly) 0.67, and another passage scored p(answers) 0.65
+- **THEN** the first row reads "usable 0.97 ≥ 0.90 · answers 0.30 < 0.50" and is not greyed, and the group opens with "found"
 
 #### Scenario: Two kept, six dropped
 - **WHEN** a deep reply kept two of eight checked passages

@@ -295,5 +295,13 @@
 @keyframes s1Grow { from { transform: scaleX(0); } }
 :global(:root[data-motion="reduced"]) .s1Fill { animation: none; }
 .s1Empty { margin: 0; padding: 9px 10px; font-size: 12px; line-height: 1.4; color: var(--paper-300); }
+.s1Result {
+  margin: 7px 10px 0; padding: 6px 8px; font-size: 12px; line-height: 1.4; color: var(--paper-300);
+  background: var(--ink-700); border-left: 2px solid var(--c-primary);
+}
+.s1Result b { margin-right: 6px; font: 700 10.5px/1.2 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--paper-50); }
+.s1Result[data-outcome="not_found"] { border-left-color: var(--paper-300); }
+.s1Result[data-outcome="fallback"] { border-left-color: var(--signal-warn); }
+.s1Result[data-outcome="fallback"] b { color: var(--signal-warn); }
 .s1Fold { margin: 0 10px 9px; padding: 0; border: 0; background: none; color: var(--paper-300); font-size: 12px; text-decoration: underline; cursor: pointer; }
 .s1Folded { opacity: 0.75; border-top: 1px dashed var(--ink-500); }

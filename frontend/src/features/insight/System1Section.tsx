@@ -105,12 +105,52 @@ export function resolveId(id: string, trace: TurnTrace | undefined, nameOf: (id:
   return id;
 }
 
-/** The row's tone: did the value code tested cross its line? A row with no comparison was used as answered. */
+/** The row's tone: did the value cross the line its meter draws (the first comparison)? A row with no comparison was
+ * used as answered. Later comparisons are further reads of the same answer (a kept passage that isn't "found" is not
+ * greyed). */
 function toneOf(r: System1Row): "pass" | "miss" | "fallback" | "unused" {
   if (r.result === "fallback") return "fallback";
   if (r.result === "not_used") return "unused";
   if (r.result === "below_threshold") return "miss";
-  return r.compared?.some((c) => c.value < c.threshold) ? "miss" : "pass";
+  const line = r.compared?.[0];
+  return line && line.value < line.threshold ? "miss" : "pass";
+}
+
+// U-36: a passage row compares two numbers from one answer; each says which.
+const CMP_LABEL: Record<string, string> = { "passage:t_keep": "usable", "passage:t_found": "answers" };
+
+const cmpLine = (r: System1Row) => (r.compared ?? []).map((c) => {
+  const label = CMP_LABEL[`${r.id}:${c.name}`];
+  return `${label ? `${label} ` : ""}${r2(c.value).toFixed(2)} ${c.value >= c.threshold ? "≥" : "<"} ${r2(c.threshold).toFixed(2)}`;
+}).join(" · ");
+
+export type PassageOutcome = "found" | "found_together" | "partly" | "not_found" | "fallback";
+
+const passages = (n: number) => (n === 1 ? "1 passage" : `${n} passages`);
+
+/** U-36: the passages' outcome, read back from the rows as the keep rule decides it (backend ai/agent/keep.py):
+ * found (a passage's p_answers ≥ t_found, or the set check said yes) → else fallback (a check missing) → partly (some
+ * usable) → not found. Turns saved before the rows carried t_found read it from the set check (asked only when none
+ * was found) or from two usable passages without one; a single usable passage without it gets no line. */
+export function passageResult(rows: System1Row[]): { outcome: PassageOutcome; label: string; text: string } | null {
+  const ps = rows.filter((r) => r.id === "passage");
+  if (!ps.length) return null;
+  const crossed = (r: System1Row, name: string) => r.compared?.some((c) => c.name === name && c.value >= c.threshold) ?? false;
+  const kept = ps.filter((r) => r.action === "kept" || r.action === "kept by search order").length;
+  const usable = ps.filter((r) => crossed(r, "t_keep")).length;
+  const set = rows.find((r) => r.id === "passage_set");
+  const missing = ps.some((r) => r.result === "fallback");
+  const saved = ps.some((r) => r.compared?.some((c) => c.name === "t_found"));
+  if (ps.some((r) => crossed(r, "t_found")) || (!saved && !set && !missing && usable >= 2))
+    return { outcome: "found", label: "found", text: `A passage answers it; the reply gets the best ${passages(kept)}.` };
+  if (set?.answer === "yes")
+    return { outcome: "found_together", label: "found together", text: `No single passage answers it, but these do together; the reply gets ${passages(kept)}.` };
+  if (missing)
+    return { outcome: "fallback", label: "fallback", text: `Not every check came back; the reply gets the top ${passages(kept)} in search order, unscored.` };
+  if (!saved && !set && usable) return null;   // the set check is only asked when none was found
+  if (usable)
+    return { outcome: "partly", label: "partly", text: `No passage fully answers it; the reply gets the ${kept === 1 ? "1 usable passage" : `${kept} usable passages`}.` };
+  return { outcome: "not_found", label: "not found", text: "No passage is usable; the reply gets none." };
 }
 
 /** Meter rows (U-29): label and verdict, then the answer with a bar of the value code tested and a tick at its line. */
@@ -142,11 +182,7 @@ function Row({ r, trace, nameOf }: { r: System1Row; trace?: TurnTrace; nameOf: (
           </span>
         )}
       </div>
-      {r.compared?.length ? (
-        <p className={s.s1Cmp}>
-          {r.compared.map((c) => `${r2(c.value).toFixed(2)} ${c.value >= c.threshold ? "≥" : "<"} ${r2(c.threshold).toFixed(2)}`).join(" · ")}
-        </p>
-      ) : null}
+      {r.compared?.length ? <p className={s.s1Cmp}>{cmpLine(r)}</p> : null}
     </li>
   );
 }
@@ -166,44 +202,48 @@ export function System1Rows({ trace, nameOf }: { trace?: TurnTrace; nameOf: (id:
   const nothing = searchedNothing(trace, groups);
   return (
     <div className={s.s1}>
-      {groups.map((g) => (
-        <Fragment key={g.purpose}>
-          <div className={s.s1Group} data-purpose={g.purpose}>
-            <p className={s.s1Head}>
-              {g.label}
-              {g.tag && <span className={s.s1Tag}>{g.tag}</span>}
-              <span className={s.s1Lat} data-fallback={g.fallback || undefined}>{g.fallback ? "fallback" : g.latencyMs !== null ? `${Math.round(g.latencyMs)} ms` : "—"}</span>
-            </p>
-            {g.why && <p className={s.s1Why}>{g.why}</p>}
-            <ul className={s.s1List}>
-              {g.rows.map((r, i) => <Row key={`${r.id}:${r.about ?? ""}:${i}`} r={r} trace={trace} nameOf={nameOf} />)}
-            </ul>
-            {g.folded.length > 0 && (
-              <>
-                <button type="button" className={s.s1Fold} aria-expanded={!!open[g.purpose]}
-                  onClick={() => setOpen((o) => ({ ...o, [g.purpose]: !o[g.purpose] }))}>
-                  asked about the others ({g.folded.length})
-                </button>
-                {open[g.purpose] && (
-                  <ul className={cx(s.s1List, s.s1Folded)}>
-                    {g.folded.map((r, i) => <Row key={`f:${r.id}:${r.about ?? ""}:${i}`} r={r} trace={trace} nameOf={nameOf} />)}
-                  </ul>
-                )}
-              </>
-            )}
-          </div>
-          {nothing?.after === g.purpose && (
-            <div className={s.s1Group} data-purpose="deep_check" data-empty="">
-              <p className={s.s1Head}>passages<span className={s.s1Lat}>—</span></p>
-            <p className={s.s1Why}>{PURPOSE_WHY.deep_check}</p>
-              <p className={s.s1Empty}>
-                The search matched nothing in {nothing.about ? `${resolveId(nothing.about, trace, nameOf)}'s` : "the"} documents, so no
-                passage was checked and the reply used none.
+      {groups.map((g) => {
+        const result = g.purpose === "deep_check" ? passageResult(g.rows) : null;
+        return (
+          <Fragment key={g.purpose}>
+            <div className={s.s1Group} data-purpose={g.purpose}>
+              <p className={s.s1Head}>
+                {g.label}
+                {g.tag && <span className={s.s1Tag}>{g.tag}</span>}
+                <span className={s.s1Lat} data-fallback={g.fallback || undefined}>{g.fallback ? "fallback" : g.latencyMs !== null ? `${Math.round(g.latencyMs)} ms` : "—"}</span>
               </p>
+              {g.why && <p className={s.s1Why}>{g.why}</p>}
+              {result && <p className={s.s1Result} data-outcome={result.outcome}><b>{result.label}</b>{result.text}</p>}
+              <ul className={s.s1List}>
+                {g.rows.map((r, i) => <Row key={`${r.id}:${r.about ?? ""}:${i}`} r={r} trace={trace} nameOf={nameOf} />)}
+              </ul>
+              {g.folded.length > 0 && (
+                <>
+                  <button type="button" className={s.s1Fold} aria-expanded={!!open[g.purpose]}
+                    onClick={() => setOpen((o) => ({ ...o, [g.purpose]: !o[g.purpose] }))}>
+                    asked about the others ({g.folded.length})
+                  </button>
+                  {open[g.purpose] && (
+                    <ul className={cx(s.s1List, s.s1Folded)}>
+                      {g.folded.map((r, i) => <Row key={`f:${r.id}:${r.about ?? ""}:${i}`} r={r} trace={trace} nameOf={nameOf} />)}
+                    </ul>
+                  )}
+                </>
+              )}
             </div>
-          )}
-        </Fragment>
-      ))}
+            {nothing?.after === g.purpose && (
+              <div className={s.s1Group} data-purpose="deep_check" data-empty="">
+                <p className={s.s1Head}>passages<span className={s.s1Lat}>—</span></p>
+                <p className={s.s1Why}>{PURPOSE_WHY.deep_check}</p>
+                <p className={s.s1Empty}>
+                  The search matched nothing in {nothing.about ? `${resolveId(nothing.about, trace, nameOf)}'s` : "the"} documents, so no
+                  passage was checked and the reply used none.
+                </p>
+              </div>
+            )}
+          </Fragment>
+        );
+      })}
     </div>
   );
 }

@@ -2,8 +2,8 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import type { TurnTrace } from "../../contract/types";
-import { groupSystem1, resolveId, showSystem1, System1Rows } from "./System1Section";
+import type { System1Row, TurnTrace } from "../../contract/types";
+import { groupSystem1, passageResult, resolveId, showSystem1, System1Rows } from "./System1Section";
 
 const nameOf = (id: string) => ({ chr_seedHana: "Hana", chr_seedRin: "Rin" } as Record<string, string>)[id] ?? id;
 
@@ -82,6 +82,41 @@ describe("System 1 section", () => {
     expect(html).not.toContain(">English?");
     expect(html).toContain("every question in one request");
     expect(html).toContain(">for Insight only</span>");
+  });
+
+  it("labels a passage's usable and found lines, keeps a usable-not-found passage bright, and heads Passages with the result (U-36)", () => {
+    const pass = (about: string, use: number, ans: number, action: string): System1Row => ({
+      purpose: "deep_check", id: "passage", version: 2, label: "does this passage answer it?", about, answer: ans >= 0.5 ? "answers" : "partly", p: use,
+      compared: [{ name: "t_keep", value: use, threshold: 0.9 }, { name: "t_found", value: ans, threshold: 0.5 }],
+      result: action === "kept" ? "used" : "below_threshold", action,
+    });
+    const found: TurnTrace = { messageId: "msg_a5", knowledge: trace.knowledge, system1: { questions: [
+      pass("kch_p1", 0.95, 0.65, "kept"), pass("kch_p1", 0.97, 0.3, "kept"), pass("kch_p1", 0.4, 0.1, "dropped"),
+    ] } };
+    const html = renderToStaticMarkup(createElement(System1Rows, { trace: found, nameOf }));
+    expect(html).toContain("usable 0.95 ≥ 0.90 · answers 0.65 ≥ 0.50");
+    expect(html).toContain("usable 0.97 ≥ 0.90 · answers 0.30 &lt; 0.50");
+    expect(html.match(/data-tone="pass"/g)).toHaveLength(2);           // the second is kept though not "found"
+    expect(html).toContain('data-outcome="found"');
+    expect(html).toContain("the reply gets the best 2 passages");
+    expect(html.indexOf("data-outcome")).toBeLessThan(html.indexOf("usable 0.95"));   // at the top of Passages
+
+    const qs = (...q: System1Row[]) => q;
+    const partly = qs(pass("kch_p1", 0.95, 0.3, "kept"));
+    expect(passageResult(partly)?.outcome).toBe("partly");
+    expect(passageResult(partly)?.text).toContain("the 1 usable passage");
+    const set: System1Row = { purpose: "deep_check", id: "passage_set", version: 1, label: "do these together answer it?", answer: "yes", result: "used", action: "found together" };
+    expect(passageResult(qs(pass("kch_p1", 0.95, 0.3, "kept"), pass("kch_p1", 0.92, 0.2, "kept"), set))?.outcome).toBe("found_together");
+    expect(passageResult(qs(pass("kch_p1", 0.4, 0.1, "dropped")))?.outcome).toBe("not_found");
+    expect(passageResult(qs(pass("kch_p1", 0.95, 0.3, "kept"),
+      { purpose: "deep_check", id: "passage", version: 2, label: "does this passage answer it?", about: "kch_p1", answer: "missing", compared: [], result: "fallback", action: "not checked" },
+    ))?.outcome).toBe("fallback");
+    // a turn saved before t_found: two usable and no set check means one was found; one usable can't be told apart
+    const old = (use: number): System1Row => ({ ...pass("kch_p1", use, 0, "kept"), compared: [{ name: "t_keep", value: use, threshold: 0.9 }] });
+    expect(passageResult(qs(old(0.99), old(0.95)))?.outcome).toBe("found");
+    expect(passageResult(qs(old(0.99)))).toBeNull();
+    expect(passageResult(qs(old(0.99), old(0.95), { ...set, answer: "no", action: "partly" }))?.outcome).toBe("partly");
+    expect(passageResult(qs({ ...old(0.5), action: "dropped" }))?.outcome).toBe("not_found");
   });
 
   it("resolves IDs to names or titles, never text", () => {

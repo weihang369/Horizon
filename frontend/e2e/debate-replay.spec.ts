@@ -107,6 +107,8 @@ test("Insight: the drawer's edge resizes it (drag, keys, double-click), the deba
   const passages = insight.locator('[data-purpose="deep_check"]').first();
   const plan = insight.locator('[data-purpose="debate_plan"], [data-purpose="turn_plan"]').first();
   expect(await top(passages)).toBeGreaterThan(400);
+  // U-36: Passages opens with the outcome; the set check said no, so no passage answers it alone
+  await expect(passages.locator("[data-outcome]")).toHaveText(/^partly.*the reply gets the 2 usable passages\.$/);
   await insight.getByRole("button", { name: /^check: Jev judges each passage found/ }).click();
   await expect.poll(() => top(passages)).toBeLessThan(200);
   await insight.getByRole("button", { name: /^state: The situation, written as data for Jev/ }).click();

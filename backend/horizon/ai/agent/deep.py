@@ -424,8 +424,10 @@ class DeepSteps:
                 probs = (1.0 - pa - pp, pp, pa)
                 level = max(range(3), key=lambda i: (probs[i], i))
                 use = pa + pp
+                # the usable line first (the meter draws it), then the found line (U-36: p_answers was never shown)
                 row.update(answer=LEVEL_ANSWER[level], p=round(use, 4), compared=[
-                    {"name": "t_keep", "value": round(use, 4), "threshold": th["t_keep"]}],
+                    {"name": "t_keep", "value": round(use, 4), "threshold": th["t_keep"]},
+                    {"name": "t_found", "value": round(pa, 4), "threshold": th["t_found"]}],
                     result="used" if c.rid in kept else "below_threshold",
                     action="kept" if c.rid in kept else outranked if c.rid in usable else "dropped")
             out.append(row)
