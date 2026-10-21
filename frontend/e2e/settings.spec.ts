@@ -156,13 +156,21 @@ test("Display: every control changes the page, the preview follows reduced motio
   await radio("Reduced motion", "Off").click();
   await expect(preview).toContainText(/motion full · vfx full/i);
 
-  // Presenter Mode: text L, and Connection shows neither the key's last four nor a Show button.
+  // Presenter Mode: text L (the Text size control locked on L), and Connection shows neither the key's last four nor a Show button.
   await setKey(page);
   await page.evaluate(() => { location.hash = "#/settings/connection"; });
   await expect(page.locator("[data-status]")).toContainText("sk-or-…0001");
   await page.evaluate(() => { location.hash = "#/settings/display"; });
   await toggle("Presenter Mode").click();
   await expect(root).toHaveAttribute("data-text-size", "l");
+  // The Text size control shows the L it forces, locked; turning Presenter off gives back the M chosen above.
+  await expect(radio("Text size", "L")).toHaveAttribute("aria-checked", "true");
+  await expect(radio("Text size", "M")).toBeDisabled();
+  await expect(page.getByText("Presenter Mode sets L")).toBeVisible();
+  await toggle("Presenter Mode").click();
+  await expect(radio("Text size", "M")).toHaveAttribute("aria-checked", "true");
+  await expect(radio("Text size", "S")).toBeEnabled();
+  await toggle("Presenter Mode").click();
   await page.evaluate(() => { location.hash = "#/settings/connection"; });
   await expect(page.locator("[data-status]")).toContainText("KEY SET");
   await expect(page.locator("[data-status]")).not.toContainText("0001");

@@ -38,8 +38,8 @@ export function DisplayTab() {
           </Row>
         </Section>
         <Section title="Reading">
-          <Row label="Text size" desc="Body text 14 / 16 / 18 px.">
-            <Segmented label="Text size" value={d.textSize} onChange={(textSize) => setPrefs({ display: { textSize } })} options={[{ value: "s", label: "S" }, { value: "m", label: "M" }, { value: "l", label: "L" }]} />
+          <Row label="Text size" desc={presenter ? "Body text 14 / 16 / 18 px. Presenter Mode sets L; turn it off to choose." : "Body text 14 / 16 / 18 px."}>
+            <Segmented label="Text size" disabled={presenter} value={presenter ? "l" : d.textSize} onChange={(textSize) => setPrefs({ display: { textSize } })} options={[{ value: "s", label: "S" }, { value: "m", label: "M" }, { value: "l", label: "L" }]} />
           </Row>
           <Row label="Presenter Mode" desc="For demos and screen recordings: hides your key and the dev overlay, forces text size L, compact Insight drawer, shows ×N and REPLAY badges.">
             <Toggle label="Presenter Mode" hideLabel checked={presenter} onChange={(presenterMode) => setPrefs({ presenterMode })} />
