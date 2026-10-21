@@ -25,6 +25,7 @@ const GROUPS: { title: string; rows: [ReactNode, string][] }[] = [
     title: "Browsing",
     rows: [
       [or("←", "→"), "World Select: previous / next world"],
+      [or("Home", "End"), "World Select: first world / + New World"],
       [k("Enter"), "Open the focused world or card"],
       [or("[", "]"), "Character profile: previous / next tab"],
       [or("←", "→"), "Intro: previous / next card"],

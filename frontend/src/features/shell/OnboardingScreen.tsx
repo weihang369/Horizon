@@ -11,7 +11,7 @@ import { client } from "../../client";
 import { useSettings } from "../../client/hooks";
 import type { HorizonErrorShape } from "../../contract/errors";
 import type { Route } from "../../router";
-import { navigate } from "../../router";
+import { navigate, routerStore } from "../../router";
 import { setPrefs } from "../../stores/prefs";
 import { Button } from "../../ui/Button";
 import { TextField } from "../../ui/Fields";
@@ -39,18 +39,25 @@ export function OnboardingScreen({ route }: { route: Extract<Route, { name: "onb
   useHouseScreen();
   const card = Math.min(Math.max(route.card ?? 1, 1), STEPS);
   const isKey = card === STEPS;
+  // Step from the card being slashed to, if any: `card` only changes at the transition's cover point, so a quick second
+  // → used to re-request the same card and was lost.
+  const target = () => {
+    const p = routerStore.getState().pending;
+    return p?.name === "onboarding" ? Math.min(Math.max(p.card ?? 1, 1), STEPS) : card;
+  };
   const go = (n: number) => {
-    if (n < 1 || n > STEPS || n === card) return;
+    const from = target();
+    if (n < 1 || n > STEPS || n === from) return;
     audio.playSfx("ui_whoosh");
-    navigate({ name: "onboarding", card: n }, { transition: n > card ? "slash" : "slash-back", replace: true });
+    navigate({ name: "onboarding", card: n }, { transition: n > from ? "slash" : "slash-back", replace: true });
   };
   const finish = (to: Route) => {
     setPrefs({ seenOnboarding: true });
     navigate(to);
   };
 
-  useShortcut("arrowright", () => go(card + 1));
-  useShortcut("arrowleft", () => go(card - 1));
+  useShortcut("arrowright", () => go(target() + 1));
+  useShortcut("arrowleft", () => go(target() - 1));
 
   const c = CARDS[card - 1];
   return (

@@ -56,3 +56,19 @@ test("“How it works” on World Select and in the Esc menu both replay the int
   await expect(page).toHaveURL(/#\/onboarding\/1$/);
   await expect(page.getByRole("list", { name: "Step 1 of 5" })).toBeVisible();
 });
+
+test("intro: →/← step through the cards, and a quick second → is not lost mid-transition", async ({ page }) => {
+  await open(page, "/onboarding/1");
+  await expect(page.getByRole("heading", { name: "WORLDS", level: 1 })).toBeVisible();
+  // Two presses inside the ~300 ms slash: the second used to re-request card 2 (U-11).
+  await page.keyboard.press("ArrowRight");
+  await page.keyboard.press("ArrowRight");
+  await expect(page).toHaveURL(/#\/onboarding\/3$/);
+  await expect(page.getByRole("heading", { name: "SESSIONS", level: 1 })).toBeVisible();
+  await page.keyboard.press("ArrowLeft");
+  await expect(page).toHaveURL(/#\/onboarding\/2$/);
+  await expect(page.getByRole("heading", { name: "CHARACTERS", level: 1 })).toBeVisible();
+  // Esc on the intro is not the pause menu.
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog", { name: "Paused" })).toHaveCount(0);
+});
