@@ -10,19 +10,19 @@
         "type": "character",
         "characterId": "chr_seedRin"
       },
-      "content": "hey. raid's at eight, don't be late again. still not covering for you if you bail on dinner, by the way.",
+      "content": "kai. you're alive. hana said you'd been buried in tickets all week.\n\nanyway i'm on hour nine of a build that won't compile, so if i sound like a zombie that's accurate.\n\nwhat's up.",
       "status": "complete",
-      "createdAt": "2026-09-26T11:30:01.467Z",
+      "createdAt": "2026-09-26T11:30:03.507Z",
       "emotion": "neutral",
       "emotionSource": "classifier",
       "usage": {
-        "tokensIn": 959,
+        "tokensIn": 702,
         "tokensCached": 0,
-        "tokensOut": 28,
-        "costUsd": 0.000353,
-        "energySpent": 4,
-        "firstTokenMs": 1170,
-        "totalMs": 1419
+        "tokensOut": 49,
+        "costUsd": 0.000074,
+        "energySpent": 1,
+        "firstTokenMs": 3182,
+        "totalMs": 3797
       },
       "trace": {
         "messageId": "msg_mockR01",
@@ -31,10 +31,10 @@
           "used": {
             "persona": 292,
             "system": 605,
-            "mode": 174,
+            "mode": 94,
             "history": 0,
             "user": 0,
-            "memory": 273,
+            "memory": 0,
             "knowledge": 0
           }
         },
@@ -56,68 +56,32 @@
             }
           ]
         },
-        "memory": {
-          "recalled": [
-            {
-              "memoryItemId": "mem_01M5DXH8M2B71HEGWTJTAY2SAD",
-              "text": "(forgotten)"
-            },
-            {
-              "memoryItemId": "mem_01M5DX648THX1CA2KV3YTK95GF",
-              "text": "Rin thinks pineapple on sushi is a crime and would eat it only to prove it's bad."
-            },
-            {
-              "memoryItemId": "mem_01M5DXH8M1BMDC4Z9M1P77EJ47",
-              "text": "(forgotten)"
-            },
-            {
-              "memoryItemId": "mem_01M5DX648THX1CA2KV3YTK95GE",
-              "text": "Hana will make grandma-style tamagoyaki as the new dish; if it tears it's called rustic."
-            },
-            {
-              "memoryItemId": "mem_01M5DXH8M3PX5P0G1CNCD0SHVF",
-              "text": "(forgotten)"
-            },
-            {
-              "memoryItemId": "mem_01M5DX648THX1CA2KV3YTK95GD",
-              "text": "(forgotten)"
-            },
-            {
-              "memoryItemId": "mem_01M5DW7MTQV3ZBQYEQJGA0PX65",
-              "text": "Rin's raid group downed the boss after wiping on the last phase; the healer kept eating the cleave."
-            },
-            {
-              "memoryItemId": "mem_01M5DW7MTT4KNFCSP06K3M13YW",
-              "text": "Takeshi will talk about barometric pressure the whole drive; Rin is bringing earbuds."
-            }
-          ]
-        },
         "guardrail": {
           "checks": [
             {
               "name": "output",
               "verdict": "pass",
-              "p": 0.05
+              "p": 0.06
             }
           ]
         },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Alibaba",
+          "provider": "Relace",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 1170,
-            "total": 1419
+            "firstToken": 3182,
+            "total": 3797
           },
-          "tokensIn": 959,
-          "tokensOut": 28,
-          "costUsd": 0.000353,
+          "tokensIn": 702,
+          "tokensOut": 49,
+          "costUsd": 0.000074,
           "tokensCached": 0
         },
         "energy": {
           "characterId": "chr_seedRin",
-          "spent": 4,
-          "remaining": 186,
+          "spent": 1,
+          "remaining": 182,
           "max": 1000
         },
         "routing": {
@@ -133,13 +97,13 @@
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000353,
-            "latencyMs": 953
+            "costUsd": 0.000074,
+            "latencyMs": 3343
           },
           {
             "purpose": "guardrail",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000024,
+            "costUsd": 0.000025,
             "latencyMs": 406
           }
         ],
@@ -152,7 +116,7 @@
           ]
         },
         "system1": {
-          "seed": "2026-09-26T11:29:59.984Z|one_on_one|chr_seedRin:0",
+          "seed": "2026-09-26T11:29:59.993Z|one_on_one|chr_seedRin:0",
           "questions": [
             {
               "purpose": "turn_plan",
@@ -169,7 +133,7 @@
                   "threshold": 0.2
                 }
               ],
-              "confidence": 0.45,
+              "confidence": 0.67,
               "result": "used",
               "action": "shown"
             },
@@ -179,16 +143,16 @@
               "version": 1,
               "label": "reply breaks the rules?",
               "answer": "no",
-              "p": 0.05,
+              "p": 0.06,
               "compared": [
                 {
                   "name": "tFlag",
-                  "value": 0.05,
+                  "value": 0.06,
                   "threshold": 0.5
                 },
                 {
                   "name": "tBlock",
-                  "value": 0.05,
+                  "value": 0.06,
                   "threshold": 0.9
                 }
               ],
@@ -209,7 +173,7 @@
       "kind": "chat",
       "content": "Raid tonight? I finally got my healer to max level!",
       "status": "complete",
-      "createdAt": "2026-09-26T11:30:11.157Z"
+      "createdAt": "2026-09-26T11:30:13.132Z"
     },
     {
       "kind": "chat",
@@ -220,19 +184,19 @@
         "type": "character",
         "characterId": "chr_seedRin"
       },
-      "content": "yeah i know, i'm the one who invited you. try not to eat every cleave this time.\n\nalso dinner's before raid, so tell hana yourself if you're skipping again. i'm not your alibi.",
+      "content": "healer to max, huh. bold of you to assume i'd trust a fresh 80 with my health bar.\n\n...okay fine. what time. i need something to look forward to that isn't error code 4021.",
       "status": "complete",
-      "createdAt": "2026-09-26T11:30:12.321Z",
+      "createdAt": "2026-09-26T11:30:14.125Z",
       "emotion": "happy",
       "emotionSource": "classifier",
       "usage": {
-        "tokensIn": 907,
+        "tokensIn": 730,
         "tokensCached": 0,
-        "tokensOut": 47,
-        "costUsd": 0.000361,
-        "energySpent": 4,
-        "firstTokenMs": 1180,
-        "totalMs": 1703
+        "tokensOut": 49,
+        "costUsd": 0.000076,
+        "energySpent": 1,
+        "firstTokenMs": 987,
+        "totalMs": 1386
       },
       "trace": {
         "messageId": "msg_mockR03",
@@ -242,9 +206,9 @@
             "persona": 292,
             "system": 605,
             "mode": 44,
-            "history": 37,
+            "history": 62,
             "user": 17,
-            "memory": 273,
+            "memory": 0,
             "knowledge": 0
           }
         },
@@ -254,51 +218,15 @@
           "candidates": [
             {
               "label": "happy",
-              "p": 0.7
+              "p": 0.58
             },
             {
               "label": "neutral",
-              "p": 0.29
+              "p": 0.4
             },
             {
               "label": "surprised",
               "p": 0.01
-            }
-          ]
-        },
-        "memory": {
-          "recalled": [
-            {
-              "memoryItemId": "mem_01M5DXH8M2B71HEGWTJTAY2SAD",
-              "text": "(forgotten)"
-            },
-            {
-              "memoryItemId": "mem_01M5DX648THX1CA2KV3YTK95GF",
-              "text": "Rin thinks pineapple on sushi is a crime and would eat it only to prove it's bad."
-            },
-            {
-              "memoryItemId": "mem_01M5DXH8M1BMDC4Z9M1P77EJ47",
-              "text": "(forgotten)"
-            },
-            {
-              "memoryItemId": "mem_01M5DX648THX1CA2KV3YTK95GE",
-              "text": "Hana will make grandma-style tamagoyaki as the new dish; if it tears it's called rustic."
-            },
-            {
-              "memoryItemId": "mem_01M5DXH8M3PX5P0G1CNCD0SHVF",
-              "text": "(forgotten)"
-            },
-            {
-              "memoryItemId": "mem_01M5DX648THX1CA2KV3YTK95GD",
-              "text": "(forgotten)"
-            },
-            {
-              "memoryItemId": "mem_01M5DW7MTQV3ZBQYEQJGA0PX65",
-              "text": "Rin's raid group downed the boss after wiping on the last phase; the healer kept eating the cleave."
-            },
-            {
-              "memoryItemId": "mem_01M5DW7MTT4KNFCSP06K3M13YW",
-              "text": "Takeshi will talk about barometric pressure the whole drive; Rin is bringing earbuds."
             }
           ]
         },
@@ -312,7 +240,7 @@
             {
               "name": "care",
               "verdict": "pass",
-              "p": 0.02
+              "p": 0.03
             },
             {
               "name": "output",
@@ -323,21 +251,21 @@
         },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Alibaba",
+          "provider": "Relace",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 1180,
-            "total": 1703
+            "firstToken": 987,
+            "total": 1386
           },
-          "tokensIn": 907,
-          "tokensOut": 47,
-          "costUsd": 0.000361,
+          "tokensIn": 730,
+          "tokensOut": 49,
+          "costUsd": 0.000076,
           "tokensCached": 0
         },
         "energy": {
           "characterId": "chr_seedRin",
-          "spent": 4,
-          "remaining": 182,
+          "spent": 1,
+          "remaining": 181,
           "max": 1000
         },
         "routing": {
@@ -347,20 +275,20 @@
           {
             "purpose": "turn_plan",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000053,
-            "latencyMs": 546
+            "costUsd": 0.000054,
+            "latencyMs": 407
           },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000361,
-            "latencyMs": 1094
+            "costUsd": 0.000076,
+            "latencyMs": 938
           },
           {
             "purpose": "guardrail",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000025,
-            "latencyMs": 422
+            "latencyMs": 407
           },
           {
             "purpose": "face_check",
@@ -378,7 +306,7 @@
           ]
         },
         "system1": {
-          "seed": "2026-09-26T11:29:59.984Z|one_on_one|chr_seedRin:1",
+          "seed": "2026-09-26T11:29:59.993Z|one_on_one|chr_seedRin:1",
           "questions": [
             {
               "purpose": "turn_plan",
@@ -387,15 +315,15 @@
               "label": "emotion",
               "about": "chr_seedRin",
               "answer": "happy",
-              "p": 0.7,
+              "p": 0.58,
               "compared": [
                 {
                   "name": "confidence",
-                  "value": 0.66,
+                  "value": 0.52,
                   "threshold": 0.2
                 }
               ],
-              "confidence": 0.66,
+              "confidence": 0.52,
               "result": "used",
               "action": "shown"
             },
@@ -422,11 +350,11 @@
               "version": 1,
               "label": "at risk?",
               "answer": "no",
-              "p": 0.02,
+              "p": 0.03,
               "compared": [
                 {
                   "name": "tCare",
-                  "value": 0.02,
+                  "value": 0.03,
                   "threshold": 0.3
                 }
               ],
@@ -460,8 +388,8 @@
               "id": "face_check",
               "version": 1,
               "label": "face and words agree?",
-              "answer": "clash",
-              "p": 0,
+              "answer": "yes",
+              "p": 0.64,
               "compared": [],
               "result": "shown_only"
             }
@@ -479,7 +407,7 @@
       "kind": "chat",
       "content": "Deal. Don't tell Hana I'm skipping dinner for it.",
       "status": "complete",
-      "createdAt": "2026-09-26T11:30:33.407Z"
+      "createdAt": "2026-09-26T11:30:35.306Z"
     },
     {
       "kind": "chat",
@@ -490,19 +418,19 @@
         "type": "character",
         "characterId": "chr_seedRin"
       },
-      "content": "that's the opposite of a deal. i literally just said i'm not covering for you.\n\nif you bail on her tamagoyaki she's gonna make that face. you know the one. fight your own battles, i'm just here for udon.",
+      "content": "she already knows. she texted me about it an hour ago. you're a terrible liar, kai.\n\n9pm. bring potions. if you let the tank die i'm telling her.",
       "status": "complete",
-      "createdAt": "2026-09-26T11:30:34.872Z",
+      "createdAt": "2026-09-26T11:30:36.543Z",
       "emotion": "happy",
-      "emotionSource": "default",
+      "emotionSource": "classifier",
       "usage": {
-        "tokensIn": 975,
-        "tokensCached": 768,
-        "tokensOut": 53,
-        "costUsd": 0.000164,
-        "energySpent": 2,
-        "firstTokenMs": 1462,
-        "totalMs": 1888
+        "tokensIn": 799,
+        "tokensCached": 0,
+        "tokensOut": 42,
+        "costUsd": 0.000077,
+        "energySpent": 1,
+        "firstTokenMs": 1222,
+        "totalMs": 1451
       },
       "trace": {
         "messageId": "msg_mockR05",
@@ -512,63 +440,27 @@
             "persona": 292,
             "system": 605,
             "mode": 44,
-            "history": 114,
+            "history": 138,
             "user": 17,
-            "memory": 273,
+            "memory": 0,
             "knowledge": 0
           }
         },
         "emotion": {
           "chosen": "happy",
-          "source": "default",
+          "source": "classifier",
           "candidates": [
             {
-              "label": "neutral",
-              "p": 0.21
+              "label": "happy",
+              "p": 0.44
             },
             {
-              "label": "happy",
-              "p": 0.2
+              "label": "neutral",
+              "p": 0.15
             },
             {
               "label": "angry",
-              "p": 0.18
-            }
-          ]
-        },
-        "memory": {
-          "recalled": [
-            {
-              "memoryItemId": "mem_01M5DXH8M2B71HEGWTJTAY2SAD",
-              "text": "(forgotten)"
-            },
-            {
-              "memoryItemId": "mem_01M5DX648THX1CA2KV3YTK95GF",
-              "text": "Rin thinks pineapple on sushi is a crime and would eat it only to prove it's bad."
-            },
-            {
-              "memoryItemId": "mem_01M5DXH8M1BMDC4Z9M1P77EJ47",
-              "text": "(forgotten)"
-            },
-            {
-              "memoryItemId": "mem_01M5DX648THX1CA2KV3YTK95GE",
-              "text": "Hana will make grandma-style tamagoyaki as the new dish; if it tears it's called rustic."
-            },
-            {
-              "memoryItemId": "mem_01M5DXH8M3PX5P0G1CNCD0SHVF",
-              "text": "(forgotten)"
-            },
-            {
-              "memoryItemId": "mem_01M5DX648THX1CA2KV3YTK95GD",
-              "text": "(forgotten)"
-            },
-            {
-              "memoryItemId": "mem_01M5DW7MTQV3ZBQYEQJGA0PX65",
-              "text": "Rin's raid group downed the boss after wiping on the last phase; the healer kept eating the cleave."
-            },
-            {
-              "memoryItemId": "mem_01M5DW7MTT4KNFCSP06K3M13YW",
-              "text": "Takeshi will talk about barometric pressure the whole drive; Rin is bringing earbuds."
+              "p": 0.04
             }
           ]
         },
@@ -587,26 +479,26 @@
             {
               "name": "output",
               "verdict": "pass",
-              "p": 0.05
+              "p": 0.06
             }
           ]
         },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Alibaba",
+          "provider": "Relace",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 1462,
-            "total": 1888
+            "firstToken": 1222,
+            "total": 1451
           },
-          "tokensIn": 975,
-          "tokensOut": 53,
-          "costUsd": 0.000164,
-          "tokensCached": 768
+          "tokensIn": 799,
+          "tokensOut": 42,
+          "costUsd": 0.000077,
+          "tokensCached": 0
         },
         "energy": {
           "characterId": "chr_seedRin",
-          "spent": 2,
+          "spent": 1,
           "remaining": 180,
           "max": 1000
         },
@@ -617,14 +509,14 @@
           {
             "purpose": "turn_plan",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000057,
-            "latencyMs": 406
+            "costUsd": 0.000058,
+            "latencyMs": 437
           },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000164,
-            "latencyMs": 1438
+            "costUsd": 0.000077,
+            "latencyMs": 953
           },
           {
             "purpose": "guardrail",
@@ -636,7 +528,7 @@
             "purpose": "face_check",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000032,
-            "latencyMs": 406
+            "latencyMs": 422
           }
         ],
         "graph": {
@@ -648,7 +540,7 @@
           ]
         },
         "system1": {
-          "seed": "2026-09-26T11:29:59.984Z|one_on_one|chr_seedRin:2",
+          "seed": "2026-09-26T11:29:59.993Z|one_on_one|chr_seedRin:2",
           "questions": [
             {
               "purpose": "turn_plan",
@@ -656,18 +548,18 @@
               "version": 2,
               "label": "emotion",
               "about": "chr_seedRin",
-              "answer": "none",
-              "p": 0.4,
+              "answer": "happy",
+              "p": 0.44,
               "compared": [
                 {
                   "name": "confidence",
-                  "value": 0.31,
+                  "value": 0.36,
                   "threshold": 0.2
                 }
               ],
-              "confidence": 0.31,
+              "confidence": 0.36,
               "result": "used",
-              "action": "kept"
+              "action": "shown"
             },
             {
               "purpose": "turn_plan",
@@ -709,16 +601,16 @@
               "version": 1,
               "label": "reply breaks the rules?",
               "answer": "no",
-              "p": 0.05,
+              "p": 0.06,
               "compared": [
                 {
                   "name": "tFlag",
-                  "value": 0.05,
+                  "value": 0.06,
                   "threshold": 0.5
                 },
                 {
                   "name": "tBlock",
-                  "value": 0.05,
+                  "value": 0.06,
                   "threshold": 0.9
                 }
               ],
@@ -731,7 +623,7 @@
               "version": 1,
               "label": "face and words agree?",
               "answer": "clash",
-              "p": 0.01,
+              "p": 0,
               "compared": [],
               "result": "shown_only"
             }

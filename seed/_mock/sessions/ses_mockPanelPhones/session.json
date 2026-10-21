@@ -12,7 +12,7 @@
         "characterId": "chr_seedAmara",
         "role": "debater",
         "side": null,
-        "currentEmotion": "thinking",
+        "currentEmotion": "neutral",
         "mutedByUser": false
       },
       {
@@ -74,42 +74,42 @@
           {
             "subjectId": "chr_seedAmara",
             "points": [
-              "Would ban phones in classrooms, not schoolbags, citing distraction evidence and vulnerable pupils.",
-              "Allows medical and accessibility carve-outs and parent pickup texts.",
-              "Prefers teaching digital judgement over pretending devices don't exist.",
-              "Closing concedes whole-school limits untested and enforcement is unfunded labour."
+              "A blanket ban punishes kids using phones as a lifeline.",
+              "It ignores the real driver: how devices are designed.",
+              "It dodges digital literacy and regulating companies.",
+              "Phone-free lessons with medical exceptions fit the evidence."
             ]
           },
           {
             "subjectId": "chr_seedVictor",
             "points": [
-              "Defines ban as no pupil-operated smartphone during instructional hours.",
-              "Argues schools are compelled audiences and may regulate speech in a nonpublic forum.",
-              "Cites enforcement asymmetry: calculators, notes, pagers banned, but phones exempted.",
-              "Closing offers phased rollout, published baseline, and sunset clause as a return path."
+              "A ban is compulsion, and compulsion demands a burden met.",
+              "A blanket prohibition punishes the disciplined many for the distracted few.",
+              "Narrower tools already exist: device policies, locked pouches, teacher discretion.",
+              "Prohibition cedes teaching judgment for commanding obedience."
             ]
           },
           {
             "subjectId": "chr_seedMei",
             "points": [
-              "Frames ban as a working-time question needing more staffed hours for enforcement.",
-              "Warns ban redistributes supervision costs from homes to schools.",
-              "Favours light-touch rules with exemptions, measured before mandated.",
-              "Closing insists pilots are inconsistent and mandate is a bet, not evidence."
+              "Schools aren't a treatment; effects vary by age band, so estimate a range.",
+              "Bans push use into transit and homes unless parents are brought in.",
+              "Credible evidence on learning is thin and mostly correlational.",
+              "A graded ban on lessons survives the evidence; a blanket ban doesn't."
             ]
           }
         ],
-        "keyDisagreement": "Whether a ban should be mandated now with phased measurement and sunset, or delayed until enforcement costs and outcomes are properly measured.",
+        "keyDisagreement": "Whether the motion's full ban is warranted when the evidence only supports phone-free lessons with narrow exceptions.",
         "decidedBy": "arbiter",
         "strongerCase": null,
-        "rationale": "The debate turned on how to handle acknowledged uncertainty: Victor argued for acting now with built-in review, while Amara and Mei demanded stronger evidence and attention to enforcement labour before mandating. The panel weighed competing risks of prohibition by assertion versus doing nothing, without resolving which side was factually right."
+        "rationale": "The debate turned on the gap between what the motion commands and what the panelists agreed the evidence could carry. Amara, Victor and Mei each argued from that gap toward narrower tools, while the prohibitionist case for a full ban was not defended in the turns shown."
       }
     },
     "isSeed": false,
-    "costUsd": 0.002258,
+    "costUsd": 0.000759,
     "messageCount": 10,
-    "createdAt": "2026-09-24T10:59:59.991Z",
-    "updatedAt": "2026-09-24T11:00:29.574Z",
-    "lastMessageAt": "2026-09-24T11:00:29.574Z"
+    "createdAt": "2026-09-24T10:59:59.993Z",
+    "updatedAt": "2026-09-24T11:00:41.442Z",
+    "lastMessageAt": "2026-09-24T11:00:41.442Z"
   }
 }

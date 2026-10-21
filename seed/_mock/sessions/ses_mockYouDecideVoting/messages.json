@@ -11,7 +11,7 @@
       "kind": "system_note",
       "content": "ROUND 1 · OPENING",
       "status": "complete",
-      "createdAt": "2026-09-25T15:05:01.600Z"
+      "createdAt": "2026-09-25T15:05:01.626Z"
     },
     {
       "kind": "chat",
@@ -28,19 +28,19 @@
         "type": "character",
         "characterId": "chr_seedVictor"
       },
-      "content": "Three points. First, voting is not a consumer preference; it is a duty of membership, and duties are enforced — jury service, taxation, the census. Second, voluntary turnout selects for intensity, so the loudest tenth governs the quiet nine-tenths; compulsory voting widens the electorate to the median citizen. Third, the state already compels attendance at a ballot box for jury duty in service of others; asking one hour every few years to choose those who bind you is a lighter ask.",
+      "content": "Three points. First, voting is not a mere privilege we may decline like a dinner invitation; it is the discharge of a civic duty, and a democracy that asks nothing of its citizens is a democracy they will eventually ask nothing of. Second, compulsion cures the free-rider problem: those who abstain still enjoy the benefits of governance, and the burden of a functioning republic should not fall to the willing few. Third, and this is the crux Mei will have to answer, define your terms: compulsory voting does not compel a vote, it compels attendance, and the ballot remains secret and free.",
       "status": "complete",
-      "createdAt": "2026-09-25T15:05:04.466Z",
+      "createdAt": "2026-09-25T15:05:03.661Z",
       "emotion": "neutral",
       "emotionSource": "classifier",
       "usage": {
-        "tokensIn": 961,
+        "tokensIn": 995,
         "tokensCached": 0,
-        "tokensOut": 101,
-        "costUsd": 0.00045,
-        "energySpent": 5,
-        "firstTokenMs": 2822,
-        "totalMs": 3714
+        "tokensOut": 125,
+        "costUsd": 0.000132,
+        "energySpent": 2,
+        "firstTokenMs": 2011,
+        "totalMs": 2714
       },
       "trace": {
         "messageId": "msg_mockV02",
@@ -52,7 +52,7 @@
             "mode": 114,
             "history": 11,
             "user": 0,
-            "memory": 257,
+            "memory": 290,
             "knowledge": 0
           }
         },
@@ -62,15 +62,15 @@
           "candidates": [
             {
               "label": "neutral",
-              "p": 0.93
+              "p": 0.89
             },
             {
               "label": "happy",
-              "p": 0.05
+              "p": 0.1
             },
             {
               "label": "thinking",
-              "p": 0.02
+              "p": 0.01
             }
           ]
         },
@@ -84,7 +84,7 @@
               "title": "Moot court notes",
               "locator": "¶ 1",
               "text": "Moot court notes: \"This house would adopt a nationwide four-day work week\" V. Hale, for the Meridian Bar Society exhibition debate. Private notes.\n\n¶ 1. Expect the opposition to say the evidence base is narrow. Concede scope early, then shift the burden: the status quo is also a policy and has to justify itself.\n\n¶ 2. Historical anchor: the Meridian Working Hours Act 1931 made the two-day weekend the default. It gave agriculture and shipping a ten-year transition and exempted continuous services.\n\n¶ 3. Continuous-coverage sectors already run on shift rules under Part IV of the Working Time Code: rest periods, a cap on consecutive shifts, and averaging over a reference period. A shorter standard week sits inside that structure.\n\n¶ 4. Phase-in precedent: sector-by-sector timetables, collective agreements first, the public sector as model employer. Courts have upheld staged duties where the end point is clear.",
-              "score": 0.025,
+              "score": 0.05,
               "cited": false
             }
           ]
@@ -92,20 +92,28 @@
         "memory": {
           "recalled": [
             {
-              "memoryItemId": "mem_01M5DXBZTG4PRRDMDV8ZHDBKZH",
-              "text": "Victor argued that nationwide means a statutory default week with a transition, not an identical schedule, citing the Working Hours Act 1931 as precedent for phasing and continuous-service exemptions."
+              "memoryItemId": "mem_01M5EZX8EDB011JJT9G06CBXS5",
+              "text": "(forgotten)"
             },
             {
-              "memoryItemId": "mem_01M5DXBZTQJZHDZR0HE2Y83NVV",
-              "text": "Victor closed that the motion already contains sequencing: set the default, exempt continuous services explicitly, phase by sector, and mandate measurement."
+              "memoryItemId": "mem_01M5EZX8EEDY508C4754434E5W",
+              "text": "(forgotten)"
             },
             {
-              "memoryItemId": "mem_01M5DXBZTPPCF5EA85ES8VJV8P",
-              "text": "Victor argued the status quo also runs unmeasured, so both the mandate's cost and the saving from doing nothing belong on the same ledger."
+              "memoryItemId": "mem_01M5EZSX1Z757JVC6SM3CKD86N",
+              "text": "(forgotten)"
             },
             {
-              "memoryItemId": "mem_01M5DXBZTNNE8SC3RZJKP3K5GY",
-              "text": "Victor conceded Mei's 18-27% staffed-hours premium across nine continuous-coverage operations was real and measured where coverage was held constant."
+              "memoryItemId": "mem_01M5EZSX2H5G7YAXJZV58767MZ",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5EZSX2JQE5HKFJT0VAYFGHV",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5EZSX2F9QCPZJH73GN3MSW8",
+              "text": "(forgotten)"
             }
           ]
         },
@@ -120,21 +128,21 @@
         },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Alibaba",
+          "provider": "Relace",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 2822,
-            "total": 3714
+            "firstToken": 2011,
+            "total": 2714
           },
-          "tokensIn": 961,
-          "tokensOut": 101,
-          "costUsd": 0.00045,
+          "tokensIn": 995,
+          "tokensOut": 125,
+          "costUsd": 0.000132,
           "tokensCached": 0
         },
         "energy": {
           "characterId": "chr_seedVictor",
-          "spent": 5,
-          "remaining": 868,
+          "spent": 2,
+          "remaining": 862,
           "max": 1000
         },
         "routing": {
@@ -146,24 +154,24 @@
             "purpose": "turn_plan",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000042,
-            "latencyMs": 453
+            "latencyMs": 422
           },
           {
             "purpose": "deep_check",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000027,
-            "latencyMs": 484
+            "latencyMs": 438
           },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.00045,
-            "latencyMs": 1563
+            "costUsd": 0.000132,
+            "latencyMs": 2000
           },
           {
             "purpose": "guardrail",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000027,
+            "costUsd": 0.000028,
             "latencyMs": 437
           }
         ],
@@ -180,7 +188,7 @@
           ]
         },
         "system1": {
-          "seed": "2026-09-25T15:04:59.984Z|debate|chr_seedVictor,chr_seedMei:0",
+          "seed": "2026-09-25T15:04:59.987Z|debate|chr_seedVictor,chr_seedMei:0",
           "questions": [
             {
               "purpose": "turn_plan",
@@ -189,15 +197,15 @@
               "label": "emotion",
               "about": "chr_seedVictor",
               "answer": "neutral",
-              "p": 0.93,
+              "p": 0.89,
               "compared": [
                 {
                   "name": "p_neutral+p_none",
-                  "value": 0.93,
+                  "value": 0.89,
                   "threshold": 0.2
                 }
               ],
-              "confidence": 0.41,
+              "confidence": 0.53,
               "result": "used",
               "action": "shown"
             },
@@ -208,11 +216,11 @@
               "label": "needs documents?",
               "about": "chr_seedVictor",
               "answer": "yes",
-              "p": 0.49,
+              "p": 0.51,
               "compared": [
                 {
                   "name": "t_gate",
-                  "value": 0.49,
+                  "value": 0.51,
                   "threshold": 0.45
                 }
               ],
@@ -226,11 +234,11 @@
               "label": "does this passage answer it?",
               "about": "kch_victorMoot01",
               "answer": "doesn't help",
-              "p": 0.05,
+              "p": 0.1,
               "compared": [
                 {
                   "name": "t_keep",
-                  "value": 0.05,
+                  "value": 0.1,
                   "threshold": 0.9
                 }
               ],
@@ -266,8 +274,8 @@
         {
           "characterId": "chr_seedMei",
           "emotion": "thinking",
-          "p": 0.8,
-          "at": "2026-09-25T15:05:06.394Z"
+          "p": 0.97,
+          "at": "2026-09-25T15:05:05.522Z"
         }
       ]
     },
@@ -286,31 +294,31 @@
         "type": "character",
         "characterId": "chr_seedMei"
       },
-      "content": "Compulsion treats a legal duty as a substitute for a functioning democracy, and those are not the same good. Turnout is a symptom; a ballot that arrives with a fine attached doesn't tell you whether anyone was persuaded, only that they were billed. Second, enforcement falls hardest on the people already stretched thinnest — shift workers, carers, the cash-poor — so the fine is regressive even when the vote is free. Third, compulsory voting doesn't fix the thing Victor will say it fixes: if the complaint is that politics ignores people, forcing attendance doesn't make anyone listen. It buys legitimacy on credit.",
+      "content": "Compulsion trades one problem for a worse one. Turnout would rise, but mostly among people who don't want to be there, and the honest effect on legitimacy is a range, not a jump. Second, enforcement is the tell: fines fall hardest on the poor, and every real-world scheme ends up with exemptions and amnesties, which is just voluntary voting wearing a costume. Third, and this is the second-order effect nobody prices in, you'd buy turnout with coercion while the actual grievance, that votes don't seem to matter, goes untouched.",
       "status": "complete",
-      "createdAt": "2026-09-25T15:05:07.368Z",
+      "createdAt": "2026-09-25T15:05:06.365Z",
       "emotion": "neutral",
       "emotionSource": "classifier",
       "usage": {
-        "tokensIn": 1000,
-        "tokensCached": 256,
-        "tokensOut": 126,
-        "costUsd": 0.00042,
-        "energySpent": 5,
-        "firstTokenMs": 77,
-        "totalMs": 1344
+        "tokensIn": 936,
+        "tokensCached": 0,
+        "tokensOut": 114,
+        "costUsd": 0.000123,
+        "energySpent": 2,
+        "firstTokenMs": 74,
+        "totalMs": 2590
       },
       "trace": {
         "messageId": "msg_mockV03",
         "context": {
           "budget": 14680,
           "used": {
-            "persona": 355,
+            "persona": 358,
             "system": 711,
             "mode": 110,
             "history": 11,
             "user": 0,
-            "memory": 282,
+            "memory": 173,
             "knowledge": 0
           }
         },
@@ -324,31 +332,27 @@
             },
             {
               "label": "thinking",
-              "p": 0.09
+              "p": 0.1
             },
             {
-              "label": "angry",
-              "p": 0.01
+              "label": "happy",
+              "p": 0
             }
           ]
         },
         "memory": {
           "recalled": [
             {
-              "memoryItemId": "mem_01M5DXBZV45ZGNXKEZ5Y9GH1PN",
-              "text": "Mei closed urging sequence, explicit exemption of continuous services, and mandated measurement before a nationwide default, calling Amara's ward result good but untested for round-the-clock cover."
+              "memoryItemId": "mem_01M5EZX8EGEF12GWZGDQAQ4VTE",
+              "text": "(forgotten)"
             },
             {
-              "memoryItemId": "mem_01M5DXBZV1K1RSSB3GMGGFY9GG",
-              "text": "Mei cited nine shift-based organisations holding coverage constant that needed 18% to 27% more staffed hours on a shorter week; two clawed part back within six months, seven did not measure it."
+              "memoryItemId": "mem_01M5EZX8EGEF12GWZGDQAQ4VTG",
+              "text": "(forgotten)"
             },
             {
-              "memoryItemId": "mem_01M5DXBZTS3X4JKBPJ48PZJEMC",
-              "text": "Mei argued the pilots covered no hospitals, transport operators or care homes, and fewer than half the firms measured output consistently, so the gains were partly redistributed rather than created."
-            },
-            {
-              "memoryItemId": "mem_01M5DXBZV3SPT37475MPFG8PMQ",
-              "text": "Mei conceded the status-quo-is-also-a-policy line lands and that doing nothing costs money in absence, agency fees and resignations."
+              "memoryItemId": "mem_01M5EZX8EGEF12GWZGDQAQ4VTF",
+              "text": "(forgotten)"
             }
           ]
         },
@@ -363,21 +367,21 @@
         },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Alibaba",
+          "provider": "Relace",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 77,
-            "total": 1344
+            "firstToken": 74,
+            "total": 2590
           },
-          "tokensIn": 1000,
-          "tokensOut": 126,
-          "costUsd": 0.00042,
-          "tokensCached": 256
+          "tokensIn": 936,
+          "tokensOut": 114,
+          "costUsd": 0.000123,
+          "tokensCached": 0
         },
         "energy": {
           "characterId": "chr_seedMei",
-          "spent": 5,
-          "remaining": 750,
+          "spent": 2,
+          "remaining": 744,
           "max": 1000
         },
         "routing": {
@@ -389,19 +393,13 @@
             "purpose": "turn_plan",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000043,
-            "latencyMs": 438
+            "latencyMs": 407
           },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.00042,
-            "latencyMs": 2079
-          },
-          {
-            "purpose": "guardrail",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000029,
-            "latencyMs": 687
+            "costUsd": 0.000123,
+            "latencyMs": 6312
           }
         ],
         "graph": {
@@ -413,7 +411,7 @@
           ]
         },
         "system1": {
-          "seed": "2026-09-25T15:04:59.984Z|debate|chr_seedVictor,chr_seedMei:1",
+          "seed": "2026-09-25T15:04:59.987Z|debate|chr_seedVictor,chr_seedMei:1",
           "questions": [
             {
               "purpose": "turn_plan",
@@ -430,7 +428,7 @@
                   "threshold": 0.2
                 }
               ],
-              "confidence": 0.5,
+              "confidence": 0.42,
               "result": "used",
               "action": "shown"
             },
@@ -481,8 +479,8 @@
         {
           "characterId": "chr_seedVictor",
           "emotion": "thinking",
-          "p": 0.79,
-          "at": "2026-09-25T15:05:09.078Z"
+          "p": 0.67,
+          "at": "2026-09-25T15:05:10.063Z"
         }
       ]
     },
@@ -496,7 +494,7 @@
       "kind": "system_note",
       "content": "ROUND 2 · CLOSING",
       "status": "complete",
-      "createdAt": "2026-09-25T15:05:10.566Z"
+      "createdAt": "2026-09-25T15:05:10.834Z"
     },
     {
       "kind": "chat",
@@ -513,19 +511,19 @@
         "type": "character",
         "characterId": "chr_seedVictor"
       },
-      "content": "Define your terms, Mei — you call it a bill, but the motion compels attendance, not assent; blank ballots remain lawful, so nothing is \"bought.\" To your regressivity: conceded that a fine can bite unevenly, yet the remedy is statutory — exemptions and a modest penalty, which the motion permits. And legitimacy on credit still beats legitimacy unearned by the governed. A turnout of half means half are bound by rulers they never chose. That is the weaker case, and yours rests on it.",
+      "content": "The sanctions objection proves too much. We compel jury service, taxation, and schooling, and a fine calibrated to income is no more regressive than the tax code itself. As for the costume charge: exemptions and amnesties are refinements, not abdication, and a rule with humane edges remains a rule. On legitimacy, Mei concedes the range moves upward, and upward is my friend. The unresolved question is enforcement, and my answer stands: attendance, not opinion, is what we compel. The ballot stays secret and free. That is why the Proposition prevails.",
       "status": "complete",
-      "createdAt": "2026-09-25T15:05:13.483Z",
+      "createdAt": "2026-09-25T15:05:15.059Z",
       "emotion": "thinking",
       "emotionSource": "classifier",
       "usage": {
-        "tokensIn": 1225,
-        "tokensCached": 1024,
-        "tokensOut": 106,
-        "costUsd": 0.00024,
-        "energySpent": 3,
-        "firstTokenMs": 944,
-        "totalMs": 1901
+        "tokensIn": 1269,
+        "tokensCached": 0,
+        "tokensOut": 116,
+        "costUsd": 0.000147,
+        "energySpent": 2,
+        "firstTokenMs": 2244,
+        "totalMs": 3840
       },
       "trace": {
         "messageId": "msg_mockV05",
@@ -535,9 +533,9 @@
             "persona": 351,
             "system": 694,
             "mode": 134,
-            "history": 398,
+            "history": 403,
             "user": 0,
-            "memory": 257,
+            "memory": 290,
             "knowledge": 0
           }
         },
@@ -547,40 +545,67 @@
           "candidates": [
             {
               "label": "thinking",
-              "p": 0.64
+              "p": 0.75
             },
             {
               "label": "angry",
-              "p": 0.09
+              "p": 0.06
             },
             {
-              "label": "happy",
+              "label": "neutral",
               "p": 0.04
             }
           ]
         },
         "knowledge": {
-          "query": "This house would make voting compulsory chr_seedMei: Compulsion treats a legal duty as a substitute for a functioning d…",
+          "query": "This house would make voting compulsory Mei Tanaka-Ruiz: Compulsion trades one problem for a worse one. Turnout would r…",
           "trigger": "gated",
-          "retrieved": []
+          "retrieved": [
+            {
+              "chunkId": "kch_victorMoot01",
+              "sourceId": "kno_seedVictor1",
+              "title": "Moot court notes",
+              "locator": "¶ 1",
+              "text": "Moot court notes: \"This house would adopt a nationwide four-day work week\" V. Hale, for the Meridian Bar Society exhibition debate. Private notes.\n\n¶ 1. Expect the opposition to say the evidence base is narrow. Concede scope early, then shift the burden: the status quo is also a policy and has to justify itself.\n\n¶ 2. Historical anchor: the Meridian Working Hours Act 1931 made the two-day weekend the default. It gave agriculture and shipping a ten-year transition and exempted continuous services.\n\n¶ 3. Continuous-coverage sectors already run on shift rules under Part IV of the Working Time Code: rest periods, a cap on consecutive shifts, and averaging over a reference period. A shorter standard week sits inside that structure.\n\n¶ 4. Phase-in precedent: sector-by-sector timetables, collective agreements first, the public sector as model employer. Courts have upheld staged duties where the end point is clear.",
+              "score": 0.02,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_victorMoot03",
+              "sourceId": "kno_seedVictor1",
+              "title": "Moot court notes",
+              "locator": "¶ 3",
+              "text": "¶ 10. Questions to expect from a physician on my own side: patient safety on longer shifts. Answer: the standard week limits total hours; Part IV still caps consecutive shifts.\n\n¶ 11. Latin, sparingly. \"Res ipsa loquitur\" (the thing speaks for itself) for the close. \"Audi alteram partem\" (hear the other side) if accused of ignoring their evidence. Always translate.\n\n¶ 12. Structure for every speech: three points, numbered, each with one example. Finish on the burden of proof.",
+              "score": 0.025,
+              "cited": false
+            }
+          ]
         },
         "memory": {
           "recalled": [
             {
-              "memoryItemId": "mem_01M5DXBZTG4PRRDMDV8ZHDBKZH",
-              "text": "Victor argued that nationwide means a statutory default week with a transition, not an identical schedule, citing the Working Hours Act 1931 as precedent for phasing and continuous-service exemptions."
+              "memoryItemId": "mem_01M5EZX8EDB011JJT9G06CBXS5",
+              "text": "(forgotten)"
             },
             {
-              "memoryItemId": "mem_01M5DXBZTQJZHDZR0HE2Y83NVV",
-              "text": "Victor closed that the motion already contains sequencing: set the default, exempt continuous services explicitly, phase by sector, and mandate measurement."
+              "memoryItemId": "mem_01M5EZX8EEDY508C4754434E5W",
+              "text": "(forgotten)"
             },
             {
-              "memoryItemId": "mem_01M5DXBZTPPCF5EA85ES8VJV8P",
-              "text": "Victor argued the status quo also runs unmeasured, so both the mandate's cost and the saving from doing nothing belong on the same ledger."
+              "memoryItemId": "mem_01M5EZSX1Z757JVC6SM3CKD86N",
+              "text": "(forgotten)"
             },
             {
-              "memoryItemId": "mem_01M5DXBZTNNE8SC3RZJKP3K5GY",
-              "text": "Victor conceded Mei's 18-27% staffed-hours premium across nine continuous-coverage operations was real and measured where coverage was held constant."
+              "memoryItemId": "mem_01M5EZSX2H5G7YAXJZV58767MZ",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5EZSX2JQE5HKFJT0VAYFGHV",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5EZSX2F9QCPZJH73GN3MSW8",
+              "text": "(forgotten)"
             }
           ]
         },
@@ -595,20 +620,20 @@
         },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Alibaba",
+          "provider": "Relace",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 944,
-            "total": 1901
+            "firstToken": 2244,
+            "total": 3840
           },
-          "tokensIn": 1225,
-          "tokensOut": 106,
-          "costUsd": 0.00024,
-          "tokensCached": 1024
+          "tokensIn": 1269,
+          "tokensOut": 116,
+          "costUsd": 0.000147,
+          "tokensCached": 0
         },
         "energy": {
           "characterId": "chr_seedVictor",
-          "spent": 3,
+          "spent": 2,
           "remaining": 860,
           "max": 1000
         },
@@ -620,26 +645,38 @@
           {
             "purpose": "turn_plan",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000052,
-            "latencyMs": 437
+            "costUsd": 0.000053,
+            "latencyMs": 453
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000029,
+            "latencyMs": 406
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000032,
+            "latencyMs": 500
           },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.00024,
-            "latencyMs": 1641
+            "costUsd": 0.000147,
+            "latencyMs": 3031
           },
           {
             "purpose": "guardrail",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000033,
-            "latencyMs": 407
+            "latencyMs": 437
           },
           {
             "purpose": "face_check",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000035,
-            "latencyMs": 422
+            "latencyMs": 437
           }
         ],
         "graph": {
@@ -655,7 +692,7 @@
           ]
         },
         "system1": {
-          "seed": "2026-09-25T15:04:59.984Z|debate|chr_seedVictor,chr_seedMei:2",
+          "seed": "2026-09-25T15:04:59.987Z|debate|chr_seedVictor,chr_seedMei:2",
           "questions": [
             {
               "purpose": "turn_plan",
@@ -664,15 +701,15 @@
               "label": "emotion",
               "about": "chr_seedVictor",
               "answer": "thinking",
-              "p": 0.64,
+              "p": 0.75,
               "compared": [
                 {
                   "name": "confidence",
-                  "value": 0.59,
+                  "value": 0.71,
                   "threshold": 0.2
                 }
               ],
-              "confidence": 0.59,
+              "confidence": 0.71,
               "result": "used",
               "action": "shown"
             },
@@ -683,16 +720,52 @@
               "label": "needs documents?",
               "about": "chr_seedVictor",
               "answer": "yes",
-              "p": 0.51,
+              "p": 0.46,
               "compared": [
                 {
                   "name": "t_gate",
-                  "value": 0.51,
+                  "value": 0.46,
                   "threshold": 0.45
                 }
               ],
               "result": "used",
               "action": "search the documents"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_victorMoot01",
+              "answer": "doesn't help",
+              "p": 0.04,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0.04,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_victorMoot03",
+              "answer": "doesn't help",
+              "p": 0.05,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0.05,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
             },
             {
               "purpose": "guardrail",
@@ -721,8 +794,8 @@
               "id": "face_check",
               "version": 1,
               "label": "face and words agree?",
-              "answer": "no (words read: angry)",
-              "p": 0.01,
+              "answer": "no (words read: neutral)",
+              "p": 0.06,
               "compared": [],
               "result": "shown_only"
             }
@@ -733,8 +806,8 @@
         {
           "characterId": "chr_seedMei",
           "emotion": "thinking",
-          "p": 0.63,
-          "at": "2026-09-25T15:05:15.421Z"
+          "p": 0.76,
+          "at": "2026-09-25T15:05:17.861Z"
         }
       ]
     },
@@ -753,31 +826,31 @@
         "type": "character",
         "characterId": "chr_seedMei"
       },
-      "content": "The blank-ballot point is fair and it cuts against you, Victor: if compulsion buys attendance but not assent, then what you're defending is the appearance of legitimacy, and you're paying for it in the only currency compulsion has — the state's willingness to punish people for abstaining. \"Legitimacy on credit still beats legitimacy unearned\" assumes the two options are compulsion or nothing, and that's the sleight of hand here. The weaker case is the one that can't say why a fine makes a government more responsive, only more attendanced. I'd rather fix access, registration and the cost of voting than bill people for staying home — and nobody in this house has shown the bill buys consent.",
+      "content": "Jury service is the wrong analogy, and that's the hinge. We compel jurors because a specific case must be decided and twelve bodies are needed; we don't fine every citizen for not showing up to court on the off chance. Voting has no such threshold: the republic functions on far less than full attendance, so the \"need\" is asserted, not shown. And \"upward is my friend\" only if you don't care who's moving. A coerced electorate doesn't express legitimacy; it launders it. The rule with humane edges is still coercion, aimed at the least powerful. The open question was enforcement, and Victor's answer, attendance not opinion, never resolves whose attendance the fine actually buys. That asymmetry is why Opposition stands.",
       "status": "complete",
-      "createdAt": "2026-09-25T15:05:17.955Z",
+      "createdAt": "2026-09-25T15:05:22.204Z",
       "emotion": "thinking",
       "emotionSource": "classifier",
       "usage": {
-        "tokensIn": 1371,
-        "tokensCached": 1024,
-        "tokensOut": 148,
-        "costUsd": 0.000344,
-        "energySpent": 4,
-        "firstTokenMs": 1165,
-        "totalMs": 2453
+        "tokensIn": 1326,
+        "tokensCached": 0,
+        "tokensOut": 153,
+        "costUsd": 0.000169,
+        "energySpent": 2,
+        "firstTokenMs": 3097,
+        "totalMs": 5823
       },
       "trace": {
         "messageId": "msg_mockV06",
         "context": {
           "budget": 14680,
           "used": {
-            "persona": 355,
+            "persona": 358,
             "system": 711,
             "mode": 130,
-            "history": 564,
+            "history": 590,
             "user": 0,
-            "memory": 282,
+            "memory": 173,
             "knowledge": 0
           }
         },
@@ -787,40 +860,91 @@
           "candidates": [
             {
               "label": "thinking",
-              "p": 0.54
+              "p": 0.77
             },
             {
               "label": "angry",
-              "p": 0.21
+              "p": 0.03
             },
             {
-              "label": "neutral",
+              "label": "happy",
               "p": 0.02
             }
           ]
         },
         "knowledge": {
-          "query": "This house would make voting compulsory chr_seedVictor: Define your terms, Mei — you call it a bill, but the motion com…",
+          "query": "This house would make voting compulsory Victor Hale: The sanctions objection proves too much. We compel jury service, t…",
           "trigger": "gated",
-          "retrieved": []
+          "retrieved": [
+            {
+              "chunkId": "kch_meiPilot03",
+              "sourceId": "kno_seedMei2",
+              "title": "Four-day week pilot summaries",
+              "locator": "p. 2",
+              "text": "## 1. Who took part\n\nSeventy-one percent of participating organisations were in professional services, software, marketing or the non-profit sector. Only nine provided round-the-clock or shift-based services.\n\n| Sector | Organisations | Workers |\n|------------------------|-----------------|-----------|\n| Professional services | 58 | 2,140 |\n| Software and digital | 49 | 2,310 |\n| Marketing and media | 21 | 640 |\n| Non-profit | 23 | 910 |\n| Manufacturing | 17 | 1,480 |\n| Retail and hospitality | 35 | 1,620 |\n| Shift-based services | 9 | 700 |\n| Total | 212 | 9,800 |\n\nMost organisations had fewer than fifty employees. Only six had more than five hundred.",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_meiPilot08",
+              "sourceId": "kno_seedMei2",
+              "title": "Four-day week pilot summaries",
+              "locator": "p. 7",
+              "text": "## 6. After the pilots\n\nNinety-two percent of organisations kept the four-day week after the pilot. Participants were not randomly selected, so the authors warn against reading this as a national estimate.\n\nOrganisations that volunteer for a four-day week pilot are likely to be the ones best placed to make it work. A firm that expects it to fail does not sign up.",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_meiPilot10",
+              "sourceId": "kno_seedMei2",
+              "title": "Four-day week pilot summaries",
+              "locator": "p. 8",
+              "text": "## 7. Recommendations\n\nThe authors recommend sector-specific trials in health, transport and care, with independent measurement of output and service quality, before any national standard is set.",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_meiPilot12",
+              "sourceId": "kno_seedMei2",
+              "title": "Four-day week pilot summaries",
+              "locator": "p. 9",
+              "text": "## 8. Method and limitations\n\nResults come from employee surveys at the start, midpoint and end of each pilot, alongside finance data reported by each organisation. Survey response fell from 74% to 58% by the final wave.\n\nFalling response rates are a common problem in workplace trials. Workers who were unhappy with the pilot may have been less likely to answer the final survey, which would make results look better than they were.\n\nFinance data was reported by the organisations themselves and was not audited. Output measures differed between firms; fewer than half used one consistent measure for the whole pilot.",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_meiPilot06",
+              "sourceId": "kno_seedMei2",
+              "title": "Four-day week pilot summaries",
+              "locator": "p. 5",
+              "text": "## 4. The gap in the evidence\n\nNone of the pilots included an acute hospital, a public transport operator or a residential care provider. The authors flag this as the main gap in the evidence.\n\nThese sectors share a feature that most pilot firms did not: service must be provided at fixed times, whatever happens to productivity. A software team can finish a task faster; a bus still has to leave at 7:42.\n\nThe pilots therefore tell us a great deal about knowledge work, and much less about the sectors where a national standard would be hardest to apply.",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_meiPilot11",
+              "sourceId": "kno_seedMei2",
+              "title": "Four-day week pilot summaries",
+              "locator": "p. 8",
+              "text": "## In particular:\n\n1. Run trials where the gap is. Fund at least one trial each in an acute hospital trust, a public transport operator and a group of residential care homes.\n2. Measure output independently. Self-reported productivity is not enough. Use service-level data: waiting times, punctuality, care-quality inspections.\n3. Count both sides of the ledger. Record the cost of extra staffed hours and savings from reduced sickness, agency use and turnover.\n4. Randomise where possible. Assign wards, depots or homes to start dates at random, so that results can be compared fairly.\n5. Publish everything, including trials that are stopped early.",
+              "score": 0,
+              "cited": false
+            }
+          ]
         },
         "memory": {
           "recalled": [
             {
-              "memoryItemId": "mem_01M5DXBZV45ZGNXKEZ5Y9GH1PN",
-              "text": "Mei closed urging sequence, explicit exemption of continuous services, and mandated measurement before a nationwide default, calling Amara's ward result good but untested for round-the-clock cover."
+              "memoryItemId": "mem_01M5EZX8EGEF12GWZGDQAQ4VTE",
+              "text": "(forgotten)"
             },
             {
-              "memoryItemId": "mem_01M5DXBZV1K1RSSB3GMGGFY9GG",
-              "text": "Mei cited nine shift-based organisations holding coverage constant that needed 18% to 27% more staffed hours on a shorter week; two clawed part back within six months, seven did not measure it."
+              "memoryItemId": "mem_01M5EZX8EGEF12GWZGDQAQ4VTG",
+              "text": "(forgotten)"
             },
             {
-              "memoryItemId": "mem_01M5DXBZTS3X4JKBPJ48PZJEMC",
-              "text": "Mei argued the pilots covered no hospitals, transport operators or care homes, and fewer than half the firms measured output consistently, so the gains were partly redistributed rather than created."
-            },
-            {
-              "memoryItemId": "mem_01M5DXBZV3SPT37475MPFG8PMQ",
-              "text": "Mei conceded the status-quo-is-also-a-policy line lands and that doing nothing costs money in absence, agency fees and resignations."
+              "memoryItemId": "mem_01M5EZX8EGEF12GWZGDQAQ4VTF",
+              "text": "(forgotten)"
             }
           ]
         },
@@ -835,20 +959,20 @@
         },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Alibaba",
+          "provider": "Relace",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 1165,
-            "total": 2453
+            "firstToken": 3097,
+            "total": 5823
           },
-          "tokensIn": 1371,
-          "tokensOut": 148,
-          "costUsd": 0.000344,
-          "tokensCached": 1024
+          "tokensIn": 1326,
+          "tokensOut": 153,
+          "costUsd": 0.000169,
+          "tokensCached": 0
         },
         "energy": {
           "characterId": "chr_seedMei",
-          "spent": 4,
+          "spent": 2,
           "remaining": 742,
           "max": 1000
         },
@@ -860,26 +984,62 @@
           {
             "purpose": "turn_plan",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000059,
+            "costUsd": 0.00006,
+            "latencyMs": 437
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000025,
             "latencyMs": 422
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000032,
+            "latencyMs": 438
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000027,
+            "latencyMs": 422
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000029,
+            "latencyMs": 438
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.00003,
+            "latencyMs": 437
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000029,
+            "latencyMs": 469
           },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000344,
-            "latencyMs": 2187
+            "costUsd": 0.000169,
+            "latencyMs": 5016
           },
           {
             "purpose": "guardrail",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000034,
-            "latencyMs": 406
+            "costUsd": 0.000035,
+            "latencyMs": 437
           },
           {
             "purpose": "face_check",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000037,
-            "latencyMs": 407
+            "latencyMs": 438
           }
         ],
         "graph": {
@@ -895,7 +1055,7 @@
           ]
         },
         "system1": {
-          "seed": "2026-09-25T15:04:59.984Z|debate|chr_seedVictor,chr_seedMei:3",
+          "seed": "2026-09-25T15:04:59.987Z|debate|chr_seedVictor,chr_seedMei:3",
           "questions": [
             {
               "purpose": "turn_plan",
@@ -904,15 +1064,15 @@
               "label": "emotion",
               "about": "chr_seedMei",
               "answer": "thinking",
-              "p": 0.54,
+              "p": 0.77,
               "compared": [
                 {
                   "name": "confidence",
-                  "value": 0.47,
+                  "value": 0.74,
                   "threshold": 0.2
                 }
               ],
-              "confidence": 0.47,
+              "confidence": 0.74,
               "result": "used",
               "action": "shown"
             },
@@ -923,16 +1083,124 @@
               "label": "needs documents?",
               "about": "chr_seedMei",
               "answer": "yes",
-              "p": 0.51,
+              "p": 0.6,
               "compared": [
                 {
                   "name": "t_gate",
-                  "value": 0.51,
+                  "value": 0.6,
                   "threshold": 0.45
                 }
               ],
               "result": "used",
               "action": "search the documents"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_meiPilot03",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_meiPilot08",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_meiPilot10",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_meiPilot12",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_meiPilot06",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_meiPilot11",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
             },
             {
               "purpose": "guardrail",
@@ -962,7 +1230,7 @@
               "version": 1,
               "label": "face and words agree?",
               "answer": "no (words read: angry)",
-              "p": 0.02,
+              "p": 0.08,
               "compared": [],
               "result": "shown_only"
             }
@@ -980,7 +1248,7 @@
       "kind": "system_note",
       "content": "ROUND 3 · VERDICT",
       "status": "complete",
-      "createdAt": "2026-09-25T15:05:21.162Z"
+      "createdAt": "2026-09-25T15:05:26.834Z"
     }
   ]
 }

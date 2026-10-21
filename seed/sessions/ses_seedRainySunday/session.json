@@ -37,11 +37,11 @@
       "nextSpeakerId": "chr_seedRin"
     },
     "isSeed": true,
-    "costUsd": 0.001949,
+    "costUsd": 0.000881,
     "messageCount": 12,
-    "createdAt": "2026-09-27T02:39:59.992Z",
-    "updatedAt": "2026-09-27T02:40:37.825Z",
+    "createdAt": "2026-09-27T02:39:59.989Z",
+    "updatedAt": "2026-09-27T02:40:46.406Z",
     "pausedReason": "turn_cap",
-    "lastMessageAt": "2026-09-27T02:40:36.207Z"
+    "lastMessageAt": "2026-09-27T02:40:45.214Z"
   }
 }

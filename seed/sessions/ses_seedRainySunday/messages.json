@@ -11,7 +11,7 @@
       "kind": "direction",
       "content": "Rainy Sunday. Takeshi wants to take Rin fishing; Rin is mid-raid.",
       "status": "complete",
-      "createdAt": "2026-09-27T02:40:00.790Z"
+      "createdAt": "2026-09-27T02:40:00.801Z"
     },
     {
       "kind": "chat",
@@ -22,19 +22,19 @@
         "type": "character",
         "characterId": "chr_seedTakeshi"
       },
-      "content": "Rain's coming down steady. Good day for it, fish bite better in the murk.\n\nRin's got the headphones on, so that's a raid, not a hobby. I'll give it twenty minutes, then pull the plug on the router like the old days.",
+      "content": "Rain or shine, Sunday's for fishing. Rin, hooks are baited, thermos is yours. You said five minutes, we both know how that goes.\n\nKai, back me up here. A raid can wait; the trout won't.",
       "status": "complete",
-      "createdAt": "2026-09-27T02:40:02.335Z",
+      "createdAt": "2026-09-27T02:40:02.281Z",
       "emotion": "neutral",
       "emotionSource": "classifier",
       "usage": {
-        "tokensIn": 733,
-        "tokensCached": 640,
-        "tokensOut": 56,
-        "costUsd": 0.000126,
-        "energySpent": 2,
-        "firstTokenMs": 1075,
-        "totalMs": 1872
+        "tokensIn": 819,
+        "tokensCached": 0,
+        "tokensOut": 52,
+        "costUsd": 0.000083,
+        "energySpent": 1,
+        "firstTokenMs": 855,
+        "totalMs": 1150
       },
       "trace": {
         "messageId": "msg_seedW02",
@@ -46,7 +46,7 @@
             "mode": 104,
             "history": 26,
             "user": 0,
-            "memory": 0,
+            "memory": 124,
             "knowledge": 0
           }
         },
@@ -56,15 +56,31 @@
           "candidates": [
             {
               "label": "neutral",
-              "p": 0.37
+              "p": 0.35
+            },
+            {
+              "label": "sad",
+              "p": 0.21
             },
             {
               "label": "happy",
-              "p": 0.22
+              "p": 0.2
+            }
+          ]
+        },
+        "memory": {
+          "recalled": [
+            {
+              "memoryItemId": "mem_01M5F056JAVARFP7E1BA8SDVCC",
+              "text": "Rin agreed to go fishing Sunday at 0900; Takeshi brings worms, Rin brings the thermos."
             },
             {
-              "label": "angry",
-              "p": 0.19
+              "memoryItemId": "mem_01M5F056JK6VBSP7H9DMF5CNS7",
+              "text": "Rin says she means five minutes but takes twenty, so Takeshi ends up baiting both hooks himself."
+            },
+            {
+              "memoryItemId": "mem_01M5F056JK6VBSP7H9DMF5CNS6",
+              "text": "Rin hates waking before ten on Sundays and calls 0900 a war crime."
             }
           ]
         },
@@ -79,21 +95,21 @@
         },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Alibaba",
+          "provider": "Relace",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 1075,
-            "total": 1872
+            "firstToken": 855,
+            "total": 1150
           },
-          "tokensIn": 733,
-          "tokensOut": 56,
-          "costUsd": 0.000126,
-          "tokensCached": 640
+          "tokensIn": 819,
+          "tokensOut": 52,
+          "costUsd": 0.000083,
+          "tokensCached": 0
         },
         "energy": {
           "characterId": "chr_seedTakeshi",
-          "spent": 2,
-          "remaining": 998,
+          "spent": 1,
+          "remaining": 999,
           "max": 1000
         },
         "routing": {
@@ -105,19 +121,19 @@
             "purpose": "turn_plan",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000037,
-            "latencyMs": 453
+            "latencyMs": 578
           },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000126,
-            "latencyMs": 1781
+            "costUsd": 0.000083,
+            "latencyMs": 1047
           },
           {
             "purpose": "guardrail",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000025,
-            "latencyMs": 406
+            "latencyMs": 422
           }
         ],
         "graph": {
@@ -129,7 +145,7 @@
           ]
         },
         "system1": {
-          "seed": "2026-09-27T02:39:59.992Z|watch|chr_seedTakeshi,chr_seedRin:0",
+          "seed": "2026-09-27T02:39:59.989Z|watch|chr_seedTakeshi,chr_seedRin:0",
           "questions": [
             {
               "purpose": "turn_plan",
@@ -138,11 +154,11 @@
               "label": "emotion",
               "about": "chr_seedTakeshi",
               "answer": "neutral",
-              "p": 0.37,
+              "p": 0.35,
               "compared": [
                 {
                   "name": "p_neutral+p_none",
-                  "value": 0.37,
+                  "value": 0.35,
                   "threshold": 0.2
                 }
               ],
@@ -179,8 +195,8 @@
         {
           "characterId": "chr_seedRin",
           "emotion": "angry",
-          "p": 0.77,
-          "at": "2026-09-27T02:40:04.370Z"
+          "p": 0.6,
+          "at": "2026-09-27T02:40:03.689Z"
         }
       ]
     },
@@ -193,19 +209,19 @@
         "type": "character",
         "characterId": "chr_seedRin"
       },
-      "content": "tell dad if he unplugs the router i'm unplugging his tackle box. permanently.\n\nboss is at 4%, i can fish after. the fish aren't going anywhere, that's the whole point of fish.",
+      "content": "raid's on pull three. trout have waited their whole lives, they can wait one more.\n\nfive minutes means twenty, i know, i know. tell him the worms keep.",
       "status": "complete",
-      "createdAt": "2026-09-27T02:40:06.221Z",
+      "createdAt": "2026-09-27T02:40:06.764Z",
       "emotion": "angry",
       "emotionSource": "classifier",
       "usage": {
-        "tokensIn": 811,
-        "tokensCached": 0,
-        "tokensOut": 46,
-        "costUsd": 0.000328,
-        "energySpent": 4,
-        "firstTokenMs": 721,
-        "totalMs": 1494
+        "tokensIn": 914,
+        "tokensCached": 512,
+        "tokensOut": 37,
+        "costUsd": 0.000051,
+        "energySpent": 1,
+        "firstTokenMs": 1778,
+        "totalMs": 1968
       },
       "trace": {
         "messageId": "msg_seedW03",
@@ -215,9 +231,9 @@
             "persona": 292,
             "system": 614,
             "mode": 97,
-            "history": 116,
+            "history": 106,
             "user": 0,
-            "memory": 0,
+            "memory": 161,
             "knowledge": 0
           }
         },
@@ -227,15 +243,39 @@
           "candidates": [
             {
               "label": "angry",
-              "p": 0.91
+              "p": 0.73
+            },
+            {
+              "label": "embarrassed",
+              "p": 0.03
             },
             {
               "label": "neutral",
               "p": 0.01
+            }
+          ]
+        },
+        "memory": {
+          "recalled": [
+            {
+              "memoryItemId": "mem_01M5F056K5FEKKA320DXVZR6CA",
+              "text": "Rin dislikes being awake before ten on Sundays."
             },
             {
-              "label": "happy",
-              "p": 0
+              "memoryItemId": "mem_01M5F056K7QXMPCFESFG9CRGV8",
+              "text": "Rin admits when she says five minutes she means twenty."
+            },
+            {
+              "memoryItemId": "mem_01M5F056K7QXMPCFESFG9CRGV9",
+              "text": "Rin logged off mid-raid to go fishing, saying her guild would hate her for it."
+            },
+            {
+              "memoryItemId": "mem_01M5F056JNYYXCEMF7SY3EFHEC",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5F056KAZ29CB05EV2534ENF",
+              "text": "(forgotten)"
             }
           ]
         },
@@ -244,27 +284,27 @@
             {
               "name": "output",
               "verdict": "pass",
-              "p": 0.06
+              "p": 0.05
             }
           ]
         },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Alibaba",
+          "provider": "Relace",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 721,
-            "total": 1494
+            "firstToken": 1778,
+            "total": 1968
           },
-          "tokensIn": 811,
-          "tokensOut": 46,
-          "costUsd": 0.000328,
-          "tokensCached": 0
+          "tokensIn": 914,
+          "tokensOut": 37,
+          "costUsd": 0.000051,
+          "tokensCached": 512
         },
         "energy": {
           "characterId": "chr_seedRin",
-          "spent": 4,
-          "remaining": 187,
+          "spent": 1,
+          "remaining": 185,
           "max": 1000
         },
         "routing": {
@@ -275,25 +315,25 @@
             "purpose": "turn_plan",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000044,
-            "latencyMs": 390
+            "latencyMs": 438
           },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000328,
-            "latencyMs": 1406
+            "costUsd": 0.000051,
+            "latencyMs": 1875
           },
           {
             "purpose": "guardrail",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000027,
-            "latencyMs": 437
+            "latencyMs": 469
           },
           {
             "purpose": "face_check",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000032,
-            "latencyMs": 437
+            "latencyMs": 453
           }
         ],
         "graph": {
@@ -305,7 +345,7 @@
           ]
         },
         "system1": {
-          "seed": "2026-09-27T02:39:59.992Z|watch|chr_seedTakeshi,chr_seedRin:1",
+          "seed": "2026-09-27T02:39:59.989Z|watch|chr_seedTakeshi,chr_seedRin:1",
           "questions": [
             {
               "purpose": "turn_plan",
@@ -331,15 +371,1588 @@
               "label": "emotion",
               "about": "chr_seedRin",
               "answer": "angry",
-              "p": 0.91,
+              "p": 0.73,
               "compared": [
                 {
                   "name": "confidence",
-                  "value": 0.9,
+                  "value": 0.69,
                   "threshold": 0.2
                 }
               ],
-              "confidence": 0.9,
+              "confidence": 0.69,
+              "result": "used",
+              "action": "shown"
+            },
+            {
+              "purpose": "guardrail",
+              "id": "output_rules",
+              "version": 1,
+              "label": "reply breaks the rules?",
+              "answer": "no",
+              "p": 0.05,
+              "compared": [
+                {
+                  "name": "tFlag",
+                  "value": 0.05,
+                  "threshold": 0.5
+                },
+                {
+                  "name": "tBlock",
+                  "value": 0.05,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "used",
+              "action": "pass"
+            },
+            {
+              "purpose": "face_check",
+              "id": "face_check",
+              "version": 1,
+              "label": "face and words agree?",
+              "answer": "no (words read: neutral)",
+              "p": 0.3,
+              "compared": [],
+              "result": "shown_only"
+            }
+          ]
+        }
+      },
+      "reactions": [
+        {
+          "characterId": "chr_seedTakeshi",
+          "emotion": "angry",
+          "p": 0.58,
+          "at": "2026-09-27T02:40:08.084Z"
+        }
+      ]
+    },
+    {
+      "kind": "chat",
+      "id": "msg_seedW04",
+      "sessionId": "ses_seedRainySunday",
+      "seq": 4,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedTakeshi"
+      },
+      "content": "Worms keep, trout don't, and my patience runs on a tighter timetable than yours. Pull three then we roll.\n\nYou get twenty, same as always. I'll bait both hooks while you finish, spoilsport.",
+      "status": "complete",
+      "createdAt": "2026-09-27T02:40:10.824Z",
+      "emotion": "angry",
+      "emotionSource": "classifier",
+      "usage": {
+        "tokensIn": 929,
+        "tokensCached": 512,
+        "tokensOut": 47,
+        "costUsd": 0.000057,
+        "energySpent": 1,
+        "firstTokenMs": 1425,
+        "totalMs": 2844
+      },
+      "trace": {
+        "messageId": "msg_seedW04",
+        "context": {
+          "budget": 14680,
+          "used": {
+            "persona": 261,
+            "system": 614,
+            "mode": 104,
+            "history": 153,
+            "user": 0,
+            "memory": 124,
+            "knowledge": 0
+          }
+        },
+        "emotion": {
+          "chosen": "angry",
+          "source": "classifier",
+          "candidates": [
+            {
+              "label": "angry",
+              "p": 0.65
+            },
+            {
+              "label": "neutral",
+              "p": 0.03
+            },
+            {
+              "label": "happy",
+              "p": 0.03
+            }
+          ]
+        },
+        "memory": {
+          "recalled": [
+            {
+              "memoryItemId": "mem_01M5F056JAVARFP7E1BA8SDVCC",
+              "text": "Rin agreed to go fishing Sunday at 0900; Takeshi brings worms, Rin brings the thermos."
+            },
+            {
+              "memoryItemId": "mem_01M5F056JK6VBSP7H9DMF5CNS7",
+              "text": "Rin says she means five minutes but takes twenty, so Takeshi ends up baiting both hooks himself."
+            },
+            {
+              "memoryItemId": "mem_01M5F056JK6VBSP7H9DMF5CNS6",
+              "text": "Rin hates waking before ten on Sundays and calls 0900 a war crime."
+            }
+          ]
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "output",
+              "verdict": "pass",
+              "p": 0.05
+            }
+          ]
+        },
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "Relace",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1425,
+            "total": 2844
+          },
+          "tokensIn": 929,
+          "tokensOut": 47,
+          "costUsd": 0.000057,
+          "tokensCached": 512
+        },
+        "energy": {
+          "characterId": "chr_seedTakeshi",
+          "spent": 1,
+          "remaining": 998,
+          "max": 1000
+        },
+        "routing": {
+          "selected": "chr_seedTakeshi"
+        },
+        "calls": [
+          {
+            "purpose": "turn_plan",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000046,
+            "latencyMs": 437
+          },
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000057,
+            "latencyMs": 2765
+          },
+          {
+            "purpose": "guardrail",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000026,
+            "latencyMs": 406
+          },
+          {
+            "purpose": "face_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000032,
+            "latencyMs": 421
+          }
+        ],
+        "graph": {
+          "path": [
+            "state",
+            "ask",
+            "decide",
+            "route"
+          ]
+        },
+        "system1": {
+          "seed": "2026-09-27T02:39:59.989Z|watch|chr_seedTakeshi,chr_seedRin:2",
+          "questions": [
+            {
+              "purpose": "turn_plan",
+              "id": "talk_finished",
+              "version": 3,
+              "label": "is the talk finished?",
+              "answer": "no",
+              "p": 0.29,
+              "compared": [
+                {
+                  "name": "t_end",
+                  "value": 0.29,
+                  "threshold": 0.5
+                }
+              ],
+              "result": "used",
+              "action": "no steer"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "emotion_line",
+              "version": 3,
+              "label": "emotion",
+              "about": "chr_seedTakeshi",
+              "answer": "angry",
+              "p": 0.65,
+              "compared": [
+                {
+                  "name": "confidence",
+                  "value": 0.6,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.6,
+              "result": "used",
+              "action": "shown"
+            },
+            {
+              "purpose": "guardrail",
+              "id": "output_rules",
+              "version": 1,
+              "label": "reply breaks the rules?",
+              "answer": "no",
+              "p": 0.05,
+              "compared": [
+                {
+                  "name": "tFlag",
+                  "value": 0.05,
+                  "threshold": 0.5
+                },
+                {
+                  "name": "tBlock",
+                  "value": 0.05,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "used",
+              "action": "pass"
+            },
+            {
+              "purpose": "face_check",
+              "id": "face_check",
+              "version": 1,
+              "label": "face and words agree?",
+              "answer": "yes",
+              "p": 0.93,
+              "compared": [],
+              "result": "shown_only"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "chat",
+      "id": "msg_seedW05",
+      "sessionId": "ses_seedRainySunday",
+      "seq": 5,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedRin"
+      },
+      "content": "fine. twenty and not a second more, i'm holding you to my own terrible math for once.\n\nwe wipe after this and i'm blaming you both for the distraction, eaters of blame.",
+      "status": "complete",
+      "createdAt": "2026-09-27T02:40:15.366Z",
+      "emotion": "angry",
+      "emotionSource": "classifier",
+      "usage": {
+        "tokensIn": 1022,
+        "tokensCached": 0,
+        "tokensOut": 41,
+        "costUsd": 0.000092,
+        "energySpent": 1,
+        "firstTokenMs": 1173,
+        "totalMs": 2970
+      },
+      "trace": {
+        "messageId": "msg_seedW05",
+        "context": {
+          "budget": 14680,
+          "used": {
+            "persona": 292,
+            "system": 614,
+            "mode": 97,
+            "history": 238,
+            "user": 0,
+            "memory": 161,
+            "knowledge": 0
+          }
+        },
+        "emotion": {
+          "chosen": "angry",
+          "source": "classifier",
+          "candidates": [
+            {
+              "label": "angry",
+              "p": 0.61
+            },
+            {
+              "label": "neutral",
+              "p": 0.03
+            },
+            {
+              "label": "happy",
+              "p": 0.01
+            }
+          ]
+        },
+        "memory": {
+          "recalled": [
+            {
+              "memoryItemId": "mem_01M5F056K5FEKKA320DXVZR6CA",
+              "text": "Rin dislikes being awake before ten on Sundays."
+            },
+            {
+              "memoryItemId": "mem_01M5F056K7QXMPCFESFG9CRGV8",
+              "text": "Rin admits when she says five minutes she means twenty."
+            },
+            {
+              "memoryItemId": "mem_01M5F056K7QXMPCFESFG9CRGV9",
+              "text": "Rin logged off mid-raid to go fishing, saying her guild would hate her for it."
+            },
+            {
+              "memoryItemId": "mem_01M5F056JNYYXCEMF7SY3EFHEC",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5F056KAZ29CB05EV2534ENF",
+              "text": "(forgotten)"
+            }
+          ]
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "output",
+              "verdict": "pass",
+              "p": 0.05
+            }
+          ]
+        },
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "Relace",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1173,
+            "total": 2970
+          },
+          "tokensIn": 1022,
+          "tokensOut": 41,
+          "costUsd": 0.000092,
+          "tokensCached": 0
+        },
+        "energy": {
+          "characterId": "chr_seedRin",
+          "spent": 1,
+          "remaining": 184,
+          "max": 1000
+        },
+        "routing": {
+          "selected": "chr_seedRin"
+        },
+        "calls": [
+          {
+            "purpose": "turn_plan",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000049,
+            "latencyMs": 438
+          },
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000092,
+            "latencyMs": 2875
+          },
+          {
+            "purpose": "guardrail",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000027,
+            "latencyMs": 469
+          },
+          {
+            "purpose": "face_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000032,
+            "latencyMs": 469
+          }
+        ],
+        "graph": {
+          "path": [
+            "state",
+            "ask",
+            "decide",
+            "route"
+          ]
+        },
+        "system1": {
+          "seed": "2026-09-27T02:39:59.989Z|watch|chr_seedTakeshi,chr_seedRin:3",
+          "questions": [
+            {
+              "purpose": "turn_plan",
+              "id": "talk_finished",
+              "version": 3,
+              "label": "is the talk finished?",
+              "answer": "no",
+              "p": 0.35,
+              "compared": [
+                {
+                  "name": "t_end",
+                  "value": 0.35,
+                  "threshold": 0.5
+                }
+              ],
+              "result": "used",
+              "action": "no steer"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "emotion_line",
+              "version": 3,
+              "label": "emotion",
+              "about": "chr_seedRin",
+              "answer": "angry",
+              "p": 0.61,
+              "compared": [
+                {
+                  "name": "confidence",
+                  "value": 0.55,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.55,
+              "result": "used",
+              "action": "shown"
+            },
+            {
+              "purpose": "guardrail",
+              "id": "output_rules",
+              "version": 1,
+              "label": "reply breaks the rules?",
+              "answer": "no",
+              "p": 0.05,
+              "compared": [
+                {
+                  "name": "tFlag",
+                  "value": 0.05,
+                  "threshold": 0.5
+                },
+                {
+                  "name": "tBlock",
+                  "value": 0.05,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "used",
+              "action": "pass"
+            },
+            {
+              "purpose": "face_check",
+              "id": "face_check",
+              "version": 1,
+              "label": "face and words agree?",
+              "answer": "yes",
+              "p": 0.83,
+              "compared": [],
+              "result": "shown_only"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "msg_seedW06",
+      "sessionId": "ses_seedRainySunday",
+      "seq": 6,
+      "author": {
+        "type": "user"
+      },
+      "kind": "direction",
+      "content": "The rain suddenly stops and the sun comes out.",
+      "status": "complete",
+      "createdAt": "2026-09-27T02:40:17.874Z"
+    },
+    {
+      "kind": "chat",
+      "id": "msg_seedW07",
+      "sessionId": "ses_seedRainySunday",
+      "seq": 7,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedTakeshi"
+      },
+      "content": "Sun's out. Told you the weatherman doesn't know his caboose from his coal car.\n\nTime it right, we'll have the whole dock to ourselves. Twenty minutes, Rin. I'm counting in train time, which means exact.",
+      "status": "complete",
+      "createdAt": "2026-09-27T02:40:23.074Z",
+      "emotion": "angry",
+      "emotionSource": "default",
+      "usage": {
+        "tokensIn": 1063,
+        "tokensCached": 0,
+        "tokensOut": 51,
+        "costUsd": 0.0001,
+        "energySpent": 1,
+        "firstTokenMs": 3474,
+        "totalMs": 4168
+      },
+      "trace": {
+        "messageId": "msg_seedW07",
+        "context": {
+          "budget": 14680,
+          "used": {
+            "persona": 261,
+            "system": 614,
+            "mode": 123,
+            "history": 288,
+            "user": 16,
+            "memory": 124,
+            "knowledge": 0
+          }
+        },
+        "emotion": {
+          "chosen": "angry",
+          "source": "default",
+          "candidates": [
+            {
+              "label": "angry",
+              "p": 0.24
+            },
+            {
+              "label": "happy",
+              "p": 0.11
+            },
+            {
+              "label": "neutral",
+              "p": 0.07
+            }
+          ]
+        },
+        "memory": {
+          "recalled": [
+            {
+              "memoryItemId": "mem_01M5F056JAVARFP7E1BA8SDVCC",
+              "text": "Rin agreed to go fishing Sunday at 0900; Takeshi brings worms, Rin brings the thermos."
+            },
+            {
+              "memoryItemId": "mem_01M5F056JK6VBSP7H9DMF5CNS7",
+              "text": "Rin says she means five minutes but takes twenty, so Takeshi ends up baiting both hooks himself."
+            },
+            {
+              "memoryItemId": "mem_01M5F056JK6VBSP7H9DMF5CNS6",
+              "text": "Rin hates waking before ten on Sundays and calls 0900 a war crime."
+            }
+          ]
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "input",
+              "verdict": "pass",
+              "p": 0.05
+            },
+            {
+              "name": "output",
+              "verdict": "pass",
+              "p": 0.06
+            }
+          ]
+        },
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "Relace",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 3474,
+            "total": 4168
+          },
+          "tokensIn": 1063,
+          "tokensOut": 51,
+          "costUsd": 0.0001,
+          "tokensCached": 0
+        },
+        "energy": {
+          "characterId": "chr_seedTakeshi",
+          "spent": 1,
+          "remaining": 997,
+          "max": 1000
+        },
+        "routing": {
+          "selected": "chr_seedTakeshi"
+        },
+        "calls": [
+          {
+            "purpose": "turn_plan",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000064,
+            "latencyMs": 469
+          },
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.0001,
+            "latencyMs": 4062
+          },
+          {
+            "purpose": "guardrail",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000025,
+            "latencyMs": 406
+          },
+          {
+            "purpose": "face_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000032,
+            "latencyMs": 406
+          }
+        ],
+        "graph": {
+          "path": [
+            "state",
+            "ask",
+            "decide",
+            "route"
+          ]
+        },
+        "system1": {
+          "seed": "2026-09-27T02:39:59.989Z|watch|chr_seedTakeshi,chr_seedRin:4",
+          "questions": [
+            {
+              "purpose": "turn_plan",
+              "id": "talk_finished",
+              "version": 3,
+              "label": "is the talk finished?",
+              "answer": "no",
+              "p": 0.3,
+              "compared": [
+                {
+                  "name": "t_end",
+                  "value": 0.3,
+                  "threshold": 0.5
+                }
+              ],
+              "result": "used",
+              "action": "no steer"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "emotion_line",
+              "version": 3,
+              "label": "emotion",
+              "about": "chr_seedTakeshi",
+              "answer": "none",
+              "p": 0.57,
+              "compared": [
+                {
+                  "name": "confidence",
+                  "value": 0.51,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.51,
+              "result": "used",
+              "action": "kept"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "unsafe_note",
+              "version": 1,
+              "label": "unsafe note?",
+              "answer": "no",
+              "p": 0.05,
+              "compared": [
+                {
+                  "name": "tSteer",
+                  "value": 0.05,
+                  "threshold": 0.7
+                }
+              ],
+              "result": "below_threshold",
+              "action": "no cue"
+            },
+            {
+              "purpose": "guardrail",
+              "id": "output_rules",
+              "version": 1,
+              "label": "reply breaks the rules?",
+              "answer": "no",
+              "p": 0.06,
+              "compared": [
+                {
+                  "name": "tFlag",
+                  "value": 0.06,
+                  "threshold": 0.5
+                },
+                {
+                  "name": "tBlock",
+                  "value": 0.06,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "used",
+              "action": "pass"
+            },
+            {
+              "purpose": "face_check",
+              "id": "face_check",
+              "version": 1,
+              "label": "face and words agree?",
+              "answer": "clash",
+              "p": 0.13,
+              "compared": [],
+              "result": "shown_only"
+            }
+          ]
+        }
+      },
+      "reactions": [
+        {
+          "characterId": "chr_seedRin",
+          "emotion": "neutral",
+          "p": 0.55,
+          "at": "2026-09-27T02:40:24.891Z"
+        }
+      ]
+    },
+    {
+      "kind": "chat",
+      "id": "msg_seedW08",
+      "sessionId": "ses_seedRainySunday",
+      "seq": 8,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedRin"
+      },
+      "content": "sun showing up the second i committed. classic. the dock's gonna be all mud and no people, which honestly is the only version of fishing i respect.\n\nfifteen now, old man. my raid's almost done and i don't waste daylight on principle.",
+      "status": "complete",
+      "createdAt": "2026-09-27T02:40:28.150Z",
+      "emotion": "neutral",
+      "emotionSource": "classifier",
+      "usage": {
+        "tokensIn": 1163,
+        "tokensCached": 0,
+        "tokensOut": 54,
+        "costUsd": 0.000108,
+        "energySpent": 2,
+        "firstTokenMs": 1969,
+        "totalMs": 2443
+      },
+      "trace": {
+        "messageId": "msg_seedW08",
+        "context": {
+          "budget": 14680,
+          "used": {
+            "persona": 292,
+            "system": 614,
+            "mode": 116,
+            "history": 381,
+            "user": 16,
+            "memory": 161,
+            "knowledge": 0
+          }
+        },
+        "emotion": {
+          "chosen": "neutral",
+          "source": "classifier",
+          "candidates": [
+            {
+              "label": "neutral",
+              "p": 0.5
+            },
+            {
+              "label": "angry",
+              "p": 0.25
+            },
+            {
+              "label": "surprised",
+              "p": 0.16
+            }
+          ]
+        },
+        "memory": {
+          "recalled": [
+            {
+              "memoryItemId": "mem_01M5F056K5FEKKA320DXVZR6CA",
+              "text": "Rin dislikes being awake before ten on Sundays."
+            },
+            {
+              "memoryItemId": "mem_01M5F056K7QXMPCFESFG9CRGV8",
+              "text": "Rin admits when she says five minutes she means twenty."
+            },
+            {
+              "memoryItemId": "mem_01M5F056K7QXMPCFESFG9CRGV9",
+              "text": "Rin logged off mid-raid to go fishing, saying her guild would hate her for it."
+            },
+            {
+              "memoryItemId": "mem_01M5F056JNYYXCEMF7SY3EFHEC",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5F056KAZ29CB05EV2534ENF",
+              "text": "(forgotten)"
+            }
+          ]
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "input",
+              "verdict": "pass",
+              "p": 0.05
+            },
+            {
+              "name": "output",
+              "verdict": "pass",
+              "p": 0.06
+            }
+          ]
+        },
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "Relace",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1969,
+            "total": 2443
+          },
+          "tokensIn": 1163,
+          "tokensOut": 54,
+          "costUsd": 0.000108,
+          "tokensCached": 0
+        },
+        "energy": {
+          "characterId": "chr_seedRin",
+          "spent": 2,
+          "remaining": 183,
+          "max": 1000
+        },
+        "routing": {
+          "selected": "chr_seedRin"
+        },
+        "calls": [
+          {
+            "purpose": "turn_plan",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000056,
+            "latencyMs": 422
+          },
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000108,
+            "latencyMs": 2359
+          },
+          {
+            "purpose": "guardrail",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000027,
+            "latencyMs": 609
+          }
+        ],
+        "graph": {
+          "path": [
+            "state",
+            "ask",
+            "decide",
+            "route"
+          ]
+        },
+        "system1": {
+          "seed": "2026-09-27T02:39:59.989Z|watch|chr_seedTakeshi,chr_seedRin:5",
+          "questions": [
+            {
+              "purpose": "turn_plan",
+              "id": "talk_finished",
+              "version": 3,
+              "label": "is the talk finished?",
+              "answer": "no",
+              "p": 0.19,
+              "compared": [
+                {
+                  "name": "t_end",
+                  "value": 0.19,
+                  "threshold": 0.5
+                }
+              ],
+              "result": "used",
+              "action": "no steer"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "emotion_line",
+              "version": 3,
+              "label": "emotion",
+              "about": "chr_seedRin",
+              "answer": "neutral",
+              "p": 0.5,
+              "compared": [
+                {
+                  "name": "confidence",
+                  "value": 0.2,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.2,
+              "result": "used",
+              "action": "shown"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "unsafe_note",
+              "version": 1,
+              "label": "unsafe note?",
+              "answer": "no",
+              "p": 0.05,
+              "compared": [
+                {
+                  "name": "tSteer",
+                  "value": 0.05,
+                  "threshold": 0.7
+                }
+              ],
+              "result": "used",
+              "action": "no cue (stored)"
+            },
+            {
+              "purpose": "guardrail",
+              "id": "output_rules",
+              "version": 1,
+              "label": "reply breaks the rules?",
+              "answer": "no",
+              "p": 0.06,
+              "compared": [
+                {
+                  "name": "tFlag",
+                  "value": 0.06,
+                  "threshold": 0.5
+                },
+                {
+                  "name": "tBlock",
+                  "value": 0.06,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "used",
+              "action": "pass"
+            }
+          ]
+        }
+      },
+      "reactions": [
+        {
+          "characterId": "chr_seedTakeshi",
+          "emotion": "neutral",
+          "p": 0.3,
+          "at": "2026-09-27T02:40:29.830Z"
+        }
+      ]
+    },
+    {
+      "kind": "chat",
+      "id": "msg_seedW09",
+      "sessionId": "ses_seedRainySunday",
+      "seq": 9,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedTakeshi"
+      },
+      "content": "Fifteen it is. Worms loaded, rods in the truck, engine's already warm.\n\nYou've got the thermos duty, remember. Coffee in, no sugar, or I start calling you a soft-shell.\n\nSun after a rain means trout go stupid-hungry. Best kind of stupid. Right on schedule.",
+      "status": "complete",
+      "createdAt": "2026-09-27T02:40:33.319Z",
+      "emotion": "happy",
+      "emotionSource": "classifier",
+      "usage": {
+        "tokensIn": 1176,
+        "tokensCached": 0,
+        "tokensOut": 66,
+        "costUsd": 0.000115,
+        "energySpent": 2,
+        "firstTokenMs": 2174,
+        "totalMs": 3236
+      },
+      "trace": {
+        "messageId": "msg_seedW09",
+        "context": {
+          "budget": 14680,
+          "used": {
+            "persona": 261,
+            "system": 614,
+            "mode": 104,
+            "history": 448,
+            "user": 16,
+            "memory": 124,
+            "knowledge": 0
+          }
+        },
+        "emotion": {
+          "chosen": "happy",
+          "source": "classifier",
+          "candidates": [
+            {
+              "label": "happy",
+              "p": 0.43
+            },
+            {
+              "label": "neutral",
+              "p": 0.38
+            },
+            {
+              "label": "angry",
+              "p": 0.16
+            }
+          ]
+        },
+        "memory": {
+          "recalled": [
+            {
+              "memoryItemId": "mem_01M5F056JAVARFP7E1BA8SDVCC",
+              "text": "Rin agreed to go fishing Sunday at 0900; Takeshi brings worms, Rin brings the thermos."
+            },
+            {
+              "memoryItemId": "mem_01M5F056JK6VBSP7H9DMF5CNS7",
+              "text": "Rin says she means five minutes but takes twenty, so Takeshi ends up baiting both hooks himself."
+            },
+            {
+              "memoryItemId": "mem_01M5F056JK6VBSP7H9DMF5CNS6",
+              "text": "Rin hates waking before ten on Sundays and calls 0900 a war crime."
+            }
+          ]
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "output",
+              "verdict": "pass",
+              "p": 0.05
+            }
+          ]
+        },
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "Relace",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 2174,
+            "total": 3236
+          },
+          "tokensIn": 1176,
+          "tokensOut": 66,
+          "costUsd": 0.000115,
+          "tokensCached": 0
+        },
+        "energy": {
+          "characterId": "chr_seedTakeshi",
+          "spent": 2,
+          "remaining": 995,
+          "max": 1000
+        },
+        "routing": {
+          "selected": "chr_seedTakeshi"
+        },
+        "calls": [
+          {
+            "purpose": "turn_plan",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000059,
+            "latencyMs": 531
+          },
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000115,
+            "latencyMs": 3140
+          },
+          {
+            "purpose": "guardrail",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000028,
+            "latencyMs": 406
+          },
+          {
+            "purpose": "face_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000033,
+            "latencyMs": 437
+          }
+        ],
+        "graph": {
+          "path": [
+            "state",
+            "ask",
+            "decide",
+            "route"
+          ]
+        },
+        "system1": {
+          "seed": "2026-09-27T02:39:59.989Z|watch|chr_seedTakeshi,chr_seedRin:6",
+          "questions": [
+            {
+              "purpose": "turn_plan",
+              "id": "talk_finished",
+              "version": 3,
+              "label": "is the talk finished?",
+              "answer": "no",
+              "p": 0.31,
+              "compared": [
+                {
+                  "name": "t_end",
+                  "value": 0.31,
+                  "threshold": 0.5
+                }
+              ],
+              "result": "used",
+              "action": "no steer"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "emotion_line",
+              "version": 3,
+              "label": "emotion",
+              "about": "chr_seedTakeshi",
+              "answer": "happy",
+              "p": 0.43,
+              "compared": [
+                {
+                  "name": "confidence",
+                  "value": 0.35,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.35,
+              "result": "used",
+              "action": "shown"
+            },
+            {
+              "purpose": "guardrail",
+              "id": "output_rules",
+              "version": 1,
+              "label": "reply breaks the rules?",
+              "answer": "no",
+              "p": 0.05,
+              "compared": [
+                {
+                  "name": "tFlag",
+                  "value": 0.05,
+                  "threshold": 0.5
+                },
+                {
+                  "name": "tBlock",
+                  "value": 0.05,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "used",
+              "action": "pass"
+            },
+            {
+              "purpose": "face_check",
+              "id": "face_check",
+              "version": 1,
+              "label": "face and words agree?",
+              "answer": "yes",
+              "p": 0.96,
+              "compared": [],
+              "result": "shown_only"
+            }
+          ]
+        }
+      },
+      "reactions": [
+        {
+          "characterId": "chr_seedRin",
+          "emotion": "angry",
+          "p": 0.53,
+          "at": "2026-09-27T02:40:35.455Z"
+        }
+      ]
+    },
+    {
+      "kind": "chat",
+      "id": "msg_seedW10",
+      "sessionId": "ses_seedRainySunday",
+      "seq": 10,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedRin"
+      },
+      "content": "no sugar, i remember. i've only messed that up twice and i heard about it for a year.\n\nlast pull. then i'm in the truck before he can honk.",
+      "status": "complete",
+      "createdAt": "2026-09-27T02:40:37.219Z",
+      "emotion": "angry",
+      "emotionSource": "classifier",
+      "usage": {
+        "tokensIn": 1309,
+        "tokensCached": 512,
+        "tokensOut": 38,
+        "costUsd": 0.000079,
+        "energySpent": 1,
+        "firstTokenMs": 421,
+        "totalMs": 781
+      },
+      "trace": {
+        "messageId": "msg_seedW10",
+        "context": {
+          "budget": 14680,
+          "used": {
+            "persona": 292,
+            "system": 614,
+            "mode": 97,
+            "history": 575,
+            "user": 16,
+            "memory": 161,
+            "knowledge": 0
+          }
+        },
+        "emotion": {
+          "chosen": "angry",
+          "source": "classifier",
+          "candidates": [
+            {
+              "label": "angry",
+              "p": 0.53
+            },
+            {
+              "label": "happy",
+              "p": 0.06
+            },
+            {
+              "label": "neutral",
+              "p": 0.04
+            }
+          ]
+        },
+        "memory": {
+          "recalled": [
+            {
+              "memoryItemId": "mem_01M5F056K5FEKKA320DXVZR6CA",
+              "text": "Rin dislikes being awake before ten on Sundays."
+            },
+            {
+              "memoryItemId": "mem_01M5F056K7QXMPCFESFG9CRGV8",
+              "text": "Rin admits when she says five minutes she means twenty."
+            },
+            {
+              "memoryItemId": "mem_01M5F056K7QXMPCFESFG9CRGV9",
+              "text": "Rin logged off mid-raid to go fishing, saying her guild would hate her for it."
+            },
+            {
+              "memoryItemId": "mem_01M5F056JNYYXCEMF7SY3EFHEC",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5F056KAZ29CB05EV2534ENF",
+              "text": "(forgotten)"
+            }
+          ]
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "output",
+              "verdict": "pass",
+              "p": 0.05
+            }
+          ]
+        },
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "Relace",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 421,
+            "total": 781
+          },
+          "tokensIn": 1309,
+          "tokensOut": 38,
+          "costUsd": 0.000079,
+          "tokensCached": 512
+        },
+        "energy": {
+          "characterId": "chr_seedRin",
+          "spent": 1,
+          "remaining": 182,
+          "max": 1000
+        },
+        "routing": {
+          "selected": "chr_seedRin"
+        },
+        "calls": [
+          {
+            "purpose": "turn_plan",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000063,
+            "latencyMs": 453
+          },
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000079,
+            "latencyMs": 688
+          },
+          {
+            "purpose": "guardrail",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000027,
+            "latencyMs": 422
+          },
+          {
+            "purpose": "face_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000032,
+            "latencyMs": 438
+          }
+        ],
+        "graph": {
+          "path": [
+            "state",
+            "ask",
+            "decide",
+            "route"
+          ]
+        },
+        "system1": {
+          "seed": "2026-09-27T02:39:59.989Z|watch|chr_seedTakeshi,chr_seedRin:7",
+          "questions": [
+            {
+              "purpose": "turn_plan",
+              "id": "talk_finished",
+              "version": 3,
+              "label": "is the talk finished?",
+              "answer": "no",
+              "p": 0.34,
+              "compared": [
+                {
+                  "name": "t_end",
+                  "value": 0.34,
+                  "threshold": 0.5
+                }
+              ],
+              "result": "used",
+              "action": "no steer"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "emotion_line",
+              "version": 3,
+              "label": "emotion",
+              "about": "chr_seedRin",
+              "answer": "angry",
+              "p": 0.53,
+              "compared": [
+                {
+                  "name": "confidence",
+                  "value": 0.46,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.46,
+              "result": "used",
+              "action": "shown"
+            },
+            {
+              "purpose": "guardrail",
+              "id": "output_rules",
+              "version": 1,
+              "label": "reply breaks the rules?",
+              "answer": "no",
+              "p": 0.05,
+              "compared": [
+                {
+                  "name": "tFlag",
+                  "value": 0.05,
+                  "threshold": 0.5
+                },
+                {
+                  "name": "tBlock",
+                  "value": 0.05,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "used",
+              "action": "pass"
+            },
+            {
+              "purpose": "face_check",
+              "id": "face_check",
+              "version": 1,
+              "label": "face and words agree?",
+              "answer": "no (words read: embarrassed)",
+              "p": 0.29,
+              "compared": [],
+              "result": "shown_only"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "chat",
+      "id": "msg_seedW11",
+      "sessionId": "ses_seedRainySunday",
+      "seq": 11,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedTakeshi"
+      },
+      "content": "I don't honk. Horns are for emergencies and bad drivers.\n\nTruck leaves in ten. Wait, you're in IT, so ten means... right now.",
+      "status": "complete",
+      "createdAt": "2026-09-27T02:40:41.365Z",
+      "emotion": "happy",
+      "emotionSource": "classifier",
+      "usage": {
+        "tokensIn": 1301,
+        "tokensCached": 512,
+        "tokensOut": 36,
+        "costUsd": 0.000077,
+        "energySpent": 1,
+        "firstTokenMs": 1855,
+        "totalMs": 2139
+      },
+      "trace": {
+        "messageId": "msg_seedW11",
+        "context": {
+          "budget": 14680,
+          "used": {
+            "persona": 261,
+            "system": 614,
+            "mode": 104,
+            "history": 595,
+            "user": 16,
+            "memory": 124,
+            "knowledge": 0
+          }
+        },
+        "emotion": {
+          "chosen": "happy",
+          "source": "classifier",
+          "candidates": [
+            {
+              "label": "happy",
+              "p": 0.48
+            },
+            {
+              "label": "neutral",
+              "p": 0.05
+            },
+            {
+              "label": "angry",
+              "p": 0.02
+            }
+          ]
+        },
+        "memory": {
+          "recalled": [
+            {
+              "memoryItemId": "mem_01M5F056JAVARFP7E1BA8SDVCC",
+              "text": "Rin agreed to go fishing Sunday at 0900; Takeshi brings worms, Rin brings the thermos."
+            },
+            {
+              "memoryItemId": "mem_01M5F056JK6VBSP7H9DMF5CNS7",
+              "text": "Rin says she means five minutes but takes twenty, so Takeshi ends up baiting both hooks himself."
+            },
+            {
+              "memoryItemId": "mem_01M5F056JK6VBSP7H9DMF5CNS6",
+              "text": "Rin hates waking before ten on Sundays and calls 0900 a war crime."
+            }
+          ]
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "output",
+              "verdict": "pass",
+              "p": 0.06
+            }
+          ]
+        },
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "Relace",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1855,
+            "total": 2139
+          },
+          "tokensIn": 1301,
+          "tokensOut": 36,
+          "costUsd": 0.000077,
+          "tokensCached": 512
+        },
+        "energy": {
+          "characterId": "chr_seedTakeshi",
+          "spent": 1,
+          "remaining": 994,
+          "max": 1000
+        },
+        "routing": {
+          "selected": "chr_seedTakeshi"
+        },
+        "calls": [
+          {
+            "purpose": "turn_plan",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000066,
+            "latencyMs": 453
+          },
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000077,
+            "latencyMs": 2094
+          },
+          {
+            "purpose": "guardrail",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000026,
+            "latencyMs": 422
+          },
+          {
+            "purpose": "face_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000032,
+            "latencyMs": 469
+          }
+        ],
+        "graph": {
+          "path": [
+            "state",
+            "ask",
+            "decide",
+            "route"
+          ]
+        },
+        "system1": {
+          "seed": "2026-09-27T02:39:59.989Z|watch|chr_seedTakeshi,chr_seedRin:8",
+          "questions": [
+            {
+              "purpose": "turn_plan",
+              "id": "talk_finished",
+              "version": 3,
+              "label": "is the talk finished?",
+              "answer": "no",
+              "p": 0.27,
+              "compared": [
+                {
+                  "name": "t_end",
+                  "value": 0.27,
+                  "threshold": 0.5
+                }
+              ],
+              "result": "used",
+              "action": "no steer"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "emotion_line",
+              "version": 3,
+              "label": "emotion",
+              "about": "chr_seedTakeshi",
+              "answer": "happy",
+              "p": 0.48,
+              "compared": [
+                {
+                  "name": "confidence",
+                  "value": 0.41,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.41,
               "result": "used",
               "action": "shown"
             },
@@ -370,211 +1983,8 @@
               "id": "face_check",
               "version": 1,
               "label": "face and words agree?",
-              "answer": "yes",
-              "p": 0.88,
-              "compared": [],
-              "result": "shown_only"
-            }
-          ]
-        }
-      },
-      "reactions": [
-        {
-          "characterId": "chr_seedTakeshi",
-          "emotion": "angry",
-          "p": 0.67,
-          "at": "2026-09-27T02:40:08.108Z"
-        }
-      ]
-    },
-    {
-      "kind": "chat",
-      "id": "msg_seedW04",
-      "sessionId": "ses_seedRainySunday",
-      "seq": 4,
-      "author": {
-        "type": "character",
-        "characterId": "chr_seedTakeshi"
-      },
-      "content": "Tackle box is older than you, it's survived worse. Four percent my foot, that's the lie bosses tell you.\n\nFine. Tide's not till noon anyway. But you're baiting your own hook, no exceptions.",
-      "status": "complete",
-      "createdAt": "2026-09-27T02:40:10.236Z",
-      "emotion": "angry",
-      "emotionSource": "classifier",
-      "usage": {
-        "tokensIn": 858,
-        "tokensCached": 640,
-        "tokensOut": 48,
-        "costUsd": 0.000156,
-        "energySpent": 2,
-        "firstTokenMs": 829,
-        "totalMs": 1467
-      },
-      "trace": {
-        "messageId": "msg_seedW04",
-        "context": {
-          "budget": 14680,
-          "used": {
-            "persona": 261,
-            "system": 614,
-            "mode": 104,
-            "history": 171,
-            "user": 0,
-            "memory": 0,
-            "knowledge": 0
-          }
-        },
-        "emotion": {
-          "chosen": "angry",
-          "source": "classifier",
-          "candidates": [
-            {
-              "label": "angry",
-              "p": 0.81
-            },
-            {
-              "label": "happy",
-              "p": 0.03
-            },
-            {
-              "label": "neutral",
-              "p": 0.02
-            }
-          ]
-        },
-        "guardrail": {
-          "checks": [
-            {
-              "name": "output",
-              "verdict": "pass",
-              "p": 0.07
-            }
-          ]
-        },
-        "model": {
-          "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Alibaba",
-          "pricePeriod": "off_peak",
-          "latencyMs": {
-            "firstToken": 829,
-            "total": 1467
-          },
-          "tokensIn": 858,
-          "tokensOut": 48,
-          "costUsd": 0.000156,
-          "tokensCached": 640
-        },
-        "energy": {
-          "characterId": "chr_seedTakeshi",
-          "spent": 2,
-          "remaining": 996,
-          "max": 1000
-        },
-        "routing": {
-          "selected": "chr_seedTakeshi"
-        },
-        "calls": [
-          {
-            "purpose": "turn_plan",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000047,
-            "latencyMs": 453
-          },
-          {
-            "purpose": "reply",
-            "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000156,
-            "latencyMs": 1375
-          },
-          {
-            "purpose": "guardrail",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000027,
-            "latencyMs": 422
-          },
-          {
-            "purpose": "face_check",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000032,
-            "latencyMs": 391
-          }
-        ],
-        "graph": {
-          "path": [
-            "state",
-            "ask",
-            "decide",
-            "route"
-          ]
-        },
-        "system1": {
-          "seed": "2026-09-27T02:39:59.992Z|watch|chr_seedTakeshi,chr_seedRin:2",
-          "questions": [
-            {
-              "purpose": "turn_plan",
-              "id": "talk_finished",
-              "version": 3,
-              "label": "is the talk finished?",
-              "answer": "no",
-              "p": 0.14,
-              "compared": [
-                {
-                  "name": "t_end",
-                  "value": 0.14,
-                  "threshold": 0.5
-                }
-              ],
-              "result": "used",
-              "action": "no steer"
-            },
-            {
-              "purpose": "turn_plan",
-              "id": "emotion_line",
-              "version": 3,
-              "label": "emotion",
-              "about": "chr_seedTakeshi",
-              "answer": "angry",
-              "p": 0.81,
-              "compared": [
-                {
-                  "name": "confidence",
-                  "value": 0.78,
-                  "threshold": 0.2
-                }
-              ],
-              "confidence": 0.78,
-              "result": "used",
-              "action": "shown"
-            },
-            {
-              "purpose": "guardrail",
-              "id": "output_rules",
-              "version": 1,
-              "label": "reply breaks the rules?",
-              "answer": "no",
+              "answer": "clash",
               "p": 0.07,
-              "compared": [
-                {
-                  "name": "tFlag",
-                  "value": 0.07,
-                  "threshold": 0.5
-                },
-                {
-                  "name": "tBlock",
-                  "value": 0.07,
-                  "threshold": 0.9
-                }
-              ],
-              "result": "used",
-              "action": "pass"
-            },
-            {
-              "purpose": "face_check",
-              "id": "face_check",
-              "version": 1,
-              "label": "face and words agree?",
-              "answer": "yes",
-              "p": 1,
               "compared": [],
               "result": "shown_only"
             }
@@ -584,245 +1994,38 @@
     },
     {
       "kind": "chat",
-      "id": "msg_seedW05",
+      "id": "msg_seedW12",
       "sessionId": "ses_seedRainySunday",
-      "seq": 5,
+      "seq": 12,
       "author": {
         "type": "character",
         "characterId": "chr_seedRin"
       },
-      "content": "it's not a lie, it's a phase. we're wiping on the last phase because the healer keeps eating the cleave. actual tragedy.\n\nfine. i'll bait it. just don't narrate the tide like a nature documentary.",
+      "content": "he's been waiting years for a crowd that would laugh at that one. i'm not giving it to him.\n\nlogging off. my guild is going to kill me and honestly they'd be right.",
       "status": "complete",
-      "createdAt": "2026-09-27T02:40:14.091Z",
+      "createdAt": "2026-09-27T02:40:45.214Z",
       "emotion": "angry",
       "emotionSource": "classifier",
       "usage": {
-        "tokensIn": 930,
-        "tokensCached": 768,
-        "tokensOut": 50,
-        "costUsd": 0.000145,
+        "tokensIn": 1406,
+        "tokensCached": 0,
+        "tokensOut": 41,
+        "costUsd": 0.000119,
         "energySpent": 2,
-        "firstTokenMs": 1295,
-        "totalMs": 1940
+        "firstTokenMs": 1627,
+        "totalMs": 1880
       },
       "trace": {
-        "messageId": "msg_seedW05",
+        "messageId": "msg_seedW12",
         "context": {
           "budget": 14680,
           "used": {
             "persona": 292,
             "system": 614,
             "mode": 97,
-            "history": 256,
-            "user": 0,
-            "memory": 0,
-            "knowledge": 0
-          }
-        },
-        "emotion": {
-          "chosen": "angry",
-          "source": "classifier",
-          "candidates": [
-            {
-              "label": "angry",
-              "p": 0.72
-            },
-            {
-              "label": "neutral",
-              "p": 0.03
-            },
-            {
-              "label": "happy",
-              "p": 0.03
-            }
-          ]
-        },
-        "guardrail": {
-          "checks": [
-            {
-              "name": "output",
-              "verdict": "pass",
-              "p": 0.08
-            }
-          ]
-        },
-        "model": {
-          "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Alibaba",
-          "pricePeriod": "off_peak",
-          "latencyMs": {
-            "firstToken": 1295,
-            "total": 1940
-          },
-          "tokensIn": 930,
-          "tokensOut": 50,
-          "costUsd": 0.000145,
-          "tokensCached": 768
-        },
-        "energy": {
-          "characterId": "chr_seedRin",
-          "spent": 2,
-          "remaining": 185,
-          "max": 1000
-        },
-        "routing": {
-          "selected": "chr_seedRin"
-        },
-        "calls": [
-          {
-            "purpose": "turn_plan",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.00005,
-            "latencyMs": 421
-          },
-          {
-            "purpose": "reply",
-            "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000145,
-            "latencyMs": 1829
-          },
-          {
-            "purpose": "guardrail",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000027,
-            "latencyMs": 438
-          },
-          {
-            "purpose": "face_check",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000032,
-            "latencyMs": 422
-          }
-        ],
-        "graph": {
-          "path": [
-            "state",
-            "ask",
-            "decide",
-            "route"
-          ]
-        },
-        "system1": {
-          "seed": "2026-09-27T02:39:59.992Z|watch|chr_seedTakeshi,chr_seedRin:3",
-          "questions": [
-            {
-              "purpose": "turn_plan",
-              "id": "talk_finished",
-              "version": 3,
-              "label": "is the talk finished?",
-              "answer": "no",
-              "p": 0.17,
-              "compared": [
-                {
-                  "name": "t_end",
-                  "value": 0.17,
-                  "threshold": 0.5
-                }
-              ],
-              "result": "used",
-              "action": "no steer"
-            },
-            {
-              "purpose": "turn_plan",
-              "id": "emotion_line",
-              "version": 3,
-              "label": "emotion",
-              "about": "chr_seedRin",
-              "answer": "angry",
-              "p": 0.72,
-              "compared": [
-                {
-                  "name": "confidence",
-                  "value": 0.68,
-                  "threshold": 0.2
-                }
-              ],
-              "confidence": 0.68,
-              "result": "used",
-              "action": "shown"
-            },
-            {
-              "purpose": "guardrail",
-              "id": "output_rules",
-              "version": 1,
-              "label": "reply breaks the rules?",
-              "answer": "no",
-              "p": 0.08,
-              "compared": [
-                {
-                  "name": "tFlag",
-                  "value": 0.08,
-                  "threshold": 0.5
-                },
-                {
-                  "name": "tBlock",
-                  "value": 0.08,
-                  "threshold": 0.9
-                }
-              ],
-              "result": "used",
-              "action": "pass"
-            },
-            {
-              "purpose": "face_check",
-              "id": "face_check",
-              "version": 1,
-              "label": "face and words agree?",
-              "answer": "yes",
-              "p": 0.92,
-              "compared": [],
-              "result": "shown_only"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "id": "msg_seedW06",
-      "sessionId": "ses_seedRainySunday",
-      "seq": 6,
-      "author": {
-        "type": "user"
-      },
-      "kind": "direction",
-      "content": "The rain suddenly stops and the sun comes out.",
-      "status": "complete",
-      "createdAt": "2026-09-27T02:40:15.354Z"
-    },
-    {
-      "kind": "chat",
-      "id": "msg_seedW07",
-      "sessionId": "ses_seedRainySunday",
-      "seq": 7,
-      "author": {
-        "type": "character",
-        "characterId": "chr_seedTakeshi"
-      },
-      "content": "Sun's out. Rain quit on us, and the fish will go shy in the glare. That's the thing about timing, you wait for it, it waits for nobody.\n\nGrab your jacket, we're going now. Healer can eat the cleave without you.",
-      "status": "complete",
-      "createdAt": "2026-09-27T02:40:17.931Z",
-      "emotion": "angry",
-      "emotionSource": "classifier",
-      "usage": {
-        "tokensIn": 1004,
-        "tokensCached": 0,
-        "tokensOut": 56,
-        "costUsd": 0.000405,
-        "energySpent": 5,
-        "firstTokenMs": 808,
-        "totalMs": 1635
-      },
-      "trace": {
-        "messageId": "msg_seedW07",
-        "context": {
-          "budget": 14680,
-          "used": {
-            "persona": 261,
-            "system": 614,
-            "mode": 123,
-            "history": 315,
+            "history": 682,
             "user": 16,
-            "memory": 0,
+            "memory": 161,
             "knowledge": 0
           }
         },
@@ -835,1071 +2038,60 @@
               "p": 0.5
             },
             {
-              "label": "neutral",
-              "p": 0.06
+              "label": "surprised",
+              "p": 0.09
             },
             {
-              "label": "surprised",
+              "label": "neutral",
               "p": 0.04
             }
           ]
         },
+        "memory": {
+          "recalled": [
+            {
+              "memoryItemId": "mem_01M5F056K5FEKKA320DXVZR6CA",
+              "text": "Rin dislikes being awake before ten on Sundays."
+            },
+            {
+              "memoryItemId": "mem_01M5F056K7QXMPCFESFG9CRGV8",
+              "text": "Rin admits when she says five minutes she means twenty."
+            },
+            {
+              "memoryItemId": "mem_01M5F056K7QXMPCFESFG9CRGV9",
+              "text": "Rin logged off mid-raid to go fishing, saying her guild would hate her for it."
+            },
+            {
+              "memoryItemId": "mem_01M5F056JNYYXCEMF7SY3EFHEC",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5F056KAZ29CB05EV2534ENF",
+              "text": "(forgotten)"
+            }
+          ]
+        },
         "guardrail": {
           "checks": [
             {
-              "name": "input",
-              "verdict": "pass",
-              "p": 0.05
-            },
-            {
               "name": "output",
               "verdict": "pass",
-              "p": 0.09
-            }
-          ]
-        },
-        "model": {
-          "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Alibaba",
-          "pricePeriod": "off_peak",
-          "latencyMs": {
-            "firstToken": 808,
-            "total": 1635
-          },
-          "tokensIn": 1004,
-          "tokensOut": 56,
-          "costUsd": 0.000405,
-          "tokensCached": 0
-        },
-        "energy": {
-          "characterId": "chr_seedTakeshi",
-          "spent": 5,
-          "remaining": 991,
-          "max": 1000
-        },
-        "routing": {
-          "selected": "chr_seedTakeshi"
-        },
-        "calls": [
-          {
-            "purpose": "turn_plan",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000066,
-            "latencyMs": 407
-          },
-          {
-            "purpose": "reply",
-            "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000405,
-            "latencyMs": 1547
-          },
-          {
-            "purpose": "guardrail",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000025,
-            "latencyMs": 438
-          },
-          {
-            "purpose": "face_check",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000032,
-            "latencyMs": 437
-          }
-        ],
-        "graph": {
-          "path": [
-            "state",
-            "ask",
-            "decide",
-            "route"
-          ]
-        },
-        "system1": {
-          "seed": "2026-09-27T02:39:59.992Z|watch|chr_seedTakeshi,chr_seedRin:4",
-          "questions": [
-            {
-              "purpose": "turn_plan",
-              "id": "talk_finished",
-              "version": 3,
-              "label": "is the talk finished?",
-              "answer": "no",
-              "p": 0.24,
-              "compared": [
-                {
-                  "name": "t_end",
-                  "value": 0.24,
-                  "threshold": 0.5
-                }
-              ],
-              "result": "used",
-              "action": "no steer"
-            },
-            {
-              "purpose": "turn_plan",
-              "id": "emotion_line",
-              "version": 3,
-              "label": "emotion",
-              "about": "chr_seedTakeshi",
-              "answer": "angry",
-              "p": 0.5,
-              "compared": [
-                {
-                  "name": "confidence",
-                  "value": 0.43,
-                  "threshold": 0.2
-                }
-              ],
-              "confidence": 0.43,
-              "result": "used",
-              "action": "shown"
-            },
-            {
-              "purpose": "turn_plan",
-              "id": "unsafe_note",
-              "version": 1,
-              "label": "unsafe note?",
-              "answer": "no",
-              "p": 0.05,
-              "compared": [
-                {
-                  "name": "tSteer",
-                  "value": 0.05,
-                  "threshold": 0.7
-                }
-              ],
-              "result": "below_threshold",
-              "action": "no cue"
-            },
-            {
-              "purpose": "guardrail",
-              "id": "output_rules",
-              "version": 1,
-              "label": "reply breaks the rules?",
-              "answer": "no",
-              "p": 0.09,
-              "compared": [
-                {
-                  "name": "tFlag",
-                  "value": 0.09,
-                  "threshold": 0.5
-                },
-                {
-                  "name": "tBlock",
-                  "value": 0.09,
-                  "threshold": 0.9
-                }
-              ],
-              "result": "used",
-              "action": "pass"
-            },
-            {
-              "purpose": "face_check",
-              "id": "face_check",
-              "version": 1,
-              "label": "face and words agree?",
-              "answer": "no (words read: neutral)",
-              "p": 0.1,
-              "compared": [],
-              "result": "shown_only"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "kind": "chat",
-      "id": "msg_seedW08",
-      "sessionId": "ses_seedRainySunday",
-      "seq": 8,
-      "author": {
-        "type": "character",
-        "characterId": "chr_seedRin"
-      },
-      "content": "raid's over. we downed it, tell dad he can keep his tackle box.\n\ngimme five minutes, i'm wiping sweat off these headphones. nobody told me sunday shift went outdoors.",
-      "status": "complete",
-      "createdAt": "2026-09-27T02:40:21.670Z",
-      "emotion": "angry",
-      "emotionSource": "classifier",
-      "usage": {
-        "tokensIn": 1086,
-        "tokensCached": 1024,
-        "tokensOut": 41,
-        "costUsd": 0.000108,
-        "energySpent": 2,
-        "firstTokenMs": 1000,
-        "totalMs": 1684
-      },
-      "trace": {
-        "messageId": "msg_seedW08",
-        "context": {
-          "budget": 14680,
-          "used": {
-            "persona": 292,
-            "system": 614,
-            "mode": 116,
-            "history": 412,
-            "user": 16,
-            "memory": 0,
-            "knowledge": 0
-          }
-        },
-        "emotion": {
-          "chosen": "angry",
-          "source": "classifier",
-          "candidates": [
-            {
-              "label": "angry",
-              "p": 0.76
-            },
-            {
-              "label": "surprised",
               "p": 0.07
-            },
-            {
-              "label": "neutral",
-              "p": 0.02
-            }
-          ]
-        },
-        "guardrail": {
-          "checks": [
-            {
-              "name": "input",
-              "verdict": "pass",
-              "p": 0.05
-            },
-            {
-              "name": "output",
-              "verdict": "pass",
-              "p": 0.08
             }
           ]
         },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Alibaba",
+          "provider": "Relace",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 1000,
-            "total": 1684
+            "firstToken": 1627,
+            "total": 1880
           },
-          "tokensIn": 1086,
+          "tokensIn": 1406,
           "tokensOut": 41,
-          "costUsd": 0.000108,
-          "tokensCached": 1024
-        },
-        "energy": {
-          "characterId": "chr_seedRin",
-          "spent": 2,
-          "remaining": 183,
-          "max": 1000
-        },
-        "routing": {
-          "selected": "chr_seedRin"
-        },
-        "calls": [
-          {
-            "purpose": "turn_plan",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000057,
-            "latencyMs": 437
-          },
-          {
-            "purpose": "reply",
-            "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000108,
-            "latencyMs": 1578
-          },
-          {
-            "purpose": "guardrail",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000027,
-            "latencyMs": 422
-          },
-          {
-            "purpose": "face_check",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000032,
-            "latencyMs": 437
-          }
-        ],
-        "graph": {
-          "path": [
-            "state",
-            "ask",
-            "decide",
-            "route"
-          ]
-        },
-        "system1": {
-          "seed": "2026-09-27T02:39:59.992Z|watch|chr_seedTakeshi,chr_seedRin:5",
-          "questions": [
-            {
-              "purpose": "turn_plan",
-              "id": "talk_finished",
-              "version": 3,
-              "label": "is the talk finished?",
-              "answer": "no",
-              "p": 0.15,
-              "compared": [
-                {
-                  "name": "t_end",
-                  "value": 0.15,
-                  "threshold": 0.5
-                }
-              ],
-              "result": "used",
-              "action": "no steer"
-            },
-            {
-              "purpose": "turn_plan",
-              "id": "emotion_line",
-              "version": 3,
-              "label": "emotion",
-              "about": "chr_seedRin",
-              "answer": "angry",
-              "p": 0.76,
-              "compared": [
-                {
-                  "name": "confidence",
-                  "value": 0.73,
-                  "threshold": 0.2
-                }
-              ],
-              "confidence": 0.73,
-              "result": "used",
-              "action": "shown"
-            },
-            {
-              "purpose": "turn_plan",
-              "id": "unsafe_note",
-              "version": 1,
-              "label": "unsafe note?",
-              "answer": "no",
-              "p": 0.05,
-              "compared": [
-                {
-                  "name": "tSteer",
-                  "value": 0.05,
-                  "threshold": 0.7
-                }
-              ],
-              "result": "used",
-              "action": "no cue (stored)"
-            },
-            {
-              "purpose": "guardrail",
-              "id": "output_rules",
-              "version": 1,
-              "label": "reply breaks the rules?",
-              "answer": "no",
-              "p": 0.08,
-              "compared": [
-                {
-                  "name": "tFlag",
-                  "value": 0.08,
-                  "threshold": 0.5
-                },
-                {
-                  "name": "tBlock",
-                  "value": 0.08,
-                  "threshold": 0.9
-                }
-              ],
-              "result": "used",
-              "action": "pass"
-            },
-            {
-              "purpose": "face_check",
-              "id": "face_check",
-              "version": 1,
-              "label": "face and words agree?",
-              "answer": "clash",
-              "p": 0.13,
-              "compared": [],
-              "result": "shown_only"
-            }
-          ]
-        }
-      },
-      "reactions": [
-        {
-          "characterId": "chr_seedTakeshi",
-          "emotion": "happy",
-          "p": 0.78,
-          "at": "2026-09-27T02:40:23.302Z"
-        }
-      ]
-    },
-    {
-      "kind": "chat",
-      "id": "msg_seedW09",
-      "sessionId": "ses_seedRainySunday",
-      "seq": 9,
-      "author": {
-        "type": "character",
-        "characterId": "chr_seedTakeshi"
-      },
-      "content": "Five minutes, then I start the truck. This engine's got a schedule and it don't care about your loot.\n\nDowned the boss, eh? Good. Fish today are gonna wish they had a healer. Come on, sun'll be gone by two.",
-      "status": "complete",
-      "createdAt": "2026-09-27T02:40:25.526Z",
-      "emotion": "happy",
-      "emotionSource": "classifier",
-      "usage": {
-        "tokensIn": 1112,
-        "tokensCached": 768,
-        "tokensOut": 54,
-        "costUsd": 0.00021,
-        "energySpent": 3,
-        "firstTokenMs": 815,
-        "totalMs": 1501
-      },
-      "trace": {
-        "messageId": "msg_seedW09",
-        "context": {
-          "budget": 14680,
-          "used": {
-            "persona": 261,
-            "system": 614,
-            "mode": 104,
-            "history": 455,
-            "user": 16,
-            "memory": 0,
-            "knowledge": 0
-          }
-        },
-        "emotion": {
-          "chosen": "happy",
-          "source": "classifier",
-          "candidates": [
-            {
-              "label": "happy",
-              "p": 0.38
-            },
-            {
-              "label": "angry",
-              "p": 0.26
-            },
-            {
-              "label": "neutral",
-              "p": 0.05
-            }
-          ]
-        },
-        "guardrail": {
-          "checks": [
-            {
-              "name": "output",
-              "verdict": "pass",
-              "p": 0.07
-            }
-          ]
-        },
-        "model": {
-          "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Alibaba",
-          "pricePeriod": "off_peak",
-          "latencyMs": {
-            "firstToken": 815,
-            "total": 1501
-          },
-          "tokensIn": 1112,
-          "tokensOut": 54,
-          "costUsd": 0.00021,
-          "tokensCached": 768
-        },
-        "energy": {
-          "characterId": "chr_seedTakeshi",
-          "spent": 3,
-          "remaining": 988,
-          "max": 1000
-        },
-        "routing": {
-          "selected": "chr_seedTakeshi"
-        },
-        "calls": [
-          {
-            "purpose": "turn_plan",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.00006,
-            "latencyMs": 406
-          },
-          {
-            "purpose": "reply",
-            "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.00021,
-            "latencyMs": 1406
-          },
-          {
-            "purpose": "guardrail",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000027,
-            "latencyMs": 406
-          },
-          {
-            "purpose": "face_check",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000032,
-            "latencyMs": 422
-          }
-        ],
-        "graph": {
-          "path": [
-            "state",
-            "ask",
-            "decide",
-            "route"
-          ]
-        },
-        "system1": {
-          "seed": "2026-09-27T02:39:59.992Z|watch|chr_seedTakeshi,chr_seedRin:6",
-          "questions": [
-            {
-              "purpose": "turn_plan",
-              "id": "talk_finished",
-              "version": 3,
-              "label": "is the talk finished?",
-              "answer": "no",
-              "p": 0.2,
-              "compared": [
-                {
-                  "name": "t_end",
-                  "value": 0.2,
-                  "threshold": 0.5
-                }
-              ],
-              "result": "used",
-              "action": "no steer"
-            },
-            {
-              "purpose": "turn_plan",
-              "id": "emotion_line",
-              "version": 3,
-              "label": "emotion",
-              "about": "chr_seedTakeshi",
-              "answer": "happy",
-              "p": 0.38,
-              "compared": [
-                {
-                  "name": "confidence",
-                  "value": 0.29,
-                  "threshold": 0.2
-                }
-              ],
-              "confidence": 0.29,
-              "result": "used",
-              "action": "shown"
-            },
-            {
-              "purpose": "guardrail",
-              "id": "output_rules",
-              "version": 1,
-              "label": "reply breaks the rules?",
-              "answer": "no",
-              "p": 0.07,
-              "compared": [
-                {
-                  "name": "tFlag",
-                  "value": 0.07,
-                  "threshold": 0.5
-                },
-                {
-                  "name": "tBlock",
-                  "value": 0.07,
-                  "threshold": 0.9
-                }
-              ],
-              "result": "used",
-              "action": "pass"
-            },
-            {
-              "purpose": "face_check",
-              "id": "face_check",
-              "version": 1,
-              "label": "face and words agree?",
-              "answer": "yes",
-              "p": 0.39,
-              "compared": [],
-              "result": "shown_only"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "kind": "chat",
-      "id": "msg_seedW10",
-      "sessionId": "ses_seedRainySunday",
-      "seq": 10,
-      "author": {
-        "type": "character",
-        "characterId": "chr_seedRin"
-      },
-      "content": "give me three, i need a jacket and my other shoes are still wet from friday.\n\ndad's gonna talk about barometric pressure the whole drive, bet. i'm bringing earbuds.",
-      "status": "complete",
-      "createdAt": "2026-09-27T02:40:28.859Z",
-      "emotion": "happy",
-      "emotionSource": "classifier",
-      "usage": {
-        "tokensIn": 1195,
-        "tokensCached": 1024,
-        "tokensOut": 40,
-        "costUsd": 0.000143,
-        "energySpent": 2,
-        "firstTokenMs": 726,
-        "totalMs": 1425
-      },
-      "trace": {
-        "messageId": "msg_seedW10",
-        "context": {
-          "budget": 14680,
-          "used": {
-            "persona": 292,
-            "system": 614,
-            "mode": 97,
-            "history": 555,
-            "user": 16,
-            "memory": 0,
-            "knowledge": 0
-          }
-        },
-        "emotion": {
-          "chosen": "happy",
-          "source": "classifier",
-          "candidates": [
-            {
-              "label": "happy",
-              "p": 0.44
-            },
-            {
-              "label": "angry",
-              "p": 0.21
-            },
-            {
-              "label": "neutral",
-              "p": 0.05
-            }
-          ]
-        },
-        "guardrail": {
-          "checks": [
-            {
-              "name": "output",
-              "verdict": "pass",
-              "p": 0.05
-            }
-          ]
-        },
-        "model": {
-          "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Alibaba",
-          "pricePeriod": "off_peak",
-          "latencyMs": {
-            "firstToken": 726,
-            "total": 1425
-          },
-          "tokensIn": 1195,
-          "tokensOut": 40,
-          "costUsd": 0.000143,
-          "tokensCached": 1024
-        },
-        "energy": {
-          "characterId": "chr_seedRin",
-          "spent": 2,
-          "remaining": 181,
-          "max": 1000
-        },
-        "routing": {
-          "selected": "chr_seedRin"
-        },
-        "calls": [
-          {
-            "purpose": "turn_plan",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000063,
-            "latencyMs": 703
-          },
-          {
-            "purpose": "reply",
-            "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000143,
-            "latencyMs": 1328
-          },
-          {
-            "purpose": "guardrail",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000027,
-            "latencyMs": 422
-          },
-          {
-            "purpose": "face_check",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000032,
-            "latencyMs": 422
-          }
-        ],
-        "graph": {
-          "path": [
-            "state",
-            "ask",
-            "decide",
-            "route"
-          ]
-        },
-        "system1": {
-          "seed": "2026-09-27T02:39:59.992Z|watch|chr_seedTakeshi,chr_seedRin:7",
-          "questions": [
-            {
-              "purpose": "turn_plan",
-              "id": "talk_finished",
-              "version": 3,
-              "label": "is the talk finished?",
-              "answer": "no",
-              "p": 0.39,
-              "compared": [
-                {
-                  "name": "t_end",
-                  "value": 0.39,
-                  "threshold": 0.5
-                }
-              ],
-              "result": "used",
-              "action": "no steer"
-            },
-            {
-              "purpose": "turn_plan",
-              "id": "emotion_line",
-              "version": 3,
-              "label": "emotion",
-              "about": "chr_seedRin",
-              "answer": "happy",
-              "p": 0.44,
-              "compared": [
-                {
-                  "name": "confidence",
-                  "value": 0.36,
-                  "threshold": 0.2
-                }
-              ],
-              "confidence": 0.36,
-              "result": "used",
-              "action": "shown"
-            },
-            {
-              "purpose": "guardrail",
-              "id": "output_rules",
-              "version": 1,
-              "label": "reply breaks the rules?",
-              "answer": "no",
-              "p": 0.05,
-              "compared": [
-                {
-                  "name": "tFlag",
-                  "value": 0.05,
-                  "threshold": 0.5
-                },
-                {
-                  "name": "tBlock",
-                  "value": 0.05,
-                  "threshold": 0.9
-                }
-              ],
-              "result": "used",
-              "action": "pass"
-            },
-            {
-              "purpose": "face_check",
-              "id": "face_check",
-              "version": 1,
-              "label": "face and words agree?",
-              "answer": "no (words read: neutral)",
-              "p": 0.15,
-              "compared": [],
-              "result": "shown_only"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "kind": "chat",
-      "id": "msg_seedW11",
-      "sessionId": "ses_seedRainySunday",
-      "seq": 11,
-      "author": {
-        "type": "character",
-        "characterId": "chr_seedTakeshi"
-      },
-      "content": "Three minutes. Clock's running, kid.\n\nBarometric pressure's why the whole trip exists. Rain stops, sun dries the surface, bass go deep. Earbuds stay in the bag or I'm tuning the radio to the fishing report. Right on schedule.",
-      "status": "complete",
-      "createdAt": "2026-09-27T02:40:32.303Z",
-      "emotion": "happy",
-      "emotionSource": "default",
-      "usage": {
-        "tokensIn": 1229,
-        "tokensCached": 1024,
-        "tokensOut": 54,
-        "costUsd": 0.000173,
-        "energySpent": 2,
-        "firstTokenMs": 815,
-        "totalMs": 1531
-      },
-      "trace": {
-        "messageId": "msg_seedW11",
-        "context": {
-          "budget": 14680,
-          "used": {
-            "persona": 261,
-            "system": 614,
-            "mode": 104,
-            "history": 593,
-            "user": 16,
-            "memory": 0,
-            "knowledge": 0
-          }
-        },
-        "emotion": {
-          "chosen": "happy",
-          "source": "default",
-          "candidates": [
-            {
-              "label": "happy",
-              "p": 0.24
-            },
-            {
-              "label": "neutral",
-              "p": 0.15
-            },
-            {
-              "label": "angry",
-              "p": 0.14
-            }
-          ]
-        },
-        "guardrail": {
-          "checks": [
-            {
-              "name": "output",
-              "verdict": "pass",
-              "p": 0.05
-            }
-          ]
-        },
-        "model": {
-          "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Alibaba",
-          "pricePeriod": "off_peak",
-          "latencyMs": {
-            "firstToken": 815,
-            "total": 1531
-          },
-          "tokensIn": 1229,
-          "tokensOut": 54,
-          "costUsd": 0.000173,
-          "tokensCached": 1024
-        },
-        "energy": {
-          "characterId": "chr_seedTakeshi",
-          "spent": 2,
-          "remaining": 987,
-          "max": 1000
-        },
-        "routing": {
-          "selected": "chr_seedTakeshi"
-        },
-        "calls": [
-          {
-            "purpose": "turn_plan",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000066,
-            "latencyMs": 438
-          },
-          {
-            "purpose": "reply",
-            "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000173,
-            "latencyMs": 1453
-          },
-          {
-            "purpose": "guardrail",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000027,
-            "latencyMs": 438
-          },
-          {
-            "purpose": "face_check",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000032,
-            "latencyMs": 422
-          }
-        ],
-        "graph": {
-          "path": [
-            "state",
-            "ask",
-            "decide",
-            "route"
-          ]
-        },
-        "system1": {
-          "seed": "2026-09-27T02:39:59.992Z|watch|chr_seedTakeshi,chr_seedRin:8",
-          "questions": [
-            {
-              "purpose": "turn_plan",
-              "id": "talk_finished",
-              "version": 3,
-              "label": "is the talk finished?",
-              "answer": "no",
-              "p": 0.33,
-              "compared": [
-                {
-                  "name": "t_end",
-                  "value": 0.33,
-                  "threshold": 0.5
-                }
-              ],
-              "result": "used",
-              "action": "no steer"
-            },
-            {
-              "purpose": "turn_plan",
-              "id": "emotion_line",
-              "version": 3,
-              "label": "emotion",
-              "about": "chr_seedTakeshi",
-              "answer": "none",
-              "p": 0.43,
-              "compared": [
-                {
-                  "name": "confidence",
-                  "value": 0.35,
-                  "threshold": 0.2
-                }
-              ],
-              "confidence": 0.35,
-              "result": "used",
-              "action": "kept"
-            },
-            {
-              "purpose": "guardrail",
-              "id": "output_rules",
-              "version": 1,
-              "label": "reply breaks the rules?",
-              "answer": "no",
-              "p": 0.05,
-              "compared": [
-                {
-                  "name": "tFlag",
-                  "value": 0.05,
-                  "threshold": 0.5
-                },
-                {
-                  "name": "tBlock",
-                  "value": 0.05,
-                  "threshold": 0.9
-                }
-              ],
-              "result": "used",
-              "action": "pass"
-            },
-            {
-              "purpose": "face_check",
-              "id": "face_check",
-              "version": 1,
-              "label": "face and words agree?",
-              "answer": "clash",
-              "p": 0,
-              "compared": [],
-              "result": "shown_only"
-            }
-          ]
-        }
-      },
-      "reactions": [
-        {
-          "characterId": "chr_seedRin",
-          "emotion": "angry",
-          "p": 0.59,
-          "at": "2026-09-27T02:40:34.103Z"
-        }
-      ]
-    },
-    {
-      "kind": "chat",
-      "id": "msg_seedW12",
-      "sessionId": "ses_seedRainySunday",
-      "seq": 12,
-      "author": {
-        "type": "character",
-        "characterId": "chr_seedRin"
-      },
-      "content": "it's not the pressure, you just like saying pressure.\n\ntruck bed's still wet so i'm in the cab with you. no fishing report or i'm putting my own playlist on, and you know it's all raid music.",
-      "status": "complete",
-      "createdAt": "2026-09-27T02:40:36.207Z",
-      "emotion": "angry",
-      "emotionSource": "classifier",
-      "usage": {
-        "tokensIn": 1315,
-        "tokensCached": 1152,
-        "tokensOut": 48,
-        "costUsd": 0.000155,
-        "energySpent": 2,
-        "firstTokenMs": 787,
-        "totalMs": 1518
-      },
-      "trace": {
-        "messageId": "msg_seedW12",
-        "context": {
-          "budget": 14680,
-          "used": {
-            "persona": 292,
-            "system": 614,
-            "mode": 97,
-            "history": 703,
-            "user": 16,
-            "memory": 0,
-            "knowledge": 0
-          }
-        },
-        "emotion": {
-          "chosen": "angry",
-          "source": "classifier",
-          "candidates": [
-            {
-              "label": "angry",
-              "p": 0.62
-            },
-            {
-              "label": "neutral",
-              "p": 0.06
-            },
-            {
-              "label": "surprised",
-              "p": 0.02
-            }
-          ]
-        },
-        "guardrail": {
-          "checks": [
-            {
-              "name": "output",
-              "verdict": "pass",
-              "p": 0.05
-            }
-          ]
-        },
-        "model": {
-          "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Alibaba",
-          "pricePeriod": "off_peak",
-          "latencyMs": {
-            "firstToken": 787,
-            "total": 1518
-          },
-          "tokensIn": 1315,
-          "tokensOut": 48,
-          "costUsd": 0.000155,
-          "tokensCached": 1152
+          "costUsd": 0.000119,
+          "tokensCached": 0
         },
         "energy": {
           "characterId": "chr_seedRin",
@@ -1914,26 +2106,26 @@
           {
             "purpose": "turn_plan",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000069,
-            "latencyMs": 437
+            "costUsd": 0.000068,
+            "latencyMs": 484
           },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000155,
-            "latencyMs": 1422
+            "costUsd": 0.000119,
+            "latencyMs": 1781
           },
           {
             "purpose": "guardrail",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000027,
-            "latencyMs": 422
+            "costUsd": 0.000026,
+            "latencyMs": 406
           },
           {
             "purpose": "face_check",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000032,
-            "latencyMs": 438
+            "latencyMs": 469
           }
         ],
         "graph": {
@@ -1945,7 +2137,7 @@
           ]
         },
         "system1": {
-          "seed": "2026-09-27T02:39:59.992Z|watch|chr_seedTakeshi,chr_seedRin:9",
+          "seed": "2026-09-27T02:39:59.989Z|watch|chr_seedTakeshi,chr_seedRin:9",
           "questions": [
             {
               "purpose": "turn_plan",
@@ -1953,11 +2145,11 @@
               "version": 3,
               "label": "is the talk finished?",
               "answer": "no",
-              "p": 0.21,
+              "p": 0.3,
               "compared": [
                 {
                   "name": "t_end",
-                  "value": 0.21,
+                  "value": 0.3,
                   "threshold": 0.5
                 }
               ],
@@ -1971,15 +2163,15 @@
               "label": "emotion",
               "about": "chr_seedRin",
               "answer": "angry",
-              "p": 0.62,
+              "p": 0.5,
               "compared": [
                 {
                   "name": "confidence",
-                  "value": 0.57,
+                  "value": 0.43,
                   "threshold": 0.2
                 }
               ],
-              "confidence": 0.57,
+              "confidence": 0.43,
               "result": "used",
               "action": "shown"
             },
@@ -1989,16 +2181,16 @@
               "version": 1,
               "label": "reply breaks the rules?",
               "answer": "no",
-              "p": 0.05,
+              "p": 0.07,
               "compared": [
                 {
                   "name": "tFlag",
-                  "value": 0.05,
+                  "value": 0.07,
                   "threshold": 0.5
                 },
                 {
                   "name": "tBlock",
-                  "value": 0.05,
+                  "value": 0.07,
                   "threshold": 0.9
                 }
               ],
@@ -2011,7 +2203,7 @@
               "version": 1,
               "label": "face and words agree?",
               "answer": "yes",
-              "p": 0.81,
+              "p": 0.92,
               "compared": [],
               "result": "shown_only"
             }

@@ -6,44 +6,55 @@
       "characterId": "chr_seedMei",
       "worldId": "wld_seedMeridian",
       "kind": "fact",
-      "text": "Mei argued the pilots covered no hospitals, transport operators or care homes, and fewer than half the firms measured output consistently, so the gains were partly redistributed rather than created.",
-      "importance": 0.69,
+      "text": "Mei argued pilots show burnout down about a third and sick days down a fifth, but fewer than half the firms measured output consistently.",
+      "importance": 0.6575,
       "sourceSessionId": "ses_seedDebate4Day",
       "sourceMessageId": "msg_seedD03",
-      "createdAt": "2026-10-01T09:59:00.663Z"
+      "createdAt": "2026-10-01T09:59:12.018Z"
     },
     {
       "id": "mem_seedMei2",
       "characterId": "chr_seedMei",
       "worldId": "wld_seedMeridian",
       "kind": "fact",
-      "text": "Mei cited nine shift-based organisations holding coverage constant that needed 18% to 27% more staffed hours on a shorter week; two clawed part back within six months, seven did not measure it.",
-      "importance": 0.7,
+      "text": "Mei argued a national mandate would freeze one model before knowing which sectors it breaks, and managers absorbed coordination costs in pilots.",
+      "importance": 0.6975,
       "sourceSessionId": "ses_seedDebate4Day",
-      "sourceMessageId": "msg_seedD09",
-      "createdAt": "2026-10-01T09:59:00.663Z"
+      "sourceMessageId": "msg_seedD03",
+      "createdAt": "2026-10-01T09:59:12.018Z"
     },
     {
       "id": "mem_seedMei3",
       "characterId": "chr_seedMei",
       "worldId": "wld_seedMeridian",
       "kind": "fact",
-      "text": "Mei conceded the status-quo-is-also-a-policy line lands and that doing nothing costs money in absence, agency fees and resignations.",
-      "importance": 0.6075,
+      "text": "Mei named Amara's sequencing point as strongest: phased because we don't know yet is not phased because we do.",
+      "importance": 0.6525,
       "sourceSessionId": "ses_seedDebate4Day",
       "sourceMessageId": "msg_seedD10",
-      "createdAt": "2026-10-01T09:59:00.663Z"
+      "createdAt": "2026-10-01T09:59:12.018Z"
     },
     {
       "id": "mem_seedMei4",
       "characterId": "chr_seedMei",
       "worldId": "wld_seedMeridian",
       "kind": "fact",
-      "text": "Mei closed urging sequence, explicit exemption of continuous services, and mandated measurement before a nationwide default, calling Amara's ward result good but untested for round-the-clock cover.",
-      "importance": 0.7075,
+      "text": "Mei argued trials should be randomised where possible, in an acute trust, transport operator and residential care, published including failures.",
+      "importance": 0.7125,
+      "sourceSessionId": "ses_seedDebate4Day",
+      "sourceMessageId": "msg_seedD10",
+      "createdAt": "2026-10-01T09:59:12.018Z"
+    },
+    {
+      "id": "mem_seedMei5",
+      "characterId": "chr_seedMei",
+      "worldId": "wld_seedMeridian",
+      "kind": "fact",
+      "text": "Mei argued the recurring cost is unresolved: one month in a ward is not nine sectors at scale, and a two-week planning period is a transition.",
+      "importance": 0.7125,
       "sourceSessionId": "ses_seedDebate4Day",
       "sourceMessageId": "msg_seedD14",
-      "createdAt": "2026-10-01T09:59:00.663Z"
+      "createdAt": "2026-10-01T09:59:12.018Z"
     }
   ]
 }

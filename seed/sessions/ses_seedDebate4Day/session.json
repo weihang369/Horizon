@@ -19,7 +19,7 @@
         "characterId": "chr_seedVictor",
         "role": "debater",
         "side": "prop",
-        "currentEmotion": "thinking",
+        "currentEmotion": "happy",
         "mutedByUser": false
       },
       {
@@ -84,25 +84,25 @@
           {
             "subjectId": "prop",
             "points": [
-              "Wards on compressed four-day rota: burnout fell about a fifth, sleep improved, throughput stayed within normal variation.",
-              "Status quo costs: burnout rose 29% to 41%, nurses resigning at 14% a year, each replacement four months' salary.",
-              "Nationwide means statutory default with sectoral averaging and continuous-service exemptions, not identical schedules overnight.",
-              "Opposition's 18–27% premium is cost of covering same service the most expensive way, hiring or overtime, not restructuring.",
-              "Sequencing and measurement are already in the motion; refusing to pass it means the hard case never gets modelled."
+              "Four-day week is not compressed longer days; it cuts burnout by breaking consecutive blocks.",
+              "Rested staff are safer: under-six-hours sleep doubled near-miss medication errors.",
+              "Nationwide means a legislated default, not one identical rota, with a transition.",
+              "The machinery exists in continuous-coverage sectors under the Working Time Code.",
+              "Trials written into the statute with sunset review; adopt the default, phase the rollout."
             ]
           },
           {
             "subjectId": "opp",
             "points": [
-              "Pilots excluded hospitals, transport and care homes, the sectors a national standard would bind hardest.",
-              "Fewer than half of pilot firms measured output consistently; managers absorbed coordination slack, redistributing gains.",
-              "Nine continuous-coverage operations needed 18–27% more staffed hours to hold service constant.",
-              "Two of nine clawed back part of the premium; seven didn't measure, so net cost is low-to-mid double digits of payroll.",
-              "Asymmetry: measured cost in hard sectors versus unmeasured saving in easy sectors; sequence, exempt, mandate measurement first."
+              "Pilot evidence is soft: fewer than half measured output consistently.",
+              "Four-day weeks are a bundle of choices; hospitals and care cannot compress coverage.",
+              "Nine shift-based organisations needed 18% to 27% more staffed hours to hold coverage.",
+              "Only two of nine checked whether lower sickness and turnover clawed any back.",
+              "Trials first, independently measured, both sides of the ledger, published including failures."
             ]
           }
         ],
-        "keyDisagreement": "Whether a nationwide four-day default should be legislated now with sequencing and exemptions, or delayed until continuous-coverage sectors are modelled and measured.",
+        "keyDisagreement": "Whether 'we do not yet know' is a reason to legislate a default trajectory now or to run sector trials first, given both sides accept trials with sunset review.",
         "decidedBy": "arbiter",
         "strongerCase": "opp",
         "scoresBy": "side",
@@ -110,52 +110,52 @@
           {
             "subjectId": "prop",
             "criterionId": "evidence",
-            "value": 9
+            "value": 8.4
           },
           {
             "subjectId": "prop",
             "criterionId": "rebuttal",
-            "value": 9.8
+            "value": 9.5
           },
           {
             "subjectId": "prop",
             "criterionId": "clarity",
-            "value": 9.4
+            "value": 8.8
           },
           {
             "subjectId": "prop",
             "criterionId": "persuasion",
-            "value": 6.6
+            "value": 6.3
           },
           {
             "subjectId": "opp",
             "criterionId": "evidence",
-            "value": 9.2
+            "value": 9.3
           },
           {
             "subjectId": "opp",
             "criterionId": "rebuttal",
-            "value": 9.8
+            "value": 9.9
           },
           {
             "subjectId": "opp",
             "criterionId": "clarity",
-            "value": 9.7
+            "value": 9.6
           },
           {
             "subjectId": "opp",
             "criterionId": "persuasion",
-            "value": 7.4
+            "value": 7.5
           }
         ],
-        "rationale": "Both sides scored strongly on evidence and rebuttal, but the Opposition's clarity and persuasion edge reflected a tighter ledger: it granted the wellbeing findings while pressing the unmeasured cost in exactly the sectors the motion binds."
+        "rationale": "The Opposition scored higher on Evidence (9.3 to 8.4), Rebuttal (9.9 to 9.5), and Clarity (9.6 to 8.8), grounding its case in specific pilot gaps and cost figures. The Proposition scored lower on Persuasion (6.3 to 7.5) and could not close the gap between conceding sector trials and defending the motion's demand to adopt nationwide now."
       }
     },
     "isSeed": true,
-    "costUsd": 0.005442,
+    "costUsd": 0.002583,
     "messageCount": 17,
-    "createdAt": "2026-10-01T09:57:59.992Z",
-    "updatedAt": "2026-10-01T09:58:53.582Z",
-    "lastMessageAt": "2026-10-01T09:58:53.582Z"
+    "createdAt": "2026-10-01T09:57:59.991Z",
+    "updatedAt": "2026-10-01T09:58:59.532Z",
+    "lastMessageAt": "2026-10-01T09:58:59.532Z"
   }
 }

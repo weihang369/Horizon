@@ -6,99 +6,99 @@
       "characterId": "chr_seedAmara",
       "worldId": "wld_seedMeridian",
       "kind": "event",
-      "text": "Kai has had a headache for three days, both temples, dull and pressing, after cutting back on coffee a week ago.",
-      "importance": 0.4225,
+      "text": "Kai described a three-day headache centered at the temples and said he cut back on coffee the week before.",
+      "importance": 0.4725,
       "sourceSessionId": "ses_seedAmaraHeadache",
       "sourceMessageId": "msg_seedA02",
-      "createdAt": "2026-09-29T21:15:29.511Z"
+      "createdAt": "2026-09-29T21:15:24.152Z"
     },
     {
       "id": "mem_seedAmara2",
       "characterId": "chr_seedAmara",
       "worldId": "wld_seedMeridian",
       "kind": "fact",
-      "text": "Kai's headache fits caffeine withdrawal: it hits 12-24 hours after a sharp drop and can last up to nine days.",
-      "importance": 0.465,
+      "text": "Amara told Kai his temple headache is likely caffeine withdrawal, fitting the usual three-day timeline.",
+      "importance": 0.405,
       "sourceSessionId": "ses_seedAmaraHeadache",
       "sourceMessageId": "msg_seedA05",
-      "createdAt": "2026-09-29T21:15:29.511Z"
+      "createdAt": "2026-09-29T21:15:24.152Z"
     },
     {
       "id": "mem_seedAmara3",
       "characterId": "chr_seedAmara",
       "worldId": "wld_seedMeridian",
       "kind": "fact",
-      "text": "Kai has no fever, neck stiffness, confusion, weakness, vision changes or pain on bending forward.",
-      "importance": 0.395,
+      "text": "Amara advised Kai to seek emergency care for thunderclap headache, fever, neck stiffness, confusion, weakness, vision changes, or stroke signs.",
+      "importance": 0.6325,
       "sourceSessionId": "ses_seedAmaraHeadache",
-      "sourceMessageId": "msg_seedA05",
-      "createdAt": "2026-09-29T21:15:29.511Z"
+      "sourceMessageId": "msg_seedA07",
+      "createdAt": "2026-09-29T21:15:24.152Z"
     },
     {
       "id": "mem_seedAmara4",
       "characterId": "chr_seedAmara",
       "worldId": "wld_seedMeridian",
       "kind": "fact",
-      "text": "Amara advised Kai to taper caffeine slowly, keep fluids up, and check back if the headache is not easing by about day nine.",
-      "importance": 0.5475,
+      "text": "Amara advised Kai that a headache waking him from sleep or after head injury needs same-day review.",
+      "importance": 0.5025,
       "sourceSessionId": "ses_seedAmaraHeadache",
       "sourceMessageId": "msg_seedA07",
-      "createdAt": "2026-09-29T21:15:29.511Z"
+      "createdAt": "2026-09-29T21:15:24.152Z"
     },
     {
       "id": "mem_seedAmara5",
       "characterId": "chr_seedAmara",
       "worldId": "wld_seedMeridian",
-      "kind": "fact",
-      "text": "Amara told Kai that a sudden severe headache reaching its worst within a minute needs emergency care, as do fever, neck stiffness, confusion, weakness, vision changes, slurred speech, face drooping, or a non-fading rash.",
-      "importance": 0.5975,
-      "sourceSessionId": "ses_seedAmaraHeadache",
-      "sourceMessageId": "msg_seedA07",
-      "createdAt": "2026-09-29T21:15:29.511Z"
+      "kind": "event",
+      "text": "Amara argued a compressed rota with guaranteed rest days cut burnout about a fifth in twelve weeks, with patient throughput, length of stay and readmissions within normal variation.",
+      "importance": 0.7275,
+      "sourceSessionId": "ses_seedDebate4Day",
+      "sourceMessageId": "msg_seedD02",
+      "createdAt": "2026-10-01T09:59:12.018Z"
     },
     {
       "id": "mem_seedAmara6",
       "characterId": "chr_seedAmara",
       "worldId": "wld_seedMeridian",
-      "kind": "event",
-      "text": "Amara argued for a nationwide four-day work week, citing two wards where a compressed four-day rota cut burnout about a fifth in twelve weeks with throughput and readmissions stable.",
-      "importance": 0.75,
+      "kind": "fact",
+      "text": "Amara reported ED burnout climbed from 29% to 41% in ten months, and staff sleeping under six hours before a shift were twice as likely to report near-miss medication errors.",
+      "importance": 0.7375,
       "sourceSessionId": "ses_seedDebate4Day",
       "sourceMessageId": "msg_seedD02",
-      "createdAt": "2026-10-01T09:59:00.663Z"
+      "createdAt": "2026-10-01T09:59:12.018Z"
     },
     {
       "id": "mem_seedAmara7",
       "characterId": "chr_seedAmara",
       "worldId": "wld_seedMeridian",
       "kind": "fact",
-      "text": "Amara's emergency department burnout rose from 29% in March to 41% by January, with nurses resigning at 14% a year and each replacement costing about four months' salary.",
-      "importance": 0.735,
+      "text": "Amara named Mei's sequencing point as strongest: thin output measurement means mandating now risks freezing the wrong model.",
+      "importance": 0.615,
       "sourceSessionId": "ses_seedDebate4Day",
-      "sourceMessageId": "msg_seedD02",
-      "createdAt": "2026-10-01T09:59:00.663Z"
+      "sourceMessageId": "msg_seedD08",
+      "createdAt": "2026-10-01T09:59:12.018Z"
     },
     {
       "id": "mem_seedAmara8",
       "characterId": "chr_seedAmara",
       "worldId": "wld_seedMeridian",
-      "kind": "fact",
-      "text": "Amara conceded her review did not test whole-department round-the-clock cover and that the emergency department proper needs further modelling.",
-      "importance": 0.675,
+      "kind": "event",
+      "text": "Amara said the pilot wards' transition month needed 6% more agency hours before settling to baseline by week eight, with no extra staffed hours long-term.",
+      "importance": 0.655,
       "sourceSessionId": "ses_seedDebate4Day",
       "sourceMessageId": "msg_seedD13",
-      "createdAt": "2026-10-01T09:59:00.663Z"
+      "createdAt": "2026-10-01T09:59:12.018Z"
     },
     {
       "id": "mem_seedAmara9",
       "characterId": "chr_seedAmara",
       "worldId": "wld_seedMeridian",
       "kind": "fact",
-      "text": "Amara's ward review found burnout fell 19% and 22%, sleep before shifts improved 40 minutes, and a 6% agency-hours transition premium faded to baseline by week eight.",
-      "importance": 0.7175,
+      "text": "Amara advocated adopting a phased statutory default with sector trials and sunset review written into the statute.",
+      "importance": 0.7225,
       "sourceSessionId": "ses_seedDebate4Day",
       "sourceMessageId": "msg_seedD13",
-      "createdAt": "2026-10-01T09:59:00.663Z"
+      "createdAt": "2026-10-01T09:59:12.018Z"
     }
   ]
 }

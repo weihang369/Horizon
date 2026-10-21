@@ -6,44 +6,33 @@
       "characterId": "chr_seedHana",
       "worldId": "wld_seedSunnyHollow",
       "kind": "event",
-      "text": "Kai is treating everyone to dinner tonight; Hana asked for the udon place and her grandma's tamagoyaki as the new dish.",
-      "importance": 0.495,
-      "sourceSessionId": "ses_seedDinner",
-      "sourceMessageId": "msg_seedC02",
-      "createdAt": "2026-09-30T10:31:50.989Z"
+      "text": "Hana fixed the wheezing fridge display, but the broken vase was her favorite cream one with the crackle glaze, now in the bin.",
+      "importance": 0.5325,
+      "sourceSessionId": "ses_seedHanaLongDay",
+      "sourceMessageId": "msg_seedH07",
+      "createdAt": "2026-09-30T19:03:28.807Z"
     },
     {
       "id": "mem_seedHana2",
       "characterId": "chr_seedHana",
       "worldId": "wld_seedSunnyHollow",
-      "kind": "fact",
-      "text": "Hana's family rule: one dish everyone loves, one nobody's tried, no skipping.",
-      "importance": 0.6275,
-      "sourceSessionId": "ses_seedDinner",
-      "sourceMessageId": "msg_seedC07",
-      "createdAt": "2026-09-30T10:31:50.989Z"
+      "kind": "event",
+      "text": "Hana made Kai tea when Kai came home after a long day.",
+      "importance": 0.3725,
+      "sourceSessionId": "ses_seedHanaLongDay",
+      "sourceMessageId": "msg_seedH03",
+      "createdAt": "2026-09-30T19:03:28.807Z"
     },
     {
       "id": "mem_seedHana3",
       "characterId": "chr_seedHana",
       "worldId": "wld_seedSunnyHollow",
       "kind": "event",
-      "text": "Hana sold out of pink ranunculus by noon, then knocked over a bucket of water and mopped the floor twice.",
-      "importance": 0.3125,
-      "sourceSessionId": "ses_seedHanaLongDay",
-      "sourceMessageId": "msg_seedH03",
-      "createdAt": "2026-09-30T19:04:04.041Z"
-    },
-    {
-      "id": "mem_seedHana4",
-      "characterId": "chr_seedHana",
-      "worldId": "wld_seedSunnyHollow",
-      "kind": "event",
-      "text": "Hana baked a small batch of lemon cookies for Rin's exam week and ate three while warm.",
-      "importance": 0.4225,
+      "text": "Hana's shop day was mostly quiet: a birthday bouquet for a regular and a delivery she almost dropped.",
+      "importance": 0.29,
       "sourceSessionId": "ses_seedHanaLongDay",
       "sourceMessageId": "msg_seedH05",
-      "createdAt": "2026-09-30T19:04:04.041Z"
+      "createdAt": "2026-09-30T19:03:28.807Z"
     }
   ]
 }

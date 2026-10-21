@@ -502,7 +502,7 @@ draft (wizard: seed → … → theme) ─→ review (APPROVE step) ─(Summon)�
 - Fixtures are validated against this contract (JSON Schema or zod generated from it).
 
 ## 8. Example: debate message (fixture form)
-*A real reply, recorded on the demo instance in the v1 test stage (2026-10-21, morning re-record) and shipped as seed message `msg_seedD09`: Mei answering the moderator's "give us a number" during the rebuttal round. `…` marks text shortened here; the trace shows its main parts (the shipped one also carries `knowledge`, `calls`, `graph` and `system1`).*
+*A real reply, recorded on the demo instance in the v1 test stage (2026-10-21, evening re-record) and shipped as seed message `msg_seedD09`: Mei answering the moderator's "give us a number" during the rebuttal round. `…` marks text shortened here; the trace shows its main parts (the shipped one also carries `knowledge`, `calls`, `graph` and `system1`).*
 ```json
 {
   "id": "msg_seedD09",
@@ -513,7 +513,7 @@ draft (wizard: seed → … → theme) ─→ review (APPROVE step) ─(Summon)�
     "characterId": "chr_seedMei"
   },
   "kind": "chat",
-  "content": "A range, because anyone who gives you one number is selling something. I…",
+  "content": "Anybody quoting a single number for this is selling you something. What…",
   "status": "complete",
   "emotion": "thinking",
   "emotionSource": "classifier",
@@ -524,22 +524,14 @@ draft (wizard: seed → … → theme) ─→ review (APPROVE step) ─(Summon)�
     "iteration": 1,
     "side": "opp"
   },
-  "reactions": [
-    {
-      "characterId": "chr_seedVictor",
-      "emotion": "thinking",
-      "p": 0.49,
-      "at": "2026-10-01T09:58:23.723Z"
-    }
-  ],
   "usage": {
-    "tokensIn": 1814,
+    "tokensIn": 2049,
     "tokensCached": 0,
-    "tokensOut": 179,
-    "costUsd": 0.000835,
-    "energySpent": 9,
-    "firstTokenMs": 1888,
-    "totalMs": 3045
+    "tokensOut": 149,
+    "costUsd": 0.000218,
+    "energySpent": 3,
+    "firstTokenMs": 1535,
+    "totalMs": 2175
   },
   "citations": [
     {
@@ -550,28 +542,28 @@ draft (wizard: seed → … → theme) ─→ review (APPROVE step) ─(Summon)�
       "chunkId": "kch_meiPilot07",
       "locator": "p. 6",
       "quote": "The nine were three private clinics, two call centres, two s…",
-      "score": 0.555
+      "score": 0.55
     }
   ],
   "trace": {
     "messageId": "msg_seedD09",
     "model": {
       "id": "deepseek/deepseek-v4.1-flash",
-      "provider": "Alibaba",
+      "provider": "Relace",
       "pricePeriod": "off_peak",
       "latencyMs": {
-        "firstToken": 1888,
-        "total": 3045
+        "firstToken": 1535,
+        "total": 2175
       },
-      "tokensIn": 1814,
-      "tokensOut": 179,
-      "costUsd": 0.000835,
+      "tokensIn": 2049,
+      "tokensOut": 149,
+      "costUsd": 0.000218,
       "tokensCached": 0
     },
     "energy": {
       "characterId": "chr_seedMei",
-      "spent": 9,
-      "remaining": 754,
+      "spent": 3,
+      "remaining": 748,
       "max": 1000
     },
     "emotion": {
@@ -580,15 +572,15 @@ draft (wizard: seed → … → theme) ─→ review (APPROVE step) ─(Summon)�
       "candidates": [
         {
           "label": "thinking",
-          "p": 0.65
+          "p": 0.64
         },
         {
           "label": "angry",
-          "p": 0.04
+          "p": 0.07
         },
         {
           "label": "neutral",
-          "p": 0.02
+          "p": 0.05
         }
       ]
     },
@@ -607,24 +599,24 @@ draft (wizard: seed → … → theme) ─→ review (APPROVE step) ─(Summon)�
         {
           "name": "output",
           "verdict": "pass",
-          "p": 0.06
+          "p": 0.05
         }
       ]
     },
     "context": {
       "budget": 14680,
       "used": {
-        "persona": 355,
+        "persona": 358,
         "system": 716,
         "mode": 144,
-        "history": 1124,
+        "history": 1199,
         "user": 15,
-        "memory": 0,
+        "memory": 317,
         "knowledge": 327
       }
     }
   },
-  "createdAt": "2026-10-01T09:58:21.688Z"
+  "createdAt": "2026-10-01T09:58:25.963Z"
 }
 ```
-*Cost: OpenRouter bills the reply ($0.000835: 1,814 tokens in, 0 of them cached, 179 out, served by Alibaba off-peak). Energy rounds the cost up at 1 ⚡ per $0.0001: 8.35 → 9 ⚡. The price arithmetic is in `domain/cost.ts` and its tests.*
+*Cost: OpenRouter bills the reply ($0.000218: 2,049 tokens in, 0 of them cached, 149 out, served by Relace off-peak). Energy rounds the cost up at 1 ⚡ per $0.0001: 2.18 → 3 ⚡. The price arithmetic is in `domain/cost.ts` and its tests.*

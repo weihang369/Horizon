@@ -6,99 +6,55 @@
       "characterId": "chr_seedTakeshi",
       "worldId": "wld_seedSunnyHollow",
       "kind": "event",
-      "text": "Rainy Sunday, Rin was mid-raid on headphones; Takeshi gave twenty minutes before pulling the router.",
-      "importance": 0.4675,
+      "text": "Rin agreed to a rainy-Sunday fishing trip; Takeshi brings worms and baits both hooks, Rin brings the thermos with coffee and no sugar.",
+      "importance": 0.585,
       "sourceSessionId": "ses_seedRainySunday",
       "sourceMessageId": "msg_seedW02",
-      "createdAt": "2026-09-27T02:40:46.673Z"
+      "createdAt": "2026-09-27T02:40:56.157Z"
     },
     {
       "id": "mem_seedTakeshi2",
       "characterId": "chr_seedTakeshi",
       "worldId": "wld_seedSunnyHollow",
       "kind": "event",
-      "text": "Rin's raid ended in a win; Rin promised Takeshi could keep his tackle box.",
-      "importance": 0.425,
+      "text": "Rin's five minutes means twenty, and this time she cut it to fifteen; Takeshi counted in train time, which means exact.",
+      "importance": 0.59,
       "sourceSessionId": "ses_seedRainySunday",
-      "sourceMessageId": "msg_seedW08",
-      "createdAt": "2026-09-27T02:40:46.673Z"
+      "sourceMessageId": "msg_seedW09",
+      "createdAt": "2026-09-27T02:40:56.157Z"
     },
     {
       "id": "mem_seedTakeshi3",
       "characterId": "chr_seedTakeshi",
       "worldId": "wld_seedSunnyHollow",
-      "kind": "event",
-      "text": "Rain quit and sun came out, so Takeshi moved the fishing trip to right now.",
-      "importance": 0.265,
+      "kind": "preference",
+      "text": "Rin hates waking before ten on Sundays and calls 0900 a war crime.",
+      "importance": 0.5375,
       "sourceSessionId": "ses_seedRainySunday",
-      "sourceMessageId": "msg_seedW07",
-      "createdAt": "2026-09-27T02:40:46.673Z"
+      "sourceMessageId": "msg_seedW02",
+      "createdAt": "2026-09-27T02:40:56.157Z"
     },
     {
       "id": "mem_seedTakeshi4",
       "characterId": "chr_seedTakeshi",
       "worldId": "wld_seedSunnyHollow",
-      "kind": "preference",
-      "text": "Rin threatened to put on raid music if Takeshi tunes the radio to the fishing report.",
-      "importance": 0.4,
+      "kind": "fact",
+      "text": "Rin works in IT and is mid-raid; she logged off to go fishing, saying her guild would kill her for it.",
+      "importance": 0.36,
       "sourceSessionId": "ses_seedRainySunday",
       "sourceMessageId": "msg_seedW12",
-      "createdAt": "2026-09-27T02:40:46.673Z"
+      "createdAt": "2026-09-27T02:40:56.157Z"
     },
     {
       "id": "mem_seedTakeshi5",
       "characterId": "chr_seedTakeshi",
       "worldId": "wld_seedSunnyHollow",
       "kind": "fact",
-      "text": "Takeshi's rule: Rin baits Rin's own hook, no exceptions.",
-      "importance": 0.6625,
+      "text": "Sun after rain means trout go stupid-hungry, and the dock will be empty mud, which Rin says is the only fishing she respects.",
+      "importance": 0.48,
       "sourceSessionId": "ses_seedRainySunday",
-      "sourceMessageId": "msg_seedW04",
-      "createdAt": "2026-09-27T02:40:46.673Z"
-    },
-    {
-      "id": "mem_seedTakeshi6",
-      "characterId": "chr_seedTakeshi",
-      "worldId": "wld_seedSunnyHollow",
-      "kind": "event",
-      "text": "Kai is treating everyone to dinner tonight; Takeshi voted for udon, anything warm after being on the water since sunup.",
-      "importance": 0.255,
-      "sourceSessionId": "ses_seedDinner",
-      "sourceMessageId": "msg_seedC04",
-      "createdAt": "2026-09-30T10:31:50.989Z"
-    },
-    {
-      "id": "mem_seedTakeshi7",
-      "characterId": "chr_seedTakeshi",
-      "worldId": "wld_seedSunnyHollow",
-      "kind": "event",
-      "text": "Rin is eating dinner with the family; Rin's headphones are only for the drive.",
-      "importance": 0.3675,
-      "sourceSessionId": "ses_seedDinner",
-      "sourceMessageId": "msg_seedC05",
-      "createdAt": "2026-09-30T10:31:50.989Z"
-    },
-    {
-      "id": "mem_seedTakeshi8",
-      "characterId": "chr_seedTakeshi",
-      "worldId": "wld_seedSunnyHollow",
-      "kind": "fact",
-      "text": "Hana's family rule: one dish everyone loves, one nobody's tried, no skipping.",
-      "importance": 0.5625,
-      "sourceSessionId": "ses_seedDinner",
-      "sourceMessageId": "msg_seedC07",
-      "createdAt": "2026-09-30T10:31:50.989Z"
-    },
-    {
-      "id": "mem_seedTakeshi9",
-      "characterId": "chr_seedTakeshi",
-      "worldId": "wld_seedSunnyHollow",
-      "kind": "event",
-      "text": "Takeshi accepted Hana's card rematch after dinner.",
-      "importance": 0.3725,
-      "sourceSessionId": "ses_seedDinner",
-      "sourceMessageId": "msg_seedC04",
-      "createdAt": "2026-09-30T10:31:50.989Z"
+      "sourceMessageId": "msg_seedW09",
+      "createdAt": "2026-09-27T02:40:56.157Z"
     }
   ]
 }

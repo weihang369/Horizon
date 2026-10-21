@@ -11,7 +11,7 @@
       "kind": "system_note",
       "content": "ROUND 1 · OPENING",
       "status": "complete",
-      "createdAt": "2026-09-24T11:00:01.652Z"
+      "createdAt": "2026-09-24T11:00:01.632Z"
     },
     {
       "kind": "chat",
@@ -27,19 +27,19 @@
         "type": "character",
         "characterId": "chr_seedAmara"
       },
-      "content": "I'd ban them in classrooms, not in schoolbags. The evidence on distraction is strong: phones fragment attention, and the kids who struggle most lose the most. But a blanket ban ignores the asthma inhaler reminder, the diabetic glucose monitor, the kid texting a parent about pickup. So: bell-to-bell limits, clear carve-outs for medical and accessibility needs, and teach digital judgement rather than pretend the devices don't exist. The question isn't whether phones distract. It's whether prohibition teaches anything.",
+      "content": "Banning phones in schools is the blunt instrument I keep hearing praised as a cure, and as a doctor I want evidence, not vibes. Yes, phones fragment attention and feed anxiety—I see it. But a blanket ban punishes the kid using a phone as a lifeline and ignores the real driver: how devices are designed. And it dodges the harder work of teaching digital literacy and regulating the companies. So I'm against.",
       "status": "complete",
-      "createdAt": "2026-09-24T11:00:03.056Z",
+      "createdAt": "2026-09-24T11:00:05.854Z",
       "emotion": "neutral",
       "emotionSource": "classifier",
       "usage": {
-        "tokensIn": 1175,
-        "tokensCached": 1024,
-        "tokensOut": 102,
-        "costUsd": 0.000218,
-        "energySpent": 3,
-        "firstTokenMs": 1287,
-        "totalMs": 2316
+        "tokensIn": 985,
+        "tokensCached": 0,
+        "tokensOut": 90,
+        "costUsd": 0.000114,
+        "energySpent": 2,
+        "firstTokenMs": 4160,
+        "totalMs": 6560
       },
       "trace": {
         "messageId": "msg_mockP02",
@@ -51,7 +51,7 @@
             "mode": 126,
             "history": 11,
             "user": 0,
-            "memory": 488,
+            "memory": 202,
             "knowledge": 0
           }
         },
@@ -61,11 +61,11 @@
           "candidates": [
             {
               "label": "neutral",
-              "p": 0.92
+              "p": 0.96
             },
             {
               "label": "thinking",
-              "p": 0.08
+              "p": 0.04
             },
             {
               "label": "happy",
@@ -76,45 +76,98 @@
         "knowledge": {
           "query": "This house would ban smartphones in schools",
           "trigger": "gated",
-          "retrieved": []
+          "retrieved": [
+            {
+              "chunkId": "kch_amaraTri13",
+              "sourceId": "kno_seedAmara2",
+              "title": "ED triage guidelines",
+              "locator": "p. 4",
+              "text": "## 4. Advice by phone and chat\n\n## 4.1 Scope\n\nPhone and chat advice helps people decide where to go: self-care at home, a pharmacist, their GP, an urgent treatment centre, or the emergency department. It is not a consultation.",
+              "score": 0.01,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraTri14",
+              "sourceId": "kno_seedAmara2",
+              "title": "ED triage guidelines",
+              "locator": "p. 4",
+              "text": "## 4.2 Saying what advice is\n\nAdvice given by phone or chat must say clearly that it is not an examination. Tell the patient which symptoms mean they should come in person.\n\nGood practice in every conversation:\n\n1. Ask one or two clarifying questions before giving any advice: where the pain is, how long it has lasted, and what has changed recently.\n2. Give the most likely explanation in plain language, and say how confident you are.\n3. Give simple, safe self-care steps.\n4. Always finish with the red flags that mean the patient should come in, and say \"today\" or \"now\" where it applies.",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraFat12",
+              "sourceId": "kno_seedAmara1",
+              "title": "Meridian Shift Fatigue Review 2025",
+              "locator": "p. 5",
+              "text": "## 4.1 The commute home\n\nTwelve percent of respondents said they had nodded off while driving home after a night shift at least once during the review period. Three reported minor collisions. The Trust's car park sleep pods, piloted at Meridian General since March, were used by fewer than one in twenty eligible staff, mostly because staff wanted to get home to children.",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraFat18",
+              "sourceId": "kno_seedAmara1",
+              "title": "Meridian Shift Fatigue Review 2025",
+              "locator": "p. 11",
+              "text": "## 10. Recommendations\n\nThe review recommends extending the compressed-rota pilot to three further departments, protecting rest days from short-notice cancellation, and reporting fatigue scores to the Trust board every quarter.",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraTri06",
+              "sourceId": "kno_seedAmara2",
+              "title": "ED triage guidelines",
+              "locator": "p. 2",
+              "text": "## 2.2 Tension-type headache\n\nUsually described as a band or pressure around the head, often worse at the end of the day. It is associated with stress, poor sleep, long screen time and missed meals. It does not usually cause vomiting or sensitivity to light.",
+              "score": 0.295,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraFat03",
+              "sourceId": "kno_seedAmara1",
+              "title": "Meridian Shift Fatigue Review 2025",
+              "locator": "p. 1",
+              "text": "The review recommends extending the compressed-rota pilot to three further departments, protecting rest days from short-notice cancellation, and reporting fatigue scores to the Board every quarter.",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraFat10",
+              "sourceId": "kno_seedAmara1",
+              "title": "Meridian Shift Fatigue Review 2025",
+              "locator": "p. 4",
+              "text": "## 3.1 What staff said\n\nIn free-text answers, the words that appeared most often next to \"burnout\" were \"cancelled\" , \"short-staffed\" , \"no break\" and \"guilt\" . Many respondents said they felt guilty taking sick leave because they knew a colleague would lose a rest day to cover them.",
+              "score": 0.005,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraFat08",
+              "sourceId": "kno_seedAmara1",
+              "title": "Meridian Shift Fatigue Review 2025",
+              "locator": "p. 3",
+              "text": "## 2.1 Short-notice changes\n\nRest days cancelled with less than 48 hours' notice were the second strongest predictor of fatigue. In emergency and acute medicine, one rest day in nine was cancelled at short notice, usually to cover sickness. In community and day-surgery settings the figure was one in forty.",
+              "score": 0,
+              "cited": false
+            }
+          ]
         },
         "memory": {
           "recalled": [
             {
-              "memoryItemId": "mem_01M5DXBZTBJHG2JNZRR32GQMN2",
-              "text": "Amara argued for a nationwide four-day work week, citing two wards where a compressed four-day rota cut burnout about a fifth in twelve weeks with throughput and readmissions stable."
+              "memoryItemId": "mem_01M5EZSX1JGRA4VZDXMH0T368T",
+              "text": "(forgotten)"
             },
             {
-              "memoryItemId": "mem_01M5DXBZTD2EXKTY481E3FKR6Z",
-              "text": "Amara's emergency department burnout rose from 29% in March to 41% by January, with nurses resigning at 14% a year and each replacement costing about four months' salary."
+              "memoryItemId": "mem_01M5EZSX1Z757JVC6SM3CKD86K",
+              "text": "(forgotten)"
             },
             {
-              "memoryItemId": "mem_01M5DXBZTFP1WMY7SYY33Z5XK2",
-              "text": "Amara's ward review found burnout fell 19% and 22%, sleep before shifts improved 40 minutes, and a 6% agency-hours transition premium faded to baseline by week eight."
+              "memoryItemId": "mem_01M5EZSX1YJNE44GDA24K5YFH3",
+              "text": "(forgotten)"
             },
             {
-              "memoryItemId": "mem_01M5DWV8ENRJDAS42MJCGWG584",
-              "text": "Amara told Kai that a sudden severe headache reaching its worst within a minute needs emergency care, as do fever, neck stiffness, confusion, weakness, vision changes, slurred speech, face drooping, or a non-fading rash."
-            },
-            {
-              "memoryItemId": "mem_01M5DXBZTEA53MKDTGR15MFZCB",
-              "text": "Amara conceded her review did not test whole-department round-the-clock cover and that the emergency department proper needs further modelling."
-            },
-            {
-              "memoryItemId": "mem_01M5DWV8ENRJDAS42MJCGWG583",
-              "text": "Amara advised Kai to taper caffeine slowly, keep fluids up, and check back if the headache is not easing by about day nine."
-            },
-            {
-              "memoryItemId": "mem_01M5DWV8ENRJDAS42MJCGWG581",
-              "text": "Kai's headache fits caffeine withdrawal: it hits 12-24 hours after a sharp drop and can last up to nine days."
-            },
-            {
-              "memoryItemId": "mem_01M5DWV8ENRJDAS42MJCGWG580",
-              "text": "Kai has had a headache for three days, both temples, dull and pressing, after cutting back on coffee a week ago."
-            },
-            {
-              "memoryItemId": "mem_01M5DWV8ENRJDAS42MJCGWG582",
-              "text": "Kai has no fever, neck stiffness, confusion, weakness, vision changes or pain on bending forward."
+              "memoryItemId": "mem_01M5EZSX1Z757JVC6SM3CKD86M",
+              "text": "(forgotten)"
             }
           ]
         },
@@ -129,21 +182,21 @@
         },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Alibaba",
+          "provider": "Relace",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 1287,
-            "total": 2316
+            "firstToken": 4160,
+            "total": 6560
           },
-          "tokensIn": 1175,
-          "tokensOut": 102,
-          "costUsd": 0.000218,
-          "tokensCached": 1024
+          "tokensIn": 985,
+          "tokensOut": 90,
+          "costUsd": 0.000114,
+          "tokensCached": 0
         },
         "energy": {
           "characterId": "chr_seedAmara",
-          "spent": 3,
-          "remaining": 994,
+          "spent": 2,
+          "remaining": 999,
           "max": 1000
         },
         "routing": {
@@ -155,19 +208,67 @@
             "purpose": "turn_plan",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000042,
-            "latencyMs": 468
+            "latencyMs": 532
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000021,
+            "latencyMs": 422
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000021,
+            "latencyMs": 437
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000024,
+            "latencyMs": 453
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000022,
+            "latencyMs": 454
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.00002,
+            "latencyMs": 828
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000022,
+            "latencyMs": 860
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000022,
+            "latencyMs": 1219
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000021,
+            "latencyMs": 1391
           },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000218,
-            "latencyMs": 1984
+            "costUsd": 0.000114,
+            "latencyMs": 5063
           },
           {
             "purpose": "guardrail",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000027,
-            "latencyMs": 484
+            "latencyMs": 594
           }
         ],
         "graph": {
@@ -183,7 +284,7 @@
           ]
         },
         "system1": {
-          "seed": "2026-09-24T10:59:59.991Z|debate|chr_seedAmara,chr_seedVictor,chr_seedMei:0",
+          "seed": "2026-09-24T10:59:59.993Z|debate|chr_seedAmara,chr_seedVictor,chr_seedMei:0",
           "questions": [
             {
               "purpose": "turn_plan",
@@ -192,15 +293,15 @@
               "label": "emotion",
               "about": "chr_seedAmara",
               "answer": "neutral",
-              "p": 0.92,
+              "p": 0.96,
               "compared": [
                 {
                   "name": "p_neutral+p_none",
-                  "value": 0.92,
+                  "value": 0.96,
                   "threshold": 0.2
                 }
               ],
-              "confidence": 0.43,
+              "confidence": 0.42,
               "result": "used",
               "action": "shown"
             },
@@ -221,6 +322,150 @@
               ],
               "result": "used",
               "action": "search the documents"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraTri13",
+              "answer": "doesn't help",
+              "p": 0.02,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0.02,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraTri14",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraFat12",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraFat18",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraTri06",
+              "answer": "partly",
+              "p": 0.59,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0.59,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraFat03",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraFat10",
+              "answer": "doesn't help",
+              "p": 0.01,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0.01,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraFat08",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
             },
             {
               "purpose": "guardrail",
@@ -262,19 +507,19 @@
         "type": "character",
         "characterId": "chr_seedVictor"
       },
-      "content": "Ban, plainly defined: no pupil-operated smartphone during instructional hours. My case rests on three reasons. First, a school is a compelled audience; the child beside you did not consent to your feed, and the state may regulate speech in a nonpublic forum. Second, enforcement asymmetry: we already ban calculators, notes and pagers, yet we flinch only at the one device with infinite reach. Third, the counterfactual is not measured either, so put the distractions, the sleep debt and the savings from doing something on one ledger. Define your terms, then count.",
+      "content": "Three points. First, define the terms: a ban is compulsion, and compulsion demands a burden met. Second, a blanket prohibition is a blunt instrument that punishes the disciplined many for the distracted few, and the classroom already possesses narrower tools: device policies, locked pouches, teacher discretion. Third, prohibition cedes the terrain we most need to win, which is teaching judgment rather than merely commanding obedience. Cui bono? Not the student, who leaves school unready for the world he actually inhabits.",
       "status": "complete",
-      "createdAt": "2026-09-24T11:00:06.273Z",
+      "createdAt": "2026-09-24T11:00:10.260Z",
       "emotion": "neutral",
       "emotionSource": "classifier",
       "usage": {
-        "tokensIn": 966,
-        "tokensCached": 0,
-        "tokensOut": 116,
-        "costUsd": 0.000472,
-        "energySpent": 5,
-        "firstTokenMs": 61,
-        "totalMs": 1169
+        "tokensIn": 945,
+        "tokensCached": 512,
+        "tokensOut": 106,
+        "costUsd": 0.000087,
+        "energySpent": 1,
+        "firstTokenMs": 65,
+        "totalMs": 2107
       },
       "trace": {
         "messageId": "msg_mockP03",
@@ -286,7 +531,7 @@
             "mode": 134,
             "history": 11,
             "user": 0,
-            "memory": 257,
+            "memory": 197,
             "knowledge": 0
           }
         },
@@ -296,15 +541,15 @@
           "candidates": [
             {
               "label": "neutral",
-              "p": 0.93
+              "p": 0.88
             },
             {
               "label": "happy",
-              "p": 0.06
+              "p": 0.1
             },
             {
               "label": "thinking",
-              "p": 0.01
+              "p": 0.02
             }
           ]
         },
@@ -318,7 +563,25 @@
               "title": "Moot court notes",
               "locator": "¶ 1",
               "text": "Moot court notes: \"This house would adopt a nationwide four-day work week\" V. Hale, for the Meridian Bar Society exhibition debate. Private notes.\n\n¶ 1. Expect the opposition to say the evidence base is narrow. Concede scope early, then shift the burden: the status quo is also a policy and has to justify itself.\n\n¶ 2. Historical anchor: the Meridian Working Hours Act 1931 made the two-day weekend the default. It gave agriculture and shipping a ten-year transition and exempted continuous services.\n\n¶ 3. Continuous-coverage sectors already run on shift rules under Part IV of the Working Time Code: rest periods, a cap on consecutive shifts, and averaging over a reference period. A shorter standard week sits inside that structure.\n\n¶ 4. Phase-in precedent: sector-by-sector timetables, collective agreements first, the public sector as model employer. Courts have upheld staged duties where the end point is clear.",
-              "score": 0.045,
+              "score": 0.05,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_victorMoot02",
+              "sourceId": "kno_seedVictor1",
+              "title": "Moot court notes",
+              "locator": "¶ 2",
+              "text": "¶ 5. Watch for the \"speed, not direction\" turn. Once the opposition accepts the goal, the debate is about implementation, and the side with a timetable wins it.\n\n¶ 6. Closing options: res ipsa loquitur; \"the destination is agreed\". Don't sound triumphant. Judges reward conceding a fair point gracefully.\n\n¶ 7. Definitions first. \"Nationwide\" means the default standard week in law, not an identical schedule for every employer. \"Adopt\" means legislate a standard with a transition, not switch overnight. If the opposition reads \"nationwide\" as \"identical\", correct it in the first rebuttal and keep correcting it.\n\n¶ 8. Their best argument is cost in coverage sectors. Do not deny it. Reframe it: the cost of exhaustion is already being paid, in sickness absence, agency fees and resignations. Ask for their number for the status quo.\n\n¶ 9. Questions to put to an economist: What is the cost of doing nothing? Which of your figures come from volunteers? Would you accept a staged timetable with sector trials written into it?",
+              "score": 0.1,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_victorMoot03",
+              "sourceId": "kno_seedVictor1",
+              "title": "Moot court notes",
+              "locator": "¶ 3",
+              "text": "¶ 10. Questions to expect from a physician on my own side: patient safety on longer shifts. Answer: the standard week limits total hours; Part IV still caps consecutive shifts.\n\n¶ 11. Latin, sparingly. \"Res ipsa loquitur\" (the thing speaks for itself) for the close. \"Audi alteram partem\" (hear the other side) if accused of ignoring their evidence. Always translate.\n\n¶ 12. Structure for every speech: three points, numbered, each with one example. Finish on the burden of proof.",
+              "score": 0.02,
               "cited": false
             }
           ]
@@ -326,20 +589,20 @@
         "memory": {
           "recalled": [
             {
-              "memoryItemId": "mem_01M5DXBZTG4PRRDMDV8ZHDBKZH",
-              "text": "Victor argued that nationwide means a statutory default week with a transition, not an identical schedule, citing the Working Hours Act 1931 as precedent for phasing and continuous-service exemptions."
+              "memoryItemId": "mem_01M5EZSX1Z757JVC6SM3CKD86N",
+              "text": "(forgotten)"
             },
             {
-              "memoryItemId": "mem_01M5DXBZTQJZHDZR0HE2Y83NVV",
-              "text": "Victor closed that the motion already contains sequencing: set the default, exempt continuous services explicitly, phase by sector, and mandate measurement."
+              "memoryItemId": "mem_01M5EZSX2H5G7YAXJZV58767MZ",
+              "text": "(forgotten)"
             },
             {
-              "memoryItemId": "mem_01M5DXBZTPPCF5EA85ES8VJV8P",
-              "text": "Victor argued the status quo also runs unmeasured, so both the mandate's cost and the saving from doing nothing belong on the same ledger."
+              "memoryItemId": "mem_01M5EZSX2JQE5HKFJT0VAYFGHV",
+              "text": "(forgotten)"
             },
             {
-              "memoryItemId": "mem_01M5DXBZTNNE8SC3RZJKP3K5GY",
-              "text": "Victor conceded Mei's 18-27% staffed-hours premium across nine continuous-coverage operations was real and measured where coverage was held constant."
+              "memoryItemId": "mem_01M5EZSX2F9QCPZJH73GN3MSW8",
+              "text": "(forgotten)"
             }
           ]
         },
@@ -348,27 +611,27 @@
             {
               "name": "output",
               "verdict": "pass",
-              "p": 0.05
+              "p": 0.04
             }
           ]
         },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Alibaba",
+          "provider": "Relace",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 61,
-            "total": 1169
+            "firstToken": 65,
+            "total": 2107
           },
-          "tokensIn": 966,
-          "tokensOut": 116,
-          "costUsd": 0.000472,
-          "tokensCached": 0
+          "tokensIn": 945,
+          "tokensOut": 106,
+          "costUsd": 0.000087,
+          "tokensCached": 512
         },
         "energy": {
           "characterId": "chr_seedVictor",
-          "spent": 5,
-          "remaining": 871,
+          "spent": 1,
+          "remaining": 862,
           "max": 1000
         },
         "routing": {
@@ -380,25 +643,37 @@
             "purpose": "turn_plan",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000042,
-            "latencyMs": 438
+            "latencyMs": 500
           },
           {
             "purpose": "deep_check",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000027,
-            "latencyMs": 516
+            "latencyMs": 453
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000024,
+            "latencyMs": 484
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000029,
+            "latencyMs": 531
           },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000472,
-            "latencyMs": 1656
+            "costUsd": 0.000087,
+            "latencyMs": 6047
           },
           {
             "purpose": "guardrail",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000028,
-            "latencyMs": 438
+            "costUsd": 0.000027,
+            "latencyMs": 687
           }
         ],
         "graph": {
@@ -414,7 +689,7 @@
           ]
         },
         "system1": {
-          "seed": "2026-09-24T10:59:59.991Z|debate|chr_seedAmara,chr_seedVictor,chr_seedMei:2",
+          "seed": "2026-09-24T10:59:59.993Z|debate|chr_seedAmara,chr_seedVictor,chr_seedMei:2",
           "questions": [
             {
               "purpose": "turn_plan",
@@ -423,15 +698,15 @@
               "label": "emotion",
               "about": "chr_seedVictor",
               "answer": "neutral",
-              "p": 0.93,
+              "p": 0.88,
               "compared": [
                 {
                   "name": "p_neutral+p_none",
-                  "value": 0.93,
+                  "value": 0.88,
                   "threshold": 0.2
                 }
               ],
-              "confidence": 0.46,
+              "confidence": 0.41,
               "result": "used",
               "action": "shown"
             },
@@ -442,11 +717,11 @@
               "label": "needs documents?",
               "about": "chr_seedVictor",
               "answer": "yes",
-              "p": 0.53,
+              "p": 0.52,
               "compared": [
                 {
                   "name": "t_gate",
-                  "value": 0.53,
+                  "value": 0.52,
                   "threshold": 0.45
                 }
               ],
@@ -460,11 +735,47 @@
               "label": "does this passage answer it?",
               "about": "kch_victorMoot01",
               "answer": "doesn't help",
-              "p": 0.09,
+              "p": 0.1,
               "compared": [
                 {
                   "name": "t_keep",
-                  "value": 0.09,
+                  "value": 0.1,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_victorMoot02",
+              "answer": "doesn't help",
+              "p": 0.19,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0.19,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_victorMoot03",
+              "answer": "doesn't help",
+              "p": 0.04,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0.04,
                   "threshold": 0.9
                 }
               ],
@@ -477,16 +788,16 @@
               "version": 1,
               "label": "reply breaks the rules?",
               "answer": "no",
-              "p": 0.05,
+              "p": 0.04,
               "compared": [
                 {
                   "name": "tFlag",
-                  "value": 0.05,
+                  "value": 0.04,
                   "threshold": 0.5
                 },
                 {
                   "name": "tBlock",
-                  "value": 0.05,
+                  "value": 0.04,
                   "threshold": 0.9
                 }
               ],
@@ -511,31 +822,31 @@
         "type": "character",
         "characterId": "chr_seedMei"
       },
-      "content": "Banning phones in schools is a working-time question wearing a discipline costume. My evidence, not my gut: shift-based organisations holding coverage constant needed 18% to 27% more staffed hours when they shortened the working week, and only two clawed any back. Teachers aren't exempt; enforcement is real labour, and someone pays. Second-order: the pupils who suffer most from phones are often the ones with the least supervision at home, so a ban redistributes their supervision costs onto schools. I favour a middle path: light-touch rules, exemptions for accessibility and medical need, measured before mandated.",
+      "content": "My case rests on three things, none of them tidy. First, schools aren't a treatment; they're a setting, and effects will vary by age band, so the honest estimate is a range, not a point. Second, bans push use into transit and homes unless parents are brought in — the second-order effect nobody budgets for. Third, the credible evidence on learning is thin and mostly correlational. I'd back a graded ban, but anyone promising a single clean number is selling something.",
       "status": "complete",
-      "createdAt": "2026-09-24T11:00:09.353Z",
+      "createdAt": "2026-09-24T11:00:14.260Z",
       "emotion": "neutral",
       "emotionSource": "classifier",
       "usage": {
-        "tokensIn": 1004,
+        "tokensIn": 834,
         "tokensCached": 0,
-        "tokensOut": 123,
-        "costUsd": 0.000494,
-        "energySpent": 5,
-        "firstTokenMs": 72,
-        "totalMs": 1091
+        "tokensOut": 101,
+        "costUsd": 0.000109,
+        "energySpent": 2,
+        "firstTokenMs": 56,
+        "totalMs": 2140
       },
       "trace": {
         "messageId": "msg_mockP04",
         "context": {
           "budget": 14680,
           "used": {
-            "persona": 355,
+            "persona": 358,
             "system": 699,
             "mode": 130,
             "history": 11,
             "user": 0,
-            "memory": 282,
+            "memory": 0,
             "knowledge": 0
           }
         },
@@ -545,35 +856,15 @@
           "candidates": [
             {
               "label": "neutral",
-              "p": 0.87
+              "p": 0.78
             },
             {
               "label": "thinking",
-              "p": 0.13
+              "p": 0.22
             },
             {
               "label": "happy",
               "p": 0
-            }
-          ]
-        },
-        "memory": {
-          "recalled": [
-            {
-              "memoryItemId": "mem_01M5DXBZV45ZGNXKEZ5Y9GH1PN",
-              "text": "Mei closed urging sequence, explicit exemption of continuous services, and mandated measurement before a nationwide default, calling Amara's ward result good but untested for round-the-clock cover."
-            },
-            {
-              "memoryItemId": "mem_01M5DXBZV1K1RSSB3GMGGFY9GG",
-              "text": "Mei cited nine shift-based organisations holding coverage constant that needed 18% to 27% more staffed hours on a shorter week; two clawed part back within six months, seven did not measure it."
-            },
-            {
-              "memoryItemId": "mem_01M5DXBZTS3X4JKBPJ48PZJEMC",
-              "text": "Mei argued the pilots covered no hospitals, transport operators or care homes, and fewer than half the firms measured output consistently, so the gains were partly redistributed rather than created."
-            },
-            {
-              "memoryItemId": "mem_01M5DXBZV3SPT37475MPFG8PMQ",
-              "text": "Mei conceded the status-quo-is-also-a-policy line lands and that doing nothing costs money in absence, agency fees and resignations."
             }
           ]
         },
@@ -588,21 +879,21 @@
         },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Alibaba",
+          "provider": "Relace",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 72,
-            "total": 1091
+            "firstToken": 56,
+            "total": 2140
           },
-          "tokensIn": 1004,
-          "tokensOut": 123,
-          "costUsd": 0.000494,
+          "tokensIn": 834,
+          "tokensOut": 101,
+          "costUsd": 0.000109,
           "tokensCached": 0
         },
         "energy": {
           "characterId": "chr_seedMei",
-          "spent": 5,
-          "remaining": 746,
+          "spent": 2,
+          "remaining": 744,
           "max": 1000
         },
         "routing": {
@@ -614,19 +905,19 @@
             "purpose": "turn_plan",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000043,
-            "latencyMs": 421
+            "latencyMs": 422
           },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000494,
-            "latencyMs": 1641
+            "costUsd": 0.000109,
+            "latencyMs": 6406
           },
           {
             "purpose": "guardrail",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000029,
-            "latencyMs": 485
+            "costUsd": 0.000027,
+            "latencyMs": 562
           }
         ],
         "graph": {
@@ -638,7 +929,7 @@
           ]
         },
         "system1": {
-          "seed": "2026-09-24T10:59:59.991Z|debate|chr_seedAmara,chr_seedVictor,chr_seedMei:2",
+          "seed": "2026-09-24T10:59:59.993Z|debate|chr_seedAmara,chr_seedVictor,chr_seedMei:2",
           "questions": [
             {
               "purpose": "turn_plan",
@@ -647,15 +938,15 @@
               "label": "emotion",
               "about": "chr_seedMei",
               "answer": "neutral",
-              "p": 0.87,
+              "p": 0.78,
               "compared": [
                 {
                   "name": "p_neutral+p_none",
-                  "value": 0.87,
+                  "value": 0.78,
                   "threshold": 0.2
                 }
               ],
-              "confidence": 0.36,
+              "confidence": 0.34,
               "result": "used",
               "action": "shown"
             },
@@ -666,11 +957,11 @@
               "label": "needs documents?",
               "about": "chr_seedMei",
               "answer": "no",
-              "p": 0.35,
+              "p": 0.4,
               "compared": [
                 {
                   "name": "t_gate",
-                  "value": 0.35,
+                  "value": 0.4,
                   "threshold": 0.45
                 }
               ],
@@ -713,7 +1004,7 @@
       "kind": "system_note",
       "content": "ROUND 2 · CLOSING",
       "status": "complete",
-      "createdAt": "2026-09-24T11:00:12.298Z"
+      "createdAt": "2026-09-24T11:00:18.321Z"
     },
     {
       "kind": "chat",
@@ -729,31 +1020,31 @@
         "type": "character",
         "characterId": "chr_seedMei"
       },
-      "content": "What's still open is measurement, and that's why I'd land where I did. Amara's carve-outs are good but untested for round-the-clock cover, and Victor's ledger counts what he can see. My concession stands: doing nothing is also a policy, and absence and resignations cost money. But a mandate built on one ward's result, with fewer than half the pilots measuring output consistently, is a bet, not evidence. Define it, exempt continuous services, then count — otherwise you're redistributing, not creating, the gains.",
+      "content": "What's still open is the size of the effect, and I'll keep saying that, because it's the honest answer. My position holds precisely because it doesn't overclaim: a graded ban on lessons survives the evidence, a blanket ban doesn't, and the difference between them is measurable. Anyone in this room offering you certainty on the full ban is reading a preference, not a finding. Vote for what the data can carry, not what the slogan promises.",
       "status": "complete",
-      "createdAt": "2026-09-24T11:00:15.539Z",
+      "createdAt": "2026-09-24T11:00:21.488Z",
       "emotion": "neutral",
       "emotionSource": "default",
       "usage": {
-        "tokensIn": 1383,
-        "tokensCached": 1024,
-        "tokensOut": 113,
-        "costUsd": 0.000301,
-        "energySpent": 4,
-        "firstTokenMs": 1741,
-        "totalMs": 2692
+        "tokensIn": 1263,
+        "tokensCached": 0,
+        "tokensOut": 94,
+        "costUsd": 0.000135,
+        "energySpent": 2,
+        "firstTokenMs": 1631,
+        "totalMs": 4485
       },
       "trace": {
         "messageId": "msg_mockP06",
         "context": {
           "budget": 14680,
           "used": {
-            "persona": 355,
+            "persona": 358,
             "system": 699,
             "mode": 149,
-            "history": 601,
+            "history": 502,
             "user": 0,
-            "memory": 282,
+            "memory": 158,
             "knowledge": 0
           }
         },
@@ -763,11 +1054,11 @@
           "candidates": [
             {
               "label": "neutral",
-              "p": 0.87
+              "p": 0.75
             },
             {
               "label": "thinking",
-              "p": 0.12
+              "p": 0.24
             },
             {
               "label": "happy",
@@ -776,27 +1067,60 @@
           ]
         },
         "knowledge": {
-          "query": "This house would ban smartphones in schools chr_seedVictor: Ban, plainly defined: no pupil-operated smartphone during i…",
+          "query": "This house would ban smartphones in schools Victor Hale: Three points. First, define the terms: a ban is compulsion, an…",
           "trigger": "gated",
-          "retrieved": []
+          "retrieved": [
+            {
+              "chunkId": "kch_meiPilot07",
+              "sourceId": "kno_seedMei2",
+              "title": "Four-day week pilot summaries",
+              "locator": "p. 6",
+              "text": "## 5. Shift-based organisations\n\nIn the nine shift-based organisations, holding coverage constant took between 18% and 27% more staffed hours, met through new hires, overtime or agency workers.\n\nThe nine were three private clinics, two call centres, two security firms, a hotel group and a logistics depot. In each, managers redesigned rotas rather than hours, and the cost came from covering the hours that productivity gains could not replace.\n\nTwo of the nine reported that reduced sickness and turnover paid back part of that cost within the six months. The others did not measure it.",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_meiPilot01",
+              "sourceId": "kno_seedMei2",
+              "title": "Four-day week pilot summaries",
+              "locator": "p. 1",
+              "text": "## Four-Day Week Pilots in Meridian, 2023-2025: Summaries and Findings\n\nMeridian Institute for Work and Policy Compendium No. 6 · August 2025 · Fictional document for the Horizon demo world \"Meridian Council\"",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_meiPilot04",
+              "sourceId": "kno_seedMei2",
+              "title": "Four-day week pilot summaries",
+              "locator": "p. 3",
+              "text": "## 2. Wellbeing\n\nAcross all pilots, self-reported burnout fell by an average of 32% and sick days by 21%. Revenue stayed broadly flat, but fewer than half of the firms tracked output with a consistent measure.\n\nWorkers reported better sleep, more time with family and less stress about household tasks. The improvements appeared within the first two months and held to the end of each pilot.\n\nImprovements were smaller for managers, who often absorbed coordination work that had previously been spread across a five-day week.",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_meiPilot05",
+              "sourceId": "kno_seedMei2",
+              "title": "Four-day week pilot summaries",
+              "locator": "p. 4",
+              "text": "## 3. What made pilots work\n\nFirms with the biggest gains had halved their meetings and redesigned workflows before the trial began. Firms that simply removed a day without redesign saw smaller benefits and more overtime.\n\nCommon redesign steps included:\n\n- cutting standing meetings to 25 minutes, or replacing them with written updates;\n- \"focus blocks\" of two to three hours with no messages;\n- clearing duplicated approval steps;\n- agreeing in advance how to cover customers on the day off.\n\nFirms that skipped redesign often saw workers squeeze five days of work into four, with longer days and weekend email. Their burnout reductions were about half the average.",
+              "score": 0.045,
+              "cited": false
+            }
+          ]
         },
         "memory": {
           "recalled": [
             {
-              "memoryItemId": "mem_01M5DXBZV45ZGNXKEZ5Y9GH1PN",
-              "text": "Mei closed urging sequence, explicit exemption of continuous services, and mandated measurement before a nationwide default, calling Amara's ward result good but untested for round-the-clock cover."
+              "memoryItemId": "mem_01M5EZVNV6PMK16MSY3WM27WQS",
+              "text": "(forgotten)"
             },
             {
-              "memoryItemId": "mem_01M5DXBZV1K1RSSB3GMGGFY9GG",
-              "text": "Mei cited nine shift-based organisations holding coverage constant that needed 18% to 27% more staffed hours on a shorter week; two clawed part back within six months, seven did not measure it."
+              "memoryItemId": "mem_01M5EZVNV27NCJ4N5SFQNDP43C",
+              "text": "(forgotten)"
             },
             {
-              "memoryItemId": "mem_01M5DXBZTS3X4JKBPJ48PZJEMC",
-              "text": "Mei argued the pilots covered no hospitals, transport operators or care homes, and fewer than half the firms measured output consistently, so the gains were partly redistributed rather than created."
-            },
-            {
-              "memoryItemId": "mem_01M5DXBZV3SPT37475MPFG8PMQ",
-              "text": "Mei conceded the status-quo-is-also-a-policy line lands and that doing nothing costs money in absence, agency fees and resignations."
+              "memoryItemId": "mem_01M5EZVNTY3H440CFJYD4YY1YH",
+              "text": "(forgotten)"
             }
           ]
         },
@@ -811,20 +1135,20 @@
         },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Alibaba",
+          "provider": "Relace",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 1741,
-            "total": 2692
+            "firstToken": 1631,
+            "total": 4485
           },
-          "tokensIn": 1383,
-          "tokensOut": 113,
-          "costUsd": 0.000301,
-          "tokensCached": 1024
+          "tokensIn": 1263,
+          "tokensOut": 94,
+          "costUsd": 0.000135,
+          "tokensCached": 0
         },
         "energy": {
           "characterId": "chr_seedMei",
-          "spent": 4,
+          "spent": 2,
           "remaining": 742,
           "max": 1000
         },
@@ -833,11 +1157,11 @@
           "candidates": [
             {
               "characterId": "chr_seedMei",
-              "p": 0.93
+              "p": 0.94
             },
             {
               "characterId": "chr_seedAmara",
-              "p": 0.05
+              "p": 0.04
             },
             {
               "characterId": "chr_seedVictor",
@@ -852,20 +1176,44 @@
           {
             "purpose": "debate_plan",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000146,
-            "latencyMs": 468
+            "costUsd": 0.000142,
+            "latencyMs": 469
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000026,
+            "latencyMs": 438
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000029,
+            "latencyMs": 484
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000028,
+            "latencyMs": 484
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000029,
+            "latencyMs": 531
           },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000301,
-            "latencyMs": 2422
+            "costUsd": 0.000135,
+            "latencyMs": 3625
           },
           {
             "purpose": "guardrail",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000033,
-            "latencyMs": 438
+            "costUsd": 0.000032,
+            "latencyMs": 641
           }
         ],
         "graph": {
@@ -881,7 +1229,7 @@
           ]
         },
         "system1": {
-          "seed": "2026-09-24T10:59:59.991Z|debate|chr_seedAmara,chr_seedVictor,chr_seedMei:3:debate",
+          "seed": "2026-09-24T10:59:59.993Z|debate|chr_seedAmara,chr_seedVictor,chr_seedMei:3:debate",
           "questions": [
             {
               "purpose": "debate_plan",
@@ -889,12 +1237,12 @@
               "version": 2,
               "label": "who speaks next?",
               "answer": "chr_seedMei",
-              "p": 0.93,
-              "confidence": 0.89,
+              "p": 0.94,
+              "confidence": 0.91,
               "compared": [
                 {
                   "name": "confidence",
-                  "value": 0.89,
+                  "value": 0.91,
                   "threshold": 0.5
                 }
               ],
@@ -907,7 +1255,45 @@
               "version": 3,
               "label": "emotion",
               "about": "chr_seedAmara",
-              "answer": "thinking",
+              "answer": "none",
+              "p": 0.48,
+              "compared": [
+                {
+                  "name": "confidence",
+                  "value": 0.41,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.41,
+              "result": "not_used",
+              "action": "kept"
+            },
+            {
+              "purpose": "debate_plan",
+              "id": "emotion_line",
+              "version": 3,
+              "label": "emotion",
+              "about": "chr_seedVictor",
+              "answer": "none",
+              "p": 0.43,
+              "compared": [
+                {
+                  "name": "confidence",
+                  "value": 0.35,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.35,
+              "result": "not_used",
+              "action": "kept"
+            },
+            {
+              "purpose": "debate_plan",
+              "id": "emotion_line",
+              "version": 3,
+              "label": "emotion",
+              "about": "chr_seedMei",
+              "answer": "none",
               "p": 0.4,
               "compared": [
                 {
@@ -917,44 +1303,6 @@
                 }
               ],
               "confidence": 0.31,
-              "result": "not_used",
-              "action": "shown"
-            },
-            {
-              "purpose": "debate_plan",
-              "id": "emotion_line",
-              "version": 3,
-              "label": "emotion",
-              "about": "chr_seedVictor",
-              "answer": "thinking",
-              "p": 0.34,
-              "compared": [
-                {
-                  "name": "confidence",
-                  "value": 0.25,
-                  "threshold": 0.2
-                }
-              ],
-              "confidence": 0.25,
-              "result": "not_used",
-              "action": "shown"
-            },
-            {
-              "purpose": "debate_plan",
-              "id": "emotion_line",
-              "version": 3,
-              "label": "emotion",
-              "about": "chr_seedMei",
-              "answer": "none",
-              "p": 0.46,
-              "compared": [
-                {
-                  "name": "confidence",
-                  "value": 0.38,
-                  "threshold": 0.2
-                }
-              ],
-              "confidence": 0.38,
               "result": "used",
               "action": "kept"
             },
@@ -965,11 +1313,11 @@
               "label": "needs documents?",
               "about": "chr_seedAmara",
               "answer": "yes",
-              "p": 0.61,
+              "p": 0.48,
               "compared": [
                 {
                   "name": "t_gate",
-                  "value": 0.61,
+                  "value": 0.48,
                   "threshold": 0.45
                 }
               ],
@@ -982,17 +1330,17 @@
               "version": 2,
               "label": "needs documents?",
               "about": "chr_seedVictor",
-              "answer": "yes",
-              "p": 0.57,
+              "answer": "no",
+              "p": 0.37,
               "compared": [
                 {
                   "name": "t_gate",
-                  "value": 0.57,
+                  "value": 0.37,
                   "threshold": 0.45
                 }
               ],
               "result": "not_used",
-              "action": "search the documents"
+              "action": "quick reply"
             },
             {
               "purpose": "debate_plan",
@@ -1001,16 +1349,88 @@
               "label": "needs documents?",
               "about": "chr_seedMei",
               "answer": "yes",
-              "p": 0.72,
+              "p": 0.7,
               "compared": [
                 {
                   "name": "t_gate",
-                  "value": 0.72,
+                  "value": 0.7,
                   "threshold": 0.45
                 }
               ],
               "result": "used",
               "action": "search the documents"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_meiPilot07",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_meiPilot01",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_meiPilot04",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_meiPilot05",
+              "answer": "doesn't help",
+              "p": 0.09,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0.09,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
             },
             {
               "purpose": "guardrail",
@@ -1036,21 +1456,7 @@
             }
           ]
         }
-      },
-      "reactions": [
-        {
-          "characterId": "chr_seedVictor",
-          "emotion": "thinking",
-          "p": 0.85,
-          "at": "2026-09-24T11:00:17.413Z"
-        },
-        {
-          "characterId": "chr_seedAmara",
-          "emotion": "thinking",
-          "p": 0.89,
-          "at": "2026-09-24T11:00:17.420Z"
-        }
-      ]
+      }
     },
     {
       "kind": "chat",
@@ -1066,19 +1472,19 @@
         "type": "character",
         "characterId": "chr_seedAmara"
       },
-      "content": "What's still open is exactly the point I'd concede: we haven't tested whole-school, bell-to-bell limits against a real counterfactual, and Mei's right that enforcement is labour someone must staff and fund. So my closing is this. Ban phones from instruction, not from children's pockets, with medical and accessibility carve-outs written in and measured. Victor's ledger counts what he can see; the parent waiting on a pickup text can't be legislated invisible. Define it, exempt need, then count. That's the stronger bet than prohibition by assertion.",
+      "content": "What's still open, honestly, is how big the effect is, and Mei's right that the evidence is thin—I won't pretend otherwise. But that's exactly why my position holds: a full ban overreaches what we can prove, while phone-free lessons with medical exceptions fit what the evidence can actually carry. Victor's narrower tools and Mei's graded ban point the same way. So vote against the blanket ban, not because phones are harmless, but because this motion promises more than it can deliver.",
       "status": "complete",
-      "createdAt": "2026-09-24T11:00:20.084Z",
-      "emotion": "thinking",
+      "createdAt": "2026-09-24T11:00:28.821Z",
+      "emotion": "neutral",
       "emotionSource": "classifier",
       "usage": {
-        "tokensIn": 1675,
-        "tokensCached": 1024,
-        "tokensOut": 115,
-        "costUsd": 0.0004,
-        "energySpent": 4,
-        "firstTokenMs": 1128,
-        "totalMs": 1973
+        "tokensIn": 1481,
+        "tokensCached": 0,
+        "tokensOut": 104,
+        "costUsd": 0.000156,
+        "energySpent": 2,
+        "firstTokenMs": 2451,
+        "totalMs": 3506
       },
       "trace": {
         "messageId": "msg_mockP07",
@@ -1088,72 +1494,137 @@
             "persona": 397,
             "system": 707,
             "mode": 145,
-            "history": 780,
+            "history": 656,
             "user": 0,
-            "memory": 488,
+            "memory": 317,
             "knowledge": 0
           }
         },
         "emotion": {
-          "chosen": "thinking",
+          "chosen": "neutral",
           "source": "classifier",
           "candidates": [
             {
-              "label": "thinking",
-              "p": 0.6
-            },
-            {
               "label": "neutral",
-              "p": 0.04
+              "p": 0.7
             },
             {
               "label": "happy",
-              "p": 0.03
+              "p": 0.22
+            },
+            {
+              "label": "thinking",
+              "p": 0.07
             }
           ]
         },
         "knowledge": {
-          "query": "This house would ban smartphones in schools chr_seedMei: What's still open is measurement, and that's why I'd land wher…",
+          "query": "This house would ban smartphones in schools Mei Tanaka-Ruiz: What's still open is the size of the effect, and I'll keep…",
           "trigger": "gated",
-          "retrieved": []
+          "retrieved": [
+            {
+              "chunkId": "kch_amaraFat07",
+              "sourceId": "kno_seedAmara1",
+              "title": "Meridian Shift Fatigue Review 2025",
+              "locator": "p. 3",
+              "text": "## 2. Shift patterns and fatigue\n\nThe single clearest pattern in the data is the effect of long blocks.\n\nStaff working more than three consecutive long shifts reported fatigue scores 38% higher than colleagues on shorter blocks. The effect was strongest in emergency and acute medicine, where rest days were most often cancelled at short notice.\n\nA \"long shift\" in this review is any shift of eleven hours or more. Across the Trust, 46% of clinical shifts were long shifts. In the emergency department the figure was 78%.\n\nTotal weekly hours mattered less than the way those hours were arranged. Two nurses working the same 37.5 hours could report very different fatigue: the one who worked four long shifts in a row, then had three days off, reported less fatigue than the one whose long shifts were scattered across the week with single rest days in between. Single rest days, especially after a night shift, were rarely restful.",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraFat02",
+              "sourceId": "kno_seedAmara1",
+              "title": "Meridian Shift Fatigue Review 2025",
+              "locator": "p. 1",
+              "text": "## Summary\n\nFatigue is no longer an occasional complaint among the Trust's clinical staff. It is a measurable, rising condition with a direct line to patient safety, sickness absence and resignations. This review followed 1,140 clinical staff for ten months and found that the length of consecutive shift blocks, not total hours alone, is the strongest predictor of how tired staff say they are.\n\nThe headline findings:\n\n- Staff working more than three consecutive long shifts reported fatigue scores 38% higher than colleagues on shorter blocks.\n- High burnout in the emergency department rose from 29% of staff in January to 41% in October.\n- Staff who slept under six hours before a shift were twice as likely to report a near-miss medication error that week.\n- Two wards that piloted a compressed rota saw burnout fall by roughly a fifth in twelve weeks, with no loss of patient throughput.\n- Voluntary nursing resignations reached 14% over the year, and each replacement costs about four months of salary.",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraTri14",
+              "sourceId": "kno_seedAmara2",
+              "title": "ED triage guidelines",
+              "locator": "p. 4",
+              "text": "## 4.2 Saying what advice is\n\nAdvice given by phone or chat must say clearly that it is not an examination. Tell the patient which symptoms mean they should come in person.\n\nGood practice in every conversation:\n\n1. Ask one or two clarifying questions before giving any advice: where the pain is, how long it has lasted, and what has changed recently.\n2. Give the most likely explanation in plain language, and say how confident you are.\n3. Give simple, safe self-care steps.\n4. Always finish with the red flags that mean the patient should come in, and say \"today\" or \"now\" where it applies.",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraFat13",
+              "sourceId": "kno_seedAmara1",
+              "title": "Meridian Shift Fatigue Review 2025",
+              "locator": "p. 6",
+              "text": "## 5. The cost of fatigue\n\nFatigue-related problems among staff themselves, from headaches and gastric complaints to minor injuries on the commute home, cost the Trust an estimated 2,300 lost shifts.\n\nThat estimate counts sickness absence recorded with a fatigue-related reason, plus the share of other short absences that staff attributed to tiredness in the survey. It does not include presenteeism, staff who came in tired and worked below their usual pace, which the review could not measure.\n\nAt the Trust's standard cost of covering a lost shift with bank or agency staff, 2,300 shifts is roughly the annual cost of forty full-time nurses.",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraTri11",
+              "sourceId": "kno_seedAmara2",
+              "title": "ED triage guidelines",
+              "locator": "p. 3",
+              "text": "## 3.2 Other warning signs\n\n- A headache with a rash that does not fade under pressure: grade 1.\n- Slurred speech, a drooping face or weakness on one side: grade 1, and follow the stroke pathway.\n- A headache in pregnancy or shortly after birth with high blood pressure: grade 2.\n- A headache with a high temperature and vomiting in an older adult: grade 2.",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraFat04",
+              "sourceId": "kno_seedAmara1",
+              "title": "Meridian Shift Fatigue Review 2025",
+              "locator": "p. 2",
+              "text": "## 1. Scope and method\n\nThis review covers 1,140 clinical staff across four Meridian Health Trust sites between January and October 2025. Fatigue was measured with a fortnightly selfreport scale and matched against rota data. All names and units are anonymised.\n\nThe four sites are Meridian General (the acute hospital and the Trust's only emergency department), Eastbank Community Hospital, the Riverside Rehabilitation Unit and the Northgate Day Surgery Centre. Participation was voluntary; 71% of eligible clinical staff took part, and response rates held above 60% in every fortnight.\n\nThe self-report scale has nine items: sleepiness at the start and end of a shift, difficulty concentrating, irritability, physical exhaustion, headaches, appetite, sleep quality and a single \"how tired are you right now\" question. Each item is scored 0 to 4, so totals run from 0 to 36. Burnout was measured separately, once a quarter, with a validated twelve-item inventory. The review's \"high burnout\" threshold is the inventory's published cut-off.",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraTri04",
+              "sourceId": "kno_seedAmara2",
+              "title": "ED triage guidelines",
+              "locator": "p. 1",
+              "text": "## 1.3 Re-triage\n\nA patient's grade can change while they wait. Re-check observations at least every hour for grades 3 to 5, and at once if the patient or a relative reports a change.",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraFat10",
+              "sourceId": "kno_seedAmara1",
+              "title": "Meridian Shift Fatigue Review 2025",
+              "locator": "p. 4",
+              "text": "## 3.1 What staff said\n\nIn free-text answers, the words that appeared most often next to \"burnout\" were \"cancelled\" , \"short-staffed\" , \"no break\" and \"guilt\" . Many respondents said they felt guilty taking sick leave because they knew a colleague would lose a rest day to cover them.",
+              "score": 0,
+              "cited": false
+            }
+          ]
         },
         "memory": {
           "recalled": [
             {
-              "memoryItemId": "mem_01M5DXBZTBJHG2JNZRR32GQMN2",
-              "text": "Amara argued for a nationwide four-day work week, citing two wards where a compressed four-day rota cut burnout about a fifth in twelve weeks with throughput and readmissions stable."
+              "memoryItemId": "mem_01M5EZVNTNQFP43XD3SZPD33V2",
+              "text": "(forgotten)"
             },
             {
-              "memoryItemId": "mem_01M5DXBZTD2EXKTY481E3FKR6Z",
-              "text": "Amara's emergency department burnout rose from 29% in March to 41% by January, with nurses resigning at 14% a year and each replacement costing about four months' salary."
+              "memoryItemId": "mem_01M5EZSX1JGRA4VZDXMH0T368T",
+              "text": "(forgotten)"
             },
             {
-              "memoryItemId": "mem_01M5DXBZTFP1WMY7SYY33Z5XK2",
-              "text": "Amara's ward review found burnout fell 19% and 22%, sleep before shifts improved 40 minutes, and a 6% agency-hours transition premium faded to baseline by week eight."
+              "memoryItemId": "mem_01M5EZVNTNQFP43XD3SZPD33V3",
+              "text": "(forgotten)"
             },
             {
-              "memoryItemId": "mem_01M5DWV8ENRJDAS42MJCGWG584",
-              "text": "Amara told Kai that a sudden severe headache reaching its worst within a minute needs emergency care, as do fever, neck stiffness, confusion, weakness, vision changes, slurred speech, face drooping, or a non-fading rash."
+              "memoryItemId": "mem_01M5EZVNTJYXHHZ3DZKFF3S78V",
+              "text": "(forgotten)"
             },
             {
-              "memoryItemId": "mem_01M5DXBZTEA53MKDTGR15MFZCB",
-              "text": "Amara conceded her review did not test whole-department round-the-clock cover and that the emergency department proper needs further modelling."
+              "memoryItemId": "mem_01M5EZSX1Z757JVC6SM3CKD86K",
+              "text": "(forgotten)"
             },
             {
-              "memoryItemId": "mem_01M5DWV8ENRJDAS42MJCGWG583",
-              "text": "Amara advised Kai to taper caffeine slowly, keep fluids up, and check back if the headache is not easing by about day nine."
+              "memoryItemId": "mem_01M5EZSX1YJNE44GDA24K5YFH3",
+              "text": "(forgotten)"
             },
             {
-              "memoryItemId": "mem_01M5DWV8ENRJDAS42MJCGWG581",
-              "text": "Kai's headache fits caffeine withdrawal: it hits 12-24 hours after a sharp drop and can last up to nine days."
-            },
-            {
-              "memoryItemId": "mem_01M5DWV8ENRJDAS42MJCGWG580",
-              "text": "Kai has had a headache for three days, both temples, dull and pressing, after cutting back on coffee a week ago."
-            },
-            {
-              "memoryItemId": "mem_01M5DWV8ENRJDAS42MJCGWG582",
-              "text": "Kai has no fever, neck stiffness, confusion, weakness, vision changes or pain on bending forward."
+              "memoryItemId": "mem_01M5EZSX1Z757JVC6SM3CKD86M",
+              "text": "(forgotten)"
             }
           ]
         },
@@ -1162,27 +1633,27 @@
             {
               "name": "output",
               "verdict": "pass",
-              "p": 0.05
+              "p": 0.04
             }
           ]
         },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Alibaba",
+          "provider": "Relace",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 1128,
-            "total": 1973
+            "firstToken": 2451,
+            "total": 3506
           },
-          "tokensIn": 1675,
-          "tokensOut": 115,
-          "costUsd": 0.0004,
-          "tokensCached": 1024
+          "tokensIn": 1481,
+          "tokensOut": 104,
+          "costUsd": 0.000156,
+          "tokensCached": 0
         },
         "energy": {
           "characterId": "chr_seedAmara",
-          "spent": 4,
-          "remaining": 986,
+          "spent": 2,
+          "remaining": 997,
           "max": 1000
         },
         "routing": {
@@ -1190,47 +1661,83 @@
           "candidates": [
             {
               "characterId": "chr_seedAmara",
-              "p": 0.77
+              "p": 0.74
             },
             {
               "characterId": "chr_seedVictor",
-              "p": 0.23
+              "p": 0.26
             }
           ],
           "selected": "chr_seedAmara",
           "forcedBy": "round_order",
-          "reason": "Side by the debate order; speaker chosen by Jev"
+          "reason": "Side by the debate order; speaker chosen by Jev, next in order: Jev was unsure"
         },
         "calls": [
           {
             "purpose": "debate_plan",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000115,
+            "costUsd": 0.000111,
+            "latencyMs": 422
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000031,
+            "latencyMs": 406
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000029,
+            "latencyMs": 437
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000027,
             "latencyMs": 453
           },
           {
-            "purpose": "turn_plan",
+            "purpose": "deep_check",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000065,
-            "latencyMs": 422
+            "costUsd": 0.000029,
+            "latencyMs": 469
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000032,
+            "latencyMs": 484
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000026,
+            "latencyMs": 469
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000025,
+            "latencyMs": 484
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000033,
+            "latencyMs": 625
           },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.0004,
-            "latencyMs": 1734
+            "costUsd": 0.000156,
+            "latencyMs": 2500
           },
           {
             "purpose": "guardrail",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000033,
+            "costUsd": 0.000032,
             "latencyMs": 453
-          },
-          {
-            "purpose": "face_check",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000035,
-            "latencyMs": 422
           }
         ],
         "graph": {
@@ -1246,7 +1753,7 @@
           ]
         },
         "system1": {
-          "seed": "2026-09-24T10:59:59.991Z|debate|chr_seedAmara,chr_seedVictor,chr_seedMei:4",
+          "seed": "2026-09-24T10:59:59.993Z|debate|chr_seedAmara,chr_seedVictor,chr_seedMei:4:debate",
           "questions": [
             {
               "purpose": "debate_plan",
@@ -1254,39 +1761,58 @@
               "version": 2,
               "label": "who speaks next?",
               "answer": "chr_seedAmara",
-              "p": 0.77,
-              "confidence": 0.54,
+              "p": 0.74,
+              "confidence": 0.48,
               "compared": [
                 {
                   "name": "confidence",
-                  "value": 0.54,
+                  "value": 0.48,
                   "threshold": 0.5
                 }
               ],
-              "result": "used",
-              "action": "speaks"
+              "result": "below_threshold",
+              "action": "next in order (unsure)"
             },
             {
-              "purpose": "turn_plan",
+              "purpose": "debate_plan",
               "id": "emotion_line",
               "version": 3,
               "label": "emotion",
               "about": "chr_seedAmara",
-              "answer": "thinking",
-              "p": 0.6,
+              "answer": "neutral",
+              "p": 0.7,
               "compared": [
                 {
                   "name": "confidence",
-                  "value": 0.54,
+                  "value": 0.27,
                   "threshold": 0.2
                 }
               ],
-              "confidence": 0.54,
+              "confidence": 0.27,
               "result": "used",
               "action": "shown"
             },
             {
-              "purpose": "turn_plan",
+              "purpose": "debate_plan",
+              "id": "emotion_line",
+              "version": 3,
+              "label": "emotion",
+              "about": "chr_seedVictor",
+              "answer": "none",
+              "p": 0.32,
+              "compared": [
+                {
+                  "name": "confidence",
+                  "value": 0.22,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.22,
+              "result": "not_used",
+              "action": "kept"
+            },
+            {
+              "purpose": "debate_plan",
               "id": "docs",
               "version": 2,
               "label": "needs documents?",
@@ -1304,36 +1830,188 @@
               "action": "search the documents"
             },
             {
+              "purpose": "debate_plan",
+              "id": "docs",
+              "version": 2,
+              "label": "needs documents?",
+              "about": "chr_seedVictor",
+              "answer": "no",
+              "p": 0.32,
+              "compared": [
+                {
+                  "name": "t_gate",
+                  "value": 0.32,
+                  "threshold": 0.45
+                }
+              ],
+              "result": "not_used",
+              "action": "quick reply"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraFat07",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraFat02",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraTri14",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraFat13",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraTri11",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraFat04",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraTri04",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraFat10",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
               "purpose": "guardrail",
               "id": "output_rules",
               "version": 1,
               "label": "reply breaks the rules?",
               "answer": "no",
-              "p": 0.05,
+              "p": 0.04,
               "compared": [
                 {
                   "name": "tFlag",
-                  "value": 0.05,
+                  "value": 0.04,
                   "threshold": 0.5
                 },
                 {
                   "name": "tBlock",
-                  "value": 0.05,
+                  "value": 0.04,
                   "threshold": 0.9
                 }
               ],
               "result": "used",
               "action": "pass"
-            },
-            {
-              "purpose": "face_check",
-              "id": "face_check",
-              "version": 1,
-              "label": "face and words agree?",
-              "answer": "yes",
-              "p": 0.66,
-              "compared": [],
-              "result": "shown_only"
             }
           ]
         }
@@ -1342,8 +2020,14 @@
         {
           "characterId": "chr_seedMei",
           "emotion": "thinking",
-          "p": 0.69,
-          "at": "2026-09-24T11:00:21.966Z"
+          "p": 0.62,
+          "at": "2026-09-24T11:00:30.828Z"
+        },
+        {
+          "characterId": "chr_seedVictor",
+          "emotion": "thinking",
+          "p": 0.49,
+          "at": "2026-09-24T11:00:31.043Z"
         }
       ]
     },
@@ -1361,19 +2045,19 @@
         "type": "character",
         "characterId": "chr_seedVictor"
       },
-      "content": "What remains open is sequencing, and sequencing is precisely what defeats the objection. Your carve-outs are answerable in text: the medical device and the pickup call sit outside the ban, named and exempted. Your measurement gap is answerable in time: phase by year group, publish the baseline, sunset the rule if the ledger does not move. That is not prohibition by assertion; that is a mandate with a return path. Mei calls it a bet. I call it the only wager on the table that ever gets counted. Absentia rei non est probatio.",
+      "content": "What remains open is enforcement, not necessity, and I have never claimed more than the evidence licenses. The prohibitionists' residual burden is the gap between a rule on paper and a rule in a corridor, and they have not closed it. The motion commands a full ban while the demonstrated case reaches only phone-free lessons with narrow exceptions. Res ipsa loquitur: a motion that overshoots its own proof refutes itself. Vote the narrower tools.",
       "status": "complete",
-      "createdAt": "2026-09-24T11:00:24.572Z",
+      "createdAt": "2026-09-24T11:00:33.460Z",
       "emotion": "thinking",
-      "emotionSource": "classifier",
+      "emotionSource": "default",
       "usage": {
-        "tokensIn": 1591,
-        "tokensCached": 1024,
-        "tokensOut": 115,
-        "costUsd": 0.000373,
-        "energySpent": 4,
-        "firstTokenMs": 1060,
-        "totalMs": 2011
+        "tokensIn": 1594,
+        "tokensCached": 0,
+        "tokensOut": 93,
+        "costUsd": 0.000158,
+        "energySpent": 2,
+        "firstTokenMs": 956,
+        "totalMs": 1824
       },
       "trace": {
         "messageId": "msg_mockP08",
@@ -1383,52 +2067,63 @@
             "persona": 351,
             "system": 684,
             "mode": 153,
-            "history": 970,
+            "history": 825,
             "user": 0,
-            "memory": 257,
+            "memory": 382,
             "knowledge": 0
           }
         },
         "emotion": {
           "chosen": "thinking",
-          "source": "classifier",
+          "source": "default",
           "candidates": [
             {
-              "label": "thinking",
-              "p": 0.56
+              "label": "happy",
+              "p": 0.3
             },
             {
-              "label": "angry",
-              "p": 0.06
+              "label": "thinking",
+              "p": 0.19
             },
             {
               "label": "neutral",
-              "p": 0.03
+              "p": 0.05
             }
           ]
-        },
-        "knowledge": {
-          "query": "This house would ban smartphones in schools chr_seedAmara: What's still open is exactly the point I'd concede: we haven…",
-          "trigger": "gated",
-          "retrieved": []
         },
         "memory": {
           "recalled": [
             {
-              "memoryItemId": "mem_01M5DXBZTG4PRRDMDV8ZHDBKZH",
-              "text": "Victor argued that nationwide means a statutory default week with a transition, not an identical schedule, citing the Working Hours Act 1931 as precedent for phasing and continuous-service exemptions."
+              "memoryItemId": "mem_01M5EZVNTQF3MQ2RE8RDR0BVAG",
+              "text": "(forgotten)"
             },
             {
-              "memoryItemId": "mem_01M5DXBZTQJZHDZR0HE2Y83NVV",
-              "text": "Victor closed that the motion already contains sequencing: set the default, exempt continuous services explicitly, phase by sector, and mandate measurement."
+              "memoryItemId": "mem_01M5EZVNTVYYW53VGW3921ME7G",
+              "text": "(forgotten)"
             },
             {
-              "memoryItemId": "mem_01M5DXBZTPPCF5EA85ES8VJV8P",
-              "text": "Victor argued the status quo also runs unmeasured, so both the mandate's cost and the saving from doing nothing belong on the same ledger."
+              "memoryItemId": "mem_01M5EZVNTVYYW53VGW3921ME7H",
+              "text": "(forgotten)"
             },
             {
-              "memoryItemId": "mem_01M5DXBZTNNE8SC3RZJKP3K5GY",
-              "text": "Victor conceded Mei's 18-27% staffed-hours premium across nine continuous-coverage operations was real and measured where coverage was held constant."
+              "memoryItemId": "mem_01M5EZVNTQF3MQ2RE8RDR0BVAH",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5EZSX1Z757JVC6SM3CKD86N",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5EZSX2H5G7YAXJZV58767MZ",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5EZSX2JQE5HKFJT0VAYFGHV",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5EZSX2F9QCPZJH73GN3MSW8",
+              "text": "(forgotten)"
             }
           ]
         },
@@ -1443,20 +2138,20 @@
         },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Alibaba",
+          "provider": "Relace",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 1060,
-            "total": 2011
+            "firstToken": 956,
+            "total": 1824
           },
-          "tokensIn": 1591,
-          "tokensOut": 115,
-          "costUsd": 0.000373,
-          "tokensCached": 1024
+          "tokensIn": 1594,
+          "tokensOut": 93,
+          "costUsd": 0.000158,
+          "tokensCached": 0
         },
         "energy": {
           "characterId": "chr_seedVictor",
-          "spent": 4,
+          "spent": 2,
           "remaining": 860,
           "max": 1000
         },
@@ -1468,26 +2163,26 @@
           {
             "purpose": "turn_plan",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.00007,
-            "latencyMs": 610
+            "costUsd": 0.000066,
+            "latencyMs": 609
           },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000373,
-            "latencyMs": 1750
+            "costUsd": 0.000158,
+            "latencyMs": 1735
           },
           {
             "purpose": "guardrail",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000033,
-            "latencyMs": 406
+            "costUsd": 0.000031,
+            "latencyMs": 469
           },
           {
             "purpose": "face_check",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000035,
-            "latencyMs": 407
+            "costUsd": 0.000034,
+            "latencyMs": 437
           }
         ],
         "graph": {
@@ -1495,15 +2190,11 @@
             "state",
             "ask",
             "decide",
-            "route",
-            "gather",
-            "search",
-            "check",
-            "keep"
+            "route"
           ]
         },
         "system1": {
-          "seed": "2026-09-24T10:59:59.991Z|debate|chr_seedAmara,chr_seedVictor,chr_seedMei:5",
+          "seed": "2026-09-24T10:59:59.993Z|debate|chr_seedAmara,chr_seedVictor,chr_seedMei:5",
           "questions": [
             {
               "purpose": "turn_plan",
@@ -1511,18 +2202,18 @@
               "version": 3,
               "label": "emotion",
               "about": "chr_seedVictor",
-              "answer": "thinking",
-              "p": 0.56,
+              "answer": "none",
+              "p": 0.46,
               "compared": [
                 {
                   "name": "confidence",
-                  "value": 0.5,
+                  "value": 0.38,
                   "threshold": 0.2
                 }
               ],
-              "confidence": 0.5,
+              "confidence": 0.38,
               "result": "used",
-              "action": "shown"
+              "action": "kept"
             },
             {
               "purpose": "turn_plan",
@@ -1530,17 +2221,17 @@
               "version": 2,
               "label": "needs documents?",
               "about": "chr_seedVictor",
-              "answer": "yes",
-              "p": 0.58,
+              "answer": "no",
+              "p": 0.39,
               "compared": [
                 {
                   "name": "t_gate",
-                  "value": 0.58,
+                  "value": 0.39,
                   "threshold": 0.45
                 }
               ],
               "result": "used",
-              "action": "search the documents"
+              "action": "quick reply"
             },
             {
               "purpose": "guardrail",
@@ -1569,8 +2260,8 @@
               "id": "face_check",
               "version": 1,
               "label": "face and words agree?",
-              "answer": "no (words read: angry)",
-              "p": 0.15,
+              "answer": "no (words read: neutral)",
+              "p": 0.03,
               "compared": [],
               "result": "shown_only"
             }
@@ -1588,7 +2279,7 @@
       "kind": "system_note",
       "content": "ROUND 3 · VERDICT",
       "status": "complete",
-      "createdAt": "2026-09-24T11:00:27.416Z"
+      "createdAt": "2026-09-24T11:00:36.236Z"
     },
     {
       "id": "msg_mockP10",
@@ -1600,7 +2291,7 @@
       "kind": "verdict",
       "content": "TOO CLOSE TO CALL",
       "status": "complete",
-      "createdAt": "2026-09-24T11:00:29.574Z"
+      "createdAt": "2026-09-24T11:00:41.442Z"
     }
   ]
 }

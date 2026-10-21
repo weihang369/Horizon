@@ -75,78 +75,78 @@
           {
             "subjectId": "prop",
             "points": [
-              "Price works where willpower fails, especially on heaviest-drinking households.",
-              "Levy shifts buying, funds school water and dental care, pushes reformulation.",
-              "Regressive effect is answered by pairing with subsidies on water and produce.",
-              "Labelling alone has not moved the dial; price reaches the autopilot shopper.",
-              "Imperfect category line still beats no line at all."
+              "Taxes change prices, prices change behaviour, especially on cheap habitual products.",
+              "Sugary drinks hit kids and lower-income families hardest; revenue can fund healthier options.",
+              "The tax is a nudge making price honest about downstream diabetes and heart disease costs.",
+              "Regressivity is a fair hit, but those families pay the steepest disease price.",
+              "His liberty point rests on a false picture of artificially low prices."
             ]
           },
           {
             "subjectId": "opp",
             "points": [
-              "Sugary drinks category has no defensible edge; line drawn by lobbyists.",
-              "Levy is regressive; subsidy promise is a separate bill nobody has passed.",
-              "Harm already disclosed on label; price punishes careful and careless alike.",
-              "Information targets both; label better, measure honestly, leave grocery budget alone.",
-              "As written, levy taxes whatever drafting room decides; subsidy not in motion."
+              "A tax is compulsion, not moral judgment; the house must justify it.",
+              "A sugary drink tax is regressive by design, falling hardest on those least able to absorb it.",
+              "Taxation is blunt: it punishes a can of soda while straining household budgets.",
+              "Silence is not consent to being taxed; the case is liberty, proportionality, burden of proof.",
+              "The mover concedes regressivity and offers promises, not proof; burden unmet."
             ]
           }
         ],
-        "keyDisagreement": "Whether a sugary drink tax as written can be justified given its regressive incidence and undefined category, or whether better labelling achieves the same without those costs.",
+        "keyDisagreement": "Whether the Proposition met its burden of proof by justifying a regressive tax through health costs and revenue-funded alternatives, or whether that justification remained an unproven promise.",
         "decidedBy": "arbiter",
-        "strongerCase": "opp",
+        "strongerCase": "prop",
         "scoresBy": "side",
         "scores": [
           {
             "subjectId": "prop",
             "criterionId": "evidence",
-            "value": 6.2
+            "value": 6.1
           },
           {
             "subjectId": "prop",
             "criterionId": "rebuttal",
-            "value": 7.9
+            "value": 8.8
           },
           {
             "subjectId": "prop",
             "criterionId": "clarity",
-            "value": 9.4
+            "value": 9.3
           },
           {
             "subjectId": "prop",
             "criterionId": "persuasion",
-            "value": 6.2
+            "value": 6.7
           },
           {
             "subjectId": "opp",
             "criterionId": "evidence",
-            "value": 7.4
+            "value": 3.8
           },
           {
             "subjectId": "opp",
             "criterionId": "rebuttal",
-            "value": 9
+            "value": 7.2
           },
           {
             "subjectId": "opp",
             "criterionId": "clarity",
-            "value": 9.7
+            "value": 9.5
           },
           {
             "subjectId": "opp",
             "criterionId": "persuasion",
-            "value": 6.7
+            "value": 5.6
           }
         ],
-        "rationale": "The Opposition scored higher on Evidence, Rebuttal, Clarity and Persuasion, and its closing effectively pressed the Proposition on the undefined category and the out-of-motion subsidy. The Proposition was clear and conceded ground, but its case rested on an unpassed subsidy and an unmeasured behaviour change, leaving the Opposition's alternative stronger on the scores."
+        "rationale": "The Proposition wins because its rebuttal and clarity scores were stronger, with Amara directly answering the regressivity charge and reframing the liberty argument, while Victor's evidence score was notably lower. Although Victor kept the burden-of-proof frame clear, his case rested more on assertion than on meeting the Proposition's substantive responses."
       }
     },
     "isSeed": false,
-    "costUsd": 0.001724,
+    "costUsd": 0.000543,
     "messageCount": 11,
-    "createdAt": "2026-09-22T13:20:00.000Z",
-    "updatedAt": "2026-09-22T13:20:22.243Z",
-    "lastMessageAt": "2026-09-22T13:20:22.243Z"
+    "createdAt": "2026-09-22T13:19:59.985Z",
+    "updatedAt": "2026-09-22T13:20:26.433Z",
+    "lastMessageAt": "2026-09-22T13:20:26.432Z"
   }
 }

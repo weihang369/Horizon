@@ -99,6 +99,8 @@ def plan(cost: float = 0.0002) -> SimulatedReply:
 async def test_scripted_stream_is_billed_drains_and_never_touches_the_network(api: Api, monkeypatch: Any) -> None:
     attempts = block_network(monkeypatch)
     await api.set_key("sk-or-v1-" + "a" * 64)  # a real-looking key: still no request may leave
+    assert api.rt.fake is not None
+    checked = len(api.rt.fake.requests)   # saving it checks it once with the fake OpenRouter (D-105); the stream adds none
     before = (await api.json(f"{API}/characters/chr_seedAmara"))["energy"]["current"]
     ctx = call_ctx("reply", world_id="wld_seedMeridian", character_id="chr_seedAmara", message_id="msg_simTest1")
     got: list[str | None] = []
@@ -119,7 +121,7 @@ async def test_scripted_stream_is_billed_drains_and_never_touches_the_network(ap
     after = (await api.json(f"{API}/characters/chr_seedAmara"))["energy"]["current"]
     assert after == before - 3
     assert attempts == []
-    assert api.rt.fake is not None and api.rt.fake.requests == []
+    assert api.rt.fake.requests[checked:] == []
 
 
 async def test_scripted_stream_refused_at_the_cap_before_any_chunk(api: Api) -> None:

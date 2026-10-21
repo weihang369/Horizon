@@ -8,13 +8,13 @@ test("1:1 replay: a citation chip opens O28 on the highlighted passage; Esc clos
   await open(page, HEADACHE);
   await seekToEnd(page);
 
-  const chip = page.getByRole("button", { name: "Source 1: ED triage guidelines, p. 2. Open source" }).first();
+  const chip = page.getByRole("button", { name: "Source 1: ED triage guidelines, p. 3. Open source" }).first();
   await chip.click();
   const viewer = page.getByRole("dialog", { name: /ED triage guidelines/ });
   await expect(viewer).toBeVisible();
-  const cited = viewer.getByRole("region", { name: "p. 2, cited passage" });
+  const cited = viewer.getByRole("region", { name: "p. 3, cited passage" });
   await expect(cited).toBeVisible();
-  await expect(cited).toContainText("Caffeine withdrawal headache");
+  await expect(cited).toContainText("Escalate any headache that is sudden and severe");
   await expect(viewer.getByText(/Highlighted: the passage behind \[1\]/)).toBeVisible();
   await expect(viewer.getByRole("button", { name: "Close source viewer" })).toBeVisible();
 
@@ -27,7 +27,7 @@ test("group dinner: Hana's cited line has a Sources strip and its entry opens O2
   await open(page, DINNER);
   await seekToEnd(page);
 
-  const hana = logEntry(page, "one dish everyone loves");
+  const hana = logEntry(page, "arguments about it are practically the appetizer");
   await expect(hana.getByRole("button", { name: /^Source 1: Grandma's recipe notebook, ¶ 2/ }).first()).toBeVisible();
   const sources = hana.getByRole("group", { name: "Sources" });
   await expect(sources).toBeVisible();
@@ -43,7 +43,7 @@ test("group dinner: Hana's cited line has a Sources strip and its entry opens O2
 test("Insight drawer: Knowledge separates the cited passage from “retrieved · not used”", async ({ page }) => {
   await open(page, DINNER);
   await seekToEnd(page);
-  await logEntry(page, "one dish everyone loves").getByRole("button", { name: "Open Insight for this message" }).click();
+  await logEntry(page, "arguments about it are practically the appetizer").getByRole("button", { name: "Open Insight for this message" }).click();
 
   const insight = page.getByRole("complementary", { name: "Insight" });
   await expect(insight).toBeVisible();
@@ -86,6 +86,9 @@ test("group dinner at 1280×720: with Insight open every speaker stays visible b
     const box = (await portrait.boundingBox())!;
     expect(box.x + box.width, `${name} must end left of the Insight drawer`).toBeLessThanOrEqual(drawerLeft + 1);
   }
-  // The latest cited line and its Sources strip are still on screen.
-  await expect(logEntry(page, "one dish everyone loves").getByRole("group", { name: "Sources" })).toBeInViewport();
+  // The latest line is still on screen, left of the drawer (the cited line is two lines up in this recording).
+  const latest = page.getByRole("log").getByRole("listitem").last();
+  await expect(latest).toBeInViewport();
+  const lb = (await latest.boundingBox())!;
+  expect(lb.x + lb.width, "the latest line must end left of the Insight drawer").toBeLessThanOrEqual(drawerLeft + 1);
 });
