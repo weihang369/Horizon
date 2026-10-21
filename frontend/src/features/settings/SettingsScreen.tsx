@@ -168,7 +168,7 @@ function ChatTab({ settings }: { settings: AppSettings }) {
       <Row label="Debate auto-advance" desc="Turns flow on their own; turn it off to step with Next.">
         <Toggle label="Debate auto-advance" hideLabel checked={c.debateAutoAdvance} onChange={(v) => void save({ chat: { debateAutoAdvance: v } })} />
       </Row>
-      <Row label="Readable Mode" desc="Long answers open in a straight, 68-character panel.">
+      <Row label="Readable Mode" desc="Every reply opens in the straight, 68-character panel. Long ones always do.">
         <Toggle label="Readable Mode by default" hideLabel checked={c.readableDefault} onChange={(v) => void save({ chat: { readableDefault: v } })} />
       </Row>
       <Row label="Speaker cut-ins" desc="A quick portrait slash when the speaker changes in multi-character scenes.">
