@@ -23,6 +23,34 @@ test("1:1 replay: a citation chip opens O28 on the highlighted passage; Esc clos
   await expect(chip).toBeFocused();
 });
 
+test("1:1 replay: the Sources entry for three markers in one document marks all three and jumps between them (U-37)", async ({ page }) => {
+  await open(page, HEADACHE);
+  await seekToEnd(page);
+
+  await page.getByRole("group", { name: "Sources" }).last().getByRole("button", { name: /^Open ED triage guidelines, p\. 3 \(markers 1, 2, 3\)/ }).click();
+  const viewer = page.getByRole("dialog", { name: /ED triage guidelines/ });
+  await expect(viewer.getByRole("region", { name: "p. 3, cited passage" })).toHaveCount(3);
+  for (const [n, text] of [[1, "3.1 Escalate at once"], [2, "3.2 Other warning signs"], [3, "3.3 Same-day review"]] as const)
+    await expect(viewer.getByRole("region", { name: "p. 3, cited passage" }).filter({ hasText: `[${n}] cited` })).toContainText(text);
+  await expect(viewer.getByText("Highlighted: the passages behind [1] [2] [3].")).toBeVisible();
+
+  const marks = viewer.getByRole("group", { name: "Cited passages" });
+  await expect(marks.getByRole("button", { name: "Jump to [1], p. 3" })).toHaveAttribute("aria-pressed", "true");
+  await marks.getByRole("button", { name: "Jump to [3], p. 3" }).click();
+  await expect(marks.getByRole("button", { name: "Jump to [3], p. 3" })).toHaveAttribute("aria-pressed", "true");
+  const third = viewer.locator('section[aria-current="true"]');
+  await expect(third).toContainText("3.3 Same-day review");
+  await expect(third).toBeInViewport();
+  await expect(viewer.getByRole("button", { name: "▸ Jump to [3]" })).toBeVisible();
+
+  // a single chip still opens on its own passage only
+  await page.keyboard.press("Escape");
+  await page.getByRole("button", { name: "Source 2: ED triage guidelines, p. 3. Open source" }).first().click();
+  await expect(viewer.getByRole("region", { name: "p. 3, cited passage" })).toHaveCount(1);
+  await expect(viewer.getByRole("region", { name: "p. 3, cited passage" })).toContainText("[2] cited");
+  await expect(viewer.getByRole("group", { name: "Cited passages" })).toHaveCount(0);
+});
+
 test("group dinner: Hana's cited line has a Sources strip and its entry opens O28", async ({ page }) => {
   await open(page, DINNER);
   await seekToEnd(page);

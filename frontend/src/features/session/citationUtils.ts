@@ -2,14 +2,19 @@
 import type { Citation, KnowledgeSource } from "../../contract/types";
 import { openOverlay } from "../../app/layers";
 
-/** Opens the Source viewer on the cited passage, carrying the snapshot for a deleted source (AC5). */
-export function openCitation(c: Pick<Citation, "n" | "sourceId" | "chunkId" | "title" | "locator" | "quote">, characterId?: string): void {
+/** Opens the Source viewer on the cited passage, carrying the snapshot for a deleted source (AC5). `also`: the same
+ * reply's other markers in this source (U-37: the SOURCES strip opens on all of them). */
+export function openCitation(c: Pick<Citation, "n" | "sourceId" | "chunkId" | "title" | "locator" | "quote">, characterId?: string,
+  also: Citation[] = []): void {
+  const more = also.filter((x) => x.n !== c.n && x.sourceId === c.sourceId)
+    .map((x) => ({ n: x.n, chunkId: x.chunkId, ...(x.locator ? { locator: x.locator } : {}), quote: x.quote }));
   openOverlay("O28", {
     sourceId: c.sourceId,
     chunkId: c.chunkId,
     ...(characterId ? { characterId } : {}),
     // n = 0: a retrieved-but-uncited passage (Insight) has no marker, so no snapshot.
     ...(c.n ? { cited: { n: c.n, title: c.title, ...(c.locator ? { locator: c.locator } : {}), quote: c.quote } } : {}),
+    ...(more.length ? { also: more } : {}),
   });
 }
 

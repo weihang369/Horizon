@@ -177,7 +177,7 @@ export function SourcesStrip({ cites, characterId, compact, className }: { cites
               <button
                 type="button"
                 className={s.entry}
-                onClick={(e) => { e.stopPropagation(); openCitation(g.items[0], characterId); }}
+                onClick={(e) => { e.stopPropagation(); openCitation(g.items[0], characterId, g.items); }}
                 aria-label={`Open ${g.title}${locs.length ? `, ${locs.join(", ")}` : ""} (markers ${g.items.map((c) => c.n).join(", ")})`}
               >
                 <span className={s.entryNs} aria-hidden="true">{g.items.map((c) => <span key={c.n} className={s.entryN}>{c.n}</span>)}</span>
