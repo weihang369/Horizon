@@ -101,29 +101,31 @@ export function PortraitStep() {
               const started = tj?.job.startedAt ? Date.parse(tj.job.startedAt) : now;
               return (
                 <article key={cand.id} role="listitem" className={cx(s.cand, cand.selected && s.candLocked)} style={{ "--i": i } as CSSProperties} aria-label={`Candidate ${i + 1}`}>
-                  <div className={s.candFrame}>
-                    {cand.url && !failed && <img src={cand.url} alt={`Candidate ${i + 1}`} className={s.candImg} draggable={false} />}
-                    {generating && !failed && (
-                      <>
-                        {tj?.task.previewUrl && <img src={tj.task.previewUrl} alt="" className={cx(s.candImg, s.candPreview)} draggable={false} />}
-                        <HalftoneDevelop className={s.candDevelop} label={null} />
-                        <div className={s.candSteps} role="status" aria-label={`${ph}, ${formatDuration(now - started)}`}>
-                          {(["QUEUED", "PAINTING", "FINISHING"] as const).map((p) => (
-                            <span key={p} className={cx(s.candStep, p === ph && s.candStepOn, (["QUEUED", "PAINTING", "FINISHING"].indexOf(p) < ["QUEUED", "PAINTING", "FINISHING"].indexOf(ph)) && s.candStepDone)}>{p}</span>
-                          ))}
-                          <span className={s.candElapsed}>{formatDuration(Math.max(0, now - started))}</span>
+                  <div className={s.candShadow}>
+                    <div className={s.candFrame}>
+                      {cand.url && !failed && <img src={cand.url} alt={`Candidate ${i + 1}`} className={s.candImg} draggable={false} />}
+                      {generating && !failed && (
+                        <>
+                          {tj?.task.previewUrl && <img src={tj.task.previewUrl} alt="" className={cx(s.candImg, s.candPreview)} draggable={false} />}
+                          <HalftoneDevelop className={s.candDevelop} label={null} />
+                          <div className={s.candSteps} role="status" aria-label={`${ph}, ${formatDuration(now - started)}`}>
+                            {(["QUEUED", "PAINTING", "FINISHING"] as const).map((p) => (
+                              <span key={p} className={cx(s.candStep, p === ph && s.candStepOn, (["QUEUED", "PAINTING", "FINISHING"].indexOf(p) < ["QUEUED", "PAINTING", "FINISHING"].indexOf(ph)) && s.candStepDone)}>{p}</span>
+                            ))}
+                            <span className={s.candElapsed}>{formatDuration(Math.max(0, now - started))}</span>
+                          </div>
+                        </>
+                      )}
+                      {failed && (
+                        <div className={s.failed}>
+                          <span className={s.failedSlash}>FAILED</span>
+                          <p>{tj?.task.error?.message ?? "The image provider returned an error."}</p>
+                          {tj && <Button size="sm" variant="secondary" onClick={() => void retryJobTask(tj.job.id, tj.task.id)}>↻ Retry</Button>}
                         </div>
-                      </>
-                    )}
-                    {failed && (
-                      <div className={s.failed}>
-                        <span className={s.failedSlash}>FAILED</span>
-                        <p>{tj?.task.error?.message ?? "The image provider returned an error."}</p>
-                        {tj && <Button size="sm" variant="secondary" onClick={() => void retryJobTask(tj.job.id, tj.task.id)}>↻ Retry</Button>}
-                      </div>
-                    )}
-                    {cand.selected && <span className={s.lockBadge}>🔒 BASE</span>}
-                    {cand.url && !generating && !failed && <span className={s.candPh}>{isPlaceholderUrl(cand.url) ? "Placeholder · " : ""}candidate {i + 1}</span>}
+                      )}
+                      {cand.selected && <span className={s.lockBadge}>🔒 BASE</span>}
+                      {cand.url && !generating && !failed && <span className={s.candPh}>{isPlaceholderUrl(cand.url) ? "Placeholder · " : ""}candidate {i + 1}</span>}
+                    </div>
                   </div>
                   <div className={s.candActions}>
                     {cand.status === "ready" && !cand.selected && (
