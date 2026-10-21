@@ -1,5 +1,6 @@
 // Tiny, safe Markdown → React renderer for chat messages (CHAT-02 AC4). Owner: C.
-// Bold, italics, inline code, fenced code, links (http/https/mailto only), bullet and numbered lists, quotes.
+// Bold, italics, inline code, fenced code, links (http/https/mailto only), bullet and numbered lists, quotes, and
+// GFM tables (document passages are Markdown from Docling; the source viewer and citation quotes render them too).
 // Raw HTML is never interpreted: everything is emitted as React text nodes (escaped by React).
 // Rendered only on turn.end (R12); streaming text stays plain.
 // D-59: `[n]` markers with a matching citation become `cite` nodes (never inside code); others stay literal text.
@@ -10,7 +11,8 @@ export type MdBlock =
   | { type: "ul" | "ol"; items: string[]; start?: number }
   | { type: "code"; text: string; lang?: string }
   | { type: "quote"; text: string }
-  | { type: "h"; text: string };
+  | { type: "h"; text: string }
+  | { type: "table"; head: string[]; rows: string[][] };
 
 export type MdInline =
   | { type: "text"; text: string }
@@ -29,6 +31,12 @@ const OL = /^\s{0,3}(\d{1,3})[.)]\s+(.*)$/;
 const FENCE = /^\s{0,3}```\s*([\w-]*)\s*$/;
 const QUOTE = /^\s{0,3}>\s?(.*)$/;
 const HEAD = /^\s{0,3}#{1,6}\s+(.*)$/;
+const DELIM = /^\s{0,3}\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)*\|?\s*$/;
+
+/** A table row's cells: outer pipes dropped, `\|` kept as a literal pipe. */
+function cells(line: string): string[] {
+  return line.trim().replace(/^\|/, "").replace(/(?<!\\)\|$/, "").split(/(?<!\\)\|/).map((c) => c.trim().replace(/\\\|/g, "|"));
+}
 
 /** Split source text into blocks. */
 export function parseBlocks(src: string): MdBlock[] {
@@ -84,6 +92,21 @@ export function parseBlocks(src: string): MdBlock[] {
     if (h) {
       flush();
       out.push({ type: "h", text: h[1] });
+      continue;
+    }
+    // A table: a header row, then a delimiter row (`|---|---|`); body rows run until a line without a pipe.
+    if (line.includes("|") && lines[i + 1]?.includes("|") && DELIM.test(lines[i + 1])) {
+      flush();
+      const head = cells(line);
+      const rows: string[][] = [];
+      i += 2;
+      while (i < lines.length && lines[i].includes("|") && lines[i].trim()) {
+        const r = cells(lines[i++]);
+        // A quote cut mid-table can end on a stub row: drop rows with no text.
+        if (r.some(Boolean)) rows.push(head.map((_, j) => r[j] ?? ""));
+      }
+      i--;
+      out.push({ type: "table", head, rows });
       continue;
     }
     para.push(line);
@@ -215,6 +238,13 @@ export function renderMarkdown(src: string, opts: MdOptions = {}): ReactNode {
       case "code": return <pre key={k}><code>{b.text}</code></pre>;
       case "ul": return <ul key={k}>{b.items.map((it, j) => <li key={j}>{inl(it, `${k}.${j}`)}</li>)}</ul>;
       case "ol": return <ol key={k} start={b.start}>{b.items.map((it, j) => <li key={j}>{inl(it, `${k}.${j}`)}</li>)}</ol>;
+      case "table":
+        return (
+          <table key={k}>
+            <thead><tr>{b.head.map((c, j) => <th key={j} scope="col">{inl(c, `${k}.h${j}`)}</th>)}</tr></thead>
+            <tbody>{b.rows.map((r, j) => <tr key={j}>{r.map((c, m) => <td key={m}>{inl(c, `${k}.${j}.${m}`)}</td>)}</tr>)}</tbody>
+          </table>
+        );
     }
     return null;
   });
@@ -227,6 +257,7 @@ export function plainText(src: string): string {
     .map((b) => {
       if (b.type === "code") return b.text;
       if ("items" in b) return b.items.map((it) => `• ${flat(parseInline(it))}`).join("\n");
+      if (b.type === "table") return [b.head, ...b.rows].map((r) => r.map((c) => flat(parseInline(c))).join(" · ")).join("\n");
       return flat(parseInline(b.text));
     })
     .join("\n");

@@ -169,6 +169,9 @@
 .md pre code { background: none; padding: 0; }
 .md blockquote { margin: 0; padding-left: 12px; border-left: 3px solid var(--c-glow); color: var(--paper-300); }
 .md a { color: var(--c-glow); }
+.md table { border-collapse: collapse; font-size: 0.9em; }
+.md th, .md td { padding: 3px 12px 3px 0; text-align: left; vertical-align: top; border-bottom: 1px solid color-mix(in srgb, var(--paper-50) 18%, transparent); }
+.md th { font-weight: 700; }
 .userBubble .md a { color: var(--ink-900); }
 
 .streamText { white-space: pre-wrap; }

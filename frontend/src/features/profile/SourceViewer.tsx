@@ -13,6 +13,7 @@ import { paletteClass } from "@/theme";
 import { Button, CloseIcon, IconButton, Skeleton, Tape } from "@/ui";
 import { cx } from "@/ui/cx";
 import { typeGlyph } from "@/features/session/citationUtils";
+import { plainText, renderMarkdown } from "@/features/session/markdown";
 import { formatAdded, sourceFacts, STATUS_LABEL, STATUS_TONE, TYPE_NAME } from "./knowledge";
 import s from "./SourceViewer.module.css";
 
@@ -116,7 +117,7 @@ export function SourceViewer({ close, sourceId, chunkId, characterId, cited }: O
                 <span className={s.snapTitle}>{cited.title}</span>
                 {cited.locator && <span className={s.snapLoc}>{cited.locator}</span>}
               </figcaption>
-              <blockquote className={s.snapQuote}>“{cited.quote}”</blockquote>
+              <blockquote className={cx(s.snapQuote, s.text)}>{renderMarkdown(cited.quote)}</blockquote>
               <span className={s.stamp} aria-hidden="true">Removed</span>
             </figure>
           </div>
@@ -155,7 +156,7 @@ export function SourceViewer({ close, sourceId, chunkId, characterId, cited }: O
           {source?.url && <p className={s.url} title="Shown as text: the preview never fetches pages">{source.url}</p>}
           {missingPassage && cited && (
             <p className={s.notice} role="note">
-              <b>[{cited.n}] {cited.locator ?? "Cited passage"}</b> isn't in this source any more (it was re-indexed). Quoted at the time: “{cited.quote}”
+              <b>[{cited.n}] {cited.locator ?? "Cited passage"}</b> isn't in this source any more (it was re-indexed). Quoted at the time: “{plainText(cited.quote)}”
             </p>
           )}
         </div>
@@ -186,9 +187,7 @@ export function SourceViewer({ close, sourceId, chunkId, characterId, cited }: O
                     <span className={s.loc}>{x.locator ?? `#${i + 1}`}</span>
                     {isHit && <span className={s.hitTag}>{cited ? `[${cited.n}] cited` : "Retrieved"}</span>}
                   </div>
-                  <p className={s.text}>
-                    {isHit ? <mark key={swept} className={s.marker}>{x.text}</mark> : x.text}
-                  </p>
+                  <div key={isHit ? swept : undefined} className={cx(s.text, isHit && s.marker)}>{renderMarkdown(x.text)}</div>
                 </section>
               );
             })}

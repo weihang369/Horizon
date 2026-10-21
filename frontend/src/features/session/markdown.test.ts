@@ -35,6 +35,15 @@ describe("markdown (CHAT-02 AC4)", () => {
     expect(b[3]).toEqual({ type: "code", text: "x < y" });
   });
 
+  it("parses GFM tables from document passages, dropping a stub row where a quote was cut", () => {
+    const src = "## 1.2 What triage is\n\nGrades:\n| Grade | Meaning |\n|---|:--|\n| 1 | Immediate |\n| 2 | a \\| b\n| ";
+    const b = parseBlocks(src);
+    expect(b.map((x) => x.type)).toEqual(["h", "p", "table"]);
+    expect(b[2]).toEqual({ type: "table", head: ["Grade", "Meaning"], rows: [["1", "Immediate"], ["2", "a | b"]] });
+    expect(plainText("| A | B |\n|---|---|\n| 1 | 2 |")).toBe("A · B\n1 · 2");
+    expect(parseBlocks("a | b\nnot a delimiter").map((x) => x.type)).toEqual(["p"]);
+  });
+
   it("plainText strips markers", () => {
     expect(plainText("**Hi** *there*\n- a")).toBe("Hi there\n• a");
   });

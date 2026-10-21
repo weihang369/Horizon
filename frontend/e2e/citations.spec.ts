@@ -14,7 +14,7 @@ test("1:1 replay: a citation chip opens O28 on the highlighted passage; Esc clos
   await expect(viewer).toBeVisible();
   const cited = viewer.getByRole("region", { name: "p. 2, cited passage" });
   await expect(cited).toBeVisible();
-  await expect(cited.locator("mark")).toContainText("Caffeine withdrawal headache");
+  await expect(cited).toContainText("Caffeine withdrawal headache");
   await expect(viewer.getByText(/Highlighted: the passage behind \[1\]/)).toBeVisible();
   await expect(viewer.getByRole("button", { name: "Close source viewer" })).toBeVisible();
 
@@ -35,7 +35,7 @@ test("group dinner: Hana's cited line has a Sources strip and its entry opens O2
 
   const viewer = page.getByRole("dialog", { name: /Grandma's recipe notebook/ });
   await expect(viewer).toBeVisible();
-  await expect(viewer.locator("mark").first()).toContainText("Strawberry daifuku");
+  await expect(viewer.getByRole("region", { name: /cited passage/ })).toContainText("Strawberry daifuku");
   await viewer.getByRole("button", { name: "Close", exact: true }).click();
   await expect(viewer).toBeHidden();
 });

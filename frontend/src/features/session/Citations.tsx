@@ -7,7 +7,7 @@ import type { Citation, KnowledgeSource } from "../../contract/types";
 import { PaletteScope } from "../../theme/PaletteScope";
 import { cx } from "../../ui/cx";
 import { groupBySource, openCitation, typeGlyph } from "./citationUtils";
-import { splitMarkers } from "./markdown";
+import { renderMarkdown, splitMarkers } from "./markdown";
 import s from "./Citations.module.css";
 
 export function TypeGlyph({ type, title, className }: { type: KnowledgeSource["type"]; title: string; className?: string }) {
@@ -132,7 +132,7 @@ export function CitationCard({ c, quote = true }: { c: Pick<Citation, "n" | "tit
         <span className={s.popTitle}>{c.title}</span>
         {c.locator && <span className={s.popLoc}>{c.locator}</span>}
       </div>
-      {quote && <blockquote className={s.quote}>{c.quote}</blockquote>}
+      {quote && <blockquote className={s.quote}>{renderMarkdown(c.quote)}</blockquote>}
     </>
   );
 }
