@@ -1,13 +1,14 @@
 // Settings → Connection (SET-01, APP-09): masked key with Show/Hide, Save, Test connection (✓ / ✗ with reason), Clear.
 // After saving only `sk-or-…a1b2` is shown. Mock: any `sk-or-*` is valid, `sk-or-bad*` invalid (R15). A key from
 // OPENROUTER_API_KEY (.env) can't be saved over or cleared here, so the form and Clear give way to where to change it
-// (D-106). Owner: Builder A.
+// (D-106). Presenter Mode (SET-12) hides the key: no last four, no Show. Owner: Builder A.
 import { useState } from "react";
 import { openOverlay, toast } from "../../app/layers";
 import { client } from "../../client";
 import type { ConnectionResult } from "../../client/HorizonClient";
 import type { HorizonErrorShape } from "../../contract/errors";
 import type { AppSettings } from "../../contract/types";
+import { usePrefs } from "../../stores/prefs";
 import { formatUsd } from "../../domain/format";
 import { Button } from "../../ui/Button";
 import { TextField } from "../../ui/Fields";
@@ -29,9 +30,11 @@ export function ConnectionTab({ settings }: { settings: AppSettings }) {
   const [error, setError] = useState<string | null>(null);
   const [test, setTest] = useState<TestState>({ kind: "idle" });
   const [hint, setHint] = useState(readKeyHint);
+  const presenter = usePrefs((p) => p.presenterMode);
   const status = settings.openRouterKeyStatus;
   const fromEnv = settings.openRouterKeySource === "env";
-  const shownKey = fromEnv ? "from .env" : maskKey(hint);
+  const masked = maskKey(presenter ? null : hint);
+  const shownKey = fromEnv ? "from .env" : masked;
 
   const save = async () => {
     const k = key.trim();
@@ -122,16 +125,16 @@ export function ConnectionTab({ settings }: { settings: AppSettings }) {
         <form className={s.keyRow} onSubmit={(e) => { e.preventDefault(); void save(); }}>
           <TextField
             label={status === "missing" ? "Key" : "Replace key"}
-            type={show ? "text" : "password"}
+            type={show && !presenter ? "text" : "password"}
             value={key}
-            placeholder={status === "missing" ? "sk-or-…" : maskKey(hint)}
+            placeholder={status === "missing" ? "sk-or-…" : masked}
             autoComplete="off"
             spellCheck={false}
             onChange={(e) => { setKey(e.target.value); setError(null); }}
             error={error}
           />
           <div className={s.keyBtns}>
-            <Button type="button" variant="ghost" size="sm" aria-pressed={show} onClick={() => setShow((v) => !v)}>{show ? "Hide" : "Show"}</Button>
+            {!presenter && <Button type="button" variant="ghost" size="sm" aria-pressed={show} onClick={() => setShow((v) => !v)}>{show ? "Hide" : "Show"}</Button>}
             <Button type="submit" icon={<KeyIcon />} disabled={busy}>{busy ? "Saving…" : "Save key"}</Button>
           </div>
         </form>

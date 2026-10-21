@@ -56,8 +56,9 @@ export default defineConfig<{ client: ClientKind }>({
   projects: [
     {
       name: "mock-desktop",
-      // The console guard checks HTTP status lines; the MockClient makes no requests, so it runs on http-desktop only.
-      testIgnore: /console-guard\.spec\.ts/,
+      // The console guard checks HTTP status lines and load-recovery stages failed requests; the MockClient makes no
+      // requests, so both run on http-desktop only.
+      testIgnore: /(console-guard|load-recovery)\.spec\.ts/,
       use: { client: "mock", baseURL: mockBase, viewport: { width: 1440, height: 900 } },
     },
     {

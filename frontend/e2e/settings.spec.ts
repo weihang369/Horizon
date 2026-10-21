@@ -118,3 +118,53 @@ test("Chat: every default is saved, and new 1:1s, groups and debates start from 
   await expect(page.getByRole("radiogroup", { name: "Emotion mode" }).getByRole("radio", { name: "Manual" })).toHaveAttribute("aria-checked", "true");
   await expect(page.getByRole("button", { name: "Readable", exact: true })).toHaveAttribute("aria-pressed", "true");
 });
+
+test("Display: every control changes the page, the preview follows reduced motion, Presenter Mode hides the key", async ({ page }) => {
+  await open(page, "/settings/display");
+  const root = page.locator("html");
+  const preview = page.getByRole("complementary", { name: "Live preview" });
+  const radio = (group: string, name: string) => page.getByRole("radiogroup", { name: group }).getByRole("radio", { name, exact: true });
+  const toggle = (name: string) => page.getByRole("switch", { name });
+  const token = (name: string) => page.evaluate((n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim(), name);
+  await expect(preview.locator("[data-vfx]").first()).toHaveAttribute("data-vfx", "full");
+
+  for (const v of ["off", "subtle", "full"]) {
+    await radio("Emotion VFX", v[0].toUpperCase() + v.slice(1)).click();
+    await expect(root).toHaveAttribute("data-vfx", v);
+    await expect(preview.locator("[data-vfx]").first()).toHaveAttribute("data-vfx", v);
+  }
+  for (const [v, peak] of [["Off", "0"], ["Low", "0.35"]]) {
+    await radio("Flash intensity", v).click();
+    await expect.poll(() => token("--flash-peak")).toBe(peak);
+  }
+  await radio("Flash intensity", "Full").click();
+  await toggle("Parallax").click();
+  await expect(root).toHaveAttribute("data-parallax", "off");
+  await toggle("Parallax").click();
+  await expect(root).toHaveAttribute("data-parallax", "on");
+  for (const [v, px] of [["S", "14px"], ["L", "18px"], ["M", "16px"]]) {
+    await radio("Text size", v).click();
+    await expect.poll(() => token("--text-body")).toBe(px);
+    await expect(preview).toContainText(`Text size ${v}`);
+  }
+
+  // Reduced motion turns the VFX off, so the preview's line says so too (it used to say "vfx full").
+  await radio("Reduced motion", "On").click();
+  await expect(root).toHaveAttribute("data-motion", "reduced");
+  await expect(root).toHaveAttribute("data-vfx", "off");
+  await expect(preview).toContainText(/motion reduced · vfx off/i);
+  await radio("Reduced motion", "Off").click();
+  await expect(preview).toContainText(/motion full · vfx full/i);
+
+  // Presenter Mode: text L, and Connection shows neither the key's last four nor a Show button.
+  await setKey(page);
+  await page.evaluate(() => { location.hash = "#/settings/connection"; });
+  await expect(page.locator("[data-status]")).toContainText("sk-or-…0001");
+  await page.evaluate(() => { location.hash = "#/settings/display"; });
+  await toggle("Presenter Mode").click();
+  await expect(root).toHaveAttribute("data-text-size", "l");
+  await page.evaluate(() => { location.hash = "#/settings/connection"; });
+  await expect(page.locator("[data-status]")).toContainText("KEY SET");
+  await expect(page.locator("[data-status]")).not.toContainText("0001");
+  await expect(page.getByRole("button", { name: "Show" })).toHaveCount(0);
+});

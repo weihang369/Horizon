@@ -1,7 +1,7 @@
 // Data hooks (README §3.4). Owner: EE.
 // Queries go through the entities store (deduped, refetched in place on entity.changed / mock.reset).
 // Session runtimes come from client/sessionRuntime.ts; streamed text from stores/streamText.ts.
-import { useEffect, useMemo, useReducer, useState } from "react";
+import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { useStore } from "zustand";
 import type {
   AppSettings, Character, EnergyState, GenerationJob, KnowledgeSource, MemoryItem, Message, Participant, Session,
@@ -55,12 +55,16 @@ const loadedStale = new Map<string, number>();
 
 function useQuery<T>(key: string | null, fetcher: () => Promise<T>): QueryResult<T> {
   const res = useStore(entities, (s) => (key ? s.res[key] ?? IDLE : IDLE)) as Res<T>;
+  // A cached error is retried once by each component that mounts on it (a screen opened again after the backend was
+  // briefly down loads instead of showing the old failure); after that it waits for an invalidation or reload().
+  const retried = useRef<string | null>(null);
   useEffect(() => {
     if (!key) return;
     const seen = loadedStale.get(key);
     if (res.status === "ready" && seen === res.stale) return;
     if (res.status === "loading") return;
-    if (res.status === "error" && seen === res.stale) return;
+    if (res.status === "error" && seen === res.stale && retried.current === key) return;
+    retried.current = key;
     loadedStale.set(key, res.stale);
     loadResource(key, fetcher, { force: res.status !== "idle" }).catch(() => {});
     // fetcher is derived from key
