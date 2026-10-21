@@ -9,7 +9,7 @@ import type { OverlayComponentProps } from "../../app/overlayTypes";
 import { openOverlay, toast } from "../../app/layers";
 import { audio } from "../../audio/engine";
 import { client } from "../../client";
-import { useWorld, useWorlds } from "../../client/hooks";
+import { deleteWorld, useWorld, useWorlds } from "../../client/hooks";
 import type { HorizonErrorShape } from "../../contract/errors";
 import type { World } from "../../contract/types";
 import { navigate } from "../../router";
@@ -106,7 +106,7 @@ function EditorForm({ close, world: initial, worlds }: { close: () => void; worl
       typed: world.name,
       confirmLabel: "Delete world",
       onConfirm: async () => {
-        await client.worlds.delete(world.id);
+        await deleteWorld(world.id);
         navigate({ name: "worlds" }, { transition: "slash-back" });
         toast({ variant: "info", text: `Deleted ${world.name}.` });
       },

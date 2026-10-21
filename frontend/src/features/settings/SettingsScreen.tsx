@@ -4,7 +4,7 @@ import { useRef } from "react";
 import type { KeyboardEvent } from "react";
 import { openOverlay, toast } from "../../app/layers";
 import { audio } from "../../audio/engine";
-import { useSettings } from "../../client/hooks";
+import { deleteWorld, useSettings } from "../../client/hooks";
 import { client } from "../../client";
 import type { HorizonErrorShape } from "../../contract/errors";
 import type { AppSettings } from "../../contract/types";
@@ -199,7 +199,7 @@ function DataTab() {
       confirmLabel: "Delete everything",
       onConfirm: async () => {
         const worlds = await client.worlds.list();
-        for (const w of worlds) await client.worlds.delete(w.id);
+        for (const w of worlds) await deleteWorld(w.id);
         try {
           await client.settings.setKey(null);
           toast({ variant: "info", text: "All data deleted." });

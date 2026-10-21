@@ -1,6 +1,6 @@
 // Settings → Connection (SET-01, APP-09): every control, on both clients. A key starting `sk-or-bad` is rejected by the
 // MockClient and by the test backend's fake OpenRouter alike.
-import { E2E_KEY, expect, expectHttpError, open, setKey, test } from "./fixtures";
+import { E2E_KEY, expect, expectHttpError, genTimeout, open, setKey, test } from "./fixtures";
 
 test("Connection: Show, Save (empty, wrong, rejected, good), Test, Clear and the key link all work", async ({ page }) => {
   await open(page, "/settings");
@@ -250,4 +250,100 @@ test("Cost: every control saves and takes effect (mode, caps, warn, energy, esti
   await page.evaluate(() => { location.hash = "#/w/wld_seedSunnyHollow/s/ses_seedHanaLongDay"; });
   await expect(page.getByRole("button", { name: "Readable", exact: true })).toBeVisible();
   await expect(hud).toHaveCount(0);
+});
+
+test("Data: Trim long pauses reaches replays; Reset keeps your own character; Delete all empties; both Resets bring the demo back", async ({ page }) => {
+  test.slow(); // the wizard's portrait takes 20 s on the backend
+  const worldCard = (name: string) => page.getByRole("list", { name: "Worlds" }).getByRole("button", { name: new RegExp(`^${name}`) });
+  const roster = page.getByRole("tabpanel", { name: /^Roster/ });
+  const sarah = roster.getByRole("button", { name: /^Sarah, .*Open profile$/ });
+  const trimRow = page.getByRole("switch", { name: "Trim long pauses in replays" });
+
+  // Trim long pauses: off here, off in a replay's transport, and back on from the transport.
+  await open(page, "/settings/data", { speed: 4 });
+  await expect(trimRow).toHaveAttribute("aria-checked", "true");
+  await trimRow.click();
+  await expect(trimRow).toHaveAttribute("aria-checked", "false");
+  await page.evaluate(() => { location.hash = "#/w/wld_seedSunnyHollow/s/ses_seedHanaLongDay"; });
+  await page.getByRole("button", { name: "Replay", exact: true }).click();
+  const trimGaps = page.getByRole("button", { name: "Trim gaps" });
+  await expect(trimGaps).toHaveAttribute("aria-pressed", "false");
+  await trimGaps.click();
+  await expect(trimGaps).toHaveAttribute("aria-pressed", "true");
+  await page.evaluate(() => { location.hash = "#/settings/data"; });
+  await expect(trimRow).toHaveAttribute("aria-checked", "true");
+
+  // A character of your own in a demo world (the wizard, as in wizard.spec.ts).
+  await setKey(page);
+  await page.evaluate(() => { location.hash = "#/w/wld_seedMeridian/create/seed"; });
+  await page.getByRole("textbox", { name: "Seed line" }).fill("Sarah, a doctor");
+  await page.getByRole("button", { name: /Draft with AI/ }).click();
+  await expect(page.getByRole("heading", { name: "Make them yours" })).toBeVisible({ timeout: genTimeout(page) });
+  await page.getByRole("button", { name: "Next: Look ▸" }).click();
+  await page.getByRole("button", { name: /^Generate portrait/ }).click();
+  await page.getByRole("dialog", { name: "Spend a little?" }).getByRole("button", { name: /^Generate ≈/ }).click();
+  await expect(page.getByRole("heading", { name: "Pick a face" })).toBeVisible({ timeout: genTimeout(page) });
+  await page.getByRole("button", { name: "Lock as base" }).click();
+  await page.getByRole("button", { name: "Next: Emotions ▸" }).click();
+  await page.getByRole("button", { name: "Skip for now" }).click();
+  await page.getByRole("button", { name: "Next: Theme ▸" }).click();
+  await page.getByRole("button", { name: "Next: Approve ▸" }).click();
+  await page.getByRole("button", { name: "Approve & Summon ▸" }).click();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("heading", { name: "Sarah", level: 1 })).toBeVisible();
+
+  // Reset demo data: the demo goes back to as shipped, and Sarah stays.
+  await page.evaluate(() => { location.hash = "#/settings/data"; });
+  await page.getByRole("button", { name: "Reset demo data" }).click();
+  const resetAsk = page.getByRole("dialog", { name: "Reset demo data?" });
+  await expect(resetAsk).toContainText("Worlds, characters and sessions you created stay");
+  await resetAsk.getByRole("button", { name: "Reset demo data" }).click();
+  await expect(page.getByText("Demo data restored.")).toBeVisible();
+  await page.evaluate(() => { location.hash = "#/w/wld_seedMeridian"; });
+  await expect(sarah).toBeVisible();
+  await expect(roster.getByRole("button", { name: /^Amara Okafor, .*Open profile$/ })).toBeVisible();
+
+  // Delete all data: Cancel deletes nothing; the button waits for the exact words; then no worlds and no key.
+  const wipe = async () => {
+    await page.evaluate(() => { location.hash = "#/settings/data"; });
+    await page.getByRole("button", { name: "Delete all data…" }).click();
+    const ask = page.getByRole("dialog", { name: "Delete all data?" });
+    const go = ask.getByRole("button", { name: "Delete everything" });
+    await expect(go).toBeDisabled();
+    await ask.getByLabel("Type “DELETE ALL” to confirm").fill("delete all");
+    await expect(go).toBeDisabled();
+    await ask.getByLabel("Type “DELETE ALL” to confirm").fill("DELETE ALL");
+    await go.click();
+    await expect(page.getByText(/^All data deleted\./)).toBeVisible();
+    await expect(page).toHaveURL(/#\/worlds$/);
+    await expect(page.getByRole("button", { name: "Restore demo data" })).toBeVisible(); // the empty state
+    await expect(worldCard("Meridian Council")).toHaveCount(0);
+    await expect(page.getByText(/^Emotions \d+\/\d+$/)).toHaveCount(0); // no job left running for a deleted character
+  };
+  await page.evaluate(() => { location.hash = "#/settings/data"; });
+  await page.getByRole("button", { name: "Delete all data…" }).click();
+  await page.getByRole("dialog", { name: "Delete all data?" }).getByRole("button", { name: "Cancel" }).click();
+  await page.evaluate(() => { location.hash = "#/worlds"; });
+  await expect(worldCard("Meridian Council")).toBeVisible();
+  await wipe();
+  await page.evaluate(() => { location.hash = "#/settings/connection"; });
+  await expect(page.locator("[data-status]")).toHaveAttribute("data-status", "missing");
+
+  // Reset demo data after Delete all: both demo worlds are back; your own character went with the delete.
+  await page.evaluate(() => { location.hash = "#/settings/data"; });
+  await page.getByRole("button", { name: "Reset demo data" }).click();
+  await page.getByRole("dialog", { name: "Reset demo data?" }).getByRole("button", { name: "Reset demo data" }).click();
+  await expect(page.getByText("Demo data restored.")).toBeVisible();
+  await page.evaluate(() => { location.hash = "#/worlds"; });
+  await expect(worldCard("Meridian Council")).toBeVisible();
+  await expect(worldCard("Sunny Hollow")).toBeVisible();
+  await worldCard("Meridian Council").click();
+  await expect(roster.getByRole("button", { name: /^Victor Hale, .*Open profile$/ })).toBeVisible();
+  await expect(sarah).toHaveCount(0);
+
+  // The empty Worlds screen's own "Restore demo data" does the same.
+  await wipe();
+  await page.getByRole("button", { name: "Restore demo data" }).click();
+  await expect(worldCard("Meridian Council")).toBeVisible();
+  await expect(worldCard("Sunny Hollow")).toBeVisible();
 });

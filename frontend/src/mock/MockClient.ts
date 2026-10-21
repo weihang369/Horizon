@@ -585,6 +585,13 @@ export class MockClient implements HorizonClient {
     delete: (id) => this.command(() => {
       this.world(id);
       delete this.db.worlds[id];
+      // Its characters' jobs stop first, as on the backend (M14): one left running ticked on a deleted character and
+      // threw, and its pill stayed up (U-27: Delete all data during the demo's Kenji emotion set).
+      for (const j of Object.values(this.db.jobs)) {
+        if (this.db.characters[j.characterId]?.worldId !== id) continue;
+        if (j.status === "queued" || j.status === "running") this.runner.cancel(j.id);
+        delete this.db.jobs[j.id];
+      }
       for (const c of Object.values(this.db.characters)) if (c.worldId === id) delete this.db.characters[c.id];
       for (const [sid, r] of Object.entries(this.db.sessions)) if (r.session.worldId === id) this.dropSession(sid);
       for (const m of Object.values(this.db.memory)) if (m.worldId === id) delete this.db.memory[m.id];

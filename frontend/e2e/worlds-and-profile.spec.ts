@@ -100,6 +100,21 @@ test("World Hub: every World options item can be clicked, below the cover's slan
   await expect(page.getByRole("heading", { name: "MERIDIAN COUNCIL", level: 1 })).toBeVisible();
 });
 
+test("World Hub: Delete world… removes it; World Select shows the rest without re-reading it", async ({ page }) => {
+  // U-27: the hub, still on screen while it left, re-read the deleted world (a 404, caught by the console guard).
+  await open(page, "/w/wld_seedMeridian");
+  await page.getByRole("button", { name: "World options" }).click();
+  await page.getByRole("menu", { name: "World options" }).getByRole("menuitem", { name: "Delete world…" }).click();
+  const confirm = page.getByRole("dialog", { name: "Delete Meridian Council?" });
+  await confirm.getByLabel("Type “Meridian Council” to confirm").fill("Meridian Council");
+  await confirm.getByRole("button", { name: "Delete world" }).click();
+  await expect(page.getByText("Deleted Meridian Council.")).toBeVisible();
+  await expect(page).toHaveURL(/#\/worlds$/);
+  const rail = page.getByRole("list", { name: "Worlds" });
+  await expect(rail.getByRole("button", { name: /^Sunny Hollow/ })).toBeVisible();
+  await expect(rail.getByRole("button", { name: /^Meridian Council/ })).toHaveCount(0);
+});
+
 test("Profile: [ and ] step through the six tabs and wrap", async ({ page }) => {
   await open(page, "/w/wld_seedMeridian/c/chr_seedAmara");
   const tabs = page.getByRole("tablist", { name: "Profile sections" });

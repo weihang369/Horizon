@@ -13,7 +13,7 @@ import { rushHourInfo } from "../domain/rushHour";
 import type { PricePeriod } from "../domain/rushHour";
 import { emotionHold, holdInputFor } from "../engine/emotionHold";
 import type { SessionRuntimeState } from "../engine/sessionReducer";
-import { entities, IDLE, invalidate, invalidateAll, loadResource, putResource, resKeys } from "../stores/entities";
+import { entities, IDLE, invalidate, invalidateAll, loadResource, putResource, resKeys, retire } from "../stores/entities";
 import type { Res } from "../stores/entities";
 import { sessionStore, slotKey } from "../stores/session";
 import type { ReplayInfo } from "../stores/session";
@@ -40,6 +40,26 @@ client.onGlobal((e) => {
     case "job": return invalidate((k) => k === resKeys.activeJobs || (!!id && k === resKeys.job(id)));
   }
 });
+
+/**
+ * Delete a world (hub, editor, Settings → Data). Its own keys are retired first, since its `entity.changed` can land
+ * before the command resolves: the hub, still on screen while it leaves, re-read the world and got a 404 (U-27). Then
+ * it leaves the cached list at once, so World Select never draws its card (whose roster read 404'd too). A screen
+ * mounted later reads afresh.
+ */
+export async function deleteWorld(id: string): Promise<void> {
+  const mine = (k: string) => k === resKeys.world(id) || k === resKeys.sessions(id) || k.startsWith(`characters:${id}:`);
+  const undo = retire(mine);
+  try {
+    await client.worlds.delete(id);
+  } catch (e) {
+    undo();
+    throw e;
+  }
+  const list = entities.getState().res[resKeys.worlds]?.data as World[] | undefined;
+  if (list) putResource(resKeys.worlds, list.filter((w) => w.id !== id));
+  for (const k of [...loadedStale.keys()]) if (mine(k)) loadedStale.delete(k);
+}
 
 // ── Generic query hook ───────────────────────────────────────────────────────
 export interface QueryResult<T> {

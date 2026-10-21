@@ -86,9 +86,22 @@ export function loadResource<T>(key: string, fetcher: () => Promise<T>, opts?: {
   return p;
 }
 
+/** Keys of a deleted world (U-27): invalidate() leaves them alone, so a screen still on its way out (the hub during
+ * its exit) doesn't re-read rows that are gone (a 404). A reset clears them: seed worlds come back with their ids. */
+const retired: Array<(key: string) => boolean> = [];
+
+/** Retire keys from invalidation; the returned function undoes it (the delete failed). */
+export function retire(pred: (key: string) => boolean): () => void {
+  retired.push(pred);
+  return () => {
+    const i = retired.indexOf(pred);
+    if (i >= 0) retired.splice(i, 1);
+  };
+}
+
 /** Mark keys stale (prefix match). Mounted hooks refetch. */
 export function invalidate(pred: (key: string) => boolean): void {
-  const keys = Object.keys(entities.getState().res).filter(pred);
+  const keys = Object.keys(entities.getState().res).filter((k) => pred(k) && !retired.some((r) => r(k)));
   keys.forEach(bump);
   entities.setState((s) => {
     const res = { ...s.res };
@@ -98,6 +111,7 @@ export function invalidate(pred: (key: string) => boolean): void {
 }
 
 export function invalidateAll(): void {
+  retired.length = 0;
   invalidate(() => true);
 }
 
