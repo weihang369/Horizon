@@ -60,8 +60,11 @@
 .tab:hover .ctaSeed, .tab:focus-visible .ctaSeed { color: var(--ink-700); }
 .tab:focus-visible .strip { filter: drop-shadow(0 0 0 var(--c-glow)) drop-shadow(0 3px 0 var(--c-glow)); }
 
-/* Hover/focus only: the full AC1 copy drops beneath the mini-player (transient, never pointer-blocking). */
+/* Hover/focus only: the full AC1 copy drops beneath the mini-player. Leaving the tape keeps it up for --linger, so the
+   pointer can cross the mini-player and land on it; it is part of the button, so hovering it keeps it open and its
+   "Add key" clicks through to Settings → Connection. Hidden, it takes no pointer (visibility: hidden). */
 .fly {
+  --linger: 400ms;
   position: absolute;
   right: 0;
   top: 64px;
@@ -77,8 +80,7 @@
   transform: translateY(-10px);
   opacity: 0;
   visibility: hidden;
-  pointer-events: none;
-  transition: transform var(--t-base) var(--ease-out), opacity var(--t-fast) linear, visibility 0s linear var(--t-base);
+  transition: transform var(--t-base) var(--ease-out) var(--linger), opacity var(--t-fast) linear var(--linger), visibility 0s linear calc(var(--linger) + var(--t-base));
 }
 .tab:hover .fly, .tab:focus-visible .fly {
   transform: none;
@@ -102,4 +104,5 @@
 :global(:root[data-motion="reduced"]) .tab { animation: global(hz-fade-in) 160ms linear both; }
 :global(:root[data-motion="reduced"]) .strip::after { animation: none; display: none; }
 :global(:root[data-vfx="off"]) .strip::after { display: none; }
-:global(:root[data-motion="reduced"]) .fly { transition: opacity 160ms linear, visibility 0s; transform: none; }
+:global(:root[data-motion="reduced"]) .fly { transition: opacity 160ms linear var(--linger), visibility 0s linear calc(var(--linger) + 160ms); transform: none; }
+:global(:root[data-motion="reduced"]) .tab:hover .fly, :global(:root[data-motion="reduced"]) .tab:focus-visible .fly { transition: opacity 160ms linear; }
