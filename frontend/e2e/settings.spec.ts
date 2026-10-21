@@ -1,6 +1,6 @@
 // Settings → Connection (SET-01, APP-09): every control, on both clients. A key starting `sk-or-bad` is rejected by the
 // MockClient and by the test backend's fake OpenRouter alike.
-import { E2E_KEY, expect, expectHttpError, open, test } from "./fixtures";
+import { E2E_KEY, expect, expectHttpError, open, setKey, test } from "./fixtures";
 
 test("Connection: Show, Save (empty, wrong, rejected, good), Test, Clear and the key link all work", async ({ page }) => {
   await open(page, "/settings");
@@ -71,4 +71,50 @@ test("Connection: Show, Save (empty, wrong, rejected, good), Test, Clear and the
   await expect(status).toHaveAttribute("data-status", "missing");
   await expect(clear).toHaveCount(0);
   await expect(page.getByText(/Connected · \d+ ms/)).toHaveCount(0);
+});
+
+test("Chat: every default is saved, and new 1:1s, groups and debates start from it", async ({ page }) => {
+  await open(page, "/settings/chat");
+  const radio = (group: string, name: string) => page.getByRole("radiogroup", { name: group }).getByRole("radio", { name });
+  const toggle = (name: string) => page.getByRole("switch", { name });
+  await expect(radio("Emotion mode", "Auto")).toHaveAttribute("aria-checked", "true");
+  await expect(radio("Group responders", "Auto")).toHaveAttribute("aria-checked", "true");
+  await expect(toggle("Debate auto-advance")).toHaveAttribute("aria-checked", "true");
+  await expect(toggle("Readable Mode by default")).toHaveAttribute("aria-checked", "false");
+  await expect(toggle("Speaker cut-ins")).toHaveAttribute("aria-checked", "true");
+
+  await radio("Emotion mode", "Manual").click();
+  await radio("Group responders", "Everyone").click();
+  await radio("Group responders", "Mentioned").click();
+  for (const name of ["Debate auto-advance", "Readable Mode by default", "Speaker cut-ins"]) await toggle(name).click();
+  // Saved, not just shown: a reload reads them back (the first four from the backend, cut-ins from this browser).
+  await expect(toggle("Readable Mode by default")).toHaveAttribute("aria-checked", "true");
+  await page.reload();
+  await expect(radio("Emotion mode", "Manual")).toHaveAttribute("aria-checked", "true");
+  await expect(radio("Group responders", "Mentioned")).toHaveAttribute("aria-checked", "true");
+  await expect(toggle("Debate auto-advance")).toHaveAttribute("aria-checked", "false");
+  await expect(toggle("Readable Mode by default")).toHaveAttribute("aria-checked", "true");
+  await expect(toggle("Speaker cut-ins")).toHaveAttribute("aria-checked", "false");
+  await setKey(page);
+
+  // Group and debate Setup start from the same defaults (it used to start at Auto / Auto whatever Settings said).
+  await page.evaluate(() => { location.hash = "#/w/wld_seedMeridian/setup/config?mode=group&cast=chr_seedAmara,chr_seedMei"; });
+  await expect(radio("Faces", "MANUAL")).toHaveAttribute("aria-checked", "true");
+  await expect(radio("Who responds", "Mentioned only")).toHaveAttribute("aria-checked", "true");
+  await page.getByRole("button", { name: "Start ▸" }).click();
+  await expect(page.getByRole("button", { name: /^Who responds.*Mentioned only/ })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Readable", exact: true })).toHaveAttribute("aria-pressed", "true");
+
+  // A debate: auto-advance off, so Next steps the turns by hand.
+  await page.evaluate(() => { location.hash = "#/w/wld_seedMeridian/setup/config?mode=debate&cast=chr_seedAmara,chr_seedMei"; });
+  await expect(radio("Faces", "MANUAL")).toHaveAttribute("aria-checked", "true");
+  await page.getByRole("textbox", { name: "Motion" }).fill("This house would ban homework");
+  await page.getByRole("button", { name: "Start ▸" }).click();
+  await expect(page.getByRole("toolbar", { name: "Debate steering" }).getByRole("button", { name: /^Next/ })).toHaveAttribute("title", "Next turn (→)");
+
+  // A new 1:1, last: it opens with a streamed greeting, and only one session streams at a time. Victor has none yet.
+  await page.evaluate(() => { location.hash = "#/w/wld_seedMeridian"; });
+  await page.getByRole("listitem").filter({ hasText: "Victor Hale" }).getByRole("button", { name: "Chat" }).click();
+  await expect(page.getByRole("radiogroup", { name: "Emotion mode" }).getByRole("radio", { name: "Manual" })).toHaveAttribute("aria-checked", "true");
+  await expect(page.getByRole("button", { name: "Readable", exact: true })).toHaveAttribute("aria-pressed", "true");
 });

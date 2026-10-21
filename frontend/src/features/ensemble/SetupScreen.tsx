@@ -45,7 +45,8 @@ export function SetupScreen({ route }: { route: SetupRoute }) {
   const worldId = route.worldId;
   const world = useWorld(worldId).data;
   const charsQ = useCharacters(worldId);
-  const demo = useSettings().data?.demoMode ?? true;
+  const settings = useSettings().data;
+  const demo = settings?.demoMode ?? true;
   const roster = useMemo(() => (charsQ.data ?? []).filter((c) => c.status === "approved"), [charsQ.data]);
   const mode = route.mode;
   const step: Step = !mode ? "mode" : route.step === "config" && (route.cast?.length ?? 0) >= 2 ? "config" : route.step === "mode" ? "mode" : route.step ?? "cast";
@@ -57,8 +58,11 @@ export function SetupScreen({ route }: { route: SetupRoute }) {
 
   // ── Config state (kept while you move between steps) ──
   const [title, setTitle] = useState("");
-  const [faces, setFaces] = useState<"llm" | "user">("llm");
-  const [responders, setResponders] = useState<GroupConfig["responderPolicy"]>("auto");
+  // Settings → Chat sets where these start (null = not touched here yet); the pickers below override them per session.
+  const [facesPick, setFaces] = useState<"llm" | "user" | null>(null);
+  const faces = facesPick ?? settings?.chat.defaultEmotionMode ?? "llm";
+  const [respondersPick, setResponders] = useState<GroupConfig["responderPolicy"] | null>(null);
+  const responders = respondersPick ?? settings?.chat.responderDefault ?? "auto";
   const [music, setMusic] = useState<MusicPolicy>("follow_speaker");
   const [motion, setMotion] = useState("");
   const [format, setFormat] = useState<DebateConfig["format"]>("two_sided");
@@ -106,7 +110,7 @@ export function SetupScreen({ route }: { route: SetupRoute }) {
             roundsPreset: rounds, phases: rounds === "quick" ? ["opening", "closing"] : ["opening", "rebuttal", "closing"],
             turnLength: turnLength ?? defaultTurnLength(cast.length), moderator, verdictBy,
             rubric: [{ id: "evidence", label: "Evidence" }, { id: "rebuttal", label: "Rebuttal" }, { id: "clarity", label: "Clarity" }, { id: "persuasion", label: "Persuasion" }],
-            autoAdvance: true, pauseMs: 1500,
+            autoAdvance: settings?.chat.debateAutoAdvance ?? true, pauseMs: 1500,
           } satisfies DebateConfig)
             : ({ premise: premise.trim(), maxTurns: length, paceMs: pace, openingSpeaker: opener } satisfies WatchConfig);
       const snap = await client.sessions.create({

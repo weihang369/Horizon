@@ -203,6 +203,8 @@ export class MockClient implements HorizonClient {
       charge: (sid, category, costUsd, purpose) => this.chargeSession(sid, category, costUsd, purpose),
     };
     this.ready = this.init(opts, dev?.scenario);
+    // A change made in the last 500 ms would miss the debounced snapshot when the tab reloads or closes: write it now.
+    if (this.storage && typeof window !== "undefined") window.addEventListener("pagehide", () => this.persistNow());
     this.dev = this.makeDev();
   }
 
@@ -319,6 +321,13 @@ export class MockClient implements HorizonClient {
   private changed(kind: Extract<GlobalEvent, { type: "entity.changed" }>["kind"], id?: string, worldId?: string): void {
     this.global({ type: "entity.changed", kind, id, worldId });
     this.persistSoon();
+  }
+
+  private persistNow(): void {
+    if (!this.persistTimer) return;
+    clearTimeout(this.persistTimer);
+    this.persistTimer = null;
+    saveSnapshot(this.storage, this.db, this.seed);
   }
 
   private persistSoon(): void {
