@@ -168,3 +168,16 @@ def test_the_name_never_appears(cid: str) -> None:
 def test_positive_wording_only(cid: str) -> None:
     for prompt in every_prompt(cid):
         assert not re.search(r"nudity|underwear|swimwear|blood|weapon", prompt, re.I)
+
+
+def test_glasses_named_once() -> None:
+    """U-14: Mei's chip said square glasses and her details put a pair on her head, so the base had two."""
+    def eyes_line(glasses: str, details: str = "") -> str:
+        a = {"attributes": {"eyes": {"shape": "almond", "color": "amber", "glasses": glasses}, "extraDetails": details}}
+        return re.findall(r"Eyes: [^.]*\.", compiler().subject({"age": 41}, a))[0]
+    assert eyes_line("square") == "Eyes: almond amber eyes, square glasses."
+    assert eyes_line("half_rim") == "Eyes: almond amber eyes, half-rim glasses."
+    assert eyes_line("square", "Rectangular glasses pushed up on her head.") == "Eyes: almond amber eyes."
+    assert eyes_line("none", "A pencil through the bun.") == "Eyes: almond amber eyes."
+    mei = seed_character("chr_seedMei")
+    assert "pushed up" not in compiler().base(mei["profile"], mei["appearance"]).prompt

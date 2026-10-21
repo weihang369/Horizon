@@ -185,9 +185,9 @@ export const CHARACTERS: CharacterDef[] = [
       outfit: { archetype: "academic", primaryColor: "#D4A017", secondaryColor: "#2F5D8A" },
       accessories: ["pendant"],
       vibe: ["mischievous", "cool"],
-      extraDetails: "A pencil through the bun, rectangular glasses pushed up on her head, oversized mustard cardigan over a striped shirt.",
+      extraDetails: "A pencil through the bun, rectangular glasses, oversized mustard cardigan over a striped shirt.",
     },
-    summary: "An adult woman with long black hair in a low bun with a pencil through it, amber eyes, glasses pushed up and an oversized mustard cardigan.",
+    summary: "An adult woman with long black hair in a low bun with a pencil through it, amber eyes behind rectangular glasses and an oversized mustard cardigan.",
     song: { genres: ["jazz hip-hop"], moods: ["calm", "playful"], bpm: 90, instruments: ["bass", "drums", "vinyl crackle"], vibe: "Jazzy hip-hop, upright bass, vinyl crackle" },
   }),
   build({

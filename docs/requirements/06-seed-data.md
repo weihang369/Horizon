@@ -53,7 +53,7 @@ Seed characters ship with **all 7 emotions + blink** (showcase quality), regardl
 - **Personality:** Dry wit, sceptical, speaks in ranges and trade-offs, secretly loves a good counter-example.
 - **Speaking style:** "It depends, and here's on what." Careful with numbers; says when the evidence is thin.
 - **Greeting:** "I have coffee and a spreadsheet. Pick one."
-- **Appearance:** Long black hair in a low bun with a pencil through it, amber eyes, oversized mustard cardigan over a striped shirt, rectangular glasses pushed up on her head.
+- **Appearance:** Long black hair in a low bun with a pencil through it, amber eyes, oversized mustard cardigan over a striped shirt, rectangular glasses.
 - **Theme brief:** Jazzy hip-hop, upright bass, vinyl crackle · 90 BPM.
 
 ### 2.4 Hana Morisaki (Sunny Hollow)
