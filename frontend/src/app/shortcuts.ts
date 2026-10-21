@@ -33,10 +33,12 @@ export function isTypingTarget(el: EventTarget | Element | null | undefined): bo
 const SLIDER_KEYS = new Set(["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End", "PageUp", "PageDown"]);
 
 /** A focused slider moves on these keys natively; a screen shortcut on the same key (World Select ←/→/Home/End, a
- * replay's ←/→) would otherwise take them, so the mini-player's volume couldn't be set from the keyboard (U-22). */
+ * replay's ←/→) would otherwise take them, so the mini-player's volume couldn't be set from the keyboard (U-22).
+ * A focused window splitter (the Insight drawer's resize edge, U-30) owns them too. */
 export function sliderOwnsKey(el: EventTarget | null, key: string): boolean {
   if (!(el instanceof HTMLElement) || !SLIDER_KEYS.has(key)) return false;
-  return (el instanceof HTMLInputElement && el.type === "range") || el.getAttribute("role") === "slider";
+  const role = el.getAttribute("role");
+  return (el instanceof HTMLInputElement && el.type === "range") || role === "slider" || (role === "separator" && el.tabIndex >= 0);
 }
 
 /** "Ctrl+Shift+D" → "ctrl+shift+d"; aliases: esc, space, mod (= ctrl on Windows/Linux, meta on Mac). */

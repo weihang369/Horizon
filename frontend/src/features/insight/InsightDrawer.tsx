@@ -15,7 +15,7 @@ import type { Character, Citation, Message, TurnTrace } from "../../contract/typ
 import { formatUsd } from "../../domain/format";
 import { useMotionPrefs } from "../../motion/prefs";
 import { entities } from "../../stores/entities";
-import { usePrefs } from "../../stores/prefs";
+import { setPrefs, usePrefs } from "../../stores/prefs";
 import { useUi } from "../../stores/ui";
 import { PaletteScope } from "../../theme/PaletteScope";
 import { IconButton } from "../../ui/Button";
@@ -209,6 +209,14 @@ function SpeakerHead({ m, c, live }: { m: Message; c?: Character; live: boolean 
   );
 }
 
+/** U-30: the drawer's width range. The session keeps at least LEAVE px beside it: with 640 at 1280 the group stage
+ * squeezed its bubbles to a narrow column and cut its header. 480 at 1280, 640 at 1440, 760 from 1560. */
+const INSIGHT_MIN = 320;
+const INSIGHT_MAX = 760;
+const INSIGHT_DEFAULT = 400;
+const LEAVE = 800;
+const maxWidth = () => Math.max(INSIGHT_MIN, Math.min(INSIGHT_MAX, (typeof window !== "undefined" ? window.innerWidth : 1440) - LEAVE));
+
 export function InsightDrawer({ sessionId, close }: OverlayComponentProps<"O08">) {
   const { runtime, replay } = useSlotRuntime(sessionId);
   const chars = useStore(entities, (st) => st.chars);
@@ -250,6 +258,17 @@ export function InsightDrawer({ sessionId, close }: OverlayComponentProps<"O08">
   const streaming = m?.status === "streaming";
   const nameOf = (id: string) => firstName(chars[id]?.profile.name) || id;
   const compact = presenter;
+  const saved = usePrefs((p) => p.insightWidth);
+  const [dragging, setDragging] = useState<number | null>(null);
+  const max = maxWidth();
+  const width = compact ? 300 : Math.max(INSIGHT_MIN, Math.min(max, dragging ?? saved));
+  // The debate and group layouts make room with --drawer-w: published on the root, they follow a drag live (it was
+  // only set on the drawer itself, so they always kept 400 px).
+  useEffect(() => {
+    const root = document.documentElement.style;
+    root.setProperty("--drawer-w", `${width}px`);
+    return () => void root.removeProperty("--drawer-w");
+  }, [width]);
   const firstCast = runtime?.session.participants[0]?.characterId;
 
   let body: ReactNode;
@@ -416,8 +435,13 @@ export function InsightDrawer({ sessionId, close }: OverlayComponentProps<"O08">
   return (
     <Drawer
       title="Insight"
-      width={compact ? 300 : 400}
+      width={width}
       onClose={close}
+      resize={compact ? undefined : {
+        label: "Resize Insight", min: INSIGHT_MIN, max, reset: INSIGHT_DEFAULT,
+        onResize: setDragging,
+        onCommit: (w) => { setDragging(null); setPrefs({ insightWidth: w }); },
+      }}
       className={cx(s.drawer, compact && s.compact)}
       headerExtra={charIds.length > 0 ? (
         <span className={s.nav}>

@@ -218,6 +218,8 @@
   z-index: 2;
   display: grid;
   grid-template-rows: minmax(0, 1fr) auto;
+  /* U-30: a shrinkable column; with a wide Insight drawer the log kept its 608 px min-content and was cut */
+  grid-template-columns: minmax(0, 1fr);
   min-height: 0;
   min-width: 0;
   background: color-mix(in srgb, var(--ink-900) 88%, transparent);
@@ -235,6 +237,7 @@
 
 .verdictCta {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
   gap: 16px;
