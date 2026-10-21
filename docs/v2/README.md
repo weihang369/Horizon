@@ -149,3 +149,31 @@ character).
 
 **What v2 would need:** if D-65's limits rise past about 100k pieces per partition, an IVF or HNSW index, with a recall
 check against the flat search.
+
+## 9. Theme songs that loop seamlessly
+
+**Deferred by:** the user's manual test of v1 (2026-10-21): a character's theme doesn't loop.
+
+**v1 behaviour:**
+- The audio engine plays a theme as a looping buffer over the **whole** file (`src.loop = true` in
+  `frontend/src/audio/engine/index.ts`, `setMusic`), with no loop points.
+- A generated song never gets a loop region: the backend stores `loop: null` when a song job finishes
+  (`services/jobs/apply.py`), and the seed's songs have none either. The Theme tab draws a loop zone only when one
+  exists.
+- Lyria 3 Clip writes a ~30 s piece with its own intro and ending. Our prompt asks for "a 30-second piece that loops
+  cleanly", but the model doesn't guarantee it, so the repeat is heard as the song stopping and starting again.
+
+**v1's stopgap (the user's choice, same review):** each pass fades instead of cutting. Before a generated theme loops,
+the engine trims its near-silent edges, fades the first 1.5 s in and the last 3 s out (`frontend/src/audio/engine/edges.ts`),
+so every repeat goes quiet and comes back up. Procedural system tracks are built to loop and are left as they are.
+
+**Why it was deferred:** the theme plays and repeats with soft edges; making the seam inaudible is audio work (finding
+loop points, crossfading), not needed for the v1 launch.
+
+**What v2 would need:**
+1. **Loop points per song.** When a song job finishes, find a loop region: trim leading and trailing silence, then
+   pick a start and end on a beat (the brief's BPM gives the bar length) where the waveform and loudness match.
+   Store it in the existing `loop` field.
+2. **The engine uses them.** Set `loopStart` / `loopEnd` on the buffer source from `song.loop`, or crossfade the end
+   into the start (a short equal-power overlap) when no clean point is found.
+3. **A check by ear** (D-88: the user judges generated media by eye and ear) on the 7 seed themes before shipping.
