@@ -8,7 +8,9 @@
   --clip: polygon(0 0, 100% 0, 100% 92%, 86% 100%, 0 100%);
   position: relative;
   height: 100vh;
-  overflow: hidden;
+  /* clip, not hidden: a hidden box is still a scroll container, and focus()/scrollIntoView on a card shifted the whole
+     screen sideways (U-11). */
+  overflow: clip;
   isolation: isolate;
   display: grid;
   grid-template-rows: auto 1fr auto;
@@ -53,6 +55,12 @@
 .state { display: grid; place-items: center; align-content: center; gap: 16px; }
 
 /* ── Rail ─────────────────────────────────────────────────────────────── */
+.railWrap {
+  position: relative;
+  display: grid;
+  min-height: 0;
+  margin: 0 calc(var(--gutter) * -1);
+}
 .rail {
   display: flex;
   align-items: center;
@@ -61,11 +69,36 @@
   overflow-x: auto;
   overflow-y: hidden;
   padding: 24px 64px 16px;
-  margin: 0 calc(var(--gutter) * -1);
   scroll-padding: 0 96px;
   scrollbar-width: none;
+  /* The cards arrive after the skeletons, in front of "+ New World": anchoring would keep New World in place and open
+     the rail at its far end (U-12). */
+  overflow-anchor: none;
+  --fade-l: 0px;
+  --fade-r: 0px;
+  mask-image: linear-gradient(90deg, transparent, #000 var(--fade-l), #000 calc(100% - var(--fade-r)), transparent);
 }
+.rail[data-more-left] { --fade-l: 72px; }
+.rail[data-more-right] { --fade-r: 72px; }
 .rail::-webkit-scrollbar { display: none; }
+.page {
+  position: absolute;
+  top: 50%;
+  z-index: 4;
+  width: 44px;
+  height: 64px;
+  border: 0;
+  background: var(--ink-700);
+  color: var(--paper-50);
+  font: 400 22px/1 var(--font-display);
+  clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+  translate: 0 -50%;
+  cursor: pointer;
+  animation: global(hz-fade-in) var(--t-fast) linear both;
+}
+.page:hover { background: var(--horizon-500); color: var(--on-brand); }
+.pagePrev { left: 12px; }
+.pageNext { right: 12px; }
 .slot {
   flex: none;
   margin-left: -40px;

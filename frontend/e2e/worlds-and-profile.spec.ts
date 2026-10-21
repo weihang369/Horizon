@@ -21,6 +21,47 @@ test("World Select: ←/→ move between worlds from anywhere, Enter opens the h
   await expect(page.getByRole("heading", { name: "SUNNY HOLLOW", level: 1 })).toBeVisible();
 });
 
+test("World Select with many worlds: the rail opens at the newest, keys and the wheel scroll only the rail @layout", async ({ page }) => {
+  await open(page, "/worlds");
+  for (let i = 1; i <= 4; i++) {
+    await page.getByRole("button", { name: /New World/ }).click();
+    await page.getByLabel("Name", { exact: true }).fill(`Extra World ${i}`);
+    await page.getByRole("button", { name: /Create world/ }).click();
+    await expect(page.getByRole("heading", { name: `EXTRA WORLD ${i}`, level: 1 })).toBeVisible();
+    await page.goBack();
+    await expect(page.getByRole("button", { name: /New World/ })).toBeVisible();
+  }
+  const screenX = () => page.locator("[data-screen=S03]").evaluate((el) => el.scrollLeft);
+  const railX = () => page.getByRole("list", { name: "Worlds" }).evaluate((el) => el.scrollLeft);
+  const newest = page.getByRole("button", { name: /^Extra World 4/ });
+  const create = page.getByRole("button", { name: /New World/ });
+
+  // U-12: the cards arrive in front of "+ New World"; scroll anchoring used to open the rail at its far end.
+  await expect(newest).toBeInViewport();
+  expect(await railX()).toBe(0);
+  await expect(page.getByRole("button", { name: "Scroll worlds right" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Scroll worlds left" })).toHaveCount(0);
+
+  // U-11: End/←/Home move focus and scroll the rail, never the screen (it used to shift sideways, cutting the title).
+  await page.keyboard.press("End");
+  await expect(create).toBeFocused();
+  await expect(create).toBeInViewport({ ratio: 0.8 });
+  expect(await screenX()).toBe(0);
+  await page.keyboard.press("ArrowLeft");
+  await expect(page.getByRole("button", { name: /^Sunny Hollow|^Meridian Council/ }).last()).toBeFocused();
+  await page.keyboard.press("Home");
+  await expect(newest).toBeFocused();
+  await expect.poll(railX).toBe(0);
+  expect(await screenX()).toBe(0);
+
+  // A plain vertical wheel reaches the far worlds (the rail has no visible scrollbar).
+  await newest.hover();
+  await page.mouse.wheel(0, 800);
+  await expect.poll(railX).toBeGreaterThan(0);
+  await expect(page.getByRole("button", { name: "Scroll worlds left" })).toBeVisible();
+  expect(await screenX()).toBe(0);
+});
+
 test("World Hub: Roster and Sessions tabs, then a character card opens the profile", async ({ page }) => {
   await open(page, "/w/wld_seedMeridian");
   await expect(page.getByRole("heading", { name: "MERIDIAN COUNCIL", level: 1 })).toBeVisible();
