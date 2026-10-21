@@ -85,7 +85,7 @@ export function EmotionLightbox({ close, characterId, emotion: initial }: Overla
             </div>
           )}
           {ref && (
-            <a className={s.lbDownload} href={ref.url} download={`${c.profile.name.replace(/\s+/g, "_")}_${emotion}.svg`}>⤓ Download</a>
+            <a className={s.lbDownload} href={ref.url} download={`${c.profile.name.replace(/\s+/g, "_")}_${emotion}.${/\.(\w+)$/.exec(ref.url.split(/[?#]/)[0])?.[1] ?? "webp"}`}>⤓ Download</a>
           )}
           <p className={s.lbHint}><Kbd>←</Kbd> <Kbd>→</Kbd> browse · <Kbd>Esc</Kbd> close</p>
         </aside>
