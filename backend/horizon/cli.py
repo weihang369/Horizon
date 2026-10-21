@@ -21,17 +21,29 @@ def _serve(args: argparse.Namespace) -> int:
     if args.host not in LOOPBACK_HOSTS:
         print(f"horizon: refusing to bind to {args.host!r}. The backend is local-only (loopback).", file=sys.stderr)
         return 2
-    import uvicorn
-
     if args.static:
         os.environ["HORIZON_STATIC_DIR"] = str(Path(args.static).resolve())
     if args.port:
         os.environ["HORIZON_PORT"] = str(args.port)
     cfg = load_config()
-    reload_dirs = [str(Path(__file__).resolve().parent)] if args.reload else None
-    uvicorn.run("horizon.main:create_app", factory=True, host=args.host, port=args.port or cfg.port, reload=args.reload,
-                reload_dirs=reload_dirs, log_config=None, access_log=False)
+    port = args.port or cfg.port
+    if args.reload:
+        # Dev reload through watchfiles, not uvicorn's reloader: on Windows that one stops its worker with a console
+        # Ctrl+C, which reaches every process in the console (`npm run dev` loses both servers) or, with no console,
+        # none (the reload hangs). watchfiles ends just the worker; the OS frees the port and the data lock.
+        import watchfiles
+
+        watchfiles.run_process(Path(__file__).resolve().parent, target=_uvicorn, args=(args.host, port),
+                               watch_filter=watchfiles.PythonFilter())
+        return 0
+    _uvicorn(args.host, port)
     return 0
+
+
+def _uvicorn(host: str, port: int) -> None:
+    import uvicorn
+
+    uvicorn.run("horizon.main:create_app", factory=True, host=host, port=port, log_config=None, access_log=False)
 
 
 def _migrate(_args: argparse.Namespace) -> int:
