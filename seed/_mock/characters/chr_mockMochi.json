@@ -127,7 +127,11 @@
       "thinking": null,
       "embarrassed": null
     },
-    "blink": null,
+    "blink": {
+      "assetId": "emo_mockMochiBlink",
+      "url": "/assets/portraits/chr_mockMochi/blink.webp",
+      "vfxPreset": "none"
+    },
     "energy": {
       "max": 1000,
       "current": 1000,

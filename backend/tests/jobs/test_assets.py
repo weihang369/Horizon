@@ -156,7 +156,7 @@ async def test_regenerated_emotion_gets_a_new_url(api: Api) -> None:
     urls = []
     for _ in range(2):
         j = await start(api, {"characterId": "chr_mockSarah", "kind": "emotion_regenerate", "emotions": ["happy"]})
-        await api.drive(16000)
+        await api.drive(32000)  # the first also makes Sarah's blink (D-108): two edits in a row
         assert (await job(api, j["id"]))["status"] == "succeeded"
         urls.append((await character(api, "chr_mockSarah"))["emotions"]["happy"]["url"])
     assert urls[0] != urls[1] and urls[1].endswith("_v2.webp")

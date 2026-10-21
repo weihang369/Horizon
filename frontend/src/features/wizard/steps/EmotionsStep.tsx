@@ -179,7 +179,7 @@ export function EmotionsStep() {
             <>
               <span className={s.emoCount}>{doneCount}/6 FACES READY</span>
               <span className={s.microNote}>
-                {lean ? "Lean mode: happy, sad and angry now; the rest on demand." : "Standard mode: all six now, plus a blink frame."}
+                {lean ? "Lean mode: happy, sad, angry and a blink frame now; the rest on demand." : "Standard mode: all six now, plus a blink frame."}
                 {setJob?.status === "partial" ? " Some faces failed: retry them below." : ""}
               </span>
             </>

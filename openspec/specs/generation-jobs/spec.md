@@ -11,7 +11,7 @@ Defines how character generation jobs (profile drafts, portraits, emotions, song
 
 #### Scenario: Lean emotion set estimate
 - **WHEN** `generationMode` is `lean` and an `emotion_set` job is estimated for a character
-- **THEN** the estimate is 3 × the emotion-edit price, and no ledger row is written
+- **THEN** the estimate is 3 × the emotion-edit price plus the blink-frame price (D-108), and no ledger row is written
 
 #### Scenario: Estimate for a tombstone
 - **WHEN** `jobs.estimate` targets a deleted character
@@ -22,13 +22,17 @@ Each job kind SHALL expand into ordered tasks as the MockClient does:
 - `profile_draft`: profile, appearance summary, palette pick and song brief;
 - `profile_regenerate`: one profile task;
 - `portrait_candidates`: 1 candidate in Lean mode, 2 in Standard; `portrait_tweak`: one;
-- `emotion_set`: one edit per emotion (Lean: happy, sad, angry; Standard: all six plus a blink frame), or one expression sheet;
-- `emotion_regenerate`: one per listed emotion;
+- `emotion_set`: one edit per emotion (Lean: happy, sad, angry; Standard: all six) plus a blink frame in both modes (D-108), or one expression sheet;
+- `emotion_regenerate`: one per listed emotion, plus a blink frame when the character has no active blink yet (D-108: a Lean character from before D-108);
 - `song`: one theme song.
 
 #### Scenario: Lean emotion set
 - **WHEN** an `emotion_set` job starts in Lean mode with no `emotions` given
-- **THEN** its tasks are three `emotion_image` tasks for happy, sad and angry, in that order
+- **THEN** its tasks are three `emotion_image` tasks for happy, sad and angry, in that order, then one `blink_frame`
+
+#### Scenario: A character without a blink gets one with its next emotion
+- **WHEN** an `emotion_regenerate` job starts for a character with no active blink
+- **THEN** its tasks are the listed emotions, then one `blink_frame`, and its estimate includes the blink
 
 #### Scenario: Standard candidates
 - **WHEN** a `portrait_candidates` job starts in Standard mode

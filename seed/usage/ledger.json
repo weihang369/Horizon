@@ -622,7 +622,7 @@
       "latencyMs": 41000
     },
     {
-      "id": "usg_0111",
+      "id": "usg_0114",
       "at": "2026-09-27T02:40:02.335Z",
       "category": "chat",
       "model": "deepseek/deepseek-v4.1-flash",
@@ -638,7 +638,7 @@
       "latencyMs": 1872
     },
     {
-      "id": "usg_0112",
+      "id": "usg_0115",
       "at": "2026-09-27T02:40:06.221Z",
       "category": "chat",
       "model": "deepseek/deepseek-v4.1-flash",
@@ -654,7 +654,7 @@
       "latencyMs": 1494
     },
     {
-      "id": "usg_0113",
+      "id": "usg_0116",
       "at": "2026-09-27T02:40:10.236Z",
       "category": "chat",
       "model": "deepseek/deepseek-v4.1-flash",
@@ -670,7 +670,7 @@
       "latencyMs": 1467
     },
     {
-      "id": "usg_0114",
+      "id": "usg_0117",
       "at": "2026-09-27T02:40:14.091Z",
       "category": "chat",
       "model": "deepseek/deepseek-v4.1-flash",
@@ -686,7 +686,7 @@
       "latencyMs": 1940
     },
     {
-      "id": "usg_0115",
+      "id": "usg_0118",
       "at": "2026-09-27T02:40:17.931Z",
       "category": "chat",
       "model": "deepseek/deepseek-v4.1-flash",
@@ -702,7 +702,7 @@
       "latencyMs": 1635
     },
     {
-      "id": "usg_0116",
+      "id": "usg_0119",
       "at": "2026-09-27T02:40:21.670Z",
       "category": "chat",
       "model": "deepseek/deepseek-v4.1-flash",
@@ -718,7 +718,7 @@
       "latencyMs": 1684
     },
     {
-      "id": "usg_0117",
+      "id": "usg_0120",
       "at": "2026-09-27T02:40:25.526Z",
       "category": "chat",
       "model": "deepseek/deepseek-v4.1-flash",
@@ -734,7 +734,7 @@
       "latencyMs": 1501
     },
     {
-      "id": "usg_0118",
+      "id": "usg_0121",
       "at": "2026-09-27T02:40:28.859Z",
       "category": "chat",
       "model": "deepseek/deepseek-v4.1-flash",
@@ -750,7 +750,7 @@
       "latencyMs": 1425
     },
     {
-      "id": "usg_0119",
+      "id": "usg_0122",
       "at": "2026-09-27T02:40:32.303Z",
       "category": "chat",
       "model": "deepseek/deepseek-v4.1-flash",
@@ -766,7 +766,7 @@
       "latencyMs": 1531
     },
     {
-      "id": "usg_0120",
+      "id": "usg_0123",
       "at": "2026-09-27T02:40:36.207Z",
       "category": "chat",
       "model": "deepseek/deepseek-v4.1-flash",
@@ -782,7 +782,7 @@
       "latencyMs": 1518
     },
     {
-      "id": "usg_0152",
+      "id": "usg_0155",
       "at": "2026-09-27T08:00:00Z",
       "category": "energy_topup",
       "characterId": "chr_seedRin",
@@ -790,7 +790,7 @@
       "energyPoints": 500
     },
     {
-      "id": "usg_0084",
+      "id": "usg_0087",
       "at": "2026-09-29T21:14:12.526Z",
       "category": "chat",
       "model": "deepseek/deepseek-v4.1-flash",
@@ -806,7 +806,7 @@
       "latencyMs": 1661
     },
     {
-      "id": "usg_0085",
+      "id": "usg_0088",
       "at": "2026-09-29T21:14:36.639Z",
       "category": "chat",
       "model": "deepseek/deepseek-v4.1-flash",
@@ -822,7 +822,7 @@
       "latencyMs": 4287
     },
     {
-      "id": "usg_0086",
+      "id": "usg_0089",
       "at": "2026-09-29T21:15:01.118Z",
       "category": "chat",
       "model": "deepseek/deepseek-v4.1-flash",
@@ -838,7 +838,7 @@
       "latencyMs": 3509
     },
     {
-      "id": "usg_0090",
+      "id": "usg_0093",
       "at": "2026-09-30T10:30:09.531Z",
       "category": "decision",
       "model": "typesafe/jev-1.13",
@@ -850,7 +850,7 @@
       "latencyMs": 180
     },
     {
-      "id": "usg_0091",
+      "id": "usg_0094",
       "at": "2026-09-30T10:30:09.531Z",
       "category": "chat",
       "model": "deepseek/deepseek-v4.1-flash",
@@ -866,7 +866,7 @@
       "latencyMs": 1342
     },
     {
-      "id": "usg_0092",
+      "id": "usg_0095",
       "at": "2026-09-30T10:30:32.038Z",
       "category": "decision",
       "model": "typesafe/jev-1.13",
@@ -878,7 +878,7 @@
       "latencyMs": 180
     },
     {
-      "id": "usg_0093",
+      "id": "usg_0096",
       "at": "2026-09-30T10:30:32.038Z",
       "category": "chat",
       "model": "deepseek/deepseek-v4.1-flash",
@@ -894,7 +894,7 @@
       "latencyMs": 1721
     },
     {
-      "id": "usg_0094",
+      "id": "usg_0097",
       "at": "2026-09-30T10:30:33.918Z",
       "category": "decision",
       "model": "typesafe/jev-1.13",
@@ -906,7 +906,7 @@
       "latencyMs": 180
     },
     {
-      "id": "usg_0095",
+      "id": "usg_0098",
       "at": "2026-09-30T10:30:33.918Z",
       "category": "chat",
       "model": "deepseek/deepseek-v4.1-flash",
@@ -922,7 +922,7 @@
       "latencyMs": 1241
     },
     {
-      "id": "usg_0096",
+      "id": "usg_0099",
       "at": "2026-09-30T10:30:57.992Z",
       "category": "decision",
       "model": "typesafe/jev-1.13",
@@ -934,7 +934,7 @@
       "latencyMs": 180
     },
     {
-      "id": "usg_0097",
+      "id": "usg_0100",
       "at": "2026-09-30T10:30:57.992Z",
       "category": "chat",
       "model": "deepseek/deepseek-v4.1-flash",
@@ -950,7 +950,7 @@
       "latencyMs": 3461
     },
     {
-      "id": "usg_0098",
+      "id": "usg_0101",
       "at": "2026-09-30T10:31:20.355Z",
       "category": "decision",
       "model": "typesafe/jev-1.13",
@@ -962,7 +962,7 @@
       "latencyMs": 180
     },
     {
-      "id": "usg_0099",
+      "id": "usg_0102",
       "at": "2026-09-30T10:31:20.355Z",
       "category": "chat",
       "model": "deepseek/deepseek-v4.1-flash",
@@ -978,7 +978,7 @@
       "latencyMs": 1707
     },
     {
-      "id": "usg_0087",
+      "id": "usg_0090",
       "at": "2026-09-30T19:02:31.563Z",
       "category": "chat",
       "model": "deepseek/deepseek-v4.1-flash",
@@ -994,7 +994,7 @@
       "latencyMs": 1658
     },
     {
-      "id": "usg_0088",
+      "id": "usg_0091",
       "at": "2026-09-30T19:02:54.196Z",
       "category": "chat",
       "model": "deepseek/deepseek-v4.1-flash",
@@ -1010,7 +1010,7 @@
       "latencyMs": 2047
     },
     {
-      "id": "usg_0089",
+      "id": "usg_0092",
       "at": "2026-09-30T19:03:35.437Z",
       "category": "chat",
       "model": "deepseek/deepseek-v4.1-flash",
@@ -1026,7 +1026,7 @@
       "latencyMs": 1696
     },
     {
-      "id": "usg_0100",
+      "id": "usg_0103",
       "at": "2026-10-01T09:58:03.896Z",
       "category": "chat",
       "model": "deepseek/deepseek-v4.1-flash",
@@ -1042,7 +1042,7 @@
       "latencyMs": 3308
     },
     {
-      "id": "usg_0101",
+      "id": "usg_0104",
       "at": "2026-10-01T09:58:06.955Z",
       "category": "chat",
       "model": "deepseek/deepseek-v4.1-flash",
@@ -1058,7 +1058,7 @@
       "latencyMs": 1578
     },
     {
-      "id": "usg_0102",
+      "id": "usg_0105",
       "at": "2026-10-01T09:58:10.432Z",
       "category": "chat",
       "model": "deepseek/deepseek-v4.1-flash",
@@ -1074,7 +1074,7 @@
       "latencyMs": 1400
     },
     {
-      "id": "usg_0103",
+      "id": "usg_0106",
       "at": "2026-10-01T09:58:17.381Z",
       "category": "chat",
       "model": "deepseek/deepseek-v4.1-flash",
@@ -1090,7 +1090,7 @@
       "latencyMs": 3183
     },
     {
-      "id": "usg_0104",
+      "id": "usg_0107",
       "at": "2026-10-01T09:58:21.688Z",
       "category": "chat",
       "model": "deepseek/deepseek-v4.1-flash",
@@ -1106,7 +1106,7 @@
       "latencyMs": 3045
     },
     {
-      "id": "usg_0105",
+      "id": "usg_0108",
       "at": "2026-10-01T09:58:25.132Z",
       "category": "chat",
       "model": "deepseek/deepseek-v4.1-flash",
@@ -1122,7 +1122,7 @@
       "latencyMs": 3146
     },
     {
-      "id": "usg_0106",
+      "id": "usg_0109",
       "at": "2026-10-01T09:58:29.963Z",
       "category": "chat",
       "model": "deepseek/deepseek-v4.1-flash",
@@ -1138,7 +1138,7 @@
       "latencyMs": 2566
     },
     {
-      "id": "usg_0107",
+      "id": "usg_0110",
       "at": "2026-10-01T09:58:36.865Z",
       "category": "chat",
       "model": "deepseek/deepseek-v4.1-flash",
@@ -1154,7 +1154,7 @@
       "latencyMs": 3671
     },
     {
-      "id": "usg_0108",
+      "id": "usg_0111",
       "at": "2026-10-01T09:58:42.152Z",
       "category": "chat",
       "model": "deepseek/deepseek-v4.1-flash",
@@ -1170,7 +1170,7 @@
       "latencyMs": 3497
     },
     {
-      "id": "usg_0109",
+      "id": "usg_0112",
       "at": "2026-10-01T09:58:47.289Z",
       "category": "chat",
       "model": "deepseek/deepseek-v4.1-flash",
@@ -1186,7 +1186,7 @@
       "latencyMs": 2816
     },
     {
-      "id": "usg_0110",
+      "id": "usg_0113",
       "at": "2026-10-01T09:58:53.582Z",
       "category": "summary",
       "model": "deepseek/deepseek-v4.1-flash",

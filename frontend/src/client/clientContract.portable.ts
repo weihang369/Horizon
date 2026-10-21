@@ -392,10 +392,11 @@ export function runPortableContract(label: string, makeHarness: MakeHarness, opt
       ch = await c.characters.lockPortrait(character.id, cand.id);
       expect(ch.emotions.neutral?.url).toBe(cand.url);
       const ej = await c.jobs.start({ characterId: character.id, kind: "emotion_set" });
-      expect(ej.tasks.map((t) => t.emotion)).toEqual(["happy", "sad", "angry"]);
+      // Lean: three edits and, since D-108, the blink.
+      expect(ej.tasks.map((t) => t.type === "blink_frame" ? "blink" : t.emotion)).toEqual(["happy", "sad", "angry", "blink"]);
       await tick(40000);
       ch = await c.characters.get(character.id);
-      expect(ch.emotions.happy && ch.emotions.sad && ch.emotions.angry).toBeTruthy();
+      expect(ch.emotions.happy && ch.emotions.sad && ch.emotions.angry && ch.blink).toBeTruthy();
       expect(ch.emotions.surprised).toBeNull();
       expect((await c.characters.approve(character.id)).status).toBe("approved");
     });

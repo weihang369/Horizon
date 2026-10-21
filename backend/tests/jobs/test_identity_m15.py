@@ -30,6 +30,11 @@ def image_prompts(fake: Any) -> list[str]:
     return [json.loads(r.content)["prompt"] for r in fake.requests if r.url.path.endswith("/images")]
 
 
+def emotion_prompts(prompts: list[str]) -> list[str]:
+    """Without the blink edit Sarah's first regenerate also makes (she has none yet, D-108)."""
+    return [p for p in prompts if "eyes fully closed" not in p]
+
+
 async def regenerate(api: Api, **extra: Any) -> dict[str, Any]:
     j = await start(api, {"characterId": SARAH, "kind": "emotion_regenerate", "emotions": ["happy"], **extra})
     return await settle_job(api, j["id"])
@@ -39,12 +44,13 @@ async def test_the_hints_words_are_ignored(api: Api) -> None:
     fake = await ready(api)
     before = len(image_prompts(fake))
     assert (await regenerate(api, prompt=HINT))["status"] == "succeeded"
-    [prompt] = image_prompts(fake)[before:]
+    sent = image_prompts(fake)[before:]
+    [prompt] = emotion_prompts(sent)
     ch = await character(api, SARAH)
     assert prompt == api.rt.prompt_compiler.emotion_edit(ch["profile"], "happy", identity=True).prompt
     assert IDENTITY in prompt
     for word in ("ignore", "that", "draw", "crown"):   # the hint's own words ("a", "and", "all" are in the fixed text)
-        assert not re.search(rf"\b{word}\b", prompt, re.I), word
+        assert not any(re.search(rf"\b{word}\b", p, re.I) for p in sent), word
 
 
 async def test_no_hint_no_line(api: Api) -> None:
@@ -53,7 +59,7 @@ async def test_no_hint_no_line(api: Api) -> None:
     assert (await regenerate(api))["status"] == "succeeded"
     assert (await regenerate(api, prompt="   "))["status"] == "succeeded"
     got = image_prompts(fake)[before:]
-    assert len(got) == 2 and all(IDENTITY not in p for p in got)
+    assert len(emotion_prompts(got)) == 2 and all(IDENTITY not in p for p in got)
 
 
 async def test_an_emotion_set_never_gets_the_line(api: Api) -> None:

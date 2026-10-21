@@ -127,7 +127,11 @@
       "thinking": null,
       "embarrassed": null
     },
-    "blink": null,
+    "blink": {
+      "assetId": "emo_mockKenjiBlink",
+      "url": "/assets/portraits/chr_mockKenji/blink.webp",
+      "vfxPreset": "none"
+    },
     "energy": {
       "max": 1000,
       "current": 1000,

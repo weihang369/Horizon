@@ -282,7 +282,7 @@ export const CHARACTERS: CharacterDef[] = [
   // ── UI-phase mock characters (seed/_mock) ──
   build({
     id: "chr_mockElena", key: "mockElena", worldId: MERIDIAN, paletteId: "pal_midnight_ink", energy: 640, mock: true,
-    seedPrompt: "An ex-diplomat turned history teacher", intent: "expert", advisory: false,
+    seedPrompt: "An ex-diplomat turned history teacher", intent: "expert", advisory: false, blink: true, // D-108
     emotions: ["neutral", "happy", "sad", "angry"], // Lean: 3 emotions still null (EMO-06)
     profile: {
       name: "Elena Vasquez", role: "History teacher, former diplomat", age: 52, pronouns: "she/her",
@@ -308,7 +308,7 @@ export const CHARACTERS: CharacterDef[] = [
   }),
   build({
     id: "chr_mockKenji", key: "mockKenji", worldId: MERIDIAN, paletteId: "pal_frost_byte", energy: 1000, mock: true,
-    seedPrompt: "A strict but fair chess coach", intent: "expert", advisory: false,
+    seedPrompt: "A strict but fair chess coach", intent: "expert", advisory: false, blink: true, // D-108
     emotions: ["neutral", "happy", "sad", "angry"], song: null, activeJobId: "job_mockKenjiEmotions",
     profile: {
       name: "Kenji Ito", role: "Chess coach", age: 34, pronouns: "he/him",
@@ -385,7 +385,7 @@ export const CHARACTERS: CharacterDef[] = [
   build({
     id: "chr_mockMochi", key: "mockMochi", worldId: SUNNY, paletteId: "pal_citrus_spark", energy: 1000, mock: true,
     status: "archived", archivedAt: "2026-09-28T18:00:00Z", emotions: ["neutral", "happy", "sad", "angry"], song: null,
-    seedPrompt: "A cheerful barista everyone calls Mochi", intent: "companion", advisory: false,
+    seedPrompt: "A cheerful barista everyone calls Mochi", intent: "companion", advisory: false, blink: true, // D-108
     profile: {
       name: "Mochi", role: "Barista", age: 29, pronouns: "they/them",
       tagline: "Oat milk is a personality.",

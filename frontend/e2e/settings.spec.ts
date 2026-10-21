@@ -188,7 +188,7 @@ test("Cost: every control saves and takes effect (mode, caps, warn, energy, esti
 
   // The mode cards' prices come from the price table (they said $0.20 / $0.40, about twice the real cost).
   await expect(mode("Lean")).toHaveAttribute("aria-checked", "true");
-  await expect(mode("Lean")).toContainText("≈ $0.11 per character");
+  await expect(mode("Lean")).toContainText("≈ $0.13 per character");
   await expect(mode("Standard")).toContainText("≈ $0.20 per character");
   await mode("Standard").click();
   await expect(mode("Standard")).toHaveAttribute("aria-checked", "true");
@@ -211,7 +211,7 @@ test("Cost: every control saves and takes effect (mode, caps, warn, energy, esti
   const gen = page.getByRole("button", { name: "Generate (≈ $0.02)" }).first();
   await gen.click();
   const ask = page.getByRole("dialog", { name: /Spend a little\?/ });
-  await expect(ask).toContainText("$0.02");
+  await expect(ask).toContainText("≈$0.02");
   await ask.getByRole("button", { name: "Not now" }).click();
   await expect(ask).toBeHidden();
 
@@ -240,7 +240,7 @@ test("Cost: every control saves and takes effect (mode, caps, warn, energy, esti
   await page.evaluate(() => { location.hash = "#/w/wld_seedMeridian/c/chr_mockElena?tab=gallery"; });
   const plain = page.getByRole("button", { name: "Generate", exact: true });
   await expect(plain.first()).toBeVisible();
-  await expect(page.getByText("≈ $0.02").filter({ visible: true })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: /≈/ })).toHaveCount(0); // (the energy panel's "≈ $x spent" is not a button)
   const before = await plain.count();
   await plain.first().click();
   await expect(plain).toHaveCount(before - 1); // that emotion is generating now

@@ -70,11 +70,16 @@ export function planTasks(h: JobHost, input: StartJobInput, newTaskId: () => str
         return { parallel: 1, plans: [sheet, ...emotions.map((e) => mk("emotion_image", 0, 0, "image", img, e))] };
       }
       const plans = emotions.map((e) => mk("emotion_image", t.emotionMs, g.emotionEdit, "image", img, e));
-      if (!lean) plans.push(mk("blink_frame", t.emotionMs, g.blinkFrame, "image", img));
+      plans.push(mk("blink_frame", t.emotionMs, g.blinkFrame, "image", img)); // D-108: Lean too
       return { parallel: t.emotionParallel, plans };
     }
-    case "emotion_regenerate":
-      return { parallel: 1, plans: (input.emotions ?? ["happy"]).map((e) => mk("emotion_image", t.emotionMs, g.emotionEdit, "image", img, e)) };
+    case "emotion_regenerate": {
+      const plans = (input.emotions ?? ["happy"]).map((e) => mk("emotion_image", t.emotionMs, g.emotionEdit, "image", img, e));
+      // D-108: a character without a blink (Lean, from before D-108) gets one with its next emotion.
+      const ch = h.db.characters?.[input.characterId];
+      if (ch && !ch.blink) plans.push(mk("blink_frame", t.emotionMs, g.blinkFrame, "image", img));
+      return { parallel: 1, plans };
+    }
     case "song":
       return { parallel: 1, plans: [mk("theme_song", t.songMs, g.song, "music", music)] };
   }

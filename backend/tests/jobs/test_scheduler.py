@@ -39,14 +39,25 @@ async def test_lean_portrait_job_runs_to_the_end(api: Api) -> None:
 
 
 async def test_lean_emotion_set_estimate_and_plan(api: Api) -> None:
-    """generation-jobs "Lean emotion set estimate" and "Lean emotion set"."""
+    """generation-jobs "Lean emotion set estimate" and "Lean emotion set": three edits and, since D-108, the blink."""
     r = await api.post(f"{API}/jobs/estimate", {"characterId": "chr_mockSarah", "kind": "emotion_set"}, status=200)
-    assert r.json() == {"estimatedCostUsd": 0.054}
+    assert r.json() == {"estimatedCostUsd": 0.072}
     assert await rows(api, "SELECT id FROM usage_records WHERE is_seed = 0") == []
     await api.set_key()
     j = await start(api, {"characterId": "chr_seedHana", "kind": "emotion_set"})
     assert [(x["type"], x.get("emotion")) for x in j["tasks"]] == [("emotion_image", "happy"), ("emotion_image", "sad"),
-                                                                   ("emotion_image", "angry")]
+                                                                   ("emotion_image", "angry"), ("blink_frame", None)]
+
+
+async def test_a_regenerate_adds_the_blink_only_when_the_character_has_none(api: Api) -> None:
+    """D-108: a Lean character from before D-108 (no blink) gets one with its next emotion; one with a blink doesn't."""
+    est = lambda cid: api.post(f"{API}/jobs/estimate", {"characterId": cid, "kind": "emotion_regenerate",  # noqa: E731
+                                                        "emotions": ["surprised"]}, status=200)
+    assert (await est("chr_mockAoi")).json() == {"estimatedCostUsd": 0.036}     # no blink: edit + blink
+    assert (await est("chr_seedHana")).json() == {"estimatedCostUsd": 0.018}    # has one: the edit only
+    await api.set_key()
+    j = await start(api, {"characterId": "chr_mockAoi", "kind": "emotion_regenerate", "emotions": ["surprised"]})
+    assert [(x["type"], x.get("emotion")) for x in j["tasks"]] == [("emotion_image", "surprised"), ("blink_frame", None)]
 
 
 async def test_estimate_for_a_tombstone_is_not_found(api: Api) -> None:

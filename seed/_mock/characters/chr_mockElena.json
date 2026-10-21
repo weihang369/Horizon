@@ -126,7 +126,11 @@
       "thinking": null,
       "embarrassed": null
     },
-    "blink": null,
+    "blink": {
+      "assetId": "emo_mockElenaBlink",
+      "url": "/assets/portraits/chr_mockElena/blink.webp",
+      "vfxPreset": "none"
+    },
     "themeSongId": "song_mockElena",
     "energy": {
       "max": 1000,

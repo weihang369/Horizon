@@ -6,6 +6,10 @@ profile, D-87) it is the song price, like the mock; with the procedural theme (s
 
 `task_spec()` rebuilds one task's plan from the job kind and the task type, so recovery, retry and the test-mode
 overlay jobs (stored without an input) get the same durations and prices as a fresh start.
+
+The blink frame (D-108): every per-emotion `emotion_set` makes one, Lean too (locking a base is when the blink is made).
+A character without one (a Lean character from before D-108) gets it with its next `emotion_regenerate`
+(`needs_blink`), so no character stays without a blink.
 """
 
 from __future__ import annotations
@@ -78,7 +82,7 @@ def parallel_for(kind: str, timing: JobTiming, *, sheet_job: bool = False) -> in
 
 
 def plan(job_input: Mapping[str, Any], *, lean: bool, prices: Mapping[str, float], timing: JobTiming,
-         song_paid: bool = False) -> JobPlan:
+         song_paid: bool = False, needs_blink: bool = False) -> JobPlan:
     kind = str(job_input["kind"])
     emotions: Sequence[str] | None = job_input.get("emotions")
     sheet = kind == "emotion_set" and job_input.get("technique") == "expression_sheet"
@@ -100,10 +104,11 @@ def plan(job_input: Mapping[str, Any], *, lean: bool, prices: Mapping[str, float
             tasks = [mk("expression_sheet"), *(mk("emotion_image", e) for e in chosen)]
         else:
             tasks = [mk("emotion_image", e) for e in chosen]
-            if not lean:
-                tasks.append(mk("blink_frame"))
+            tasks.append(mk("blink_frame"))
     elif kind == "emotion_regenerate":
         tasks = [mk("emotion_image", e) for e in (list(emotions) if emotions else ["happy"])]
+        if needs_blink:
+            tasks.append(mk("blink_frame"))
     elif kind == "song":
         tasks = [mk("theme_song")]
     else:

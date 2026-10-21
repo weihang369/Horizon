@@ -260,7 +260,9 @@ async def test_emotion_edit_sends_the_base_portrait(api: Api) -> None:
     j = await start(api, {"characterId": "chr_mockSarah", "kind": "emotion_regenerate", "emotions": ["happy"]})
     done = await settle_job(api, j["id"])
     assert done["status"] == "succeeded"
-    req = next(r for r in reversed(fake.requests) if r.url.path.endswith("/images"))
+    # Sarah has no blink yet, so the job also makes one (D-108); this checks the happy edit.
+    req = next(r for r in reversed(fake.requests)
+               if r.url.path.endswith("/images") and "eyes fully closed" not in json.loads(r.content)["prompt"])
     body = json.loads(req.content)
     assert len(body["input_references"]) == 1
     ref = body["input_references"][0]
@@ -269,7 +271,7 @@ async def test_emotion_edit_sends_the_base_portrait(api: Api) -> None:
     expected = api.rt.prompt_compiler.emotion_edit(ch["profile"], "happy").prompt
     assert body["prompt"] == expected and body["n"] == 1 and body["aspect_ratio"] == "3:4" and body["resolution"] == "1K"
     rows_ = await ledger(api, j["id"])
-    assert len(rows_) == 1 and rows_[0]["purpose"] == "image_emotion" and rows_[0]["provider"] == "Seed"
+    assert sorted(r["purpose"] for r in rows_) == ["image_blink", "image_emotion"] and all(r["provider"] == "Seed" for r in rows_)
 
 
 async def test_svg_base_is_rejected_for_naive_edits(api: Api) -> None:
@@ -317,8 +319,8 @@ async def test_naive_wizard_run(api: Api) -> None:
     assert (await settle_job(api, sj["id"]))["status"] == "succeeded"
     ch = (await api.post(f"{API}/characters/{cid}/approve", status=200)).json()
     assert ch["status"] == "approved"
-    for e in ("neutral", "happy", "sad", "angry"):
-        served = await api.get(ch["emotions"][e]["url"])
+    for url in [*(ch["emotions"][e]["url"] for e in ("neutral", "happy", "sad", "angry")), ch["blink"]["url"]]:
+        served = await api.get(url)
         assert served.status_code == 200 and len(served.content) <= 250 * 1024
         with Image.open(io.BytesIO(served.content)) as img:
             assert img.format == "WEBP" and img.size == (768, 1024)
@@ -326,4 +328,4 @@ async def test_naive_wizard_run(api: Api) -> None:
     assert song["status"] == "ready" and song["url"].endswith(".mp3") and song["format"] == "mp3"   # Lyria 3 Clip (D-87)
     delta = {k: fake.counts[k] - before.get(k, 0) for k in fake.counts}
     assert delta.get("chat", 0) == 2 and delta.get("music", 0) == 1   # the draft, then the song (both on the chat endpoint)
-    assert delta.get("images", 0) == 4 and delta.get("models", 0) == 1
+    assert delta.get("images", 0) == 5 and delta.get("models", 0) == 1   # 1 candidate, 3 edits, the blink (D-108)

@@ -20,10 +20,10 @@ type View = "controls" | "spend";
 
 /** What creating one character costs in each mode, from the bundled price table (backend services/jobs/plans.py):
  *  profile draft, the candidate portraits, the emotion edits made at creation (Lean: happy, sad, angry; Standard: all
- *  six plus the blink frame) and one theme song. Tweaks and later on-demand emotions are extra. */
+ *  six) plus the blink frame (D-108: both modes) and one theme song. Tweaks and later on-demand emotions are extra. */
 const g = PRICING.generation;
 const CREATE_USD = {
-  lean: g.profileDraft + g.portrait + 3 * g.emotionEdit + g.song,
+  lean: g.profileDraft + g.portrait + 3 * g.emotionEdit + g.blinkFrame + g.song,
   standard: g.profileDraft + 2 * g.portrait + 6 * g.emotionEdit + g.blinkFrame + g.song,
 };
 
@@ -67,7 +67,7 @@ function Controls({ settings }: { settings: AppSettings }) {
           {(["lean", "standard"] as const).map((m) => (
             <button key={m} type="button" role="radio" aria-checked={settings.generationMode === m} className={s.modeCard} onClick={() => void save({ generationMode: m })}>
               <span className={s.modeName}>{m === "lean" ? "Lean" : "Standard"}{m === "lean" && <Tape tone="ok" size="sm">DEFAULT</Tape>}</span>
-              <span className={s.modeDesc}>{m === "lean" ? "1 candidate portrait, 4 emotions. The rest on demand." : "2 candidate portraits, all 7 emotions at creation."}</span>
+              <span className={s.modeDesc}>{m === "lean" ? "1 candidate portrait, 4 emotions and a blink. The rest on demand." : "2 candidate portraits, all 7 emotions and a blink at creation."}</span>
               <span className={s.modeCost}>≈ ${CREATE_USD[m].toFixed(2)} per character</span>
             </button>
           ))}
