@@ -39,9 +39,24 @@ describe("System 1 section", () => {
     expect(html).toMatch(/p 0\.71/);
     expect(html).toContain("HIGH");
     expect(html).toContain("0.81 ≥ 0.35");
-    expect(html).toContain("→ deep");
+    expect(html).toContain(">deep</span>");                          // the verdict pill
+    expect(html).toContain('data-tone="pass"');                       // 0.81 crossed its line…
+    expect(html).toContain("left:35%");                               // …the tick sits at 0.35
     expect(html).toContain("asked about the others (1)");
     expect(html).not.toContain("chr_seedHana");
+  });
+
+  it("greys a row under its line and marks a fallback (U-29 meter rows)", () => {
+    const t: TurnTrace = { ...trace, system1: { questions: [
+      { purpose: "deep_check", id: "passage", version: 1, label: "does this passage answer it?", about: "kch_p1", answer: "partly", p: 0.72,
+        compared: [{ name: "p", value: 0.72, threshold: 0.9 }], result: "used", action: "dropped" },
+      { purpose: "deep_check", id: "passage", version: 1, label: "does this passage answer it?", about: "kch_p1", answer: "answers", result: "fallback" },
+    ] } };
+    const html = renderToStaticMarkup(createElement(System1Rows, { trace: t, nameOf }));
+    expect(html).toContain('data-tone="miss"');
+    expect(html).toContain("0.72 &lt; 0.90");
+    expect(html).toContain('data-tone="fallback"');
+    expect(html).toContain(">fallback</span>");
   });
 
   it("resolves IDs to names or titles, never text", () => {

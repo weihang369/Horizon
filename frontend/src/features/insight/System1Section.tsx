@@ -1,8 +1,10 @@
 // The "System 1 · Jev" section of O08 (docs/ai/13 W1; system1-trace "The Insight section"): every Jev question behind
-// the turn, grouped by purpose and headed by that purpose's latency (or "fallback"). Each row reads: the label and
-// answer, `p` or confidence with its band (INS-01 AC4), each comparison as "value ≥ threshold", and what code did.
+// the turn, grouped by purpose and headed by that purpose's latency (or "fallback"). Each row (U-29 meter rows) reads:
+// the label and what code did, then the answer with a bar of the value code tested and a tick at its line, `p` or
+// confidence with its band (INS-01 AC4), and each comparison as "value ≥ threshold".
 // `not_used` rows (asked about the other candidates) fold away. IDs resolve to names or titles; text never appears.
 import { useState } from "react";
+import type { CSSProperties } from "react";
 import type { System1Row, TurnTrace } from "../../contract/types";
 import { probBand } from "../../domain/format";
 import { cx } from "../../ui/cx";
@@ -82,28 +84,48 @@ export function resolveId(id: string, trace: TurnTrace | undefined, nameOf: (id:
   return id;
 }
 
+/** The row's tone: did the value code tested cross its line? A row with no comparison was used as answered. */
+function toneOf(r: System1Row): "pass" | "miss" | "fallback" | "unused" {
+  if (r.result === "fallback") return "fallback";
+  if (r.result === "not_used") return "unused";
+  if (r.result === "below_threshold") return "miss";
+  return r.compared?.some((c) => c.value < c.threshold) ? "miss" : "pass";
+}
+
+/** Meter rows (U-29): label and verdict, then the answer with a bar of the value code tested and a tick at its line. */
 function Row({ r, trace, nameOf }: { r: System1Row; trace?: TurnTrace; nameOf: (id: string) => string }) {
   const value = r.p ?? r.confidence;
   const band = value !== undefined ? probBand(r2(value)) : null;
+  const line = r.compared?.[0];
+  const bar = line?.value ?? value;
+  const tone = toneOf(r);
+  const verdict = r.action ?? (r.result === "shown_only" ? "shown only" : r.result === "fallback" ? "fallback" : null);
   return (
-    <li className={s.s1Row} data-result={r.result}>
-      <span className={s.s1Label}>{r.label}{r.about ? <span className={s.s1About}> · {resolveId(r.about, trace, nameOf)}</span> : null}</span>
-      <span className={s.s1Answer}>
-        <b>{/^[a-z]{2,6}_/.test(r.answer) ? resolveId(r.answer, trace, nameOf) : r.answer}</b>
+    <li className={s.s1Row} data-result={r.result} data-tone={tone}>
+      <div className={s.s1Top}>
+        <span className={s.s1Label}>{r.label}{r.about ? <span className={s.s1About}> · {resolveId(r.about, trace, nameOf)}</span> : null}</span>
+        {verdict && <span className={s.s1Verdict}>{verdict}</span>}
+      </div>
+      <div className={s.s1Meter}>
+        <b className={s.s1Answer}>{/^[a-z]{2,6}_/.test(r.answer) ? resolveId(r.answer, trace, nameOf) : r.answer}</b>
+        {bar !== undefined ? (
+          <span className={s.s1Gauge} aria-hidden="true">
+            <span className={s.s1Track}><span className={s.s1Fill} style={{ "--p": Math.max(0, Math.min(1, bar)) } as CSSProperties} /></span>
+            {line && <span className={s.s1Tick} style={{ left: `${Math.max(0, Math.min(1, line.threshold)) * 100}%` }} />}
+          </span>
+        ) : <span className={s.s1Gauge} />}
         {value !== undefined && (
           <span className={s.s1Prob}>
             {r.p !== undefined ? "p" : "conf"} {r2(value).toFixed(2)}
-            <span className={cx(s.band, band && s[`band_${band}`])}> · {band}</span>
+            <span className={cx(s.band, band && s[`band_${band}`])}> {band}</span>
           </span>
         )}
-      </span>
-      {r.compared?.map((c) => (
-        <span key={c.name} className={s.s1Cmp}>
-          {r2(c.value).toFixed(2)} {c.value >= c.threshold ? "≥" : "<"} {r2(c.threshold).toFixed(2)}
-        </span>
-      ))}
-      {r.action && <span className={s.s1Action}>→ {r.action}</span>}
-      {r.result === "shown_only" && <span className={s.s1Action}>(shown only)</span>}
+      </div>
+      {r.compared?.length ? (
+        <p className={s.s1Cmp}>
+          {r.compared.map((c) => `${r2(c.value).toFixed(2)} ${c.value >= c.threshold ? "≥" : "<"} ${r2(c.threshold).toFixed(2)}`).join(" · ")}
+        </p>
+      ) : null}
     </li>
   );
 }
@@ -117,7 +139,7 @@ export function System1Rows({ trace, nameOf }: { trace?: TurnTrace; nameOf: (id:
         <div key={g.purpose} className={s.s1Group} data-purpose={g.purpose}>
           <p className={s.s1Head}>
             {g.label}
-            <span> · {g.fallback ? "fallback" : g.latencyMs !== null ? `${Math.round(g.latencyMs)} ms` : "—"}</span>
+            <span className={s.s1Lat} data-fallback={g.fallback || undefined}>{g.fallback ? "fallback" : g.latencyMs !== null ? `${Math.round(g.latencyMs)} ms` : "—"}</span>
           </p>
           <ul className={s.s1List}>
             {g.rows.map((r, i) => <Row key={`${r.id}:${r.about ?? ""}:${i}`} r={r} trace={trace} nameOf={nameOf} />)}

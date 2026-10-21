@@ -252,16 +252,42 @@
 .kTag { font: 600 10px/1 var(--font-mono); font-style: normal; letter-spacing: 0.04em; color: var(--paper-300); white-space: nowrap; }
 
 /* ── System 1 · Jev (rev 1.4, docs/ai/13 W1) ─────────────────────────── */
-.s1 { display: grid; gap: 10px; }
-.s1Head { margin: 0; font: 700 11px/1.2 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--paper-300); }
-.s1Head span { text-transform: none; letter-spacing: 0; }
-.s1List { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 4px; }
-.s1Row { display: flex; flex-wrap: wrap; gap: 2px 10px; font-size: 12px; line-height: 1.4; }
-.s1Label { flex: 1 1 100%; color: var(--paper-50); }
+/* System 1 · Jev (U-29 meter rows): one panel per purpose; each question = label + verdict, then its answer, a bar of
+   the value code tested with a tick at its line, and the exact comparison. Crossed the line: palette colour; under it:
+   grey (often the safe outcome, not a failure); fallback: warn. */
+.s1 { display: grid; gap: 12px; }
+.s1Group { background: var(--ink-900); border: 1px solid var(--ink-500); }
+.s1Head {
+  display: flex; align-items: center; gap: 8px; margin: 0; padding: 7px 10px;
+  font: 700 11px/1.2 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--paper-50);
+  border-bottom: 1px solid var(--ink-500);
+}
+.s1Lat { margin-left: auto; padding: 3px 6px; background: var(--ink-700); color: var(--paper-300); letter-spacing: 0.04em; text-transform: none; font-variant-numeric: tabular-nums; }
+.s1Lat[data-fallback] { color: var(--signal-warn); }
+.s1List { list-style: none; margin: 0; padding: 0; display: grid; }
+.s1Row { display: grid; gap: 5px; padding: 9px 10px; font-size: 12px; line-height: 1.35; }
+.s1Row + .s1Row { border-top: 1px solid color-mix(in srgb, var(--ink-500) 60%, transparent); }
+.s1Top { display: flex; align-items: baseline; gap: 8px; }
+.s1Label { flex: 1; min-width: 0; color: var(--paper-50); }
 .s1About { color: var(--paper-300); }
-.s1Answer b { font-family: var(--font-mono); }
-.s1Prob { margin-left: 6px; font-family: var(--font-mono); }
-.s1Cmp, .s1Action { font-family: var(--font-mono); color: var(--paper-300); }
-.s1Row[data-result="fallback"] .s1Answer b { color: var(--signal-warn); }
-.s1Fold { margin-top: 4px; padding: 0; border: 0; background: none; color: var(--paper-300); font-size: 12px; text-decoration: underline; cursor: pointer; }
-.s1Folded { opacity: 0.75; }
+.s1Verdict {
+  flex: none; max-width: 55%; padding: 3px 7px; font: 700 10px/1.1 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase;
+  background: var(--c-primary); color: var(--c-on-primary); clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
+}
+.s1Meter { display: grid; grid-template-columns: minmax(56px, auto) 1fr auto; align-items: center; gap: 10px; }
+.s1Answer { font: 700 12px/1.2 var(--font-mono); text-transform: uppercase; letter-spacing: 0.03em; color: var(--paper-50); overflow-wrap: anywhere; }
+.s1Gauge { position: relative; height: 14px; display: flex; align-items: center; }
+.s1Track { position: relative; flex: 1; height: 8px; background: var(--ink-500); overflow: hidden; clip-path: polygon(2px 0, 100% 0, calc(100% - 2px) 100%, 0 100%); }
+.s1Fill { position: absolute; inset: 0; background: var(--c-primary); transform-origin: left; transform: scaleX(var(--p, 0)); animation: s1Grow 600ms var(--ease-out) both; }
+.s1Tick { position: absolute; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: var(--paper-50); box-shadow: 0 0 0 1px var(--ink-900); }
+.s1Prob { font: 500 12px/1 var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--paper-50); }
+.s1Cmp { margin: 0; font: 500 11px/1.2 var(--font-mono); color: var(--paper-300); font-variant-numeric: tabular-nums; }
+.s1Row[data-tone="miss"] .s1Fill { background: var(--paper-300); opacity: 0.55; }
+.s1Row[data-tone="miss"] .s1Verdict { background: none; color: var(--paper-300); box-shadow: inset 0 0 0 1px var(--ink-500); clip-path: none; }
+.s1Row[data-tone="miss"] .s1Answer, .s1Row[data-tone="miss"] .s1Label { color: var(--paper-300); }
+.s1Row[data-tone="fallback"] .s1Answer { color: var(--signal-warn); }
+.s1Row[data-tone="fallback"] .s1Verdict { background: none; color: var(--signal-warn); box-shadow: inset 0 0 0 1px var(--signal-warn); clip-path: none; }
+@keyframes s1Grow { from { transform: scaleX(0); } }
+:global(:root[data-motion="reduced"]) .s1Fill { animation: none; }
+.s1Fold { margin: 0 10px 9px; padding: 0; border: 0; background: none; color: var(--paper-300); font-size: 12px; text-decoration: underline; cursor: pointer; }
+.s1Folded { opacity: 0.75; border-top: 1px dashed var(--ink-500); }
