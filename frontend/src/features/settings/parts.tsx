@@ -8,9 +8,9 @@ import type { HorizonErrorShape } from "../../contract/errors";
 import type { AppSettings } from "../../contract/types";
 import s from "./Settings.module.css";
 
-export function Section({ title, desc, children, aside }: { title: string; desc?: ReactNode; children: ReactNode; aside?: ReactNode }) {
+export function Section({ title, desc, children, aside, className }: { title: string; desc?: ReactNode; children: ReactNode; aside?: ReactNode; className?: string }) {
   return (
-    <section className={s.section} aria-label={title}>
+    <section className={className ? `${s.section} ${className}` : s.section} aria-label={title}>
       <header className={s.sectionHead}>
         <h3 className={s.sectionTitle}>{title}</h3>
         {aside}

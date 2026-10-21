@@ -121,14 +121,29 @@
 .previewMeta { margin: 0; font: 600 11px/1 var(--font-mono); color: var(--paper-300); text-transform: uppercase; letter-spacing: 0.08em; }
 @media (max-width: 1340px) { .split { grid-template-columns: minmax(0, 1fr) 230px; gap: 24px; } }
 
-/* Models */
-.models { display: grid; gap: 16px; }
-.modelRow { display: grid; grid-template-columns: minmax(0, 1fr) 220px; gap: 16px; align-items: end; }
-.modelSide { display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding-bottom: 22px; }
-/* docs/ai/03 C9: the read-only "Models in use" rows. */
-.modelLabel { font: 700 var(--text-small, 13px)/1.3 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; }
-.modelSlug { display: block; margin-top: 4px; overflow-wrap: anywhere; }
-.modelHint { margin-top: 4px; opacity: 0.75; font-size: var(--text-small, 13px); }
+/* Models (docs/ai/03 C9): read-only cards. The two language models share the top row, image · music · embedding the
+   second; provider small over the model name, price at the foot of each card. */
+.modelsSection { max-width: 1120px; }
+.models { margin: 4px 0 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px; }
+.modelCard {
+  grid-column: span 2;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding: 18px 20px 16px;
+  background: var(--ink-700);
+  box-shadow: inset 4px 0 0 var(--horizon-500);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+}
+.modelCard:is([data-role="chat"], [data-role="decision"]) { grid-column: span 3; padding: 22px 24px 18px; }
+.modelLabel { font: 700 12px/1.2 var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--horizon-300); }
+.modelSlug { display: grid; gap: 2px; min-width: 0; }
+.modelProvider { font: 600 13px/1.2 var(--font-mono); color: var(--paper-300); }
+.modelName { font: 400 clamp(20px, 1.6vw, 28px)/1.05 var(--font-display); letter-spacing: 0.02em; color: var(--paper-50); overflow-wrap: anywhere; }
+.modelCard:is([data-role="chat"], [data-role="decision"]) .modelName { font-size: clamp(28px, 2.2vw, 38px); }
+.modelDesc { color: var(--paper-300); font-size: var(--text-sm); line-height: 1.45; }
+.modelPrice { margin-top: auto; padding-top: 10px; border-top: 1px solid var(--ink-500); font: 600 13px/1.2 var(--font-mono); color: var(--paper-50); }
 
 /* Cost */
 .viewSwitch { margin: -6px 0 20px; }
