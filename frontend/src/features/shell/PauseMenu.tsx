@@ -1,8 +1,8 @@
 // O01 Pause menu (APP-02, R4, R13): Esc outside fields/modals or the ☰ button. Resume · Worlds · World Hub ·
 // History (deep link: hub ?tab=sessions) · Settings · How it works (replays S02) · Title, with the current world and active character.
-// ↑/↓ move, Enter picks, Esc again resumes (LayerStack). Owner: Builder A.
+// ↑/↓ move, Enter picks, Esc again resumes (LayerStack); a click off the red slab resumes too (U-18). Owner: Builder A.
 import { useEffect, useRef } from "react";
-import type { KeyboardEvent } from "react";
+import type { KeyboardEvent, MouseEvent } from "react";
 import type { OverlayComponentProps } from "../../app/overlayTypes";
 import { audio } from "../../audio/engine";
 import { useCharacter, useCharacters, useSessions, useWorld } from "../../client/hooks";
@@ -38,18 +38,19 @@ export function PauseMenu({ close }: OverlayComponentProps<"O01">) {
   ];
 
   const list = useRef<HTMLUListElement>(null);
+  const slab = useRef<HTMLDivElement>(null);
   useEffect(() => {
     audio.playSfx("ui_pause_open");
     list.current?.querySelector<HTMLButtonElement>("button")?.focus();
   }, []);
 
+  const resume = () => {
+    audio.playSfx("ui_pause_close");
+    close();
+  };
   const pick = (it: Item) => {
     if (it.disabled) return;
-    if (it.id === "resume") {
-      audio.playSfx("ui_pause_close");
-      close();
-      return;
-    }
+    if (it.id === "resume") return resume();
     close();
     if (it.to) navigate(it.to, it.id === "title" || it.id === "worlds" ? { transition: "slash-back" } : undefined);
   };
@@ -63,9 +64,15 @@ export function PauseMenu({ close }: OverlayComponentProps<"O01">) {
     audio.playSfx("ui_hover");
   };
 
+  // The slab is slanted (clip-path), and hit testing follows the clip: a click that lands on no part of it is "outside".
+  const onClick = (e: MouseEvent<HTMLDivElement>) => {
+    if ((e.target as Element).closest("button")) return;
+    if (!document.elementsFromPoint(e.clientX, e.clientY).includes(slab.current!)) resume();
+  };
+
   return (
-    <div className={s.pause} role="dialog" aria-modal="true" aria-label="Paused">
-      <div className={s.pauseSlab} aria-hidden="true" />
+    <div className={s.pause} role="dialog" aria-modal="true" aria-label="Paused" onClick={onClick}>
+      <div ref={slab} className={s.pauseSlab} aria-hidden="true" />
       <div className={s.pauseGhost} aria-hidden="true">PAUSE</div>
       <div className={s.pauseLeft}>
         <h2 className={s.pauseTitle}>
