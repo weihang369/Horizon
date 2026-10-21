@@ -310,9 +310,9 @@ test("Data: Trim long pauses reaches replays; Reset keeps your own character; De
     const ask = page.getByRole("dialog", { name: "Delete all data?" });
     const go = ask.getByRole("button", { name: "Delete everything" });
     await expect(go).toBeDisabled();
-    await ask.getByLabel("Type “DELETE ALL” to confirm").fill("delete all");
+    await ask.getByLabel("Type “DELETE ALL” to confirm").fill("DELETE AL");
     await expect(go).toBeDisabled();
-    await ask.getByLabel("Type “DELETE ALL” to confirm").fill("DELETE ALL");
+    await ask.getByLabel("Type “DELETE ALL” to confirm").fill("delete all"); // any case (U-28)
     await go.click();
     await expect(page.getByText(/^All data deleted\./)).toBeVisible();
     await expect(page).toHaveURL(/#\/worlds$/);
