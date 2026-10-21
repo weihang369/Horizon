@@ -1,5 +1,5 @@
 // App shell: route host, ambient chrome, LayerStack, toasts, the one TransitionLayer, dev overlays. Owner: EE.
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import { useSettings } from "../client/hooks";
 import { CommitCounter, PerfHUD } from "../features/dev/PerfHUD";
 import { JobPill } from "../features/profile/JobPill";
@@ -37,6 +37,9 @@ export function App() {
   const speed = useMock((m) => m.speed);
   const demo = settings?.demoMode ?? false;
   const chrome = route.name !== "title" && route.name !== "dev";
+  // Settings → Cost "Show cost estimates" (SET-08): off hides every `.hz-cost-estimate` (button costs, "Generate (≈ $x)").
+  const estimates = settings?.cost.showEstimates ?? true;
+  useEffect(() => { document.documentElement.dataset.costEstimates = estimates ? "on" : "off"; }, [estimates]);
   return (
     <CommitCounter>
       <div className={s.app} data-route={route.name}>

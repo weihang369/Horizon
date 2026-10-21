@@ -47,7 +47,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
         {icon}
         {children}
         {iconRight}
-        {costText && <span className={s.cost}>{costText}</span>}
+        {costText && <span className={cx(s.cost, "hz-cost-estimate")}>{costText}</span>}
       </span>
     </button>
   );

@@ -81,3 +81,6 @@ code, kbd, samp, pre { font-family: var(--font-mono); }
 /* ── Reduced motion safety net ───────────────────────────────────────── */
 :root[data-motion="reduced"] [data-anim="loop"],
 :root[data-motion="reduced"] .hz-loop { animation: none !important; }
+
+/* Settings → Cost "Show cost estimates" off (App sets data-cost-estimates). */
+:root[data-cost-estimates="off"] .hz-cost-estimate { display: none !important; }

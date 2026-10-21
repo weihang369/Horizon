@@ -176,3 +176,78 @@ test("Display: every control changes the page, the preview follows reduced motio
   await expect(page.locator("[data-status]")).not.toContainText("0001");
   await expect(page.getByRole("button", { name: "Show" })).toHaveCount(0);
 });
+
+test("Cost: every control saves and takes effect (mode, caps, warn, energy, estimates, confirm, HUD, spend)", async ({ page }) => {
+  await open(page, "/settings/cost");
+  await setKey(page);
+  const mode = (n: string) => page.getByRole("radiogroup", { name: "Generation mode" }).getByRole("radio", { name: new RegExp(`^${n}`) });
+  const radio = (group: string, name: string) => page.getByRole("radiogroup", { name: group }).getByRole("radio", { name, exact: true });
+  const toggle = (name: string) => page.getByRole("switch", { name });
+  const daily = page.getByLabel("Daily cap in US dollars");
+  const creation = page.getByLabel("Creation cap in US dollars");
+
+  // The mode cards' prices come from the price table (they said $0.20 / $0.40, about twice the real cost).
+  await expect(mode("Lean")).toHaveAttribute("aria-checked", "true");
+  await expect(mode("Lean")).toContainText("≈ $0.11 per character");
+  await expect(mode("Standard")).toContainText("≈ $0.20 per character");
+  await mode("Standard").click();
+  await expect(mode("Standard")).toHaveAttribute("aria-checked", "true");
+
+  await daily.fill("-1");
+  await daily.press("Enter");
+  await expect(page.getByText("Enter a positive number.")).toBeVisible();
+  await daily.fill("2.5");
+  await daily.press("Enter");
+  await expect(page.getByText("Daily cap updated.")).toBeVisible();
+  await creation.fill("0.8");
+  await creation.press("Tab"); // commits on blur too
+  await expect(page.getByText("Creation cap updated.")).toBeVisible();
+  await radio("Warn at", "50 %").click();
+  await radio("Default character energy", "2000 ⚡").click();
+  await expect(radio("Default character energy", "2000 ⚡")).toHaveAttribute("aria-checked", "true");
+
+  // Confirm before generating (on): the first generation asks with its estimate; Not now starts nothing.
+  await page.evaluate(() => { location.hash = "#/w/wld_seedMeridian/c/chr_mockElena?tab=gallery"; });
+  const gen = page.getByRole("button", { name: "Generate (≈ $0.02)" }).first();
+  await gen.click();
+  const ask = page.getByRole("dialog", { name: /Spend a little\?/ });
+  await expect(ask).toContainText("$0.02");
+  await ask.getByRole("button", { name: "Not now" }).click();
+  await expect(ask).toBeHidden();
+
+  // Cost HUD (on): a session header shows the running cost.
+  const hud = page.getByText(/^\$[\d.]+ · [\d.]+k? tok$/);
+  await page.evaluate(() => { location.hash = "#/w/wld_seedSunnyHollow/s/ses_seedHanaLongDay"; });
+  await expect(hud).toBeVisible();
+
+  // All three display toggles off; everything above survives a reload.
+  await page.evaluate(() => { location.hash = "#/settings/cost"; });
+  for (const name of ["Show cost estimates", "Confirm before generating", "Cost HUD"]) {
+    await toggle(name).click();
+    await expect(toggle(name)).toHaveAttribute("aria-checked", "false");
+  }
+  await page.reload();
+  await expect(mode("Standard")).toHaveAttribute("aria-checked", "true");
+  await expect(daily).toHaveValue("2.5");
+  await expect(creation).toHaveValue("0.8");
+  await expect(radio("Warn at", "50 %")).toHaveAttribute("aria-checked", "true");
+  await expect(radio("Default character energy", "2000 ⚡")).toHaveAttribute("aria-checked", "true");
+  for (const name of ["Show cost estimates", "Confirm before generating", "Cost HUD"]) await expect(toggle(name)).toHaveAttribute("aria-checked", "false");
+  await radio("Cost view", "Spend").click();
+  await expect(page.getByText(/of \$2\.50 daily cap/)).toBeVisible();
+
+  // Estimates off: the buttons lose their "≈ $x" (the toggle used to change nothing). Confirm off: no dialog.
+  await page.evaluate(() => { location.hash = "#/w/wld_seedMeridian/c/chr_mockElena?tab=gallery"; });
+  const plain = page.getByRole("button", { name: "Generate", exact: true });
+  await expect(plain.first()).toBeVisible();
+  await expect(page.getByText("≈ $0.02").filter({ visible: true })).toHaveCount(0);
+  const before = await plain.count();
+  await plain.first().click();
+  await expect(plain).toHaveCount(before - 1); // that emotion is generating now
+  await expect(ask).toHaveCount(0);
+
+  // HUD off: the header has no cost.
+  await page.evaluate(() => { location.hash = "#/w/wld_seedSunnyHollow/s/ses_seedHanaLongDay"; });
+  await expect(page.getByRole("button", { name: "Readable", exact: true })).toBeVisible();
+  await expect(hud).toHaveCount(0);
+});

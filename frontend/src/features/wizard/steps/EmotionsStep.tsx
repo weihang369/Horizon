@@ -268,7 +268,7 @@ function EmotionSlot({ e, st, base, index = 0, hidden, popped, register, onOpen,
         {base && <Tape tone="brand" size="sm">Base</Tape>}
       </div>
       {status === "later" && onGenerate && (
-        <button type="button" className={s.slotAction} onClick={onGenerate}>Generate{estOne ? ` (≈ $${estOne.toFixed(2)})` : ""}</button>
+        <button type="button" className={s.slotAction} onClick={onGenerate}>Generate{estOne ? <span className="hz-cost-estimate">{` (≈ $${estOne.toFixed(2)})`}</span> : null}</button>
       )}
       {status === "failed" && st?.job && st.task && onRetry && (
         <button type="button" className={cx(s.slotAction, s.slotRetry)} onClick={() => onRetry(st.job!, st.task!)}>↻ Retry</button>
