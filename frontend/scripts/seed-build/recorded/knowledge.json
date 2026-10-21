@@ -10,7 +10,7 @@
       "bytes": 94903,
       "pages": 11,
       "chunks": 20,
-      "citedCount": 2,
+      "citedCount": 4,
       "addedAt": "2026-10-20T15:30:37.758Z"
     },
     "chunks": [
@@ -440,7 +440,7 @@
       "status": "indexed",
       "bytes": 2443,
       "chunks": 3,
-      "citedCount": 1,
+      "citedCount": 2,
       "addedAt": "2026-10-20T15:30:37.806Z"
     },
     "chunks": [

@@ -21,11 +21,11 @@
     "config": null,
     "state": null,
     "isSeed": true,
-    "costUsd": 0.000138,
+    "costUsd": 0.000809,
     "messageCount": 7,
-    "createdAt": "2026-09-30T19:01:59.993Z",
-    "updatedAt": "2026-09-30T19:03:59.615Z",
+    "createdAt": "2026-09-30T19:02:00.000Z",
+    "updatedAt": "2026-09-30T19:04:01.212Z",
     "pausedReason": "navigated_away",
-    "lastMessageAt": "2026-09-30T19:03:33.353Z"
+    "lastMessageAt": "2026-09-30T19:03:35.437Z"
   }
 }

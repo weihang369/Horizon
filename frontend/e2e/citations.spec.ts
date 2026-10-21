@@ -27,8 +27,8 @@ test("group dinner: Hana's cited line has a Sources strip and its entry opens O2
   await open(page, DINNER);
   await seekToEnd(page);
 
-  const hana = logEntry(page, "one dish everybody loves");
-  await expect(hana.getByRole("button", { name: /^Source 1: Grandma's recipe notebook, ¶ 2/ })).toBeVisible();
+  const hana = logEntry(page, "one dish everyone loves");
+  await expect(hana.getByRole("button", { name: /^Source 1: Grandma's recipe notebook, ¶ 2/ }).first()).toBeVisible();
   const sources = hana.getByRole("group", { name: "Sources" });
   await expect(sources).toBeVisible();
   await sources.getByRole("button", { name: /^Open Grandma's recipe notebook, ¶ 2/ }).click();
@@ -43,12 +43,12 @@ test("group dinner: Hana's cited line has a Sources strip and its entry opens O2
 test("Insight drawer: Knowledge separates the cited passage from “retrieved · not used”", async ({ page }) => {
   await open(page, DINNER);
   await seekToEnd(page);
-  await logEntry(page, "one dish everybody loves").getByRole("button", { name: "Open Insight for this message" }).click();
+  await logEntry(page, "one dish everyone loves").getByRole("button", { name: "Open Insight for this message" }).click();
 
   const insight = page.getByRole("complementary", { name: "Insight" });
   await expect(insight).toBeVisible();
   const knowledge = insight.getByRole("region", { name: "Knowledge" });
-  await expect(knowledge).toContainText("1/2 cited");
+  await expect(knowledge).toContainText("1/3 cited");
   await expect(knowledge.getByRole("button", { name: /^Cited \[1\]: Grandma's recipe notebook, ¶ 2/ })).toBeVisible();
   const unused = knowledge.getByRole("button", { name: /^Retrieved, not used: Grandma's recipe notebook, ¶ 1/ });
   await expect(unused).toBeVisible();
@@ -87,5 +87,5 @@ test("group dinner at 1280×720: with Insight open every speaker stays visible b
     expect(box.x + box.width, `${name} must end left of the Insight drawer`).toBeLessThanOrEqual(drawerLeft + 1);
   }
   // The latest cited line and its Sources strip are still on screen.
-  await expect(logEntry(page, "one dish everybody loves").getByRole("group", { name: "Sources" })).toBeInViewport();
+  await expect(logEntry(page, "one dish everyone loves").getByRole("group", { name: "Sources" })).toBeInViewport();
 });

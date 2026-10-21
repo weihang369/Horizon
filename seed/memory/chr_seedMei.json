@@ -6,44 +6,44 @@
       "characterId": "chr_seedMei",
       "worldId": "wld_seedMeridian",
       "kind": "fact",
-      "text": "Mei argued against a nationwide four-day week: pilots aren't a mandate, gains came from redesign not the calendar, and small shift-based firms bear the cost.",
-      "importance": 0.6575,
+      "text": "Mei argued the pilots covered no hospitals, transport operators or care homes, and fewer than half the firms measured output consistently, so the gains were partly redistributed rather than created.",
+      "importance": 0.69,
       "sourceSessionId": "ses_seedDebate4Day",
       "sourceMessageId": "msg_seedD03",
-      "createdAt": "2026-10-01T09:59:20.540Z"
+      "createdAt": "2026-10-01T09:59:00.663Z"
     },
     {
       "id": "mem_seedMei2",
       "characterId": "chr_seedMei",
       "worldId": "wld_seedMeridian",
       "kind": "fact",
-      "text": "Mei's strongest point: in nine shift-based organisations, holding coverage constant took 18–27% more staffed hours, landing on nights, weekends, and care homes.",
-      "importance": 0.7325,
+      "text": "Mei cited nine shift-based organisations holding coverage constant that needed 18% to 27% more staffed hours on a shorter week; two clawed part back within six months, seven did not measure it.",
+      "importance": 0.7,
       "sourceSessionId": "ses_seedDebate4Day",
       "sourceMessageId": "msg_seedD09",
-      "createdAt": "2026-10-01T09:59:20.540Z"
+      "createdAt": "2026-10-01T09:59:00.663Z"
     },
     {
       "id": "mem_seedMei3",
       "characterId": "chr_seedMei",
       "worldId": "wld_seedMeridian",
       "kind": "fact",
-      "text": "Mei conceded the leak is real—exhaustion billed as sickness absence, agency fees, resignations—but argued that's a case for fixing the leak, not a calendar mandate.",
-      "importance": 0.665,
+      "text": "Mei conceded the status-quo-is-also-a-policy line lands and that doing nothing costs money in absence, agency fees and resignations.",
+      "importance": 0.6075,
       "sourceSessionId": "ses_seedDebate4Day",
       "sourceMessageId": "msg_seedD10",
-      "createdAt": "2026-10-01T09:59:20.540Z"
+      "createdAt": "2026-10-01T09:59:00.663Z"
     },
     {
       "id": "mem_seedMei4",
       "characterId": "chr_seedMei",
       "worldId": "wld_seedMeridian",
-      "kind": "event",
-      "text": "Debate verdict: the Against side made the stronger case, as neither side closed whether staffed hours rise or turnover savings repay costs.",
-      "importance": 0.5075,
+      "kind": "fact",
+      "text": "Mei closed urging sequence, explicit exemption of continuous services, and mandated measurement before a nationwide default, calling Amara's ward result good but untested for round-the-clock cover.",
+      "importance": 0.7075,
       "sourceSessionId": "ses_seedDebate4Day",
-      "sourceMessageId": "msg_seedD15",
-      "createdAt": "2026-10-01T09:59:20.540Z"
+      "sourceMessageId": "msg_seedD14",
+      "createdAt": "2026-10-01T09:59:00.663Z"
     }
   ]
 }

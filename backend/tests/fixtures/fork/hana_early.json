@@ -33,7 +33,7 @@
     "type": "energy",
     "payload": {
      "characterId": "chr_seedHana",
-     "current": 922,
+     "current": 929,
      "max": 1000,
      "state": "active"
     }
@@ -42,7 +42,7 @@
     "id": "evt_forkFixture1e3",
     "sessionId": "ses_forkFixture1",
     "seq": 3,
-    "at": "2026-09-30T19:02:00.340Z",
+    "at": "2026-09-30T19:02:00.317Z",
     "type": "turn.next",
     "payload": {
      "nextSpeakerId": "chr_seedHana"
@@ -52,7 +52,7 @@
     "id": "evt_forkFixture1e4",
     "sessionId": "ses_forkFixture1",
     "seq": 4,
-    "at": "2026-09-30T19:02:00.416Z",
+    "at": "2026-09-30T19:02:00.386Z",
     "type": "turn.thinking",
     "payload": {
      "characterId": "chr_seedHana"
@@ -62,7 +62,7 @@
     "id": "evt_forkFixture1e5",
     "sessionId": "ses_forkFixture1",
     "seq": 5,
-    "at": "2026-09-30T19:02:01.945Z",
+    "at": "2026-09-30T19:02:01.908Z",
     "type": "turn.start",
     "payload": {
      "messageId": "msg_forkFixture1m0",
@@ -76,7 +76,7 @@
     "id": "evt_forkFixture1e6",
     "sessionId": "ses_forkFixture1",
     "seq": 6,
-    "at": "2026-09-30T19:02:01.945Z",
+    "at": "2026-09-30T19:02:01.908Z",
     "type": "emotion",
     "payload": {
      "messageId": "msg_forkFixture1m0",
@@ -89,7 +89,7 @@
     "id": "evt_forkFixture1e7",
     "sessionId": "ses_forkFixture1",
     "seq": 7,
-    "at": "2026-09-30T19:02:01.996Z",
+    "at": "2026-09-30T19:02:01.973Z",
     "type": "token",
     "payload": {
      "messageId": "msg_forkFixture1m0",
@@ -100,29 +100,29 @@
     "id": "evt_forkFixture1e8",
     "sessionId": "ses_forkFixture1",
     "seq": 8,
-    "at": "2026-09-30T19:02:02.088Z",
+    "at": "2026-09-30T19:02:02.048Z",
     "type": "token",
     "payload": {
      "messageId": "msg_forkFixture1m0",
-     "delta": "! Come here"
+     "delta": "! Come here, tell me"
     }
    },
    {
     "id": "evt_forkFixture1e9",
     "sessionId": "ses_forkFixture1",
     "seq": 9,
-    "at": "2026-09-30T19:02:02.171Z",
+    "at": "2026-09-30T19:02:02.134Z",
     "type": "token",
     "payload": {
      "messageId": "msg_forkFixture1m0",
-     "delta": ", tell me everything."
+     "delta": " everything."
     }
    },
    {
     "id": "evt_forkFixture1e10",
     "sessionId": "ses_forkFixture1",
     "seq": 10,
-    "at": "2026-09-30T19:02:02.171Z",
+    "at": "2026-09-30T19:02:02.152Z",
     "type": "turn.end",
     "payload": {
      "messageId": "msg_forkFixture1m0",
@@ -154,8 +154,8 @@
    "costUsd": 0,
    "messageCount": 1,
    "createdAt": "2026-10-03T03:00:00.000Z",
-   "updatedAt": "2026-09-30T19:02:02.171Z",
-   "lastMessageAt": "2026-09-30T19:02:01.945Z",
+   "updatedAt": "2026-09-30T19:02:02.152Z",
+   "lastMessageAt": "2026-09-30T19:02:01.908Z",
    "continuedFrom": "ses_seedHanaLongDay"
   },
   "messages": [
@@ -170,7 +170,7 @@
     },
     "content": "You're back! Come here, tell me everything.",
     "status": "complete",
-    "createdAt": "2026-09-30T19:02:01.945Z",
+    "createdAt": "2026-09-30T19:02:01.908Z",
     "emotion": "happy",
     "emotionSource": "default"
    }

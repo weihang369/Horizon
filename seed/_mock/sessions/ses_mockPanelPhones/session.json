@@ -74,42 +74,42 @@
           {
             "subjectId": "chr_seedAmara",
             "points": [
-              "Phones turn school time into a slot machine, harming attention, especially for struggling kids.",
-              "Social pressure to be reachable and performing online never takes a break.",
-              "A ban is enforceable and teachable: clear hours, clear rule, a room to think.",
-              "Concedes a lifeline cost, but pairs ban with school phones, staffed offices, accommodations."
+              "Would ban phones in classrooms, not schoolbags, citing distraction evidence and vulnerable pupils.",
+              "Allows medical and accessibility carve-outs and parent pickup texts.",
+              "Prefers teaching digital judgement over pretending devices don't exist.",
+              "Closing concedes whole-school limits untested and enforcement is unfunded labour."
             ]
           },
           {
             "subjectId": "chr_seedVictor",
             "points": [
-              "A ban is state coercion, not guidance or a norm, and demands an unmet burden of proof.",
-              "A school is not sovereign; blanket prohibition substitutes a rule for teaching judgment.",
-              "The motion forbids the tool, not the distraction; existing confiscation already handles disruption.",
-              "Exceptions are where the discretion he condemns in Mei's proposal lives, laundered through notes."
+              "Defines ban as no pupil-operated smartphone during instructional hours.",
+              "Argues schools are compelled audiences and may regulate speech in a nonpublic forum.",
+              "Cites enforcement asymmetry: calculators, notes, pagers banned, but phones exempted.",
+              "Closing offers phased rollout, published baseline, and sunset clause as a return path."
             ]
           },
           {
             "subjectId": "chr_seedMei",
             "points": [
-              "Evidence on learning is mixed and mostly correlational, with effects near zero to modest.",
-              "Second-order worry: supervision migrates to corridors, canteens, homes, hitting kids whose phones are a lifeline.",
-              "Would regulate use by age and context, not confiscate a device.",
-              "Both colleagues' gains are real but modest; targeted restriction captures attention gain without confiscating the lifeline."
+              "Frames ban as a working-time question needing more staffed hours for enforcement.",
+              "Warns ban redistributes supervision costs from homes to schools.",
+              "Favours light-touch rules with exemptions, measured before mandated.",
+              "Closing insists pilots are inconsistent and mandate is a bet, not evidence."
             ]
           }
         ],
-        "keyDisagreement": "Whether a blanket ban is justified over targeted regulation that preserves phones as a lifeline and relies on teaching judgment.",
+        "keyDisagreement": "Whether a ban should be mandated now with phased measurement and sunset, or delayed until enforcement costs and outcomes are properly measured.",
         "decidedBy": "arbiter",
         "strongerCase": null,
-        "rationale": "The debate turned on the definitional and enforcement burden of a ban: Amara defended bounded hours with built-in exceptions, while Victor argued those exceptions recreate the discretion he condemns, and Mei pressed the unpriced costs and lifeline loss. No side fully resolved who enforces context or how to weigh modest attention gains against confiscating a lifeline."
+        "rationale": "The debate turned on how to handle acknowledged uncertainty: Victor argued for acting now with built-in review, while Amara and Mei demanded stronger evidence and attention to enforcement labour before mandating. The panel weighed competing risks of prohibition by assertion versus doing nothing, without resolving which side was factually right."
       }
     },
     "isSeed": false,
-    "costUsd": 0.000805,
+    "costUsd": 0.002258,
     "messageCount": 10,
-    "createdAt": "2026-09-24T10:59:59.984Z",
-    "updatedAt": "2026-09-24T11:00:25.960Z",
-    "lastMessageAt": "2026-09-24T11:00:25.960Z"
+    "createdAt": "2026-09-24T10:59:59.991Z",
+    "updatedAt": "2026-09-24T11:00:29.574Z",
+    "lastMessageAt": "2026-09-24T11:00:29.574Z"
   }
 }

@@ -12,7 +12,7 @@
       },
       "content": "Shift just ended and I've got tea. What's going on?",
       "status": "complete",
-      "createdAt": "2026-09-29T21:14:01.933Z",
+      "createdAt": "2026-09-29T21:14:01.858Z",
       "emotion": "happy",
       "emotionSource": "default",
       "trace": {
@@ -37,7 +37,7 @@
       "kind": "chat",
       "content": "I've had a headache for three days and coffee isn't helping.",
       "status": "complete",
-      "createdAt": "2026-09-29T21:14:11.222Z"
+      "createdAt": "2026-09-29T21:14:11.146Z"
     },
     {
       "kind": "chat",
@@ -48,52 +48,20 @@
         "type": "character",
         "characterId": "chr_seedAmara"
       },
-      "content": "Where's the pain — one spot, or a band around your head? And what changed this week, sleep, stress, caffeine?\n\nMost three-day headaches are tension-type or related to cutting back on caffeine [2][1]. Dull and pressing on both sides fits that picture [3].\n\nThe thing I actually care about: sudden worst-ever headache, fever with a stiff neck, weakness, confusion, or vision changes. Any of those, it's the ED today, not me.\n\nAlso, coffee not helping isn't surprising. Painkillers taken too many days in a row can start causing the headache themselves.",
+      "content": "Where's the pain — one side, both, behind your eyes? And anything new lately: fever, vision changes, neck stiffness?",
       "status": "complete",
-      "createdAt": "2026-09-29T21:14:14.306Z",
+      "createdAt": "2026-09-29T21:14:12.526Z",
       "emotion": "thinking",
       "emotionSource": "classifier",
       "usage": {
-        "tokensIn": 1177,
-        "tokensCached": 0,
-        "tokensOut": 125,
-        "costUsd": 0.000145,
+        "tokensIn": 802,
+        "tokensCached": 640,
+        "tokensOut": 27,
+        "costUsd": 0.00011,
         "energySpent": 2,
-        "firstTokenMs": 3077,
-        "totalMs": 3540
+        "firstTokenMs": 1371,
+        "totalMs": 1661
       },
-      "citations": [
-        {
-          "n": 1,
-          "sourceId": "kno_seedAmara2",
-          "title": "ED triage guidelines",
-          "type": "file",
-          "chunkId": "kch_amaraTri08",
-          "locator": "p. 2",
-          "quote": "## 2.4 Caffeine withdrawal\n\nCaffeine withdrawal headache usually begins 12 to 24 hours after a sharp cut in intake and can last two to nine days. Gradual tapering, fluids and simple painkillers are usually enough; it rarely needs emergency care.\n\nAsk about recent changes in coffee, tea, energy drinks and cola.",
-          "score": 0.635
-        },
-        {
-          "n": 2,
-          "sourceId": "kno_seedAmara2",
-          "title": "ED triage guidelines",
-          "type": "file",
-          "chunkId": "kch_amaraTri05",
-          "locator": "p. 2",
-          "quote": "## 2. Headache\n\n## 2.1 Common headaches\n\nMost headaches seen in the department are primary headaches: tension-type, migraine, or medication- and caffeine-related.",
-          "score": 0.5
-        },
-        {
-          "n": 3,
-          "sourceId": "kno_seedAmara2",
-          "title": "ED triage guidelines",
-          "type": "file",
-          "chunkId": "kch_amaraTri06",
-          "locator": "p. 2",
-          "quote": "## 2.2 Tension-type headache\n\nUsually described as a band or pressure around the head, often worse at the end of the day.",
-          "score": 0.49
-        }
-      ],
       "trace": {
         "messageId": "msg_seedA03",
         "context": {
@@ -105,7 +73,7 @@
             "history": 19,
             "user": 20,
             "memory": 0,
-            "knowledge": 528
+            "knowledge": 0
           }
         },
         "emotion": {
@@ -114,96 +82,15 @@
           "candidates": [
             {
               "label": "thinking",
-              "p": 0.68
+              "p": 0.58
             },
             {
               "label": "neutral",
-              "p": 0.14
+              "p": 0.24
             },
             {
-              "label": "happy",
-              "p": 0.01
-            }
-          ]
-        },
-        "knowledge": {
-          "query": "I've had a headache for three days and coffee isn't helping.",
-          "trigger": "gated",
-          "retrieved": [
-            {
-              "chunkId": "kch_amaraTri08",
-              "sourceId": "kno_seedAmara2",
-              "title": "ED triage guidelines",
-              "locator": "p. 2",
-              "text": "## 2.4 Caffeine withdrawal\n\nCaffeine withdrawal headache usually begins 12 to 24 hours after a sharp cut in intake and can last two to nine days. Gradual tapering, fluids and simple painkillers are usually enough; it rarely needs emergency care.\n\nAsk about recent changes in coffee, tea, energy drinks and cola. Patients often do not connect a new headache with cutting back a week earlier. A slower taper (reducing by about a quarter every few days) prevents most withdrawal headaches.",
-              "score": 0.635,
-              "cited": true,
-              "n": 1
-            },
-            {
-              "chunkId": "kch_amaraTri05",
-              "sourceId": "kno_seedAmara2",
-              "title": "ED triage guidelines",
-              "locator": "p. 2",
-              "text": "## 2. Headache\n\n## 2.1 Common headaches\n\nMost headaches seen in the department are primary headaches: tension-type, migraine, or medication- and caffeine-related. A dull, pressing pain on both sides without neurological signs is typical of tension-type or withdrawal headache.",
-              "score": 0.5,
-              "cited": true,
-              "n": 2
-            },
-            {
-              "chunkId": "kch_amaraTri09",
-              "sourceId": "kno_seedAmara2",
-              "title": "ED triage guidelines",
-              "locator": "p. 2",
-              "text": "## 2.5 Medication-overuse headache\n\nTaking simple painkillers on more than about fifteen days a month can itself cause daily headaches. Ask how often the patient takes painkillers, and suggest a GP review rather than more medication.",
-              "score": 0.365,
-              "cited": false
-            },
-            {
-              "chunkId": "kch_amaraTri06",
-              "sourceId": "kno_seedAmara2",
-              "title": "ED triage guidelines",
-              "locator": "p. 2",
-              "text": "## 2.2 Tension-type headache\n\nUsually described as a band or pressure around the head, often worse at the end of the day. It is associated with stress, poor sleep, long screen time and missed meals. It does not usually cause vomiting or sensitivity to light.",
-              "score": 0.49,
-              "cited": true,
-              "n": 3
-            },
-            {
-              "chunkId": "kch_amaraTri12",
-              "sourceId": "kno_seedAmara2",
-              "title": "ED triage guidelines",
-              "locator": "p. 3",
-              "text": "## 3.3 Same-day review\n\nA first severe headache after age 50, a headache after a head injury, or one that wakes the patient from sleep should also be reviewed the same day, even when observations are normal.\n\nPatients taking blood thinners who have any head injury should be graded 2, whatever their headache score.",
-              "score": 0.385,
-              "cited": false
-            },
-            {
-              "chunkId": "kch_amaraTri11",
-              "sourceId": "kno_seedAmara2",
-              "title": "ED triage guidelines",
-              "locator": "p. 3",
-              "text": "## 3.2 Other warning signs\n\n- A headache with a rash that does not fade under pressure: grade 1.\n- Slurred speech, a drooping face or weakness on one side: grade 1, and follow the stroke pathway.\n- A headache in pregnancy or shortly after birth with high blood pressure: grade 2.\n- A headache with a high temperature and vomiting in an older adult: grade 2.",
-              "score": 0.415,
-              "cited": false
-            },
-            {
-              "chunkId": "kch_amaraTri13",
-              "sourceId": "kno_seedAmara2",
-              "title": "ED triage guidelines",
-              "locator": "p. 4",
-              "text": "## 4. Advice by phone and chat\n\n## 4.1 Scope\n\nPhone and chat advice helps people decide where to go: self-care at home, a pharmacist, their GP, an urgent treatment centre, or the emergency department. It is not a consultation.",
-              "score": 0.265,
-              "cited": false
-            },
-            {
-              "chunkId": "kch_amaraTri10",
-              "sourceId": "kno_seedAmara2",
-              "title": "ED triage guidelines",
-              "locator": "p. 3",
-              "text": "## 3. Red flags\n\n## 3.1 Escalate at once\n\nEscalate any headache that is sudden and severe (\"thunderclap\"), or that comes with fever, neck stiffness, confusion, new weakness or changes in vision. These patients are graded 2 or higher and seen by a doctor without delay.\n\nA thunderclap headache reaches its worst within about a minute. Patients often describe it as \"the worst headache of my life\" . It must be treated as a possible bleed until proven otherwise.",
-              "score": 0.475,
-              "cited": false
+              "label": "sad",
+              "p": 0.03
             }
           ]
         },
@@ -222,22 +109,22 @@
             {
               "name": "output",
               "verdict": "pass",
-              "p": 0.06
+              "p": 0.05
             }
           ]
         },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Relace",
+          "provider": "Alibaba",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 3077,
-            "total": 3540
+            "firstToken": 1371,
+            "total": 1661
           },
-          "tokensIn": 1177,
-          "tokensOut": 125,
-          "costUsd": 0.000145,
-          "tokensCached": 0
+          "tokensIn": 802,
+          "tokensOut": 27,
+          "costUsd": 0.00011,
+          "tokensCached": 640
         },
         "energy": {
           "characterId": "chr_seedAmara",
@@ -253,79 +140,25 @@
             "purpose": "turn_plan",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000067,
-            "latencyMs": 532
-          },
-          {
-            "purpose": "deep_check",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000022,
-            "latencyMs": 469
-          },
-          {
-            "purpose": "deep_check",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000025,
-            "latencyMs": 500
-          },
-          {
-            "purpose": "deep_check",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000022,
-            "latencyMs": 484
-          },
-          {
-            "purpose": "deep_check",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000025,
-            "latencyMs": 485
-          },
-          {
-            "purpose": "deep_check",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000022,
-            "latencyMs": 531
-          },
-          {
-            "purpose": "deep_check",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000022,
-            "latencyMs": 531
-          },
-          {
-            "purpose": "deep_check",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000024,
-            "latencyMs": 547
-          },
-          {
-            "purpose": "deep_check",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000023,
-            "latencyMs": 1094
-          },
-          {
-            "purpose": "deep_check",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000031,
-            "latencyMs": 485
+            "latencyMs": 625
           },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000145,
-            "latencyMs": 1250
+            "costUsd": 0.00011,
+            "latencyMs": 985
           },
           {
             "purpose": "guardrail",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000029,
-            "latencyMs": 734
+            "costUsd": 0.000024,
+            "latencyMs": 516
           },
           {
             "purpose": "face_check",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000035,
-            "latencyMs": 484
+            "costUsd": 0.000031,
+            "latencyMs": 422
           }
         ],
         "graph": {
@@ -333,16 +166,11 @@
             "state",
             "ask",
             "decide",
-            "route",
-            "deep",
-            "gather",
-            "search",
-            "check",
-            "keep"
+            "route"
           ]
         },
         "system1": {
-          "seed": "2026-09-29T21:13:59.984Z|one_on_one|chr_seedAmara:1",
+          "seed": "2026-09-29T21:13:59.985Z|one_on_one|chr_seedAmara:1",
           "questions": [
             {
               "purpose": "turn_plan",
@@ -351,15 +179,15 @@
               "label": "emotion",
               "about": "chr_seedAmara",
               "answer": "thinking",
-              "p": 0.68,
+              "p": 0.58,
               "compared": [
                 {
                   "name": "confidence",
-                  "value": 0.63,
+                  "value": 0.52,
                   "threshold": 0.2
                 }
               ],
-              "confidence": 0.63,
+              "confidence": 0.52,
               "result": "used",
               "action": "shown"
             },
@@ -369,22 +197,22 @@
               "version": 2,
               "label": "needs documents?",
               "about": "chr_seedAmara",
-              "answer": "yes",
-              "p": 0.45,
+              "answer": "no",
+              "p": 0.43,
               "compared": [
                 {
                   "name": "t_gate",
-                  "value": 0.45,
+                  "value": 0.43,
                   "threshold": 0.45
                 },
                 {
                   "name": "t_confident",
-                  "value": 0.45,
+                  "value": 0.43,
                   "threshold": 0.8
                 }
               ],
               "result": "used",
-              "action": "search the documents"
+              "action": "quick reply"
             },
             {
               "purpose": "turn_plan",
@@ -392,15 +220,15 @@
               "version": 2,
               "label": "standalone?",
               "answer": "yes",
-              "p": 0.87,
+              "p": 0.89,
               "compared": [
                 {
                   "name": "t_standalone",
-                  "value": 0.87,
+                  "value": 0.89,
                   "threshold": 0.35
                 }
               ],
-              "result": "used",
+              "result": "not_used",
               "action": "no rewrite needed"
             },
             {
@@ -417,7 +245,7 @@
                   "threshold": 0.5
                 }
               ],
-              "result": "used",
+              "result": "not_used",
               "action": "no rewrite needed"
             },
             {
@@ -455,175 +283,21 @@
               "action": "no cue"
             },
             {
-              "purpose": "deep_check",
-              "id": "passage",
-              "version": 2,
-              "label": "does this passage answer it?",
-              "about": "kch_amaraTri08",
-              "answer": "partly",
-              "p": 1,
-              "compared": [
-                {
-                  "name": "t_keep",
-                  "value": 1,
-                  "threshold": 0.9
-                }
-              ],
-              "result": "used",
-              "action": "kept"
-            },
-            {
-              "purpose": "deep_check",
-              "id": "passage",
-              "version": 2,
-              "label": "does this passage answer it?",
-              "about": "kch_amaraTri05",
-              "answer": "partly",
-              "p": 0.98,
-              "compared": [
-                {
-                  "name": "t_keep",
-                  "value": 0.98,
-                  "threshold": 0.9
-                }
-              ],
-              "result": "used",
-              "action": "kept"
-            },
-            {
-              "purpose": "deep_check",
-              "id": "passage",
-              "version": 2,
-              "label": "does this passage answer it?",
-              "about": "kch_amaraTri09",
-              "answer": "partly",
-              "p": 0.72,
-              "compared": [
-                {
-                  "name": "t_keep",
-                  "value": 0.72,
-                  "threshold": 0.9
-                }
-              ],
-              "result": "below_threshold",
-              "action": "dropped"
-            },
-            {
-              "purpose": "deep_check",
-              "id": "passage",
-              "version": 2,
-              "label": "does this passage answer it?",
-              "about": "kch_amaraTri06",
-              "answer": "partly",
-              "p": 0.96,
-              "compared": [
-                {
-                  "name": "t_keep",
-                  "value": 0.96,
-                  "threshold": 0.9
-                }
-              ],
-              "result": "used",
-              "action": "kept"
-            },
-            {
-              "purpose": "deep_check",
-              "id": "passage",
-              "version": 2,
-              "label": "does this passage answer it?",
-              "about": "kch_amaraTri12",
-              "answer": "partly",
-              "p": 0.76,
-              "compared": [
-                {
-                  "name": "t_keep",
-                  "value": 0.76,
-                  "threshold": 0.9
-                }
-              ],
-              "result": "below_threshold",
-              "action": "dropped"
-            },
-            {
-              "purpose": "deep_check",
-              "id": "passage",
-              "version": 2,
-              "label": "does this passage answer it?",
-              "about": "kch_amaraTri11",
-              "answer": "partly",
-              "p": 0.82,
-              "compared": [
-                {
-                  "name": "t_keep",
-                  "value": 0.82,
-                  "threshold": 0.9
-                }
-              ],
-              "result": "below_threshold",
-              "action": "dropped"
-            },
-            {
-              "purpose": "deep_check",
-              "id": "passage",
-              "version": 2,
-              "label": "does this passage answer it?",
-              "about": "kch_amaraTri13",
-              "answer": "partly",
-              "p": 0.53,
-              "compared": [
-                {
-                  "name": "t_keep",
-                  "value": 0.53,
-                  "threshold": 0.9
-                }
-              ],
-              "result": "below_threshold",
-              "action": "dropped"
-            },
-            {
-              "purpose": "deep_check",
-              "id": "passage",
-              "version": 2,
-              "label": "does this passage answer it?",
-              "about": "kch_amaraTri10",
-              "answer": "partly",
-              "p": 0.93,
-              "compared": [
-                {
-                  "name": "t_keep",
-                  "value": 0.93,
-                  "threshold": 0.9
-                }
-              ],
-              "result": "below_threshold",
-              "action": "dropped"
-            },
-            {
-              "purpose": "deep_check",
-              "id": "passage_set",
-              "version": 1,
-              "label": "do these passages answer it together?",
-              "answer": "no",
-              "compared": [],
-              "result": "used",
-              "action": "partly"
-            },
-            {
               "purpose": "guardrail",
               "id": "output_rules",
               "version": 1,
               "label": "reply breaks the rules?",
               "answer": "no",
-              "p": 0.06,
+              "p": 0.05,
               "compared": [
                 {
                   "name": "tFlag",
-                  "value": 0.06,
+                  "value": 0.05,
                   "threshold": 0.5
                 },
                 {
                   "name": "tBlock",
-                  "value": 0.06,
+                  "value": 0.05,
                   "threshold": 0.9
                 }
               ],
@@ -636,7 +310,7 @@
               "version": 1,
               "label": "face and words agree?",
               "answer": "no (words read: neutral)",
-              "p": 0.03,
+              "p": 0.01,
               "compared": [],
               "result": "shown_only"
             }
@@ -654,7 +328,7 @@
       "kind": "chat",
       "content": "Temples. And actually I cut back on coffee last week. Could that be it?",
       "status": "complete",
-      "createdAt": "2026-09-29T21:14:35.574Z"
+      "createdAt": "2026-09-29T21:14:33.400Z"
     },
     {
       "kind": "chat",
@@ -665,19 +339,19 @@
         "type": "character",
         "characterId": "chr_seedAmara"
       },
-      "content": "Timing fits. Withdrawal headaches usually kick in 12 to 24 hours after a sharp cut and can run two to nine days [1]. Temples, both sides, no other symptoms — that's the usual picture.\n\nSo this is likely your body objecting to a fast taper, not something ominous. Fluids, a steady small dose rather than none, and a simple painkiller if you need one today. Then cut back by about a quarter every few days instead of cold turkey [1].\n\nTell me if it's one-sided and throbbing, or if light and sound start bothering you. That points somewhere else.",
+      "content": "Temples, both sides, and you cut back a week ago — that lines up fairly well with caffeine withdrawal. It usually hits 12 to 24 hours after a sharp drop and can drag on for up to nine days [1]. A slow taper, fluids and a simple painkiller handle most cases [1]. Dull pressing pain on both sides without other symptoms fits the usual pattern [2].\n\nBut I want to be sure. Any fever, worst headache of your life, confusion, weakness, or pain that spikes when you bend forward? Those change things.",
       "status": "complete",
-      "createdAt": "2026-09-29T21:14:38.699Z",
+      "createdAt": "2026-09-29T21:14:36.639Z",
       "emotion": "thinking",
       "emotionSource": "classifier",
       "usage": {
-        "tokensIn": 1170,
-        "tokensCached": 512,
-        "tokensOut": 129,
-        "costUsd": 0.000115,
-        "energySpent": 2,
-        "firstTokenMs": 3127,
-        "totalMs": 3886
+        "tokensIn": 1151,
+        "tokensCached": 1024,
+        "tokensOut": 115,
+        "costUsd": 0.000228,
+        "energySpent": 3,
+        "firstTokenMs": 3224,
+        "totalMs": 4287
       },
       "citations": [
         {
@@ -688,7 +362,17 @@
           "chunkId": "kch_amaraTri08",
           "locator": "p. 2",
           "quote": "## 2.4 Caffeine withdrawal\n\nCaffeine withdrawal headache usually begins 12 to 24 hours after a sharp cut in intake and can last two to nine days. Gradual tapering, fluids and simple painkillers are usually enough; it rarely needs emergency care.\n\nAsk about recent changes in coffee, tea, energy drinks and cola. Patients often do not connect a new headache with cutting back a week earlier.",
-          "score": 0.905
+          "score": 0.96
+        },
+        {
+          "n": 2,
+          "sourceId": "kno_seedAmara2",
+          "title": "ED triage guidelines",
+          "type": "file",
+          "chunkId": "kch_amaraTri05",
+          "locator": "p. 2",
+          "quote": "## 2. Headache\n\n## 2.1 Common headaches\n\nMost headaches seen in the department are primary headaches: tension-type, migraine, or medication- and caffeine-related. A dull, pressing pain on both sides without neurological signs is typical of tension-type or withdrawal headache.",
+          "score": 0.49
         }
       ],
       "trace": {
@@ -699,10 +383,10 @@
             "persona": 397,
             "system": 677,
             "mode": 44,
-            "history": 225,
+            "history": 81,
             "user": 24,
             "memory": 0,
-            "knowledge": 314
+            "knowledge": 424
           }
         },
         "emotion": {
@@ -711,20 +395,20 @@
           "candidates": [
             {
               "label": "thinking",
-              "p": 0.51
+              "p": 0.8
             },
             {
               "label": "neutral",
-              "p": 0.1
+              "p": 0.05
             },
             {
-              "label": "happy",
-              "p": 0
+              "label": "surprised",
+              "p": 0.01
             }
           ]
         },
         "knowledge": {
-          "query": "Temples. And actually I cut back on coffee last week. Could that be it?",
+          "query": "caffeine withdrawal headache duration temples three days",
           "trigger": "gated",
           "retrieved": [
             {
@@ -733,9 +417,28 @@
               "title": "ED triage guidelines",
               "locator": "p. 2",
               "text": "## 2.4 Caffeine withdrawal\n\nCaffeine withdrawal headache usually begins 12 to 24 hours after a sharp cut in intake and can last two to nine days. Gradual tapering, fluids and simple painkillers are usually enough; it rarely needs emergency care.\n\nAsk about recent changes in coffee, tea, energy drinks and cola. Patients often do not connect a new headache with cutting back a week earlier. A slower taper (reducing by about a quarter every few days) prevents most withdrawal headaches.",
-              "score": 0.905,
+              "score": 0.96,
               "cited": true,
               "n": 1
+            },
+            {
+              "chunkId": "kch_amaraTri05",
+              "sourceId": "kno_seedAmara2",
+              "title": "ED triage guidelines",
+              "locator": "p. 2",
+              "text": "## 2. Headache\n\n## 2.1 Common headaches\n\nMost headaches seen in the department are primary headaches: tension-type, migraine, or medication- and caffeine-related. A dull, pressing pain on both sides without neurological signs is typical of tension-type or withdrawal headache.",
+              "score": 0.49,
+              "cited": true,
+              "n": 2
+            },
+            {
+              "chunkId": "kch_amaraTri09",
+              "sourceId": "kno_seedAmara2",
+              "title": "ED triage guidelines",
+              "locator": "p. 2",
+              "text": "## 2.5 Medication-overuse headache\n\nTaking simple painkillers on more than about fifteen days a month can itself cause daily headaches. Ask how often the patient takes painkillers, and suggest a GP review rather than more medication.",
+              "score": 0.02,
+              "cited": false
             },
             {
               "chunkId": "kch_amaraFat11",
@@ -743,16 +446,7 @@
               "title": "Meridian Shift Fatigue Review 2025",
               "locator": "p. 5",
               "text": "## 4. Sleep and patient safety\n\nPoor sleep was the most common complaint, named by 63% of respondents. Staff who slept under six hours before a shift were twice as likely to report a near-miss medication error that week.\n\nNight shifts were the main cause of short sleep. Staff moving from nights back to days with only one rest day in between averaged under five hours of sleep on the first night home.\n\nA near miss is an error caught before it reaches the patient: the wrong dose drawn up and noticed, the wrong patient's chart opened and closed again. The Trust's incident system does not link incidents to rotas, so the review used a short anonymous weekly question instead. The association held in every department and at every site.",
-              "score": 0.095,
-              "cited": false
-            },
-            {
-              "chunkId": "kch_amaraFat02",
-              "sourceId": "kno_seedAmara1",
-              "title": "Meridian Shift Fatigue Review 2025",
-              "locator": "p. 1",
-              "text": "## Summary\n\nFatigue is no longer an occasional complaint among the Trust's clinical staff. It is a measurable, rising condition with a direct line to patient safety, sickness absence and resignations. This review followed 1,140 clinical staff for ten months and found that the length of consecutive shift blocks, not total hours alone, is the strongest predictor of how tired staff say they are.\n\nThe headline findings:\n\n- Staff working more than three consecutive long shifts reported fatigue scores 38% higher than colleagues on shorter blocks.\n- High burnout in the emergency department rose from 29% of staff in January to 41% in October.\n- Staff who slept under six hours before a shift were twice as likely to report a near-miss medication error that week.\n- Two wards that piloted a compressed rota saw burnout fall by roughly a fifth in twelve weeks, with no loss of patient throughput.\n- Voluntary nursing resignations reached 14% over the year, and each replacement costs about four months of salary.",
-              "score": 0.02,
+              "score": 0,
               "cited": false
             },
             {
@@ -761,7 +455,7 @@
               "title": "Meridian Shift Fatigue Review 2025",
               "locator": "p. 2",
               "text": "## 1. Scope and method\n\nThis review covers 1,140 clinical staff across four Meridian Health Trust sites between January and October 2025. Fatigue was measured with a fortnightly selfreport scale and matched against rota data. All names and units are anonymised.\n\nThe four sites are Meridian General (the acute hospital and the Trust's only emergency department), Eastbank Community Hospital, the Riverside Rehabilitation Unit and the Northgate Day Surgery Centre. Participation was voluntary; 71% of eligible clinical staff took part, and response rates held above 60% in every fortnight.\n\nThe self-report scale has nine items: sleepiness at the start and end of a shift, difficulty concentrating, irritability, physical exhaustion, headaches, appetite, sleep quality and a single \"how tired are you right now\" question. Each item is scored 0 to 4, so totals run from 0 to 36. Burnout was measured separately, once a quarter, with a validated twelve-item inventory. The review's \"high burnout\" threshold is the inventory's published cut-off.",
-              "score": 0.015,
+              "score": 0.005,
               "cited": false
             },
             {
@@ -770,34 +464,25 @@
               "title": "Meridian Shift Fatigue Review 2025",
               "locator": "p. 7",
               "text": "## 6. The compressed-rota pilot\n\nTwo wards piloted a compressed rota: four longer days, then three days off. After twelve weeks, burnout scores on both wards fell by roughly a fifth, sleep quality improved, and patient throughput stayed within normal variation.\n\nThe pilot wards were Ward 7 (acute medicine) and the emergency department's observation unit. Staff chose to join. The rota guaranteed the three rest days: they could not be cancelled except in a declared major incident.\n\nWhat changed after twelve weeks:\n\n- Burnout scores fell by 19% on Ward 7 and 22% on the observation unit.\n- Average sleep before a shift rose by 40 minutes.\n- Short-notice cancellations of rest days fell to zero, by design.\n- Patient throughput, length of stay and readmissions stayed within normal variation for those wards.\n\nStaff on the pilot wards described the guaranteed rest days, not the longer shifts, as the change that mattered most.",
-              "score": 0.005,
+              "score": 0,
               "cited": false
             },
             {
-              "chunkId": "kch_amaraTri14",
+              "chunkId": "kch_amaraTri06",
               "sourceId": "kno_seedAmara2",
               "title": "ED triage guidelines",
-              "locator": "p. 4",
-              "text": "## 4.2 Saying what advice is\n\nAdvice given by phone or chat must say clearly that it is not an examination. Tell the patient which symptoms mean they should come in person.\n\nGood practice in every conversation:\n\n1. Ask one or two clarifying questions before giving any advice: where the pain is, how long it has lasted, and what has changed recently.\n2. Give the most likely explanation in plain language, and say how confident you are.\n3. Give simple, safe self-care steps.\n4. Always finish with the red flags that mean the patient should come in, and say \"today\" or \"now\" where it applies.",
-              "score": 0.28,
+              "locator": "p. 2",
+              "text": "## 2.2 Tension-type headache\n\nUsually described as a band or pressure around the head, often worse at the end of the day. It is associated with stress, poor sleep, long screen time and missed meals. It does not usually cause vomiting or sensitivity to light.",
+              "score": 0.255,
               "cited": false
             },
             {
-              "chunkId": "kch_amaraFat07",
+              "chunkId": "kch_amaraFat20",
               "sourceId": "kno_seedAmara1",
               "title": "Meridian Shift Fatigue Review 2025",
-              "locator": "p. 3",
-              "text": "## 2. Shift patterns and fatigue\n\nThe single clearest pattern in the data is the effect of long blocks.\n\nStaff working more than three consecutive long shifts reported fatigue scores 38% higher than colleagues on shorter blocks. The effect was strongest in emergency and acute medicine, where rest days were most often cancelled at short notice.\n\nA \"long shift\" in this review is any shift of eleven hours or more. Across the Trust, 46% of clinical shifts were long shifts. In the emergency department the figure was 78%.\n\nTotal weekly hours mattered less than the way those hours were arranged. Two nurses working the same 37.5 hours could report very different fatigue: the one who worked four long shifts in a row, then had three days off, reported less fatigue than the one whose long shifts were scattered across the week with single rest days in between. Single rest days, especially after a night shift, were rarely restful.",
-              "score": 0.06,
-              "cited": false
-            },
-            {
-              "chunkId": "kch_amaraFat08",
-              "sourceId": "kno_seedAmara1",
-              "title": "Meridian Shift Fatigue Review 2025",
-              "locator": "p. 3",
-              "text": "## 2.1 Short-notice changes\n\nRest days cancelled with less than 48 hours' notice were the second strongest predictor of fatigue. In emergency and acute medicine, one rest day in nine was cancelled at short notice, usually to cover sickness. In community and day-surgery settings the figure was one in forty.",
-              "score": 0.035,
+              "locator": "p. 11",
+              "text": "## Appendix: the fatigue scale\n\nNine items, each scored 0 (not at all) to 4 (extremely): sleepiness at the start of the shift; sleepiness at the end; difficulty concentrating; irritability; physical exhaustion; headache; change in appetite; poor sleep quality; and \"how tired are you right now\" . Scores of 18 and above are treated as high fatigue in this review.",
+              "score": 0.04,
               "cited": false
             }
           ]
@@ -812,32 +497,32 @@
             {
               "name": "care",
               "verdict": "pass",
-              "p": 0.02
+              "p": 0.03
             },
             {
               "name": "output",
               "verdict": "pass",
-              "p": 0.09
+              "p": 0.07
             }
           ]
         },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Relace",
+          "provider": "Alibaba",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 3127,
-            "total": 3886
+            "firstToken": 3224,
+            "total": 4287
           },
-          "tokensIn": 1170,
-          "tokensOut": 129,
-          "costUsd": 0.000115,
-          "tokensCached": 512
+          "tokensIn": 1151,
+          "tokensOut": 115,
+          "costUsd": 0.000228,
+          "tokensCached": 1024
         },
         "energy": {
           "characterId": "chr_seedAmara",
-          "spent": 2,
-          "remaining": 996,
+          "spent": 3,
+          "remaining": 995,
           "max": 1000
         },
         "routing": {
@@ -847,80 +532,80 @@
           {
             "purpose": "turn_plan",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000075,
-            "latencyMs": 485
+            "costUsd": 0.000071,
+            "latencyMs": 422
+          },
+          {
+            "purpose": "query_rewrite",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000127,
+            "latencyMs": 1062
           },
           {
             "purpose": "deep_check",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000035,
-            "latencyMs": 609
-          },
-          {
-            "purpose": "deep_check",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000036,
-            "latencyMs": 625
-          },
-          {
-            "purpose": "deep_check",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000035,
-            "latencyMs": 625
-          },
-          {
-            "purpose": "deep_check",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000029,
-            "latencyMs": 609
-          },
-          {
-            "purpose": "deep_check",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000031,
-            "latencyMs": 609
-          },
-          {
-            "purpose": "deep_check",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000033,
-            "latencyMs": 625
+            "costUsd": 0.000022,
+            "latencyMs": 390
           },
           {
             "purpose": "deep_check",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.00003,
-            "latencyMs": 625
+            "latencyMs": 406
           },
           {
             "purpose": "deep_check",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000034,
-            "latencyMs": 703
+            "costUsd": 0.000022,
+            "latencyMs": 422
           },
           {
-            "purpose": "query_rewrite",
-            "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000045,
-            "latencyMs": 2860
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000024,
+            "latencyMs": 422
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000024,
+            "latencyMs": 422
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000026,
+            "latencyMs": 437
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000028,
+            "latencyMs": 438
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000022,
+            "latencyMs": 688
           },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000115,
-            "latencyMs": 1281
+            "costUsd": 0.000228,
+            "latencyMs": 1968
           },
           {
             "purpose": "guardrail",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000029,
-            "latencyMs": 531
+            "costUsd": 0.000028,
+            "latencyMs": 391
           },
           {
             "purpose": "face_check",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000036,
-            "latencyMs": 422
+            "costUsd": 0.000035,
+            "latencyMs": 407
           }
         ],
         "graph": {
@@ -937,7 +622,7 @@
           ]
         },
         "system1": {
-          "seed": "2026-09-29T21:13:59.984Z|one_on_one|chr_seedAmara:2",
+          "seed": "2026-09-29T21:13:59.985Z|one_on_one|chr_seedAmara:2",
           "questions": [
             {
               "purpose": "turn_plan",
@@ -946,15 +631,15 @@
               "label": "emotion",
               "about": "chr_seedAmara",
               "answer": "thinking",
-              "p": 0.51,
+              "p": 0.8,
               "compared": [
                 {
                   "name": "confidence",
-                  "value": 0.44,
+                  "value": 0.77,
                   "threshold": 0.2
                 }
               ],
-              "confidence": 0.44,
+              "confidence": 0.77,
               "result": "used",
               "action": "shown"
             },
@@ -965,16 +650,16 @@
               "label": "needs documents?",
               "about": "chr_seedAmara",
               "answer": "yes",
-              "p": 0.54,
+              "p": 0.53,
               "compared": [
                 {
                   "name": "t_gate",
-                  "value": 0.54,
+                  "value": 0.53,
                   "threshold": 0.45
                 },
                 {
                   "name": "t_confident",
-                  "value": 0.54,
+                  "value": 0.53,
                   "threshold": 0.8
                 }
               ],
@@ -987,11 +672,11 @@
               "version": 2,
               "label": "standalone?",
               "answer": "no",
-              "p": 0.23,
+              "p": 0.18,
               "compared": [
                 {
                   "name": "t_standalone",
-                  "value": 0.23,
+                  "value": 0.18,
                   "threshold": 0.35
                 }
               ],
@@ -1038,11 +723,11 @@
               "version": 1,
               "label": "at risk?",
               "answer": "no",
-              "p": 0.02,
+              "p": 0.03,
               "compared": [
                 {
                   "name": "tCare",
-                  "value": 0.02,
+                  "value": 0.03,
                   "threshold": 0.3
                 }
               ],
@@ -1072,25 +757,25 @@
               "id": "passage",
               "version": 2,
               "label": "does this passage answer it?",
-              "about": "kch_amaraFat11",
-              "answer": "doesn't help",
-              "p": 0.19,
+              "about": "kch_amaraTri05",
+              "answer": "partly",
+              "p": 0.98,
               "compared": [
                 {
                   "name": "t_keep",
-                  "value": 0.19,
+                  "value": 0.98,
                   "threshold": 0.9
                 }
               ],
-              "result": "below_threshold",
-              "action": "dropped"
+              "result": "used",
+              "action": "kept"
             },
             {
               "purpose": "deep_check",
               "id": "passage",
               "version": 2,
               "label": "does this passage answer it?",
-              "about": "kch_amaraFat02",
+              "about": "kch_amaraTri09",
               "answer": "doesn't help",
               "p": 0.04,
               "compared": [
@@ -1108,13 +793,13 @@
               "id": "passage",
               "version": 2,
               "label": "does this passage answer it?",
-              "about": "kch_amaraFat04",
+              "about": "kch_amaraFat11",
               "answer": "doesn't help",
-              "p": 0.03,
+              "p": 0,
               "compared": [
                 {
                   "name": "t_keep",
-                  "value": 0.03,
+                  "value": 0,
                   "threshold": 0.9
                 }
               ],
@@ -1126,7 +811,7 @@
               "id": "passage",
               "version": 2,
               "label": "does this passage answer it?",
-              "about": "kch_amaraFat14",
+              "about": "kch_amaraFat04",
               "answer": "doesn't help",
               "p": 0.01,
               "compared": [
@@ -1144,13 +829,31 @@
               "id": "passage",
               "version": 2,
               "label": "does this passage answer it?",
-              "about": "kch_amaraTri14",
+              "about": "kch_amaraFat14",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraTri06",
               "answer": "partly",
-              "p": 0.53,
+              "p": 0.51,
               "compared": [
                 {
                   "name": "t_keep",
-                  "value": 0.53,
+                  "value": 0.51,
                   "threshold": 0.9
                 }
               ],
@@ -1162,31 +865,13 @@
               "id": "passage",
               "version": 2,
               "label": "does this passage answer it?",
-              "about": "kch_amaraFat07",
+              "about": "kch_amaraFat20",
               "answer": "doesn't help",
-              "p": 0.12,
+              "p": 0.08,
               "compared": [
                 {
                   "name": "t_keep",
-                  "value": 0.12,
-                  "threshold": 0.9
-                }
-              ],
-              "result": "below_threshold",
-              "action": "dropped"
-            },
-            {
-              "purpose": "deep_check",
-              "id": "passage",
-              "version": 2,
-              "label": "does this passage answer it?",
-              "about": "kch_amaraFat08",
-              "answer": "doesn't help",
-              "p": 0.07,
-              "compared": [
-                {
-                  "name": "t_keep",
-                  "value": 0.07,
+                  "value": 0.08,
                   "threshold": 0.9
                 }
               ],
@@ -1199,16 +884,16 @@
               "version": 1,
               "label": "reply breaks the rules?",
               "answer": "no",
-              "p": 0.09,
+              "p": 0.07,
               "compared": [
                 {
                   "name": "tFlag",
-                  "value": 0.09,
+                  "value": 0.07,
                   "threshold": 0.5
                 },
                 {
                   "name": "tBlock",
-                  "value": 0.09,
+                  "value": 0.07,
                   "threshold": 0.9
                 }
               ],
@@ -1221,7 +906,7 @@
               "version": 1,
               "label": "face and words agree?",
               "answer": "no (words read: neutral)",
-              "p": 0,
+              "p": 0.21,
               "compared": [],
               "result": "shown_only"
             }
@@ -1239,7 +924,7 @@
       "kind": "chat",
       "content": "Thanks. Anything I should watch out for?",
       "status": "complete",
-      "createdAt": "2026-09-29T21:14:59.955Z"
+      "createdAt": "2026-09-29T21:14:58.721Z"
     },
     {
       "kind": "chat",
@@ -1250,20 +935,42 @@
         "type": "character",
         "characterId": "chr_seedAmara"
       },
-      "content": "Red flags, short list: thunderclap — hits its worst in seconds. Fever with neck stiffness. Weakness or numbness on one side, trouble speaking, confusion. Vision changes, or a headache that wakes you at night and worsens when you lie down. New headache after a head knock.\n\nAny of those, same-day emergency care. Otherwise, if it's still hanging on past a week or getting worse despite the taper, get seen in person and let someone actually examine you.\n\nI spent my morning shift on a similar story. Taper beats cold turkey, in my experience.",
+      "content": "That's not an exam, so take the usual caveats. Sudden severe headache reaching its worst within about a minute — the \"worst of my life\" kind — needs emergency care now, not a chat with me [1].\n\nAlso come in today for fever, neck stiffness, confusion, new weakness, vision changes, or slurred speech or face drooping [1][3]. Rash that doesn't fade under pressure, or headache in pregnancy with high blood pressure, same deal [3].\n\nOtherwise, taper caffeine slowly, keep fluids up, and check back if it's not easing by about day nine [1].\n\nHow's your sleep been through all this?",
       "status": "complete",
-      "createdAt": "2026-09-29T21:15:01.491Z",
+      "createdAt": "2026-09-29T21:15:01.118Z",
       "emotion": "thinking",
       "emotionSource": "default",
       "usage": {
-        "tokensIn": 1095,
-        "tokensCached": 512,
-        "tokensOut": 119,
-        "costUsd": 0.000104,
-        "energySpent": 2,
-        "firstTokenMs": 1505,
-        "totalMs": 2211
+        "tokensIn": 1467,
+        "tokensCached": 1024,
+        "tokensOut": 136,
+        "costUsd": 0.00036,
+        "energySpent": 4,
+        "firstTokenMs": 2398,
+        "totalMs": 3509
       },
+      "citations": [
+        {
+          "n": 1,
+          "sourceId": "kno_seedAmara2",
+          "title": "ED triage guidelines",
+          "type": "file",
+          "chunkId": "kch_amaraTri10",
+          "locator": "p. 3",
+          "quote": "## 3. Red flags\n\n## 3.1 Escalate at once\n\nEscalate any headache that is sudden and severe (\"thunderclap\"), or that comes with fever, neck stiffness, confusion, new weakness or changes in vision. These patients are graded 2 or higher and seen by a doctor without delay.\n\nA thunderclap headache reaches its worst within about a minute. Patients often describe it as \"the worst headache of my life\" .",
+          "score": 0.925
+        },
+        {
+          "n": 3,
+          "sourceId": "kno_seedAmara2",
+          "title": "ED triage guidelines",
+          "type": "file",
+          "chunkId": "kch_amaraTri11",
+          "locator": "p. 3",
+          "quote": "## 3.2 Other warning signs\n\n- A headache with a rash that does not fade under pressure: grade 1.\n- Slurred speech, a drooping face or weakness on one side: grade 1, and follow the stroke pathway.\n- A headache in pregnancy or shortly after birth with high blood pressure: grade 2.\n- A headache with a high temperature and vomiting in an older adult: grade 2.",
+          "score": 0.705
+        }
+      ],
       "trace": {
         "messageId": "msg_seedA07",
         "context": {
@@ -1272,10 +979,10 @@
             "persona": 397,
             "system": 677,
             "mode": 44,
-            "history": 432,
+            "history": 272,
             "user": 14,
             "memory": 0,
-            "knowledge": 0
+            "knowledge": 658
           }
         },
         "emotion": {
@@ -1288,7 +995,7 @@
             },
             {
               "label": "thinking",
-              "p": 0.16
+              "p": 0.23
             },
             {
               "label": "happy",
@@ -1299,7 +1006,83 @@
         "knowledge": {
           "query": "Thanks. Anything I should watch out for?",
           "trigger": "gated",
-          "retrieved": []
+          "retrieved": [
+            {
+              "chunkId": "kch_amaraTri14",
+              "sourceId": "kno_seedAmara2",
+              "title": "ED triage guidelines",
+              "locator": "p. 4",
+              "text": "## 4.2 Saying what advice is\n\nAdvice given by phone or chat must say clearly that it is not an examination. Tell the patient which symptoms mean they should come in person.\n\nGood practice in every conversation:\n\n1. Ask one or two clarifying questions before giving any advice: where the pain is, how long it has lasted, and what has changed recently.\n2. Give the most likely explanation in plain language, and say how confident you are.\n3. Give simple, safe self-care steps.\n4. Always finish with the red flags that mean the patient should come in, and say \"today\" or \"now\" where it applies.",
+              "score": 0.87,
+              "cited": false,
+              "n": 2
+            },
+            {
+              "chunkId": "kch_amaraTri15",
+              "sourceId": "kno_seedAmara2",
+              "title": "ED triage guidelines",
+              "locator": "p. 4",
+              "text": "## 4.3 Recording\n\nRecord the advice given, the red flags explained and the patient's plan. If the patient seems unsure or frightened, invite them in rather than closing the conversation.",
+              "score": 0.19,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraTri10",
+              "sourceId": "kno_seedAmara2",
+              "title": "ED triage guidelines",
+              "locator": "p. 3",
+              "text": "## 3. Red flags\n\n## 3.1 Escalate at once\n\nEscalate any headache that is sudden and severe (\"thunderclap\"), or that comes with fever, neck stiffness, confusion, new weakness or changes in vision. These patients are graded 2 or higher and seen by a doctor without delay.\n\nA thunderclap headache reaches its worst within about a minute. Patients often describe it as \"the worst headache of my life\" . It must be treated as a possible bleed until proven otherwise.",
+              "score": 0.925,
+              "cited": true,
+              "n": 1
+            },
+            {
+              "chunkId": "kch_amaraTri11",
+              "sourceId": "kno_seedAmara2",
+              "title": "ED triage guidelines",
+              "locator": "p. 3",
+              "text": "## 3.2 Other warning signs\n\n- A headache with a rash that does not fade under pressure: grade 1.\n- Slurred speech, a drooping face or weakness on one side: grade 1, and follow the stroke pathway.\n- A headache in pregnancy or shortly after birth with high blood pressure: grade 2.\n- A headache with a high temperature and vomiting in an older adult: grade 2.",
+              "score": 0.705,
+              "cited": true,
+              "n": 3
+            },
+            {
+              "chunkId": "kch_amaraTri12",
+              "sourceId": "kno_seedAmara2",
+              "title": "ED triage guidelines",
+              "locator": "p. 3",
+              "text": "## 3.3 Same-day review\n\nA first severe headache after age 50, a headache after a head injury, or one that wakes the patient from sleep should also be reviewed the same day, even when observations are normal.\n\nPatients taking blood thinners who have any head injury should be graded 2, whatever their headache score.",
+              "score": 0.615,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraTri16",
+              "sourceId": "kno_seedAmara2",
+              "title": "ED triage guidelines",
+              "locator": "p. 5",
+              "text": "## 5. Hydration and simple painkillers\n\nFor headaches without red flags, advise fluids, regular meals, rest from screens and a simple painkiller if it is safe for the patient. Paracetamol or ibuprofen at the dose on the packet is usually enough. Ibuprofen is not suitable for everyone: people with stomach ulcers, some kidney problems or asthma made worse by antiinflammatories should use paracetamol instead. If in doubt, a pharmacist can advise.",
+              "score": 0.7,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraTri13",
+              "sourceId": "kno_seedAmara2",
+              "title": "ED triage guidelines",
+              "locator": "p. 4",
+              "text": "## 4. Advice by phone and chat\n\n## 4.1 Scope\n\nPhone and chat advice helps people decide where to go: self-care at home, a pharmacist, their GP, an urgent treatment centre, or the emergency department. It is not a consultation.",
+              "score": 0.18,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraTri04",
+              "sourceId": "kno_seedAmara2",
+              "title": "ED triage guidelines",
+              "locator": "p. 1",
+              "text": "## 1.3 Re-triage\n\nA patient's grade can change while they wait. Re-check observations at least every hour for grades 3 to 5, and at once if the patient or a relative reports a change.",
+              "score": 0.3,
+              "cited": false
+            }
+          ]
         },
         "guardrail": {
           "checks": [
@@ -1316,27 +1099,27 @@
             {
               "name": "output",
               "verdict": "pass",
-              "p": 0.06
+              "p": 0.07
             }
           ]
         },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Relace",
+          "provider": "Alibaba",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 1505,
-            "total": 2211
+            "firstToken": 2398,
+            "total": 3509
           },
-          "tokensIn": 1095,
-          "tokensOut": 119,
-          "costUsd": 0.000104,
-          "tokensCached": 512
+          "tokensIn": 1467,
+          "tokensOut": 136,
+          "costUsd": 0.00036,
+          "tokensCached": 1024
         },
         "energy": {
           "characterId": "chr_seedAmara",
-          "spent": 2,
-          "remaining": 995,
+          "spent": 4,
+          "remaining": 991,
           "max": 1000
         },
         "routing": {
@@ -1346,26 +1129,74 @@
           {
             "purpose": "turn_plan",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000083,
+            "costUsd": 0.000078,
             "latencyMs": 422
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.00003,
+            "latencyMs": 406
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000028,
+            "latencyMs": 437
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000027,
+            "latencyMs": 453
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000031,
+            "latencyMs": 453
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.00003,
+            "latencyMs": 500
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000029,
+            "latencyMs": 515
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000027,
+            "latencyMs": 500
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000027,
+            "latencyMs": 1109
           },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000104,
-            "latencyMs": 1453
+            "costUsd": 0.00036,
+            "latencyMs": 1875
           },
           {
             "purpose": "guardrail",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000028,
-            "latencyMs": 531
+            "costUsd": 0.000029,
+            "latencyMs": 391
           },
           {
             "purpose": "face_check",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000035,
-            "latencyMs": 453
+            "costUsd": 0.000036,
+            "latencyMs": 438
           }
         ],
         "graph": {
@@ -1382,7 +1213,7 @@
           ]
         },
         "system1": {
-          "seed": "2026-09-29T21:13:59.984Z|one_on_one|chr_seedAmara:3",
+          "seed": "2026-09-29T21:13:59.985Z|one_on_one|chr_seedAmara:3",
           "questions": [
             {
               "purpose": "turn_plan",
@@ -1391,15 +1222,15 @@
               "label": "emotion",
               "about": "chr_seedAmara",
               "answer": "none",
-              "p": 0.51,
+              "p": 0.44,
               "compared": [
                 {
                   "name": "confidence",
-                  "value": 0.44,
+                  "value": 0.36,
                   "threshold": 0.2
                 }
               ],
-              "confidence": 0.44,
+              "confidence": 0.36,
               "result": "used",
               "action": "kept"
             },
@@ -1410,16 +1241,16 @@
               "label": "needs documents?",
               "about": "chr_seedAmara",
               "answer": "yes",
-              "p": 0.65,
+              "p": 0.68,
               "compared": [
                 {
                   "name": "t_gate",
-                  "value": 0.65,
+                  "value": 0.68,
                   "threshold": 0.45
                 },
                 {
                   "name": "t_confident",
-                  "value": 0.65,
+                  "value": 0.68,
                   "threshold": 0.8
                 }
               ],
@@ -1432,11 +1263,11 @@
               "version": 2,
               "label": "standalone?",
               "answer": "yes",
-              "p": 0.43,
+              "p": 0.35,
               "compared": [
                 {
                   "name": "t_standalone",
-                  "value": 0.43,
+                  "value": 0.35,
                   "threshold": 0.35
                 }
               ],
@@ -1495,21 +1326,165 @@
               "action": "no cue"
             },
             {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraTri14",
+              "answer": "answers",
+              "p": 0.99,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0.99,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "used",
+              "action": "kept"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraTri15",
+              "answer": "doesn't help",
+              "p": 0.36,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0.36,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraTri10",
+              "answer": "answers",
+              "p": 1,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 1,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "used",
+              "action": "kept"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraTri11",
+              "answer": "partly",
+              "p": 0.99,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0.99,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "used",
+              "action": "kept"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraTri12",
+              "answer": "partly",
+              "p": 0.95,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0.95,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraTri16",
+              "answer": "partly",
+              "p": 0.98,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0.98,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraTri13",
+              "answer": "doesn't help",
+              "p": 0.35,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0.35,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraTri04",
+              "answer": "partly",
+              "p": 0.56,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0.56,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
               "purpose": "guardrail",
               "id": "output_rules",
               "version": 1,
               "label": "reply breaks the rules?",
               "answer": "no",
-              "p": 0.06,
+              "p": 0.07,
               "compared": [
                 {
                   "name": "tFlag",
-                  "value": 0.06,
+                  "value": 0.07,
                   "threshold": 0.5
                 },
                 {
                   "name": "tBlock",
-                  "value": 0.06,
+                  "value": 0.07,
                   "threshold": 0.9
                 }
               ],

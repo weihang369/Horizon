@@ -5,67 +5,100 @@
       "id": "mem_seedAmara1",
       "characterId": "chr_seedAmara",
       "worldId": "wld_seedMeridian",
-      "kind": "about_user",
-      "text": "Kai has had a three-day headache, worse at the temples on both sides, after cutting back sharply on coffee last week.",
-      "importance": 0.4675,
+      "kind": "event",
+      "text": "Kai has had a headache for three days, both temples, dull and pressing, after cutting back on coffee a week ago.",
+      "importance": 0.4225,
       "sourceSessionId": "ses_seedAmaraHeadache",
       "sourceMessageId": "msg_seedA02",
-      "createdAt": "2026-09-29T21:15:30.747Z"
+      "createdAt": "2026-09-29T21:15:29.511Z"
     },
     {
       "id": "mem_seedAmara2",
       "characterId": "chr_seedAmara",
       "worldId": "wld_seedMeridian",
-      "kind": "event",
-      "text": "Amara advised Kai to hydrate, take a steady small caffeine dose, taper by a quarter every few days, and use a simple painkiller if needed.",
-      "importance": 0.565,
+      "kind": "fact",
+      "text": "Kai's headache fits caffeine withdrawal: it hits 12-24 hours after a sharp drop and can last up to nine days.",
+      "importance": 0.465,
       "sourceSessionId": "ses_seedAmaraHeadache",
       "sourceMessageId": "msg_seedA05",
-      "createdAt": "2026-09-29T21:15:30.747Z"
+      "createdAt": "2026-09-29T21:15:29.511Z"
     },
     {
       "id": "mem_seedAmara3",
       "characterId": "chr_seedAmara",
       "worldId": "wld_seedMeridian",
       "kind": "fact",
-      "text": "Amara told Kai red flags needing same-day emergency care: thunderclap headache, fever with neck stiffness, one-sided weakness, confusion, vision changes, or headache waking him at night.",
-      "importance": 0.65,
+      "text": "Kai has no fever, neck stiffness, confusion, weakness, vision changes or pain on bending forward.",
+      "importance": 0.395,
       "sourceSessionId": "ses_seedAmaraHeadache",
-      "sourceMessageId": "msg_seedA07",
-      "createdAt": "2026-09-29T21:15:30.747Z"
+      "sourceMessageId": "msg_seedA05",
+      "createdAt": "2026-09-29T21:15:29.511Z"
     },
     {
       "id": "mem_seedAmara4",
       "characterId": "chr_seedAmara",
       "worldId": "wld_seedMeridian",
       "kind": "fact",
-      "text": "Amara argued for a nationwide four-day week: a protected-rest health and safety intervention, citing burnout cuts, better sleep, and stable patient care in pilots.",
-      "importance": 0.6625,
-      "sourceSessionId": "ses_seedDebate4Day",
-      "sourceMessageId": "msg_seedD02",
-      "createdAt": "2026-10-01T09:59:20.540Z"
+      "text": "Amara advised Kai to taper caffeine slowly, keep fluids up, and check back if the headache is not easing by about day nine.",
+      "importance": 0.5475,
+      "sourceSessionId": "ses_seedAmaraHeadache",
+      "sourceMessageId": "msg_seedA07",
+      "createdAt": "2026-09-29T21:15:29.511Z"
     },
     {
       "id": "mem_seedAmara5",
       "characterId": "chr_seedAmara",
       "worldId": "wld_seedMeridian",
       "kind": "fact",
-      "text": "Mei's strongest opposing point: holding coverage constant took 18–27% more staffed hours, hitting small shift-based employers hardest.",
-      "importance": 0.6475,
-      "sourceSessionId": "ses_seedDebate4Day",
-      "sourceMessageId": "msg_seedD11",
-      "createdAt": "2026-10-01T09:59:20.540Z"
+      "text": "Amara told Kai that a sudden severe headache reaching its worst within a minute needs emergency care, as do fever, neck stiffness, confusion, weakness, vision changes, slurred speech, face drooping, or a non-fading rash.",
+      "importance": 0.5975,
+      "sourceSessionId": "ses_seedAmaraHeadache",
+      "sourceMessageId": "msg_seedA07",
+      "createdAt": "2026-09-29T21:15:29.511Z"
     },
     {
       "id": "mem_seedAmara6",
       "characterId": "chr_seedAmara",
       "worldId": "wld_seedMeridian",
       "kind": "event",
-      "text": "Debate verdict: the Against side made the stronger case, as neither side closed whether staffed hours rise or turnover savings repay costs.",
-      "importance": 0.54,
+      "text": "Amara argued for a nationwide four-day work week, citing two wards where a compressed four-day rota cut burnout about a fifth in twelve weeks with throughput and readmissions stable.",
+      "importance": 0.75,
       "sourceSessionId": "ses_seedDebate4Day",
-      "sourceMessageId": "msg_seedD15",
-      "createdAt": "2026-10-01T09:59:20.540Z"
+      "sourceMessageId": "msg_seedD02",
+      "createdAt": "2026-10-01T09:59:00.663Z"
+    },
+    {
+      "id": "mem_seedAmara7",
+      "characterId": "chr_seedAmara",
+      "worldId": "wld_seedMeridian",
+      "kind": "fact",
+      "text": "Amara's emergency department burnout rose from 29% in March to 41% by January, with nurses resigning at 14% a year and each replacement costing about four months' salary.",
+      "importance": 0.735,
+      "sourceSessionId": "ses_seedDebate4Day",
+      "sourceMessageId": "msg_seedD02",
+      "createdAt": "2026-10-01T09:59:00.663Z"
+    },
+    {
+      "id": "mem_seedAmara8",
+      "characterId": "chr_seedAmara",
+      "worldId": "wld_seedMeridian",
+      "kind": "fact",
+      "text": "Amara conceded her review did not test whole-department round-the-clock cover and that the emergency department proper needs further modelling.",
+      "importance": 0.675,
+      "sourceSessionId": "ses_seedDebate4Day",
+      "sourceMessageId": "msg_seedD13",
+      "createdAt": "2026-10-01T09:59:00.663Z"
+    },
+    {
+      "id": "mem_seedAmara9",
+      "characterId": "chr_seedAmara",
+      "worldId": "wld_seedMeridian",
+      "kind": "fact",
+      "text": "Amara's ward review found burnout fell 19% and 22%, sleep before shifts improved 40 minutes, and a 6% agency-hours transition premium faded to baseline by week eight.",
+      "importance": 0.7175,
+      "sourceSessionId": "ses_seedDebate4Day",
+      "sourceMessageId": "msg_seedD13",
+      "createdAt": "2026-10-01T09:59:00.663Z"
     }
   ]
 }

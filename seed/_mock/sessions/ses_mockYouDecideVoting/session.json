@@ -73,11 +73,11 @@
       "nextSpeakerId": "chr_seedMei"
     },
     "isSeed": false,
-    "costUsd": 0.00047,
+    "costUsd": 0.001454,
     "messageCount": 7,
-    "createdAt": "2026-09-25T15:04:59.966Z",
-    "updatedAt": "2026-09-25T15:05:59.297Z",
+    "createdAt": "2026-09-25T15:04:59.984Z",
+    "updatedAt": "2026-09-25T15:05:44.810Z",
     "pausedReason": "user",
-    "lastMessageAt": "2026-09-25T15:05:17.220Z"
+    "lastMessageAt": "2026-09-25T15:05:21.162Z"
   }
 }

@@ -45,7 +45,7 @@
     "type": "energy",
     "payload": {
      "characterId": "chr_seedHana",
-     "current": 921,
+     "current": 925,
      "max": 1000,
      "state": "active"
     }
@@ -71,7 +71,7 @@
     "type": "energy",
     "payload": {
      "characterId": "chr_seedRin",
-     "current": 182,
+     "current": 188,
      "max": 1000,
      "state": "tired"
     }
@@ -80,7 +80,7 @@
     "id": "evt_forkFixture1e5",
     "sessionId": "ses_forkFixture1",
     "seq": 5,
-    "at": "2026-09-30T10:30:10.659Z",
+    "at": "2026-09-30T10:30:08.137Z",
     "type": "message",
     "payload": {
      "message": {
@@ -93,7 +93,7 @@
       "kind": "chat",
       "content": "Dinner's on me tonight, everyone. What should we order?",
       "status": "complete",
-      "createdAt": "2026-09-30T10:30:10.659Z"
+      "createdAt": "2026-09-30T10:30:08.137Z"
      }
     }
    },
@@ -101,7 +101,7 @@
     "id": "evt_forkFixture1e6",
     "sessionId": "ses_forkFixture1",
     "seq": 6,
-    "at": "2026-09-30T10:30:11.208Z",
+    "at": "2026-09-30T10:30:08.645Z",
     "type": "turn.next",
     "payload": {
      "nextSpeakerId": "chr_seedHana"
@@ -111,7 +111,7 @@
     "id": "evt_forkFixture1e7",
     "sessionId": "ses_forkFixture1",
     "seq": 7,
-    "at": "2026-09-30T10:30:11.273Z",
+    "at": "2026-09-30T10:30:08.715Z",
     "type": "turn.thinking",
     "payload": {
      "characterId": "chr_seedHana"
@@ -121,7 +121,7 @@
     "id": "evt_forkFixture1e8",
     "sessionId": "ses_forkFixture1",
     "seq": 8,
-    "at": "2026-09-30T10:30:11.808Z",
+    "at": "2026-09-30T10:30:09.531Z",
     "type": "turn.start",
     "payload": {
      "messageId": "msg_forkFixture1m1",
@@ -135,7 +135,7 @@
     "id": "evt_forkFixture1e9",
     "sessionId": "ses_forkFixture1",
     "seq": 9,
-    "at": "2026-09-30T10:30:11.808Z",
+    "at": "2026-09-30T10:30:09.531Z",
     "type": "emotion",
     "payload": {
      "messageId": "msg_forkFixture1m1",
@@ -148,129 +148,74 @@
     "id": "evt_forkFixture1e10",
     "sessionId": "ses_forkFixture1",
     "seq": 10,
-    "at": "2026-09-30T10:30:11.892Z",
+    "at": "2026-09-30T10:30:09.584Z",
     "type": "token",
     "payload": {
      "messageId": "msg_forkFixture1m1",
-     "delta": "Ooh, something warm and cozy"
+     "delta": "Can we do"
     }
    },
    {
     "id": "evt_forkFixture1e11",
     "sessionId": "ses_forkFixture1",
     "seq": 11,
-    "at": "2026-09-30T10:30:11.986Z",
+    "at": "2026-09-30T10:30:09.668Z",
     "type": "token",
     "payload": {
      "messageId": "msg_forkFixture1m1",
-     "delta": " — it's been d"
+     "delta": " that udon place? I've been dreaming about their"
     }
    },
    {
     "id": "evt_forkFixture1e12",
     "sessionId": "ses_forkFixture1",
     "seq": 12,
-    "at": "2026-09-30T10:30:12.065Z",
+    "at": "2026-09-30T10:30:09.805Z",
     "type": "token",
     "payload": {
      "messageId": "msg_forkFixture1m1",
-     "delta": "rizzly all afternoon at the shop!! I vote curry"
+     "delta": " tempura since Tuesday!! Also Dad,"
     }
    },
    {
     "id": "evt_forkFixture1e13",
     "sessionId": "ses_forkFixture1",
     "seq": 13,
-    "at": "2026-09-30T10:30:12.143Z",
+    "at": "2026-09-30T10:30:09.955Z",
     "type": "token",
     "payload": {
      "messageId": "msg_forkFixture1m1",
-     "delta": ", or maybe that little ram"
+     "delta": " you still owe me a rematch at cards after dinner"
     }
    },
    {
     "id": "evt_forkFixture1e14",
     "sessionId": "ses_forkFixture1",
     "seq": 14,
-    "at": "2026-09-30T10:30:12.221Z",
+    "at": "2026-09-30T10:30:09.973Z",
     "type": "token",
     "payload": {
      "messageId": "msg_forkFixture1m1",
-     "delta": "en place Dad keeps swearing is \""
+     "delta": "."
     }
    },
    {
     "id": "evt_forkFixture1e15",
     "sessionId": "ses_forkFixture1",
     "seq": 15,
-    "at": "2026-09-30T10:30:12.283Z",
-    "type": "token",
-    "payload": {
-     "messageId": "msg_forkFixture1m1",
-     "delta": "the only real one.\"\n\nAlso I"
-    }
-   },
-   {
-    "id": "evt_forkFixture1e16",
-    "sessionId": "ses_forkFixture1",
-    "seq": 16,
-    "at": "2026-09-30T10:30:12.376Z",
-    "type": "token",
-    "payload": {
-     "messageId": "msg_forkFixture1m1",
-     "delta": " may have stress-baked a"
-    }
-   },
-   {
-    "id": "evt_forkFixture1e17",
-    "sessionId": "ses_forkFixture1",
-    "seq": 17,
-    "at": "2026-09-30T10:30:12.700Z",
-    "type": "token",
-    "payload": {
-     "messageId": "msg_forkFixture1m1",
-     "delta": " lemon loaf"
-    }
-   },
-   {
-    "id": "evt_forkFixture1e18",
-    "sessionId": "ses_forkFixture1",
-    "seq": 18,
-    "at": "2026-09-30T10:30:12.889Z",
-    "type": "token",
-    "payload": {
-     "messageId": "msg_forkFixture1m1",
-     "delta": " earlier, so save a"
-    }
-   },
-   {
-    "id": "evt_forkFixture1e19",
-    "sessionId": "ses_forkFixture1",
-    "seq": 19,
-    "at": "2026-09-30T10:30:12.941Z",
-    "type": "token",
-    "payload": {
-     "messageId": "msg_forkFixture1m1",
-     "delta": " tiny corner for dessert."
-    }
-   },
-   {
-    "id": "evt_forkFixture1e20",
-    "sessionId": "ses_forkFixture1",
-    "seq": 20,
-    "at": "2026-09-30T10:30:13.450Z",
+    "at": "2026-09-30T10:30:10.527Z",
     "type": "turn.end",
     "payload": {
      "messageId": "msg_forkFixture1m1",
      "status": "complete",
      "usage": {
       "tokensIn": 726,
-      "tokensCached": 256,
-      "tokensOut": 62,
-      "costUsd": 0.000066,
-      "energySpent": 1,
-      "firstTokenMs": 620,
-      "totalMs": 1782
+      "tokensCached": 0,
+      "tokensOut": 34,
+      "costUsd": 0.000284,
+      "energySpent": 3,
+      "firstTokenMs": 888,
+      "totalMs": 1342
      }
     }
    }
@@ -311,11 +256,11 @@
    },
    "state": null,
    "isSeed": false,
-   "costUsd": 0.000066,
+   "costUsd": 0.000284,
    "messageCount": 2,
    "createdAt": "2026-10-03T03:00:00.000Z",
-   "updatedAt": "2026-09-30T10:30:13.450Z",
-   "lastMessageAt": "2026-09-30T10:30:11.808Z",
+   "updatedAt": "2026-09-30T10:30:10.527Z",
+   "lastMessageAt": "2026-09-30T10:30:09.531Z",
    "continuedFrom": "ses_seedDinner"
   },
   "messages": [
@@ -329,7 +274,7 @@
     "kind": "chat",
     "content": "Dinner's on me tonight, everyone. What should we order?",
     "status": "complete",
-    "createdAt": "2026-09-30T10:30:10.659Z"
+    "createdAt": "2026-09-30T10:30:08.137Z"
    },
    {
     "kind": "chat",
@@ -340,19 +285,19 @@
      "type": "character",
      "characterId": "chr_seedHana"
     },
-    "content": "Ooh, something warm and cozy — it's been drizzly all afternoon at the shop!! I vote curry, or maybe that little ramen place Dad keeps swearing is \"the only real one.\"\n\nAlso I may have stress-baked a lemon loaf earlier, so save a tiny corner for dessert.",
+    "content": "Can we do that udon place? I've been dreaming about their tempura since Tuesday!! Also Dad, you still owe me a rematch at cards after dinner.",
     "status": "complete",
-    "createdAt": "2026-09-30T10:30:11.808Z",
+    "createdAt": "2026-09-30T10:30:09.531Z",
     "emotion": "happy",
     "emotionSource": "classifier",
     "usage": {
      "tokensIn": 726,
-     "tokensCached": 256,
-     "tokensOut": 62,
-     "costUsd": 0.000066,
-     "energySpent": 1,
-     "firstTokenMs": 620,
-     "totalMs": 1782
+     "tokensCached": 0,
+     "tokensOut": 34,
+     "costUsd": 0.000284,
+     "energySpent": 3,
+     "firstTokenMs": 888,
+     "totalMs": 1342
     }
    }
   ]

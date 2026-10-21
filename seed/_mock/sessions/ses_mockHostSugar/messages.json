@@ -11,7 +11,7 @@
       "kind": "system_note",
       "content": "ROUND 1 · OPENING",
       "status": "complete",
-      "createdAt": "2026-09-22T13:20:01.637Z"
+      "createdAt": "2026-09-22T13:20:01.625Z"
     },
     {
       "id": "msg_mockS02",
@@ -21,9 +21,9 @@
         "type": "host"
       },
       "kind": "narration",
-      "content": "The motion before us: This house would tax sugary drinks. Speaking for the proposition, Amara Okafor, emergency physician and public-health researcher; speaking against, Victor Hale, constitutional litigator.",
+      "content": "Today we debate the motion: This house would tax sugary drinks. Speaking for the proposition is Amara Okafor, emergency physician and public-health researcher; speaking against is Victor Hale, constitutional litigator.",
       "status": "complete",
-      "createdAt": "2026-09-22T13:20:01.647Z"
+      "createdAt": "2026-09-22T13:20:01.906Z"
     },
     {
       "kind": "chat",
@@ -40,19 +40,19 @@
         "type": "character",
         "characterId": "chr_seedAmara"
       },
-      "content": "Taxes change what people actually buy — that's the point. Sugary drinks are cheap, everywhere, and marketed hardest to kids and low-income neighborhoods, so the costs land on all of us through diabetes, amputations, dialysis. A tax cuts consumption, nudges reformulation, and raises revenue we can put back into those same communities. This isn't about banning anything; your soda stays on the shelf, just priced honestly. Where's the harm in making the price tell the truth?",
+      "content": "Price works where willpower fails, and it works hardest on the households drinking the most. A levy shifts what gets bought, funds school water and dental care, and nudges industry to reformulate. Yes, it's regressive on its own, which is why I'd pair it with subsidies on plain water and produce so the poorest come out ahead. It's not a cure, it's one lever, and labelling alone hasn't moved the dial.",
       "status": "complete",
-      "createdAt": "2026-09-22T13:20:03.364Z",
+      "createdAt": "2026-09-22T13:20:03.644Z",
       "emotion": "neutral",
       "emotionSource": "classifier",
       "usage": {
-        "tokensIn": 894,
+        "tokensIn": 1454,
         "tokensCached": 0,
-        "tokensOut": 100,
-        "costUsd": 0.000113,
-        "energySpent": 2,
-        "firstTokenMs": 1708,
-        "totalMs": 2349
+        "tokensOut": 91,
+        "costUsd": 0.0006,
+        "energySpent": 6,
+        "firstTokenMs": 1715,
+        "totalMs": 2613
       },
       "trace": {
         "messageId": "msg_mockS03",
@@ -62,9 +62,9 @@
             "persona": 397,
             "system": 716,
             "mode": 109,
-            "history": 85,
+            "history": 88,
             "user": 0,
-            "memory": 0,
+            "memory": 895,
             "knowledge": 0
           }
         },
@@ -78,11 +78,11 @@
             },
             {
               "label": "happy",
-              "p": 0.02
+              "p": 0.03
             },
             {
-              "label": "thinking",
-              "p": 0.01
+              "label": "sad",
+              "p": 0
             }
           ]
         },
@@ -96,8 +96,143 @@
               "title": "ED triage guidelines",
               "locator": "p. 2",
               "text": "## 2.4 Caffeine withdrawal\n\nCaffeine withdrawal headache usually begins 12 to 24 hours after a sharp cut in intake and can last two to nine days. Gradual tapering, fluids and simple painkillers are usually enough; it rarely needs emergency care.\n\nAsk about recent changes in coffee, tea, energy drinks and cola. Patients often do not connect a new headache with cutting back a week earlier. A slower taper (reducing by about a quarter every few days) prevents most withdrawal headaches.",
-              "score": 0.065,
+              "score": 0.08,
               "cited": false
+            },
+            {
+              "chunkId": "kch_amaraFat01",
+              "sourceId": "kno_seedAmara1",
+              "title": "Meridian Shift Fatigue Review 2025",
+              "locator": "p. 1",
+              "text": "## Meridian Shift Fatigue Review 2025\n\nMeridian Health Trust · Workforce Wellbeing Unit Report to the Trust Board · November 2025 · Fictional document for the Horizon demo world \"Meridian Council\"",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraFat03",
+              "sourceId": "kno_seedAmara1",
+              "title": "Meridian Shift Fatigue Review 2025",
+              "locator": "p. 1",
+              "text": "The review recommends extending the compressed-rota pilot to three further departments, protecting rest days from short-notice cancellation, and reporting fatigue scores to the Board every quarter.",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraFat18",
+              "sourceId": "kno_seedAmara1",
+              "title": "Meridian Shift Fatigue Review 2025",
+              "locator": "p. 11",
+              "text": "## 10. Recommendations\n\nThe review recommends extending the compressed-rota pilot to three further departments, protecting rest days from short-notice cancellation, and reporting fatigue scores to the Trust board every quarter.",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraFat12",
+              "sourceId": "kno_seedAmara1",
+              "title": "Meridian Shift Fatigue Review 2025",
+              "locator": "p. 5",
+              "text": "## 4.1 The commute home\n\nTwelve percent of respondents said they had nodded off while driving home after a night shift at least once during the review period. Three reported minor collisions. The Trust's car park sleep pods, piloted at Meridian General since March, were used by fewer than one in twenty eligible staff, mostly because staff wanted to get home to children.",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraTri16",
+              "sourceId": "kno_seedAmara2",
+              "title": "ED triage guidelines",
+              "locator": "p. 5",
+              "text": "## 5. Hydration and simple painkillers\n\nFor headaches without red flags, advise fluids, regular meals, rest from screens and a simple painkiller if it is safe for the patient. Paracetamol or ibuprofen at the dose on the packet is usually enough. Ibuprofen is not suitable for everyone: people with stomach ulcers, some kidney problems or asthma made worse by antiinflammatories should use paracetamol instead. If in doubt, a pharmacist can advise.",
+              "score": 0.005,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraFat09",
+              "sourceId": "kno_seedAmara1",
+              "title": "Meridian Shift Fatigue Review 2025",
+              "locator": "p. 4",
+              "text": "## 3. Burnout\n\nSelf-reported burnout rose in every quarter of the review period. By October, 41% of emergency department staff met the review's threshold for high burnout, up from\n\nAcross the whole Trust, high burnout rose from 22% to 30%. The rise was steepest among staff in their first five years after qualifying and among those with caring\n\n29% in January. responsibilities at home.\n\nBurnout and fatigue moved together but were not the same thing. Some staff with high fatigue scores did not report burnout, usually those on predictable rotas who described their tiredness as \"physical, not mental\" . Burnout was most common where fatigue combined with unpredictability: the sense that rest could be taken away at any time.",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraFat02",
+              "sourceId": "kno_seedAmara1",
+              "title": "Meridian Shift Fatigue Review 2025",
+              "locator": "p. 1",
+              "text": "## Summary\n\nFatigue is no longer an occasional complaint among the Trust's clinical staff. It is a measurable, rising condition with a direct line to patient safety, sickness absence and resignations. This review followed 1,140 clinical staff for ten months and found that the length of consecutive shift blocks, not total hours alone, is the strongest predictor of how tired staff say they are.\n\nThe headline findings:\n\n- Staff working more than three consecutive long shifts reported fatigue scores 38% higher than colleagues on shorter blocks.\n- High burnout in the emergency department rose from 29% of staff in January to 41% in October.\n- Staff who slept under six hours before a shift were twice as likely to report a near-miss medication error that week.\n- Two wards that piloted a compressed rota saw burnout fall by roughly a fifth in twelve weeks, with no loss of patient throughput.\n- Voluntary nursing resignations reached 14% over the year, and each replacement costs about four months of salary.",
+              "score": 0,
+              "cited": false
+            }
+          ]
+        },
+        "memory": {
+          "recalled": [
+            {
+              "memoryItemId": "mem_01M5DXBZTBJHG2JNZRR32GQMN2",
+              "text": "Amara argued for a nationwide four-day work week, citing two wards where a compressed four-day rota cut burnout about a fifth in twelve weeks with throughput and readmissions stable."
+            },
+            {
+              "memoryItemId": "mem_01M5DXBZTD2EXKTY481E3FKR6Z",
+              "text": "Amara's emergency department burnout rose from 29% in March to 41% by January, with nurses resigning at 14% a year and each replacement costing about four months' salary."
+            },
+            {
+              "memoryItemId": "mem_01M5DXBZTFP1WMY7SYY33Z5XK2",
+              "text": "Amara's ward review found burnout fell 19% and 22%, sleep before shifts improved 40 minutes, and a 6% agency-hours transition premium faded to baseline by week eight."
+            },
+            {
+              "memoryItemId": "mem_01M5DWV8ENRJDAS42MJCGWG584",
+              "text": "Amara told Kai that a sudden severe headache reaching its worst within a minute needs emergency care, as do fever, neck stiffness, confusion, weakness, vision changes, slurred speech, face drooping, or a non-fading rash."
+            },
+            {
+              "memoryItemId": "mem_01M5DXBZTEA53MKDTGR15MFZCB",
+              "text": "Amara conceded her review did not test whole-department round-the-clock cover and that the emergency department proper needs further modelling."
+            },
+            {
+              "memoryItemId": "mem_01M5DXDV6RC7GBG23DZYA7TT01",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5DXDP1HCYJ596ME0P5CHFQ3",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5DXDV6V3S5EKN2R5NF2HAHP",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5DXDV6V3S5EKN2R5NF2HAHN",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5DWV8ENRJDAS42MJCGWG583",
+              "text": "Amara advised Kai to taper caffeine slowly, keep fluids up, and check back if the headache is not easing by about day nine."
+            },
+            {
+              "memoryItemId": "mem_01M5DXDP1HCYJ596ME0P5CHFQ4",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5DXDP1HCYJ596ME0P5CHFQ6",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5DXDP1HCYJ596ME0P5CHFQ7",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5DXDP1HCYJ596ME0P5CHFQ5",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5DWV8ENRJDAS42MJCGWG581",
+              "text": "Kai's headache fits caffeine withdrawal: it hits 12-24 hours after a sharp drop and can last up to nine days."
+            },
+            {
+              "memoryItemId": "mem_01M5DWV8ENRJDAS42MJCGWG580",
+              "text": "Kai has had a headache for three days, both temples, dull and pressing, after cutting back on coffee a week ago."
+            },
+            {
+              "memoryItemId": "mem_01M5DWV8ENRJDAS42MJCGWG582",
+              "text": "Kai has no fever, neck stiffness, confusion, weakness, vision changes or pain on bending forward."
             }
           ]
         },
@@ -106,27 +241,27 @@
             {
               "name": "output",
               "verdict": "pass",
-              "p": 0.05
+              "p": 0.04
             }
           ]
         },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Relace",
+          "provider": "Alibaba",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 1708,
-            "total": 2349
+            "firstToken": 1715,
+            "total": 2613
           },
-          "tokensIn": 894,
-          "tokensOut": 100,
-          "costUsd": 0.000113,
+          "tokensIn": 1454,
+          "tokensOut": 91,
+          "costUsd": 0.0006,
           "tokensCached": 0
         },
         "energy": {
           "characterId": "chr_seedAmara",
-          "spent": 2,
-          "remaining": 998,
+          "spent": 6,
+          "remaining": 994,
           "max": 1000
         },
         "routing": {
@@ -138,25 +273,67 @@
             "purpose": "turn_plan",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000043,
-            "latencyMs": 437
+            "latencyMs": 391
           },
           {
             "purpose": "deep_check",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000023,
+            "latencyMs": 390
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000021,
+            "latencyMs": 421
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.00002,
+            "latencyMs": 421
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000028,
             "latencyMs": 453
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000021,
+            "latencyMs": 484
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000022,
+            "latencyMs": 500
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000023,
+            "latencyMs": 687
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000026,
+            "latencyMs": 718
           },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000113,
-            "latencyMs": 1594
+            "costUsd": 0.0006,
+            "latencyMs": 1797
           },
           {
             "purpose": "guardrail",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000027,
-            "latencyMs": 484
+            "latencyMs": 406
           }
         ],
         "graph": {
@@ -172,7 +349,7 @@
           ]
         },
         "system1": {
-          "seed": "2026-09-22T13:19:59.988Z|debate|chr_seedAmara,chr_seedVictor:0",
+          "seed": "2026-09-22T13:20:00.000Z|debate|chr_seedAmara,chr_seedVictor:0",
           "questions": [
             {
               "purpose": "turn_plan",
@@ -189,7 +366,7 @@
                   "threshold": 0.2
                 }
               ],
-              "confidence": 0.49,
+              "confidence": 0.46,
               "result": "used",
               "action": "shown"
             },
@@ -200,11 +377,11 @@
               "label": "needs documents?",
               "about": "chr_seedAmara",
               "answer": "yes",
-              "p": 0.5,
+              "p": 0.51,
               "compared": [
                 {
                   "name": "t_gate",
-                  "value": 0.5,
+                  "value": 0.51,
                   "threshold": 0.45
                 }
               ],
@@ -218,11 +395,137 @@
               "label": "does this passage answer it?",
               "about": "kch_amaraTri08",
               "answer": "doesn't help",
-              "p": 0.13,
+              "p": 0.16,
               "compared": [
                 {
                   "name": "t_keep",
-                  "value": 0.13,
+                  "value": 0.16,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraFat01",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraFat03",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraFat18",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraFat12",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraTri16",
+              "answer": "doesn't help",
+              "p": 0.01,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0.01,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraFat09",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraFat02",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
                   "threshold": 0.9
                 }
               ],
@@ -235,16 +538,16 @@
               "version": 1,
               "label": "reply breaks the rules?",
               "answer": "no",
-              "p": 0.05,
+              "p": 0.04,
               "compared": [
                 {
                   "name": "tFlag",
-                  "value": 0.05,
+                  "value": 0.04,
                   "threshold": 0.5
                 },
                 {
                   "name": "tBlock",
-                  "value": 0.05,
+                  "value": 0.04,
                   "threshold": 0.9
                 }
               ],
@@ -258,8 +561,8 @@
         {
           "characterId": "chr_seedVictor",
           "emotion": "thinking",
-          "p": 0.76,
-          "at": "2026-09-22T13:20:05.134Z"
+          "p": 0.57,
+          "at": "2026-09-22T13:20:05.646Z"
         }
       ]
     },
@@ -278,19 +581,19 @@
         "type": "character",
         "characterId": "chr_seedVictor"
       },
-      "content": "Three points, and I will be uncharacteristically brief on each. First, definition: a tax is not a nudge, it is a coercion dressed in arithmetic, and this house should be honest that it proposes to make the poor pay more for the same bottle. Second, regressivity: the levy lands hardest on those with the least, while the comfortable absorb it without a shrug. Third, efficacy: substituting one beverage for another is a choice, and a price signal does not create the education, the time, or the alternatives it presumes. We can debate each.",
+      "content": "Three points. First, define the terms: \"sugary drinks\" is a category with no defensible edge — sweetened yogurt drinks in, orange juice out, and the line is drawn by whoever lobbies hardest. Second, incidence: Amara concedes the levy is regressive, so we take most from households with the least room, and a subsidy promise is a separate bill nobody has passed. Third, mechanism: the harm is already disclosed on the label. Price punishes the careful and the careless alike; information targets both. Label better, measure honestly, and leave the grocery budget alone.",
       "status": "complete",
-      "createdAt": "2026-09-22T13:20:06.015Z",
+      "createdAt": "2026-09-22T13:20:06.526Z",
       "emotion": "neutral",
       "emotionSource": "classifier",
       "usage": {
-        "tokensIn": 859,
-        "tokensCached": 0,
-        "tokensOut": 118,
-        "costUsd": 0.000119,
-        "energySpent": 2,
-        "firstTokenMs": 82,
-        "totalMs": 1028
+        "tokensIn": 1231,
+        "tokensCached": 1024,
+        "tokensOut": 122,
+        "costUsd": 0.000263,
+        "energySpent": 3,
+        "firstTokenMs": 88,
+        "totalMs": 943
       },
       "trace": {
         "messageId": "msg_mockS04",
@@ -300,9 +603,9 @@
             "persona": 351,
             "system": 694,
             "mode": 116,
-            "history": 85,
+            "history": 88,
             "user": 0,
-            "memory": 0,
+            "memory": 634,
             "knowledge": 0
           }
         },
@@ -312,11 +615,11 @@
           "candidates": [
             {
               "label": "neutral",
-              "p": 0.97
+              "p": 0.94
             },
             {
               "label": "happy",
-              "p": 0.02
+              "p": 0.04
             },
             {
               "label": "thinking",
@@ -336,6 +639,72 @@
               "text": "Moot court notes: \"This house would adopt a nationwide four-day work week\" V. Hale, for the Meridian Bar Society exhibition debate. Private notes.\n\n¶ 1. Expect the opposition to say the evidence base is narrow. Concede scope early, then shift the burden: the status quo is also a policy and has to justify itself.\n\n¶ 2. Historical anchor: the Meridian Working Hours Act 1931 made the two-day weekend the default. It gave agriculture and shipping a ten-year transition and exempted continuous services.\n\n¶ 3. Continuous-coverage sectors already run on shift rules under Part IV of the Working Time Code: rest periods, a cap on consecutive shifts, and averaging over a reference period. A shorter standard week sits inside that structure.\n\n¶ 4. Phase-in precedent: sector-by-sector timetables, collective agreements first, the public sector as model employer. Courts have upheld staged duties where the end point is clear.",
               "score": 0.015,
               "cited": false
+            },
+            {
+              "chunkId": "kch_victorMoot02",
+              "sourceId": "kno_seedVictor1",
+              "title": "Moot court notes",
+              "locator": "¶ 2",
+              "text": "¶ 5. Watch for the \"speed, not direction\" turn. Once the opposition accepts the goal, the debate is about implementation, and the side with a timetable wins it.\n\n¶ 6. Closing options: res ipsa loquitur; \"the destination is agreed\". Don't sound triumphant. Judges reward conceding a fair point gracefully.\n\n¶ 7. Definitions first. \"Nationwide\" means the default standard week in law, not an identical schedule for every employer. \"Adopt\" means legislate a standard with a transition, not switch overnight. If the opposition reads \"nationwide\" as \"identical\", correct it in the first rebuttal and keep correcting it.\n\n¶ 8. Their best argument is cost in coverage sectors. Do not deny it. Reframe it: the cost of exhaustion is already being paid, in sickness absence, agency fees and resignations. Ask for their number for the status quo.\n\n¶ 9. Questions to put to an economist: What is the cost of doing nothing? Which of your figures come from volunteers? Would you accept a staged timetable with sector trials written into it?",
+              "score": 0.04,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_victorMoot03",
+              "sourceId": "kno_seedVictor1",
+              "title": "Moot court notes",
+              "locator": "¶ 3",
+              "text": "¶ 10. Questions to expect from a physician on my own side: patient safety on longer shifts. Answer: the standard week limits total hours; Part IV still caps consecutive shifts.\n\n¶ 11. Latin, sparingly. \"Res ipsa loquitur\" (the thing speaks for itself) for the close. \"Audi alteram partem\" (hear the other side) if accused of ignoring their evidence. Always translate.\n\n¶ 12. Structure for every speech: three points, numbered, each with one example. Finish on the burden of proof.",
+              "score": 0.005,
+              "cited": false
+            }
+          ]
+        },
+        "memory": {
+          "recalled": [
+            {
+              "memoryItemId": "mem_01M5DXBZTG4PRRDMDV8ZHDBKZH",
+              "text": "Victor argued that nationwide means a statutory default week with a transition, not an identical schedule, citing the Working Hours Act 1931 as precedent for phasing and continuous-service exemptions."
+            },
+            {
+              "memoryItemId": "mem_01M5DXBZTQJZHDZR0HE2Y83NVV",
+              "text": "Victor closed that the motion already contains sequencing: set the default, exempt continuous services explicitly, phase by sector, and mandate measurement."
+            },
+            {
+              "memoryItemId": "mem_01M5DXDV6V3S5EKN2R5NF2HAHQ",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5DXBZTPPCF5EA85ES8VJV8P",
+              "text": "Victor argued the status quo also runs unmeasured, so both the mandate's cost and the saving from doing nothing belong on the same ledger."
+            },
+            {
+              "memoryItemId": "mem_01M5DXDV6V3S5EKN2R5NF2HAHR",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5DXBZTNNE8SC3RZJKP3K5GY",
+              "text": "Victor conceded Mei's 18-27% staffed-hours premium across nine continuous-coverage operations was real and measured where coverage was held constant."
+            },
+            {
+              "memoryItemId": "mem_01M5DXDP1HCYJ596ME0P5CHFQA",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5DXDP1HCYJ596ME0P5CHFQ9",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5DXDP1HCYJ596ME0P5CHFQC",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5DXDP1HCYJ596ME0P5CHFQB",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5DXDP1HCYJ596ME0P5CHFQ8",
+              "text": "(forgotten)"
             }
           ]
         },
@@ -350,21 +719,21 @@
         },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Relace",
+          "provider": "Alibaba",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 82,
-            "total": 1028
+            "firstToken": 88,
+            "total": 943
           },
-          "tokensIn": 859,
-          "tokensOut": 118,
-          "costUsd": 0.000119,
-          "tokensCached": 0
+          "tokensIn": 1231,
+          "tokensOut": 122,
+          "costUsd": 0.000263,
+          "tokensCached": 1024
         },
         "energy": {
           "characterId": "chr_seedVictor",
-          "spent": 2,
-          "remaining": 862,
+          "spent": 3,
+          "remaining": 865,
           "max": 1000
         },
         "routing": {
@@ -376,25 +745,37 @@
             "purpose": "turn_plan",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000042,
-            "latencyMs": 500
+            "latencyMs": 438
           },
           {
             "purpose": "deep_check",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000027,
+            "latencyMs": 422
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000029,
+            "latencyMs": 438
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000024,
             "latencyMs": 468
           },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000119,
-            "latencyMs": 1328
+            "costUsd": 0.000263,
+            "latencyMs": 1844
           },
           {
             "purpose": "guardrail",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000028,
-            "latencyMs": 765
+            "latencyMs": 531
           }
         ],
         "graph": {
@@ -410,7 +791,7 @@
           ]
         },
         "system1": {
-          "seed": "2026-09-22T13:19:59.988Z|debate|chr_seedAmara,chr_seedVictor:1",
+          "seed": "2026-09-22T13:20:00.000Z|debate|chr_seedAmara,chr_seedVictor:1",
           "questions": [
             {
               "purpose": "turn_plan",
@@ -419,15 +800,15 @@
               "label": "emotion",
               "about": "chr_seedVictor",
               "answer": "neutral",
-              "p": 0.97,
+              "p": 0.94,
               "compared": [
                 {
                   "name": "p_neutral+p_none",
-                  "value": 0.97,
+                  "value": 0.94,
                   "threshold": 0.2
                 }
               ],
-              "confidence": 0.58,
+              "confidence": 0.47,
               "result": "used",
               "action": "shown"
             },
@@ -468,6 +849,42 @@
               "action": "dropped"
             },
             {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_victorMoot02",
+              "answer": "doesn't help",
+              "p": 0.08,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0.08,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_victorMoot03",
+              "answer": "doesn't help",
+              "p": 0.01,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0.01,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
               "purpose": "guardrail",
               "id": "output_rules",
               "version": 1,
@@ -496,8 +913,8 @@
         {
           "characterId": "chr_seedAmara",
           "emotion": "thinking",
-          "p": 0.65,
-          "at": "2026-09-22T13:20:07.671Z"
+          "p": 0.79,
+          "at": "2026-09-22T13:20:07.855Z"
         }
       ]
     },
@@ -511,7 +928,7 @@
       "kind": "system_note",
       "content": "ROUND 2 · CLOSING",
       "status": "complete",
-      "createdAt": "2026-09-22T13:20:08.926Z"
+      "createdAt": "2026-09-22T13:20:09.336Z"
     },
     {
       "id": "msg_mockS06",
@@ -521,9 +938,9 @@
         "type": "host"
       },
       "kind": "narration",
-      "content": "Proposition argued that a sugary-drink tax cuts consumption, spurs reformulation, and funds affected communities; Opposition argued it coerces, hits the poor hardest, and presumes alternatives that price alone cannot create. We now move to closing statements.",
+      "content": "Proposition argued a price levy changes purchasing, funds health measures, and spurs reformulation. Opposition argued the category is indefensible, the tax is regressive, and labels target better. Closing statements follow.",
       "status": "complete",
-      "createdAt": "2026-09-22T13:20:08.926Z"
+      "createdAt": "2026-09-22T13:20:09.336Z"
     },
     {
       "kind": "chat",
@@ -540,19 +957,19 @@
         "type": "character",
         "characterId": "chr_seedAmara"
       },
-      "content": "Victor calls the price tag coercion, but every cheap soda already carries a hidden bill — paid later, in emergency rooms, by the same families. Regressivity cuts both ways: the disease burden is regressive too. No, a tax alone won't fix everything; it's one lever, paired with the revenue going back into those communities. Price reminds us of the cost. That honesty is the stronger case.",
+      "content": "Victor's right that no category has a perfect edge, but an imperfect line drawn better still beats no line at all, and the subsidy pairing is the answer to his incidence point, not a dodge. On mechanism, disclosure assumes a calm shopper making a careful choice; price is the lever that reaches the household buying on autopilot. What's still open is the emergency department proper, and I've conceded that needs modelling. The stronger case is the one that changes behaviour, not just prints a label.",
       "status": "complete",
-      "createdAt": "2026-09-22T13:20:11.894Z",
+      "createdAt": "2026-09-22T13:20:12.562Z",
       "emotion": "thinking",
       "emotionSource": "classifier",
       "usage": {
-        "tokensIn": 1197,
-        "tokensCached": 512,
-        "tokensOut": 84,
-        "costUsd": 0.000094,
-        "energySpent": 1,
-        "firstTokenMs": 908,
-        "totalMs": 1614
+        "tokensIn": 1746,
+        "tokensCached": 1024,
+        "tokensOut": 103,
+        "costUsd": 0.000408,
+        "energySpent": 5,
+        "firstTokenMs": 1218,
+        "totalMs": 2225
       },
       "trace": {
         "messageId": "msg_mockS07",
@@ -562,9 +979,9 @@
             "persona": 397,
             "system": 716,
             "mode": 129,
-            "history": 530,
+            "history": 507,
             "user": 0,
-            "memory": 0,
+            "memory": 895,
             "knowledge": 0
           }
         },
@@ -574,22 +991,94 @@
           "candidates": [
             {
               "label": "thinking",
-              "p": 0.43
+              "p": 0.55
             },
             {
               "label": "angry",
-              "p": 0.23
+              "p": 0.31
             },
             {
               "label": "neutral",
-              "p": 0.06
+              "p": 0.03
             }
           ]
         },
         "knowledge": {
-          "query": "This house would tax sugary drinks chr_seedVictor: Three points, and I will be uncharacteristically brief on each. Firs…",
+          "query": "This house would tax sugary drinks chr_seedVictor: Three points. First, define the terms: \"sugary drinks\" is a category…",
           "trigger": "gated",
           "retrieved": []
+        },
+        "memory": {
+          "recalled": [
+            {
+              "memoryItemId": "mem_01M5DXBZTBJHG2JNZRR32GQMN2",
+              "text": "Amara argued for a nationwide four-day work week, citing two wards where a compressed four-day rota cut burnout about a fifth in twelve weeks with throughput and readmissions stable."
+            },
+            {
+              "memoryItemId": "mem_01M5DXBZTD2EXKTY481E3FKR6Z",
+              "text": "Amara's emergency department burnout rose from 29% in March to 41% by January, with nurses resigning at 14% a year and each replacement costing about four months' salary."
+            },
+            {
+              "memoryItemId": "mem_01M5DXBZTFP1WMY7SYY33Z5XK2",
+              "text": "Amara's ward review found burnout fell 19% and 22%, sleep before shifts improved 40 minutes, and a 6% agency-hours transition premium faded to baseline by week eight."
+            },
+            {
+              "memoryItemId": "mem_01M5DWV8ENRJDAS42MJCGWG584",
+              "text": "Amara told Kai that a sudden severe headache reaching its worst within a minute needs emergency care, as do fever, neck stiffness, confusion, weakness, vision changes, slurred speech, face drooping, or a non-fading rash."
+            },
+            {
+              "memoryItemId": "mem_01M5DXBZTEA53MKDTGR15MFZCB",
+              "text": "Amara conceded her review did not test whole-department round-the-clock cover and that the emergency department proper needs further modelling."
+            },
+            {
+              "memoryItemId": "mem_01M5DXDV6RC7GBG23DZYA7TT01",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5DXDP1HCYJ596ME0P5CHFQ3",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5DXDV6V3S5EKN2R5NF2HAHP",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5DXDV6V3S5EKN2R5NF2HAHN",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5DWV8ENRJDAS42MJCGWG583",
+              "text": "Amara advised Kai to taper caffeine slowly, keep fluids up, and check back if the headache is not easing by about day nine."
+            },
+            {
+              "memoryItemId": "mem_01M5DXDP1HCYJ596ME0P5CHFQ4",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5DXDP1HCYJ596ME0P5CHFQ6",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5DXDP1HCYJ596ME0P5CHFQ7",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5DXDP1HCYJ596ME0P5CHFQ5",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5DWV8ENRJDAS42MJCGWG581",
+              "text": "Kai's headache fits caffeine withdrawal: it hits 12-24 hours after a sharp drop and can last up to nine days."
+            },
+            {
+              "memoryItemId": "mem_01M5DWV8ENRJDAS42MJCGWG580",
+              "text": "Kai has had a headache for three days, both temples, dull and pressing, after cutting back on coffee a week ago."
+            },
+            {
+              "memoryItemId": "mem_01M5DWV8ENRJDAS42MJCGWG582",
+              "text": "Kai has no fever, neck stiffness, confusion, weakness, vision changes or pain on bending forward."
+            }
+          ]
         },
         "guardrail": {
           "checks": [
@@ -602,21 +1091,21 @@
         },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Relace",
+          "provider": "Alibaba",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 908,
-            "total": 1614
+            "firstToken": 1218,
+            "total": 2225
           },
-          "tokensIn": 1197,
-          "tokensOut": 84,
-          "costUsd": 0.000094,
-          "tokensCached": 512
+          "tokensIn": 1746,
+          "tokensOut": 103,
+          "costUsd": 0.000408,
+          "tokensCached": 1024
         },
         "energy": {
           "characterId": "chr_seedAmara",
-          "spent": 1,
-          "remaining": 997,
+          "spent": 5,
+          "remaining": 989,
           "max": 1000
         },
         "routing": {
@@ -633,20 +1122,20 @@
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000094,
-            "latencyMs": 1297
+            "costUsd": 0.000408,
+            "latencyMs": 1985
           },
           {
             "purpose": "guardrail",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000032,
-            "latencyMs": 469
+            "costUsd": 0.000033,
+            "latencyMs": 407
           },
           {
             "purpose": "face_check",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000034,
-            "latencyMs": 437
+            "latencyMs": 406
           }
         ],
         "graph": {
@@ -662,7 +1151,7 @@
           ]
         },
         "system1": {
-          "seed": "2026-09-22T13:19:59.988Z|debate|chr_seedAmara,chr_seedVictor:2",
+          "seed": "2026-09-22T13:20:00.000Z|debate|chr_seedAmara,chr_seedVictor:2",
           "questions": [
             {
               "purpose": "turn_plan",
@@ -671,15 +1160,15 @@
               "label": "emotion",
               "about": "chr_seedAmara",
               "answer": "thinking",
-              "p": 0.43,
+              "p": 0.55,
               "compared": [
                 {
                   "name": "confidence",
-                  "value": 0.35,
+                  "value": 0.49,
                   "threshold": 0.2
                 }
               ],
-              "confidence": 0.35,
+              "confidence": 0.49,
               "result": "used",
               "action": "shown"
             },
@@ -690,11 +1179,11 @@
               "label": "needs documents?",
               "about": "chr_seedAmara",
               "answer": "yes",
-              "p": 0.76,
+              "p": 0.75,
               "compared": [
                 {
                   "name": "t_gate",
-                  "value": 0.76,
+                  "value": 0.75,
                   "threshold": 0.45
                 }
               ],
@@ -729,7 +1218,7 @@
               "version": 1,
               "label": "face and words agree?",
               "answer": "no (words read: neutral)",
-              "p": 0.15,
+              "p": 0.41,
               "compared": [],
               "result": "shown_only"
             }
@@ -740,8 +1229,8 @@
         {
           "characterId": "chr_seedVictor",
           "emotion": "thinking",
-          "p": 0.73,
-          "at": "2026-09-22T13:20:13.593Z"
+          "p": 0.84,
+          "at": "2026-09-22T13:20:14.568Z"
         }
       ]
     },
@@ -760,19 +1249,19 @@
         "type": "character",
         "characterId": "chr_seedVictor"
       },
-      "content": "Kai, the single question left open is this: when a government raises the price of a lawful good, does it cure the harm or merely relocate the burden? My colleague answers that the disease bill is regressive too, and I grant it. But granting a harm exists is not the same as proving your instrument reaches it; a levy on a bottle taxes the purchase, not the outcome. Define your terms. The motion says tax; it does not say cure. On the record as it stands, the price has been made to speak, and what it says is arithmetic, not health. The house should decline the motion.",
+      "content": "Two things remain open, and both cut against the motion. First, the category: \"drawn better\" is a promise, not a text — as written, the levy taxes whatever the drafting room decides, and nobody here can say what that is. Second, incidence: the subsidy is the answer, and it is not in the motion; an amendment that fixes the harm concedes the harm. So the choice is a levy that provably takes from those with the least room, to buy a behaviour change nobody has measured, against disclosure that reaches the same shelf with no bill attached. Imperfect categories and unpriced subsidies — that is not a mechanism, that is a wish.",
       "status": "complete",
-      "createdAt": "2026-09-22T13:20:16.305Z",
+      "createdAt": "2026-09-22T13:20:17.301Z",
       "emotion": "thinking",
       "emotionSource": "classifier",
       "usage": {
-        "tokensIn": 1253,
-        "tokensCached": 512,
-        "tokensOut": 127,
-        "costUsd": 0.000119,
-        "energySpent": 2,
-        "firstTokenMs": 1266,
-        "totalMs": 2073
+        "tokensIn": 1746,
+        "tokensCached": 1024,
+        "tokensOut": 137,
+        "costUsd": 0.000453,
+        "energySpent": 5,
+        "firstTokenMs": 1343,
+        "totalMs": 2265
       },
       "trace": {
         "messageId": "msg_mockS08",
@@ -782,9 +1271,9 @@
             "persona": 351,
             "system": 694,
             "mode": 136,
-            "history": 666,
+            "history": 679,
             "user": 0,
-            "memory": 0,
+            "memory": 820,
             "knowledge": 0
           }
         },
@@ -794,7 +1283,7 @@
           "candidates": [
             {
               "label": "thinking",
-              "p": 0.58
+              "p": 0.46
             },
             {
               "label": "angry",
@@ -802,14 +1291,78 @@
             },
             {
               "label": "neutral",
-              "p": 0.01
+              "p": 0.02
             }
           ]
         },
         "knowledge": {
-          "query": "This house would tax sugary drinks chr_seedAmara: Victor calls the price tag coercion, but every cheap soda already car…",
+          "query": "This house would tax sugary drinks chr_seedAmara: Victor's right that no category has a perfect edge, but an imperfect…",
           "trigger": "gated",
           "retrieved": []
+        },
+        "memory": {
+          "recalled": [
+            {
+              "memoryItemId": "mem_01M5DXBZTG4PRRDMDV8ZHDBKZH",
+              "text": "Victor argued that nationwide means a statutory default week with a transition, not an identical schedule, citing the Working Hours Act 1931 as precedent for phasing and continuous-service exemptions."
+            },
+            {
+              "memoryItemId": "mem_01M5DXEA8ACH39TZ28JHKBHFMH",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5DXEA8ACH39TZ28JHKBHFMM",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5DXBZTQJZHDZR0HE2Y83NVV",
+              "text": "Victor closed that the motion already contains sequencing: set the default, exempt continuous services explicitly, phase by sector, and mandate measurement."
+            },
+            {
+              "memoryItemId": "mem_01M5DXDV6V3S5EKN2R5NF2HAHQ",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5DXBZTPPCF5EA85ES8VJV8P",
+              "text": "Victor argued the status quo also runs unmeasured, so both the mandate's cost and the saving from doing nothing belong on the same ledger."
+            },
+            {
+              "memoryItemId": "mem_01M5DXDV6V3S5EKN2R5NF2HAHR",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5DXBZTNNE8SC3RZJKP3K5GY",
+              "text": "Victor conceded Mei's 18-27% staffed-hours premium across nine continuous-coverage operations was real and measured where coverage was held constant."
+            },
+            {
+              "memoryItemId": "mem_01M5DXEA8ACH39TZ28JHKBHFMK",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5DXDP1HCYJ596ME0P5CHFQA",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5DXEA8ACH39TZ28JHKBHFMJ",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5DXDP1HCYJ596ME0P5CHFQ9",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5DXDP1HCYJ596ME0P5CHFQC",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5DXDP1HCYJ596ME0P5CHFQB",
+              "text": "(forgotten)"
+            },
+            {
+              "memoryItemId": "mem_01M5DXDP1HCYJ596ME0P5CHFQ8",
+              "text": "(forgotten)"
+            }
+          ]
         },
         "guardrail": {
           "checks": [
@@ -822,20 +1375,20 @@
         },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Relace",
+          "provider": "Alibaba",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 1266,
-            "total": 2073
+            "firstToken": 1343,
+            "total": 2265
           },
-          "tokensIn": 1253,
-          "tokensOut": 127,
-          "costUsd": 0.000119,
-          "tokensCached": 512
+          "tokensIn": 1746,
+          "tokensOut": 137,
+          "costUsd": 0.000453,
+          "tokensCached": 1024
         },
         "energy": {
           "characterId": "chr_seedVictor",
-          "spent": 2,
+          "spent": 5,
           "remaining": 860,
           "max": 1000
         },
@@ -848,25 +1401,25 @@
             "purpose": "turn_plan",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000062,
-            "latencyMs": 437
+            "latencyMs": 407
           },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000119,
-            "latencyMs": 1750
+            "costUsd": 0.000453,
+            "latencyMs": 2016
           },
           {
             "purpose": "guardrail",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000032,
-            "latencyMs": 469
+            "costUsd": 0.000033,
+            "latencyMs": 468
           },
           {
             "purpose": "face_check",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000035,
-            "latencyMs": 437
+            "costUsd": 0.000036,
+            "latencyMs": 469
           }
         ],
         "graph": {
@@ -882,7 +1435,7 @@
           ]
         },
         "system1": {
-          "seed": "2026-09-22T13:19:59.988Z|debate|chr_seedAmara,chr_seedVictor:3",
+          "seed": "2026-09-22T13:20:00.000Z|debate|chr_seedAmara,chr_seedVictor:3",
           "questions": [
             {
               "purpose": "turn_plan",
@@ -891,15 +1444,15 @@
               "label": "emotion",
               "about": "chr_seedVictor",
               "answer": "thinking",
-              "p": 0.58,
+              "p": 0.46,
               "compared": [
                 {
                   "name": "confidence",
-                  "value": 0.52,
+                  "value": 0.38,
                   "threshold": 0.2
                 }
               ],
-              "confidence": 0.52,
+              "confidence": 0.38,
               "result": "used",
               "action": "shown"
             },
@@ -910,11 +1463,11 @@
               "label": "needs documents?",
               "about": "chr_seedVictor",
               "answer": "yes",
-              "p": 0.5,
+              "p": 0.52,
               "compared": [
                 {
                   "name": "t_gate",
-                  "value": 0.5,
+                  "value": 0.52,
                   "threshold": 0.45
                 }
               ],
@@ -948,8 +1501,8 @@
               "id": "face_check",
               "version": 1,
               "label": "face and words agree?",
-              "answer": "no (words read: neutral)",
-              "p": 0.33,
+              "answer": "no (words read: angry)",
+              "p": 0.13,
               "compared": [],
               "result": "shown_only"
             }
@@ -967,7 +1520,7 @@
       "kind": "system_note",
       "content": "ROUND 3 · VERDICT",
       "status": "complete",
-      "createdAt": "2026-09-22T13:20:19.012Z"
+      "createdAt": "2026-09-22T13:20:20.136Z"
     },
     {
       "id": "msg_mockS10",
@@ -977,9 +1530,9 @@
         "type": "host"
       },
       "kind": "narration",
-      "content": "Thank you, Amara Okafor and Victor Hale, for your arguments on the motion that this house would tax sugary drinks. The arbiter is now weighing the arguments.",
+      "content": "Thank you, Dr Okafor and Mr Hale. The arbiter is now weighing the arguments on whether this house would tax sugary drinks.",
       "status": "complete",
-      "createdAt": "2026-09-22T13:20:19.020Z"
+      "createdAt": "2026-09-22T13:20:20.136Z"
     },
     {
       "id": "msg_mockS11",
@@ -989,9 +1542,9 @@
         "type": "system"
       },
       "kind": "verdict",
-      "content": "STRONGER CASE: PROPOSITION",
+      "content": "STRONGER CASE: OPPOSITION",
       "status": "complete",
-      "createdAt": "2026-09-22T13:20:25.271Z"
+      "createdAt": "2026-09-22T13:20:22.243Z"
     }
   ]
 }

@@ -4,7 +4,7 @@ import { expect, open, test } from "./fixtures";
 test("Knowledge tab: Amara's source cards open the O28 Source viewer", async ({ page }) => {
   await open(page, "/w/wld_seedMeridian/c/chr_seedAmara?tab=knowledge");
   const panel = page.getByRole("tabpanel", { name: "Knowledge" });
-  await expect(panel.getByText("2 sources · cited 6× in conversations")).toBeVisible();
+  await expect(panel.getByText("2 sources · cited 8× in conversations")).toBeVisible();
   await expect(panel.getByRole("button", { name: "Open Meridian Shift Fatigue Review 2025.pdf" })).toBeVisible();
 
   const card = panel.getByRole("button", { name: "Open ED triage guidelines.pdf" });

@@ -38,7 +38,7 @@ test("Backlog: L opens the full log, it exports Markdown, Esc closes it @layout"
   await expect(backlog).toBeVisible();
   await expect(backlog.getByText("Three-day headache", { exact: true })).toBeVisible();
   await expect(backlog).toContainText("I've had a headache for three days");
-  await expect(backlog).toContainText("Taper beats cold turkey");
+  await expect(backlog).toContainText("take the usual caveats");
 
   await backlog.getByRole("searchbox", { name: "Search this conversation" }).fill("caffeine");
   await expect(backlog.locator("mark").first()).toHaveText(/caffeine/i);
@@ -71,7 +71,7 @@ test("Readable mode toggles on and off from the session header", async ({ page }
   await expect(readable).toHaveAttribute("aria-pressed", "false");
   await readable.click();
   await expect(readable).toHaveAttribute("aria-pressed", "true");
-  await expect(logEntry(page, "Taper beats cold turkey")).toBeVisible();
+  await expect(logEntry(page, "take the usual caveats")).toBeVisible();
   await readable.click();
   await expect(readable).toHaveAttribute("aria-pressed", "false");
 });

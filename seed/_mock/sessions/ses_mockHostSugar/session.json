@@ -75,78 +75,78 @@
           {
             "subjectId": "prop",
             "points": [
-              "Taxes change buying; sugary drinks are cheap, everywhere, and marketed to kids and poor areas.",
-              "Health costs land on all through diabetes, amputations, dialysis.",
-              "A tax cuts consumption, nudges reformulation, and raises revenue for those communities.",
-              "Not a ban; soda stays on shelf, just priced honestly.",
-              "Price tag carries hidden bill paid later by same families; regressivity cuts both ways."
+              "Price works where willpower fails, especially on heaviest-drinking households.",
+              "Levy shifts buying, funds school water and dental care, pushes reformulation.",
+              "Regressive effect is answered by pairing with subsidies on water and produce.",
+              "Labelling alone has not moved the dial; price reaches the autopilot shopper.",
+              "Imperfect category line still beats no line at all."
             ]
           },
           {
             "subjectId": "opp",
             "points": [
-              "A tax is coercion dressed in arithmetic, making the poor pay more for the same bottle.",
-              "Regressivity: the levy lands hardest on those with the least.",
-              "Efficacy: price signal does not create education, time, or alternatives it presumes.",
-              "A levy taxes the purchase, not the outcome; granting a harm is not proving the instrument reaches it.",
-              "The motion says tax; it does not say cure."
+              "Sugary drinks category has no defensible edge; line drawn by lobbyists.",
+              "Levy is regressive; subsidy promise is a separate bill nobody has passed.",
+              "Harm already disclosed on label; price punishes careful and careless alike.",
+              "Information targets both; label better, measure honestly, leave grocery budget alone.",
+              "As written, levy taxes whatever drafting room decides; subsidy not in motion."
             ]
           }
         ],
-        "keyDisagreement": "Whether a tax on sugary drinks actually reduces the health harm or merely relocates the burden onto the poor without curing the outcome.",
+        "keyDisagreement": "Whether a sugary drink tax as written can be justified given its regressive incidence and undefined category, or whether better labelling achieves the same without those costs.",
         "decidedBy": "arbiter",
-        "strongerCase": "prop",
+        "strongerCase": "opp",
         "scoresBy": "side",
         "scores": [
           {
             "subjectId": "prop",
             "criterionId": "evidence",
-            "value": 6.4
+            "value": 6.2
           },
           {
             "subjectId": "prop",
             "criterionId": "rebuttal",
-            "value": 7.8
+            "value": 7.9
           },
           {
             "subjectId": "prop",
             "criterionId": "clarity",
-            "value": 9.6
+            "value": 9.4
           },
           {
             "subjectId": "prop",
             "criterionId": "persuasion",
-            "value": 6.7
+            "value": 6.2
           },
           {
             "subjectId": "opp",
             "criterionId": "evidence",
-            "value": 4.3
+            "value": 7.4
           },
           {
             "subjectId": "opp",
             "criterionId": "rebuttal",
-            "value": 8.1
+            "value": 9
           },
           {
             "subjectId": "opp",
             "criterionId": "clarity",
-            "value": 9.6
+            "value": 9.7
           },
           {
             "subjectId": "opp",
             "criterionId": "persuasion",
-            "value": 6.2
+            "value": 6.7
           }
         ],
-        "rationale": "The Proposition wins because its rebuttal and persuasion scores, while not dominant, are backed by the highest clarity and a coherent link between tax, consumption, and revenue. The Opposition's strong rebuttal and clarity are undercut by weaker evidence and persuasion, leaving its efficacy challenge potent but less fully supported."
+        "rationale": "The Opposition scored higher on Evidence, Rebuttal, Clarity and Persuasion, and its closing effectively pressed the Proposition on the undefined category and the out-of-motion subsidy. The Proposition was clear and conceded ground, but its case rested on an unpassed subsidy and an unmeasured behaviour change, leaving the Opposition's alternative stronger on the scores."
       }
     },
     "isSeed": false,
-    "costUsd": 0.000445,
+    "costUsd": 0.001724,
     "messageCount": 11,
-    "createdAt": "2026-09-22T13:19:59.988Z",
-    "updatedAt": "2026-09-22T13:20:25.271Z",
-    "lastMessageAt": "2026-09-22T13:20:25.271Z"
+    "createdAt": "2026-09-22T13:20:00.000Z",
+    "updatedAt": "2026-09-22T13:20:22.243Z",
+    "lastMessageAt": "2026-09-22T13:20:22.243Z"
   }
 }

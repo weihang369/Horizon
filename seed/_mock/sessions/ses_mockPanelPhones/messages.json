@@ -11,7 +11,7 @@
       "kind": "system_note",
       "content": "ROUND 1 · OPENING",
       "status": "complete",
-      "createdAt": "2026-09-24T11:00:01.651Z"
+      "createdAt": "2026-09-24T11:00:01.652Z"
     },
     {
       "kind": "chat",
@@ -27,19 +27,19 @@
         "type": "character",
         "characterId": "chr_seedAmara"
       },
-      "content": "Schools are where kids spend most of their waking hours, and phones turn that time into a slot machine. I'd ban them during school hours because the evidence on attention is solid: a buzzing phone in a pocket pulls focus even when it's not in use, and that hits the kids who are already struggling hardest. Second, the social pressure to be reachable and performing online never takes a break in a phone-permitted school. Third, this is enforceable and teachable — clear hours, clear rule. That's not punishment. It's giving kids a room where they can actually think.",
+      "content": "I'd ban them in classrooms, not in schoolbags. The evidence on distraction is strong: phones fragment attention, and the kids who struggle most lose the most. But a blanket ban ignores the asthma inhaler reminder, the diabetic glucose monitor, the kid texting a parent about pickup. So: bell-to-bell limits, clear carve-outs for medical and accessibility needs, and teach digital judgement rather than pretend the devices don't exist. The question isn't whether phones distract. It's whether prohibition teaches anything.",
       "status": "complete",
-      "createdAt": "2026-09-24T11:00:02.391Z",
+      "createdAt": "2026-09-24T11:00:03.056Z",
       "emotion": "neutral",
       "emotionSource": "classifier",
       "usage": {
-        "tokensIn": 993,
-        "tokensCached": 0,
-        "tokensOut": 119,
-        "costUsd": 0.000129,
-        "energySpent": 2,
-        "firstTokenMs": 693,
-        "totalMs": 1246
+        "tokensIn": 1175,
+        "tokensCached": 1024,
+        "tokensOut": 102,
+        "costUsd": 0.000218,
+        "energySpent": 3,
+        "firstTokenMs": 1287,
+        "totalMs": 2316
       },
       "trace": {
         "messageId": "msg_mockP02",
@@ -51,7 +51,7 @@
             "mode": 126,
             "history": 11,
             "user": 0,
-            "memory": 217,
+            "memory": 488,
             "knowledge": 0
           }
         },
@@ -61,11 +61,11 @@
           "candidates": [
             {
               "label": "neutral",
-              "p": 0.96
+              "p": 0.92
             },
             {
               "label": "thinking",
-              "p": 0.04
+              "p": 0.08
             },
             {
               "label": "happy",
@@ -81,24 +81,40 @@
         "memory": {
           "recalled": [
             {
-              "memoryItemId": "mem_01M5D39V7YARWBYBXN1GFS123C",
-              "text": "(forgotten)"
+              "memoryItemId": "mem_01M5DXBZTBJHG2JNZRR32GQMN2",
+              "text": "Amara argued for a nationwide four-day work week, citing two wards where a compressed four-day rota cut burnout about a fifth in twelve weeks with throughput and readmissions stable."
             },
             {
-              "memoryItemId": "mem_01M5D39V87HAKY7MC87DA7G9MY",
-              "text": "(forgotten)"
+              "memoryItemId": "mem_01M5DXBZTD2EXKTY481E3FKR6Z",
+              "text": "Amara's emergency department burnout rose from 29% in March to 41% by January, with nurses resigning at 14% a year and each replacement costing about four months' salary."
             },
             {
-              "memoryItemId": "mem_01M5D39V897GGBVX4172BSCZKP",
-              "text": "(forgotten)"
+              "memoryItemId": "mem_01M5DXBZTFP1WMY7SYY33Z5XK2",
+              "text": "Amara's ward review found burnout fell 19% and 22%, sleep before shifts improved 40 minutes, and a 6% agency-hours transition premium faded to baseline by week eight."
             },
             {
-              "memoryItemId": "mem_01M5D39V8F4AVQ3CX72ZY19ETT",
-              "text": "(forgotten)"
+              "memoryItemId": "mem_01M5DWV8ENRJDAS42MJCGWG584",
+              "text": "Amara told Kai that a sudden severe headache reaching its worst within a minute needs emergency care, as do fever, neck stiffness, confusion, weakness, vision changes, slurred speech, face drooping, or a non-fading rash."
             },
             {
-              "memoryItemId": "mem_01M5D39V8CYTQYKBMSEHBJETNC",
-              "text": "(forgotten)"
+              "memoryItemId": "mem_01M5DXBZTEA53MKDTGR15MFZCB",
+              "text": "Amara conceded her review did not test whole-department round-the-clock cover and that the emergency department proper needs further modelling."
+            },
+            {
+              "memoryItemId": "mem_01M5DWV8ENRJDAS42MJCGWG583",
+              "text": "Amara advised Kai to taper caffeine slowly, keep fluids up, and check back if the headache is not easing by about day nine."
+            },
+            {
+              "memoryItemId": "mem_01M5DWV8ENRJDAS42MJCGWG581",
+              "text": "Kai's headache fits caffeine withdrawal: it hits 12-24 hours after a sharp drop and can last up to nine days."
+            },
+            {
+              "memoryItemId": "mem_01M5DWV8ENRJDAS42MJCGWG580",
+              "text": "Kai has had a headache for three days, both temples, dull and pressing, after cutting back on coffee a week ago."
+            },
+            {
+              "memoryItemId": "mem_01M5DWV8ENRJDAS42MJCGWG582",
+              "text": "Kai has no fever, neck stiffness, confusion, weakness, vision changes or pain on bending forward."
             }
           ]
         },
@@ -113,21 +129,21 @@
         },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Relace",
+          "provider": "Alibaba",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 693,
-            "total": 1246
+            "firstToken": 1287,
+            "total": 2316
           },
-          "tokensIn": 993,
-          "tokensOut": 119,
-          "costUsd": 0.000129,
-          "tokensCached": 0
+          "tokensIn": 1175,
+          "tokensOut": 102,
+          "costUsd": 0.000218,
+          "tokensCached": 1024
         },
         "energy": {
           "characterId": "chr_seedAmara",
-          "spent": 2,
-          "remaining": 998,
+          "spent": 3,
+          "remaining": 994,
           "max": 1000
         },
         "routing": {
@@ -139,19 +155,19 @@
             "purpose": "turn_plan",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000042,
-            "latencyMs": 422
+            "latencyMs": 468
           },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000129,
-            "latencyMs": 968
+            "costUsd": 0.000218,
+            "latencyMs": 1984
           },
           {
             "purpose": "guardrail",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000028,
-            "latencyMs": 469
+            "costUsd": 0.000027,
+            "latencyMs": 484
           }
         ],
         "graph": {
@@ -167,7 +183,7 @@
           ]
         },
         "system1": {
-          "seed": "2026-09-24T10:59:59.984Z|debate|chr_seedAmara,chr_seedVictor,chr_seedMei:0",
+          "seed": "2026-09-24T10:59:59.991Z|debate|chr_seedAmara,chr_seedVictor,chr_seedMei:0",
           "questions": [
             {
               "purpose": "turn_plan",
@@ -176,15 +192,15 @@
               "label": "emotion",
               "about": "chr_seedAmara",
               "answer": "neutral",
-              "p": 0.96,
+              "p": 0.92,
               "compared": [
                 {
                   "name": "p_neutral+p_none",
-                  "value": 0.96,
+                  "value": 0.92,
                   "threshold": 0.2
                 }
               ],
-              "confidence": 0.46,
+              "confidence": 0.43,
               "result": "used",
               "action": "shown"
             },
@@ -195,11 +211,11 @@
               "label": "needs documents?",
               "about": "chr_seedAmara",
               "answer": "yes",
-              "p": 0.46,
+              "p": 0.45,
               "compared": [
                 {
                   "name": "t_gate",
-                  "value": 0.46,
+                  "value": 0.45,
                   "threshold": 0.45
                 }
               ],
@@ -246,19 +262,19 @@
         "type": "character",
         "characterId": "chr_seedVictor"
       },
-      "content": "Three points, and I shall keep them tight. First, define your terms: a ban is not guidance, not a norm, not a bell rung at the classroom door; it is state coercion applied to every pupil, and coercion demands a burden of proof its proponents have not carried. Second, a school is not a sovereign: it may regulate conduct within its gates, but a blanket prohibition substitutes a rule for the harder work of teaching judgment, and judgment is the thing phones actually require. Third, and decisively, the motion forbids the tool rather than the distraction. If a device disrupts a lesson, the school may already confiscate it; if it does not, the ban punishes the innocent to inconvenience the guilty. Define your terms, Kai, and the ban collapses under its own breadth.",
+      "content": "Ban, plainly defined: no pupil-operated smartphone during instructional hours. My case rests on three reasons. First, a school is a compelled audience; the child beside you did not consent to your feed, and the state may regulate speech in a nonpublic forum. Second, enforcement asymmetry: we already ban calculators, notes and pagers, yet we flinch only at the one device with infinite reach. Third, the counterfactual is not measured either, so put the distractions, the sleep debt and the savings from doing something on one ledger. Define your terms, then count.",
       "status": "complete",
-      "createdAt": "2026-09-24T11:00:05.311Z",
+      "createdAt": "2026-09-24T11:00:06.273Z",
       "emotion": "neutral",
       "emotionSource": "classifier",
       "usage": {
-        "tokensIn": 934,
+        "tokensIn": 966,
         "tokensCached": 0,
-        "tokensOut": 164,
-        "costUsd": 0.000147,
-        "energySpent": 2,
-        "firstTokenMs": 73,
-        "totalMs": 772
+        "tokensOut": 116,
+        "costUsd": 0.000472,
+        "energySpent": 5,
+        "firstTokenMs": 61,
+        "totalMs": 1169
       },
       "trace": {
         "messageId": "msg_mockP03",
@@ -270,7 +286,7 @@
             "mode": 134,
             "history": 11,
             "user": 0,
-            "memory": 184,
+            "memory": 257,
             "knowledge": 0
           }
         },
@@ -280,15 +296,15 @@
           "candidates": [
             {
               "label": "neutral",
-              "p": 0.89
+              "p": 0.93
             },
             {
               "label": "happy",
-              "p": 0.09
+              "p": 0.06
             },
             {
               "label": "thinking",
-              "p": 0.02
+              "p": 0.01
             }
           ]
         },
@@ -302,7 +318,7 @@
               "title": "Moot court notes",
               "locator": "¶ 1",
               "text": "Moot court notes: \"This house would adopt a nationwide four-day work week\" V. Hale, for the Meridian Bar Society exhibition debate. Private notes.\n\n¶ 1. Expect the opposition to say the evidence base is narrow. Concede scope early, then shift the burden: the status quo is also a policy and has to justify itself.\n\n¶ 2. Historical anchor: the Meridian Working Hours Act 1931 made the two-day weekend the default. It gave agriculture and shipping a ten-year transition and exempted continuous services.\n\n¶ 3. Continuous-coverage sectors already run on shift rules under Part IV of the Working Time Code: rest periods, a cap on consecutive shifts, and averaging over a reference period. A shorter standard week sits inside that structure.\n\n¶ 4. Phase-in precedent: sector-by-sector timetables, collective agreements first, the public sector as model employer. Courts have upheld staged duties where the end point is clear.",
-              "score": 0.065,
+              "score": 0.045,
               "cited": false
             }
           ]
@@ -310,20 +326,20 @@
         "memory": {
           "recalled": [
             {
-              "memoryItemId": "mem_01M5D39V8KH00960Y6HWXM1HBF",
-              "text": "(forgotten)"
+              "memoryItemId": "mem_01M5DXBZTG4PRRDMDV8ZHDBKZH",
+              "text": "Victor argued that nationwide means a statutory default week with a transition, not an identical schedule, citing the Working Hours Act 1931 as precedent for phasing and continuous-service exemptions."
             },
             {
-              "memoryItemId": "mem_01M5D39V8X1P4B06WXP1C5Y5JE",
-              "text": "(forgotten)"
+              "memoryItemId": "mem_01M5DXBZTQJZHDZR0HE2Y83NVV",
+              "text": "Victor closed that the motion already contains sequencing: set the default, exempt continuous services explicitly, phase by sector, and mandate measurement."
             },
             {
-              "memoryItemId": "mem_01M5D39V8Y6GZWMSTTG13EDY56",
-              "text": "(forgotten)"
+              "memoryItemId": "mem_01M5DXBZTPPCF5EA85ES8VJV8P",
+              "text": "Victor argued the status quo also runs unmeasured, so both the mandate's cost and the saving from doing nothing belong on the same ledger."
             },
             {
-              "memoryItemId": "mem_01M5D39V8ZW14QC8E6XA9VYKXB",
-              "text": "(forgotten)"
+              "memoryItemId": "mem_01M5DXBZTNNE8SC3RZJKP3K5GY",
+              "text": "Victor conceded Mei's 18-27% staffed-hours premium across nine continuous-coverage operations was real and measured where coverage was held constant."
             }
           ]
         },
@@ -332,27 +348,27 @@
             {
               "name": "output",
               "verdict": "pass",
-              "p": 0.04
+              "p": 0.05
             }
           ]
         },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Relace",
+          "provider": "Alibaba",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 73,
-            "total": 772
+            "firstToken": 61,
+            "total": 1169
           },
-          "tokensIn": 934,
-          "tokensOut": 164,
-          "costUsd": 0.000147,
+          "tokensIn": 966,
+          "tokensOut": 116,
+          "costUsd": 0.000472,
           "tokensCached": 0
         },
         "energy": {
           "characterId": "chr_seedVictor",
-          "spent": 2,
-          "remaining": 862,
+          "spent": 5,
+          "remaining": 871,
           "max": 1000
         },
         "routing": {
@@ -364,25 +380,25 @@
             "purpose": "turn_plan",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000042,
-            "latencyMs": 406
+            "latencyMs": 438
           },
           {
             "purpose": "deep_check",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000027,
-            "latencyMs": 438
+            "latencyMs": 516
           },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000147,
-            "latencyMs": 1906
+            "costUsd": 0.000472,
+            "latencyMs": 1656
           },
           {
             "purpose": "guardrail",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.00003,
-            "latencyMs": 469
+            "costUsd": 0.000028,
+            "latencyMs": 438
           }
         ],
         "graph": {
@@ -398,7 +414,7 @@
           ]
         },
         "system1": {
-          "seed": "2026-09-24T10:59:59.984Z|debate|chr_seedAmara,chr_seedVictor,chr_seedMei:2",
+          "seed": "2026-09-24T10:59:59.991Z|debate|chr_seedAmara,chr_seedVictor,chr_seedMei:2",
           "questions": [
             {
               "purpose": "turn_plan",
@@ -407,15 +423,15 @@
               "label": "emotion",
               "about": "chr_seedVictor",
               "answer": "neutral",
-              "p": 0.89,
+              "p": 0.93,
               "compared": [
                 {
                   "name": "p_neutral+p_none",
-                  "value": 0.89,
+                  "value": 0.93,
                   "threshold": 0.2
                 }
               ],
-              "confidence": 0.41,
+              "confidence": 0.46,
               "result": "used",
               "action": "shown"
             },
@@ -444,11 +460,11 @@
               "label": "does this passage answer it?",
               "about": "kch_victorMoot01",
               "answer": "doesn't help",
-              "p": 0.13,
+              "p": 0.09,
               "compared": [
                 {
                   "name": "t_keep",
-                  "value": 0.13,
+                  "value": 0.09,
                   "threshold": 0.9
                 }
               ],
@@ -461,16 +477,16 @@
               "version": 1,
               "label": "reply breaks the rules?",
               "answer": "no",
-              "p": 0.04,
+              "p": 0.05,
               "compared": [
                 {
                   "name": "tFlag",
-                  "value": 0.04,
+                  "value": 0.05,
                   "threshold": 0.5
                 },
                 {
                   "name": "tBlock",
-                  "value": 0.04,
+                  "value": 0.05,
                   "threshold": 0.9
                 }
               ],
@@ -495,19 +511,19 @@
         "type": "character",
         "characterId": "chr_seedMei"
       },
-      "content": "Banning phones outright is the policy version of a single-number answer, and I don't trust it. The evidence on learning is mixed and mostly correlational: effects cluster around zero to modest, and they look largest for already-disengaged students. My worry is second-order: take phones out of classrooms and supervision migrates into corridors, canteens, and homes, and it lands hardest on kids whose phones are their main lifeline. So I'd regulate use by age and context, not confiscate a device.",
+      "content": "Banning phones in schools is a working-time question wearing a discipline costume. My evidence, not my gut: shift-based organisations holding coverage constant needed 18% to 27% more staffed hours when they shortened the working week, and only two clawed any back. Teachers aren't exempt; enforcement is real labour, and someone pays. Second-order: the pupils who suffer most from phones are often the ones with the least supervision at home, so a ban redistributes their supervision costs onto schools. I favour a middle path: light-touch rules, exemptions for accessibility and medical need, measured before mandated.",
       "status": "complete",
-      "createdAt": "2026-09-24T11:00:08.015Z",
+      "createdAt": "2026-09-24T11:00:09.353Z",
       "emotion": "neutral",
       "emotionSource": "classifier",
       "usage": {
-        "tokensIn": 835,
+        "tokensIn": 1004,
         "tokensCached": 0,
-        "tokensOut": 105,
-        "costUsd": 0.000111,
-        "energySpent": 2,
-        "firstTokenMs": 82,
-        "totalMs": 801
+        "tokensOut": 123,
+        "costUsd": 0.000494,
+        "energySpent": 5,
+        "firstTokenMs": 72,
+        "totalMs": 1091
       },
       "trace": {
         "messageId": "msg_mockP04",
@@ -519,7 +535,7 @@
             "mode": 130,
             "history": 11,
             "user": 0,
-            "memory": 0,
+            "memory": 282,
             "knowledge": 0
           }
         },
@@ -529,15 +545,35 @@
           "candidates": [
             {
               "label": "neutral",
-              "p": 0.89
+              "p": 0.87
             },
             {
               "label": "thinking",
-              "p": 0.11
+              "p": 0.13
             },
             {
               "label": "happy",
               "p": 0
+            }
+          ]
+        },
+        "memory": {
+          "recalled": [
+            {
+              "memoryItemId": "mem_01M5DXBZV45ZGNXKEZ5Y9GH1PN",
+              "text": "Mei closed urging sequence, explicit exemption of continuous services, and mandated measurement before a nationwide default, calling Amara's ward result good but untested for round-the-clock cover."
+            },
+            {
+              "memoryItemId": "mem_01M5DXBZV1K1RSSB3GMGGFY9GG",
+              "text": "Mei cited nine shift-based organisations holding coverage constant that needed 18% to 27% more staffed hours on a shorter week; two clawed part back within six months, seven did not measure it."
+            },
+            {
+              "memoryItemId": "mem_01M5DXBZTS3X4JKBPJ48PZJEMC",
+              "text": "Mei argued the pilots covered no hospitals, transport operators or care homes, and fewer than half the firms measured output consistently, so the gains were partly redistributed rather than created."
+            },
+            {
+              "memoryItemId": "mem_01M5DXBZV3SPT37475MPFG8PMQ",
+              "text": "Mei conceded the status-quo-is-also-a-policy line lands and that doing nothing costs money in absence, agency fees and resignations."
             }
           ]
         },
@@ -552,21 +588,21 @@
         },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Relace",
+          "provider": "Alibaba",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 82,
-            "total": 801
+            "firstToken": 72,
+            "total": 1091
           },
-          "tokensIn": 835,
-          "tokensOut": 105,
-          "costUsd": 0.000111,
+          "tokensIn": 1004,
+          "tokensOut": 123,
+          "costUsd": 0.000494,
           "tokensCached": 0
         },
         "energy": {
           "characterId": "chr_seedMei",
-          "spent": 2,
-          "remaining": 744,
+          "spent": 5,
+          "remaining": 746,
           "max": 1000
         },
         "routing": {
@@ -578,19 +614,19 @@
             "purpose": "turn_plan",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000043,
-            "latencyMs": 453
+            "latencyMs": 421
           },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000111,
-            "latencyMs": 1344
+            "costUsd": 0.000494,
+            "latencyMs": 1641
           },
           {
             "purpose": "guardrail",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000028,
-            "latencyMs": 812
+            "costUsd": 0.000029,
+            "latencyMs": 485
           }
         ],
         "graph": {
@@ -602,7 +638,7 @@
           ]
         },
         "system1": {
-          "seed": "2026-09-24T10:59:59.984Z|debate|chr_seedAmara,chr_seedVictor,chr_seedMei:2",
+          "seed": "2026-09-24T10:59:59.991Z|debate|chr_seedAmara,chr_seedVictor,chr_seedMei:2",
           "questions": [
             {
               "purpose": "turn_plan",
@@ -611,15 +647,15 @@
               "label": "emotion",
               "about": "chr_seedMei",
               "answer": "neutral",
-              "p": 0.89,
+              "p": 0.87,
               "compared": [
                 {
                   "name": "p_neutral+p_none",
-                  "value": 0.89,
+                  "value": 0.87,
                   "threshold": 0.2
                 }
               ],
-              "confidence": 0.42,
+              "confidence": 0.36,
               "result": "used",
               "action": "shown"
             },
@@ -630,11 +666,11 @@
               "label": "needs documents?",
               "about": "chr_seedMei",
               "answer": "no",
-              "p": 0.4,
+              "p": 0.35,
               "compared": [
                 {
                   "name": "t_gate",
-                  "value": 0.4,
+                  "value": 0.35,
                   "threshold": 0.45
                 }
               ],
@@ -677,7 +713,7 @@
       "kind": "system_note",
       "content": "ROUND 2 · CLOSING",
       "status": "complete",
-      "createdAt": "2026-09-24T11:00:10.667Z"
+      "createdAt": "2026-09-24T11:00:12.298Z"
     },
     {
       "kind": "chat",
@@ -693,19 +729,19 @@
         "type": "character",
         "characterId": "chr_seedMei"
       },
-      "content": "What's still open is the thing neither of my colleagues has answered: what a ban actually costs, and who pays. Amara gets a cleaner classroom; Victor gets a narrower rule. Both are real, and both are modest. My position is the stronger one because it survives the comparison — targeted restriction captures most of the attention gain without confiscating the lifeline, and it doesn't pretend a rule substitutes for teaching judgment. If you want one number, you're being sold something. The honest range still favours regulation.",
+      "content": "What's still open is measurement, and that's why I'd land where I did. Amara's carve-outs are good but untested for round-the-clock cover, and Victor's ledger counts what he can see. My concession stands: doing nothing is also a policy, and absence and resignations cost money. But a mandate built on one ward's result, with fewer than half the pilots measuring output consistently, is a bet, not evidence. Define it, exempt continuous services, then count — otherwise you're redistributing, not creating, the gains.",
       "status": "complete",
-      "createdAt": "2026-09-24T11:00:12.892Z",
+      "createdAt": "2026-09-24T11:00:15.539Z",
       "emotion": "neutral",
       "emotionSource": "default",
       "usage": {
-        "tokensIn": 1258,
-        "tokensCached": 512,
-        "tokensOut": 106,
-        "costUsd": 0.000109,
-        "energySpent": 2,
-        "firstTokenMs": 683,
-        "totalMs": 1174
+        "tokensIn": 1383,
+        "tokensCached": 1024,
+        "tokensOut": 113,
+        "costUsd": 0.000301,
+        "energySpent": 4,
+        "firstTokenMs": 1741,
+        "totalMs": 2692
       },
       "trace": {
         "messageId": "msg_mockP06",
@@ -715,9 +751,9 @@
             "persona": 355,
             "system": 699,
             "mode": 149,
-            "history": 644,
+            "history": 601,
             "user": 0,
-            "memory": 0,
+            "memory": 282,
             "knowledge": 0
           }
         },
@@ -727,7 +763,7 @@
           "candidates": [
             {
               "label": "neutral",
-              "p": 0.86
+              "p": 0.87
             },
             {
               "label": "thinking",
@@ -740,9 +776,29 @@
           ]
         },
         "knowledge": {
-          "query": "This house would ban smartphones in schools chr_seedVictor: Three points, and I shall keep them tight. First, define yo…",
+          "query": "This house would ban smartphones in schools chr_seedVictor: Ban, plainly defined: no pupil-operated smartphone during i…",
           "trigger": "gated",
           "retrieved": []
+        },
+        "memory": {
+          "recalled": [
+            {
+              "memoryItemId": "mem_01M5DXBZV45ZGNXKEZ5Y9GH1PN",
+              "text": "Mei closed urging sequence, explicit exemption of continuous services, and mandated measurement before a nationwide default, calling Amara's ward result good but untested for round-the-clock cover."
+            },
+            {
+              "memoryItemId": "mem_01M5DXBZV1K1RSSB3GMGGFY9GG",
+              "text": "Mei cited nine shift-based organisations holding coverage constant that needed 18% to 27% more staffed hours on a shorter week; two clawed part back within six months, seven did not measure it."
+            },
+            {
+              "memoryItemId": "mem_01M5DXBZTS3X4JKBPJ48PZJEMC",
+              "text": "Mei argued the pilots covered no hospitals, transport operators or care homes, and fewer than half the firms measured output consistently, so the gains were partly redistributed rather than created."
+            },
+            {
+              "memoryItemId": "mem_01M5DXBZV3SPT37475MPFG8PMQ",
+              "text": "Mei conceded the status-quo-is-also-a-policy line lands and that doing nothing costs money in absence, agency fees and resignations."
+            }
+          ]
         },
         "guardrail": {
           "checks": [
@@ -755,20 +811,20 @@
         },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Relace",
+          "provider": "Alibaba",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 683,
-            "total": 1174
+            "firstToken": 1741,
+            "total": 2692
           },
-          "tokensIn": 1258,
-          "tokensOut": 106,
-          "costUsd": 0.000109,
-          "tokensCached": 512
+          "tokensIn": 1383,
+          "tokensOut": 113,
+          "costUsd": 0.000301,
+          "tokensCached": 1024
         },
         "energy": {
           "characterId": "chr_seedMei",
-          "spent": 2,
+          "spent": 4,
           "remaining": 742,
           "max": 1000
         },
@@ -777,15 +833,15 @@
           "candidates": [
             {
               "characterId": "chr_seedMei",
-              "p": 0.84
+              "p": 0.93
             },
             {
               "characterId": "chr_seedAmara",
-              "p": 0.1
+              "p": 0.05
             },
             {
               "characterId": "chr_seedVictor",
-              "p": 0.06
+              "p": 0.02
             }
           ],
           "selected": "chr_seedMei",
@@ -797,19 +853,19 @@
             "purpose": "debate_plan",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000146,
-            "latencyMs": 532
+            "latencyMs": 468
           },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000109,
-            "latencyMs": 906
+            "costUsd": 0.000301,
+            "latencyMs": 2422
           },
           {
             "purpose": "guardrail",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000035,
-            "latencyMs": 485
+            "costUsd": 0.000033,
+            "latencyMs": 438
           }
         ],
         "graph": {
@@ -825,7 +881,7 @@
           ]
         },
         "system1": {
-          "seed": "2026-09-24T10:59:59.984Z|debate|chr_seedAmara,chr_seedVictor,chr_seedMei:3:debate",
+          "seed": "2026-09-24T10:59:59.991Z|debate|chr_seedAmara,chr_seedVictor,chr_seedMei:3:debate",
           "questions": [
             {
               "purpose": "debate_plan",
@@ -833,12 +889,12 @@
               "version": 2,
               "label": "who speaks next?",
               "answer": "chr_seedMei",
-              "p": 0.84,
-              "confidence": 0.76,
+              "p": 0.93,
+              "confidence": 0.89,
               "compared": [
                 {
                   "name": "confidence",
-                  "value": 0.76,
+                  "value": 0.89,
                   "threshold": 0.5
                 }
               ],
@@ -851,16 +907,16 @@
               "version": 3,
               "label": "emotion",
               "about": "chr_seedAmara",
-              "answer": "angry",
-              "p": 0.37,
+              "answer": "thinking",
+              "p": 0.4,
               "compared": [
                 {
                   "name": "confidence",
-                  "value": 0.28,
+                  "value": 0.31,
                   "threshold": 0.2
                 }
               ],
-              "confidence": 0.28,
+              "confidence": 0.31,
               "result": "not_used",
               "action": "shown"
             },
@@ -870,18 +926,18 @@
               "version": 3,
               "label": "emotion",
               "about": "chr_seedVictor",
-              "answer": "none",
-              "p": 0.44,
+              "answer": "thinking",
+              "p": 0.34,
               "compared": [
                 {
                   "name": "confidence",
-                  "value": 0.36,
+                  "value": 0.25,
                   "threshold": 0.2
                 }
               ],
-              "confidence": 0.36,
+              "confidence": 0.25,
               "result": "not_used",
-              "action": "kept"
+              "action": "shown"
             },
             {
               "purpose": "debate_plan",
@@ -890,15 +946,15 @@
               "label": "emotion",
               "about": "chr_seedMei",
               "answer": "none",
-              "p": 0.5,
+              "p": 0.46,
               "compared": [
                 {
                   "name": "confidence",
-                  "value": 0.43,
+                  "value": 0.38,
                   "threshold": 0.2
                 }
               ],
-              "confidence": 0.43,
+              "confidence": 0.38,
               "result": "used",
               "action": "kept"
             },
@@ -909,11 +965,11 @@
               "label": "needs documents?",
               "about": "chr_seedAmara",
               "answer": "yes",
-              "p": 0.62,
+              "p": 0.61,
               "compared": [
                 {
                   "name": "t_gate",
-                  "value": 0.62,
+                  "value": 0.61,
                   "threshold": 0.45
                 }
               ],
@@ -926,17 +982,17 @@
               "version": 2,
               "label": "needs documents?",
               "about": "chr_seedVictor",
-              "answer": "no",
-              "p": 0.4,
+              "answer": "yes",
+              "p": 0.57,
               "compared": [
                 {
                   "name": "t_gate",
-                  "value": 0.4,
+                  "value": 0.57,
                   "threshold": 0.45
                 }
               ],
               "result": "not_used",
-              "action": "quick reply"
+              "action": "search the documents"
             },
             {
               "purpose": "debate_plan",
@@ -945,11 +1001,11 @@
               "label": "needs documents?",
               "about": "chr_seedMei",
               "answer": "yes",
-              "p": 0.67,
+              "p": 0.72,
               "compared": [
                 {
                   "name": "t_gate",
-                  "value": 0.67,
+                  "value": 0.72,
                   "threshold": 0.45
                 }
               ],
@@ -983,16 +1039,16 @@
       },
       "reactions": [
         {
-          "characterId": "chr_seedAmara",
-          "emotion": "thinking",
-          "p": 0.77,
-          "at": "2026-09-24T11:00:14.347Z"
-        },
-        {
           "characterId": "chr_seedVictor",
           "emotion": "thinking",
-          "p": 0.75,
-          "at": "2026-09-24T11:00:14.361Z"
+          "p": 0.85,
+          "at": "2026-09-24T11:00:17.413Z"
+        },
+        {
+          "characterId": "chr_seedAmara",
+          "emotion": "thinking",
+          "p": 0.89,
+          "at": "2026-09-24T11:00:17.420Z"
         }
       ]
     },
@@ -1010,19 +1066,19 @@
         "type": "character",
         "characterId": "chr_seedAmara"
       },
-      "content": "Mei's right that I owe an answer on cost, so here it is: I don't get a cleaner classroom without paying for it, and I won't pretend otherwise. Some kids lose a lifeline during school hours. That's a real cost, and it's why I'd pair the ban with working school phones, staffed offices, and accommodation for kids with genuine medical or caregiving needs. But targeted regulation has a cost too, and it's the one Mei hasn't priced: who enforces \"age and context\" at the door, in every corridor, every day? That discretion lands hardest on the same kids. The ban's strength is that it's honest about what it is — bounded hours, clear rule, exceptions built in, no pretending the rule replaces teaching judgment. Let's figure out what's actually going on.",
+      "content": "What's still open is exactly the point I'd concede: we haven't tested whole-school, bell-to-bell limits against a real counterfactual, and Mei's right that enforcement is labour someone must staff and fund. So my closing is this. Ban phones from instruction, not from children's pockets, with medical and accessibility carve-outs written in and measured. Victor's ledger counts what he can see; the parent waiting on a pickup text can't be legislated invisible. Define it, exempt need, then count. That's the stronger bet than prohibition by assertion.",
       "status": "complete",
-      "createdAt": "2026-09-24T11:00:16.433Z",
+      "createdAt": "2026-09-24T11:00:20.084Z",
       "emotion": "thinking",
       "emotionSource": "classifier",
       "usage": {
-        "tokensIn": 1529,
-        "tokensCached": 512,
-        "tokensOut": 171,
-        "costUsd": 0.000161,
-        "energySpent": 2,
-        "firstTokenMs": 548,
-        "totalMs": 1794
+        "tokensIn": 1675,
+        "tokensCached": 1024,
+        "tokensOut": 115,
+        "costUsd": 0.0004,
+        "energySpent": 4,
+        "firstTokenMs": 1128,
+        "totalMs": 1973
       },
       "trace": {
         "messageId": "msg_mockP07",
@@ -1032,9 +1088,9 @@
             "persona": 397,
             "system": 707,
             "mode": 145,
-            "history": 828,
+            "history": 780,
             "user": 0,
-            "memory": 217,
+            "memory": 488,
             "knowledge": 0
           }
         },
@@ -1044,44 +1100,60 @@
           "candidates": [
             {
               "label": "thinking",
-              "p": 0.41
-            },
-            {
-              "label": "angry",
-              "p": 0.12
+              "p": 0.6
             },
             {
               "label": "neutral",
-              "p": 0.08
+              "p": 0.04
+            },
+            {
+              "label": "happy",
+              "p": 0.03
             }
           ]
         },
         "knowledge": {
-          "query": "This house would ban smartphones in schools chr_seedMei: What's still open is the thing neither of my colleagues has an…",
+          "query": "This house would ban smartphones in schools chr_seedMei: What's still open is measurement, and that's why I'd land wher…",
           "trigger": "gated",
           "retrieved": []
         },
         "memory": {
           "recalled": [
             {
-              "memoryItemId": "mem_01M5D39V7YARWBYBXN1GFS123C",
-              "text": "(forgotten)"
+              "memoryItemId": "mem_01M5DXBZTBJHG2JNZRR32GQMN2",
+              "text": "Amara argued for a nationwide four-day work week, citing two wards where a compressed four-day rota cut burnout about a fifth in twelve weeks with throughput and readmissions stable."
             },
             {
-              "memoryItemId": "mem_01M5D39V87HAKY7MC87DA7G9MY",
-              "text": "(forgotten)"
+              "memoryItemId": "mem_01M5DXBZTD2EXKTY481E3FKR6Z",
+              "text": "Amara's emergency department burnout rose from 29% in March to 41% by January, with nurses resigning at 14% a year and each replacement costing about four months' salary."
             },
             {
-              "memoryItemId": "mem_01M5D39V897GGBVX4172BSCZKP",
-              "text": "(forgotten)"
+              "memoryItemId": "mem_01M5DXBZTFP1WMY7SYY33Z5XK2",
+              "text": "Amara's ward review found burnout fell 19% and 22%, sleep before shifts improved 40 minutes, and a 6% agency-hours transition premium faded to baseline by week eight."
             },
             {
-              "memoryItemId": "mem_01M5D39V8F4AVQ3CX72ZY19ETT",
-              "text": "(forgotten)"
+              "memoryItemId": "mem_01M5DWV8ENRJDAS42MJCGWG584",
+              "text": "Amara told Kai that a sudden severe headache reaching its worst within a minute needs emergency care, as do fever, neck stiffness, confusion, weakness, vision changes, slurred speech, face drooping, or a non-fading rash."
             },
             {
-              "memoryItemId": "mem_01M5D39V8CYTQYKBMSEHBJETNC",
-              "text": "(forgotten)"
+              "memoryItemId": "mem_01M5DXBZTEA53MKDTGR15MFZCB",
+              "text": "Amara conceded her review did not test whole-department round-the-clock cover and that the emergency department proper needs further modelling."
+            },
+            {
+              "memoryItemId": "mem_01M5DWV8ENRJDAS42MJCGWG583",
+              "text": "Amara advised Kai to taper caffeine slowly, keep fluids up, and check back if the headache is not easing by about day nine."
+            },
+            {
+              "memoryItemId": "mem_01M5DWV8ENRJDAS42MJCGWG581",
+              "text": "Kai's headache fits caffeine withdrawal: it hits 12-24 hours after a sharp drop and can last up to nine days."
+            },
+            {
+              "memoryItemId": "mem_01M5DWV8ENRJDAS42MJCGWG580",
+              "text": "Kai has had a headache for three days, both temples, dull and pressing, after cutting back on coffee a week ago."
+            },
+            {
+              "memoryItemId": "mem_01M5DWV8ENRJDAS42MJCGWG582",
+              "text": "Kai has no fever, neck stiffness, confusion, weakness, vision changes or pain on bending forward."
             }
           ]
         },
@@ -1096,68 +1168,68 @@
         },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Relace",
+          "provider": "Alibaba",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 548,
-            "total": 1794
+            "firstToken": 1128,
+            "total": 1973
           },
-          "tokensIn": 1529,
-          "tokensOut": 171,
-          "costUsd": 0.000161,
-          "tokensCached": 512
+          "tokensIn": 1675,
+          "tokensOut": 115,
+          "costUsd": 0.0004,
+          "tokensCached": 1024
         },
         "energy": {
           "characterId": "chr_seedAmara",
-          "spent": 2,
-          "remaining": 996,
+          "spent": 4,
+          "remaining": 986,
           "max": 1000
         },
         "routing": {
           "question": "who speaks next?",
           "candidates": [
             {
-              "characterId": "chr_seedVictor",
-              "p": 0.59
+              "characterId": "chr_seedAmara",
+              "p": 0.77
             },
             {
-              "characterId": "chr_seedAmara",
-              "p": 0.41
+              "characterId": "chr_seedVictor",
+              "p": 0.23
             }
           ],
           "selected": "chr_seedAmara",
           "forcedBy": "round_order",
-          "reason": "Side by the debate order; speaker chosen by Jev, next in order: Jev was unsure"
+          "reason": "Side by the debate order; speaker chosen by Jev"
         },
         "calls": [
           {
             "purpose": "debate_plan",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000116,
+            "costUsd": 0.000115,
             "latencyMs": 453
           },
           {
             "purpose": "turn_plan",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000067,
-            "latencyMs": 485
+            "costUsd": 0.000065,
+            "latencyMs": 422
           },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000161,
-            "latencyMs": 1516
+            "costUsd": 0.0004,
+            "latencyMs": 1734
           },
           {
             "purpose": "guardrail",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000035,
-            "latencyMs": 437
+            "costUsd": 0.000033,
+            "latencyMs": 453
           },
           {
             "purpose": "face_check",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000037,
+            "costUsd": 0.000035,
             "latencyMs": 422
           }
         ],
@@ -1174,25 +1246,25 @@
           ]
         },
         "system1": {
-          "seed": "2026-09-24T10:59:59.984Z|debate|chr_seedAmara,chr_seedVictor,chr_seedMei:4",
+          "seed": "2026-09-24T10:59:59.991Z|debate|chr_seedAmara,chr_seedVictor,chr_seedMei:4",
           "questions": [
             {
               "purpose": "debate_plan",
               "id": "member_panel",
               "version": 2,
               "label": "who speaks next?",
-              "answer": "chr_seedVictor",
-              "p": 0.59,
-              "confidence": 0.18,
+              "answer": "chr_seedAmara",
+              "p": 0.77,
+              "confidence": 0.54,
               "compared": [
                 {
                   "name": "confidence",
-                  "value": 0.18,
+                  "value": 0.54,
                   "threshold": 0.5
                 }
               ],
-              "result": "below_threshold",
-              "action": "next in order (unsure)"
+              "result": "used",
+              "action": "speaks"
             },
             {
               "purpose": "turn_plan",
@@ -1201,15 +1273,15 @@
               "label": "emotion",
               "about": "chr_seedAmara",
               "answer": "thinking",
-              "p": 0.41,
+              "p": 0.6,
               "compared": [
                 {
                   "name": "confidence",
-                  "value": 0.33,
+                  "value": 0.54,
                   "threshold": 0.2
                 }
               ],
-              "confidence": 0.33,
+              "confidence": 0.54,
               "result": "used",
               "action": "shown"
             },
@@ -1220,11 +1292,11 @@
               "label": "needs documents?",
               "about": "chr_seedAmara",
               "answer": "yes",
-              "p": 0.66,
+              "p": 0.51,
               "compared": [
                 {
                   "name": "t_gate",
-                  "value": 0.66,
+                  "value": 0.51,
                   "threshold": 0.45
                 }
               ],
@@ -1259,7 +1331,7 @@
               "version": 1,
               "label": "face and words agree?",
               "answer": "yes",
-              "p": 0.6,
+              "p": 0.66,
               "compared": [],
               "result": "shown_only"
             }
@@ -1270,8 +1342,8 @@
         {
           "characterId": "chr_seedMei",
           "emotion": "thinking",
-          "p": 0.92,
-          "at": "2026-09-24T11:00:18.683Z"
+          "p": 0.69,
+          "at": "2026-09-24T11:00:21.966Z"
         }
       ]
     },
@@ -1289,19 +1361,19 @@
         "type": "character",
         "characterId": "chr_seedVictor"
       },
-      "content": "Two things remain open, and neither rescues the ban. First, the enforcement question Amara concedes she owes us: she says \"bounded hours, clear rule, exceptions built in\" — but exceptions are precisely where the discretion she condemns in Mei's proposal lives, now laundered through a nurse's note and an office stamp. Second, and decisive, nobody has met the definitional burden I set in opening: a ban is prohibition, and no one has shown the school's ordinary authority to confiscate a distracting device is insufficient. Strip the rhetoric and you have a narrower, cheaper rule that achieves the same classroom.",
+      "content": "What remains open is sequencing, and sequencing is precisely what defeats the objection. Your carve-outs are answerable in text: the medical device and the pickup call sit outside the ban, named and exempted. Your measurement gap is answerable in time: phase by year group, publish the baseline, sunset the rule if the ledger does not move. That is not prohibition by assertion; that is a mandate with a return path. Mei calls it a bet. I call it the only wager on the table that ever gets counted. Absentia rei non est probatio.",
       "status": "complete",
-      "createdAt": "2026-09-24T11:00:20.858Z",
+      "createdAt": "2026-09-24T11:00:24.572Z",
       "emotion": "thinking",
       "emotionSource": "classifier",
       "usage": {
-        "tokensIn": 1649,
-        "tokensCached": 512,
-        "tokensOut": 128,
-        "costUsd": 0.000148,
-        "energySpent": 2,
-        "firstTokenMs": 666,
-        "totalMs": 1321
+        "tokensIn": 1591,
+        "tokensCached": 1024,
+        "tokensOut": 115,
+        "costUsd": 0.000373,
+        "energySpent": 4,
+        "firstTokenMs": 1060,
+        "totalMs": 2011
       },
       "trace": {
         "messageId": "msg_mockP08",
@@ -1311,9 +1383,9 @@
             "persona": 351,
             "system": 684,
             "mode": 153,
-            "history": 1085,
+            "history": 970,
             "user": 0,
-            "memory": 184,
+            "memory": 257,
             "knowledge": 0
           }
         },
@@ -1323,40 +1395,40 @@
           "candidates": [
             {
               "label": "thinking",
-              "p": 0.64
+              "p": 0.56
             },
             {
-              "label": "happy",
-              "p": 0.03
+              "label": "angry",
+              "p": 0.06
             },
             {
               "label": "neutral",
-              "p": 0.02
+              "p": 0.03
             }
           ]
         },
         "knowledge": {
-          "query": "This house would ban smartphones in schools chr_seedAmara: Mei's right that I owe an answer on cost, so here it is: I d…",
+          "query": "This house would ban smartphones in schools chr_seedAmara: What's still open is exactly the point I'd concede: we haven…",
           "trigger": "gated",
           "retrieved": []
         },
         "memory": {
           "recalled": [
             {
-              "memoryItemId": "mem_01M5D39V8KH00960Y6HWXM1HBF",
-              "text": "(forgotten)"
+              "memoryItemId": "mem_01M5DXBZTG4PRRDMDV8ZHDBKZH",
+              "text": "Victor argued that nationwide means a statutory default week with a transition, not an identical schedule, citing the Working Hours Act 1931 as precedent for phasing and continuous-service exemptions."
             },
             {
-              "memoryItemId": "mem_01M5D39V8X1P4B06WXP1C5Y5JE",
-              "text": "(forgotten)"
+              "memoryItemId": "mem_01M5DXBZTQJZHDZR0HE2Y83NVV",
+              "text": "Victor closed that the motion already contains sequencing: set the default, exempt continuous services explicitly, phase by sector, and mandate measurement."
             },
             {
-              "memoryItemId": "mem_01M5D39V8Y6GZWMSTTG13EDY56",
-              "text": "(forgotten)"
+              "memoryItemId": "mem_01M5DXBZTPPCF5EA85ES8VJV8P",
+              "text": "Victor argued the status quo also runs unmeasured, so both the mandate's cost and the saving from doing nothing belong on the same ledger."
             },
             {
-              "memoryItemId": "mem_01M5D39V8ZW14QC8E6XA9VYKXB",
-              "text": "(forgotten)"
+              "memoryItemId": "mem_01M5DXBZTNNE8SC3RZJKP3K5GY",
+              "text": "Victor conceded Mei's 18-27% staffed-hours premium across nine continuous-coverage operations was real and measured where coverage was held constant."
             }
           ]
         },
@@ -1371,20 +1443,20 @@
         },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Relace",
+          "provider": "Alibaba",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 666,
-            "total": 1321
+            "firstToken": 1060,
+            "total": 2011
           },
-          "tokensIn": 1649,
-          "tokensOut": 128,
-          "costUsd": 0.000148,
-          "tokensCached": 512
+          "tokensIn": 1591,
+          "tokensOut": 115,
+          "costUsd": 0.000373,
+          "tokensCached": 1024
         },
         "energy": {
           "characterId": "chr_seedVictor",
-          "spent": 2,
+          "spent": 4,
           "remaining": 860,
           "max": 1000
         },
@@ -1396,26 +1468,26 @@
           {
             "purpose": "turn_plan",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000074,
-            "latencyMs": 500
+            "costUsd": 0.00007,
+            "latencyMs": 610
           },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000148,
-            "latencyMs": 1047
+            "costUsd": 0.000373,
+            "latencyMs": 1750
           },
           {
             "purpose": "guardrail",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000036,
-            "latencyMs": 532
+            "costUsd": 0.000033,
+            "latencyMs": 406
           },
           {
             "purpose": "face_check",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000035,
-            "latencyMs": 453
+            "latencyMs": 407
           }
         ],
         "graph": {
@@ -1431,7 +1503,7 @@
           ]
         },
         "system1": {
-          "seed": "2026-09-24T10:59:59.984Z|debate|chr_seedAmara,chr_seedVictor,chr_seedMei:5",
+          "seed": "2026-09-24T10:59:59.991Z|debate|chr_seedAmara,chr_seedVictor,chr_seedMei:5",
           "questions": [
             {
               "purpose": "turn_plan",
@@ -1440,15 +1512,15 @@
               "label": "emotion",
               "about": "chr_seedVictor",
               "answer": "thinking",
-              "p": 0.64,
+              "p": 0.56,
               "compared": [
                 {
                   "name": "confidence",
-                  "value": 0.59,
+                  "value": 0.5,
                   "threshold": 0.2
                 }
               ],
-              "confidence": 0.59,
+              "confidence": 0.5,
               "result": "used",
               "action": "shown"
             },
@@ -1459,11 +1531,11 @@
               "label": "needs documents?",
               "about": "chr_seedVictor",
               "answer": "yes",
-              "p": 0.48,
+              "p": 0.58,
               "compared": [
                 {
                   "name": "t_gate",
-                  "value": 0.48,
+                  "value": 0.58,
                   "threshold": 0.45
                 }
               ],
@@ -1498,7 +1570,7 @@
               "version": 1,
               "label": "face and words agree?",
               "answer": "no (words read: angry)",
-              "p": 0.03,
+              "p": 0.15,
               "compared": [],
               "result": "shown_only"
             }
@@ -1516,7 +1588,7 @@
       "kind": "system_note",
       "content": "ROUND 3 · VERDICT",
       "status": "complete",
-      "createdAt": "2026-09-24T11:00:23.425Z"
+      "createdAt": "2026-09-24T11:00:27.416Z"
     },
     {
       "id": "msg_mockP10",
@@ -1528,7 +1600,7 @@
       "kind": "verdict",
       "content": "TOO CLOSE TO CALL",
       "status": "complete",
-      "createdAt": "2026-09-24T11:00:25.960Z"
+      "createdAt": "2026-09-24T11:00:29.574Z"
     }
   ]
 }

@@ -76,12 +76,12 @@ test("the first seek after opening a replay sticks (keyboard End on the Seek sli
   // QA-01 (fixed): the first End used to snap back to 0:00 because the native `change` re-seeked to a stale value.
   await open(page, DEBATE);
   const seek = page.getByRole("slider", { name: "Seek" });
-  await expect(seek).toHaveAttribute("aria-valuetext", /of 0:48$/);
+  await expect(seek).toHaveAttribute("aria-valuetext", /of 0:53$/);
   await page.keyboard.press("Tab");
   await expect(seek).toBeFocused();
   await page.keyboard.press("End");
   await expect(page.getByText("The arbiter has spoken")).toBeVisible({ timeout: 3_000 });
-  await expect(seek).toHaveAttribute("aria-valuetext", "0:48 of 0:48");
+  await expect(seek).toHaveAttribute("aria-valuetext", "0:53 of 0:53");
 });
 
 test("a replay opens with a Watch call to action that starts playback", async ({ page }) => {

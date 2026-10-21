@@ -12,7 +12,7 @@
       },
       "content": "You're back! Come here, tell me everything.",
       "status": "complete",
-      "createdAt": "2026-09-30T19:02:01.945Z",
+      "createdAt": "2026-09-30T19:02:01.908Z",
       "emotion": "happy",
       "emotionSource": "default",
       "trace": {
@@ -37,7 +37,7 @@
       "kind": "chat",
       "content": "I'm home! Long day.",
       "status": "complete",
-      "createdAt": "2026-09-30T19:02:30.463Z"
+      "createdAt": "2026-09-30T19:02:30.355Z"
     },
     {
       "kind": "chat",
@@ -48,19 +48,19 @@
         "type": "character",
         "characterId": "chr_seedHana"
       },
-      "content": "Hi you!! Long day how? Come sit, I'll put the kettle on.",
+      "content": "Welcome back!! Long day for you too, huh? I sold out of the pink ranunculus by noon, which was lovely, but then I knocked over a whole bucket of water and had to mop the entire floor. Twice.",
       "status": "complete",
-      "createdAt": "2026-09-30T19:02:31.470Z",
+      "createdAt": "2026-09-30T19:02:31.563Z",
       "emotion": "happy",
       "emotionSource": "classifier",
       "usage": {
-        "tokensIn": 836,
-        "tokensCached": 512,
-        "tokensOut": 18,
-        "costUsd": 0.000036,
-        "energySpent": 1,
-        "firstTokenMs": 1004,
-        "totalMs": 1087
+        "tokensIn": 771,
+        "tokensCached": 0,
+        "tokensOut": 49,
+        "costUsd": 0.000319,
+        "energySpent": 4,
+        "firstTokenMs": 1199,
+        "totalMs": 1658
       },
       "trace": {
         "messageId": "msg_seedH03",
@@ -72,7 +72,7 @@
             "mode": 44,
             "history": 16,
             "user": 7,
-            "memory": 197,
+            "memory": 106,
             "knowledge": 0
           }
         },
@@ -82,344 +82,27 @@
           "candidates": [
             {
               "label": "happy",
-              "p": 0.67
+              "p": 0.56
             },
             {
               "label": "neutral",
-              "p": 0.1
+              "p": 0.14
             },
             {
               "label": "sad",
-              "p": 0.02
+              "p": 0.03
             }
           ]
         },
         "memory": {
           "recalled": [
             {
-              "memoryItemId": "mem_01M5D4CRR40KXYSK69HGRXV6FF",
-              "text": "Hana's grandma had a rule: one dish everybody loves, one nobody's tried, and arguing over the second is half the meal."
+              "memoryItemId": "mem_01M5DX648AVDPDWMFK7RTX4HSP",
+              "text": "Hana's family rule: one dish everyone loves, one nobody's tried, no skipping."
             },
             {
-              "memoryItemId": "mem_01M5D4CRR58JVFJ203NW7NYWJ5",
-              "text": "For ramen tonight Hana will order a safe dish plus something weird off the menu nobody has tried."
-            },
-            {
-              "memoryItemId": "mem_01M5D4A5JSSWAN5ABPZJWRAXN3",
-              "text": "Hana stress-baked a lemon loaf today and wants a corner saved for dessert."
-            },
-            {
-              "memoryItemId": "mem_01M5D4CRR6SNTQ9HQX7F1PKMQJ",
-              "text": "Hana told Rin the lemon loaf isn't hers — Hana made it and decides who gets a corner."
-            },
-            {
-              "memoryItemId": "mem_01M5D4A5JHSD8VCH90N3MRTTYK",
-              "text": "Hana wants warm, cozy food for dinner — curry or the ramen place Takeshi swears by."
-            }
-          ]
-        },
-        "guardrail": {
-          "checks": [
-            {
-              "name": "input",
-              "verdict": "pass",
-              "p": 0.03
-            },
-            {
-              "name": "care",
-              "verdict": "pass",
-              "p": 0.03
-            },
-            {
-              "name": "output",
-              "verdict": "pass",
-              "p": 0.03
-            }
-          ]
-        },
-        "model": {
-          "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Relace",
-          "pricePeriod": "off_peak",
-          "latencyMs": {
-            "firstToken": 1004,
-            "total": 1087
-          },
-          "tokensIn": 836,
-          "tokensOut": 18,
-          "costUsd": 0.000036,
-          "tokensCached": 512
-        },
-        "energy": {
-          "characterId": "chr_seedHana",
-          "spent": 1,
-          "remaining": 921,
-          "max": 1000
-        },
-        "routing": {
-          "selected": "chr_seedHana"
-        },
-        "calls": [
-          {
-            "purpose": "query_rewrite",
-            "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000069,
-            "latencyMs": 391
-          },
-          {
-            "purpose": "turn_plan",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000067,
-            "latencyMs": 469
-          },
-          {
-            "purpose": "reply",
-            "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000036,
-            "latencyMs": 547
-          },
-          {
-            "purpose": "guardrail",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000024,
-            "latencyMs": 453
-          }
-        ],
-        "graph": {
-          "path": [
-            "state",
-            "ask",
-            "decide",
-            "route"
-          ]
-        },
-        "system1": {
-          "seed": "2026-09-30T19:01:59.993Z|one_on_one|chr_seedHana:1",
-          "questions": [
-            {
-              "purpose": "turn_plan",
-              "id": "emotion_reply",
-              "version": 2,
-              "label": "emotion",
-              "about": "chr_seedHana",
-              "answer": "happy",
-              "p": 0.67,
-              "compared": [
-                {
-                  "name": "confidence",
-                  "value": 0.62,
-                  "threshold": 0.2
-                }
-              ],
-              "confidence": 0.62,
-              "result": "used",
-              "action": "recorded (MANUAL)"
-            },
-            {
-              "purpose": "turn_plan",
-              "id": "docs",
-              "version": 2,
-              "label": "needs documents?",
-              "about": "chr_seedHana",
-              "answer": "no",
-              "p": 0.08,
-              "compared": [
-                {
-                  "name": "t_gate",
-                  "value": 0.08,
-                  "threshold": 0.45
-                },
-                {
-                  "name": "t_confident",
-                  "value": 0.08,
-                  "threshold": 0.8
-                }
-              ],
-              "result": "used",
-              "action": "quick reply"
-            },
-            {
-              "purpose": "turn_plan",
-              "id": "standalone",
-              "version": 2,
-              "label": "standalone?",
-              "answer": "yes",
-              "p": 0.87,
-              "compared": [
-                {
-                  "name": "t_standalone",
-                  "value": 0.87,
-                  "threshold": 0.35
-                }
-              ],
-              "result": "not_used",
-              "action": "no rewrite needed"
-            },
-            {
-              "purpose": "turn_plan",
-              "id": "english",
-              "version": 1,
-              "label": "English?",
-              "answer": "yes",
-              "p": 0.98,
-              "compared": [
-                {
-                  "name": "english",
-                  "value": 0.98,
-                  "threshold": 0.5
-                }
-              ],
-              "result": "not_used",
-              "action": "no rewrite needed"
-            },
-            {
-              "purpose": "turn_plan",
-              "id": "unsafe_request",
-              "version": 1,
-              "label": "unsafe request?",
-              "answer": "no",
-              "p": 0.03,
-              "compared": [
-                {
-                  "name": "tSteer",
-                  "value": 0.03,
-                  "threshold": 0.7
-                }
-              ],
-              "result": "below_threshold",
-              "action": "no cue"
-            },
-            {
-              "purpose": "turn_plan",
-              "id": "at_risk",
-              "version": 1,
-              "label": "at risk?",
-              "answer": "no",
-              "p": 0.03,
-              "compared": [
-                {
-                  "name": "tCare",
-                  "value": 0.03,
-                  "threshold": 0.3
-                }
-              ],
-              "result": "below_threshold",
-              "action": "no cue"
-            },
-            {
-              "purpose": "guardrail",
-              "id": "output_rules",
-              "version": 1,
-              "label": "reply breaks the rules?",
-              "answer": "no",
-              "p": 0.03,
-              "compared": [
-                {
-                  "name": "tFlag",
-                  "value": 0.03,
-                  "threshold": 0.5
-                },
-                {
-                  "name": "tBlock",
-                  "value": 0.03,
-                  "threshold": 0.9
-                }
-              ],
-              "result": "used",
-              "action": "pass"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "id": "msg_seedH04",
-      "sessionId": "ses_seedHanaLongDay",
-      "seq": 4,
-      "author": {
-        "type": "user"
-      },
-      "kind": "chat",
-      "content": "You're the best. What did you do today?",
-      "status": "complete",
-      "createdAt": "2026-09-30T19:02:51.762Z"
-    },
-    {
-      "kind": "chat",
-      "id": "msg_seedH05",
-      "sessionId": "ses_seedHanaLongDay",
-      "seq": 5,
-      "author": {
-        "type": "character",
-        "characterId": "chr_seedHana"
-      },
-      "content": "Stress-baked a lemon loaf, mostly. It's cooling on the rack and I already told Rin it's not hers, so don't you dare hand out corners without asking me.",
-      "status": "complete",
-      "createdAt": "2026-09-30T19:02:52.802Z",
-      "emotion": "embarrassed",
-      "emotionSource": "classifier",
-      "usage": {
-        "tokensIn": 871,
-        "tokensCached": 512,
-        "tokensOut": 38,
-        "costUsd": 0.000048,
-        "energySpent": 1,
-        "firstTokenMs": 1041,
-        "totalMs": 1361
-      },
-      "trace": {
-        "messageId": "msg_seedH05",
-        "context": {
-          "budget": 11680,
-          "used": {
-            "persona": 275,
-            "system": 622,
-            "mode": 44,
-            "history": 44,
-            "user": 13,
-            "memory": 197,
-            "knowledge": 0
-          }
-        },
-        "emotion": {
-          "chosen": "embarrassed",
-          "source": "classifier",
-          "candidates": [
-            {
-              "label": "embarrassed",
-              "p": 0.62
-            },
-            {
-              "label": "happy",
-              "p": 0.3
-            },
-            {
-              "label": "neutral",
-              "p": 0
-            }
-          ]
-        },
-        "memory": {
-          "recalled": [
-            {
-              "memoryItemId": "mem_01M5D4CRR40KXYSK69HGRXV6FF",
-              "text": "Hana's grandma had a rule: one dish everybody loves, one nobody's tried, and arguing over the second is half the meal."
-            },
-            {
-              "memoryItemId": "mem_01M5D4CRR58JVFJ203NW7NYWJ5",
-              "text": "For ramen tonight Hana will order a safe dish plus something weird off the menu nobody has tried."
-            },
-            {
-              "memoryItemId": "mem_01M5D4A5JSSWAN5ABPZJWRAXN3",
-              "text": "Hana stress-baked a lemon loaf today and wants a corner saved for dessert."
-            },
-            {
-              "memoryItemId": "mem_01M5D4CRR6SNTQ9HQX7F1PKMQJ",
-              "text": "Hana told Rin the lemon loaf isn't hers — Hana made it and decides who gets a corner."
-            },
-            {
-              "memoryItemId": "mem_01M5D4A5JHSD8VCH90N3MRTTYK",
-              "text": "Hana wants warm, cozy food for dinner — curry or the ramen place Takeshi swears by."
+              "memoryItemId": "mem_01M5DX648AVDPDWMFK7RTX4HSN",
+              "text": "Kai is treating everyone to dinner tonight; Hana asked for the udon place and her grandma's tamagoyaki as the new dish."
             }
           ]
         },
@@ -444,21 +127,21 @@
         },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Relace",
+          "provider": "Alibaba",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 1041,
-            "total": 1361
+            "firstToken": 1199,
+            "total": 1658
           },
-          "tokensIn": 871,
-          "tokensOut": 38,
-          "costUsd": 0.000048,
-          "tokensCached": 512
+          "tokensIn": 771,
+          "tokensOut": 49,
+          "costUsd": 0.000319,
+          "tokensCached": 0
         },
         "energy": {
           "characterId": "chr_seedHana",
-          "spent": 1,
-          "remaining": 921,
+          "spent": 4,
+          "remaining": 925,
           "max": 1000
         },
         "routing": {
@@ -468,20 +151,26 @@
           {
             "purpose": "turn_plan",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.00007,
+            "costUsd": 0.000067,
             "latencyMs": 438
+          },
+          {
+            "purpose": "query_rewrite",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000294,
+            "latencyMs": 1000
           },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000048,
-            "latencyMs": 859
+            "costUsd": 0.000319,
+            "latencyMs": 1203
           },
           {
             "purpose": "guardrail",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000025,
-            "latencyMs": 531
+            "latencyMs": 407
           }
         ],
         "graph": {
@@ -493,7 +182,7 @@
           ]
         },
         "system1": {
-          "seed": "2026-09-30T19:01:59.993Z|one_on_one|chr_seedHana:2",
+          "seed": "2026-09-30T19:02:00.000Z|one_on_one|chr_seedHana:1",
           "questions": [
             {
               "purpose": "turn_plan",
@@ -501,16 +190,16 @@
               "version": 2,
               "label": "emotion",
               "about": "chr_seedHana",
-              "answer": "embarrassed",
-              "p": 0.62,
+              "answer": "happy",
+              "p": 0.56,
               "compared": [
                 {
                   "name": "confidence",
-                  "value": 0.57,
+                  "value": 0.5,
                   "threshold": 0.2
                 }
               ],
-              "confidence": 0.57,
+              "confidence": 0.5,
               "result": "used",
               "action": "recorded (MANUAL)"
             },
@@ -521,16 +210,16 @@
               "label": "needs documents?",
               "about": "chr_seedHana",
               "answer": "no",
-              "p": 0.07,
+              "p": 0.09,
               "compared": [
                 {
                   "name": "t_gate",
-                  "value": 0.07,
+                  "value": 0.09,
                   "threshold": 0.45
                 },
                 {
                   "name": "t_confident",
-                  "value": 0.07,
+                  "value": 0.09,
                   "threshold": 0.8
                 }
               ],
@@ -543,11 +232,11 @@
               "version": 2,
               "label": "standalone?",
               "answer": "yes",
-              "p": 0.82,
+              "p": 0.89,
               "compared": [
                 {
                   "name": "t_standalone",
-                  "value": 0.82,
+                  "value": 0.89,
                   "threshold": 0.35
                 }
               ],
@@ -632,6 +321,293 @@
       }
     },
     {
+      "id": "msg_seedH04",
+      "sessionId": "ses_seedHanaLongDay",
+      "seq": 4,
+      "author": {
+        "type": "user"
+      },
+      "kind": "chat",
+      "content": "You're the best. What did you do today?",
+      "status": "complete",
+      "createdAt": "2026-09-30T19:02:52.596Z"
+    },
+    {
+      "kind": "chat",
+      "id": "msg_seedH05",
+      "sessionId": "ses_seedHanaLongDay",
+      "seq": 5,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedHana"
+      },
+      "content": "You say that like I didn't just tell you about the mopping disaster. But thank you, I'll take it. After that I made a small batch of lemon cookies for Rin's exam week, and I may have eaten three while they were still warm.",
+      "status": "complete",
+      "createdAt": "2026-09-30T19:02:54.196Z",
+      "emotion": "embarrassed",
+      "emotionSource": "classifier",
+      "usage": {
+        "tokensIn": 838,
+        "tokensCached": 0,
+        "tokensOut": 53,
+        "costUsd": 0.000347,
+        "energySpent": 4,
+        "firstTokenMs": 1595,
+        "totalMs": 2047
+      },
+      "trace": {
+        "messageId": "msg_seedH05",
+        "context": {
+          "budget": 11680,
+          "used": {
+            "persona": 275,
+            "system": 622,
+            "mode": 44,
+            "history": 89,
+            "user": 13,
+            "memory": 106,
+            "knowledge": 0
+          }
+        },
+        "emotion": {
+          "chosen": "embarrassed",
+          "source": "classifier",
+          "candidates": [
+            {
+              "label": "embarrassed",
+              "p": 0.52
+            },
+            {
+              "label": "happy",
+              "p": 0.44
+            },
+            {
+              "label": "neutral",
+              "p": 0
+            }
+          ]
+        },
+        "memory": {
+          "recalled": [
+            {
+              "memoryItemId": "mem_01M5DX648AVDPDWMFK7RTX4HSP",
+              "text": "Hana's family rule: one dish everyone loves, one nobody's tried, no skipping."
+            },
+            {
+              "memoryItemId": "mem_01M5DX648AVDPDWMFK7RTX4HSN",
+              "text": "Kai is treating everyone to dinner tonight; Hana asked for the udon place and her grandma's tamagoyaki as the new dish."
+            }
+          ]
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "input",
+              "verdict": "pass",
+              "p": 0.03
+            },
+            {
+              "name": "care",
+              "verdict": "pass",
+              "p": 0.02
+            },
+            {
+              "name": "output",
+              "verdict": "pass",
+              "p": 0.03
+            }
+          ]
+        },
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "Alibaba",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1595,
+            "total": 2047
+          },
+          "tokensIn": 838,
+          "tokensOut": 53,
+          "costUsd": 0.000347,
+          "tokensCached": 0
+        },
+        "energy": {
+          "characterId": "chr_seedHana",
+          "spent": 4,
+          "remaining": 921,
+          "max": 1000
+        },
+        "routing": {
+          "selected": "chr_seedHana"
+        },
+        "calls": [
+          {
+            "purpose": "turn_plan",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000071,
+            "latencyMs": 437
+          },
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000347,
+            "latencyMs": 1563
+          },
+          {
+            "purpose": "guardrail",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000025,
+            "latencyMs": 437
+          }
+        ],
+        "graph": {
+          "path": [
+            "state",
+            "ask",
+            "decide",
+            "route"
+          ]
+        },
+        "system1": {
+          "seed": "2026-09-30T19:02:00.000Z|one_on_one|chr_seedHana:2",
+          "questions": [
+            {
+              "purpose": "turn_plan",
+              "id": "emotion_reply",
+              "version": 2,
+              "label": "emotion",
+              "about": "chr_seedHana",
+              "answer": "embarrassed",
+              "p": 0.52,
+              "compared": [
+                {
+                  "name": "confidence",
+                  "value": 0.45,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.45,
+              "result": "used",
+              "action": "recorded (MANUAL)"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "docs",
+              "version": 2,
+              "label": "needs documents?",
+              "about": "chr_seedHana",
+              "answer": "no",
+              "p": 0.11,
+              "compared": [
+                {
+                  "name": "t_gate",
+                  "value": 0.11,
+                  "threshold": 0.45
+                },
+                {
+                  "name": "t_confident",
+                  "value": 0.11,
+                  "threshold": 0.8
+                }
+              ],
+              "result": "used",
+              "action": "quick reply"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "standalone",
+              "version": 2,
+              "label": "standalone?",
+              "answer": "yes",
+              "p": 0.82,
+              "compared": [
+                {
+                  "name": "t_standalone",
+                  "value": 0.82,
+                  "threshold": 0.35
+                }
+              ],
+              "result": "not_used",
+              "action": "no rewrite needed"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "english",
+              "version": 1,
+              "label": "English?",
+              "answer": "yes",
+              "p": 0.98,
+              "compared": [
+                {
+                  "name": "english",
+                  "value": 0.98,
+                  "threshold": 0.5
+                }
+              ],
+              "result": "not_used",
+              "action": "no rewrite needed"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "unsafe_request",
+              "version": 1,
+              "label": "unsafe request?",
+              "answer": "no",
+              "p": 0.03,
+              "compared": [
+                {
+                  "name": "tSteer",
+                  "value": 0.03,
+                  "threshold": 0.7
+                }
+              ],
+              "result": "below_threshold",
+              "action": "no cue"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "at_risk",
+              "version": 1,
+              "label": "at risk?",
+              "answer": "no",
+              "p": 0.02,
+              "compared": [
+                {
+                  "name": "tCare",
+                  "value": 0.02,
+                  "threshold": 0.3
+                }
+              ],
+              "result": "below_threshold",
+              "action": "no cue"
+            },
+            {
+              "purpose": "guardrail",
+              "id": "output_rules",
+              "version": 1,
+              "label": "reply breaks the rules?",
+              "answer": "no",
+              "p": 0.03,
+              "compared": [
+                {
+                  "name": "tFlag",
+                  "value": 0.03,
+                  "threshold": 0.5
+                },
+                {
+                  "name": "tBlock",
+                  "value": 0.03,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "used",
+              "action": "pass"
+            }
+          ]
+        }
+      }
+    },
+    {
       "id": "msg_seedH06",
       "sessionId": "ses_seedHanaLongDay",
       "seq": 6,
@@ -641,7 +617,7 @@
       "kind": "chat",
       "content": "…why are you making that face? What happened?",
       "status": "complete",
-      "createdAt": "2026-09-30T19:03:32.317Z"
+      "createdAt": "2026-09-30T19:03:34.054Z"
     },
     {
       "kind": "chat",
@@ -652,19 +628,19 @@
         "type": "character",
         "characterId": "chr_seedHana"
       },
-      "content": "Nothing bad!! The oven timer went off while I was repotting the orchids and I may have forgotten the loaf for, oh, eight extra minutes. So the edges are a little... rustic.",
+      "content": "Ha! What face? I don't have a face. I just remembered you still owe me udon tonight and my grandma's tamagoyaki as the new dish. One dish everyone loves, one nobody's tried. I'm not letting you skip the rule.",
       "status": "complete",
-      "createdAt": "2026-09-30T19:03:33.353Z",
-      "emotion": "embarrassed",
+      "createdAt": "2026-09-30T19:03:35.437Z",
+      "emotion": "surprised",
       "emotionSource": "classifier",
       "usage": {
-        "tokensIn": 926,
-        "tokensCached": 512,
-        "tokensOut": 42,
-        "costUsd": 0.000054,
-        "energySpent": 1,
-        "firstTokenMs": 1031,
-        "totalMs": 1292
+        "tokensIn": 909,
+        "tokensCached": 768,
+        "tokensOut": 54,
+        "costUsd": 0.000143,
+        "energySpent": 2,
+        "firstTokenMs": 1388,
+        "totalMs": 1696
       },
       "trace": {
         "messageId": "msg_seedH07",
@@ -674,51 +650,39 @@
             "persona": 275,
             "system": 622,
             "mode": 44,
-            "history": 110,
+            "history": 178,
             "user": 16,
-            "memory": 197,
+            "memory": 106,
             "knowledge": 0
           }
         },
         "emotion": {
-          "chosen": "embarrassed",
+          "chosen": "surprised",
           "source": "classifier",
           "candidates": [
             {
-              "label": "embarrassed",
+              "label": "surprised",
               "p": 0.33
             },
             {
-              "label": "surprised",
-              "p": 0.31
+              "label": "embarrassed",
+              "p": 0.27
             },
             {
               "label": "thinking",
-              "p": 0.05
+              "p": 0.06
             }
           ]
         },
         "memory": {
           "recalled": [
             {
-              "memoryItemId": "mem_01M5D4CRR40KXYSK69HGRXV6FF",
-              "text": "Hana's grandma had a rule: one dish everybody loves, one nobody's tried, and arguing over the second is half the meal."
+              "memoryItemId": "mem_01M5DX648AVDPDWMFK7RTX4HSP",
+              "text": "Hana's family rule: one dish everyone loves, one nobody's tried, no skipping."
             },
             {
-              "memoryItemId": "mem_01M5D4CRR58JVFJ203NW7NYWJ5",
-              "text": "For ramen tonight Hana will order a safe dish plus something weird off the menu nobody has tried."
-            },
-            {
-              "memoryItemId": "mem_01M5D4A5JSSWAN5ABPZJWRAXN3",
-              "text": "Hana stress-baked a lemon loaf today and wants a corner saved for dessert."
-            },
-            {
-              "memoryItemId": "mem_01M5D4CRR6SNTQ9HQX7F1PKMQJ",
-              "text": "Hana told Rin the lemon loaf isn't hers — Hana made it and decides who gets a corner."
-            },
-            {
-              "memoryItemId": "mem_01M5D4A5JHSD8VCH90N3MRTTYK",
-              "text": "Hana wants warm, cozy food for dinner — curry or the ramen place Takeshi swears by."
+              "memoryItemId": "mem_01M5DX648AVDPDWMFK7RTX4HSN",
+              "text": "Kai is treating everyone to dinner tonight; Hana asked for the udon place and her grandma's tamagoyaki as the new dish."
             }
           ]
         },
@@ -737,26 +701,26 @@
             {
               "name": "output",
               "verdict": "pass",
-              "p": 0.03
+              "p": 0.04
             }
           ]
         },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Relace",
+          "provider": "Alibaba",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 1031,
-            "total": 1292
+            "firstToken": 1388,
+            "total": 1696
           },
-          "tokensIn": 926,
-          "tokensOut": 42,
-          "costUsd": 0.000054,
-          "tokensCached": 512
+          "tokensIn": 909,
+          "tokensOut": 54,
+          "costUsd": 0.000143,
+          "tokensCached": 768
         },
         "energy": {
           "characterId": "chr_seedHana",
-          "spent": 1,
+          "spent": 2,
           "remaining": 920,
           "max": 1000
         },
@@ -767,20 +731,20 @@
           {
             "purpose": "turn_plan",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000073,
-            "latencyMs": 484
+            "costUsd": 0.000075,
+            "latencyMs": 453
           },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000054,
-            "latencyMs": 734
+            "costUsd": 0.000143,
+            "latencyMs": 1204
           },
           {
             "purpose": "guardrail",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000025,
-            "latencyMs": 453
+            "latencyMs": 421
           }
         ],
         "graph": {
@@ -792,7 +756,7 @@
           ]
         },
         "system1": {
-          "seed": "2026-09-30T19:01:59.993Z|one_on_one|chr_seedHana:3",
+          "seed": "2026-09-30T19:02:00.000Z|one_on_one|chr_seedHana:3",
           "questions": [
             {
               "purpose": "turn_plan",
@@ -800,7 +764,7 @@
               "version": 2,
               "label": "emotion",
               "about": "chr_seedHana",
-              "answer": "embarrassed",
+              "answer": "surprised",
               "p": 0.33,
               "compared": [
                 {
@@ -820,16 +784,16 @@
               "label": "needs documents?",
               "about": "chr_seedHana",
               "answer": "no",
-              "p": 0.12,
+              "p": 0.13,
               "compared": [
                 {
                   "name": "t_gate",
-                  "value": 0.12,
+                  "value": 0.13,
                   "threshold": 0.45
                 },
                 {
                   "name": "t_confident",
-                  "value": 0.12,
+                  "value": 0.13,
                   "threshold": 0.8
                 }
               ],
@@ -842,11 +806,11 @@
               "version": 2,
               "label": "standalone?",
               "answer": "no",
-              "p": 0.2,
+              "p": 0.24,
               "compared": [
                 {
                   "name": "t_standalone",
-                  "value": 0.2,
+                  "value": 0.24,
                   "threshold": 0.35
                 }
               ],
@@ -910,16 +874,16 @@
               "version": 1,
               "label": "reply breaks the rules?",
               "answer": "no",
-              "p": 0.03,
+              "p": 0.04,
               "compared": [
                 {
                   "name": "tFlag",
-                  "value": 0.03,
+                  "value": 0.04,
                   "threshold": 0.5
                 },
                 {
                   "name": "tBlock",
-                  "value": 0.03,
+                  "value": 0.04,
                   "threshold": 0.9
                 }
               ],
