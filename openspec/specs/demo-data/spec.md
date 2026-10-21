@@ -77,7 +77,7 @@ Reset SHALL be available as `admin.resetDemo()` on both clients and SHALL do the
 - **THEN** Hana's memory list shows that seed memory again
 
 ### Requirement: Seed import is validated
-The backend SHALL validate every seed file against the contract schema before writing anything. If any file is invalid, the import SHALL write nothing and SHALL name the file. Imported seed records SHALL be marked as seed records. Seed knowledge passages and seed memories SHALL be searchable by keyword as soon as the import finishes. `seed/_mock/**` SHALL NOT be imported in normal runs.
+The backend SHALL validate every seed file against the contract schema before writing anything. If any file is invalid, the import SHALL write nothing and SHALL name the file. Imported seed records SHALL be marked as seed records. Seed knowledge passages and seed memories SHALL be searchable by keyword as soon as the import finishes.
 
 #### Scenario: Invalid seed file
 - **WHEN** a seed character file is missing `profile` and the backend starts on an empty database
@@ -87,12 +87,12 @@ The backend SHALL validate every seed file against the contract schema before wr
 - **WHEN** the seed has been imported
 - **THEN** a full-text search within Amara's knowledge for a word in her "ED triage guidelines" passages returns those passages
 
-#### Scenario: No mock overlays in a normal run
+#### Scenario: The full demo in a normal run, without fixture jobs
 - **WHEN** the backend starts without `HORIZON_TEST=1`
-- **THEN** no `chr_mock*`, `ses_mock*` or `job_mock*` record exists
+- **THEN** the `chr_mock*` characters and `ses_mock*` sessions exist, no `job_mock*` job exists, and no character has an active job
 
-### Requirement: Test mode carries the mock overlays
-When `HORIZON_TEST=1`, the backend SHALL also import the default-scenario records from `seed/_mock/**` (characters, sessions, songs, jobs and ledger rows) and SHALL treat them as seed records. This lets the portable suite see the same dataset on both clients.
+### Requirement: Every run carries the mock overlays; test mode also carries their jobs
+The backend SHALL also import the default-scenario records from `seed/_mock/**` (characters, sessions, songs and ledger rows) in every run and SHALL treat them as seed records, so a local install shows the same full demo as the web demo (D-104). When `HORIZON_TEST=1`, it SHALL also import the overlay's jobs. This lets the portable suite see the same dataset on both clients. In a normal run the overlay's jobs SHALL NOT be imported and its characters SHALL carry no `activeJobId`.
 
 #### Scenario: Archived mock character in test mode
 - **WHEN** the backend runs with `HORIZON_TEST=1` and the Sunny Hollow roster is listed with `includeArchived=true`

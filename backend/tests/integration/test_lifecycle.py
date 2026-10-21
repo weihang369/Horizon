@@ -67,12 +67,17 @@ async def test_keyword_search_after_import(api_normal: Api) -> None:
     assert hits and all(h["sourceId"] == "kno_seedAmara2" for h in hits)
 
 
-# ── 6.2 mock overlays only in test mode ──
-async def test_no_mock_records_in_a_normal_run(api_normal: Api) -> None:
+# ── 6.2 the full demo in every run (D-104); fixture jobs only in test mode ──
+async def test_a_normal_run_ships_the_full_demo_without_fixture_jobs(api_normal: Api) -> None:
     async with api_normal.rt.db.read() as conn:
-        for table in ("characters", "sessions", "generation_jobs"):
-            n = (await conn.execute(text(f"SELECT count(*) FROM {table} WHERE id LIKE '%_mock%'"))).scalar_one()
-            assert n == 0, table
+        count = lambda table: conn.execute(text(f"SELECT count(*) FROM {table} WHERE id LIKE '%_mock%'"))  # noqa: E731
+        assert (await count("characters")).scalar_one() == 5
+        assert (await count("sessions")).scalar_one() == 6
+        assert (await count("generation_jobs")).scalar_one() == 0
+        busy = (await conn.execute(text("SELECT count(*) FROM characters WHERE active_job_id IS NOT NULL"))).scalar_one()
+        assert busy == 0
+    roster = await api_normal.json("/api/v1/worlds/wld_seedSunnyHollow/characters", params={"includeArchived": "true"})
+    assert any(c["id"] == "chr_mockMochi" and c["status"] == "archived" for c in roster)
 
 
 async def test_test_mode_has_the_archived_mock_character(api: Api) -> None:

@@ -377,7 +377,7 @@ embedding_spaces  id PK ('qwen3-emb-8b@1024'), model, provider, dims, dtype ('fl
   5. **Synthesise** knowledge sections.
   6. **Index** FTS immediately.
 
-  Vectors are created by an explicit **"Index seed knowledge"** action offered after `setKey`, an estimated < $0.001 (NFR-30). Until then the seed sources are `keyword_only`. `seed/_mock/**` is never imported in normal runs. **In test mode (`HORIZON_TEST=1`) only**, its default-scenario overlays (characters, sessions, songs, jobs, ledger rows; not `variants/`) are imported as shipped rows, so the portable contract suite sees the MockClient's dataset.
+  Vectors are created by an explicit **"Index seed knowledge"** action offered after `setKey`, an estimated < $0.001 (NFR-30). Until then the seed sources are `keyword_only`. Every run also imports the default-scenario overlays in `seed/_mock/**` (characters, sessions, songs, ledger rows; not `variants/`) as shipped rows, so a local install shows the same full demo as the web demo (D-104). Their fixture jobs (Kenji's and Aoi's emotion sets) are imported **in test mode (`HORIZON_TEST=1`) only**, so the portable contract suite sees the MockClient's dataset; in a normal run they are left out, with the characters' `activeJobId`.
 - **Wire `isSeed` vs. `is_seed`.** Worlds, characters and sessions store the wire `isSeed` they ship with (the `_mock` overlays ship `false`); reset finds them by the seed dataset's ids. Memory, knowledge, songs, jobs and ledger rows have no wire flag, so their `is_seed` means "shipped, restored by reset".
 - **Seed timestamps** are normalised everywhere they occur, nested JSON included, so events, messages and traces stay consistent.
 - **Contract schema.**

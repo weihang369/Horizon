@@ -1,7 +1,8 @@
 """Seed import and reset-demo (doc 02 §4–§5, design D5/D12). One code path: importing into an empty database is
 a reset-demo with nothing to preserve.
 
-`load_seed()` reads `seed/**` (plus the default-scenario `seed/_mock/**` overlays in test mode, OQ-6), validates
+`load_seed()` reads `seed/**` (plus the default-scenario `seed/_mock/**` overlays when asked: every run since D-104,
+OQ-6; the runtime drops their fixture jobs outside test mode), validates
 every entity against `schema.json`, normalises nothing yet, and asserts that reducing each session's events gives
 exactly its shipped session and messages. Any failure raises `SeedError` naming the file or session, before a row
 is written.

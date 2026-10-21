@@ -527,9 +527,15 @@ class Runtime:
 
     # ── seed ──
     async def load_seed(self) -> seeding.SeedData:
+        """D-104: every run ships the full demo (the `_mock` overlay too, as the web demo does). Outside test mode the
+        overlay's fixture jobs stay out, so no character shows a generation that never runs."""
         if self._seed is None:
-            self._seed = await asyncio.to_thread(seeding.load_seed, self.cfg.seed_dir, self.schema,
-                                                 include_mock=self.cfg.test_mode)
+            data = await asyncio.to_thread(seeding.load_seed, self.cfg.seed_dir, self.schema, include_mock=True)
+            if not self.cfg.test_mode:
+                data.jobs = []
+                for c in data.characters:
+                    c.pop("activeJobId", None)
+            self._seed = data
         return self._seed
 
     async def import_seed(self) -> list[str]:
