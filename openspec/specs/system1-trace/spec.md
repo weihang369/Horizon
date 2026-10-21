@@ -84,7 +84,7 @@ Every reply started by a router's decision (`naive` and `scripted` group routing
 
 ### Requirement: The Insight section
 The Insight drawer SHALL show a "System 1 · Jev" section after Emotion:
-- rows grouped by purpose, each group headed by its latency or "fallback";
+- rows grouped by purpose, each group headed by its latency or "fallback" and a one-line description; the plan's group is named "plan" in every mode, tagged with when it was made (before the reply, second reply, made ahead) (U-35);
 - each row with its label, answer, `p` or confidence and its band, comparisons as "value ≥ threshold", and the action;
 - each row drawn as a meter (U-29): a bar of the value code tested with a tick at its threshold, in the palette colour
   when it crossed the line, grey when under it, warn on a fallback; the action as a pill;

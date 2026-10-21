@@ -102,6 +102,15 @@ test("Insight: the drawer's edge resizes it (drag, keys, double-click), the deba
   await mei.getByRole("button", { name: "Open Insight for this message" }).click();
   const insight = page.getByRole("complementary", { name: "Insight" });
   await expect(insight.getByRole("list", { name: "Turn pipeline" }).locator("li")).toHaveCount(8); // STATE … KEEP
+  // U-35: each chip says what its step is and jumps to its panel
+  const top = async (l: import("@playwright/test").Locator) => Math.round((await l.boundingBox())?.y ?? -1);
+  const passages = insight.locator('[data-purpose="deep_check"]').first();
+  const plan = insight.locator('[data-purpose="debate_plan"], [data-purpose="turn_plan"]').first();
+  expect(await top(passages)).toBeGreaterThan(400);
+  await insight.getByRole("button", { name: /^check: Jev judges each passage found/ }).click();
+  await expect.poll(() => top(passages)).toBeLessThan(200);
+  await insight.getByRole("button", { name: /^state: The situation, written as data for Jev/ }).click();
+  await expect.poll(async () => { const y = await top(plan); return y >= 0 && y < 200; }).toBe(true);
   const edge = insight.getByRole("separator", { name: "Resize Insight" });
   await expect(edge).toHaveAttribute("aria-valuenow", "400");
   await expect.poll(async () => Math.round((await insight.boundingBox())?.width ?? 0)).toBe(400);

@@ -225,6 +225,18 @@ async def test_regenerate_reuses_the_stored_rewrite(api: Api) -> None:
     assert q["rewrite"] == "how night shifts affect staff fatigue scores in the shift fatigue review"
 
 
+async def test_a_usable_passage_that_lost_on_rank_says_not_in_top_k(api: Api) -> None:
+    """U-35: every passage answers (all usable); a 1:1 keeps 3; the rest read "not in top 3", never "dropped"."""
+    sid = await agent(api, "one_on_one", [AMARA])
+    gate(api, AMARA, 0.9)
+    assert api.rt.fake is not None
+    api.rt.fake.answer_question("passage:*", ANSWERS)
+    [reply] = await send(api, sid, QUESTION)
+    actions = [r["action"] for r in rows(reply, "passage")]
+    assert len(actions) > 3 and actions.count("kept") == 3
+    assert set(actions) == {"kept", "not in top 3"}
+
+
 # ── 7.1 Jev call 2 ──
 async def test_one_check_rate_limited_falls_back_for_that_passage(api: Api) -> None:
     sid = await agent(api, "one_on_one", [AMARA])

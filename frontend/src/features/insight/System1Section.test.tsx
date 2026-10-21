@@ -69,6 +69,21 @@ describe("System 1 section", () => {
     expect(renderToStaticMarkup(createElement(System1Rows, { trace, nameOf }))).not.toContain("matched nothing");
   });
 
+  it("names the plan PLAN in every mode with a tag, says what each panel is, and uses plain row labels (U-35)", () => {
+    const t: TurnTrace = { messageId: "msg_a4", system1: { questions: [
+      { purpose: "debate_plan", id: "docs", version: 2, label: "needs documents?", about: "chr_seedHana", answer: "yes", p: 0.8, result: "used", action: "search the documents" },
+      { purpose: "turn_plan", id: "english", version: 1, label: "English?", answer: "yes", p: 0.97, result: "used", action: "no rewrite needed" },
+      { purpose: "face_check", id: "face_check", version: 1, label: "face and words agree?", answer: "yes", p: 0.82, result: "shown_only" },
+    ] } };
+    const g = groupSystem1(t);
+    expect(g.map((x) => [x.label, x.tag])).toEqual([["plan", "made ahead"], ["plan", "before the reply"], ["after the reply", undefined]]);
+    const html = renderToStaticMarkup(createElement(System1Rows, { trace: t, nameOf }));
+    expect(html).toContain("message in English?");
+    expect(html).not.toContain(">English?");
+    expect(html).toContain("every question in one request");
+    expect(html).toContain(">for Insight only</span>");
+  });
+
   it("resolves IDs to names or titles, never text", () => {
     expect(resolveId("kch_p1", trace, nameOf)).toBe("Shift Fatigue Review (p. 3)");
     expect(resolveId("mem_x", trace, nameOf)).toBe("a memory");

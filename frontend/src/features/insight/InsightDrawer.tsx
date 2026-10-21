@@ -81,7 +81,39 @@ function Section({ n, title, aside, children, i }: { n: string; title: string; a
   );
 }
 
+// U-35: what each step of the turn's path means, and where its detail is. A chip jumps to the first of its targets
+// present (a System 1 panel, else the section that shows that step).
+const sec = (title: string) => `section[aria-label="${title}"]`;
+const PLAN_AT = ['[data-purpose="turn_plan"]', '[data-purpose="debate_plan"]', '[data-purpose="follow_plan"]',
+  '[data-purpose="route"]', sec("System 1 · Jev")];
+const DOCS_AT = ['[data-purpose="deep_check"]', sec("Knowledge")];
+const STEPS: Record<string, { why: string; to: string[] }> = {
+  state: { why: "The situation, written as data for Jev", to: PLAN_AT },
+  ask: { why: "Every question to Jev, in one request", to: PLAN_AT },
+  decide: { why: "Code reads each of Jev's answers against its line", to: PLAN_AT },
+  route: { why: "Quick reply, or search first", to: PLAN_AT },
+  deep: { why: "The search starts", to: DOCS_AT },
+  gather: { why: "The search query: keywords, meaning, a rewrite", to: DOCS_AT },
+  search: { why: "Keyword and meaning search of the documents", to: DOCS_AT },
+  check: { why: "Jev judges each passage found", to: DOCS_AT },
+  keep: { why: "Code keeps the best usable passages", to: DOCS_AT },
+  recall: { why: "Search of earlier lines and memories", to: ['[data-purpose="deep_check:recall"]', sec("In-session recall"), sec("Memory recalled")] },
+  both: { why: "Documents and earlier lines searched together", to: DOCS_AT },
+  Route: { why: "Who speaks", to: [sec("Routing · who speaks")] },
+  Recall: { why: "What was fetched for the reply", to: [sec("Knowledge"), sec("Memory recalled"), sec("In-session recall")] },
+  Generate: { why: "The model writes the reply", to: [sec("Model")] },
+  Emotion: { why: "The face", to: [sec("Emotion")] },
+  Guard: { why: "The output check", to: ['[data-purpose="guardrail"]', sec("Guardrail")] },
+};
+
+function jumpTo(from: HTMLElement, targets: string[], reduced: boolean): void {
+  const root = from.closest("aside");
+  const el = targets.map((t) => root?.querySelector<HTMLElement>(t)).find(Boolean);
+  el?.scrollIntoView({ block: "start", behavior: reduced ? "auto" : "smooth" });
+}
+
 function Pipeline({ trace, streaming }: { trace?: TurnTrace; streaming: boolean }) {
+  const { reduced } = useMotionPrefs();
   const steps = trace?.graph?.path?.length
     ? trace.graph.path.map((p) => ({ k: p, on: true }))
     : [
@@ -95,7 +127,12 @@ function Pipeline({ trace, streaming }: { trace?: TurnTrace; streaming: boolean 
     <ol className={cx(s.pipe, streaming && s.pipeLive)} aria-label="Turn pipeline">
       {steps.map((st, i) => (
         <li key={st.k} className={cx(s.node, (st.on || streaming) && s.nodeOn)} style={{ "--i": i } as CSSProperties}>
-          <span>{st.k}</span>
+          {STEPS[st.k] ? (
+            <button type="button" className={s.nodeBtn} title={STEPS[st.k].why} aria-label={`${st.k}: ${STEPS[st.k].why}. Show`}
+              onClick={(e) => jumpTo(e.currentTarget, STEPS[st.k].to, reduced)}>
+              <span>{st.k}</span>
+            </button>
+          ) : <span>{st.k}</span>}
         </li>
       ))}
     </ol>

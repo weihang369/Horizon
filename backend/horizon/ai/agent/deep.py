@@ -406,6 +406,9 @@ class DeepSteps:
         th = self._passage_thresholds()
         pe, se = b.get(PASSAGE), b.get(PASSAGE_SET)
         kept = set(k.kept)
+        usable = set(k.usable)
+        # a usable passage that lost on rank says so (U-35): "0.99 ≥ 0.90 → dropped" read as a contradiction
+        outranked = f"not in top {len(k.kept)}"
         out: list[dict[str, Any]] = []
         for c in checked:
             h = hits.get(c.rid)
@@ -424,7 +427,7 @@ class DeepSteps:
                 row.update(answer=LEVEL_ANSWER[level], p=round(use, 4), compared=[
                     {"name": "t_keep", "value": round(use, 4), "threshold": th["t_keep"]}],
                     result="used" if c.rid in kept else "below_threshold",
-                    action="kept" if c.rid in kept else "dropped")
+                    action="kept" if c.rid in kept else outranked if c.rid in usable else "dropped")
             out.append(row)
         if set_yes is not None or (k.outcome in ("partly", "found") and len(k.usable) >= 2 and not any(
                 keeping.found(c, th["t_found"]) for c in checked)):

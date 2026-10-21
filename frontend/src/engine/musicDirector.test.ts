@@ -23,6 +23,9 @@ describe("musicDirector", () => {
     expect(musicDirector(base({ mode: "debate", policy: "arena" }), 0).track?.url).toBe("/sys/arena");
     const won = musicDirector(base({ mode: "debate", verdict: { decidedBy: "arbiter", strongerCase: "opp", summary: [] } }), 0);
     expect(won.track?.url).toBe("/t/b");
+    // U-35: the side's first debater has no theme, a teammate does: the teammate's, not Arena
+    const songless = [cast[0], cast[2], cast[1]];
+    expect(musicDirector(base({ mode: "debate", cast: songless, verdict: { decidedBy: "arbiter", strongerCase: "opp", summary: [] } }), 0).track?.url).toBe("/t/b");
     const tie = musicDirector(base({ mode: "debate", verdict: { decidedBy: "arbiter", strongerCase: null, summary: [] } }), 0);
     expect(tie.track?.url).toBe("/sys/arena");
   });

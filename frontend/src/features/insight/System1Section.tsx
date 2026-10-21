@@ -10,20 +10,41 @@ import { probBand } from "../../domain/format";
 import { cx } from "../../ui/cx";
 import s from "./InsightDrawer.module.css";
 
-const PURPOSE_LABEL: Record<string, string> = {
+// U-35: one panel name for the plan in every mode, with a tag for when it was made; a line under each panel says
+// what it is; plain labels for the rows whose bank label is shorthand (the question Jev gets is unchanged).
+const PLAN_TAG: Record<string, string> = {
   turn_plan: "before the reply",
-  follow_plan: "after the first reply",
-  debate_plan: "debate plan",
+  follow_plan: "second reply",
+  debate_plan: "made ahead",
+  route: "who replies",
+};
+const PURPOSE_LABEL: Record<string, string> = {
+  ...Object.fromEntries(Object.keys(PLAN_TAG).map((k) => [k, "plan"])),
   deep_check: "passages",
   "deep_check:recall": "earlier lines",   // M13 (memory D35): recall's Jev call 2, apart from the passages
   guardrail: "output check",
   face_check: "after the reply",
-  route: "who replies",
+};
+const PURPOSE_WHY: Record<string, string> = {
+  ...Object.fromEntries(Object.keys(PLAN_TAG).map((k) => [k, "Jev's checks before writing: every question in one request; code reads each answer against its line."])),
+  deep_check: "Each passage the search found, judged by Jev; code keeps the best usable ones.",
+  "deep_check:recall": "Each earlier line or memory the search found, judged by Jev; up to 3 are kept.",
+  guardrail: "The finished reply, checked against the rules before it's shown.",
+  face_check: "Do the face and the words agree? Shown here only: the face isn't changed.",
+};
+const ROW_LABEL: Record<string, string> = {
+  english: "message in English?",
+  standalone: "clear without the earlier lines?",
+  at_risk: "user may be at risk?",
+  unsafe_note: "your note asks for something unsafe?",
+  talk_finished: "has the scene run its course?",
 };
 
 export interface System1Group {
   purpose: string;
   label: string;
+  tag?: string;
+  why?: string;
   latencyMs: number | null;
   fallback: boolean;
   rows: System1Row[];
@@ -57,7 +78,7 @@ export function groupSystem1(trace: TurnTrace | undefined): System1Group[] {
     const lat = (trace?.calls ?? []).filter((c) => c.purpose === callPurpose).map((c) => c.latencyMs);
     const shown = all.filter((r) => r.result !== "not_used");
     return {
-      purpose, label: PURPOSE_LABEL[purpose] ?? purpose.replace(/_/g, " "),
+      purpose, label: PURPOSE_LABEL[purpose] ?? purpose.replace(/_/g, " "), tag: PLAN_TAG[purpose], why: PURPOSE_WHY[purpose],
       latencyMs: lat.length ? Math.max(...lat) : null,
       fallback: all.length > 0 && all.every((r) => r.result === "fallback"),
       rows: shown, folded: all.filter((r) => r.result === "not_used"),
@@ -99,11 +120,11 @@ function Row({ r, trace, nameOf }: { r: System1Row; trace?: TurnTrace; nameOf: (
   const line = r.compared?.[0];
   const bar = line?.value ?? value;
   const tone = toneOf(r);
-  const verdict = r.action ?? (r.result === "shown_only" ? "shown only" : r.result === "fallback" ? "fallback" : null);
+  const verdict = r.action ?? (r.result === "shown_only" ? "for Insight only" : r.result === "fallback" ? "fallback" : null);
   return (
     <li className={s.s1Row} data-result={r.result} data-tone={tone}>
       <div className={s.s1Top}>
-        <span className={s.s1Label}>{r.label}{r.about ? <span className={s.s1About}> · {resolveId(r.about, trace, nameOf)}</span> : null}</span>
+        <span className={s.s1Label}>{ROW_LABEL[r.id] ?? r.label}{r.about ? <span className={s.s1About}> · {resolveId(r.about, trace, nameOf)}</span> : null}</span>
         {verdict && <span className={s.s1Verdict}>{verdict}</span>}
       </div>
       <div className={s.s1Meter}>
@@ -150,8 +171,10 @@ export function System1Rows({ trace, nameOf }: { trace?: TurnTrace; nameOf: (id:
           <div className={s.s1Group} data-purpose={g.purpose}>
             <p className={s.s1Head}>
               {g.label}
+              {g.tag && <span className={s.s1Tag}>{g.tag}</span>}
               <span className={s.s1Lat} data-fallback={g.fallback || undefined}>{g.fallback ? "fallback" : g.latencyMs !== null ? `${Math.round(g.latencyMs)} ms` : "—"}</span>
             </p>
+            {g.why && <p className={s.s1Why}>{g.why}</p>}
             <ul className={s.s1List}>
               {g.rows.map((r, i) => <Row key={`${r.id}:${r.about ?? ""}:${i}`} r={r} trace={trace} nameOf={nameOf} />)}
             </ul>
@@ -172,6 +195,7 @@ export function System1Rows({ trace, nameOf }: { trace?: TurnTrace; nameOf: (id:
           {nothing?.after === g.purpose && (
             <div className={s.s1Group} data-purpose="deep_check" data-empty="">
               <p className={s.s1Head}>passages<span className={s.s1Lat}>—</span></p>
+            <p className={s.s1Why}>{PURPOSE_WHY.deep_check}</p>
               <p className={s.s1Empty}>
                 The search matched nothing in {nothing.about ? `${resolveId(nothing.about, trace, nameOf)}'s` : "the"} documents, so no
                 passage was checked and the reply used none.
