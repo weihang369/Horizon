@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+import httpx
 import pytest
 from pydantic import SecretStr
 from sqlalchemy import text
@@ -53,13 +54,17 @@ async def test_energy_regenerates_only_with_a_key(api: Api) -> None:
 
 # ── 9.2: PUT /settings/key ──
 async def test_save_and_clear_without_network(api: Api, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test mode answers from the in-process fake: Save checks the key with one GET /key (D-105), Clear calls nothing."""
     attempts = block_network(monkeypatch)
     events: list[Any] = []
     unsubscribe = _capture(api, events)
+    before = api.rt.fake.counts["key"]
     r = await put_key(api, f"  {KEY}  ")
     assert r.status_code == 200 and r.json()["openRouterKeyStatus"] == "set"
+    assert api.rt.fake.counts["key"] == before + 1
     assert json.loads((api.data_dir / "secrets.local.json").read_text(encoding="utf-8")) == {"openRouterKey": KEY}
     r = await put_key(api, None)
+    assert api.rt.fake.counts["key"] == before + 1
     assert r.json()["openRouterKeyStatus"] == "missing" and r.json()["demoMode"] is True
     assert not (api.data_dir / "secrets.local.json").exists()
     assert attempts == []
@@ -80,6 +85,21 @@ def _capture(api: Api, events: list[Any]) -> Any:
         api.rt.publish = real  # type: ignore[method-assign]
 
     return undo
+
+
+async def test_save_checks_the_key_once(api: Api) -> None:
+    """D-105: Save asks OpenRouter once (GET /key, free), so a rejected key reads `invalid` in the answer itself."""
+    r = await put_key(api, "sk-or-bad-0001")
+    assert r.status_code == 200 and r.json()["openRouterKeyStatus"] == "invalid" and r.json()["demoMode"] is True
+    r = await put_key(api, KEY)
+    assert r.json()["openRouterKeyStatus"] == "set"
+
+
+async def test_save_keeps_the_key_when_openrouter_is_unreachable(api: Api) -> None:
+    api.rt.fake.queued.append(httpx.Response(503, json={"error": {"message": "unavailable"}}))
+    r = await put_key(api, KEY)
+    assert r.status_code == 200 and r.json()["openRouterKeyStatus"] == "set"
+    assert not api.rt.fake.queued
 
 
 async def test_malformed_key_is_validation(api: Api) -> None:

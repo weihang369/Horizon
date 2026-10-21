@@ -25,11 +25,19 @@ When `HORIZON_TEST=1`, the backend SHALL ignore `OPENROUTER_API_KEY` from the en
 - **THEN** settings report `openRouterKeyStatus: "missing"` until the harness sets a key
 
 ### Requirement: Setting the key
-`PUT /api/v1/settings/key` with `{ "key": string }` SHALL accept a key matching `sk-or-` followed by one or more of `[A-Za-z0-9_-]`, after trimming. It SHALL write the key to `data/secrets.local.json` and return `AppSettings`, without any network call. A key that doesn't match SHALL reject with `validation` and change nothing. `{ "key": null }` SHALL delete the secrets file.
+`PUT /api/v1/settings/key` with `{ "key": string }` SHALL accept a key matching `sk-or-` followed by one or more of `[A-Za-z0-9_-]`, after trimming. It SHALL write the key to `data/secrets.local.json`, then check it with one `GET /key` to OpenRouter (free), and return `AppSettings` (D-105): a 401 marks the key `invalid` in that same answer; any other failure (unreachable, timeout, 5xx) SHALL keep it `set`, and its first call checks it. A key that doesn't match SHALL reject with `validation` and change nothing, without a network call. `{ "key": null }` SHALL delete the secrets file, without a network call.
 
 #### Scenario: Save a key
 - **WHEN** `PUT /settings/key` is sent with `{ "key": "sk-or-test-0001" }`
-- **THEN** the response has `openRouterKeyStatus: "set"` and `demoMode: false`, and no outbound request was made
+- **THEN** the response has `openRouterKeyStatus: "set"` and `demoMode: false`, after exactly one `GET /key`
+
+#### Scenario: Save a rejected key
+- **WHEN** `PUT /settings/key` is sent with a key OpenRouter answers with 401
+- **THEN** the response itself has `openRouterKeyStatus: "invalid"` and `demoMode: true`, and the key is stored
+
+#### Scenario: Save while OpenRouter is unreachable
+- **WHEN** `PUT /settings/key` is sent and the `GET /key` check fails with anything but 401
+- **THEN** the response has `openRouterKeyStatus: "set"`, and the first call that uses the key checks it
 
 #### Scenario: Malformed key
 - **WHEN** `PUT /settings/key` is sent with `{ "key": "hello" }`
