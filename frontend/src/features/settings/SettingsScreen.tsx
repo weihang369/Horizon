@@ -130,10 +130,10 @@ function AudioTab() {
   const a = usePrefs((p) => p.audio);
   return (
     <>
-      <Section title="Volume" desc="Changes apply instantly. Stored in this browser.">
-        <Slider label="Master" value={a.master} min={0} max={1} step={0.05} format={pct} onChange={(master) => setPrefs({ audio: { master } })} />
-        <Slider label="Music" value={a.music} min={0} max={1} step={0.05} format={pct} onChange={(music) => setPrefs({ audio: { music } })} />
-        <Slider label="Sound effects" value={a.sfx} min={0} max={1} step={0.05} format={pct} onChange={(sfx) => { setPrefs({ audio: { sfx } }); audio.playSfx("ui_toggle"); }} />
+      <Section title="Volume" desc="Changes apply instantly. Stored in this browser. Moving a slider unmutes it.">
+        <Slider label="Master" value={a.master} min={0} max={1} step={0.05} format={pct} onChange={(master) => setPrefs({ audio: { master, masterMuted: false } })} />
+        <Slider label="Music" value={a.music} min={0} max={1} step={0.05} format={pct} onChange={(music) => setPrefs({ audio: { music, musicMuted: false } })} />
+        <Slider label="Sound effects" value={a.sfx} min={0} max={1} step={0.05} format={pct} onChange={(sfx) => { setPrefs({ audio: { sfx, sfxMuted: false } }); audio.playSfx("ui_toggle"); }} />
       </Section>
       <Section title="Mute">
         <Row label="Mute everything" desc="Global mute."><Toggle label="Mute everything" hideLabel checked={a.masterMuted} onChange={(masterMuted) => setPrefs({ audio: { masterMuted } })} /></Row>

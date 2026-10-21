@@ -58,7 +58,7 @@ test.describe("desktop guard", () => {
   });
 });
 
-test("Mini-player: Enable audio opens nothing; the popover's sliders work from the keyboard on World Select", async ({ page }) => {
+test("Mini-player: Enable audio opens nothing; popover sliders work from the keyboard and it closes on a screen change", async ({ page }) => {
   await open(page, "/worlds");
   await expect(page.getByRole("list", { name: "Worlds" })).toBeVisible();
   // A real click: the app's first-pointerdown unlock flips the chip mid-click, which used to open the popover too.
@@ -83,4 +83,17 @@ test("Mini-player: Enable audio opens nothing; the popover's sliders work from t
   await expect(master).toHaveAttribute("aria-valuetext", "100 %");
   await expect(master).toBeFocused();
   await expect(page).toHaveURL(/#\/worlds$/);
+
+  // Any screen change closes the popover, like a menu.
+  await page.evaluate(() => { location.hash = "#/settings/audio"; });
+  await expect(page.getByRole("region", { name: "Volume" })).toBeVisible();
+  await expect(pop).toHaveCount(0);
+
+  // Settings → Audio: moving a muted channel's slider unmutes it, as the popover's sliders do.
+  const muteMusic = page.getByRole("switch", { name: "Mute music" });
+  await muteMusic.click();
+  await expect(muteMusic).toHaveAttribute("aria-checked", "true");
+  await page.getByRole("region", { name: "Volume" }).getByRole("slider", { name: "Music" }).focus();
+  await page.keyboard.press("ArrowLeft");
+  await expect(muteMusic).toHaveAttribute("aria-checked", "false");
 });
