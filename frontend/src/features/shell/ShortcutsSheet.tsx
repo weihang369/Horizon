@@ -49,7 +49,7 @@ const GROUPS: { title: string; rows: [ReactNode, string][] }[] = [
     rows: [
       [k("Enter"), "Send"],
       [k("Shift", "Enter"), "New line"],
-      [k("Ctrl", "Enter"), "Send (alias) · start the debate on Setup"],
+      [k("Ctrl", "Enter"), "Send (alias, also in Ask… / Interject / Step in / Note) · start the session on Setup"],
       [k("@"), "Mention picker"],
     ],
   },
