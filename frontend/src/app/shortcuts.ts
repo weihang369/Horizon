@@ -30,6 +30,15 @@ export function isTypingTarget(el: EventTarget | Element | null | undefined): bo
   return !["button", "checkbox", "radio", "range", "submit", "reset", "color", "file", "image"].includes(type);
 }
 
+const SLIDER_KEYS = new Set(["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End", "PageUp", "PageDown"]);
+
+/** A focused slider moves on these keys natively; a screen shortcut on the same key (World Select ←/→/Home/End, a
+ * replay's ←/→) would otherwise take them, so the mini-player's volume couldn't be set from the keyboard (U-22). */
+export function sliderOwnsKey(el: EventTarget | null, key: string): boolean {
+  if (!(el instanceof HTMLElement) || !SLIDER_KEYS.has(key)) return false;
+  return (el instanceof HTMLInputElement && el.type === "range") || el.getAttribute("role") === "slider";
+}
+
 /** "Ctrl+Shift+D" → "ctrl+shift+d"; aliases: esc, space, mod (= ctrl on Windows/Linux, meta on Mac). */
 export function normalizeCombo(combo: string): string {
   const isMac = typeof navigator !== "undefined" && /Mac/i.test(navigator.platform);
@@ -62,7 +71,7 @@ function onKey(e: KeyboardEvent): void {
   if (e.defaultPrevented || e.isComposing) return;
   const combo = comboOf(e);
   const single = !e.ctrlKey && !e.altKey && !e.metaKey;
-  const typing = isTypingTarget(e.target);
+  const typing = isTypingTarget(e.target) || sliderOwnsKey(e.target, e.key);
   const top = topBlockingKey();
   const list = [...entries].filter((x) => x.combo === combo).sort((a, b) => b.order - a.order);
   for (const x of list) {

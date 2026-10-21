@@ -57,3 +57,30 @@ test.describe("desktop guard", () => {
     await expect(page.getByRole("list", { name: "Worlds" })).toBeVisible();
   });
 });
+
+test("Mini-player: Enable audio opens nothing; the popover's sliders work from the keyboard on World Select", async ({ page }) => {
+  await open(page, "/worlds");
+  await expect(page.getByRole("list", { name: "Worlds" })).toBeVisible();
+  // A real click: the app's first-pointerdown unlock flips the chip mid-click, which used to open the popover too.
+  const enable = page.getByRole("button", { name: "Enable audio" });
+  const box = (await enable.boundingBox())!;
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  const chip = page.getByRole("button", { name: /^Now playing:/ });
+  await expect(chip).toBeVisible();
+  const pop = page.getByRole("dialog", { name: "Music and volume" });
+  await page.waitForTimeout(800); // the popover is lazy-loaded: give a wrongly opened one time to appear
+  await expect(pop).toHaveCount(0);
+
+  // World Select binds ←/→/Home/End; a focused slider keeps them (they used to move the world rail instead).
+  await chip.click();
+  const master = pop.getByRole("slider", { name: "Master" });
+  await master.focus();
+  await page.keyboard.press("Home");
+  await expect(master).toHaveAttribute("aria-valuetext", "0 %");
+  await page.keyboard.press("ArrowRight");
+  await expect(master).toHaveAttribute("aria-valuetext", "5 %");
+  await page.keyboard.press("End");
+  await expect(master).toHaveAttribute("aria-valuetext", "100 %");
+  await expect(master).toBeFocused();
+  await expect(page).toHaveURL(/#\/worlds$/);
+});
