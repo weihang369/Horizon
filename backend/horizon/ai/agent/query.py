@@ -2,9 +2,10 @@
 parallel"; retrieval "Agent keyword terms").
 
 - **Keyword terms** (`agent_terms`): Unicode words of 2+ characters, lower-cased, without FTS operators and without
-  the committed English stop list, de-duplicated, ordered rarest first within the speaker's searchable pieces (one
-  scoped FTS5 count per term, at most 40 looked at), cut to 16, or 24 with a rewrite (its terms first, then the
-  message's). The FTS query keeps today's quoted OR form, so user text still can't change how the search works.
+  the committed English stop list, de-duplicated, without words no searchable piece of the speaker's holds, ordered
+  rarest first within those pieces (one scoped FTS5 count per term, at most 40 looked at), cut to 16, or 24 with a
+  rewrite (its terms first, then the message's). The FTS query keeps today's quoted OR form, so user text still
+  can't change how the search works.
 - **The bundle per case** (K4's table): as written, rewritten, a failed or late rewrite (marked `fallback`), debate
   (the motion and the last opposing argument, or the motion alone for an opening, or the moderator's question and the
   motion for an Ask answer) and watch (the last message, and the two earlier lines with it).
@@ -50,13 +51,15 @@ def words(text: str) -> list[str]:
 
 
 async def rarest(index: ScopedIndex, terms: Sequence[str]) -> list[str]:
-    """`terms` (at most 40 looked at) ordered by how few of the speaker's pieces hold each, ties in their own order."""
+    """`terms` (at most 40 looked at) that some of the speaker's pieces hold, ordered by how few hold each, ties in
+    their own order. A term no piece holds can't match, and it sorted first: a debate rebuttal's text (the motion and
+    the whole opposing argument) filled all 16 slots with them, so its search found nothing (U-34)."""
     look = list(terms)[:LOOKED_AT]
     if not look:
         return []
     counts = await index.term_counts(look)
     pos = {t: i for i, t in enumerate(look)}
-    return sorted(look, key=lambda t: (counts.get(t, 0), pos[t]))
+    return sorted((t for t in look if counts.get(t, 0) > 0), key=lambda t: (counts[t], pos[t]))
 
 
 async def agent_terms(index: ScopedIndex, message: str, *, rewrite: str | None = None,

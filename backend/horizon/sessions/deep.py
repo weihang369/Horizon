@@ -72,7 +72,7 @@ async def deep_request(actor: SessionActor, spec: TurnSpec, plan: TurnPlan,
                                argument=spec.prompt)
         if kind == "debate_opening" or (spec.debate is not None and spec.debate.phase == "opening"):
             return DeepRequest(**common, message=debate_text(motion), motion=motion)
-        argument = _last_opposing(actor, spec)
+        argument = _last_opposing(actor, spec, sctx)
         return DeepRequest(**common, message=debate_text(motion, argument=argument), motion=motion, argument=argument)
     if kind in LINE_KINDS or sctx.mode == "watch":
         mid, line, earlier = _last_line(sctx)
@@ -88,8 +88,9 @@ async def deep_request(actor: SessionActor, spec: TurnSpec, plan: TurnPlan,
                        stored_rewrite=stored)
 
 
-def _last_opposing(actor: SessionActor, spec: TurnSpec) -> str:
-    """The last argument by the other side (by anyone else in a panel), "Name: text" (doc 01 A6, V2)."""
+def _last_opposing(actor: SessionActor, spec: TurnSpec, sctx: SessionContext) -> str:
+    """The last argument by the other side (by anyone else in a panel), "Name: text" (doc 01 A6, V2). The name comes
+    from the context: the session's participants carry ids only, so the text read "chr_seedMei: …" (U-34)."""
     from horizon.services.runtime.reducer import ordered_messages
     from horizon.sessions.modes.debate import side_of
 
@@ -101,8 +102,7 @@ def _last_opposing(actor: SessionActor, spec: TurnSpec) -> str:
         if cid == spec.speaker:
             continue
         if mine is None or side_of(actor, cid) != mine:
-            name = next((p.get("name") for p in actor.session["participants"] if p["characterId"] == cid), None)
-            return f"{name or cid}: {m['content']}"
+            return f"{sctx.name_of(cid) or cid}: {m['content']}"
     return ""
 
 

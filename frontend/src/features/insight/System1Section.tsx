@@ -3,7 +3,7 @@
 // the label and what code did, then the answer with a bar of the value code tested and a tick at its line, `p` or
 // confidence with its band (INS-01 AC4), and each comparison as "value ≥ threshold".
 // `not_used` rows (asked about the other candidates) fold away. IDs resolve to names or titles; text never appears.
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import type { CSSProperties } from "react";
 import type { System1Row, TurnTrace } from "../../contract/types";
 import { probBand } from "../../domain/format";
@@ -130,34 +130,55 @@ function Row({ r, trace, nameOf }: { r: System1Row; trace?: TurnTrace; nameOf: (
   );
 }
 
+/** U-34: "needs documents?" said search, but no passage was checked because the search matched nothing. The section
+ * said so by saying nothing; this is the line it shows after the group that decided to search. */
+function searchedNothing(trace: TurnTrace | undefined, groups: System1Group[]): { after: string; about?: string } | null {
+  if (groups.some((g) => g.purpose === "deep_check") || !trace?.knowledge || trace.knowledge.retrieved.length) return null;
+  const g = groups.find((x) => x.rows.some((r) => r.id === "docs" && r.answer === "yes"));
+  const row = g?.rows.find((r) => r.id === "docs" && r.answer === "yes");
+  return g ? { after: g.purpose, about: row?.about } : null;
+}
+
 export function System1Rows({ trace, nameOf }: { trace?: TurnTrace; nameOf: (id: string) => string }) {
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const groups = groupSystem1(trace);
+  const nothing = searchedNothing(trace, groups);
   return (
     <div className={s.s1}>
       {groups.map((g) => (
-        <div key={g.purpose} className={s.s1Group} data-purpose={g.purpose}>
-          <p className={s.s1Head}>
-            {g.label}
-            <span className={s.s1Lat} data-fallback={g.fallback || undefined}>{g.fallback ? "fallback" : g.latencyMs !== null ? `${Math.round(g.latencyMs)} ms` : "—"}</span>
-          </p>
-          <ul className={s.s1List}>
-            {g.rows.map((r, i) => <Row key={`${r.id}:${r.about ?? ""}:${i}`} r={r} trace={trace} nameOf={nameOf} />)}
-          </ul>
-          {g.folded.length > 0 && (
-            <>
-              <button type="button" className={s.s1Fold} aria-expanded={!!open[g.purpose]}
-                onClick={() => setOpen((o) => ({ ...o, [g.purpose]: !o[g.purpose] }))}>
-                asked about the others ({g.folded.length})
-              </button>
-              {open[g.purpose] && (
-                <ul className={cx(s.s1List, s.s1Folded)}>
-                  {g.folded.map((r, i) => <Row key={`f:${r.id}:${r.about ?? ""}:${i}`} r={r} trace={trace} nameOf={nameOf} />)}
-                </ul>
-              )}
-            </>
+        <Fragment key={g.purpose}>
+          <div className={s.s1Group} data-purpose={g.purpose}>
+            <p className={s.s1Head}>
+              {g.label}
+              <span className={s.s1Lat} data-fallback={g.fallback || undefined}>{g.fallback ? "fallback" : g.latencyMs !== null ? `${Math.round(g.latencyMs)} ms` : "—"}</span>
+            </p>
+            <ul className={s.s1List}>
+              {g.rows.map((r, i) => <Row key={`${r.id}:${r.about ?? ""}:${i}`} r={r} trace={trace} nameOf={nameOf} />)}
+            </ul>
+            {g.folded.length > 0 && (
+              <>
+                <button type="button" className={s.s1Fold} aria-expanded={!!open[g.purpose]}
+                  onClick={() => setOpen((o) => ({ ...o, [g.purpose]: !o[g.purpose] }))}>
+                  asked about the others ({g.folded.length})
+                </button>
+                {open[g.purpose] && (
+                  <ul className={cx(s.s1List, s.s1Folded)}>
+                    {g.folded.map((r, i) => <Row key={`f:${r.id}:${r.about ?? ""}:${i}`} r={r} trace={trace} nameOf={nameOf} />)}
+                  </ul>
+                )}
+              </>
+            )}
+          </div>
+          {nothing?.after === g.purpose && (
+            <div className={s.s1Group} data-purpose="deep_check" data-empty="">
+              <p className={s.s1Head}>passages<span className={s.s1Lat}>—</span></p>
+              <p className={s.s1Empty}>
+                The search matched nothing in {nothing.about ? `${resolveId(nothing.about, trace, nameOf)}'s` : "the"} documents, so no
+                passage was checked and the reply used none.
+              </p>
+            </div>
           )}
-        </div>
+        </Fragment>
       ))}
     </div>
   );

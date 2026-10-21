@@ -113,11 +113,15 @@ An `agent` search SHALL rank the speaker's passages by keyword (top 20) and by m
 - **THEN** it still returns at most 8 candidates, and a different passage comes before the second copy
 
 ### Requirement: Agent keyword terms
-An `agent` search's keyword terms SHALL drop common English stop words, be ordered rarest first within the speaker's searchable passages, and number at most 16, or 24 when the query was rewritten (the rewrite's terms first, then the message's). User text SHALL still be unable to change how the search works.
+An `agent` search's keyword terms SHALL drop common English stop words, drop words that none of the speaker's searchable passages contain, be ordered rarest first within those passages, and number at most 16, or 24 when the query was rewritten (the rewrite's terms first, then the message's). User text SHALL still be unable to change how the search works.
 
 #### Scenario: Rare terms first
 - **WHEN** a message reads "what does the review say about the night shift premium"
 - **THEN** "the", "does" and "about" are not searched, and "premium" comes before "review" when fewer of the speaker's passages contain it
+
+#### Scenario: A long debate text still finds the speaker's passages
+- **WHEN** a rebuttal searches the motion and a long opposing argument, and more than 16 of its words appear in none of the speaker's passages
+- **THEN** those words are left out, and the words the passages do contain are searched
 
 ### Requirement: A search stays on its space
 A search SHALL use one embedding space from start to end. An embedding space switch that commits while a search runs SHALL NOT change the space that search reads.

@@ -6,6 +6,7 @@ session-event-sourcing's `message_ai_meta`; system1-trace "Passage rows"). No ne
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -235,6 +236,10 @@ async def test_a_debate_rebuttal_searches_the_motion_and_the_opposing_argument(a
     k = reb[0]["trace"]["knowledge"]
     assert k["query"].startswith("Long shift blocks harm patient safety")
     assert len([r for r in k["retrieved"] if r.get("n")]) <= 2
+    # U-34: the opponent by name ("chr_…: " before), and the words of a long argument the speaker's documents don't
+    # hold no longer crowd out the ones they do: every rebuttal found passages
+    assert "chr_" not in k["query"] and re.match(r"Long shift blocks harm patient safety (Amara|Mei|Victor) ", k["query"])
+    assert all((m["trace"]["knowledge"] or {}).get("retrieved") for m in reb)
 
 
 # ── 5.3 `message_ai_meta` ──

@@ -59,6 +59,16 @@ describe("System 1 section", () => {
     expect(html).toContain(">fallback</span>");
   });
 
+  it("says when the search matched nothing after needs documents? said yes (U-34)", () => {
+    const t: TurnTrace = { messageId: "msg_a3", knowledge: { retrieved: [] }, system1: { questions: [
+      { purpose: "turn_plan", id: "docs", version: 2, label: "needs documents?", about: "chr_seedHana", answer: "yes", p: 0.86,
+        compared: [{ name: "t_gate", value: 0.86, threshold: 0.45 }], result: "used", action: "search the documents" },
+    ] } };
+    const html = renderToStaticMarkup(createElement(System1Rows, { trace: t, nameOf }));
+    expect(html).toContain("The search matched nothing in Hana&#x27;s documents");
+    expect(renderToStaticMarkup(createElement(System1Rows, { trace, nameOf }))).not.toContain("matched nothing");
+  });
+
   it("resolves IDs to names or titles, never text", () => {
     expect(resolveId("kch_p1", trace, nameOf)).toBe("Shift Fatigue Review (p. 3)");
     expect(resolveId("mem_x", trace, nameOf)).toBe("a memory");
