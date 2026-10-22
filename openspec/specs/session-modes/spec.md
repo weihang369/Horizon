@@ -86,10 +86,15 @@ choice falls back (timeout or failure), the trace SHALL mark the fallback and ca
 
 ### Requirement: Debate phases
 A debate SHALL run its configured phases in order. Each phase SHALL open with a `phase` event and a `ROUND n · LABEL` note, plus host narration when the moderator is `auto_host`. A phase SHALL be a list of slots: alternating prop/opp in two-sided debates (one per member), or one per panellist. Each slot SHALL be filled when it comes up by an eligible member of its side (awake and not yet heard in this phase-iteration): by the debate plan under `agent`, else the first in fixed order. Each turn SHALL be marked `forcedBy: "round_order"` and tagged with phase, round and iteration. With `autoAdvance`, the next turn SHALL start `pauseMs` after the previous one ends.
+A debate loaded from storage while active and un-held (after a restart or an idle release) SHALL go on auto-advancing from its first command, after that command's own work (an Ask's answer speaks first); a debate whose actor started or stepped it SHALL never gain a second chain.
 
 #### Scenario: Quick debate to a verdict
 - **WHEN** a quick two-sided debate (opening, closing) with one debater per side and arbiter verdict runs for 90 seconds of clock time
 - **THEN** it holds 4 character messages and a `verdict` message, the session is `ended`, and its state has `phase: "ended"` and `verdict.decidedBy: "arbiter"`
+
+#### Scenario: A debate loaded mid-round goes on after its first command
+- **WHEN** an auto-advance debate's actor is released mid-round, 20 seconds pass, and the user then asks Mei a question
+- **THEN** nothing moves during the 20 seconds; Mei answers once, then the remaining slots run in order and the debate ends
 
 #### Scenario: Fixed order while everyone is awake
 - **WHEN** a `scripted` 2 v 2 Standard debate runs with everyone awake
