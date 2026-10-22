@@ -1,4 +1,6 @@
-// S05a SEED (CHR-02): one line, an optional intent, "Surprise me", Draft with AI or write it yourself. Owner: Builder B.
+// S05a SEED (CHR-02): one line, an optional intent, "Surprise me", Draft with AI. U-77: "Write it myself" left the
+// step at the user's ask (it read as unclickable beside the disabled draft); a failed draft still leaves the profile
+// form to fill by hand. Owner: Builder B.
 import { useEffect, useRef, useState } from "react";
 import { openOverlay } from "@/app/layers";
 import { reportError } from "@/app/errors";
@@ -22,7 +24,7 @@ export function SeedStep() {
   const settings = useSettings().data;
   const [seed, setSeed] = useState("");
   const [intent, setIntent] = useState<Character["intent"] | null>(null);
-  const [busy, setBusy] = useState<"ai" | "self" | null>(null);
+  const [busy, setBusy] = useState(false);
   const [ph, setPh] = useState(0);
   const surpriseAt = useRef(Math.floor(Math.random() * SURPRISE.length));
   const field = useRef<HTMLTextAreaElement>(null);
@@ -36,23 +38,22 @@ export function SeedStep() {
     return () => clearInterval(t);
   }, []);
 
-  const start = async (mode: "ai" | "self") => {
+  const start = async () => {
     const text = seed.trim();
-    if (!text && mode === "ai") return;
+    if (!text) return;
     if (settings && settings.openRouterKeyStatus !== "set") {
-      openOverlay("O05", { reason: mode === "ai" ? "Drafting with AI needs your OpenRouter key." : "Creating a character needs your OpenRouter key." });
+      openOverlay("O05", { reason: "Drafting with AI needs your OpenRouter key." });
       return;
     }
-    setBusy(mode);
+    setBusy(true);
     try {
       const { character, job } = await client.characters.createDraft(worldId, { seedPrompt: text, intent: intent ?? "other" });
       createdThisSession.add(character.id);
-      if (mode === "self") await client.jobs.cancel(job.id);
-      else rememberJob(job);
+      rememberJob(job);
       navigate({ name: "wizard", worldId, characterId: character.id, step: "profile" }, { replace: true, transition: "none", force: true });
     } catch (err) {
       reportError(err, { context: "Drafting with AI needs your OpenRouter key." });
-      setBusy(null);
+      setBusy(false);
     }
   };
 
@@ -85,7 +86,7 @@ export function SeedStep() {
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
-                  void start("ai");
+                  void start();
                 }
               }}
             />
@@ -121,16 +122,15 @@ export function SeedStep() {
         </div>
       </section>
       <ActionBar backTo="exit">
-        <Button variant="ghost" disabled={!!busy} onClick={() => void start("self")}>Write it myself</Button>
         <Button
           variant="primary"
           size="lg"
-          disabled={!seed.trim() || !!busy}
+          disabled={!seed.trim() || busy}
           cost={DRAFT_USD}
           keyLocked={settings ? settings.openRouterKeyStatus !== "set" : false}
-          onClick={() => void start("ai")}
+          onClick={() => void start()}
         >
-          {busy === "ai" ? "Drafting…" : "Draft with AI ▸"}
+          {busy ? "Drafting…" : "Draft with AI ▸"}
         </Button>
       </ActionBar>
     </>

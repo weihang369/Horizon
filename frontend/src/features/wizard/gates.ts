@@ -29,7 +29,7 @@ export function validateProfile(p: Pick<CharacterProfile, "name" | "role" | "age
 export const profileValid = (p: Parameters<typeof validateProfile>[0]): boolean => Object.keys(validateProfile(p)).length === 0;
 
 export interface GateFacts {
-  /** A character exists: the draft returned, or "Write it myself" was chosen (CHR seed gate). */
+  /** A character exists: the draft returned (CHR seed gate). */
   hasCharacter: boolean;
   profileOk: boolean;
   baseLocked: boolean;

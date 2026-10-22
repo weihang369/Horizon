@@ -116,7 +116,7 @@ A full-screen flow with a skewed step rail: `SEED → PROFILE → LOOK → PORTR
 
 | From → To | Gate |
 |---|---|
-| SEED → PROFILE | Draft returned, or "Write it myself" |
+| SEED → PROFILE | Draft returned (U-77: the Seed step's "Write it myself" was removed; a failed or cancelled draft still opens the editable profile) |
 | PROFILE → LOOK | Required profile fields valid |
 | LOOK → PORTRAIT | Always |
 | PORTRAIT → EMOTIONS | Base portrait locked |
@@ -138,8 +138,8 @@ As Jun, I want to type one line like "Sarah, a doctor", so the AI does the heavy
 
 **CHR-03: AI drafting state** · Must
 - AC1: The Profile step opens with a scanning-stripe shimmer. When the draft arrives, fields **reveal one by one** (a client-side stagger of 60–120 ms per field; the backend need not stream fields).
-- AC2: Cancel stops the draft. Fields that already arrived are kept; the rest stay blank (the same as "Write it myself").
-- AC3: If drafting fails, show an inline error with "Retry" and "Write it myself".
+- AC2: Cancel stops the draft. Fields that already arrived are kept; the rest stay blank, to fill by hand.
+- AC3: If drafting fails, show an inline error with "Retry"; the profile form stays editable, so the user can write it by hand.
 
 **CHR-04: Edit profile (= system prompt)** · Must
 - Fields: Name\*, Title, Role\*, **Age\* (integer ≥ 18)**, Pronouns, Tagline (≤ 80), Personality summary + traits (3–8 chips), Backstory, Speaking style (summary + tone + formality + quirks + catchphrases), Expertise (chips), Goals, Boundaries (list), Greeting, Example lines (0–3, optional), Relationship to user (free text, e.g. "your girlfriend"; **not** a link to another character), Advisory flag (auto-set for professional roles, editable).
