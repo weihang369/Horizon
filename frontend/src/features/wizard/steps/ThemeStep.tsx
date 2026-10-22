@@ -6,10 +6,12 @@ import type { SongBrief } from "@/contract/types";
 import { Button, ChipGroup, ErrorTape, Slider, Tape, TextField } from "@/ui";
 import { cx } from "@/ui/cx";
 import { Composing, ThemePlayer } from "@/features/profile/ThemePlayer";
+import { songCredit } from "@/features/profile/songCredit";
 import { ActionBar } from "../ActionBar";
 import { useWizard } from "../context";
 import { isRunning, startGeneration, useEstimate } from "../generate";
 import { DEFAULT_BRIEF, GENRES, INSTRUMENTS, MOODS } from "../options";
+import { NO_BACKEND } from "@/features/shell/onlineDemo";
 import s from "./steps.module.css";
 
 const withExtra = (opts: { value: string; label: string }[], cur: string[]) => [...opts, ...cur.filter((v) => !opts.some((o) => o.value === v)).map((v) => ({ value: v, label: v }))];
@@ -69,7 +71,7 @@ export function ThemeStep() {
               </Button>
               {failed && <Button variant="ghost" onClick={() => void goStep("approve")}>Approve without song</Button>}
             </div>
-            <p className={s.fine}>Music: {song?.generation?.model ?? "google/lyria-3-clip-preview"} · instrumental · {song?.licenseNote ?? "Placeholder: procedural WebAudio sketch (D-52)."}</p>
+            <p className={s.fine}>Instrumental · {songCredit(ready ? song : null, NO_BACKEND)}</p>
           </div>
         </div>
       </section>

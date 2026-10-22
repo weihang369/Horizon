@@ -311,7 +311,7 @@ async def test_check_1_reads_each_call_from_the_ledger(tmp_path: Path) -> None:
     folder = _run_folder(tmp_path)
     rows = [json.loads(x) for x in (folder / "results.jsonl").read_text(encoding="utf-8").splitlines()]
     assert [x["id"] for x in rows] == [MS.load("rewrite")[-1]["id"], "mrw-long"]
-    assert all(x["memory_calls"] and x["memory_calls"][0]["cap"] == 500 for x in rows)
+    assert all(x["memory_calls"] and x["memory_calls"][0]["cap"] == 800 for x in rows)   # 600 per character + 200 (U-35)
     rep = (folder / "report.md").read_text(encoding="utf-8")
     assert f"### Check 1: the `{PROMPT_VERSION}` calls" in rep and "the 8000-token piece (`mrw-long`)" in rep
 

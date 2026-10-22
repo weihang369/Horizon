@@ -88,7 +88,8 @@ async def test_no_mention_asks_who_answers_first_and_every_face_in_one_request(a
     tr = replies[0]["trace"]
     assert tr["routing"]["question"] == "who answers first?" and tr["routing"]["selected"] == MEI
     assert tr["routing"]["candidates"][0] == {"characterId": MEI, "p": 0.9}
-    assert replies[0]["emotion"] == "happy" and replies[0]["emotionSource"] == "classifier"
+    face = replies[0]["trace"]["emotion"]          # the reply's own face (a face check's clash may switch it, D-112)
+    assert face["chosen"] == "happy" and face["source"] == "classifier"
     got = {(r["id"], r.get("about")): (r["purpose"], r["result"]) for r in rows(replies[0])}
     assert got[("who_first", None)] == ("turn_plan", "used")
     assert got[("emotion_reply", MEI)] == ("turn_plan", "used")

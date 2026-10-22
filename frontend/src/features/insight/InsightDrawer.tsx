@@ -15,7 +15,7 @@ import type { Character, Citation, Message, TurnTrace } from "../../contract/typ
 import { formatUsd } from "../../domain/format";
 import { useMotionPrefs } from "../../motion/prefs";
 import { entities } from "../../stores/entities";
-import { usePrefs } from "../../stores/prefs";
+import { setPrefs, usePrefs } from "../../stores/prefs";
 import { useUi } from "../../stores/ui";
 import { PaletteScope } from "../../theme/PaletteScope";
 import { IconButton } from "../../ui/Button";
@@ -30,11 +30,20 @@ import { TypeGlyph } from "../session/Citations";
 import { openCitation } from "../session/citationUtils";
 import { EmotionBody } from "./EmotionSection";
 import { emotionChip } from "./emotionView";
+import { citingSentence, focusSnippet } from "./passagePreview";
 import { showSystem1, System1Rows } from "./System1Section";
+import { turnPath } from "./turnPath";
 
 /** Bars and bands use the same 2-decimal value, so "0.70" never reads "MED" (no false precision, INS-01 AC4). */
 const r2 = (p: number) => Math.round(p * 100) / 100;
 import s from "./InsightDrawer.module.css";
+
+/** D-112: the emotion a clash switched the face to, read from the face check's row. */
+const switchedTo = (trace?: TurnTrace): string | null => {
+  const r = trace?.system1?.questions.find((x) => x.purpose === "face_check" && x.action?.startsWith("face switched to "));
+  const to = r?.action?.slice("face switched to ".length);
+  return to ? (emotionMeta[to as keyof typeof emotionMeta]?.label ?? to) : null;
+};
 
 const firstName = (n?: string) => (n ? n.split(" ").find((w) => !/^(dr|prof|mr|ms|mrs)\.?$/i.test(w)) ?? n : "");
 const isChar = (m?: Message): m is Message => !!m && m.author.type === "character" && !!m.author.characterId;
@@ -66,6 +75,7 @@ const FORCED_LABEL: Record<NonNullable<NonNullable<TurnTrace["routing"]>["forced
   mention: "Forced by you · @mention",
   nudge: "Forced by you · Speak next",
   round_order: "Round order",
+  opening: "Opening speaker",   // U-55: the opening speaker set at creation, not a Speak next press
 };
 
 function Section({ n, title, aside, children, i }: { n: string; title: string; aside?: ReactNode; children: ReactNode; i: number }) {
@@ -81,9 +91,63 @@ function Section({ n, title, aside, children, i }: { n: string; title: string; a
   );
 }
 
+// U-35: what each step of the turn's path means, and where its detail is. A chip jumps to the first of its targets
+// present (a System 1 panel, else the section that shows that step).
+const sec = (title: string) => `section[aria-label="${title}"]`;
+const PLAN_AT = ['[data-purpose="turn_plan"]', '[data-purpose="debate_plan"]', '[data-purpose="follow_plan"]',
+  '[data-purpose="route"]', sec("System 1 · Jev")];
+const DOCS_AT = ['[data-purpose="deep_check"]', sec("Knowledge")];
+const STEPS: Record<string, { why: string; to: string[] }> = {
+  state: { why: "The situation, written as data for Jev", to: PLAN_AT },
+  ask: { why: "Every question to Jev, in one request", to: PLAN_AT },
+  decide: { why: "Code reads each of Jev's answers against its line", to: PLAN_AT },
+  route: { why: "Quick reply, or search first", to: PLAN_AT },
+  deep: { why: "The search starts", to: DOCS_AT },
+  gather: { why: "The search query: keywords, meaning, a rewrite", to: DOCS_AT },
+  search: { why: "Keyword and meaning search of the documents", to: DOCS_AT },
+  check: { why: "Jev judges each passage found", to: DOCS_AT },
+  keep: { why: "Code keeps the best usable passages", to: DOCS_AT },
+  recall: { why: "Search of earlier lines and memories", to: ['[data-purpose="deep_check:recall"]', sec("In-session recall"), sec("Found by recall")] },
+  Route: { why: "Who speaks", to: [sec("Routing · who speaks")] },
+  Recall: { why: "What was fetched for the reply", to: [sec("Knowledge"), sec("Memory given"), sec("Found by recall"), sec("In-session recall")] },
+  Generate: { why: "The model writes the reply", to: [sec("Model")] },
+  Emotion: { why: "The face", to: [sec("Emotion")] },
+  Guard: { why: "The output check", to: ['[data-purpose="guardrail"]', sec("Guardrail")] },
+};
+
+function jumpTo(from: HTMLElement, targets: string[], reduced: boolean): void {
+  const root = from.closest("aside");
+  const el = targets.map((t) => root?.querySelector<HTMLElement>(t)).find(Boolean);
+  el?.scrollIntoView({ block: "start", behavior: reduced ? "auto" : "smooth" });
+}
+
+const LIST_SHOWN = 3;
+
+/** A long list shows its first few rows, then "show all (n)": a character with many memories filled the drawer
+ * (the user's ask, 2026-10-22). */
+export function MoreList<T>({ items, render }: { items: T[]; render: (x: T) => ReactNode }) {
+  const [all, setAll] = useState(false);
+  const shown = all || items.length <= LIST_SHOWN + 1 ? items : items.slice(0, LIST_SHOWN);
+  return (
+    <>
+      <ul className={s.recall}>{shown.map(render)}</ul>
+      {items.length > LIST_SHOWN + 1 && (
+        <button type="button" className={cx(s.s1Fold, s.moreBtn)} aria-expanded={all} onClick={() => setAll((v) => !v)}>
+          {all ? "show fewer" : `show all (${items.length})`}
+        </button>
+      )}
+    </>
+  );
+}
+
 function Pipeline({ trace, streaming }: { trace?: TurnTrace; streaming: boolean }) {
-  const steps = trace?.graph?.path?.length
-    ? trace.graph.path.map((p) => ({ k: p, on: true }))
+  const { reduced } = useMotionPrefs();
+  const path = turnPath(trace);
+  // U-57: a line written ahead (a stored greeting) made no AI call: it says so instead of an empty pipeline
+  if (!path.length && trace && !trace.model && !trace.system1 && !streaming)
+    return <p className={s.pipeNote}>Written ahead with the character: no AI call for this line.</p>;
+  const steps = path.length
+    ? path.map((p) => ({ k: p, on: true }))
     : [
       { k: "Route", on: !!trace?.routing },
       { k: "Recall", on: !!(trace?.memory || trace?.knowledge || trace?.contextInSession || trace?.context) },
@@ -95,7 +159,12 @@ function Pipeline({ trace, streaming }: { trace?: TurnTrace; streaming: boolean 
     <ol className={cx(s.pipe, streaming && s.pipeLive)} aria-label="Turn pipeline">
       {steps.map((st, i) => (
         <li key={st.k} className={cx(s.node, (st.on || streaming) && s.nodeOn)} style={{ "--i": i } as CSSProperties}>
-          <span>{st.k}</span>
+          {STEPS[st.k] ? (
+            <button type="button" className={s.nodeBtn} title={STEPS[st.k].why} aria-label={`${st.k}: ${STEPS[st.k].why}. Show`}
+              onClick={(e) => jumpTo(e.currentTarget, STEPS[st.k].to, reduced)}>
+              <span>{st.k}</span>
+            </button>
+          ) : <span>{st.k}</span>}
         </li>
       ))}
     </ol>
@@ -154,6 +223,8 @@ function KnowledgeList({ k, m, armed }: { k: NonNullable<TurnTrace["knowledge"]>
         {rows.map((r) => {
           const cite = r.cited ? m.citations?.find((c) => c.chunkId === r.chunkId) : undefined;
           const type = types.get(r.sourceId) ?? (/\.[a-z]{2,4}$/i.test(r.title) ? "file" : "text");
+          // U-59: the part that matched (the reply's sentence for a cited passage, else the query), not the first lines
+          const preview = focusSnippet(r.text, (r.cited && r.n ? citingSentence(m.content, r.n) : "") || k.query || "");
           const open = () => (cite
             ? openCitation(cite, m.author.characterId)
             : openCitation({ n: r.n ?? 0, sourceId: r.sourceId, chunkId: r.chunkId, title: r.title, locator: r.locator, quote: r.text }, m.author.characterId));
@@ -172,7 +243,7 @@ function KnowledgeList({ k, m, armed }: { k: NonNullable<TurnTrace["knowledge"]>
                     <span className={s.kName}>{r.title}</span>
                     {r.locator && <span className={s.kLoc}>{r.locator}</span>}
                   </span>
-                  <span className={s.kText}>{r.text}</span>
+                  <span className={s.kText}>{preview}</span>
                   <span className={s.kScore}>
                     <span className={s.kTrack} aria-hidden="true"><span className={s.kFill} style={{ transform: `scaleX(${armed ? r.score : 0})` }} /></span>
                     <b>{r.score.toFixed(2)}</b>
@@ -208,6 +279,14 @@ function SpeakerHead({ m, c, live }: { m: Message; c?: Character; live: boolean 
     </PaletteScope>
   );
 }
+
+/** U-30: the drawer's width range. The session keeps at least LEAVE px beside it: with 640 at 1280 the group stage
+ * squeezed its bubbles to a narrow column and cut its header. 480 at 1280, 640 at 1440, 760 from 1560. */
+const INSIGHT_MIN = 320;
+const INSIGHT_MAX = 760;
+const INSIGHT_DEFAULT = 400;
+const LEAVE = 800;
+const maxWidth = () => Math.max(INSIGHT_MIN, Math.min(INSIGHT_MAX, (typeof window !== "undefined" ? window.innerWidth : 1440) - LEAVE));
 
 export function InsightDrawer({ sessionId, close }: OverlayComponentProps<"O08">) {
   const { runtime, replay } = useSlotRuntime(sessionId);
@@ -250,6 +329,17 @@ export function InsightDrawer({ sessionId, close }: OverlayComponentProps<"O08">
   const streaming = m?.status === "streaming";
   const nameOf = (id: string) => firstName(chars[id]?.profile.name) || id;
   const compact = presenter;
+  const saved = usePrefs((p) => p.insightWidth);
+  const [dragging, setDragging] = useState<number | null>(null);
+  const max = maxWidth();
+  const width = compact ? 300 : Math.max(INSIGHT_MIN, Math.min(max, dragging ?? saved));
+  // The debate and group layouts make room with --drawer-w: published on the root, they follow a drag live (it was
+  // only set on the drawer itself, so they always kept 400 px).
+  useEffect(() => {
+    const root = document.documentElement.style;
+    root.setProperty("--drawer-w", `${width}px`);
+    return () => void root.removeProperty("--drawer-w");
+  }, [width]);
   const firstCast = runtime?.session.participants[0]?.characterId;
 
   let body: ReactNode;
@@ -289,6 +379,7 @@ export function InsightDrawer({ sessionId, close }: OverlayComponentProps<"O08">
       sections.push(
         <Section key="emotion" n={num(i)} title="Emotion" i={i++} aside={<span className={s.chip}>{emotionChip(e)}</span>}>
           <EmotionBody emotion={e} armed={armed} manual={runtime.session.emotionMode === "user"} />
+          {switchedTo(trace) && <p className={s.switched}>After the line: switched to <b>{switchedTo(trace)}</b>, because the words clashed with the face.</p>}
         </Section>,
       );
     }
@@ -328,12 +419,42 @@ export function InsightDrawer({ sessionId, close }: OverlayComponentProps<"O08">
         </Section>,
       );
     }
-    if (!compact) {
-      if (trace?.memory?.recalled.length) {
-        sections.push(
-          <Section key="memory" n={num(i)} title="Memory recalled" i={i++}>
+    // U-60: the listeners' faces after this line (one Jev request after it): what changed on stage, and why
+    if (m.reactions?.length || (runtime.session.participants.length > 1 && m.status === "complete")) {
+      const rs = m.reactions ?? [];
+      sections.push(
+        <Section key="reactions" n={num(i)} title="Listener reactions" i={i++}>
+          {rs.length ? (
             <ul className={s.recall}>
-              {trace.memory.recalled.map((x) => (
+              {rs.map((x) => (
+                <li key={`${x.characterId}:${x.at}`}>
+                  <span>{nameOf(x.characterId)} · {emotionMeta[x.emotion]?.icon} {emotionMeta[x.emotion]?.label ?? x.emotion}{x.p === undefined ? " (faded)" : ""}</span>
+                  {x.p !== undefined && <b>{x.p.toFixed(2)}</b>}
+                </li>
+              ))}
+            </ul>
+          ) : <p className={s.fine}>No visible reaction from the others.</p>}
+        </Section>,
+      );
+    }
+    if (!compact) {
+      // U-58: what the prompt's memory list gave the reply, apart from what the recall search found for it
+      const mem = trace?.memory?.recalled ?? [];
+      const found = mem.filter((x) => x.via === "recall" || (x.via === undefined && x.score !== undefined));
+      const given = mem.filter((x) => !found.includes(x));
+      if (given.length) {
+        sections.push(
+          <Section key="memory" n={num(i)} title="Memory given" i={i++}>
+            <p className={s.fine}>Every memory that fits the prompt's memory list, by importance and recency: not picked for this line.</p>
+            <MoreList items={given} render={(x) => <li key={x.memoryItemId}><span>{x.text}</span></li>} />
+          </Section>,
+        );
+      }
+      if (found.length) {
+        sections.push(
+          <Section key="found" n={num(i)} title="Found by recall" i={i++}>
+            <ul className={s.recall}>
+              {found.map((x) => (
                 <li key={x.memoryItemId}><span>{x.text}</span>{x.score !== undefined && <b>{x.score.toFixed(2)}</b>}</li>
               ))}
             </ul>
@@ -416,8 +537,13 @@ export function InsightDrawer({ sessionId, close }: OverlayComponentProps<"O08">
   return (
     <Drawer
       title="Insight"
-      width={compact ? 300 : 400}
+      width={width}
       onClose={close}
+      resize={compact ? undefined : {
+        label: "Resize Insight", min: INSIGHT_MIN, max, reset: INSIGHT_DEFAULT,
+        onResize: setDragging,
+        onCommit: (w) => { setDragging(null); setPrefs({ insightWidth: w }); },
+      }}
       className={cx(s.drawer, compact && s.compact)}
       headerExtra={charIds.length > 0 ? (
         <span className={s.nav}>

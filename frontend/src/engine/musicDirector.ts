@@ -36,7 +36,8 @@ function ambientOr(input: MusicInput): TrackRef | null {
   return input.system.ambient ?? null;
 }
 
-/** Theme of the highest-scoring debater on the stronger side (else the first-listed debater on that side). */
+/** Theme of the highest-scoring debater on the stronger side (else the first-listed debater on that side); when that
+ * one has no theme, a teammate's (U-35: it fell back to Arena though a teammate had a song). */
 export function verdictWinnerTheme(cast: MusicCast[], verdict: Verdict): TrackRef | null {
   if (verdict.strongerCase !== "prop" && verdict.strongerCase !== "opp") return null;
   const side = verdict.strongerCase;
@@ -53,7 +54,7 @@ export function verdictWinnerTheme(cast: MusicCast[], verdict: Verdict): TrackRe
       }
     }
   }
-  return best.theme ?? null;
+  return best.theme ?? onSide.find((c) => c.theme)?.theme ?? null;
 }
 
 export function musicDirector(input: MusicInput, nowMs: number): MusicDecision {

@@ -2,8 +2,7 @@
 // Cover header 240 / 168 · tab row 48 with CTAs · roster grid (5 / 4 cols) or session history. Owner: Builder A.
 import { openOverlay, toast } from "../../app/layers";
 import { audio } from "../../audio/engine";
-import { useCharacters, useRushHour, useSessions, useSettings, useWorld } from "../../client/hooks";
-import { client } from "../../client";
+import { deleteWorld, useCharacters, useRushHour, useSessions, useSettings, useWorld } from "../../client/hooks";
 import type { Route } from "../../router";
 import { navigate } from "../../router";
 import { Button } from "../../ui/Button";
@@ -54,7 +53,7 @@ export function WorldHubScreen({ route }: { route: Extract<Route, { name: "hub" 
   }
 
   const editWorld = () => openOverlay("O02", { worldId });
-  const deleteWorld = () => {
+  const askDelete = () => {
     if (!world) return;
     openOverlay("O03", {
       title: `Delete ${world.name}?`,
@@ -62,7 +61,7 @@ export function WorldHubScreen({ route }: { route: Extract<Route, { name: "hub" 
       typed: world.name,
       confirmLabel: "Delete world",
       onConfirm: async () => {
-        await client.worlds.delete(worldId);
+        await deleteWorld(worldId);
         navigate({ name: "worlds" }, { transition: "slash-back" });
         toast({ variant: "info", text: `Deleted ${world.name}.` });
       },
@@ -99,12 +98,13 @@ export function WorldHubScreen({ route }: { route: Extract<Route, { name: "hub" 
             )}
             <MoreMenu
               label="World options"
+              menuClassName={s.worldMenu}
               items={[
                 { id: "edit", label: "Edit world" },
                 { id: "history", label: "Session history" },
                 { id: "delete", label: "Delete world…", danger: true, divider: true },
               ]}
-              onSelect={(id) => (id === "edit" ? editWorld() : id === "delete" ? deleteWorld() : setTab("sessions"))}
+              onSelect={(id) => (id === "edit" ? editWorld() : id === "delete" ? askDelete() : setTab("sessions"))}
             />
           </div>
         </div>

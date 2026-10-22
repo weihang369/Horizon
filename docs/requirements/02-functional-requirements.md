@@ -116,7 +116,7 @@ A full-screen flow with a skewed step rail: `SEED → PROFILE → LOOK → PORTR
 
 | From → To | Gate |
 |---|---|
-| SEED → PROFILE | Draft returned, or "Write it myself" |
+| SEED → PROFILE | Draft returned (U-77: the Seed step's "Write it myself" was removed; a failed or cancelled draft still opens the editable profile) |
 | PROFILE → LOOK | Required profile fields valid |
 | LOOK → PORTRAIT | Always |
 | PORTRAIT → EMOTIONS | Base portrait locked |
@@ -138,8 +138,8 @@ As Jun, I want to type one line like "Sarah, a doctor", so the AI does the heavy
 
 **CHR-03: AI drafting state** · Must
 - AC1: The Profile step opens with a scanning-stripe shimmer. When the draft arrives, fields **reveal one by one** (a client-side stagger of 60–120 ms per field; the backend need not stream fields).
-- AC2: Cancel stops the draft. Fields that already arrived are kept; the rest stay blank (the same as "Write it myself").
-- AC3: If drafting fails, show an inline error with "Retry" and "Write it myself".
+- AC2: Cancel stops the draft. Fields that already arrived are kept; the rest stay blank, to fill by hand.
+- AC3: If drafting fails, show an inline error with "Retry"; the profile form stays editable, so the user can write it by hand.
 
 **CHR-04: Edit profile (= system prompt)** · Must
 - Fields: Name\*, Title, Role\*, **Age\* (integer ≥ 18)**, Pronouns, Tagline (≤ 80), Personality summary + traits (3–8 chips), Backstory, Speaking style (summary + tone + formality + quirks + catchphrases), Expertise (chips), Goals, Boundaries (list), Greeting, Example lines (0–3, optional), Relationship to user (free text, e.g. "your girlfriend"; **not** a link to another character), Advisory flag (auto-set for professional roles, editable).
@@ -178,7 +178,7 @@ As Jun, I want Sims-style pickers for appearance, so I can shape the look withou
 - AC2: "Generate emotions ▸" (with cost estimate) runs in one of two reveal variants, and **UI/UX designs both**. The Seed Asset Sprint picks one:
   - **Variant B (per-emotion edit):** slots fill one by one.
   - **Variant C (expression sheet):** a contact sheet develops, then a *slice* animation cuts it into the slots.
-- AC3: **Lean mode (default, D-40)** generates happy, sad and angry now. The other 3 slots show "Generate (≈ $0.04)" and can be generated later on demand. **Standard mode** generates all 6 non-neutral emotions now.
+- AC3: **Lean mode (default, D-40)** generates happy, sad and angry now. The other 3 slots show "Generate (≈ $0.04)" and can be generated later on demand. **Standard mode** generates all 6 non-neutral emotions now. Both modes make the blink frame when the base is locked (D-108); a character without one gets it with its next generated emotion.
 - AC4: Clicking a slot opens a lightbox with ↻ Regenerate (cost shown) and **"Doesn't look like them"**, which marks the asset `rejected` and regenerates with a consistency hint.
 - AC5: Failed slots show a red "FAILED · Retry" slash. The user can still proceed, and missing emotions fall back to neutral + VFX (EMO-06).
 - AC6: "Skip for now" saves the character with neutral only.
@@ -490,8 +490,8 @@ As any user, I want to see each character's energy at a glance, so I know how mu
 **SET-02: Audio** · Must. Master, Music and SFX sliders; global mute; "Duck music under stings".
 **SET-03: Chat defaults** · Must. Default emotion mode, group responder policy, debate auto-advance, Readable Mode default, speaker cut-ins on/off.
 **SET-04: Display** · Must. Reduced motion, VFX intensity (Off/Subtle/Full), **flash intensity (Off/Low/Full)**, parallax, text size (S/M/L).
-**SET-05: Models (Advanced)** · Should. **Read-only in v1** ([docs/ai/03](../ai/03-llm-parameters.md) C9): a "Models in use" panel showing, for each role (main chat · decision (System One) · image · music · embedding), the model slug, what it is for, its price and a "Test" button, with the line "Tuned for these models. Custom models are planned for v2." Editable model IDs are in the [v2 backlog](../v2/README.md) §1.
-**SET-06: Generation mode** (Cost tab) · Must. **Lean (default)**: 1 candidate, 4 emotions, the rest on demand. **Standard**: 2 candidates, all emotions at creation. "Auto-generate missing emotions" defaults to off.
+**SET-05: Models (Advanced)** · Should. **Read-only in v1** ([docs/ai/03](../ai/03-llm-parameters.md) C9): a "Models in use" panel showing, for each role (main chat · decision (System One) · image · music · embedding), the model slug, what it is for and its price (no Test button, D-107), with the line "Tuned for these models. Custom models are planned for v2." Editable model IDs are in the [v2 backlog](../v2/README.md) §1.
+**SET-06: Generation mode** (Cost tab) · Must. **Lean (default)**: 1 candidate, 4 emotions and a blink, the rest on demand. **Standard**: 2 candidates, all emotions and a blink at creation (D-108). Each card shows its per-character cost from the bundled price table. "Auto-generate missing emotions" defaults to off.
 **SET-07: Cost controls** · Should. Cost estimates on/off, confirm-before-generate on/off, cost HUD on/off.
 **SET-08: Budget & energy** (Cost tab) · Must. Daily cap (default US$1.00), per-character creation cap (US$0.60), warn at % (80), and **default character energy** (1000 ⚡/day). There is **no per-session cap**: energy replaces it (D-42).
 **SET-09: Spend view** · Should. Spend today and to date, by category (chat, decision, image, music), character and session, with an "estimated vs actual" delta.

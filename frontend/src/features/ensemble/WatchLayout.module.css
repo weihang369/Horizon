@@ -1,8 +1,9 @@
-/* S12 Watch: marquee · subtitle script (760/680) · proscenium row (46 % vh). Builder D. */
+/* S12 Watch: marquee · subtitle script (760/680) · proscenium row (cards ≤ 28 % vh, U-71). Builder D. */
 .root {
   --script: 760px;
   --drape: 56px;
-  --actor-w: min(300px, calc(44vh * 0.75));
+  /* U-71 (the user's ask): smaller cards (was min(300px, 44vh × 0.75)) so the script above them shows more lines */
+  --actor-w: min(210px, calc(28vh * 0.75));
   position: relative;
   isolation: isolate;
   container-type: inline-size;
@@ -42,6 +43,11 @@
 }
 .curtainL { left: 0; box-shadow: inset -3px 0 0 var(--horizon-500); clip-path: polygon(0 0, 100% 0, 70% 100%, 0 100%); }
 .curtainR { right: 0; box-shadow: inset 3px 0 0 var(--horizon-500); clip-path: polygon(0 0, 100% 0, 100% 100%, 30% 100%); }
+/* U-51 (the user's choice): the replay's end closes the drapes over the stage; seeking back opens them again */
+.curtainL, .curtainR { transition: width 900ms var(--ease-slam), clip-path 900ms var(--ease-slam); }
+.root[data-fin] .curtainL, .root[data-fin] .curtainR { width: calc(50% + 1px); }
+.root[data-fin] .curtainL { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+.root[data-fin] .curtainR { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
 
 /* ── Marquee ─────────────────────────────────────────────────────────────── */
 .marquee {
@@ -103,7 +109,7 @@
 }
 .counter b { font-weight: 400; font-size: 20px; color: var(--paper-50); }
 
-/* ── Script: subtitle column, last ~8 lines, fade at the top ─────────────── */
+/* ── Script: subtitle column, fade at the top ──────────────────────────── */
 .script {
   position: relative;
   z-index: 3;
@@ -111,7 +117,7 @@
   width: min(var(--script), calc(100% - var(--drape) * 2 - 40px));
   min-height: 0;
   display: grid;
-  mask-image: linear-gradient(180deg, transparent 0, #000 34%);
+  mask-image: linear-gradient(180deg, transparent 0, #000 16%);
 }
 .log { min-height: 0; }
 
@@ -175,15 +181,17 @@
   position: absolute;
   z-index: 6;
   left: 50%;
-  top: 40%;
+  top: 50%;
   display: grid;
   justify-items: center;
   gap: 12px;
   translate: -50% -50%;
-  animation: hz-pop 260ms var(--ease-slam) both;
+  animation: hz-pop 260ms var(--ease-slam) 700ms both;   /* after the drapes have closed */
 }
 
 :global(:root[data-motion="reduced"]) .actor { animation: hz-fade-in var(--t-reduced) linear both; transition-duration: var(--t-reduced); }
 :global(:root[data-motion="reduced"]) .spot { transition-duration: var(--t-reduced); }
+:global(:root[data-motion="reduced"]) .curtainL, :global(:root[data-motion="reduced"]) .curtainR { transition-duration: var(--t-reduced); }
+:global(:root[data-motion="reduced"]) .curtainCard { animation-delay: 0ms; }
 :global(:root[data-motion="reduced"]) .cue,
 :global(:root[data-motion="reduced"]) .onAirLive i { animation: none; }

@@ -23,7 +23,7 @@ from horizon.services.knowledge import space_cli
 from horizon.services.knowledge.build import build_space
 from tests.conftest import Api
 from tests.gwkit import build_gateway
-from tests.knowledge.kit import API, add_text, settle
+from tests.knowledge.kit import API, add_text, seed_before_d110, settle
 
 HANA = "chr_seedHana"
 SEED_SRC = "kno_seedAmara1"
@@ -143,6 +143,7 @@ async def test_an_existing_install_keeps_its_space(make_api: Any, tmp_path: Path
 
 
 async def test_seed_indexing_embeds_with_the_header(api: Api) -> None:
+    await seed_before_d110(api)
     await api.set_key()
     r = await api.client.post(f"{API}/_test/ai-profile", json={"profile": "scripted", "overrides": {"embedder": "naive"}})
     assert r.status_code == 204
@@ -151,7 +152,7 @@ async def test_seed_indexing_embeds_with_the_header(api: Api) -> None:
     fake = api.rt.fake
     assert fake is not None
     [sent] = inputs(fake)
-    assert all(t.startswith("Meridian Shift Fatigue Review 2025\n\n") for t in sent)   # seed rows: heading == locator
+    assert all(t.startswith("Meridian Shift Fatigue Review 2025\n") for t in sent)   # the title heads every piece
     [row] = await ledger(api, "embed_doc")
     assert row["character_id"] == "chr_seedAmara"
 
@@ -159,6 +160,7 @@ async def test_seed_indexing_embeds_with_the_header(api: Api) -> None:
 # ── 2.4 the build copies what wouldn't change ──
 async def _plain_with_memories(api: Api, n: int) -> None:
     """An install on the plain space with `n` memories that have vectors there, and one indexed user source."""
+    await seed_before_d110(api)
     await api.set_key()
     r = await api.client.post(f"{API}/_test/ai-profile", json={"profile": "scripted", "overrides": {"embedder": "naive"}})
     assert r.status_code == 204
@@ -208,6 +210,7 @@ async def test_the_build_fills_only_the_kinds_asked(api: Api) -> None:
 async def test_space_build_declined_spends_nothing(make_api: Any, tmp_path: Path) -> None:
     data = tmp_path / "declined"
     first: Api = await make_api(data_dir=data)
+    await seed_before_d110(first)
     await first.set_key()
     cfg = first.rt.cfg
     await first.rt.stop()

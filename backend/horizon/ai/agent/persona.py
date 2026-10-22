@@ -355,8 +355,9 @@ def _session(inp: PersonaInput) -> str:
         lines.append(f"This is a group chat with {user} and: {_who(inp.others)}.")
     elif inp.mode == "watch":
         premise = f" Premise: {_sentence(inp.premise)}" if inp.premise.strip() else ""
-        lines.append(f"{user[0].upper() + user[1:]} is watching this scene and may step in.{premise} "
-                     f"With you: {_who(inp.others)}.")
+        # U-64 (the user's choice): the watcher is off-stage until they step in, so lines aren't addressed to them
+        lines.append(f"{user[0].upper() + user[1:]} is watching this scene from outside it and may step in. Until "
+                     f"{user} speaks in it, talk to each other, not to {user}.{premise} With you: {_who(inp.others)}.")
     elif inp.mode == "debate" and inp.debate is not None:
         d = inp.debate
         if d.format == "panel" or d.side is None:

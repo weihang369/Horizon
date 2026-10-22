@@ -64,7 +64,7 @@ uv run --project backend horizon models fetch
 
 - **Reset:** Settings → Data → "Reset demo data" restores the shipped demo and keeps your own worlds. `uv run --project backend horizon reset --factory --yes` wipes `data/` (except downloaded models).
 - **Local only:** the backend binds to `127.0.0.1` and refuses any other address. The key never appears in logs, errors, exports or the ledger.
-- **Tests never spend:** every automated test uses a fake provider and a fake key. Paid live checks are separate (`pytest -m live`) and never run by default.
+- **Tests never spend:** every automated test uses a fake provider and a fake key. Paid live checks and real Docling conversions are manual scripts under [`backend/manual/`](backend/manual/README.md), outside the test paths, so a normal run never collects them.
 - **AI profile:** with a key, the app uses the `agent` profile (Jev decides, DeepSeek speaks); without one, `scripted`. Set `HORIZON_AI_PROFILE=naive` for the baseline (plain DeepSeek replies, the Jev router), or `HORIZON_AI_<PORT>` to change one port. The backend's start-up log names the profile and lists what every port resolved to.
 
 ### Privacy switches

@@ -1,4 +1,5 @@
-// O15 Summon reveal (CHR-11 AC2, VMD §2.4 "Summon (1800)"): the wizard's climax. Owner: Builder B.
+// O15 Summon reveal (CHR-11 AC2, VMD §2.4 "Summon (1800)"): the wizard's climax; the finished card then holds until
+// the tagline is typed plus 1.8 s (≥ 4.2 s in all, U-73). Owner: Builder B.
 //   0     palette flood (setAppPalette, R10) + ink stage
 //   350   slash band sweeps
 //   500   portrait slides in from +40vw (380 ms) with three ghost copies collapsing as motion blur
@@ -23,8 +24,14 @@ import { cx } from "@/ui/cx";
 import { themeLabel } from "@/features/profile/ThemePlayer";
 import s from "./summon.module.css";
 
-const CEREMONY_MS = 2600;
+const TYPE_AT = 1150;
+const TYPE_MS = 28;
 const STING_AT = 1200;
+/** U-73 (the user: "too short"): the 2,600 ms ceremony ended before a long tagline had finished typing. It now lasts
+ *  until the tagline is typed, then holds the finished card for a beat; any key or click still skips. */
+const MIN_CEREMONY_MS = 4200;
+const END_HOLD_MS = 1800;
+const ceremonyMs = (tagline: string) => Math.max(MIN_CEREMONY_MS, TYPE_AT + tagline.length * TYPE_MS + END_HOLD_MS);
 const REDUCED_HOLD_MS = 1200;
 
 /** Resolves after `ms`, or on the first key or pointer press (observed only, never cancelled). */
@@ -41,8 +48,6 @@ function holdUnlessInput(ms: number): Promise<void> {
     window.addEventListener("pointerdown", done);
   });
 }
-const TYPE_AT = 1150;
-const TYPE_MS = 28;
 const AMBIENT = "placeholder:system/ambient_bed";
 
 /** CHR-11 AC2b: when the theme finishes composing after the summon, ping once. */
@@ -105,7 +110,7 @@ export function SummonReveal({ close, characterId }: OverlayComponentProps<"O15"
       startMusic();
     }, prefs.reduced ? 0 : STING_AT));
     const h = playCeremony("summon", {
-      durationMs: CEREMONY_MS,
+      durationMs: ceremonyMs(c.profile.tagline ?? ""),
       onSkip: () => {
         timers.forEach(clearTimeout);
         setPhase("skipped");
@@ -152,7 +157,7 @@ export function SummonReveal({ close, characterId }: OverlayComponentProps<"O15"
       paletteId={c.paletteId}
       className={cx(s.root, phase === "skipped" && s.skip, phase === "leaving" && s.leaving, prefs.reduced && s.reduced)}
       aria-live="polite"
-      style={{ "--pal-name": `"${pal.name}"` } as CSSProperties}
+      style={{ "--pal-name": `"${pal.name}"`, "--sm-ms": `${ceremonyMs(tagline)}ms` } as CSSProperties}
     >
       <span className="sr-only">{c.profile.name} summoned.</span>
       <div className={s.stage} aria-hidden="true">

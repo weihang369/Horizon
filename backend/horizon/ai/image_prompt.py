@@ -51,8 +51,8 @@ BASELINE = {  # v2 fix 1
     "neutral": "calm neutral, mouth closed, attentive eyes looking at the viewer",
     "sharp": "composed, slightly intense gaze, mouth closed, eyes looking at the viewer",
 }
-EMOTIONS = {  # TESTING.md A2 with v2 fixes 2 and 3
-    "happy": "a warm open smile showing a little of the upper teeth, eyes softly crinkled",
+EMOTIONS = {  # TESTING.md A2 with v2 fixes 2 and 3; happy reworded by D-103
+    "happy": "a joyful smile clearly brighter than in the original, lips parted, cheeks softly rounded and smooth, bright sparkling eyes",
     "sad": "inner brows raised, eyes lowered and slightly glossy, mouth gently downturned",
     "angry": "brows drawn down and together, narrowed eyes, tight mouth",
     "surprised": 'eyebrows high, eyes wide open, mouth in a small open "o"',
@@ -61,6 +61,7 @@ EMOTIONS = {  # TESTING.md A2 with v2 fixes 2 and 3
     "blink": "eyes fully closed and relaxed, otherwise identical to the original",
 }
 OFF_LIMITS = re.compile(r"\b(background|scenery|pose|posture|art style|style|photo\w*|realistic|3d|render)\b", re.I)
+GLASSES = re.compile(r"\b(glasses|spectacles|specs|eyeglasses)\b", re.I)
 TINTED = re.compile(r"\b([a-z]+)-tinted ([a-z]+(?:-[a-z]+)?)( hair| bob| curls| waves)?", re.I)
 
 
@@ -146,12 +147,15 @@ class ImagePromptCompiler:
             if hair.get("fringe") and hair["fringe"] != "none":
                 bits.append(f"{hair['fringe']} fringe")
             lines.append("Hair: " + ", ".join(b for b in bits if b) + ".")
-        if eyes:
-            eye = " ".join(x for x in (str(eyes.get("shape") or ""), str(eyes.get("color") or "")) if x)
-            glasses = f", {eyes['glasses']} glasses" if eyes.get("glasses") and eyes["glasses"] != "none" else ""
-            lines.append(f"Eyes: {eye} eyes{glasses}.")
         outfit = a.get("outfit") or {}
         details = fix_compound_colours(str(a.get("extraDetails") or ""))
+        if eyes:
+            eye = " ".join(x for x in (str(eyes.get("shape") or ""), str(eyes.get("color") or "")) if x)
+            # U-14: details that already describe the glasses ("pushed up on her head") win over the chip, or the
+            # model draws two pairs.
+            chip = eyes.get("glasses") and eyes["glasses"] != "none" and not GLASSES.search(details)
+            glasses = f", {str(eyes['glasses']).replace('_', '-')} glasses" if chip else ""
+            lines.append(f"Eyes: {eye} eyes{glasses}.")
         if outfit.get("archetype") or details or clothed:
             line = f"Outfit: {outfit.get('archetype', 'everyday')} style" + (f"; {_sentence(details)}" if details else ".")
             lines.append(f"{line} {CLOTHED}" if clothed else line)

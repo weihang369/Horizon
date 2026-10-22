@@ -392,10 +392,11 @@ export function runPortableContract(label: string, makeHarness: MakeHarness, opt
       ch = await c.characters.lockPortrait(character.id, cand.id);
       expect(ch.emotions.neutral?.url).toBe(cand.url);
       const ej = await c.jobs.start({ characterId: character.id, kind: "emotion_set" });
-      expect(ej.tasks.map((t) => t.emotion)).toEqual(["happy", "sad", "angry"]);
+      // Lean: three edits and, since D-108, the blink.
+      expect(ej.tasks.map((t) => t.type === "blink_frame" ? "blink" : t.emotion)).toEqual(["happy", "sad", "angry", "blink"]);
       await tick(40000);
       ch = await c.characters.get(character.id);
-      expect(ch.emotions.happy && ch.emotions.sad && ch.emotions.angry).toBeTruthy();
+      expect(ch.emotions.happy && ch.emotions.sad && ch.emotions.angry && ch.blink).toBeTruthy();
       expect(ch.emotions.surprised).toBeNull();
       expect((await c.characters.approve(character.id)).status).toBe("approved");
     });
@@ -477,7 +478,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness, opt
       expect(md).toContain("[^1]");
       expect(md).not.toMatch(/[a-z.,]\[\d\]/);
       expect(md).toContain("## Sources");
-      expect(md).toMatch(/\[\^1\]: Meridian Shift Fatigue Review 2025\.pdf, p\. 4\. "/);
+      expect(md).toMatch(/\[\^1\]: Meridian Shift Fatigue Review 2025, p\. 7\. "/);
     });
 
     // ── rev 1.3: error codes (client-contract spec) ─────────────────────────
@@ -535,7 +536,8 @@ export function runPortableContract(label: string, makeHarness: MakeHarness, opt
 
     test("M1b", "the usage summary has an embedding bucket", async () => {
       const { c } = await make();
-      expect((await c.usage.summary()).byCategory.embedding).toBe(0);
+      // D-110: the shipped ledger holds the real run's embedding rows (the demo documents were added in the app)
+      expect((await c.usage.summary()).byCategory.embedding).toBeGreaterThanOrEqual(0);
     });
 
     test("M3", "a live reply's trace lists its paid calls, with the reply cost matching usage", async () => {
@@ -667,6 +669,14 @@ export function runPortableContract(label: string, makeHarness: MakeHarness, opt
       expect(src.id).toMatch(/^kno_[0-9A-Za-z]{1,40}$/);
     });
 
+    test("M5", "knowledge: a pasted title already in use is numbered, in any case (U-80)", async () => {
+      const { c } = await make();
+      const add = async (title: string, text: string) => (await c.characters.addKnowledge("chr_seedHana", { type: "text", title, text })).title;
+      expect(await add("Tea notes", "Steep three minutes.")).toBe("Tea notes");
+      expect(await add("Tea notes", "Pour slowly.")).toBe("Tea notes (2)");
+      expect(await add("tea notes", "Warm the cup.")).toBe("tea notes (3)");
+    });
+
     test("M5", "knowledge: files over 10 MB, a 21st source and duplicate content are refused", async () => {
       const { c } = await make();
       const big = new File([new Uint8Array(10 * 1024 * 1024 + 1)], "huge.txt", { type: "text/plain" });
@@ -684,6 +694,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness, opt
 
     test("M5", "knowledge: with a key, progress climbs through the stages and the source ends indexed with an embedding row", async () => {
       const { c, tick, globals } = await make({ key: true });
+      const shipped = new Set((await c.usage.list()).map((r) => r.id));   // D-110: the seed's own embedding rows
       const src = await c.characters.addKnowledge("chr_seedHana", { file: new File(["# Soups\n\nMiso first.\n\nThen tofu."], "soups.md", { type: "text/markdown" }) });
       await tick(5000);
       const progress = globals.flatMap((g) => (g.type === "entity.changed" && g.kind === "knowledge" && g.id === src.id && g.progress ? [g.progress] : []));
@@ -696,7 +707,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness, opt
       expect(source.chunks).toBe(1);   // pack@2 (rag D3): the heading is carried, the paragraphs packed
       expect(chunks.map((k) => [k.text, k.locator])).toEqual([["# Soups\n\nMiso first.\n\nThen tofu.", "§ Soups"]]);
       for (const k of chunks) KnowledgeChunkSchema.parse(k);
-      const rows = (await c.usage.list()).filter((r) => r.category === "embedding" && r.characterId === "chr_seedHana");
+      const rows = (await c.usage.list()).filter((r) => r.category === "embedding" && r.characterId === "chr_seedHana" && !shipped.has(r.id));
       expect(rows.length).toBe(1);
       // Embedding is cheap ($0.01/M): a few short passages round to $0.000000, but the tokens are recorded.
       expect(rows[0].tokensIn).toBeGreaterThan(0);
@@ -705,12 +716,13 @@ export function runPortableContract(label: string, makeHarness: MakeHarness, opt
 
     test("M5", "knowledge: without a key the source ends keyword_only, readable, with no ledger row; a key re-embeds it", async () => {
       const { c, tick, h } = await make();
+      const shipped = new Set((await c.usage.list()).map((r) => r.id));
       const src = await c.characters.addKnowledge("chr_seedHana", { type: "text", title: "Tea", text: "Steep for three minutes." });
       await tick(5000);
       let got = await c.characters.knowledgeSource(src.id);
       expect(got.source.status).toBe("keyword_only");
       expect(got.chunks.map((k) => k.text)).toEqual(["Steep for three minutes."]);
-      expect((await c.usage.list()).some((r) => r.category === "embedding")).toBe(false);
+      expect((await c.usage.list()).some((r) => r.category === "embedding" && !shipped.has(r.id))).toBe(false);
       const ids = got.chunks.map((k) => k.id);
       // Saving a key embeds the user's keyword-only sources in the background; seed sources wait for their Index.
       await h.setKey();
@@ -718,7 +730,7 @@ export function runPortableContract(label: string, makeHarness: MakeHarness, opt
       got = await c.characters.knowledgeSource(src.id);
       expect(got.source.status).toBe("indexed");
       expect(got.chunks.map((k) => k.id)).toEqual(ids);
-      expect((await c.usage.list()).filter((r) => r.category === "embedding").length).toBe(1);
+      expect((await c.usage.list()).filter((r) => r.category === "embedding" && !shipped.has(r.id)).length).toBe(1);
     });
 
     test("M5", "knowledge: re-indexing a source that is still indexing rejects with conflict", async () => {

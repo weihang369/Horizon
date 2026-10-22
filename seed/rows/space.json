@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "data": {
+    "id": "qwen3-emb-8b@1024+h",
+    "dims": 1024
+  }
+}

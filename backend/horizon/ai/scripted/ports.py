@@ -34,6 +34,7 @@ from horizon.ai.contexts import (
 from horizon.ai.ports import (
     CitationMap,
     Emotion,
+    FaceCheckOut,
     GuardrailResult,
     Reaction,
     RoutingDecision,
@@ -360,7 +361,7 @@ class ScriptedFaceCheck:
         self.simulate = simulate
 
     async def check(self, ctx: SessionContext, message_id: str, speaker_id: str, face: str,
-                    text: str) -> tuple[dict[str, Any], dict[str, Any] | None] | None:
+                    text: str) -> FaceCheckOut | None:
         await self.deps.clock().sleep(self.deps.timing.face_check_ms / 1000)
         call = None
         if self.simulate:
@@ -371,7 +372,7 @@ class ScriptedFaceCheck:
                 tokens_in=FACE_CHECK_DECISION_TOKENS, latency_ms=REACTION_LATENCY_MS)
             call = {"purpose": "face_check", "model": res.model, "costUsd": res.cost_usd, "latencyMs": res.latency_ms}
         row = self.deps.system1_row("face_check", "yes")
-        return (row, call) if row is not None else None
+        return FaceCheckOut(row, call) if row is not None else None
 
 
 LEAD_INS = {"arbiter": "Thank you all. The arbiter is weighing the arguments.",

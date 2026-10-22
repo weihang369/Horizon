@@ -4,8 +4,9 @@ import { useRef } from "react";
 import type { KeyboardEvent } from "react";
 import { openOverlay, toast } from "../../app/layers";
 import { audio } from "../../audio/engine";
-import { useSettings } from "../../client/hooks";
+import { deleteWorld, useSettings } from "../../client/hooks";
 import { client } from "../../client";
+import type { HorizonErrorShape } from "../../contract/errors";
 import type { AppSettings } from "../../contract/types";
 import type { Route, SettingsTab } from "../../router";
 import { navigate, parseRoute } from "../../router";
@@ -19,6 +20,7 @@ import { RansomText } from "../../ui/RansomText";
 import { Tape } from "../../ui/Tape";
 import { BackIcon } from "../../ui/icons";
 import { useHouseScreen } from "../shell/house";
+import { NO_BACKEND } from "../shell/onlineDemo";
 import { APP_VERSION } from "../shell/TitleScreen";
 import { ConnectionTab } from "./ConnectionTab";
 import { CostTab } from "./CostTab";
@@ -32,7 +34,7 @@ const LABEL: Record<SettingsTab, string> = {
 };
 const BLURB: Record<SettingsTab, string> = {
   connection: "Your OpenRouter key", audio: "Volumes & ducking", chat: "Defaults for new sessions", display: "Motion, VFX, text size",
-  models: "Advanced model IDs", cost: "Caps, energy, spend", data: "Reset & delete", about: "Version & credits",
+  models: "Models in use", cost: "Caps, energy, spend", data: "Reset & delete", about: "Version & credits",
 };
 const pct = (v: number) => `${Math.round(v * 100)} %`;
 
@@ -128,10 +130,10 @@ function AudioTab() {
   const a = usePrefs((p) => p.audio);
   return (
     <>
-      <Section title="Volume" desc="Changes apply instantly. Stored in this browser.">
-        <Slider label="Master" value={a.master} min={0} max={1} step={0.05} format={pct} onChange={(master) => setPrefs({ audio: { master } })} />
-        <Slider label="Music" value={a.music} min={0} max={1} step={0.05} format={pct} onChange={(music) => setPrefs({ audio: { music } })} />
-        <Slider label="Sound effects" value={a.sfx} min={0} max={1} step={0.05} format={pct} onChange={(sfx) => { setPrefs({ audio: { sfx } }); audio.playSfx("ui_toggle"); }} />
+      <Section title="Volume" desc="Changes apply instantly. Stored in this browser. Moving a slider unmutes it.">
+        <Slider label="Master" value={a.master} min={0} max={1} step={0.05} format={pct} onChange={(master) => setPrefs({ audio: { master, masterMuted: false } })} />
+        <Slider label="Music" value={a.music} min={0} max={1} step={0.05} format={pct} onChange={(music) => setPrefs({ audio: { music, musicMuted: false } })} />
+        <Slider label="Sound effects" value={a.sfx} min={0} max={1} step={0.05} format={pct} onChange={(sfx) => { setPrefs({ audio: { sfx, sfxMuted: false } }); audio.playSfx("ui_toggle"); }} />
       </Section>
       <Section title="Mute">
         <Row label="Mute everything" desc="Global mute."><Toggle label="Mute everything" hideLabel checked={a.masterMuted} onChange={(masterMuted) => setPrefs({ audio: { masterMuted } })} /></Row>
@@ -166,7 +168,7 @@ function ChatTab({ settings }: { settings: AppSettings }) {
       <Row label="Debate auto-advance" desc="Turns flow on their own; turn it off to step with Next.">
         <Toggle label="Debate auto-advance" hideLabel checked={c.debateAutoAdvance} onChange={(v) => void save({ chat: { debateAutoAdvance: v } })} />
       </Row>
-      <Row label="Readable Mode" desc="Long answers open in a straight, 68-character panel.">
+      <Row label="Readable Mode" desc="Every reply opens in the straight, 68-character panel. Long ones always do.">
         <Toggle label="Readable Mode by default" hideLabel checked={c.readableDefault} onChange={(v) => void save({ chat: { readableDefault: v } })} />
       </Row>
       <Row label="Speaker cut-ins" desc="A quick portrait slash when the speaker changes in multi-character scenes.">
@@ -197,18 +199,30 @@ function DataTab() {
       confirmLabel: "Delete everything",
       onConfirm: async () => {
         const worlds = await client.worlds.list();
-        for (const w of worlds) await client.worlds.delete(w.id);
-        await client.settings.setKey(null);
-        toast({ variant: "info", text: "All data deleted." });
+        for (const w of worlds) await deleteWorld(w.id);
+        try {
+          await client.settings.setKey(null);
+          toast({ variant: "info", text: "All data deleted." });
+        } catch (e) {
+          // Audit 02-07: a key from OPENROUTER_API_KEY (.env) can't be cleared here (409); the data is gone, so say so.
+          if ((e as HorizonErrorShape)?.code !== "conflict") throw e;
+          toast({ variant: "info", text: "All data deleted. Your key comes from OPENROUTER_API_KEY in .env, so it stays: remove it there." });
+        }
         navigate({ name: "worlds" });
       },
     });
   return (
     <>
       <Section title="Where your data lives" desc="Horizon is local-first: nothing leaves this machine except calls to OpenRouter.">
-        <Row label="Data folder" desc="This UI preview keeps everything in your browser's local storage.">
-          <code className={s.path}>localStorage · horizon.*</code>
-        </Row>
+        {NO_BACKEND ? (
+          <Row label="Data folder" desc="This online demo keeps everything in your browser's local storage.">
+            <code className={s.path}>localStorage · horizon.*</code>
+          </Row>
+        ) : (
+          <Row label="Data folder" desc="The backend keeps everything in its data folder: the database, your documents and generated images and songs.">
+            <code className={s.path}>data/ · horizon.db</code>
+          </Row>
+        )}
       </Section>
       <Section title="Replays">
         <Row label="Trim long pauses" desc="Replays clamp gaps longer than 2.5 s so recordings stay snappy.">
@@ -241,7 +255,7 @@ function AboutTab() {
       <Section title="Project">
         <Row label="Source" desc="Issues and pull requests welcome."><a className={s.link} href="https://github.com/weihang369/Horizon" target="_blank" rel="noreferrer">github.com/weihang369/Horizon ↗</a></Row>
         <Row label="Licence"><span className={s.value}>MIT</span></Row>
-        <Row label="Asset credits" desc="Portraits and music in this preview are procedural placeholders (labelled PLACEHOLDER / SKETCH). Real assets and their provenance are listed in ASSETS.md.">
+        <Row label="Asset credits" desc="The demo characters' portraits and theme songs were generated by AI (Seedream 5.0 Flash, Lyria). The app's own music is a procedural sketch (labelled SKETCH). Every asset's source is listed in ASSETS.md.">
           <a className={s.link} href="https://github.com/weihang369/Horizon/blob/main/ASSETS.md" target="_blank" rel="noreferrer">ASSETS.md ↗</a>
         </Row>
       </Section>

@@ -1,9 +1,10 @@
 // O09 Mini-player popover (MUS-04, R11): now playing, SKETCH explainer, master/music/SFX volume + mutes.
-// Changes go through the prefs store, which drives the audio engine live. Owner: Builder A.
-import { useSyncExternalStore } from "react";
+// Changes go through the prefs store, which drives the audio engine live. It closes on any route change, like a menu
+// (U-22). Owner: Builder A.
+import { useEffect, useRef, useSyncExternalStore } from "react";
 import type { OverlayComponentProps } from "../../app/overlayTypes";
 import { audio } from "../../audio/engine";
-import { getRoute, navigate } from "../../router";
+import { getRoute, navigate, useRoute } from "../../router";
 import { formatRoute } from "../../router/routes";
 import { setPrefs, usePrefs } from "../../stores/prefs";
 import { Slider, Toggle } from "../../ui/Controls";
@@ -16,6 +17,11 @@ const pct = (v: number) => `${Math.round(v * 100)} %`;
 export function MiniPlayerPopover({ close }: OverlayComponentProps<"O09">) {
   const st = useSyncExternalStore((cb) => audio.subscribe(cb), () => audio.getState());
   const a = usePrefs((p) => p.audio);
+  const route = useRoute();
+  const openedOn = useRef(route);
+  useEffect(() => {
+    if (route !== openedOn.current) close();
+  }, [route, close]);
   return (
     <div className={s.pop} role="dialog" aria-label="Music and volume">
       <div className={s.popHead}>

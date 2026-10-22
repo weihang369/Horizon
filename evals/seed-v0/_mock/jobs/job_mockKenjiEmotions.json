@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "data": {
+    "id": "job_mockKenjiEmotions",
+    "characterId": "chr_mockKenji",
+    "kind": "emotion_set",
+    "status": "running",
+    "progress": 0.55,
+    "estimatedCostUsd": 0.234,
+    "actualCostUsd": 0.117,
+    "tasks": [
+      {
+        "id": "task_mockKenjiHappy",
+        "type": "emotion_image",
+        "emotion": "happy",
+        "status": "succeeded",
+        "attempt": 1,
+        "maxAttempts": 3,
+        "resultRef": "emo_mockKenjiHappy"
+      },
+      {
+        "id": "task_mockKenjiSad",
+        "type": "emotion_image",
+        "emotion": "sad",
+        "status": "succeeded",
+        "attempt": 1,
+        "maxAttempts": 3,
+        "resultRef": "emo_mockKenjiSad"
+      },
+      {
+        "id": "task_mockKenjiAngry",
+        "type": "emotion_image",
+        "emotion": "angry",
+        "status": "succeeded",
+        "attempt": 1,
+        "maxAttempts": 3,
+        "resultRef": "emo_mockKenjiAngry"
+      },
+      {
+        "id": "task_mockKenjiSurprised",
+        "type": "emotion_image",
+        "emotion": "surprised",
+        "status": "running",
+        "attempt": 1,
+        "maxAttempts": 3
+      },
+      {
+        "id": "task_mockKenjiThinking",
+        "type": "emotion_image",
+        "emotion": "thinking",
+        "status": "queued",
+        "attempt": 0,
+        "maxAttempts": 3
+      },
+      {
+        "id": "task_mockKenjiEmbarrassed",
+        "type": "emotion_image",
+        "emotion": "embarrassed",
+        "status": "queued",
+        "attempt": 0,
+        "maxAttempts": 3
+      }
+    ],
+    "createdAt": "2026-10-01T11:58:00Z",
+    "startedAt": "2026-10-01T11:58:01Z"
+  }
+}

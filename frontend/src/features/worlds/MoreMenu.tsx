@@ -6,8 +6,8 @@ import type { MenuItem } from "../../ui/Fields";
 import { MoreIcon } from "../../ui/icons";
 import s from "./Hub.module.css";
 
-export function MoreMenu<V extends string>({ label, items, onSelect, align = "right", size = "md" }: {
-  label: string; items: MenuItem<V>[]; onSelect: (id: V) => void; align?: "left" | "right"; size?: "sm" | "md";
+export function MoreMenu<V extends string>({ label, items, onSelect, align = "right", size = "md", menuClassName }: {
+  label: string; items: MenuItem<V>[]; onSelect: (id: V) => void; align?: "left" | "right"; size?: "sm" | "md"; menuClassName?: string;
 }) {
   const [open, setOpen] = useState(false);
   const id = useId();
@@ -27,6 +27,7 @@ export function MoreMenu<V extends string>({ label, items, onSelect, align = "ri
         items={items}
         label={label}
         align={align}
+        className={menuClassName}
         onClose={close}
         onSelect={(v) => {
           setOpen(false);

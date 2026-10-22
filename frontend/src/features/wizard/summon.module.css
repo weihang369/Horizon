@@ -38,7 +38,7 @@
   -webkit-text-stroke: 3px var(--c-text);
   opacity: 0.06;
   transform: translate(-6vw, -50%) rotate(-6deg);
-  animation: drift 2600ms linear both;
+  animation: drift var(--sm-ms, 2600ms) linear both;
 }
 @keyframes drift { from { transform: translate(4vw, -50%) rotate(-6deg); } to { transform: translate(-14vw, -50%) rotate(-6deg); } }
 .slash {

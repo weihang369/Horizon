@@ -103,7 +103,9 @@
   color: var(--paper-300);
   clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%);
 }
-.segment:hover { color: var(--paper-50); }
+.segment:hover:not(:disabled) { color: var(--paper-50); }
+.segment:disabled { cursor: not-allowed; }
+.segment:disabled:not([aria-checked="true"]) { opacity: 0.45; }
 .segment[aria-checked="true"] { background: var(--c-primary); color: var(--c-on-primary); }
 .segment:focus-visible { outline: 2px solid var(--c-glow); outline-offset: -2px; }
 

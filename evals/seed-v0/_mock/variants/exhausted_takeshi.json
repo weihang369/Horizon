@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "data": {
+    "id": "exhausted_takeshi",
+    "label": "Takeshi exhausted (0 ⚡)",
+    "characterPatches": [
+      {
+        "characterId": "chr_seedTakeshi",
+        "energy": {
+          "current": 0,
+          "state": "exhausted"
+        }
+      }
+    ]
+  }
+}

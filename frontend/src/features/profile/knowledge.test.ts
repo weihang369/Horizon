@@ -65,7 +65,10 @@ describe("knowledge helpers", () => {
     expect(pasteProblem("Rice", "a".repeat(PASTE_MAX_BYTES + 1))).toBe("Pasted text can be at most 200 KB.");
     // The limit is in UTF-8 bytes: 70 000 three-byte characters are 210 000 bytes.
     expect(pasteProblem("Kanji", "漢".repeat(70_000))).toBe("Pasted text can be at most 200 KB.");
-    expect(pasteCounter(0)).toBe("0.0 KB / 200 KB");
+    expect(pasteCounter(0)).toBe("0 B / 200 KB");
+    expect(pasteCounter(33)).toBe("33 B / 200 KB");
+    expect(pasteCounter(1023)).toBe("1023 B / 200 KB");
+    expect(pasteCounter(1024)).toBe("1.0 KB / 200 KB");
     expect(pasteCounter(PASTE_MAX_BYTES)).toBe("200 KB / 200 KB");
     expect(ACCEPT.split(",")).toEqual([".pdf", ".docx", ".md", ".markdown", ".txt"]);
   });

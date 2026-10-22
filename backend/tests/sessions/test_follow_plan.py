@@ -130,6 +130,9 @@ async def test_none_gives_one_reply_and_writes_its_rows_to_the_first(api: Api) -
 
 
 async def test_a_late_follow_plan_gives_no_second_reply_and_nothing_hangs(api: Api) -> None:
+    from tests.sessions.test_deep_m12 import measured_deadlines
+
+    measured_deadlines(api)          # D-113: with `docsWaitAll` on, a plan asking about documents is waited for
     sid = await agent(api, "group", TRIO)
     await first_is_amara(api)
     assert api.rt.fake is not None

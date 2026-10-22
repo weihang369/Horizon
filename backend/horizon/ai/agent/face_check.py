@@ -3,7 +3,10 @@
 After `turn.end`, Jev reads only the reply's words (its last 600 tokens, quoted) and picks which of the 7 emotions they
 show. The System 1 row says whether that agrees with the face shown: `yes`, `clash` (happy against sad or angry,
 either way), or `no (words read: {pick})`, with `p` = Jev's probability for the face shown and result `shown_only`.
-It never changes the face (D-46). A late, failed or refused call returns None: no row.
+D-112 (the user's choice, U-54, reversing the display-only rule of turn-plan-emotion D24 for clashes only): on a clash
+the runtime switches the face to the words' emotion and the row says so; any other answer never changes the face. A
+late, failed or refused call returns None, and the runtime adds a `skipped` row saying so (U-49), as it does for a
+face it doesn't check.
 """
 
 from __future__ import annotations
@@ -17,6 +20,7 @@ from sqlalchemy import select
 
 from horizon.ai.contexts import SessionContext
 from horizon.ai.decider import ChoiceAnswer, DecisionResult
+from horizon.ai.ports import FaceCheckOut
 from horizon.ai.questions import bank
 from horizon.db import tables as t
 from horizon.domain.pricing import count_tokens
@@ -53,12 +57,26 @@ def row(*, version: int, label: str, face: str, pick: str, p: float | None) -> d
     return out
 
 
+def skipped_row(reason: str) -> dict[str, Any]:
+    """U-49: the row a reply gets when its face isn't checked (a neutral face, MANUAL, no answer in time)."""
+    meta = bank().get(QUESTION)
+    return {"purpose": PURPOSE, "id": QUESTION, "version": meta.version, "label": meta.label, "answer": "\u2014",
+            "compared": [], "result": "skipped", "action": reason}
+
+
+def switched(r: dict[str, Any], words: str) -> dict[str, Any]:
+    """D-112: the clash row once the face was switched to the words' emotion."""
+    return {**r, "result": "used", "action": f"face switched to {words}"}
+
+
 class JevFaceCheck:
+    reports_skips = True   # U-49: a reply it doesn't check still gets a row saying why
+
     def __init__(self, deps: Any) -> None:
         self.deps = deps
 
     async def check(self, ctx: SessionContext, message_id: str, speaker_id: str, face: str,
-                    text: str) -> tuple[dict[str, Any], dict[str, Any] | None] | None:
+                    text: str) -> FaceCheckOut | None:
         q = bank().question(QUESTION, seed=f"{ctx.seed}:{message_id}:face")
         decider = self.deps.decider()
         call_ctx = ctx.call_ctx(PURPOSE, character_id=speaker_id, message_id=message_id)
@@ -80,7 +98,7 @@ class JevFaceCheck:
         meta = q.meta
         r = row(version=meta.version if meta else 0, label=meta.label if meta else "face and words agree?", face=face,
                 pick=a.choice, p=probs.get(face, 1.0 if a.choice == face else 0.0))
-        return r, await self._call(res.generation_id)
+        return FaceCheckOut(r, await self._call(res.generation_id), a.choice)
 
     async def _call(self, generation_id: str | None) -> dict[str, Any] | None:
         """The check's ledger row as a `TurnTrace.calls` entry (its latency shows in Insight, W1)."""

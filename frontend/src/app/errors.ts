@@ -4,6 +4,7 @@
 import type { HorizonErrorShape } from "../contract/errors";
 import { ERROR_COPY, toHorizonError } from "../contract/errors";
 import { entities } from "../stores/entities";
+import { ui } from "../stores/ui";
 import { openOverlay, toast } from "./layers";
 
 export function reportError(err: unknown, opts?: { context?: string; retry?: () => void; quiet?: boolean }): HorizonErrorShape {
@@ -17,10 +18,14 @@ export function reportError(err: unknown, opts?: { context?: string; retry?: () 
     case "creation_budget_exceeded": {
       const st = entities.getState().settings;
       const daily = e.code === "daily_budget_exceeded";
+      // Audit 03-F12: the global `budget.reached` event carries the real figures and may have opened O21 already; the
+      // refusal itself has none for a creation cap, so it never replaces that dialog with $0.
+      if (!daily && ui.getState().layers.some((l) => l.id === "O21")) break;
+      const num = (v: unknown) => (typeof v === "number" ? v : undefined);
       openOverlay("O21", {
         scope: daily ? "daily" : "creation",
-        spentUsd: daily ? st?.spentTodayUsd ?? 0 : 0,
-        capUsd: daily ? st?.budget.dailyCapUsd ?? 0 : st?.budget.perCharacterCreationCapUsd ?? 0,
+        spentUsd: num(e.details?.spentUsd) ?? (daily ? st?.spentTodayUsd ?? 0 : 0),
+        capUsd: num(e.details?.capUsd) ?? (daily ? st?.budget.dailyCapUsd ?? 0 : st?.budget.perCharacterCreationCapUsd ?? 0),
       });
       break;
     }

@@ -1,7 +1,7 @@
 """The conversion subprocess (knowledge-memory-storage tasks 4.5, 5.1, 5.2; document-conversion "Conversions are
 bounded and cancellable", "Unavailable conversion fails with a next step"; local-backend "Reset during a conversion").
 
-A stub worker stands in for Docling, so these run in CI; the real worker is exercised by `pytest -m docling`.
+A stub worker stands in for Docling, so these run in CI; the real worker is exercised by the manual check `uv run pytest manual/docling`.
 """
 
 from __future__ import annotations
@@ -16,7 +16,7 @@ from typing import Any
 import pytest
 
 from horizon.ai.converter import ConversionError, DoclingConverter
-from horizon.ai.docling_worker import parent_alive, run, watchdog
+from horizon.ai.docling_worker import batches, page_ocr_modes, parent_alive, run, watchdog
 from tests import docs_kit
 from tests.conftest import Api
 from tests.knowledge.kit import API, add_file, settle, source
@@ -80,6 +80,44 @@ async def test_timeout_kills_the_worker(tmp_path: Path) -> None:
         await conv.convert(pdf_file(tmp_path), "pdf", title="doc.pdf")
     assert e.value.reason == "timeout" and "took too long" in e.value.message
     assert gone(conv.pid())
+
+
+async def test_progress_is_reported_and_the_limit_is_on_silence_not_the_whole_read(tmp_path: Path) -> None:
+    """U-80: the worker reports pages as it goes; the time limit counts from its last line, so a long document that
+    keeps reading is never cut off (the stub takes 1.2 s in all against a 1 s limit)."""
+    conv = StubDocling(tmp_path, "progress", timeout_s=1.0)
+    seen: list[tuple[int, int]] = []
+    doc = await conv.convert(pdf_file(tmp_path), "pdf", title="doc.pdf", on_progress=lambda d, n: seen.append((d, n)))
+    assert seen == [(1, 3), (2, 3), (3, 3)] and doc.pages == 2
+    assert gone(conv.pid())
+
+
+async def test_a_worker_that_stops_reporting_times_out(tmp_path: Path) -> None:
+    conv = StubDocling(tmp_path, "stall", timeout_s=1.0)
+    seen: list[tuple[int, int]] = []
+    with pytest.raises(ConversionError) as e:
+        await conv.convert(pdf_file(tmp_path), "pdf", title="doc.pdf", on_progress=lambda d, n: seen.append((d, n)))
+    assert e.value.reason == "timeout" and seen == [(1, 3)]
+    assert gone(conv.pid())
+    assert not leftovers(tmp_path)
+
+
+def test_ocr_is_chosen_per_page(tmp_path: Path) -> None:
+    """U-80: no text layer → full-page OCR; text with a picture of real size → OCR of its bitmaps; plain text → none
+    (a 2 % logo doesn't count). Batches are runs of one mode, at most three pages."""
+    text = tmp_path / "text.pdf"
+    text.write_bytes(docs_kit.pdf(["one", "two"]))
+    assert page_ocr_modes(text) == ["none", "none"]
+    scan = tmp_path / "scan.pdf"
+    scan.write_bytes(docs_kit.image_pdf(["scanned words"]))
+    assert page_ocr_modes(scan) == ["full_page"]
+    mixed = tmp_path / "mixed.pdf"
+    mixed.write_bytes(docs_kit.picture_pdf([("Text only.", None), ("A logo.", (["x"], 20, 20)),
+                                            ("A screenshot.", (["The code is BLUEFOX"], 400, 200)), ("More.", None)]))
+    modes = page_ocr_modes(mixed)
+    assert modes == ["none", "none", "bitmaps", "none"]
+    assert batches(modes) == [(1, 2, "none"), (3, 3, "bitmaps"), (4, 4, "none")]
+    assert batches(["none"] * 7) == [(1, 3, "none"), (4, 6, "none"), (7, 7, "none")]
 
 
 async def test_cancel_kills_the_worker(tmp_path: Path) -> None:
@@ -171,6 +209,24 @@ async def test_real_conversion_without_a_key(api_normal: Api, tmp_path: Path) ->
             break
         await asyncio.sleep(0.05)
     assert got["source"]["status"] == "keyword_only" and got["chunks"][1]["text"] == "Triage starts at the door."
+
+
+async def test_reading_moves_the_bar_page_by_page(api: Api, tmp_path: Path) -> None:
+    """U-80: the bar went 5 % → 45 % only when the whole document was read; now each batch moves it."""
+    use(api, StubDocling(tmp_path, "progress"))
+    sub = api.rt.bus.subscribe("global")
+    src = await add_file(api, "doc.pdf", docs_kit.pdf(["one", "two"]), "application/pdf")
+    for _ in range(200):
+        if (await source(api, src["id"]))["source"]["status"] != "indexing":
+            break
+        await asyncio.sleep(0.05)
+    pcts = []
+    while not sub.queue.empty():
+        e = sub.queue.get_nowait()
+        if e.get("kind") == "knowledge" and e.get("id") == src["id"] and e.get("progress", {}).get("stage") == "extracting":
+            pcts.append(e["progress"]["pct"])
+    assert pcts[0] == 0.05 and pcts[-1] == 0.45
+    assert len(pcts) >= 4 and pcts == sorted(pcts), pcts
 
 
 async def test_delete_during_conversion_kills_the_process(api: Api, tmp_path: Path) -> None:

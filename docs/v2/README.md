@@ -148,4 +148,66 @@ character).
 **Why it was deferred:** at v1's sizes an exact search is fast enough and has no recall loss (docs/ai/10 K3).
 
 **What v2 would need:** if D-65's limits rise past about 100k pieces per partition, an IVF or HNSW index, with a recall
-check against the flat search.
+check against the flat search. The user's wish (2026-10-22): **detect it automatically**: keep flat KNN by default, and when a character's
+partition passes a size threshold, build an IVF-flat index for it (sqlite-vec's IVF, or a side index) and search through
+it; drop back to flat below the threshold. The threshold is set from a measured latency curve (flat vs IVF, recall@20
+against flat as the gold).
+
+## 9. Theme songs that loop seamlessly
+
+**Deferred by:** the user's manual test of v1 (2026-10-21): a character's theme doesn't loop.
+
+**v1 behaviour:**
+- The audio engine plays a theme as a looping buffer over the **whole** file (`src.loop = true` in
+  `frontend/src/audio/engine/index.ts`, `setMusic`), with no loop points.
+- A generated song never gets a loop region: the backend stores `loop: null` when a song job finishes
+  (`services/jobs/apply.py`), and the seed's songs have none either. The Theme tab draws a loop zone only when one
+  exists.
+- Lyria 3 Clip writes a ~30 s piece with its own intro and ending. Our prompt asks for "a 30-second piece that loops
+  cleanly", but the model doesn't guarantee it, so the repeat is heard as the song stopping and starting again.
+
+**v1's stopgap (the user's choice, same review):** each pass fades instead of cutting. Before a generated theme loops,
+the engine trims its near-silent edges, fades the first 1.5 s in and the last 3 s out (`frontend/src/audio/engine/edges.ts`),
+so every repeat goes quiet and comes back up. Procedural system tracks are built to loop and are left as they are.
+
+**Why it was deferred:** the theme plays and repeats with soft edges; making the seam inaudible is audio work (finding
+loop points, crossfading), not needed for the v1 launch.
+
+**What v2 would need:**
+1. **Loop points per song.** When a song job finishes, find a loop region: trim leading and trailing silence, then
+   pick a start and end on a beat (the brief's BPM gives the bar length) where the waveform and loudness match.
+   Store it in the existing `loop` field.
+2. **The engine uses them.** Set `loopStart` / `loopEnd` on the buffer source from `song.loop`, or crossfade the end
+   into the start (a short equal-power overlap) when no clean point is found.
+3. **A check by ear** (D-88: the user judges generated media by eye and ear) on the 7 seed themes before shipping.
+
+## 10. Rewriting a changed fact below the prompt's list
+
+**Deferred by:** the user's review of the memory pipeline (2026-10-22, U-78): "no need perfect, put it in v2".
+
+**v1 behaviour:**
+- The rewrite call (doc 09 M3) shows DeepSeek each character's top memories only, the same ~30 lines (1,000 tokens)
+  as the prompt list (M8). A `rewrite` or `confirm` can only target a line it was shown.
+- The duplicate check (M5) reaches every current memory: an add whose nearest memory is at or above `dupCosine`
+  (0.85) goes to Jev `same_fact`, and the same fact reinforces that memory. So a **repeated** fact below the list is
+  caught and climbs back.
+- A **changed** fact below the list is not. If memory #45 says "Kai lives in KL" and Kai now says "I moved to
+  Penang", DeepSeek adds the new line, `same_fact` rightly says it is not the same fact, and the new line is written
+  beside the old one. The guard never sees it (it checks rewrites only), so the stale line stays current. The new line
+  ranks into the list and the old one sinks, but the overflow recall (M9) can still bring the old one back, and the
+  Memory tab shows both until the user forgets one.
+
+**Why it was deferred:** it needs a character with more memories than the list holds (roughly 10–20 sittings) and a
+changed fact that sits below rank ~30; the result is visible and the user can forget the stale line. The M13
+evaluation measured "rewritten, not duplicated" (92 %) only for facts inside the shown list.
+
+**What v2 would need:**
+1. **Measure it first:** overflow items in the `memory` suite's rewrite part (a changed fact planted below the
+   list), so the rate is known before a fix is chosen.
+2. **Show DeepSeek the near overflow lines** (preferred): before the call, search the character's memories outside
+   the list against the stretch (the hybrid search M9 already has) and add the few closest as extra numbered lines,
+   so the model can `rewrite` or `confirm` them like any other. Costs one search per character per run and a few
+   hundred input tokens.
+3. **Or turn a near "not the same" into a guarded rewrite:** when `same_fact` says no above `dupCosine`, ask whether
+   the add replaces the old line, and if so run the guard and Supersede. Riskier: an extension ("likes tea" → "likes
+   green tea") would go through it too.

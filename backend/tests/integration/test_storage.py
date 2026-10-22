@@ -378,7 +378,8 @@ async def test_world_delete_clears_fts_and_vectors(api: Api) -> None:
     async with rt.db.write() as tx:  # give Amara's chunks and memories vectors, as M5 will
         for table, src in ((kno_vec, "knowledge_chunks"), (mem_vec, "memory_items")):
             await tx.conn.execute(text(f"INSERT INTO {table}(rid, character_id, embedding) "
-                                       f"SELECT rid, character_id, :e FROM {src} WHERE world_id = 'wld_seedMeridian'"),
+                                       f"SELECT rid, character_id, :e FROM {src} WHERE world_id = 'wld_seedMeridian' "
+                                       f"AND rid NOT IN (SELECT rid FROM {table})"),
                                   {"e": json.dumps([0.1] * 1024)})
     async with rt.db.read() as conn:
         before = (await conn.execute(text(f"SELECT count(*) FROM {kno_vec}"))).scalar_one()
@@ -386,9 +387,10 @@ async def test_world_delete_clears_fts_and_vectors(api: Api) -> None:
         assert (await conn.execute(text("SELECT count(*) FROM knowledge_fts WHERE knowledge_fts MATCH 'triage'"))).scalar_one() > 0
     r = await api.client.delete("/api/v1/worlds/wld_seedMeridian")
     assert r.status_code == 204
-    async with rt.db.read() as conn:
-        assert (await conn.execute(text(f"SELECT count(*) FROM {kno_vec}"))).scalar_one() == 0
-        assert (await conn.execute(text(f"SELECT count(*) FROM {mem_vec}"))).scalar_one() == 0
+    meridian = "(SELECT id FROM characters WHERE world_id = 'wld_seedMeridian')"
+    async with rt.db.read() as conn:   # Sunny Hollow's shipped vectors (D-110) are not the deleted world's
+        assert (await conn.execute(text(f"SELECT count(*) FROM {kno_vec} WHERE character_id IN {meridian}"))).scalar_one() == 0
+        assert (await conn.execute(text(f"SELECT count(*) FROM {mem_vec} WHERE character_id IN {meridian}"))).scalar_one() == 0
         assert (await conn.execute(text("SELECT count(*) FROM knowledge_fts WHERE knowledge_fts MATCH 'triage'"))).scalar_one() == 0
         assert (await conn.execute(text("SELECT count(*) FROM knowledge_chunks WHERE world_id='wld_seedMeridian'"))).scalar_one() == 0
 

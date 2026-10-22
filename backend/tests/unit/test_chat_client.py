@@ -34,7 +34,7 @@ async def test_request_body_pins_routing(chat: ChatClient) -> None:
     route = respx.post(URL).mock(return_value=response("chat_ok"))
     await chat.complete(REQ)
     body = json.loads(route.calls.last.request.content)
-    assert body["provider"]["order"] == ["DeepSeek"]
+    assert body["provider"]["order"] == ["DeepSeek", "Relace", "Alibaba", "Together"]   # D-101: DeepSeek first
     assert body["provider"]["require_parameters"] is True
     assert body["provider"]["data_collection"] == "allow"  # D-80
     assert body["provider"]["quantizations"] == ["bf16", "fp16", "fp32", "unknown"]

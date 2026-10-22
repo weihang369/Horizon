@@ -6,9 +6,11 @@ present character's current list (m1…, the same lines as its prompt block) and
 changes: `add`, `rewrite` (target) and `confirm` (target). Lines it doesn't mention stay; it never drops a line.
 
 - **The system message is fixed** (no names, no dates), so repeated runs hit DeepSeek's prefix cache.
-- **`max_tokens`** = 300 × characters in the call + 200, at most 3,000. A `length` answer is not a try: the characters
+- **`max_tokens`** = 600 × characters in the call + 200, at most 3,000. A `length` answer is not a try: the characters
   are split into two halves, each its own call over the same stretch (every character still listed, so `about` keeps
-  working), recursively down to one.
+  working), recursively down to one; one character still cut asks once more at 3,000. (U-35: it was 300 per character,
+  below what the rules allow one character, five 40-word changes ≈ 490 tokens even unindented, so a debater's long
+  stretch hit `length` alone, and that failed the whole run for everyone present.)
 - **One retry** on a parse or schema failure of the whole answer (after the free local quote repair, D19 of
   ai-foundation). An invalid single change is dropped and logged, never retried.
 - **Code checks** (doc 09 M3): `for` is a character of this call; `op`, `kind` and `about` are valid; `target` is in
@@ -22,7 +24,7 @@ from __future__ import annotations
 import json
 import logging
 from collections.abc import Sequence
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any, Literal
 
 from horizon.ai.jsonrepair import repair_json_quotes
@@ -36,7 +38,7 @@ log = logging.getLogger("horizon.memory.rewrite")
 
 PURPOSE = "memory"
 PROMPT_VERSION = "memory-2"   # phase 10 (the user's choice): a character's lines hold only what it heard
-TOKENS_PER_CHARACTER = 300
+TOKENS_PER_CHARACTER = 600
 TOKENS_BASE = 200
 TOKENS_MAX = 3_000
 MAX_CHANGES = 5            # adds and rewrites per character; confirms are free
@@ -287,6 +289,10 @@ async def call(deps: Any, stretch: Stretch, ctx: Any, writing: Sequence[Present]
     for attempt in (1, 2):
         calls += 1
         res = await gateway.chat_complete(req, ctx.call(PURPOSE))
+        if getattr(res, "finish_reason", None) == "length" and len(who) == 1 and req.max_tokens < TOKENS_MAX:
+            calls += 1   # one character still cut: once more with the whole budget (a cap, not a cost)
+            req = replace(req, max_tokens=TOKENS_MAX)
+            res = await gateway.chat_complete(req, ctx.call(PURPOSE))
         if getattr(res, "finish_reason", None) == "length":
             if len(who) > 1:
                 half = (len(who) + 1) // 2

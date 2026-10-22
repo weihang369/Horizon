@@ -28,6 +28,8 @@
   clip-path: polygon(var(--s) 0, 100% 0, calc(100% - var(--s)) 100%, 0 100%);
 }
 .tapeText { position: relative; padding-top: 1px; }
+/* An icon in a tape sits on the text line (v1 walkthrough: a block SVG pushed "KEY SET" below the tape). */
+.tapeText > svg { display: inline-block; width: 1em; height: 1em; vertical-align: -0.12em; margin-right: 0.3em; }
 .tape_sm { --h: 22px; font-size: 12px; padding: 0 calc(var(--s) + 7px); }
 .tape_md { --h: 28px; }
 .tape_lg { --h: 40px; font-size: 22px; padding: 0 calc(var(--s) + 16px); }

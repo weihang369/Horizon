@@ -17,7 +17,7 @@ export interface CostBadgeProps {
 export function CostBadge({ usd, approx = true, tone = "ink", className }: CostBadgeProps) {
   const text = `${approx ? "≈ " : ""}${formatUsd(usd)}`;
   return (
-    <span className={cx(s.cost, s[`cost_${tone}`], className)} aria-label={`${approx ? "about " : ""}${formatUsd(usd)}`}>
+    <span className={cx(s.cost, s[`cost_${tone}`], approx && "hz-cost-estimate", className)} aria-label={`${approx ? "about " : ""}${formatUsd(usd)}`}>
       {text}
     </span>
   );

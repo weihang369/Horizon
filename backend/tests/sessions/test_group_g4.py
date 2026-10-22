@@ -122,7 +122,7 @@ async def test_everyone_in_jevs_order_from_one_request_with_its_faces(api: Api) 
     assert [m["author"]["characterId"] for m in replies] == [VICTOR, MEI, AMARA]
     assert len(decision_bodies(api, "who_first")) == n + 1                # one request for the whole run
     amara = replies[2]                                                     # the third: prefetched
-    assert amara["emotion"] == "happy" and amara["emotionSource"] == "classifier"
+    assert amara["trace"]["emotion"]["chosen"] == "happy" and amara["trace"]["emotion"]["source"] == "classifier"   # D-112
     for m in replies:
         assert [r.get("about") for r in m["trace"]["system1"]["questions"] if r["id"] == "emotion_reply"] == [
             m["author"]["characterId"]]

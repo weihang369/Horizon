@@ -14,6 +14,7 @@ from horizon.ai.agent.rewrite import INSTRUCTION
 from horizon.ai.contexts import DeepRequest
 from horizon.gateway.fake import load_canned
 from tests.conftest import Api
+from tests.knowledge.kit import seed_before_d110
 from tests.sessions.kit import API, chars, command, events, ledger, messages
 from tests.sessions.test_gates_m12 import AMARA, HANA, RIN, SUNNY, agent, chat_caps, decisions, gate, rows, send
 
@@ -50,8 +51,20 @@ async def trace_version(api: Api, mid: str) -> str:
                                        {"m": mid})).scalar_one())
 
 
+def measured_deadlines(api: Api) -> None:
+    """U-45 made deep insight wait for every stage (`docsWaitAll`); these tests read the measured deadlines it replaces."""
+    import dataclasses
+
+    cfg = api.rt.runtime_cfg
+    r = cfg.runtime.retrieval
+    assert r.agent is not None
+    r = dataclasses.replace(r, agent=dataclasses.replace(r.agent, docs_wait_all=False))
+    api.rt.runtime_cfg = dataclasses.replace(cfg, runtime=dataclasses.replace(cfg.runtime, retrieval=r))
+
+
 # ── 7.4 1:1 ──
 async def test_a_deep_one_on_one_reply_carries_its_passages(api: Api) -> None:
+    await seed_before_d110(api)   # the keyword-only documents this path was written against (set check aside)
     sid = await agent(api, "one_on_one", [AMARA])
     gate(api, AMARA, 0.8)
     assert api.rt.fake is not None
@@ -63,7 +76,7 @@ async def test_a_deep_one_on_one_reply_carries_its_passages(api: Api) -> None:
     assert new.index("reply") > max(i for i, p in enumerate(new) if p == "deep_check")
     body = chats(api, "reply")[-1]
     tail = body["messages"][-1]["content"]
-    assert tail.startswith("# From your documents\n<passage>\n[1] Meridian Shift Fatigue Review 2025, p. 3\n")
+    assert tail.startswith("# From your documents\n<passage>\n[1] Meridian Shift Fatigue Review 2025, p. 1\n")
     assert STANDING in tail and body["max_tokens"] == api.rt.runtime_cfg.runtime.reply_max_tokens.one_on_one_deep
     tr = reply["trace"]
     assert tr["graph"]["path"][-4:] == ["gather", "search", "check", "keep"]
@@ -192,6 +205,7 @@ async def test_a_two_line_rewrite_is_rejected_for_the_fallback_query(api: Api) -
 
 
 async def test_a_late_rewrite_falls_back_and_is_still_recorded(api: Api) -> None:
+    measured_deadlines(api)
     from tests.helpers.storm import park_next_chat
 
     sid = await agent(api, "one_on_one", [AMARA])
@@ -225,6 +239,30 @@ async def test_regenerate_reuses_the_stored_rewrite(api: Api) -> None:
     assert q["rewrite"] == "how night shifts affect staff fatigue scores in the shift fatigue review"
 
 
+async def test_a_usable_passage_that_lost_on_rank_says_not_in_top_k(api: Api) -> None:
+    """U-35: every passage answers (all usable); a 1:1 keeps 3; the rest read "not in top 3", never "dropped"."""
+    sid = await agent(api, "one_on_one", [AMARA])
+    gate(api, AMARA, 0.9)
+    assert api.rt.fake is not None
+    api.rt.fake.answer_question("passage:*", ANSWERS)
+    [reply] = await send(api, sid, QUESTION)
+    actions = [r["action"] for r in rows(reply, "passage")]
+    assert len(actions) > 3 and actions.count("kept") == 3
+    assert set(actions) == {"kept", "not in top 3"}
+
+
+async def test_each_passage_row_shows_the_found_line_after_the_usable_line(api: Api) -> None:
+    """U-36: a row compares p_partly + p_answers with t_keep, then p_answers alone with t_found."""
+    sid = await agent(api, "one_on_one", [AMARA])
+    gate(api, AMARA, 0.9)
+    assert api.rt.fake is not None
+    api.rt.fake.answer_question("passage:*", ANSWERS)
+    [reply] = await send(api, sid, QUESTION)
+    for r in rows(reply, "passage"):
+        assert [(c["name"], c["value"], c["threshold"]) for c in r["compared"]] == [
+            ("t_keep", 0.95, 0.9), ("t_found", 0.9, 0.5)]
+
+
 # ── 7.1 Jev call 2 ──
 async def test_one_check_rate_limited_falls_back_for_that_passage(api: Api) -> None:
     sid = await agent(api, "one_on_one", [AMARA])
@@ -241,6 +279,7 @@ async def test_one_check_rate_limited_falls_back_for_that_passage(api: Api) -> N
 
 
 async def test_two_late_and_none_found_is_the_fallback(api: Api) -> None:
+    measured_deadlines(api)
     sid = await agent(api, "one_on_one", [AMARA])
     gate(api, AMARA, 0.9)
     assert api.rt.fake is not None
@@ -258,6 +297,7 @@ async def test_two_late_and_none_found_is_the_fallback(api: Api) -> None:
 
 
 async def test_one_late_with_others_found_is_found(api: Api) -> None:
+    measured_deadlines(api)
     sid = await agent(api, "one_on_one", [AMARA])
     gate(api, AMARA, 0.8)
     assert api.rt.fake is not None
@@ -362,6 +402,7 @@ async def test_an_indexed_speaker_embeds_at_the_gate(api: Api) -> None:
 
 
 async def test_a_keyword_only_speaker_never_embeds(api: Api) -> None:
+    await seed_before_d110(api)   # D-110 ships Amara's documents indexed
     sid = await agent(api, "one_on_one", [AMARA])
     gate(api, AMARA, 0.8)
     await send(api, sid, QUESTION)
@@ -369,6 +410,7 @@ async def test_a_keyword_only_speaker_never_embeds(api: Api) -> None:
 
 
 async def test_a_late_embedding_searches_by_keywords_and_is_still_recorded(api: Api) -> None:
+    measured_deadlines(api)
     await api.set_key()
     await _indexed_source(api, HANA)
     sid = await agent(api, "one_on_one", [HANA], world=SUNNY)
@@ -383,6 +425,37 @@ async def test_a_late_embedding_searches_by_keywords_and_is_still_recorded(api: 
     release.set()
     await api.drive(2000)
     assert [r for r in await ledger(api) if r["purpose"] == "query_embed"]
+
+
+async def test_a_documents_search_waits_for_its_vector(api: Api, monkeypatch: pytest.MonkeyPatch) -> None:
+    """U-45 (the user's choice): the query vector arriving 3 s in (OpenRouter's 0.9-13 s, far past the old 200 ms) is
+    waited for, so the documents search is hybrid."""
+    from horizon.ai.agent import deep
+
+    bundles: list[Any] = []
+    real = deep.search
+
+    async def spy(index: Any, bundle: Any, params: Any) -> Any:
+        bundles.append(bundle)
+        return await real(index, bundle, params)
+
+    monkeypatch.setattr(deep, "search", spy)
+    await api.set_key()
+    await _indexed_source(api, HANA)
+    sid = await agent(api, "one_on_one", [HANA], world=SUNNY)
+    gate(api, HANA, 0.8)
+    fake = api.rt.fake
+    assert fake is not None
+    release = fake.park_embedding(fake.counts["embeddings"] + 1)
+    await command(api, sid, "send", {"text": "How long should the rice soak?"})
+    await api.drive(3000)
+    assert not bundles                       # still waiting for the vector, past the old 200 ms
+    release.set()
+    await api.drive(15000)
+    assert bundles and any(bundles[0].dense.values())
+    tr = chars(await messages(api, sid))[-1]["trace"]
+    assert tr["knowledge"]["trigger"] == "gated"
+    assert tr["search"]["vectorMs"] >= 3000   # U-58: Insight shows what the search waited for
 
 
 async def test_both_group_repliers_share_one_embedding(api: Api) -> None:

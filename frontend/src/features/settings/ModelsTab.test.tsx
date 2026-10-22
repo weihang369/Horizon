@@ -1,5 +1,5 @@
 // docs/ai/03 C9 (llm-parameters "Tuned for one model set"): Settings → Models is read-only, and each role shows its
-// price from the bundled table and a Test button. Rendered to static markup in the node test environment.
+// price from the bundled table; no Test button (D-107: a paid probe the user doesn't need). Rendered to static markup in the node test environment.
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
@@ -18,11 +18,11 @@ describe("Models tab", () => {
     expect(html).toContain("Tuned for these models. Custom models are planned for v2.");
   });
 
-  it("shows each role's model in use (never the override), its price and Test", () => {
+  it("shows each role's model in use (never the override) and its price, with no Test button", () => {
     for (const role of ["chat", "decision", "image", "music", "embedding"]) expect(html).toContain(`data-role="${role}"`);
     expect(html).toContain(settings.models.chat);
     expect(html).not.toContain("other/model");
     expect(html.match(/data-price/g)?.length).toBe(5);
-    expect(html.match(/>Test</g)?.length).toBe(5);
+    expect(html).not.toMatch(/<button/);
   });
 });

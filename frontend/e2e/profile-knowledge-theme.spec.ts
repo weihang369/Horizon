@@ -4,14 +4,14 @@ import { expect, open, test } from "./fixtures";
 test("Knowledge tab: Amara's source cards open the O28 Source viewer", async ({ page }) => {
   await open(page, "/w/wld_seedMeridian/c/chr_seedAmara?tab=knowledge");
   const panel = page.getByRole("tabpanel", { name: "Knowledge" });
-  await expect(panel.getByText("2 sources · cited 6× in conversations")).toBeVisible();
+  await expect(panel.getByText("2 sources · cited 8× in conversations")).toBeVisible();
   await expect(panel.getByRole("button", { name: "Open Meridian Shift Fatigue Review 2025.pdf" })).toBeVisible();
 
   const card = panel.getByRole("button", { name: "Open ED triage guidelines.pdf" });
   await card.click();
   const viewer = page.getByRole("dialog", { name: /ED triage guidelines/ });
   await expect(viewer).toBeVisible();
-  await expect(viewer.getByText("End of indexed passages · 6 of 6")).toBeVisible();
+  await expect(viewer.getByText("End of indexed passages · 17 of 17")).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(viewer).toBeHidden();
   await expect(card).toBeFocused();
@@ -19,9 +19,9 @@ test("Knowledge tab: Amara's source cards open the O28 Source viewer", async ({ 
 
 test("Knowledge tab: Mei's unreadable document shows the reason and a Retry button", async ({ page }) => {
   await open(page, "/w/wld_seedMeridian/c/chr_seedMei?tab=knowledge");
-  const failed = page.getByRole("tabpanel", { name: "Knowledge" }).getByRole("listitem").filter({ hasText: "Working-time pilots appendix.docx" });
+  const failed = page.getByRole("tabpanel", { name: "Knowledge" }).getByRole("listitem").filter({ hasText: "Working-time pilots appendix.pdf" });
   await expect(failed).toContainText("failed");
-  await expect(failed).toContainText("This document is password-protected.");
+  await expect(failed).toContainText("This PDF is password-protected.");
   await expect(failed.getByRole("button", { name: "↻ Retry" })).toBeVisible();
 });
 

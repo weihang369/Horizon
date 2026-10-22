@@ -8,11 +8,17 @@
   body. Once request bytes are on the wire and the read fails, the call is NOT retried; it surfaces as
   `maybe_charged` and the pipeline records it at its estimate.
 - A 401 marks the key rejected (the status flips to `invalid`).
+- **Warm connections (v1 test stage).** A fresh connection to OpenRouter costs 600-950 ms about one time in four from
+  Malaysia (measured 2026-10-20: the IPv6 attempt stalls and happy eyeballs falls back to IPv4), against 30-60 ms
+  for a reused one. httpx keeps idle connections only 5 s, so nearly every turn opened new ones and the first Jev call
+  of a session missed its 700 ms deadline. So idle connections are kept for `KEEPALIVE_S`, and `warm()` opens a few
+  (an unauthenticated GET of a public model page, no key sent) when a session is opened, before its first turn.
 """
 
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import contextvars
 from collections.abc import AsyncIterator, Mapping
 from contextlib import asynccontextmanager
@@ -25,6 +31,10 @@ from horizon.gateway.errors import ProviderError, from_status
 
 BASE_URL = "https://openrouter.ai/api"
 RETRY_PAUSE_S = 0.25
+KEEPALIVE_S = 300.0         # measured 2026-10-20: OpenRouter still reuses a connection idle for 240 s (47 ms)
+WARM_CONNECTIONS = 3        # a turn's concurrent calls: Jev's turn plan, the reply stream, and a check
+WARM_TIMEOUT_S = 5.0
+WARM_EVERY_S = 30.0         # a session opened again within this window reuses the last warm-up
 PURPOSE_HEADER = "X-Horizon-Purpose"
 # The paid call being sent (set by the pipeline around a request). In test mode only, HttpCore labels the request with
 # it, so the fake provider can answer per purpose with recorded responses (docs/ai/13 W14). Never sent to OpenRouter.
@@ -42,11 +52,28 @@ class HttpCore:
                  base_url: str = BASE_URL, label_purpose: bool = False) -> None:
         self.keys = keys
         self.label_purpose = label_purpose   # test mode only (W14): add the X-Horizon-Purpose header
+        self._live = transport is None       # the fake provider, respx and the probe's deny transport are never warmed
+        self._warmed_at = -WARM_EVERY_S
         self._client = httpx.AsyncClient(base_url=base_url, transport=transport,
+                                         limits=httpx.Limits(max_keepalive_connections=8, keepalive_expiry=KEEPALIVE_S),
                                          headers={"X-Title": "Horizon", "HTTP-Referer": "http://127.0.0.1"})
 
     async def aclose(self) -> None:
         await self._client.aclose()
+
+    async def warm(self, path: str) -> None:
+        """Open `WARM_CONNECTIONS` pooled connections ahead of a turn. Only with a key (no key: the app stays offline),
+        never in test or probe mode, at most once per `WARM_EVERY_S`; failures are ignored (a turn opens its own)."""
+        now = asyncio.get_running_loop().time()
+        if not self._live or self.keys.secret() is None or now - self._warmed_at < WARM_EVERY_S:
+            return
+        self._warmed_at = now
+
+        async def one() -> None:
+            with contextlib.suppress(httpx.HTTPError):
+                await self._client.get(path, timeout=WARM_TIMEOUT_S)
+
+        await asyncio.gather(*(one() for _ in range(WARM_CONNECTIONS)))
 
     def require_key(self) -> None:
         """The key guard alone (the pipeline runs it before the cap preflight, so no key reads as missing_key)."""

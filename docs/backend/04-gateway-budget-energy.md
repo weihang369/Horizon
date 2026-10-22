@@ -39,11 +39,13 @@ ChatChunk   = { generation_id (required; taken from the first chunk), content?, 
 **Routing for the main LLM (NFR-33, D-41):**
 
 ```json
-{ "provider": { "order": ["DeepSeek"], "require_parameters": true, "allow_fallbacks": true,
+{ "provider": { "order": ["DeepSeek", "Relace", "Alibaba", "Together"], "require_parameters": true, "allow_fallbacks": true,
                 "quantizations": ["bf16", "fp16", "fp32", "unknown"], "data_collection": "allow" },
   "usage": { "include": true } }
 ```
 
+- **D-101 (2026-10-20):** OpenRouter stopped listing DeepSeek's own endpoint for V4.1 Flash, so the order names the
+  measured third parties after it (cheapest that caches first). DeepSeek stays first in case it returns.
 - Model IDs are pinned in config. *No fallback model from the AI stage: `deepseek/deepseek-v4-flash` is no longer served by DeepSeek ([docs/ai/03](../ai/03-llm-parameters.md) C8).*
 - **`data_collection: "allow"` (D-80).** DeepSeek's first-party endpoint may train on inputs, so under `deny` OpenRouter removes it and routes to the cheapest third party. The user's OpenRouter privacy settings must also allow paid endpoints that may train on inputs; otherwise OpenRouter's guardrail still removes DeepSeek (verified in the M2 live run).
 - **If the provider that served the call isn't DeepSeek, a warning goes into the trace.** `require_parameters` can route a call away from the first-party endpoint when a parameter such as `logprobs` isn't supported there (verify in M2), which loses caching and breaks the price assumptions.

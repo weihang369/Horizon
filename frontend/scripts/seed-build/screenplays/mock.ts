@@ -1,5 +1,6 @@
-// UI-phase-only sessions (seed/_mock): the debate variants doc 06 §9 requires (panel, auto host, You decide,
-// no scores, too close to call) and extra history rows. They are ordinary (non-seed) sessions, so they can be resumed.
+// UI-phase-only sessions (seed/_mock): the debate variants doc 06 §9 requires (panel, auto host, You decide) and
+// extra history rows. They are ordinary (non-seed) sessions, so they can be resumed. D-117: the hand-made "no scores"
+// and "too close to call" debates left the demo (their Insight predates Jev's recorded steps).
 import type { DebateConfig, Participant, Verdict } from "../../../src/contract/types";
 import type { Beat, Screenplay } from "../types";
 
@@ -8,7 +9,6 @@ const SUNNY = "wld_seedSunnyHollow";
 const AMARA = "chr_seedAmara";
 const VICTOR = "chr_seedVictor";
 const MEI = "chr_seedMei";
-const ELENA = "chr_mockElena";
 const RIN = "chr_seedRin";
 
 const D = (characterId: string, side: "prop" | "opp" | null): Participant => ({
@@ -124,70 +124,6 @@ export const YOU_DECIDE_VOTING: Screenplay = {
 };
 
 // ── Arbiter with no scores (bars hidden, summary alone) ──
-const NO_SCORES_VERDICT: Verdict = {
-  decidedBy: "arbiter", strongerCase: "opp",
-  summary: [
-    { subjectId: "prop", points: ["Remote work erodes mentoring for juniors."] },
-    { subjectId: "opp", points: ["Productivity data favours hybrid work.", "Commute time returned to workers is a real gain."] },
-  ],
-  keyDisagreement: "Whether mentoring losses outweigh productivity gains.",
-};
-export const NO_SCORES_REMOTE: Screenplay = {
-  msgKey: "mockN", evtKey: "mockNoScoresRemote", startAt: "2026-09-20T10:10:00Z", mock: true,
-  session: {
-    id: "ses_mockNoScoresRemote", worldId: MERIDIAN, title: "Debate: Remote work", titleIsCustom: false,
-    mode: "debate", participants: [D(VICTOR, "prop"), D(MEI, "opp")], emotionMode: "llm", musicPolicy: "arena",
-    readableMode: false,
-    config: quick("This house believes remote work does more harm than good", { sides: { prop: [VICTOR], opp: [MEI] } }),
-    initialState: { phase: "setup", round: 0, iteration: 0 }, isSeed: false,
-  },
-  beats: [
-    { k: "phase", phase: "opening", round: 1 },
-    { k: "line", who: VICTOR, emotion: "neutral", forcedBy: "round_order", gapMs: 1500, text: "Juniors learn by overhearing. Remote work deletes the overhearing. That is the whole case, and it is sufficient." },
-    { k: "line", who: MEI, emotion: "happy", forcedBy: "round_order", gapMs: 1500, text: "Hybrid teams in the better studies hold productivity and lose less staff. Mentoring can be scheduled; commutes can't be refunded." },
-    { k: "phase", phase: "closing", round: 2 },
-    { k: "line", who: VICTOR, emotion: "thinking", forcedBy: "round_order", gapMs: 1500, text: "Scheduled mentoring is a meeting, not an apprenticeship." },
-    { k: "line", who: MEI, emotion: "neutral", forcedBy: "round_order", gapMs: 1500, text: "Then fix the apprenticeship, not the postcode." },
-    { k: "verdict", verdict: NO_SCORES_VERDICT, text: verdictText(NO_SCORES_VERDICT) },
-    { k: "end", status: "ended" },
-  ],
-};
-
-// ── Too close to call (strongerCase null in two-sided mode) ──
-const TOO_CLOSE_VERDICT: Verdict = {
-  decidedBy: "arbiter", strongerCase: null, scoresBy: "side",
-  scores: sideScores([7.0, 7.5, 7.0, 7.5], [7.5, 7.0, 7.5, 7.0]),
-  summary: [
-    { subjectId: "prop", points: ["Exams reward cramming, not understanding.", "Continuous assessment catches struggling students earlier."] },
-    { subjectId: "opp", points: ["Coursework is easier to game.", "Exams are the fairest single snapshot we have."] },
-  ],
-  keyDisagreement: "Which method is harder to game.",
-  rationale: "Both sides landed their main point and neither rebuttal was decisive.",
-};
-export const TOO_CLOSE_EXAMS: Screenplay = {
-  msgKey: "mockT", evtKey: "mockTooCloseExams", startAt: "2026-09-18T16:45:00Z", mock: true,
-  session: {
-    id: "ses_mockTooCloseExams", worldId: MERIDIAN, title: "Debate: Exams vs coursework", titleIsCustom: false,
-    mode: "debate", participants: [D(ELENA, "prop"), D(AMARA, "prop"), D(MEI, "opp")], emotionMode: "llm", musicPolicy: "arena",
-    readableMode: false,
-    config: quick("This house would replace exams with continuous assessment", { sides: { prop: [ELENA, AMARA], opp: [MEI] } }),
-    initialState: { phase: "setup", round: 0, iteration: 0 }, isSeed: false,
-  },
-  beats: [
-    { k: "phase", phase: "opening", round: 1 },
-    { k: "line", who: ELENA, emotion: "neutral", forcedBy: "round_order", gapMs: 1500, text: "I taught for twelve years. The exam measured who slept well the night before. Coursework measured who learned.", reactions: { [MEI]: "thinking" } },
-    { k: "line", who: MEI, emotion: "thinking", forcedBy: "round_order", gapMs: 1500, text: "Coursework measures who has a parent with a printer and an evening free. The exam is crude, but it's the same crude for everyone." },
-    { k: "line", who: AMARA, emotion: "happy", forcedBy: "round_order", gapMs: 1500, text: "Continuous assessment also flags the kid who's struggling in October, not in June when it's too late." },
-    { k: "phase", phase: "closing", round: 2 },
-    { k: "line", who: ELENA, emotion: "happy", forcedBy: "round_order", gapMs: 1500, text: "Learning is continuous. Assessment should rhyme with it." },
-    { k: "line", who: MEI, emotion: "neutral", forcedBy: "round_order", gapMs: 1500, text: "Fairness is a snapshot. I'll take the snapshot." },
-    { k: "line", who: AMARA, emotion: "neutral", forcedBy: "round_order", gapMs: 1500, text: "Then take two snapshots and a conversation. We rest." },
-    { k: "verdict", verdict: TOO_CLOSE_VERDICT, text: verdictText(TOO_CLOSE_VERDICT) },
-    { k: "end", status: "ended" },
-  ],
-};
-
-// ── Extra history row in Sunny Hollow: a short 1:1 with Rin (resumable) ──
 const rinBeats: Beat[] = [
   { k: "line", who: RIN, emotion: "neutral", text: "oh. it's you. hi. (that was a warm greeting btw)", gapMs: 200 },
   { k: "user", text: "Raid tonight?" },
@@ -197,7 +133,7 @@ const rinBeats: Beat[] = [
   { k: "end", status: "paused", reason: "navigated_away" },
 ];
 export const RIN_RAID: Screenplay = {
-  msgKey: "mockR", evtKey: "mockRinRaid", startAt: "2026-09-26T12:15:00Z", mock: true,
+  msgKey: "mockR", evtKey: "mockRinRaid", startAt: "2026-09-26T11:30:00Z", mock: true,
   session: {
     id: "ses_mockRinRaid", worldId: SUNNY, title: "Raid night", titleIsCustom: false,
     mode: "one_on_one", participants: [{ characterId: RIN, role: "speaker", currentEmotion: "neutral", mutedByUser: false }],
@@ -206,4 +142,4 @@ export const RIN_RAID: Screenplay = {
   beats: rinBeats,
 };
 
-export const MOCK_SCREENPLAYS: Screenplay[] = [PANEL_PHONES, HOST_SUGAR, YOU_DECIDE_VOTING, NO_SCORES_REMOTE, TOO_CLOSE_EXAMS, RIN_RAID];
+export const MOCK_SCREENPLAYS: Screenplay[] = [PANEL_PHONES, HOST_SUGAR, YOU_DECIDE_VOTING, RIN_RAID];

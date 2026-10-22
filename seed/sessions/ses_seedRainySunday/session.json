@@ -6,17 +6,18 @@
     "title": "Rainy Sunday",
     "titleIsCustom": true,
     "mode": "watch",
+    "status": "paused",
     "participants": [
       {
         "characterId": "chr_seedTakeshi",
         "role": "speaker",
-        "currentEmotion": "happy",
+        "currentEmotion": "angry",
         "mutedByUser": false
       },
       {
         "characterId": "chr_seedRin",
         "role": "speaker",
-        "currentEmotion": "sad",
+        "currentEmotion": "angry",
         "mutedByUser": false
       }
     ],
@@ -29,19 +30,18 @@
       "paceMs": 1500,
       "openingSpeaker": "chr_seedTakeshi"
     },
-    "isSeed": true,
-    "status": "paused",
     "state": {
       "status": "ended",
       "turnsTaken": 10,
       "turnLimit": 10,
       "nextSpeakerId": "chr_seedRin"
     },
-    "costUsd": 0.000625,
-    "messageCount": 11,
-    "createdAt": "2026-09-27T02:40:00Z",
-    "updatedAt": "2026-09-27T02:40:40.438Z",
+    "isSeed": true,
+    "costUsd": 0.00043,
+    "messageCount": 12,
+    "createdAt": "2026-09-27T02:39:59.478Z",
+    "updatedAt": "2026-09-27T02:40:41.808Z",
     "pausedReason": "turn_cap",
-    "lastMessageAt": "2026-09-27T02:40:38.030Z"
+    "lastMessageAt": "2026-09-27T02:40:40.362Z"
   }
 }

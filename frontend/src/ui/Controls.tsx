@@ -222,10 +222,13 @@ export interface SegmentedProps<V extends string> {
   value: V;
   onChange: (v: V) => void;
   className?: string;
+  /** Locked: shows `value` but can't be changed (e.g. a setting another one overrides). */
+  disabled?: boolean;
 }
 
-export function Segmented<V extends string>({ label, options, value, onChange, className }: SegmentedProps<V>) {
+export function Segmented<V extends string>({ label, options, value, onChange, className, disabled }: SegmentedProps<V>) {
   const onKey = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (disabled) return;
     const i = options.findIndex((o) => o.value === value);
     const d = e.key === "ArrowRight" || e.key === "ArrowDown" ? 1 : e.key === "ArrowLeft" || e.key === "ArrowUp" ? -1 : 0;
     if (!d) return;
@@ -235,7 +238,7 @@ export function Segmented<V extends string>({ label, options, value, onChange, c
     (e.currentTarget.querySelector(`[data-v="${CSS.escape(next.value)}"]`) as HTMLElement | null)?.focus();
   };
   return (
-    <div role="radiogroup" aria-label={label} className={cx(s.segmented, className)} onKeyDown={onKey}>
+    <div role="radiogroup" aria-label={label} aria-disabled={disabled || undefined} className={cx(s.segmented, className)} onKeyDown={onKey}>
       {options.map((o) => (
         <button
           key={o.value}
@@ -244,6 +247,7 @@ export function Segmented<V extends string>({ label, options, value, onChange, c
           data-v={o.value}
           aria-checked={o.value === value}
           tabIndex={o.value === value ? 0 : -1}
+          disabled={disabled}
           className={s.segment}
           onClick={() => onChange(o.value)}
         >

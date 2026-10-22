@@ -12,7 +12,8 @@ export function ConfirmDialog({ close, title, body, confirmLabel, typed, onConfi
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const ok = !typed || text.trim() === typed;
+  // Any case (U-28): the label is drawn in capitals, so "TESTING" for a world named "testing" never matched.
+  const ok = !typed || text.trim().toLowerCase() === typed.trim().toLowerCase();
   const confirm = async () => {
     if (!ok || busy) return;
     setBusy(true);

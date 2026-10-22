@@ -2,6 +2,7 @@
 // Each milestone added the methods for its own routes. Until M5 a method whose backend hadn't shipped rejected at once,
 // without a request, with a non-retryable `validation` error naming the milestone (`details.availableIn`); from M5
 // every method has a route, so nothing is held back.
+import { HorizonError } from "../../contract/errors";
 import type {
   AppSettings, Character, EmotionAsset, Energy, GenerationJob, KnowledgeChunk, KnowledgeSource, MemoryItem, Message, Session,
   SessionEvent, ThemeSong, TurnTrace, UsageRecord, World,
@@ -25,6 +26,11 @@ export interface HttpClientOptions {
 }
 
 const enc = encodeURIComponent;
+/**
+ * D-65: a file over 10 MB is refused here, before the upload. The backend refuses it too (413), but it answers before
+ * the body has arrived, and the dev proxy or the browser then reports only a broken connection, so nothing was shown.
+ */
+const MAX_FILE_BYTES = 10 * 1024 * 1024;
 
 class NoEventSource {
   onmessage: ((e: MessageEvent) => void) | null = null;
@@ -96,6 +102,10 @@ export class HttpClient implements HorizonClient {
     forgetMemory: (memoryItemId) => this.t.delete(`/memory/${enc(memoryItemId)}`),
     addKnowledge: (id, input) => {
       if ("file" in input) {
+        if (input.file.size > MAX_FILE_BYTES) {
+          return Promise.reject(new HorizonError("validation", "Files can be at most 10 MB.",
+            { retryable: false, details: { field: "file", limit: MAX_FILE_BYTES, bytes: input.file.size } }));
+        }
         const form = new FormData();
         form.append("file", input.file, input.file.name || "upload");
         return this.t.postForm<KnowledgeSource>(`/characters/${enc(id)}/knowledge`, form);

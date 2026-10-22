@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "data": {
+    "id": "job_mockAoiEmotions",
+    "characterId": "chr_mockAoi",
+    "kind": "emotion_set",
+    "status": "partial",
+    "progress": 1,
+    "estimatedCostUsd": 0.117,
+    "actualCostUsd": 0.078,
+    "tasks": [
+      {
+        "id": "task_mockAoiHappy",
+        "type": "emotion_image",
+        "emotion": "happy",
+        "status": "succeeded",
+        "attempt": 1,
+        "maxAttempts": 3,
+        "resultRef": "emo_mockAoiHappy"
+      },
+      {
+        "id": "task_mockAoiSad",
+        "type": "emotion_image",
+        "emotion": "sad",
+        "status": "failed",
+        "attempt": 1,
+        "maxAttempts": 3,
+        "error": {
+          "code": "provider_error",
+          "message": "The image provider returned an error.",
+          "retryable": true
+        }
+      },
+      {
+        "id": "task_mockAoiAngry",
+        "type": "emotion_image",
+        "emotion": "angry",
+        "status": "succeeded",
+        "attempt": 1,
+        "maxAttempts": 3,
+        "resultRef": "emo_mockAoiAngry"
+      }
+    ],
+    "createdAt": "2026-09-30T19:20:00Z",
+    "startedAt": "2026-09-30T19:20:01Z",
+    "finishedAt": "2026-09-30T19:20:34Z"
+  }
+}

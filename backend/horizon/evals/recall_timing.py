@@ -118,8 +118,8 @@ def instrumented(env: RunEnv, rec: Recorder) -> Iterator[None]:
         r.update(docs_ms=_ms(clock, t0), docs_end=clock.now(), docs_outcome=out.outcome)
         return out
 
-    async def check(deps: Any, req: Any, bundle: Any, picked: Any, knobs: Any) -> Any:
-        ps, slowest = await check0(deps, req, bundle, picked, knobs)
+    async def check(deps: Any, req: Any, bundle: Any, picked: Any, knobs: Any, *, wait_ms: float | None = None) -> Any:
+        ps, slowest = await check0(deps, req, bundle, picked, knobs, wait_ms=wait_ms)
         rec.row(req).update(recall_slowest_ms=slowest, recall_checks=len(ps),
                             recall_missing=sum(1 for p in ps if p is None))
         return ps, slowest

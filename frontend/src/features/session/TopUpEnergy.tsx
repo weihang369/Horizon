@@ -92,7 +92,7 @@ export function TopUpEnergy({ characterId, close }: OverlayComponentProps<"O27">
         </p>
       )}
       <p className={s.fine}>
-        Free now; uses ≈ US{formatUsd(cost)} of today's budget headroom ({formatUsd(spent)} of {formatUsd(cap)} spent). {e && e.state === "exhausted" ? `${name} wakes up right away.` : ""}
+        Free now; uses ≈ US{formatUsd(cost)} of today's budget headroom ({formatUsd(spent)} of {formatUsd(cap)} spent). {e && e.state === "exhausted" ? `${name} wakes up right away.` : e && e.current >= e.max ? `${name} is already full: this goes on top, past the bar.` : ""}
       </p>
     </Modal>
   );

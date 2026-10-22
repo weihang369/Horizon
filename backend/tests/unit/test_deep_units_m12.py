@@ -74,7 +74,7 @@ async def test_rarest_terms_first() -> None:
 async def test_a_rewrite_puts_its_terms_first_and_allows_24() -> None:
     message = " ".join(f"word{i}" for i in range(30))
     rewrite = " ".join(f"rew{i}" for i in range(10))
-    idx = FakeIndex()
+    idx = FakeIndex(counts={**{f"word{i}": 1 for i in range(30)}, **{f"rew{i}": 1 for i in range(10)}})
     terms = await Q.agent_terms(idx, message, rewrite=rewrite)  # type: ignore[arg-type]
     assert len(terms) == 24 and terms[:10] == [f"rew{i}" for i in range(10)]
     plain = await Q.agent_terms(idx, message)  # type: ignore[arg-type]
@@ -82,9 +82,19 @@ async def test_a_rewrite_puts_its_terms_first_and_allows_24() -> None:
 
 
 async def test_a_failed_rewrite_with_few_terms_adds_the_previous_message() -> None:
-    idx = FakeIndex()
+    idx = FakeIndex(counts={"nights": 3, "tiring": 2, "long": 5, "shift": 7, "blocks": 1})
     terms = await Q.agent_terms(idx, "and nights?", extra="How tiring are long shift blocks?")  # type: ignore[arg-type]
     assert terms[0] == "nights" and {"tiring", "long", "shift", "blocks"} <= set(terms)
+
+
+async def test_words_no_passage_holds_are_left_out() -> None:
+    """U-34: they sorted first and, in a rebuttal (the motion + a long opposing argument), took all 16 slots, so the
+    search matched nothing. The words the speaker's passages hold are searched instead."""
+    argument = " ".join(f"rare{i}" for i in range(30))
+    idx = FakeIndex(counts={"four": 4, "day": 5, "week": 4, "work": 5})
+    terms = await Q.agent_terms(idx, f"This house would adopt a nationwide four-day work week.\nAmara: {argument}")  # type: ignore[arg-type]
+    assert terms == ["four", "week", "day", "work"]
+    assert await Q.agent_terms(FakeIndex(), "nothing here matches") == []  # type: ignore[arg-type]
 
 
 def test_user_text_cannot_change_the_search() -> None:

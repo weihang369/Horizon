@@ -5,6 +5,7 @@
 import type { SfxId } from "../synth/sfx";
 import { onPrefsAudio } from "../../stores/prefs";
 import type { Prefs } from "../../stores/prefs";
+import { edgeFade } from "./edges";
 
 export interface MusicOpts { crossfadeMs?: number; label?: string; gainDb?: number }
 export interface AudioState {
@@ -32,6 +33,18 @@ let ducks: ReadonlySet<string> = new Set();
 const resolveAudio = (url: string) => loadResolve().then((m) => m.resolveAudio(url));
 /** Same rule as the VMD's isProceduralAudio (kept sync for the mini-player label). */
 const isProceduralAudio = (url: string) => url.startsWith("placeholder:") || /\.proc\.json(\?|#|$)/.test(url);
+
+/** A real (generated) track loops with its edges faded (edges.ts); cached per decoded buffer. */
+const edged = new WeakMap<AudioBuffer, AudioBuffer>();
+function withEdgeFades(ctx: BaseAudioContext, buf: AudioBuffer): AudioBuffer {
+  let out = edged.get(buf);
+  if (out) return out;
+  const chans = edgeFade(Array.from({ length: buf.numberOfChannels }, (_, i) => buf.getChannelData(i)), buf.sampleRate);
+  out = ctx.createBuffer(chans.length, chans[0].length, buf.sampleRate);
+  chans.forEach((c, i) => out!.copyToChannel(c, i));
+  edged.set(buf, out);
+  return out;
+}
 
 interface Deck { src: AudioBufferSourceNode; gain: GainNode; url: string }
 
@@ -194,7 +207,7 @@ class AudioEngine {
       const ctx = this.ctx;
       const gain = ctx.createGain();
       const src = ctx.createBufferSource();
-      src.buffer = buf;
+      src.buffer = isProceduralAudio(url) ? buf : withEdgeFades(ctx, buf);
       src.loop = true;
       src.connect(gain).connect(this.music);
       const t = ctx.currentTime;

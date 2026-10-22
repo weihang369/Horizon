@@ -229,6 +229,9 @@ async def test_a_late_member_still_gets_an_on_time_face(api: Api) -> None:
 
 
 async def test_too_late_for_the_face_keeps_the_fallback_and_writes_the_late_rows(api: Api) -> None:
+    from tests.sessions.test_deep_m12 import measured_deadlines
+
+    measured_deadlines(api)          # D-113: with `docsWaitAll` on, a plan with Amara's gate is waited for
     sid = await debate(api)
     jev_answers(api, **{f"emotion_line:{AMARA}": ("happy", 0.95)})
     assert api.rt.fake is not None
@@ -242,7 +245,8 @@ async def test_too_late_for_the_face_keeps_the_fallback_and_writes_the_late_rows
     await api.drive(60000)
     amara = args(await messages(api, sid), "rebuttal")[1]
     assert amara["author"]["characterId"] == AMARA
-    assert amara["emotion"] != "happy" and amara["emotionSource"] != "classifier"   # a kept (or faded) face
+    face = amara["trace"]["emotion"]          # the reply's own face (a face check's clash may switch it, D-112)
+    assert face["chosen"] != "happy" and face["source"] != "classifier"            # a kept (or faded) face
     rows = [r for r in amara["trace"]["system1"]["questions"] if r["purpose"] == "debate_plan"]
     late = [r for r in rows if r["id"] == "emotion_line" and r.get("about") == AMARA and r["result"] == "fallback"
             and r.get("answer") == "happy"]

@@ -92,11 +92,11 @@
         "extraDetails": "Three-piece navy suit, gold tie pin, pocket-watch chain."
       },
       "appearanceSummary": "An adult man with slicked-back black hair and a silver streak, sharp grey eyes, a three-piece navy suit and a gold tie pin.",
-      "basePortraitUrl": "/assets/placeholder/portraits/chr_seedVictor/neutral.svg",
+      "basePortraitUrl": "/assets/portraits/chr_seedVictor/neutral.webp",
       "candidates": [
         {
           "id": "cand_seedVictor1",
-          "url": "/assets/placeholder/portraits/chr_seedVictor/neutral.svg",
+          "url": "/assets/portraits/chr_seedVictor/neutral.webp",
           "selected": true,
           "status": "ready"
         }
@@ -117,54 +117,54 @@
     "emotions": {
       "neutral": {
         "assetId": "emo_seedVictorNeutral",
-        "url": "/assets/placeholder/portraits/chr_seedVictor/neutral.svg",
+        "url": "/assets/portraits/chr_seedVictor/neutral.webp",
         "vfxPreset": "none"
       },
       "happy": {
         "assetId": "emo_seedVictorHappy",
-        "url": "/assets/placeholder/portraits/chr_seedVictor/happy.svg",
+        "url": "/assets/portraits/chr_seedVictor/happy.webp",
         "vfxPreset": "sparkle"
       },
       "sad": {
         "assetId": "emo_seedVictorSad",
-        "url": "/assets/placeholder/portraits/chr_seedVictor/sad.svg",
+        "url": "/assets/portraits/chr_seedVictor/sad.webp",
         "vfxPreset": "rain"
       },
       "angry": {
         "assetId": "emo_seedVictorAngry",
-        "url": "/assets/placeholder/portraits/chr_seedVictor/angry.svg",
+        "url": "/assets/portraits/chr_seedVictor/angry.webp",
         "vfxPreset": "anger"
       },
       "surprised": {
         "assetId": "emo_seedVictorSurprised",
-        "url": "/assets/placeholder/portraits/chr_seedVictor/surprised.svg",
+        "url": "/assets/portraits/chr_seedVictor/surprised.webp",
         "vfxPreset": "shock"
       },
       "thinking": {
         "assetId": "emo_seedVictorThinking",
-        "url": "/assets/placeholder/portraits/chr_seedVictor/thinking.svg",
+        "url": "/assets/portraits/chr_seedVictor/thinking.webp",
         "vfxPreset": "ponder"
       },
       "embarrassed": {
         "assetId": "emo_seedVictorEmbarrassed",
-        "url": "/assets/placeholder/portraits/chr_seedVictor/embarrassed.svg",
+        "url": "/assets/portraits/chr_seedVictor/embarrassed.webp",
         "vfxPreset": "blush"
       }
     },
     "blink": {
       "assetId": "emo_seedVictorBlink",
-      "url": "/assets/placeholder/portraits/chr_seedVictor/blink.svg",
+      "url": "/assets/portraits/chr_seedVictor/blink.webp",
       "vfxPreset": "none"
     },
     "themeSongId": "song_seedVictor",
     "energy": {
       "max": 1000,
-      "current": 860,
-      "asOf": "2026-10-01T12:00:00Z",
+      "current": 977,
+      "asOf": "2026-10-01T09:59:37.938Z",
       "regenPerHour": 41.666666666666664,
       "state": "active",
-      "fullAt": "2026-10-01T15:21:36.000Z",
-      "spentToday": 140
+      "fullAt": "2026-10-01T10:32:45.138Z",
+      "spentToday": 23
     },
     "version": 1,
     "isSeed": true,

@@ -108,7 +108,7 @@ export function GalleryTab({ c, onPreview }: { c: Character; onPreview: (e: Emot
               </div>
               {!ref && !working && c.status !== "archived" && (
                 <button type="button" className={s.gGen} onClick={() => void startGeneration({ characterId: c.id, kind: "emotion_regenerate", emotions: [e] }, `Generate ${m.label.toLowerCase()}`)}>
-                  Generate{est ? ` (≈ $${est.toFixed(2)})` : ""}
+                  Generate{est ? <span className="hz-cost-estimate">{` (≈ $${est.toFixed(2)})`}</span> : null}
                 </button>
               )}
             </div>

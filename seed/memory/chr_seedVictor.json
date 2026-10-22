@@ -1,4 +1,148 @@
 {
   "schemaVersion": 1,
-  "data": []
+  "data": [
+    {
+      "id": "mem_seedVictor1",
+      "characterId": "chr_seedVictor",
+      "worldId": "wld_seedMeridian",
+      "kind": "fact",
+      "text": "Amara argued for taxing sugary drinks: price cuts consumption, reformulation, and funds prevention; costs of diabetes and heart disease fall on everyone.",
+      "importance": 0.525,
+      "sourceSessionId": "ses_mockHostSugar",
+      "sourceMessageId": "msg_mockS03",
+      "createdAt": "2026-09-22T13:20:54.746Z"
+    },
+    {
+      "id": "mem_seedVictor2",
+      "characterId": "chr_seedVictor",
+      "worldId": "wld_seedMeridian",
+      "kind": "fact",
+      "text": "Victor argued the tax is a regressive sin levy on the poor, that evidence of causation is association, and that reformulation undercuts the health claim.",
+      "importance": 0.6575,
+      "sourceSessionId": "ses_mockHostSugar",
+      "sourceMessageId": "msg_mockS04",
+      "createdAt": "2026-09-22T13:20:54.746Z"
+    },
+    {
+      "id": "mem_seedVictor3",
+      "characterId": "chr_seedVictor",
+      "worldId": "wld_seedMeridian",
+      "kind": "fact",
+      "text": "Amara conceded the regressivity point but argued disease costs fall hardest on the poorest, so the levy is still justified.",
+      "importance": 0.495,
+      "sourceSessionId": "ses_mockHostSugar",
+      "sourceMessageId": "msg_mockS07",
+      "createdAt": "2026-09-22T13:20:54.746Z"
+    },
+    {
+      "id": "mem_seedVictor4",
+      "characterId": "chr_seedVictor",
+      "worldId": "wld_seedMeridian",
+      "kind": "fact",
+      "text": "Victor closed that the levy can lower purchases and raise revenue, but health outcomes are unproven; the tax is plausible, not just.",
+      "importance": 0.59,
+      "sourceSessionId": "ses_mockHostSugar",
+      "sourceMessageId": "msg_mockS08",
+      "createdAt": "2026-09-22T13:20:54.746Z"
+    },
+    {
+      "id": "mem_seedVictor5",
+      "characterId": "chr_seedVictor",
+      "worldId": "wld_seedMeridian",
+      "kind": "event",
+      "text": "In the smartphone-ban debate, Victor argued a ban cannot define its target, is disproportionate since schools have narrower means, and teaches removal over governance.",
+      "importance": 0.6125,
+      "sourceSessionId": "ses_mockPanelPhones",
+      "sourceMessageId": "msg_mockP03",
+      "createdAt": "2026-09-24T11:00:51.017Z"
+    },
+    {
+      "id": "mem_seedVictor6",
+      "characterId": "chr_seedVictor",
+      "worldId": "wld_seedMeridian",
+      "kind": "fact",
+      "text": "Victor closed that the motion as drafted leaves enforcement, the override, and the definition of the banned object unresolved, and that this gap cuts against the ban.",
+      "importance": 0.585,
+      "sourceSessionId": "ses_mockPanelPhones",
+      "sourceMessageId": "msg_mockP08",
+      "createdAt": "2026-09-24T11:00:51.017Z"
+    },
+    {
+      "id": "mem_seedVictor7",
+      "characterId": "chr_seedVictor",
+      "worldId": "wld_seedMeridian",
+      "kind": "event",
+      "text": "In the compulsory-voting debate, Victor argued compulsion completes a duty owed, corrects the turnout gap favoring organized interests, and forces demand for easy, equal ballots.",
+      "importance": 0.6775,
+      "sourceSessionId": "ses_mockYouDecideVoting",
+      "sourceMessageId": "msg_mockV02",
+      "createdAt": "2026-09-25T15:06:54.872Z"
+    },
+    {
+      "id": "mem_seedVictor8",
+      "characterId": "chr_seedVictor",
+      "worldId": "wld_seedMeridian",
+      "kind": "fact",
+      "text": "Victor closed that Mei conceded turnout rises and only disputed magnitude; fines and donkey votes are design flaws fixed by civil penalties, a free vote, and no-fault abstention.",
+      "importance": 0.64,
+      "sourceSessionId": "ses_mockYouDecideVoting",
+      "sourceMessageId": "msg_mockV05",
+      "createdAt": "2026-09-25T15:06:54.872Z"
+    },
+    {
+      "id": "mem_seedVictor9",
+      "characterId": "chr_seedVictor",
+      "worldId": "wld_seedMeridian",
+      "kind": "event",
+      "text": "Victor defined the motion as a shorter standard week, same pay, phased in, not unpaid Fridays.",
+      "importance": 0.6875,
+      "sourceSessionId": "ses_seedDebate4Day",
+      "sourceMessageId": "msg_seedD04",
+      "createdAt": "2026-10-01T09:59:52.855Z"
+    },
+    {
+      "id": "mem_seedVictor10",
+      "characterId": "chr_seedVictor",
+      "worldId": "wld_seedMeridian",
+      "kind": "fact",
+      "text": "Victor cited the Meridian Working Hours Act 1931, which made the two-day weekend default with a ten-year transition and exemptions for continuous services.",
+      "importance": 0.7075,
+      "sourceSessionId": "ses_seedDebate4Day",
+      "sourceMessageId": "msg_seedD04",
+      "createdAt": "2026-10-01T09:59:52.855Z"
+    },
+    {
+      "id": "mem_seedVictor11",
+      "characterId": "chr_seedVictor",
+      "worldId": "wld_seedMeridian",
+      "kind": "fact",
+      "text": "Victor argued the Working Time Code Part IV already runs shift caps, rest periods and averaging, so a shorter standard week fits existing machinery.",
+      "importance": 0.685,
+      "sourceSessionId": "ses_seedDebate4Day",
+      "sourceMessageId": "msg_seedD04",
+      "createdAt": "2026-10-01T09:59:52.855Z"
+    },
+    {
+      "id": "mem_seedVictor12",
+      "characterId": "chr_seedVictor",
+      "worldId": "wld_seedMeridian",
+      "kind": "fact",
+      "text": "Mei priced a fifth more staffed hours at roughly a tenth more on total recurring cost if labour is half of operating cost, in nine shift-based organisations.",
+      "importance": 0.5925,
+      "sourceSessionId": "ses_seedDebate4Day",
+      "sourceMessageId": "msg_seedD08",
+      "createdAt": "2026-10-01T09:59:52.855Z"
+    },
+    {
+      "id": "mem_seedVictor13",
+      "characterId": "chr_seedVictor",
+      "worldId": "wld_seedMeridian",
+      "kind": "fact",
+      "text": "Amara conceded the four-day rota was paid for with longer shifts and agreed sector trials should start with health and care.",
+      "importance": 0.535,
+      "sourceSessionId": "ses_seedDebate4Day",
+      "sourceMessageId": "msg_seedD09",
+      "createdAt": "2026-10-01T09:59:52.855Z"
+    }
+  ]
 }

@@ -9,7 +9,7 @@
  },
  "mode": "lean",
  "parallel": 2,
- "estimatedCostUsd": 0.036,
+ "estimatedCostUsd": 0.054,
  "tasks": [
   {
    "type": "emotion_image",
@@ -21,6 +21,12 @@
   {
    "type": "emotion_image",
    "emotion": "happy",
+   "ms": 15000,
+   "cost": 0.018,
+   "category": "image"
+  },
+  {
+   "type": "blink_frame",
    "ms": 15000,
    "cost": 0.018,
    "category": "image"

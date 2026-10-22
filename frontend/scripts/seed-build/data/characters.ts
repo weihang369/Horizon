@@ -2,7 +2,7 @@
 import type { Appearance, Character, CharacterProfile, Emotion, EmotionAssetRef, SongBrief, VfxPreset } from "../../../src/contract/types";
 import { EMOTIONS } from "../../../src/contract/types";
 import { makeEnergy } from "../../../src/domain/energy";
-import { portraitUrl, ASSET_SOURCE } from "../assets";
+import { portraitUrl } from "../assets";
 
 export const VFX_BY_EMOTION: Record<Emotion, VfxPreset> = {
   neutral: "none", happy: "sparkle", sad: "rain", angry: "anger", surprised: "shock", thinking: "ponder", embarrassed: "blush",
@@ -13,7 +13,7 @@ const CREATED = "2026-09-14T09:00:00Z";
 
 export interface CharacterDef {
   character: Character;
-  /** Emotions to render as placeholder files ("blink" and "cand-2" included when set). */
+  /** Emotions the character shows; the build draws a placeholder for each one without a real file. */
   renderEmotions: Emotion[];
   renderBlink: boolean;
   renderCandidate2: boolean;
@@ -87,7 +87,7 @@ function build(d: Def): CharacterDef {
   };
   return {
     character,
-    renderEmotions: ASSET_SOURCE === "placeholder" ? present : [],
+    renderEmotions: present,
     renderBlink: Boolean(d.blink),
     renderCandidate2: Boolean(d.candidate2),
     song: songId && d.song ? { id: songId, brief: d.song } : undefined,
@@ -185,9 +185,9 @@ export const CHARACTERS: CharacterDef[] = [
       outfit: { archetype: "academic", primaryColor: "#D4A017", secondaryColor: "#2F5D8A" },
       accessories: ["pendant"],
       vibe: ["mischievous", "cool"],
-      extraDetails: "A pencil through the bun, rectangular glasses pushed up on her head, oversized mustard cardigan over a striped shirt.",
+      extraDetails: "A pencil through the bun, rectangular glasses, oversized mustard cardigan over a striped shirt.",
     },
-    summary: "An adult woman with long black hair in a low bun with a pencil through it, amber eyes, glasses pushed up and an oversized mustard cardigan.",
+    summary: "An adult woman with long black hair in a low bun with a pencil through it, amber eyes behind rectangular glasses and an oversized mustard cardigan.",
     song: { genres: ["jazz hip-hop"], moods: ["calm", "playful"], bpm: 90, instruments: ["bass", "drums", "vinyl crackle"], vibe: "Jazzy hip-hop, upright bass, vinyl crackle" },
   }),
   build({
@@ -227,7 +227,7 @@ export const CHARACTERS: CharacterDef[] = [
       name: "Takeshi Morisaki", role: "Retired train engineer", age: 58, pronouns: "he/him",
       tagline: "Every problem looks smaller from a fishing pier.",
       personality: { summary: "Gruff exterior, soft heart, terrible puns, punctual to a fault, fiercely proud of his daughters.", traits: ["gruff", "kind", "punny", "punctual", "proud"] },
-      backstory: "Drove the coastal line for thirty years. Hana's father (profile text). Fishes every Sunday, rain or shine.",
+      backstory: "Drove the coastal line for thirty years. Hana's father. Fishes every Sunday, rain or shine.",
       speakingStyle: {
         summary: "Short sentences, train and fishing metaphors, ends serious advice with a dad joke.", tone: "gruff", formality: "casual",
         quirks: ["train metaphors", "dad jokes"], catchphrases: ["Right on schedule."],
@@ -256,7 +256,7 @@ export const CHARACTERS: CharacterDef[] = [
       name: "Rin Morisaki", role: "Game-design grad student & junior game developer", age: 22, pronouns: "she/her",
       tagline: "I'm not antisocial, I'm in a raid.",
       personality: { summary: "Deadpan, sarcastic, competitive gamer, secretly protective of Hana, hates mornings.", traits: ["deadpan", "sarcastic", "competitive", "protective"] },
-      backstory: "Hana's younger sister (profile text). Grad student by day, junior dev on an indie studio's night shift, raid tank always.",
+      backstory: "Hana's younger sister. Grad student by day, junior dev on an indie studio's night shift, raid tank always.",
       speakingStyle: {
         summary: "Short replies in lowercase, gamer slang used sparingly, an occasional sincere moment she immediately undercuts.", tone: "deadpan", formality: "casual",
         quirks: ["all lowercase", "undercuts sincerity"], catchphrases: ["fight me."],
@@ -282,7 +282,7 @@ export const CHARACTERS: CharacterDef[] = [
   // ── UI-phase mock characters (seed/_mock) ──
   build({
     id: "chr_mockElena", key: "mockElena", worldId: MERIDIAN, paletteId: "pal_midnight_ink", energy: 640, mock: true,
-    seedPrompt: "An ex-diplomat turned history teacher", intent: "expert", advisory: false,
+    seedPrompt: "An ex-diplomat turned history teacher", intent: "expert", advisory: false, blink: true, // D-108
     emotions: ["neutral", "happy", "sad", "angry"], // Lean: 3 emotions still null (EMO-06)
     profile: {
       name: "Elena Vasquez", role: "History teacher, former diplomat", age: 52, pronouns: "she/her",
@@ -308,7 +308,7 @@ export const CHARACTERS: CharacterDef[] = [
   }),
   build({
     id: "chr_mockKenji", key: "mockKenji", worldId: MERIDIAN, paletteId: "pal_frost_byte", energy: 1000, mock: true,
-    seedPrompt: "A strict but fair chess coach", intent: "expert", advisory: false,
+    seedPrompt: "A strict but fair chess coach", intent: "expert", advisory: false, blink: true, // D-108
     emotions: ["neutral", "happy", "sad", "angry"], song: null, activeJobId: "job_mockKenjiEmotions",
     profile: {
       name: "Kenji Ito", role: "Chess coach", age: 34, pronouns: "he/him",
@@ -385,7 +385,7 @@ export const CHARACTERS: CharacterDef[] = [
   build({
     id: "chr_mockMochi", key: "mockMochi", worldId: SUNNY, paletteId: "pal_citrus_spark", energy: 1000, mock: true,
     status: "archived", archivedAt: "2026-09-28T18:00:00Z", emotions: ["neutral", "happy", "sad", "angry"], song: null,
-    seedPrompt: "A cheerful barista everyone calls Mochi", intent: "companion", advisory: false,
+    seedPrompt: "A cheerful barista everyone calls Mochi", intent: "companion", advisory: false, blink: true, // D-108
     profile: {
       name: "Mochi", role: "Barista", age: 29, pronouns: "they/them",
       tagline: "Oat milk is a personality.",

@@ -79,11 +79,11 @@
         ]
       },
       "appearanceSummary": "A middle-aged woman with wavy silver shoulder-length hair, half-rim glasses and a silk scarf over a navy blazer.",
-      "basePortraitUrl": "/assets/placeholder/portraits/chr_mockElena/neutral.svg",
+      "basePortraitUrl": "/assets/portraits/chr_mockElena/neutral.webp",
       "candidates": [
         {
           "id": "cand_mockElena1",
-          "url": "/assets/placeholder/portraits/chr_mockElena/neutral.svg",
+          "url": "/assets/portraits/chr_mockElena/neutral.webp",
           "selected": true,
           "status": "ready"
         }
@@ -104,29 +104,33 @@
     "emotions": {
       "neutral": {
         "assetId": "emo_mockElenaNeutral",
-        "url": "/assets/placeholder/portraits/chr_mockElena/neutral.svg",
+        "url": "/assets/portraits/chr_mockElena/neutral.webp",
         "vfxPreset": "none"
       },
       "happy": {
         "assetId": "emo_mockElenaHappy",
-        "url": "/assets/placeholder/portraits/chr_mockElena/happy.svg",
+        "url": "/assets/portraits/chr_mockElena/happy.webp",
         "vfxPreset": "sparkle"
       },
       "sad": {
         "assetId": "emo_mockElenaSad",
-        "url": "/assets/placeholder/portraits/chr_mockElena/sad.svg",
+        "url": "/assets/portraits/chr_mockElena/sad.webp",
         "vfxPreset": "rain"
       },
       "angry": {
         "assetId": "emo_mockElenaAngry",
-        "url": "/assets/placeholder/portraits/chr_mockElena/angry.svg",
+        "url": "/assets/portraits/chr_mockElena/angry.webp",
         "vfxPreset": "anger"
       },
       "surprised": null,
       "thinking": null,
       "embarrassed": null
     },
-    "blink": null,
+    "blink": {
+      "assetId": "emo_mockElenaBlink",
+      "url": "/assets/portraits/chr_mockElena/blink.webp",
+      "vfxPreset": "none"
+    },
     "themeSongId": "song_mockElena",
     "energy": {
       "max": 1000,

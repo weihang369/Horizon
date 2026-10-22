@@ -81,11 +81,11 @@
         ]
       },
       "appearanceSummary": "An adult woman with lavender twin tails, round glasses and a white pastry-chef jacket.",
-      "basePortraitUrl": "/assets/placeholder/portraits/chr_mockAoi/neutral.svg",
+      "basePortraitUrl": "/assets/portraits/chr_mockAoi/neutral.webp",
       "candidates": [
         {
           "id": "cand_mockAoi1",
-          "url": "/assets/placeholder/portraits/chr_mockAoi/neutral.svg",
+          "url": "/assets/portraits/chr_mockAoi/neutral.webp",
           "selected": true,
           "status": "ready"
         }
@@ -106,18 +106,18 @@
     "emotions": {
       "neutral": {
         "assetId": "emo_mockAoiNeutral",
-        "url": "/assets/placeholder/portraits/chr_mockAoi/neutral.svg",
+        "url": "/assets/portraits/chr_mockAoi/neutral.webp",
         "vfxPreset": "none"
       },
       "happy": {
         "assetId": "emo_mockAoiHappy",
-        "url": "/assets/placeholder/portraits/chr_mockAoi/happy.svg",
+        "url": "/assets/portraits/chr_mockAoi/happy.webp",
         "vfxPreset": "sparkle"
       },
       "sad": null,
       "angry": {
         "assetId": "emo_mockAoiAngry",
-        "url": "/assets/placeholder/portraits/chr_mockAoi/angry.svg",
+        "url": "/assets/portraits/chr_mockAoi/angry.webp",
         "vfxPreset": "anger"
       },
       "surprised": null,

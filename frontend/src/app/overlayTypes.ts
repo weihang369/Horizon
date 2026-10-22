@@ -45,6 +45,8 @@ export interface OverlayProps {
     sourceId: string; chunkId?: string; characterId?: string;
     /** The citation snapshot, shown when the source was deleted after the answer (PRF-10 AC5). */
     cited?: { n: number; title: string; locator?: string; quote: string };
+    /** U-37: the reply's other markers in this source (the SOURCES strip's group), highlighted too, with a jump row. */
+    also?: { n: number; chunkId: string; locator?: string; quote: string }[];
   };
   /** M5 Paste text (knowledge-sources "Paste text"): `name` is the character's first name for the title. */
   O29: { characterId: string; name: string };

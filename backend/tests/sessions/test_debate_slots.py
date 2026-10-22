@@ -163,3 +163,32 @@ async def test_an_announced_member_asleep_at_turn_start_gives_way(api: Api) -> N
     victor = chars(msgs)[-1]
     assert victor["trace"]["routing"].get("skipped") == [{"characterId": MEI, "reason": "exhausted"}]
     await assert_reduces(api, sid)
+
+
+async def test_an_auto_advance_debate_loaded_mid_round_goes_on_after_its_first_command(api: Api) -> None:
+    """U-43: the chain lived only in the released actor's timer; the loaded actor's first command (an Ask) re-arms it
+    after the answer, and the debate runs to its end in order."""
+    sid = await debate(api)
+    await api.drive(20000)
+    before = speakers(await messages(api, sid))
+    assert 1 <= len(before) < 6
+    actor = await api.rt.sessions.get(sid)
+    await api.rt.sessions.release(sid, actor)   # a restart or an idle release: the timer goes with the actor
+    await api.drive(20000)
+    assert speakers(await messages(api, sid)) == before   # nothing moves without a command
+    await command(api, sid, "debate/ask", {"characterId": MEI, "text": "Mei, give us a number."})
+    await api.drive(120000)
+    msgs = await messages(api, sid)
+    turns = [m for m in chars(msgs) if not m.get("forcedSpeaker")]
+    assert [m["author"]["characterId"] for m in turns] == [AMARA, VICTOR, MEI, AMARA, VICTOR, MEI]
+    assert len([m for m in chars(msgs) if m.get("forcedSpeaker")]) == 1   # the answer, once
+    assert (await snapshot(api, sid))["session"]["status"] == "ended"
+    await assert_reduces(api, sid)
+
+
+async def test_a_fresh_debate_first_command_does_not_start_a_second_chain(api: Api) -> None:
+    sid = await debate(api)
+    await api.drive(3000)
+    await command(api, sid, "debate/interject", {"text": "Numbers, please."})
+    await api.drive(120000)
+    assert speakers(await messages(api, sid)) == [AMARA, VICTOR, MEI, AMARA, VICTOR, MEI]

@@ -2,6 +2,8 @@
 
 - `pdf(pages)`: a valid text PDF, one page per string (Helvetica, plain ASCII), readable by any PDF parser.
 - `image_pdf(lines)`: an image-only ("scanned") PDF made with Pillow: no text layer, so only OCR can read it.
+- `picture_pdf(pages)`: text pages, some with a JPEG picture of words under the text (`(text, (lines, w, h))`, size in
+  points): a text layer that doesn't hold the picture's words, so only OCR of the bitmap finds them.
 - `docx(paragraphs)`: a minimal WordprocessingML package; `(text, "Heading1")` makes a heading. It carries a
   `styles.xml` naming the heading styles, as every Word file does (Docling reads heading levels from style names).
 - `xlsx()`: a minimal spreadsheet package (a ZIP without `word/document.xml`).
@@ -30,6 +32,11 @@ def pdf(pages: list[str]) -> bytes:
                     f"/Contents {4 + 2 * i} 0 R >>".encode())
         objs.append(b"<< /Length " + str(len(content)).encode() + b" >>\nstream\n" + content + b"\nendstream")
     objs.append(b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>")
+    return _write(objs)
+
+
+def _write(objs: list[bytes]) -> bytes:
+    """Numbered objects 1..n, the xref table and the trailer (object 1 is the catalog)."""
     out = io.BytesIO()
     out.write(b"%PDF-1.4\n")
     offsets = []
@@ -42,6 +49,40 @@ def pdf(pages: list[str]) -> bytes:
         out.write(f"{off:010d} 00000 n \n".encode())
     out.write(f"trailer\n<< /Size {len(objs) + 1} /Root 1 0 R >>\nstartxref\n{xref}\n%%EOF\n".encode())
     return out.getvalue()
+
+
+def picture_pdf(pages: list[tuple[str, tuple[list[str], int, int] | None]]) -> bytes:
+    from PIL import Image, ImageDraw, ImageFont
+
+    objs: list[bytes] = [b"", b""]   # 1 catalog, 2 pages: filled in last
+    font = len(objs) + 1
+    objs.append(b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>")
+    kids = []
+    for text, picture in pages:
+        content = f"BT /F1 12 Tf 72 720 Td ({_esc(text)}) Tj ET".encode()
+        xobj = b""
+        if picture is not None:
+            lines, w, h = picture
+            img = Image.new("RGB", (w * 3, h * 3), "white")
+            draw = ImageDraw.Draw(img)
+            for i, line in enumerate(lines):
+                draw.text((30, 30 + i * 90), line, fill="black", font=ImageFont.load_default(size=60))
+            buf = io.BytesIO()
+            img.save(buf, format="JPEG", quality=92)
+            jpg = buf.getvalue()
+            objs.append(f"<< /Type /XObject /Subtype /Image /Width {img.width} /Height {img.height} /ColorSpace "
+                        f"/DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length {len(jpg)} >>\nstream\n".encode()
+                        + jpg + b"\nendstream")
+            xobj = f"/XObject << /Im1 {len(objs)} 0 R >>".encode()
+            content += f"\nq {w} 0 0 {h} 72 {680 - h} cm /Im1 Do Q".encode()
+        objs.append(b"<< /Length " + str(len(content)).encode() + b" >>\nstream\n" + content + b"\nendstream")
+        stream = len(objs)
+        objs.append(f"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 {font} 0 R >> "
+                    .encode() + xobj + f" >> /Contents {stream} 0 R >>".encode())
+        kids.append(f"{len(objs)} 0 R")
+    objs[0] = b"<< /Type /Catalog /Pages 2 0 R >>"
+    objs[1] = f"<< /Type /Pages /Kids [{' '.join(kids)}] /Count {len(kids)} >>".encode()
+    return _write(objs)
 
 
 def image_pdf(lines: list[str]) -> bytes:

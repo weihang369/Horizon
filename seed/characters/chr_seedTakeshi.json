@@ -23,7 +23,7 @@
           "proud"
         ]
       },
-      "backstory": "Drove the coastal line for thirty years. Hana's father (profile text). Fishes every Sunday, rain or shine.",
+      "backstory": "Drove the coastal line for thirty years. Hana's father. Fishes every Sunday, rain or shine.",
       "speakingStyle": {
         "summary": "Short sentences, train and fishing metaphors, ends serious advice with a dad joke.",
         "tone": "gruff",
@@ -85,11 +85,11 @@
         "extraDetails": "Thick moustache, weathered tan, olive fishing vest over a flannel shirt, bucket hat."
       },
       "appearanceSummary": "An older man with a grey crew cut and thick moustache, an olive fishing vest over a flannel shirt and a bucket hat.",
-      "basePortraitUrl": "/assets/placeholder/portraits/chr_seedTakeshi/neutral.svg",
+      "basePortraitUrl": "/assets/portraits/chr_seedTakeshi/neutral.webp",
       "candidates": [
         {
           "id": "cand_seedTakeshi1",
-          "url": "/assets/placeholder/portraits/chr_seedTakeshi/neutral.svg",
+          "url": "/assets/portraits/chr_seedTakeshi/neutral.webp",
           "selected": true,
           "status": "ready"
         }
@@ -110,53 +110,54 @@
     "emotions": {
       "neutral": {
         "assetId": "emo_seedTakeshiNeutral",
-        "url": "/assets/placeholder/portraits/chr_seedTakeshi/neutral.svg",
+        "url": "/assets/portraits/chr_seedTakeshi/neutral.webp",
         "vfxPreset": "none"
       },
       "happy": {
         "assetId": "emo_seedTakeshiHappy",
-        "url": "/assets/placeholder/portraits/chr_seedTakeshi/happy.svg",
+        "url": "/assets/portraits/chr_seedTakeshi/happy.webp",
         "vfxPreset": "sparkle"
       },
       "sad": {
         "assetId": "emo_seedTakeshiSad",
-        "url": "/assets/placeholder/portraits/chr_seedTakeshi/sad.svg",
+        "url": "/assets/portraits/chr_seedTakeshi/sad.webp",
         "vfxPreset": "rain"
       },
       "angry": {
         "assetId": "emo_seedTakeshiAngry",
-        "url": "/assets/placeholder/portraits/chr_seedTakeshi/angry.svg",
+        "url": "/assets/portraits/chr_seedTakeshi/angry.webp",
         "vfxPreset": "anger"
       },
       "surprised": {
         "assetId": "emo_seedTakeshiSurprised",
-        "url": "/assets/placeholder/portraits/chr_seedTakeshi/surprised.svg",
+        "url": "/assets/portraits/chr_seedTakeshi/surprised.webp",
         "vfxPreset": "shock"
       },
       "thinking": {
         "assetId": "emo_seedTakeshiThinking",
-        "url": "/assets/placeholder/portraits/chr_seedTakeshi/thinking.svg",
+        "url": "/assets/portraits/chr_seedTakeshi/thinking.webp",
         "vfxPreset": "ponder"
       },
       "embarrassed": {
         "assetId": "emo_seedTakeshiEmbarrassed",
-        "url": "/assets/placeholder/portraits/chr_seedTakeshi/embarrassed.svg",
+        "url": "/assets/portraits/chr_seedTakeshi/embarrassed.webp",
         "vfxPreset": "blush"
       }
     },
     "blink": {
       "assetId": "emo_seedTakeshiBlink",
-      "url": "/assets/placeholder/portraits/chr_seedTakeshi/blink.svg",
+      "url": "/assets/portraits/chr_seedTakeshi/blink.webp",
       "vfxPreset": "none"
     },
     "themeSongId": "song_seedTakeshi",
     "energy": {
       "max": 1000,
-      "current": 1000,
-      "asOf": "2026-10-01T12:00:00Z",
+      "current": 999,
+      "asOf": "2026-09-30T10:30:48.776Z",
       "regenPerHour": 41.666666666666664,
       "state": "active",
-      "spentToday": 0
+      "fullAt": "2026-09-30T10:32:15.176Z",
+      "spentToday": 1
     },
     "version": 1,
     "isSeed": true,

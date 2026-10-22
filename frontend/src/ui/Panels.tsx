@@ -1,6 +1,6 @@
 // Modal (frame), Drawer (frame), ToastView, ErrorTape, EmptyState (spec §3.7). Owner: VMD.
 // Stacking, focus trap/restore and Esc routing are the EE's LayerStack; these are presentational frames.
-import { useId, useMemo, type HTMLAttributes, type ReactNode } from "react";
+import { useId, useMemo, useRef, type HTMLAttributes, type ReactNode } from "react";
 import s from "./Panels.module.css";
 import { cx } from "./cx";
 import { Button, IconButton } from "./Button";
@@ -57,16 +57,80 @@ export function Modal({ title, tape, tapeTone = "brand", size = "md", tone = "de
 }
 
 // ── Drawer ───────────────────────────────────────────────────────────────────
+export interface DrawerResize {
+  /** Accessible name of the edge, e.g. "Resize Insight". */
+  label: string;
+  min: number;
+  max: number;
+  /** Live, while dragging. */
+  onResize(width: number): void;
+  /** The width to keep: pointer up, a key, or a double-click (back to `reset`). */
+  onCommit(width: number): void;
+  reset: number;
+}
+
 export interface DrawerProps extends Omit<HTMLAttributes<HTMLElement>, "title"> {
   title: ReactNode;
   width?: number;
   onClose?: () => void;
   headerExtra?: ReactNode;
   children?: ReactNode;
+  /** A draggable left edge (a window splitter: ←/→ 16 px, Shift ×4, Home/End, double-click resets). */
+  resize?: DrawerResize;
+}
+
+const RESIZE_KEYS: Record<string, number> = { ArrowLeft: 1, ArrowRight: -1 };
+
+/** The drawer's left edge as a window splitter (U-30). The drawer is pinned right, so dragging left widens it. */
+function DrawerGrip({ width, resize }: { width: number; resize: DrawerResize }) {
+  const drag = useRef<{ x: number; w: number; last: number } | null>(null);
+  const clamp = (w: number) => Math.round(Math.max(resize.min, Math.min(resize.max, w)));
+  return (
+    <div
+      role="separator"
+      aria-orientation="vertical"
+      aria-label={resize.label}
+      aria-valuemin={resize.min}
+      aria-valuemax={resize.max}
+      aria-valuenow={width}
+      tabIndex={0}
+      className={s.drawerGrip}
+      onPointerDown={(e) => {
+        if (e.button !== 0) return;
+        e.preventDefault();
+        e.currentTarget.setPointerCapture(e.pointerId);
+        drag.current = { x: e.clientX, w: width, last: width };
+      }}
+      onPointerMove={(e) => {
+        const d = drag.current;
+        if (!d) return;
+        d.last = clamp(d.w + d.x - e.clientX);
+        resize.onResize(d.last);
+      }}
+      onPointerUp={() => {
+        const d = drag.current;
+        drag.current = null;
+        if (d && d.last !== d.w) resize.onCommit(d.last);
+      }}
+      onPointerCancel={() => {
+        const d = drag.current;
+        drag.current = null;
+        if (d) resize.onCommit(d.last);
+      }}
+      onDoubleClick={() => resize.onCommit(clamp(resize.reset))}
+      onKeyDown={(e) => {
+        const dir = RESIZE_KEYS[e.key];
+        const next = dir ? width + dir * (e.shiftKey ? 64 : 16) : e.key === "Home" ? resize.min : e.key === "End" ? resize.max : null;
+        if (next === null) return;
+        e.preventDefault();
+        resize.onCommit(clamp(next));
+      }}
+    />
+  );
 }
 
 /** Skewed right-side panel with a horizon-500 header tape (doc 04 §8). */
-export function Drawer({ title, width = 400, onClose, headerExtra, children, className, style, ...rest }: DrawerProps) {
+export function Drawer({ title, width = 400, onClose, headerExtra, children, className, style, resize, ...rest }: DrawerProps) {
   const id = useId();
   return (
     <aside
@@ -75,6 +139,7 @@ export function Drawer({ title, width = 400, onClose, headerExtra, children, cla
       style={{ ...style, ["--drawer-w" as string]: `${width}px` }}
       {...rest}
     >
+      {resize && <DrawerGrip width={width} resize={resize} />}
       <div className={s.drawerHead}>
         <Tape tone="brand" size="md" id={`${id}-t`}>
           {title}

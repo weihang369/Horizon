@@ -82,6 +82,10 @@ class KeyStore:
             return self._file_key, "file"
         return None
 
+    def source(self) -> KeySource | None:
+        eff = self.effective()
+        return eff[1] if eff else None
+
     def secret(self) -> SecretStr | None:
         eff = self.effective()
         return eff[0] if eff else None

@@ -183,6 +183,13 @@ async def test_a_chosen_opening_speaker_is_forced(api: Api) -> None:
     first = await replies(api, sid, 1)
     assert list(plan_bodies(api)[0]["questions"]) == [f"emotion_opening:{MEI}", f"docs:{MEI}"]
     assert speakers(first) == [MEI]
+    # U-55: the opening speaker set at creation has its own tag (it was shown as the user's Speak next)
+    assert first[0]["trace"]["routing"]["forcedBy"] == "opening"
+    # U-49: the opening's unasked questions are listed greyed, each with its reason
+    skipped = {r["id"]: r["action"] for r in first[0]["trace"]["system1"]["questions"] if r["result"] == "skipped"}
+    assert skipped["talk_finished"] == "skipped: the scene's opening"
+    assert skipped["unsafe_note"] == "skipped: no director's note this turn"
+    assert skipped["earlier"] == "skipped: nothing earlier to search"
 
 
 # ── 6.4: the steer ──
@@ -208,7 +215,9 @@ async def test_steer_then_cap(api: Api, monkeypatch: Any) -> None:
     jev(api, finished(0.9))
     msgs = await replies(api, sid, 5)
     actions = [rows(m, "talk_finished")[0]["action"] if rows(m, "talk_finished") else None for m in msgs]
-    assert actions == [None, "steer", "no steer (steered recently)", "no steer (steered recently)", "steer"]
+    # U-49: the opening didn't ask "is the talk finished?" and says so
+    assert actions == ["skipped: the scene's opening", "steer", "no steer (steered recently)",
+                       "no steer (steered recently)", "steer"]
     assert seen[:5] == [None, "steer", None, None, "steer"]
     row = rows(msgs[1], "talk_finished")[0]
     assert (row["answer"], row["p"], row["result"]) == ("yes", 0.9, "used")
@@ -272,6 +281,9 @@ async def test_none_at_the_limit_and_one_request_per_turn(api: Api) -> None:
 async def test_a_directors_note_in_the_gap_redoes_the_plan(api: Api) -> None:
     """Jev hasn't answered the plan made ahead when a director's note lands: the turn finds the fingerprint changed and
     plans again, and uses that plan (its call is no fallback)."""
+    from tests.sessions.test_deep_m12 import measured_deadlines
+
+    measured_deadlines(api)          # D-113: with `docsWaitAll` on, these plans and checks are waited for
     sid = await agent_watch(api, manual=True, maxTurns=10, paceMs=1500)
     assert api.rt.fake is not None
     # M14 (safety D10): call 1, the output check, then the plan made ahead

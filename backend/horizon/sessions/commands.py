@@ -223,6 +223,9 @@ async def run_command(rt: Runtime, sid: str, name: str, body: Wire) -> None:
             actor.mode.verdict_checked = True
             if name not in ("debate/end", "debate/resume"):
                 debate_verdict.resume(actor)
+            await handler(actor, body)
+            debate.rearm(actor)   # U-43: queued after the handler's own work (an Ask's answer speaks first)
+            return
         await handler(actor, body)
 
     try:

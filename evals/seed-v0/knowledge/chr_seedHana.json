@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "data": [
+    {
+      "id": "kno_seedHana1",
+      "characterId": "chr_seedHana",
+      "worldId": "wld_seedSunnyHollow",
+      "title": "Grandma's recipe notebook",
+      "type": "text",
+      "status": "indexed",
+      "bytes": 6480,
+      "addedAt": "2026-09-15T16:20:00Z",
+      "chunks": 5,
+      "citedCount": 1
+    }
+  ]
+}

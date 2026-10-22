@@ -86,7 +86,8 @@ def test_group_names_profile_roles_and_others_in_the_speak_only_line() -> None:
 def test_watch_language_rule_and_premise() -> None:
     text = compile_persona(inp("chr_seedRin", "wld_seedSunnyHollow", mode="watch", premise="A storm traps them",
                                others=[CastMember(name="Hana Morisaki", role="Florist")])).text
-    assert "is watching this scene and may step in. Premise: A storm traps them. With you: Hana Morisaki (florist)." in text
+    assert ("is watching this scene from outside it and may step in. Until Kai speaks in it, talk to each other, not to "
+            "Kai. Premise: A storm traps them. With you: Hana Morisaki (florist).") in text
     assert "otherwise the premise's; if you can't tell, English." in text
 
 

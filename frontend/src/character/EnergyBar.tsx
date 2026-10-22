@@ -59,26 +59,29 @@ function EnergyBarView({
   const prev = useRef<number | null>(null);
 
   const max = Math.max(1, value?.max ?? 1);
-  const cur = Math.max(0, Math.min(max, value?.current ?? 0));
+  // U-73: a top-up may take energy past max for the day (ENG-05). The fill stops at full, but the label and the change
+  // effects follow the real value: a top-up on a full bar visibly adds, and lowering max is not a "−N ⚡" drain.
+  const real = Math.max(0, value?.current ?? 0);
+  const cur = Math.min(max, real);
   const pct = cur / max;
   const state: EnergyState = value?.state ?? (cur <= 0 ? "exhausted" : pct < 0.2 ? "tired" : "active");
   const tone = pct < 0.2 ? "red" : pct < 0.4 ? "amber" : "ok";
-  const regen = !!value && cur < max && state !== "exhausted";
+  const regen = !!value && real < max && state !== "exhausted";
   const labelOn = showLabel ?? size === "chat";
 
   useLayoutEffect(() => {
     const was = prev.current;
-    prev.current = cur;
+    prev.current = real;
     const f = fill.current;
     if (!f) return;
     const reduced = getMotionPrefs().reduced;
-    if (was === null || was === cur || reduced) {
+    if (was === null || reduced) {
       f.style.transition = reduced && was !== null ? `transform ${DUR.reduced}ms linear` : "none";
       f.style.transform = `scaleX(${pct})`;
       return;
     }
-    const wasPct = was / max;
-    const delta = cur - was;
+    const wasPct = Math.min(1, was / max);
+    const delta = real - was;
     if (delta < 0) {
       // Drain: fill snaps down, the paper ghost holds 200 ms then collapses over 400 ms.
       f.style.transition = `transform ${DUR.base}ms ${EASE.out}`;
@@ -98,13 +101,13 @@ function EnergyBarView({
       f.style.transform = `scaleX(${pct})`;
       sparks(fx.current, wasPct, pct);
     } else {
-      // Regen tick: glide.
+      // Regen tick, or a new max with the same energy: glide.
       f.style.transition = `transform ${DUR.slow}ms ${EASE.out}`;
       f.style.transform = `scaleX(${pct})`;
     }
-  }, [cur, max, pct]);
+  }, [real, max, pct]);
 
-  const aria = `${label ? `${label} energy` : "Energy"} ${Math.floor(cur)} of ${max}${state !== "active" ? `, ${state}` : ""}`;
+  const aria = `${label ? `${label} energy` : "Energy"} ${Math.floor(real)} of ${max}${state !== "active" ? `, ${state}` : ""}`;
   return (
     <div
       className={cx(
@@ -114,7 +117,7 @@ function EnergyBarView({
       style={style}
       data-energy-state={state}
     >
-      <span className={s.track} role="meter" aria-label={aria} aria-valuemin={0} aria-valuemax={max} aria-valuenow={Math.floor(cur)}>
+      <span className={s.track} role="meter" aria-label={aria} aria-valuemin={0} aria-valuemax={Math.max(max, Math.floor(real))} aria-valuenow={Math.floor(real)}>
         <span ref={ghost} className={s.ghost} />
         <span ref={fill} className={s.fill} style={{ transform: `scaleX(${pct})` }}>
           {regen && <span className={s.sheen} />}
@@ -124,9 +127,9 @@ function EnergyBarView({
       {(labelOn || onTopUp) && (
         <span className={s.meta}>
           {labelOn && (
-            <span className={s.label}>
+            <span className={s.label} title={real > max ? "Topped up past the maximum for today" : undefined}>
               <BoltIcon width={11} height={11} />
-              {Math.floor(cur)} / {max}
+              {Math.floor(real)} / {max}
             </span>
           )}
           {onTopUp && (

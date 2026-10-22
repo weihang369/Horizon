@@ -64,7 +64,9 @@ export type LookTab = (typeof LOOK_TABS)[number];
 /** CHR-06 AC2: selections compile into one editable sentence. */
 export function compileSummary(a: Appearance["attributes"], role: string): string {
   const band = AGE_BANDS.find((b) => b.value === a.body.ageBand)?.label.toLowerCase() ?? "adult";
-  const hair = [a.hair.length, a.hair.color, a.hair.style !== "straight" ? a.hair.style : "", "hair"].filter(Boolean).join(" ");
+  // U-73: "chin black hair" → "chin-length black hair" (the chips name a length, the summary needs the phrase).
+  const length = ({ buzz: "buzz-cut", chin: "chin-length", shoulder: "shoulder-length" } as Record<string, string>)[a.hair.length] ?? a.hair.length;
+  const hair = [length, a.hair.color, a.hair.style !== "straight" ? a.hair.style : "", "hair"].filter(Boolean).join(" ");
   const parts = [
     `${/^[aeiou]/i.test(band) ? "An" : "A"} ${band}${role ? ` ${role.toLowerCase()}` : ""}`,
     `${a.body.build} build`,

@@ -45,3 +45,13 @@ def test_the_new_judges_are_in_the_bank_and_locked() -> None:
 def test_no_item_copies_a_bank_phrase() -> None:
     rows = [r for qid in SETS for r in load_dataset(DATASETS / "judges" / f"{qid}.jsonl")]
     assert overlap_problems(rows) == []
+
+
+def test_a_conversation_item_keeps_its_units_split_and_others_follow_the_hash_rule() -> None:
+    """v1 test stage: `eval overlap` reported M15's 51 conversation items as wrong (CI never got that far on dev)."""
+    from horizon.evals.datachecks import split_for, split_problems
+
+    rid = "judge_x-real-conv-a-1"
+    other = "test" if split_for(rid) == "dev" else "dev"
+    assert split_problems([{"id": rid, "split": other, "source": "conversations:a#1:naive"}]) == []
+    assert split_problems([{"id": rid, "split": other, "source": "planted:x"}]) != []

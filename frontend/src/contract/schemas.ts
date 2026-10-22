@@ -53,6 +53,7 @@ const ModelSetSchema = so({ chat: z.string(), decision: z.string(), image: z.str
 const unit = z.number().min(0).max(1);
 export const AppSettingsSchema = so({
   openRouterKeyStatus: z.enum(["missing", "set", "invalid"]),
+  openRouterKeySource: z.enum(["env", "app"]).optional(),
   demoMode: z.boolean(),
   models: ModelSetSchema,
   modelOverrides: ModelSetSchema.partial().optional(),
@@ -233,6 +234,7 @@ export const VerdictSchema = so({
   strongerCase: SideSchema.nullable().optional(),
   scoresBy: z.enum(["side", "debater"]).optional(),
   scores: z.array(so({ subjectId: z.string(), criterionId: z.string(), value: z.number().min(0).max(10) })).optional(),
+  margin: z.number().min(0).max(10).optional(),
   summary: z.array(so({ subjectId: z.string(), points: z.array(z.string()) })),
   keyDisagreement: z.string().optional(),
   rationale: z.string().optional(),
@@ -287,7 +289,7 @@ export const System1RowSchema = so({
   purpose: z.string().min(1), id: z.string().min(1), version: z.number().int().positive(), label: z.string().min(1),
   about: z.string().regex(ID_RE).optional(), answer: z.string(), p: unit.optional(), confidence: unit.optional(),
   compared: z.array(so({ name: z.string().min(1), value: z.number(), threshold: z.number() })).optional(),
-  result: z.enum(["used", "below_threshold", "fallback", "not_used", "shown_only"]),
+  result: z.enum(["used", "below_threshold", "fallback", "not_used", "shown_only", "skipped"]),
   action: z.string().optional(),
 }) satisfies z.ZodType<System1Row>;
 export const TurnSystem1Schema = so({
@@ -307,14 +309,15 @@ export const TurnTraceSchema = so({
   }).optional(),
   routing: so({
     question: z.string().optional(), selected: z.string(),
-    forcedBy: z.enum(["user_ask", "mention", "nudge", "round_order"]).optional(),
+    forcedBy: z.enum(["user_ask", "mention", "nudge", "round_order", "opening"]).optional(),
     candidates: z.array(so({ characterId: id("chr"), p: unit })).optional(),
     skipped: z.array(so({ characterId: id("chr"), reason: SkipReasonSchema })).optional(),
     reason: z.string().optional(),
   }).optional(),
   memory: so({
-    recalled: z.array(so({ memoryItemId: z.string(), text: z.string(), sourceSessionId: z.string().optional(), score: z.number().optional() })),
+    recalled: z.array(so({ memoryItemId: z.string(), text: z.string(), sourceSessionId: z.string().optional(), score: z.number().optional(), via: z.enum(["block", "recall"]).optional() })),
   }).optional(),
+  search: so({ vectorMs: z.number().min(0).optional(), rewriteMs: z.number().min(0).optional(), recallVectorMs: z.number().min(0).optional() }).optional(),
   knowledge: so({
     query: z.string().optional(),
     trigger: z.enum(["always", "tool_call", "gated"]).optional(),

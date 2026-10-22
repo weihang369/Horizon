@@ -101,3 +101,44 @@ async def test_key_guard_runs_before_sending() -> None:
         await call(rejected)
     assert e.value.code == "invalid_key"
     assert route.call_count == 0
+
+
+# ── Warm connections (v1 test stage: a fresh connection cost 600-950 ms one time in four) ──
+WARM = f"{BASE_URL}/v1/models/typesafe/jev-1.13/endpoints"
+
+
+@respx.mock
+async def test_warm_opens_pooled_connections_without_the_key_and_at_most_once_per_window() -> None:
+    from horizon.gateway.client import WARM_CONNECTIONS
+
+    route = respx.get(WARM).mock(return_value=httpx.Response(200, json={"data": {}}))
+    core = HttpCore(FakeKeys())
+    try:
+        await core.warm("/v1/models/typesafe/jev-1.13/endpoints")
+        assert route.call_count == WARM_CONNECTIONS
+        assert all("Authorization" not in c.request.headers for c in route.calls)
+        await core.warm("/v1/models/typesafe/jev-1.13/endpoints")   # opened again within the window: reused
+        assert route.call_count == WARM_CONNECTIONS
+    finally:
+        await core.aclose()
+
+
+@respx.mock
+async def test_warm_sends_nothing_without_a_key_and_ignores_failures() -> None:
+    route = respx.get(WARM).mock(side_effect=httpx.ConnectError("down"))
+    offline = HttpCore(FakeKeys(None))
+    await offline.warm("/v1/models/typesafe/jev-1.13/endpoints")
+    assert route.call_count == 0                                 # no key: the app makes no outbound call at all
+    failing = HttpCore(FakeKeys())
+    await failing.warm("/v1/models/typesafe/jev-1.13/endpoints")   # errors are swallowed: a turn opens its own
+    assert route.call_count > 0
+    await offline.aclose()
+    await failing.aclose()
+
+
+async def test_warm_never_touches_an_injected_transport() -> None:
+    seen: list[httpx.Request] = []
+    core = HttpCore(FakeKeys(), transport=httpx.MockTransport(lambda r: seen.append(r) or httpx.Response(200)))
+    await core.warm("/v1/models/typesafe/jev-1.13/endpoints")
+    await core.aclose()
+    assert seen == []                                            # the fake provider and the probe's deny transport

@@ -1,4 +1,4 @@
-// Energy + cost maths (ENG-01..06, doc 05 §8). Owner: EE.
+// Energy + cost maths (ENG-01..06; the worked example was doc 05 §8 before the seed was recorded). Owner: EE.
 import { describe, expect, it } from "vitest";
 import { PRICING } from "../mock/pricing.config";
 import { chatCostUsd, chatEnergy } from "./cost";
@@ -8,7 +8,7 @@ const H = 3600_000;
 const T0 = Date.parse("2026-10-01T00:00:00Z");
 
 describe("energy", () => {
-  it("doc 05 §8: 2,000 uncached + 7,800 cached + 168 out ≈ $0.00042 → 5 ⚡", () => {
+  it("worked example: 2,000 uncached + 7,800 cached + 168 out ≈ $0.00042 → 5 ⚡", () => {
     const usage = { tokensIn: 9800, tokensCached: 7800, tokensOut: 168 };
     expect(chatCostUsd(usage, PRICING.chat, "off_peak")).toBeCloseTo(0.000424, 6);
     expect(chatEnergy(usage, PRICING.chat, "off_peak")).toBe(5);

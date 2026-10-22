@@ -60,7 +60,8 @@ export function ProfileStep() {
   };
   const regenProps = (field: ProfileField) => ({
     onRegenerate: () => regenerate(field),
-    regenerateLabel: `Regenerate ${field}`,
+    regenerateLabel: `Regenerate ${field} with AI`,
+    regenerateText: "AI rewrite",
     edited: edited.has(field),
     readOnly: regen?.field === field,
   });

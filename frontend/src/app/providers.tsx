@@ -21,6 +21,17 @@ function applyDeepLink(): void {
   if (sp === 1 || sp === 2 || sp === 4) mockDev.setSpeed(sp);
 }
 
+/** U-73: the job-done toast in words ("Aiko: AI rewrite ready."), not the job's kind ("profile regenerate ready."). */
+const JOB_DONE: Record<string, string> = {
+  profile_draft: "profile draft",
+  profile_regenerate: "AI rewrite",
+  portrait_candidates: "portrait candidates",
+  portrait_tweak: "portrait tweak",
+  emotion_set: "faces",
+  emotion_regenerate: "new face",
+  song: "theme song",
+};
+
 export function useAppBoot(): void {
   useEffect(() => {
     const stopRouter = startRouter();
@@ -37,10 +48,14 @@ export function useAppBoot(): void {
         case "budget.reached":
           openOverlay("O21", { scope: e.scope, spentUsd: e.spentUsd, capUsd: e.capUsd, sessionId: e.sessionId });
           break;
-        case "job.done":
-          if (e.job.status === "succeeded") toast({ variant: "success", text: `${e.characterName ? `${e.characterName}: ` : ""}${e.job.kind.replace(/_/g, " ")} ready.` });
-          else if (e.job.status === "partial" || e.job.status === "failed") toast({ variant: e.job.status === "failed" ? "error" : "warn", text: `${e.characterName ? `${e.characterName}: ` : ""}${e.job.kind.replace(/_/g, " ")} ${e.job.status}.` });
+        case "job.done": {
+          const who = e.characterName ? `${e.characterName}: ` : "";
+          const what = JOB_DONE[e.job.kind] ?? e.job.kind.replace(/_/g, " ");
+          if (e.job.status === "succeeded") toast({ variant: "success", text: `${who}${what} ready.` });
+          else if (e.job.status === "partial") toast({ variant: "warn", text: `${who}${what} partly done: retry what failed.` });
+          else if (e.job.status === "failed") toast({ variant: "error", text: `${who}${what} failed.` });
           break;
+        }
         case "error":
           toast({ variant: "error", text: e.error.message });
           break;

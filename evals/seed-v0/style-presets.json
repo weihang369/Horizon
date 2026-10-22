@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "data": [
+    {
+      "id": "style_horizon_anime",
+      "version": 1,
+      "promptFragment": "Modern Japanese anime illustration, clean confident line art, soft cel shading with subtle gradients, bright saturated but natural colours, expressive eyes with glossy highlights, fashionable contemporary clothing with fabric detail, slice-of-life romantic-comedy aesthetic, adult character with adult proportions, waist-up portrait, plain background.",
+      "referenceImageUrls": []
+    }
+  ]
+}

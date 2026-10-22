@@ -13,6 +13,8 @@ export interface Prefs {
   seenOnboarding: boolean;
   /** Replay gap trim (Lead ruling: on by default, can be switched off). */
   replayTrimGaps: boolean;
+  /** The Insight drawer's width in px, dragged on its left edge (U-30); clamped to the window when shown. */
+  insightWidth: number;
 }
 
 export const PREFS_KEY = "horizon.prefs.v1";
@@ -23,6 +25,7 @@ export const DEFAULT_PREFS: Prefs = {
   presenterMode: false,
   seenOnboarding: false,
   replayTrimGaps: true,
+  insightWidth: 400,
 };
 
 function read(): Prefs {

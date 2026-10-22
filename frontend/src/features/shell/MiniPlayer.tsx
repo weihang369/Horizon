@@ -26,7 +26,9 @@ export function MiniPlayer() {
   if (st.blocked || !st.unlocked) {
     return (
       <div className={s.player} data-state="blocked">
-        <button type="button" className={s.main} onClick={() => void audio.unlock()} aria-label="Enable audio">
+        {/* Its own key: the app's first-pointerdown unlock flips this chip to the "Now playing" button mid-click; a reused
+            node would take that click and open the volume popover (U-22). A new node lets the click land on neither. */}
+        <button key="enable" type="button" className={s.main} onClick={() => void audio.unlock()} aria-label="Enable audio">
           <span className={s.play} aria-hidden="true">▶</span>
           <span className={s.label}>{st.blocked ? "Enable audio" : st.track ? `♪ ${label}` : "Audio off"}</span>
           {st.track?.procedural && <span className={s.sketch}>SKETCH</span>}
@@ -38,6 +40,7 @@ export function MiniPlayer() {
   return (
     <div className={s.player} data-state={playing ? "playing" : "idle"}>
       <button
+        key="open"
         type="button"
         className={s.main}
         aria-haspopup="dialog"

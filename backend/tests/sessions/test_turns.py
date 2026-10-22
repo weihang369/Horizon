@@ -84,6 +84,27 @@ async def test_turn_order_trace_ownership_drain_and_citations(api: Api) -> None:
     await assert_reduces(api, sid)
 
 
+async def test_a_cited_reply_announces_its_source(api: Api) -> None:
+    """U-79: a source's citedCount is read from message_citations, so the turn that writes them announces the source;
+    without it the Knowledge tab kept the count it loaded before the chat."""
+    async def cited() -> int:
+        return int(next(s for s in await api.json(f"{API}/characters/chr_seedAmara/knowledge")
+                        if s["id"] == "kno_seedAmara1").get("citedCount", 0))
+
+    sid = await _one_on_one(api)
+    api.rt.ai.override("turn", FixedEngine(api))
+    before = await cited()
+    sub = api.rt.bus.subscribe("global")
+    await command(api, sid, "send", {"text": "What does the review say?"})
+    await api.drive(10000)
+    seen = []
+    while not sub.queue.empty():
+        seen.append(sub.queue.get_nowait())
+    knowledge = [e for e in seen if e.get("type") == "entity.changed" and e.get("kind") == "knowledge"]
+    assert knowledge == [{"type": "entity.changed", "kind": "knowledge", "id": "kno_seedAmara1", "worldId": "wld_seedMeridian"}]
+    assert await cited() == before + 1
+
+
 async def test_blocked_reply_is_scrubbed(api: Api) -> None:
     sid = await _one_on_one(api)
 

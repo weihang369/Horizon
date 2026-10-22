@@ -259,3 +259,14 @@
   position: relative;
 }
 .actions::before { content: ""; position: absolute; right: 0; top: -2px; width: 260px; height: 2px; background: var(--horizon-500); }
+
+/* U-61: each side's mean and the lead a win needs, under the bars */
+.totals {
+  margin: 10px 0 0;
+  font: 500 13px/1.3 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--paper-100);
+  text-align: center;
+  animation: hz-fade-in var(--t-base) linear var(--d, 0ms) both;
+}
+.totals span { color: var(--paper-300); }

@@ -16,12 +16,14 @@ completion marker from `horizon models fetch`, D5) or `ready`.
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import importlib.util
 import json
 import math
 import os
 import subprocess
 import sys
+import threading
 import uuid
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
@@ -51,11 +53,14 @@ class ConversionError(Exception):
         self.message = message
 
 
+Progress = Callable[[int, int], None]   # (pages done, pages in all)
+
+
 class DocumentConverter(Protocol):
     name: str
 
     def ready(self) -> bool: ...
-    async def convert(self, path: Path, kind: str, *, title: str) -> ConvertedDoc: ...
+    async def convert(self, path: Path, kind: str, *, title: str, on_progress: Progress | None = None) -> ConvertedDoc: ...
 
 
 def readiness(models_dir: Path) -> Readiness:
@@ -94,7 +99,7 @@ class ScriptedConverter:
     def ready(self) -> bool:
         return True
 
-    async def convert(self, path: Path, kind: str, *, title: str) -> ConvertedDoc:
+    async def convert(self, path: Path, kind: str, *, title: str, on_progress: Progress | None = None) -> ConvertedDoc:
         if kind not in ("pdf", "docx"):
             return await read_plain(path)
         if self.sleep is not None:
@@ -122,9 +127,12 @@ def _popen_kwargs() -> dict[str, Any]:
 
 class DoclingConverter:
     """Docling in a subprocess (design D4): one document at a time (the caller holds `docling_slots`), offline, at
-    below-normal priority, bounded by `timeout_s`, killed on cancel. The worker writes Markdown with page markers to
-    a temporary file and prints one JSON line (`{"ok": true, "pages": N}` or `{"ok": false, "reason", "error"}`).
-    `command` replaces the worker command line in tests (a stub process, no Docling needed)."""
+    below-normal priority, killed on cancel. The worker writes Markdown with page markers to a temporary file; on
+    stdout it prints `{"progress": done, "pages": N}` after each batch of pages, then one result line
+    (`{"ok": true, "pages": N}` or `{"ok": false, "reason", "error"}`). `timeout_s` bounds the wait for the NEXT
+    line, not the whole document (U-80): a 19-page PDF took 4 minutes on a laptop CPU, so a fixed 600 s total failed
+    every PDF past about 45 pages while it was still reading. `command` replaces the worker command line in tests (a
+    stub process, no Docling needed)."""
 
     name = "naive"
 
@@ -141,19 +149,28 @@ class DoclingConverter:
         return [sys.executable, "-m", "horizon.ai.docling_worker", "--in", str(src), "--out", str(out),
                 "--models", str(self.models_dir), "--max-pages", str(MAX_PAGES), "--parent", str(os.getpid())]
 
-    async def convert(self, path: Path, kind: str, *, title: str) -> ConvertedDoc:
+    async def convert(self, path: Path, kind: str, *, title: str, on_progress: Progress | None = None) -> ConvertedDoc:
         if kind not in ("pdf", "docx"):
             return await read_plain(path)
         out = path.with_name(f".convert-{uuid.uuid4().hex}.md.tmp")
         env = {**os.environ, "HF_HUB_OFFLINE": "1", "TRANSFORMERS_OFFLINE": "1",
                "OMP_NUM_THREADS": str(min(4, os.cpu_count() or 1)), "PYTHONIOENCODING": "utf-8"}
         proc = await asyncio.to_thread(_spawn, self.command(path, out), env)
+        lines: asyncio.Queue[str | None] = asyncio.Queue()
+        _pump(proc, asyncio.get_running_loop(), lines)
         try:
-            try:
-                stdout, _stderr = await asyncio.wait_for(asyncio.to_thread(proc.communicate), self.timeout_s)
-            except TimeoutError as e:
-                raise ConversionError("timeout", "Reading this document took too long. Try a smaller file, or Retry.") from e
-            result = _result(stdout)
+            result: dict[str, Any] | None = None
+            while (line := await self._next(lines)) is not None:
+                obj = _json_line(line)
+                if obj is None:
+                    continue
+                if "progress" in obj:
+                    if on_progress is not None:
+                        on_progress(int(obj["progress"]), int(obj.get("pages") or 0))
+                    continue
+                result = obj
+            if result is None:
+                result = {"ok": False, "reason": "unreadable", "error": "Couldn't read this document."}
             if not result.get("ok"):
                 reason = str(result.get("reason") or "unreadable")
                 raise ConversionError(reason, str(result.get("error") or "Couldn't read this document."))
@@ -165,20 +182,49 @@ class DoclingConverter:
             await asyncio.shield(asyncio.to_thread(_reap, proc))
             await asyncio.to_thread(out.unlink, True)
 
+    async def _next(self, lines: asyncio.Queue[str | None]) -> str | None:
+        try:
+            return await asyncio.wait_for(lines.get(), self.timeout_s)
+        except TimeoutError as e:
+            raise ConversionError("timeout", "Reading this document took too long. Try a smaller file, or Retry.") from e
+
 
 def _spawn(cmd: list[str], env: dict[str, str]) -> subprocess.Popen[bytes]:
     return subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env, **_popen_kwargs())
 
 
-def _result(stdout: bytes) -> dict[str, Any]:
-    for line in reversed(stdout.decode("utf-8", "replace").strip().splitlines()):
+def _pump(proc: subprocess.Popen[bytes], loop: asyncio.AbstractEventLoop, lines: asyncio.Queue[str | None]) -> None:
+    """Two daemon threads: stdout's lines into `lines` (then None at its end); stderr read and dropped (Docling logs
+    a lot there, and a full pipe would stall the worker)."""
+    def put(item: str | None) -> None:
+        with contextlib.suppress(RuntimeError):   # the loop closed under a cancelled conversion
+            loop.call_soon_threadsafe(lines.put_nowait, item)
+
+    def out() -> None:
+        assert proc.stdout is not None
         try:
-            obj = json.loads(line)
-        except ValueError:
-            continue
-        if isinstance(obj, dict):
-            return obj
-    return {"ok": False, "reason": "unreadable", "error": "Couldn't read this document."}
+            for raw in iter(proc.stdout.readline, b""):
+                put(raw.decode("utf-8", "replace"))
+        except (OSError, ValueError):   # the pipe closed by _reap
+            pass
+        put(None)
+
+    def err() -> None:
+        assert proc.stderr is not None
+        with contextlib.suppress(OSError, ValueError):
+            for _ in iter(proc.stderr.readline, b""):
+                pass
+
+    threading.Thread(target=out, name="docling-stdout", daemon=True).start()
+    threading.Thread(target=err, name="docling-stderr", daemon=True).start()
+
+
+def _json_line(line: str) -> dict[str, Any] | None:
+    try:
+        obj = json.loads(line)
+    except ValueError:
+        return None
+    return obj if isinstance(obj, dict) else None
 
 
 def _reap(proc: subprocess.Popen[bytes]) -> None:
@@ -186,7 +232,7 @@ def _reap(proc: subprocess.Popen[bytes]) -> None:
     if proc.poll() is None:
         proc.kill()
     try:
-        proc.wait(timeout=10)   # `communicate()` (still running in its thread after a timeout) closes the pipes
+        proc.wait(timeout=10)
     except subprocess.TimeoutExpired:  # pragma: no cover - a kill that didn't take
         pass
 

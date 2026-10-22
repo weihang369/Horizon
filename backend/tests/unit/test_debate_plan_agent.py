@@ -82,7 +82,11 @@ async def test_one_candidate_asks_only_the_face() -> None:
     assert member.outcome == "single" and plan.member == A
     tp = plan.for_speaker(A)
     assert tp.emotion is not None and tp.emotion.face == "happy"
-    assert [r["id"] for r in tp.rows] == ["emotion_line"]
+    assert [r["id"] for r in tp.rows if r["result"] != "skipped"] == ["emotion_line"]
+    # U-49: the questions this turn didn't ask are listed greyed, each with its reason
+    assert {r["id"]: r["action"] for r in tp.rows if r["result"] == "skipped"} == {
+        "docs": "skipped: no searchable documents", "earlier": "skipped: nothing earlier to search",
+        "unsafe_note": "skipped: no Interject this turn"}
     assert set(jev.states[0]) <= {"mode", "quoted_user", "quoted_cast", "quoted_latest", "quoted_recent"}
 
 

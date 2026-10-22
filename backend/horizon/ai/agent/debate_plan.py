@@ -19,7 +19,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any
 
 from horizon.ai.agent import gates
@@ -218,6 +218,9 @@ class JevDebateCall:
     async def faces(self, until: datetime) -> DebatePlan:
         """At the turn's start: the member as fixed, and the faces if Jev's answer has landed (else fallbacks)."""
         fixed = self.fixed or await self.member(until)
+        waited = gates.plan_wait(self.steps.deps, 0.0, bool(self.gated))   # U-46: the gate is waited for, not dropped
+        if waited:
+            until = max(until, self.req.started_at + timedelta(seconds=waited))
         try:
             res, meta = await self.read(until)
         except asyncio.CancelledError:

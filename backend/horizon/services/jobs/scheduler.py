@@ -137,10 +137,10 @@ class JobScheduler:
                     .mappings().all())
 
     # ── estimate / start ──
-    def plan(self, job_input: Mapping[str, Any]) -> plans.JobPlan:
+    def plan(self, job_input: Mapping[str, Any], *, needs_blink: bool = False) -> plans.JobPlan:
         try:
             return plans.plan(job_input, lean=self.lean(), prices=self.rt.prices.generation, timing=self.timing,
-                              song_paid=self.song_paid())
+                              song_paid=self.song_paid(), needs_blink=needs_blink)
         except ValueError as e:
             raise validation(str(e), {"field": "kind"}) from e
 
@@ -151,7 +151,19 @@ class JobScheduler:
     async def estimate(self, job_input: Mapping[str, Any]) -> float:
         async with self.rt.db.read() as conn:
             await self._live(conn, str(job_input["characterId"]))
-        return self.plan(job_input).estimate
+            needs_blink = await self._needs_blink(conn, job_input)
+        return self.plan(job_input, needs_blink=needs_blink).estimate
+
+    @staticmethod
+    async def _needs_blink(conn: AsyncConnection, job_input: Mapping[str, Any]) -> bool:
+        """D-108: an emotion_regenerate also makes the blink when the character has none yet."""
+        if job_input.get("kind") != "emotion_regenerate":
+            return False
+        a = t.image_assets.c
+        found = (await conn.execute(select(a.id).where(and_(
+            a.character_id == str(job_input["characterId"]), a.kind == "emotion", a.variant == "blink",
+            a.is_active.is_(True))).limit(1))).first()
+        return found is None
 
     @staticmethod
     async def _live(conn: AsyncConnection, character_id: str) -> Any:
@@ -181,9 +193,10 @@ class JobScheduler:
             ch = await self._live(conn, cid)
             await self._check_base(conn, ch, str(job_input["kind"]))
             active = (await conn.execute(select(J.id).where(and_(J.character_id == cid, J.status.in_(ACTIVE))))).first()
+            needs_blink = await self._needs_blink(conn, job_input)
         if active is not None:
             raise conflict("This character already has a generation job running.", {"activeJobId": active[0]})
-        plan = self.plan(job_input)
+        plan = self.plan(job_input, needs_blink=needs_blink)
         await self._check_prompt(ch, job_input, plan)   # M14 (safety D17): before any hold or row
         job_id = new_id("job")
         await self._reserve(ch, job_id, plan.estimate, existing=False)

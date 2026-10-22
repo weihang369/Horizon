@@ -11,7 +11,8 @@ const r2 = (p: number) => Math.round(p * 100) / 100;
 
 export function EmotionBody({ emotion: e, armed, manual }: { emotion: TraceEmotion; armed: boolean; manual: boolean }) {
   const { cands, kept } = emotionView(e);
-  const band = cands[0] && !kept ? probBand(r2(cands[0].p)) : null;
+  const shown = cands.find((x) => x.label === e.chosen);   // the band describes the face shown, not the top bar
+  const band = shown && !kept ? probBand(r2(shown.p)) : null;
   return (
     <>
       <p className={s.chosen}><span className={s.chosenIcon} aria-hidden="true">{emotionMeta[e.chosen].icon}</span>{emotionMeta[e.chosen].label}{band && <span className={cx(s.band, s[`band_${band}`])}>{band}</span>}</p>

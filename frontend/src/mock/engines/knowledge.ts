@@ -115,7 +115,18 @@ export async function acceptInput(h: KnowledgeHost, characterId: string, input: 
   const hashes = h.db.knowledgeHashes ?? {};
   const dup = existing.find((k) => hashes[k.id] === accepted.hash);
   if (dup) throw new HorizonError("conflict", `“${dup.title}” already has this content.`, { retryable: false, details: { existingSourceId: dup.id } });
+  if (accepted.type === "text") accepted = { ...accepted, title: numbered(accepted.title, new Set(existing.map((k) => k.title.toLowerCase()))) };
   return accepted;
+}
+
+/** U-80 (the backend's `numbered`): a pasted title the character already uses becomes "title (2)", "title (3)", … */
+export function numbered(title: string, taken: Set<string>): string {
+  if (!taken.has(title.toLowerCase())) return title;
+  for (let n = 2; ; n++) {
+    const suffix = ` (${n})`;
+    const candidate = title.slice(0, 200 - suffix.length) + suffix;
+    if (!taken.has(candidate.toLowerCase())) return candidate;
+  }
 }
 
 /** Create the `indexing` source and schedule its pipeline. */

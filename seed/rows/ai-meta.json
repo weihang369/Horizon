@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "data": [
+    {
+      "message_id": "msg_mockR02",
+      "rewrites": "{}",
+      "updated_at": "2026-09-26T11:30:17.630Z",
+      "safety": "{\"steer\":false,\"care\":false,\"pInput\":0.04,\"pCare\":0.02,\"at\":\"2026-09-26T11:30:17.630Z\",\"v\":{\"unsafe_request\":1,\"at_risk\":1}}"
+    },
+    {
+      "message_id": "msg_mockR04",
+      "rewrites": "{}",
+      "updated_at": "2026-09-26T11:30:41.970Z",
+      "safety": "{\"steer\":false,\"care\":false,\"pInput\":0.04,\"pCare\":0.03,\"at\":\"2026-09-26T11:30:41.970Z\",\"v\":{\"unsafe_request\":1,\"at_risk\":1}}"
+    },
+    {
+      "message_id": "msg_mockR06",
+      "rewrites": "{}",
+      "updated_at": "2026-09-26T11:31:00.703Z",
+      "safety": "{\"steer\":false,\"care\":false,\"pInput\":0.05,\"pCare\":0.02,\"at\":\"2026-09-26T11:31:00.703Z\",\"v\":{\"unsafe_request\":1,\"at_risk\":1}}"
+    },
+    {
+      "message_id": "msg_seedW06",
+      "rewrites": "{}",
+      "updated_at": "2026-09-27T02:40:17.435Z",
+      "safety": "{\"steer\":false,\"care\":null,\"pInput\":0.05,\"pCare\":null,\"at\":\"2026-09-27T02:40:17.435Z\",\"v\":{\"unsafe_note\":1}}"
+    },
+    {
+      "message_id": "msg_seedA02",
+      "rewrites": "{}",
+      "updated_at": "2026-09-29T21:14:11.282Z",
+      "safety": "{\"steer\":false,\"care\":false,\"pInput\":0.04,\"pCare\":0.03,\"at\":\"2026-09-29T21:14:11.282Z\",\"v\":{\"unsafe_request\":1,\"at_risk\":1}}"
+    },
+    {
+      "message_id": "msg_seedA04",
+      "rewrites": "{\"chr_seedAmara\":{\"text\":\"caffeine withdrawal headache duration temples\",\"at\":\"2026-09-29T21:14:33.384Z\"}}",
+      "updated_at": "2026-09-29T21:14:33.384Z",
+      "safety": "{\"steer\":false,\"care\":false,\"pInput\":0.03,\"pCare\":0.02,\"at\":\"2026-09-29T21:14:33.380Z\",\"v\":{\"unsafe_request\":1,\"at_risk\":1}}"
+    },
+    {
+      "message_id": "msg_seedA06",
+      "rewrites": "{\"chr_seedAmara\":{\"text\":\"caffeine withdrawal headache red flag symptoms duration taper\",\"at\":\"2026-09-29T21:14:55.365Z\"}}",
+      "updated_at": "2026-09-29T21:14:55.365Z",
+      "safety": "{\"steer\":false,\"care\":false,\"pInput\":0.05,\"pCare\":0.02,\"at\":\"2026-09-29T21:14:55.365Z\",\"v\":{\"unsafe_request\":1,\"at_risk\":1}}"
+    },
+    {
+      "message_id": "msg_seedA08",
+      "rewrites": "{}",
+      "updated_at": "2026-09-29T21:15:17.201Z",
+      "safety": "{\"steer\":false,\"care\":false,\"pInput\":0.04,\"pCare\":0.02,\"at\":\"2026-09-29T21:15:17.201Z\",\"v\":{\"unsafe_request\":1,\"at_risk\":1}}"
+    },
+    {
+      "message_id": "msg_seedC01",
+      "rewrites": "{}",
+      "updated_at": "2026-09-30T10:30:16.083Z",
+      "safety": "{\"steer\":false,\"care\":false,\"pInput\":0.03,\"pCare\":0.02,\"at\":\"2026-09-30T10:30:16.083Z\",\"v\":{\"unsafe_request\":1,\"at_risk\":1}}"
+    },
+    {
+      "message_id": "msg_seedC03",
+      "rewrites": "{}",
+      "updated_at": "2026-09-30T10:30:40.802Z",
+      "safety": "{\"steer\":false,\"care\":false,\"pInput\":0.03,\"pCare\":0.02,\"at\":\"2026-09-30T10:30:40.802Z\",\"v\":{\"unsafe_request\":1,\"at_risk\":1}}"
+    },
+    {
+      "message_id": "msg_seedC06",
+      "rewrites": "{\"chr_seedHana\":{\"text\":\"grandma rule one new dish nobody tried family dinner\",\"at\":\"2026-09-30T10:31:09.976Z\"}}",
+      "updated_at": "2026-09-30T10:31:09.976Z",
+      "safety": "{\"steer\":false,\"care\":false,\"pInput\":0.03,\"pCare\":0.02,\"at\":\"2026-09-30T10:31:07.610Z\",\"v\":{\"unsafe_request\":1,\"at_risk\":1}}"
+    },
+    {
+      "message_id": "msg_seedC08",
+      "rewrites": "{}",
+      "updated_at": "2026-09-30T10:31:27.653Z",
+      "safety": "{\"steer\":false,\"care\":false,\"pInput\":0.03,\"pCare\":0.02,\"at\":\"2026-09-30T10:31:27.653Z\",\"v\":{\"unsafe_request\":1,\"at_risk\":1}}"
+    },
+    {
+      "message_id": "msg_seedH02",
+      "rewrites": "{}",
+      "updated_at": "2026-09-30T19:02:21.558Z",
+      "safety": "{\"steer\":false,\"care\":false,\"pInput\":0.03,\"pCare\":0.03,\"at\":\"2026-09-30T19:02:21.558Z\",\"v\":{\"unsafe_request\":1,\"at_risk\":1}}"
+    },
+    {
+      "message_id": "msg_seedH04",
+      "rewrites": "{}",
+      "updated_at": "2026-09-30T19:02:42.833Z",
+      "safety": "{\"steer\":false,\"care\":false,\"pInput\":0.04,\"pCare\":0.03,\"at\":\"2026-09-30T19:02:42.833Z\",\"v\":{\"unsafe_request\":1,\"at_risk\":1}}"
+    },
+    {
+      "message_id": "msg_seedH06",
+      "rewrites": "{}",
+      "updated_at": "2026-09-30T19:03:11.813Z",
+      "safety": "{\"steer\":false,\"care\":false,\"pInput\":0.04,\"pCare\":0.04,\"at\":\"2026-09-30T19:03:11.813Z\",\"v\":{\"unsafe_request\":1,\"at_risk\":1}}"
+    },
+    {
+      "message_id": "msg_seedH08",
+      "rewrites": "{}",
+      "updated_at": "2026-09-30T19:03:29.183Z",
+      "safety": "{\"steer\":false,\"care\":false,\"pInput\":0.05,\"pCare\":0.02,\"at\":\"2026-09-30T19:03:29.183Z\",\"v\":{\"unsafe_request\":1,\"at_risk\":1}}"
+    },
+    {
+      "message_id": "msg_seedD06",
+      "rewrites": "{}",
+      "updated_at": "2026-10-01T09:58:32.195Z",
+      "safety": "{\"steer\":false,\"care\":null,\"pInput\":0.04,\"pCare\":null,\"at\":\"2026-10-01T09:58:32.195Z\",\"v\":{\"unsafe_note\":1}}"
+    },
+    {
+      "message_id": "msg_seedD07",
+      "rewrites": "{}",
+      "updated_at": "2026-10-01T09:58:21.396Z",
+      "safety": "{\"steer\":false,\"care\":null,\"pInput\":0.04,\"pCare\":null,\"at\":\"2026-10-01T09:58:21.396Z\",\"v\":{\"unsafe_request\":1}}"
+    }
+  ]
+}

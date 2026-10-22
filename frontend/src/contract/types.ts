@@ -30,6 +30,9 @@ export type Side = "prop" | "opp";
 export interface ModelSet { chat: string; decision: string; image: string; music: string; embedding: string }
 export interface AppSettings {
   openRouterKeyStatus: "missing" | "set" | "invalid";
+  /** Where the key comes from when there is one (D-106): `env` = OPENROUTER_API_KEY in the environment or .env, which
+   * Settings can't change; `app` = saved in Settings. Absent without a key (and on the MockClient). */
+  openRouterKeySource?: "env" | "app";
   demoMode: boolean;
   models: ModelSet;
   modelOverrides?: Partial<ModelSet>;
@@ -195,6 +198,8 @@ export interface Verdict {
   strongerCase?: Side | null;
   scoresBy?: "side" | "debater";
   scores?: { subjectId: string; criterionId: string; value: number }[];
+  /** U-61: the lead (0–10 scale) the stronger case needs over the other side's mean, when Jev scored. */
+  margin?: number;
   summary: { subjectId: string; points: string[] }[];
   keyDisagreement?: string;
   rationale?: string;
@@ -291,12 +296,15 @@ export interface TurnTrace {
   emotion?: { chosen: Emotion; source: EmotionSource; candidates?: { label: Emotion; p: number }[] };
   routing?: {
     question?: string; selected: string;
-    forcedBy?: "user_ask" | "mention" | "nudge" | "round_order";
+    forcedBy?: "user_ask" | "mention" | "nudge" | "round_order" | "opening";
     candidates?: { characterId: string; p: number }[];
     skipped?: { characterId: string; reason: "exhausted" | "muted" | "archived" }[];
     reason?: string;
   };
-  memory?: { recalled: { memoryItemId: string; text: string; sourceSessionId?: string; score?: number }[] };
+  /** `via` (U-58): "block" = in the prompt's memory list, "recall" = found by the recall search (with Jev's score). */
+  memory?: { recalled: { memoryItemId: string; text: string; sourceSessionId?: string; score?: number; via?: "block" | "recall" }[] };
+  /** U-58: how long the turn's searches waited, in ms: the documents' query vector, the rewrite, recall's vector. */
+  search?: { vectorMs?: number; rewriteMs?: number; recallVectorMs?: number };
   /** Knowledge retrieval for this turn (D-59): every passage fetched, `cited` = it backs a `[n]` marker. */
   knowledge?: {
     query?: string;
@@ -342,7 +350,7 @@ export interface System1Row {
   confidence?: number;
   /** Every comparison code made, e.g. { name: "p_answers+p_partly", value: 0.81, threshold: 0.6 }. */
   compared?: { name: string; value: number; threshold: number }[];
-  result: "used" | "below_threshold" | "fallback" | "not_used" | "shown_only";
+  result: "used" | "below_threshold" | "fallback" | "not_used" | "shown_only" | "skipped";
   /** What code did, in a few words: "deep", "kept [1]", "no cue", "rewritten". */
   action?: string;
 }

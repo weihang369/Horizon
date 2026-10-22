@@ -120,6 +120,9 @@ async def test_storms_on_a_stored_debate_plan(api: Api) -> None:
     assert actor.mode.debate_plan is None
 
     # a fingerprint change: the moderator interjects after the plan is stored; the turn drops it and asks again
+    from tests.sessions.test_deep_m12 import measured_deadlines
+
+    measured_deadlines(api)          # D-113: with `docsWaitAll` on, the held plan would be waited for
     sid2 = await debate(api)
     release2 = api.rt.fake.park_question("emotion_line:")
     await first_rebuttal_end(api, sid2)

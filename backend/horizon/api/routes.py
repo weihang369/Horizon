@@ -19,6 +19,7 @@ from horizon.api.errors import HorizonHTTPError, validation
 from horizon.domain.clock import FrozenClock
 from horizon.domain.timeutil import parse_iso, to_iso
 from horizon.events.bus import GLOBAL
+from horizon.gateway.errors import ProviderError
 from horizon.runtime import Runtime
 from horizon.services import energy_writes, probes, reads
 from horizon.services import settings as settings_svc
@@ -66,7 +67,7 @@ def _dump(m: BaseModel | None) -> dict[str, Any] | None:
 async def settings_body(rt: Runtime) -> dict[str, Any]:
     async with rt.db.read() as conn:
         return await settings_svc.app_settings(conn, seed=rt.seed_settings, local=rt.local_settings(), clock=rt.clock,
-                                               key_status=rt.keys.status())
+                                               key_status=rt.keys.status(), key_source=rt.keys.source())
 
 
 @router.get("/settings")
@@ -143,9 +144,16 @@ class KeyBody(_Model):
 
 @router.put("/settings/key")
 async def put_settings_key(request: Request, body: KeyBody) -> Response:
-    """Format check only, no network (testConnection does that). PUT, so the body never reaches the idempotency store."""
+    """Format check, then one free GET /key (D-105): a 401 marks the key rejected (gateway core), so the answer already
+    reads `invalid`; any other failure keeps it `set` and the first call checks it. PUT, so the body never reaches the
+    idempotency store."""
     rt = rt_of(request)
     rt.keys.set_key(body.key)
+    if body.key is not None:
+        try:
+            await rt.gateway.meta.key_info()
+        except ProviderError:
+            pass
     return json_response(rt, await settings_body(rt), def_name="AppSettings")
 
 
@@ -206,6 +214,7 @@ async def delete_world(request: Request, world_id: str) -> Response:
     async with rt.db.write() as tx:
         await worlds_svc.delete_world(tx, world_id, now=rt.now_iso())
     worlds_svc.remove_world_files(rt.cfg.data_dir, world_id)
+    rt.purge.notify()   # v1 test stage (audit 01-06): the queued purge ran only at the next restart before
     return Response(status_code=204)
 
 

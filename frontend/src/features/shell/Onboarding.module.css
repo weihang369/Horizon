@@ -182,7 +182,6 @@
   clip-path: var(--clip-card);
   border: 6px solid var(--paper-50);
 }
-.placeholderTape { position: absolute; left: 10px; top: 12px; }
 .summon {
   position: absolute;
   left: -40px;

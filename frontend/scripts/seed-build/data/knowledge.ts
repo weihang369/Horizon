@@ -1,11 +1,15 @@
 // D-59 seed knowledge: sources + indexed passages (chunks). All fictional: Meridian and Sunny Hollow only.
 // Chunks are written to seed/knowledge/chunks/<sourceId>.json; citedCount is computed from the compiled sessions.
+// The real demo (v1 endgame): the full documents in ./knowledge-docs/ were uploaded and indexed in the app, and
+// `horizon demo export --knowledge` recorded them; a recorded source replaces the fixture with the same title (its id
+// stays the fixture's), with the app's real passages.
 import type { KnowledgeChunk, KnowledgeSource } from "../../../src/contract/types";
+import { RECORDED_KNOWLEDGE } from "../recorded";
 
 const MERIDIAN = "wld_seedMeridian";
 const SUNNY = "wld_seedSunnyHollow";
 
-export const KNOWLEDGE_SOURCES: KnowledgeSource[] = [
+const SCRIPTED_SOURCES: KnowledgeSource[] = [
   {
     id: "kno_seedAmara1", characterId: "chr_seedAmara", worldId: MERIDIAN, title: "Meridian Shift Fatigue Review 2025.pdf",
     type: "file", status: "indexed", bytes: 482_113, pages: 18, addedAt: "2026-09-18T08:40:00Z",
@@ -89,12 +93,39 @@ const PASSAGES: Record<string, { key: string; passages: Passage[] }> = {
 
 const pad2 = (n: number) => String(n).padStart(2, "0");
 
+/** Recorded source id or chunk id → its seed id (the recordings' citations are rewritten with it). */
+export const KNOWLEDGE_IDS: Record<string, string> = {};
+
+/** A title without its file extension: a recording matches its fixture by character and this (D-110: Mei's appendix
+ * is a real password-protected PDF now, where the fixture was a .docx the app could never have stored). */
+const stem = (title: string) => title.replace(/\.(pdf|docx|md|txt)$/i, "");
+
+/** Seed source id → its chunk-id key (`kch_<key><nn>`, `ksec_<key><nn>`). */
+export const KNOWLEDGE_KEYS: Record<string, string> = { kno_seedMei1: "meiAppendix" };
+
+export const KNOWLEDGE_SOURCES: KnowledgeSource[] = SCRIPTED_SOURCES.map((s) => {
+  const real = RECORDED_KNOWLEDGE?.find((r) => r.source.characterId === s.characterId && stem(r.source.title) === stem(s.title));
+  if (!real) return s;
+  KNOWLEDGE_IDS[real.source.id] = s.id;
+  // D-110: the recording owns everything but the id (title, type, size, pages, status, error, when it was added)
+  const { id: _id, chunks: _c, citedCount: _n, ...rest } = real.source;
+  return { ...rest, id: s.id };
+});
+
 /** Chunks by source id, ordered. Ids: kch_<key><nn>. */
 export const KNOWLEDGE_CHUNKS: Record<string, KnowledgeChunk[]> = Object.fromEntries(
-  Object.entries(PASSAGES).map(([sourceId, { key, passages }]) => [
-    sourceId,
-    passages.map(([locator, text], i) => ({ id: `kch_${key}${pad2(i + 1)}`, sourceId, index: i, locator, text })),
-  ]),
+  Object.entries(PASSAGES).map(([sourceId, { key, passages }]) => {
+    KNOWLEDGE_KEYS[sourceId] = key;
+    const real = RECORDED_KNOWLEDGE?.find((r) => KNOWLEDGE_IDS[r.source.id] === sourceId);
+    const rows: [string, string, string | undefined][] = real
+      ? [...real.chunks].sort((a, b) => a.index - b.index).map((c) => [c.locator ?? "", c.text, c.id])
+      : passages.map(([locator, text]) => [locator, text, undefined]);
+    return [sourceId, rows.map(([locator, text, recordedId], i) => {
+      const id = `kch_${key}${pad2(i + 1)}`;
+      if (recordedId) KNOWLEDGE_IDS[recordedId] = id;
+      return { id, sourceId, index: i, locator, text };
+    })];
+  }),
 );
 
 export const CHUNK_BY_ID: Record<string, { chunk: KnowledgeChunk; source: KnowledgeSource }> = Object.fromEntries(

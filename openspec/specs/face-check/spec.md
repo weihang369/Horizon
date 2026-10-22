@@ -2,14 +2,17 @@
 
 ## Purpose
 The live face-and-words check: after a reply ends, Jev reads only its words and says which emotion they show, and
-Insight records whether that agrees with the face shown. It is display only and never changes the face.
+Insight records whether that agrees with the face shown. On a clash it switches the face to what the words show
+(D-112); any other answer is display only.
 
 ## Requirements
 
 ### Requirement: When the face check runs
 Under `agent`, after `turn.end` of a completed reply that was in AUTO mode at its `turn.start` and whose face is not
 `neutral`, the runtime SHALL start one face-check task for the session. It SHALL be skipped for MANUAL, neutral,
-blocked, interrupted and failed replies, and for a verbatim greeting. `naive` SHALL have no check.
+blocked, interrupted and failed replies, and for a verbatim greeting. `naive` SHALL have no check. Under `agent`, a
+MANUAL or neutral reply SHALL instead gain a `skipped` row saying why ("skipped: manual emotions", "skipped: neutral
+face"), so every reply lists the check (U-49).
 
 #### Scenario: Non-neutral AUTO reply
 - **WHEN** an `agent` 1:1 reply completes with face `sad` in AUTO mode
@@ -17,7 +20,7 @@ blocked, interrupted and failed replies, and for a verbatim greeting. `naive` SH
 
 #### Scenario: Neutral reply
 - **WHEN** an `agent` reply completes with face `neutral`
-- **THEN** no `face_check` request is sent
+- **THEN** no `face_check` request is sent, and the trace gains the row result `skipped`, action "skipped: neutral face"
 
 #### Scenario: Switched to MANUAL mid-reply
 - **WHEN** a reply started in MANUAL mode and the user switched to AUTO before it ended
@@ -45,14 +48,31 @@ the face shown.
 - **WHEN** the reply's face is `happy` and Jev picks `angry`
 - **THEN** the row's answer is `clash`
 
-### Requirement: The face check never changes the face
-The face check SHALL never emit an `emotion` or `reaction` event. A late, failed or refused check SHALL add no row and
-SHALL never pause the session or emit an `error` event. Its spend SHALL count toward the daily cap as decision spend
-and SHALL never drain energy.
+### Requirement: A clash switches the face
+On a `clash` (D-112, the user's choice of 2026-10-22, U-54, reversing the display-only rule of turn-plan-emotion D24 for clashes only) the runtime SHALL emit
+one `emotion` event for the reply (its message ID, the speaker, the words' emotion, source `classifier`), checked under
+the writer lock: the session is active and AUTO, the speaker still shows the reply's face, and they haven't started or
+made a newer line. The row SHALL then be `used` with action "face switched to {emotion}"; when the check fails, the row
+SHALL keep result `shown_only` with action "not switched: the face had already changed". Any answer other than a clash
+SHALL never change the face. The face check SHALL never emit a `reaction` event.
+
+#### Scenario: Clash switched
+- **WHEN** a reply's face is `happy`, Jev reads `angry`, and nothing has moved the face since
+- **THEN** an `emotion` event sets the reply's face to `angry`, and its row is `used`, action "face switched to angry"
+
+#### Scenario: Changed since
+- **WHEN** the user switched to MANUAL before the clash arrived
+- **THEN** no `emotion` event is emitted and the row's action is "not switched: the face had already changed"
+
+### Requirement: A failed check changes nothing
+A late, failed or refused check SHALL add only a `skipped` row, action "skipped: no answer in time" (U-49), and SHALL
+never change the face, pause the session or emit an `error` event. Its spend SHALL count toward the daily cap as
+decision spend and SHALL never drain energy.
 
 #### Scenario: Failed check
 - **WHEN** the `face_check` request fails
-- **THEN** the reply's trace and face are unchanged, and no `error` or `session.paused` event is emitted
+- **THEN** the reply's face is unchanged, its trace gains the `skipped` row, and no `error` or `session.paused` event is
+  emitted
 
 ### Requirement: Cancelling the face check
 `clear()` (Stop, leave, a cap pause, the session's end) SHALL cancel a pending face check, and no row SHALL be added

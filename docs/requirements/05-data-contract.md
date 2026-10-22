@@ -89,6 +89,7 @@ type DebatePhase = "setup" | "opening" | "rebuttal" | "closing" | "verdict" | "e
 ```ts
 AppSettings {
   openRouterKeyStatus: "missing" | "set" | "invalid";   // the key itself is NEVER sent to the frontend
+  openRouterKeySource?: "env" | "app";   // D-106: OPENROUTER_API_KEY (.env) or saved in Settings; absent without a key
   demoMode: boolean;                                     // true when no key is set
   models: { chat: string; decision: string; image: string; music: string; embedding: string };  // config defaults (embedding: rev 1.3)
   modelOverrides?: Partial<AppSettings["models"]>;      // local, git-ignored
@@ -305,6 +306,7 @@ Verdict {
   strongerCase?: "prop" | "opp" | null;           // null = too close to call / panel / none
   scoresBy?: "side" | "debater";
   scores?: { subjectId: string; criterionId: string; value: number }[];   // long format, 0–10; optional
+  margin?: number;                // U-61: the lead (0–10) a side's mean needs to win, when Jev scored
   summary: { subjectId: string; points: string[] }[];
   keyDisagreement?: string;
   rationale?: string;
@@ -361,11 +363,13 @@ TurnTrace {
   energy?:   { characterId: string; spent: number; remaining: number; max: number };
   emotion?:  { chosen: Emotion; source: EmotionSource; candidates?: { label: Emotion; p: number }[] };
   routing?:  { question?: string; selected: string;
-               forcedBy?: "user_ask" | "mention" | "nudge" | "round_order";
+               forcedBy?: "user_ask" | "mention" | "nudge" | "round_order" | "opening";   // opening: U-55
                candidates?: { characterId: string; p: number }[];
                skipped?: { characterId: string; reason: "exhausted" | "muted" | "archived" }[];
                reason?: string };                 // only if an LLM produces one; Jev never does
-  memory?:   { recalled: { memoryItemId: string; text: string; sourceSessionId?: string; score?: number }[] };
+  memory?:   { recalled: { memoryItemId: string; text: string; sourceSessionId?: string; score?: number;
+                           via?: "block" | "recall" }[] };   // U-58: the prompt's memory list, or found by recall
+  search?:   { vectorMs?: number; rewriteMs?: number; recallVectorMs?: number };   // U-58: what the searches waited for
   knowledge?: { query?: string; trigger?: "always" | "tool_call" | "gated";            // D-59 (rev 1.2)
                 retrieved: { chunkId: string; sourceId: string; title: string; locator?: string;
                              text: string; score: number; cited: boolean; n?: number }[] };
@@ -388,7 +392,7 @@ TurnTrace {
       p?: number;                  // the answer's probability; a noul: always p(yes); absent on a fallback
       confidence?: number;         // a choice or score: Jev's confidence, which the floor is compared with (06 E1)
       compared?: { name: string; value: number; threshold: number }[];   // every comparison code made
-      result: "used" | "below_threshold" | "fallback" | "not_used" | "shown_only";
+      result: "used" | "below_threshold" | "fallback" | "not_used" | "shown_only" | "skipped";   // skipped: U-49, not asked
       action?: string;             // what code did, in a few words: "deep", "kept [1]", "no cue", "rewritten"
     }[];
   };
@@ -433,7 +437,7 @@ GenerationTask {
 - **New sources** are `"file"` (PDF, DOCX, MD, TXT; ≤ 10 MB, ≤ 300 pages) or `"text"` (pasted), with at most 20 per character. `"url"` is **legacy and read-only**: no command creates it.
 - **Status:** `indexing` → `indexed` (keyword and vector search) | `keyword_only` (keyword search only, because embedding was unavailable; `reindexKnowledge` upgrades it) | `failed` (`error` says why).
 - **Commands (rev 1.3):** `characters.addKnowledge(id, { file } | { type: "text", title, text })`, `deleteKnowledge(sourceId)` and `reindexKnowledge(sourceId)`. Progress arrives as `entity.changed { kind: "knowledge", id, progress: { stage: "extracting" | "chunking" | "embedding", pct } }`.
-- **Seed status:** the backend imports seed sources as `keyword_only` until the user runs "Index seed knowledge" (doc [backend/02](../backend/02-storage.md)). The MockClient shows them as `indexed`, so the public demo's citations look the same.
+- **Seed status:** the backend imports shipped sources `indexed`, with the vectors the real run made (D-110), when its active embedding space is the seed's; on another space they are `keyword_only` until the user's Index (doc [backend/02](../backend/02-storage.md)). The MockClient shows them as `indexed`.
 
 ### KnowledgeChunk (D-59, rev. 1.2)
 `{ id /*kch_…*/, sourceId, index, locator?, text }`. Read with `characters.knowledgeSource(sourceId) → { source, chunks }` for the O28 Source viewer. Chunking is AI-owned (OQ-AI-03); the UI only needs stable ids and a readable locator.
@@ -501,31 +505,129 @@ draft (wizard: seed → … → theme) ─→ review (APPROVE step) ─(Summon)�
 - Fixtures are validated against this contract (JSON Schema or zod generated from it).
 
 ## 8. Example: debate message (fixture form)
+*A real reply, recorded on the demo instance in the v1 test stage (2026-10-22, re-recorded on the story clock after the U-62 fixes, D-110) and shipped as seed message `msg_seedD08`: Mei answering the moderator's "give us a number" during the rebuttal round. `…` marks text shortened here; the trace shows its main parts (the shipped one also carries `search`, `knowledge`, `memory`, `calls`, `graph` and `system1`).*
 ```json
 {
-  "id": "msg_seedD08", "seq": 8, "sessionId": "ses_seedDebate4Day",
-  "author": { "type": "character", "characterId": "chr_seedMei" },
   "kind": "chat",
-  "content": "Honestly? Nobody can give you one reliable number…",
-  "status": "complete",
-  "emotion": "thinking", "emotionSource": "llm", "forcedSpeaker": true,
-  "debate": { "phase": "rebuttal", "round": 2, "iteration": 1, "side": "opp" },
-  "reactions": [
-    { "characterId": "chr_seedVictor", "emotion": "thinking", "p": 0.64, "at": "2026-10-01T10:03:20Z" },
-    { "characterId": "chr_seedAmara", "emotion": "thinking", "p": 0.58, "at": "2026-10-01T10:03:20Z" }
-  ],
-  "usage": { "tokensIn": 9800, "tokensCached": 7800, "tokensOut": 168, "costUsd": 0.00042, "energySpent": 5, "firstTokenMs": 1420, "totalMs": 5600 },
-  "trace": {
-    "model": { "id": "deepseek/deepseek-v4.1-flash", "provider": "DeepSeek", "pricePeriod": "off_peak",
-               "latencyMs": { "firstToken": 1420, "total": 5600 }, "tokensIn": 9800, "tokensCached": 7800, "tokensOut": 168, "costUsd": 0.00042 },
-    "energy": { "characterId": "chr_seedMei", "spent": 5, "remaining": 742, "max": 1000 },
-    "emotion": { "chosen": "thinking", "source": "llm", "candidates": [ { "label": "thinking", "p": 0.71 }, { "label": "neutral", "p": 0.18 } ] },
-    "routing": { "selected": "chr_seedMei", "forcedBy": "user_ask" },
-    "contextInSession": [ { "text": "R1: Mei: pilots were voluntary, self-selected firms", "messageId": "msg_seedD03" } ],
-    "context": { "budget": 12000, "cacheHitPct": 80,
-                 "used": { "system": 900, "persona": 700, "memory": 0, "knowledge": 0, "history": 6900, "user": 40, "mode": 580 } }
+  "forcedSpeaker": true,
+  "debate": {
+    "phase": "rebuttal",
+    "round": 2,
+    "iteration": 1,
+    "side": "opp"
   },
-  "createdAt": "2026-10-01T10:03:14Z"
+  "id": "msg_seedD08",
+  "sessionId": "ses_seedDebate4Day",
+  "seq": 8,
+  "author": {
+    "type": "character",
+    "characterId": "chr_seedMei"
+  },
+  "content": "Fine, a number, with error bars, since you asked. In the nine shift-based organisations where coverage was held constant, the extra staffed hours ran 18% to 27% [1]…",
+  "status": "complete",
+  "createdAt": "2026-10-01T09:58:29.249Z",
+  "emotion": "thinking",
+  "emotionSource": "classifier",
+  "usage": {
+    "tokensIn": 1859,
+    "tokensCached": 1024,
+    "tokensOut": 168,
+    "costUsd": 0.000151,
+    "energySpent": 2,
+    "firstTokenMs": 7852,
+    "totalMs": 9806
+  },
+  "citations": [
+    {
+      "n": 1,
+      "sourceId": "kno_seedMei2",
+      "title": "Four-day week pilot summaries",
+      "type": "file",
+      "chunkId": "kch_meiPilot07",
+      "locator": "p. 6",
+      "quote": "The nine were three private clinics, two call centres, two security firms, a…",
+      "score": 0.555
+    }
+  ],
+  "reactions": [
+    {
+      "characterId": "chr_seedVictor",
+      "emotion": "thinking",
+      "p": 0.74,
+      "at": "2026-10-01T09:58:32.179Z"
+    }
+  ],
+  "trace": {
+    "messageId": "msg_seedD08",
+    "model": {
+      "id": "deepseek/deepseek-v4.1-flash",
+      "provider": "Relace",
+      "pricePeriod": "peak",
+      "latencyMs": {
+        "firstToken": 7852,
+        "total": 9806
+      },
+      "tokensIn": 1859,
+      "tokensOut": 168,
+      "costUsd": 0.000151,
+      "tokensCached": 1024
+    },
+    "energy": {
+      "characterId": "chr_seedMei",
+      "spent": 2,
+      "remaining": 996,
+      "max": 1000
+    },
+    "emotion": {
+      "chosen": "thinking",
+      "source": "classifier",
+      "candidates": [
+        {
+          "label": "thinking",
+          "p": 0.54
+        },
+        {
+          "label": "neutral",
+          "p": 0.05
+        },
+        {
+          "label": "angry",
+          "p": 0.03
+        }
+      ]
+    },
+    "routing": {
+      "question": "Mei, give us a number. What does this cost?",
+      "selected": "chr_seedMei",
+      "forcedBy": "user_ask"
+    },
+    "guardrail": {
+      "checks": [
+        {
+          "name": "input",
+          "verdict": "pass",
+          "p": 0.04
+        },
+        {
+          "name": "output",
+          "verdict": "pass",
+          "p": 0.05
+        }
+      ]
+    },
+    "context": {
+      "budget": 14680,
+      "used": {
+        "persona": 358,
+        "system": 716,
+        "mode": 144,
+        "history": 910,
+        "user": 15,
+        "memory": 332,
+        "knowledge": 327
+      }
+    }
+  }
 }
 ```
-*Cost: 2,000 uncached tokens × $0.15/M + 7,800 cached × $0.003/M + 168 out × $0.60/M ≈ $0.00042 (off-peak, first-party) → 4.2 ⚡, rounded up to 5 ⚡.*
+*Cost: OpenRouter bills the reply ($0.000151: 1,859 tokens in, 1,024 of them cached, 168 out, served by Relace at the peak price). Energy rounds the cost up at 1 ⚡ per $0.0001: 1.51 → 2 ⚡. The price arithmetic is in `domain/cost.ts` and its tests.*

@@ -8,7 +8,7 @@ from typing import Any
 from horizon.ai.embedder import Embedded
 from horizon.gateway.errors import ProviderError
 from tests.conftest import Api
-from tests.knowledge.kit import API, add_text, settle
+from tests.knowledge.kit import API, add_text, seed_before_d110, settle
 from tests.sessions.kit import chars, command, create, events, messages
 
 AMARA = "chr_seedAmara"
@@ -57,6 +57,7 @@ async def test_group_message_to_three_characters_embeds_once(api: Api) -> None:
 
 
 async def test_nobody_has_vectors_embeds_nothing(api: Api) -> None:
+    await seed_before_d110(api)
     await api.set_key()
     await naive_retrieval(api)
     _, replies = await group_send(api, "What happens to burnout on night shifts?")

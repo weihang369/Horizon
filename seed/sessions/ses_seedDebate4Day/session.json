@@ -6,26 +6,27 @@
     "title": "Debate: Four-day work week",
     "titleIsCustom": false,
     "mode": "debate",
+    "status": "ended",
     "participants": [
       {
         "characterId": "chr_seedAmara",
         "role": "debater",
         "side": "prop",
-        "currentEmotion": "happy",
+        "currentEmotion": "thinking",
         "mutedByUser": false
       },
       {
         "characterId": "chr_seedVictor",
         "role": "debater",
         "side": "prop",
-        "currentEmotion": "happy",
+        "currentEmotion": "angry",
         "mutedByUser": false
       },
       {
         "characterId": "chr_seedMei",
         "role": "debater",
         "side": "opp",
-        "currentEmotion": "neutral",
+        "currentEmotion": "thinking",
         "mutedByUser": false
       }
     ],
@@ -74,84 +75,88 @@
       "autoAdvance": true,
       "pauseMs": 1500
     },
-    "isSeed": true,
-    "status": "ended",
     "state": {
       "phase": "ended",
       "round": 4,
       "iteration": 1,
       "verdict": {
+        "summary": [
+          {
+            "subjectId": "prop",
+            "points": [
+              "A compressed rota cut burnout by a fifth with no harm to throughput.",
+              "Rest days that cannot be cancelled matter more than shorter hours.",
+              "Turnover at 14% and replacement costs four months' salary.",
+              "A shorter standard week is not untried: the 1931 Act phased in a two-day weekend.",
+              "Adopt means legislate a phased timetable, not switch overnight; put trials in the statute."
+            ]
+          },
+          {
+            "subjectId": "opp",
+            "points": [
+              "Pilots are knowledge-work; evidence is silent on hospitals, transport, care.",
+              "A nationwide mandate redistributes labour: hire at large cost or compress and stretch the queue.",
+              "Holding coverage constant costs 18–27% more staffed hours, roughly a tenth on total.",
+              "Only two of nine recovered part of it through sickness and turnover, measured badly.",
+              "Wider coverage standards cost real money; continuity is the scope; trials first, not a national standard now."
+            ]
+          }
+        ],
+        "keyDisagreement": "Whether to adopt a nationwide four-day standard now, when the extra staffing cost is documented but offsetting savings remain unmeasured.",
         "decidedBy": "arbiter",
-        "strongerCase": "prop",
+        "strongerCase": "opp",
         "scoresBy": "side",
         "scores": [
           {
             "subjectId": "prop",
             "criterionId": "evidence",
-            "value": 6.5
+            "value": 8.5
           },
           {
             "subjectId": "prop",
             "criterionId": "rebuttal",
-            "value": 7.5
+            "value": 8.9
           },
           {
             "subjectId": "prop",
             "criterionId": "clarity",
-            "value": 8
+            "value": 8.9
           },
           {
             "subjectId": "prop",
             "criterionId": "persuasion",
-            "value": 7.5
+            "value": 6
           },
           {
             "subjectId": "opp",
             "criterionId": "evidence",
-            "value": 7.5
+            "value": 9
           },
           {
             "subjectId": "opp",
             "criterionId": "rebuttal",
-            "value": 7
+            "value": 9.6
           },
           {
             "subjectId": "opp",
             "criterionId": "clarity",
-            "value": 8.5
+            "value": 9.7
           },
           {
             "subjectId": "opp",
             "criterionId": "persuasion",
-            "value": 7
+            "value": 7.3
           }
         ],
-        "summary": [
-          {
-            "subjectId": "prop",
-            "points": [
-              "Burnout is itself a staffing cost.",
-              "The five-day week is a policy choice, not a law of nature.",
-              "Phased legal implementation addresses coverage sectors."
-            ]
-          },
-          {
-            "subjectId": "opp",
-            "points": [
-              "Pilot evidence comes from self-selected, easier sectors.",
-              "Costs concentrate in health, transport and care.",
-              "Fund sector-specific trials before a national mandate."
-            ]
-          }
-        ],
-        "keyDisagreement": "Whether evidence from voluntary pilots generalises to coverage-based sectors.",
-        "rationale": "Opposition had the stronger evidential framing but conceded direction in closing. Proposition's \"cost of the status quo\" rebuttal went unanswered."
+        "margin": 0.25,
+        "rationale": "The Opposition led on evidence, rebuttal, clarity and persuasion by keeping the debate on the unmeasured offset and the absence of sector trials, while the Proposition conceded the staffing cost and the gap. The Proposition argued a phased, trial-in-statute reading of the motion, but the Opposition's tighter framing of the cost-benefit ledger and the sequencing objection carried the scores."
       }
     },
-    "costUsd": 0.00176,
-    "messageCount": 15,
-    "createdAt": "2026-10-01T10:02:50.373Z",
-    "updatedAt": "2026-10-01T10:03:48.607Z",
-    "lastMessageAt": "2026-10-01T10:03:47.097Z"
+    "isSeed": true,
+    "costUsd": 0.005859,
+    "messageCount": 17,
+    "createdAt": "2026-10-01T09:57:59.545Z",
+    "updatedAt": "2026-10-01T09:59:38.239Z",
+    "lastMessageAt": "2026-10-01T09:59:38.239Z"
   }
 }

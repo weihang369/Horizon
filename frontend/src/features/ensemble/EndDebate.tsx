@@ -49,7 +49,7 @@ export function EndDebate({ sessionId, close }: OverlayComponentProps<"O26">) {
           </Button>
           {!verdictOff && (
             <Button disabled={!!busy} onClick={() => void go(true)}>
-              {busy === "verdict" ? "Calling the arbiter…" : `Go to verdict now (≈ ${formatUsd(estimate)})`}
+              {busy === "verdict" ? "Calling the arbiter…" : <>Go to verdict now<span className="hz-cost-estimate"> (≈ {formatUsd(estimate)})</span></>}
             </Button>
           )}
         </>

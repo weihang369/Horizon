@@ -14,7 +14,7 @@ from horizon.db.spaces import DEFAULT_SPACE, SpaceSpec
 from horizon.services.knowledge.build import build_space
 from horizon.services.knowledge.index import ScopedIndex
 from tests.conftest import Api
-from tests.knowledge.kit import HANA, SUNNY, add_text, row, settle, source, vector_count
+from tests.knowledge.kit import HANA, SUNNY, add_text, row, seed_before_d110, settle, source, vector_count
 
 HASH64 = SpaceSpec(id="hash@64", model=DEFAULT_SPACE.model, provider="test", dims=64,
                    query_instruction=DEFAULT_SPACE.query_instruction)
@@ -48,6 +48,7 @@ async def indexed_note(api: Api) -> dict[str, Any]:
 
 
 async def test_atomic_switch(api: Api) -> None:
+    await seed_before_d110(api)
     await api.set_key()
     old = api.rt.space_id or ""
     src = await indexed_note(api)
@@ -81,6 +82,7 @@ async def test_atomic_switch(api: Api) -> None:
 
 
 async def test_source_added_during_a_build(api: Api) -> None:
+    await seed_before_d110(api)
     await api.set_key()
     old = api.rt.space_id or ""
     async with api.rt.db.write() as tx:

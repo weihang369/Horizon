@@ -64,6 +64,21 @@ describe("rev 1.2 entities validate under rev 1.3", () => {
   });
 });
 
+/** `doc` equals `actual`, except that a doc string ending in "…" only has to start `actual`. */
+function expectShortened(doc: unknown, actual: unknown, where: string): void {
+  if (typeof doc === "string" && doc.endsWith("…")) {
+    expect(typeof actual === "string" && actual.startsWith(doc.slice(0, -1)), where).toBe(true);
+  } else if (Array.isArray(doc)) {
+    expect(Array.isArray(actual) && actual.length === doc.length, where).toBe(true);
+    doc.forEach((d, i) => expectShortened(d, (actual as unknown[])[i], `${where}[${i}]`));
+  } else if (doc && typeof doc === "object") {
+    expect(Object.keys(actual as object).sort(), where).toEqual(Object.keys(doc).sort());
+    for (const [k, v] of Object.entries(doc)) expectShortened(v, (actual as Record<string, unknown>)[k], `${where}.${k}`);
+  } else {
+    expect(actual, where).toEqual(doc);
+  }
+}
+
 describe("seed fixtures", () => {
   it("found the seed folder", () => {
     expect(files.length).toBeGreaterThan(50);
@@ -108,15 +123,15 @@ describe("seed fixtures", () => {
     for (const d of seed) expect((read(`${d}/session.json`).data as Session).isSeed).toBe(true);
   });
 
-  it("msg_seedD08 matches doc 05 §8 (content abbreviated with … in the doc; trace.messageId required by the type)", () => {
+  it("msg_seedD08 matches doc 05 §8 (text ending in … is shortened in the doc; the doc's trace shows some parts)", () => {
     const md = readFileSync(DOC05, "utf8");
     const doc = JSON.parse(md.split("## 8.")[1].split("```json")[1].split("```")[0]) as Message;
     const m = (read("sessions/ses_seedDebate4Day/messages.json").data as Message[]).find((x) => x.id === "msg_seedD08")!;
-    expect(m.content.startsWith(doc.content.replace(/…$/, ""))).toBe(true);
-    const { content: _a, trace: t1, ...restDoc } = doc;
-    const { content: _b, trace: t2, ...restSeed } = m;
-    expect(restSeed).toEqual(restDoc);
-    expect({ ...t2, messageId: undefined }).toEqual({ ...t1, messageId: undefined });
+    const { trace: t1, ...restDoc } = doc;
+    const { trace: t2, ...restSeed } = m;
+    expect(Object.keys(restSeed).sort()).toEqual(Object.keys(restDoc).sort());
+    expectShortened(restDoc, restSeed, "message");
+    for (const [k, v] of Object.entries(t1 ?? {})) expectShortened(v, (t2 as unknown as Record<string, unknown>)[k], `trace.${k}`);
     expect(t2?.messageId).toBe("msg_seedD08");
   });
 
@@ -135,7 +150,9 @@ describe("seed fixtures", () => {
       for (const m of read(`${dir}/messages.json`).data as Message[]) {
         for (const c of m.citations ?? []) {
           expect(m.content, `${m.id} [${c.n}]`).toContain(`[${c.n}]`);
-          expect(chunks.get(c.chunkId)?.text, c.chunkId).toBe(c.quote);
+          // The backend quotes the cited passage of the chunk (≤ 400 characters, D-59), not always the whole chunk.
+          expect(chunks.get(c.chunkId)?.text, c.chunkId).toContain(c.quote);
+          expect(c.quote.length, c.chunkId).toBeLessThanOrEqual(400);
           expect(chunks.get(c.chunkId)?.sourceId).toBe(c.sourceId);
           expect(m.trace?.knowledge?.retrieved.some((r) => r.chunkId === c.chunkId && r.cited && r.n === c.n), m.id).toBe(true);
           counted[c.sourceId] = (counted[c.sourceId] ?? 0) + 1;
@@ -163,7 +180,8 @@ describe("seed fixtures", () => {
   });
 
   it("seed knowledge is file or text only: no url sources, no CSV (D-65)", () => {
-    const all = files.filter((x) => /(^|\/)knowledge\/[^/]+\.json$/.test(x) && !x.includes("chunks/")).flatMap((f) => read(f).data as KnowledgeSource[]);
+    const all = files.filter((x) => /(^|\/)knowledge\/[^/]+\.json$/.test(x) && !x.includes("chunks/") && !x.startsWith("rows/"))
+      .flatMap((f) => read(f).data as KnowledgeSource[]);
     expect(all.length).toBeGreaterThanOrEqual(5);
     for (const k of all) {
       expect(k.type, k.id).not.toBe("url");

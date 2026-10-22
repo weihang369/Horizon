@@ -233,7 +233,8 @@ class TurnRunner:
             if planning is not None:
                 sctx, plan = await vclock.join(planning)   # the worker's token is given up while Jev thinks
             else:
-                sctx = await session_context(rt, actor)   # M8: no summary work here (docs/ai/05 X2: after turn.end)
+                # M8: no summary work here (docs/ai/05 X2: after turn.end)
+                sctx = await session_context(rt, actor, before_message=spec.variant_of)
             if plan is not None and spec.deep is not None:   # M12 (rag D15): deep work started ahead of the turn
                 merged = await self._deep(actor, spec, plan, mid, started_iso)
                 if merged is None:   # a newer user message arrived during the deep work (G5): no reply
@@ -328,7 +329,7 @@ class TurnRunner:
         base face is the current face in AUTO, and the speaker's last AI-chosen face under MANUAL (docs/ai/06 E2)."""
         rt = self.rt
         started = rt.clock.now()
-        sctx = await session_context(rt, actor)
+        sctx = await session_context(rt, actor, before_message=spec.variant_of)
         planner = rt.ai.planner(self.key_set(info))
         manual = actor.session.get("emotionMode") == "user"
         if manual:

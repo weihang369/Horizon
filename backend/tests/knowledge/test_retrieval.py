@@ -18,6 +18,7 @@ from horizon.ai.retrieval import (
 from horizon.db import spaces
 from horizon.services.knowledge.index import ScopedIndex, has_vectors
 from tests.conftest import Api
+from tests.knowledge.kit import seed_before_d110
 
 MERIDIAN = "wld_seedMeridian"
 AMARA = "chr_seedAmara"
@@ -52,6 +53,7 @@ async def test_keyword_only_seed_knowledge_is_found(api: Api) -> None:
 
 
 async def test_meaning_match_through_vectors(api: Api) -> None:
+    await seed_before_d110(api)   # vectors of the test's own making
     _, kno = spaces.vec_tables(api.rt.space_id or "")
     async with api.rt.db.write() as tx:
         rows = (await tx.conn.execute(text("SELECT rid, id FROM knowledge_chunks WHERE character_id = :c ORDER BY rid"),
@@ -69,6 +71,7 @@ async def test_meaning_match_through_vectors(api: Api) -> None:
 
 
 async def test_rrf_score_is_one_when_first_in_both_lists(api: Api) -> None:
+    await seed_before_d110(api)
     _, kno = spaces.vec_tables(api.rt.space_id or "")
     first = (await index(api).knowledge_fts('"burnout"', 1))[0]
     async with api.rt.db.write() as tx:
@@ -89,6 +92,8 @@ async def test_superseded_memory_is_never_recalled(api: Api) -> None:
 
 
 async def test_vector_gate_follows_indexed_sources(api: Api) -> None:
+    assert await has_vectors(api.rt, [AMARA])   # D-110: the shipped documents arrive indexed
+    await seed_before_d110(api)
     assert not await has_vectors(api.rt, [AMARA])
     async with api.rt.db.write() as tx:
         await tx.conn.execute(text("UPDATE knowledge_sources SET status = 'indexed', embedding_space_id = :s "

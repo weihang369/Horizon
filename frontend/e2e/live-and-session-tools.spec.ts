@@ -36,12 +36,12 @@ test("Backlog: L opens the full log, it exports Markdown, Esc closes it @layout"
   await page.keyboard.press("l");
   const backlog = page.getByRole("dialog", { name: "Backlog" });
   await expect(backlog).toBeVisible();
-  await expect(backlog.getByText("Three-day headache")).toBeVisible();
+  await expect(backlog.getByText("Three-day headache", { exact: true })).toBeVisible();
   await expect(backlog).toContainText("I've had a headache for three days");
-  await expect(backlog).toContainText("this is the honest caveat");
+  await expect(backlog).toContainText("Withdrawal headaches often show up 12 to 24 hours");
 
-  await backlog.getByRole("searchbox", { name: "Search this conversation" }).fill("caffeine");
-  await expect(backlog.locator("mark").first()).toHaveText(/caffeine/i);
+  await backlog.getByRole("searchbox", { name: "Search this conversation" }).fill("withdrawal");
+  await expect(backlog.locator("mark").first()).toHaveText(/withdrawal/i);
 
   const [download] = await Promise.all([page.waitForEvent("download"), backlog.getByRole("button", { name: "Export .md" }).click()]);
   expect(download.suggestedFilename()).toBe("three-day-headache.md");
@@ -71,7 +71,7 @@ test("Readable mode toggles on and off from the session header", async ({ page }
   await expect(readable).toHaveAttribute("aria-pressed", "false");
   await readable.click();
   await expect(readable).toHaveAttribute("aria-pressed", "true");
-  await expect(logEntry(page, "honest caveat")).toBeVisible();
+  await expect(logEntry(page, "Withdrawal headaches often show up 12 to 24 hours")).toBeVisible();
   await readable.click();
   await expect(readable).toHaveAttribute("aria-pressed", "false");
 });

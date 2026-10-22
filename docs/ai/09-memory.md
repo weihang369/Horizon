@@ -238,8 +238,9 @@ fewer, more complete lines.
 
 **Decision:**
 - **One call per piece**, purpose `memory`, `runtime.llm.calls.memory` (doc 03 C1: thinking off, 0.7, JSON mode),
-  validated, one retry (doc 03 C7). **`max_tokens` = 300 × characters present + 200**, at most 3,000; a
-  `finish_reason` of `length` is **not** a try: the characters are split into two calls instead. The instructions are
+  validated, one retry (doc 03 C7). **`max_tokens` = 600 × characters present + 200**, at most 3,000 (300 until U-35: one character's five 40-word
+  changes are ≈ 490 tokens, so a debater's long stretch ran out alone); a `finish_reason` of `length` is **not** a
+  try: the characters are split into two calls instead, and one character still cut asks once more at 3,000. The instructions are
   a fixed system message, so repeated runs hit DeepSeek's cache for them.
 - **The input:** the world's name, the You-card name, the mode; the characters present as numbers with name and role;
   **for each, its current memory list as `m1…m30`** (the same lines, in the same ranking, as its prompt block, M8; at
@@ -297,7 +298,7 @@ character already carries in its prompt, so it costs ~1,000 input tokens per cha
 - **extract, then a Jev compare with the 3 nearest memories** (the first version, superseded by the user's choice):
   it can't merge detail, and it needs a cosine threshold tied to one embedding model.
 
-*Built in M13 (`memory` D13): `memory-1` (now `memory-2`: phase 10 added the perspective rule, the user's choice), one DeepSeek JSON call per piece for everyone present (temperature 0.7, thinking off, `max_tokens` 300 × characters + 200, at most 3,000; a `length` answer splits the characters in halves; a parse failure is retried once). Code checks drop unknown characters, targets, kinds and source lines, cut a line at 40 words, keep at most 5 changes per character (every confirm kept) and merge exact duplicates. Measured: 37 of 37 calls valid, output p50 240 tokens (35 % of the cap), and the 8,000-token piece 294 of 500 ([m13.md](checks/m13.md)). Found: the call writes `"about": 0` for the user (8 lines a run under memory-1 were dropped as invalid until phase 10, by the user's choice, read an `about` naming no one present as the user); and it sees every present character's list, so a line sometimes carries a detail only another character's list held (3 of 89 lines read by hand under `memory-2`, whose perspective rule didn't measurably change it; accepted).*
+*Built in M13 (`memory` D13): `memory-1` (now `memory-2`: phase 10 added the perspective rule, the user's choice), one DeepSeek JSON call per piece for everyone present (temperature 0.7, thinking off, `max_tokens` 300 × characters + 200 (600 since U-35), at most 3,000; a `length` answer splits the characters in halves; a parse failure is retried once). Code checks drop unknown characters, targets, kinds and source lines, cut a line at 40 words, keep at most 5 changes per character (every confirm kept) and merge exact duplicates. Measured: 37 of 37 calls valid, output p50 240 tokens (35 % of the cap), and the 8,000-token piece 294 of 500 ([m13.md](checks/m13.md)). Found: the call writes `"about": 0` for the user (8 lines a run under memory-1 were dropped as invalid until phase 10, by the user's choice, read an `about` naming no one present as the user); and it sees every present character's list, so a line sometimes carries a detail only another character's list held (3 of 89 lines read by hand under `memory-2`, whose perspective rule didn't measurably change it; accepted).*
 
 *Built in M14 (OpenSpec `safety` D16; doc 11 S7): before the call, code drops each user line whose steer or care cue
 was on (from its stored safety answers, care's 2-line stay included) and the replies to it (in 1:1 and group, the

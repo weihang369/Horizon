@@ -87,7 +87,8 @@ The backend SHALL serve these `HorizonClient` queries with the documented routes
 - **`spentTodayUsd`:** the sum of today's ledger costs in the configured time zone;
 - **`pricing`:** derived from the clock (peak Mon–Fri 09:00–12:00 and 14:00–18:00 Malaysia time);
 - **`energy.estReplyPoints`** and **`models.embedding`:** from config;
-- **`openRouterKeyStatus`** and **`demoMode`:** from the key status (see `openrouter-key`).
+- **`openRouterKeyStatus`** and **`demoMode`:** from the key status (see `openrouter-key`);
+- **`openRouterKeySource`:** where the key comes from, only when there is one (see `openrouter-key`).
 
 The key itself SHALL never appear in the response.
 
@@ -186,7 +187,7 @@ In test mode, the provider SHALL be the in-process fake (see `provider-gateway`)
 - **THEN** it rejects with `validation`
 
 ### Requirement: Settings update
-`PATCH /api/v1/settings` with a partial `AppSettings` SHALL deep-merge the editable fields into `data/settings.local.json` and return the full `AppSettings`. The following fields are computed or config-owned and SHALL be ignored when present in the patch: `openRouterKeyStatus`, `demoMode`, `spentTodayUsd`, `pricing`, `models` (except `modelOverrides`), `energy.estReplyPoints`. An editable field with a value of the wrong type or out of range SHALL reject with `validation`, and nothing SHALL be written. A successful update SHALL publish `entity.changed { kind: "settings" }`.
+`PATCH /api/v1/settings` with a partial `AppSettings` SHALL deep-merge the editable fields into `data/settings.local.json` and return the full `AppSettings`. The following fields are computed or config-owned and SHALL be ignored when present in the patch: `openRouterKeyStatus`, `openRouterKeySource`, `demoMode`, `spentTodayUsd`, `pricing`, `models` (except `modelOverrides`), `energy.estReplyPoints`. An editable field with a value of the wrong type or out of range SHALL reject with `validation`, and nothing SHALL be written. A successful update SHALL publish `entity.changed { kind: "settings" }`.
 
 #### Scenario: Read-only threshold ignored
 - **WHEN** `PATCH /settings` sends `{ "energy": { "estReplyPoints": { "off_peak": 1, "peak": 1 } } }`

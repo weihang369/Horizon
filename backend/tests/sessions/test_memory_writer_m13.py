@@ -122,7 +122,7 @@ def test_the_prompt_bytes_match_the_committed_fixture() -> None:
 
 
 def test_max_tokens_grow_with_the_cast_and_stop_at_3000() -> None:
-    assert mem1.max_tokens(1) == 500 and mem1.max_tokens(2) == 800 and mem1.max_tokens(20) == 3000
+    assert mem1.max_tokens(1) == 800 and mem1.max_tokens(2) == 1400 and mem1.max_tokens(20) == 3000
 
 
 def test_the_code_checks_drop_what_is_invalid() -> None:
@@ -205,6 +205,28 @@ async def test_a_length_answer_splits_the_characters_in_halves(api: Api) -> None
     assert not out.failed and len(seen) == 3
     assert "Write changes only for: 1. Amara" in seen[1] + seen[2] and "Write changes only for: 2. Mei" in seen[1] + seen[2]
     assert all("1. Amara (nurse)" in m and "2. Mei (chef)" in m for m in seen)   # everyone stays listed
+
+
+async def test_one_character_still_cut_asks_once_more_with_the_whole_budget(api: Api) -> None:
+    """U-35: a debater's long stretch hit `length` alone and failed the run for everyone; it now asks once at 3,000."""
+    await api.set_key()
+    _agent(api, "naive")
+    budgets: list[int] = []
+    assert api.rt.fake is not None
+    fake = api.rt.fake
+    real = fake._canned
+
+    def canned(purpose: str, body: dict[str, Any]) -> Any:
+        budgets.append(int(body["max_tokens"]))
+        cut = len(budgets) < 3   # the pair, then the first half alone, are cut; the other half and the retry answer
+        fake.canned[purpose] = [{"content": '{"changes": [', "finish_reason": "length"} if cut else {"content": _answer()}]
+        return real(purpose, body)
+
+    fake._canned = canned  # type: ignore[method-assign]
+    _canned(api, "unused")
+    out = await mem1.call(api.rt.ai.deps, _stretch(), await _ctx(api))
+    assert not out.failed
+    assert budgets == [mem1.max_tokens(2), mem1.max_tokens(1), mem1.max_tokens(1), mem1.TOKENS_MAX]   # halves at once
 
 
 # ── 3.3 the bank entries ──

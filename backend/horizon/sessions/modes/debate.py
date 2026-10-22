@@ -116,6 +116,8 @@ async def begin_phase(actor: SessionActor, phase: str, iteration: int = 1, *, vi
 
 
 def start(actor: SessionActor) -> None:
+    actor.mode.debate_armed = True
+
     async def job() -> None:
         wait = actor.rt.runtime_cfg.timing.debate_start_ms / 1000
         t0 = actor.rt.clock.now()
@@ -208,6 +210,8 @@ async def pause_side(actor: SessionActor, side: str | None, asleep: tuple[str, .
 
 def step(actor: SessionActor) -> None:
     """One normal debate turn (or a phase boundary), queued behind any steering."""
+    actor.mode.debate_armed = True
+
     async def job() -> None:
         st = state_of(actor)
         if st.get("phase") in ("verdict", "ended") or actor.session["status"] == "ended":
@@ -495,6 +499,19 @@ def schedule_next(actor: SessionActor, ms: float | None = None) -> None:
             step(actor)
 
     actor.after(ms if ms is not None else float(cfg_of(actor).get("pauseMs", 1500)), go)
+
+
+def rearm(actor: SessionActor) -> None:
+    """U-43: the auto-advance chain lives in the actor's timer, so an actor loaded from storage mid-round (a restart, an
+    idle release) has none. On its first command, after that command's own work, an active, un-held auto-advance
+    debate that this actor never started or stepped schedules its next step."""
+    async def job() -> None:
+        st = state_of(actor)
+        if (not actor.mode.debate_armed and not actor.held and actor.session["status"] == "active"
+                and st.get("phase") not in ("verdict", "ended")):
+            schedule_next(actor)
+
+    actor.enqueue(job)
 
 
 # ── verdict ──

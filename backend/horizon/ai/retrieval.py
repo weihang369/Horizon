@@ -65,6 +65,7 @@ class QueryBundle:
     terms: tuple[str, ...] = ()            # the BM25 terms in order
     dense: dict[str, dict[int, list[float]]] = field(default_factory=dict)
     display: str = ""                      # `TurnTrace.knowledge.query`: ≤ 120 characters
+    waits: dict[str, float] = field(default_factory=dict)   # U-58: ms the search waited ("vector", "rewrite")
 
     def to_json(self) -> dict[str, Any]:
         out = asdict(self)

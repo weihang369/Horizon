@@ -40,6 +40,33 @@ def _name(full: str) -> str:
     return full if len(full) <= NAME_MAX else first_name(full)[:NAME_MAX]
 
 
+def plan_wait(deps: Any, base_s: float, gated: bool) -> float:
+    """U-46: how long a plan is waited for, in seconds: to the end when it asks "needs documents?" about someone (deep
+    insight waits for every stage, D-111), else `base_s`. A profile without agent knobs keeps `base_s`."""
+    if not gated:
+        return base_s
+    get = getattr(deps, "retrieval", None)
+    r = get() if get is not None else None
+    agent = r.agent if r is not None else None
+    return float(agent.plan_wait_s(base_s, gated)) if agent is not None else base_s
+
+
+SKIP_NO_DOCS = "skipped: no searchable documents"
+SKIP_NOTHING_EARLIER = "skipped: nothing earlier to search"
+SKIP_TOO_LARGE = "skipped: the plan's state was too large"
+
+
+def skipped_row(qid: str, *, purpose: str, reason: str, about: str | None = None) -> dict[str, Any]:
+    """U-49 (the user's choice): a question this turn didn't ask, greyed in Insight with its reason, so every turn of a
+    mode lists the same rows."""
+    e = bank().get(qid)
+    row: dict[str, Any] = {"purpose": purpose, "id": qid, "version": e.version, "label": e.label}
+    if about is not None:
+        row["about"] = about
+    row.update(answer="\u2014", compared=[], result="skipped", action=reason)
+    return row
+
+
 def gate_key(cid: str) -> str:
     return f"{GATE}:{cid}"
 
@@ -200,11 +227,17 @@ def noul_rows(msg: MessageNouls, *, purpose: str, considered: bool) -> list[dict
 
 
 def speaker_rows(cid: str, gates: Mapping[str, GateAnswer], msg: MessageNouls | None, *, purpose: str, kind: str,
-                 everyone: bool = False, recall_gates: Mapping[str, GateAnswer] | None = None) -> list[dict[str, Any]]:
+                 everyone: bool = False, recall_gates: Mapping[str, GateAnswer] | None = None,
+                 skips: bool = True) -> list[dict[str, Any]]:
     """A reply's gate rows: its own `docs` row, the other candidates' `not_used` (none on an Everyone reply, D22), and
-    the message's nouls when asked."""
+    the message's nouls when asked. U-49 (`skips`): the speaker's own gate that wasn't asked is a `skipped` row with
+    its reason (no searchable documents, nothing earlier to search, or X9's cap)."""
     rows: list[dict[str, Any]] = []
     abstain_kind = kind in ABSTAIN_KINDS
+    own = gates.get(cid)
+    if skips and (own is None or own.outcome == "dropped"):
+        rows.append(skipped_row(GATE, purpose=purpose, about=cid,
+                                reason=SKIP_TOO_LARGE if own is not None else SKIP_NO_DOCS))
     for other, g in gates.items():
         if g.outcome == "dropped":
             continue
@@ -214,6 +247,10 @@ def speaker_rows(cid: str, gates: Mapping[str, GateAnswer], msg: MessageNouls | 
             rows.append(gate_row(other, g, purpose=purpose, abstain_kind=abstain_kind, result="not_used"))
     if msg is not None:
         rows.extend(noul_rows(msg, purpose=purpose, considered=deep(gates.get(cid))))
+    mine = (recall_gates or {}).get(cid)
+    if skips and (mine is None or mine.outcome == "dropped"):
+        rows.append(skipped_row(EARLIER, purpose=purpose, about=cid,
+                                reason=SKIP_TOO_LARGE if mine is not None else SKIP_NOTHING_EARLIER))
     for other, g in (recall_gates or {}).items():   # M13 (D35): the earlier rows, after the docs rows
         if g.outcome == "dropped":
             continue

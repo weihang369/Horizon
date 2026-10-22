@@ -5,9 +5,11 @@ import { useEffect, useState } from "react";
 import { PortraitCard } from "../../character/PortraitCard";
 import { useCharacter } from "../../client/hooks";
 import type { Emotion } from "../../contract/types";
-import { useMotionPrefs } from "../../motion/prefs";
+import { effectiveVfx, useMotionPrefs } from "../../motion/prefs";
 import { setPrefs, usePrefs } from "../../stores/prefs";
+import { Button } from "../../ui/Button";
 import { Segmented, Toggle } from "../../ui/Controls";
+import { Skeleton } from "../../ui/Data";
 import { Tape } from "../../ui/Tape";
 import { Row, Section } from "./parts";
 import s from "./Settings.module.css";
@@ -36,21 +38,22 @@ export function DisplayTab() {
           </Row>
         </Section>
         <Section title="Reading">
-          <Row label="Text size" desc="Body text 14 / 16 / 18 px.">
-            <Segmented label="Text size" value={d.textSize} onChange={(textSize) => setPrefs({ display: { textSize } })} options={[{ value: "s", label: "S" }, { value: "m", label: "M" }, { value: "l", label: "L" }]} />
+          <Row label="Text size" desc={presenter ? "Body text 14 / 16 / 18 px. Presenter Mode sets L; turn it off to choose." : "Body text 14 / 16 / 18 px."}>
+            <Segmented label="Text size" disabled={presenter} value={presenter ? "l" : d.textSize} onChange={(textSize) => setPrefs({ display: { textSize } })} options={[{ value: "s", label: "S" }, { value: "m", label: "M" }, { value: "l", label: "L" }]} />
           </Row>
           <Row label="Presenter Mode" desc="For demos and screen recordings: hides your key and the dev overlay, forces text size L, compact Insight drawer, shows ×N and REPLAY badges.">
             <Toggle label="Presenter Mode" hideLabel checked={presenter} onChange={(presenterMode) => setPrefs({ presenterMode })} />
           </Row>
         </Section>
       </div>
-      <Preview reduced={m.reduced} vfx={m.vfx} textSize={presenter ? "l" : d.textSize} />
+      <Preview reduced={m.reduced} vfx={effectiveVfx(m)} textSize={presenter ? "l" : d.textSize} />
     </div>
   );
 }
 
 function Preview({ reduced, vfx, textSize }: { reduced: boolean; vfx: string; textSize: string }) {
-  const hana = useCharacter("chr_seedHana").data;
+  const q = useCharacter("chr_seedHana");
+  const hana = q.data && !q.data.deletedAt ? q.data : undefined;
   const [i, setI] = useState(0);
   useEffect(() => {
     const t = window.setInterval(() => setI((x) => (x + 1) % CYCLE.length), 2600);
@@ -61,6 +64,14 @@ function Preview({ reduced, vfx, textSize }: { reduced: boolean; vfx: string; te
       <Tape tone="ink" size="sm">LIVE PREVIEW</Tape>
       {hana ? (
         <PortraitCard character={hana} emotion={CYCLE[i]} size="stage" width={220} showPlate showEnergy parallax />
+      ) : q.loading ? (
+        <Skeleton lines={1} widths={["220px"]} height={300} label="Loading the preview" />
+      ) : q.error && q.error.code !== "not_found" ? (
+        // A failed load (say, the backend was restarting) is not a missing Hana: offer a retry instead.
+        <div className={s.previewEmpty}>
+          Couldn't load the preview.{" "}
+          <Button size="sm" variant="ghost" onClick={q.reload}>Retry</Button>
+        </div>
       ) : (
         <div className={s.previewEmpty}>Preview needs the seed character Hana. Reset demo data to bring her back.</div>
       )}

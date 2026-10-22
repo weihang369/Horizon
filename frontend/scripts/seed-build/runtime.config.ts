@@ -35,6 +35,14 @@ export interface AgentRetrieval {
   /** The deep path's wait for a query embedding from when the search needs it (rag 11.5: 800, the embedding starting
    *  with Jev call 1; the top-level `queryEmbedWaitMs` stays naive's). */
   queryEmbedWaitMs: number;
+  /** U-45 (the user's choice, 2026-10-22): a turn that searches its documents waits for its query vectors (the
+   *  message's and a rewritten query's) up to this cap, so the search is hybrid; measured 0.9-13 s on OpenRouter.
+   *  Turns with no documents keep `queryEmbedWaitMs`. */
+  docsEmbedWaitMs: number;
+  /** U-45 (the user's choice, "deep insight waits for every stage"): a turn that searches its documents waits for each
+   *  stage to finish (query vectors, rewrite, passage checks, set check), under a 5-minute safety cap; off → the
+   *  measured deadlines (`rewriteMs`, `deepCheckMs`, `docsEmbedWaitMs`). */
+  docsWaitAll: boolean;
   /** M13 (docs/ai/09 M9; memory design D31–D35, D42): recall's search, Jev call 2 and tail; `t_recall` is in the bank. */
   recall: RecallKnobs;
 }
@@ -154,6 +162,7 @@ export const RUNTIME: RuntimeConfig = {
     agent: {
       pool: 20, candidates: 8, blockTokens: 1400, mmrLambda: 1.0, k: { oneOnOne: 3, group: 2, watch: 2, debate: 2 },
       pieceTarget: 300, pieceMax: 400, rewriteMs: 1200, deepCheckMs: 1500, queryEmbedWaitMs: 200,
+      docsEmbedWaitMs: 10000, docsWaitAll: true,
       // M13 (memory D42): recall's numbers, tuned in phase 10
       recall: { pool: 10, perCorpus: 5, candidates: 6, mmrLambda: 0.7, keep: 3, fallbackKeep: 2, checkMs: 1500,
         tailTokens: 400, lineWords: 60, linesDense: true, standoutP: 0.25, standoutRatio: 3 },

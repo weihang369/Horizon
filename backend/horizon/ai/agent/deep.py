@@ -43,7 +43,7 @@ import contextlib
 import logging
 import operator
 from collections.abc import Sequence
-from datetime import timedelta
+from datetime import datetime, timedelta
 from typing import Annotated, Any, TypedDict
 
 from langgraph.graph import END, START, StateGraph
@@ -126,6 +126,14 @@ class DeepSteps:
         task: asyncio.Task[Any] = self.deps.spawn(name, coro)   # the runtime's tracked spawn (its only way)
         return task
 
+    def _since(self, began: datetime) -> float:
+        now: datetime = self.deps.clock().now()
+        return round(max(0.0, (now - began).total_seconds() * 1000), 1)
+
+    def _left(self, deadline: datetime) -> float:
+        now: datetime = self.deps.clock().now()
+        return max(0.0, (deadline - now).total_seconds())
+
     async def _wait(self, task: asyncio.Task[Any] | None, seconds: float) -> Any:
         if task is None:
             return None
@@ -136,7 +144,12 @@ class DeepSteps:
     # ── gather ──
     async def gather(self, req: DeepRequest) -> tuple[QueryBundle, rw.Rewrite | None]:
         knobs = self.knobs()
-        wait = _seconds(knobs.query_embed_wait_ms)
+        # U-45 (the user's choice): a turn that searches its documents waits for its query vectors (up to the cap),
+        # so the search is hybrid as designed; turns with no documents keep the quick wait (recall's)
+        wait = _seconds(knobs.wait_ms(knobs.docs_embed_wait_ms))
+        began = self.deps.clock().now()
+        deadline = began + timedelta(seconds=wait)
+        waits: dict[str, float] = {}   # U-58: what this search waited for, shown in Insight
         index = self.index(req)
         io = self.deps.deep_io()
         space = await io.space(index.active_space)
@@ -158,10 +171,12 @@ class DeepSteps:
             if rewriting:
                 tctx = TurnContext(session=req.session, speaker=req.speaker, message_id=req.reply_message_id,
                                    max_tokens=1)
-                rewrite = await rw.run(self.deps, tctx, timeout_s=_seconds(knobs.rewrite_ms),
+                rewrite = await rw.run(self.deps, tctx, timeout_s=_seconds(knobs.wait_ms(knobs.rewrite_ms)),
                                        stored=req.stored_rewrite, early=rw.early_key(tctx, req.message_id))
+                waits["rewrite"] = self._since(began)
             source: Any
             extra: dict[int, list[float]] = {}
+            later: list[tuple[int, asyncio.Task[Any]]] = []   # the rewritten query's vector, waited for below
             if req.session.mode == "debate":
                 source = "debate"
                 terms = await q.agent_terms(index, req.message)
@@ -174,22 +189,24 @@ class DeepSteps:
                 if vec_ok:
                     t2 = self._spawn(f"query-embed:{req.speaker.id}:rw", self._embed(req, [rewrite.text], space))
                     tasks.append(t2)
-                    got = await self._wait(t2, 0.0)   # never waited for (rag 11.9)
-                    if got:
-                        extra[0] = got[0]
+                    later.append((0, t2))
             elif rewrite is not None:
                 source = "fallback"
                 terms = await q.agent_terms(index, req.message, extra=req.previous_user)
                 if vec_ok and with_earlier:
                     t2 = self._spawn(f"query-embed:{req.speaker.id}:fb", self._embed(req, [with_earlier], space))
                     tasks.append(t2)
-                    got = await self._wait(t2, 0.0)   # never waited for (rag 11.9)
-                    if got:
-                        extra[1] = got[0]
+                    later.append((1, t2))
             else:
                 source = "as_written"
                 terms = await q.agent_terms(index, req.message)
-            first = await self._wait(embed, wait) or {}
+            first = await self._wait(embed, self._left(deadline)) or {}
+            for slot, t2 in later:
+                got = await self._wait(t2, self._left(deadline))
+                if got:
+                    extra[slot] = got[0]
+            if vec_ok:
+                waits["vector"] = self._since(began)
         except asyncio.CancelledError:
             for t in tasks:
                 t.cancel()
@@ -202,6 +219,7 @@ class DeepSteps:
         else:
             dense = dict(first)
         bundle = q.bundle(source=source, mode=req.session.mode, speaker_id=req.speaker.id, message=req.message,
+                          waits=waits,
                           message_id=req.message_id, earlier=req.earlier,
                           rewrite=rewrite.text if rewrite is not None else None, terms=terms,
                           dense={index.active_space: dense} if dense else {})
@@ -216,19 +234,25 @@ class DeepSteps:
         io = self.deps.deep_io()
         space_id = io.active_space()
         dense: dict[int, list[float]] = {}
-        # the message's own vector (the early start's, usually already served) when the documents' search had none
+        waits: dict[str, float] = {}
+        # the message's own vector (the early start's, usually already served) when the documents' search had none;
+        # U-56 (the user's choice): waited for to the end like the documents' (D-111), else `queryEmbedWaitMs`
         if (docs_bundle is None or not docs_bundle.dense.get(space_id)) and io.key_set():
             space = await io.space(space_id)
             if space is not None:
                 task = self._spawn(f"query-embed:{req.speaker.id}:recall", self._embed(req, [req.message], space))
+                began = self.deps.clock().now()
                 try:
-                    dense = await self._wait(task, _seconds(self.knobs().query_embed_wait_ms)) or {}
+                    agent = self.knobs()
+                    dense = await self._wait(task, _seconds(agent.wait_ms(agent.query_embed_wait_ms))) or {}
+                    waits["recall_vector"] = self._since(began)
                 except asyncio.CancelledError:
                     task.cancel()
                     raise
         bundle = rc.recall_bundle(req, docs_bundle, dense, space_id)
         found = await rc.find(io, req, bundle, knobs, self.deps.memory_knobs(), self.deps.clock().now())
-        ps, slowest = await rc.check(self.deps, req, bundle, found.picked, knobs)
+        ps, slowest = await rc.check(self.deps, req, bundle, found.picked, knobs,
+                                     wait_ms=self.knobs().wait_ms(knobs.check_ms))   # U-56: every check, like D-111
         kept, outcome = rc.keep(found.picked, found.merged, ps, knobs)
         rows = rc.rows(found.picked, ps, kept, outcome)
         checks = [{"id": it.hit.id, "kind": it.kind, "order": i, "p": p} for i, (it, p) in
@@ -238,7 +262,7 @@ class DeepSteps:
             calls.append({"purpose": PURPOSE, "model": self.deps.prices.decision.model, "costUsd": 0.0,
                           "latencyMs": float(slowest or knobs.check_ms), "fallback": True})
         return {"recall": kept, "recall_outcome": outcome, "recall_rows": rows, "recall_checks": checks,
-                "recall_lists": found.lists, "recall_calls": calls}
+                "recall_lists": found.lists, "recall_calls": calls, "waits": waits}
 
     async def docs_chain(self, req: DeepRequest, bundle: QueryBundle, rewrite: rw.Rewrite | None) -> DeepResult:
         """The documents branch end to end (search, check, keep), for a turn that also recalls."""
@@ -285,7 +309,7 @@ class DeepSteps:
         if not cands:
             return [], None, False, None, None
         sent = self.deps.clock().now()
-        at = sent + timedelta(milliseconds=knobs.deep_check_ms)
+        at = sent + timedelta(milliseconds=knobs.wait_ms(knobs.deep_check_ms))
         calls: list[DecisionCall] = []
         for c in cands:
             h = hits[c.rid]
@@ -333,7 +357,7 @@ class DeepSteps:
             started = self.deps.clock().now()
             call = decider.start(set_state, {PASSAGE_SET: b.question(PASSAGE_SET)}, ctx, purpose=PURPOSE)
             try:
-                res = await call.by(started + timedelta(milliseconds=knobs.deep_check_ms))
+                res = await call.by(started + timedelta(milliseconds=knobs.wait_ms(knobs.deep_check_ms)))
                 a = res.answers.get(PASSAGE_SET)
                 set_info = {"chunkIds": [hits[x.rid].chunk_id for x in use], "p": None}
                 if isinstance(a, NoulAnswer) and a.source == "jev":
@@ -394,6 +418,7 @@ class DeepSteps:
         checks = [{"chunkId": hits[c.rid].chunk_id, "order": c.order, "p_answers": c.p_answers,
                    "p_partly": c.p_partly, "unit": c.unit} for c in checked if c.rid in hits]
         return DeepResult(query=bundle.to_json(), display=bundle.display, retrieved=retrieved, kept=kept_hits,
+                          waits=dict(bundle.waits),
                           outcome=k.outcome, abstain=k.abstain, partly_line=k.partly_line, rows=rows, calls=calls,
                           rewrite=new_rewrite, rewrite_status=rewrite.status if rewrite is not None else None,
                           slowest_check_ms=slowest, quote_words=words, checks=checks,
@@ -406,6 +431,9 @@ class DeepSteps:
         th = self._passage_thresholds()
         pe, se = b.get(PASSAGE), b.get(PASSAGE_SET)
         kept = set(k.kept)
+        usable = set(k.usable)
+        # a usable passage that lost on rank says so (U-35): "0.99 ≥ 0.90 → dropped" read as a contradiction
+        outranked = f"not in top {len(k.kept)}"
         out: list[dict[str, Any]] = []
         for c in checked:
             h = hits.get(c.rid)
@@ -421,10 +449,12 @@ class DeepSteps:
                 probs = (1.0 - pa - pp, pp, pa)
                 level = max(range(3), key=lambda i: (probs[i], i))
                 use = pa + pp
+                # the usable line first (the meter draws it), then the found line (U-36: p_answers was never shown)
                 row.update(answer=LEVEL_ANSWER[level], p=round(use, 4), compared=[
-                    {"name": "t_keep", "value": round(use, 4), "threshold": th["t_keep"]}],
+                    {"name": "t_keep", "value": round(use, 4), "threshold": th["t_keep"]},
+                    {"name": "t_found", "value": round(pa, 4), "threshold": th["t_found"]}],
                     result="used" if c.rid in kept else "below_threshold",
-                    action="kept" if c.rid in kept else "dropped")
+                    action="kept" if c.rid in kept else outranked if c.rid in usable else "dropped")
             out.append(row)
         if set_yes is not None or (k.outcome in ("partly", "found") and len(k.usable) >= 2 and not any(
                 keeping.found(c, th["t_found"]) for c in checked)):
@@ -486,7 +516,8 @@ def start_early_embedding(deps: Any, session: Any, who: Sequence[str], text: str
 def with_recall(out: DeepResult, got: dict[str, Any]) -> DeepResult:
     return out.model_copy(update={"recall": got["recall"], "recall_outcome": got["recall_outcome"],
                                   "recall_rows": got["recall_rows"], "recall_checks": got["recall_checks"],
-                                  "recall_lists": got["recall_lists"], "calls": [*out.calls, *got["recall_calls"]]})
+                                  "recall_lists": got["recall_lists"], "calls": [*out.calls, *got["recall_calls"]],
+                                  "waits": {**out.waits, **(got.get("waits") or {})}})
 
 
 def build_deep_graph(steps: DeepSteps) -> Any:

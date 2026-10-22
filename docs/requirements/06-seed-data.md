@@ -53,7 +53,7 @@ Seed characters ship with **all 7 emotions + blink** (showcase quality), regardl
 - **Personality:** Dry wit, sceptical, speaks in ranges and trade-offs, secretly loves a good counter-example.
 - **Speaking style:** "It depends, and here's on what." Careful with numbers; says when the evidence is thin.
 - **Greeting:** "I have coffee and a spreadsheet. Pick one."
-- **Appearance:** Long black hair in a low bun with a pencil through it, amber eyes, oversized mustard cardigan over a striped shirt, rectangular glasses pushed up on her head.
+- **Appearance:** Long black hair in a low bun with a pencil through it, amber eyes, oversized mustard cardigan over a striped shirt, rectangular glasses.
 - **Theme brief:** Jazzy hip-hop, upright bass, vinyl crackle · 90 BPM.
 
 ### 2.4 Hana Morisaki (Sunny Hollow)
@@ -97,6 +97,8 @@ Seed characters ship with **all 7 emotions + blink** (showcase quality), regardl
 Each is stored as a **SessionEvent script** (doc 05), so Replay reproduces timing, emotions, reactions, energy drains, banners and Insight traces. **Every character message carries a `trace`.**
 
 ## 4. Transcripts
+
+*The transcripts below are the original screenplays. Since D-110 the shipped sessions are real recordings of the same scenes (Kai's lines adapted live to each reply); `seed/sessions/**` holds them.*
 
 Notation: `[emotion]` = the emotion shown with the message. `{reactions: Name→emotion}` = listener reactions (structured `Message.reactions` in fixtures). `⟨face: X⟩` = a user MANUAL `setEmotion` event. The user's log label is the world's You-card name ("Kai").
 
@@ -177,6 +179,8 @@ Notation: `[emotion]` = the emotion shown with the message. `{reactions: Name→
 > *(Turn limit reached → Episode-end card: Continue +10 · Summarise · Back)*
 
 ## 5. Mock memory items (for the PRF-07 mock)
+
+*Since D-110 the shipped demo is a real run of the app (the 9 scenes recorded on a story clock, one continuous memory): the seed ships the memories the app wrote, for every character, Victor and Rin included (71 in all), with their vectors. The table below is the original screenplay's, kept for the hand-written fallback; the memory empty state shows on a newly created character.*
 
 | Character | Kind | Text | Importance |
 |---|---|---|---|
@@ -301,7 +305,7 @@ Every AI-generated asset gets a provenance record (model, date, prompt, techniqu
 | Knowledge docs (indexed, indexing, failed) | PRF-08 |
 | Usage ledger (~2 weeks of mixed entries) | SET-09 |
 | 5 seed sessions (§3) with traces on every character message | Replay, Insight, demo mode |
-| Debate variants: **panel**, **auto host**, **You decide**, **no scores**, **too close to call** | MULTI-05..08 |
+| Debate variants: **panel**, **auto host**, **You decide** (D-117: the hand-made **no scores** and **too close to call** debates left the demo; unit tests cover both endings) | MULTI-05..08 |
 | Daily-cap pause mid-session; budget warning toast | STATE-06 |
 | Late emotion, missing reaction, content refusal, stream cut | APP-08 |
 | ≥ 8 history rows across modes and both worlds | HIST-01 filters/sort |

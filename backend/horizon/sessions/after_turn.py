@@ -129,23 +129,71 @@ def start_reactions(rt: Runtime, actor: SessionActor, info: TurnInfo, ctx: TurnC
     actor.background(REACTIONS, job())
 
 
+def face_switch_check(message_id: str, speaker_id: str, face: str) -> Any:
+    """D-112's re-check under the writer lock: the session is active and AUTO, the speaker still shows the face this
+    reply was given (no reaction, MANUAL change or later turn moved it), and they haven't started or made a newer
+    line."""
+    def check(state: Mapping[str, Any]) -> bool:
+        s = state["session"]
+        if s.get("emotionMode") == "user" or s.get("status") != "active":
+            return False
+        part = next((p for p in s["participants"] if p["characterId"] == speaker_id), None)
+        if part is None or str(part.get("currentEmotion") or "neutral") != face:
+            return False
+        msgs = state["messages"]
+        streaming = msgs.get(state.get("streamingId") or "")
+        if streaming is not None and streaming["author"].get("characterId") == speaker_id:
+            return False
+        mine = msgs.get(message_id)
+        return mine is None or not any(m["author"].get("characterId") == speaker_id and m["seq"] > mine["seq"]
+                                       for m in msgs.values())
+    return check
+
+
 def start_face_check(rt: Runtime, actor: SessionActor, info: TurnInfo, ctx: TurnContext, *, key_set: bool) -> None:
     """W2's start conditions past the caller's (complete, not scrubbed, not verbatim): AUTO at `turn.start`, a face that
-    isn't neutral, and a profile that checks at all."""
+    isn't neutral, and a profile that checks at all. U-49: a checker that `reports_skips` leaves a `skipped` row saying
+    why a reply wasn't checked. D-112: on a clash the face switches to the words' emotion (re-checked under the lock)."""
     checker = rt.ai.face_check(key_set)
     face = info.face or "neutral"
-    if isinstance(checker, NoFaceCheck) or not info.auto or face == "neutral" or not info.content.strip():
+    if isinstance(checker, NoFaceCheck) or not info.content.strip():
         return
     message_id, variant_id, speaker_id, text = info.message_id, info.variant_id, info.character_id, info.content
+    skips = bool(getattr(checker, "reports_skips", False))
+    reason = "skipped: manual emotions" if not info.auto else "skipped: neutral face" if face == "neutral" else None
+    if reason is not None:
+        if skips:
+            actor.background(FACE_CHECK, _append_skip(actor, message_id, variant_id, reason))
+        return
 
     async def job() -> None:
         try:
             out = await checker.check(ctx.session, message_id, speaker_id, face, text)
             if out is None:
+                if skips:
+                    await _append_skip(actor, message_id, variant_id, "skipped: no answer in time")
                 return
-            row, call = out
-            await actor.append_system1(message_id, variant_id, [row], [call] if call is not None else [])
+            row = out.row
+            if row.get("answer") == "clash" and out.words:
+                from horizon.ai.agent.face_check import switched
+
+                event = {"type": "emotion", "payload": {"messageId": message_id, "characterId": speaker_id,
+                                                        "emotion": out.words, "source": "classifier"}}
+                if await actor.emit_checked(event, face_switch_check(message_id, speaker_id, face)):
+                    row = switched(row, out.words)
+                else:
+                    row = {**row, "action": "not switched: the face had already changed"}
+            await actor.append_system1(message_id, variant_id, [row], [out.call] if out.call is not None else [])
         except Exception:
             log.exception("the face check failed after message %s (ignored)", message_id)
 
     actor.background(FACE_CHECK, job())
+
+
+async def _append_skip(actor: SessionActor, message_id: str, variant_id: str | None, reason: str) -> None:
+    from horizon.ai.agent.face_check import skipped_row
+
+    try:
+        await actor.append_system1(message_id, variant_id, [skipped_row(reason)], [])
+    except Exception:
+        log.exception("the face check's skip row failed after message %s (ignored)", message_id)

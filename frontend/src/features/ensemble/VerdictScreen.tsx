@@ -133,6 +133,12 @@ function Reveal({ verdict, cfg, cols, chars }: RevealProps) {
   const subjects = verdict.scoresBy === "debater" || panel ? [...cols.prop, ...cols.opp] : ["prop", "opp"];
   const rows = rubricRows(verdict, cfg.rubric, subjects);
   const showBars = rows.length > 0 && (verdict.decidedBy !== "user" || showArbiter);
+  // U-61 (the user's choice): each side's mean over the criteria (how the winner is decided), so a narrow win reads
+  // as one; with the lead a win needs when the verdict carries it
+  const totals = subjects.every((sid) => sid in SIDE_NAME) ? subjects.map((sid) => {
+    const vs = rows.flatMap((r) => r.values.filter((v) => v.subjectId === sid).map((v) => v.value));
+    return { name: SIDE_NAME[sid as Side], mean: vs.length ? vs.reduce((a, b) => a + b, 0) / vs.length : 0 };
+  }) : [];
   const summaries = orderSummaries(verdict, panel ? [...cols.prop, ...cols.opp] : ["prop", "opp"]);
 
   const stack = (side: Side) => {
@@ -220,6 +226,12 @@ function Reveal({ verdict, cfg, cols, chars }: RevealProps) {
                   </div>
                 </div>
               ))}
+              {totals.length > 0 && (
+                <p className={s.totals} style={{ "--d": `${400 + rows.length * subjects.length * 120}ms` } as CSSProperties}>
+                  {totals.map((t) => `${t.name} ${t.mean.toFixed(2)}`).join(" · ")}
+                  {verdict.margin !== undefined && <span> · a win needs a {verdict.margin.toFixed(2)} lead</span>}
+                </p>
+              )}
             </section>
           )}
 

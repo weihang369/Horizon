@@ -101,6 +101,7 @@ async def test_an_agent_arbiter_verdict_from_jevs_scores_and_canned_prose(api: A
     assert v["decidedBy"] == "arbiter" and v["strongerCase"] == "prop" and v["scoresBy"] == "side"
     assert len(v["scores"]) == 8 and all(0 <= s["value"] <= 10 for s in v["scores"])
     assert {(s["subjectId"], s["value"]) for s in v["scores"]} == {("prop", 10.0), ("opp", 2.5)}
+    assert v["margin"] == 0.25   # U-61: the lead a win needs, for the screen's totals
     assert v["summary"] == [{"subjectId": "prop", "points": ["Prop point 0", "Prop point 1", "Prop point 2"]},
                             {"subjectId": "opp", "points": ["Opp point 0", "Opp point 1", "Opp point 2"]}]
     assert v["rationale"] == "The Proposition answered the strongest point directly."

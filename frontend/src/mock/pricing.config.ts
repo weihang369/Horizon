@@ -30,8 +30,12 @@ export const PRICING: PricingTable = {
   peak: { multiplier: 2, tz: "Asia/Kuala_Lumpur", windows: [[540, 720], [840, 1080]] },
   // Backend gateway (doc backend/04 §1, NFR-33, D-80): pinned routing for the main LLM, per-purpose timeouts, embedding batches.
   gateway: {
+    // v1 test stage (2026-10-20): DeepSeek's own endpoint was no longer listed for V4.1 Flash, so OpenRouter spread
+    // replies by price over ~12 providers (one took 7 s to its first token). The measured order behind it: Relace
+    // (cheapest, caches prompts, ≈ 650 ms to first token), Alibaba (≈ 600 ms), Together (≈ 390 ms, twice the price).
+    // DeepSeek stays first: the peak pricing (rush hour) is its price, and OpenRouter skips a provider it doesn't list.
     routing: {
-      order: ["DeepSeek"], require_parameters: true, allow_fallbacks: true,
+      order: ["DeepSeek", "Relace", "Alibaba", "Together"], require_parameters: true, allow_fallbacks: true,
       quantizations: ["bf16", "fp16", "fp32", "unknown"], data_collection: "allow", // D-80
     },
     // No fallback model (docs/ai/03 C8): V4.1 Flash only; provider fallback stays (`allow_fallbacks`).

@@ -72,9 +72,10 @@ testpaths = ["tests"]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
 filterwarnings = ["ignore::DeprecationWarning:aiosqlite.*"]
+# The paid live checks and the real Docling conversions are manual scripts under manual/ (see manual/README.md):
+# outside testpaths, so a normal run collects and deselects nothing. Their markers stay for `-m` selection there.
 markers = ["live: calls the real OpenRouter API with the key from the environment (manual, <= $0.05; never in CI)",
            "docling: needs the optional Docling install and its fetched models (manual, local; never in CI)"]
-addopts = "-m 'not live and not docling'"
 
 [tool.ruff]
 line-length = 140
@@ -91,6 +92,7 @@ ignore = ["RUF001", "RUF002", "RUF003"]
 [tool.ruff.lint.per-file-ignores]
 "horizon/gateway/**" = ["TID251"]
 "tests/**" = ["TID251"]
+"manual/**" = ["TID251"]   # the manual checks drive the app in process, as tests/ does
 # The smoke suite drives the app in process (httpx.ASGITransport): no outbound HTTP; paid calls still go through the gateway.
 "horizon/evals/suites.py" = ["TID251"]
 "horizon/evals/content.py" = ["TID251"]   # M8: the long and transcript suites drive the in-process app, as smoke does
@@ -105,6 +107,7 @@ ignore = ["RUF001", "RUF002", "RUF003"]
 "horizon/evals/conversations.py" = ["TID251"]   # M15: conversations replies through the in-process app too
 "horizon/evals/faithfulness.py" = ["TID251"]   # M15: faithfulness drives the deep turns the same way
 "horizon/evals/blended.py" = ["TID251"]   # M15: latency --part blended drives the in-process app too
+"horizon/demo_export.py" = ["TID251"]   # v1 endgame: reads a local Horizon's public API (loopback only, refused otherwise)
 
 [tool.mypy]
 python_version = "3.12"

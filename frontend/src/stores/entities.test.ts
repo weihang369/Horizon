@@ -1,7 +1,7 @@
 // A late fetch answer never overwrites newer data (found over HTTP: a job GET started before job.done landed after it
 // and left the wizard on "Developing…").
 import { describe, expect, it } from "vitest";
-import { entities, invalidate, loadResource, putResource } from "./entities";
+import { entities, invalidate, invalidateAll, loadResource, putResource, retire } from "./entities";
 
 function deferred<T>() {
   let resolve!: (v: T) => void;
@@ -54,6 +54,21 @@ describe("loadResource", () => {
     answers[1].resolve("after");
     await expect(p).resolves.toBe("after");
     expect(res("t:first")).toMatchObject({ data: "after", status: "ready" });
+  });
+
+  it("leaves retired keys out of invalidations until undone or a reset (U-27: a deleted world)", () => {
+    putResource("t:gone", "old");
+    putResource("t:kept", "old");
+    const stale = (k: string) => res(k)?.stale;
+    const undo = retire((k) => k === "t:gone");
+    invalidate((k) => k.startsWith("t:"));
+    expect([stale("t:gone"), stale("t:kept")]).toEqual([0, 1]);
+    undo();
+    invalidate((k) => k === "t:gone");
+    expect(stale("t:gone")).toBe(1);
+    retire((k) => k === "t:gone");
+    invalidateAll();                             // Reset demo data: seed worlds come back with their ids
+    expect(stale("t:gone")).toBe(2);
   });
 
   it("still dedupes concurrent loads of the same version", async () => {

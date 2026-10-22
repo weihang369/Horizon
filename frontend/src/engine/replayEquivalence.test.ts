@@ -39,11 +39,11 @@ describe("replay equivalence", () => {
     expect(raw.at(-1)!.t).toBeGreaterThanOrEqual(trimmed.at(-1)!.t);
   });
 
-  it("Mei's bar reads 742 right after msg_seedD08 (doc 05 §8 trace.energy.remaining)", () => {
+  it("Mei's bar reads 996 right after msg_seedD08 (doc 05 §8 trace.energy.remaining)", () => {
     const events = read<SessionEvent[]>("sessions/ses_seedDebate4Day/events.json");
     const end = events.find((e) => e.type === "turn.end" && (e.payload as { messageId: string }).messageId === "msg_seedD08")!;
     const drain = events.find((e) => e.seq > end.seq && e.type === "energy" && (e.payload as { characterId: string }).characterId === "chr_seedMei")!;
     const at = replayTo(read<Session>("sessions/ses_seedDebate4Day/session.json"), events, drain.seq);
-    expect(at.energyById.chr_seedMei).toMatchObject({ current: 742, lastSpent: 5 });
+    expect(at.energyById.chr_seedMei).toMatchObject({ current: 996, lastSpent: 2 });
   });
 });

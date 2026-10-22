@@ -48,7 +48,7 @@ async def test_cancel_during_an_emotion_set(api: Api) -> None:
     body = r.json()
     assert body["status"] == "cancelled" and body["finishedAt"]
     statuses = [t["status"] for t in body["tasks"]]
-    assert statuses.count("succeeded") == 1 and statuses.count("skipped") == 2
+    assert statuses.count("succeeded") == 1 and statuses.count("skipped") == 3   # sad, angry and the blink (D-108)
     assert "activeJobId" not in await character(api, "chr_mockSarah")
     assert rec.of(j["id"], "job.done")
     release.set()

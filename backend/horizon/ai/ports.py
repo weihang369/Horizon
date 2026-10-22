@@ -12,7 +12,7 @@ from __future__ import annotations
 from collections.abc import AsyncIterator, Awaitable, Callable, Mapping, Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Protocol
+from typing import Any, NamedTuple, Protocol
 
 from sqlalchemy.ext.asyncio import AsyncConnection
 
@@ -141,12 +141,21 @@ class TurnPlanner(Protocol):
     def start_debate(self, req: DebateRequest) -> DebateCall | None: ...   # M11 (debate D5)
 
 
+class FaceCheckOut(NamedTuple):
+    """A face check's result: its System 1 row, its call entry, and the emotion the words show (D-112: on a clash the
+    runtime switches the face to it)."""
+
+    row: dict[str, Any]
+    call: dict[str, Any] | None
+    words: str | None = None
+
+
 class FaceChecker(Protocol):
     """M9 (doc 13 W2; design D23, D24): after `turn.end`, which emotion the reply's words show. Returns the System 1
-    row and its call entry, or None (no check for this profile, or the call was late or failed)."""
+    row, its call entry and the words' emotion, or None (no check for this profile, or the call was late or failed)."""
 
     async def check(self, ctx: SessionContext, message_id: str, speaker_id: str, face: str,
-                    text: str) -> tuple[dict[str, Any], dict[str, Any] | None] | None: ...
+                    text: str) -> FaceCheckOut | None: ...
 
 
 class ReactionPredictor(Protocol):

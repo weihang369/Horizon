@@ -6,19 +6,20 @@
     "title": "Debate: Sugar tax (auto host)",
     "titleIsCustom": false,
     "mode": "debate",
+    "status": "ended",
     "participants": [
       {
         "characterId": "chr_seedAmara",
         "role": "debater",
         "side": "prop",
-        "currentEmotion": "happy",
+        "currentEmotion": "thinking",
         "mutedByUser": false
       },
       {
         "characterId": "chr_seedVictor",
         "role": "debater",
         "side": "opp",
-        "currentEmotion": "neutral",
+        "currentEmotion": "thinking",
         "mutedByUser": false
       }
     ],
@@ -28,6 +29,14 @@
     "config": {
       "motion": "This house would tax sugary drinks",
       "format": "two_sided",
+      "sides": {
+        "prop": [
+          "chr_seedAmara"
+        ],
+        "opp": [
+          "chr_seedVictor"
+        ]
+      },
       "roundsPreset": "quick",
       "phases": [
         "opening",
@@ -55,23 +64,36 @@
         }
       ],
       "autoAdvance": true,
-      "pauseMs": 1500,
-      "sides": {
-        "prop": [
-          "chr_seedAmara"
-        ],
-        "opp": [
-          "chr_seedVictor"
-        ]
-      }
+      "pauseMs": 1500
     },
-    "isSeed": false,
-    "status": "ended",
     "state": {
       "phase": "ended",
       "round": 3,
       "iteration": 1,
       "verdict": {
+        "summary": [
+          {
+            "subjectId": "prop",
+            "points": [
+              "Taxes work where willpower alone doesn't; price shapes what we buy.",
+              "Sugary drinks are the easiest place to start; no nutritional need.",
+              "She treats the consequences; those costs land on all of us.",
+              "A modest levy cuts consumption, nudges reformulation, and funds prevention.",
+              "She grants regressivity but says disease costs fall hardest on the poorest."
+            ]
+          },
+          {
+            "subjectId": "opp",
+            "points": [
+              "Calls the tax a sin levy, priced onto the poor, collected by the state.",
+              "Argues a tax on a substance is not a tax on a behavior.",
+              "Says the evidence is association dressed as cause.",
+              "Calls it a regressive duty falling hardest on the least able to absorb it.",
+              "Concludes her case proves a tax is plausible, not that it is just."
+            ]
+          }
+        ],
+        "keyDisagreement": "Whether a levy's proven effect on purchases is enough to show it improves health outcomes and is just, given its regressive cost.",
         "decidedBy": "arbiter",
         "strongerCase": "prop",
         "scoresBy": "side",
@@ -79,68 +101,53 @@
           {
             "subjectId": "prop",
             "criterionId": "evidence",
-            "value": 7.5
+            "value": 7.2
           },
           {
             "subjectId": "prop",
             "criterionId": "rebuttal",
-            "value": 7
+            "value": 8.1
           },
           {
             "subjectId": "prop",
             "criterionId": "clarity",
-            "value": 8
+            "value": 9.3
           },
           {
             "subjectId": "prop",
             "criterionId": "persuasion",
-            "value": 7.5
+            "value": 6.6
           },
           {
             "subjectId": "opp",
             "criterionId": "evidence",
-            "value": 6.5
+            "value": 5.1
           },
           {
             "subjectId": "opp",
             "criterionId": "rebuttal",
-            "value": 7
+            "value": 8.8
           },
           {
             "subjectId": "opp",
             "criterionId": "clarity",
-            "value": 7.5
+            "value": 9.2
           },
           {
             "subjectId": "opp",
             "criterionId": "persuasion",
-            "value": 6.5
+            "value": 6.9
           }
         ],
-        "summary": [
-          {
-            "subjectId": "prop",
-            "points": [
-              "Sugar taxes shift purchases measurably.",
-              "Revenue can fund school meals."
-            ]
-          },
-          {
-            "subjectId": "opp",
-            "points": [
-              "Regressive for low-income households.",
-              "Industry reformulates around thresholds."
-            ]
-          }
-        ],
-        "keyDisagreement": "Whether regressivity is outweighed by health gains.",
-        "rationale": "Proposition answered the regressivity point with earmarked revenue; Opposition did not rebut it."
+        "margin": 0.25,
+        "rationale": "The Proposition leads on evidence and clarity, grounding the case in clinical experience and a consistent price-purchases direction, while the Opposition leads narrowly on rebuttal and persuasion. The Opposition's strongest point, regressivity, is largely conceded and reframed by the Proposition as a trade-off against disease costs, so the Proposition's case survives as the stronger overall."
       }
     },
-    "costUsd": 0.000487,
+    "isSeed": false,
+    "costUsd": 0.001848,
     "messageCount": 11,
-    "createdAt": "2026-09-22T13:20:00Z",
-    "updatedAt": "2026-09-22T13:20:32.361Z",
-    "lastMessageAt": "2026-09-22T13:20:30.851Z"
+    "createdAt": "2026-09-22T13:19:59.406Z",
+    "updatedAt": "2026-09-22T13:20:38.226Z",
+    "lastMessageAt": "2026-09-22T13:20:38.226Z"
   }
 }

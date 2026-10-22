@@ -166,6 +166,21 @@ def test_a_recall_only_bundle_never_rewrites_and_adds_the_earlier_lines() -> Non
     assert b.rewrite is None and b.dense == {} and "sister" in b.terms and "mia" in b.terms
 
 
+def test_a_bundle_shared_with_the_documents_keeps_recalls_own_words() -> None:
+    """U-34: the documents' terms leave out words no passage holds; recall searches lines and memories, so it takes the
+    shared bundle's texts and vectors but its own words ("sister" is in no document)."""
+    from horizon.ai.retrieval import QueryBundle
+
+    msg = "does the review mention my sister Mia's ward?"
+    docs = QueryBundle(text=msg, message=msg, rewrite="fatigue review ward nurses", terms=("review", "ward"),
+                       dense={"sp": {0: [1.0]}})
+    req = SimpleNamespace(message=msg, earlier=[], message_id="msg_9", speaker=SimpleNamespace(id="chr_a"),
+                          session=SimpleNamespace(mode="one_on_one"))
+    b = rc.recall_bundle(req, docs, {}, "sp")   # type: ignore[arg-type]
+    assert b.terms[:4] == ("fatigue", "review", "ward", "nurses") and {"sister", "mia"} <= set(b.terms)
+    assert b.dense == docs.dense and b.rewrite == docs.rewrite
+
+
 # ── D26 ──
 def test_earlier_is_asked_only_with_something_to_search_and_not_when_dropped() -> None:
     assert gates.recall_asked(["a", "b", "c"], ["a", "c"], dropped=["c"]) == ["a"]

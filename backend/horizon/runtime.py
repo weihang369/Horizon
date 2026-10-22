@@ -527,15 +527,23 @@ class Runtime:
 
     # ── seed ──
     async def load_seed(self) -> seeding.SeedData:
+        """D-104: every run ships the full demo (the `_mock` overlay too, as the web demo does). Outside test mode the
+        overlay's fixture jobs stay out, so no character shows a generation that never runs."""
         if self._seed is None:
-            self._seed = await asyncio.to_thread(seeding.load_seed, self.cfg.seed_dir, self.schema,
-                                                 include_mock=self.cfg.test_mode)
+            data = await asyncio.to_thread(seeding.load_seed, self.cfg.seed_dir, self.schema, include_mock=True)
+            if not self.cfg.test_mode:
+                data.jobs = []
+                for c in data.characters:
+                    c.pop("activeJobId", None)
+            self._seed = data
         return self._seed
 
     async def import_seed(self) -> list[str]:
         data = await self.load_seed()
         async with self.db.write() as tx:
-            return await seeding.apply_seed(tx.conn, data, energy_day=self.energy_day, local_day=self.local_day)
+            sids = await seeding.apply_seed(tx.conn, data, energy_day=self.energy_day, local_day=self.local_day)
+        await asyncio.to_thread(seeding.install_knowledge_files, data, self.cfg.knowledge_dir)   # D-110
+        return sids
 
     async def reset_demo(self) -> None:
         """POST /admin/reset-demo (doc 02 §4): re-seed seed records in place; user data survives. In test mode it also
@@ -552,14 +560,29 @@ class Runtime:
             await self._ingest.cancel_for(source_ids=[k["id"] for k in data.knowledge])
         if self._memory_runs is not None:  # M13 (memory D8): both resets cancel running pause runs
             self._memory_runs.cancel_all()
+        await self._drop_retired_demo_sessions({s.session["id"] for s in data.sessions})
         async with self.db.write() as tx:
             sids = await seeding.apply_seed(tx.conn, data, energy_day=self.energy_day, local_day=self.local_day)
             if sids:
                 await tx.conn.execute(t.ai_purge_queue.insert().values(scope="session", ids=sids, created_at=self.now_iso(),
                                                                        attempts=0, done_at=None))
             tx.publish(GLOBAL, {"type": "mock.reset"})
+        await asyncio.to_thread(seeding.install_knowledge_files, data, self.cfg.knowledge_dir)   # D-110
+        if sids and self._purge is not None:
+            self._purge.notify()   # audit 01-06: the replaced seed sessions' AI rows are purged now, not at the next start
         if self._jobs is not None:
             await self._jobs.recover()
+
+    async def _drop_retired_demo_sessions(self, shipped: set[str]) -> None:
+        """D-117: reset only upserts what still ships, so a demo session that left the `_mock` overlay (the two
+        hand-made debates) would stay in an existing database for good. Shipped overlay ids start `ses_mock`; a user's
+        own sessions never do (ULIDs), so only retired demo sessions go, the normal delete way."""
+        from horizon.sessions.lifecycle import delete_session
+
+        async with self.db.read() as conn:
+            ids = [r[0] for r in await conn.execute(select(t.sessions.c.id).where(t.sessions.c.id.like("ses_mock%")))]
+        for sid in (x for x in ids if x not in shipped):
+            await delete_session(self, sid)
 
     def clear_scenario_state(self) -> None:
         """Forget every test-scenario fault and override (M6 design D3): scenarios replace each other, as on the mock."""
@@ -591,6 +614,8 @@ class Runtime:
             async with self.db.write() as tx:
                 await worlds_svc.delete_world(tx, world_id, now=self.now_iso())
             worlds_svc.remove_world_files(self.cfg.data_dir, world_id)
+        if world_ids and self._purge is not None:
+            self._purge.notify()   # audit 01-06
         self.publish(GLOBAL, {"type": "mock.reset"})
 
     async def factory_reset(self) -> None:

@@ -31,11 +31,11 @@ from typing import Any
 
 from horizon.ai.agent import keep as keeping
 from horizon.evals.metrics import bootstrap_mean, wilson
-from horizon.evals.runner import EVALS_DIR
+from horizon.evals.runner import EVAL_SEED, EVALS_DIR
 
 DATASET = EVALS_DIR / "datasets" / "retrieval" / "retrieval.jsonl"
 CORPUS = EVALS_DIR / "corpus"
-SEED_CHUNKS = EVALS_DIR.parent / "seed" / "knowledge" / "chunks"
+SEED_CHUNKS = EVAL_SEED / "knowledge" / "chunks"
 CHARACTERS = {"amara": "chr_seedAmara", "mei": "chr_seedMei", "victor": "chr_seedVictor", "hana": "chr_seedHana"}
 COVER = 0.8
 THRESHOLDS = (0.5, 0.6, 0.7, 0.8, 0.9)

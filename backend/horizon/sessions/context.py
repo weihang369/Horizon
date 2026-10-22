@@ -64,8 +64,11 @@ def energy_of(rt: Runtime, row: Any) -> dict[str, Any]:
                        utc_offset_min=p.utc_offset_min)
 
 
-async def session_context(rt: Runtime, actor: SessionActor, *, recent: int | None = None) -> SessionContext:
-    """`recent` is the history window (the messages after the latest rolling summary), or its last `recent` items."""
+async def session_context(rt: Runtime, actor: SessionActor, *, recent: int | None = None,
+                          before_message: str | None = None) -> SessionContext:
+    """`recent` is the history window (the messages after the latest rolling summary), or its last `recent` items.
+    `before_message` (a regenerate: the message whose new variant is written) ends the history before that message,
+    so the reply being replaced is never read back as already said (v1 test stage, audit 04-01)."""
     s = actor.session
     ids = [p["characterId"] for p in s["participants"]]
     chars = await characters(rt, ids)
@@ -81,6 +84,9 @@ async def session_context(rt: Runtime, actor: SessionActor, *, recent: int | Non
                              energy=energy_of(rt, chars[p["characterId"]]) if p["characterId"] in chars else {})
              for p in s["participants"]]
     msgs = ordered_messages(actor.state)
+    cut = actor.state["messages"].get(before_message) if before_message else None
+    if cut is not None:
+        msgs = [m for m in msgs if m["seq"] < cut["seq"]]
     views = _views([m for m in msgs if m["seq"] > upto and m["status"] != "streaming"], names)
     # docs/ai/05 X2 (persona-context D10): never more than twice the mode's window of history, for every caller
     # (turns, prefetches, the router, host and verdict); older lines are only hidden until the summary lands.

@@ -9,12 +9,13 @@ MMR over the merge with `recall.mmrLambda` picks `candidates`, keyed `line:{rid}
 rids collide; similarity is the stored vectors' cosine (both in the active space), else the Jaccard of words.
 
 **The query texts (D32).** The documents' bundle when that branch ran (the message, plus its rewrite); a recall-only
-turn never rewrites: the message, and the message with its two earlier lines. The message's vector is waited for at
-most `queryEmbedWaitMs`; without one, BM25 only (`lists.dense == 0`).
+turn never rewrites: the message, and the message with its two earlier lines. The message's vector is waited for to the
+end under `docsWaitAll` (U-56), else at most `queryEmbedWaitMs`; without one, BM25 only (`lists.dense == 0`).
 
 **Jev call 2 (D33).** One `recall` request per candidate (≤ 6), all at once, each read by `recall.checkMs` from when it
-was sent; a 429 falls back at once. Up to `keep` (3) at or above `t_recall` are kept, by p. Every answer missing: the
-top `fallbackKeep` (2) of the merged order, unscored (`fallback`). Some back: only those decide (recall never
+was sent (U-56: to the end, under `retrieval.agent.docsWaitAll`, as the documents' checks); a 429 falls back at
+once. Up to `keep` (3) at or above `t_recall` are kept, by p. Every answer missing: the top `fallbackKeep` (2) of the
+merged order, unscored (`fallback`). Some back: only those decide (recall never
 abstains, so partial evidence is safe).
 
 **Phase 10 (the user's choices, m13.md):** the session's lines are searched by vector only when the query has one
@@ -134,17 +135,25 @@ def mmr(items: Sequence[Item], n: int, lam: float) -> list[Item]:
     return picked
 
 
-def recall_bundle(req: DeepRequest, docs: QueryBundle | None, dense: dict[int, list[float]], space_id: str) -> QueryBundle:
-    """D32: the documents' bundle when that branch ran; else the message and, with its earlier lines, its words."""
-    if docs is not None:   # its own vector when the documents' search had none (no indexed documents)
-        return docs if docs.dense.get(space_id) or not dense else replace(docs, dense={space_id: dense})
-    texts = [req.message, "\n".join([*req.earlier, req.message])] if req.earlier else [req.message]
+def _terms(texts: Sequence[str]) -> tuple[str, ...]:
+    """Recall's BM25 terms: the texts' words in order, de-duplicated, ≤ 24 (never ranked against the documents)."""
     terms: list[str] = []
     for t_ in texts:
         terms += [w for w in q.words(t_) if w not in terms]
+    return tuple(terms[:q.MAX_TERMS_REWRITTEN])
+
+
+def recall_bundle(req: DeepRequest, docs: QueryBundle | None, dense: dict[int, list[float]], space_id: str) -> QueryBundle:
+    """D32: the documents' texts and vectors when that branch ran; else the message and, with its earlier lines, its
+    words. The documents' own terms are not reused: they are ranked against the speaker's documents and leave out
+    words no passage holds (U-34), which are often what recall looks for ("my sister")."""
+    if docs is not None:   # its own vector when the documents' search had none (no indexed documents)
+        out = docs if docs.dense.get(space_id) or not dense else replace(docs, dense={space_id: dense})
+        return replace(out, terms=_terms([t for t in (docs.rewrite, docs.message or docs.text) if t]))
+    texts = [req.message, "\n".join([*req.earlier, req.message])] if req.earlier else [req.message]
     return QueryBundle(text=req.message, message_id=req.message_id, speaker_id=req.speaker.id,
                        mode=req.session.mode, source="as_written", message=req.message, earlier=tuple(req.earlier),
-                       dense_texts=tuple(texts), terms=tuple(terms[:q.MAX_TERMS_REWRITTEN]),
+                       dense_texts=tuple(texts), terms=_terms(texts),
                        dense={space_id: dense} if dense else {}, display=q.display(req.message))
 
 
@@ -195,9 +204,9 @@ def candidate_text(hit: RecallHit, line_words: int) -> str:
 
 
 async def check(deps: Any, req: DeepRequest, bundle: QueryBundle, picked: Sequence[Item],
-                knobs: Any) -> tuple[list[float | None], float | None]:
-    """D33: one request per candidate, all started at once, each read by `checkMs` from when it was sent. Returns each
-    candidate's p (None: missing) and the slowest landing (ms)."""
+                knobs: Any, *, wait_ms: float | None = None) -> tuple[list[float | None], float | None]:
+    """D33: one request per candidate, all started at once, each read by `checkMs` (U-56: `wait_ms`, to the end under
+    `docsWaitAll`) from when it was sent. Returns each candidate's p (None: missing) and the slowest landing (ms)."""
     if not picked:
         return [], None
     decider = deps.decider()
@@ -205,7 +214,7 @@ async def check(deps: Any, req: DeepRequest, bundle: QueryBundle, picked: Sequen
     ctx = req.session.call_ctx(PURPOSE, character_id=req.speaker.id, message_id=req.reply_message_id)
     name = req.speaker.name if len(req.speaker.name) <= 40 else req.speaker.first_name[:40]
     sent = deps.clock().now()
-    at = sent + timedelta(milliseconds=knobs.check_ms)
+    at = sent + timedelta(milliseconds=knobs.check_ms if wait_ms is None else wait_ms)
     calls: list[DecisionCall] = []
     for it in picked:
         state = {"mode": req.session.mode, "candidate_kind": "earlier line" if it.kind == LINE else "memory",

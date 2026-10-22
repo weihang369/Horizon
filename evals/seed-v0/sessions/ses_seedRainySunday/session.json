@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "data": {
+    "id": "ses_seedRainySunday",
+    "worldId": "wld_seedSunnyHollow",
+    "title": "Rainy Sunday",
+    "titleIsCustom": true,
+    "mode": "watch",
+    "participants": [
+      {
+        "characterId": "chr_seedTakeshi",
+        "role": "speaker",
+        "currentEmotion": "happy",
+        "mutedByUser": false
+      },
+      {
+        "characterId": "chr_seedRin",
+        "role": "speaker",
+        "currentEmotion": "sad",
+        "mutedByUser": false
+      }
+    ],
+    "emotionMode": "llm",
+    "musicPolicy": "follow_speaker",
+    "readableMode": false,
+    "config": {
+      "premise": "Rainy Sunday. Takeshi wants to take Rin fishing; Rin is mid-raid.",
+      "maxTurns": 10,
+      "paceMs": 1500,
+      "openingSpeaker": "chr_seedTakeshi"
+    },
+    "isSeed": true,
+    "status": "paused",
+    "state": {
+      "status": "ended",
+      "turnsTaken": 10,
+      "turnLimit": 10,
+      "nextSpeakerId": "chr_seedRin"
+    },
+    "costUsd": 0.000625,
+    "messageCount": 11,
+    "createdAt": "2026-09-27T02:40:00Z",
+    "updatedAt": "2026-09-27T02:40:40.438Z",
+    "pausedReason": "turn_cap",
+    "lastMessageAt": "2026-09-27T02:40:38.030Z"
+  }
+}

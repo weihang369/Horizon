@@ -1,9 +1,12 @@
 """The seed round trip (design D5, the main read-model acceptance test): every seed entity read back through the API
 equals its seed file after timestamp normalisation and ONLY the documented read-time derivations:
 
-- `KnowledgeSource.status`: a shipped `indexed` source has no vectors yet, so it reads `keyword_only` (OQ-1);
+- `KnowledgeSource.status`: since D-110 a shipped `indexed` source carries its vectors (the default space), so it reads
+  as shipped (before: `keyword_only`, OQ-1);
 - `Energy.state` / `fullAt` / floors are derived (energy spec) and equal the shipped values for the shipped data;
-- `World.characterCount`, `KnowledgeSource.citedCount` are derived and must equal the shipped values.
+- `World.characterCount`, `KnowledgeSource.citedCount` are derived and must equal the shipped values (since D-104 the
+  count includes the `_mock` overlay's approved characters, which every run imports);
+- outside test mode the overlay's fixture jobs are not imported, so its characters read without `activeJobId`.
 
 Any field a mapper drops, renames or invents fails here.
 """
@@ -41,15 +44,22 @@ def seed_root(overlay: bool) -> Path:
     return SEED_DIR / "_mock" if overlay else SEED_DIR
 
 
-async def _roundtrip(api: Api, root: Path, *, worlds: bool) -> int:
+def approved_in(world_id: str) -> int:
+    return sum(1 for root in (SEED_DIR, SEED_DIR / "_mock") for p in (root / "characters").glob("*.json")
+               if data(p)["worldId"] == world_id and data(p)["status"] == "approved")
+
+
+async def _roundtrip(api: Api, root: Path, *, worlds: bool, jobs: bool = True) -> int:
     checked = 0
     if worlds:
         for p in sorted((root / "worlds").glob("*.json")):
             w = data(p)
-            assert await api.json(f"/api/v1/worlds/{w['id']}") == norm(w), p.name
+            assert await api.json(f"/api/v1/worlds/{w['id']}") == norm({**w, "characterCount": approved_in(w["id"])}), p.name
             checked += 1
     for p in sorted((root / "characters").glob("*.json")):
         c = data(p)
+        if not jobs:
+            c.pop("activeJobId", None)
         assert await api.json(f"/api/v1/characters/{c['id']}") == norm(c), p.name
         checked += 1
     for p in sorted((root / "songs").glob("*.json")):
@@ -80,8 +90,7 @@ async def _roundtrip(api: Api, root: Path, *, worlds: bool) -> int:
         if not items:
             continue
         got = await api.json(f"/api/v1/characters/{items[0]['characterId']}/knowledge")
-        expected = [{**k, "status": "keyword_only" if k["status"] == "indexed" else k["status"]} for k in items]
-        assert sorted(got, key=lambda x: x["id"]) == sorted(norm(expected), key=lambda x: x["id"]), p.name
+        assert sorted(got, key=lambda x: x["id"]) == sorted(norm(items), key=lambda x: x["id"]), p.name
         for k in items:
             body = await api.json(f"/api/v1/knowledge/{k['id']}")
             chunk_file = root / "knowledge" / "chunks" / f"{k['id']}.json"
@@ -98,7 +107,10 @@ async def _roundtrip(api: Api, root: Path, *, worlds: bool) -> int:
         checked += len(rows)
     for p in sorted((root / "jobs").glob("*.json")):
         j = data(p)
-        assert await api.json(f"/api/v1/jobs/{j['id']}") == norm(recovered(j)), p.name
+        if jobs:
+            assert await api.json(f"/api/v1/jobs/{j['id']}") == norm(recovered(j)), p.name
+        else:
+            await api.json(f"/api/v1/jobs/{j['id']}", status=404)
         checked += 1
     return checked
 
@@ -119,6 +131,10 @@ async def test_seed_roundtrips_exactly(api_normal: Api) -> None:
 
 async def test_mock_overlays_roundtrip_in_test_mode(api: Api) -> None:
     assert await _roundtrip(api, seed_root(True), worlds=False) > 20
+
+
+async def test_mock_overlays_roundtrip_in_a_normal_run_without_fixture_jobs(api_normal: Api) -> None:
+    assert await _roundtrip(api_normal, seed_root(True), worlds=False, jobs=False) > 20
 
 
 @pytest.mark.parametrize("field", ["profile", "emotionSet"])

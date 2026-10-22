@@ -99,6 +99,20 @@
   clip-path: polygon(0 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
 }
 
+/* U-37: the reply's markers in this source; each jumps to its passage. */
+.marks { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+.marksLabel { margin-right: 4px; font: 700 10.5px/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--paper-300); }
+.markBtn {
+  min-width: 28px; height: 26px; padding: 0 8px;
+  font: 700 12px/1 var(--font-mono); font-variant-numeric: tabular-nums;
+  color: var(--c-primary); background: transparent; border: 0; box-shadow: inset 0 0 0 1.5px var(--c-primary);
+  clip-path: polygon(3px 0, 100% 0, calc(100% - 3px) 100%, 0 100%);
+  cursor: pointer;
+}
+.markBtn:hover { background: color-mix(in srgb, var(--c-primary) 22%, transparent); }
+.markBtn[aria-pressed="true"] { color: var(--c-on-primary); background: var(--c-primary); }
+.markBtn:focus-visible { outline: 2px solid var(--c-glow); outline-offset: 2px; }
+
 .notice {
   margin: 2px 0 0;
   padding: 8px 12px;
@@ -156,6 +170,13 @@
 .margin { display: grid; align-content: start; justify-items: end; gap: 6px; padding: 3px 16px 0 10px; }
 .loc { font: 600 12px/1.2 var(--font-mono); color: color-mix(in srgb, var(--ink-900) 62%, var(--paper-50)); white-space: nowrap; }
 .text { margin: 0; padding-left: 22px; font: 400 16px/1.7 var(--font-ui); max-width: 68ch; }
+/* Passages are Markdown (Docling): headings, lists and tables. */
+.text > * + * { margin-top: 0.6em; }
+.text ul, .text ol { margin: 0; padding-left: 1.3em; }
+.text table { border-collapse: collapse; font-size: 14px; line-height: 1.45; }
+.text th, .text td { padding: 4px 12px 4px 0; text-align: left; vertical-align: top; }
+.text th { font: 700 11px/1.3 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; border-bottom: 2px solid var(--ink-900); }
+.text td { border-bottom: 1px solid color-mix(in srgb, var(--ink-900) 14%, transparent); }
 
 .hit .loc { color: var(--ink-900); }
 .hitTag {
@@ -178,20 +199,16 @@
   width: 5px;
   background: var(--c-primary);
 }
+/* The cited passage: one marker stroke swept across the whole block (it can hold a heading, a list or a table). */
 .marker {
-  color: inherit;
-  padding: 0.08em 0.15em;
-  margin: 0 -0.15em;
-  background-color: transparent;
-  background-image: linear-gradient(100deg, transparent 0 0.2em, var(--hl) 0.35em calc(100% - 0.35em), transparent calc(100% - 0.15em));
+  padding-top: 0.15em;
+  padding-bottom: 0.15em;
+  background-image: linear-gradient(100deg, transparent 0 12px, var(--hl) 18px calc(100% - 8px), transparent 100%);
   background-repeat: no-repeat;
-  background-size: 100% 88%;
-  background-position: 0 70%;
-  -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
+  background-size: 100% 100%;
   animation: sweep 760ms var(--ease-out) 220ms both;
 }
-@keyframes sweep { from { background-size: 0% 88%; } }
+@keyframes sweep { from { background-size: 0% 100%; } }
 :root[data-motion="reduced"] .marker { animation: none; }
 
 .emptyDoc, .end { margin: 0; padding: 12px 0 0 134px; font: 500 12px/1.5 var(--font-mono); color: color-mix(in srgb, var(--ink-900) 60%, var(--paper-50)); }

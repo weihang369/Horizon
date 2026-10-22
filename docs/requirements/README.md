@@ -63,7 +63,7 @@ Horizon is an open-source **AI multi-character platform with a game-like anime i
 | **Session** | A conversation in one of 4 modes: `one_on_one`, `group`, `debate`, `watch`. |
 | **Emotion set** | 7 portraits: neutral, happy, sad, angry, surprised, thinking, embarrassed. |
 | **AUTO / MANUAL emotion** | AUTO: the AI picks the emotion per reply. MANUAL: the user sets the face (face only). |
-| **Lean / Standard** | Image generation modes. Lean (default): 1 portrait + 4 emotions, rest on demand (≈ US$0.25/character). Standard: 2 portraits + all 7 (≈ US$0.50) |
+| **Lean / Standard** | Image generation modes. Lean (default): 1 portrait + 4 emotions + blink, rest on demand (≈ US$0.13/character). Standard: 2 portraits + all 7 + blink (≈ US$0.20). Both from the bundled price table (D-108) |
 | **Energy (⚡)** | Each character's stamina bar. Talking costs ⚡ (1 ⚡ = US$0.0001), it refills over ~24 h, and an empty character falls asleep until topped up. It is the per-character budget |
 | **You card** | Optional per-world card (your display name + one line) so characters in that world know who you are |
 | **Insight drawer** | A side panel showing what the AI did per message (model, cost, emotion probabilities, routing, memory, context budget). |

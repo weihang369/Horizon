@@ -113,7 +113,7 @@ Only parse or validation failures SHALL retry. A creation task's `cost_usd` SHAL
 - **THEN** two `profile` ledger rows exist, and the task's `cost_usd` is $0.0019
 
 ### Requirement: Tuned for one model set
-Every chat call SHALL use the pinned chat model from the price table, and no fallback model SHALL be sent. Settings → Models SHALL be a read-only "Models in use" panel. Each role row SHALL show its model, its purpose, its price from the bundled price table, and a Test button, with the line "Tuned for these models. Custom models are planned for v2." Stored model overrides SHALL be ignored.
+Every chat call SHALL use the pinned chat model from the price table, and no fallback model SHALL be sent. Settings → Models SHALL be a read-only "Models in use" panel. Each role SHALL show its model, its purpose and its price from the bundled price table, with no Test button (D-107), and the panel SHALL carry the line "Tuned for these models. Custom models are planned for v2." Stored model overrides SHALL be ignored.
 
 #### Scenario: No model list
 - **WHEN** any chat request is sent
@@ -121,4 +121,4 @@ Every chat call SHALL use the pinned chat model from the price table, and no fal
 
 #### Scenario: Read-only panel
 - **WHEN** the user opens Settings → Models
-- **THEN** no model ID is editable, and each role shows its price and a Test button
+- **THEN** no model ID is editable, each role shows its price, and there is no Test button

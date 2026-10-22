@@ -10,6 +10,7 @@ from typing import Any
 
 import httpx
 from PIL import Image
+from sqlalchemy import text
 
 from horizon.ai.naive.creation import QUOTE_RULE, draft_schema
 from horizon.ai.scripted.drafts import draft_from_seed
@@ -81,7 +82,7 @@ async def test_naive_draft_is_schema_valid(api: Api) -> None:
     # the system prompt, and room for a whole draft (one measured 1,229 tokens in the 2026-10-06 live run)
     assert body["response_format"] == {"type": "json_object"}
     assert json.dumps(draft_schema(list(load_palettes(SEED_DIR))), separators=(",", ":")) in body["messages"][0]["content"]
-    assert body["provider"]["order"] == ["DeepSeek"] and body["reasoning"] == {"enabled": False}
+    assert body["provider"]["order"][0] == "DeepSeek" and body["reasoning"] == {"enabled": False}
     assert body["max_tokens"] == 2400
     # persona-context 7.1 (docs/ai/04 P11): the drafter knows the world, the names already used and the You card
     user = body["messages"][1]["content"]
@@ -259,7 +260,9 @@ async def test_emotion_edit_sends_the_base_portrait(api: Api) -> None:
     j = await start(api, {"characterId": "chr_mockSarah", "kind": "emotion_regenerate", "emotions": ["happy"]})
     done = await settle_job(api, j["id"])
     assert done["status"] == "succeeded"
-    req = next(r for r in reversed(fake.requests) if r.url.path.endswith("/images"))
+    # Sarah has no blink yet, so the job also makes one (D-108); this checks the happy edit.
+    req = next(r for r in reversed(fake.requests)
+               if r.url.path.endswith("/images") and "eyes fully closed" not in json.loads(r.content)["prompt"])
     body = json.loads(req.content)
     assert len(body["input_references"]) == 1
     ref = body["input_references"][0]
@@ -268,11 +271,17 @@ async def test_emotion_edit_sends_the_base_portrait(api: Api) -> None:
     expected = api.rt.prompt_compiler.emotion_edit(ch["profile"], "happy").prompt
     assert body["prompt"] == expected and body["n"] == 1 and body["aspect_ratio"] == "3:4" and body["resolution"] == "1K"
     rows_ = await ledger(api, j["id"])
-    assert len(rows_) == 1 and rows_[0]["purpose"] == "image_emotion" and rows_[0]["provider"] == "Seed"
+    assert sorted(r["purpose"] for r in rows_) == ["image_blink", "image_emotion"] and all(r["provider"] == "Seed" for r in rows_)
 
 
 async def test_svg_base_is_rejected_for_naive_edits(api: Api) -> None:
     await naive(api, image="naive")
+    # The seed ships real portraits since v1; an install still on a placeholder drawing is made by pointing the base at
+    # its SVG (the placeholder set the seed shipped before).
+    async with api.rt.db.write() as tx:
+        await tx.conn.execute(text("UPDATE image_assets SET rel_path = 'placeholder/portraits/chr_seedHana/neutral.svg' "
+                              "WHERE character_id = 'chr_seedHana' AND kind = 'emotion' AND emotion = 'neutral' "
+                              "AND variant = 'default' AND is_active = 1"))
     r = await api.post(f"{API}/jobs", {"characterId": "chr_seedHana", "kind": "emotion_regenerate", "emotions": ["happy"]})
     assert r.status_code == 422
     err = r.json()["error"]
@@ -310,8 +319,8 @@ async def test_naive_wizard_run(api: Api) -> None:
     assert (await settle_job(api, sj["id"]))["status"] == "succeeded"
     ch = (await api.post(f"{API}/characters/{cid}/approve", status=200)).json()
     assert ch["status"] == "approved"
-    for e in ("neutral", "happy", "sad", "angry"):
-        served = await api.get(ch["emotions"][e]["url"])
+    for url in [*(ch["emotions"][e]["url"] for e in ("neutral", "happy", "sad", "angry")), ch["blink"]["url"]]:
+        served = await api.get(url)
         assert served.status_code == 200 and len(served.content) <= 250 * 1024
         with Image.open(io.BytesIO(served.content)) as img:
             assert img.format == "WEBP" and img.size == (768, 1024)
@@ -319,4 +328,4 @@ async def test_naive_wizard_run(api: Api) -> None:
     assert song["status"] == "ready" and song["url"].endswith(".mp3") and song["format"] == "mp3"   # Lyria 3 Clip (D-87)
     delta = {k: fake.counts[k] - before.get(k, 0) for k in fake.counts}
     assert delta.get("chat", 0) == 2 and delta.get("music", 0) == 1   # the draft, then the song (both on the chat endpoint)
-    assert delta.get("images", 0) == 4 and delta.get("models", 0) == 1
+    assert delta.get("images", 0) == 5 and delta.get("models", 0) == 1   # 1 candidate, 3 edits, the blink (D-108)

@@ -67,12 +67,17 @@ async def test_keyword_search_after_import(api_normal: Api) -> None:
     assert hits and all(h["sourceId"] == "kno_seedAmara2" for h in hits)
 
 
-# ── 6.2 mock overlays only in test mode ──
-async def test_no_mock_records_in_a_normal_run(api_normal: Api) -> None:
+# ── 6.2 the full demo in every run (D-104); fixture jobs only in test mode ──
+async def test_a_normal_run_ships_the_full_demo_without_fixture_jobs(api_normal: Api) -> None:
     async with api_normal.rt.db.read() as conn:
-        for table in ("characters", "sessions", "generation_jobs"):
-            n = (await conn.execute(text(f"SELECT count(*) FROM {table} WHERE id LIKE '%_mock%'"))).scalar_one()
-            assert n == 0, table
+        count = lambda table: conn.execute(text(f"SELECT count(*) FROM {table} WHERE id LIKE '%_mock%'"))  # noqa: E731
+        assert (await count("characters")).scalar_one() == 5
+        assert (await count("sessions")).scalar_one() == 4   # D-117: the two hand-made debates left
+        assert (await count("generation_jobs")).scalar_one() == 0
+        busy = (await conn.execute(text("SELECT count(*) FROM characters WHERE active_job_id IS NOT NULL"))).scalar_one()
+        assert busy == 0
+    roster = await api_normal.json("/api/v1/worlds/wld_seedSunnyHollow/characters", params={"includeArchived": "true"})
+    assert any(c["id"] == "chr_mockMochi" and c["status"] == "archived" for c in roster)
 
 
 async def test_test_mode_has_the_archived_mock_character(api: Api) -> None:
@@ -110,6 +115,23 @@ async def test_reset_restores_seed_and_keeps_user_data(api: Api) -> None:
     assert any(u["id"] == "use_user1" for u in (await api.json("/api/v1/usage", params={"limit": 1000}))["items"])
     async with rt.db.read() as conn:
         assert (await conn.execute(text("SELECT count(*) FROM ai_purge_queue WHERE scope='session'"))).scalar_one() == 1
+
+
+async def test_reset_drops_a_demo_session_that_no_longer_ships(api: Api) -> None:
+    """D-117: an install from before the two hand-made debates left still holds them; reset removes them (it only
+    upserts what ships), and a user's own session stays."""
+    rt = api.rt
+    async with rt.db.write() as tx:   # both as an older install has them: the shipped Debate4Day row under other ids
+        cols = [r[1] for r in await tx.conn.execute(text("PRAGMA table_info(sessions)"))]
+        for sid, seed in (("ses_mockTooCloseExams", 1), ("ses_01M5USERDEBATE000000000", 0)):
+            sel = ", ".join(f"'{sid}'" if c == "id" else str(seed) if c == "is_seed" else c for c in cols)
+            await tx.conn.execute(text(f"INSERT INTO sessions({', '.join(cols)}) "
+                                       f"SELECT {sel} FROM sessions WHERE id = 'ses_seedDebate4Day'"))
+    assert (await api.client.post("/api/v1/admin/reset-demo", json={"confirm": True})).status_code == 204
+    async with rt.db.read() as conn:
+        left = {r[0] for r in await conn.execute(text("SELECT id FROM sessions"))}
+    assert "ses_mockTooCloseExams" not in left
+    assert {"ses_01M5USERDEBATE000000000", "ses_mockHostSugar", "ses_seedDebate4Day"} <= left
 
 
 async def test_reset_requires_confirmation(api: Api) -> None:
@@ -263,7 +285,7 @@ async def test_world_scoped_lists_need_their_world(api: Api) -> None:
 async def test_usage_summary_has_every_category(api: Api) -> None:
     s = await api.json("/api/v1/usage/summary")
     assert set(s["byCategory"]) >= {"chat", "embedding", "energy_topup"}
-    assert s["byCategory"]["embedding"] == 0 and s["capUsd"] == 1
+    assert s["byCategory"]["embedding"] >= 0 and s["capUsd"] == 1
 
 
 async def test_health(api: Api) -> None:
