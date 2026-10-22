@@ -72,7 +72,7 @@ async def test_a_normal_run_ships_the_full_demo_without_fixture_jobs(api_normal:
     async with api_normal.rt.db.read() as conn:
         count = lambda table: conn.execute(text(f"SELECT count(*) FROM {table} WHERE id LIKE '%_mock%'"))  # noqa: E731
         assert (await count("characters")).scalar_one() == 5
-        assert (await count("sessions")).scalar_one() == 6
+        assert (await count("sessions")).scalar_one() == 4   # D-117: the two hand-made debates left
         assert (await count("generation_jobs")).scalar_one() == 0
         busy = (await conn.execute(text("SELECT count(*) FROM characters WHERE active_job_id IS NOT NULL"))).scalar_one()
         assert busy == 0

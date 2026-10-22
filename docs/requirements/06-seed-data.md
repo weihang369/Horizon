@@ -305,7 +305,7 @@ Every AI-generated asset gets a provenance record (model, date, prompt, techniqu
 | Knowledge docs (indexed, indexing, failed) | PRF-08 |
 | Usage ledger (~2 weeks of mixed entries) | SET-09 |
 | 5 seed sessions (§3) with traces on every character message | Replay, Insight, demo mode |
-| Debate variants: **panel**, **auto host**, **You decide**, **no scores**, **too close to call** | MULTI-05..08 |
+| Debate variants: **panel**, **auto host**, **You decide** (D-117: the hand-made **no scores** and **too close to call** debates left the demo; unit tests cover both endings) | MULTI-05..08 |
 | Daily-cap pause mid-session; budget warning toast | STATE-06 |
 | Late emotion, missing reaction, content refusal, stream cut | APP-08 |
 | ≥ 8 history rows across modes and both worlds | HIST-01 filters/sort |

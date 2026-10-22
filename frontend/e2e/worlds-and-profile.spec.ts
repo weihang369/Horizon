@@ -158,6 +158,18 @@ test("Profile: [ and ] step through the six tabs and wrap", async ({ page }) => 
   await expect(selected).toHaveText("Profile");
 });
 
+test("Sessions tab: a row's “⋯” menu shows whole, above the rows below, and its last item can be clicked @layout", async ({ page }) => {
+  // U-75: the row's slanted clip-path cut the open menu down to a 16 px strip.
+  await open(page, "/w/wld_seedSunnyHollow?tab=sessions");
+  await page.getByRole("button", { name: "More for Long day" }).click();
+  const menu = page.getByRole("menu", { name: "More for Long day" });
+  await expect(menu.getByRole("menuitem")).toHaveText(["Open", "Rename", "Export Markdown", "Delete…"]);
+  await menu.getByRole("menuitem", { name: "Delete…" }).click({ timeout: 3000 });
+  await expect(page.getByRole("dialog")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog")).toBeHidden();
+});
+
 test("Replay from the Sessions tab opens the recording in replay mode", async ({ page }) => {
   await open(page, "/w/wld_seedMeridian?tab=sessions");
   await page.getByRole("button", { name: "Replay Debate: Four-day work week" }).click();

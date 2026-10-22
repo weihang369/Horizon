@@ -237,12 +237,22 @@
   gap: 18px;
   min-height: 76px;
   padding: 10px 20px 10px 12px;
-  background: var(--ink-700);
-  clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
-  transition: background var(--t-fast) var(--ease-out);
+  isolation: isolate;
   animation: global(hz-slide-up) var(--t-base) var(--ease-out) both;
   animation-delay: calc(var(--i, 0) * 40ms);
 }
+/* U-75: the slanted ink plate is a layer behind the row: a clip-path on the row itself cut its "⋯" menu down to a
+   16 px red strip. The row with an open menu sits above the rows below it. */
+.row::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--ink-700);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+  transition: background var(--t-fast) var(--ease-out);
+}
+.row:focus-within, .row:has([aria-expanded="true"]) { z-index: 2; }
 .row::before {
   content: "";
   position: absolute;
@@ -254,7 +264,7 @@
   transform: scaleY(0);
   transition: transform var(--t-fast) var(--ease-wipe);
 }
-.row:hover, .row:focus-within { background: color-mix(in srgb, var(--ink-500) 70%, var(--ink-700)); }
+.row:hover::after, .row:focus-within::after { background: color-mix(in srgb, var(--ink-500) 70%, var(--ink-700)); }
 .row:hover::before, .row:focus-within::before { transform: scaleY(1); }
 @media (max-width: 1340px) {
   .row { grid-template-columns: 48px minmax(0, 1fr) 132px 80px 184px 292px; gap: 12px; }

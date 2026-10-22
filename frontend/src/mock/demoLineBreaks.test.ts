@@ -17,7 +17,7 @@ const lines = (dir: string) => read<Message[]>(`${dir}/messages.json`).filter((m
 describe("demo line breaks", () => {
   it("debate messages are paragraphs: no single line breaks (a recorded reply may still hold a paragraph break)", () => {
     const debates = dirs.filter((d) => read<Session>(`${d}/session.json`).mode === "debate");
-    expect(debates.length).toBeGreaterThanOrEqual(5);
+    expect(debates.length).toBeGreaterThanOrEqual(4);   // the four-day debate + three mock debates (D-117)
     // The prompt asks for one paragraph; the real model wrote two on 1 of 10 turns of the recorded debate (2026-10-21).
     for (const d of debates) for (const m of lines(d)) expect(m.content.replace(/\n\n/g, ""), `${d} ${m.id}`).not.toContain("\n");
     for (const phase of ["opening", "rebuttal", "closing"] as const) {
