@@ -96,6 +96,15 @@ describe("HttpClient", () => {
     expect(calls.every((x) => x.url.includes("limit=1000"))).toBe(true);
   });
 
+  it("a file over 10 MB is refused before the upload (the backend's early 413 reads as a broken connection)", async () => {
+    const { c, calls } = make(() => json(201, {}));
+    const big = new File([new Uint8Array(10 * 1024 * 1024 + 1)], "huge.txt", { type: "text/plain" });
+    const err = await c.characters.addKnowledge("chr_a", { file: big }).catch((e: unknown) => e);
+    expect(err).toBeInstanceOf(HorizonError);
+    expect(err).toMatchObject({ code: "validation", message: "Files can be at most 10 MB." });
+    expect(calls).toHaveLength(0);
+  });
+
   it("nothing is held back in M5: the knowledge and memory methods send their requests", async () => {
     const src = { id: "kno_a", characterId: "chr_a", title: "notes.md", type: "md", status: "indexing", chunks: 0, addedAt: "2026-10-03T03:00:00.000Z" };
     const { c, calls } = make((_url, init) => (init?.method === "DELETE" ? new Response(null, { status: 204 }) : json(201, src)));

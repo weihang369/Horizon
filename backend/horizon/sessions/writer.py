@@ -6,7 +6,9 @@ The one write path for a live session's rows. `append(events)`:
 3. in ONE writer transaction, stores the events and projects what they changed: the session row, participants,
    the touched messages, `turn_traces` (from `insight`) and `message_citations` (from `turn.end`);
 4. publishes each stored event on the session channel only after the commit, so a subscriber never sees an event that
-   isn't stored, and the event it sees is the stored one (stored == streamed by construction).
+   isn't stored, and the event it sees is the stored one (stored == streamed by construction). A `turn.end` that
+   adds or replaces citations also announces each source it touched (`entity.changed {kind: "knowledge"}`), since a
+   source's `citedCount` is read from these rows and the Knowledge tab would otherwise keep the old count.
 
 If the transaction fails, the in-memory state is reloaded from storage, so it never runs ahead of the rows.
 The caller (the SessionActor) serialises appends; the writer itself is not reentrant.
@@ -124,13 +126,16 @@ class EventWriter:
                 if prepare is not None:
                     await prepare(tx, stamped)
                     apply_in_place(self.state, stamped)
-                await self._project(tx, stamped, before_parts, traces or {})
+                cited = await self._project(tx, stamped, before_parts, traces or {})
                 if extra is not None:
                     await extra(tx, stamped)
                 for e in stamped:
                     tx.publish(session_channel(self.session_id), e)
                 if any(e["type"] in SESSION_CHANGING for e in stamped):
                     tx.publish(GLOBAL, {"type": "entity.changed", "kind": "session", "id": self.session_id,
+                                        "worldId": self.session["worldId"]})
+                for source_id in sorted(cited):
+                    tx.publish(GLOBAL, {"type": "entity.changed", "kind": "knowledge", "id": source_id,
                                         "worldId": self.session["worldId"]})
         except BaseException as e:
             # the events were applied in memory first: a second cancel cutting this reload short would leave them
@@ -144,7 +149,8 @@ class EventWriter:
         return stamped
 
     async def _project(self, tx: WriteTx, stamped: list[Wire], before_parts: list[Wire],
-                       traces: Mapping[str, TraceMeta]) -> None:
+                       traces: Mapping[str, TraceMeta]) -> set[str]:
+        """Writes the rows; returns the knowledge sources whose citations changed."""
         conn = tx.conn
         await conn.execute(t.session_events.insert(), [mp.event_row(e) for e in stamped])
         srow, prow = mp.session_rows(self.session, is_seed=self.is_seed)
@@ -153,6 +159,7 @@ class EventWriter:
         if prow != mp.session_rows({**self.session, "participants": before_parts}, is_seed=self.is_seed)[1]:
             await self._participants(conn, prow, before_parts)
         touched: list[str] = []
+        cited: set[str] = set()
         for e in stamped:
             mid = mp.event_message_id(e)
             if mid and mid not in touched:
@@ -185,10 +192,14 @@ class EventWriter:
                 mid = e["payload"]["messageId"]
                 if mid not in msgs:
                     continue
-                await conn.execute(delete(t.message_citations).where(t.message_citations.c.message_id == mid))
+                C = t.message_citations.c
+                cited.update((await conn.execute(select(C.source_id).where(C.message_id == mid))).scalars())
+                await conn.execute(delete(t.message_citations).where(C.message_id == mid))
                 rows = mp.citation_rows(msgs[mid])
                 if rows:
                     await conn.execute(t.message_citations.insert(), rows)
+                    cited.update(r["source_id"] for r in rows)
+        return cited
 
     async def _participants(self, conn: AsyncConnection, rows: list[dict[str, Any]], before: list[Wire]) -> None:
         P = t.participants.c
