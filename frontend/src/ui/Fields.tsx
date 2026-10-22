@@ -20,6 +20,8 @@ interface FieldChrome {
   /** ↻ regenerate slot (AI field regeneration). */
   onRegenerate?: () => void;
   regenerateLabel?: string;
+  /** The slot's visible words (default "Regen"); U-73: a free rebuild must not read like a paid AI call. */
+  regenerateText?: string;
 }
 
 function Chrome({
@@ -43,9 +45,9 @@ function Chrome({
         {children}
         {chrome.onRegenerate && (
           <span className={s.slot}>
-            <button type="button" className={s.regen} onClick={chrome.onRegenerate} aria-label={chrome.regenerateLabel ?? `Regenerate ${chrome.label}`}>
+            <button type="button" className={s.regen} onClick={chrome.onRegenerate} aria-label={chrome.regenerateLabel ?? `Regenerate ${chrome.label}`} title={chrome.regenerateLabel}>
               <RegenIcon width={14} height={14} />
-              <span aria-hidden="true">Regen</span>
+              <span aria-hidden="true">{chrome.regenerateText ?? "Regen"}</span>
             </button>
           </span>
         )}
@@ -67,12 +69,12 @@ function Chrome({
 export type TextFieldProps = FieldChrome & Omit<InputHTMLAttributes<HTMLInputElement>, "children">;
 
 export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(function TextField(props, ref) {
-  const { label, hideLabel, hint, error, edited, counter, counterMax, onRegenerate, regenerateLabel, id: idProp, className, ...rest } = props;
+  const { label, hideLabel, hint, error, edited, counter, counterMax, onRegenerate, regenerateLabel, regenerateText, id: idProp, className, ...rest } = props;
   const auto = useId();
   const id = idProp ?? auto;
   const length = String(rest.value ?? rest.defaultValue ?? "").length;
   return (
-    <Chrome id={id} length={length} max={rest.maxLength} chrome={{ label, hideLabel, hint, error, edited, counter, counterMax, onRegenerate, regenerateLabel }}>
+    <Chrome id={id} length={length} max={rest.maxLength} chrome={{ label, hideLabel, hint, error, edited, counter, counterMax, onRegenerate, regenerateLabel, regenerateText }}>
       <input
         ref={ref}
         id={id}
@@ -88,12 +90,12 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(function T
 export type TextAreaProps = FieldChrome & Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "children">;
 
 export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(function TextArea(props, ref) {
-  const { label, hideLabel, hint, error, edited, counter, counterMax, onRegenerate, regenerateLabel, id: idProp, className, ...rest } = props;
+  const { label, hideLabel, hint, error, edited, counter, counterMax, onRegenerate, regenerateLabel, regenerateText, id: idProp, className, ...rest } = props;
   const auto = useId();
   const id = idProp ?? auto;
   const length = String(rest.value ?? rest.defaultValue ?? "").length;
   return (
-    <Chrome id={id} length={length} max={rest.maxLength} chrome={{ label, hideLabel, hint, error, edited, counter, counterMax, onRegenerate, regenerateLabel }}>
+    <Chrome id={id} length={length} max={rest.maxLength} chrome={{ label, hideLabel, hint, error, edited, counter, counterMax, onRegenerate, regenerateLabel, regenerateText }}>
       <textarea
         ref={ref}
         id={id}

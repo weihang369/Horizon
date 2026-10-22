@@ -1,5 +1,6 @@
 /* TextField, TextArea, Select, Menu */
-.field { display: grid; gap: 6px; min-width: 0; }
+/* U-73: one column that may shrink: an auto track sized itself to the input's default 20 characters and spilled out of narrow cells (Title, Tone). */
+.field { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; min-width: 0; }
 .labelRow { display: flex; align-items: center; gap: 8px; min-height: 20px; }
 .label { font-size: 12px; font-weight: 600; color: var(--paper-300); text-transform: uppercase; letter-spacing: var(--tracking-caps); }
 .edited { width: 7px; height: 7px; background: var(--c-primary); transform: rotate(45deg); flex: none; }

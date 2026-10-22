@@ -11,6 +11,7 @@ import { cx } from "@/ui/cx";
 import { isRunning, startGeneration, useCharacterJobs, useEstimate } from "@/features/wizard/generate";
 import { BARS, fakePeaks, usePeaks } from "./peaks";
 import { themeLabel, useAudioState } from "./ThemePlayer";
+import { songCredit } from "./songCredit";
 import s from "./ThemeTrack.module.css";
 
 const mmss = (sec: number) => `${Math.floor(sec / 60)}:${String(Math.round(sec % 60)).padStart(2, "0")}`;
@@ -130,9 +131,8 @@ export function ThemeTrack({ c, song }: { c: Character; song: ThemeSong | null }
             <div><dt>Vocals</dt><dd>{song.instrumental ? "None (instrumental)" : "With vocals"}</dd></div>
           </dl>
           <p className={s.credits}>
-            <span>Composed by {song.generation?.model ?? "google/lyria-3-clip-preview"}</span>
+            <span>{songCredit(song, sketch)}</span>
             {song.generation?.costUsd !== undefined && <span>Cost {formatUsd(song.generation.costUsd)}</span>}
-            <span>{song.licenseNote || (sketch ? "Placeholder: procedural WebAudio sketch (D-52)." : "")}</span>
           </p>
         </section>
       )}

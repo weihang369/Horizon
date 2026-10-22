@@ -145,7 +145,8 @@ export function LookStep() {
             edited={work.w.summaryEdited}
             hint={work.w.summaryEdited ? "Edited by you: chips no longer rewrite it." : "Compiled from your picks. Edit freely."}
             onRegenerate={() => work.setSummary(compileSummary(a, work.w.profile.role), false)}
-            regenerateLabel="Recompile from chips"
+            regenerateLabel="Rebuild the summary from your picks (free, no AI call)"
+            regenerateText="Rebuild from picks"
             onChange={(e) => work.setSummary(e.target.value)}
           />
           <TextArea label="Extra details" rows={2} maxLength={300} counter placeholder="e.g. a cherry-blossom hairpin, ink-stained fingers" value={a.extraDetails ?? ""} onChange={(e) => set(["extraDetails"], e.target.value)} />

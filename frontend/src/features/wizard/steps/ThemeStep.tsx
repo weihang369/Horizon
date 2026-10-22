@@ -6,6 +6,7 @@ import type { SongBrief } from "@/contract/types";
 import { Button, ChipGroup, ErrorTape, Slider, Tape, TextField } from "@/ui";
 import { cx } from "@/ui/cx";
 import { Composing, ThemePlayer } from "@/features/profile/ThemePlayer";
+import { songCredit } from "@/features/profile/songCredit";
 import { ActionBar } from "../ActionBar";
 import { useWizard } from "../context";
 import { isRunning, startGeneration, useEstimate } from "../generate";
@@ -70,7 +71,7 @@ export function ThemeStep() {
               </Button>
               {failed && <Button variant="ghost" onClick={() => void goStep("approve")}>Approve without song</Button>}
             </div>
-            <p className={s.fine}>Music: {song?.generation?.model ?? "google/lyria-3-clip-preview"} · instrumental{song?.licenseNote ? ` · ${song.licenseNote}` : NO_BACKEND ? " · Placeholder: procedural WebAudio sketch (D-52)." : ""}</p>
+            <p className={s.fine}>Instrumental · {songCredit(ready ? song : null, NO_BACKEND)}</p>
           </div>
         </div>
       </section>

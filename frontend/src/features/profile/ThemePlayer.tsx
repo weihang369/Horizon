@@ -7,6 +7,7 @@ import type { ThemeSong } from "@/contract/types";
 import { PauseIcon, PlayIcon, Tape } from "@/ui";
 import { cx } from "@/ui/cx";
 import { BARS, fakePeaks, usePeaks } from "./peaks";
+import { songCredit } from "./songCredit";
 import s from "./ThemePlayer.module.css";
 
 export function useAudioState() {
@@ -56,7 +57,7 @@ export function ThemePlayer({ song, characterName, compact, className }: ThemePl
         {!compact && (
           <div className={s.small}>
             <span>{song.brief.genres.join(" · ")} · {song.brief.bpm} BPM · {dur.toFixed(0)} s loop</span>
-            <span>{song.generation?.model ?? "model n/a"} · {song.licenseNote}</span>
+            <span>{songCredit(song)}</span>
           </div>
         )}
       </div>
