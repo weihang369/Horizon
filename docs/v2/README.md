@@ -180,3 +180,34 @@ loop points, crossfading), not needed for the v1 launch.
 2. **The engine uses them.** Set `loopStart` / `loopEnd` on the buffer source from `song.loop`, or crossfade the end
    into the start (a short equal-power overlap) when no clean point is found.
 3. **A check by ear** (D-88: the user judges generated media by eye and ear) on the 7 seed themes before shipping.
+
+## 10. Rewriting a changed fact below the prompt's list
+
+**Deferred by:** the user's review of the memory pipeline (2026-10-22, U-78): "no need perfect, put it in v2".
+
+**v1 behaviour:**
+- The rewrite call (doc 09 M3) shows DeepSeek each character's top memories only, the same ~30 lines (1,000 tokens)
+  as the prompt list (M8). A `rewrite` or `confirm` can only target a line it was shown.
+- The duplicate check (M5) reaches every current memory: an add whose nearest memory is at or above `dupCosine`
+  (0.85) goes to Jev `same_fact`, and the same fact reinforces that memory. So a **repeated** fact below the list is
+  caught and climbs back.
+- A **changed** fact below the list is not. If memory #45 says "Kai lives in KL" and Kai now says "I moved to
+  Penang", DeepSeek adds the new line, `same_fact` rightly says it is not the same fact, and the new line is written
+  beside the old one. The guard never sees it (it checks rewrites only), so the stale line stays current. The new line
+  ranks into the list and the old one sinks, but the overflow recall (M9) can still bring the old one back, and the
+  Memory tab shows both until the user forgets one.
+
+**Why it was deferred:** it needs a character with more memories than the list holds (roughly 10–20 sittings) and a
+changed fact that sits below rank ~30; the result is visible and the user can forget the stale line. The M13
+evaluation measured "rewritten, not duplicated" (92 %) only for facts inside the shown list.
+
+**What v2 would need:**
+1. **Measure it first:** overflow items in the `memory` suite's rewrite part (a changed fact planted below the
+   list), so the rate is known before a fix is chosen.
+2. **Show DeepSeek the near overflow lines** (preferred): before the call, search the character's memories outside
+   the list against the stretch (the hybrid search M9 already has) and add the few closest as extra numbered lines,
+   so the model can `rewrite` or `confirm` them like any other. Costs one search per character per run and a few
+   hundred input tokens.
+3. **Or turn a near "not the same" into a guarded rewrite:** when `same_fact` says no above `dupCosine`, ask whether
+   the add replaces the old line, and if so run the guard and Supersede. Riskier: an extension ("likes tea" → "likes
+   green tea") would go through it too.
