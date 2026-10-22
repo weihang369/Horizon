@@ -560,6 +560,7 @@ class Runtime:
             await self._ingest.cancel_for(source_ids=[k["id"] for k in data.knowledge])
         if self._memory_runs is not None:  # M13 (memory D8): both resets cancel running pause runs
             self._memory_runs.cancel_all()
+        await self._drop_retired_demo_sessions({s.session["id"] for s in data.sessions})
         async with self.db.write() as tx:
             sids = await seeding.apply_seed(tx.conn, data, energy_day=self.energy_day, local_day=self.local_day)
             if sids:
@@ -571,6 +572,17 @@ class Runtime:
             self._purge.notify()   # audit 01-06: the replaced seed sessions' AI rows are purged now, not at the next start
         if self._jobs is not None:
             await self._jobs.recover()
+
+    async def _drop_retired_demo_sessions(self, shipped: set[str]) -> None:
+        """D-117: reset only upserts what still ships, so a demo session that left the `_mock` overlay (the two
+        hand-made debates) would stay in an existing database for good. Shipped overlay ids start `ses_mock`; a user's
+        own sessions never do (ULIDs), so only retired demo sessions go, the normal delete way."""
+        from horizon.sessions.lifecycle import delete_session
+
+        async with self.db.read() as conn:
+            ids = [r[0] for r in await conn.execute(select(t.sessions.c.id).where(t.sessions.c.id.like("ses_mock%")))]
+        for sid in (x for x in ids if x not in shipped):
+            await delete_session(self, sid)
 
     def clear_scenario_state(self) -> None:
         """Forget every test-scenario fault and override (M6 design D3): scenarios replace each other, as on the mock."""

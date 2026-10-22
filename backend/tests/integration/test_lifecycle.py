@@ -117,6 +117,23 @@ async def test_reset_restores_seed_and_keeps_user_data(api: Api) -> None:
         assert (await conn.execute(text("SELECT count(*) FROM ai_purge_queue WHERE scope='session'"))).scalar_one() == 1
 
 
+async def test_reset_drops_a_demo_session_that_no_longer_ships(api: Api) -> None:
+    """D-117: an install from before the two hand-made debates left still holds them; reset removes them (it only
+    upserts what ships), and a user's own session stays."""
+    rt = api.rt
+    async with rt.db.write() as tx:   # both as an older install has them: the shipped Debate4Day row under other ids
+        cols = [r[1] for r in await tx.conn.execute(text("PRAGMA table_info(sessions)"))]
+        for sid, seed in (("ses_mockTooCloseExams", 1), ("ses_01M5USERDEBATE000000000", 0)):
+            sel = ", ".join(f"'{sid}'" if c == "id" else str(seed) if c == "is_seed" else c for c in cols)
+            await tx.conn.execute(text(f"INSERT INTO sessions({', '.join(cols)}) "
+                                       f"SELECT {sel} FROM sessions WHERE id = 'ses_seedDebate4Day'"))
+    assert (await api.client.post("/api/v1/admin/reset-demo", json={"confirm": True})).status_code == 204
+    async with rt.db.read() as conn:
+        left = {r[0] for r in await conn.execute(text("SELECT id FROM sessions"))}
+    assert "ses_mockTooCloseExams" not in left
+    assert {"ses_01M5USERDEBATE000000000", "ses_mockHostSugar", "ses_seedDebate4Day"} <= left
+
+
 async def test_reset_requires_confirmation(api: Api) -> None:
     r = await api.client.post("/api/v1/admin/reset-demo", json={})
     assert r.status_code == 422 and r.json()["error"]["code"] == "validation"
