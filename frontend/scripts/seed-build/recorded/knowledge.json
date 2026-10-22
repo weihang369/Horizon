@@ -1,7 +1,7 @@
 [
   {
     "source": {
-      "id": "kno_01M5CYZ71QTZ4ZKQNPBCJ33QBY",
+      "id": "kno_01M5H51EDK1QKW3K2W36F9KRGM",
       "characterId": "chr_seedAmara",
       "worldId": "wld_seedMeridian",
       "title": "Meridian Shift Fatigue Review 2025.pdf",
@@ -11,145 +11,145 @@
       "pages": 11,
       "chunks": 20,
       "citedCount": 4,
-      "addedAt": "2026-10-20T15:30:37.758Z"
+      "addedAt": "2026-09-18T08:40:01.287Z"
     },
     "chunks": [
       {
-        "id": "kch_01M5CZ0BSYCH1QDX3S1737378X",
-        "sourceId": "kno_01M5CYZ71QTZ4ZKQNPBCJ33QBY",
+        "id": "kch_01M5H529CV3TJ8MYYNBQQ1SKEJ",
+        "sourceId": "kno_01M5H51EDK1QKW3K2W36F9KRGM",
         "index": 0,
         "locator": "p. 1",
         "text": "## Meridian Shift Fatigue Review 2025\n\nMeridian Health Trust · Workforce Wellbeing Unit Report to the Trust Board · November 2025 · Fictional document for the Horizon demo world \"Meridian Council\""
       },
       {
-        "id": "kch_01M5CZ0BSZ28H6NRX2115M2TC7",
-        "sourceId": "kno_01M5CYZ71QTZ4ZKQNPBCJ33QBY",
+        "id": "kch_01M5H529CV3TJ8MYYNBQQ1SKEM",
+        "sourceId": "kno_01M5H51EDK1QKW3K2W36F9KRGM",
         "index": 1,
         "locator": "p. 1",
         "text": "## Summary\n\nFatigue is no longer an occasional complaint among the Trust's clinical staff. It is a measurable, rising condition with a direct line to patient safety, sickness absence and resignations. This review followed 1,140 clinical staff for ten months and found that the length of consecutive shift blocks, not total hours alone, is the strongest predictor of how tired staff say they are.\n\nThe headline findings:\n\n- Staff working more than three consecutive long shifts reported fatigue scores 38% higher than colleagues on shorter blocks.\n- High burnout in the emergency department rose from 29% of staff in January to 41% in October.\n- Staff who slept under six hours before a shift were twice as likely to report a near-miss medication error that week.\n- Two wards that piloted a compressed rota saw burnout fall by roughly a fifth in twelve weeks, with no loss of patient throughput.\n- Voluntary nursing resignations reached 14% over the year, and each replacement costs about four months of salary."
       },
       {
-        "id": "kch_01M5CZ0BT0VMBMJX0KJBK76S6G",
-        "sourceId": "kno_01M5CYZ71QTZ4ZKQNPBCJ33QBY",
+        "id": "kch_01M5H529D8W2E3H5G2SG1V85DT",
+        "sourceId": "kno_01M5H51EDK1QKW3K2W36F9KRGM",
         "index": 2,
         "locator": "p. 1",
         "text": "The review recommends extending the compressed-rota pilot to three further departments, protecting rest days from short-notice cancellation, and reporting fatigue scores to the Board every quarter."
       },
       {
-        "id": "kch_01M5CZ0BT20Z59BYCAVM2SXFAD",
-        "sourceId": "kno_01M5CYZ71QTZ4ZKQNPBCJ33QBY",
+        "id": "kch_01M5H529D92BXX6PBR5HSAGECK",
+        "sourceId": "kno_01M5H51EDK1QKW3K2W36F9KRGM",
         "index": 3,
         "locator": "p. 2",
         "text": "## 1. Scope and method\n\nThis review covers 1,140 clinical staff across four Meridian Health Trust sites between January and October 2025. Fatigue was measured with a fortnightly selfreport scale and matched against rota data. All names and units are anonymised.\n\nThe four sites are Meridian General (the acute hospital and the Trust's only emergency department), Eastbank Community Hospital, the Riverside Rehabilitation Unit and the Northgate Day Surgery Centre. Participation was voluntary; 71% of eligible clinical staff took part, and response rates held above 60% in every fortnight.\n\nThe self-report scale has nine items: sleepiness at the start and end of a shift, difficulty concentrating, irritability, physical exhaustion, headaches, appetite, sleep quality and a single \"how tired are you right now\" question. Each item is scored 0 to 4, so totals run from 0 to 36. Burnout was measured separately, once a quarter, with a validated twelve-item inventory. The review's \"high burnout\" threshold is the inventory's published cut-off."
       },
       {
-        "id": "kch_01M5CZ0BT36M3DD2P2Q1N9YQ89",
-        "sourceId": "kno_01M5CYZ71QTZ4ZKQNPBCJ33QBY",
+        "id": "kch_01M5H529D92BXX6PBR5HSAGECM",
+        "sourceId": "kno_01M5H51EDK1QKW3K2W36F9KRGM",
         "index": 4,
         "locator": "p. 2",
         "text": "Rota data came from the Trust's e-rostering system. For every respondent we recorded shift length, the number of consecutive shifts, the hours of rest between shifts, cancelled rest days and any short-notice changes (less than 48 hours)."
       },
       {
-        "id": "kch_01M5CZ0BT4Z7H1TT697P6HM03D",
-        "sourceId": "kno_01M5CYZ71QTZ4ZKQNPBCJ33QBY",
+        "id": "kch_01M5H529DAFJ6ECAVP6S8X793Q",
+        "sourceId": "kno_01M5H51EDK1QKW3K2W36F9KRGM",
         "index": 5,
         "locator": "p. 2",
         "text": "## 1.1 What this review does not measure\n\nThe review relies on what staff report. It does not measure fatigue objectively, and it cannot prove that long blocks cause errors. It shows associations that are consistent across sites, departments and months. Where we discuss costs, we use the Trust finance office's standard figures."
       },
       {
-        "id": "kch_01M5CZ0BT6REVB2G3VSCXJ9G5E",
-        "sourceId": "kno_01M5CYZ71QTZ4ZKQNPBCJ33QBY",
+        "id": "kch_01M5H529DAFJ6ECAVP6S8X793S",
+        "sourceId": "kno_01M5H51EDK1QKW3K2W36F9KRGM",
         "index": 6,
         "locator": "p. 3",
         "text": "## 2. Shift patterns and fatigue\n\nThe single clearest pattern in the data is the effect of long blocks.\n\nStaff working more than three consecutive long shifts reported fatigue scores 38% higher than colleagues on shorter blocks. The effect was strongest in emergency and acute medicine, where rest days were most often cancelled at short notice.\n\nA \"long shift\" in this review is any shift of eleven hours or more. Across the Trust, 46% of clinical shifts were long shifts. In the emergency department the figure was 78%.\n\nTotal weekly hours mattered less than the way those hours were arranged. Two nurses working the same 37.5 hours could report very different fatigue: the one who worked four long shifts in a row, then had three days off, reported less fatigue than the one whose long shifts were scattered across the week with single rest days in between. Single rest days, especially after a night shift, were rarely restful."
       },
       {
-        "id": "kch_01M5CZ0BT74V4F1CGJ2FRN2BC2",
-        "sourceId": "kno_01M5CYZ71QTZ4ZKQNPBCJ33QBY",
+        "id": "kch_01M5H529DAFJ6ECAVP6S8X793V",
+        "sourceId": "kno_01M5H51EDK1QKW3K2W36F9KRGM",
         "index": 7,
         "locator": "p. 3",
         "text": "## 2.1 Short-notice changes\n\nRest days cancelled with less than 48 hours' notice were the second strongest predictor of fatigue. In emergency and acute medicine, one rest day in nine was cancelled at short notice, usually to cover sickness. In community and day-surgery settings the figure was one in forty."
       },
       {
-        "id": "kch_01M5CZ0BT9N7VC0KE9TG9TWQBE",
-        "sourceId": "kno_01M5CYZ71QTZ4ZKQNPBCJ33QBY",
+        "id": "kch_01M5H529DAFJ6ECAVP6S8X793X",
+        "sourceId": "kno_01M5H51EDK1QKW3K2W36F9KRGM",
         "index": 8,
         "locator": "p. 4",
         "text": "## 3. Burnout\n\nSelf-reported burnout rose in every quarter of the review period. By October, 41% of emergency department staff met the review's threshold for high burnout, up from\n\nAcross the whole Trust, high burnout rose from 22% to 30%. The rise was steepest among staff in their first five years after qualifying and among those with caring\n\n29% in January. responsibilities at home.\n\nBurnout and fatigue moved together but were not the same thing. Some staff with high fatigue scores did not report burnout, usually those on predictable rotas who described their tiredness as \"physical, not mental\" . Burnout was most common where fatigue combined with unpredictability: the sense that rest could be taken away at any time."
       },
       {
-        "id": "kch_01M5CZ0BTBMYH9N07RDFYFVBY1",
-        "sourceId": "kno_01M5CYZ71QTZ4ZKQNPBCJ33QBY",
+        "id": "kch_01M5H529DAFJ6ECAVP6S8X793Z",
+        "sourceId": "kno_01M5H51EDK1QKW3K2W36F9KRGM",
         "index": 9,
         "locator": "p. 4",
         "text": "## 3.1 What staff said\n\nIn free-text answers, the words that appeared most often next to \"burnout\" were \"cancelled\" , \"short-staffed\" , \"no break\" and \"guilt\" . Many respondents said they felt guilty taking sick leave because they knew a colleague would lose a rest day to cover them."
       },
       {
-        "id": "kch_01M5CZ0BTCXD636SDD5D2N0GA5",
-        "sourceId": "kno_01M5CYZ71QTZ4ZKQNPBCJ33QBY",
+        "id": "kch_01M5H529DAFJ6ECAVP6S8X7941",
+        "sourceId": "kno_01M5H51EDK1QKW3K2W36F9KRGM",
         "index": 10,
         "locator": "p. 5",
         "text": "## 4. Sleep and patient safety\n\nPoor sleep was the most common complaint, named by 63% of respondents. Staff who slept under six hours before a shift were twice as likely to report a near-miss medication error that week.\n\nNight shifts were the main cause of short sleep. Staff moving from nights back to days with only one rest day in between averaged under five hours of sleep on the first night home.\n\nA near miss is an error caught before it reaches the patient: the wrong dose drawn up and noticed, the wrong patient's chart opened and closed again. The Trust's incident system does not link incidents to rotas, so the review used a short anonymous weekly question instead. The association held in every department and at every site."
       },
       {
-        "id": "kch_01M5CZ0BTDRV8V3S4HPD95N96J",
-        "sourceId": "kno_01M5CYZ71QTZ4ZKQNPBCJ33QBY",
+        "id": "kch_01M5H529DAFJ6ECAVP6S8X7943",
+        "sourceId": "kno_01M5H51EDK1QKW3K2W36F9KRGM",
         "index": 11,
         "locator": "p. 5",
         "text": "## 4.1 The commute home\n\nTwelve percent of respondents said they had nodded off while driving home after a night shift at least once during the review period. Three reported minor collisions. The Trust's car park sleep pods, piloted at Meridian General since March, were used by fewer than one in twenty eligible staff, mostly because staff wanted to get home to children."
       },
       {
-        "id": "kch_01M5CZ0BTG206S81QX53DGHAT4",
-        "sourceId": "kno_01M5CYZ71QTZ4ZKQNPBCJ33QBY",
+        "id": "kch_01M5H529DAFJ6ECAVP6S8X7945",
+        "sourceId": "kno_01M5H51EDK1QKW3K2W36F9KRGM",
         "index": 12,
         "locator": "p. 6",
         "text": "## 5. The cost of fatigue\n\nFatigue-related problems among staff themselves, from headaches and gastric complaints to minor injuries on the commute home, cost the Trust an estimated 2,300 lost shifts.\n\nThat estimate counts sickness absence recorded with a fatigue-related reason, plus the share of other short absences that staff attributed to tiredness in the survey. It does not include presenteeism, staff who came in tired and worked below their usual pace, which the review could not measure.\n\nAt the Trust's standard cost of covering a lost shift with bank or agency staff, 2,300 shifts is roughly the annual cost of forty full-time nurses."
       },
       {
-        "id": "kch_01M5CZ0BTH2SFC71J4YAJKPZPZ",
-        "sourceId": "kno_01M5CYZ71QTZ4ZKQNPBCJ33QBY",
+        "id": "kch_01M5H529DAFJ6ECAVP6S8X7947",
+        "sourceId": "kno_01M5H51EDK1QKW3K2W36F9KRGM",
         "index": 13,
         "locator": "p. 7",
         "text": "## 6. The compressed-rota pilot\n\nTwo wards piloted a compressed rota: four longer days, then three days off. After twelve weeks, burnout scores on both wards fell by roughly a fifth, sleep quality improved, and patient throughput stayed within normal variation.\n\nThe pilot wards were Ward 7 (acute medicine) and the emergency department's observation unit. Staff chose to join. The rota guaranteed the three rest days: they could not be cancelled except in a declared major incident.\n\nWhat changed after twelve weeks:\n\n- Burnout scores fell by 19% on Ward 7 and 22% on the observation unit.\n- Average sleep before a shift rose by 40 minutes.\n- Short-notice cancellations of rest days fell to zero, by design.\n- Patient throughput, length of stay and readmissions stayed within normal variation for those wards.\n\nStaff on the pilot wards described the guaranteed rest days, not the longer shifts, as the change that mattered most."
       },
       {
-        "id": "kch_01M5CZ0BTKEQ6MDXFE6RX86KRP",
-        "sourceId": "kno_01M5CYZ71QTZ4ZKQNPBCJ33QBY",
+        "id": "kch_01M5H529DAFJ6ECAVP6S8X7949",
+        "sourceId": "kno_01M5H51EDK1QKW3K2W36F9KRGM",
         "index": 14,
         "locator": "p. 8",
         "text": "## 7. Transition costs\n\nThe pilot wards needed 6% more agency hours during the transition month to cover handovers. That cost fell back to baseline by week eight, once teams had settled the new handover pattern.\n\nMost of the transition cost came from overlapping handovers while two rota patterns ran side by side, and from a period of retraining on the new handover checklist. Ward managers recommended a two-week planning period before any further rollout, and a single start date per ward rather than a phased switch.\n\nThe pilot did not test round-the-clock coverage on a whole-department scale. The emergency department proper, as opposed to its observation unit, would need further modelling before a compressed rota could be offered there."
       },
       {
-        "id": "kch_01M5CZ0BTMWFFZ6GP5HFT0BKAX",
-        "sourceId": "kno_01M5CYZ71QTZ4ZKQNPBCJ33QBY",
+        "id": "kch_01M5H529DAFJ6ECAVP6S8X794B",
+        "sourceId": "kno_01M5H51EDK1QKW3K2W36F9KRGM",
         "index": 15,
         "locator": "p. 9",
         "text": "## 8. Retention\n\nVoluntary resignations among nursing staff reached 14% over the year. The Trust's finance office puts each replacement at roughly four months of salary once recruitment, induction and supervised practice are counted.\n\nThe rate was highest in the emergency department (19%) and lowest in day surgery (6%). Two thirds of leavers had been with the Trust for under five years.\n\nReplacing a nurse is not only a cost. New starters need supervision, which takes experienced staff away from patients during the first months. Wards with high turnover were also the wards with the most short-notice rest-day cancellations, a cycle the review describes as \"exhaustion feeding exhaustion\" ."
       },
       {
-        "id": "kch_01M5CZ0BTPR46S2NZJB4WAET2A",
-        "sourceId": "kno_01M5CYZ71QTZ4ZKQNPBCJ33QBY",
+        "id": "kch_01M5H529DAFJ6ECAVP6S8X794D",
+        "sourceId": "kno_01M5H51EDK1QKW3K2W36F9KRGM",
         "index": 16,
         "locator": "p. 10",
         "text": "## 9. Why staff leave\n\nExit interviews named workload and unpredictable rotas as the two leading reasons for leaving, ahead of pay. Several leavers said they would have stayed for a guaranteed rest pattern.\n\nOf 162 exit interviews analysed, 58% named workload, 51% named rota unpredictability, 37% named pay and 22% named a lack of career development. Respondents could give more than one reason.\n\nLeavers who moved to other hospitals often cited a \"fixed pattern\" or \"self-rostering\" as the reason for choosing their new employer."
       },
       {
-        "id": "kch_01M5CZ0BTQ3XTVZYF3FN8C6KG7",
-        "sourceId": "kno_01M5CYZ71QTZ4ZKQNPBCJ33QBY",
+        "id": "kch_01M5H529DAFJ6ECAVP6S8X794F",
+        "sourceId": "kno_01M5H51EDK1QKW3K2W36F9KRGM",
         "index": 17,
         "locator": "p. 11",
         "text": "## 10. Recommendations\n\nThe review recommends extending the compressed-rota pilot to three further departments, protecting rest days from short-notice cancellation, and reporting fatigue scores to the Trust board every quarter."
       },
       {
-        "id": "kch_01M5CZ0BTS86YFS4SJNV5XHZQS",
-        "sourceId": "kno_01M5CYZ71QTZ4ZKQNPBCJ33QBY",
+        "id": "kch_01M5H529DAFJ6ECAVP6S8X794H",
+        "sourceId": "kno_01M5H51EDK1QKW3K2W36F9KRGM",
         "index": 18,
         "locator": "p. 11",
         "text": "## In detail:\n\n1. Extend the pilot to acute surgery, the Eastbank inpatient wards and the Riverside Rehabilitation Unit, with a two-week planning period and a single start date for each.\n2. Protect rest days. Short-notice cancellation should need a manager's sign-off and be recorded, and no member of staff should lose more than one rest day a quarter.\n3. Limit long blocks to three consecutive long shifts, except by the employee's own request.\n4. Two rest days after nights before any day shift.\n5. Report quarterly to the Board: fatigue scores, burnout prevalence, rest-day cancellations and resignations, by department.\n6. Model the emergency department separately before offering it a compressed rota."
       },
       {
-        "id": "kch_01M5CZ0BTVJ9MH7QT9Z6MYCGAX",
-        "sourceId": "kno_01M5CYZ71QTZ4ZKQNPBCJ33QBY",
+        "id": "kch_01M5H529DT1H1DX7BPGF4C7AK0",
+        "sourceId": "kno_01M5H51EDK1QKW3K2W36F9KRGM",
         "index": 19,
         "locator": "p. 11",
         "text": "## Appendix: the fatigue scale\n\nNine items, each scored 0 (not at all) to 4 (extremely): sleepiness at the start of the shift; sleepiness at the end; difficulty concentrating; irritability; physical exhaustion; headache; change in appetite; poor sleep quality; and \"how tired are you right now\" . Scores of 18 and above are treated as high fatigue in this review."
@@ -158,7 +158,7 @@
   },
   {
     "source": {
-      "id": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+      "id": "kno_01M5H52XQY4KS0W605NT20RJVP",
       "characterId": "chr_seedAmara",
       "worldId": "wld_seedMeridian",
       "title": "ED triage guidelines.pdf",
@@ -168,124 +168,124 @@
       "pages": 5,
       "chunks": 17,
       "citedCount": 4,
-      "addedAt": "2026-10-20T15:30:37.775Z"
+      "addedAt": "2026-09-21T19:12:01.281Z"
     },
     "chunks": [
       {
-        "id": "kch_01M5CZ144KDG5HVKHN6MZ5EFXD",
-        "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+        "id": "kch_01M5H53GY8R00CTP35Y21P1KZ1",
+        "sourceId": "kno_01M5H52XQY4KS0W605NT20RJVP",
         "index": 0,
         "locator": "p. 1",
         "text": "## Emergency Department Triage Guidelines\n\nMeridian General Hospital · Emergency Department Version 4.1 · Reviewed September 2025 · Fictional document for the Horizon demo world \"Meridian Council\""
       },
       {
-        "id": "kch_01M5CZ144NE6MDWA7KZM1N939S",
-        "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+        "id": "kch_01M5H53GY8R00CTP35Y21P1KZ3",
+        "sourceId": "kno_01M5H52XQY4KS0W605NT20RJVP",
         "index": 1,
         "locator": "p. 1",
         "text": "## 1. Purpose and principles\n\n## 1.1 Who these guidelines are for\n\nThese guidelines are for triage nurses and clinicians working in the emergency department at Meridian General, and for staff who give advice by phone or online chat on the department's behalf."
       },
       {
-        "id": "kch_01M5CZ144R2ATRW9X6B6P1DBQ6",
-        "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+        "id": "kch_01M5H53GY8R00CTP35Y21P1KZ5",
+        "sourceId": "kno_01M5H52XQY4KS0W605NT20RJVP",
         "index": 2,
         "locator": "p. 1",
         "text": "## 1.2 What triage is\n\nTriage assigns urgency, not diagnosis. Nurses grade each presentation from 1 (immediate) to 5 (non-urgent) using the presenting complaint and the observations taken on arrival.\n\n| Grade | Meaning | Seen by a clinician within |\n|---------|-------------|------------------------------|\n| 1 | Immediate | 0 minutes |\n| 2 | Very urgent | 10 minutes |\n| 3 | Urgent | 60 minutes |\n| 4 | Standard | 120 minutes |\n| 5 | Non-urgent | 240 minutes |"
       },
       {
-        "id": "kch_01M5CZ144TW0XXD1K6696C0A4Y",
-        "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+        "id": "kch_01M5H53GY8R00CTP35Y21P1KZ7",
+        "sourceId": "kno_01M5H52XQY4KS0W605NT20RJVP",
         "index": 3,
         "locator": "p. 1",
         "text": "## 1.3 Re-triage\n\nA patient's grade can change while they wait. Re-check observations at least every hour for grades 3 to 5, and at once if the patient or a relative reports a change."
       },
       {
-        "id": "kch_01M5CZ144WJ1XC6MK8QJCGSFKY",
-        "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+        "id": "kch_01M5H53GY8R00CTP35Y21P1KZ9",
+        "sourceId": "kno_01M5H52XQY4KS0W605NT20RJVP",
         "index": 4,
         "locator": "p. 2",
         "text": "## 2. Headache\n\n## 2.1 Common headaches\n\nMost headaches seen in the department are primary headaches: tension-type, migraine, or medication- and caffeine-related. A dull, pressing pain on both sides without neurological signs is typical of tension-type or withdrawal headache."
       },
       {
-        "id": "kch_01M5CZ144YGYHHXEHYJKYBAKY5",
-        "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+        "id": "kch_01M5H53GYK0GBGNFN38NH4XREQ",
+        "sourceId": "kno_01M5H52XQY4KS0W605NT20RJVP",
         "index": 5,
         "locator": "p. 2",
         "text": "## 2.2 Tension-type headache\n\nUsually described as a band or pressure around the head, often worse at the end of the day. It is associated with stress, poor sleep, long screen time and missed meals. It does not usually cause vomiting or sensitivity to light."
       },
       {
-        "id": "kch_01M5CZ1450DP55EW5VB4ZX1XSX",
-        "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+        "id": "kch_01M5H53GYK0GBGNFN38NH4XRES",
+        "sourceId": "kno_01M5H52XQY4KS0W605NT20RJVP",
         "index": 6,
         "locator": "p. 2",
         "text": "## 2.3 Migraine\n\nUsually one-sided and throbbing, with nausea, sensitivity to light or sound, and sometimes a visual aura beforehand. Patients with a known migraine pattern who present with a typical attack are usually graded 4."
       },
       {
-        "id": "kch_01M5CZ14527QHPWPPF11KW5DBG",
-        "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+        "id": "kch_01M5H53GYK0GBGNFN38NH4XREV",
+        "sourceId": "kno_01M5H52XQY4KS0W605NT20RJVP",
         "index": 7,
         "locator": "p. 2",
         "text": "## 2.4 Caffeine withdrawal\n\nCaffeine withdrawal headache usually begins 12 to 24 hours after a sharp cut in intake and can last two to nine days. Gradual tapering, fluids and simple painkillers are usually enough; it rarely needs emergency care.\n\nAsk about recent changes in coffee, tea, energy drinks and cola. Patients often do not connect a new headache with cutting back a week earlier. A slower taper (reducing by about a quarter every few days) prevents most withdrawal headaches."
       },
       {
-        "id": "kch_01M5CZ1454N32K5ADDYGSNF8D7",
-        "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+        "id": "kch_01M5H53GYK0GBGNFN38NH4XREX",
+        "sourceId": "kno_01M5H52XQY4KS0W605NT20RJVP",
         "index": 8,
         "locator": "p. 2",
         "text": "## 2.5 Medication-overuse headache\n\nTaking simple painkillers on more than about fifteen days a month can itself cause daily headaches. Ask how often the patient takes painkillers, and suggest a GP review rather than more medication."
       },
       {
-        "id": "kch_01M5CZ1456X0T6BEZ9SQ2ZZKQD",
-        "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+        "id": "kch_01M5H53GYQY4FZ6VG444N33RWJ",
+        "sourceId": "kno_01M5H52XQY4KS0W605NT20RJVP",
         "index": 9,
         "locator": "p. 3",
         "text": "## 3. Red flags\n\n## 3.1 Escalate at once\n\nEscalate any headache that is sudden and severe (\"thunderclap\"), or that comes with fever, neck stiffness, confusion, new weakness or changes in vision. These patients are graded 2 or higher and seen by a doctor without delay.\n\nA thunderclap headache reaches its worst within about a minute. Patients often describe it as \"the worst headache of my life\" . It must be treated as a possible bleed until proven otherwise."
       },
       {
-        "id": "kch_01M5CZ1458E3DWQ3RY3BSTHQR9",
-        "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+        "id": "kch_01M5H53GYRATJHYN142XX90W2Z",
+        "sourceId": "kno_01M5H52XQY4KS0W605NT20RJVP",
         "index": 10,
         "locator": "p. 3",
         "text": "## 3.2 Other warning signs\n\n- A headache with a rash that does not fade under pressure: grade 1.\n- Slurred speech, a drooping face or weakness on one side: grade 1, and follow the stroke pathway.\n- A headache in pregnancy or shortly after birth with high blood pressure: grade 2.\n- A headache with a high temperature and vomiting in an older adult: grade 2."
       },
       {
-        "id": "kch_01M5CZ145B15KA3TJKKE5CSKRE",
-        "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+        "id": "kch_01M5H53GYSQH7JEXWCX2HTQZH1",
+        "sourceId": "kno_01M5H52XQY4KS0W605NT20RJVP",
         "index": 11,
         "locator": "p. 3",
         "text": "## 3.3 Same-day review\n\nA first severe headache after age 50, a headache after a head injury, or one that wakes the patient from sleep should also be reviewed the same day, even when observations are normal.\n\nPatients taking blood thinners who have any head injury should be graded 2, whatever their headache score."
       },
       {
-        "id": "kch_01M5CZ145DN896HPBARQ3713JS",
-        "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+        "id": "kch_01M5H53GYTG8ZWE3KX0D61X7PM",
+        "sourceId": "kno_01M5H52XQY4KS0W605NT20RJVP",
         "index": 12,
         "locator": "p. 4",
         "text": "## 4. Advice by phone and chat\n\n## 4.1 Scope\n\nPhone and chat advice helps people decide where to go: self-care at home, a pharmacist, their GP, an urgent treatment centre, or the emergency department. It is not a consultation."
       },
       {
-        "id": "kch_01M5CZ145EDQ5YR9PTKN49BWPM",
-        "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+        "id": "kch_01M5H53GYVKWCMEEN6JENTS673",
+        "sourceId": "kno_01M5H52XQY4KS0W605NT20RJVP",
         "index": 13,
         "locator": "p. 4",
         "text": "## 4.2 Saying what advice is\n\nAdvice given by phone or chat must say clearly that it is not an examination. Tell the patient which symptoms mean they should come in person.\n\nGood practice in every conversation:\n\n1. Ask one or two clarifying questions before giving any advice: where the pain is, how long it has lasted, and what has changed recently.\n2. Give the most likely explanation in plain language, and say how confident you are.\n3. Give simple, safe self-care steps.\n4. Always finish with the red flags that mean the patient should come in, and say \"today\" or \"now\" where it applies."
       },
       {
-        "id": "kch_01M5CZ145GCT00SRP316TTR6DS",
-        "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+        "id": "kch_01M5H53GYWC8N9CF5AGS1MN6FG",
+        "sourceId": "kno_01M5H52XQY4KS0W605NT20RJVP",
         "index": 14,
         "locator": "p. 4",
         "text": "## 4.3 Recording\n\nRecord the advice given, the red flags explained and the patient's plan. If the patient seems unsure or frightened, invite them in rather than closing the conversation."
       },
       {
-        "id": "kch_01M5CZ145HBEA0JRC9H3C6W3W6",
-        "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+        "id": "kch_01M5H53GYXETPVNMQJCFXWJS53",
+        "sourceId": "kno_01M5H52XQY4KS0W605NT20RJVP",
         "index": 15,
         "locator": "p. 5",
         "text": "## 5. Hydration and simple painkillers\n\nFor headaches without red flags, advise fluids, regular meals, rest from screens and a simple painkiller if it is safe for the patient. Paracetamol or ibuprofen at the dose on the packet is usually enough. Ibuprofen is not suitable for everyone: people with stomach ulcers, some kidney problems or asthma made worse by antiinflammatories should use paracetamol instead. If in doubt, a pharmacist can advise."
       },
       {
-        "id": "kch_01M5CZ145J8JKJY29NFNSVAZ3Q",
-        "sourceId": "kno_01M5CYZ72APQGEGG32F8KVEDHK",
+        "id": "kch_01M5H53GYY0HFHH062S64TGA46",
+        "sourceId": "kno_01M5H52XQY4KS0W605NT20RJVP",
         "index": 16,
         "locator": "p. 5",
         "text": "## 6. Review of these guidelines\n\nThese guidelines are reviewed every year by the department's senior nursing team and the clinical lead. Send comments to the triage practice group."
@@ -294,7 +294,7 @@
   },
   {
     "source": {
-      "id": "kno_01M5CYZ73NZ759DKV71CD1GP8S",
+      "id": "kno_01M5H50YNWWW8HP5V640SHFF2Y",
       "characterId": "chr_seedHana",
       "worldId": "wld_seedSunnyHollow",
       "title": "Grandma's recipe notebook",
@@ -303,26 +303,26 @@
       "bytes": 2086,
       "chunks": 3,
       "citedCount": 1,
-      "addedAt": "2026-10-20T15:30:37.821Z"
+      "addedAt": "2026-09-15T16:20:01.290Z"
     },
     "chunks": [
       {
-        "id": "kch_01M5CYZ75EHA4E7SSZSAGG9RFS",
-        "sourceId": "kno_01M5CYZ73NZ759DKV71CD1GP8S",
+        "id": "kch_01M5H50YQW6VKJN5JRYPW4N08C",
+        "sourceId": "kno_01M5H50YNWWW8HP5V640SHFF2Y",
         "index": 0,
         "locator": "¶ 1",
         "text": "Grandma's recipe notebook (typed up by Hana, Sunny Hollow)\n\np. 1. For Hana, Rin and whoever they bring home. Cook for people, not for photographs.\n\np. 2. Yuzu cake: zest two yuzu into the sugar first and rub it with your fingers until it smells like winter sunshine. Don't skip this. The juice goes in the glaze, never the batter.\n\np. 3. Yuzu cake, the rest: 200 g butter, 200 g of that yuzu sugar, four eggs, 200 g flour, a pinch of salt. Bake in a slow oven until a skewer comes out clean. Glaze while warm with icing sugar and the juice. It keeps three days, if nobody knows where it is.\n\np. 4. Miso marinade for fish: two spoons miso, one of mirin, one of sugar. Leave the fish in it overnight. Wipe it off before grilling or it burns.\n\np. 5. Sushi rice for a crowd: three cups of rice and a splash more vinegar than you think. A spoon of pineapple juice in the vinegar keeps it bright when the fish is rich. Your grandfather never noticed."
       },
       {
-        "id": "kch_01M5CYZ75GV5PEKXGEFZ0FDW1M",
-        "sourceId": "kno_01M5CYZ73NZ759DKV71CD1GP8S",
+        "id": "kch_01M5H50YQW6VKJN5JRYPW4N08D",
+        "sourceId": "kno_01M5H50YNWWW8HP5V640SHFF2Y",
         "index": 1,
         "locator": "¶ 2",
         "text": "p. 6. Fishing-day rice balls: pack them the night before, wrap them in a cloth, and give the biggest one to whoever drives.\n\np. 7. Tamagoyaki: three eggs, a spoon of sugar, a little dashi. Roll it in thin layers. If it tears, nobody minds; call it rustic.\n\np. 8. Rainy-day soup: miso, tofu and whatever greens are wilting. If a child refuses it, call it \"dragon broth\" and serve it in the good bowls.\n\np. 9. Fever soup: the same soup with ginger and an egg stirred in. Bring it to the bedroom. Don't ask if they want it.\n\np. 10. Strawberry daifuku for the shop's opening day: wrap each strawberry in sweet bean paste, then in soft mochi. Dust your hands with starch, not flour.\n\np. 11. Flowers on the table should never be taller than your elbow. People want to see each other when they eat.\n\np. 12. A good dinner has one dish everyone loves and one dish someone has never tried. Arguments about the second one are part of the meal."
       },
       {
-        "id": "kch_01M5CYZ75HXZE35B45PZ466W3T",
-        "sourceId": "kno_01M5CYZ73NZ759DKV71CD1GP8S",
+        "id": "kch_01M5H50YQW6VKJN5JRYPW4N08E",
+        "sourceId": "kno_01M5H50YNWWW8HP5V640SHFF2Y",
         "index": 2,
         "locator": "¶ 3",
         "text": "p. 13. Pickled plums: salt, patience and a dark cupboard. Check them in June.\n\np. 14. Leftover rice becomes tomorrow's onigiri. Salt your hands, not the rice, and press as if you were holding a small bird."
@@ -331,7 +331,21 @@
   },
   {
     "source": {
-      "id": "kno_01M5CYZ72WZ5CX6NQS0A1D1G2W",
+      "id": "kno_01M5H58DXP1R651Q1R5C9DGF6A",
+      "characterId": "chr_seedMei",
+      "worldId": "wld_seedMeridian",
+      "title": "Working-time pilots appendix.pdf",
+      "type": "file",
+      "status": "failed",
+      "bytes": 1011,
+      "addedAt": "2026-09-24T14:05:00.984Z",
+      "error": "This PDF is password-protected. Remove the password and add it again."
+    },
+    "chunks": []
+  },
+  {
+    "source": {
+      "id": "kno_01M5H58RTVK9YMG2903K5SZ781",
       "characterId": "chr_seedMei",
       "worldId": "wld_seedMeridian",
       "title": "Four-day week pilot summaries.pdf",
@@ -340,90 +354,90 @@
       "bytes": 85731,
       "pages": 9,
       "chunks": 12,
-      "citedCount": 3,
-      "addedAt": "2026-10-20T15:30:37.793Z"
+      "citedCount": 7,
+      "addedAt": "2026-09-24T14:11:00.989Z"
     },
     "chunks": [
       {
-        "id": "kch_01M5CZ20XPD2MK44HF412TZTF1",
-        "sourceId": "kno_01M5CYZ72WZ5CX6NQS0A1D1G2W",
+        "id": "kch_01M5H59EKT2EVARE8BKR8FD5RQ",
+        "sourceId": "kno_01M5H58RTVK9YMG2903K5SZ781",
         "index": 0,
         "locator": "p. 1",
         "text": "## Four-Day Week Pilots in Meridian, 2023-2025: Summaries and Findings\n\nMeridian Institute for Work and Policy Compendium No. 6 · August 2025 · Fictional document for the Horizon demo world \"Meridian Council\""
       },
       {
-        "id": "kch_01M5CZ20XQAYKXPTGCB2MFYRXR",
-        "sourceId": "kno_01M5CYZ72WZ5CX6NQS0A1D1G2W",
+        "id": "kch_01M5H59EKT2EVARE8BKR8FD5RS",
+        "sourceId": "kno_01M5H58RTVK9YMG2903K5SZ781",
         "index": 1,
         "locator": "p. 1",
         "text": "## Overview\n\nThis compendium summarises fourteen four-day week pilots run in Meridian between 2023 and 2025, covering 212 organisations and about 9,800 workers. Every participating organisation volunteered.\n\nEach pilot used the \"100-80-100\" model: workers kept 100% of their pay for 80% of their usual hours, in exchange for a commitment to keep 100% of their output. Pilots ran for six months, and organisations then chose whether to continue.\n\nThe compendium is written for policymakers. It reports what the pilots found and, just as carefully, what they could not find."
       },
       {
-        "id": "kch_01M5CZ20XSYQAE4E9VES19BCKF",
-        "sourceId": "kno_01M5CYZ72WZ5CX6NQS0A1D1G2W",
+        "id": "kch_01M5H59EKT2EVARE8BKR8FD5RV",
+        "sourceId": "kno_01M5H58RTVK9YMG2903K5SZ781",
         "index": 2,
         "locator": "p. 2",
         "text": "## 1. Who took part\n\nSeventy-one percent of participating organisations were in professional services, software, marketing or the non-profit sector. Only nine provided round-the-clock or shift-based services.\n\n| Sector | Organisations | Workers |\n|------------------------|-----------------|-----------|\n| Professional services | 58 | 2,140 |\n| Software and digital | 49 | 2,310 |\n| Marketing and media | 21 | 640 |\n| Non-profit | 23 | 910 |\n| Manufacturing | 17 | 1,480 |\n| Retail and hospitality | 35 | 1,620 |\n| Shift-based services | 9 | 700 |\n| Total | 212 | 9,800 |\n\nMost organisations had fewer than fifty employees. Only six had more than five hundred."
       },
       {
-        "id": "kch_01M5CZ20XWGFFM0FFBH90Q593Y",
-        "sourceId": "kno_01M5CYZ72WZ5CX6NQS0A1D1G2W",
+        "id": "kch_01M5H59EKT2EVARE8BKR8FD5RX",
+        "sourceId": "kno_01M5H58RTVK9YMG2903K5SZ781",
         "index": 3,
         "locator": "p. 3",
         "text": "## 2. Wellbeing\n\nAcross all pilots, self-reported burnout fell by an average of 32% and sick days by 21%. Revenue stayed broadly flat, but fewer than half of the firms tracked output with a consistent measure.\n\nWorkers reported better sleep, more time with family and less stress about household tasks. The improvements appeared within the first two months and held to the end of each pilot.\n\nImprovements were smaller for managers, who often absorbed coordination work that had previously been spread across a five-day week."
       },
       {
-        "id": "kch_01M5CZ20XXVX41DCTCC7EGSGSS",
-        "sourceId": "kno_01M5CYZ72WZ5CX6NQS0A1D1G2W",
+        "id": "kch_01M5H59EKT2EVARE8BKR8FD5RZ",
+        "sourceId": "kno_01M5H58RTVK9YMG2903K5SZ781",
         "index": 4,
         "locator": "p. 4",
         "text": "## 3. What made pilots work\n\nFirms with the biggest gains had halved their meetings and redesigned workflows before the trial began. Firms that simply removed a day without redesign saw smaller benefits and more overtime.\n\nCommon redesign steps included:\n\n- cutting standing meetings to 25 minutes, or replacing them with written updates;\n- \"focus blocks\" of two to three hours with no messages;\n- clearing duplicated approval steps;\n- agreeing in advance how to cover customers on the day off.\n\nFirms that skipped redesign often saw workers squeeze five days of work into four, with longer days and weekend email. Their burnout reductions were about half the average."
       },
       {
-        "id": "kch_01M5CZ20XZ3VJ4ZAA36YVVC2KA",
-        "sourceId": "kno_01M5CYZ72WZ5CX6NQS0A1D1G2W",
+        "id": "kch_01M5H59EKT2EVARE8BKR8FD5S1",
+        "sourceId": "kno_01M5H58RTVK9YMG2903K5SZ781",
         "index": 5,
         "locator": "p. 5",
         "text": "## 4. The gap in the evidence\n\nNone of the pilots included an acute hospital, a public transport operator or a residential care provider. The authors flag this as the main gap in the evidence.\n\nThese sectors share a feature that most pilot firms did not: service must be provided at fixed times, whatever happens to productivity. A software team can finish a task faster; a bus still has to leave at 7:42.\n\nThe pilots therefore tell us a great deal about knowledge work, and much less about the sectors where a national standard would be hardest to apply."
       },
       {
-        "id": "kch_01M5CZ20Y10WERCHS8NWVQW1KW",
-        "sourceId": "kno_01M5CYZ72WZ5CX6NQS0A1D1G2W",
+        "id": "kch_01M5H59EKT2EVARE8BKR8FD5S3",
+        "sourceId": "kno_01M5H58RTVK9YMG2903K5SZ781",
         "index": 6,
         "locator": "p. 6",
         "text": "## 5. Shift-based organisations\n\nIn the nine shift-based organisations, holding coverage constant took between 18% and 27% more staffed hours, met through new hires, overtime or agency workers.\n\nThe nine were three private clinics, two call centres, two security firms, a hotel group and a logistics depot. In each, managers redesigned rotas rather than hours, and the cost came from covering the hours that productivity gains could not replace.\n\nTwo of the nine reported that reduced sickness and turnover paid back part of that cost within the six months. The others did not measure it."
       },
       {
-        "id": "kch_01M5CZ20Y353J55EGHWKFAK5HE",
-        "sourceId": "kno_01M5CYZ72WZ5CX6NQS0A1D1G2W",
+        "id": "kch_01M5H59EKT2EVARE8BKR8FD5S5",
+        "sourceId": "kno_01M5H58RTVK9YMG2903K5SZ781",
         "index": 7,
         "locator": "p. 7",
         "text": "## 6. After the pilots\n\nNinety-two percent of organisations kept the four-day week after the pilot. Participants were not randomly selected, so the authors warn against reading this as a national estimate.\n\nOrganisations that volunteer for a four-day week pilot are likely to be the ones best placed to make it work. A firm that expects it to fail does not sign up."
       },
       {
-        "id": "kch_01M5CZ20Y4CB5842MDW4RPSNFQ",
-        "sourceId": "kno_01M5CYZ72WZ5CX6NQS0A1D1G2W",
+        "id": "kch_01M5H59EKT2EVARE8BKR8FD5S7",
+        "sourceId": "kno_01M5H58RTVK9YMG2903K5SZ781",
         "index": 8,
         "locator": "p. 7",
         "text": "## 6.1 Retention\n\nWorker retention improved in most pilots: voluntary resignations fell from 6.1% to 4.3% on average over the trial period.\n\nRecruitment also became easier. Several firms reported more applications per vacancy and fewer offers declined."
       },
       {
-        "id": "kch_01M5CZ20Y59F4B6ZYY1JVXHA2Q",
-        "sourceId": "kno_01M5CYZ72WZ5CX6NQS0A1D1G2W",
+        "id": "kch_01M5H59EM9DB8CRC6RVKVFTNWC",
+        "sourceId": "kno_01M5H58RTVK9YMG2903K5SZ781",
         "index": 9,
         "locator": "p. 8",
         "text": "## 7. Recommendations\n\nThe authors recommend sector-specific trials in health, transport and care, with independent measurement of output and service quality, before any national standard is set."
       },
       {
-        "id": "kch_01M5CZ20Y69F15E44FT2M6MPDC",
-        "sourceId": "kno_01M5CYZ72WZ5CX6NQS0A1D1G2W",
+        "id": "kch_01M5H59EM9DB8CRC6RVKVFTNWE",
+        "sourceId": "kno_01M5H58RTVK9YMG2903K5SZ781",
         "index": 10,
         "locator": "p. 8",
         "text": "## In particular:\n\n1. Run trials where the gap is. Fund at least one trial each in an acute hospital trust, a public transport operator and a group of residential care homes.\n2. Measure output independently. Self-reported productivity is not enough. Use service-level data: waiting times, punctuality, care-quality inspections.\n3. Count both sides of the ledger. Record the cost of extra staffed hours and savings from reduced sickness, agency use and turnover.\n4. Randomise where possible. Assign wards, depots or homes to start dates at random, so that results can be compared fairly.\n5. Publish everything, including trials that are stopped early."
       },
       {
-        "id": "kch_01M5CZ20Y71K8EHQYAKJP83KMD",
-        "sourceId": "kno_01M5CYZ72WZ5CX6NQS0A1D1G2W",
+        "id": "kch_01M5H59EM9DB8CRC6RVKVFTNWG",
+        "sourceId": "kno_01M5H58RTVK9YMG2903K5SZ781",
         "index": 11,
         "locator": "p. 9",
         "text": "## 8. Method and limitations\n\nResults come from employee surveys at the start, midpoint and end of each pilot, alongside finance data reported by each organisation. Survey response fell from 74% to 58% by the final wave.\n\nFalling response rates are a common problem in workplace trials. Workers who were unhappy with the pilot may have been less likely to answer the final survey, which would make results look better than they were.\n\nFinance data was reported by the organisations themselves and was not audited. Output measures differed between firms; fewer than half used one consistent measure for the whole pilot."
@@ -432,7 +446,7 @@
   },
   {
     "source": {
-      "id": "kno_01M5CYZ737SW48XTWKTDNJ6N2S",
+      "id": "kno_01M5H560MC3629B7ATWJ66CDYH",
       "characterId": "chr_seedVictor",
       "worldId": "wld_seedMeridian",
       "title": "Moot court notes",
@@ -441,26 +455,26 @@
       "bytes": 2443,
       "chunks": 3,
       "citedCount": 2,
-      "addedAt": "2026-10-20T15:30:37.806Z"
+      "addedAt": "2026-09-22T22:30:00.962Z"
     },
     "chunks": [
       {
-        "id": "kch_01M5CYZ74NBAW7JW95CEW0THMT",
-        "sourceId": "kno_01M5CYZ737SW48XTWKTDNJ6N2S",
+        "id": "kch_01M5H560PK1S9QQ56DS1R800QZ",
+        "sourceId": "kno_01M5H560MC3629B7ATWJ66CDYH",
         "index": 0,
         "locator": "¶ 1",
         "text": "Moot court notes: \"This house would adopt a nationwide four-day work week\" V. Hale, for the Meridian Bar Society exhibition debate. Private notes.\n\n¶ 1. Expect the opposition to say the evidence base is narrow. Concede scope early, then shift the burden: the status quo is also a policy and has to justify itself.\n\n¶ 2. Historical anchor: the Meridian Working Hours Act 1931 made the two-day weekend the default. It gave agriculture and shipping a ten-year transition and exempted continuous services.\n\n¶ 3. Continuous-coverage sectors already run on shift rules under Part IV of the Working Time Code: rest periods, a cap on consecutive shifts, and averaging over a reference period. A shorter standard week sits inside that structure.\n\n¶ 4. Phase-in precedent: sector-by-sector timetables, collective agreements first, the public sector as model employer. Courts have upheld staged duties where the end point is clear."
       },
       {
-        "id": "kch_01M5CYZ74QDZTFBGYTRC4Y1T63",
-        "sourceId": "kno_01M5CYZ737SW48XTWKTDNJ6N2S",
+        "id": "kch_01M5H560PNFFCYVWKV80KZ8QNM",
+        "sourceId": "kno_01M5H560MC3629B7ATWJ66CDYH",
         "index": 1,
         "locator": "¶ 2",
         "text": "¶ 5. Watch for the \"speed, not direction\" turn. Once the opposition accepts the goal, the debate is about implementation, and the side with a timetable wins it.\n\n¶ 6. Closing options: res ipsa loquitur; \"the destination is agreed\". Don't sound triumphant. Judges reward conceding a fair point gracefully.\n\n¶ 7. Definitions first. \"Nationwide\" means the default standard week in law, not an identical schedule for every employer. \"Adopt\" means legislate a standard with a transition, not switch overnight. If the opposition reads \"nationwide\" as \"identical\", correct it in the first rebuttal and keep correcting it.\n\n¶ 8. Their best argument is cost in coverage sectors. Do not deny it. Reframe it: the cost of exhaustion is already being paid, in sickness absence, agency fees and resignations. Ask for their number for the status quo.\n\n¶ 9. Questions to put to an economist: What is the cost of doing nothing? Which of your figures come from volunteers? Would you accept a staged timetable with sector trials written into it?"
       },
       {
-        "id": "kch_01M5CYZ74SHKS8ZABWE5DHG4KY",
-        "sourceId": "kno_01M5CYZ737SW48XTWKTDNJ6N2S",
+        "id": "kch_01M5H560PQRNRWCBX08TT1GQCC",
+        "sourceId": "kno_01M5H560MC3629B7ATWJ66CDYH",
         "index": 2,
         "locator": "¶ 3",
         "text": "¶ 10. Questions to expect from a physician on my own side: patient safety on longer shifts. Answer: the standard week limits total hours; Part IV still caps consecutive shifts.\n\n¶ 11. Latin, sparingly. \"Res ipsa loquitur\" (the thing speaks for itself) for the close. \"Audi alteram partem\" (hear the other side) if accused of ignoring their evidence. Always translate.\n\n¶ 12. Structure for every speech: three points, numbered, each with one example. Finish on the burden of proof."

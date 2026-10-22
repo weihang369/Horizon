@@ -306,6 +306,7 @@ Verdict {
   strongerCase?: "prop" | "opp" | null;           // null = too close to call / panel / none
   scoresBy?: "side" | "debater";
   scores?: { subjectId: string; criterionId: string; value: number }[];   // long format, 0–10; optional
+  margin?: number;                // U-61: the lead (0–10) a side's mean needs to win, when Jev scored
   summary: { subjectId: string; points: string[] }[];
   keyDisagreement?: string;
   rationale?: string;
@@ -362,11 +363,13 @@ TurnTrace {
   energy?:   { characterId: string; spent: number; remaining: number; max: number };
   emotion?:  { chosen: Emotion; source: EmotionSource; candidates?: { label: Emotion; p: number }[] };
   routing?:  { question?: string; selected: string;
-               forcedBy?: "user_ask" | "mention" | "nudge" | "round_order";
+               forcedBy?: "user_ask" | "mention" | "nudge" | "round_order" | "opening";   // opening: U-55
                candidates?: { characterId: string; p: number }[];
                skipped?: { characterId: string; reason: "exhausted" | "muted" | "archived" }[];
                reason?: string };                 // only if an LLM produces one; Jev never does
-  memory?:   { recalled: { memoryItemId: string; text: string; sourceSessionId?: string; score?: number }[] };
+  memory?:   { recalled: { memoryItemId: string; text: string; sourceSessionId?: string; score?: number;
+                           via?: "block" | "recall" }[] };   // U-58: the prompt's memory list, or found by recall
+  search?:   { vectorMs?: number; rewriteMs?: number; recallVectorMs?: number };   // U-58: what the searches waited for
   knowledge?: { query?: string; trigger?: "always" | "tool_call" | "gated";            // D-59 (rev 1.2)
                 retrieved: { chunkId: string; sourceId: string; title: string; locator?: string;
                              text: string; score: number; cited: boolean; n?: number }[] };
@@ -389,7 +392,7 @@ TurnTrace {
       p?: number;                  // the answer's probability; a noul: always p(yes); absent on a fallback
       confidence?: number;         // a choice or score: Jev's confidence, which the floor is compared with (06 E1)
       compared?: { name: string; value: number; threshold: number }[];   // every comparison code made
-      result: "used" | "below_threshold" | "fallback" | "not_used" | "shown_only";
+      result: "used" | "below_threshold" | "fallback" | "not_used" | "shown_only" | "skipped";   // skipped: U-49, not asked
       action?: string;             // what code did, in a few words: "deep", "kept [1]", "no cue", "rewritten"
     }[];
   };
@@ -434,7 +437,7 @@ GenerationTask {
 - **New sources** are `"file"` (PDF, DOCX, MD, TXT; ≤ 10 MB, ≤ 300 pages) or `"text"` (pasted), with at most 20 per character. `"url"` is **legacy and read-only**: no command creates it.
 - **Status:** `indexing` → `indexed` (keyword and vector search) | `keyword_only` (keyword search only, because embedding was unavailable; `reindexKnowledge` upgrades it) | `failed` (`error` says why).
 - **Commands (rev 1.3):** `characters.addKnowledge(id, { file } | { type: "text", title, text })`, `deleteKnowledge(sourceId)` and `reindexKnowledge(sourceId)`. Progress arrives as `entity.changed { kind: "knowledge", id, progress: { stage: "extracting" | "chunking" | "embedding", pct } }`.
-- **Seed status:** the backend imports seed sources as `keyword_only` until the user runs "Index seed knowledge" (doc [backend/02](../backend/02-storage.md)). The MockClient shows them as `indexed`, so the public demo's citations look the same.
+- **Seed status:** the backend imports shipped sources `indexed`, with the vectors the real run made (D-110), when its active embedding space is the seed's; on another space they are `keyword_only` until the user's Index (doc [backend/02](../backend/02-storage.md)). The MockClient shows them as `indexed`.
 
 ### KnowledgeChunk (D-59, rev. 1.2)
 `{ id /*kch_…*/, sourceId, index, locator?, text }`. Read with `characters.knowledgeSource(sourceId) → { source, chunks }` for the O28 Source viewer. Chunking is AI-owned (OQ-AI-03); the UI only needs stable ids and a readable locator.
@@ -502,21 +505,10 @@ draft (wizard: seed → … → theme) ─→ review (APPROVE step) ─(Summon)�
 - Fixtures are validated against this contract (JSON Schema or zod generated from it).
 
 ## 8. Example: debate message (fixture form)
-*A real reply, recorded on the demo instance in the v1 test stage (2026-10-21, evening re-record) and shipped as seed message `msg_seedD09`: Mei answering the moderator's "give us a number" during the rebuttal round. `…` marks text shortened here; the trace shows its main parts (the shipped one also carries `knowledge`, `calls`, `graph` and `system1`).*
+*A real reply, recorded on the demo instance in the v1 test stage (2026-10-22, re-recorded on the story clock after the U-62 fixes, D-110) and shipped as seed message `msg_seedD08`: Mei answering the moderator's "give us a number" during the rebuttal round. `…` marks text shortened here; the trace shows its main parts (the shipped one also carries `search`, `knowledge`, `memory`, `calls`, `graph` and `system1`).*
 ```json
 {
-  "id": "msg_seedD09",
-  "seq": 9,
-  "sessionId": "ses_seedDebate4Day",
-  "author": {
-    "type": "character",
-    "characterId": "chr_seedMei"
-  },
   "kind": "chat",
-  "content": "Anybody quoting a single number for this is selling you something. What…",
-  "status": "complete",
-  "emotion": "thinking",
-  "emotionSource": "classifier",
   "forcedSpeaker": true,
   "debate": {
     "phase": "rebuttal",
@@ -524,14 +516,26 @@ draft (wizard: seed → … → theme) ─→ review (APPROVE step) ─(Summon)�
     "iteration": 1,
     "side": "opp"
   },
+  "id": "msg_seedD08",
+  "sessionId": "ses_seedDebate4Day",
+  "seq": 8,
+  "author": {
+    "type": "character",
+    "characterId": "chr_seedMei"
+  },
+  "content": "Fine, a number, with error bars, since you asked. In the nine shift-based organisations where coverage was held constant, the extra staffed hours ran 18% to 27% [1]…",
+  "status": "complete",
+  "createdAt": "2026-10-01T09:58:29.249Z",
+  "emotion": "thinking",
+  "emotionSource": "classifier",
   "usage": {
-    "tokensIn": 2049,
-    "tokensCached": 0,
-    "tokensOut": 149,
-    "costUsd": 0.000218,
-    "energySpent": 3,
-    "firstTokenMs": 1535,
-    "totalMs": 2175
+    "tokensIn": 1859,
+    "tokensCached": 1024,
+    "tokensOut": 168,
+    "costUsd": 0.000151,
+    "energySpent": 2,
+    "firstTokenMs": 7852,
+    "totalMs": 9806
   },
   "citations": [
     {
@@ -541,29 +545,37 @@ draft (wizard: seed → … → theme) ─→ review (APPROVE step) ─(Summon)�
       "type": "file",
       "chunkId": "kch_meiPilot07",
       "locator": "p. 6",
-      "quote": "The nine were three private clinics, two call centres, two s…",
-      "score": 0.55
+      "quote": "The nine were three private clinics, two call centres, two security firms, a…",
+      "score": 0.555
+    }
+  ],
+  "reactions": [
+    {
+      "characterId": "chr_seedVictor",
+      "emotion": "thinking",
+      "p": 0.74,
+      "at": "2026-10-01T09:58:32.179Z"
     }
   ],
   "trace": {
-    "messageId": "msg_seedD09",
+    "messageId": "msg_seedD08",
     "model": {
       "id": "deepseek/deepseek-v4.1-flash",
       "provider": "Relace",
-      "pricePeriod": "off_peak",
+      "pricePeriod": "peak",
       "latencyMs": {
-        "firstToken": 1535,
-        "total": 2175
+        "firstToken": 7852,
+        "total": 9806
       },
-      "tokensIn": 2049,
-      "tokensOut": 149,
-      "costUsd": 0.000218,
-      "tokensCached": 0
+      "tokensIn": 1859,
+      "tokensOut": 168,
+      "costUsd": 0.000151,
+      "tokensCached": 1024
     },
     "energy": {
       "characterId": "chr_seedMei",
-      "spent": 3,
-      "remaining": 748,
+      "spent": 2,
+      "remaining": 996,
       "max": 1000
     },
     "emotion": {
@@ -572,15 +584,15 @@ draft (wizard: seed → … → theme) ─→ review (APPROVE step) ─(Summon)�
       "candidates": [
         {
           "label": "thinking",
-          "p": 0.64
-        },
-        {
-          "label": "angry",
-          "p": 0.07
+          "p": 0.54
         },
         {
           "label": "neutral",
           "p": 0.05
+        },
+        {
+          "label": "angry",
+          "p": 0.03
         }
       ]
     },
@@ -609,14 +621,13 @@ draft (wizard: seed → … → theme) ─→ review (APPROVE step) ─(Summon)�
         "persona": 358,
         "system": 716,
         "mode": 144,
-        "history": 1199,
+        "history": 910,
         "user": 15,
-        "memory": 317,
+        "memory": 332,
         "knowledge": 327
       }
     }
-  },
-  "createdAt": "2026-10-01T09:58:25.963Z"
+  }
 }
 ```
-*Cost: OpenRouter bills the reply ($0.000218: 2,049 tokens in, 0 of them cached, 149 out, served by Relace off-peak). Energy rounds the cost up at 1 ⚡ per $0.0001: 2.18 → 3 ⚡. The price arithmetic is in `domain/cost.ts` and its tests.*
+*Cost: OpenRouter bills the reply ($0.000151: 1,859 tokens in, 1,024 of them cached, 168 out, served by Relace at the peak price). Energy rounds the cost up at 1 ⚡ per $0.0001: 1.51 → 2 ⚡. The price arithmetic is in `domain/cost.ts` and its tests.*

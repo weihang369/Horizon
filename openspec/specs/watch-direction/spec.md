@@ -121,3 +121,11 @@ Under `agent`, a Step in line SHALL be asked "unsafe request?" and "at risk?" in
 #### Scenario: Step in at risk
 - **WHEN** a Step in line's `at_risk` answer is p 0.8
 - **THEN** one character answers with the care paragraph in its cue, and no follow plan runs
+
+### Requirement: The opening speaker's tag
+A watch opening whose speaker was set at creation SHALL be traced with `routing.forcedBy: "opening"`, shown in Insight
+as "Opening speaker" (U-55); `nudge` SHALL mean only a Speak next press.
+
+#### Scenario: Takeshi opens
+- **WHEN** a watch is created with `openingSpeaker` Takeshi
+- **THEN** the first line's routing is `{selected: Takeshi, forcedBy: "opening"}`

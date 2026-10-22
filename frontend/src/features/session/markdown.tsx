@@ -205,18 +205,65 @@ export function parseInline(src: string, cites?: ReadonlySet<number>): MdInline[
 }
 
 function renderInline(nodes: MdInline[], key = "i", cite?: CiteRenderer): ReactNode[] {
-  return nodes.map((n, idx) => {
+  return glueCites(nodes.map((n, idx): Piece => {
     const k = `${key}.${idx}`;
     switch (n.type) {
-      case "text": return withBreaks(n.text, k);
-      case "code": return <code key={k}>{n.text}</code>;
-      case "strong": return <strong key={k}>{renderInline(n.children, k, cite)}</strong>;
-      case "em": return <em key={k}>{renderInline(n.children, k, cite)}</em>;
-      case "link": return <a key={k} href={n.href} target="_blank" rel="noreferrer noopener">{renderInline(n.children, k, cite)}</a>;
-      case "cite": return cite ? cite(n.n, k) : `[${n.n}]`;
+      case "text": return { text: n.text };
+      case "code": return { node: <code key={k}>{n.text}</code> };
+      case "strong": return { node: <strong key={k}>{renderInline(n.children, k, cite)}</strong> };
+      case "em": return { node: <em key={k}>{renderInline(n.children, k, cite)}</em> };
+      case "link": return { node: <a key={k} href={n.href} target="_blank" rel="noreferrer noopener">{renderInline(n.children, k, cite)}</a> };
+      case "cite": return { node: cite ? cite(n.n, k) : `[${n.n}]`, cite: true };
     }
-    return null;
-  });
+    return { node: null };
+  }), key, withBreaks);
+}
+
+/** A run of inline content: plain text, or a rendered node (`cite` marks a citation chip). */
+export type Piece = { text: string } | { node: ReactNode; cite?: boolean };
+
+const WORD_BEFORE = /\S+[ \t]?$/;
+const PUNCT_AFTER = /^[.,;:!?…)\]"'’”]+/;
+
+/** Keeps each citation chip on one line with the word before it and the punctuation after it, so a chip and its full
+ * stop never wrap onto a line of their own (U-63). Consecutive chips stay together. */
+export function glueCites(pieces: Piece[], key: string, text: (t: string, k: string) => ReactNode): ReactNode[] {
+  const items = [...pieces];
+  const out: ReactNode[] = [];
+  for (let i = 0; i < items.length; i++) {
+    const p = items[i];
+    if ("text" in p) {
+      if (p.text) out.push(text(p.text, `${key}t${i}`));
+      continue;
+    }
+    if (!p.cite) {
+      out.push(p.node);
+      continue;
+    }
+    const run: ReactNode[] = [];
+    const prev = items[i - 1];
+    const word = prev && "text" in prev ? WORD_BEFORE.exec(prev.text) : null;
+    if (prev && "text" in prev && word) {
+      out.pop();
+      const head = prev.text.slice(0, word.index);
+      if (head) out.push(text(head, `${key}t${i - 1}`));
+      run.push(word[0]);
+    }
+    for (; i < items.length; i++) {
+      const c = items[i];
+      if ("text" in c || !c.cite) break;
+      run.push(c.node);
+    }
+    i--;
+    const next = items[i + 1];
+    const tail = next && "text" in next ? PUNCT_AFTER.exec(next.text) : null;
+    if (next && "text" in next && tail) {
+      run.push(tail[0]);
+      items[i + 1] = { text: next.text.slice(tail[0].length) };
+    }
+    out.push(<span key={`${key}g${i}`} style={{ whiteSpace: "nowrap" }}>{run}</span>);
+  }
+  return out;
 }
 
 function withBreaks(text: string, key: string): ReactNode {

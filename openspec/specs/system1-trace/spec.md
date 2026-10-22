@@ -14,7 +14,8 @@ A turn's trace SHALL carry an optional `system1` section: an optional `seed`, an
 - the answer;
 - an optional `p` and `confidence`;
 - the comparisons made, each `{name, value, threshold}`;
-- the result: `used`, `below_threshold`, `fallback`, `not_used` or `shown_only`;
+- the result: `used`, `below_threshold`, `fallback`, `not_used`, `shown_only` or `skipped` (U-49: a question this
+  turn didn't ask, with its reason as the action);
 - an optional `action`.
 
 A fallback row SHALL have no `p`.
@@ -88,7 +89,9 @@ The Insight drawer SHALL show a "System 1 · Jev" section after Emotion:
 - each row with its label, answer, `p` or confidence and its band, comparisons as "value ≥ threshold", and the action;
 - each row drawn as a meter (U-29): a bar of the value code tested with a tick at its threshold, in the palette colour
   when it crossed the line, grey when under it, warn on a fallback; the action as a pill;
-- `not_used` rows folded under "asked about the others (n)";
+- `not_used` rows folded under "not used this turn (n)" (U-57); `skipped` rows greyed, with their reason;
+- a "search query" group after the plan when the trace has `search`: the query vector's, the rewrite's and recall's
+  vector's waits (U-58);
 - IDs resolved to names or titles.
 
 The section SHALL be hidden when there are no rows, and absent in Compact mode.
@@ -117,7 +120,19 @@ Every planned reply SHALL carry one emotion row per candidate asked, with `about
 - **THEN** its emotion row's action is "recorded (MANUAL)"
 
 ### Requirement: Face-check rows
-A reply checked by the face check SHALL gain one row with purpose `face_check`, label "face and words agree?" and result `shown_only`, appended after the turn through the runtime's append operation. Its call SHALL appear in the trace's `calls` with its latency.
+A reply checked by the face check SHALL gain one row with purpose `face_check`, label "face and words agree?" and result `shown_only` (`used` when a clash switched the face, D-112), appended after the turn through the runtime's append operation. Its call SHALL appear in the trace's `calls` with its latency. A reply not checked SHALL gain the `skipped` row instead.
+
+### Requirement: Every turn of a mode lists the same rows
+Under `agent` (U-49, the user's choice of 2026-10-22), a reply SHALL carry a `skipped` row, answer "—", for each of
+its own questions the turn didn't ask: "needs documents?" ("skipped: no searchable documents", or "skipped: the plan's
+state was too large" when X9's cap dropped it), "needs something from earlier?" ("skipped: nothing earlier to search"),
+a watch opening's "is the talk finished?" ("skipped: the scene's opening"), a watch line's or a debate argument's
+"unsafe note?" ("skipped: no director's note this turn", "skipped: no Interject this turn"), and the face check (above).
+A generated greeting SHALL carry no gate skips.
+
+#### Scenario: Rin in watch
+- **WHEN** Rin, who has no documents, speaks a watch line with no director's note
+- **THEN** her trace has `skipped` rows for "needs documents?", "needs something from earlier?" and "unsafe note?"
 
 #### Scenario: Row after the reply
 - **WHEN** an `agent` reply's face check answers 380 ms after `turn.end`

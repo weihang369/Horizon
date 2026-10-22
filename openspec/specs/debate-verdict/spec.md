@@ -37,7 +37,7 @@ The state SHALL hold the two sides as an ordered list of blocks, each with its a
 - **THEN** the request differs from the live one, and it is not served from the store
 
 ### Requirement: The verdict prose
-A verdict SHALL get its summary, key disagreement and rationale from one DeepSeek JSON call with the `verdict` settings and purpose `verdict`, given the transcript as quoted content, the missed turns, and the result already decided. It SHALL judge argument quality only, say nothing that wasn't argued, write in the debate's language, named explicitly, and, under You decide, word the rationale as the arbiter's view.
+A verdict SHALL get its summary, key disagreement and rationale from one DeepSeek JSON call with the `verdict` settings and purpose `verdict`, given the transcript as quoted content, the missed turns, and the result already decided, the scores one line per criterion naming the side that leads it, or "level" (U-65). It SHALL judge argument quality only, say nothing that wasn't argued, write in the debate's language, named explicitly, and, under You decide, word the rationale as the arbiter's view.
 
 #### Scenario: You decide
 - **WHEN** the arbiter's scores favour the Opposition and the user picks the Proposition
@@ -95,3 +95,12 @@ Under `naive`, one DeepSeek JSON call SHALL write the scores (0–10 per side pe
 #### Scenario: Peak prices the prose higher
 - **WHEN** the price period is peak
 - **THEN** the label's DeepSeek part uses the peak multiplier and its Jev part doesn't, so it reads ≈ $0.0026 instead of ≈ $0.0014
+
+### Requirement: The verdict carries the margin
+A verdict whose bars Jev scored SHALL carry `margin`, the lead (0–10 scale) a side's mean needs over the other's to
+win (`verdict.margin`). The verdict screen SHALL show each side's mean over the criteria and that lead under the bars
+(U-61), so a narrow win reads as one.
+
+#### Scenario: A narrow win
+- **WHEN** Opposition's mean is 8.83 and Proposition's 8.45 with margin 0.25
+- **THEN** the screen shows "Proposition 8.45 · Opposition 8.83 · a win needs a 0.25 lead"

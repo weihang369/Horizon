@@ -127,8 +127,9 @@ The pipeline was built in M5; this task sets its AI policy.
   - the O28 Source viewer, which **finds the cited piece by `chunkId`** and shows an "isn't in this source any more
     (it was re-indexed)" notice with the quote when it is gone
     ([SourceViewer.tsx](../../frontend/src/features/profile/SourceViewer.tsx)).
-- **Reindex** restarts from the lowest stale layer. A seed source has no original file, so it is only re-embedded
-  (`_start_stage`). Seed sources stay `keyword_only` until "Index seed knowledge" (D-91).
+- **Reindex** restarts from the lowest stale layer (`_start_stage`). Since D-110 a shipped source carries its stored
+  original, sections and pieces, and its vectors in the default space, so a fresh install searches it by vector; on
+  another active space it reads `keyword_only` until its Index (D-91). A source with no original is only re-embedded.
 - **`build_space`** dual-writes, fills knowledge pieces and memories, then flips ([build.py](../../backend/horizon/services/knowledge/build.py)).
 - **The gateway** ([context.py](../../backend/horizon/gateway/context.py)):
   - only purpose `reply` drains energy;
@@ -463,7 +464,9 @@ is 1:1's cut; in group a newer message cancels the deep work (m12.md).*
 *Amended in M12 (`rag` D32.2, D32.8, the user's choices):
 - **The embedding starts with Jev call 1** for a candidate with vectors (K15's trim 2), waited for up to 200 ms after
   check 2. The rewrite's own vector is never waited for, and in 1:1 the rewrite of a message of at most six words
-  starts with Jev call 1 too (K15's trim 1).
+  starts with Jev call 1 too (K15's trim 1). *Superseded by D-111 (2026-10-22): measured live, 0 of 25 query vectors came
+  within 200 ms (0.86-13.2 s), so every search ran on keywords; a document turn now waits for its vectors, its rewrite
+  and every passage check to finish (`retrieval.agent.docsWaitAll`).*
 - **The instruction is `rewrite-2`.** Check 3 found DeepSeek answering follow-ups in character when this wording came
   as a trailing system message ("Depends on your contract and jurisdiction, and I'd need to check."). It is now the
   last user message: "This is a search step, not a chat line: don't reply to the last message. Write one search query

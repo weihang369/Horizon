@@ -30,11 +30,20 @@ import { TypeGlyph } from "../session/Citations";
 import { openCitation } from "../session/citationUtils";
 import { EmotionBody } from "./EmotionSection";
 import { emotionChip } from "./emotionView";
+import { citingSentence, focusSnippet } from "./passagePreview";
 import { showSystem1, System1Rows } from "./System1Section";
+import { turnPath } from "./turnPath";
 
 /** Bars and bands use the same 2-decimal value, so "0.70" never reads "MED" (no false precision, INS-01 AC4). */
 const r2 = (p: number) => Math.round(p * 100) / 100;
 import s from "./InsightDrawer.module.css";
+
+/** D-112: the emotion a clash switched the face to, read from the face check's row. */
+const switchedTo = (trace?: TurnTrace): string | null => {
+  const r = trace?.system1?.questions.find((x) => x.purpose === "face_check" && x.action?.startsWith("face switched to "));
+  const to = r?.action?.slice("face switched to ".length);
+  return to ? (emotionMeta[to as keyof typeof emotionMeta]?.label ?? to) : null;
+};
 
 const firstName = (n?: string) => (n ? n.split(" ").find((w) => !/^(dr|prof|mr|ms|mrs)\.?$/i.test(w)) ?? n : "");
 const isChar = (m?: Message): m is Message => !!m && m.author.type === "character" && !!m.author.characterId;
@@ -66,6 +75,7 @@ const FORCED_LABEL: Record<NonNullable<NonNullable<TurnTrace["routing"]>["forced
   mention: "Forced by you · @mention",
   nudge: "Forced by you · Speak next",
   round_order: "Round order",
+  opening: "Opening speaker",   // U-55: the opening speaker set at creation, not a Speak next press
 };
 
 function Section({ n, title, aside, children, i }: { n: string; title: string; aside?: ReactNode; children: ReactNode; i: number }) {
@@ -97,10 +107,9 @@ const STEPS: Record<string, { why: string; to: string[] }> = {
   search: { why: "Keyword and meaning search of the documents", to: DOCS_AT },
   check: { why: "Jev judges each passage found", to: DOCS_AT },
   keep: { why: "Code keeps the best usable passages", to: DOCS_AT },
-  recall: { why: "Search of earlier lines and memories", to: ['[data-purpose="deep_check:recall"]', sec("In-session recall"), sec("Memory recalled")] },
-  both: { why: "Documents and earlier lines searched together", to: DOCS_AT },
+  recall: { why: "Search of earlier lines and memories", to: ['[data-purpose="deep_check:recall"]', sec("In-session recall"), sec("Found by recall")] },
   Route: { why: "Who speaks", to: [sec("Routing · who speaks")] },
-  Recall: { why: "What was fetched for the reply", to: [sec("Knowledge"), sec("Memory recalled"), sec("In-session recall")] },
+  Recall: { why: "What was fetched for the reply", to: [sec("Knowledge"), sec("Memory given"), sec("Found by recall"), sec("In-session recall")] },
   Generate: { why: "The model writes the reply", to: [sec("Model")] },
   Emotion: { why: "The face", to: [sec("Emotion")] },
   Guard: { why: "The output check", to: ['[data-purpose="guardrail"]', sec("Guardrail")] },
@@ -112,10 +121,33 @@ function jumpTo(from: HTMLElement, targets: string[], reduced: boolean): void {
   el?.scrollIntoView({ block: "start", behavior: reduced ? "auto" : "smooth" });
 }
 
+const LIST_SHOWN = 3;
+
+/** A long list shows its first few rows, then "show all (n)": a character with many memories filled the drawer
+ * (the user's ask, 2026-10-22). */
+export function MoreList<T>({ items, render }: { items: T[]; render: (x: T) => ReactNode }) {
+  const [all, setAll] = useState(false);
+  const shown = all || items.length <= LIST_SHOWN + 1 ? items : items.slice(0, LIST_SHOWN);
+  return (
+    <>
+      <ul className={s.recall}>{shown.map(render)}</ul>
+      {items.length > LIST_SHOWN + 1 && (
+        <button type="button" className={cx(s.s1Fold, s.moreBtn)} aria-expanded={all} onClick={() => setAll((v) => !v)}>
+          {all ? "show fewer" : `show all (${items.length})`}
+        </button>
+      )}
+    </>
+  );
+}
+
 function Pipeline({ trace, streaming }: { trace?: TurnTrace; streaming: boolean }) {
   const { reduced } = useMotionPrefs();
-  const steps = trace?.graph?.path?.length
-    ? trace.graph.path.map((p) => ({ k: p, on: true }))
+  const path = turnPath(trace);
+  // U-57: a line written ahead (a stored greeting) made no AI call: it says so instead of an empty pipeline
+  if (!path.length && trace && !trace.model && !trace.system1 && !streaming)
+    return <p className={s.pipeNote}>Written ahead with the character: no AI call for this line.</p>;
+  const steps = path.length
+    ? path.map((p) => ({ k: p, on: true }))
     : [
       { k: "Route", on: !!trace?.routing },
       { k: "Recall", on: !!(trace?.memory || trace?.knowledge || trace?.contextInSession || trace?.context) },
@@ -191,6 +223,8 @@ function KnowledgeList({ k, m, armed }: { k: NonNullable<TurnTrace["knowledge"]>
         {rows.map((r) => {
           const cite = r.cited ? m.citations?.find((c) => c.chunkId === r.chunkId) : undefined;
           const type = types.get(r.sourceId) ?? (/\.[a-z]{2,4}$/i.test(r.title) ? "file" : "text");
+          // U-59: the part that matched (the reply's sentence for a cited passage, else the query), not the first lines
+          const preview = focusSnippet(r.text, (r.cited && r.n ? citingSentence(m.content, r.n) : "") || k.query || "");
           const open = () => (cite
             ? openCitation(cite, m.author.characterId)
             : openCitation({ n: r.n ?? 0, sourceId: r.sourceId, chunkId: r.chunkId, title: r.title, locator: r.locator, quote: r.text }, m.author.characterId));
@@ -209,7 +243,7 @@ function KnowledgeList({ k, m, armed }: { k: NonNullable<TurnTrace["knowledge"]>
                     <span className={s.kName}>{r.title}</span>
                     {r.locator && <span className={s.kLoc}>{r.locator}</span>}
                   </span>
-                  <span className={s.kText}>{r.text}</span>
+                  <span className={s.kText}>{preview}</span>
                   <span className={s.kScore}>
                     <span className={s.kTrack} aria-hidden="true"><span className={s.kFill} style={{ transform: `scaleX(${armed ? r.score : 0})` }} /></span>
                     <b>{r.score.toFixed(2)}</b>
@@ -345,6 +379,7 @@ export function InsightDrawer({ sessionId, close }: OverlayComponentProps<"O08">
       sections.push(
         <Section key="emotion" n={num(i)} title="Emotion" i={i++} aside={<span className={s.chip}>{emotionChip(e)}</span>}>
           <EmotionBody emotion={e} armed={armed} manual={runtime.session.emotionMode === "user"} />
+          {switchedTo(trace) && <p className={s.switched}>After the line: switched to <b>{switchedTo(trace)}</b>, because the words clashed with the face.</p>}
         </Section>,
       );
     }
@@ -384,12 +419,42 @@ export function InsightDrawer({ sessionId, close }: OverlayComponentProps<"O08">
         </Section>,
       );
     }
-    if (!compact) {
-      if (trace?.memory?.recalled.length) {
-        sections.push(
-          <Section key="memory" n={num(i)} title="Memory recalled" i={i++}>
+    // U-60: the listeners' faces after this line (one Jev request after it): what changed on stage, and why
+    if (m.reactions?.length || (runtime.session.participants.length > 1 && m.status === "complete")) {
+      const rs = m.reactions ?? [];
+      sections.push(
+        <Section key="reactions" n={num(i)} title="Listener reactions" i={i++}>
+          {rs.length ? (
             <ul className={s.recall}>
-              {trace.memory.recalled.map((x) => (
+              {rs.map((x) => (
+                <li key={`${x.characterId}:${x.at}`}>
+                  <span>{nameOf(x.characterId)} · {emotionMeta[x.emotion]?.icon} {emotionMeta[x.emotion]?.label ?? x.emotion}{x.p === undefined ? " (faded)" : ""}</span>
+                  {x.p !== undefined && <b>{x.p.toFixed(2)}</b>}
+                </li>
+              ))}
+            </ul>
+          ) : <p className={s.fine}>No visible reaction from the others.</p>}
+        </Section>,
+      );
+    }
+    if (!compact) {
+      // U-58: what the prompt's memory list gave the reply, apart from what the recall search found for it
+      const mem = trace?.memory?.recalled ?? [];
+      const found = mem.filter((x) => x.via === "recall" || (x.via === undefined && x.score !== undefined));
+      const given = mem.filter((x) => !found.includes(x));
+      if (given.length) {
+        sections.push(
+          <Section key="memory" n={num(i)} title="Memory given" i={i++}>
+            <p className={s.fine}>Every memory that fits the prompt's memory list, by importance and recency: not picked for this line.</p>
+            <MoreList items={given} render={(x) => <li key={x.memoryItemId}><span>{x.text}</span></li>} />
+          </Section>,
+        );
+      }
+      if (found.length) {
+        sections.push(
+          <Section key="found" n={num(i)} title="Found by recall" i={i++}>
+            <ul className={s.recall}>
+              {found.map((x) => (
                 <li key={x.memoryItemId}><span>{x.text}</span>{x.score !== undefined && <b>{x.score.toFixed(2)}</b>}</li>
               ))}
             </ul>

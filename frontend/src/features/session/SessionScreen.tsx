@@ -77,6 +77,8 @@ export function SessionScreen({ route }: { route: SessionRoute }) {
   }, [castIds, chars]);
   const expansion = useUi((u) => u.dockExpansion);
   const insightOpen = useUi((u) => u.layers.some((l) => l.id === "O08"));
+  // U-53: Insight belongs to the session: leaving it (back to the world, another screen) closes the drawer too
+  useEffect(() => () => closeOverlay("O08"), []);
   const presenter = usePrefs((p) => p.presenterMode);
   const [readableLocal, setReadableLocal] = useState<boolean | null>(null);
 

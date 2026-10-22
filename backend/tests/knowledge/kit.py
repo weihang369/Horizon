@@ -13,6 +13,20 @@ HANA = "chr_seedHana"
 SUNNY = "wld_seedSunnyHollow"
 
 
+async def seed_before_d110(api: Api) -> None:
+    """The shipped documents and memories as an install from before D-110 holds them (and any install whose active space
+    isn't the seed's): keyword-only, no vectors, no stored original, so a reindex only re-embeds them (D-91)."""
+    from horizon.db import spaces
+
+    async with api.rt.db.write() as tx:
+        mem, kno = spaces.vec_tables((await spaces.active(tx.conn)).id)
+        await tx.conn.execute(text(f"DELETE FROM {kno} WHERE rid IN (SELECT c.rid FROM knowledge_chunks c "
+                                   "JOIN knowledge_sources s ON s.id = c.source_id WHERE s.is_seed = 1)"))
+        await tx.conn.execute(text(f"DELETE FROM {mem} WHERE rid IN (SELECT rid FROM memory_items WHERE is_seed = 1)"))
+        await tx.conn.execute(text("UPDATE knowledge_sources SET status = 'keyword_only', embedding_space_id = NULL, "
+                                   "indexed_at = NULL, has_original = 0 WHERE is_seed = 1 AND status = 'indexed'"))
+
+
 async def add_text(api: Api, title: str, body: str, character: str = HANA) -> dict[str, Any]:
     r = await api.client.post(f"{API}/characters/{character}/knowledge", json={"type": "text", "title": title, "text": body})
     assert r.status_code == 201, r.text

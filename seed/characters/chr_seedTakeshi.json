@@ -152,11 +152,12 @@
     "themeSongId": "song_seedTakeshi",
     "energy": {
       "max": 1000,
-      "current": 1000,
-      "asOf": "2026-10-01T12:00:00Z",
+      "current": 999,
+      "asOf": "2026-09-30T10:30:48.776Z",
       "regenPerHour": 41.666666666666664,
       "state": "active",
-      "spentToday": 0
+      "fullAt": "2026-09-30T10:32:15.176Z",
+      "spentToday": 1
     },
     "version": 1,
     "isSeed": true,

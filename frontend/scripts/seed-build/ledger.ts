@@ -1,4 +1,6 @@
-// ~2.5 weeks of usage records (SET-09 spend view), derived from the compiled sessions + character creation.
+// ~2.5 weeks of usage records (SET-09 spend view): character creation (portraits, songs and profiles were made in
+// another install, so these stay fixture rows), then the sessions. D-110: with the real run's ledger (`real`), its rows
+// replace the rows derived from the compiled sessions and the illustrative top-up.
 import type { Message, UsageRecord } from "../../src/contract/types";
 import { MODELS, PRICING } from "../../src/mock/pricing.config";
 import type { CharacterDef } from "./data/characters";
@@ -8,6 +10,7 @@ const add = (ms: number, deltaMs: number) => new Date(ms + deltaMs).toISOString(
 export function ledgerFor(
   sessions: { sessionId: string; mode: string; messages: Message[]; mock: boolean }[],
   characters: CharacterDef[],
+  real?: { seed: UsageRecord[]; mock: UsageRecord[] },
 ): { seed: UsageRecord[]; mock: UsageRecord[] } {
   const seed: UsageRecord[] = [];
   const mock: UsageRecord[] = [];
@@ -29,6 +32,9 @@ export function ledgerFor(
     }
     if (c.song) push(target, { at: add(created, 420_000), category: "music", model: MODELS.music, characterId: cid, costUsd: g.song, estimatedCostUsd: g.song, latencyMs: 41_000 });
   }
+
+  const byTime = (a: UsageRecord, b: UsageRecord) => a.at.localeCompare(b.at) || a.id.localeCompare(b.id);
+  if (real) return { seed: [...seed, ...real.seed].sort(byTime), mock: [...mock, ...real.mock].sort(byTime) };
 
   for (const s of sessions) {
     const target = s.mock ? mock : seed;
@@ -53,6 +59,5 @@ export function ledgerFor(
   // An energy top-up for Rin (ENG-05), so the spend view shows the category.
   push(seed, { at: "2026-09-27T08:00:00Z", category: "energy_topup", characterId: "chr_seedRin", costUsd: 0.05, energyPoints: 500 });
 
-  const byTime = (a: UsageRecord, b: UsageRecord) => a.at.localeCompare(b.at) || a.id.localeCompare(b.id);
   return { seed: seed.sort(byTime), mock: mock.sort(byTime) };
 }

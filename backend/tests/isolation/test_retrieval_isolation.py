@@ -47,7 +47,8 @@ async def _twin_with_vectors(api: Api) -> None:
         for table, src in ((kno, "knowledge_chunks"), (mem, "memory_items")):
             rows = (await tx.conn.execute(text(f"SELECT rid, character_id, text FROM {src} "
                                                "WHERE character_id IN (:a, :b)"), {"a": AMARA, "b": TWIN})).all()
-            for rid, cid, body in rows:
+            for rid, cid, body in rows:   # the seed's shipped vectors (D-110) give way to the twins' identical ones
+                await tx.conn.execute(text(f"DELETE FROM {table} WHERE rid = :r"), {"r": rid})
                 await tx.conn.execute(text(f"INSERT INTO {table}(rid, character_id, embedding) VALUES (:r, :c, :e)"),
                                       {"r": rid, "c": cid, "e": sqlite_vec.serialize_float32(vec(body))})
 

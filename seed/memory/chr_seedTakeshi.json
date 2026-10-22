@@ -6,55 +6,77 @@
       "characterId": "chr_seedTakeshi",
       "worldId": "wld_seedSunnyHollow",
       "kind": "event",
-      "text": "Rin agreed to a rainy-Sunday fishing trip; Takeshi brings worms and baits both hooks, Rin brings the thermos with coffee and no sugar.",
-      "importance": 0.585,
+      "text": "Rainy Sunday, Takeshi asked Rin to go fishing; Rin finished the raid first, then they agreed to go out together rain or not.",
+      "importance": 0.3875,
       "sourceSessionId": "ses_seedRainySunday",
-      "sourceMessageId": "msg_seedW02",
-      "createdAt": "2026-09-27T02:40:56.157Z"
+      "sourceMessageId": "msg_seedW04",
+      "createdAt": "2026-09-27T02:40:48.374Z"
     },
     {
       "id": "mem_seedTakeshi2",
       "characterId": "chr_seedTakeshi",
       "worldId": "wld_seedSunnyHollow",
-      "kind": "event",
-      "text": "Rin's five minutes means twenty, and this time she cut it to fifteen; Takeshi counted in train time, which means exact.",
-      "importance": 0.59,
+      "kind": "preference",
+      "text": "Rin dislikes sitting in a wet boat for fish that could be bought for six bucks.",
+      "importance": 0.4,
       "sourceSessionId": "ses_seedRainySunday",
-      "sourceMessageId": "msg_seedW09",
-      "createdAt": "2026-09-27T02:40:56.157Z"
+      "sourceMessageId": "msg_seedW05",
+      "createdAt": "2026-09-27T02:40:48.374Z"
     },
     {
       "id": "mem_seedTakeshi3",
       "characterId": "chr_seedTakeshi",
       "worldId": "wld_seedSunnyHollow",
-      "kind": "preference",
-      "text": "Rin hates waking before ten on Sundays and calls 0900 a war crime.",
-      "importance": 0.5375,
+      "kind": "fact",
+      "text": "Rin is twenty-two, not thirty-something; Takeshi has been rounding up since Rin's birthday.",
+      "importance": 0.55,
       "sourceSessionId": "ses_seedRainySunday",
-      "sourceMessageId": "msg_seedW02",
-      "createdAt": "2026-09-27T02:40:56.157Z"
+      "sourceMessageId": "msg_seedW10",
+      "createdAt": "2026-09-27T02:40:48.374Z"
     },
     {
       "id": "mem_seedTakeshi4",
       "characterId": "chr_seedTakeshi",
       "worldId": "wld_seedSunnyHollow",
-      "kind": "fact",
-      "text": "Rin works in IT and is mid-raid; she logged off to go fishing, saying her guild would kill her for it.",
-      "importance": 0.36,
+      "kind": "event",
+      "text": "Rin finished the raid boss and said Rin carried the whole fight.",
+      "importance": 0.355,
       "sourceSessionId": "ses_seedRainySunday",
       "sourceMessageId": "msg_seedW12",
-      "createdAt": "2026-09-27T02:40:56.157Z"
+      "createdAt": "2026-09-27T02:40:48.374Z"
     },
     {
       "id": "mem_seedTakeshi5",
       "characterId": "chr_seedTakeshi",
       "worldId": "wld_seedSunnyHollow",
       "kind": "fact",
-      "text": "Sun after rain means trout go stupid-hungry, and the dock will be empty mud, which Rin says is the only fishing she respects.",
-      "importance": 0.48,
-      "sourceSessionId": "ses_seedRainySunday",
-      "sourceMessageId": "msg_seedW09",
-      "createdAt": "2026-09-27T02:40:56.157Z"
+      "text": "Takeshi spent thirty years eating what's on the menu, not what he wanted, so he tells people not to fuss over him.",
+      "importance": 0.73,
+      "sourceSessionId": "ses_seedDinner",
+      "sourceMessageId": "msg_seedC04",
+      "createdAt": "2026-09-30T10:32:35.903Z"
+    },
+    {
+      "id": "mem_seedTakeshi6",
+      "characterId": "chr_seedTakeshi",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "preference",
+      "text": "Rin insists on basil noodles or nothing, and allows the mild curry for Takeshi.",
+      "importance": 0.3725,
+      "sourceSessionId": "ses_seedDinner",
+      "sourceMessageId": "msg_seedC05",
+      "createdAt": "2026-09-30T10:32:35.903Z"
+    },
+    {
+      "id": "mem_seedTakeshi7",
+      "characterId": "chr_seedTakeshi",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "event",
+      "text": "Hana picked lotus root as the unknown dish; Rin can veto after tasting.",
+      "importance": 0.27,
+      "sourceSessionId": "ses_seedDinner",
+      "sourceMessageId": "msg_seedC07",
+      "createdAt": "2026-09-30T10:32:35.903Z"
     }
   ]
 }

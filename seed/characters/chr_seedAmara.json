@@ -166,11 +166,12 @@
     "themeSongId": "song_seedAmara",
     "energy": {
       "max": 1000,
-      "current": 1000,
-      "asOf": "2026-10-01T12:00:00Z",
+      "current": 979,
+      "asOf": "2026-10-01T09:59:17.614Z",
       "regenPerHour": 41.666666666666664,
       "state": "active",
-      "spentToday": 0
+      "fullAt": "2026-10-01T10:29:32.014Z",
+      "spentToday": 21
     },
     "version": 1,
     "isSeed": true,

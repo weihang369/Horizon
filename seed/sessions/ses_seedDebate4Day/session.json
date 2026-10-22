@@ -19,7 +19,7 @@
         "characterId": "chr_seedVictor",
         "role": "debater",
         "side": "prop",
-        "currentEmotion": "happy",
+        "currentEmotion": "angry",
         "mutedByUser": false
       },
       {
@@ -84,25 +84,25 @@
           {
             "subjectId": "prop",
             "points": [
-              "Four-day week is not compressed longer days; it cuts burnout by breaking consecutive blocks.",
-              "Rested staff are safer: under-six-hours sleep doubled near-miss medication errors.",
-              "Nationwide means a legislated default, not one identical rota, with a transition.",
-              "The machinery exists in continuous-coverage sectors under the Working Time Code.",
-              "Trials written into the statute with sunset review; adopt the default, phase the rollout."
+              "A compressed rota cut burnout by a fifth with no harm to throughput.",
+              "Rest days that cannot be cancelled matter more than shorter hours.",
+              "Turnover at 14% and replacement costs four months' salary.",
+              "A shorter standard week is not untried: the 1931 Act phased in a two-day weekend.",
+              "Adopt means legislate a phased timetable, not switch overnight; put trials in the statute."
             ]
           },
           {
             "subjectId": "opp",
             "points": [
-              "Pilot evidence is soft: fewer than half measured output consistently.",
-              "Four-day weeks are a bundle of choices; hospitals and care cannot compress coverage.",
-              "Nine shift-based organisations needed 18% to 27% more staffed hours to hold coverage.",
-              "Only two of nine checked whether lower sickness and turnover clawed any back.",
-              "Trials first, independently measured, both sides of the ledger, published including failures."
+              "Pilots are knowledge-work; evidence is silent on hospitals, transport, care.",
+              "A nationwide mandate redistributes labour: hire at large cost or compress and stretch the queue.",
+              "Holding coverage constant costs 18–27% more staffed hours, roughly a tenth on total.",
+              "Only two of nine recovered part of it through sickness and turnover, measured badly.",
+              "Wider coverage standards cost real money; continuity is the scope; trials first, not a national standard now."
             ]
           }
         ],
-        "keyDisagreement": "Whether 'we do not yet know' is a reason to legislate a default trajectory now or to run sector trials first, given both sides accept trials with sunset review.",
+        "keyDisagreement": "Whether to adopt a nationwide four-day standard now, when the extra staffing cost is documented but offsetting savings remain unmeasured.",
         "decidedBy": "arbiter",
         "strongerCase": "opp",
         "scoresBy": "side",
@@ -110,52 +110,53 @@
           {
             "subjectId": "prop",
             "criterionId": "evidence",
-            "value": 8.4
+            "value": 8.5
           },
           {
             "subjectId": "prop",
             "criterionId": "rebuttal",
-            "value": 9.5
+            "value": 8.9
           },
           {
             "subjectId": "prop",
             "criterionId": "clarity",
-            "value": 8.8
+            "value": 8.9
           },
           {
             "subjectId": "prop",
             "criterionId": "persuasion",
-            "value": 6.3
+            "value": 6
           },
           {
             "subjectId": "opp",
             "criterionId": "evidence",
-            "value": 9.3
+            "value": 9
           },
           {
             "subjectId": "opp",
             "criterionId": "rebuttal",
-            "value": 9.9
-          },
-          {
-            "subjectId": "opp",
-            "criterionId": "clarity",
             "value": 9.6
           },
           {
             "subjectId": "opp",
+            "criterionId": "clarity",
+            "value": 9.7
+          },
+          {
+            "subjectId": "opp",
             "criterionId": "persuasion",
-            "value": 7.5
+            "value": 7.3
           }
         ],
-        "rationale": "The Opposition scored higher on Evidence (9.3 to 8.4), Rebuttal (9.9 to 9.5), and Clarity (9.6 to 8.8), grounding its case in specific pilot gaps and cost figures. The Proposition scored lower on Persuasion (6.3 to 7.5) and could not close the gap between conceding sector trials and defending the motion's demand to adopt nationwide now."
+        "margin": 0.25,
+        "rationale": "The Opposition led on evidence, rebuttal, clarity and persuasion by keeping the debate on the unmeasured offset and the absence of sector trials, while the Proposition conceded the staffing cost and the gap. The Proposition argued a phased, trial-in-statute reading of the motion, but the Opposition's tighter framing of the cost-benefit ledger and the sequencing objection carried the scores."
       }
     },
     "isSeed": true,
-    "costUsd": 0.002583,
+    "costUsd": 0.005859,
     "messageCount": 17,
-    "createdAt": "2026-10-01T09:57:59.991Z",
-    "updatedAt": "2026-10-01T09:58:59.532Z",
-    "lastMessageAt": "2026-10-01T09:58:59.532Z"
+    "createdAt": "2026-10-01T09:57:59.545Z",
+    "updatedAt": "2026-10-01T09:59:38.239Z",
+    "lastMessageAt": "2026-10-01T09:59:38.239Z"
   }
 }

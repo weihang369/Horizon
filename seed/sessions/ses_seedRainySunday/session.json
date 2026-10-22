@@ -11,7 +11,7 @@
       {
         "characterId": "chr_seedTakeshi",
         "role": "speaker",
-        "currentEmotion": "happy",
+        "currentEmotion": "angry",
         "mutedByUser": false
       },
       {
@@ -37,11 +37,11 @@
       "nextSpeakerId": "chr_seedRin"
     },
     "isSeed": true,
-    "costUsd": 0.000881,
+    "costUsd": 0.00043,
     "messageCount": 12,
-    "createdAt": "2026-09-27T02:39:59.989Z",
-    "updatedAt": "2026-09-27T02:40:46.406Z",
+    "createdAt": "2026-09-27T02:39:59.478Z",
+    "updatedAt": "2026-09-27T02:40:41.808Z",
     "pausedReason": "turn_cap",
-    "lastMessageAt": "2026-09-27T02:40:45.214Z"
+    "lastMessageAt": "2026-09-27T02:40:40.362Z"
   }
 }

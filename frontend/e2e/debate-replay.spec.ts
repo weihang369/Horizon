@@ -76,12 +76,12 @@ test("the first seek after opening a replay sticks (keyboard End on the Seek sli
   // QA-01 (fixed): the first End used to snap back to 0:00 because the native `change` re-seeked to a stale value.
   await open(page, DEBATE);
   const seek = page.getByRole("slider", { name: "Seek" });
-  await expect(seek).toHaveAttribute("aria-valuetext", /of 0:57$/);
+  await expect(seek).toHaveAttribute("aria-valuetext", /of 1:10$/);
   await page.keyboard.press("Tab");
   await expect(seek).toBeFocused();
   await page.keyboard.press("End");
   await expect(page.getByText("The arbiter has spoken")).toBeVisible({ timeout: 3_000 });
-  await expect(seek).toHaveAttribute("aria-valuetext", "0:57 of 0:57");
+  await expect(seek).toHaveAttribute("aria-valuetext", "1:10 of 1:10");
 });
 
 test("a replay opens with a Watch call to action that starts playback", async ({ page }) => {
@@ -94,14 +94,15 @@ test("a replay opens with a Watch call to action that starts playback", async ({
 });
 
 test("Insight: the drawer's edge resizes it (drag, keys, double-click), the debate makes room, the width is kept; no pipeline chip is cut", async ({ page }) => {
-  // U-30: the eight pipeline chips (STATE … KEEP) had equal shares of 400 px, so DECIDE / GATHER / SEARCH were cut.
+  // U-30: the pipeline chips (STATE … KEEP, nine since U-57's DEEP) had equal shares of 400 px, so DECIDE / GATHER /
+  // SEARCH were cut.
   await open(page, DEBATE);
   await seekToEnd(page);
-  const mei = logEntry(page, "Opposition's case rests on three things").first();
+  const mei = logEntry(page, "Two reasons, and I'll keep it dry").first();
   await mei.hover();
   await mei.getByRole("button", { name: "Open Insight for this message" }).click();
   const insight = page.getByRole("complementary", { name: "Insight" });
-  await expect(insight.getByRole("list", { name: "Turn pipeline" }).locator("li")).toHaveCount(8); // STATE … KEEP
+  await expect(insight.getByRole("list", { name: "Turn pipeline" }).locator("li")).toHaveCount(9); // STATE … ROUTE, DEEP, GATHER … KEEP (U-57)
   // U-35: each chip says what its step is and jumps to its panel
   const top = async (l: import("@playwright/test").Locator) => Math.round((await l.boundingBox())?.y ?? -1);
   const passages = insight.locator('[data-purpose="deep_check"]').first();

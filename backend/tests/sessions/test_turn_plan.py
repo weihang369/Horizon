@@ -49,8 +49,9 @@ async def test_a_one_on_one_send_is_planned(api: Api) -> None:
     before = len(await ledger(api))
     reply = await send(api, sid, "My dog died this morning.")
     new = (await ledger(api))[before:]
-    # the plan's row lands before the chat row (a short message's rewrite may start beside the plan, rag 11.9)
-    assert [p for p in purposes(new) if p != "query_rewrite"][:2] == ["turn_plan", "reply"]
+    # the plan's row lands before the chat row (a short message's rewrite may start beside the plan, rag 11.9, and so
+    # does the early query embedding, rag 11.5, now that the seed ships Amara's vectors, D-110)
+    assert [p for p in purposes(new) if p not in ("query_rewrite", "query_embed")][:2] == ["turn_plan", "reply"]
     plan_row = next(r for r in new if r["purpose"] == "turn_plan")
     assert plan_row["category"] == "decision" and plan_row["message_id"] == reply["id"]
     sys1 = reply["trace"]["system1"]
@@ -116,13 +117,17 @@ async def test_the_plan_overlaps_the_thinking_delay(api: Api) -> None:
 
 
 async def test_a_late_answer_falls_back_and_is_still_recorded(api: Api) -> None:
+    from tests.sessions.test_deep_m12 import measured_deadlines
+
+    measured_deadlines(api)          # D-113: with `docsWaitAll` on, a plan asking about documents is waited for
     sid = await agent(api)
     assert api.rt.fake is not None
     n = api.rt.fake.counts["decisions"] + 1
     release = api.rt.fake.park_decision(n)
     reply = await send(api, sid, "Are you there?", ms=3000)
     row = reply["trace"]["system1"]["questions"][0]
-    assert row["result"] == "fallback" and "p" not in row and reply["emotionSource"] == "default"
+    # the reply's own face is the fallback's (a face check's clash may switch it afterwards, D-112)
+    assert row["result"] == "fallback" and "p" not in row and reply["trace"]["emotion"]["source"] == "default"
     release.set()
     await api.drive(1000)
     late = [r for r in await ledger(api) if r["purpose"] == "turn_plan"][-1]
@@ -134,7 +139,9 @@ async def test_agent_one_on_one_is_quick(api: Api) -> None:
     sid = await agent(api)
     before = len(await ledger(api))
     reply = await send(api, sid, "What does the sleep guide say about night shifts?")
-    assert "query_embed" not in purposes((await ledger(api))[before:]) and "knowledge" not in reply["trace"]
+    new = purposes((await ledger(api))[before:])
+    # only the early embedding started beside the plan (rag 11.5; the seed ships her vectors, D-110): no search
+    assert new.count("query_embed") <= 1 and "deep_check" not in new and "knowledge" not in reply["trace"]
 
 
 # ── 3.5: turn.start and the first face in one write (D14) ──

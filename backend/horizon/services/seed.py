@@ -14,13 +14,22 @@ memory, knowledge, jobs and ledger rows have no wire flag, so their `is_seed` co
 - seed sessions keep their row (so forks keep `continuedFrom`) while their events/messages are replaced;
 - seed memory, knowledge, jobs and ledger rows are replaced; user rows (`is_seed = 0`) are never touched;
 - non-seed emotion asset versions of seed characters are deactivated, never deleted (OQ-13).
+
+D-110 (`seed/rows/**`, built from the real run by `horizon demo export --rows`): the documents as the app stored them
+(sections, pieces, their vectors and the stored originals in `seed/knowledge/files/`), the memories' vectors and recall
+counts, recall's line index, the stored query rewrites and safety answers, and the full ledger rows. Rows replace what
+would otherwise be synthesised from the wire files; vectors go in only when the install's active embedding space is the
+one they were made in (a fresh install is), with fresh `rid`s on every import, so install, Reset demo and Delete all
+data each restore them at $0. On another space the documents stay `keyword_only` (D-91's Index upgrades them).
 """
 
 from __future__ import annotations
 
+import base64
 import copy
 import json
 import re
+import shutil
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -32,6 +41,7 @@ from sqlalchemy.ext.asyncio import AsyncConnection
 
 from horizon.contract import mappers as mp
 from horizon.contract.validate import ContractSchema
+from horizon.db import spaces
 from horizon.db import tables as t
 from horizon.domain.timeutil import normalise_iso
 from horizon.services.memory.refs import refs_from_trace
@@ -52,6 +62,18 @@ class SeedSession:
 
 
 @dataclass
+class SeedRows:
+    """D-110: the real run's stored rows, by seed id (`seed/rows/**`)."""
+    space: str
+    knowledge: dict[str, Wire] = field(default_factory=dict)   # source id → {source, files, sections, chunks}
+    memory: dict[str, Wire] = field(default_factory=dict)
+    message_index: list[Wire] = field(default_factory=list)
+    ai_meta: list[Wire] = field(default_factory=list)
+    usage: dict[str, Wire] = field(default_factory=dict)
+    files_dir: Path | None = None
+
+
+@dataclass
 class SeedData:
     worlds: list[Wire] = field(default_factory=list)
     characters: list[Wire] = field(default_factory=list)
@@ -62,6 +84,7 @@ class SeedData:
     chunks: dict[str, list[Wire]] = field(default_factory=dict)
     ledger: list[Wire] = field(default_factory=list)
     jobs: list[Wire] = field(default_factory=list)
+    rows: SeedRows | None = None
 
     @property
     def world_names(self) -> dict[str, str]:
@@ -137,6 +160,15 @@ def _load_dir(root: Path, data: SeedData, schema: ContractSchema, *, overlay: bo
         j = _read(p)
         _check(schema, "GenerationJob", j, p)
         data.jobs.append(j)
+    if not overlay and (root / "rows" / "space.json").is_file():
+        rows = SeedRows(space=str(_read(root / "rows" / "space.json")["id"]), files_dir=root / "knowledge" / "files")
+        for p in sorted((root / "rows" / "knowledge").glob("*.json")):
+            rows.knowledge[p.stem] = _read(p)
+        rows.memory = {m["id"]: m for m in _read(root / "rows" / "memory.json")}
+        rows.message_index = _read(root / "rows" / "message-index.json")
+        rows.ai_meta = _read(root / "rows" / "ai-meta.json")
+        rows.usage = {u["id"]: u for u in _read(root / "rows" / "usage.json")}
+        data.rows = rows
 
 
 def _assert_reductions(data: SeedData) -> None:
@@ -227,6 +259,8 @@ async def apply_seed(conn: AsyncConnection, data: SeedData, *, energy_day: Calla
                      local_day: Callable[[str], str]) -> list[str]:
     """Upsert the seed into the database (inside the caller's writer transaction). Returns the seed session ids."""
     await conn.execute(text("PRAGMA defer_foreign_keys = ON"))
+    rows = data.rows
+    vec_space = await _vector_space(conn, rows)
 
     # Worlds.
     await _upsert(conn, t.worlds, [mp.world_row(w, is_seed=bool(w["isSeed"])) for w in data.worlds])
@@ -282,6 +316,19 @@ async def apply_seed(conn: AsyncConnection, data: SeedData, *, energy_day: Calla
         await _insert(conn, t.message_citations, [r for m in s.messages for r in mp.citation_rows(m)])
         refs = [r for m in s.messages for r in refs_from_trace(m["id"], m.get("trace"))]   # the M5 shared helper (D14)
         await _insert(conn, t.trace_memory_refs, refs)
+    if rows is not None:   # D-110: what the AI stored per user message, and recall's line index (cascaded away above)
+        shipped = {m["id"] for s in data.sessions for m in s.messages}
+        for a in (a for a in rows.ai_meta if a["message_id"] in shipped):
+            await conn.execute(text("INSERT OR REPLACE INTO message_ai_meta(message_id, rewrites, updated_at, safety) "
+                                    "VALUES (:m, :r, :u, :s)"),
+                               {"m": a["message_id"], "r": a["rewrites"], "u": a["updated_at"], "s": a["safety"]})
+        msg_vec = spaces.message_vec_table(vec_space) if vec_space else None
+        for line in (x for x in rows.message_index if x["message_id"] in shipped):
+            await conn.execute(insert(t.message_index).values(**{k: v for k, v in line.items() if k != "vector"}))
+            if msg_vec and line.get("vector"):
+                rid = (await conn.execute(select(t.message_index.c.rid).where(
+                    t.message_index.c.message_id == line["message_id"]))).scalar_one()
+                await _put_vector(conn, msg_vec, "session_id", int(rid), line["session_id"], line["vector"])
 
     # Memory: seed rows replaced; user-earned memories (is_seed = 0) survive.
     await conn.execute(delete(t.memory_items).where(t.memory_items.c.is_seed.is_(True)))
@@ -294,10 +341,27 @@ async def apply_seed(conn: AsyncConnection, data: SeedData, *, energy_day: Calla
     modes = {s.session["id"]: s.session["mode"] for s in data.sessions}
     await _insert(conn, t.memory_items, [mp.memory_row(m, is_seed=True, source_mode=modes.get(m.get("sourceSessionId") or ""))
                                          for m in data.memory])
+    if rows is not None:   # D-110: the columns the wire doesn't carry, and the vectors
+        mem_vec = spaces.vec_tables(vec_space)[0] if vec_space else None
+        M = t.memory_items.c
+        for m in data.memory:
+            r = rows.memory.get(m["id"])
+            if r is None:
+                continue
+            await conn.execute(update(t.memory_items).where(M.id == m["id"]).values(
+                **{k: r[k] for k in ("source_mode", "source_variant_id", "about_character_id", "last_recalled_at",
+                                     "recall_count", "superseded_by")}))
+            if mem_vec and r.get("vector"):
+                rid = (await conn.execute(select(M.rid).where(M.id == m["id"]))).scalar_one()
+                await _put_vector(conn, mem_vec, "character_id", int(rid), m["characterId"], r["vector"])
 
     # Knowledge: seed sources replaced (cascade clears sections, chunks, FTS and vectors).
     await conn.execute(delete(t.knowledge_sources).where(t.knowledge_sources.c.is_seed.is_(True)))
     for k in data.knowledge:
+        stored = rows.knowledge.get(k["id"]) if rows is not None else None
+        if stored is not None:
+            await _stored_source(conn, k, stored, vec_space)
+            continue
         chunks = data.chunks.get(k["id"], [])
         await _insert(conn, t.knowledge_sources, [mp.knowledge_source_row(k, is_seed=True, chunk_count=len(chunks))])
         sections, crow = mp.chunk_rows(chunks, k, lambda ch: "ksec_" + ch["id"].split("_", 1)[1])
@@ -306,12 +370,72 @@ async def apply_seed(conn: AsyncConnection, data: SeedData, *, energy_day: Calla
 
     # Ledger: seed rows replaced.
     await conn.execute(delete(t.usage_records).where(t.usage_records.c.is_seed.is_(True)))
-    await _insert(conn, t.usage_records, [mp.usage_row(u, is_seed=True, local_day=local_day) for u in data.ledger])
+    await _insert(conn, t.usage_records, [_usage_row(u, rows, local_day) for u in data.ledger])
 
     bad = (await conn.execute(text("PRAGMA foreign_key_check"))).all()
     if bad:
         raise SeedError(f"seed violates foreign keys: {bad[:3]}")
     return sids
+
+
+async def _vector_space(conn: AsyncConnection, rows: SeedRows | None) -> str | None:
+    """The space the shipped vectors go into: the active one, if they were made in it (D-110)."""
+    if rows is None:
+        return None
+    active = await spaces.active(conn)
+    return active.id if active.id == rows.space else None
+
+
+async def _put_vector(conn: AsyncConnection, table: str, part: str, rid: int, key: str, b64: str) -> None:
+    await conn.execute(text(f"INSERT INTO {table}(rid, {part}, embedding) VALUES (:r, :p, :e)"),
+                       {"r": rid, "p": key, "e": base64.b64decode(b64)})
+
+
+async def _stored_source(conn: AsyncConnection, k: Wire, stored: Wire, vec_space: str | None) -> None:
+    """D-110: a shipped document as the app stored it: its sections and pieces, and their vectors when `vec_space` is
+    set (then `indexed`, as after an upload; else `keyword_only` until D-91's Index)."""
+    src = stored["source"]
+    row = mp.knowledge_source_row(k, is_seed=True, chunk_count=len(stored["chunks"]))
+    row.update({c: src[c] for c in ("mime", "original_name", "sha256", "extractor_version", "chunker_version", "tokenizer")})
+    row["has_original"] = any(f.startswith("original.") for f in stored["files"])
+    await _insert(conn, t.knowledge_sources, [row])
+    await _insert(conn, t.knowledge_sections, stored["sections"])
+    await _insert(conn, t.knowledge_chunks, [{c: v for c, v in ch.items() if c != "vector"} for ch in stored["chunks"]])
+    if vec_space is None or row["status"] != "keyword_only" or not all(ch.get("vector") for ch in stored["chunks"]):
+        return
+    C = t.knowledge_chunks.c
+    rids = dict((await conn.execute(select(C.id, C.rid).where(C.source_id == k["id"]))).all())
+    table = spaces.vec_tables(vec_space)[1]
+    for ch in stored["chunks"]:
+        await _put_vector(conn, table, "character_id", int(rids[ch["id"]]), k["characterId"], ch["vector"])
+    await conn.execute(update(t.knowledge_sources).where(t.knowledge_sources.c.id == k["id"]).values(
+        status="indexed", embedding_space_id=vec_space, indexed_at=src["indexed_at"]))
+
+
+def _usage_row(u: Wire, rows: SeedRows | None, local_day: Callable[[str], str]) -> dict[str, Any]:
+    """A ledger row: the real run's full row when shipped (D-110: purpose, message, generation id, finish reason...),
+    else the wire record's columns."""
+    full = rows.usage.get(u["id"]) if rows is not None else None
+    if full is None:
+        return mp.usage_row(u, is_seed=True, local_day=local_day)
+    at = normalise_iso(full["at"])
+    return {**full, "at": at, "local_day": local_day(at), "is_seed": True}
+
+
+def install_knowledge_files(data: SeedData, knowledge_dir: Path) -> None:
+    """D-110: each shipped document's stored files (its original, `extracted.md`) in its folder, where an upload leaves
+    them, so a continued demo can show, re-chunk or re-embed it like any upload. Run after `apply_seed` commits."""
+    if data.rows is None or data.rows.files_dir is None:
+        return
+    for k in data.knowledge:
+        stored = data.rows.knowledge.get(k["id"])
+        if not stored or not stored["files"]:
+            continue
+        dst = knowledge_dir / k["worldId"] / k["characterId"] / k["id"]
+        shutil.rmtree(dst, ignore_errors=True)
+        dst.mkdir(parents=True)
+        for name in stored["files"]:
+            shutil.copy2(data.rows.files_dir / k["id"] / name, dst / name)
 
 
 async def has_worlds(conn: AsyncConnection) -> bool:

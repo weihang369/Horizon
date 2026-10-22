@@ -159,12 +159,12 @@
     "themeSongId": "song_seedMei",
     "energy": {
       "max": 1000,
-      "current": 742,
-      "asOf": "2026-10-01T12:00:00Z",
+      "current": 979,
+      "asOf": "2026-10-01T09:59:28.701Z",
       "regenPerHour": 41.666666666666664,
       "state": "active",
-      "fullAt": "2026-10-01T18:11:31.200Z",
-      "spentToday": 258
+      "fullAt": "2026-10-01T10:29:43.101Z",
+      "spentToday": 21
     },
     "version": 1,
     "isSeed": true,

@@ -75,25 +75,25 @@
           {
             "subjectId": "prop",
             "points": [
-              "Taxes change prices, prices change behaviour, especially on cheap habitual products.",
-              "Sugary drinks hit kids and lower-income families hardest; revenue can fund healthier options.",
-              "The tax is a nudge making price honest about downstream diabetes and heart disease costs.",
-              "Regressivity is a fair hit, but those families pay the steepest disease price.",
-              "His liberty point rests on a false picture of artificially low prices."
+              "Taxes work where willpower alone doesn't; price shapes what we buy.",
+              "Sugary drinks are the easiest place to start; no nutritional need.",
+              "She treats the consequences; those costs land on all of us.",
+              "A modest levy cuts consumption, nudges reformulation, and funds prevention.",
+              "She grants regressivity but says disease costs fall hardest on the poorest."
             ]
           },
           {
             "subjectId": "opp",
             "points": [
-              "A tax is compulsion, not moral judgment; the house must justify it.",
-              "A sugary drink tax is regressive by design, falling hardest on those least able to absorb it.",
-              "Taxation is blunt: it punishes a can of soda while straining household budgets.",
-              "Silence is not consent to being taxed; the case is liberty, proportionality, burden of proof.",
-              "The mover concedes regressivity and offers promises, not proof; burden unmet."
+              "Calls the tax a sin levy, priced onto the poor, collected by the state.",
+              "Argues a tax on a substance is not a tax on a behavior.",
+              "Says the evidence is association dressed as cause.",
+              "Calls it a regressive duty falling hardest on the least able to absorb it.",
+              "Concludes her case proves a tax is plausible, not that it is just."
             ]
           }
         ],
-        "keyDisagreement": "Whether the Proposition met its burden of proof by justifying a regressive tax through health costs and revenue-funded alternatives, or whether that justification remained an unproven promise.",
+        "keyDisagreement": "Whether a levy's proven effect on purchases is enough to show it improves health outcomes and is just, given its regressive cost.",
         "decidedBy": "arbiter",
         "strongerCase": "prop",
         "scoresBy": "side",
@@ -101,12 +101,12 @@
           {
             "subjectId": "prop",
             "criterionId": "evidence",
-            "value": 6.1
+            "value": 7.2
           },
           {
             "subjectId": "prop",
             "criterionId": "rebuttal",
-            "value": 8.8
+            "value": 8.1
           },
           {
             "subjectId": "prop",
@@ -116,37 +116,38 @@
           {
             "subjectId": "prop",
             "criterionId": "persuasion",
-            "value": 6.7
+            "value": 6.6
           },
           {
             "subjectId": "opp",
             "criterionId": "evidence",
-            "value": 3.8
+            "value": 5.1
           },
           {
             "subjectId": "opp",
             "criterionId": "rebuttal",
-            "value": 7.2
+            "value": 8.8
           },
           {
             "subjectId": "opp",
             "criterionId": "clarity",
-            "value": 9.5
+            "value": 9.2
           },
           {
             "subjectId": "opp",
             "criterionId": "persuasion",
-            "value": 5.6
+            "value": 6.9
           }
         ],
-        "rationale": "The Proposition wins because its rebuttal and clarity scores were stronger, with Amara directly answering the regressivity charge and reframing the liberty argument, while Victor's evidence score was notably lower. Although Victor kept the burden-of-proof frame clear, his case rested more on assertion than on meeting the Proposition's substantive responses."
+        "margin": 0.25,
+        "rationale": "The Proposition leads on evidence and clarity, grounding the case in clinical experience and a consistent price-purchases direction, while the Opposition leads narrowly on rebuttal and persuasion. The Opposition's strongest point, regressivity, is largely conceded and reframed by the Proposition as a trade-off against disease costs, so the Proposition's case survives as the stronger overall."
       }
     },
     "isSeed": false,
-    "costUsd": 0.000543,
+    "costUsd": 0.001848,
     "messageCount": 11,
-    "createdAt": "2026-09-22T13:19:59.985Z",
-    "updatedAt": "2026-09-22T13:20:26.433Z",
-    "lastMessageAt": "2026-09-22T13:20:26.432Z"
+    "createdAt": "2026-09-22T13:19:59.406Z",
+    "updatedAt": "2026-09-22T13:20:38.226Z",
+    "lastMessageAt": "2026-09-22T13:20:38.226Z"
   }
 }

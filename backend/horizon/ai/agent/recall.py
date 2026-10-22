@@ -9,12 +9,13 @@ MMR over the merge with `recall.mmrLambda` picks `candidates`, keyed `line:{rid}
 rids collide; similarity is the stored vectors' cosine (both in the active space), else the Jaccard of words.
 
 **The query texts (D32).** The documents' bundle when that branch ran (the message, plus its rewrite); a recall-only
-turn never rewrites: the message, and the message with its two earlier lines. The message's vector is waited for at
-most `queryEmbedWaitMs`; without one, BM25 only (`lists.dense == 0`).
+turn never rewrites: the message, and the message with its two earlier lines. The message's vector is waited for to the
+end under `docsWaitAll` (U-56), else at most `queryEmbedWaitMs`; without one, BM25 only (`lists.dense == 0`).
 
 **Jev call 2 (D33).** One `recall` request per candidate (≤ 6), all at once, each read by `recall.checkMs` from when it
-was sent; a 429 falls back at once. Up to `keep` (3) at or above `t_recall` are kept, by p. Every answer missing: the
-top `fallbackKeep` (2) of the merged order, unscored (`fallback`). Some back: only those decide (recall never
+was sent (U-56: to the end, under `retrieval.agent.docsWaitAll`, as the documents' checks); a 429 falls back at
+once. Up to `keep` (3) at or above `t_recall` are kept, by p. Every answer missing: the top `fallbackKeep` (2) of the
+merged order, unscored (`fallback`). Some back: only those decide (recall never
 abstains, so partial evidence is safe).
 
 **Phase 10 (the user's choices, m13.md):** the session's lines are searched by vector only when the query has one
@@ -203,9 +204,9 @@ def candidate_text(hit: RecallHit, line_words: int) -> str:
 
 
 async def check(deps: Any, req: DeepRequest, bundle: QueryBundle, picked: Sequence[Item],
-                knobs: Any) -> tuple[list[float | None], float | None]:
-    """D33: one request per candidate, all started at once, each read by `checkMs` from when it was sent. Returns each
-    candidate's p (None: missing) and the slowest landing (ms)."""
+                knobs: Any, *, wait_ms: float | None = None) -> tuple[list[float | None], float | None]:
+    """D33: one request per candidate, all started at once, each read by `checkMs` (U-56: `wait_ms`, to the end under
+    `docsWaitAll`) from when it was sent. Returns each candidate's p (None: missing) and the slowest landing (ms)."""
     if not picked:
         return [], None
     decider = deps.decider()
@@ -213,7 +214,7 @@ async def check(deps: Any, req: DeepRequest, bundle: QueryBundle, picked: Sequen
     ctx = req.session.call_ctx(PURPOSE, character_id=req.speaker.id, message_id=req.reply_message_id)
     name = req.speaker.name if len(req.speaker.name) <= 40 else req.speaker.first_name[:40]
     sent = deps.clock().now()
-    at = sent + timedelta(milliseconds=knobs.check_ms)
+    at = sent + timedelta(milliseconds=knobs.check_ms if wait_ms is None else wait_ms)
     calls: list[DecisionCall] = []
     for it in picked:
         state = {"mode": req.session.mode, "candidate_kind": "earlier line" if it.kind == LINE else "memory",

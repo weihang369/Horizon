@@ -45,7 +45,7 @@
     "type": "energy",
     "payload": {
      "characterId": "chr_seedHana",
-     "current": 922,
+     "current": 920,
      "max": 1000,
      "state": "active"
     }
@@ -71,16 +71,16 @@
     "type": "energy",
     "payload": {
      "characterId": "chr_seedRin",
-     "current": 183,
+     "current": 1000,
      "max": 1000,
-     "state": "tired"
+     "state": "active"
     }
    },
    {
     "id": "evt_forkFixture1e5",
     "sessionId": "ses_forkFixture1",
     "seq": 5,
-    "at": "2026-09-30T10:30:08.158Z",
+    "at": "2026-09-30T10:30:14.781Z",
     "type": "message",
     "payload": {
      "message": {
@@ -93,7 +93,7 @@
       "kind": "chat",
       "content": "Dinner's on me tonight, everyone. What should we order?",
       "status": "complete",
-      "createdAt": "2026-09-30T10:30:08.158Z"
+      "createdAt": "2026-09-30T10:30:14.781Z"
      }
     }
    },
@@ -101,7 +101,7 @@
     "id": "evt_forkFixture1e6",
     "sessionId": "ses_forkFixture1",
     "seq": 6,
-    "at": "2026-09-30T10:30:08.727Z",
+    "at": "2026-09-30T10:30:16.099Z",
     "type": "turn.next",
     "payload": {
      "nextSpeakerId": "chr_seedHana"
@@ -111,7 +111,7 @@
     "id": "evt_forkFixture1e7",
     "sessionId": "ses_forkFixture1",
     "seq": 7,
-    "at": "2026-09-30T10:30:08.776Z",
+    "at": "2026-09-30T10:30:16.168Z",
     "type": "turn.thinking",
     "payload": {
      "characterId": "chr_seedHana"
@@ -121,7 +121,7 @@
     "id": "evt_forkFixture1e8",
     "sessionId": "ses_forkFixture1",
     "seq": 8,
-    "at": "2026-09-30T10:30:09.407Z",
+    "at": "2026-09-30T10:30:16.997Z",
     "type": "turn.start",
     "payload": {
      "messageId": "msg_forkFixture1m1",
@@ -135,7 +135,7 @@
     "id": "evt_forkFixture1e9",
     "sessionId": "ses_forkFixture1",
     "seq": 9,
-    "at": "2026-09-30T10:30:09.407Z",
+    "at": "2026-09-30T10:30:16.997Z",
     "type": "emotion",
     "payload": {
      "messageId": "msg_forkFixture1m1",
@@ -148,74 +148,129 @@
     "id": "evt_forkFixture1e10",
     "sessionId": "ses_forkFixture1",
     "seq": 10,
-    "at": "2026-09-30T10:30:09.413Z",
+    "at": "2026-09-30T10:30:17.063Z",
     "type": "token",
     "payload": {
      "messageId": "msg_forkFixture1m1",
-     "delta": "I'm still voting chive pockets, and yes, I'll cover"
+     "delta": "Ooh, you're spo"
     }
    },
    {
     "id": "evt_forkFixture1e11",
     "sessionId": "ses_forkFixture1",
     "seq": 11,
-    "at": "2026-09-30T10:30:09.474Z",
+    "at": "2026-09-30T10:30:17.116Z",
     "type": "token",
     "payload": {
      "messageId": "msg_forkFixture1m1",
-     "delta": " gas since my dumpling pick caused the whole detour last time"
+     "delta": "iling us!! I vote fo"
     }
    },
    {
     "id": "evt_forkFixture1e12",
     "sessionId": "ses_forkFixture1",
     "seq": 12,
-    "at": "2026-09-30T10:30:09.484Z",
+    "at": "2026-09-30T10:30:17.184Z",
     "type": "token",
     "payload": {
      "messageId": "msg_forkFixture1m1",
-     "delta": ". Also throwing in that mushroom and glass noodle wild"
+     "delta": "r the lit"
     }
    },
    {
     "id": "evt_forkFixture1e13",
     "sessionId": "ses_forkFixture1",
     "seq": 13,
-    "at": "2026-09-30T10:30:09.559Z",
+    "at": "2026-09-30T10:30:17.237Z",
     "type": "token",
     "payload": {
      "messageId": "msg_forkFixture1m1",
-     "delta": " card — Grandma always said a boring table is"
+     "delta": "tle Thai place by the station — remember the b"
     }
    },
    {
     "id": "evt_forkFixture1e14",
     "sessionId": "ses_forkFixture1",
     "seq": 14,
-    "at": "2026-09-30T10:30:09.599Z",
+    "at": "2026-09-30T10:30:17.300Z",
     "type": "token",
     "payload": {
      "messageId": "msg_forkFixture1m1",
-     "delta": " a sad table."
+     "delta": "asil noodles? Rin demolis"
     }
    },
    {
     "id": "evt_forkFixture1e15",
     "sessionId": "ses_forkFixture1",
     "seq": 15,
-    "at": "2026-09-30T10:30:10.149Z",
+    "at": "2026-09-30T10:30:17.396Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": "hed a whole plate last time"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e16",
+    "sessionId": "ses_forkFixture1",
+    "seq": 16,
+    "at": "2026-09-30T10:30:17.614Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": ".\n\nAlso, Dad wil"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e17",
+    "sessionId": "ses_forkFixture1",
+    "seq": 17,
+    "at": "2026-09-30T10:30:17.709Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": "l say \"anything's fine\" and then compla"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e18",
+    "sessionId": "ses_forkFixture1",
+    "seq": 18,
+    "at": "2026-09-30T10:30:17.926Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": "in it's too spicy, so m"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e19",
+    "sessionId": "ses_forkFixture1",
+    "seq": 19,
+    "at": "2026-09-30T10:30:17.960Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": "aybe grab him the mild curry. Probably."
+    }
+   },
+   {
+    "id": "evt_forkFixture1e20",
+    "sessionId": "ses_forkFixture1",
+    "seq": 20,
+    "at": "2026-09-30T10:30:18.597Z",
     "type": "turn.end",
     "payload": {
      "messageId": "msg_forkFixture1m1",
      "status": "complete",
      "usage": {
-      "tokensIn": 834,
-      "tokensCached": 0,
-      "tokensOut": 52,
-      "costUsd": 0.000084,
+      "tokensIn": 726,
+      "tokensCached": 640,
+      "tokensOut": 62,
+      "costUsd": 0.000042,
       "energySpent": 1,
-      "firstTokenMs": 685,
-      "totalMs": 920
+      "firstTokenMs": 900,
+      "totalMs": 1893
      }
     }
    }
@@ -256,11 +311,11 @@
    },
    "state": null,
    "isSeed": false,
-   "costUsd": 0.000084,
+   "costUsd": 0.000042,
    "messageCount": 2,
    "createdAt": "2026-10-03T03:00:00.000Z",
-   "updatedAt": "2026-09-30T10:30:10.149Z",
-   "lastMessageAt": "2026-09-30T10:30:09.407Z",
+   "updatedAt": "2026-09-30T10:30:18.597Z",
+   "lastMessageAt": "2026-09-30T10:30:16.997Z",
    "continuedFrom": "ses_seedDinner"
   },
   "messages": [
@@ -274,7 +329,7 @@
     "kind": "chat",
     "content": "Dinner's on me tonight, everyone. What should we order?",
     "status": "complete",
-    "createdAt": "2026-09-30T10:30:08.158Z"
+    "createdAt": "2026-09-30T10:30:14.781Z"
    },
    {
     "kind": "chat",
@@ -285,19 +340,19 @@
      "type": "character",
      "characterId": "chr_seedHana"
     },
-    "content": "I'm still voting chive pockets, and yes, I'll cover gas since my dumpling pick caused the whole detour last time. Also throwing in that mushroom and glass noodle wild card — Grandma always said a boring table is a sad table.",
+    "content": "Ooh, you're spoiling us!! I vote for the little Thai place by the station — remember the basil noodles? Rin demolished a whole plate last time.\n\nAlso, Dad will say \"anything's fine\" and then complain it's too spicy, so maybe grab him the mild curry. Probably.",
     "status": "complete",
-    "createdAt": "2026-09-30T10:30:09.407Z",
+    "createdAt": "2026-09-30T10:30:16.997Z",
     "emotion": "happy",
     "emotionSource": "classifier",
     "usage": {
-     "tokensIn": 834,
-     "tokensCached": 0,
-     "tokensOut": 52,
-     "costUsd": 0.000084,
+     "tokensIn": 726,
+     "tokensCached": 640,
+     "tokensOut": 62,
+     "costUsd": 0.000042,
      "energySpent": 1,
-     "firstTokenMs": 685,
-     "totalMs": 920
+     "firstTokenMs": 900,
+     "totalMs": 1893
     }
    }
   ]

@@ -225,7 +225,8 @@ class JevTurnPlanner:
         ctx = req.session.call_ctx(PURPOSE, character_id=cid, message_id=req.message_id)
         call = decider.start({**state.state, **sf.state_extra(req.safety)}, qs, ctx, purpose=PURPOSE, fallback=fallback)
         try:
-            res: DecisionResult = await call.by(req.started_at + timedelta(seconds=decider.timeout_for(PURPOSE)))
+            wait = gates.plan_wait(self.deps, decider.timeout_for(PURPOSE), bool(gated))   # U-46
+            res: DecisionResult = await call.by(req.started_at + timedelta(seconds=wait))
         except asyncio.CancelledError:
             call.cancel()   # D8: readers detach; the request already sent settles and is recorded `cancelled`
             raise
@@ -250,7 +251,7 @@ class JevTurnPlanner:
         recall.update(gates.dropped([c for c in [req.speaker_id] if c in req.recallable and c in state.dropped_gates]))
         gate, rgate = found.get(req.speaker_id), recall.get(req.speaker_id)
         rows = [row, *gates.speaker_rows(req.speaker_id, found, nouls, purpose=PURPOSE, kind=req.kind,
-                                         recall_gates=recall)]
+                                         recall_gates=recall, skips=req.kind == "reply")]
         cue = sf.decide(req.safety, res)   # M14 (safety D4, D19): its rows are shared by the reply
         rows += sf.rows(cue, purpose=PURPOSE)
         return TurnPlan(seed=self.seed(req), kind=req.kind, emotion=face, rows=rows, calls=calls,

@@ -10,7 +10,7 @@ from sqlalchemy import text
 from horizon.evals.store import ResponseStore
 from horizon.gateway.context import call_ctx
 from tests.conftest import Api
-from tests.knowledge.kit import add_text, settle, source
+from tests.knowledge.kit import add_text, seed_before_d110, settle, source
 
 API = "/api/v1"
 SEED_SRC = "kno_seedAmara1"
@@ -72,6 +72,7 @@ async def test_the_reversed_ask_is_sent_and_stored_apart(api: Api, tmp_path: Pat
 async def test_seed_view_reuses_seed_embeddings_and_never_keeps_user_text(api: Api, tmp_path: Path) -> None:
     store_dir = tmp_path / "cache"
     api.rt.gateway.seed_store = ResponseStore.seed_view(store_dir)
+    await seed_before_d110(api)
     await api.set_key()
     r = await api.post(f"{API}/_test/ai-profile", {"profile": "scripted", "overrides": {"embedder": "naive"}})
     assert r.status_code == 204
@@ -84,6 +85,7 @@ async def test_seed_view_reuses_seed_embeddings_and_never_keeps_user_text(api: A
     stored = len(list(store_dir.glob("*.json")))
     assert sent > 0 and rows > 0 and stored == sent
     assert (await api.post(f"{API}/admin/reset-demo", {"confirm": True})).status_code == 204
+    await seed_before_d110(api)
     api.rt.gateway.seed_store = ResponseStore.seed_view(store_dir)        # what a normal start attaches
     assert (await api.client.post(f"{API}/knowledge/{SEED_SRC}/reindex")).status_code == 200
     await settle(api)

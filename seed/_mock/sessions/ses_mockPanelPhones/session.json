@@ -19,7 +19,7 @@
         "characterId": "chr_seedVictor",
         "role": "debater",
         "side": null,
-        "currentEmotion": "thinking",
+        "currentEmotion": "neutral",
         "mutedByUser": false
       },
       {
@@ -74,42 +74,42 @@
           {
             "subjectId": "chr_seedAmara",
             "points": [
-              "A blanket ban punishes kids using phones as a lifeline.",
-              "It ignores the real driver: how devices are designed.",
-              "It dodges digital literacy and regulating companies.",
-              "Phone-free lessons with medical exceptions fit the evidence."
+              "A blanket ban is a blunt instrument; better to have phones off during instruction and teach managed use.",
+              "Notification-driven pull on attention is real and lands hardest on struggling kids.",
+              "Phones are a lifeline to counselors or parents in a bad situation; a total ban strips that away.",
+              "The tool is not the problem; unmanaged use is, so teach the skill."
             ]
           },
           {
             "subjectId": "chr_seedVictor",
             "points": [
-              "A ban is compulsion, and compulsion demands a burden met.",
-              "A blanket prohibition punishes the disciplined many for the distracted few.",
-              "Narrower tools already exist: device policies, locked pouches, teacher discretion.",
-              "Prohibition cedes teaching judgment for commanding obedience."
+              "Banning the device is not banning the distraction; it bans the object and hopes behaviour follows.",
+              "A smartphone cannot be defined; a locked handset is inert metal, so enforcement will be arbitrary against the poor child with the older phone.",
+              "Schools already possess narrower means—confiscation, signal-blocking, locked pouches—and need no statute.",
+              "A blanket ban teaches pupils that difficult things are removed rather than governed, and the same logic will next ban the tools we require them to learn with."
             ]
           },
           {
             "subjectId": "chr_seedMei",
             "points": [
-              "Schools aren't a treatment; effects vary by age band, so estimate a range.",
-              "Bans push use into transit and homes unless parents are brought in.",
-              "Credible evidence on learning is thin and mostly correlational.",
-              "A graded ban on lessons survives the evidence; a blanket ban doesn't."
+              "Schools are workplaces, and banning devices is a working-time intervention.",
+              "Attendance and focus gains look real but modest, maybe 0.05 to 0.1 standard deviations on test scores.",
+              "Enforcement costs land on teachers, not on us.",
+              "The kids who lose most are the ones who already lack supervision elsewhere; ban inside the building but understand it is a blunt instrument with real distributional edges."
             ]
           }
         ],
-        "keyDisagreement": "Whether the motion's full ban is warranted when the evidence only supports phone-free lessons with narrow exceptions.",
+        "keyDisagreement": "Whether a blanket ban as drafted is stronger than narrower school-level controls, given its unresolved definition, enforcement funding, and exception set.",
         "decidedBy": "arbiter",
         "strongerCase": null,
-        "rationale": "The debate turned on the gap between what the motion commands and what the panelists agreed the evidence could carry. Amara, Victor and Mei each argued from that gap toward narrower tools, while the prohibitionist case for a full ban was not defended in the turns shown."
+        "rationale": "The debate turned on whether the motion's blunt instrument could survive its own gaps in definition, enforcement, and exceptions, or whether narrower school-level controls already reach the same behaviour without those gaps. No side established that its factual premises were correct; the argument hinged on which instrument was left unfinished and which was already sufficient."
       }
     },
     "isSeed": false,
-    "costUsd": 0.000759,
+    "costUsd": 0.002136,
     "messageCount": 10,
-    "createdAt": "2026-09-24T10:59:59.993Z",
-    "updatedAt": "2026-09-24T11:00:41.442Z",
-    "lastMessageAt": "2026-09-24T11:00:41.442Z"
+    "createdAt": "2026-09-24T10:59:59.455Z",
+    "updatedAt": "2026-09-24T11:00:41.790Z",
+    "lastMessageAt": "2026-09-24T11:00:41.790Z"
   }
 }

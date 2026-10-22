@@ -416,7 +416,9 @@ tokens, a 429 retried once by the Decider. Swapped order is a different request,
   panel in Chinese or Malay can pass 700, and only generated tokens are billed); overall limit
   **30 s**, `timeoutsMs.verdict`). Ledger purpose `verdict` (category chat), daily cap only.
 - **Input:** the motion, the format, the sides and names, the transcript (quoted as content), the missed-turn facts,
-  and **the result already decided**: the scores and the stronger case (two-sided), or "summary only". The prompt
+  and **the result already decided**: the scores and the stronger case (two-sided), or "summary only". The scores go
+  one line per criterion that already says who leads it ("Clarity: Proposition 9.2, Opposition 9.4 (Opposition
+  leads)"), so the rationale never compares numbers itself (U-65: a rationale had called 9.2 against 9.4 an "edge"). The prompt
   carries **one example output** and the mapping from each name to its `subjectId` (`prop`, `opp`, or the panellist's
   character id), as doc 03 F2 asks of JSON mode.
 - **Instruction:** "Write the arbiter's notes as JSON with `summary` (for each {side | panellist}: 3–5 points, each

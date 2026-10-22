@@ -1,6 +1,7 @@
 """The face check through the runtime (turn-plan-emotion tasks 6.3, 6.4; design D24, D35; face-check, system1-trace and
-decider specs). No network: the plan's face comes from a Decider fixture; the check itself is a real fake request,
-parked so a test can choose its answer (a queued response) or its timing."""
+decider specs; D-112: a clash switches the face; U-49: an unchecked reply gets a `skipped` row saying why). No network:
+the plan's face comes from a Decider fixture; the check itself is a real fake request, parked so a test can choose its
+answer (a queued response) or its timing."""
 
 from __future__ import annotations
 
@@ -84,7 +85,10 @@ async def test_a_neutral_reply_is_not_checked(api: Api) -> None:
     await fixture(api, "neutral", 0.9)
     await command(api, sid, "send", {"text": "Hello there."})
     await api.drive(12000)
-    assert chars(await messages(api, sid))[-1]["emotion"] == "neutral" and checks(api) == []
+    reply = chars(await messages(api, sid))[-1]
+    assert reply["emotion"] == "neutral" and checks(api) == []
+    row = face_row(reply)   # U-49: greyed, with why
+    assert row is not None and (row["result"], row["action"]) == ("skipped", "skipped: neutral face")
 
 
 async def test_a_manual_reply_is_not_checked(api: Api) -> None:
@@ -94,6 +98,8 @@ async def test_a_manual_reply_is_not_checked(api: Api) -> None:
     await command(api, sid, "send", {"text": "My dog died."})
     await api.drive(12000)
     assert checks(api) == []
+    row = face_row(chars(await messages(api, sid))[-1])
+    assert row is not None and (row["result"], row["action"]) == ("skipped", "skipped: manual emotions")
 
 
 # ── the row ──
@@ -111,22 +117,51 @@ async def test_agreement_adds_a_second_insight_with_the_row_and_the_call(api: Ap
     assert {r["purpose"] for r in face_rows} == {"turn_plan", "face_check"}
 
 
-async def test_clash(api: Api) -> None:
-    _, reply = await checked_reply(api, "happy", answer("angry", 0.8, "happy", 0.05))
+async def test_a_clash_switches_the_face_to_the_words(api: Api) -> None:
+    """D-112 (the user's choice, U-54): happy against angry is a clash, so the face becomes what the words show."""
+    sid, reply = await checked_reply(api, "happy", answer("angry", 0.8, "happy", 0.05))
     row = face_row(reply)
-    assert row is not None and (row["answer"], row["p"]) == ("clash", 0.05)
+    assert row is not None and (row["answer"], row["p"], row["result"]) == ("clash", 0.05, "used")
+    assert row["action"] == "face switched to angry" and reply["emotion"] == "angry"
+    switch = [e for e in await events(api, sid) if e["type"] == "emotion" and e["payload"].get("messageId") == reply["id"]]
+    assert switch[-1]["payload"] == {"messageId": reply["id"], "characterId": AMARA, "emotion": "angry",
+                                     "source": "classifier"}
+
+
+async def test_a_mismatch_that_isnt_a_clash_keeps_the_face(api: Api) -> None:
+    _, reply = await checked_reply(api, "sad", answer("thinking", 0.7, "sad", 0.2))
+    row = face_row(reply)
+    assert row is not None and row["answer"] == "no (words read: thinking)" and row["result"] == "shown_only"
+    assert reply["emotion"] == "sad"
+
+
+async def test_a_clash_never_overrides_a_face_changed_since(api: Api) -> None:
+    sid = await agent(api)
+    await fixture(api, "happy", 0.9)
+    assert api.rt.fake is not None
+    release = api.rt.fake.park_question("face_check")
+    await command(api, sid, "send", {"text": "My dog died."})
+    await until_parked(api)
+    await command(api, sid, "set-emotion-mode", {"mode": "user"})              # MANUAL now: the user owns the face
+    api.rt.fake.queued.append(answer("angry", 0.8, "happy", 0.05))
+    release.set()
+    await api.drive(400)
+    reply = chars(await messages(api, sid))[-1]
+    row = face_row(reply)
+    assert row is not None and row["action"] == "not switched: the face had already changed"
+    assert reply["emotion"] == "happy"
 
 
 async def test_a_failed_check_changes_nothing(api: Api) -> None:
     sid, reply = await checked_reply(api, "sad", httpx.Response(500, json={"error": {"code": 500, "message": "boom"}}))
-    assert face_row(reply) is None and reply["emotion"] == "sad"
+    row = face_row(reply)   # U-49: the row says the check had no answer; the face is untouched
+    assert row is not None and (row["result"], row["action"]) == ("skipped", "skipped: no answer in time")
+    assert reply["emotion"] == "sad"
     types = [e["type"] for e in await events(api, sid)]
     assert "error" not in types and "session.paused" not in types
-    assert len([e for e in await events(api, sid) if e["type"] == "insight"
-                and e["payload"]["messageId"] == reply["id"]]) == 1
 
 
-async def test_a_late_check_adds_no_row(api: Api) -> None:
+async def test_a_late_check_adds_only_its_skip_row(api: Api) -> None:
     sid = await agent(api)
     await fixture(api, "sad", 0.9)
     assert api.rt.fake is not None
@@ -136,7 +171,8 @@ async def test_a_late_check_adds_no_row(api: Api) -> None:
     api.rt.fake.queued.append(answer("sad", 0.9))
     release.set()
     await api.drive(1000)
-    assert face_row(chars(await messages(api, sid))[-1]) is None
+    row = face_row(chars(await messages(api, sid))[-1])
+    assert row is not None and (row["result"], row["action"]) == ("skipped", "skipped: no answer in time")
 
 
 # ── cancelling ──

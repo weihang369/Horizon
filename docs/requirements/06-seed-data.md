@@ -98,6 +98,8 @@ Each is stored as a **SessionEvent script** (doc 05), so Replay reproduces timin
 
 ## 4. Transcripts
 
+*The transcripts below are the original screenplays. Since D-110 the shipped sessions are real recordings of the same scenes (Kai's lines adapted live to each reply); `seed/sessions/**` holds them.*
+
 Notation: `[emotion]` = the emotion shown with the message. `{reactions: Name→emotion}` = listener reactions (structured `Message.reactions` in fixtures). `⟨face: X⟩` = a user MANUAL `setEmotion` event. The user's log label is the world's You-card name ("Kai").
 
 ### A. 1:1, Amara (AUTO)
@@ -177,6 +179,8 @@ Notation: `[emotion]` = the emotion shown with the message. `{reactions: Name→
 > *(Turn limit reached → Episode-end card: Continue +10 · Summarise · Back)*
 
 ## 5. Mock memory items (for the PRF-07 mock)
+
+*Since D-110 the shipped demo is a real run of the app (the 9 scenes recorded on a story clock, one continuous memory): the seed ships the memories the app wrote, for every character, Victor and Rin included (71 in all), with their vectors. The table below is the original screenplay's, kept for the hand-written fallback; the memory empty state shows on a newly created character.*
 
 | Character | Kind | Text | Importance |
 |---|---|---|---|

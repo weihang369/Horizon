@@ -35,7 +35,24 @@ export interface RecordedKnowledge {
   chunks: KnowledgeChunk[];
 }
 
+/** A database row as stored (snake_case columns); `vector` is the float32 embedding, base64, in `space`. */
+export type Row = Record<string, unknown> & { vector?: string };
+
+/** D-110: what the real run wrote that the API doesn't show (`horizon demo export --rows`). */
+export interface RecordedRows {
+  space: { id: string; dims: number };
+  knowledge: { source: Row; files: string[]; sections: Row[]; chunks: Row[] }[];
+  memory: Row[];
+  messageIndex: Row[];
+  aiMeta: Row[];
+  usage: Row[];
+  energy: Record<string, { energy_current: number; energy_as_of: string; energy_spent_today: number }>;
+}
+
 export const recordedSession = (seedSessionId: string) => read<RecordedSession>(`sessions/${seedSessionId}.json`);
+export const RECORDED_ROWS: RecordedRows | null = read("rows.json");
+/** The recorded sources' stored files (original, extracted.md), by recorded source id. */
+export const RECORDED_FILES_DIR = path.join(DIR, "knowledge-files");
 export const RECORDED_SONGS: Record<string, RecordedSong> = read("songs.json") ?? {};
 export const RECORDED_IMAGES: Record<string, RecordedImages> = read("images.json") ?? {};
 export const RECORDED_KNOWLEDGE: RecordedKnowledge[] | null = read("knowledge.json");

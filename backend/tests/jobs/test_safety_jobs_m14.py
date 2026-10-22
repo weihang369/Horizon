@@ -72,6 +72,7 @@ async def test_naive_and_scripted_pass_with_no_call(api: Api) -> None:
 async def test_a_likeness_tweak_is_refused_with_no_job_or_hold(api: Api) -> None:
     fake = await agent(api, image="scripted")
     fake.answer_question("image_likeness", BLOCK)
+    shipped = await rows(api, "SELECT id FROM usage_records WHERE purpose = 'guardrail'")   # the seed's own (D-110)
     r = await api.post(f"{API}/jobs", {"characterId": SARAH, "kind": "portrait_tweak",
                                       "prompt": "make him look like Henry Cavill"})
     assert r.status_code == 451
@@ -79,8 +80,9 @@ async def test_a_likeness_tweak_is_refused_with_no_job_or_hold(api: Api) -> None
     assert await jobs_of(api, SARAH) == [] and api.rt.book.total() == 0
     [req] = checks(api)
     assert "Henry Cavill" in req["state"]["quoted_text"]
-    [row] = await rows(api, "SELECT job_id, character_id, purpose FROM usage_records WHERE purpose = 'guardrail'")
-    assert row == {"job_id": None, "character_id": SARAH, "purpose": "guardrail"}
+    [row] = [r for r in await rows(api, "SELECT id, job_id, character_id, purpose FROM usage_records "
+                                        "WHERE purpose = 'guardrail'") if {"id": r["id"]} not in shipped]
+    assert row == {"id": row["id"], "job_id": None, "character_id": SARAH, "purpose": "guardrail"}
 
 
 async def test_a_refused_base_and_a_reworded_retry(api: Api) -> None:

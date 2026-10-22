@@ -42,6 +42,11 @@
 }
 .curtainL { left: 0; box-shadow: inset -3px 0 0 var(--horizon-500); clip-path: polygon(0 0, 100% 0, 70% 100%, 0 100%); }
 .curtainR { right: 0; box-shadow: inset 3px 0 0 var(--horizon-500); clip-path: polygon(0 0, 100% 0, 100% 100%, 30% 100%); }
+/* U-51 (the user's choice): the replay's end closes the drapes over the stage; seeking back opens them again */
+.curtainL, .curtainR { transition: width 900ms var(--ease-slam), clip-path 900ms var(--ease-slam); }
+.root[data-fin] .curtainL, .root[data-fin] .curtainR { width: calc(50% + 1px); }
+.root[data-fin] .curtainL { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+.root[data-fin] .curtainR { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
 
 /* ── Marquee ─────────────────────────────────────────────────────────────── */
 .marquee {
@@ -175,15 +180,17 @@
   position: absolute;
   z-index: 6;
   left: 50%;
-  top: 40%;
+  top: 50%;
   display: grid;
   justify-items: center;
   gap: 12px;
   translate: -50% -50%;
-  animation: hz-pop 260ms var(--ease-slam) both;
+  animation: hz-pop 260ms var(--ease-slam) 700ms both;   /* after the drapes have closed */
 }
 
 :global(:root[data-motion="reduced"]) .actor { animation: hz-fade-in var(--t-reduced) linear both; transition-duration: var(--t-reduced); }
 :global(:root[data-motion="reduced"]) .spot { transition-duration: var(--t-reduced); }
+:global(:root[data-motion="reduced"]) .curtainL, :global(:root[data-motion="reduced"]) .curtainR { transition-duration: var(--t-reduced); }
+:global(:root[data-motion="reduced"]) .curtainCard { animation-delay: 0ms; }
 :global(:root[data-motion="reduced"]) .cue,
 :global(:root[data-motion="reduced"]) .onAirLive i { animation: none; }

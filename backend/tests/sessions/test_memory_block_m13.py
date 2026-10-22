@@ -104,7 +104,7 @@ async def test_the_reply_trace_lists_the_block_without_scores_and_forget_scrubs_
     [reply] = await send(api, sid, "How are you?")
     recalled = (reply["trace"].get("memory") or {}).get("recalled") or []
     mine = [r for r in recalled if r["memoryItemId"] == m1]
-    assert mine == [{"memoryItemId": m1, "text": "Kai's sister Mia works nights in Ipoh."}]
+    assert mine == [{"memoryItemId": m1, "text": "Kai's sister Mia works nights in Ipoh.", "via": "block"}]   # U-58
     used = reply["trace"]["context"]["used"]
     assert used["memory"] > 0
     async with api.rt.db.read() as conn:

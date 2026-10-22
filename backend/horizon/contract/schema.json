@@ -3985,7 +3985,8 @@
             "below_threshold",
             "fallback",
             "not_used",
-            "shown_only"
+            "shown_only",
+            "skipped"
           ],
           "type": "string"
         },
@@ -4520,6 +4521,13 @@
                   },
                   "text": {
                     "type": "string"
+                  },
+                  "via": {
+                    "enum": [
+                      "block",
+                      "recall"
+                    ],
+                    "type": "string"
                   }
                 },
                 "required": [
@@ -4634,7 +4642,8 @@
                 "user_ask",
                 "mention",
                 "nudge",
-                "round_order"
+                "round_order",
+                "opening"
               ],
               "type": "string"
             },
@@ -4676,6 +4685,24 @@
           "required": [
             "selected"
           ],
+          "type": "object"
+        },
+        "search": {
+          "additionalProperties": false,
+          "properties": {
+            "recallVectorMs": {
+              "minimum": 0,
+              "type": "number"
+            },
+            "rewriteMs": {
+              "minimum": 0,
+              "type": "number"
+            },
+            "vectorMs": {
+              "minimum": 0,
+              "type": "number"
+            }
+          },
           "type": "object"
         },
         "system1": {
@@ -4874,6 +4901,11 @@
         },
         "keyDisagreement": {
           "type": "string"
+        },
+        "margin": {
+          "maximum": 10,
+          "minimum": 0,
+          "type": "number"
         },
         "rationale": {
           "type": "string"

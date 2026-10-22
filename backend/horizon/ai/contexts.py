@@ -145,6 +145,7 @@ class Assessment(Frozen):
     scored: bool = False
     scores: list[dict[str, Any]] = []
     stronger: str | None = None                     # the arbiter's stronger case; None: too close, or no scores
+    margin: float | None = None                     # U-61: the lead a win needs (`verdict.margin`), when Jev scored
     summary: list[dict[str, Any]] = []
     key_disagreement: str | None = None
     rationale: str | None = None
@@ -351,6 +352,7 @@ class DeepResult(Frozen):
     recall_rows: list[dict[str, Any]] = []
     recall_checks: list[dict[str, Any]] = []        # each check's {id, kind, order, p} (eval)
     recall_lists: dict[str, int] = {}               # how many each list returned per corpus (dense 0: BM25 only)
+    waits: dict[str, float] = {}                    # U-58: ms waited for "vector", "rewrite", "recall_vector"
 
 
 class GateAnswer(Frozen):
@@ -404,6 +406,7 @@ class TurnPlan(Frozen):
     recall: list[RecallHit] = []
     recall_outcome: RecallOutcome | None = None
     safety: SafetyCue | None = None                 # M14 (safety D6): the safety decision for the line answered
+    search_waits: dict[str, float] = {}             # U-58: the deep work's waits (TurnTrace.search)
 
     @property
     def deep(self) -> bool:
@@ -420,7 +423,7 @@ class TurnPlan(Frozen):
             "rewrite": res.rewrite, "rewrite_for": res.query.get("message_id") if res.rewrite else None,
             "quote_words": list(res.quote_words), "recall": list(res.recall), "recall_outcome": res.recall_outcome,
             "rows": [*self.rows, *res.rows, *res.recall_rows], "calls": [*self.calls, *res.calls],
-            "graph_path": [*self.graph_path, *res.path]})
+            "graph_path": [*self.graph_path, *res.path], "search_waits": dict(res.waits)})
 
 
 class PlanRequest(Frozen):
@@ -462,7 +465,7 @@ class WhoPick(Frozen):
     p: float | None = None
     confidence: float | None = None
     candidates: list[dict[str, Any]] = []           # routing.candidates: [{characterId, p}], highest first
-    forced_by: Literal["mention", "nudge", "round_order", "user_ask"] | None = None
+    forced_by: Literal["mention", "nudge", "round_order", "user_ask", "opening"] | None = None
     reason: str | None = None                       # routing.reason ("fallback", or the guard's sentence)
 
 
@@ -493,7 +496,7 @@ class CastRequest(Frozen):
     kind: CastKind
     candidates: list[str]                           # who may be picked or asked about, in cast order
     forced: list[str] = []                          # speak without a who question (mentions, a nudge, the guard)
-    forced_by: Literal["mention", "nudge", "round_order", "user_ask"] | None = None
+    forced_by: Literal["mention", "nudge", "round_order", "user_ask", "opening"] | None = None
     reason: str | None = None                       # the guard's routing.reason
     cast: list[CharacterView] = []                  # the candidates' profiles (X9's `about`)
     latest: str = ""                                # the line being answered: the user's text, or "Name: line"
@@ -552,6 +555,7 @@ class CastPlan(Frozen):
         from horizon.ai.agent import safety as sf
 
         rows += sf.rows(self.safety, purpose="turn_plan")
+        rows += sf.note_skip(self.safety, self.kind, purpose="turn_plan")   # U-49
         return TurnPlan(seed=self.seed, kind="reply", branch=g.branch(gate, rgate),
                         emotion=self.faces.get(cid), rows=rows, calls=list(self.calls),
                         graph_path=list(self.graph_path), state_tokens=self.state_tokens,
@@ -685,6 +689,7 @@ class DebatePlan(Frozen):
         from horizon.ai.agent import safety as sf
 
         rows += sf.rows(self.safety, purpose="debate_plan")
+        rows += sf.note_skip(self.safety, "debate_line", purpose="debate_plan")   # U-49
         return TurnPlan(seed=self.seed, kind="reply", branch=g.branch(gate, rgate),
                         emotion=self.faces.get(cid), rows=rows, calls=list(self.calls),
                         graph_path=list(self.graph_path), state_tokens=self.state_tokens, gate=gate,

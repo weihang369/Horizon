@@ -100,7 +100,8 @@ def test_for_speaker_marks_the_other_candidates_not_used() -> None:
     assert tp.emotion is not None and tp.emotion.face == "happy" and tp.branch == "quick" and tp.cue is None
     results = {(r["id"], r.get("about")): r["result"] for r in tp.rows}
     assert results == {("who_first", None): "used", ("emotion_reply", "chr_a"): "used",
-                       ("emotion_reply", "chr_b"): "not_used"}
+                       ("emotion_reply", "chr_b"): "not_used",
+                       ("docs", "chr_a"): "skipped", ("earlier", "chr_a"): "skipped"}   # U-49: greyed, with why
     assert TurnContext.model_validate_json(TurnContext(
         session=session(), speaker=CharacterView(id="chr_a", name="Amara", profile={}), message_id="m",
         max_tokens=150, plan=tp).model_dump_json()).plan == tp

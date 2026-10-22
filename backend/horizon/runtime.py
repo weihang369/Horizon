@@ -541,7 +541,9 @@ class Runtime:
     async def import_seed(self) -> list[str]:
         data = await self.load_seed()
         async with self.db.write() as tx:
-            return await seeding.apply_seed(tx.conn, data, energy_day=self.energy_day, local_day=self.local_day)
+            sids = await seeding.apply_seed(tx.conn, data, energy_day=self.energy_day, local_day=self.local_day)
+        await asyncio.to_thread(seeding.install_knowledge_files, data, self.cfg.knowledge_dir)   # D-110
+        return sids
 
     async def reset_demo(self) -> None:
         """POST /admin/reset-demo (doc 02 §4): re-seed seed records in place; user data survives. In test mode it also
@@ -564,6 +566,7 @@ class Runtime:
                 await tx.conn.execute(t.ai_purge_queue.insert().values(scope="session", ids=sids, created_at=self.now_iso(),
                                                                        attempts=0, done_at=None))
             tx.publish(GLOBAL, {"type": "mock.reset"})
+        await asyncio.to_thread(seeding.install_knowledge_files, data, self.cfg.knowledge_dir)   # D-110
         if sids and self._purge is not None:
             self._purge.notify()   # audit 01-06: the replaced seed sessions' AI rows are purged now, not at the next start
         if self._jobs is not None:

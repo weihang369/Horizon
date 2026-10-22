@@ -20,7 +20,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any
 
 from horizon.ai.agent import gates
@@ -120,6 +120,9 @@ class JevFollowCall:
         self.asked = asked   # the request's question keys (M12: which gates rode it)
 
     async def by(self, deadline: datetime) -> FollowPlan:
+        waited = gates.plan_wait(self.planner.deps, 0.0, any(k.startswith(f"{gates.GATE}:") for k in self.asked))
+        if waited:   # U-46: a follow plan with a documents question is waited for to the end
+            deadline = max(deadline, self.req.started_at + timedelta(seconds=waited))
         try:
             plan, path = await run_plan(self.planner.follow_graph, {"handle": self, "deadline": deadline})
         except asyncio.CancelledError:

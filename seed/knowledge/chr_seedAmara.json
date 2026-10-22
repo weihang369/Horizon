@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "data": [
     {
-      "id": "kno_seedAmara1",
       "characterId": "chr_seedAmara",
       "worldId": "wld_seedMeridian",
       "title": "Meridian Shift Fatigue Review 2025.pdf",
@@ -10,12 +9,12 @@
       "status": "indexed",
       "bytes": 94903,
       "pages": 11,
-      "addedAt": "2026-09-18T08:40:00Z",
+      "addedAt": "2026-09-18T08:40:01.287Z",
+      "id": "kno_seedAmara1",
       "chunks": 20,
-      "citedCount": 6
+      "citedCount": 4
     },
     {
-      "id": "kno_seedAmara2",
       "characterId": "chr_seedAmara",
       "worldId": "wld_seedMeridian",
       "title": "ED triage guidelines.pdf",
@@ -23,9 +22,10 @@
       "status": "indexed",
       "bytes": 70915,
       "pages": 5,
-      "addedAt": "2026-09-21T19:12:00Z",
+      "addedAt": "2026-09-21T19:12:01.281Z",
+      "id": "kno_seedAmara2",
       "chunks": 17,
-      "citedCount": 3
+      "citedCount": 4
     }
   ]
 }

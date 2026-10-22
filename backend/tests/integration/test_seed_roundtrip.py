@@ -1,7 +1,8 @@
 """The seed round trip (design D5, the main read-model acceptance test): every seed entity read back through the API
 equals its seed file after timestamp normalisation and ONLY the documented read-time derivations:
 
-- `KnowledgeSource.status`: a shipped `indexed` source has no vectors yet, so it reads `keyword_only` (OQ-1);
+- `KnowledgeSource.status`: since D-110 a shipped `indexed` source carries its vectors (the default space), so it reads
+  as shipped (before: `keyword_only`, OQ-1);
 - `Energy.state` / `fullAt` / floors are derived (energy spec) and equal the shipped values for the shipped data;
 - `World.characterCount`, `KnowledgeSource.citedCount` are derived and must equal the shipped values (since D-104 the
   count includes the `_mock` overlay's approved characters, which every run imports);
@@ -89,8 +90,7 @@ async def _roundtrip(api: Api, root: Path, *, worlds: bool, jobs: bool = True) -
         if not items:
             continue
         got = await api.json(f"/api/v1/characters/{items[0]['characterId']}/knowledge")
-        expected = [{**k, "status": "keyword_only" if k["status"] == "indexed" else k["status"]} for k in items]
-        assert sorted(got, key=lambda x: x["id"]) == sorted(norm(expected), key=lambda x: x["id"]), p.name
+        assert sorted(got, key=lambda x: x["id"]) == sorted(norm(items), key=lambda x: x["id"]), p.name
         for k in items:
             body = await api.json(f"/api/v1/knowledge/{k['id']}")
             chunk_file = root / "knowledge" / "chunks" / f"{k['id']}.json"

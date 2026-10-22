@@ -42,7 +42,7 @@ describe("System 1 section", () => {
     expect(html).toContain(">deep</span>");                          // the verdict pill
     expect(html).toContain('data-tone="pass"');                       // 0.81 crossed its line…
     expect(html).toContain("left:35%");                               // …the tick sits at 0.35
-    expect(html).toContain("asked about the others (1)");
+    expect(html).toContain("not used this turn (1)");
     expect(html).not.toContain("chr_seedHana");
   });
 

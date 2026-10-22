@@ -5,100 +5,166 @@
       "id": "mem_seedAmara1",
       "characterId": "chr_seedAmara",
       "worldId": "wld_seedMeridian",
-      "kind": "event",
-      "text": "Kai described a three-day headache centered at the temples and said he cut back on coffee the week before.",
-      "importance": 0.4725,
-      "sourceSessionId": "ses_seedAmaraHeadache",
-      "sourceMessageId": "msg_seedA02",
-      "createdAt": "2026-09-29T21:15:24.152Z"
+      "kind": "fact",
+      "text": "Amara argued for taxing sugary drinks: price cuts consumption, reformulation, and funds prevention; costs of diabetes and heart disease fall on everyone.",
+      "importance": 0.7675,
+      "sourceSessionId": "ses_mockHostSugar",
+      "sourceMessageId": "msg_mockS03",
+      "createdAt": "2026-09-22T13:20:54.746Z"
     },
     {
       "id": "mem_seedAmara2",
       "characterId": "chr_seedAmara",
       "worldId": "wld_seedMeridian",
       "kind": "fact",
-      "text": "Amara told Kai his temple headache is likely caffeine withdrawal, fitting the usual three-day timeline.",
-      "importance": 0.405,
-      "sourceSessionId": "ses_seedAmaraHeadache",
-      "sourceMessageId": "msg_seedA05",
-      "createdAt": "2026-09-29T21:15:24.152Z"
+      "text": "Victor argued the tax is a regressive sin levy on the poor, that evidence of causation is association, and that reformulation undercuts the health claim.",
+      "importance": 0.6275,
+      "sourceSessionId": "ses_mockHostSugar",
+      "sourceMessageId": "msg_mockS04",
+      "createdAt": "2026-09-22T13:20:54.746Z"
     },
     {
       "id": "mem_seedAmara3",
       "characterId": "chr_seedAmara",
       "worldId": "wld_seedMeridian",
       "kind": "fact",
-      "text": "Amara advised Kai to seek emergency care for thunderclap headache, fever, neck stiffness, confusion, weakness, vision changes, or stroke signs.",
-      "importance": 0.6325,
-      "sourceSessionId": "ses_seedAmaraHeadache",
-      "sourceMessageId": "msg_seedA07",
-      "createdAt": "2026-09-29T21:15:24.152Z"
+      "text": "Amara conceded the regressivity point but argued disease costs fall hardest on the poorest, so the levy is still justified.",
+      "importance": 0.665,
+      "sourceSessionId": "ses_mockHostSugar",
+      "sourceMessageId": "msg_mockS07",
+      "createdAt": "2026-09-22T13:20:54.746Z"
     },
     {
       "id": "mem_seedAmara4",
       "characterId": "chr_seedAmara",
       "worldId": "wld_seedMeridian",
       "kind": "fact",
-      "text": "Amara advised Kai that a headache waking him from sleep or after head injury needs same-day review.",
-      "importance": 0.5025,
-      "sourceSessionId": "ses_seedAmaraHeadache",
-      "sourceMessageId": "msg_seedA07",
-      "createdAt": "2026-09-29T21:15:24.152Z"
+      "text": "Amara works in the ER treating diabetic emergencies, heart failure, and amputations.",
+      "importance": 0.7875,
+      "sourceSessionId": "ses_mockHostSugar",
+      "sourceMessageId": "msg_mockS03",
+      "createdAt": "2026-09-22T13:20:54.746Z"
     },
     {
       "id": "mem_seedAmara5",
       "characterId": "chr_seedAmara",
       "worldId": "wld_seedMeridian",
       "kind": "event",
-      "text": "Amara argued a compressed rota with guaranteed rest days cut burnout about a fifth in twelve weeks, with patient throughput, length of stay and readmissions within normal variation.",
-      "importance": 0.7275,
-      "sourceSessionId": "ses_seedDebate4Day",
-      "sourceMessageId": "msg_seedD02",
-      "createdAt": "2026-10-01T09:59:12.018Z"
+      "text": "In the smartphone-ban debate, Amara argued for phones off during instruction, taught use, and a red-flag exception instead of a blanket ban.",
+      "importance": 0.5825,
+      "sourceSessionId": "ses_mockPanelPhones",
+      "sourceMessageId": "msg_mockP02",
+      "createdAt": "2026-09-24T11:00:51.017Z"
     },
     {
       "id": "mem_seedAmara6",
       "characterId": "chr_seedAmara",
       "worldId": "wld_seedMeridian",
       "kind": "fact",
-      "text": "Amara reported ED burnout climbed from 29% to 41% in ten months, and staff sleeping under six hours before a shift were twice as likely to report near-miss medication errors.",
-      "importance": 0.7375,
-      "sourceSessionId": "ses_seedDebate4Day",
-      "sourceMessageId": "msg_seedD02",
-      "createdAt": "2026-10-01T09:59:12.018Z"
+      "text": "Mei argued the ban is a working-time intervention with modest gains of about 0.05 to 0.1 standard deviations and uneven costs.",
+      "importance": 0.51,
+      "sourceSessionId": "ses_mockPanelPhones",
+      "sourceMessageId": "msg_mockP04",
+      "createdAt": "2026-09-24T11:00:51.017Z"
     },
     {
       "id": "mem_seedAmara7",
       "characterId": "chr_seedAmara",
       "worldId": "wld_seedMeridian",
-      "kind": "fact",
-      "text": "Amara named Mei's sequencing point as strongest: thin output measurement means mandating now risks freezing the wrong model.",
-      "importance": 0.615,
-      "sourceSessionId": "ses_seedDebate4Day",
-      "sourceMessageId": "msg_seedD08",
-      "createdAt": "2026-10-01T09:59:12.018Z"
+      "kind": "event",
+      "text": "Kai had a dull headache at both temples for three days after cutting coffee from four cups a day to one.",
+      "importance": 0.43,
+      "sourceSessionId": "ses_seedAmaraHeadache",
+      "sourceMessageId": "msg_seedA02",
+      "createdAt": "2026-09-29T21:16:21.622Z"
     },
     {
       "id": "mem_seedAmara8",
       "characterId": "chr_seedAmara",
       "worldId": "wld_seedMeridian",
-      "kind": "event",
-      "text": "Amara said the pilot wards' transition month needed 6% more agency hours before settling to baseline by week eight, with no extra staffed hours long-term.",
-      "importance": 0.655,
-      "sourceSessionId": "ses_seedDebate4Day",
-      "sourceMessageId": "msg_seedD13",
-      "createdAt": "2026-10-01T09:59:12.018Z"
+      "kind": "fact",
+      "text": "Amara advised Kai to taper caffeine by about a quarter every few days, keep fluids up, and use simple painkillers.",
+      "importance": 0.5375,
+      "sourceSessionId": "ses_seedAmaraHeadache",
+      "sourceMessageId": "msg_seedA05",
+      "createdAt": "2026-09-29T21:16:21.622Z"
     },
     {
       "id": "mem_seedAmara9",
       "characterId": "chr_seedAmara",
       "worldId": "wld_seedMeridian",
       "kind": "fact",
-      "text": "Amara advocated adopting a phased statutory default with sector trials and sunset review written into the statute.",
-      "importance": 0.7225,
+      "text": "Amara told Kai a thunderclap headache, fever, stiff neck, confusion, weakness, or vision changes means same-day emergency care.",
+      "importance": 0.6875,
+      "sourceSessionId": "ses_seedAmaraHeadache",
+      "sourceMessageId": "msg_seedA07",
+      "createdAt": "2026-09-29T21:16:21.622Z"
+    },
+    {
+      "id": "mem_seedAmara10",
+      "characterId": "chr_seedAmara",
+      "worldId": "wld_seedMeridian",
+      "kind": "event",
+      "text": "Kai planned to taper coffee more slowly, drink more water, and had a busy week of deadlines.",
+      "importance": 0.5,
+      "sourceSessionId": "ses_seedAmaraHeadache",
+      "sourceMessageId": "msg_seedA08",
+      "createdAt": "2026-09-29T21:16:21.622Z"
+    },
+    {
+      "id": "mem_seedAmara11",
+      "characterId": "chr_seedAmara",
+      "worldId": "wld_seedMeridian",
+      "kind": "event",
+      "text": "Amara's department ran a compressed rota: four longer days, three protected rest days; burnout fell about a fifth in twelve weeks, throughput and readmissions stable.",
+      "importance": 0.735,
       "sourceSessionId": "ses_seedDebate4Day",
-      "sourceMessageId": "msg_seedD13",
-      "createdAt": "2026-10-01T09:59:12.018Z"
+      "sourceMessageId": "msg_seedD02",
+      "createdAt": "2026-10-01T09:59:52.855Z"
+    },
+    {
+      "id": "mem_seedAmara12",
+      "characterId": "chr_seedAmara",
+      "worldId": "wld_seedMeridian",
+      "kind": "fact",
+      "text": "In emergency medicine, consecutive shift block length predicts fatigue more than total hours; staff sleeping under six hours were twice as likely to report a near-miss medication error.",
+      "importance": 0.745,
+      "sourceSessionId": "ses_seedDebate4Day",
+      "sourceMessageId": "msg_seedD02",
+      "createdAt": "2026-10-01T09:59:52.855Z"
+    },
+    {
+      "id": "mem_seedAmara13",
+      "characterId": "chr_seedAmara",
+      "worldId": "wld_seedMeridian",
+      "kind": "fact",
+      "text": "Voluntary nursing resignations hit 14% over a year; replacing a nurse costs about four months of salary.",
+      "importance": 0.6575,
+      "sourceSessionId": "ses_seedDebate4Day",
+      "sourceMessageId": "msg_seedD02",
+      "createdAt": "2026-10-01T09:59:52.855Z"
+    },
+    {
+      "id": "mem_seedAmara14",
+      "characterId": "chr_seedAmara",
+      "worldId": "wld_seedMeridian",
+      "kind": "fact",
+      "text": "Mei argued pilots are knowledge-work based, silent on hospitals, transport and care; a nationwide four-day mandate redistributes labour rather than creating it.",
+      "importance": 0.6275,
+      "sourceSessionId": "ses_seedDebate4Day",
+      "sourceMessageId": "msg_seedD03",
+      "createdAt": "2026-10-01T09:59:52.855Z"
+    },
+    {
+      "id": "mem_seedAmara15",
+      "characterId": "chr_seedAmara",
+      "worldId": "wld_seedMeridian",
+      "kind": "fact",
+      "text": "Mei measured extra staffed hours at 18–27% across nine shift-based organisations holding coverage constant; two of nine partially recovered costs through sickness and turnover.",
+      "importance": 0.6875,
+      "sourceSessionId": "ses_seedDebate4Day",
+      "sourceMessageId": "msg_seedD08",
+      "createdAt": "2026-10-01T09:59:52.855Z"
     }
   ]
 }

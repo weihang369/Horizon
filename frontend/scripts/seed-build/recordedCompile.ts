@@ -92,6 +92,7 @@ function adjustEnergy(e: SessionEvent, offsets: Record<string, number>): Session
 
 export function compileRecorded(
   sp: Screenplay, rec: RecordedSession, endEnergy: Record<string, number>, knowledgeIds: Record<string, string>,
+  adjust = true,
 ): { compiled: CompiledSession; map: RecordingMap } {
   const sorted = [...rec.events].sort((a, b) => a.seq - b.seq);
   if (!sorted.length) throw new Error(`[seed-build] recording for ${sp.session.id} has no events`);
@@ -100,7 +101,9 @@ export function compileRecorded(
   const ids = { ...knowledgeIds, ...messageIds, [rec.source]: sp.session.id };
 
   const moved = sorted.map((e) => rewrite(e, ids, shiftMs));
-  const offsets = energyOffsets(moved, endEnergy);
+  // D-110: a story-clock recording of the whole demo carries the real energy (the characters' end state comes from
+  // the same run), so nothing is moved; older recordings end at the fixture's energy as before
+  const offsets = adjust ? energyOffsets(moved, endEnergy) : {};
   const events: SessionEvent[] = moved.map((e, i) => ({
     ...adjustEnergy(e, offsets), id: `evt_${sp.evtKey}${pad(i + 1, 4)}`, sessionId: sp.session.id, seq: i + 1,
   }) as SessionEvent);

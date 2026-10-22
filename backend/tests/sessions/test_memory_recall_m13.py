@@ -101,6 +101,9 @@ async def test_a_recall_only_turn_searches_lines_with_no_rewrite_and_is_traced(a
 
 
 async def test_every_answer_late_keeps_the_top_two_unscored(api: Api) -> None:
+    from tests.sessions.test_deep_m12 import measured_deadlines
+
+    measured_deadlines(api)          # D-113: with `docsWaitAll` on, these plans and checks are waited for
     sid = await indexed_session(api)
     recall_yes(api)
     assert api.rt.fake is not None

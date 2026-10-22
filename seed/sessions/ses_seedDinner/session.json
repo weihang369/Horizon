@@ -11,19 +11,19 @@
       {
         "characterId": "chr_seedHana",
         "role": "speaker",
-        "currentEmotion": "happy",
+        "currentEmotion": "neutral",
         "mutedByUser": false
       },
       {
         "characterId": "chr_seedTakeshi",
         "role": "speaker",
-        "currentEmotion": "angry",
+        "currentEmotion": "neutral",
         "mutedByUser": false
       },
       {
         "characterId": "chr_seedRin",
         "role": "speaker",
-        "currentEmotion": "angry",
+        "currentEmotion": "neutral",
         "mutedByUser": false
       }
     ],
@@ -36,11 +36,11 @@
     },
     "state": null,
     "isSeed": true,
-    "costUsd": 0.000548,
+    "costUsd": 0.00078,
     "messageCount": 9,
-    "createdAt": "2026-09-30T10:29:59.984Z",
-    "updatedAt": "2026-09-30T10:31:40.499Z",
+    "createdAt": "2026-09-30T10:29:59.968Z",
+    "updatedAt": "2026-10-01T10:01:45.363Z",
     "pausedReason": "navigated_away",
-    "lastMessageAt": "2026-09-30T10:31:21.701Z"
+    "lastMessageAt": "2026-09-30T10:31:30.465Z"
   }
 }

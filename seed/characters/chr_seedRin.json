@@ -153,12 +153,12 @@
     "themeSongId": "song_seedRin",
     "energy": {
       "max": 1000,
-      "current": 180,
-      "asOf": "2026-10-01T12:00:00Z",
+      "current": 993,
+      "asOf": "2026-09-30T10:31:36.294Z",
       "regenPerHour": 41.666666666666664,
-      "state": "tired",
-      "fullAt": "2026-10-02T07:40:48.000Z",
-      "spentToday": 820
+      "state": "active",
+      "fullAt": "2026-09-30T10:41:41.094Z",
+      "spentToday": 7
     },
     "version": 1,
     "isSeed": true,

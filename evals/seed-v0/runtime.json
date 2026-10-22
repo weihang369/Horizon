@@ -139,6 +139,8 @@
           "rewriteMs": 1200,
           "deepCheckMs": 1500,
           "queryEmbedWaitMs": 200,
+          "docsEmbedWaitMs": 10000,
+          "docsWaitAll": true,
           "recall": {
             "pool": 10,
             "perCorpus": 5,

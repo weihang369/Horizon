@@ -50,7 +50,8 @@ Measured by the shared token count (UTF-8 bytes ÷ 3, rounded up), each free-tex
 The session block SHALL describe the mode once, with its length line:
 - **1:1:** a private chat;
 - **group:** the others with their profile roles;
-- **watch:** the premise and that the user may step in;
+- **watch:** the premise, that the user may step in, and that until the user speaks in it the characters talk to each
+  other, not to the user (U-64: the watcher is off-stage);
 - **debate:** the motion, the speaker's side and teammates, and the opponents with their roles; a panel lists the others.
 
 The user SHALL be the You card's display name, or "the user".

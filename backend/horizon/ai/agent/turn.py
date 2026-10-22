@@ -316,6 +316,10 @@ class AgentTurnEngine(NaiveTurnEngine):
             "used": {"persona": t["card"], "system": t["world"] + t["rules"], "mode": t["session"] + mode_tail,
                      "history": summary + max(0, history - user) + recall_lines, "user": user, "memory": memory,
                      "knowledge": max(0, block_tokens - tail_memory)}}}
+        waits = ctx.plan.search_waits if ctx.plan is not None else {}
+        if waits:   # U-58: what the search waited for (Insight's "search query" group)
+            names = {"vector": "vectorMs", "rewrite": "rewriteMs", "recall_vector": "recallVectorMs"}
+            patch["search"] = {names[k]: v for k, v in waits.items() if k in names}
         if chosen is not None:
             patch["emotion"] = {"chosen": chosen.emotion, "source": chosen.source}
             face = ctx.plan.emotion if ctx.plan is not None else None
@@ -330,8 +334,8 @@ class AgentTurnEngine(NaiveTurnEngine):
                 patch["memory"] = mem
         # M13 (memory D24, D35): what the model was given: the list's lines with no score, then recall's memories with
         # Jev's p (none on a fallback); recall's lines as `contextInSession` (Insight's "In-session recall")
-        listed = [{"memoryItemId": m.id, "text": m.text} for m in ctx.speaker.memories]
-        recalled_mems = [{"memoryItemId": h.id, "text": h.text,
+        listed = [{"memoryItemId": m.id, "text": m.text, "via": "block"} for m in ctx.speaker.memories]
+        recalled_mems = [{"memoryItemId": h.id, "text": h.text, "via": "recall",
                           **({"sourceSessionId": h.source_session_id} if h.source_session_id else {}),
                           **({"score": round(h.p, 4)} if h.p is not None else {})} for h in hits if h.kind == "memory"]
         if listed or recalled_mems:

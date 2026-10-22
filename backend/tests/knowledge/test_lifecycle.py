@@ -108,7 +108,9 @@ async def test_key_added_after_uploads_reembeds_user_sources_only(api: Api) -> N
     await api.set_key()
     await settle(api)
     assert (await source(api, src["id"]))["source"]["status"] == "indexed"
-    assert (await source(api, SEED_SRC))["source"]["status"] == "keyword_only"
+    # the shipped documents arrive indexed (D-110) and are never re-embedded on the user's behalf
+    assert (await source(api, SEED_SRC))["source"]["status"] == "indexed"
+    assert not await embedding_rows(api, "chr_seedAmara")
 
 
 async def test_seed_reindex_keeps_chunk_ids_and_conflicts_while_indexing(api: Api) -> None:
@@ -130,10 +132,20 @@ async def test_seed_failure_fails_again_with_its_reason(api: Api) -> None:
     if sid is None:
         return
     before = (await source(api, sid))["source"]["error"]
+    # D-110: the shipped original is a real password-protected PDF; the real converter refuses it before any OCR
+    r = await api.client.post(f"{API}/_test/ai-profile", json={"profile": "scripted", "overrides": {"converter": "naive"}})
+    assert r.status_code == 204
     assert (await api.client.post(f"{API}/knowledge/{sid}/reindex")).status_code == 200
-    await settle(api)
     got = (await source(api, sid))["source"]
-    assert got["status"] == "failed" and got["error"] == before
+    for _ in range(200):   # D-110: Retry reads the stored original again (the converter's pacing, then the PDF reader)
+        await settle(api, 5000)
+        got = (await source(api, sid))["source"]
+        if got["status"] != "indexing":
+            break
+        await asyncio.sleep(0.05)
+    assert got["status"] == "failed"
+    if (await api.json(f"{API}/health"))["docling"] == "ok":   # where PDFs can be read at all, for the same reason
+        assert got["error"] == before
 
 
 async def test_cited_source_deleted_keeps_message_citations(api: Api) -> None:
@@ -162,6 +174,9 @@ async def test_delete_while_indexing_leaves_nothing_and_does_not_resume(make_api
     await asyncio.wait_for(fake.embed_parked.wait(), 10)
     folder = api.rt.cfg.knowledge_dir / "wld_seedSunnyHollow" / "chr_seedHana" / src["id"]
     assert folder.is_dir()
+    _, kno = spaces.vec_tables(api.rt.space_id or "")
+    async with api.rt.db.read() as conn:   # the shipped notebook's own vectors (D-110) stay
+        shipped = (await conn.execute(text(f"SELECT count(*) FROM {kno} WHERE character_id = 'chr_seedHana'"))).scalar_one()
     deleting = asyncio.create_task(api.client.delete(f"{API}/knowledge/{src['id']}"))
     await asyncio.sleep(0.05)
     release.set()
@@ -171,8 +186,7 @@ async def test_delete_while_indexing_leaves_nothing_and_does_not_resume(make_api
             col = "id" if table == "knowledge_sources" else "source_id"
             n = (await conn.execute(text(f"SELECT count(*) FROM {table} WHERE {col} = :s"), {"s": src["id"]})).scalar_one()
             assert n == 0, table
-        _, kno = spaces.vec_tables(api.rt.space_id or "")
-        assert (await conn.execute(text(f"SELECT count(*) FROM {kno} WHERE character_id = 'chr_seedHana'"))).scalar_one() == 0
+        assert (await conn.execute(text(f"SELECT count(*) FROM {kno} WHERE character_id = 'chr_seedHana'"))).scalar_one() == shipped
     assert not folder.exists()
     await api.rt.stop()
     again: Api = await make_api(data_dir=data)
@@ -180,7 +194,8 @@ async def test_delete_while_indexing_leaves_nothing_and_does_not_resume(make_api
     assert src["id"] not in again.rt.ingest.submitted
 
 
-async def test_reset_returns_seed_sources_to_keyword_only(api: Api) -> None:
+async def test_reset_restores_seed_sources_as_shipped(api: Api) -> None:
+    """D-110 (replaces D-98): Reset brings a shipped document back indexed, with its shipped passages and vectors."""
     await api.set_key()
     assert (await api.client.post(f"{API}/knowledge/{SEED_SRC}/reindex")).status_code == 200
     await settle(api)
@@ -191,7 +206,8 @@ async def test_reset_returns_seed_sources_to_keyword_only(api: Api) -> None:
     assert (await api.client.post(f"{API}/admin/reset-demo", json={"confirm": True})).status_code in (200, 204)
     await settle(api)
     seed = await source(api, SEED_SRC)
-    assert seed["source"]["status"] == "keyword_only" and [c["text"] for c in seed["chunks"]] == shipped
+    assert seed["source"]["status"] == "indexed" and [c["text"] for c in seed["chunks"]] == shipped
+    assert await vector_count(api, SEED_SRC) == len(shipped)
     assert (await source(api, mine["id"]))["source"]["status"] == "indexed"
 
 

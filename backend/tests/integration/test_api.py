@@ -261,7 +261,7 @@ async def test_delete_world_cascades_and_keeps_ledger(api: Api) -> None:
     gen = api.data_dir / "assets" / "gen" / "wld_seedSunnyHollow"
     docs = api.data_dir / "knowledge" / "wld_seedSunnyHollow"
     for d in (gen, docs):
-        d.mkdir(parents=True)
+        d.mkdir(parents=True, exist_ok=True)
         (d / "f.bin").write_bytes(b"x")
     ledger_before = [u for u in (await api.json("/api/v1/usage", params={"limit": 1000}))["items"]
                      if u.get("characterId") == "chr_seedHana"]

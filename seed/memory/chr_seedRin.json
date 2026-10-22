@@ -1,4 +1,126 @@
 {
   "schemaVersion": 1,
-  "data": []
+  "data": [
+    {
+      "id": "mem_seedRin1",
+      "characterId": "chr_seedRin",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "event",
+      "text": "Kai and Rin agreed to raid at 9:30pm, right after Rin's shift; Kai will heal for Rin's tank.",
+      "importance": 0.5425,
+      "sourceSessionId": "ses_mockRinRaid",
+      "sourceMessageId": "msg_mockR05",
+      "createdAt": "2026-09-26T11:31:56.462Z"
+    },
+    {
+      "id": "mem_seedRin2",
+      "characterId": "chr_seedRin",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "event",
+      "text": "Kai made Rin promise not to tell Hana that Kai is skipping dinner for the raid; Rin agreed to keep it secret.",
+      "importance": 0.6625,
+      "sourceSessionId": "ses_mockRinRaid",
+      "sourceMessageId": "msg_mockR07",
+      "createdAt": "2026-09-26T11:31:56.462Z"
+    },
+    {
+      "id": "mem_seedRin3",
+      "characterId": "chr_seedRin",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "fact",
+      "text": "Kai just got a healer to max level and wants Rin to tank for him.",
+      "importance": 0.595,
+      "sourceSessionId": "ses_mockRinRaid",
+      "sourceMessageId": "msg_mockR03",
+      "createdAt": "2026-09-26T11:31:56.462Z"
+    },
+    {
+      "id": "mem_seedRin4",
+      "characterId": "chr_seedRin",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "event",
+      "text": "Rainy Sunday, Dad asked Rin to go fishing and waited; Rin agreed to go after finishing the raid, rain or not.",
+      "importance": 0.5025,
+      "sourceSessionId": "ses_seedRainySunday",
+      "sourceMessageId": "msg_seedW04",
+      "createdAt": "2026-09-27T02:40:48.374Z"
+    },
+    {
+      "id": "mem_seedRin5",
+      "characterId": "chr_seedRin",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "fact",
+      "text": "Dad says Rin has joined him fishing only four times, three of them before Rin was ten.",
+      "importance": 0.48,
+      "sourceSessionId": "ses_seedRainySunday",
+      "sourceMessageId": "msg_seedW04",
+      "createdAt": "2026-09-27T02:40:48.374Z"
+    },
+    {
+      "id": "mem_seedRin6",
+      "characterId": "chr_seedRin",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "preference",
+      "text": "Rin won't sit in a wet boat for a fish that could be bought for six bucks.",
+      "importance": 0.5475,
+      "sourceSessionId": "ses_seedRainySunday",
+      "sourceMessageId": "msg_seedW05",
+      "createdAt": "2026-09-27T02:40:48.374Z"
+    },
+    {
+      "id": "mem_seedRin7",
+      "characterId": "chr_seedRin",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "event",
+      "text": "Rin killed the raid boss and told Dad not to look smug, saying Rin carried the whole fight.",
+      "importance": 0.47,
+      "sourceSessionId": "ses_seedRainySunday",
+      "sourceMessageId": "msg_seedW12",
+      "createdAt": "2026-09-27T02:40:48.374Z"
+    },
+    {
+      "id": "mem_seedRin8",
+      "characterId": "chr_seedRin",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "event",
+      "text": "Kai is treating everyone to Thai dinner tonight; Rin ordered basil noodles or nothing.",
+      "importance": 0.38,
+      "sourceSessionId": "ses_seedDinner",
+      "sourceMessageId": "msg_seedC05",
+      "createdAt": "2026-09-30T10:32:35.903Z"
+    },
+    {
+      "id": "mem_seedRin9",
+      "characterId": "chr_seedRin",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "preference",
+      "text": "Rin thinks pineapple \"sushi\" is a crime scene with rice, would eat it once to confirm, and logs it as a boss designed by a committee.",
+      "importance": 0.5175,
+      "sourceSessionId": "ses_seedDinner",
+      "sourceMessageId": "msg_seedC09",
+      "createdAt": "2026-09-30T10:32:35.903Z"
+    },
+    {
+      "id": "mem_seedRin10",
+      "characterId": "chr_seedRin",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "fact",
+      "text": "Hana's grandma's rule: one dish everyone loves and one dish someone has never tried; arguments about the second are part of the meal.",
+      "importance": 0.575,
+      "sourceSessionId": "ses_seedDinner",
+      "sourceMessageId": "msg_seedC07",
+      "createdAt": "2026-09-30T10:32:35.903Z"
+    },
+    {
+      "id": "mem_seedRin11",
+      "characterId": "chr_seedRin",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "event",
+      "text": "Hana picked lotus root as the unknown dish; Rin can veto after tasting.",
+      "importance": 0.455,
+      "sourceSessionId": "ses_seedDinner",
+      "sourceMessageId": "msg_seedC07",
+      "createdAt": "2026-09-30T10:32:35.903Z"
+    }
+  ]
 }

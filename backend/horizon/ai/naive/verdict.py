@@ -80,11 +80,16 @@ def result_line(req: VerdictRequest, scores: list[dict[str, Any]] | None, strong
     """The result already decided, told to the writer (V8)."""
     if not two_sided(req) or req.by == "none" or scores is None:
         return "The result: summary only, no scores and no winner."
+    # U-65 (the user's choice): one line per criterion that already says who leads it, so the rationale never has to
+    # compare the numbers itself (a pilot rationale called 9.2 against 9.4 an "edge")
+    by = {(v["subjectId"], v["criterionId"]): v["value"] for v in scores}
     lines = []
-    for s in SIDES:
-        parts = ", ".join(f"{labels.get(v['criterionId'], v['criterionId'])} {v['value']}" for v in scores
-                          if v["subjectId"] == s)
-        lines.append(f"{SIDE_NAME[s]}: {parts}")
+    for cid in dict.fromkeys(v["criterionId"] for v in scores):
+        prop, opp = by.get(("prop", cid)), by.get(("opp", cid))
+        lead = ("level" if prop == opp else f"{SIDE_NAME['prop' if prop > opp else 'opp']} leads"
+                ) if prop is not None and opp is not None else None
+        sides = ", ".join(f"{SIDE_NAME[s]} {by[(s, cid)]}" for s in SIDES if (s, cid) in by)
+        lines.append(f"{labels.get(cid, cid)}: {sides}" + (f" ({lead})" if lead else ""))
     verdict = f"the stronger case is the {SIDE_NAME[stronger]}'s" if stronger else "too close to call"
     return "The arbiter's scores (0–10):\n" + "\n".join(lines) + f"\nThe result: {verdict}."
 
@@ -320,11 +325,15 @@ def deliver(a: Assessment, picked: str | None) -> dict[str, Any]:
         v.update(decidedBy="user", strongerCase=picked)
         if a.scored:
             v.update(scoresBy="side", scores=a.scores)
+            if a.margin is not None:
+                v["margin"] = a.margin
             if a.rationale:
                 v["rationale"] = a.rationale
         return v
     if a.by == "arbiter" and a.two_sided and a.scored:
         v.update(decidedBy="arbiter", strongerCase=a.stronger, scoresBy="side", scores=a.scores)
+        if a.margin is not None:   # U-61: the screen shows each side's mean and the lead a win needs
+            v["margin"] = a.margin
         if a.rationale:
             v["rationale"] = a.rationale
         return v
@@ -357,7 +366,7 @@ async def naive_assess(deps: Any, req: VerdictRequest) -> Assessment:
 async def agent_assess(deps: Any, req: VerdictRequest) -> Assessment:
     """D12 then D13: Jev's scores (two-sided, Arbiter or You decide), then the prose told the result."""
     from horizon.ai.agent.rubric import criteria as rubric_criteria
-    from horizon.ai.agent.rubric import score
+    from horizon.ai.agent.rubric import margin, score
 
     sided = two_sided(req) and req.by != "none"
     notes: list[str] = []
@@ -376,7 +385,7 @@ async def agent_assess(deps: Any, req: VerdictRequest) -> Assessment:
     if out is None:
         notes.append(NOTE_PROSE)
         return Assessment(by=req.by, two_sided=two_sided(req), scored=scored, scores=scores or [], stronger=stronger,
-                          summary=quoted_summary(req), notes=notes)
+                          margin=margin() if scored else None, summary=quoted_summary(req), notes=notes)
     return Assessment(by=req.by, two_sided=two_sided(req), scored=scored, scores=scores or [], stronger=stronger,
-                      summary=out["summary"], key_disagreement=out["keyDisagreement"],
+                      margin=margin() if scored else None, summary=out["summary"], key_disagreement=out["keyDisagreement"],
                       rationale=out["rationale"] if scored or not sided else None, notes=notes)

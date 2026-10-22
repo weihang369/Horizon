@@ -1,5 +1,5 @@
 // World Select keyboard (WLD-01), the World Hub (WLD-05) and the Character Profile tabs (PRF-*).
-import { expect, open, test } from "./fixtures";
+import { expect, expectHttpError, open, test } from "./fixtures";
 
 test("World Select: ←/→ move between worlds from anywhere, Enter opens the hub", async ({ page }) => {
   await open(page, "/worlds");
@@ -117,6 +117,27 @@ test("World Hub: Delete world… removes it; World Select shows the rest without
   const rail = page.getByRole("list", { name: "Worlds" });
   await expect(rail.getByRole("button", { name: /^Sunny Hollow/ })).toBeVisible();
   await expect(rail.getByRole("button", { name: /^Meridian Council/ })).toHaveCount(0);
+});
+
+test("World Select: with the demo deleted, “Watch a 60-second AI debate” offers to restore it, then plays it", async ({ page }) => {
+  // The user's ask (2026-10-22): the button stays, and brings the demo back (Reset demo data) instead of a dead end.
+  await open(page, "/w/wld_seedMeridian");
+  await page.getByRole("button", { name: "World options" }).click();
+  await page.getByRole("menu", { name: "World options" }).getByRole("menuitem", { name: "Delete world…" }).click();
+  const confirm = page.getByRole("dialog", { name: "Delete Meridian Council?" });
+  await confirm.getByLabel("Type “Meridian Council” to confirm").fill("MERIDIAN COUNCIL");
+  await confirm.getByRole("button", { name: "Delete world" }).click();
+  await expect(page).toHaveURL(/#\/worlds$/);
+
+  // The app asks for the featured session to learn it is gone: that 404 is the expected answer.
+  expectHttpError(page, 404);
+  await page.getByRole("button", { name: "▶ Watch a 60-second AI debate" }).click();
+  const ask = page.getByRole("dialog", { name: "Bring the demo back?" });
+  await expect(ask).toContainText("Worlds, characters and sessions you created stay");
+  await ask.getByRole("button", { name: "Restore demo data" }).click();
+  await expect(page.getByText("Demo data restored.")).toBeVisible();
+  await expect(page).toHaveURL(/#\/w\/wld_seedMeridian\/s\/ses_seedDebate4Day\?replay=1$/);
+  await expect(page.getByRole("slider", { name: "Seek" })).toBeVisible();
 });
 
 test("Profile: [ and ] step through the six tabs and wrap", async ({ page }) => {

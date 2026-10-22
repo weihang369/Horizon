@@ -102,10 +102,9 @@ export const MEMORY: MemoryItem[] = [
   { id: "mem_seedMei1", characterId: "chr_seedMei", worldId: "wld_seedMeridian", kind: "fact", text: "Argued that pilot evidence comes from self-selected firms", importance: 0.8, sourceSessionId: "ses_seedDebate4Day", sourceMessageId: "msg_seedD03", createdAt: "2026-10-01T10:00:30Z" },
   { id: "mem_seedTakeshi1", characterId: "chr_seedTakeshi", worldId: "wld_seedSunnyHollow", kind: "event", text: "Took Rin fishing on a rainy Sunday; first fish named \"Patch Notes\"", importance: 0.6, sourceSessionId: "ses_seedRainySunday", sourceMessageId: "msg_seedW10", createdAt: "2026-09-27T02:45:00Z" },
 ];
-/** Victor and Rin deliberately have no memories (empty state, doc 06 §5). */
+/** Fixture memories: Victor and Rin have none (empty state, doc 06 §5). U-41: the recorded demo ships every character's
+ * memories as the app wrote them, so Victor and Rin have theirs too (the empty state shows on a new character). */
 export const MEMORY_OWNERS = ["chr_seedAmara", "chr_seedVictor", "chr_seedMei", "chr_seedHana", "chr_seedTakeshi", "chr_seedRin"];
-/** The recorded demo keeps the empty state too: whatever the app wrote for them is left out. */
-export const EMPTY_MEMORY_OWNERS = ["chr_seedVictor", "chr_seedRin"];
 
 /** D-59: sources and their passages live in ./knowledge (chunks + citedCount are filled by the build). */
 export { KNOWLEDGE_SOURCES as KNOWLEDGE } from "./knowledge";

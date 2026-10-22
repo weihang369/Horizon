@@ -48,7 +48,7 @@ Reset SHALL be available as `admin.resetDemo()` on both clients and SHALL do the
 - restore every seed world, character, session, memory, knowledge source and seed ledger row to its shipped state, upserting seed records in place;
 - keep user-created worlds, characters, sessions (including forks of seed sessions), memories (including memories a seed character earned in user sessions), knowledge sources and ledger rows;
 - on the backend, cancel any non-terminal job on a seed character, and keep the user-generated asset versions of seed characters as inactive versions (they were paid for);
-- on the backend, stop any indexing of seed sources and return them to `keyword_only`, without vectors, until they are indexed again;
+- on the backend, stop any indexing of seed sources and restore them as shipped: their stored sections and passages, and, when the active embedding space is the one the shipped vectors were made in, those vectors (`indexed`); on another space `keyword_only` until they are indexed again. Seed memories get their shipped vectors the same way;
 - leave settings and the API key unchanged;
 - emit `mock.reset` afterwards.
 
@@ -70,7 +70,14 @@ Reset SHALL be available as `admin.resetDemo()` on both clients and SHALL do the
 
 #### Scenario: Indexed seed source after reset
 - **WHEN** on the backend the user indexes one of Amara's seed sources, adds a source of their own to Amara, then resets demo data
-- **THEN** the seed source is `keyword_only` with its shipped passages, and the user's source is unchanged
+- **THEN** the seed source is `indexed` with its shipped passages and vectors, and the user's source is unchanged
+
+#### Scenario: Continue, reset, continue again
+- **WHEN** on the backend the user continues a seed session, a memory is earned in it, the user resets demo data and
+  continues the same session and the seed session again, twice
+- **THEN** after each reset every shipped document is `indexed` with one vector per passage, every shipped memory has its
+  vector, the user's session and memory (with its vector) are unchanged, no trace reads "(forgotten)", and both
+  sessions take new turns; Delete all data then gives the same fresh demo
 
 #### Scenario: Forgotten seed memory comes back
 - **WHEN** the user forgets one of Hana's seed memories, then resets demo data

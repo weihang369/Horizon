@@ -65,3 +65,17 @@ describe("markdown (CHAT-02 AC4)", () => {
     expect(splitMarkers("a[1] b[4]")).toEqual(["a", 1, " b", 4]);
   });
 });
+
+describe("a citation chip keeps its line (U-63)", () => {
+  it("glues the word before a chip, the chips, and the full stop after into one unbreakable run", async () => {
+    const { createElement } = await import("react");
+    const { renderToStaticMarkup } = await import("react-dom/server");
+    const { renderMarkdown } = await import("./markdown");
+    const html = renderToStaticMarkup(createElement("div", null, renderMarkdown("the arguing is half the meal [1][2]. So papaya salad.", {
+      cites: new Set([1, 2]),
+      renderCite: (n, k) => createElement("b", { key: k }, n),
+    })));
+    expect(html).toContain('<span style="white-space:nowrap">meal <b>1</b><b>2</b>.</span> So papaya salad.');
+    expect(html).toContain("the arguing is half the ");
+  });
+});

@@ -123,6 +123,19 @@ def _flag_action(outcome: str) -> str:
     return {"late": "flagged: Jev late", "pending": "flagged: still being checked"}.get(outcome, "flagged: Jev failed")
 
 
+NOTE_SKIP = {"scene": "skipped: no director's note this turn", "opening": "skipped: no director's note this turn",
+             "debate_opening": "skipped: no Interject this turn", "debate_line": "skipped: no Interject this turn"}
+
+
+def note_skip(cue: SafetyCue | None, kind: str, *, purpose: str) -> list[dict[str, Any]]:
+    """U-49: a watch scene line or a debate argument with no note to check gets a greyed "unsafe note?" row."""
+    if kind not in NOTE_SKIP or (cue is not None and cue.question == NOTE):
+        return []
+    from horizon.ai.agent.gates import skipped_row
+
+    return [skipped_row(NOTE, purpose=purpose, reason=NOTE_SKIP[kind])]
+
+
 def rows(cue: SafetyCue | None, *, purpose: str) -> list[dict[str, Any]]:
     """The shared System 1 rows: one for the input question and one for "at risk?" when it applies. A stored answer is
     `used` with no call."""

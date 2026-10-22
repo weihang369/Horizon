@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import io
 import json
+import sys
 from collections.abc import Iterable
 from datetime import UTC, datetime
 from pathlib import Path
@@ -176,7 +177,7 @@ def export_knowledge(src: Source, character_ids: Iterable[str], *, log: Any = pr
     out: list[Wire] = []
     for cid in sorted(character_ids):
         for k in src.get(f"/characters/{cid}/knowledge") or []:
-            if k.get("status") != "indexed" or str(k["id"]).startswith("kno_seed"):
+            if k.get("status") not in ("indexed", "failed") or str(k["id"]).startswith("kno_seed"):
                 continue
             detail = src.get(f"/knowledge/{k['id']}")
             out.append({"source": detail["source"], "chunks": detail["chunks"]})
@@ -195,7 +196,96 @@ def export_memory(src: Source, character_ids: Iterable[str], session_ids: Iterab
     log(f"memory: {len(out)} items")
 
 
+def export_rows(db_path: Path, session_ids: Iterable[str], *, log: Any = print) -> None:
+    """D-110: what a real run writes that the public API doesn't show, read straight from the recording database
+    (read-only): the seed characters' knowledge as stored (sources, sections, pieces, their vectors and original files),
+    the recorded sessions' memories with their vectors, recall's line index, the stored query rewrites and safety
+    answers, the ledger, and each character's energy. The seed build renames ids and moves times as for sessions."""
+    import base64
+    import shutil
+    import sqlite3
+
+    import sqlite_vec
+
+    from horizon.db.spaces import message_vec_table, vec_tables
+
+    db = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
+    db.row_factory = sqlite3.Row
+    db.enable_load_extension(True)
+    sqlite_vec.load(db)
+    def rows(q: str, *a: Any) -> list[dict[str, Any]]:
+        return [dict(r) for r in db.execute(q, a).fetchall()]
+
+    space = rows("SELECT id, dims FROM embedding_spaces WHERE status = 'active'")[0]
+    mem_vec, kno_vec = vec_tables(space["id"])
+    msg_vec = message_vec_table(space["id"])
+
+    def vectors(table: str, rids: list[int]) -> dict[int, str]:
+        if not rids:
+            return {}
+        got = db.execute(f"SELECT rid, embedding FROM {table} WHERE rid IN ({','.join('?' * len(rids))})", rids)
+        return {int(r[0]): base64.b64encode(bytes(r[1])).decode() for r in got}
+
+    def strip(r: dict[str, Any], vec: dict[int, str]) -> dict[str, Any]:
+        rid = r.pop("rid")
+        r.pop("is_seed", None)
+        if rid in vec:
+            r["vector"] = vec[rid]
+        return r
+
+    shipped = [cid for cid, c in seed_characters().items() if c.get("isSeed")]
+    sids = list(session_ids)
+    marks = ",".join("?" * len(sids))
+    files_dir = RECORDED / "knowledge-files"
+    shutil.rmtree(files_dir, ignore_errors=True)
+    knowledge: list[Wire] = []
+    data_dir = db_path.parent
+    for src in rows(f"SELECT * FROM knowledge_sources WHERE is_seed = 0 AND character_id IN ({','.join('?' * len(shipped))}) "
+                    "ORDER BY added_at", *shipped):
+        src.pop("is_seed", None)
+        chunks = rows("SELECT * FROM knowledge_chunks WHERE source_id = ? ORDER BY idx", src["id"])
+        vec = vectors(kno_vec, [c["rid"] for c in chunks])
+        folder = data_dir / "knowledge" / src["world_id"] / src["character_id"] / src["id"]
+        files = []
+        if folder.is_dir():
+            for f in sorted(folder.iterdir()):
+                if f.is_file():
+                    (files_dir / src["id"]).mkdir(parents=True, exist_ok=True)
+                    shutil.copy2(f, files_dir / src["id"] / f.name)
+                    files.append(f.name)
+        if not files and src["status"] == "indexed":   # rows read from a copied database: its files stayed behind
+            log(f"WARNING: no original file for {src['id']} under {folder} (pass the live data/horizon.db)")
+        knowledge.append({"source": src, "files": files,
+                          "sections": rows("SELECT * FROM knowledge_sections WHERE source_id = ? ORDER BY idx", src["id"]),
+                          "chunks": [strip(c, vec) for c in chunks]})
+    memory = rows(f"SELECT * FROM memory_items WHERE source_session_id IN ({marks}) ORDER BY character_id, created_at, id",
+                  *sids)
+    mvec = vectors(mem_vec, [m["rid"] for m in memory])
+    index = rows(f"SELECT * FROM message_index WHERE session_id IN ({marks}) ORDER BY session_id, seq", *sids)
+    ivec = vectors(msg_vec, [m["rid"] for m in index])
+    out = {
+        "space": space,
+        "knowledge": knowledge,
+        "memory": [strip(m, mvec) for m in memory],
+        "messageIndex": [strip(m, ivec) for m in index],
+        "aiMeta": rows(f"SELECT a.* FROM message_ai_meta a JOIN messages m ON m.id = a.message_id "
+                       f"WHERE m.session_id IN ({marks}) ORDER BY a.message_id", *sids),
+        "usage": [{k: v for k, v in u.items() if k != "is_seed"}
+                  for u in rows("SELECT * FROM usage_records ORDER BY at, id")],
+        "energy": {r["id"]: {k: r[k] for k in ("energy_current", "energy_as_of", "energy_spent_today")}
+                   for r in rows("SELECT * FROM characters WHERE is_seed = 1 ORDER BY id")},
+    }
+    db.close()
+    _write_json(RECORDED / "rows.json", out)
+    pieces = [c for k in knowledge for c in k["chunks"]]
+    log(f"rows: {len(knowledge)} sources ({len(pieces)} pieces, {sum('vector' in c for c in pieces)} vectors), "
+        f"{len(out['memory'])} memories ({len(mvec)} vectors), {len(index)} indexed lines, "
+        f"{len(out['aiMeta'])} ai-meta rows, {len(out['usage'])} ledger rows, space {space['id']}")
+
+
 def run(args: Any) -> int:
+    if hasattr(sys.stdout, "reconfigure"):   # a Windows console (cp1252) can't print the progress lines' "→"
+        sys.stdout.reconfigure(errors="replace")
     src = Source(args.source)
     if src.get("/health") is None:
         raise SystemExit(f"horizon demo export: no Horizon backend answering at {args.source}")
@@ -215,8 +305,12 @@ def run(args: Any) -> int:
     if args.memory:
         export_memory(src, seed_characters(), [s for s, _ in pairs] or _recorded_sources())
         did = True
+    if args.rows:
+        export_rows(Path(args.rows), [s for s, _ in pairs] or _recorded_sources())
+        did = True
     if not did:
-        raise SystemExit("horizon demo export: nothing to do (pass --assets, --session SRC=SEED, --knowledge or --memory)")
+        raise SystemExit("horizon demo export: nothing to do (pass --assets, --session SRC=SEED, --knowledge, --memory "
+                         "or --rows)")
     print("Next: npm run seed:build (in frontend/) to regenerate seed/.")
     return 0
 
@@ -235,4 +329,6 @@ def register(sub: Any) -> None:
     e.add_argument("--session", action="append", metavar="SRC=SEED", help="record a session as a seed session (repeatable)")
     e.add_argument("--knowledge", action="store_true", help="the seed characters' indexed knowledge and chunks")
     e.add_argument("--memory", action="store_true", help="the memories the recorded sessions produced")
+    e.add_argument("--rows", metavar="DB", help="the source app's horizon.db (read-only): stored knowledge with vectors "
+                   "and originals, memory vectors, line index, ai-meta, ledger, energy (D-110)")
     e.set_defaults(fn=run)

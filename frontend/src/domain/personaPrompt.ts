@@ -255,7 +255,7 @@ function sessionBlock(inp: PersonaInput): string {
     lines.push(`This is a group chat with ${user} and: ${who(others)}.`);
   } else if (mode === "watch") {
     const premise = strip(inp.premise ?? "") ? ` Premise: ${sentence(inp.premise ?? "")}` : "";
-    lines.push(`${user[0].toUpperCase() + user.slice(1)} is watching this scene and may step in.${premise} With you: ${who(others)}.`);
+    lines.push(`${user[0].toUpperCase() + user.slice(1)} is watching this scene from outside it and may step in. Until ${user} speaks in it, talk to each other, not to ${user}.${premise} With you: ${who(others)}.`);
   } else if (mode === "debate" && inp.debate) {
     const d = inp.debate;
     if ((d.format ?? "two_sided") === "panel" || !d.side) {

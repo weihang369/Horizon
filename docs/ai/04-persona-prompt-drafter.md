@@ -224,7 +224,7 @@ very long backstory also drowns the speaking style.
 |---|---|---|
 | 1:1 | "This is a private one-to-one chat with {user}." | "Write 1–3 short messages, each on its own line, about 70 words in all." |
 | Group | "This is a group chat with {user} and: Hana (barista), Rin (…)." Names with profile roles. | "Write 1–2 short messages, each on its own line, about 50 words in all." |
-| Watch | "{user} is watching this scene and may step in. Premise: … With you: …" | "Write 1–2 short lines, each on its own line, about 50 words in all." |
+| Watch | "{user} is watching this scene from outside it and may step in. Until {user} speaks in it, talk to each other, not to {user}. Premise: … With you: …" (U-64) | "Write 1–2 short lines, each on its own line, about 50 words in all." |
 | Debate | The motion, your side and teammates, your opponents (worded in doc 08 V4). | "Write one paragraph, no line breaks, about {80 / 140 / 220} words." |
 
 - The length line appears **once**, here; the reply rules (P6) don't repeat it.
@@ -233,7 +233,9 @@ very long backstory also drowns the speaking style.
   `role`), filled in `sessions/context.py`, which already loads every cast row. The existing `role` is the
   participant role (`speaker` / `debater`).
 - Watch says "may step in" because `watch.step_in` lets the user post and two characters answer; the cached block
-  must be true either way.
+  must be true either way. U-64 (the user's choice, 2026-10-22): the watcher is off-stage until they speak in it, so
+  the block says to talk to each other, not to them (in the real-user test Hana spoke to Kai in 4 of 20 watch lines;
+  after the change, 0 of 20).
 - Debate arguments and host lines stay one bubble (C5); their prompts are doc 08's (V4, V6).
   *Built in M11 (`debate` D10): the debate block is unchanged and stays byte-identical across a debate's turns (cached);
   V4's per-phase cue is the tail's cue line (`DEBATE_CUES` and its TS twin `debateCue()`, one shared fixture), with

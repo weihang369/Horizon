@@ -123,16 +123,16 @@ describe("seed fixtures", () => {
     for (const d of seed) expect((read(`${d}/session.json`).data as Session).isSeed).toBe(true);
   });
 
-  it("msg_seedD09 matches doc 05 §8 (text ending in … is shortened in the doc; the doc's trace shows some parts)", () => {
+  it("msg_seedD08 matches doc 05 §8 (text ending in … is shortened in the doc; the doc's trace shows some parts)", () => {
     const md = readFileSync(DOC05, "utf8");
     const doc = JSON.parse(md.split("## 8.")[1].split("```json")[1].split("```")[0]) as Message;
-    const m = (read("sessions/ses_seedDebate4Day/messages.json").data as Message[]).find((x) => x.id === "msg_seedD09")!;
+    const m = (read("sessions/ses_seedDebate4Day/messages.json").data as Message[]).find((x) => x.id === "msg_seedD08")!;
     const { trace: t1, ...restDoc } = doc;
     const { trace: t2, ...restSeed } = m;
     expect(Object.keys(restSeed).sort()).toEqual(Object.keys(restDoc).sort());
     expectShortened(restDoc, restSeed, "message");
     for (const [k, v] of Object.entries(t1 ?? {})) expectShortened(v, (t2 as unknown as Record<string, unknown>)[k], `trace.${k}`);
-    expect(t2?.messageId).toBe("msg_seedD09");
+    expect(t2?.messageId).toBe("msg_seedD08");
   });
 
   it("knowledge citations (D-59): markers in text, chunks resolve, quotes match, citedCount matches", () => {
@@ -180,7 +180,8 @@ describe("seed fixtures", () => {
   });
 
   it("seed knowledge is file or text only: no url sources, no CSV (D-65)", () => {
-    const all = files.filter((x) => /(^|\/)knowledge\/[^/]+\.json$/.test(x) && !x.includes("chunks/")).flatMap((f) => read(f).data as KnowledgeSource[]);
+    const all = files.filter((x) => /(^|\/)knowledge\/[^/]+\.json$/.test(x) && !x.includes("chunks/") && !x.startsWith("rows/"))
+      .flatMap((f) => read(f).data as KnowledgeSource[]);
     expect(all.length).toBeGreaterThanOrEqual(5);
     for (const k of all) {
       expect(k.type, k.id).not.toBe("url");

@@ -297,6 +297,9 @@ class CastSteps:
         ctx = req.session.call_ctx(PURPOSE)
         call = decider.start(state.state, qs, ctx, purpose=PURPOSE, fallback=fallback)
         deadline = req.deadline_at or req.started_at + timedelta(seconds=decider.timeout_for(PURPOSE))
+        waited = gates.plan_wait(self.deps, 0.0, bool(meta["gated"]))   # U-46: a plan with a documents question
+        if waited:
+            deadline = max(deadline, req.started_at + timedelta(seconds=waited))
         try:
             res: DecisionResult = await call.by(deadline)
         except asyncio.CancelledError:
@@ -365,6 +368,8 @@ class CastSteps:
             p = a.p if isinstance(a, NoulAnswer) and a.source != "fallback" else None
             talk = steer_rule(p, t_end, req.steer_block)
             shared.append(talk_row(talk, version=te.version, label=te.label, t_end=t_end))
+        elif req.kind == "opening":   # U-49: the scene's first line has no talk to finish
+            shared.append(gates.skipped_row(TALK, purpose=PURPOSE, reason="skipped: the scene's opening"))
         calls: list[dict[str, Any]] = []
         if res.failure is not None:
             calls.append({"purpose": PURPOSE, "model": self.deps.prices.decision.model, "costUsd": 0.0,

@@ -33,7 +33,7 @@
     "type": "energy",
     "payload": {
      "characterId": "chr_seedHana",
-     "current": 923,
+     "current": 1000,
      "max": 1000,
      "state": "active"
     }
@@ -42,7 +42,7 @@
     "id": "evt_forkFixture1e3",
     "sessionId": "ses_forkFixture1",
     "seq": 3,
-    "at": "2026-09-30T19:02:00.358Z",
+    "at": "2026-09-30T19:02:00.323Z",
     "type": "turn.next",
     "payload": {
      "nextSpeakerId": "chr_seedHana"
@@ -52,7 +52,7 @@
     "id": "evt_forkFixture1e4",
     "sessionId": "ses_forkFixture1",
     "seq": 4,
-    "at": "2026-09-30T19:02:00.441Z",
+    "at": "2026-09-30T19:02:00.387Z",
     "type": "turn.thinking",
     "payload": {
      "characterId": "chr_seedHana"
@@ -62,7 +62,7 @@
     "id": "evt_forkFixture1e5",
     "sessionId": "ses_forkFixture1",
     "seq": 5,
-    "at": "2026-09-30T19:02:01.550Z",
+    "at": "2026-09-30T19:02:01.917Z",
     "type": "turn.start",
     "payload": {
      "messageId": "msg_forkFixture1m0",
@@ -76,77 +76,57 @@
     "id": "evt_forkFixture1e6",
     "sessionId": "ses_forkFixture1",
     "seq": 6,
-    "at": "2026-09-30T19:02:01.550Z",
+    "at": "2026-09-30T19:02:01.917Z",
     "type": "emotion",
     "payload": {
      "messageId": "msg_forkFixture1m0",
      "characterId": "chr_seedHana",
-     "emotion": "neutral",
-     "source": "classifier"
+     "emotion": "happy",
+     "source": "default"
     }
    },
    {
     "id": "evt_forkFixture1e7",
     "sessionId": "ses_forkFixture1",
     "seq": 7,
-    "at": "2026-09-30T19:02:01.576Z",
+    "at": "2026-09-30T19:02:01.971Z",
     "type": "token",
     "payload": {
      "messageId": "msg_forkFixture1m0",
-     "delta": "Hey you. The kettle's just boiled and I'm still finding"
+     "delta": "You're back"
     }
    },
    {
     "id": "evt_forkFixture1e8",
     "sessionId": "ses_forkFixture1",
     "seq": 8,
-    "at": "2026-09-30T19:02:01.628Z",
+    "at": "2026-09-30T19:02:02.046Z",
     "type": "token",
     "payload": {
      "messageId": "msg_forkFixture1m0",
-     "delta": " ribbon bits everywhere from last week.\nAlso Rin's cat in"
+     "delta": "! Come here, tell me"
     }
    },
    {
     "id": "evt_forkFixture1e9",
     "sessionId": "ses_forkFixture1",
     "seq": 9,
-    "at": "2026-09-30T19:02:01.685Z",
+    "at": "2026-09-30T19:02:02.130Z",
     "type": "token",
     "payload": {
      "messageId": "msg_forkFixture1m0",
-     "delta": " that tiny scarf is still living"
+     "delta": " everything."
     }
    },
    {
     "id": "evt_forkFixture1e10",
     "sessionId": "ses_forkFixture1",
     "seq": 10,
-    "at": "2026-09-30T19:02:01.700Z",
-    "type": "token",
-    "payload": {
-     "messageId": "msg_forkFixture1m0",
-     "delta": " in my head rent free."
-    }
-   },
-   {
-    "id": "evt_forkFixture1e11",
-    "sessionId": "ses_forkFixture1",
-    "seq": 11,
-    "at": "2026-09-30T19:02:02.161Z",
+    "at": "2026-09-30T19:02:02.146Z",
     "type": "turn.end",
     "payload": {
      "messageId": "msg_forkFixture1m0",
-     "status": "complete",
-     "usage": {
-      "tokensIn": 887,
-      "tokensCached": 0,
-      "tokensOut": 38,
-      "costUsd": 0.000081,
-      "energySpent": 1,
-      "firstTokenMs": 1208,
-      "totalMs": 1346
-     }
+     "status": "complete"
     }
    }
   ],
@@ -171,11 +151,11 @@
    "config": null,
    "state": null,
    "isSeed": false,
-   "costUsd": 0.000081,
+   "costUsd": 0,
    "messageCount": 1,
    "createdAt": "2026-10-03T03:00:00.000Z",
-   "updatedAt": "2026-09-30T19:02:02.161Z",
-   "lastMessageAt": "2026-09-30T19:02:01.550Z",
+   "updatedAt": "2026-09-30T19:02:02.146Z",
+   "lastMessageAt": "2026-09-30T19:02:01.917Z",
    "continuedFrom": "ses_seedHanaLongDay"
   },
   "messages": [
@@ -188,20 +168,11 @@
      "type": "character",
      "characterId": "chr_seedHana"
     },
-    "content": "Hey you. The kettle's just boiled and I'm still finding ribbon bits everywhere from last week.\nAlso Rin's cat in that tiny scarf is still living in my head rent free.",
+    "content": "You're back! Come here, tell me everything.",
     "status": "complete",
-    "createdAt": "2026-09-30T19:02:01.550Z",
-    "emotion": "neutral",
-    "emotionSource": "classifier",
-    "usage": {
-     "tokensIn": 887,
-     "tokensCached": 0,
-     "tokensOut": 38,
-     "costUsd": 0.000081,
-     "energySpent": 1,
-     "firstTokenMs": 1208,
-     "totalMs": 1346
-    }
+    "createdAt": "2026-09-30T19:02:01.917Z",
+    "emotion": "happy",
+    "emotionSource": "default"
    }
   ]
  }

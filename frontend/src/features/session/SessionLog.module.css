@@ -362,12 +362,17 @@
 .wrap[data-variant="script"] .scroller {
   mask-image: linear-gradient(180deg, transparent 0, #000 22%);
 }
-.wrap[data-variant="script"] .list { gap: 10px; text-align: center; align-items: center; }
-.scriptRow { flex-direction: column; align-items: center; gap: 4px; max-width: 680px; }
+.wrap[data-variant="script"] .list { gap: 16px; text-align: center; align-items: center; padding-bottom: 60px; }
+/* U-63: the centred pill sat on the current (last, centred) line: in the script it goes to the corner, and the list
+   keeps room under the last line for it */
+.wrap[data-variant="script"] .newPill { left: auto; right: 16px; transform: none; }
+/* U-52 (the user's choice): subtitle-sized lines (24 px at M), so fewer lines show at once (the last ~5) */
+.scriptRow { flex-direction: column; align-items: center; gap: 6px; max-width: 760px; }
 .scriptWho { display: contents; }
+.scriptRow .nameTape { --h: 26px; font-size: 18px; }
 .scriptText {
-  font-size: calc(var(--text-body) + 2px);
-  line-height: 1.5;
+  font-size: calc(var(--text-body) + 8px);
+  line-height: 1.42;
   text-shadow: 0 2px 0 var(--ink-900);
 }
 .scriptText p { display: inline; }

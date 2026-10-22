@@ -146,7 +146,7 @@ async def plan_scene(actor: SessionActor, *, deadline_at: datetime | None = None
     elif opening:
         chosen = (actor.session.get("config") or {}).get("openingSpeaker", "auto")
         pick = ScenePick(kind=kind, forced=str(chosen) if chosen not in (None, "auto") and chosen in awake else None,
-                         forced_by="nudge" if chosen not in (None, "auto") and chosen in awake else None)
+                         forced_by="opening" if chosen not in (None, "auto") and chosen in awake else None)
     elif (g := guard(msgs, awake)) is not None:
         who, k = g
         pick = ScenePick(kind=kind, forced=who, forced_by="round_order",

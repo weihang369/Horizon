@@ -31,6 +31,7 @@ export function SessionLog({ rt, variant = "chat", className, hideThinking, empt
   const scroller = useRef<HTMLDivElement>(null);
   const inner = useRef<HTMLOListElement>(null);
   const stick = useRef(true);
+  const lastTop = useRef(0);
   const [unseen, setUnseen] = useState(0);
   const lastCount = useRef(rt.order.length);
   const initial = useRef<Set<string> | null>(null);
@@ -71,14 +72,17 @@ export function SessionLog({ rt, variant = "chat", className, hideThinking, empt
     el.scrollTo({ top: el.scrollHeight, behavior: smooth ? "smooth" : "auto" });
   }, []);
 
-  // Pin to the bottom while content grows (tokens re-render only the streaming row, so observe size).
+  // Pin to the bottom while content grows (tokens re-render only the streaming row, so observe size), and while the
+  // log itself resizes (a composer or panel opening over it).
   useLayoutEffect(() => {
     const el = inner.current;
+    const box = scroller.current;
     if (!el || typeof ResizeObserver === "undefined") return;
     const ro = new ResizeObserver(() => {
       if (stick.current) toBottom();
     });
     ro.observe(el);
+    if (box) ro.observe(box);
     return () => ro.disconnect();
   }, [toBottom]);
 
@@ -97,11 +101,17 @@ export function SessionLog({ rt, variant = "chat", className, hideThinking, empt
     row?.scrollIntoView({ block: "nearest" });
   }, [selectedId]);
 
+  // Only scrolling UP leaves the bottom (CHAT-02 AC2). A line that grows faster than the pin can follow (Watch's 24 px
+  // lines, a long reply) moves the bottom away without moving scrollTop, and must not unpin the log (the pilot's script
+  // stopped following and its "↓ New messages" pill covered the current line).
   const onScroll = () => {
     const el = scroller.current;
     if (!el) return;
     const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < STICK_PX;
-    stick.current = atBottom;
+    const up = el.scrollTop < lastTop.current - 1;
+    lastTop.current = el.scrollTop;
+    if (atBottom) stick.current = true;
+    else if (up) stick.current = false;
     if (atBottom && unseen) setUnseen(0);
   };
 

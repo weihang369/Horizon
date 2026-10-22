@@ -36,8 +36,9 @@ def leftovers(api: Api) -> list[Path]:
 
 
 def knowledge_files(api: Api) -> list[Path]:
+    """Files under data/knowledge other than the shipped documents' own (D-110)."""
     root = api.rt.cfg.knowledge_dir
-    return [p for p in root.rglob("*") if p.is_file()] if root.exists() else []
+    return [p for p in root.rglob("*") if p.is_file() and not p.parent.name.startswith("kno_seed")] if root.exists() else []
 
 
 async def test_pasted_text_is_201_and_contract_valid(api: Api) -> None:

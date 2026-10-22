@@ -1,6 +1,7 @@
 // S12 Watch layout (R14) — Builder D. Theatre, distinct from Group: a proscenium ROW of bottom-anchored portraits
 // (46 % vh) under a subtitle-style script (760/680, last ~8 lines, top fade mask; full log via L / O10).
-// The speaker steps into a palette spotlight. Episode end (turn limit) opens O17 live; Replay shows a curtain card.
+// The speaker steps into a palette spotlight. Episode end (turn limit) opens O17 live; Replay closes the drapes over
+// the stage and shows the FIN card on them (U-51: the card used to sit on the script's last lines).
 import { useEffect, useMemo, useRef } from "react";
 import type { CSSProperties } from "react";
 import type { WatchConfig, WatchState } from "../../contract/types";
@@ -48,7 +49,7 @@ export function WatchLayout({ rt, replay }: LayoutProps) {
   const onAir = status === "playing" && !rt.paused;
 
   return (
-    <div className={s.root} data-layout="watch" style={{ "--n": n } as CSSProperties}>
+    <div className={s.root} data-layout="watch" data-fin={ended && replay ? "" : undefined} style={{ "--n": n } as CSSProperties}>
       <div className={s.lights} aria-hidden="true">
         {rt.participants.map((p, i) => (
           <PaletteScope

@@ -120,6 +120,9 @@ def rt_caps(api: Api) -> dict[str, int]:
 
 
 async def test_a_late_plan_is_quick_with_a_fallback_row(api: Api) -> None:
+    from tests.sessions.test_deep_m12 import measured_deadlines
+
+    measured_deadlines(api)          # D-113: with `docsWaitAll` on, a documents plan is waited for (test_waits_u62)
     sid = await agent(api, "one_on_one", [AMARA])
     gate(api, AMARA, 0.9)
     assert api.rt.fake is not None
@@ -140,7 +143,9 @@ async def test_a_character_without_sources_gets_no_gate(api: Api) -> None:
     [reply] = await send(api, sid, "What does the guide say?")
     [body] = [b for b in decisions(api) if f"emotion_reply:{RIN}" in b["questions"]]
     assert unsafe_free(body["questions"]) == [f"emotion_reply:{RIN}"] and "quoted_documents" not in body["state"]
-    assert not rows(reply, "docs") and not rows(reply, "standalone")
+    assert not rows(reply, "standalone")
+    # U-49: the question not asked is a greyed row with its reason
+    assert [(r["result"], r["action"]) for r in rows(reply, "docs")] == [("skipped", gates.SKIP_NO_DOCS)]
 
 
 # ── 4.3 the cast plan ──
@@ -170,14 +175,14 @@ async def test_next_speaker_asks_docs_only(api: Api) -> None:
     assert {k for k in nxt[-1]["questions"] if k.startswith("docs:")} and "standalone" not in nxt[-1]["questions"]
 
 
-def test_dropped_gates_go_quick_with_no_row() -> None:
+def test_dropped_gates_go_quick_with_a_skipped_row() -> None:
     plan = CastPlan(seed="s", kind="group_first", order=[MEI],
                     gates={MEI: GateAnswer(outcome="dropped"), AMARA: GateAnswer(p=0.9)},
                     nouls=MessageNouls(standalone=0.9, english=0.9))
     tp = plan.for_speaker(MEI)
     assert tp.branch == "quick" and tp.gate is not None and tp.gate.outcome == "dropped"
-    assert [r["about"] for r in tp.rows if r["id"] == "docs"] == [AMARA]
-    assert [r["result"] for r in tp.rows if r["id"] == "docs"] == ["not_used"]
+    assert [(r["about"], r["result"]) for r in tp.rows if r["id"] == "docs"] == [(MEI, "skipped"), (AMARA, "not_used")]
+    assert next(r for r in tp.rows if r["id"] == "docs")["action"] == gates.SKIP_TOO_LARGE     # U-49
     amara = plan.for_speaker(AMARA)
     assert amara.branch == "deep" and amara.abstain_ok   # group_first answers a user message, p ≥ t_confident
 
@@ -233,7 +238,9 @@ async def test_a_debate_gate_back_by_the_turns_start_is_used(api: Api) -> None:
 
 async def test_a_debate_gate_later_than_the_turns_start_is_quick(api: Api) -> None:
     from tests.sessions.test_debate_plan import args, debate, first_rebuttal_end, until
+    from tests.sessions.test_deep_m12 import measured_deadlines
 
+    measured_deadlines(api)          # D-113: with `docsWaitAll` on, the turn waits for the gate
     sid = await debate(api)
     gate(api, AMARA, 0.9)
     assert api.rt.fake is not None

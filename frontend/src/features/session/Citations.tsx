@@ -7,7 +7,7 @@ import type { Citation, KnowledgeSource } from "../../contract/types";
 import { PaletteScope } from "../../theme/PaletteScope";
 import { cx } from "../../ui/cx";
 import { groupBySource, openCitation, typeGlyph } from "./citationUtils";
-import { renderMarkdown, splitMarkers } from "./markdown";
+import { glueCites, renderMarkdown, splitMarkers } from "./markdown";
 import s from "./Citations.module.css";
 
 export function TypeGlyph({ type, title, className }: { type: KnowledgeSource["type"]; title: string; className?: string }) {
@@ -145,7 +145,8 @@ export function PendingChip({ n }: { n: number }) {
 /** Text with `[n]` markers as pending chips (streaming). */
 export function PendingText({ text }: { text: string }) {
   if (!text.includes("[")) return <>{text}</>;
-  return <>{splitMarkers(text).map((x, i) => (typeof x === "number" ? <PendingChip key={i} n={x} /> : x))}</>;
+  const parts = splitMarkers(text).map((x, i) => (typeof x === "number" ? { node: <PendingChip key={i} n={x} />, cite: true } : { text: x }));
+  return <>{glueCites(parts, "p", (t) => t)}</>;
 }
 
 /** Plain text with cited markers as chips (Backlog). `mark` decorates text runs (search highlight). */
@@ -156,9 +157,9 @@ export function CitedText({ text, cites, paletteId, characterId, mark = (t) => t
   const byN = new Map(cites.map((c) => [c.n, c]));
   return (
     <>
-      {splitMarkers(text, new Set(byN.keys())).map((x, i) => (typeof x === "number"
-        ? <CiteChip key={i} c={byN.get(x)!} paletteId={paletteId} characterId={characterId} />
-        : <span key={i}>{mark(x)}</span>))}
+      {glueCites(splitMarkers(text, new Set(byN.keys())).map((x, i) => (typeof x === "number"
+        ? { node: <CiteChip key={i} c={byN.get(x)!} paletteId={paletteId} characterId={characterId} />, cite: true }
+        : { text: x })), "c", (t, k) => <span key={k}>{mark(t)}</span>)}
     </>
   );
 }

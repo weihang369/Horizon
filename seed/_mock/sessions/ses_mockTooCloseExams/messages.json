@@ -172,7 +172,7 @@
         "energy": {
           "characterId": "chr_seedMei",
           "spent": 2,
-          "remaining": 744,
+          "remaining": 981,
           "max": 1000
         },
         "emotion": {
@@ -276,7 +276,7 @@
         "energy": {
           "characterId": "chr_seedAmara",
           "spent": 2,
-          "remaining": 1002,
+          "remaining": 981,
           "max": 1000
         },
         "emotion": {
@@ -496,7 +496,7 @@
         "energy": {
           "characterId": "chr_seedMei",
           "spent": 2,
-          "remaining": 742,
+          "remaining": 979,
           "max": 1000
         },
         "emotion": {
@@ -600,7 +600,7 @@
         "energy": {
           "characterId": "chr_seedAmara",
           "spent": 2,
-          "remaining": 1000,
+          "remaining": 979,
           "max": 1000
         },
         "emotion": {

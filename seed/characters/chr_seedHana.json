@@ -161,12 +161,12 @@
     "themeSongId": "song_seedHana",
     "energy": {
       "max": 1000,
-      "current": 920,
-      "asOf": "2026-10-01T12:00:00Z",
+      "current": 993,
+      "asOf": "2026-09-30T19:03:35.071Z",
       "regenPerHour": 41.666666666666664,
       "state": "active",
-      "fullAt": "2026-10-01T13:55:12.000Z",
-      "spentToday": 80
+      "fullAt": "2026-09-30T19:13:39.871Z",
+      "spentToday": 7
     },
     "version": 1,
     "isSeed": true,

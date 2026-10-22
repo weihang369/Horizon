@@ -363,7 +363,7 @@ embedding_spaces  id PK ('qwen3-emb-8b@1024'), model, provider, dims, dtype ('fl
 | **Delete a session** | Through its actor (which stops first). Cascades the events, messages, traces and summaries; ledger `session_id` becomes NULL; queues an AI purge |
 | **Forget a memory** | §3.7 |
 | **Guardrail block after streaming** | `turn.end` with `status:"error"`, `content_refused`. The message content **and its persisted `token` events are scrubbed** (the Forget path, by `message_id`), and the message is excluded from memory: the memory writer isn't called for it, and any memory sourced from it is forgotten in the scrub's transaction (M5) |
-| **Reset demo data** | **Upserts** seed worlds and characters in place (user forks may reference them). **Deletes and re-inserts seed sessions.** Replaces seed ledger rows (`is_seed`). Seed memory and knowledge are restored, while **user-earned memories on seed characters (`is_seed = 0`) survive**. Indexing of seed sources is stopped first; re-inserted seed sources are `keyword_only` again (new `rid`s, vectors gone, D-98). Queues an AI purge for the seed sessions. Emits a global `mock.reset` so screens re-query |
+| **Reset demo data** | **Upserts** seed worlds and characters in place (user forks may reference them). **Deletes and re-inserts seed sessions.** Replaces seed ledger rows (`is_seed`). Seed memory and knowledge are restored, while **user-earned memories on seed characters (`is_seed = 0`) survive**. Indexing of seed sources is stopped first; re-inserted seed sources come back with their shipped sections, pieces and vectors under new `rid`s (D-110, replacing D-98's keyword-only reset), as do the seed memories' vectors. Queues an AI purge for the seed sessions. Emits a global `mock.reset` so screens re-query |
 | **Factory reset** | Double-confirmed:<ol><li>stop the actors, the scheduler and any Docling process;</li><li>close the `graph.db` checkpointer;</li><li>dispose the engines and close the log handlers (Windows file locks);</li><li>`rmtree data/` except `models/`, with retries;</li><li>re-run the startup lifespan in-process.</li></ol> |
 
 ## 5. Migrations and seed import
@@ -374,10 +374,17 @@ embedding_spaces  id PK ('qwen3-emb-8b@1024'), model, provider, dims, dtype ('fl
   2. **Normalise** timestamps to milliseconds.
   3. **Insert** in one transaction with `is_seed=1`.
   4. **Reduce** seed `events.json` into messages and **assert** the result equals `messages.json`.
-  5. **Synthesise** knowledge sections.
+  5. **Insert the stored rows** (`seed/rows/**`, D-110): each document's real sections and pieces, the memories'
+     recall counts, recall's line index, the stored query rewrites and safety answers, and the full ledger rows; then
+     the shipped vectors (documents, memories, indexed lines) under the new `rid`s, **when the active embedding space is
+     the one they were made in** (a fresh install's default is). The documents' stored files (`seed/knowledge/files/`)
+     are copied into their folders after the commit. A source with no stored rows gets one synthesised section per
+     piece, as before.
   6. **Index** FTS immediately.
 
-  Vectors are created by an explicit **"Index seed knowledge"** action offered after `setKey`, an estimated < $0.001 (NFR-30). Until then the seed sources are `keyword_only`. Every run also imports the default-scenario overlays in `seed/_mock/**` (characters, sessions, songs, ledger rows; not `variants/`) as shipped rows, so a local install shows the same full demo as the web demo (D-104). Their fixture jobs (Kenji's and Aoi's emotion sets) are imported **in test mode (`HORIZON_TEST=1`) only**, so the portable contract suite sees the MockClient's dataset; in a normal run they are left out, with the characters' `activeJobId`.
+  So install, Reset demo data and Delete all data each restore a demo that searches by vector at $0 (NFR-30 holds:
+  nothing is spent). On another active space the shipped vectors are skipped and the documents read `keyword_only`
+  until the user's per-source Index (D-91). Every run also imports the default-scenario overlays in `seed/_mock/**` (characters, sessions, songs, ledger rows; not `variants/`) as shipped rows, so a local install shows the same full demo as the web demo (D-104). Their fixture jobs (Kenji's and Aoi's emotion sets) are imported **in test mode (`HORIZON_TEST=1`) only**, so the portable contract suite sees the MockClient's dataset; in a normal run they are left out, with the characters' `activeJobId`.
 - **Wire `isSeed` vs. `is_seed`.** Worlds, characters and sessions store the wire `isSeed` they ship with (the `_mock` overlays ship `false`); reset finds them by the seed dataset's ids. Memory, knowledge, songs, jobs and ledger rows have no wire flag, so their `is_seed` means "shipped, restored by reset".
 - **Seed timestamps** are normalised everywhere they occur, nested JSON included, so events, messages and traces stay consistent.
 - **Contract schema.**

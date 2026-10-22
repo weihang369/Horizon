@@ -30,7 +30,8 @@ const PURPOSE_WHY: Record<string, string> = {
   deep_check: "Each passage the search found, judged by Jev; code keeps the best usable ones.",
   "deep_check:recall": "Each earlier line or memory the search found, judged by Jev; up to 3 are kept.",
   guardrail: "The finished reply, checked against the rules before it's shown.",
-  face_check: "Do the face and the words agree? Shown here only: the face isn't changed.",
+  face_check: "Do the face and the words agree? On a clash (happy against sad or angry) the face switches to what the words show.",
+  search: "What the search waited for before it ran: the meaning vectors, and the rewritten query.",
 };
 const ROW_LABEL: Record<string, string> = {
   english: "message in English?",
@@ -61,6 +62,19 @@ export const showSystem1 = (trace: TurnTrace | undefined, compact: boolean): boo
 
 /** M13 (memory D35): recall's rows share `deep_check` with the passages but are their own group, "earlier lines". */
 const groupOf = (r: System1Row): string => (r.purpose === "deep_check" && r.id === "recall" ? "deep_check:recall" : r.purpose);
+
+/** U-58: the search's waits as a group of its own, shown after the plan that decided to search. */
+export function searchWaits(trace: TurnTrace | undefined): { label: string; ms: number }[] {
+  const w = trace?.search;
+  if (!w) return [];
+  return [
+    w.vectorMs !== undefined ? { label: "meaning vector of the query", ms: w.vectorMs } : null,
+    w.rewriteMs !== undefined ? { label: "rewritten query", ms: w.rewriteMs } : null,
+    w.recallVectorMs !== undefined ? { label: "meaning vector for earlier lines", ms: w.recallVectorMs } : null,
+  ].filter((x): x is { label: string; ms: number } => x !== null);
+}
+
+const secs = (ms: number) => (ms < 1000 ? `${Math.round(ms)} ms` : `${(ms / 1000).toFixed(1)} s`);
 
 /** Rows grouped by purpose in first-seen order; the header latency is the slowest of that purpose's calls. */
 export function groupSystem1(trace: TurnTrace | undefined): System1Group[] {
@@ -108,7 +122,8 @@ export function resolveId(id: string, trace: TurnTrace | undefined, nameOf: (id:
 /** The row's tone: did the value cross the line its meter draws (the first comparison)? A row with no comparison was
  * used as answered. Later comparisons are further reads of the same answer (a kept passage that isn't "found" is not
  * greyed). */
-function toneOf(r: System1Row): "pass" | "miss" | "fallback" | "unused" {
+function toneOf(r: System1Row): "pass" | "miss" | "fallback" | "unused" | "skipped" {
+  if (r.result === "skipped") return "skipped";
   if (r.result === "fallback") return "fallback";
   if (r.result === "not_used") return "unused";
   if (r.result === "below_threshold") return "miss";
@@ -116,11 +131,13 @@ function toneOf(r: System1Row): "pass" | "miss" | "fallback" | "unused" {
   return line && line.value < line.threshold ? "miss" : "pass";
 }
 
-// U-36: a passage row compares two numbers from one answer; each says which.
+// U-36: a passage row compares two numbers from one answer; each says which. U-58: so does a row that tests Jev's
+// confidence (not the p printed beside it), and the neutral face's merged sum.
 const CMP_LABEL: Record<string, string> = { "passage:t_keep": "usable", "passage:t_found": "answers" };
+const CMP_NAME: Record<string, string> = { confidence: "confidence", "p_neutral+p_none": "neutral + none" };
 
 const cmpLine = (r: System1Row) => (r.compared ?? []).map((c) => {
-  const label = CMP_LABEL[`${r.id}:${c.name}`];
+  const label = CMP_LABEL[`${r.id}:${c.name}`] ?? CMP_NAME[c.name];
   return `${label ? `${label} ` : ""}${r2(c.value).toFixed(2)} ${c.value >= c.threshold ? "≥" : "<"} ${r2(c.threshold).toFixed(2)}`;
 }).join(" · ");
 
@@ -161,6 +178,16 @@ function Row({ r, trace, nameOf }: { r: System1Row; trace?: TurnTrace; nameOf: (
   const bar = line?.value ?? value;
   const tone = toneOf(r);
   const verdict = r.action ?? (r.result === "shown_only" ? "for Insight only" : r.result === "fallback" ? "fallback" : null);
+  if (r.result === "skipped") {   // U-49: a question this turn didn't ask, greyed, with its reason
+    return (
+      <li className={s.s1Row} data-result={r.result} data-tone={tone}>
+        <div className={s.s1Top}>
+          <span className={s.s1Label}>{ROW_LABEL[r.id] ?? r.label}{r.about ? <span className={s.s1About}> · {resolveId(r.about, trace, nameOf)}</span> : null}</span>
+          <span className={s.s1Verdict}>{r.action ?? "skipped"}</span>
+        </div>
+      </li>
+    );
+  }
   return (
     <li className={s.s1Row} data-result={r.result} data-tone={tone}>
       <div className={s.s1Top}>
@@ -168,7 +195,7 @@ function Row({ r, trace, nameOf }: { r: System1Row; trace?: TurnTrace; nameOf: (
         {verdict && <span className={s.s1Verdict}>{verdict}</span>}
       </div>
       <div className={s.s1Meter}>
-        <b className={s.s1Answer}>{/^[a-z]{2,6}_/.test(r.answer) ? resolveId(r.answer, trace, nameOf) : r.answer}</b>
+        <b className={s.s1Answer}>{r.result === "fallback" && value === undefined ? "\u2014" : /^[a-z]{2,6}_/.test(r.answer) ? resolveId(r.answer, trace, nameOf) : r.answer}</b>
         {bar !== undefined ? (
           <span className={s.s1Gauge} aria-hidden="true">
             <span className={s.s1Track}><span className={s.s1Fill} style={{ "--p": Math.max(0, Math.min(1, bar)) } as CSSProperties} /></span>
@@ -200,8 +227,25 @@ export function System1Rows({ trace, nameOf }: { trace?: TurnTrace; nameOf: (id:
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const groups = groupSystem1(trace);
   const nothing = searchedNothing(trace, groups);
+  const waits = searchWaits(trace);
+  // U-58: after the plan that sent the search (the first plan group), or first when no plan group is on this trace
+  const waitsAfter = groups.find((g) => PLAN_TAG[g.purpose])?.purpose ?? null;
+  const waitsGroup = waits.length > 0 && (
+    <div className={s.s1Group} data-purpose="search">
+      <p className={s.s1Head}>search query<span className={s.s1Lat}>{secs(Math.max(...waits.map((w) => w.ms)))}</span></p>
+      <p className={s.s1Why}>{PURPOSE_WHY.search}</p>
+      <ul className={s.s1List}>
+        {waits.map((w) => (
+          <li key={w.label} className={s.s1Row} data-tone="pass">
+            <div className={s.s1Top}><span className={s.s1Label}>{w.label}</span><span className={s.s1Verdict}>waited {secs(w.ms)}</span></div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
   return (
     <div className={s.s1}>
+      {waitsAfter === null && waitsGroup}
       {groups.map((g) => {
         const result = g.purpose === "deep_check" ? passageResult(g.rows) : null;
         return (
@@ -221,7 +265,7 @@ export function System1Rows({ trace, nameOf }: { trace?: TurnTrace; nameOf: (id:
                 <>
                   <button type="button" className={s.s1Fold} aria-expanded={!!open[g.purpose]}
                     onClick={() => setOpen((o) => ({ ...o, [g.purpose]: !o[g.purpose] }))}>
-                    asked about the others ({g.folded.length})
+                    not used this turn ({g.folded.length})
                   </button>
                   {open[g.purpose] && (
                     <ul className={cx(s.s1List, s.s1Folded)}>
@@ -231,6 +275,7 @@ export function System1Rows({ trace, nameOf }: { trace?: TurnTrace; nameOf: (id:
                 </>
               )}
             </div>
+            {waitsAfter === g.purpose && waitsGroup}
             {nothing?.after === g.purpose && (
               <div className={s.s1Group} data-purpose="deep_check" data-empty="">
                 <p className={s.s1Head}>passages<span className={s.s1Lat}>—</span></p>

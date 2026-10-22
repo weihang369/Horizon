@@ -89,7 +89,8 @@ def display(text: str) -> str:
 
 def bundle(*, source: QuerySource, mode: str, speaker_id: str, message: str, message_id: str | None,
            earlier: Sequence[str] = (), rewrite: str | None = None, terms: Sequence[str] = (),
-           dense: dict[str, dict[int, list[float]]] | None = None) -> QueryBundle:
+           dense: dict[str, dict[int, list[float]]] | None = None,
+           waits: dict[str, float] | None = None) -> QueryBundle:
     """The frozen bundle for one search, K4's table:
 
     | source | dense texts |
@@ -110,7 +111,8 @@ def bundle(*, source: QuerySource, mode: str, speaker_id: str, message: str, mes
     return QueryBundle(text=rewrite or message, message_id=message_id, speaker_id=speaker_id, mode=mode, source=source,
                        message=message, rewrite=rewrite if source == "rewritten" else None, earlier=tuple(earlier),
                        dense_texts=texts, terms=tuple(terms), dense=dict(dense or {}),
-                       display=display(rewrite if source == "rewritten" and rewrite else message))
+                       display=display(rewrite if source == "rewritten" and rewrite else message),
+                       waits=dict(waits or {}))
 
 
 def debate_text(motion: str, *, argument: str = "", question: str = "") -> str:

@@ -159,12 +159,12 @@
     "themeSongId": "song_seedVictor",
     "energy": {
       "max": 1000,
-      "current": 860,
-      "asOf": "2026-10-01T12:00:00Z",
+      "current": 977,
+      "asOf": "2026-10-01T09:59:37.938Z",
       "regenPerHour": 41.666666666666664,
       "state": "active",
-      "fullAt": "2026-10-01T15:21:36.000Z",
-      "spentToday": 140
+      "fullAt": "2026-10-01T10:32:45.138Z",
+      "spentToday": 23
     },
     "version": 1,
     "isSeed": true,

@@ -3,11 +3,12 @@
 // Owner: Builder A.
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { KeyboardEvent, MouseEvent } from "react";
-import { openOverlay } from "../../app/layers";
+import { openOverlay, toast } from "../../app/layers";
 import { useShortcut } from "../../app/shortcuts";
 import { audio } from "../../audio/engine";
 import { client } from "../../client";
 import { useCharacters, useNow, useWorlds } from "../../client/hooks";
+import type { HorizonErrorShape } from "../../contract/errors";
 import type { World } from "../../contract/types";
 import { formatRelative } from "../../domain/format";
 import { useMotionPrefs } from "../../motion/prefs";
@@ -36,6 +37,30 @@ const EDGE = 96;
 
 /** The seed debate replay World Select links to directly (doc 06). */
 const FEATURED = { worldId: "wld_seedMeridian", sessionId: "ses_seedDebate4Day" } as const;
+
+/** The featured debate, or (the user's ask, 2026-10-22) when the demo data was deleted, an offer to restore it first:
+ * the same Reset demo data as Settings, which keeps everything the user made. */
+async function watchFeatured(): Promise<void> {
+  const go = () => navigate({ name: "session", ...FEATURED, replay: true }, { transition: "slash" });
+  try {
+    await client.sessions.get(FEATURED.sessionId);
+  } catch (e) {
+    if ((e as HorizonErrorShape).code !== "not_found") return go();   // anything else: the session screen says what
+    openOverlay("O03", {
+      title: "Bring the demo back?",
+      body: "The demo debate was deleted. Restore the demo data to watch it: the seed worlds, characters and recordings "
+        + "come back as shipped. Worlds, characters and sessions you created stay, and so do your key and settings.",
+      confirmLabel: "Restore demo data",
+      onConfirm: async () => {
+        await client.admin.resetDemo();
+        toast({ variant: "success", text: "Demo data restored." });
+        go();
+      },
+    });
+    return;
+  }
+  go();
+}
 
 export function WorldSelectScreen() {
   useHouseScreen();
@@ -128,10 +153,9 @@ export function WorldSelectScreen() {
         </h1>
         <p className={s.sub}>Pick a universe. Nothing crosses between them.</p>
         <nav className={s.headNav} aria-label="Shell">
-          {worlds?.some((w) => w.id === FEATURED.worldId) && (
-            // U2: the strongest feature in one click (otherwise world → hub → Sessions → replay).
-            <Button size="sm" onClick={() => navigate({ name: "session", ...FEATURED, replay: true }, { transition: "slash" })}>▶ Watch a 60-second AI debate</Button>
-          )}
+          {/* U2: the strongest feature in one click (otherwise world → hub → Sessions → replay); shown even when the
+              demo was deleted, so it can offer to bring it back */}
+          <Button size="sm" onClick={() => void watchFeatured()}>▶ Watch a 60-second AI debate</Button>
           <Button variant="ghost" size="sm" onClick={() => navigate({ name: "title" }, { transition: "slash-back" })}>◂ Title</Button>
           <Button variant="ghost" size="sm" onClick={() => navigate({ name: "onboarding", card: 1 })}>How it works</Button>
           <Button variant="ghost" size="sm" icon={<GearIcon />} onClick={() => navigate({ name: "settings", from: "/worlds" })}>Settings</Button>

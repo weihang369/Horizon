@@ -11,7 +11,7 @@
       "kind": "system_note",
       "content": "ROUND 1 · OPENING",
       "status": "complete",
-      "createdAt": "2026-09-22T13:20:02.456Z"
+      "createdAt": "2026-09-22T13:20:02.216Z"
     },
     {
       "id": "msg_mockS02",
@@ -21,9 +21,9 @@
         "type": "host"
       },
       "kind": "narration",
-      "content": "The motion before us is: This house would tax sugary drinks. Speaking for the proposition is Amara Okafor, emergency physician and public-health researcher; speaking against is Victor Hale, constitutional litigator.",
+      "content": "Today's motion: This house would tax sugary drinks. Speaking for the proposition is Amara Okafor, emergency physician and public-health researcher; speaking against is Victor Hale, constitutional litigator.",
       "status": "complete",
-      "createdAt": "2026-09-22T13:20:02.464Z"
+      "createdAt": "2026-09-22T13:20:02.906Z"
     },
     {
       "kind": "chat",
@@ -40,19 +40,19 @@
         "type": "character",
         "characterId": "chr_seedAmara"
       },
-      "content": "Taxes change prices, and prices change behaviour — that's the whole mechanism, and it works best on cheap, habitual, heavily marketed products. Sugary drinks are exactly that, and the cost lands hardest on the kids and lower-income families who drink the most of them, while the revenue can fund the very things that make the healthy choice easier. Victor will call this paternalism; I'd call it a nudge that finally makes the price honest about the diabetes and heart disease we all pay for downstream.",
+      "content": "Taxes work where willpower alone doesn't: price shapes what we buy, and sugary drinks are the easiest place to start because there's no nutritional need for them. In the ER I treat the consequences — diabetic emergencies, heart failure, amputations — and those costs land on all of us, not just the drinker. A modest levy cuts consumption, nudges reformulation, and funds prevention. Victor will call this paternalism; I'd call it paying for the damage.",
       "status": "complete",
-      "createdAt": "2026-09-22T13:20:04.364Z",
+      "createdAt": "2026-09-22T13:20:06.203Z",
       "emotion": "neutral",
       "emotionSource": "classifier",
       "usage": {
-        "tokensIn": 895,
+        "tokensIn": 893,
         "tokensCached": 0,
-        "tokensOut": 103,
-        "costUsd": 0.000114,
-        "energySpent": 2,
-        "firstTokenMs": 1873,
-        "totalMs": 2435
+        "tokensOut": 97,
+        "costUsd": 0.000423,
+        "energySpent": 5,
+        "firstTokenMs": 3272,
+        "totalMs": 4679
       },
       "trace": {
         "messageId": "msg_mockS03",
@@ -62,11 +62,14 @@
             "persona": 397,
             "system": 716,
             "mode": 109,
-            "history": 87,
+            "history": 84,
             "user": 0,
             "memory": 0,
             "knowledge": 0
           }
+        },
+        "search": {
+          "vectorMs": 1781.7
         },
         "emotion": {
           "chosen": "neutral",
@@ -96,7 +99,70 @@
               "title": "ED triage guidelines",
               "locator": "p. 2",
               "text": "## 2.4 Caffeine withdrawal\n\nCaffeine withdrawal headache usually begins 12 to 24 hours after a sharp cut in intake and can last two to nine days. Gradual tapering, fluids and simple painkillers are usually enough; it rarely needs emergency care.\n\nAsk about recent changes in coffee, tea, energy drinks and cola. Patients often do not connect a new headache with cutting back a week earlier. A slower taper (reducing by about a quarter every few days) prevents most withdrawal headaches.",
-              "score": 0.07,
+              "score": 0.08,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraFat01",
+              "sourceId": "kno_seedAmara1",
+              "title": "Meridian Shift Fatigue Review 2025",
+              "locator": "p. 1",
+              "text": "## Meridian Shift Fatigue Review 2025\n\nMeridian Health Trust · Workforce Wellbeing Unit Report to the Trust Board · November 2025 · Fictional document for the Horizon demo world \"Meridian Council\"",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraFat03",
+              "sourceId": "kno_seedAmara1",
+              "title": "Meridian Shift Fatigue Review 2025",
+              "locator": "p. 1",
+              "text": "The review recommends extending the compressed-rota pilot to three further departments, protecting rest days from short-notice cancellation, and reporting fatigue scores to the Board every quarter.",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraFat18",
+              "sourceId": "kno_seedAmara1",
+              "title": "Meridian Shift Fatigue Review 2025",
+              "locator": "p. 11",
+              "text": "## 10. Recommendations\n\nThe review recommends extending the compressed-rota pilot to three further departments, protecting rest days from short-notice cancellation, and reporting fatigue scores to the Trust board every quarter.",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraFat12",
+              "sourceId": "kno_seedAmara1",
+              "title": "Meridian Shift Fatigue Review 2025",
+              "locator": "p. 5",
+              "text": "## 4.1 The commute home\n\nTwelve percent of respondents said they had nodded off while driving home after a night shift at least once during the review period. Three reported minor collisions. The Trust's car park sleep pods, piloted at Meridian General since March, were used by fewer than one in twenty eligible staff, mostly because staff wanted to get home to children.",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraTri16",
+              "sourceId": "kno_seedAmara2",
+              "title": "ED triage guidelines",
+              "locator": "p. 5",
+              "text": "## 5. Hydration and simple painkillers\n\nFor headaches without red flags, advise fluids, regular meals, rest from screens and a simple painkiller if it is safe for the patient. Paracetamol or ibuprofen at the dose on the packet is usually enough. Ibuprofen is not suitable for everyone: people with stomach ulcers, some kidney problems or asthma made worse by antiinflammatories should use paracetamol instead. If in doubt, a pharmacist can advise.",
+              "score": 0.01,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraFat09",
+              "sourceId": "kno_seedAmara1",
+              "title": "Meridian Shift Fatigue Review 2025",
+              "locator": "p. 4",
+              "text": "## 3. Burnout\n\nSelf-reported burnout rose in every quarter of the review period. By October, 41% of emergency department staff met the review's threshold for high burnout, up from\n\nAcross the whole Trust, high burnout rose from 22% to 30%. The rise was steepest among staff in their first five years after qualifying and among those with caring\n\n29% in January. responsibilities at home.\n\nBurnout and fatigue moved together but were not the same thing. Some staff with high fatigue scores did not report burnout, usually those on predictable rotas who described their tiredness as \"physical, not mental\" . Burnout was most common where fatigue combined with unpredictability: the sense that rest could be taken away at any time.",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraFat02",
+              "sourceId": "kno_seedAmara1",
+              "title": "Meridian Shift Fatigue Review 2025",
+              "locator": "p. 1",
+              "text": "## Summary\n\nFatigue is no longer an occasional complaint among the Trust's clinical staff. It is a measurable, rising condition with a direct line to patient safety, sickness absence and resignations. This review followed 1,140 clinical staff for ten months and found that the length of consecutive shift blocks, not total hours alone, is the strongest predictor of how tired staff say they are.\n\nThe headline findings:\n\n- Staff working more than three consecutive long shifts reported fatigue scores 38% higher than colleagues on shorter blocks.\n- High burnout in the emergency department rose from 29% of staff in January to 41% in October.\n- Staff who slept under six hours before a shift were twice as likely to report a near-miss medication error that week.\n- Two wards that piloted a compressed rota saw burnout fall by roughly a fifth in twelve weeks, with no loss of patient throughput.\n- Voluntary nursing resignations reached 14% over the year, and each replacement costs about four months of salary.",
+              "score": 0,
               "cited": false
             }
           ]
@@ -112,21 +178,21 @@
         },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Relace",
+          "provider": "Alibaba",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 1873,
-            "total": 2435
+            "firstToken": 3272,
+            "total": 4679
           },
-          "tokensIn": 895,
-          "tokensOut": 103,
-          "costUsd": 0.000114,
+          "tokensIn": 893,
+          "tokensOut": 97,
+          "costUsd": 0.000423,
           "tokensCached": 0
         },
         "energy": {
           "characterId": "chr_seedAmara",
-          "spent": 2,
-          "remaining": 998,
+          "spent": 5,
+          "remaining": 995,
           "max": 1000
         },
         "routing": {
@@ -138,25 +204,67 @@
             "purpose": "turn_plan",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000043,
-            "latencyMs": 672
+            "latencyMs": 468
           },
           {
             "purpose": "deep_check",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000023,
-            "latencyMs": 578
+            "latencyMs": 437
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000022,
+            "latencyMs": 438
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000021,
+            "latencyMs": 438
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.00002,
+            "latencyMs": 438
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000021,
+            "latencyMs": 438
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000028,
+            "latencyMs": 469
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000023,
+            "latencyMs": 750
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000026,
+            "latencyMs": 750
           },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000114,
-            "latencyMs": 1547
+            "costUsd": 0.000423,
+            "latencyMs": 2078
           },
           {
             "purpose": "guardrail",
             "model": "typesafe/jev-1.13-20260917",
             "costUsd": 0.000027,
-            "latencyMs": 453
+            "latencyMs": 407
           }
         ],
         "graph": {
@@ -172,7 +280,7 @@
           ]
         },
         "system1": {
-          "seed": "2026-09-22T13:19:59.985Z|debate|chr_seedAmara,chr_seedVictor:0",
+          "seed": "2026-09-22T13:19:59.406Z|debate|chr_seedAmara,chr_seedVictor:0",
           "questions": [
             {
               "purpose": "turn_plan",
@@ -189,7 +297,7 @@
                   "threshold": 0.2
                 }
               ],
-              "confidence": 0.5,
+              "confidence": 0.45,
               "result": "used",
               "action": "shown"
             },
@@ -212,609 +320,25 @@
               "action": "search the documents"
             },
             {
-              "purpose": "deep_check",
-              "id": "passage",
-              "version": 2,
-              "label": "does this passage answer it?",
-              "about": "kch_amaraTri08",
-              "answer": "doesn't help",
-              "p": 0.14,
-              "compared": [
-                {
-                  "name": "t_keep",
-                  "value": 0.14,
-                  "threshold": 0.9
-                }
-              ],
-              "result": "below_threshold",
-              "action": "dropped"
-            },
-            {
-              "purpose": "guardrail",
-              "id": "output_rules",
-              "version": 1,
-              "label": "reply breaks the rules?",
-              "answer": "no",
-              "p": 0.05,
-              "compared": [
-                {
-                  "name": "tFlag",
-                  "value": 0.05,
-                  "threshold": 0.5
-                },
-                {
-                  "name": "tBlock",
-                  "value": 0.05,
-                  "threshold": 0.9
-                }
-              ],
-              "result": "used",
-              "action": "pass"
-            }
-          ]
-        }
-      },
-      "reactions": [
-        {
-          "characterId": "chr_seedVictor",
-          "emotion": "thinking",
-          "p": 0.7,
-          "at": "2026-09-22T13:20:06.166Z"
-        }
-      ]
-    },
-    {
-      "kind": "chat",
-      "debate": {
-        "phase": "opening",
-        "round": 1,
-        "iteration": 1,
-        "side": "opp"
-      },
-      "id": "msg_mockS04",
-      "sessionId": "ses_mockHostSugar",
-      "seq": 4,
-      "author": {
-        "type": "character",
-        "characterId": "chr_seedVictor"
-      },
-      "content": "Three points for the Opposition. First, define the term: a tax is not a moral judgment dressed in arithmetic; it is compulsion, and the house must show the compulsion is justified. Second, a sugary drink tax is regressive by design, and regressive measures fall hardest on those with the least room to absorb them. Third, and decisive: taxation is a blunt instrument that punishes a can of soda while the household budget it strains is a matter of individual autonomy, not legislative convenience. Qui tacet consentire videtur? No. Silence is not consent to being taxed. Our case is liberty, proportionality, and the burden of proof, which rests with the mover.",
-      "status": "complete",
-      "createdAt": "2026-09-22T13:20:06.916Z",
-      "emotion": "neutral",
-      "emotionSource": "classifier",
-      "usage": {
-        "tokensIn": 860,
-        "tokensCached": 0,
-        "tokensOut": 139,
-        "costUsd": 0.00013,
-        "energySpent": 2,
-        "firstTokenMs": 95,
-        "totalMs": 1838
-      },
-      "trace": {
-        "messageId": "msg_mockS04",
-        "context": {
-          "budget": 14680,
-          "used": {
-            "persona": 351,
-            "system": 694,
-            "mode": 116,
-            "history": 87,
-            "user": 0,
-            "memory": 0,
-            "knowledge": 0
-          }
-        },
-        "emotion": {
-          "chosen": "neutral",
-          "source": "classifier",
-          "candidates": [
-            {
-              "label": "neutral",
-              "p": 0.97
-            },
-            {
-              "label": "happy",
-              "p": 0.02
-            },
-            {
-              "label": "thinking",
-              "p": 0.01
-            }
-          ]
-        },
-        "knowledge": {
-          "query": "This house would tax sugary drinks",
-          "trigger": "gated",
-          "retrieved": [
-            {
-              "chunkId": "kch_victorMoot01",
-              "sourceId": "kno_seedVictor1",
-              "title": "Moot court notes",
-              "locator": "¶ 1",
-              "text": "Moot court notes: \"This house would adopt a nationwide four-day work week\" V. Hale, for the Meridian Bar Society exhibition debate. Private notes.\n\n¶ 1. Expect the opposition to say the evidence base is narrow. Concede scope early, then shift the burden: the status quo is also a policy and has to justify itself.\n\n¶ 2. Historical anchor: the Meridian Working Hours Act 1931 made the two-day weekend the default. It gave agriculture and shipping a ten-year transition and exempted continuous services.\n\n¶ 3. Continuous-coverage sectors already run on shift rules under Part IV of the Working Time Code: rest periods, a cap on consecutive shifts, and averaging over a reference period. A shorter standard week sits inside that structure.\n\n¶ 4. Phase-in precedent: sector-by-sector timetables, collective agreements first, the public sector as model employer. Courts have upheld staged duties where the end point is clear.",
-              "score": 0.015,
-              "cited": false
-            }
-          ]
-        },
-        "guardrail": {
-          "checks": [
-            {
-              "name": "output",
-              "verdict": "pass",
-              "p": 0.04
-            }
-          ]
-        },
-        "model": {
-          "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Relace",
-          "pricePeriod": "off_peak",
-          "latencyMs": {
-            "firstToken": 95,
-            "total": 1838
-          },
-          "tokensIn": 860,
-          "tokensOut": 139,
-          "costUsd": 0.00013,
-          "tokensCached": 0
-        },
-        "energy": {
-          "characterId": "chr_seedVictor",
-          "spent": 2,
-          "remaining": 862,
-          "max": 1000
-        },
-        "routing": {
-          "selected": "chr_seedVictor",
-          "forcedBy": "round_order"
-        },
-        "calls": [
-          {
-            "purpose": "turn_plan",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000042,
-            "latencyMs": 625
-          },
-          {
-            "purpose": "deep_check",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000027,
-            "latencyMs": 579
-          },
-          {
-            "purpose": "reply",
-            "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.00013,
-            "latencyMs": 4672
-          }
-        ],
-        "graph": {
-          "path": [
-            "state",
-            "ask",
-            "decide",
-            "route",
-            "gather",
-            "search",
-            "check",
-            "keep"
-          ]
-        },
-        "system1": {
-          "seed": "2026-09-22T13:19:59.985Z|debate|chr_seedAmara,chr_seedVictor:1",
-          "questions": [
-            {
               "purpose": "turn_plan",
-              "id": "emotion_debate_opening",
+              "id": "earlier",
               "version": 2,
-              "label": "emotion",
-              "about": "chr_seedVictor",
-              "answer": "neutral",
-              "p": 0.97,
-              "compared": [
-                {
-                  "name": "p_neutral+p_none",
-                  "value": 0.97,
-                  "threshold": 0.2
-                }
-              ],
-              "confidence": 0.59,
-              "result": "used",
-              "action": "shown"
-            },
-            {
-              "purpose": "turn_plan",
-              "id": "docs",
-              "version": 2,
-              "label": "needs documents?",
-              "about": "chr_seedVictor",
-              "answer": "yes",
-              "p": 0.55,
-              "compared": [
-                {
-                  "name": "t_gate",
-                  "value": 0.55,
-                  "threshold": 0.45
-                }
-              ],
-              "result": "used",
-              "action": "search the documents"
-            },
-            {
-              "purpose": "deep_check",
-              "id": "passage",
-              "version": 2,
-              "label": "does this passage answer it?",
-              "about": "kch_victorMoot01",
-              "answer": "doesn't help",
-              "p": 0.03,
-              "compared": [
-                {
-                  "name": "t_keep",
-                  "value": 0.03,
-                  "threshold": 0.9
-                }
-              ],
-              "result": "below_threshold",
-              "action": "dropped"
-            },
-            {
-              "purpose": "guardrail",
-              "id": "output_rules",
-              "version": 1,
-              "label": "reply breaks the rules?",
-              "answer": "no",
-              "p": 0.04,
-              "compared": [
-                {
-                  "name": "tFlag",
-                  "value": 0.04,
-                  "threshold": 0.5
-                },
-                {
-                  "name": "tBlock",
-                  "value": 0.04,
-                  "threshold": 0.9
-                }
-              ],
-              "result": "used",
-              "action": "pass"
-            }
-          ]
-        }
-      },
-      "reactions": [
-        {
-          "characterId": "chr_seedAmara",
-          "emotion": "thinking",
-          "p": 0.84,
-          "at": "2026-09-22T13:20:09.613Z"
-        }
-      ]
-    },
-    {
-      "id": "msg_mockS05",
-      "sessionId": "ses_mockHostSugar",
-      "seq": 5,
-      "author": {
-        "type": "system"
-      },
-      "kind": "system_note",
-      "content": "ROUND 2 · CLOSING",
-      "status": "complete",
-      "createdAt": "2026-09-22T13:20:10.623Z"
-    },
-    {
-      "id": "msg_mockS06",
-      "sessionId": "ses_mockHostSugar",
-      "seq": 6,
-      "author": {
-        "type": "host"
-      },
-      "kind": "narration",
-      "content": "Proposition argued that taxing sugary drinks changes behaviour and funds health measures; Opposition argued it is compulsion, regressive, and a blunt instrument. We now move to closing statements.",
-      "status": "complete",
-      "createdAt": "2026-09-22T13:20:10.625Z"
-    },
-    {
-      "kind": "chat",
-      "debate": {
-        "phase": "closing",
-        "round": 2,
-        "iteration": 1,
-        "side": "prop"
-      },
-      "id": "msg_mockS07",
-      "sessionId": "ses_mockHostSugar",
-      "seq": 7,
-      "author": {
-        "type": "character",
-        "characterId": "chr_seedAmara"
-      },
-      "content": "Victor says silence isn't consent, but nobody consents to paying for someone else's heart attack either — that's the cost we're already subsidising. On regressivity: yes, a flat tax bites harder on small budgets, and that's a fair hit, not a knockout. But the same families pay the steepest price for the diseases these drinks drive, so designing the tax to fund cheap, accessible alternatives answers the objection rather than dodging it. His liberty point rests on a false picture — autonomy in a market where the price has been kept artificially low. That's the open question the house must decide: honest pricing, or a subsidy we don't name.",
-      "status": "complete",
-      "createdAt": "2026-09-22T13:20:15.874Z",
-      "emotion": "thinking",
-      "emotionSource": "classifier",
-      "usage": {
-        "tokensIn": 1208,
-        "tokensCached": 0,
-        "tokensOut": 137,
-        "costUsd": 0.000153,
-        "energySpent": 2,
-        "firstTokenMs": 3265,
-        "totalMs": 3933
-      },
-      "trace": {
-        "messageId": "msg_mockS07",
-        "context": {
-          "budget": 14680,
-          "used": {
-            "persona": 397,
-            "system": 716,
-            "mode": 129,
-            "history": 562,
-            "user": 0,
-            "memory": 0,
-            "knowledge": 0
-          }
-        },
-        "emotion": {
-          "chosen": "thinking",
-          "source": "classifier",
-          "candidates": [
-            {
-              "label": "thinking",
-              "p": 0.51
-            },
-            {
-              "label": "angry",
-              "p": 0.19
-            },
-            {
-              "label": "neutral",
-              "p": 0.03
-            }
-          ]
-        },
-        "knowledge": {
-          "query": "This house would tax sugary drinks Victor Hale: Three points for the Opposition. First, define the term: a tax is not a…",
-          "trigger": "gated",
-          "retrieved": [
-            {
-              "chunkId": "kch_amaraTri08",
-              "sourceId": "kno_seedAmara2",
-              "title": "ED triage guidelines",
-              "locator": "p. 2",
-              "text": "## 2.4 Caffeine withdrawal\n\nCaffeine withdrawal headache usually begins 12 to 24 hours after a sharp cut in intake and can last two to nine days. Gradual tapering, fluids and simple painkillers are usually enough; it rarely needs emergency care.\n\nAsk about recent changes in coffee, tea, energy drinks and cola. Patients often do not connect a new headache with cutting back a week earlier. A slower taper (reducing by about a quarter every few days) prevents most withdrawal headaches.",
-              "score": 0.01,
-              "cited": false
-            },
-            {
-              "chunkId": "kch_amaraFat06",
-              "sourceId": "kno_seedAmara1",
-              "title": "Meridian Shift Fatigue Review 2025",
-              "locator": "p. 2",
-              "text": "## 1.1 What this review does not measure\n\nThe review relies on what staff report. It does not measure fatigue objectively, and it cannot prove that long blocks cause errors. It shows associations that are consistent across sites, departments and months. Where we discuss costs, we use the Trust finance office's standard figures.",
-              "score": 0,
-              "cited": false
-            },
-            {
-              "chunkId": "kch_amaraFat14",
-              "sourceId": "kno_seedAmara1",
-              "title": "Meridian Shift Fatigue Review 2025",
-              "locator": "p. 7",
-              "text": "## 6. The compressed-rota pilot\n\nTwo wards piloted a compressed rota: four longer days, then three days off. After twelve weeks, burnout scores on both wards fell by roughly a fifth, sleep quality improved, and patient throughput stayed within normal variation.\n\nThe pilot wards were Ward 7 (acute medicine) and the emergency department's observation unit. Staff chose to join. The rota guaranteed the three rest days: they could not be cancelled except in a declared major incident.\n\nWhat changed after twelve weeks:\n\n- Burnout scores fell by 19% on Ward 7 and 22% on the observation unit.\n- Average sleep before a shift rose by 40 minutes.\n- Short-notice cancellations of rest days fell to zero, by design.\n- Patient throughput, length of stay and readmissions stayed within normal variation for those wards.\n\nStaff on the pilot wards described the guaranteed rest days, not the longer shifts, as the change that mattered most.",
-              "score": 0,
-              "cited": false
-            },
-            {
-              "chunkId": "kch_amaraFat16",
-              "sourceId": "kno_seedAmara1",
-              "title": "Meridian Shift Fatigue Review 2025",
-              "locator": "p. 9",
-              "text": "## 8. Retention\n\nVoluntary resignations among nursing staff reached 14% over the year. The Trust's finance office puts each replacement at roughly four months of salary once recruitment, induction and supervised practice are counted.\n\nThe rate was highest in the emergency department (19%) and lowest in day surgery (6%). Two thirds of leavers had been with the Trust for under five years.\n\nReplacing a nurse is not only a cost. New starters need supervision, which takes experienced staff away from patients during the first months. Wards with high turnover were also the wards with the most short-notice rest-day cancellations, a cycle the review describes as \"exhaustion feeding exhaustion\" .",
-              "score": 0,
-              "cited": false
-            },
-            {
-              "chunkId": "kch_amaraFat12",
-              "sourceId": "kno_seedAmara1",
-              "title": "Meridian Shift Fatigue Review 2025",
-              "locator": "p. 5",
-              "text": "## 4.1 The commute home\n\nTwelve percent of respondents said they had nodded off while driving home after a night shift at least once during the review period. Three reported minor collisions. The Trust's car park sleep pods, piloted at Meridian General since March, were used by fewer than one in twenty eligible staff, mostly because staff wanted to get home to children.",
-              "score": 0,
-              "cited": false
-            },
-            {
-              "chunkId": "kch_amaraFat02",
-              "sourceId": "kno_seedAmara1",
-              "title": "Meridian Shift Fatigue Review 2025",
-              "locator": "p. 1",
-              "text": "## Summary\n\nFatigue is no longer an occasional complaint among the Trust's clinical staff. It is a measurable, rising condition with a direct line to patient safety, sickness absence and resignations. This review followed 1,140 clinical staff for ten months and found that the length of consecutive shift blocks, not total hours alone, is the strongest predictor of how tired staff say they are.\n\nThe headline findings:\n\n- Staff working more than three consecutive long shifts reported fatigue scores 38% higher than colleagues on shorter blocks.\n- High burnout in the emergency department rose from 29% of staff in January to 41% in October.\n- Staff who slept under six hours before a shift were twice as likely to report a near-miss medication error that week.\n- Two wards that piloted a compressed rota saw burnout fall by roughly a fifth in twelve weeks, with no loss of patient throughput.\n- Voluntary nursing resignations reached 14% over the year, and each replacement costs about four months of salary.",
-              "score": 0,
-              "cited": false
-            },
-            {
-              "chunkId": "kch_amaraFat07",
-              "sourceId": "kno_seedAmara1",
-              "title": "Meridian Shift Fatigue Review 2025",
-              "locator": "p. 3",
-              "text": "## 2. Shift patterns and fatigue\n\nThe single clearest pattern in the data is the effect of long blocks.\n\nStaff working more than three consecutive long shifts reported fatigue scores 38% higher than colleagues on shorter blocks. The effect was strongest in emergency and acute medicine, where rest days were most often cancelled at short notice.\n\nA \"long shift\" in this review is any shift of eleven hours or more. Across the Trust, 46% of clinical shifts were long shifts. In the emergency department the figure was 78%.\n\nTotal weekly hours mattered less than the way those hours were arranged. Two nurses working the same 37.5 hours could report very different fatigue: the one who worked four long shifts in a row, then had three days off, reported less fatigue than the one whose long shifts were scattered across the week with single rest days in between. Single rest days, especially after a night shift, were rarely restful.",
-              "score": 0,
-              "cited": false
-            },
-            {
-              "chunkId": "kch_amaraFat08",
-              "sourceId": "kno_seedAmara1",
-              "title": "Meridian Shift Fatigue Review 2025",
-              "locator": "p. 3",
-              "text": "## 2.1 Short-notice changes\n\nRest days cancelled with less than 48 hours' notice were the second strongest predictor of fatigue. In emergency and acute medicine, one rest day in nine was cancelled at short notice, usually to cover sickness. In community and day-surgery settings the figure was one in forty.",
-              "score": 0,
-              "cited": false
-            }
-          ]
-        },
-        "guardrail": {
-          "checks": [
-            {
-              "name": "output",
-              "verdict": "pass",
-              "p": 0.05
-            }
-          ]
-        },
-        "model": {
-          "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Relace",
-          "pricePeriod": "off_peak",
-          "latencyMs": {
-            "firstToken": 3265,
-            "total": 3933
-          },
-          "tokensIn": 1208,
-          "tokensOut": 137,
-          "costUsd": 0.000153,
-          "tokensCached": 0
-        },
-        "energy": {
-          "characterId": "chr_seedAmara",
-          "spent": 2,
-          "remaining": 996,
-          "max": 1000
-        },
-        "routing": {
-          "selected": "chr_seedAmara",
-          "forcedBy": "round_order"
-        },
-        "calls": [
-          {
-            "purpose": "turn_plan",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000063,
-            "latencyMs": 453
-          },
-          {
-            "purpose": "deep_check",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000028,
-            "latencyMs": 422
-          },
-          {
-            "purpose": "deep_check",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.00003,
-            "latencyMs": 422
-          },
-          {
-            "purpose": "deep_check",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000034,
-            "latencyMs": 422
-          },
-          {
-            "purpose": "deep_check",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000029,
-            "latencyMs": 438
-          },
-          {
-            "purpose": "deep_check",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000032,
-            "latencyMs": 485
-          },
-          {
-            "purpose": "deep_check",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000034,
-            "latencyMs": 500
-          },
-          {
-            "purpose": "deep_check",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000034,
-            "latencyMs": 1172
-          },
-          {
-            "purpose": "deep_check",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000028,
-            "latencyMs": 1172
-          },
-          {
-            "purpose": "reply",
-            "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000153,
-            "latencyMs": 2422
-          },
-          {
-            "purpose": "guardrail",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000035,
-            "latencyMs": 422
-          },
-          {
-            "purpose": "face_check",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000036,
-            "latencyMs": 422
-          }
-        ],
-        "graph": {
-          "path": [
-            "state",
-            "ask",
-            "decide",
-            "route",
-            "gather",
-            "search",
-            "check",
-            "keep"
-          ]
-        },
-        "system1": {
-          "seed": "2026-09-22T13:19:59.985Z|debate|chr_seedAmara,chr_seedVictor:2",
-          "questions": [
-            {
-              "purpose": "turn_plan",
-              "id": "emotion_line",
-              "version": 3,
-              "label": "emotion",
+              "label": "needs something from earlier?",
               "about": "chr_seedAmara",
-              "answer": "thinking",
-              "p": 0.51,
-              "compared": [
-                {
-                  "name": "confidence",
-                  "value": 0.44,
-                  "threshold": 0.2
-                }
-              ],
-              "confidence": 0.44,
-              "result": "used",
-              "action": "shown"
+              "answer": "—",
+              "compared": [],
+              "result": "skipped",
+              "action": "skipped: nothing earlier to search"
             },
             {
               "purpose": "turn_plan",
-              "id": "docs",
-              "version": 2,
-              "label": "needs documents?",
-              "about": "chr_seedAmara",
-              "answer": "yes",
-              "p": 0.73,
-              "compared": [
-                {
-                  "name": "t_gate",
-                  "value": 0.73,
-                  "threshold": 0.45
-                }
-              ],
-              "result": "used",
-              "action": "search the documents"
+              "id": "unsafe_note",
+              "version": 1,
+              "label": "unsafe note?",
+              "answer": "—",
+              "compared": [],
+              "result": "skipped",
+              "action": "skipped: no Interject this turn"
             },
             {
               "purpose": "deep_check",
@@ -823,12 +347,17 @@
               "label": "does this passage answer it?",
               "about": "kch_amaraTri08",
               "answer": "doesn't help",
-              "p": 0.02,
+              "p": 0.16,
               "compared": [
                 {
                   "name": "t_keep",
-                  "value": 0.02,
+                  "value": 0.16,
                   "threshold": 0.9
+                },
+                {
+                  "name": "t_found",
+                  "value": 0,
+                  "threshold": 0.5
                 }
               ],
               "result": "below_threshold",
@@ -839,7 +368,7 @@
               "id": "passage",
               "version": 2,
               "label": "does this passage answer it?",
-              "about": "kch_amaraFat06",
+              "about": "kch_amaraFat01",
               "answer": "doesn't help",
               "p": 0,
               "compared": [
@@ -847,6 +376,11 @@
                   "name": "t_keep",
                   "value": 0,
                   "threshold": 0.9
+                },
+                {
+                  "name": "t_found",
+                  "value": 0,
+                  "threshold": 0.5
                 }
               ],
               "result": "below_threshold",
@@ -857,7 +391,7 @@
               "id": "passage",
               "version": 2,
               "label": "does this passage answer it?",
-              "about": "kch_amaraFat14",
+              "about": "kch_amaraFat03",
               "answer": "doesn't help",
               "p": 0,
               "compared": [
@@ -865,6 +399,11 @@
                   "name": "t_keep",
                   "value": 0,
                   "threshold": 0.9
+                },
+                {
+                  "name": "t_found",
+                  "value": 0,
+                  "threshold": 0.5
                 }
               ],
               "result": "below_threshold",
@@ -875,7 +414,7 @@
               "id": "passage",
               "version": 2,
               "label": "does this passage answer it?",
-              "about": "kch_amaraFat16",
+              "about": "kch_amaraFat18",
               "answer": "doesn't help",
               "p": 0,
               "compared": [
@@ -883,6 +422,11 @@
                   "name": "t_keep",
                   "value": 0,
                   "threshold": 0.9
+                },
+                {
+                  "name": "t_found",
+                  "value": 0,
+                  "threshold": 0.5
                 }
               ],
               "result": "below_threshold",
@@ -901,6 +445,57 @@
                   "name": "t_keep",
                   "value": 0,
                   "threshold": 0.9
+                },
+                {
+                  "name": "t_found",
+                  "value": 0,
+                  "threshold": 0.5
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraTri16",
+              "answer": "doesn't help",
+              "p": 0.02,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0.02,
+                  "threshold": 0.9
+                },
+                {
+                  "name": "t_found",
+                  "value": 0,
+                  "threshold": 0.5
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraFat09",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                },
+                {
+                  "name": "t_found",
+                  "value": 0,
+                  "threshold": 0.5
                 }
               ],
               "result": "below_threshold",
@@ -919,6 +514,636 @@
                   "name": "t_keep",
                   "value": 0,
                   "threshold": 0.9
+                },
+                {
+                  "name": "t_found",
+                  "value": 0,
+                  "threshold": 0.5
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "guardrail",
+              "id": "output_rules",
+              "version": 1,
+              "label": "reply breaks the rules?",
+              "answer": "no",
+              "p": 0.05,
+              "compared": [
+                {
+                  "name": "tFlag",
+                  "value": 0.05,
+                  "threshold": 0.5
+                },
+                {
+                  "name": "tBlock",
+                  "value": 0.05,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "used",
+              "action": "pass"
+            },
+            {
+              "purpose": "face_check",
+              "id": "face_check",
+              "version": 1,
+              "label": "face and words agree?",
+              "answer": "—",
+              "compared": [],
+              "result": "skipped",
+              "action": "skipped: neutral face"
+            }
+          ]
+        }
+      },
+      "reactions": [
+        {
+          "characterId": "chr_seedVictor",
+          "emotion": "thinking",
+          "p": 0.59,
+          "at": "2026-09-22T13:20:08.490Z"
+        }
+      ]
+    },
+    {
+      "kind": "chat",
+      "debate": {
+        "phase": "opening",
+        "round": 1,
+        "iteration": 1,
+        "side": "opp"
+      },
+      "id": "msg_mockS04",
+      "sessionId": "ses_mockHostSugar",
+      "seq": 4,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedVictor"
+      },
+      "content": "Let us begin where I always begin: define your terms. \"Tax\" is a euphemism the proposer is too polite to use. Call it what it is: a sin levy, priced onto the poor, collected by the state, and swallowed by a beverage company that will simply reformulate and repackage. Two points. First, a tax on a substance is not a tax on a behavior; the evidence she will offer is association dressed as cause. Second, a regressive duty falls hardest on the household with the least room to absorb it. That is not public health. That is arithmetic with a moral veneer. I look forward to the good doctor's reply.",
+      "status": "complete",
+      "createdAt": "2026-09-22T13:20:12.754Z",
+      "emotion": "neutral",
+      "emotionSource": "classifier",
+      "usage": {
+        "tokensIn": 858,
+        "tokensCached": 0,
+        "tokensOut": 138,
+        "costUsd": 0.000465,
+        "energySpent": 5,
+        "firstTokenMs": 3222,
+        "totalMs": 5336
+      },
+      "trace": {
+        "messageId": "msg_mockS04",
+        "context": {
+          "budget": 14680,
+          "used": {
+            "persona": 351,
+            "system": 694,
+            "mode": 116,
+            "history": 84,
+            "user": 0,
+            "memory": 0,
+            "knowledge": 0
+          }
+        },
+        "emotion": {
+          "chosen": "neutral",
+          "source": "classifier",
+          "candidates": [
+            {
+              "label": "neutral",
+              "p": 0.92
+            },
+            {
+              "label": "happy",
+              "p": 0.07
+            },
+            {
+              "label": "thinking",
+              "p": 0.01
+            }
+          ]
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "output",
+              "verdict": "pass",
+              "p": 0.06
+            }
+          ]
+        },
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "Alibaba",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 3222,
+            "total": 5336
+          },
+          "tokensIn": 858,
+          "tokensOut": 138,
+          "costUsd": 0.000465,
+          "tokensCached": 0
+        },
+        "energy": {
+          "characterId": "chr_seedVictor",
+          "spent": 5,
+          "remaining": 855,
+          "max": 1000
+        },
+        "routing": {
+          "selected": "chr_seedVictor",
+          "forcedBy": "round_order"
+        },
+        "calls": [
+          {
+            "purpose": "turn_plan",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000036,
+            "latencyMs": 454
+          },
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000465,
+            "latencyMs": 11422
+          }
+        ],
+        "graph": {
+          "path": [
+            "state",
+            "ask",
+            "decide",
+            "route"
+          ]
+        },
+        "system1": {
+          "seed": "2026-09-22T13:19:59.406Z|debate|chr_seedAmara,chr_seedVictor:1",
+          "questions": [
+            {
+              "purpose": "turn_plan",
+              "id": "emotion_debate_opening",
+              "version": 2,
+              "label": "emotion",
+              "about": "chr_seedVictor",
+              "answer": "neutral",
+              "p": 0.92,
+              "compared": [
+                {
+                  "name": "p_neutral+p_none",
+                  "value": 0.92,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.55,
+              "result": "used",
+              "action": "shown"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "docs",
+              "version": 2,
+              "label": "needs documents?",
+              "about": "chr_seedVictor",
+              "answer": "—",
+              "compared": [],
+              "result": "skipped",
+              "action": "skipped: no searchable documents"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "earlier",
+              "version": 2,
+              "label": "needs something from earlier?",
+              "about": "chr_seedVictor",
+              "answer": "—",
+              "compared": [],
+              "result": "skipped",
+              "action": "skipped: nothing earlier to search"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "unsafe_note",
+              "version": 1,
+              "label": "unsafe note?",
+              "answer": "—",
+              "compared": [],
+              "result": "skipped",
+              "action": "skipped: no Interject this turn"
+            },
+            {
+              "purpose": "guardrail",
+              "id": "output_rules",
+              "version": 1,
+              "label": "reply breaks the rules?",
+              "answer": "no",
+              "p": 0.06,
+              "compared": [
+                {
+                  "name": "tFlag",
+                  "value": 0.06,
+                  "threshold": 0.5
+                },
+                {
+                  "name": "tBlock",
+                  "value": 0.06,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "used",
+              "action": "pass"
+            },
+            {
+              "purpose": "face_check",
+              "id": "face_check",
+              "version": 1,
+              "label": "face and words agree?",
+              "answer": "—",
+              "compared": [],
+              "result": "skipped",
+              "action": "skipped: neutral face"
+            }
+          ]
+        }
+      },
+      "reactions": [
+        {
+          "characterId": "chr_seedAmara",
+          "emotion": "thinking",
+          "p": 0.8,
+          "at": "2026-09-22T13:20:16.079Z"
+        }
+      ]
+    },
+    {
+      "id": "msg_mockS05",
+      "sessionId": "ses_mockHostSugar",
+      "seq": 5,
+      "author": {
+        "type": "system"
+      },
+      "kind": "system_note",
+      "content": "ROUND 2 · CLOSING",
+      "status": "complete",
+      "createdAt": "2026-09-22T13:20:16.832Z"
+    },
+    {
+      "id": "msg_mockS06",
+      "sessionId": "ses_mockHostSugar",
+      "seq": 6,
+      "author": {
+        "type": "host"
+      },
+      "kind": "narration",
+      "content": "Amara Okafor argued that a sugary-drink tax cuts consumption, prompts reformulation, and funds prevention against costs borne by all. Victor Hale argued it is a regressive levy with weak causal evidence. We now move to closing statements.",
+      "status": "complete",
+      "createdAt": "2026-09-22T13:20:17.378Z"
+    },
+    {
+      "kind": "chat",
+      "debate": {
+        "phase": "closing",
+        "round": 2,
+        "iteration": 1,
+        "side": "prop"
+      },
+      "id": "msg_mockS07",
+      "sessionId": "ses_mockHostSugar",
+      "seq": 7,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedAmara"
+      },
+      "content": "Victor's regressivity point is real, and I'll grant it: a flat levy costs a poor household proportionally more. But compare it to the alternative we already have — diabetes and heart disease also fall hardest on the poorest, and those costs arrive as emergencies, not receipts. Reformulation isn't a dodge; it's the mechanism working. On causation, no single study proves everything, but the direction is consistent: price goes up, purchases go down. That's enough to act.",
+      "status": "complete",
+      "createdAt": "2026-09-22T13:20:24.353Z",
+      "emotion": "thinking",
+      "emotionSource": "classifier",
+      "usage": {
+        "tokensIn": 1215,
+        "tokensCached": 768,
+        "tokensOut": 100,
+        "costUsd": 0.000305,
+        "energySpent": 4,
+        "firstTokenMs": 5027,
+        "totalMs": 6425
+      },
+      "trace": {
+        "messageId": "msg_mockS07",
+        "context": {
+          "budget": 14680,
+          "used": {
+            "persona": 397,
+            "system": 716,
+            "mode": 129,
+            "history": 535,
+            "user": 0,
+            "memory": 0,
+            "knowledge": 0
+          }
+        },
+        "search": {
+          "vectorMs": 1458.8
+        },
+        "emotion": {
+          "chosen": "thinking",
+          "source": "classifier",
+          "candidates": [
+            {
+              "label": "thinking",
+              "p": 0.61
+            },
+            {
+              "label": "angry",
+              "p": 0.18
+            },
+            {
+              "label": "neutral",
+              "p": 0.05
+            }
+          ]
+        },
+        "knowledge": {
+          "query": "This house would tax sugary drinks Victor Hale: Let us begin where I always begin: define your terms. \"Tax\" is a euphem…",
+          "trigger": "gated",
+          "retrieved": [
+            {
+              "chunkId": "kch_amaraFat06",
+              "sourceId": "kno_seedAmara1",
+              "title": "Meridian Shift Fatigue Review 2025",
+              "locator": "p. 2",
+              "text": "## 1.1 What this review does not measure\n\nThe review relies on what staff report. It does not measure fatigue objectively, and it cannot prove that long blocks cause errors. It shows associations that are consistent across sites, departments and months. Where we discuss costs, we use the Trust finance office's standard figures.",
+              "score": 0.13,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraTri14",
+              "sourceId": "kno_seedAmara2",
+              "title": "ED triage guidelines",
+              "locator": "p. 4",
+              "text": "## 4.2 Saying what advice is\n\nAdvice given by phone or chat must say clearly that it is not an examination. Tell the patient which symptoms mean they should come in person.\n\nGood practice in every conversation:\n\n1. Ask one or two clarifying questions before giving any advice: where the pain is, how long it has lasted, and what has changed recently.\n2. Give the most likely explanation in plain language, and say how confident you are.\n3. Give simple, safe self-care steps.\n4. Always finish with the red flags that mean the patient should come in, and say \"today\" or \"now\" where it applies.",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraTri06",
+              "sourceId": "kno_seedAmara2",
+              "title": "ED triage guidelines",
+              "locator": "p. 2",
+              "text": "## 2.2 Tension-type headache\n\nUsually described as a band or pressure around the head, often worse at the end of the day. It is associated with stress, poor sleep, long screen time and missed meals. It does not usually cause vomiting or sensitivity to light.",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraFat20",
+              "sourceId": "kno_seedAmara1",
+              "title": "Meridian Shift Fatigue Review 2025",
+              "locator": "p. 11",
+              "text": "## Appendix: the fatigue scale\n\nNine items, each scored 0 (not at all) to 4 (extremely): sleepiness at the start of the shift; sleepiness at the end; difficulty concentrating; irritability; physical exhaustion; headache; change in appetite; poor sleep quality; and \"how tired are you right now\" . Scores of 18 and above are treated as high fatigue in this review.",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraTri09",
+              "sourceId": "kno_seedAmara2",
+              "title": "ED triage guidelines",
+              "locator": "p. 2",
+              "text": "## 2.5 Medication-overuse headache\n\nTaking simple painkillers on more than about fifteen days a month can itself cause daily headaches. Ask how often the patient takes painkillers, and suggest a GP review rather than more medication.",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraFat09",
+              "sourceId": "kno_seedAmara1",
+              "title": "Meridian Shift Fatigue Review 2025",
+              "locator": "p. 4",
+              "text": "## 3. Burnout\n\nSelf-reported burnout rose in every quarter of the review period. By October, 41% of emergency department staff met the review's threshold for high burnout, up from\n\nAcross the whole Trust, high burnout rose from 22% to 30%. The rise was steepest among staff in their first five years after qualifying and among those with caring\n\n29% in January. responsibilities at home.\n\nBurnout and fatigue moved together but were not the same thing. Some staff with high fatigue scores did not report burnout, usually those on predictable rotas who described their tiredness as \"physical, not mental\" . Burnout was most common where fatigue combined with unpredictability: the sense that rest could be taken away at any time.",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraFat08",
+              "sourceId": "kno_seedAmara1",
+              "title": "Meridian Shift Fatigue Review 2025",
+              "locator": "p. 3",
+              "text": "## 2.1 Short-notice changes\n\nRest days cancelled with less than 48 hours' notice were the second strongest predictor of fatigue. In emergency and acute medicine, one rest day in nine was cancelled at short notice, usually to cover sickness. In community and day-surgery settings the figure was one in forty.",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_amaraFat16",
+              "sourceId": "kno_seedAmara1",
+              "title": "Meridian Shift Fatigue Review 2025",
+              "locator": "p. 9",
+              "text": "## 8. Retention\n\nVoluntary resignations among nursing staff reached 14% over the year. The Trust's finance office puts each replacement at roughly four months of salary once recruitment, induction and supervised practice are counted.\n\nThe rate was highest in the emergency department (19%) and lowest in day surgery (6%). Two thirds of leavers had been with the Trust for under five years.\n\nReplacing a nurse is not only a cost. New starters need supervision, which takes experienced staff away from patients during the first months. Wards with high turnover were also the wards with the most short-notice rest-day cancellations, a cycle the review describes as \"exhaustion feeding exhaustion\" .",
+              "score": 0,
+              "cited": false
+            }
+          ]
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "output",
+              "verdict": "pass",
+              "p": 0.05
+            }
+          ]
+        },
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "Alibaba",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 5027,
+            "total": 6425
+          },
+          "tokensIn": 1215,
+          "tokensOut": 100,
+          "costUsd": 0.000305,
+          "tokensCached": 768
+        },
+        "energy": {
+          "characterId": "chr_seedAmara",
+          "spent": 4,
+          "remaining": 991,
+          "max": 1000
+        },
+        "routing": {
+          "selected": "chr_seedAmara",
+          "forcedBy": "round_order"
+        },
+        "calls": [
+          {
+            "purpose": "turn_plan",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000063,
+            "latencyMs": 406
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000028,
+            "latencyMs": 391
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000027,
+            "latencyMs": 422
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000029,
+            "latencyMs": 422
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000032,
+            "latencyMs": 422
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000027,
+            "latencyMs": 438
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.00003,
+            "latencyMs": 454
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000031,
+            "latencyMs": 453
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000028,
+            "latencyMs": 469
+          },
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000305,
+            "latencyMs": 4422
+          },
+          {
+            "purpose": "guardrail",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000033,
+            "latencyMs": 406
+          },
+          {
+            "purpose": "face_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000034,
+            "latencyMs": 454
+          }
+        ],
+        "graph": {
+          "path": [
+            "state",
+            "ask",
+            "decide",
+            "route",
+            "gather",
+            "search",
+            "check",
+            "keep"
+          ]
+        },
+        "system1": {
+          "seed": "2026-09-22T13:19:59.406Z|debate|chr_seedAmara,chr_seedVictor:2",
+          "questions": [
+            {
+              "purpose": "turn_plan",
+              "id": "emotion_line",
+              "version": 3,
+              "label": "emotion",
+              "about": "chr_seedAmara",
+              "answer": "thinking",
+              "p": 0.61,
+              "compared": [
+                {
+                  "name": "confidence",
+                  "value": 0.55,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.55,
+              "result": "used",
+              "action": "shown"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "docs",
+              "version": 2,
+              "label": "needs documents?",
+              "about": "chr_seedAmara",
+              "answer": "yes",
+              "p": 0.85,
+              "compared": [
+                {
+                  "name": "t_gate",
+                  "value": 0.85,
+                  "threshold": 0.45
+                }
+              ],
+              "result": "used",
+              "action": "search the documents"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "earlier",
+              "version": 2,
+              "label": "needs something from earlier?",
+              "about": "chr_seedAmara",
+              "answer": "—",
+              "compared": [],
+              "result": "skipped",
+              "action": "skipped: nothing earlier to search"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "unsafe_note",
+              "version": 1,
+              "label": "unsafe note?",
+              "answer": "—",
+              "compared": [],
+              "result": "skipped",
+              "action": "skipped: no Interject this turn"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraFat06",
+              "answer": "doesn't help",
+              "p": 0.24,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0.24,
+                  "threshold": 0.9
+                },
+                {
+                  "name": "t_found",
+                  "value": 0.02,
+                  "threshold": 0.5
                 }
               ],
               "result": "below_threshold",
@@ -929,7 +1154,7 @@
               "id": "passage",
               "version": 2,
               "label": "does this passage answer it?",
-              "about": "kch_amaraFat07",
+              "about": "kch_amaraTri14",
               "answer": "doesn't help",
               "p": 0,
               "compared": [
@@ -937,6 +1162,103 @@
                   "name": "t_keep",
                   "value": 0,
                   "threshold": 0.9
+                },
+                {
+                  "name": "t_found",
+                  "value": 0,
+                  "threshold": 0.5
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraTri06",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                },
+                {
+                  "name": "t_found",
+                  "value": 0,
+                  "threshold": 0.5
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraFat20",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                },
+                {
+                  "name": "t_found",
+                  "value": 0,
+                  "threshold": 0.5
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraTri09",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                },
+                {
+                  "name": "t_found",
+                  "value": 0,
+                  "threshold": 0.5
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraFat09",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                },
+                {
+                  "name": "t_found",
+                  "value": 0,
+                  "threshold": 0.5
                 }
               ],
               "result": "below_threshold",
@@ -955,6 +1277,34 @@
                   "name": "t_keep",
                   "value": 0,
                   "threshold": 0.9
+                },
+                {
+                  "name": "t_found",
+                  "value": 0,
+                  "threshold": 0.5
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_amaraFat16",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                },
+                {
+                  "name": "t_found",
+                  "value": 0,
+                  "threshold": 0.5
                 }
               ],
               "result": "below_threshold",
@@ -987,8 +1337,8 @@
               "id": "face_check",
               "version": 1,
               "label": "face and words agree?",
-              "answer": "no (words read: angry)",
-              "p": 0.11,
+              "answer": "no (words read: neutral)",
+              "p": 0.26,
               "compared": [],
               "result": "shown_only"
             }
@@ -999,8 +1349,8 @@
         {
           "characterId": "chr_seedVictor",
           "emotion": "thinking",
-          "p": 0.83,
-          "at": "2026-09-22T13:20:17.433Z"
+          "p": 0.76,
+          "at": "2026-09-22T13:20:26.829Z"
         }
       ]
     },
@@ -1019,19 +1369,19 @@
         "type": "character",
         "characterId": "chr_seedVictor"
       },
-      "content": "The house must decide one thing: whether the burden of proof has been met. It has not. My learned friend concedes the tax is regressive, then asks you to trust that the revenue answers the objection. That is a promise dressed as a policy, and promises are not proof. Honest pricing, she says. Who defines honest? The state sets the price, collects the price, and spends the price, and calls that autonomy. No new argument is needed: a burden unmet is a burden lost. The Opposition rests.",
+      "content": "The proposer has been generous at the end, granting the regressivity, and I accept it, because it concedes the whole case in miniature: she has admitted her instrument lands hardest on those least able to bear it, then asked us to weigh that against a disease burden she says is worse. That is an argument from necessity, not from wisdom. To what is still open: nothing of substance. The claim that price reduces purchases is not contested; the claim that it improves health outcomes is not shown. A levy can lower purchases and raise revenue simultaneously, and only one of those things funds hospitals. Her mechanism and her premise remain two different claims wearing one coat. On the record, her case proves that a tax is plausible, not that it is just. Ours shows what it costs and whom it costs. I ask you to vote against the motion.",
       "status": "complete",
-      "createdAt": "2026-09-22T13:20:21.318Z",
+      "createdAt": "2026-09-22T13:20:29.385Z",
       "emotion": "thinking",
       "emotionSource": "classifier",
       "usage": {
-        "tokensIn": 1317,
+        "tokensIn": 1288,
         "tokensCached": 0,
-        "tokensOut": 108,
-        "costUsd": 0.000146,
-        "energySpent": 2,
-        "firstTokenMs": 2345,
-        "totalMs": 2839
+        "tokensOut": 174,
+        "costUsd": 0.000655,
+        "energySpent": 7,
+        "firstTokenMs": 1268,
+        "totalMs": 4754
       },
       "trace": {
         "messageId": "msg_mockS08",
@@ -1041,7 +1391,7 @@
             "persona": 351,
             "system": 694,
             "mode": 136,
-            "history": 783,
+            "history": 698,
             "user": 0,
             "memory": 0,
             "knowledge": 0
@@ -1053,48 +1403,15 @@
           "candidates": [
             {
               "label": "thinking",
-              "p": 0.51
+              "p": 0.54
             },
             {
               "label": "angry",
-              "p": 0.12
+              "p": 0.16
             },
             {
               "label": "neutral",
-              "p": 0.03
-            }
-          ]
-        },
-        "knowledge": {
-          "query": "This house would tax sugary drinks Amara Okafor: Victor says silence isn't consent, but nobody consents to paying for s…",
-          "trigger": "gated",
-          "retrieved": [
-            {
-              "chunkId": "kch_victorMoot02",
-              "sourceId": "kno_seedVictor1",
-              "title": "Moot court notes",
-              "locator": "¶ 2",
-              "text": "¶ 5. Watch for the \"speed, not direction\" turn. Once the opposition accepts the goal, the debate is about implementation, and the side with a timetable wins it.\n\n¶ 6. Closing options: res ipsa loquitur; \"the destination is agreed\". Don't sound triumphant. Judges reward conceding a fair point gracefully.\n\n¶ 7. Definitions first. \"Nationwide\" means the default standard week in law, not an identical schedule for every employer. \"Adopt\" means legislate a standard with a transition, not switch overnight. If the opposition reads \"nationwide\" as \"identical\", correct it in the first rebuttal and keep correcting it.\n\n¶ 8. Their best argument is cost in coverage sectors. Do not deny it. Reframe it: the cost of exhaustion is already being paid, in sickness absence, agency fees and resignations. Ask for their number for the status quo.\n\n¶ 9. Questions to put to an economist: What is the cost of doing nothing? Which of your figures come from volunteers? Would you accept a staged timetable with sector trials written into it?",
-              "score": 0.125,
-              "cited": false
-            },
-            {
-              "chunkId": "kch_victorMoot01",
-              "sourceId": "kno_seedVictor1",
-              "title": "Moot court notes",
-              "locator": "¶ 1",
-              "text": "Moot court notes: \"This house would adopt a nationwide four-day work week\" V. Hale, for the Meridian Bar Society exhibition debate. Private notes.\n\n¶ 1. Expect the opposition to say the evidence base is narrow. Concede scope early, then shift the burden: the status quo is also a policy and has to justify itself.\n\n¶ 2. Historical anchor: the Meridian Working Hours Act 1931 made the two-day weekend the default. It gave agriculture and shipping a ten-year transition and exempted continuous services.\n\n¶ 3. Continuous-coverage sectors already run on shift rules under Part IV of the Working Time Code: rest periods, a cap on consecutive shifts, and averaging over a reference period. A shorter standard week sits inside that structure.\n\n¶ 4. Phase-in precedent: sector-by-sector timetables, collective agreements first, the public sector as model employer. Courts have upheld staged duties where the end point is clear.",
-              "score": 0.01,
-              "cited": false
-            },
-            {
-              "chunkId": "kch_victorMoot03",
-              "sourceId": "kno_seedVictor1",
-              "title": "Moot court notes",
-              "locator": "¶ 3",
-              "text": "¶ 10. Questions to expect from a physician on my own side: patient safety on longer shifts. Answer: the standard week limits total hours; Part IV still caps consecutive shifts.\n\n¶ 11. Latin, sparingly. \"Res ipsa loquitur\" (the thing speaks for itself) for the close. \"Audi alteram partem\" (hear the other side) if accused of ignoring their evidence. Always translate.\n\n¶ 12. Structure for every speech: three points, numbered, each with one example. Finish on the burden of proof.",
-              "score": 0.015,
-              "cited": false
+              "p": 0.02
             }
           ]
         },
@@ -1109,21 +1426,21 @@
         },
         "model": {
           "id": "deepseek/deepseek-v4.1-flash",
-          "provider": "Relace",
+          "provider": "Alibaba",
           "pricePeriod": "off_peak",
           "latencyMs": {
-            "firstToken": 2345,
-            "total": 2839
+            "firstToken": 1268,
+            "total": 4754
           },
-          "tokensIn": 1317,
-          "tokensOut": 108,
-          "costUsd": 0.000146,
+          "tokensIn": 1288,
+          "tokensOut": 174,
+          "costUsd": 0.000655,
           "tokensCached": 0
         },
         "energy": {
           "characterId": "chr_seedVictor",
-          "spent": 2,
-          "remaining": 860,
+          "spent": 7,
+          "remaining": 848,
           "max": 1000
         },
         "routing": {
@@ -1134,43 +1451,25 @@
           {
             "purpose": "turn_plan",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000065,
-            "latencyMs": 453
-          },
-          {
-            "purpose": "deep_check",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000035,
-            "latencyMs": 438
-          },
-          {
-            "purpose": "deep_check",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000033,
-            "latencyMs": 484
-          },
-          {
-            "purpose": "deep_check",
-            "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.00003,
-            "latencyMs": 578
+            "costUsd": 0.000058,
+            "latencyMs": 406
           },
           {
             "purpose": "reply",
             "model": "deepseek/deepseek-v4.1-flash",
-            "costUsd": 0.000146,
-            "latencyMs": 1954
+            "costUsd": 0.000655,
+            "latencyMs": 4672
           },
           {
             "purpose": "guardrail",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000033,
-            "latencyMs": 485
+            "costUsd": 0.000035,
+            "latencyMs": 422
           },
           {
             "purpose": "face_check",
             "model": "typesafe/jev-1.13-20260917",
-            "costUsd": 0.000035,
+            "costUsd": 0.000037,
             "latencyMs": 422
           }
         ],
@@ -1179,15 +1478,11 @@
             "state",
             "ask",
             "decide",
-            "route",
-            "gather",
-            "search",
-            "check",
-            "keep"
+            "route"
           ]
         },
         "system1": {
-          "seed": "2026-09-22T13:19:59.985Z|debate|chr_seedAmara,chr_seedVictor:3",
+          "seed": "2026-09-22T13:19:59.406Z|debate|chr_seedAmara,chr_seedVictor:3",
           "questions": [
             {
               "purpose": "turn_plan",
@@ -1196,15 +1491,15 @@
               "label": "emotion",
               "about": "chr_seedVictor",
               "answer": "thinking",
-              "p": 0.51,
+              "p": 0.54,
               "compared": [
                 {
                   "name": "confidence",
-                  "value": 0.44,
+                  "value": 0.47,
                   "threshold": 0.2
                 }
               ],
-              "confidence": 0.44,
+              "confidence": 0.47,
               "result": "used",
               "action": "shown"
             },
@@ -1214,71 +1509,31 @@
               "version": 2,
               "label": "needs documents?",
               "about": "chr_seedVictor",
-              "answer": "yes",
-              "p": 0.46,
-              "compared": [
-                {
-                  "name": "t_gate",
-                  "value": 0.46,
-                  "threshold": 0.45
-                }
-              ],
-              "result": "used",
-              "action": "search the documents"
+              "answer": "—",
+              "compared": [],
+              "result": "skipped",
+              "action": "skipped: no searchable documents"
             },
             {
-              "purpose": "deep_check",
-              "id": "passage",
+              "purpose": "turn_plan",
+              "id": "earlier",
               "version": 2,
-              "label": "does this passage answer it?",
-              "about": "kch_victorMoot02",
-              "answer": "doesn't help",
-              "p": 0.24,
-              "compared": [
-                {
-                  "name": "t_keep",
-                  "value": 0.24,
-                  "threshold": 0.9
-                }
-              ],
-              "result": "below_threshold",
-              "action": "dropped"
+              "label": "needs something from earlier?",
+              "about": "chr_seedVictor",
+              "answer": "—",
+              "compared": [],
+              "result": "skipped",
+              "action": "skipped: nothing earlier to search"
             },
             {
-              "purpose": "deep_check",
-              "id": "passage",
-              "version": 2,
-              "label": "does this passage answer it?",
-              "about": "kch_victorMoot01",
-              "answer": "doesn't help",
-              "p": 0.02,
-              "compared": [
-                {
-                  "name": "t_keep",
-                  "value": 0.02,
-                  "threshold": 0.9
-                }
-              ],
-              "result": "below_threshold",
-              "action": "dropped"
-            },
-            {
-              "purpose": "deep_check",
-              "id": "passage",
-              "version": 2,
-              "label": "does this passage answer it?",
-              "about": "kch_victorMoot03",
-              "answer": "doesn't help",
-              "p": 0.03,
-              "compared": [
-                {
-                  "name": "t_keep",
-                  "value": 0.03,
-                  "threshold": 0.9
-                }
-              ],
-              "result": "below_threshold",
-              "action": "dropped"
+              "purpose": "turn_plan",
+              "id": "unsafe_note",
+              "version": 1,
+              "label": "unsafe note?",
+              "answer": "—",
+              "compared": [],
+              "result": "skipped",
+              "action": "skipped: no Interject this turn"
             },
             {
               "purpose": "guardrail",
@@ -1308,7 +1563,7 @@
               "version": 1,
               "label": "face and words agree?",
               "answer": "no (words read: angry)",
-              "p": 0,
+              "p": 0.03,
               "compared": [],
               "result": "shown_only"
             }
@@ -1326,7 +1581,7 @@
       "kind": "system_note",
       "content": "ROUND 3 · VERDICT",
       "status": "complete",
-      "createdAt": "2026-09-22T13:20:23.728Z"
+      "createdAt": "2026-09-22T13:20:34.800Z"
     },
     {
       "id": "msg_mockS10",
@@ -1336,9 +1591,9 @@
         "type": "host"
       },
       "kind": "narration",
-      "content": "Thank you, Dr. Okafor and Mr. Hale, for your arguments on whether this house would tax sugary drinks. The arbiter is now weighing the arguments.",
+      "content": "Thank you, Amara Okafor and Victor Hale, for your clear and rigorous arguments on whether this house would tax sugary drinks. The arbiter is now weighing the arguments.",
       "status": "complete",
-      "createdAt": "2026-09-22T13:20:24.506Z"
+      "createdAt": "2026-09-22T13:20:35.078Z"
     },
     {
       "id": "msg_mockS11",
@@ -1350,7 +1605,7 @@
       "kind": "verdict",
       "content": "STRONGER CASE: PROPOSITION",
       "status": "complete",
-      "createdAt": "2026-09-22T13:20:26.432Z"
+      "createdAt": "2026-09-22T13:20:38.226Z"
     }
   ]
 }

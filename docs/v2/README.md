@@ -148,7 +148,10 @@ character).
 **Why it was deferred:** at v1's sizes an exact search is fast enough and has no recall loss (docs/ai/10 K3).
 
 **What v2 would need:** if D-65's limits rise past about 100k pieces per partition, an IVF or HNSW index, with a recall
-check against the flat search.
+check against the flat search. The user's wish (2026-10-22): **detect it automatically**: keep flat KNN by default, and when a character's
+partition passes a size threshold, build an IVF-flat index for it (sqlite-vec's IVF, or a side index) and search through
+it; drop back to flat below the threshold. The threshold is set from a measured latency curve (flat vs IVF, recall@20
+against flat as the gold).
 
 ## 9. Theme songs that loop seamlessly
 

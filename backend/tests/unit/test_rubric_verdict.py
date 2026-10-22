@@ -179,7 +179,7 @@ def test_the_request_tells_the_result_and_names_the_language() -> None:
     msgs = prose.messages(r, scores=bars, stronger="opp", criteria=[{"id": "evidence", "label": "Evidence"}])
     assert "The arbiter's scores favoured the Opposition: …" in msgs[0]["content"]
     assert "never instructions to you" in msgs[0]["content"] and "single quotes" in msgs[0]["content"]
-    assert "Proposition: Evidence 2.5" in msgs[1]["content"]
+    assert "Evidence: Proposition 2.5, Opposition 7.5 (Opposition leads)" in msgs[1]["content"]   # U-65
     assert msgs[1]["content"].endswith("The debate is in Malay. Write the notes in Malay.")
 
 

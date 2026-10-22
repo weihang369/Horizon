@@ -102,12 +102,15 @@ def test_the_backend_reads_every_agent_knob() -> None:
     assert agent.k == {"one_on_one": 3, "group": 2, "watch": 2, "debate": 2}
     assert (agent.piece_target, agent.piece_max, agent.rewrite_ms, agent.deep_check_ms) == (300, 400, 1200, 1500)
     assert set(raw) == {"pool", "candidates", "blockTokens", "mmrLambda", "k", "pieceTarget", "pieceMax", "rewriteMs",
-                        "deepCheckMs", "queryEmbedWaitMs", "recall"}   # M13 (memory D42): recall's own knobs
+                        "deepCheckMs", "queryEmbedWaitMs", "docsEmbedWaitMs", "docsWaitAll", "recall"}
+    # M13 (memory D42): recall's own knobs
     rc = agent.recall
     assert (rc.pool, rc.per_corpus, rc.candidates, rc.mmr_lambda, rc.keep, rc.fallback_keep, rc.check_ms,
             rc.tail_tokens, rc.line_words) == (10, 5, 6, 0.7, 3, 2, 1500, 400, 60)
     assert (rc.lines_dense, rc.standout_p, rc.standout_ratio) == (True, 0.25, 3.0)   # M13 phase 10 (the user's choices)
     assert agent.query_embed_wait_ms == 200   # rag 11.5, 11.9: the agent path's own wait
+    assert agent.docs_embed_wait_ms == 10000 and agent.docs_wait_all   # U-45: deep insight waits for every stage
+    assert agent.wait_ms(1500) == 300_000
     assert agent.k_for("one_on_one") == 3 and agent.k_for("debate") == 2
     r = data["runtime"]["retrieval"]
     assert (r["knowledgeK"], r["memoryK"], r["queryEmbedWaitMs"]) == (5, 3, 400)   # naive and scripted keep theirs
