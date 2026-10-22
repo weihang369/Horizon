@@ -7,8 +7,10 @@ export const ACCEPT = ".pdf,.docx,.md,.markdown,.txt";
 /** D-65: pasted text is capped at 200 KB on both clients (files stay at 10 MB). */
 export const PASTE_MAX_BYTES = 204_800;
 export const pasteBytes = (text: string) => new TextEncoder().encode(text).length;
-/** "12.3 KB / 200 KB": the Paste text dialog's counter (KB = 1 024 bytes, as the limit is). */
-export const pasteCounter = (bytes: number) => `${(bytes / 1024).toFixed(bytes < 10_240 ? 1 : 0)} KB / 200 KB`;
+/** "33 B / 200 KB", "12.3 KB / 200 KB": the Paste text dialog's counter (KB = 1 024 bytes, as the limit is; bytes
+ * below 1 KB, where "0.0 KB" read as empty, U-80). */
+export const pasteCounter = (bytes: number) =>
+  `${bytes < 1024 ? `${bytes} B` : `${(bytes / 1024).toFixed(bytes < 10_240 ? 1 : 0)} KB`} / 200 KB`;
 /** Why the Paste text dialog can't be submitted yet, or null (the clients refuse the same inputs). */
 export function pasteProblem(title: string, text: string): string | null {
   if (!title.trim()) return "Give the pasted text a title.";

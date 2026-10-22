@@ -24,15 +24,33 @@ PDF and DOCX files SHALL be converted to Markdown, with a page marker before eac
 - **WHEN** a three-page PDF with text on every page is converted
 - **THEN** its passages carry locators `p. 1` to `p. 3` that match the pages their text came from
 
+### Requirement: OCR only where a page needs it
+A PDF SHALL be converted a few pages at a time, choosing OCR per page (D-118): a page with no text layer SHALL be OCRed whole; a page with a text layer and a picture covering at least 2 % of the page SHALL have its pictures OCRed; a page of plain text SHALL NOT be OCRed.
+
+#### Scenario: A screenshot on a text page is still read
+- **WHEN** a PDF of text pages has one page with a screenshot whose words are not in the text layer
+- **THEN** the screenshot's words are in that page's passages, and the plain pages are converted without OCR
+
+#### Scenario: A scan is still read
+- **WHEN** an image-only PDF is added
+- **THEN** its words are found by OCR
+
+### Requirement: Reading reports progress
+While a PDF is being converted, the source's progress SHALL move through the reading stage as batches of pages finish, so the bar never sits still for the whole document.
+
+#### Scenario: The bar moves while reading
+- **WHEN** a multi-page PDF is being converted
+- **THEN** the source's `extracting` progress rises from 5 % towards 45 % batch by batch, before chunking starts
+
 ### Requirement: Conversions are bounded and cancellable
-A conversion SHALL stop at a configurable timeout (default 10 minutes), when its source is deleted, and when the backend stops or is factory-reset. A stopped conversion SHALL leave no running process and no partial output. A timeout SHALL end the source `failed` with a readable reason.
+A conversion SHALL stop when it reports nothing for a configurable time (default 10 minutes since its last batch of pages, not since it started, so a long document that keeps reading is never cut off), when its source is deleted, and when the backend stops or is factory-reset. A stopped conversion SHALL leave no running process and no partial output. A timeout SHALL end the source `failed` with a readable reason.
 
 #### Scenario: Delete during conversion
 - **WHEN** a source is deleted while its PDF is being converted
 - **THEN** the conversion process is gone within a few seconds, and no file or row of that source remains
 
 #### Scenario: Timeout
-- **WHEN** a conversion runs past the configured timeout
+- **WHEN** a conversion reports no new pages for longer than the configured timeout
 - **THEN** its process is stopped, and the source is `failed` with an error saying reading the document took too long
 
 ### Requirement: Page limit is checked before converting

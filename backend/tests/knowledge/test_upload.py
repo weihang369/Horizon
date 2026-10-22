@@ -53,6 +53,18 @@ async def test_pasted_text_is_201_and_contract_valid(api: Api) -> None:
     assert orig.name == "original.txt" and orig.read_bytes() == b"Rice first."
 
 
+async def test_a_pasted_title_already_in_use_is_numbered(api: Api) -> None:
+    """U-80: two pastes titled "Notes" read "Notes" and "Notes (2)", any case, and a file's name counts as a title."""
+    titles = [(await add_text(api, t, f"Different words {i}.")).json()["title"]
+              for i, t in enumerate(["Notes", "Notes", "notes", "  Notes  "])]
+    assert titles == ["Notes", "Notes (2)", "notes (3)", "Notes (4)"]
+    assert (await add_file(api, "menu.md", b"# Menu", "text/markdown")).json()["title"] == "menu.md"
+    assert (await add_text(api, "menu.md", "Pasted under the file's name.")).json()["title"] == "menu.md (2)"
+    long = "x" * 200
+    assert (await add_text(api, long, "One.")).json()["title"] == long
+    assert (await add_text(api, long, "Two.")).json()["title"] == "x" * 196 + " (2)"
+
+
 async def test_markdown_file_is_accepted(api: Api) -> None:
     r = await add_file(api, "soups.md", b"# Soups\n\nMiso first.", "text/markdown")
     assert r.status_code == 201, r.text

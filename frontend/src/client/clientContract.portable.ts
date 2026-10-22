@@ -669,6 +669,14 @@ export function runPortableContract(label: string, makeHarness: MakeHarness, opt
       expect(src.id).toMatch(/^kno_[0-9A-Za-z]{1,40}$/);
     });
 
+    test("M5", "knowledge: a pasted title already in use is numbered, in any case (U-80)", async () => {
+      const { c } = await make();
+      const add = async (title: string, text: string) => (await c.characters.addKnowledge("chr_seedHana", { type: "text", title, text })).title;
+      expect(await add("Tea notes", "Steep three minutes.")).toBe("Tea notes");
+      expect(await add("Tea notes", "Pour slowly.")).toBe("Tea notes (2)");
+      expect(await add("tea notes", "Warm the cup.")).toBe("tea notes (3)");
+    });
+
     test("M5", "knowledge: files over 10 MB, a 21st source and duplicate content are refused", async () => {
       const { c } = await make();
       const big = new File([new Uint8Array(10 * 1024 * 1024 + 1)], "huge.txt", { type: "text/plain" });

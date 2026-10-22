@@ -3,7 +3,8 @@
 The upload has already been streamed and counted into `data/tmp/{uuid}.upload` (or is pasted text in memory) and its
 content checked. One writer transaction then:
 1. checks the character's source count against 20 (`details.limit: 20`);
-2. refuses a duplicate SHA-256 on the same character (`conflict`, `details.existingSourceId`);
+2. refuses a duplicate SHA-256 on the same character (`conflict`, `details.existingSourceId`), and numbers a pasted
+   text whose title the character already uses ("Notes (2)", U-80), so two cards never read the same;
 3. moves the original to `knowledge/{world}/{character}/{source}/original.{ext}` (atomic replace, before the commit,
    so the row never points to a missing file; removed again if the commit fails);
 4. inserts the source as `queued` and announces it after the commit.
@@ -31,13 +32,26 @@ from horizon.db import tables as t
 from horizon.domain.ids import new_id
 from horizon.events.bus import GLOBAL
 from horizon.services import reads
-from horizon.services.knowledge.validate import MAX_SOURCES, MIME_OF, FileKind, too_many_sources
+from horizon.services.knowledge.validate import MAX_SOURCES, MIME_OF, TITLE_MAX, FileKind, too_many_sources
 from horizon.storage.atomic import write_atomic
 
 if TYPE_CHECKING:
     from horizon.runtime import Runtime
 
 EXT: dict[str, str] = {"pdf": "pdf", "docx": "docx", "md": "md", "txt": "txt", "text": "txt"}
+
+
+def numbered(title: str, taken: set[str]) -> str:
+    """`title`, or the first free "title (n)" from 2 up (compared case-folded; the base is cut to fit TITLE_MAX)."""
+    if title.casefold() not in taken:
+        return title
+    n = 2
+    while True:
+        suffix = f" ({n})"
+        candidate = title[:TITLE_MAX - len(suffix)] + suffix
+        if candidate.casefold() not in taken:
+            return candidate
+        n += 1
 
 
 def source_dir(rt: Runtime, world_id: str, character_id: str, source_id: str) -> Path:
@@ -92,6 +106,9 @@ async def create_source(rt: Runtime, character_id: str, *, kind: FileKind | None
                                                                           K.sha256 == sha)))).first()
             if dup is not None:
                 raise conflict(f"“{dup[1]}” already has this content.", {"existingSourceId": dup[0]})
+            if type_ == "text":
+                taken = (await tx.conn.execute(select(K.title).where(K.character_id == character_id))).scalars()
+                title = numbered(title, {str(x).casefold() for x in taken})
             folder = source_dir(rt, world_id, character_id, sid)
             final = folder / f"original.{ext}"
             if upload is not None:

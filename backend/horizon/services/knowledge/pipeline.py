@@ -132,7 +132,8 @@ class Pipeline:
                     await self.finish("failed", error=SETUP_STEPS)
                     return None
                 async with self.rt.docling_slots.slot():
-                    converted: ConvertedDoc = await converter.convert(path, kind, title=row["title"])
+                    converted: ConvertedDoc = await converter.convert(path, kind, title=row["title"],
+                                                                      on_progress=self.reading)
                 doc = converted
             else:
                 doc = await read_plain(path)
@@ -150,6 +151,11 @@ class Pipeline:
         await self.stage("extracting", extractor_version=doc.extractor, pages=doc.pages)
         self.progress("extracting", 0.45)
         return doc
+
+    def reading(self, done: int, total: int) -> None:
+        """Pages read so far move the bar through the reading part, 5 % → 45 % (U-80: it sat at 5 % for minutes)."""
+        if total > 0:
+            self.progress("extracting", 0.05 + 0.40 * min(done, total) / total)
 
     async def _stored_doc(self) -> ConvertedDoc | None:
         row = self.row

@@ -68,6 +68,22 @@ async def test_scanned_pdf_is_read_by_ocr(tmp_path: Path) -> None:
     assert "night shift starts at seven" in words, doc.markdown[:300]
 
 
+async def test_ocr_reads_a_picture_on_a_text_page_and_progress_is_reported(tmp_path: Path) -> None:
+    """U-80: OCR is chosen per page. The plain pages skip it; the page with a screenshot is still OCRed, so the
+    picture's words (not in the text layer) reach the Markdown; the bar's progress arrives batch by batch."""
+    body = docs_kit.picture_pdf([("Plain page one.", None), ("Plain page two.", None),
+                                 ("The screenshot below shows the code.", (["The secret code is BLUEFOX"], 420, 160)),
+                                 ("Plain page four.", None)])
+    seen: list[tuple[int, int]] = []
+    doc = await DoclingConverter(MODELS).convert(write(tmp_path, "mixed.pdf", body), "pdf", title="mixed.pdf",
+                                                 on_progress=lambda d, n: seen.append((d, n)))
+    assert doc.pages == 4
+    assert [int(n) for n in re.findall(r"<!-- page (\d+) -->", doc.markdown)] == [1, 2, 3, 4]
+    assert "bluefox" in doc.markdown.lower(), doc.markdown
+    assert "Plain page four." in doc.markdown
+    assert seen == [(2, 4), (3, 4), (4, 4)]
+
+
 async def test_over_the_page_limit_fails_fast(tmp_path: Path) -> None:
     src = write(tmp_path, "huge.pdf", docs_kit.pdf([f"Page {i}." for i in range(1, 413)]))
     t0 = time.monotonic()
