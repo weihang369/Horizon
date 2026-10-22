@@ -4827,7 +4827,7 @@
     "id": "evt_forkFixture1e93",
     "sessionId": "ses_forkFixture1",
     "seq": 93,
-    "at": "2026-10-01T10:01:45.195Z",
+    "at": "2026-09-29T21:15:35.799Z",
     "type": "session.paused",
     "payload": {
      "reason": "navigated_away"
@@ -4858,7 +4858,7 @@
    "costUsd": 0.000762,
    "messageCount": 9,
    "createdAt": "2026-10-03T03:00:00.000Z",
-   "updatedAt": "2026-10-01T10:01:45.195Z",
+   "updatedAt": "2026-09-29T21:15:35.799Z",
    "pausedReason": "navigated_away",
    "lastMessageAt": "2026-09-29T21:15:18.238Z",
    "continuedFrom": "ses_seedAmaraHeadache"

@@ -26,7 +26,7 @@
     "costUsd": 0.000106,
     "messageCount": 7,
     "createdAt": "2026-09-26T11:30:04.611Z",
-    "updatedAt": "2026-10-01T10:01:49.845Z",
+    "updatedAt": "2026-09-26T11:31:23.600Z",
     "lastMessageAt": "2026-09-26T11:31:05.869Z"
   },
   "events": [
@@ -2077,7 +2077,7 @@
       "id": "evt_01M5H7TVMVN3FV5WF9ZA8CKR2T",
       "sessionId": "ses_01M5H5GJVWMQNVWPTKV2AYGVVT",
       "seq": 62,
-      "at": "2026-10-01T10:01:49.845Z",
+      "at": "2026-09-26T11:31:23.600Z",
       "type": "session.paused",
       "payload": {
         "reason": "navigated_away"
