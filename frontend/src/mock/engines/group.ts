@@ -1,5 +1,5 @@
 // Group engine (MULTI-02/03/04, ENG-04 AC3): mentions first, then up to 2 by score (Auto), everyone, or mentioned
-// only. Exhausted or muted characters are skipped with a system note; routing candidates go into the trace. Owner: EE.
+// only. Exhausted or muted characters are skipped with a system note; routing candidates go into the trace.
 import type { GroupConfig } from "../../contract/types";
 import { decisionCostUsd, ROUTE_DECISION_TOKENS } from "../../domain/cost";
 import type { EngineHost } from "./host";

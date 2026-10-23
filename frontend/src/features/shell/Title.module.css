@@ -1,5 +1,5 @@
 /* S01 Title. Choreography (VMD §2.4): 150 tiles drop (60 ms stagger) · 700 band sweeps · 1000 subtitle types ·
- * 1300 "PRESS ANY KEY" pulses. Reduced motion: one 300 ms fade. Colours: house tokens only. Owner: Builder A. */
+ * 1300 "PRESS ANY KEY" pulses. Reduced motion: one 300 ms fade. Colours: house tokens only. */
 .title {
   --logo-size: min(12.4vw, 21vh);
   --horizon-y: 61%;

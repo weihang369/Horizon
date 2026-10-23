@@ -233,7 +233,7 @@ very long backstory also drowns the speaking style.
   `role`), filled in `sessions/context.py`, which already loads every cast row. The existing `role` is the
   participant role (`speaker` / `debater`).
 - Watch says "may step in" because `watch.step_in` lets the user post and two characters answer; the cached block
-  must be true either way. U-64 (the user's choice, 2026-10-22): the watcher is off-stage until they speak in it, so
+  must be true either way. U-64 (the maintainer's choice, 2026-10-22): the watcher is off-stage until they speak in it, so
   the block says to talk to each other, not to them (in the real-user test Hana spoke to Kai in 4 of 20 watch lines;
   after the change, 0 of 20).
 - Debate arguments and host lines stay one bubble (C5); their prompts are doc 08's (V4, V6).

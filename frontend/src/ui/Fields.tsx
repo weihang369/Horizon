@@ -1,4 +1,4 @@
-// TextField, TextArea, Select, Menu (spec §3.7). Owner: VMD.
+// TextField, TextArea, Select, Menu (spec §3.7).
 import {
   forwardRef, useEffect, useId, useRef, useState,
   type InputHTMLAttributes, type KeyboardEvent, type ReactNode, type TextareaHTMLAttributes,

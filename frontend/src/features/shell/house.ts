@@ -1,6 +1,5 @@
 // House-palette screens (Title, Onboarding, Worlds, Hub, Settings): snap the app root back to the house palette on
 // entry so a palette left by a profile or 1:1 never leaks in (R9), and keep the system main theme playing (MUS-05).
-// Owner: Builder A.
 import { useEffect } from "react";
 import tracks from "@seed/system-tracks.json";
 import { audio } from "../../audio/engine";

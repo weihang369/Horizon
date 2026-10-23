@@ -1,4 +1,4 @@
-// Chip, ChipGroup, Tabs, Toggle, Segmented, Slider, Swatch (spec §3.7). Owner: VMD.
+// Chip, ChipGroup, Tabs, Toggle, Segmented, Slider, Swatch (spec §3.7).
 import { useId, useRef, type ButtonHTMLAttributes, type CSSProperties, type KeyboardEvent, type ReactNode } from "react";
 import type { Palette } from "../contract/types";
 import s from "./Controls.module.css";

@@ -37,7 +37,7 @@ from horizon.services.memory.stretch import Present, Stretch, StretchLine
 log = logging.getLogger("horizon.memory.rewrite")
 
 PURPOSE = "memory"
-PROMPT_VERSION = "memory-2"   # phase 10 (the user's choice): a character's lines hold only what it heard
+PROMPT_VERSION = "memory-2"   # phase 10 (the maintainer's choice): a character's lines hold only what it heard
 TOKENS_PER_CHARACTER = 600
 TOKENS_BASE = 200
 TOKENS_MAX = 3_000
@@ -238,7 +238,7 @@ def check(raw: Sequence[Any], stretch: Stretch, writing: Sequence[Present] | Non
             about = None
         else:
             other = everyone.get(_int(about_raw) or -1)
-            if other is None:   # phase 10 (the user's choice): the call writes 0 for the user; keep the line
+            if other is None:   # phase 10 (the maintainer's choice): the call writes 0 for the user; keep the line
                 out.log.append({"step": "rewrite", "why": "about names no one present: read as the user",
                                 "change": item})
             else:

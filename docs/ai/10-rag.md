@@ -461,7 +461,7 @@ the deep graph's gather step, only for a speaker with an `indexed` source, and i
 embedder's in-flight de-duplication. In 1:1 a new message queues behind the reply rather than superseding it, so Stop
 is 1:1's cut; in group a newer message cancels the deep work (m12.md).*
 
-*Amended in M12 (`rag` D32.2, D32.8, the user's choices):
+*Amended in M12 (`rag` D32.2, D32.8, the maintainer's choices):
 - **The embedding starts with Jev call 1** for a candidate with vectors (K15's trim 2), waited for up to 200 ms after
   check 2. The rewrite's own vector is never waited for, and in 1:1 the rewrite of a message of at most six words
   starts with Jev call 1 too (K15's trim 1). *Superseded by D-111 (2026-10-22): measured live, 0 of 25 query vectors came
@@ -598,7 +598,7 @@ plan; elsewhere it starts as soon as the speaker and their gate are known (`star
 
 *Tuned in M12 ([m12.md](checks/m12.md) 11.5, 11.6; `rag` D32.6). Jev call 2's slowest-of-8 is p90 ≈ 1.3 s from
 Malaysia. At `deepCheckMs` 700 about 1 turn in 7 fell back, and only 13 of 26 dev unanswerable questions abstained.
-- **By the user's choice, `deepCheckMs` is 1,500.**
+- **By the maintainer's choice, `deepCheckMs` is 1,500.**
 - **The thresholds** `t_keep` **0.9** and `t_found` **0.5** come from the leave-one-out on dev with every answer back
   (`passage` v2). `t_set` stays 0.5 (18 set checks, fewer than 20).
 - **Test, once:** 1 wrong abstain in 57 and 13 of 14 unanswerable abstained, both passing B5.
@@ -674,7 +674,7 @@ the conversation's language.
 > That's not something the fatigue review covers. Pay sits with HR, not the rota data.
 > From what I've seen on the ward, though, night premiums rarely make up for the sleep you lose.
 
-**Rejected (the user's choice):**
+**Rejected (the maintainer's choice):**
 - **a strict refusal;**
 - **a silent general answer.**
 
@@ -696,7 +696,7 @@ only where abstaining is allowed (D8).*
   - listener reactions and the rolling summary still run after `turn.end`.
 - **Later:** task 13 may add the citation check to the System 1 section as a flag. It never removes a chip, because
   that would need `turn.end` to carry corrected text (a contract change). **[doc 13](13-wrap-up.md) W2 kept it evaluation-only
-  (the user's choice).**
+  (the maintainer's choice).**
 
 **Why:**
 - Citations can only point at pieces that code put in the block (K8), and Jev scored those pieces as answering or
@@ -704,7 +704,7 @@ only where abstaining is allowed (D8).*
 - What remains is whether a sentence says what its passage says. The evaluation measures that, and a live check
   would add cost, delay the chips and need a contract change.
 
-**Rejected (the user's choice):** a live Jev check after each reply.
+**Rejected (the maintainer's choice):** a live Jev check after each reply.
 
 *M12 (`rag`) adds no live check (D25). The two B4 rows run in the conversations suite, which is paid at M15 (doc 13
 W6); M12 builds and validates only the Not-found reply's two judges (K14).*
@@ -832,7 +832,7 @@ only re-embed, keeping their IDs; startup never re-chunks (`tests/knowledge/test
 - **The naming questions keep up** (Recall@8 1.000 on dev and test), so K2's "Jev picks the named document" isn't
   revisited.
 - **The Not-found reply:** both judges pass B4. Where K9's lines are sent they work (14 of 16), but only 12 of 40
-  unanswerable turns reach them, so the row is reported both ways (the user's choice).
+  unanswerable turns reach them, so the row is reported both ways (the maintainer's choice).
 - **Sentence faithfulness** on the two-passage items is M15's conversations, so multi-document thinking stays off.*
 
 ### K15. Speed and cost in one place
@@ -863,7 +863,7 @@ only re-embed, keeping their IDs; startup never re-chunks (`tests/knowledge/test
 
 Trims 1 and 2 spend before the gate, so they come back to the user first. Jev stays in every case (doc 07 G2).
 
-*Trim 2 applied in M12, before check 2 (`rag` D32, the user's choice, 2026-10-15). The first dev retrieval run
+*Trim 2 applied in M12, before check 2 (`rag` D32, the maintainer's choice, 2026-10-15). The first dev retrieval run
 measured the query embedding from Malaysia at ≈ 1.1 s median (0.9 s at the fastest, p90 3.3 s), so the 400 ms wait
 after the gate left 94 of 107 deep turns on keywords only. In 1:1 and group the message's embedding now starts with
 Jev call 1 for a candidate with vectors, and the `agent` path waits up to 800 ms (`retrieval.agent.queryEmbedWaitMs`).*
@@ -880,7 +880,7 @@ Jev call 1 for a candidate with vectors, and the `agent` path waits up to 800 ms
   | debate | 3.07 s p50 | NFR-02: just fails |
 
 - **The waste was the embedding wait:** Nebius ran p50 6.8–10.8 s that evening.
-- **By the user's choices (`rag` D32.9–11):**
+- **By the maintainer's choices (`rag` D32.9–11):**
   - the wait is 200 ms, and the rewrite's own vector is never waited for;
   - **trim 1 applies in 1:1** (a message of at most six words);
   - `rewriteMs` is 1,200.

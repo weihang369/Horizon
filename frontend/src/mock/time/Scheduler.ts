@@ -1,4 +1,4 @@
-// Scheduler: tagged timers on the virtual clock (jobs, engines). Owner: EE.
+// Scheduler: tagged timers on the virtual clock (jobs, engines).
 // Tags let a whole session or job be cancelled at once (Stop, cancel, mock reset).
 import type { Clock } from "./Clock";
 import { VirtualClock } from "./Clock";

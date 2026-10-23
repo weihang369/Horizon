@@ -173,7 +173,7 @@ The table lives in the seed-build source `frontend/scripts/seed-build/runtime.co
 | `probe` | Settings → Test, 1 token | off | none | text | today |
 
 Why these temperatures:
-- **Replies use 1.0** (changed from 1.3 in M8, `persona-context` D34, the user's choice on 2026-10-12). 1.3 is
+- **Replies use 1.0** (changed from 1.3 in M8, `persona-context` D34, the maintainer's choice on 2026-10-12). 1.3 is
   DeepSeek's value for conversation (F4), but M8's paid long runs showed it collapsing long chats into word salad in
   both `naive` and `agent`, with 32–47 % of replies cut off at `max_tokens`. On the same 50-turn script, 1.0 stayed
   coherent with no cut-offs (longest reply 84 tokens), and 0.7 turned stiff and repetitive (`docs/ai/checks/m8.md`).

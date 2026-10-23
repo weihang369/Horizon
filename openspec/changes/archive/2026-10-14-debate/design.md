@@ -423,7 +423,7 @@ Pass: at most 10 % of the 30 miss. Jev's slow spells are reported apart, as in M
 
 **If more than 10 % miss, V2's rule applies, and it is locked:** keep Jev, set `timeoutsMs.decision.debate_plan` from
 the measured p90 of `S + L`, record the NFR-02 exception for `turn.next`, and report the finding about Jev. Whether
-M11 merges with that exception is the user's choice (D29).
+M11 merges with that exception is the maintainer's choice (D29).
 
 **What a miss costs a viewer:** the announced member is the fixed-order one, and the turn starts on time. The face
 still comes from Jev if the answer lands within the 1.5 s pause, which it almost always does. So a miss costs the
@@ -464,7 +464,7 @@ The engine only renders.
 **"View as prompt"** shows system message 1, whose debate block already exists. One fixed note goes under it, built
 from the TS twin (M10 D10's pattern): "In a debate, each argument's cue names its round, e.g. “Give your rebuttal: …”".
 
-**The steer reword** (the user's choice, 2026-10-13). M10 found the steer closes scenes: 3 exits, 2 hand-offs to Kai
+**The steer reword** (the maintainer's choice, 2026-10-13). M10 found the steer closes scenes: 3 exits, 2 hand-offs to Kai
 and 2 reframes, out of 7. G3's sentence is replaced:
 - **old:** "This thread has run its course. Take the scene somewhere new that still fits the premise.";
 - **new:** "This thread has run its course. Bring in something new that fits the premise: an event, a discovery or a

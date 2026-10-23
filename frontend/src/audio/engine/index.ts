@@ -1,4 +1,4 @@
-// Audio engine (README §3.6, EE paper §2.8, MUS-01..10). Owner: EE. Buffer-only and outside React (D5).
+// Audio engine (README §3.6, EE paper §2.8, MUS-01..10). Buffer-only and outside React (D5).
 // Graph: deckA/deckB → music bus → duck → master → compressor → out;  sfx bus → master.
 // Buffers come from the VMD's resolveAudio(url), so swapping placeholders for real files is a URL change only (R11).
 // resolve.ts + the synth recipes load lazily on unlock (they're ~8 KB gz and never needed before a gesture).

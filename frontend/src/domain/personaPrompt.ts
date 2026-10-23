@@ -2,7 +2,6 @@
 // A line-for-line port of backend/horizon/ai/agent/persona.py: both pass the shared fixtures in
 // backend/tests/fixtures/persona_prompt/ byte for byte, so "View as prompt" shows exactly what `agent` sends.
 // Indices are UTF-16 here and code points in Python; every cut lands on a code-point boundary, so the bytes agree.
-// Owner: AI.
 import { countTokens, utf8Bytes } from "./tokens";
 
 export const PROMPT_VERSION = "agent-1"; // M9 D40: the mood line (agent-2) is off by default
@@ -339,7 +338,7 @@ export function compilePersona(inp: PersonaInput): PersonaPrompt {
 export const TURN_CUE_SENTENCES: Record<string, string> = {
   second: "{first} has just answered. Don't repeat them; add your own angle, or answer {first} directly.",
   next: "Nobody asked you directly; say something that moves the talk on. You may answer anyone.",
-  // M11 (debate D10, the user's choice of 2026-10-13): M10 found the old steer closed scenes.
+  // M11 (debate D10, the maintainer's choice of 2026-10-13): M10 found the old steer closed scenes.
   steer: "This thread has run its course. Bring in something new that fits the premise: an event, a discovery or a change of plan. Don't wrap up, say goodbye or wait for {user} to decide.",
 };
 

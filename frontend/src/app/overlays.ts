@@ -1,4 +1,4 @@
-// Overlay registry: every O01–O27 → { kind, component } (README §3.3, R4). Owner: EE.
+// Overlay registry: every O01–O27 → { kind, component } (README §3.3, R4).
 // Builders replace only their own component imports. Components are lazy so heavy overlays (Insight) split out.
 import { lazy } from "react";
 import type { ComponentType, LazyExoticComponent } from "react";

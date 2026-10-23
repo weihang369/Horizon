@@ -1,4 +1,4 @@
-// Loads the seed dataset (one lazy chunk, cached). Owner: EE.
+// Loads the seed dataset (one lazy chunk, cached).
 import type { Dataset } from "./dataset";
 import { cloneDataset, datasetFromFiles } from "./dataset";
 

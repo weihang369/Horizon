@@ -1,4 +1,4 @@
-// Self-hosted OFL fonts, LATIN SUBSETS ONLY (R18, NFR-13). Owner: VMD.
+// Self-hosted OFL fonts, LATIN SUBSETS ONLY (R18, NFR-13).
 // - Static families: the @fontsource `latin-400.css` entry points (Dela Gothic One would otherwise pull in
 //   several MB of Japanese glyphs).
 // - Variable families: @fontsource-variable has no per-subset CSS, so we register the latin woff2 directly

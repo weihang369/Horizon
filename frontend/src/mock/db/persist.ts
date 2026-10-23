@@ -1,5 +1,5 @@
 // Mock DB persistence (Lead gap ruling): snapshot to localStorage keyed by the fixture hash.
-// A new seed build (new hash) discards old snapshots. Recorded events identical to seed/ are not stored. Owner: EE.
+// A new seed build (new hash) discards old snapshots. Recorded events identical to seed/ are not stored.
 import type { Dataset, SessionRecord } from "./dataset";
 
 export const SNAPSHOT_KEY = "horizon.mock.db.v1";

@@ -1,6 +1,6 @@
 // Shared fork fixtures (backend/tests/fixtures/fork/*.json, session-event-sourcing "Fork is identical in both
 // languages"): forkEvents and the backend's sessions/fork.py must give exactly these events, session and messages.
-// Regenerate with `npm run fixtures:build`; `npm run fixtures:check` fails when they drift. Owner: SWE.
+// Regenerate with `npm run fixtures:build`; `npm run fixtures:check` fails when they drift.
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";

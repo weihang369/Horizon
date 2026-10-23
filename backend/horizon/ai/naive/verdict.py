@@ -80,7 +80,7 @@ def result_line(req: VerdictRequest, scores: list[dict[str, Any]] | None, strong
     """The result already decided, told to the writer (V8)."""
     if not two_sided(req) or req.by == "none" or scores is None:
         return "The result: summary only, no scores and no winner."
-    # U-65 (the user's choice): one line per criterion that already says who leads it, so the rationale never has to
+    # U-65 (the maintainer's choice): one line per criterion that already says who leads it, so the rationale never has to
     # compare the numbers itself (a pilot rationale called 9.2 against 9.4 an "edge")
     by = {(v["subjectId"], v["criterionId"]): v["value"] for v in scores}
     lines = []
@@ -179,7 +179,7 @@ class Invalid(ValueError):
 
 
 def trim_rationale(text: str, limit: int = RATIONALE_WORDS) -> str | None:
-    """M11 D32 (the user's choice): a rationale over `limit` words is cut at the last full sentence that fits, a free
+    """M11 D32 (the maintainer's choice): a rationale over `limit` words is cut at the last full sentence that fits, a free
     local repair; None (the call is invalid, so the paid retry runs) only when not even its first sentence fits."""
     if len(text.split()) <= limit:
         return text

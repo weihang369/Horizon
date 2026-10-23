@@ -72,6 +72,10 @@ testpaths = ["tests"]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
 filterwarnings = ["ignore::DeprecationWarning:aiosqlite.*"]
+# A test's data/ holds a full horizon.db (~43 MB: sqlite-vec preallocates its vector chunks). pytest keeps every
+# tmp_path until the session ends, so the whole suite filled the CI runner's disk (22 Oct). Passing tests' folders are
+# removed as they finish; a failing test's folder stays for inspection.
+tmp_path_retention_policy = "failed"
 # The paid live checks and the real Docling conversions are manual scripts under manual/ (see manual/README.md):
 # outside testpaths, so a normal run collects and deselects nothing. Their markers stay for `-m` selection there.
 markers = ["live: calls the real OpenRouter API with the key from the environment (manual, <= $0.05; never in CI)",

@@ -1,6 +1,6 @@
 // S02 Onboarding (APP-04): 4 intro cards (copy: doc 06 §8) + a key step ("Enter key" / "Explore demo first").
 // Shown once (prefs.seenOnboarding), replayable from World Select ("How it works"), the Esc menu and Settings → About.
-// ←/→ page, Enter = next. A replay with a key already set ends on "You're live" instead of the key form. Owner: Builder A.
+// ←/→ page, Enter = next. A replay with a key already set ends on "You're live" instead of the key form.
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { toast } from "../../app/layers";

@@ -1,5 +1,5 @@
 // S04 World Hub (WLD-05) + S13 History as its Sessions tab (R13, `?tab=sessions&filter=`).
-// Cover header 240 / 168 · tab row 48 with CTAs · roster grid (5 / 4 cols) or session history. Owner: Builder A.
+// Cover header 240 / 168 · tab row 48 with CTAs · roster grid (5 / 4 cols) or session history.
 import { openOverlay, toast } from "../../app/layers";
 import { audio } from "../../audio/engine";
 import { deleteWorld, useCharacters, useRushHour, useSessions, useSettings, useWorld } from "../../client/hooks";

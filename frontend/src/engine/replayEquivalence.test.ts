@@ -1,5 +1,5 @@
 // Replay equivalence (EE paper §2.10): reducing a recording's events from its replay base reproduces its
-// messages.json exactly and its session.json (status, state, participants, cost, counts). Owner: EE.
+// messages.json exactly and its session.json (status, state, participants, cost, counts).
 import { readdirSync, readFileSync, existsSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";

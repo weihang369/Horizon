@@ -4,7 +4,7 @@
 **Timing** (`compare-timing`, `--part a|b`: the window):
 - **The bodies** are the manifest's own (compiled from the datasets exactly as the suites send them, private safety
   items left out), bucketed by their tokens: under 1k, 1k–2.5k and 2.5k–4k, 30 each, plus 5 near 10k and 5 near 25k.
-  The manifest holds only 18 bodies over 2.5k and one near 10k, so (the user's choice, 2026-10-20) the last three
+  The manifest holds only 18 bodies over 2.5k and one near 10k, so (the maintainer's choice, 2026-10-20) the last three
   buckets are topped up with *padded* bodies: a manifest body whose longest text field repeats its own lines up to the
   target size. Padded bodies are timing-only: never scored, never stored, labelled in every row.
 - **The order:** 5 warm-up requests per model first (the first five small bodies; excluded and counted), then each

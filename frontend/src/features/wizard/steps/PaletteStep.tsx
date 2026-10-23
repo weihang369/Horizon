@@ -1,6 +1,6 @@
 // S05f PALETTE (CHR-09, D-50): the AI pick is pre-set as the provisional palette; all 12 fixed palettes as skewed
 // swatch cards. Hover = instant 120 ms-debounced swap on the app root (no flood); click = select + one Palette Flood
-// (R10, NFR-16). Sharing a palette within the world shows a soft warning. Owner: Builder B.
+// (R10, NFR-16). Sharing a palette within the world shows a soft warning.
 import { useEffect, useRef, useState } from "react";
 import { audio } from "@/audio/engine";
 import { reportError } from "@/app/errors";

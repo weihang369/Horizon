@@ -8,7 +8,7 @@
 >   point turns out to be needed, **stop and ask the user** before changing it.
 > - **Background work and waits.** New background work starts only through `rt.spawn`, `actor.background` or a named
 >   after-turn task; new waits use the runtime clock.
-> - **Nothing tuned is re-versioned** except by the user's choice: no bank entry, threshold or deadline changes.
+> - **Nothing tuned is re-versioned** except by the maintainer's choice: no bank entry, threshold or deadline changes.
 >   The honesty line (D5) and `naive`'s tag line (D14, `naive-9`…`naive-12`) are the only prompt edits, and both
 >   are choices.
 > - **Not in M15:**
@@ -218,7 +218,7 @@ per-item results under `docs/ai/checks/m15/`, no live older batch.
 - [x] 8.4 The 7 short transcripts (≈ $0.02). The team reads each before commit, and the user spot-checks. Verify:
   the loader finds 20, and every label holds.
 - [x] 8.5 B4 for `judge_pairwise` v3, `judge_voice`, `judge_persona_fact`, `judge_answers_last` and
-  `judge_sentence_supported` (≈ $0.015). A failing judge may be reworded once, by the user's choice. Verify: results
+  `judge_sentence_supported` (≈ $0.015). A failing judge may be reworded once, by the maintainer's choice. Verify: results
   in `evals/baselines/judges.json`.
 - [x] 8.6 The honesty re-measure, one or two wordings by 4.1's choice (≈ $0.05 / $0.10), in the fixed order. Apply
   D5's rule. **Bring the result to the user** (keep the wording, try the advisory-line tweak, or revert by 4.3).
@@ -247,7 +247,7 @@ per-item results under `docs/ai/checks/m15/`, no live older batch.
 
 - [x] 9.1 Amend everything D20 lists not already done: doc 12's §5, I7, §4 and "Built in M15" notes; doc 13's W3,
   W4, W6, W10 and W12 rows; doc 02 B3, B4 and B8; doc 11 S2's note. Verify: the docs link check, with 0 broken.
-- [x] 9.2 Finish `docs/ai/checks/m15.md`: the runs, the findings, the user's choices, and **"What the AI stage
+- [x] 9.2 Finish `docs/ai/checks/m15.md`: the runs, the findings, the maintainer's choices, and **"What the AI stage
   leaves"** (D19: the manifest and how the Jev 1.14 comparison uses it; the endgame list; the LinkedIn figures and
   good-emotion cases). Verify: it is linked from doc 13.
 - [x] 9.3 Final gates on the gate worktree:

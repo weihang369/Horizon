@@ -1,4 +1,4 @@
-// LayerStack (R4, UXA D1): renders the ui store's layers with central Esc order and focus trap/restore. Owner: EE.
+// LayerStack (R4, UXA D1): renders the ui store's layers with central Esc order and focus trap/restore.
 // Esc: popover → dock expansion → modal → drawer → blur text field → pause menu (O01; Esc again resumes).
 import { Suspense, useEffect, useRef } from "react";
 import type { ComponentType, ReactNode } from "react";

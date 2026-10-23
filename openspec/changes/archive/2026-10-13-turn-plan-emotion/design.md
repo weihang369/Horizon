@@ -49,7 +49,7 @@ here touches one, it says so and stays inside it.
 - Every item in W4's M9 row, Windows first. Each phase in tasks.md ends with the offline gates green.
 - **Our side stays fast.** The plan overlaps the thinking delay. Nothing new waits before the first word except Jev
   call 1 (A13). Reactions and the face check run after `turn.end`.
-- **`naive` doesn't move** (the user's choice, D34), except the event grouping in D14, which is identical on the wire.
+- **`naive` doesn't move** (the maintainer's choice, D34), except the event grouping in D14, which is identical on the wire.
 - **Every paid output is saved** in the store, except the latency run, which W10 forbids from using it.
 
 **Non-Goals:**
@@ -806,7 +806,7 @@ The user can pick `moodline --limit 60` when it is asked.
   ask the emotion. No stopgap call is built.
 - **`judge_voice` stays unvalidated,** with X5 off, until M15's `conversations` run gets a fresh held-out set.
 
-### D35. A refused after-turn decision pauses nothing (the user's choice, 2026-10-12, found in phase 5)
+### D35. A refused after-turn decision pauses nothing (the maintainer's choice, 2026-10-12, found in phase 5)
 
 **Found while building 5.6:** the gateway's daily-cap refusal publishes `budget.reached`, and the session manager's
 hook pauses every live session for it. A refused `reaction` request would therefore pause sessions, against the
@@ -820,28 +820,28 @@ from a reply, as D7 reasons for Jev call 1. Spend that *crosses* the cap when re
 **Rejected:** keeping the pause and narrowing the scenario to "the reactions task emits nothing itself": the user
 would see a pause caused by a background face.
 
-### D36. The emotion floor grid reaches down to 0.2 (the user's choice, 2026-10-12, found in 9.1)
+### D36. The emotion floor grid reaches down to 0.2 (the maintainer's choice, 2026-10-12, found in 9.1)
 
 B5's grid {0.5 … 0.9} only removed right answers: Jev's confidences over 8 options sit low (median 0.58) while its
 picks are mostly right. The emotion grid adds 0.2, 0.3 and 0.4; dev chose 0.2 and the test split read 0.82 (m9.md).
 Both emotion entries are v2 with floor 0.2. **Rejected:** keeping floor 0.5 with test at 0.75 below target; growing
 the set first (E8's +40 follows anyway, in M15).
 
-### D37. The reaction state shows no face (the user's choice, found in 9.2)
+### D37. The reaction state shows no face (the maintainer's choice, found in 9.2)
 
 With each listener's current face in the state, Jev answered that face in 83 of 90 items, so reactions never
 showed. The state now holds the listener's name, card line and debate side only; code still uses the face for
 "differs" and for the fades. The listener-reactions requirement "One Jev request per message" changes with it.
 **Rejected:** rewording the instructions and keeping the face; keeping random reactions for `agent`.
 
-### D38. Order bias is "not measured" for shuffled choices (the user's choice, found in 9.1)
+### D38. Order bias is "not measured" for shuffled choices (the maintainer's choice, found in 9.1)
 
 The response store's key sorts JSON keys, so a choice asked with its options reversed hits the first order's stored
 answer; B6's order-bias line has read 0 for every shuffled choice since M7. The report now says "not measured" for
 them, with the reason. Live calls are unaffected (Jev gets the shuffled order). Fixing the key changes W10's locked
 rule, so it is its own change, with the user's OK. **Rejected:** fixing the key in M9.
 
-### D39. Jev reactions ship at floor 0.2, below E8's accuracy target (the user's choice, 9.2)
+### D39. Jev reactions ship at floor 0.2, below E8's accuracy target (the maintainer's choice, 9.2)
 
 On a fresh 90-item set labelled blind (the first set's calm debate lines were labelled with reactions to meet the
 `none` cap), the extended grid picked floor 0.2 on dev and the test split read 0.61 against 0.80, +0.31 over "always
@@ -849,7 +849,7 @@ none" (p 0.001), with 39 % of messages showing a reaction; random reactions scor
 floor 0.2 and stays in `AGENT_PORTS`. The miss is recorded and revisited in M15. **Rejected:** random reactions for
 `agent` until M15; another rewording now (the test split would have been read twice).
 
-### D40. The mood line ships off (the user's choice, 9.5: "I want the best performance")
+### D40. The mood line ships off (the maintainer's choice, 9.5: "I want the best performance")
 
 E8's on/off run (34 non-neutral English turns, every candidate used) showed no gain in exact match (+0.00, 95 %
 −0.17 to +0.09), a pairwise toss-up (0.51, unvalidated) and more replies naming the feeling with the line (5/34

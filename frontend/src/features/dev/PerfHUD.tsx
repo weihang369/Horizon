@@ -1,4 +1,4 @@
-// PerfHUD (R20, EE paper §2.9): fps, dropped frames, long tasks, React commits. Ctrl+Shift+P, dev builds only. Owner: EE.
+// PerfHUD (R20, EE paper §2.9): fps, dropped frames, long tasks, React commits. Ctrl+Shift+P, dev builds only.
 import { Profiler, useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { onTick } from "../../vfx/ticker";

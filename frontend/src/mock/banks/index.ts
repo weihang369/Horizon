@@ -1,5 +1,5 @@
 // Line picking for the live fake AI (EE paper §2.3): score bank lines by keyword overlap with the prompt,
-// otherwise rotate with a PRNG seeded by sessionId + turn, so every review is repeatable. Owner: EE.
+// otherwise rotate with a PRNG seeded by sessionId + turn, so every review is repeatable.
 import type { Character } from "../../contract/types";
 import type { Rng } from "../rng";
 import { directionLines, genericChat, sceneLines } from "./generic";

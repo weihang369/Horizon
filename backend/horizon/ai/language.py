@@ -1,4 +1,4 @@
-"""The reply language cue (persona-context D35, the user's choice after the paid `long` run, 2026-10-12).
+"""The reply language cue (persona-context D35, the maintainer's choice after the paid `long` run, 2026-10-12).
 
 The reply rule ("reply in the language the user writes in") sits in the cached system prompt, and against an English
 persona, English example lines and an English greeting the model ignored it: Malay user lines got English replies

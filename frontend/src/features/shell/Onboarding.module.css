@@ -1,4 +1,4 @@
-/* S02 Onboarding. Copy column left, art right on a 14° brand stripe. Owner: Builder A. */
+/* S02 Onboarding. Copy column left, art right on a 14° brand stripe. */
 .screen {
   --word-size: clamp(56px, min(6.4vw, 10.5vh), 100px);
   --gutter: 48px;

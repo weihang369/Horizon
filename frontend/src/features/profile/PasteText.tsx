@@ -1,6 +1,6 @@
 // O29 Paste text (knowledge-sources "Paste text", design D20): a title and up to 200 KB of text become a `text`
 // source that starts indexing. Validation and conflict errors stay in the dialog; anything else goes to reportError.
-// Built from the existing Modal, field and button primitives. Owner: Builder B.
+// Built from the existing Modal, field and button primitives.
 import { useState } from "react";
 import type { OverlayComponentProps } from "../../app/overlayTypes";
 import { reportError } from "../../app/errors";

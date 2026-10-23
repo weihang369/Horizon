@@ -1,4 +1,4 @@
-// Canvas parts of the emotion VFX table (VMD paper §2.5, doc 04 §6). Owner: VMD.
+// Canvas parts of the emotion VFX table (VMD paper §2.5, doc 04 §6).
 // DOM/SVG parts (vignette, ring, vein, "!" burst, bubble, blush hatch, edge glow) live in
 // character/EmotionVfx. Positions are card percentages. One-shots ≤ 1.2 s, at most 3 at once.
 import type { VfxPreset } from "../contract/types";

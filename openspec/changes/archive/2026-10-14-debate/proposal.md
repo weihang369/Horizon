@@ -121,7 +121,7 @@ last among the offline phases, so they can't block the debate work.
 - **"Go to verdict now (≈ $x)"** becomes an estimate from the shared price table and the current price period (design
   D16 explains why it isn't per profile).
 
-**M10's carry-overs (the user's choices of 2026-10-13; design D17–D20)**
+**M10's carry-overs (the maintainer's choices of 2026-10-13; design D17–D20)**
 - **`who_scene` v3 and `who_next` v3 without `last_spoke`:** the guard still reads it in code. Both are measured
   again:
   - `who_scene` on 40 fresh held-out cuts;

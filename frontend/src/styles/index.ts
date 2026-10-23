@@ -1,4 +1,4 @@
-// One import for the whole visual foundation: `import "./styles";` in main.tsx. Owner: VMD.
+// One import for the whole visual foundation: `import "./styles";` in main.tsx.
 import "./fonts";
 import "./tokens.css";
 import "./palettes.css";

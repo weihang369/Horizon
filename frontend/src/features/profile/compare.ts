@@ -1,5 +1,5 @@
 // O25 trigger (PRF-03 AC5): when a regeneration for an APPROVED character finishes, the new asset arrives inactive;
-// open the Old | New comparison so the user chooses. Owner: Builder B.
+// open the Old | New comparison so the user chooses.
 import { useEffect } from "react";
 import { openOverlay } from "@/app/layers";
 import { client } from "@/client";

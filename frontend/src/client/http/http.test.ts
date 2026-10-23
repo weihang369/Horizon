@@ -1,5 +1,5 @@
 // HttpClient unit tests (http-client spec): errors, idempotency keys, paging, streams and the not-yet methods,
-// against a stubbed fetch and a fake EventSource. The end-to-end run is clientContract.http.test.ts. Owner: SWE.
+// against a stubbed fetch and a fake EventSource. The end-to-end run is clientContract.http.test.ts.
 import { describe, expect, it } from "vitest";
 import { HorizonError } from "../../contract/errors";
 import type { SessionEvent } from "../../contract/types";

@@ -1,5 +1,5 @@
 // O05 Key required (STATE-04, R15): compact modal — "Add key" deep-links to Settings → Connection, "Not now" keeps
-// browsing. Recordings always play without a key. Owner: Builder A.
+// browsing. Recordings always play without a key.
 import type { OverlayComponentProps } from "../../app/overlayTypes";
 import { getRoute, navigate } from "../../router";
 import { formatRoute } from "../../router/routes";

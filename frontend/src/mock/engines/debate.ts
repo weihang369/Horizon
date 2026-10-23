@@ -1,5 +1,5 @@
 // Debate engine (MULTI-05..08): walks the DebateConfig phases, alternating sides, with steering inserted at turn
-// boundaries. Verdict scores come from the PRNG and honour arbiter / You decide / none / panel. Owner: EE.
+// boundaries. Verdict scores come from the PRNG and honour arbiter / You decide / none / panel.
 import type {
   DebateConfig, DebatePhase, DebateState, DebateTurnPhase, Message, Side, StreamEvent, Verdict,
 } from "../../contract/types";

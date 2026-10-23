@@ -1,4 +1,4 @@
-// Dataset: the mock's in-memory copy of repo-root seed/ (doc 05 shapes). Owner: EE.
+// Dataset: the mock's in-memory copy of repo-root seed/ (doc 05 shapes).
 // Built from the raw fixture files (path → parsed JSON). `_mock/` overlays (UI-phase-only fixtures) are merged in.
 import type {
   AppSettings, Character, EmotionAsset, Emotion, GenerationJob, KnowledgeChunk, KnowledgeSource, MemoryItem, Message, Palette, Session, SessionEvent,

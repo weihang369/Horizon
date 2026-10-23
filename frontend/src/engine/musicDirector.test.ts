@@ -1,4 +1,4 @@
-// musicDirector (MUS-01..08). Owner: EE.
+// musicDirector (MUS-01..08).
 import { describe, expect, it } from "vitest";
 import type { MusicCast, MusicInput } from "./musicDirector";
 import { FOLLOW_DWELL_MS, musicDirector } from "./musicDirector";

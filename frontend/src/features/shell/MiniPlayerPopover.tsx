@@ -1,6 +1,6 @@
 // O09 Mini-player popover (MUS-04, R11): now playing, SKETCH explainer, master/music/SFX volume + mutes.
 // Changes go through the prefs store, which drives the audio engine live. It closes on any route change, like a menu
-// (U-22). Owner: Builder A.
+// (U-22).
 import { useEffect, useRef, useSyncExternalStore } from "react";
 import type { OverlayComponentProps } from "../../app/overlayTypes";
 import { audio } from "../../audio/engine";

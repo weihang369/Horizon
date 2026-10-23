@@ -1,4 +1,4 @@
-// O20 Keyboard shortcuts sheet (APP-10, doc 03 §6). `?` opens it (outside text fields). Owner: Builder A.
+// O20 Keyboard shortcuts sheet (APP-10, doc 03 §6). `?` opens it (outside text fields).
 import type { ReactNode } from "react";
 import type { OverlayComponentProps } from "../../app/overlayTypes";
 import { Button } from "../../ui/Button";

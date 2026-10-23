@@ -1,6 +1,6 @@
 // O19 Desktop guard (APP-06): below 1280×720 a stylised, undismissable notice. No mobile layout is built.
 // On phones and tablets (coarse pointer) "widen the window" is no advice: show what they're missing (the share image)
-// and hand them the link to open on a laptop. Owner: Builder A. Statically imported by App (entry bundle): keep it light.
+// and hand them the link to open on a laptop. Statically imported by App (entry bundle): keep it light.
 import { useEffect, useState } from "react";
 import type { OverlayComponentProps } from "../../app/overlayTypes";
 import { RansomText } from "../../ui/RansomText";

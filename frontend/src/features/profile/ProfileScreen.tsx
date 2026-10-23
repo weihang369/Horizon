@@ -1,4 +1,4 @@
-// S06 Character Profile (PRF-01..09, ENG-01/03/05/06). Owner: Builder B.
+// S06 Character Profile (PRF-01..09, ENG-01/03/05/06).
 // Left: the large animated portrait card with the energy panel under it. Right: name, CTAs and six tabs
 // (Profile · Gallery · Theme · Sessions · Memory · Knowledge). Single-character screen → the whole app root wears
 // the character's palette (R9) with a flood on entry (R10); the theme song starts (PRF-01 AC2, MUS-02).

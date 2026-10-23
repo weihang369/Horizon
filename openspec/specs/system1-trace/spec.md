@@ -123,7 +123,7 @@ Every planned reply SHALL carry one emotion row per candidate asked, with `about
 A reply checked by the face check SHALL gain one row with purpose `face_check`, label "face and words agree?" and result `shown_only` (`used` when a clash switched the face, D-112), appended after the turn through the runtime's append operation. Its call SHALL appear in the trace's `calls` with its latency. A reply not checked SHALL gain the `skipped` row instead.
 
 ### Requirement: Every turn of a mode lists the same rows
-Under `agent` (U-49, the user's choice of 2026-10-22), a reply SHALL carry a `skipped` row, answer "—", for each of
+Under `agent` (U-49, the maintainer's choice of 2026-10-22), a reply SHALL carry a `skipped` row, answer "—", for each of
 its own questions the turn didn't ask: "needs documents?" ("skipped: no searchable documents", or "skipped: the plan's
 state was too large" when X9's cap dropped it), "needs something from earlier?" ("skipped: nothing earlier to search"),
 a watch opening's "is the talk finished?" ("skipped: the scene's opening"), a watch line's or a debate argument's

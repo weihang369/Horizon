@@ -1,5 +1,5 @@
 // HorizonClient contract on the MockClient: the portable suite through a ManualClock harness, plus mock-only checks.
-// The HttpClient runs the same portable suite through its own harness (backend /_test/* routes). Owner: EE.
+// The HttpClient runs the same portable suite through its own harness (backend /_test/* routes).
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";

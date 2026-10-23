@@ -1,4 +1,4 @@
-// setAppPalette — themes the app root (R9: single-character screens) with flood + snap (R10). Owner: VMD.
+// setAppPalette — themes the app root (R9: single-character screens) with flood + snap (R10).
 // The palette class flips at the flood's cover point; CSS variables are never interpolated.
 // At most one flood per second; extra commits inside that window snap without a flood.
 import { useSyncExternalStore } from "react";

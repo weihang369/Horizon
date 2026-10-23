@@ -1,4 +1,4 @@
-// Custom hash router (R3, README §3.1). Owner: EE.
+// Custom hash router (R3, README §3.1).
 // The URL updates at once; the screen swaps at the transition's cover point (VMD runTransition). The transition
 // layer is pointer-events:none, so input is never blocked, and a second navigate() supersedes the first.
 import { useSyncExternalStore } from "react";

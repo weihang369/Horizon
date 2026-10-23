@@ -1,6 +1,5 @@
 // S03 World Select (WLD-01): a centred rail of tilted world cards (−8°, 40 px overlap), "+ New World" always last.
 // Hover/focus straightens to −4° and lifts 12 px with a hover tick; a card shatters into its Hub (README §3.1).
-// Owner: Builder A.
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { KeyboardEvent, MouseEvent } from "react";
 import { openOverlay, toast } from "../../app/layers";

@@ -1,5 +1,4 @@
 // Pure hub logic (S04 + S13): filter grammar in the URL, session filtering/sorting, verdict badges, resume targets.
-// Owner: Builder A.
 import type { DebateConfig, DebateState, Session, SessionMode, WatchState } from "../../contract/types";
 import type { Route } from "../../router";
 

@@ -1,4 +1,4 @@
-// Routes (README §3.1, UXA §2.1): a typed union ⇄ hash paths. Pure. Owner: EE.
+// Routes (README §3.1, UXA §2.1): a typed union ⇄ hash paths. Pure.
 //   #/                                   title          #/onboarding/:card     onboarding
 //   #/worlds                             worlds         #/w/:wid?tab=&filter=  hub (+ S13 Sessions tab)
 //   #/w/:wid/c/:cid?tab=                 profile        #/w/:wid/create/:step  wizard (new)

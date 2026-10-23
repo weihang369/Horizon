@@ -1,5 +1,5 @@
 // Spec card column (CHR-06 layout): the current base portrait (or the "?" silhouette), framed in the provisional
-// palette, the name plate from the working profile, and a compact character sheet. Owner: Builder B.
+// palette, the name plate from the working profile, and a compact character sheet.
 import type { CSSProperties } from "react";
 import { useSong } from "@/client/hooks";
 import type { Character, Emotion } from "@/contract/types";

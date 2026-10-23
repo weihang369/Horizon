@@ -2,7 +2,6 @@
 // optional "You in this world" card. Live preview card on the left. Create lands in the new hub's empty state.
 // rev 1.3 / M4: a picked image is kept as a File (previewed with an object URL) and uploaded through
 // `worlds.uploadCover` after the world is saved; no data URL goes into the world record (worldSave.ts).
-// Owner: Builder A.
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { ChangeEvent } from "react";
 import type { OverlayComponentProps } from "../../app/overlayTypes";

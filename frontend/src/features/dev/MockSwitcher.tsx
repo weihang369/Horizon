@@ -1,5 +1,5 @@
 // O18 Mock State Switcher (APP-08): Ctrl+Shift+D. Drives every scenario in mock/scenarios, demo speed, a mock key
-// and Reset demo data. Hidden in Presenter Mode. Owner: EE.
+// and Reset demo data. Hidden in Presenter Mode.
 import type { OverlayComponentProps } from "../../app/overlayTypes";
 import { toast } from "../../app/layers";
 import { client } from "../../client";

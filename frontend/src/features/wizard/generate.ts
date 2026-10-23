@@ -1,6 +1,6 @@
 // Generation plumbing for the wizard and profile (CHR-13): estimates, the once-per-launch cost confirm (O04),
 // key gating (O05), and a per-character memory of the latest job per kind (jobs live in the client, so they
-// survive navigation; this map only remembers which job a step belongs to). Owner: Builder B.
+// survive navigation; this map only remembers which job a step belongs to).
 import { useEffect, useMemo, useState } from "react";
 import { openOverlay, toast } from "@/app/layers";
 import { ui } from "@/stores/ui";

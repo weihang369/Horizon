@@ -49,7 +49,7 @@ the face shown.
 - **THEN** the row's answer is `clash`
 
 ### Requirement: A clash switches the face
-On a `clash` (D-112, the user's choice of 2026-10-22, U-54, reversing the display-only rule of turn-plan-emotion D24 for clashes only) the runtime SHALL emit
+On a `clash` (D-112, the maintainer's choice of 2026-10-22, U-54, reversing the display-only rule of turn-plan-emotion D24 for clashes only) the runtime SHALL emit
 one `emotion` event for the reply (its message ID, the speaker, the words' emotion, source `classifier`), checked under
 the writer lock: the session is active and AUTO, the speaker still shows the reply's face, and they haven't started or
 made a newer line. The row SHALL then be `used` with action "face switched to {emotion}"; when the check fails, the row

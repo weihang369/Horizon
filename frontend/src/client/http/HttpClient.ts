@@ -1,4 +1,4 @@
-// The HttpClient: HorizonClient over the local backend (doc backend/03 §5, http-client spec). Owner: SWE.
+// The HttpClient: HorizonClient over the local backend (doc backend/03 §5, http-client spec).
 // Each milestone added the methods for its own routes. Until M5 a method whose backend hadn't shipped rejected at once,
 // without a request, with a non-retryable `validation` error naming the milestone (`details.availableIn`); from M5
 // every method has a route, so nothing is held back.

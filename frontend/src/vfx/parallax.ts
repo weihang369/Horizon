@@ -1,4 +1,4 @@
-// Cursor parallax (doc 04 §4 "idle life": 6–10 px opposite the cursor). Owner: VMD.
+// Cursor parallax (doc 04 §4 "idle life": 6–10 px opposite the cursor).
 // One pointermove listener + the one global ticker (R12). Elements get `transform: translate3d()`
 // written directly; the ticker unsubscribes once every element has settled.
 import { onTick } from "./ticker";

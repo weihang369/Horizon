@@ -1,4 +1,4 @@
-// ProbBar, StackedBar, Skeleton, ScanLoader, HalftoneDevelop, Tooltip (spec §3.7). Owner: VMD.
+// ProbBar, StackedBar, Skeleton, ScanLoader, HalftoneDevelop, Tooltip (spec §3.7).
 import {
   cloneElement, isValidElement, useId, useState,
   type CSSProperties, type ReactElement, type ReactNode,

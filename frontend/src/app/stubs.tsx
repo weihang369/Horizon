@@ -1,4 +1,4 @@
-// Foundation stubs: every screen/overlay renders its id and name until its builder replaces it. Owner: EE.
+// Foundation stubs: every screen/overlay renders its id and name until its builder replaces it.
 import type { ReactNode } from "react";
 import { back, navigate } from "../router";
 import type { Route } from "../router";

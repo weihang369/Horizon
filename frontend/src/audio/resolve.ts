@@ -1,4 +1,4 @@
-// resolveAudio(url) → AudioBuffer (spec §3.6). Owner: VMD. Browser only.
+// resolveAudio(url) → AudioBuffer (spec §3.6). Browser only.
 // Swapping procedural placeholders for real audio is a URL change only (R11):
 //   *.proc.json                → fetch the spec, renderTheme(spec)
 //   placeholder:sfx/<id>       → built-in SFX recipe

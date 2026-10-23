@@ -85,7 +85,7 @@ def cut_summary(text: str, limit: int = SUMMARY_MAX) -> str:
 # ── watch's recap (M10; doc 07 G10; group-watch design D19) ──
 # episode-1 said "in the language the characters used", read as their names' language; episode-2 still drifted once
 # and guessed a pronoun; episode-3 adds the language line at the end (persona-context D35's pattern) and the
-# pronoun rule (task 10.6, the user's choices of 2026-10-13)
+# pronoun rule (task 10.6, the maintainer's choices of 2026-10-13)
 EPISODE_VERSION = "episode-3"
 EPISODE_PURPOSE = "episode_summary"
 EPISODE_WORDS = 120

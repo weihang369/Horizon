@@ -1,4 +1,4 @@
-// Bundle budgets (EE paper §2.9, R20). Run after `npm run build`. Owner: EE.
+// Bundle budgets (EE paper §2.9, R20). Run after `npm run build`.
 //   Entry JS (index.html script + its modulepreloads) ≤ 150 KB gz · each lazy JS chunk ≤ 60 KB gz
 //   Fonts ≤ 450 KB woff2 (Latin subsets, R18). Exempt from the chunk cap: the seed data chunk and the dev Kit Gallery.
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";

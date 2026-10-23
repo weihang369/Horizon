@@ -1,4 +1,4 @@
-// UI store: the one LayerStack (R4), toasts (STATE-05), Insight selection, dock expansion, dev toggles. Owner: EE.
+// UI store: the one LayerStack (R4), toasts (STATE-05), Insight selection, dock expansion, dev toggles.
 import { createStore } from "zustand/vanilla";
 import { useStore } from "zustand";
 import type { LayerKind, OverlayId, OverlayProps } from "../app/overlayTypes";

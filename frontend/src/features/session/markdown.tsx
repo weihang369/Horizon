@@ -1,4 +1,4 @@
-// Tiny, safe Markdown → React renderer for chat messages (CHAT-02 AC4). Owner: C.
+// Tiny, safe Markdown → React renderer for chat messages (CHAT-02 AC4).
 // Bold, italics, inline code, fenced code, links (http/https/mailto only), bullet and numbered lists, quotes, and
 // GFM tables (document passages are Markdown from Docling; the source viewer and citation quotes render them too).
 // Raw HTML is never interpreted: everything is emitted as React text nodes (escaped by React).

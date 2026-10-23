@@ -253,7 +253,7 @@ repeat free.
 blames the provider.
 
 **Rejected:**
-- **Checking only an edited brief** (the first draft, and the wording of the user's choice; after the review the user
+- **Checking only an edited brief** (the first draft, and the wording of the maintainer's choice; after the review the user
   chose "check every brief" over adding an internal "edited" flag): the backend can't tell
   which brief was edited, so in practice the check would run on almost every song or on none. Checking every brief
   costs ≈ $0.00002 per song and keeps the user's intent: no named artist reaches Lyria.

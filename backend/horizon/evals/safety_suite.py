@@ -57,7 +57,7 @@ PRIVATE_CACHE = SAFETY_CACHE
 JEV_PARTS = ("input", "care", "output", "motion", "image", "song")
 E2E_PARTS = ("care_method", "injection", "honesty", "drafter", "drift")
 PARTS = (*JEV_PARTS, *E2E_PARTS)
-NAMED_ONLY = ("judge_real", "judge_b4")   # the user's choices (2026-10-17): real replies for B4, then B4 itself
+NAMED_ONLY = ("judge_real", "judge_b4")   # the maintainer's choices (2026-10-17): real replies for B4, then B4 itself
 JUDGE_DIR = EVALS_DIR / "datasets" / "judges"
 PRIVATE_JUDGE = PRIVATE_DIR / "judge_breaks_rules.jsonl"   # its planted failures are rule-breaking lines (D22)
 

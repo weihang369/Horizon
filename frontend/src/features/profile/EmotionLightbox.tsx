@@ -1,5 +1,5 @@
 // O06 Emotion lightbox (PRF-02 AC2, CHR-08 AC4): big face with its VFX, ←/→ through the 7 emotions, Regenerate
-// (cost), "Doesn't look like them" (consistency hint), Download. Owner: Builder B.
+// (cost), "Doesn't look like them" (consistency hint), Download.
 import { useEffect, useState } from "react";
 import type { OverlayComponentProps } from "@/app/overlayTypes";
 import { useCharacter, useJob } from "@/client/hooks";

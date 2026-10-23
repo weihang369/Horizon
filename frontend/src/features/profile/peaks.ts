@@ -1,4 +1,4 @@
-// Waveform peaks for the theme player and track page (decoded buffer, or a seeded fake). Owner: Builder B.
+// Waveform peaks for the theme player and track page (decoded buffer, or a seeded fake).
 import { useEffect, useState } from "react";
 
 export const BARS = 72;

@@ -2,7 +2,7 @@
 // is not Jev's top candidate (`none`, unsure or a fallback kept the previous face), the chip says "kept" instead of the
 // source and the band is dropped: the band would describe a face that wasn't shown. U-57: so does any face Jev didn't
 // pick (source `default` with Jev's candidates), even when it happens to be the top one; a face Jev picked is never
-// "kept", even when another candidate has a higher p. Owner: AI.
+// "kept", even when another candidate has a higher p.
 import type { TurnTrace } from "../../contract/types";
 
 export type TraceEmotion = NonNullable<TurnTrace["emotion"]>;

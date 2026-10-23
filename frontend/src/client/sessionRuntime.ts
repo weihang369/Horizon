@@ -1,7 +1,7 @@
 // Session runtime controllers (R1, R12): one per open session (live or replay), ref-counted by useSessionRuntime.
 // Live: snapshot → subscribe(sinceSeq). Replay: recorded events → ScriptPlayer on the real clock (gaps trimmed).
 // Both feed the same reducer; events are coalesced into one store write per frame, and streamed text goes to the
-// streamText store through the StreamSmoother. Owner: EE.
+// streamText store through the StreamSmoother.
 import type { Message, Session, SessionEvent } from "../contract/types";
 import { toHorizonError } from "../contract/errors";
 import { realClock } from "../engine/clock";

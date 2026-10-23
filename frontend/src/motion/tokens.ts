@@ -1,4 +1,4 @@
-// Motion tokens as TS constants (mirror of styles/tokens.css). Owner: VMD.
+// Motion tokens as TS constants (mirror of styles/tokens.css).
 export const DUR = {
   tap: 80,
   fast: 140,

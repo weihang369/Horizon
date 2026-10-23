@@ -1,5 +1,5 @@
 /* S03 World Select (UXA §2.2): ransom "WORLDS" 72 at (48,48); cards 380×520 @1440 / 300×410 @1280, −8°,
- * 40 px overlap; focus straightens to −4°, lifts −12 px, 180 ms. Owner: Builder A. */
+ * 40 px overlap; focus straightens to −4°, lifts −12 px, 180 ms. */
 .screen {
   --gutter: 48px;
   --title-size: 72px;

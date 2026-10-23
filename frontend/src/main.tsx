@@ -1,4 +1,4 @@
-// Entry. Owner: EE. Global CSS + fonts come from the VMD's styles/ (R18: Latin subsets).
+// Entry. Global CSS + fonts come from the VMD's styles/ (R18: Latin subsets).
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./styles";

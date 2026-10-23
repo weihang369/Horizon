@@ -1,4 +1,4 @@
-// Mock time (EE paper §2.3). Owner: EE.
+// Mock time (EE paper §2.3).
 // VirtualClock: virtual ms = base ms × demo speed (×1/×2/×4). A speed change rebases time and reschedules every
 // pending timer by its remaining *virtual* delay, so a 20 s portrait job at ×4 still reads as 20 s of mock time.
 // Wall time (ISO stamps, energy regen) is never sped up.

@@ -1,4 +1,4 @@
-/* Theme player + composing state. Owner: Builder B. */
+/* Theme player + composing state. */
 .player, .composing {
   position: relative;
   display: grid;

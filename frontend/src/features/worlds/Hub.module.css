@@ -1,5 +1,5 @@
 /* S04 World Hub + S13 Sessions tab (UXA §2.2): cover 240 / 168, name ransom 64 / 48, tab row with CTAs,
- * roster 5 / 4 columns of 236 px cards, history rows. House palette only (R9). Owner: Builder A. */
+ * roster 5 / 4 columns of 236 px cards, history rows. House palette only (R9). */
 .hub {
   --gutter: 48px;
   --cover-h: clamp(168px, 26.7vh, 240px);

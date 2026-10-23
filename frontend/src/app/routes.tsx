@@ -1,4 +1,4 @@
-// Route registry: route name → lazy screen (one chunk per screen, prefetched on idle). Owner: EE.
+// Route registry: route name → lazy screen (one chunk per screen, prefetched on idle).
 // Builders replace only their own import lines.
 import { lazy } from "react";
 import type { ComponentType, LazyExoticComponent } from "react";

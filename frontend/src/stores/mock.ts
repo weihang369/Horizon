@@ -1,4 +1,4 @@
-// Mock dev state mirror for O18 and the ×N badge (APP-07 AC2, APP-08). Owner: EE.
+// Mock dev state mirror for O18 and the ×N badge (APP-07 AC2, APP-08).
 import { createStore } from "zustand/vanilla";
 import { useStore } from "zustand";
 import { mockDev } from "../client";

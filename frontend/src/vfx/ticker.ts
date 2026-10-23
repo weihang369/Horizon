@@ -1,4 +1,4 @@
-// One global requestAnimationFrame ticker (R12). Owner: VMD (shared with EE).
+// One global requestAnimationFrame ticker (R12).
 // Subscribers get (dtMs, nowMs). The loop runs only while something is subscribed,
 // and dt is clamped so a backgrounded tab doesn't produce a giant step.
 export type TickFn = (dtMs: number, nowMs: number) => void;

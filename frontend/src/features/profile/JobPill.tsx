@@ -1,4 +1,4 @@
-// Background job pill (STATE-02 "Background/job: toast + rail/status pill"). Owner: Builder B.
+// Background job pill (STATE-02 "Background/job: toast + rail/status pill").
 //
 // Prop API (final; Builder A imports it into the hub roster):
 //   <JobPill />                          global floating pill (App chrome): every running job, click → its wizard/profile

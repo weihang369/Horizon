@@ -1,7 +1,7 @@
 // Knowledge ingestion in the mock (rev 1.3, D-65, doc backend/02 §3.8): validate → `indexing` → staged progress on the
 // global stream → `indexed` (key set: an `embedding` ledger row) | `keyword_only` (no key or no budget) | `failed`.
 // MD / TXT / pasted text are chunked from their real text; PDF / DOCX get synthetic passages (the backend's Docling
-// does the real extraction). Time runs on the mock Scheduler, so tests stay deterministic. Owner: EE.
+// does the real extraction). Time runs on the mock Scheduler, so tests stay deterministic.
 import type { KnowledgeChunk, KnowledgeSource, UsageRecord } from "../../contract/types";
 import { HorizonError } from "../../contract/errors";
 import type { AddKnowledgeInput, IngestProgress } from "../../client/HorizonClient";

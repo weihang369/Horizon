@@ -1,4 +1,4 @@
-// O25 Old / New asset comparison (PRF-03 AC5): the old version stays active until the user picks. Owner: Builder B.
+// O25 Old / New asset comparison (PRF-03 AC5): the old version stays active until the user picks.
 import { useEffect, useState } from "react";
 import type { OverlayComponentProps } from "@/app/overlayTypes";
 import { reportError } from "@/app/errors";

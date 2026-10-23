@@ -1,4 +1,4 @@
-// S05 Character Creation Wizard (doc 02 CHR epic: seed → AI draft → human edit → approve). Owner: Builder B.
+// S05 Character Creation Wizard (doc 02 CHR epic: seed → AI draft → human edit → approve).
 // Layout (UXA §2.2): step rail 64 · spec card column 440/360 · work area · action bar 80. The wizard themes the
 // whole app root with the provisional palette (R9, D-50). Leaving mid-wizard asks O13 via the router leave guard.
 import { useCallback, useEffect, useMemo, useRef } from "react";

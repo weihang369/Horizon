@@ -1,5 +1,5 @@
 // <NamePlate> (spec §3.5, VMD paper §2.2): a primary bar at −8° with the name in Anton (onPrimary),
-// over an ink role strip offset 10 px right. Scoped to the character's palette (R9). Owner: VMD.
+// over an ink role strip offset 10 px right. Scoped to the character's palette (R9).
 import type { CSSProperties, ReactNode } from "react";
 import type { Character } from "../contract/types";
 import { PaletteScope } from "../theme/PaletteScope";

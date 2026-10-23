@@ -1,7 +1,7 @@
 // HorizonClient contract (EE paper §2.10, rev 1.3): the executable spec that BOTH clients must pass.
 // Portable: it touches only the HorizonClient interface plus a ContractHarness (time, scenarios, reset, key).
 // It must never import from src/mock: the MockClient harness lives in clientContract.mock.test.ts, and the M1b
-// HttpClient harness drives the backend's /_test/* routes instead. Owner: EE.
+// HttpClient harness drives the backend's /_test/* routes instead.
 import { afterEach, describe, expect, it } from "vitest";
 import type { Message, Session, SessionEvent } from "../contract/types";
 import { initialRuntime, orderedMessages, reduceAll } from "../engine/sessionReducer";

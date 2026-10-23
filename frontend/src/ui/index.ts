@@ -1,4 +1,4 @@
-// UI primitives barrel (spec §3.7). Owner: VMD.
+// UI primitives barrel (spec §3.7).
 // Slants are clip-path polygons; text inside is always level (R7). Colours come from tokens/palettes only.
 export { Button, IconButton, type ButtonProps, type ButtonVariant, type ButtonSize, type IconButtonProps } from "./Button";
 export { Tape, type TapeProps, type TapeTone } from "./Tape";

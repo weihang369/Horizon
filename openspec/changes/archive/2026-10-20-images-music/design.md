@@ -238,7 +238,7 @@ is the only reason system message 1 changes in M15, and the layer-3 re-run that 
   answers) and M14 (`care_method`, `injection`, `drift`). The `conversations` run (D11) is the post-rewording reply
   measure that replaces them as the current figure. None is re-run separately.
 
-**How it is chosen (the user's choice, before `conversations` is paid):**
+**How it is chosen (the maintainer's choice, before `conversations` is paid):**
 - The aim: a question asked inside the story is answered in the story. A sincere question asked outside the story
   still gets an honest "I'm an AI character" (SB 243, SC-5), and no character ever claims to be a real person.
 - **Candidates**, for the user to pick or edit (each one sentence or two, English, in `S2_LINES`):
@@ -578,7 +578,7 @@ The committed histories made with `naive-5` are frozen data and are unaffected b
   `agent` column.
 - **Cost:** priced at the task from M11's and M13's measured per-call costs. The working figure is ≈ $0.06–0.10.
 
-**The tag notes (m11 D31.3), the user's choice before the `naive` debate arm and `conversations` are paid:**
+**The tag notes (m11 D31.3), the maintainer's choice before the `naive` debate arm and `conversations` are paid:**
 - **Proposed:** `naive`'s tag line becomes "Begin every reply with exactly one emotion tag <e:LABEL>, … Write only the
   tag itself, like <e:thinking>, with nothing inside it and no closing tag. Never write tags anywhere else." The
   prompt's labels move by 4: `naive-6` was already M11's debate request, and `naive-7`/`naive-8` M12's sliced

@@ -1,5 +1,5 @@
 // Watch engine (MULTI-09..11): speakers alternate at the configured pace; a director's note switches the bank
-// category for the next turns; Step in pauses and lets up to 2 reply; the turn limit pauses with turn_cap. Owner: EE.
+// category for the next turns; Step in pauses and lets up to 2 reply; the turn limit pauses with turn_cap.
 import type { StreamEvent, WatchConfig, WatchState } from "../../contract/types";
 import { chatCostUsd } from "../../domain/cost";
 import { pickSceneLine } from "../banks";

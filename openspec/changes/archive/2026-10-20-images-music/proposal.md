@@ -75,7 +75,7 @@ the code it measures is final.
 - `ASSETS.md` gains a "Generated music" section: SynthID, and Google's terms as group A A4 read them. No row is
   added, so `assets:check` is unaffected.
 
-**Prompts, as the user's choices (design D5, D10)**
+**Prompts, as the maintainer's choices (design D5, D10)**
 - The S2 honesty line reworded so a question asked inside the story is answered in the story. The candidate
   wordings and their re-measure come to the user before anything is paid. The new bytes move `agent-1`…`agent-8`
   to `agent-9`…`agent-16`. **Reverted in 8.6 (task 4.3):** wording B kept only 10/30 in-story asks in the story,

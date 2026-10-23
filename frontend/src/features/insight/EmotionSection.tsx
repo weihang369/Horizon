@@ -1,5 +1,5 @@
 // Insight's Emotion section body (INS-01; turn-plan-emotion D15): a kept face shows no band (rules in emotionView.ts).
-// Display only. Owner: AI.
+// Display only.
 import { emotionMeta } from "../../character/emotionMeta";
 import { probBand } from "../../domain/format";
 import { ProbBar } from "../../ui/Data";

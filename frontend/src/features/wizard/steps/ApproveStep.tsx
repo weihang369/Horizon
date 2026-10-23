@@ -1,5 +1,5 @@
 // S05h APPROVE (CHR-11): summary card (portrait, plate, role, tagline, palette, emotion thumbs, song, warnings) and
-// "Approve & Summon" → O15. Editing an approved character ends with "Save changes" instead (PRF-03 AC4). Owner: Builder B.
+// "Approve & Summon" → O15. Editing an approved character ends with "Save changes" instead (PRF-03 AC4).
 import { useEffect, useState } from "react";
 import type { CSSProperties } from "react";
 import { openOverlay, toast } from "@/app/layers";

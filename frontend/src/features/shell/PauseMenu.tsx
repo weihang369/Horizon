@@ -1,6 +1,6 @@
 // O01 Pause menu (APP-02, R4, R13): Esc outside fields/modals or the ☰ button. Resume · Worlds · World Hub ·
 // History (deep link: hub ?tab=sessions) · Settings · How it works (replays S02) · Title, with the current world and active character.
-// ↑/↓ move, Enter picks, Esc again resumes (LayerStack); a click off the red slab resumes too (U-18). Owner: Builder A.
+// ↑/↓ move, Enter picks, Esc again resumes (LayerStack); a click off the red slab resumes too (U-18).
 import { useEffect, useRef } from "react";
 import type { KeyboardEvent, MouseEvent } from "react";
 import type { OverlayComponentProps } from "../../app/overlayTypes";

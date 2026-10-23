@@ -1,4 +1,4 @@
-// Starts a test-mode backend for the HTTP contract run (`npm run test:http`) and stops it afterwards. Owner: SWE.
+// Starts a test-mode backend for the HTTP contract run (`npm run test:http`) and stops it afterwards.
 // HORIZON_TEST=1 mounts /_test/*, validates every response against schema.json and loads the _mock overlays, so the
 // portable suite sees the MockClient's dataset. The environment comes from the shared recipe (../test-backend/env.ts):
 // a temp HORIZON_ROOT with no .env, the repo seed, a temp data dir and the scripted AI profile.

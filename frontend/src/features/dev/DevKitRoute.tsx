@@ -1,4 +1,4 @@
-// #/dev/kit: lazy-loads the VMD's Kit Gallery (Lead gap ruling). Hidden in Presenter Mode. Owner: EE.
+// #/dev/kit: lazy-loads the VMD's Kit Gallery (Lead gap ruling). Hidden in Presenter Mode.
 import { lazy, Suspense } from "react";
 import { usePrefs } from "../../stores/prefs";
 

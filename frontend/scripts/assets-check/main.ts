@@ -1,5 +1,5 @@
 // `npm run assets:check`: builds the shipped-asset inventory from the repo and checks ASSETS.md against it
-// (asset-credits spec). Run directly by Node (erasable TypeScript). Exit 1 with one line per problem. Owner: SWE.
+// (asset-credits spec). Run directly by Node (erasable TypeScript). Exit 1 with one line per problem.
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";

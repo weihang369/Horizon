@@ -72,7 +72,7 @@ def test_the_builders_are_deterministic_and_use_the_live_state() -> None:
 
 def test_the_watch_part_is_built_from_the_committed_histories() -> None:
     """10.2: `who_scene` is the live cast plan's state at each labelled cut of `evals/watch/*.json`, one acceptable
-    name per item (never the last speaker), all English (the user's choice), at least 20 test items (D23). G11's growth
+    name per item (never the last speaker), all English (the maintainer's choice), at least 20 test items (D23). G11's growth
     (10.3) adds 40 after the first 60, whose ids and splits never move."""
     import sys
 

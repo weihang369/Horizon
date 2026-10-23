@@ -1,5 +1,5 @@
 // S05c LOOK (CHR-06): Sims-style chips and swatches, AI pre-selected; selections compile into an editable summary.
-// No sliders, no live morphing: only outfit colours and the palette frame preview instantly. Owner: Builder B.
+// No sliders, no live morphing: only outfit colours and the palette frame preview instantly.
 import { useState } from "react";
 import type { CSSProperties } from "react";
 import type { Appearance } from "@/contract/types";

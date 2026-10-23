@@ -1,5 +1,5 @@
 // The masked key hint shown after saving (SET-01 AC2: only `sk-or-…a1b2`). The key itself is never stored here:
-// only its last 4 characters, so Settings can show which key is active. Owner: Builder A.
+// only its last 4 characters, so Settings can show which key is active.
 const KEY = "horizon.keyHint.v1";
 
 export function maskKey(last4: string | null): string {

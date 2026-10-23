@@ -5,7 +5,7 @@ The model is asked to begin its reply with `<e:label>`. The parser:
 - accepts only the 7 contract emotions: a valid tag yields `Emotion(label, "llm")`;
 - otherwise (no tag, an invalid label, no `>` within 32 characters, or the stream ending first) yields the previous
   face with source `default`, and releases the buffered text (an invalid but complete tag is dropped, never released);
-- (persona-context D37, the user's choice after 10.4) also accepts a bare `<label>` (one of the 7, any case) at the
+- (persona-context D37, the maintainer's choice after 10.4) also accepts a bare `<label>` (one of the 7, any case) at the
   head the same way: DeepSeek V4.1 Flash wrote `<neutral>` for `<e:neutral>` in 87 of 91 replies of one transcript,
   and the user saw it;
 - strips stray tags (`<e:…>`, and a closing `</e:…>`: debate D31.3) anywhere later, including a tag split across

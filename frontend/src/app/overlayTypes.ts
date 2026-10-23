@@ -1,4 +1,4 @@
-// Overlay ids, kinds and props (doc 03 §2, UXA D1, README §3.3). Owner: EE.
+// Overlay ids, kinds and props (doc 03 §2, UXA D1, README §3.3).
 // Builders may add optional props (additive only).
 import type { Emotion } from "../contract/types";
 

@@ -133,7 +133,7 @@ function Reveal({ verdict, cfg, cols, chars }: RevealProps) {
   const subjects = verdict.scoresBy === "debater" || panel ? [...cols.prop, ...cols.opp] : ["prop", "opp"];
   const rows = rubricRows(verdict, cfg.rubric, subjects);
   const showBars = rows.length > 0 && (verdict.decidedBy !== "user" || showArbiter);
-  // U-61 (the user's choice): each side's mean over the criteria (how the winner is decided), so a narrow win reads
+  // U-61 (the maintainer's choice): each side's mean over the criteria (how the winner is decided), so a narrow win reads
   // as one; with the lead a win needs when the verdict carries it
   const totals = subjects.every((sid) => sid in SIDE_NAME) ? subjects.map((sid) => {
     const vs = rows.flatMap((r) => r.values.filter((v) => v.subjectId === sid).map((v) => v.value));

@@ -1,4 +1,4 @@
-/* O28 Source viewer: evidence on the corkboard, but it reads like a document. Owner: Builder B. */
+/* O28 Source viewer: evidence on the corkboard, but it reads like a document. */
 .viewer {
   --hl: color-mix(in srgb, var(--c-primary) 42%, var(--paper-50));
   position: relative;

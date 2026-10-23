@@ -1,4 +1,4 @@
-// Live-session infrastructure shared by the mock engines (R1). Owner: EE.
+// Live-session infrastructure shared by the mock engines (R1).
 // Every live turn is a generated event script (buildLineScript) appended to the session's ScriptPlayer, the same
 // player class Replay uses. Turns run through a per-session task queue, so steering (Ask…, Interject, Step in)
 // lands at the next boundary and never overlaps a streaming reply.

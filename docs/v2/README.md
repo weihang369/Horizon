@@ -45,7 +45,7 @@ Before v1.0, a model override changed only what the Test button probed.
 
 ## 2. "Forget everywhere" for a memory about the user
 
-**Deferred by:** [docs/ai/09-memory.md](../ai/09-memory.md) (task 9, the user's choice, 2026-10-10).
+**Deferred by:** [docs/ai/09-memory.md](../ai/09-memory.md) (task 9, the maintainer's choice, 2026-10-10).
 
 **v1 behaviour:** every character present forms memories from their own point of view (D-71), so a fact about the
 user ("Kai quit coffee") can live in several characters' lists. The Memory tab's Forget removes it from **one**
@@ -65,7 +65,7 @@ through the SWE side, and per-character Forget already keeps the "Forget means g
 
 ## 3. Keyword search for Chinese, Japanese and Korean
 
-**Deferred by:** [docs/ai/10-rag.md](../ai/10-rag.md) K11 (task 10, the user's choice "focus on English",
+**Deferred by:** [docs/ai/10-rag.md](../ai/10-rag.md) K11 (task 10, the maintainer's choice "focus on English",
 2026-10-10).
 
 **v1 behaviour:**
@@ -166,7 +166,7 @@ against flat as the gold).
 - Lyria 3 Clip writes a ~30 s piece with its own intro and ending. Our prompt asks for "a 30-second piece that loops
   cleanly", but the model doesn't guarantee it, so the repeat is heard as the song stopping and starting again.
 
-**v1's stopgap (the user's choice, same review):** each pass fades instead of cutting. Before a generated theme loops,
+**v1's stopgap (the maintainer's choice, same review):** each pass fades instead of cutting. Before a generated theme loops,
 the engine trims its near-silent edges, fades the first 1.5 s in and the last 3 s out (`frontend/src/audio/engine/edges.ts`),
 so every repeat goes quiet and comes back up. Procedural system tracks are built to loop and are left as they are.
 

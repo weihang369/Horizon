@@ -1,4 +1,4 @@
-// Replay helpers (MULTI-15, R1). Pure. Owner: EE.
+// Replay helpers (MULTI-15, R1). Pure.
 // A recording replays from its session's starting point: the first event (session.state) restores status, state
 // and participants; costs and counts are rebuilt by the reducer from the events.
 import type { Session, SessionEvent } from "../contract/types";

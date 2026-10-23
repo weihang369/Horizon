@@ -1,4 +1,4 @@
-// Fork a recording at a playhead (R16, D-51; session-runtime design D8). Pure. Owner: EE.
+// Fork a recording at a playhead (R16, D-51; session-runtime design D8). Pure.
 // Extracted from MockClient.fork so the backend's port (backend/horizon/sessions/fork.py) can be pinned to it by the
 // shared fixtures in backend/tests/fixtures/fork/: cut the events at `atSeq` (finishing a turn that was streaming
 // there), rename the session, message and event IDs deterministically, renumber seq from 1, and re-reduce.

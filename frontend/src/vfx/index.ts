@@ -1,4 +1,4 @@
-// VFX: Shadow Self placeholders, particles, emotion presets, covers, parallax, global ticker. Owner: VMD.
+// VFX: Shadow Self placeholders, particles, emotion presets, covers, parallax, global ticker.
 export * from "./shadow";
 export * from "./particles";
 export { playOneShot, startLoop, type CardBox, type VfxRun, type LoopPreset } from "./emotionPresets";

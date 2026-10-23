@@ -141,7 +141,7 @@ DeepSeek streams, told the mood by one
   task 10.5: both floors **0.2** (dev 0.77 and 1.00); the slice reads 7/13 = 0.54 on its small English test split,
   below E8's 0.80, recorded; two of the six misses had Jev's top pick right and were turned into "keep" by the
   neutral + none merge (turn-plan-emotion D12) ([m10.md](checks/m10.md)).*
-  *Changed in M11 (`debate` D20, D33, the user's choice): on the watch slice grown to 80, dropping the merge for
+  *Changed in M11 (`debate` D20, D33, the maintainer's choice): on the watch slice grown to 80, dropping the merge for
   `emotion_line` scored better (test 13/22 against 11/22), so `emotion_line` v3 takes `none` as "keep" and `neutral`
   as its own answer; `emotion_reply`, `emotion_opening` and `emotion_debate_opening` still merge. Floor 0.2; the
   watch faces read 16/26 = 0.62, +0.35 over keeping ([m11.md](checks/m11.md)).*

@@ -1,4 +1,4 @@
-// Data hooks (README §3.4). Owner: EE.
+// Data hooks (README §3.4).
 // Queries go through the entities store (deduped, refetched in place on entity.changed / mock.reset).
 // Session runtimes come from client/sessionRuntime.ts; streamed text from stores/streamText.ts.
 import { useEffect, useMemo, useReducer, useRef, useState } from "react";

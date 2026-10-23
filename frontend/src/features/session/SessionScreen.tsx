@@ -1,4 +1,4 @@
-// SessionScreen (S07/S09/S10/S12 frame, R5). Owner: C.
+// SessionScreen (S07/S09/S10/S12 frame, R5).
 // Picks layouts[mode] and docks[kind] from the registry; driven by useSessionRuntime(sessionId, { replay }).
 // Header: back · title · mode tag · REPLAY tag · (1:1) AUTO|MANUAL · Readable · cost HUD · Log · Insight.
 // Mid-session settings arrive as session.state events (D-57), so everything reads the runtime's session fields.

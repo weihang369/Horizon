@@ -211,9 +211,9 @@ from asking about the same line.
 | 1:1 | a chat message | Jev call 1 for its reply | yes |
 | group | a chat message | the cast plan (`group_first`, `group_mentioned` or `everyone`) | yes |
 | group | Everyone answer, Next speaker | the cast plan for the same last message (reads the stored flags; asks only without them) | yes |
-| watch | Step in (`step_in`) | the cast plan, `latest` = the line | **yes (U1, the user's choice)** |
+| watch | Step in (`step_in`) | the cast plan, `latest` = the line | **yes (U1, the maintainer's choice)** |
 | watch | a director's note (`direction`, user-authored) | the next cast plan (`scene`) or the plan made ahead (its fingerprint holds the note, so a stale plan is redone, G8) | no |
-| debate | an Ask (kind `steer`) | **the Ask's own face plan** (cast plan `debate_ask`, sent at once) (U3, the user's choice) | no |
+| debate | an Ask (kind `steer`) | **the Ask's own face plan** (cast plan `debate_ask`, sent at once) (U3, the maintainer's choice) | no |
 | debate | an Interject | the next debate plan; in the opening phase, the next opening's face plan | no |
 
 - **Why the Ask rides its face plan:** that request is sent when the Ask arrives, and its reply is the answer to the
@@ -416,7 +416,7 @@ from asking about the same line.
   - sets that message's (or variant's) status to `error`;
   - in the TS client, clears the StreamingText buffer.
 - **Live blocks:** the `error` comes before `turn.end`, which already sets `error`.
-- **After-the-fact blocks** (U2, the user's choice): the `error` comes after an `interrupted` `turn.end`.
+- **After-the-fact blocks** (U2, the maintainer's choice): the `error` comes after an `interrupted` `turn.end`.
   - The rule turns the row into a blocked one: the text is gone, and it offers Regenerate only, never Continue.
   - The backend scrubber writes the same: content "", status `error`, the stored token deltas emptied.
   - So served messages still match the event log (session-event-sourcing).
@@ -687,7 +687,7 @@ from asking about the same line.
     in the repo or under `private/`.
   - Sexual-content items state the request or the reply's direction without explicit description.
   - The team writes the private items by hand. DeepSeek drafts only harmless items (a paid call, asked for).
-  - **Amended during apply (the user's choices, 2026-10-17):**
+  - **Amended during apply (the maintainer's choices, 2026-10-17):**
     - The team cannot author the harmful items. It writes the mild ones: likeness, gore and weapons, a childlike look,
       and song copying (40). The 244 harmless items are written by hand too, so no DeepSeek draft is needed.
     - The rest come from **MIT-licensed benchmarks only**: HarmBench and AdvBench, licences checked upstream and
@@ -768,7 +768,7 @@ Amend:
 - doc 11's and doc 12's "Built in" notes;
 - W6's and W12's M14 rows.
 
-Write `docs/ai/checks/m14.md`: step 0, the runs, the findings, the user's choices, and "What M15 inherits".
+Write `docs/ai/checks/m14.md`: step 0, the runs, the findings, the maintainer's choices, and "What M15 inherits".
 
 ### D27. Phases
 
@@ -790,7 +790,7 @@ Each phase ends green offline:
 - **[A live reply is readable until the check answers]** → S5's honest limit: up to 0.7 s on screen before it is
   cleared. Prefetches have no exposure. A per-sentence check is rejected (NFR-01).
 - **[≈ 8 % of output checks may be late at 700 ms (m12.md's single-request p90 657 ms)]** → They fail open with a flag,
-  so nothing is blocked by a slow Jev. Check 2 measures it, and a raise is the user's choice.
+  so nothing is blocked by a slow Jev. Check 2 measures it, and a raise is the maintainer's choice.
 - **[False steers refuse honest questions]** → The 60 hard-safe items and the precision-set `tSteer`. More than 3 of
   60 false steers comes back to the user (doc 11 check 1).
 - **[Care over-fires and every character goes soft]** → The 30 not-at-risk items cap false care at 6. One voice and no

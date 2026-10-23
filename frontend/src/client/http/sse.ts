@@ -1,4 +1,4 @@
-// SSE for the HttpClient (doc backend/03 §4–§5): at most two EventSources (global + the open session). Owner: SWE.
+// SSE for the HttpClient (doc backend/03 §4–§5): at most two EventSources (global + the open session).
 // - Global: one shared EventSource, opened by the first `onGlobal` subscriber and closed after the last leaves.
 // - Session: one stream at a time. Subscribers of the same session share it; a later subscriber that asks for older
 //   events gets that backlog over HTTP while live events are held back, then everything is de-duplicated by `seq`.

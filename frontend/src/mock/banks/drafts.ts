@@ -1,5 +1,5 @@
 // "AI" profile drafts for the wizard (CHR-02/03): a seed line like "Sarah, a doctor" becomes a full profile,
-// appearance chips, a palette pick and a song brief. Deterministic per seed. Owner: EE.
+// appearance chips, a palette pick and a song brief. Deterministic per seed.
 import type { Appearance, Character, CharacterProfile, SongBrief } from "../../contract/types";
 import { PALETTES } from "../../theme/palettes";
 import { createRng } from "../rng";

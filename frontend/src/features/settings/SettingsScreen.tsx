@@ -1,5 +1,5 @@
 // S14 Settings (SET-01..12): 8 tabs — Connection · Audio · Chat · Display · Models · Cost (+ Spend view) · Data · About.
-// Vertical tab rail (↑/↓), deep-linkable (`#/settings/:tab?from=`), ◂ returns to `from`. House palette. Owner: Builder A.
+// Vertical tab rail (↑/↓), deep-linkable (`#/settings/:tab?from=`), ◂ returns to `from`. House palette.
 import { useRef } from "react";
 import type { KeyboardEvent } from "react";
 import { openOverlay, toast } from "../../app/layers";

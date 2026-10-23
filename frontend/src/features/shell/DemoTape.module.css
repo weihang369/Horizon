@@ -1,5 +1,5 @@
 /* O22 Demo tape: a slim tape stuck to the top edge, right-aligned over the mini-player column (≤ 272 px wide,
-   0–18 px tall). The mini-player drops under it via :root[data-demo-tape] (MiniPlayer.module.css). Owner: Builder A. */
+   0–18 px tall). The mini-player drops under it via :root[data-demo-tape] (MiniPlayer.module.css). */
 .tab {
   position: fixed;
   top: 0;

@@ -1,6 +1,6 @@
 // One Knowledge tab card (PRF-08, design D20): readable sources open O28; indexing ones show the stage and a bar;
 // failed ones offer ↻ Retry; keyword-only ones offer ↻ Index while a key is set (D-91), else say what a key adds.
-// Every card can be deleted (after a confirm, by the caller). Presentational: the tab passes the actions. Owner: Builder B.
+// Every card can be deleted (after a confirm, by the caller). Presentational: the tab passes the actions.
 import type { CSSProperties } from "react";
 import type { IngestProgress } from "@/client/HorizonClient";
 import type { KnowledgeSource } from "@/contract/types";

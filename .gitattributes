@@ -2,3 +2,10 @@
 # checkout must hold the same bytes, so it is LF on every platform (a Windows autocrlf checkout once shifted every span
 # and failed CI on Linux).
 evals/corpus/** text eol=lf
+
+# Documents are bytes: never convert line endings inside a PDF or DOCX. seed/'s `* text eol=lf` once stripped the CR
+# bytes inside the demo PDFs, so the committed seed copies no longer matched their recorded originals (seed:check).
+*.pdf binary
+*.docx binary
+# The recorded demo's documents are copied into seed/ byte for byte, so a Windows checkout must not add CRs to them.
+frontend/scripts/seed-build/recorded/knowledge-files/** -text

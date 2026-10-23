@@ -1,5 +1,4 @@
 // Generic bank: templates over a character's profile (wizard-made characters), plus debate and scene templates.
-// Owner: EE.
 import type { Character, DebateTurnPhase, Side } from "../../contract/types";
 import type { BankLine } from "./types";
 

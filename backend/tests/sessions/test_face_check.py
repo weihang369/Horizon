@@ -118,7 +118,7 @@ async def test_agreement_adds_a_second_insight_with_the_row_and_the_call(api: Ap
 
 
 async def test_a_clash_switches_the_face_to_the_words(api: Api) -> None:
-    """D-112 (the user's choice, U-54): happy against angry is a clash, so the face becomes what the words show."""
+    """D-112 (the maintainer's choice, U-54): happy against angry is a clash, so the face becomes what the words show."""
     sid, reply = await checked_reply(api, "happy", answer("angry", 0.8, "happy", 0.05))
     row = face_row(reply)
     assert row is not None and (row["answer"], row["p"], row["result"]) == ("clash", 0.05, "used")

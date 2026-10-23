@@ -1,5 +1,5 @@
 // Shared creation fixtures (generation-jobs design D2, D9): the backend's plans.py, drafts.py and theme.py ports must give
-// exactly these. Regenerate with `npm run fixtures:build`; `npm run fixtures:check` fails when they drift. Owner: SWE.
+// exactly these. Regenerate with `npm run fixtures:build`; `npm run fixtures:check` fails when they drift.
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";

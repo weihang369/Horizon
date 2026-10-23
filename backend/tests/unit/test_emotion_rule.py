@@ -91,7 +91,7 @@ def test_candidates_ignore_unknown_keys_and_rank_stably() -> None:
 
 
 def test_emotion_line_does_not_merge_neutral_and_none() -> None:
-    """M11 D33 (the user's choice after D20's measure): `emotion_line` (watch, group, debate lines) keeps `none` as
+    """M11 D33 (the maintainer's choice after D20's measure): `emotion_line` (watch, group, debate lines) keeps `none` as
     "keep" and `neutral` as its own answer; the other face questions still merge."""
     assert not merges("emotion_line") and merges("emotion_reply") and merges("emotion_opening")
     a = ans("thinking", 0.41, thinking=0.41, neutral=0.24, none=0.21)   # 10.5's emw-023: merged, neutral wins

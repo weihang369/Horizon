@@ -1,4 +1,4 @@
-// The World editor's save flow (worlds "The world editor uploads covers", generation-jobs design D11). Owner: SWE.
+// The World editor's save flow (worlds "The world editor uploads covers", generation-jobs design D11).
 // A picked cover file is never inlined into the world record: the world is created or saved first (with its previous or
 // preset cover), then the file goes through `worlds.uploadCover`. An upload error leaves the world saved and is shown in
 // the editor, which then edits that world (so saving again never creates a second one).

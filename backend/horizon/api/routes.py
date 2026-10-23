@@ -202,7 +202,7 @@ async def update_world(request: Request, world_id: str, body: WorldPatch) -> Res
 @router.delete("/worlds/{world_id}", status_code=204)
 async def delete_world(request: Request, world_id: str) -> Response:
     rt = rt_of(request)
-    # M14 (found during safety's apply; the user's choice): its characters' jobs are cancelled first, as a character
+    # M14 (found during safety's apply; the maintainer's choice): its characters' jobs are cancelled first, as a character
     # delete does, so a queued call (a song's music request) never goes out for rows about to cascade away
     async with rt.db.read() as conn:
         cids = [str(r[0]) for r in await conn.execute(text("SELECT id FROM characters WHERE world_id = :w"),

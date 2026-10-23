@@ -1,5 +1,5 @@
 // App boot: router hash sync, deep-linked mock scenarios, audio unlock, global client events → toasts/overlays,
-// global shortcuts, route prefetch. Owner: EE.
+// global shortcuts, route prefetch.
 import { useEffect, useState } from "react";
 import { audio } from "../audio/engine";
 import { client, mockDev } from "../client";

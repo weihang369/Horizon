@@ -1,6 +1,5 @@
 // Particle field on a <canvas>, driven by the ONE global ticker (R12): no React state, no per-field rAF.
 // A field subscribes to the ticker only while it has live particles or emitters, so idle stages cost nothing.
-// Owner: VMD.
 import { onTick } from "../ticker";
 
 export type ParticleKind = "sparkle" | "streak" | "glyph" | "spark" | "puff" | "dot" | "ring";

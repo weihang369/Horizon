@@ -1,4 +1,4 @@
-/* Global keyframes + utility classes. Owner: VMD.
+/* Global keyframes + utility classes.
  * Only transform and opacity are animated (NFR-03). CSS Modules that need these
  * should use the global utility classes (hz-*) via className strings, or declare local keyframes. */
 

@@ -1,6 +1,6 @@
 // Settings → Display (SET-04, SET-12, APP-05): reduced motion, VFX intensity, flash intensity, parallax, text size and
 // Presenter Mode. Every control writes the prefs store, which re-applies the root data attributes live; the preview
-// card on the right reacts immediately. Owner: Builder A.
+// card on the right reacts immediately.
 import { useEffect, useState } from "react";
 import { PortraitCard } from "../../character/PortraitCard";
 import { useCharacter } from "../../client/hooks";

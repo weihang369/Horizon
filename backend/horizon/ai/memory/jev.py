@@ -12,7 +12,7 @@
 - **The guard** (purpose `memory_guard`, bank entry `memory_guard`): one request per rewrite, asking whether the new
   line keeps every still-true part of the old one. p ≥ `t_keep` → Supersede; below it, or failed or late → the new
   line is inserted beside the old one (the fallback answers 0.0).
-- **Same fact?** (purpose `memory_guard`, bank entry `same_fact`; phase 10, the user's choice): one request per add
+- **Same fact?** (purpose `memory_guard`, bank entry `same_fact`; phase 10, the maintainer's choice): one request per add
   whose nearest current memory is at or above `memory.dupCosine`. p ≥ `t_same` → that memory is reinforced; below it,
   or failed or late → the add is written (the fallback answers 0.0: a dropped detail can't be recovered, a duplicate
   line can be forgotten).

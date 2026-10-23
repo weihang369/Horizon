@@ -1,4 +1,4 @@
-// Motion: transitions, ceremonies (conductor), display prefs, tokens. Owner: VMD.
+// Motion: transitions, ceremonies (conductor), display prefs, tokens.
 export { runTransition, registerTransitionHost, shardPolygons, type TransitionKind, type TransitionOpts, type TransitionHandle } from "./transitions";
 export { TransitionLayer } from "./TransitionLayer";
 export {

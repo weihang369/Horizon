@@ -123,7 +123,7 @@ def reordered(q: Question) -> Question:
 
 
 def order_line(flips: int, total: int, items: list[dict[str, Any]]) -> str:
-    """B6's lean report. Not measured for shuffled choice questions (turn-plan-emotion D38, the user's choice): the
+    """B6's lean report. Not measured for shuffled choice questions (turn-plan-emotion D38, the maintainer's choice): the
     store key sorts JSON keys, so the reversed request returns the first order's stored answer. The key fix is its
     own change."""
     shuffled = sorted({str(i["question_id"]) for i in items
@@ -382,7 +382,7 @@ class Decisions:
                 res.summary += policies.report(debate, kind, fade, title="Emotion (the debate slice, its own floor)")
         watch = [r for r in res.rows if r.get("kind") == "watch" and isinstance(r["label"], dict)
                  and policies.kind_of(r["question_id"]) == "emotion"]
-        if watch and not self.smoke:   # M11 (debate D20): both merge rules side by side, for the user's choice
+        if watch and not self.smoke:   # M11 (debate D20): both merge rules side by side, for the maintainer's choice
             res.summary += policies.merge_comparison(watch, fade)
         if not self.smoke:   # M10 (group-watch D23): who speaks (three parts) and "is the talk finished?"
             for part in who_policies.PARTS:

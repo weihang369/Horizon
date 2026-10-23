@@ -1,5 +1,5 @@
 // S05d PORTRAIT (CHR-07): candidates develop (QUEUED → PAINTING → FINISHING + elapsed), pick → Lock as base,
-// regenerate or refine by text (Tweak). Failures are per candidate with Retry. Owner: Builder B.
+// regenerate or refine by text (Tweak). Failures are per candidate with Retry.
 import { useState } from "react";
 import type { CSSProperties } from "react";
 import { audio } from "@/audio/engine";

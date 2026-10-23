@@ -1,7 +1,6 @@
 // Backend runtime knobs (session-runtime design D9), emitted with the mock's timing table into seed/runtime.json, so
 // the backend paces live sessions from the same committed numbers the MockClient uses. The mock never reads this file.
-// Owner: SWE.
-/** One settings row per DeepSeek call type (docs/ai/03 C1, C2): code never hard-codes these. Owner: AI. */
+/** One settings row per DeepSeek call type (docs/ai/03 C1, C2): code never hard-codes these. */
 export interface LlmCallRow {
   /** off = `reasoning: {enabled: false}` (every call today); low / high only after the latency suite passes again. */
   thinking: "off" | "low" | "high";
@@ -35,11 +34,11 @@ export interface AgentRetrieval {
   /** The deep path's wait for a query embedding from when the search needs it (rag 11.5: 800, the embedding starting
    *  with Jev call 1; the top-level `queryEmbedWaitMs` stays naive's). */
   queryEmbedWaitMs: number;
-  /** U-45 (the user's choice, 2026-10-22): a turn that searches its documents waits for its query vectors (the
+  /** U-45 (the maintainer's choice, 2026-10-22): a turn that searches its documents waits for its query vectors (the
    *  message's and a rewritten query's) up to this cap, so the search is hybrid; measured 0.9-13 s on OpenRouter.
    *  Turns with no documents keep `queryEmbedWaitMs`. */
   docsEmbedWaitMs: number;
-  /** U-45 (the user's choice, "deep insight waits for every stage"): a turn that searches its documents waits for each
+  /** U-45 (the maintainer's choice, "deep insight waits for every stage"): a turn that searches its documents waits for each
    *  stage to finish (query vectors, rewrite, passage checks, set check), under a 5-minute safety cap; off → the
    *  measured deadlines (`rewriteMs`, `deepCheckMs`, `docsEmbedWaitMs`). */
   docsWaitAll: boolean;

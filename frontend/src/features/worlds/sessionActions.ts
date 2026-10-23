@@ -1,4 +1,4 @@
-// History row actions (S13, HIST-02/03, R15/R16): replay, resume, continue live, rename, export, delete. Owner: Builder A.
+// History row actions (S13, HIST-02/03, R15/R16): replay, resume, continue live, rename, export, delete.
 import { openOverlay, toast } from "../../app/layers";
 import { client } from "../../client";
 import type { HorizonErrorShape } from "../../contract/errors";

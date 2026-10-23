@@ -1,4 +1,4 @@
-// Rush hour (ENG-06): Mon–Fri 09:00–12:00 and 14:00–18:00 MYT (UTC+8). Owner: EE.
+// Rush hour (ENG-06): Mon–Fri 09:00–12:00 and 14:00–18:00 MYT (UTC+8).
 import { describe, expect, it } from "vitest";
 import { isPeak, nextPeriodChange, periodMultiplier, rushHourInfo } from "./rushHour";
 

@@ -21,7 +21,7 @@ inside a memory line of the retrieval message collapses to a space, so a memory 
 v5 (`naive-5`, persona-context D35): when the latest user line is clearly not English, one last system message says
 which language to reply in (`horizon/ai/language.py`). English turns are byte-identical to v4.
 
-v9 (M15, images-music D14, the user's choice): the tag line says to write only the tag itself, with nothing inside it
+v9 (M15, images-music D14, the maintainer's choice): the tag line says to write only the tag itself, with nothing inside it
 and no closing tag (M11 counted notes written inside the tag on 14 of 154 debate arguments, D31.3). Its bytes reach
 every request, so each label moves by 4 (`naive-5` → `naive-9`, `-6` → `-10`, `-7` → `-11`, `-8` → `-12`), in the same
 order; the label still follows the bytes sent.

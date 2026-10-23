@@ -6,7 +6,7 @@
 // `advance` moves the backend's virtual clock and returns once the work it woke has settled (session-runtime D2).
 // `network_down` is a client-side fault (http-client-parity D2): the client's fetch fails before any request leaves, so
 // the HttpClient's real "server unreachable" path answers `network`. The next scenario or a reset lifts it, as on the
-// mock. Owner: SWE.
+// mock.
 import { EventSource } from "eventsource";
 import { inject } from "vitest";
 import type { ContractHarness } from "./clientContract.portable";

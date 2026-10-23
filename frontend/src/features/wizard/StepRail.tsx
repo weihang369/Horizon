@@ -1,4 +1,4 @@
-// Step rail (UXA §2.2: 64 px, 8 skewed chips, progress pips for background jobs). Owner: Builder B.
+// Step rail (UXA §2.2: 64 px, 8 skewed chips, progress pips for background jobs).
 import { useJob } from "@/client/hooks";
 import type { CreationStep, GenerationJob } from "@/contract/types";
 import { CREATION_STEPS } from "@/contract/types";

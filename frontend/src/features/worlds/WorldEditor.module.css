@@ -1,4 +1,4 @@
-/* O02 world editor. Owner: Builder A. */
+/* O02 world editor. */
 .editor { display: grid; grid-template-columns: 220px 1fr; gap: 28px; align-items: start; }
 .preview { position: sticky; top: 0; padding-top: 6px; }
 .previewCard {

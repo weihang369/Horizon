@@ -1,4 +1,4 @@
-// <EmotionVfx> (spec §3.5, VMD paper §2.5). Owner: VMD.
+// <EmotionVfx> (spec §3.5, VMD paper §2.5).
 // An overlay box the size of the portrait card. DOM/SVG layers do shaped effects (vignette, ring, vein,
 // "!" burst, thought bubble, blush hatch, edge glow); a bleeding canvas does particles on the global ticker.
 // intensity: full · subtle (half the particles, no shake) · off (static badges only, R19).

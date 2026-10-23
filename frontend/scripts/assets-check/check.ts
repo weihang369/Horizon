@@ -1,7 +1,6 @@
 // ASSETS.md check (asset-credits spec, http-client-parity D16): every shipped asset has a row, every row matches a
 // shipped asset, and every row carries the provenance or credit its source needs. Pure functions over an inventory and
 // the ASSETS.md text, so the rules are unit-tested without touching the repo. Offline: no network, no dependencies.
-// Owner: SWE.
 
 export type Source = "procedural" | "ai" | "library" | "font";
 export const SOURCES: readonly Source[] = ["procedural", "ai", "library", "font"];

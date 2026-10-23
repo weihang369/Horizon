@@ -1,6 +1,6 @@
 // S06 Theme tab as a track page (CHR-12, PRF-04): sleeve + vinyl, big ▶/❚❚ on the music bus, the full waveform with
 // its loop region, the brief as liner notes, credits, and the composing / failed / placeholder / none states.
-// Uses only ThemeSong fields that exist. Owner: Builder B.
+// Uses only ThemeSong fields that exist.
 import type { CSSProperties } from "react";
 import { audio } from "@/audio/engine";
 import { useJob } from "@/client/hooks";

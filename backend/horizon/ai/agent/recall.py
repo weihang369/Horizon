@@ -18,7 +18,7 @@ once. Up to `keep` (3) at or above `t_recall` are kept, by p. Every answer missi
 merged order, unscored (`fallback`). Some back: only those decide (recall never
 abstains, so partial evidence is safe).
 
-**Phase 10 (the user's choices, m13.md):** the session's lines are searched by vector only when the query has one
+**Phase 10 (the maintainer's choices, m13.md):** the session's lines are searched by vector only when the query has one
 (`recall.linesDense`; BM25 matched chat noise: in-session hit@3 97 % dense-only against 75 % hybrid), and the overflow
 stays hybrid. When nothing reaches `t_recall`, the top candidate is still kept if it stands out: p ≥
 `recall.standoutP` (0.25) and ≥ `recall.standoutRatio` (3) × the runner-up (an indirect question about an overflow

@@ -1,4 +1,4 @@
-// WLD-02 AC1: name required, 1–40 chars, unique (case-insensitive) among worlds. Owner: Builder A.
+// WLD-02 AC1: name required, 1–40 chars, unique (case-insensitive) among worlds.
 import type { World } from "../../contract/types";
 
 export function validateWorldName(name: string, worlds: Pick<World, "id" | "name">[], selfId?: string): string | null {

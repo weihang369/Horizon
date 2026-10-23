@@ -1,4 +1,4 @@
-// The World editor's save flow with a fake client (worlds "The world editor uploads covers"). Owner: SWE.
+// The World editor's save flow with a fake client (worlds "The world editor uploads covers").
 import { describe, expect, it } from "vitest";
 import type { HorizonClient, WorldInput } from "../../client/HorizonClient";
 import { HorizonError } from "../../contract/errors";

@@ -1,5 +1,5 @@
 // Streamed text, outside the session runtime (R12): one store write per frame, revealed by the StreamSmoother on
-// the global ticker, so only <StreamingMessage id> re-renders while tokens arrive. Owner: EE.
+// the global ticker, so only <StreamingMessage id> re-renders while tokens arrive.
 import { createStore } from "zustand/vanilla";
 import { StreamSmoother } from "../engine/StreamSmoother";
 import { onTick } from "../vfx/ticker";

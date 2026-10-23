@@ -1,4 +1,4 @@
-// The app's one client instance. Owner: EE + SWE.
+// The app's one client instance.
 // `VITE_HORIZON_CLIENT=http` (`vite --mode http`, frontend/.env.http; the root `npm run dev`) talks to the local backend
 // through the Vite proxy; unset or `mock` (the root `npm run dev:mock`, the Vercel build) is the MockClient (D-73). The
 // value is a build-time constant, so the unused client is dropped from the bundle. vite.config.ts refuses any other

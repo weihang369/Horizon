@@ -1,4 +1,4 @@
-// 1:1 engine (CHAT-01..06, ENG-04). Owner: EE.
+// 1:1 engine (CHAT-01..06, ENG-04).
 import { greetingFor } from "../banks";
 import type { EngineHost } from "./host";
 import { asleepNote, enqueue, isAsleep, speakThen, userMessage } from "./host";

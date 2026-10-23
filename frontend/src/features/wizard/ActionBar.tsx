@@ -1,4 +1,4 @@
-// Wizard action bar (UXA §2.2, 80 px): ◂ Back · save state · estimate + primary on the right. Owner: Builder B.
+// Wizard action bar (UXA §2.2, 80 px): ◂ Back · save state · estimate + primary on the right.
 import type { ReactNode } from "react";
 import type { CreationStep } from "@/contract/types";
 import { CREATION_STEPS } from "@/contract/types";

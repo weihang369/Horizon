@@ -1,4 +1,4 @@
-// HTTP transport for the HttpClient (doc backend/03 §1–§2, §5). Owner: SWE.
+// HTTP transport for the HttpClient (doc backend/03 §1–§2, §5).
 // - Every non-2xx response becomes a HorizonError built from the `{ error }` envelope (details kept).
 // - A request that can't reach the server rejects with `network` (retryable).
 // - Every POST carries an Idempotency-Key; the one automatic retry (network failure only) reuses it, so a create

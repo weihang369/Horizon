@@ -69,7 +69,7 @@ shared cancel-storm test helper. Every later phase adds its own cancel-in-a-writ
   the stream's end and `turn.end`. Until M14 there is nothing there, so the follow plan gets about 400 ms against Jev's
   measured 420–530 ms p50. Most follow plans will likely be late, so there would be no second reply. The paid timing
   check measures this, and G2's rule (keep Jev, deadline from the measured p90, record an NFR-02 exception) applies.
-  Whether M10 merges with that exception is the user's choice.
+  Whether M10 merges with that exception is the maintainer's choice.
 
 **Next speaker, Everyone and Step in (G4), and the cancel rule (G5) (design D11, D12)**
 - **Next speaker** asks "who speaks next?" with no `none` and without the last speaker. Its cue gets G3's "Nobody asked
@@ -127,7 +127,7 @@ shared cancel-storm test helper. Every later phase adds its own cancel-in-a-writ
   watch. Floors are chosen on dev, over a grid that includes 0.2–0.4.
 - **"Is the talk finished?":** about 120 nouls (at least 60 "yes"), including goodbye loops and polite-agreement loops.
   `t_end` is the lowest threshold with precision ≥ 90 %.
-- **A 40-item watch slice for the two new emotion entries** (the user's choice, D27).
+- **A 40-item watch slice for the two new emotion entries** (the maintainer's choice, D27).
 - **The episode recaps:** 10 in the `summary` suite, from two watch histories generated once. One of them has about
   100 turns.
 - **The timing checks:**

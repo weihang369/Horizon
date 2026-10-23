@@ -43,7 +43,7 @@
 }
 .curtainL { left: 0; box-shadow: inset -3px 0 0 var(--horizon-500); clip-path: polygon(0 0, 100% 0, 70% 100%, 0 100%); }
 .curtainR { right: 0; box-shadow: inset 3px 0 0 var(--horizon-500); clip-path: polygon(0 0, 100% 0, 100% 100%, 30% 100%); }
-/* U-51 (the user's choice): the replay's end closes the drapes over the stage; seeking back opens them again */
+/* U-51 (the maintainer's choice): the replay's end closes the drapes over the stage; seeking back opens them again */
 .curtainL, .curtainR { transition: width 900ms var(--ease-slam), clip-path 900ms var(--ease-slam); }
 .root[data-fin] .curtainL, .root[data-fin] .curtainR { width: calc(50% + 1px); }
 .root[data-fin] .curtainL { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }

@@ -1,4 +1,4 @@
-// Energy + cost maths (ENG-01..06; the worked example was doc 05 §8 before the seed was recorded). Owner: EE.
+// Energy + cost maths (ENG-01..06; the worked example was doc 05 §8 before the seed was recorded).
 import { describe, expect, it } from "vitest";
 import { PRICING } from "../mock/pricing.config";
 import { chatCostUsd, chatEnergy } from "./cost";
