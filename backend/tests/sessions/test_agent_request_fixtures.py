@@ -67,9 +67,31 @@ def debate_case(phase: str = "rebuttal", round_: int = 2, iteration: int = 1,
 MOOD_ON = {"persona.moodLine": True}   # D40: the line is behind a switch, off by default
 
 
+ENGLISH_CUE = "Kai wrote in English. Reply in English."
+
+
+def without_language_cue(messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """U-84: every request whose window has a user line now ends with the language cue (English too). The fixtures
+    were recorded before it; like the Malay cue (D35) it carries no prompt label, so they compare without it."""
+    if not messages or messages[-1]["role"] != "system" or not str(messages[-1]["content"]).endswith(ENGLISH_CUE):
+        return messages
+    rest = str(messages[-1]["content"])[: -len(ENGLISH_CUE)].rstrip("\n")
+    return [*messages[:-1], {"role": "system", "content": rest}] if rest else messages[:-1]
+
+
 def dump(c: TurnContext, switches: dict[str, bool] | None = None) -> dict[str, Any]:
     req, prefix = engine(switches).request(c)
-    return {"messages": req.messages, "stop": req.stop, "max_tokens": req.max_tokens, "prefix_len": len(prefix)}
+    return {"messages": without_language_cue(req.messages), "stop": req.stop, "max_tokens": req.max_tokens,
+            "prefix_len": len(prefix)}
+
+
+def test_a_request_with_a_user_line_ends_with_its_language() -> None:
+    """U-84: the cue is the request's last line, after every other tail line."""
+    for name in ("one_on_one", "group", "scene"):
+        req, _ = engine().request(cases()[name])
+        assert str(req.messages[-1]["content"]).endswith(ENGLISH_CUE)
+    req, _ = engine().request(cases()["greeting"])   # no user line yet: no cue
+    assert ENGLISH_CUE not in json.dumps(req.messages)
 
 
 def fixture(name: str) -> dict[str, Any]:

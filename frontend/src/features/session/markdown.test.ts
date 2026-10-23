@@ -78,4 +78,15 @@ describe("a citation chip keeps its line (U-63)", () => {
     expect(html).toContain('<span style="white-space:nowrap">meal <b>1</b><b>2</b>.</span> So papaya salad.');
     expect(html).toContain("the arguing is half the ");
   });
+
+  it("glues only a few characters of a line without spaces, so Chinese still wraps (U-85)", async () => {
+    const { createElement } = await import("react");
+    const { renderToStaticMarkup } = await import("react-dom/server");
+    const { renderMarkdown } = await import("./markdown");
+    const html = renderToStaticMarkup(createElement("div", null, renderMarkdown("长通勤是压力的累积器：睡眠时间被侵蚀，还有三起轻微碰撞 [1]。下一句。", {
+      cites: new Set([1]),
+      renderCite: (n, k) => createElement("b", { key: k }, n),
+    })));
+    expect(html).toContain('长通勤是压力的累积器：睡眠时间被侵蚀，<span style="white-space:nowrap">还有三起轻微碰撞 <b>1</b>。</span>下一句。');
+  });
 });

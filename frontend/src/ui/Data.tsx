@@ -167,6 +167,14 @@ export interface TooltipProps {
 }
 
 /** Hover/focus tooltip. The child gets aria-describedby. */
+/** U-96: a tip centred on a target near the window's edge (the 1:1 energy bar) ran off it; move it back in. */
+function keepInWindow(el: HTMLSpanElement | null): void {
+  if (!el || typeof window === "undefined") return;
+  const r = el.getBoundingClientRect();
+  const dx = r.left < 8 ? 8 - r.left : r.right > window.innerWidth - 8 ? window.innerWidth - 8 - r.right : 0;
+  if (dx) el.style.translate = `${dx}px 0`;
+}
+
 export function Tooltip({ content, placement = "top", children }: TooltipProps) {
   const [open, setOpen] = useState(false);
   const id = useId();
@@ -182,7 +190,7 @@ export function Tooltip({ content, placement = "top", children }: TooltipProps) 
     >
       {child}
       {open && (
-        <span role="tooltip" id={id} className={cx(s.tip, placement === "bottom" && s.tip_bottom)}>
+        <span role="tooltip" id={id} ref={keepInWindow} className={cx(s.tip, placement === "bottom" && s.tip_bottom)}>
           {content}
         </span>
       )}

@@ -293,7 +293,9 @@
 .opp .slot { left: 10px; }
 /* Visible offsets are 56 outward / 40 up (UXA §2.2), compensated for the scale around the card's bottom centre. */
 .slot[data-rank="1"] { --sc: 0.88; --tx: calc((-56px - var(--card-w) * 0.06) * var(--dir)); --ty: calc(-40px - var(--card-w) * 0.16); }
-.slot[data-rank="2"] { --sc: 0.8; --tx: calc((-100px - var(--card-w) * 0.1) * var(--dir)); --ty: calc(-72px - var(--card-w) * 0.2667); }
+/* U-87: the third card of a side of 3 stands higher and less far out, so its face shows above the two in front (at
+ * 100 px out it left the screen's edge and sat behind both). */
+.slot[data-rank="2"] { --sc: 0.8; --tx: calc((-20px - var(--card-w) * 0.1) * var(--dir)); --ty: calc(-144px - var(--card-w) * 0.2667); }
 .slotSpeaking[data-rank="0"] { --tx: calc(40px * var(--dir)); }
 .slotLean[data-rank="0"]:not(.slotSpeaking) { --tx: calc(10px * var(--dir)); }
 

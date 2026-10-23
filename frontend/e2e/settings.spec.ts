@@ -253,7 +253,9 @@ test("Cost: every control saves and takes effect (mode, caps, warn, energy, esti
 });
 
 test("Data: Trim long pauses reaches replays; Reset keeps your own character; Delete all empties; both Resets bring the demo back", async ({ page }) => {
-  test.slow(); // the wizard's portrait takes 20 s on the backend
+  // The wizard's portrait takes 20 s on the backend; on the CI runner the whole test passed 135 s (test.slow's 3 × 45 s,
+  // 23 Oct) just before its last step, so it gets 4 minutes.
+  test.setTimeout(240_000);
   const worldCard = (name: string) => page.getByRole("list", { name: "Worlds" }).getByRole("button", { name: new RegExp(`^${name}`) });
   const roster = page.getByRole("tabpanel", { name: /^Roster/ });
   const sarah = roster.getByRole("button", { name: /^Sarah, .*Open profile$/ });

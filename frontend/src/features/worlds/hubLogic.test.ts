@@ -53,6 +53,8 @@ describe("rows", () => {
     const base = { decidedBy: "arbiter" as const, summary: [] };
     expect(verdictBadge(ses({ id: "v", mode: "debate", state: { phase: "ended", round: 3, iteration: 0, verdict: { ...base, strongerCase: "prop" } } }))?.text).toBe("STRONGER CASE · PROP");
     expect(verdictBadge(ses({ id: "v", mode: "debate", state: { phase: "ended", round: 3, iteration: 0, verdict: { ...base, strongerCase: null } } }))?.text).toBe("TOO CLOSE TO CALL");
+    const panel = { format: "panel" } as unknown as Session["config"];   // U-91: a panel's summary is no tie
+    expect(verdictBadge(ses({ id: "p", mode: "debate", config: panel, state: { phase: "ended", round: 2, iteration: 0, verdict: { ...base, strongerCase: null } } }))?.text).toBe("SUMMARY");
     expect(verdictBadge(ses({ id: "g", mode: "group" }))).toBeNull();
   });
   it("features the seed debate first", () => {

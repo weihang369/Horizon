@@ -164,10 +164,11 @@ export async function setScenario(page: Page, id: E2EScenario): Promise<void> {
 
 /**
  * How long to wait for a generation job to land. The mock runs at `?speed=4`; the backend paces jobs in real time (a
- * portrait takes 20 s, seed/runtime.json), so HTTP waits longer (D11).
+ * portrait takes 20 s, seed/runtime.json), so HTTP waits longer (D11). The mock's 5 s portrait was at 78 % after 8 s
+ * on the CI runner (23 Oct: its job ticks run slower there), so the mock waits 20 s.
  */
 export function genTimeout(page: Page): number {
-  return clientFor(page) === "http" ? 60_000 : 8_000;
+  return clientFor(page) === "http" ? 60_000 : 20_000;
 }
 
 /** The log entry (listitem) whose text contains `text`. */

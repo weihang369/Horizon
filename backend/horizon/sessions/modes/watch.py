@@ -264,7 +264,9 @@ async def _planned_step_in(actor: SessionActor, text: str, awake: list[str], epo
 async def extend(actor: SessionActor, turns: int = 10) -> None:
     st = state_of(actor)
     actor.held = False
-    await actor.emit(*watch_state(actor, {"turnLimit": int(st["turnLimit"]) + turns, "status": "playing"}),
+    # U-94: "Continue +10" is 10 more turns from here. Stopped early (5 of 40), adding to the limit gave 45 more.
+    taken = min(int(st["turnsTaken"]), int(st["turnLimit"]))
+    await actor.emit(*watch_state(actor, {"turnLimit": taken + turns, "status": "playing"}),
                      {"type": "session.resumed", "payload": {"reason": "extend"}})
     turn(actor)
 

@@ -37,6 +37,20 @@ async def test_stop_at_the_cap_then_extend(api: Api) -> None:
     await assert_reduces(api, sid)
 
 
+async def test_continue_after_an_early_stop_is_ten_more_turns(api: Api) -> None:
+    """U-94: Stop (pause) at turn 3 of 40, then Continue +10: the limit is 13, not 50."""
+    sid = await _watch(api, maxTurns=40)
+    while (await snapshot(api, sid))["session"]["state"]["turnsTaken"] < 3:
+        await api.drive(500)
+    await command(api, sid, "watch/pause")
+    await api.drive(10000)
+    taken = (await snapshot(api, sid))["session"]["state"]["turnsTaken"]
+    await command(api, sid, "watch/extend", {"turns": 10})
+    await api.drive(1000)
+    assert (await snapshot(api, sid))["session"]["state"]["turnLimit"] == taken + 10
+    await assert_reduces(api, sid)
+
+
 async def test_pace_is_clock_time(api: Api) -> None:
     from horizon.domain.timeutil import ms_from_iso
 

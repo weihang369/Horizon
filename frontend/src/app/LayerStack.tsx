@@ -1,6 +1,6 @@
 // LayerStack (R4, UXA D1): renders the ui store's layers with central Esc order and focus trap/restore.
 // Esc: popover → dock expansion → modal → drawer → blur text field → pause menu (O01; Esc again resumes).
-import { Suspense, useEffect, useRef } from "react";
+import { Suspense, useEffect, useLayoutEffect, useRef } from "react";
 import type { ComponentType, ReactNode } from "react";
 import { getRoute } from "../router";
 import { ui, useUi } from "../stores/ui";
@@ -81,6 +81,29 @@ function popoverStyle(anchor?: AnchorRect): React.CSSProperties | undefined {
     : { left: Math.max(8, anchor.x), bottom: (typeof window === "undefined" ? 0 : window.innerHeight) - anchor.y + 8 };
 }
 
+/** An anchored popover kept inside the window (U-86): `popoverStyle` places it from a guessed height, so once it has
+ * rendered, and whenever its content changes size (the portrait menu's 7 faces), it moves back in by what overflows. */
+function AnchoredPopover({ anchor, id, children }: { anchor: AnchorRect; id: string; children: ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const fit = () => {
+      el.style.translate = "";
+      const r = el.getBoundingClientRect();
+      const dx = Math.min(0, window.innerWidth - 8 - r.right);
+      let dy = Math.min(0, window.innerHeight - 8 - r.bottom);
+      if (r.top + dy < 8) dy = 8 - r.top;
+      if (dx || dy) el.style.translate = `${dx}px ${dy}px`;
+    };
+    fit();
+    const ro = new ResizeObserver(fit);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [anchor]);
+  return <div ref={ref} className={s.popover} style={popoverStyle(anchor)} data-layer={id}>{children}</div>;
+}
+
 function LayerView({ layer, trap }: { layer: Layer; trap: boolean }) {
   const C = OVERLAYS[layer.id as OverlayId].component as unknown as ComponentType<OverlayComponentProps<OverlayId>>;
   const close = () => closeOverlay(layer.key);
@@ -105,7 +128,9 @@ function LayerView({ layer, trap }: { layer: Layer; trap: boolean }) {
       return (
         <>
           <div style={{ position: "fixed", inset: 0, zIndex: "calc(var(--z-modal) + 4)" }} onMouseDown={close} aria-hidden="true" />
-          <div className={`${s.popover} ${anchor ? "" : s.popoverCentered}`} style={popoverStyle(anchor)} data-layer={layer.id}>{body}</div>
+          {anchor
+            ? <AnchoredPopover anchor={anchor} id={layer.id}>{body}</AnchoredPopover>
+            : <div className={`${s.popover} ${s.popoverCentered}`} data-layer={layer.id}>{body}</div>}
         </>
       );
     }

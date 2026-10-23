@@ -134,7 +134,8 @@ export function extendWatch(h: EngineHost, sid: string, turns = 10): void {
   const live = h.live(sid);
   const st = stateOf(live);
   live.held = false;
-  h.emit(sid, ...watchState(h, sid, { turnLimit: st.turnLimit + turns, status: "playing" }), { type: "session.resumed", payload: { reason: "extend" } });
+  // U-94: "Continue +10" is 10 more turns from here (stopped early at 5 of 40, adding to the limit gave 45 more)
+  h.emit(sid, ...watchState(h, sid, { turnLimit: Math.min(st.turnsTaken, st.turnLimit) + turns, status: "playing" }), { type: "session.resumed", payload: { reason: "extend" } });
   turn(h, sid);
 }
 

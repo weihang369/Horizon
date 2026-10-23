@@ -49,6 +49,8 @@ export function verdictBadge(s: Session): { text: string; tone: "prop" | "opp" |
   if (v.strongerCase === "prop") return { text: "STRONGER CASE · PROP", tone: "prop" };
   if (v.strongerCase === "opp") return { text: "STRONGER CASE · OPP", tone: "opp" };
   if (v.decidedBy === "none") return { text: "NO VERDICT", tone: "ink" };
+  // U-91: a panel's arbiter summary names no side by design; it isn't a tie
+  if ((s.config as DebateConfig | null)?.format === "panel") return { text: "SUMMARY", tone: "ink" };
   return { text: "TOO CLOSE TO CALL", tone: "ink" };
 }
 

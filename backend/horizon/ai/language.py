@@ -46,11 +46,15 @@ def detect_language(text: str) -> str | None:
     return None
 
 
-def language_cue(ctx: TurnContext) -> str | None:
-    """The cue for the latest user line in the window, if it is clearly not English."""
+def language_cue(ctx: TurnContext, *, english: bool = False) -> str | None:
+    """The cue for the latest user line in the window, if it is clearly not English. With `english` (the agent engine,
+    U-84), an English or unsure line gets "Reply in English." too: on 23 Oct a group reply to a plain English question
+    came back in Chinese with only the system rule to go on (M10's recaps did the same; unsure counts as English)."""
     latest = next((m.content for m in reversed(ctx.session.recent) if m.author_type == "user" and m.content), "")
     lang = detect_language(latest) if latest else None
     if lang is None:
-        return None
+        if not (english and WORD.search(latest)):
+            return None
+        lang = "English"
     you = str((ctx.session.world.you or {}).get("displayName") or "The user")
     return f"{you} wrote in {lang}. Reply in {lang}."

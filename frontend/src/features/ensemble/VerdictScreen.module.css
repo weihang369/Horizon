@@ -126,6 +126,13 @@
 .card:only-child { --v-card: calc(var(--side) * 0.62); }
 /* Two seats share the column side by side, so the back seat's plate is never under the front card. */
 .card:first-child:nth-last-child(2), .card:last-child:nth-child(2) { --v-card: calc((var(--side) - 56px) / 2); margin-inline: 6px; }
+/* U-89: three or more (a 3-person side, a 5-person panel's column) overlap by a tenth each, sized to fit the column;
+ * at full width the third card fell outside it and was clipped away. */
+.cards:has(> .card:nth-child(3)) > .card {
+  --v-card: calc((var(--side) - 24px) / (var(--n) * 0.8 + 0.2));
+  margin-inline: calc(var(--v-card) * -0.1);
+  z-index: calc(5 + var(--i));   /* the later card on top: each name plate (bottom left) stays readable */
+}
 .stack[data-role="win"] .cards { animation: winLift 420ms var(--ease-slam) 1500ms both; }
 .stack[data-role="lose"] { animation: loseDim 400ms var(--ease-out) 1500ms both; }
 @keyframes winLift { from { transform: none; } to { transform: scale(1.03); } }

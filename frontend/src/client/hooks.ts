@@ -187,7 +187,10 @@ export function useEnergy(characterId: string | null | undefined): EnergyView | 
   }, [characterId]);
   return useMemo(() => {
     const est = (estPoints ?? EST_REPLY_POINTS)[peak ? "peak" : "off_peak"];
-    if (rtEnergy) {
+    // U-95: a top-up during a chat writes the character, not the session's energy events; the newer of the two wins
+    // (it read 993 / 1000 under "Amara is recharged (+500)" until her next reply)
+    const charNewer = !!char && !rtReplay && !!rtEnergy?.at && Date.parse(char.energy.asOf) > Date.parse(rtEnergy.at);
+    if (rtEnergy && !charNewer) {
       const frozen = rtReplay || demo || !rtEnergy.at;
       const regen = rtEnergy.max / 24;
       const current = frozen ? rtEnergy.current : Math.floor(regenAt({ current: rtEnergy.current, max: rtEnergy.max, asOf: rtEnergy.at!, regenPerHour: regen }, now));

@@ -287,6 +287,8 @@ async def test_a_naive_panel_maps_names_to_ids(api: Api) -> None:
     assert {x["subjectId"] for x in v["summary"]} == {AMARA, MEI, VICTOR} and "scores" not in v
     sysmsg = verdict_requests(api)[0]["messages"][0]["content"]
     assert f'→ "{AMARA}"' in sysmsg
+    assert "SUMMARY" in notes(await messages(api, sid))   # U-91: a panel names no side; not "too close to call"
+    assert "TOO CLOSE TO CALL" not in notes(await messages(api, sid))
 
 
 # ── 7.7 / 7.8: when the work runs, and the pick ──
