@@ -1,4 +1,4 @@
-// O14 Toast stack host (STATE-05): renders the VMD ToastView frames, top-right under the mini-player. Owner: EE.
+// O14 Toast stack host (STATE-05): renders the VMD ToastView frames, top-right under the mini-player.
 import { useUi } from "../stores/ui";
 import { ToastView } from "../ui/Panels";
 import { dismissToast } from "./layers";

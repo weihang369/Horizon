@@ -1,4 +1,4 @@
-// <PortraitCard> (spec §3.5, doc 04 §4, VMD paper §2.2/§2.5). Owner: VMD.
+// <PortraitCard> (spec §3.5, doc 04 §4, VMD paper §2.2/§2.5).
 // 3:4 card, clip-path cut corner, 6 px palette frame, misregistered ink block behind, halftone stage.
 // Preloads + decode()s every emotion image on mount; crossfades ≤ 300 ms with a 1.02→1 settle.
 // Missing emotion art → neutral + VFX + tint (EMO-06). Exhausted → neutral (or blink) + a STATIC greyscale

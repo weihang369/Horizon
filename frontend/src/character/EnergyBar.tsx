@@ -1,4 +1,4 @@
-// <EnergyBar> (spec §3.5, doc 04 §6.1, VMD §2.2). Owner: VMD.
+// <EnergyBar> (spec §3.5, doc 04 §6.1, VMD §2.2).
 // characterId → live energy via the EE's useEnergy(); energy → a plain value.
 // stage 6 px / chat 10 px. Drain = fighting-game damage ghost (hold 200 ms, collapse 400 ms) + "−N ⚡" float;
 // regen = sheen every 2.8 s; top-up = 600 ms fill + 6 sparks; exhausted = .55↔1 pulse.

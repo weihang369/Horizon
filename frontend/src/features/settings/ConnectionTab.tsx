@@ -1,7 +1,7 @@
 // Settings → Connection (SET-01, APP-09): masked key with Show/Hide, Save, Test connection (✓ / ✗ with reason), Clear.
 // After saving only `sk-or-…a1b2` is shown. Mock: any `sk-or-*` is valid, `sk-or-bad*` invalid (R15). A key from
 // OPENROUTER_API_KEY (.env) can't be saved over or cleared here, so the form and Clear give way to where to change it
-// (D-106). Presenter Mode (SET-12) hides the key: no last four, no Show. Owner: Builder A.
+// (D-106). Presenter Mode (SET-12) hides the key: no last four, no Show.
 import { useState } from "react";
 import { openOverlay, toast } from "../../app/layers";
 import { client } from "../../client";

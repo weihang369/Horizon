@@ -356,7 +356,7 @@ async def test_a_rate_limited_guard_is_retried_once(api: Api) -> None:
 
 # ── 3.6 the duplicate check ──
 async def test_a_near_duplicate_reinforces(api: Api) -> None:
-    """Phase 10 (the user's choice): near (cosine ≥ dupCosine) asks Jev "same fact?"; yes reinforces."""
+    """Phase 10 (the maintainer's choice): near (cosine ≥ dupCosine) asks Jev "same fact?"; yes reinforces."""
     await api.set_key()
     writer = _agent(api)
     assert api.rt.fake is not None

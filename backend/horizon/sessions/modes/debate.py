@@ -522,7 +522,9 @@ async def finish(actor: SessionActor, verdict: Wire | None = None) -> None:
         if verdict.get("strongerCase"):
             text = f"STRONGER CASE: {'PROPOSITION' if verdict['strongerCase'] == 'prop' else 'OPPOSITION'}"
         else:
-            text = "SUMMARY" if verdict.get("decidedBy") == "none" else "TOO CLOSE TO CALL"
+            # U-91: a panel's arbiter summary names no side by design; it isn't a tie
+            panel = cfg_of(actor).get("format") == "panel"
+            text = "SUMMARY" if verdict.get("decidedBy") == "none" or panel else "TOO CLOSE TO CALL"
         events.append(message_event(note(actor, text, "verdict")))
         events.append({"type": "session.state", "payload": {"state": {**st, "verdict": verdict}}})
     events.append({"type": "phase", "payload": {"phase": "ended", "round": st.get("round", 0),

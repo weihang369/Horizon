@@ -1,5 +1,5 @@
 // The persona-prompt twin against the backend's shared fixtures (docs/ai/04 P10; persona-prompt "The preview is the
-// real prompt"): every case in backend/tests/fixtures/persona_prompt/ must come out byte for byte. Owner: AI.
+// real prompt"): every case in backend/tests/fixtures/persona_prompt/ must come out byte for byte.
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";

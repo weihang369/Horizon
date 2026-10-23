@@ -1,6 +1,6 @@
 // S05e EMOTIONS (CHR-08): a 7-slot grid (neutral = the locked base); per-emotion edits of the base develop and fill
 // the slots one by one. U-73: the expression-sheet variant (C) left the screen at the user's ask; the API keeps it.
-// Lean generates happy/sad/angry now; the rest are "Generate (≈ $0.04)" on demand. Owner: Builder B.
+// Lean generates happy/sad/angry now; the rest are "Generate (≈ $0.04)" on demand.
 import { useMemo } from "react";
 import type { CSSProperties } from "react";
 import { openOverlay } from "@/app/layers";

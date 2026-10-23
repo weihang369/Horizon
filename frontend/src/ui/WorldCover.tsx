@@ -1,4 +1,4 @@
-// <WorldCover> — the 8 CSS/SVG presets (or an uploaded/generated image URL). Owner: VMD.
+// <WorldCover> — the 8 CSS/SVG presets (or an uploaded/generated image URL).
 import type { CSSProperties, ReactNode } from "react";
 import type { World } from "../contract/types";
 import { getCoverPreset } from "../vfx/covers";

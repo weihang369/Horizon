@@ -1,6 +1,6 @@
 // Shared inline-emotion-tag fixtures (backend/tests/fixtures/tag_parser/*.json, session-runtime design D11): a
 // test-only TS reference parser runs the same cases as the backend's naive engine parser, so the rules are
-// language-neutral. Owner: SWE.
+// language-neutral.
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";

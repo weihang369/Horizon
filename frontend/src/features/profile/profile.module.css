@@ -1,4 +1,4 @@
-/* S06 Character Profile. Whole-root palette (R9); clip-path slants (R7). Owner: Builder B. */
+/* S06 Character Profile. Whole-root palette (R9); clip-path slants (R7). */
 .root {
   --pf-col: 540px;
   --pf-w: min(430px, calc((100vh - var(--top-inset, 0px) - 300px) * 0.75));

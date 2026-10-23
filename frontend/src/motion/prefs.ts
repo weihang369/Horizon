@@ -1,4 +1,4 @@
-// Display / motion preference plumbing via root data attributes. Owner: VMD.
+// Display / motion preference plumbing via root data attributes.
 // The EE's prefs store calls applyDisplayPrefs(settings.display) whenever prefs change.
 // Visual-kit components read prefs from here (no dependency on the stores).
 import { useSyncExternalStore } from "react";

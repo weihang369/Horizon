@@ -2,7 +2,7 @@
 // Every passage in order with its locator in the margin; the cited `chunkId` is scrolled to and marker-swept. Opened
 // from the SOURCES strip it marks every marker of the reply in this source, with a row to jump between them (U-37).
 // Removed source + `cited` snapshot → "removed after the answer" state (PRF-10 AC5). Esc/trap/restore come from
-// the modal layer. Owner: Builder B.
+// the modal layer.
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import type { OverlayComponentProps } from "@/app/overlayTypes";

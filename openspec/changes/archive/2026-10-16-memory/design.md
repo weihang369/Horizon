@@ -468,7 +468,7 @@ memory writer" requirement goes with them.
     before it.
 - **Code checks** (doc 09 M3):
   - `for` is present;
-  - `op`, `kind` and `about` are valid (phase 10, the user's choice: an `about` naming no one present, such as the
+  - `op`, `kind` and `about` are valid (phase 10, the maintainer's choice: an `about` naming no one present, such as the
     0 the call writes for the user, reads as the user and keeps the line);
   - `target` is in that character's list (rewrite and confirm only);
   - `source` is a numbered line;
@@ -730,7 +730,7 @@ nurse Ipoh shift").
 M12 found X9's 2,000-token state cap dropping **every** member's `docs` gate late in panel and three-a-side debates.
 The arguments (`latest_by_candidate`, 60 words each, plus `last_opposing`) fill the state. With D26, `earlier` drops
 too, so those turns can't recall either. The memory block itself is in system message 1, not the plan state, so it
-doesn't add to this cap. It only shares the X1 budget (D24). X9 is a locked doc, so this was the user's choice (U2;
+doesn't add to this cap. It only shares the X1 budget (D24). X9 is a locked doc, so this was the maintainer's choice (U2;
 **option 1 chosen**, D44):
 1. **(chosen) Cut the debate's arguments before dropping gates:** after X9's existing steps, cut
    `latest_by_candidate` to 30 words, then `last_opposing` to 120 tokens, and only then drop gates. Request size and
@@ -983,7 +983,7 @@ B2 (dev / test, test held out until the end).
 - recall's λ;
 - `recallCheckMs` from the measured tail.
 
-**Labels:** about 460 Jev items plus the suite's plants. The team writes them, and the review is the user's choice
+**Labels:** about 460 Jev items plus the suite's plants. The team writes them, and the review is the maintainer's choice
 (U1).
 
 **Offline (smoke, CI, tests):**
@@ -1055,7 +1055,7 @@ W6 said ≈ $0.16. The difference:
 - **Doc 13:** W6's M13 row (the spend found) and W12's rows (the thresholds and knobs found).
 - **The new `docs/ai/checks/m13.md`:** step 0, the runs, the findings, and what M14 inherits.
 
-### D44. The user's choices at the proposal
+### D44. The maintainer's choices at the proposal
 
 The user's answers (2026-10-15, at the proposal):
 1. **U1, the labels:** **delegated to the team,** as in M8–M12. A recorded pass goes in `evals/reviews/m13-review.md`,

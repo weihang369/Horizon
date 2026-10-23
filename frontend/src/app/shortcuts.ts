@@ -1,4 +1,4 @@
-// Focus-aware, overlay-scoped shortcuts (README §3.3, APP-10, doc 03 §6). Owner: EE.
+// Focus-aware, overlay-scoped shortcuts (README §3.3, APP-10, doc 03 §6).
 // Single-key combos never fire while typing (isTypingTarget) unless `allowInInput`. A shortcut registered inside a
 // layer fires only while that layer is the top blocking layer; screen shortcuts are muted under modals/ceremonies.
 import { createContext, useContext, useEffect, useRef } from "react";

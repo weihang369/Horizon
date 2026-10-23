@@ -3,7 +3,7 @@
 // - `HORIZON_ROOT` is a fresh temp dir with no `.env`, so the repo-root `.env` (AI overrides, data dir, key) is never read;
 // - inherited `HORIZON_*` and `OPENROUTER_API_KEY` are dropped, because the environment outranks `.env`;
 // - the seed comes from the repo, the data lives in the temp dir, and the AI profile is `scripted`.
-// Plain erasable TypeScript: Node runs it directly (the E2E launcher), and vitest imports it. Owner: SWE.
+// Plain erasable TypeScript: Node runs it directly (the E2E launcher), and vitest imports it.
 import { spawnSync } from "node:child_process";
 import type { ChildProcess } from "node:child_process";
 import { mkdtempSync, rmSync } from "node:fs";

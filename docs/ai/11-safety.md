@@ -174,7 +174,7 @@ referral without knowing the user's country (S4).
 - *The line is over-applied in role-play. Asked inside a scene, about half the replies step out to say "I'm an AI
   character": 14 of 30 on a clean run. Amara does it 5 of 5 times, Mei 4 of 5, Victor never. After a user has asked
   sincerely, almost all do (28 of 30), helped by the memory of that ask.*
-- *The user's choice: accept it for v1 (it errs toward honesty) and reword the line in M15, where system message 1
+- *The maintainer's choice: accept it for v1 (it errs toward honesty) and reword the line in M15, where system message 1
   changes anyway.*
 
 *Measured in M15 ([m15.md](checks/m15.md) 8.6):*
@@ -381,7 +381,7 @@ it actually wrote. At ≈ $0.00003 per reply it is the cheapest safety net avail
 *Built in M14 (OpenSpec `safety` D9–D11), measured in [m14.md](checks/m14.md) 8.4:*
 - *Alone, the check is p50 449 ms and p90 485 ms (doc 11 check 2 passes).*
 - *Beside the next debate plan it slows to p90 735 ms, and 10 of 30 went past 700 ms. So
-  `timeoutsMs.decision.guardrail` is **800 ms** (the user's choice).*
+  `timeoutsMs.decision.guardrail` is **800 ms** (the maintainer's choice).*
 - *With the check before `turn.end`, the follow plan gets its head start back: `follow_plan` returns to 400 ms and
   M10's NFR-02 exception is dropped.*
 
@@ -563,7 +563,7 @@ into scolds.
 **Rejected:** OpenAI- or Llama-Guard-style models as the judge: a second provider and a second key (D-38: OpenRouter
 only), and Jev nouls are already the house judge (doc 02 B4).
 
-*Built in M14 (OpenSpec `safety` D21–D24, amended by the user's choices; [m14.md](checks/m14.md)):*
+*Built in M14 (OpenSpec `safety` D21–D24, amended by the maintainer's choices; [m14.md](checks/m14.md)):*
 - *The suite: 244 harmless items committed in full.*
 - *The private items:*
   - *40 written by the team (likeness, gore, a childlike look, song copying);*

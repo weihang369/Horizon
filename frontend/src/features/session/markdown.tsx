@@ -1,4 +1,4 @@
-// Tiny, safe Markdown → React renderer for chat messages (CHAT-02 AC4). Owner: C.
+// Tiny, safe Markdown → React renderer for chat messages (CHAT-02 AC4).
 // Bold, italics, inline code, fenced code, links (http/https/mailto only), bullet and numbered lists, quotes, and
 // GFM tables (document passages are Markdown from Docling; the source viewer and citation quotes render them too).
 // Raw HTML is never interpreted: everything is emitted as React text nodes (escaped by React).
@@ -222,8 +222,10 @@ function renderInline(nodes: MdInline[], key = "i", cite?: CiteRenderer): ReactN
 /** A run of inline content: plain text, or a rendered node (`cite` marks a citation chip). */
 export type Piece = { text: string } | { node: ReactNode; cite?: boolean };
 
-const WORD_BEFORE = /\S+[ \t]?$/;
-const PUNCT_AFTER = /^[.,;:!?…)\]"'’”]+/;
+// U-85: at most the last 8 characters. Chinese or Japanese has no spaces, so "the word before" was the whole sentence,
+// held on one line past the bubble's edge; a longer Latin word still can't break where the glued run starts.
+const WORD_BEFORE = /\S{1,8}[ \t]?$/;
+const PUNCT_AFTER = /^[.,;:!?…)\]"'’”。，、；：！？）」』》]+/;
 
 /** Keeps each citation chip on one line with the word before it and the punctuation after it, so a chip and its full
  * stop never wrap onto a line of their own (U-63). Consecutive chips stay together. */

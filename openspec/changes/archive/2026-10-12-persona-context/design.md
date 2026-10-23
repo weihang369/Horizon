@@ -788,7 +788,7 @@ to `docs/ai/checks/m8.md`.
 - **The drafter's invalid-JSON rate is measured, not hidden.** A draft still invalid after C7's one retry is a counted
   failure with its error, so the suite reports it instead of crashing.
 
-### D33. A free structural repair of drafts before C7's paid retry (the user's choice, 2026-10-12)
+### D33. A free structural repair of drafts before C7's paid retry (the maintainer's choice, 2026-10-12)
 
 - **The failure:** in the paid run, 9 of 20 first drafts left `personality` open, wrote the rest of the profile (and
   sometimes the top-level fields) inside it, and ended one `}` short. C7's paid retry often repeated the same text,
@@ -801,7 +801,7 @@ to `docs/ai/checks/m8.md`.
   `structure`, `summaryAlt`) or duplicates, which still fail to the paid retry: content is never dropped silently.
 - **Rejected:** a precise retry message (still a paid call each time); dropping unknown keys (it would hide garbage).
 
-### D34. `reply.chat` temperature 1.0, not 1.3 (the user's choice, 2026-10-12)
+### D34. `reply.chat` temperature 1.0, not 1.3 (the maintainer's choice, 2026-10-12)
 
 - **The failure:** the paid `long` and `transcript` runs at 1.3 drifted into word salad by turns 35–80 in `naive` and
   `agent` alike, and 32–47 % of replies hit the 200-token cap. Cut-off, garbled replies then sat in the history and fed
@@ -813,7 +813,7 @@ to `docs/ai/checks/m8.md`.
   03 C1 and C3 say so. `reply.debate` and `host` were already 1.0.
 - **Rejected:** raising the caps (not needed); 0.7 (stiff); keeping 1.3 (the collapse).
 
-### D35. A per-turn reply-language cue (the user's choice, 2026-10-12)
+### D35. A per-turn reply-language cue (the maintainer's choice, 2026-10-12)
 
 - **The failure:** with the language rule only in the cached system prompt, Malay user lines got English replies
   (`agent` 2 of 75 in Malay at 1.0, `naive` 0 of 50). The persona, example lines, greeting and earlier replies are all
@@ -828,7 +828,7 @@ to `docs/ai/checks/m8.md`.
   turn plan can take it over).
 - **Measured:** the Malay 1:1 script at 1.0 with the cue: 68 of 75 replies in Malay (was 2), recall 5/5, $0.0055.
 
-### D36. Transcript scripts: 100 turns, no repeated filler (the user's choice, 2026-10-12)
+### D36. Transcript scripts: 100 turns, no repeated filler (the maintainer's choice, 2026-10-12)
 
 - **The failure:** at 1.0, 50–55-turn transcripts never reached a summary drop (D31 needs one). And `build.py` drew
   fillers from 24 lines with replacement, so each repeated about twice; characters answered the "loop" ("you've asked
@@ -838,7 +838,7 @@ to `docs/ai/checks/m8.md`.
   draw, byte-identical, because they were already measured.
 - **Rejected:** appending 40 lines to the old scripts (keeps the loops); deferring the transcripts to M15.
 
-### D37. The tag parser also takes a bare `<label>` (the user's choice, 2026-10-12)
+### D37. The tag parser also takes a bare `<label>` (the maintainer's choice, 2026-10-12)
 
 - **The failure:** in 10.4's transcripts DeepSeek V4.1 Flash began 87 of 91 `naive` one-on-one replies with
   `<neutral>` (the asked-for form is `<e:neutral>`), and the user saw the tag. Across every naive run the valid tag
@@ -851,7 +851,7 @@ to `docs/ai/checks/m8.md`.
   real openers like "Thinking — maybe…" (M9's emotion choice takes the face off the model); a stronger `naive-6`
   wording (paid, and this model ignores the format anyway); leaving it to M9 (`naive` stays the default until M15).
 
-### D38. Judge validation: fix the data before the judge, and a held-out check for any tuning (the user's choices, 10.6)
+### D38. Judge validation: fix the data before the judge, and a held-out check for any tuning (the maintainer's choices, 10.6)
 
 - **The first run** passed 9 of 13. Re-reading every item a judge got wrong showed four different causes, so each got
   its own fix:

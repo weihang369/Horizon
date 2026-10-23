@@ -1,4 +1,4 @@
-// MockClient: the UI-phase HorizonClient (doc 05 §7, EE paper §2.3, R1/R15/R16). Owner: EE.
+// MockClient: the UI-phase HorizonClient (doc 05 §7, EE paper §2.3, R1/R15/R16).
 // In-memory DB loaded from seed/, snapshotted to localStorage by fixture hash. Live turns are generated event
 // scripts played through ScriptPlayer on a virtual clock (demo speed ×1/×2/×4). Demo mode (R15): `sk-or-*` is a
 // valid mock key, `sk-or-bad…` an invalid one; live actions without a key reject with missing_key (→ O05).

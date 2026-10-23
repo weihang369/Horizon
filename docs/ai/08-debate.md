@@ -330,7 +330,7 @@ Only with `moderator: auto_host`. With "You" as moderator only the round banners
   speakers, then, by verdict mode: the arbiter is weighing the arguments | it's now {user}'s call | here is the
   summary.} Use the motion's language."
 - **Settings:** `runtime.llm.calls.host`: thinking off, temperature **1.0** (doc 03 C1), output **text** (not
-  streamed: the user's choice; the contract would allow a streamed `host` turn, but it would have to run through
+  streamed: the maintainer's choice; the contract would allow a streamed `host` turn, but it would have to run through
   the turn runner and the reducer for a 40-word line), `max_tokens` 120. Ledger
   purpose `host` (category chat), daily cap only (ENG-02 AC2).
 - **Failure** (error, refusal, empty, over 60 words): the fixed sentence. The lead-in, which has none today, gets

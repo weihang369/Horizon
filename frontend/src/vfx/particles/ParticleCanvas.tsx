@@ -1,4 +1,4 @@
-// <ParticleCanvas> — a pointer-events:none canvas that owns one ParticleField. Owner: VMD.
+// <ParticleCanvas> — a pointer-events:none canvas that owns one ParticleField.
 // The field is handed to the parent through `onField` (refs only; particles never re-render React).
 import { useEffect, useLayoutEffect, useRef, type CSSProperties } from "react";
 import { ParticleField } from "./engine";

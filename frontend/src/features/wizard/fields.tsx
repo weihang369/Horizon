@@ -1,5 +1,4 @@
 // Local form pieces the kit doesn't have: a chip-list editor (traits, quirks, boundaries…) and a section frame.
-// Owner: Builder B.
 import { useId, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
 import { cx } from "@/ui/cx";

@@ -1,5 +1,5 @@
 // Cursor paging (doc backend/03 §1): paginated routes return `{ items, nextCursor }`; the HorizonClient methods keep
-// returning plain arrays, so the HttpClient follows `nextCursor` until it is null. Owner: SWE.
+// returning plain arrays, so the HttpClient follows `nextCursor` until it is null.
 import type { Query, Transport } from "./transport";
 
 export interface Page<T> { items: T[]; nextCursor: string | null }

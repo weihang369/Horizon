@@ -1,6 +1,6 @@
 // S13 History = the hub's Sessions tab (R13, HIST-01..03, MULTI-15). World-scoped rows with mode icon, title (renameable),
 // cast heads, message count, last updated and verdict badge; filters by mode and character; Replay / Resume /
-// Continue live / Rename / Export / Delete. Demo: a "FEATURED RECORDING" strip heads the list. Owner: Builder A.
+// Continue live / Rename / Export / Delete. Demo: a "FEATURED RECORDING" strip heads the list.
 import { useState } from "react";
 import { useNow } from "../../client/hooks";
 import type { Character, Session, SessionMode } from "../../contract/types";

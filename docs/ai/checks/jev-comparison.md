@@ -145,7 +145,7 @@ judge_answers_last / judge_breaks_rules fail on both). See finding F3.
   setting, so a choice for the user) or a re-validation of those judges.
 - **F4. tFlag 0.5 looks low for both models** (output check): at 0.8 both reach 54–55/56 against 45/56 at 0.5 on
   the 56 output items, by leave-one-out. A finding for the audit or v2, not for this change (a threshold change is
-  the user's choice).
+  the maintainer's choice).
 - **F5. Jev's latency depends on the hour** (≈ 440 ms morning, ≈ 700 ms evening, KL) for both models; deadlines set
   from a morning run (M15) will miss more in the evening. For the audit or the E2E test stage.
 - **F6. M15's manifest had 491 bodies wrong** (§6.3), and its "docs, earlier, importance, recall bodies changed"
@@ -179,7 +179,7 @@ judge_answers_last / judge_breaks_rules fail on both). See finding F3.
 | `openspec validate jev-comparison --strict` | valid |
 | `private/`, `6 RAG.pdf` | 0 files tracked |
 
-What phase 4 found and settled (design D10's padded top-ups, the user's choice; D20):
+What phase 4 found and settled (design D10's padded top-ups, the maintainer's choice; D20):
 - the manifest has only 9 distinct bodies over 2.5k and none near 25k, so the timing probe tops up 2.5k–4k, ~10k
   and ~25k with padded bodies (timing only; ≈ $0.03 per window for both models);
 - `horizon eval manifest` rebuilt from the store is **byte-identical** to the committed `jev-1.13-requests.json`;

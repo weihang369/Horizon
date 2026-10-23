@@ -1,4 +1,4 @@
-/* O06 lightbox, O25 compare. Owner: Builder B. */
+/* O06 lightbox, O25 compare. */
 .lightbox {
   --lb-w: clamp(300px, min(30vw, 52vh), 420px);
   position: relative;

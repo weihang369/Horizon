@@ -1,4 +1,4 @@
-/* Job pill: a skewed ink tag with a palette progress hairline (R7: clip-path, text level). Owner: Builder B. */
+/* Job pill: a skewed ink tag with a palette progress hairline (R7: clip-path, text level). */
 .pill {
   --h: 24px;
   --cut: calc(var(--h) * var(--tan-tilt));

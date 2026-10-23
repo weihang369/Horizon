@@ -241,7 +241,7 @@ against `backend/tests/fixtures/turn_cue/cases.json`. The sentence is its own li
 note, outside the cached prefix. A request with the sentence is labelled `agent-3` (`agent-4` with the mood line on);
 every other request keeps `agent-1` / `agent-2`. "View as prompt" shows a fixed note with the second-reply example.*
 
-*Reworded in M11 (OpenSpec `debate` D10, D18; the user's choice after M10's finding that the steer closed scenes): the
+*Reworded in M11 (OpenSpec `debate` D10, D18; the maintainer's choice after M10's finding that the steer closed scenes): the
 steer sentence is now "This thread has run its course. Bring in something new that fits the premise: an event, a
 discovery or a change of plan. Don't wrap up, say goodbye or wait for {user} to decide." (`{user}` is the You card's
 name). A steered request is labelled `agent-5` (`agent-6` with the mood line on), so M10's `agent-3` answers keep
@@ -448,7 +448,7 @@ p90 1,920 ms, inside NFR-02's 3 s.*
 sentence end; any non-cap failure posts the system note, never a canned recap. `scripted` and the mock keep the canned
 text, billed as `episode_summary`.*
 
-*Amended in M10 (task 10.6, the user's choice of 2026-10-13): the paid run wrote all 10 recaps of English scenes in
+*Amended in M10 (task 10.6, the maintainer's choice of 2026-10-13): the paid run wrote all 10 recaps of English scenes in
 other languages (Chinese, Japanese, one Romanian): DeepSeek read "in the language the characters used" as the
 language of the characters' names. The instruction is now `episode-2`: "…past tense, third person, in the language
 most of the lines use; keep names as they are. End with one sentence on where things stand…" (the rolling summary's

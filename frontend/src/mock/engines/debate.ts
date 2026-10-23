@@ -1,5 +1,5 @@
 // Debate engine (MULTI-05..08): walks the DebateConfig phases, alternating sides, with steering inserted at turn
-// boundaries. Verdict scores come from the PRNG and honour arbiter / You decide / none / panel. Owner: EE.
+// boundaries. Verdict scores come from the PRNG and honour arbiter / You decide / none / panel.
 import type {
   DebateConfig, DebatePhase, DebateState, DebateTurnPhase, Message, Side, StreamEvent, Verdict,
 } from "../../contract/types";
@@ -266,7 +266,7 @@ function finish(h: EngineHost, sid: string, verdict?: Verdict): void {
   const live = h.live(sid);
   const st = stateOf(live);
   const text = verdict
-    ? verdict.strongerCase ? `STRONGER CASE: ${verdict.strongerCase === "prop" ? "PROPOSITION" : "OPPOSITION"}` : verdict.decidedBy === "none" ? "SUMMARY" : "TOO CLOSE TO CALL"
+    ? verdict.strongerCase ? `STRONGER CASE: ${verdict.strongerCase === "prop" ? "PROPOSITION" : "OPPOSITION"}` : verdict.decidedBy === "none" || cfgOf(live).format === "panel" ? "SUMMARY" : "TOO CLOSE TO CALL"
     : "";
   const events: StreamEvent[] = [];
   if (verdict) {

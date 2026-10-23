@@ -8,7 +8,7 @@ docs/ai/02 B5; turn-plan-emotion design D26; evaluation-harness "Decision suite"
   (no cap: a single listener). Correct when it is in the acceptable set. The baseline is "always `none`".
 - **Floors** come from {0.5, 0.6, 0.7, 0.8, 0.9}, chosen on the dev split from each item's one seeded order (B5, E8). A
   floor must beat both "no floor" and "fallback only"; ties go to the lower floor (more Jev answers used). The emotion
-  grid also holds 0.2, 0.3 and 0.4 (turn-plan-emotion D36, the user's choice): Jev's 8-option confidences sit low
+  grid also holds 0.2, 0.3 and 0.4 (turn-plan-emotion D36, the maintainer's choice): Jev's 8-option confidences sit low
   (median 0.58) while its picks are mostly right, so B5's grid only removed right answers.
 """
 
@@ -167,7 +167,7 @@ def report(rows: Sequence[Mapping[str, Any]], kind: str, fade: frozenset[str] = 
     return out
 
 
-# ── M11 (debate D20): the watch faces under both merge rules, for the user's choice ──
+# ── M11 (debate D20): the watch faces under both merge rules, for the maintainer's choice ──
 def merge_comparison(rows: Sequence[Mapping[str, Any]], fade: frozenset[str] = FADE) -> list[str]:
     """`emotion_line` items scored under (a) the live neutral + none merge and (b) no merge, each with its own floor
     from the same grid on dev; then the English test once per rule, and every item where the two faces differ."""

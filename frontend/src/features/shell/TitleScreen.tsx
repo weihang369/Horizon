@@ -1,6 +1,6 @@
 // S01 Title (APP-01, R18): fonts (≤ 800 ms) → kinetic RansomText intro → "Press any key".
 // The first gesture unlocks audio, starts the main theme and slashes to Onboarding (first run, no key) or World Select.
-// This is the first frame of the showreel: retro sun, ransom tiles, a −12° band and ink shards. Owner: Builder A.
+// This is the first frame of the showreel: retro sun, ransom tiles, a −12° band and ink shards.
 import { useEffect, useRef, useState } from "react";
 import { audio } from "../../audio/engine";
 import { useSettings } from "../../client/hooks";

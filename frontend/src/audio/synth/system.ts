@@ -1,5 +1,5 @@
 // System tracks (VMD paper §2.6): Main 100 BPM Dorian · Arena 128 BPM Phrygian · Bed 60 BPM Lydian pad.
-// Rendered from SYSTEM_TRACK_SPECS through the same theme renderer. Owner: VMD. Browser only.
+// Rendered from SYSTEM_TRACK_SPECS through the same theme renderer. Browser only.
 import { renderTheme } from "./renderTheme";
 import { SYSTEM_TRACK_SPECS, type SystemTrackKind } from "./spec";
 

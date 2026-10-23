@@ -1,4 +1,4 @@
-// Knowledge helpers shared by the Knowledge tab (PRF-08) and O28 Source viewer (D-59). Owner: Builder B.
+// Knowledge helpers shared by the Knowledge tab (PRF-08) and O28 Source viewer (D-59).
 import type { GlobalEvent, IngestProgress } from "@/client/HorizonClient";
 import type { KnowledgeSource } from "@/contract/types";
 

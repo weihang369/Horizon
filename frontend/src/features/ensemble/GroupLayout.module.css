@@ -114,15 +114,15 @@
 .right .seat { left: calc(10px + var(--i) * var(--seat-w) * 0.5); }
 /* Single seat: centred in the wing. */
 .seat[data-i="0"]:only-child { right: auto; left: 50%; translate: -50% 0; }
-.back {
-  z-index: 1;
-  transform: translate(calc(var(--seat-w) * -0.32 * var(--dir)), -58px) scale(0.8);
-}
+.back { z-index: 1; }
 .left .back { right: 18px; }
 .right .back { left: 18px; }
 .front { z-index: 15; }
 .speaking { z-index: 20; transform: translate(calc(24px * var(--dir)), calc(var(--i) * -22px)) scale(1.08); }
 .lean:not(.speaking) { transform: translate(calc(8px * var(--dir)), calc(var(--i) * -22px)); }
+/* U-81: the back seat stands higher than the two in front, so its face shows between them (at -58px it sat wholly
+ * behind them). After .lean so leaning in doesn't drop it back out of sight. */
+.back:not(.speaking) { transform: translate(calc(var(--seat-w) * -0.32 * var(--dir)), calc(var(--seat-w) * -0.62)) scale(0.8); }
 
 .foot {
   position: relative;
@@ -136,6 +136,8 @@
 .energy { width: calc(var(--seat-w) * 0.7); margin-left: 12px; }
 .right .seat:not(:only-child) .energy { margin: 0 12px 0 0; }
 .back .foot { opacity: 0; }
+/* U-90: with the outer seat in front, its card covers the inner seat's name plate, which showed cut through; hide it. */
+.wing:has(> .seat[data-i="1"]:is(.front, .speaking)) > .seat[data-i="0"] .foot { opacity: 0; }
 
 .upNext {
   position: absolute;

@@ -1,4 +1,4 @@
-// Central error routing (STATE-03/04/06). Owner: EE.
+// Central error routing (STATE-03/04/06).
 // Builders call reportError(e) in catch blocks: missing/invalid key → O05, budget → O21, everything else → a toast
 // (inline ErrorTapes are the feature's job). Typed input is never cleared here.
 import type { HorizonErrorShape } from "../contract/errors";

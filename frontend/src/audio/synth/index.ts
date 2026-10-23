@@ -1,4 +1,4 @@
-// Procedural "SKETCH" audio (R11, D-52). Owner: VMD.
+// Procedural "SKETCH" audio (R11, D-52).
 // spec/prng are pure (Node-safe, used by the seed build); the renderers need WebAudio.
 export * from "./spec";
 export { makeRng, hashString, type Rng } from "./prng";

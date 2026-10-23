@@ -3,7 +3,7 @@
 After `turn.end`, Jev reads only the reply's words (its last 600 tokens, quoted) and picks which of the 7 emotions they
 show. The System 1 row says whether that agrees with the face shown: `yes`, `clash` (happy against sad or angry,
 either way), or `no (words read: {pick})`, with `p` = Jev's probability for the face shown and result `shown_only`.
-D-112 (the user's choice, U-54, reversing the display-only rule of turn-plan-emotion D24 for clashes only): on a clash
+D-112 (the maintainer's choice, U-54, reversing the display-only rule of turn-plan-emotion D24 for clashes only): on a clash
 the runtime switches the face to the words' emotion and the row says so; any other answer never changes the face. A
 late, failed or refused call returns None, and the runtime adds a `skipped` row saying so (U-49), as it does for a
 face it doesn't check.

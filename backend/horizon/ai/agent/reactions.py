@@ -72,7 +72,7 @@ def state(req: ReactionRequest) -> dict[str, Any]:
     for lv in req.listeners:
         if not lv.eligible:
             continue
-        # D37 (the user's choice): no face here. With it, Jev answered the face the listener already had in 83 of
+        # D37 (the maintainer's choice): no face here. With it, Jev answered the face the listener already had in 83 of
         # 90 items; code still compares with it ("differs") and fades by it
         entry: dict[str, Any] = {"name": lv.name, "about": cut_tokens(first_sentence(lv.about_source), ABOUT_MAX)}
         if lv.side_label:

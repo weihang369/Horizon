@@ -1,4 +1,4 @@
-// Bank line shapes. Owner: EE.
+// Bank line shapes.
 import type { Emotion } from "../../contract/types";
 
 export interface BankLine {

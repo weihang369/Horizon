@@ -1,4 +1,4 @@
-// "⋯" button + skewed Menu (world header, history rows). Owner: Builder A.
+// "⋯" button + skewed Menu (world header, history rows).
 import { useId, useRef, useState } from "react";
 import { IconButton } from "../../ui/Button";
 import { Menu } from "../../ui/Fields";

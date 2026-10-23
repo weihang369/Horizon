@@ -1,4 +1,4 @@
-// Head-crop sources for world cards, session rows and the pause menu. Real art swaps by URL only. Owner: Builder A.
+// Head-crop sources for world cards, session rows and the pause menu. Real art swaps by URL only.
 import type { Character } from "../../contract/types";
 import { shadowDataUrl } from "../../vfx/shadow/renderShadowSvg";
 import { specFromAppearance } from "../../vfx/shadow/specFromAppearance";

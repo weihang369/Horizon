@@ -303,7 +303,7 @@ probabilities for Insight.
     (M9), so until then an `agent` reply keeps the previous face with source `default`; M9 replaces only where the
     face comes from.
   - **Built in M9** (OpenSpec `turn-plan-emotion`, design D6, D14): Jev call 1 picks the face in `agent` 1:1; group,
-    watch and debate keep M8's held face until M10/M11 (the user's choice, D34).
+    watch and debate keep M8's held face until M10/M11 (the maintainer's choice, D34).
 - If Jev is unsure, the previous face stays (A4); short faces fade to neutral (doc 06 E3).
 - MANUAL emotion stays face-only and never changes the reply.
 - ~~Task 6 confirms the approach with the evaluation and words the mood line.~~ Done in doc 06 (E1–E9): the question
@@ -327,7 +327,7 @@ emotion, and the hits it kept. The reply engine never queries storage (D-92 hold
 - **Deep reply:**
   1. **Embed the question, and only now.** Never before the gate says yes. The plan waits at most
      `retrieval.queryEmbedWaitMs` (400 ms), then falls back to keyword-only search.
-     *Amended in M12 (`rag` D32, the user's choice, 2026-10-15): from Malaysia a query embedding takes ≈ 1.1 s at the
+     *Amended in M12 (`rag` D32, the maintainer's choice, 2026-10-15): from Malaysia a query embedding takes ≈ 1.1 s at the
      median, so 94 of 107 dev deep turns missed the 400 ms wait. In 1:1 and group the user message's embedding now
      starts with Jev call 1 for a candidate with vectors, and the `agent` path waits up to
      `retrieval.agent.queryEmbedWaitMs` (800 ms). A quick turn to an indexed speaker costs one ≈ $0.000002 embedding;
@@ -544,7 +544,7 @@ the same transaction as the run's writes; `data/graph.db` is still unused.*
 
 *Built in M12 (`rag` D15, D32): before the first word a deep turn runs the rewrite, BM25 and the embedding in
 parallel, then the search and the 8 `deep_check` requests at once (plus a set check when needed). One exception to
-"only when Jev call 1 says deep" was the user's choice (D32): the user message's embedding starts beside Jev call 1
+"only when Jev call 1 says deep" was the maintainer's choice (D32): the user message's embedding starts beside Jev call 1
 for a candidate with vectors, because from Malaysia it takes longer than Jev call 1 itself; it costs ≈ $0.000002 on a
 quick turn. Group's deep work hides in the preamble and watch's in the pace; debate's has nothing to hide behind.*
 
@@ -619,8 +619,8 @@ None of the backend rows changes the HTTP contract unless marked.
 |---|---|---|---|
 | A **`TurnPlanner` port** (the turn plan graph), the `agent` profile value, and a scripted twin with fixtures so the mock parity tests still pass. **Built in M9** (`turn-plan-emotion` D3–D5): the port, the graph and `TurnContext.plan`; the scripted twin lands with the System 1 fixture rows | backend | A4, A6, A12 | 5 |
 | **Every turn entry point calls the planner:** 1:1 send, regenerate, group auto, Everyone, nudge (random today), watch turns and step-in (random today), debate turns and Ask, the opening prefetch. **1:1 built in M9** (send, regenerate, a generated greeting; D6). **Group and watch built in M10** (`group-watch` D5, D11, D13: group Auto, mentions, Everyone and policy `everyone`, Next speaker, watch turns, the Auto opening, Step in and the Everyone prefetch) | backend | A4 | 5–8 |
-| **New `Decider` purposes** `turn_plan` and `deep_check`, with config timeouts and ledger purposes; the `Decider` also checks the total request size. *`deep_check` built in M12 (`rag` D13, D26): category `decision`, its deadline `retrieval.agent.deepCheckMs` in `runtime.json` (700 ms, then 1,500 ms by the user's choice after 11.5), no retry on a 429* | backend | A4, A6 | 5 |
-| **Embed only on deep turns**, replacing D-97's embedding at send; keep the 400 ms wait; debate and watch turns may embed; doc 10 K4 adds the rewrite when needed. *Built in M12 (`rag` D11, D32): `start_query` is off for `agent`; the rewrite is embedded too. Amended by the user's choices (D32): in 1:1 and group the message's embedding starts with Jev call 1 for a candidate with vectors, waited for up to 200 ms on the `agent` path (check 2), and a rewrite's own vector is never waited for; `naive` and `scripted` keep 400 ms* | backend | A6 | 10 |
+| **New `Decider` purposes** `turn_plan` and `deep_check`, with config timeouts and ledger purposes; the `Decider` also checks the total request size. *`deep_check` built in M12 (`rag` D13, D26): category `decision`, its deadline `retrieval.agent.deepCheckMs` in `runtime.json` (700 ms, then 1,500 ms by the maintainer's choice after 11.5), no retry on a 429* | backend | A4, A6 | 5 |
+| **Embed only on deep turns**, replacing D-97's embedding at send; keep the 400 ms wait; debate and watch turns may embed; doc 10 K4 adds the rewrite when needed. *Built in M12 (`rag` D11, D32): `start_query` is off for `agent`; the rewrite is embedded too. Amended by the maintainer's choices (D32): in 1:1 and group the message's embedding starts with Jev call 1 for a candidate with vectors, waited for up to 200 ms on the `agent` path (check 2), and a rewrite's own vector is never waited for; `naive` and `scripted` keep 400 ms* | backend | A6 | 10 |
 | The reply receives the Jev emotion: show it at preflight, mood line in the dynamic tail, strip the tag. **Built in M9** for `agent` 1:1 (the face on the first chunk, `turn.start` and `emotion` in one write, D14) | backend | A5 | 6 |
 | `Summariser.rolling` and `ReactionPredictor.predict` become **async**, and both run after `turn.end` | backend | A7, A13 | 5, 6 |
 | ~~The citation check runs on interrupted replies~~ (withdrawn by doc 10 K10: evaluation only in v1); the after-reply work runs after `turn.end` | backend | A13 | 6, 10 |
@@ -633,7 +633,7 @@ None of the backend rows changes the HTTP contract unless marked.
 **Built in** ([doc 13](13-wrap-up.md) W4): the `agent` profile in M7 and the `TurnPlanner` in M9; the entry points in M9 (1:1),
 M10 (group, watch) and M11 (debate); the `Decider` changes in M7 (each new purpose is added by the change that first calls it, doc 13 W4); embedding only on deep turns (D-100) in M12; the
 async `Summariser.rolling` in M8 and `ReactionPredictor` in M9. *M12 (`rag`) built `deep_check`, the deep path in all
-four modes and D-100's embedding, amended by the user's choice to start it with Jev call 1 (D32). M13 (`memory`) built
+four modes and D-100's embedding, amended by the maintainer's choice to start it with Jev call 1 (D32). M13 (`memory`) built
 recall from earlier lines and overflow memories on the same deep path, and the memory graph at pauses.*
 
 ## 9. Left for later tasks

@@ -1,4 +1,4 @@
-/* Kit Gallery layout. Owner: VMD. Its own scroll container (body is overflow: hidden). */
+/* Kit Gallery layout. Its own scroll container (body is overflow: hidden). */
 .root {
   display: grid;
   grid-template-columns: 220px minmax(0, 1fr);

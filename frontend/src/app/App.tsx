@@ -1,4 +1,4 @@
-// App shell: route host, ambient chrome, LayerStack, toasts, the one TransitionLayer, dev overlays. Owner: EE.
+// App shell: route host, ambient chrome, LayerStack, toasts, the one TransitionLayer, dev overlays.
 import { Suspense, useEffect } from "react";
 import { useSettings } from "../client/hooks";
 import { CommitCounter, PerfHUD } from "../features/dev/PerfHUD";

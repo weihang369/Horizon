@@ -1,4 +1,4 @@
-// HorizonClient: the one interface the UI talks to (doc 05 §6–7, EE paper §2.2). Owner: EE.
+// HorizonClient: the one interface the UI talks to (doc 05 §6–7, EE paper §2.2).
 // Queries return Promises. Commands acknowledge with Promise<void>; their results arrive as SessionEvents
 // (sessions.subscribe), JobEvents (jobs.subscribe) or GlobalEvents (onGlobal). Every rejection is a HorizonError.
 // The MockClient implements it now; the FastAPI HttpClient implements the same interface later.

@@ -1,4 +1,4 @@
-// Reducer unit tests (R1). Owner: EE.
+// Reducer unit tests (R1).
 import { describe, expect, it } from "vitest";
 import type { Session, SessionEvent, StreamEvent } from "../contract/types";
 import { applyEvent, initialRuntime, orderedMessages, reduceAll } from "./sessionReducer";

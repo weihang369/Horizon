@@ -253,7 +253,9 @@ test("Cost: every control saves and takes effect (mode, caps, warn, energy, esti
 });
 
 test("Data: Trim long pauses reaches replays; Reset keeps your own character; Delete all empties; both Resets bring the demo back", async ({ page }) => {
-  test.slow(); // the wizard's portrait takes 20 s on the backend
+  // The wizard's portrait takes 20 s on the backend; on the CI runner the whole test passed 135 s (test.slow's 3 × 45 s,
+  // 23 Oct) just before its last step, so it gets 4 minutes.
+  test.setTimeout(240_000);
   const worldCard = (name: string) => page.getByRole("list", { name: "Worlds" }).getByRole("button", { name: new RegExp(`^${name}`) });
   const roster = page.getByRole("tabpanel", { name: /^Roster/ });
   const sarah = roster.getByRole("button", { name: /^Sarah, .*Open profile$/ });
@@ -290,7 +292,8 @@ test("Data: Trim long pauses reaches replays; Reset keeps your own character; De
   await page.getByRole("button", { name: "Next: Approve ▸" }).click();
   await page.getByRole("button", { name: "Approve & Summon ▸" }).click();
   await page.keyboard.press("Enter");
-  await expect(page.getByRole("heading", { name: "Sarah", level: 1 })).toBeVisible();
+  // The profile itself: the Approve step has a "Sarah" h1 too, and leaving before the summon landed raced it (U-98).
+  await expect(page.getByRole("main", { name: "Sarah, profile" })).toBeVisible();
 
   // Reset demo data: the demo goes back to as shipped, and Sarah stays.
   await page.evaluate(() => { location.hash = "#/settings/data"; });

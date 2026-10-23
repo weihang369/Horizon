@@ -1,6 +1,6 @@
 // Which HorizonClient a Vite run bundles, and the rules that keep the HttpClient out of builds that must not have it
 // (http-client spec "Client selection", http-client-parity D14). Called from vite.config.ts for every dev server,
-// build and vitest run. Owner: SWE.
+// build and vitest run.
 // - The value must be unset, "mock" or "http": a typo like "HTTP" fails instead of silently meaning mock.
 // - "http" in a build needs `--mode http` (only `npm run demo` does that), so a stray env var can't flip a deploy.
 // - A Vercel build (VERCEL=1) never bundles the HttpClient: production there is the MockClient (D-73).

@@ -1,4 +1,4 @@
-// Session store: the reducer output for each open session runtime (live or replay). Owner: EE.
+// Session store: the reducer output for each open session runtime (live or replay).
 // Written at most once per animation frame by the runtime controller (client/sessionRuntime.ts).
 import { createStore } from "zustand/vanilla";
 import type { HorizonErrorShape } from "../contract/errors";

@@ -1,4 +1,4 @@
-// emotionMeta (spec §3.5): label, glyph, MANUAL hotkey 1..7, VFX preset, SFX id per emotion. Owner: VMD.
+// emotionMeta (spec §3.5): label, glyph, MANUAL hotkey 1..7, VFX preset, SFX id per emotion.
 import type { Emotion, EnergyState, VfxPreset } from "../contract/types";
 import type { SfxId } from "../audio/synth/sfx";
 

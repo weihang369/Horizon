@@ -1,4 +1,4 @@
-// Mock State Switcher scenarios (APP-08 AC1) as data (EE paper §2.3). Owner: EE.
+// Mock State Switcher scenarios (APP-08 AC1) as data (EE paper §2.3).
 // A scenario = settings patch + dataset overlay + faults + timing patch. Overlay scenarios re-seed the DB
 // (and emit mock.reset); the others patch the running mock in place so they land on the current screen.
 import type { AppSettings, ErrorCode } from "../../contract/types";

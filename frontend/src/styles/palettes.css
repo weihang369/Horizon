@@ -1,4 +1,4 @@
-/* Generated from theme/palettes.ts (doc 04 §3). One class per palette; vars snap, never interpolate (R10). Owner: VMD. */
+/* Generated from theme/palettes.ts (doc 04 §3). One class per palette; vars snap, never interpolate (R10). */
 :where(:root), .pal-house {
   --c-primary: #FF4D2E; --c-secondary: #FFB199; --c-accent: #FFC53D; --c-stage: #0B0B0F;
   --c-surface: #1A1A22; --c-on-primary: #0B0B0F; --c-glow: #FFB199; --c-text: #F5F2EA;

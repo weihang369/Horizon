@@ -81,7 +81,7 @@ def test_nothing_to_check_is_none() -> None:
     assert rc.keep([], [], [], K) == ([], "none")
 
 
-# ── phase 10: the standout rule and dense-only lines (the user's choices, m13.md) ──
+# ── phase 10: the standout rule and dense-only lines (the maintainer's choices, m13.md) ──
 def test_a_clear_standout_is_kept_below_t_recall() -> None:
     picked = [item("memory", i, 1.0 - i / 10) for i in range(4)]
     kept, outcome = rc.keep(picked, picked, [0.03, 0.43, 0.04, 0.02], K)   # an indirect question's overflow memory

@@ -1,5 +1,4 @@
-// SessionScreen seam (README §4, R5): layouts[mode] and docks[kind]. Owner: EE (pre-filled); C owns the 1:1 and
-// replay/demo entries, D replaces the ensemble entries (stubs in features/ensemble/).
+// SessionScreen seam (README §4, R5): layouts[mode] and docks[kind].
 import type { ComponentType, ReactNode } from "react";
 import type { SessionMode } from "../../contract/types";
 import type { SessionRuntimeView } from "../../client/hooks";

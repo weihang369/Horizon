@@ -1,4 +1,4 @@
-// Shared WebAudio building blocks for offline rendering (browser only). Owner: VMD.
+// Shared WebAudio building blocks for offline rendering (browser only).
 export const SAMPLE_RATE = 48000;
 
 export const midiToHz = (m: number) => 440 * Math.pow(2, (m - 69) / 12);

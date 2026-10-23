@@ -570,6 +570,7 @@ dependencies = [
 dev = [
     { name = "asgi-lifespan" },
     { name = "mypy" },
+    { name = "pypdfium2" },
     { name = "pytest" },
     { name = "pytest-asyncio" },
     { name = "respx" },
@@ -611,6 +612,7 @@ requires-dist = [
 dev = [
     { name = "asgi-lifespan", specifier = ">=2.1" },
     { name = "mypy", specifier = ">=1.13" },
+    { name = "pypdfium2", specifier = ">=5.13" },
     { name = "pytest", specifier = ">=8.3" },
     { name = "pytest-asyncio", specifier = ">=0.24" },
     { name = "respx", specifier = ">=0.21" },

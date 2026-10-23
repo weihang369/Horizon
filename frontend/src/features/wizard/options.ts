@@ -1,6 +1,6 @@
 // LOOK step catalogues (CHR-06): Sims-style chip and swatch pickers. Values are free strings in the contract;
 // these lists are the UI's vocabulary. Swatch hexes are *character appearance data* (they are sent to the image
-// model and stored in Appearance), not UI theme colours. Owner: Builder B.
+// model and stored in Appearance), not UI theme colours.
 import type { AgeBand, Appearance, CharacterProfile, SongBrief } from "@/contract/types";
 
 export interface Opt { value: string; label: string }

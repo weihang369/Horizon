@@ -1,4 +1,4 @@
-// Wizard step gates (doc 02 CHR epic "Step gates" table) and profile validation (CHR-04). Pure. Owner: Builder B.
+// Wizard step gates (doc 02 CHR epic "Step gates" table) and profile validation (CHR-04). Pure.
 import type { Character, CharacterProfile, CreationStep, Emotion, GenerationJob } from "@/contract/types";
 import { CREATION_STEPS } from "@/contract/types";
 

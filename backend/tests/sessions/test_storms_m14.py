@@ -316,7 +316,7 @@ async def test_check_prompt_in_the_song_task_cut_by_cancel_and_deletes(api: Api,
     await api.drive(3000)
     await assert_writer_free(api.rt.db)
     if cut == "world":
-        # found during apply (the user's choice, fixed in M14): a world delete cancels its characters' jobs first, so
+        # found during apply (the maintainer's choice, fixed in M14): a world delete cancels its characters' jobs first, so
         # the queued music call never goes out; the job's row then cascades away with the world
         from tests.jobs.kit import rows
 

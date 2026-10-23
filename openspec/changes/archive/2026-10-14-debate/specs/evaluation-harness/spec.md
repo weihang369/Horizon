@@ -91,7 +91,7 @@ The summary suite's recap check SHALL give `judge_summary_unsupported` the recap
 - **THEN** the unsupported-claim judge is given that premise
 
 ### Requirement: The watch faces under both merge rules
-The decisions suite SHALL score the watch emotion slice, grown past 13 test items, under both rules for `emotion_line` (the `neutral` + `none` merge, and no merge), on dev and test with the same floor grid, and report them side by side for the user's choice.
+The decisions suite SHALL score the watch emotion slice, grown past 13 test items, under both rules for `emotion_line` (the `neutral` + `none` merge, and no merge), on dev and test with the same floor grid, and report them side by side for the maintainer's choice.
 
 #### Scenario: Both policies reported
 - **WHEN** the watch emotion slice is scored

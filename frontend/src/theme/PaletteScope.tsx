@@ -1,4 +1,4 @@
-// <PaletteScope paletteId> — scopes a palette's CSS variables to a subtree (R9). Owner: VMD.
+// <PaletteScope paletteId> — scopes a palette's CSS variables to a subtree (R9).
 import type { CSSProperties, ElementType, ReactNode } from "react";
 import { paletteClass } from "./palettes";
 

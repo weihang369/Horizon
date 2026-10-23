@@ -1,4 +1,4 @@
-// O04 Cost confirmation (CHR-13 AC1): first generation per app launch, can be switched off. Owner: Builder B.
+// O04 Cost confirmation (CHR-13 AC1): first generation per app launch, can be switched off.
 import { useState } from "react";
 import type { OverlayComponentProps } from "@/app/overlayTypes";
 import { run } from "@/app/errors";

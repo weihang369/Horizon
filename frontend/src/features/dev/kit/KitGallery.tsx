@@ -1,5 +1,5 @@
 // Kit Gallery (#/dev/kit): every primitive, all 6 seed characters × 7 emotions, every VFX, energy state,
-// transition, ceremony, palette, cover and sound — one anchored page for screenshot review. Owner: VMD.
+// transition, ceremony, palette, cover and sound — one anchored page for screenshot review.
 // Hidden in Presenter Mode by the EE's router. Lazy-loaded: `export function KitGallery()` (no props).
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type MouseEvent, type ReactNode } from "react";
 import type { Character, Emotion, EnergyState } from "../../../contract/types";

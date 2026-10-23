@@ -9,7 +9,7 @@ are chosen here on dev by D40's rules, then scored once on test; English is scor
 - **`earlier`** (noul, per candidate as `earlier:{id}`): `t_gate` by B5's gate rule, the highest threshold with recall
   ≥ 90 %, as `docs`.
 - **`recall`** (noul, per candidate): `t_recall` = the lowest threshold with precision ≥ 85 %, with its recall beside.
-- **`same_fact`** (noul; phase 10, the user's choice): the duplicate check's question. `t_same` = the lowest threshold
+- **`same_fact`** (noul; phase 10, the maintainer's choice): the duplicate check's question. `t_same` = the lowest threshold
   with precision ≥ 95 % on "same fact" (D39's rule for `dupCosine`, carried to the question that replaced it).
 """
 

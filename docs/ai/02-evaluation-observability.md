@@ -315,7 +315,7 @@ frozen transcripts start from a long committed history.
   | **Agent vs naive** | a choice of "reply A", "reply B" or "about the same", **asked in both orders** | the last 2 turns + both replies |
   | **Citation support** | a noul for each cited passage: "does this passage support what the reply says it supports?" (evaluation only in v1, doc 10 K10; ≥ 95 %) | the passage + the cited sentence |
   | **Sentence faithfulness** (deep turns) | code splits the reply into sentences; a noul for each factual sentence against the kept passages | the passages + one sentence |
-  | **Not-found reply** (doc 10 K14) | 2 nouls: tells the user the documents don't cover the question (or which part) · anything beyond them is framed as the character's own view, with no `[n]`; ≥ 90 % each. *Built in M12 (`rag` D22): `judge_notfound_says` and `judge_notfound_cites`, both B4-validated on 30 real + 30 planted (says 0.97 / 1.00; cites 0.93 / 0.93, missing both real failures, so its rate is a ceiling). End to end on 50 turns ([m12.md](checks/m12.md) 11.8): cites 2 failures; says fails end to end (13 of 40 unanswerable say it). K9's lines work where they are sent (14/16), and 12 of 40 unanswerable turns reach them. By the user's choice the row is reported both ways; M15 measures it again* | the question + the reply |
+  | **Not-found reply** (doc 10 K14) | 2 nouls: tells the user the documents don't cover the question (or which part) · anything beyond them is framed as the character's own view, with no `[n]`; ≥ 90 % each. *Built in M12 (`rag` D22): `judge_notfound_says` and `judge_notfound_cites`, both B4-validated on 30 real + 30 planted (says 0.97 / 1.00; cites 0.93 / 0.93, missing both real failures, so its rate is a ceiling). End to end on 50 turns ([m12.md](checks/m12.md) 11.8): cites 2 failures; says fails end to end (13 of 40 unanswerable say it). K9's lines work where they are sent (14/16), and 12 of 40 unanswerable turns reach them. By the maintainer's choice the row is reported both ways; M15 measures it again* | the question + the reply |
   | **Reply rules** (doc 04 P12) | 4 nouls: no assistant voice · no flattery (on a 100-reply sample) · replies in the user's language (non-English lines only) · pushes back (planted wrong claims only) | the last user line + the reply |
   | **Draft quality** (doc 04 P12) | 2 nouls: fits the seed · the relationship fits the You card | the seed, the You card + the draft |
   | **Summary quality** (doc 05 X10) | 5 nouls: a planted fact is kept · the promise is kept · it says who made the promise · same language as most lines · nothing unsupported | the dropped lines + the summary (one fact or promise per question) |
@@ -408,7 +408,7 @@ the largest Jev item, so judge results are cached (B7).
     test 22/31 = 0.71, +0.23 over the fixed order, McNemar p 0.033: the lift passes, 80 % doesn't);
     `emotion_debate_opening` **0.2** (the debate slice ties "always keep", 11/19); `verdict.margin` **0.25** (chosen
     on the suite's dev debates); `who_scene` v3 0.63 and `who_next` 0.75 (still below target, floors kept at 0.2);
-    `talk_finished` v3 keeps `t_end` 0.5; `emotion_line` v3 drops the neutral + none merge (the user's choice, D33),
+    `talk_finished` v3 keeps `t_end` 0.5; `emotion_line` v3 drops the neutral + none merge (the maintainer's choice, D33),
     floor 0.2, the watch faces 16/26 = 0.62, +0.35 over keeping. Each changed entry has a new version in the bank.*
 - **Noul thresholds have targets on both sides,** so no threshold can meet its target trivially:
 
@@ -658,7 +658,7 @@ with itself only about 64 % of the time, so that rule mixes up ordinary noise wi
   no slow spells in either run.*
 - *Built in M15 (OpenSpec `images-music` D15) as `latency --part blended`, the must-pass run ([m15.md](checks/m15.md)
   8.12): 100 quick and 100 deep 1:1 turns, 50 group, 50 debate and 25 deep watch, 5 warm-up turns per part left out,
-  one off-peak window (the user's choice; peak is not measured), on a loaded database, $0.123. **NFR-01 met:**
+  one off-peak window (the maintainer's choice; peak is not measured), on a loaded database, $0.123. **NFR-01 met:**
   blended p50 951 / p90 1,479 ms at the deep rate fixed before the run; deep turns alone p50 1,710 / p90 2,211 ms, so
   no rate can miss it. **NFR-02 met** in group (p50 1.7 s), watch (1.4 s) and debate (2.4 s, its exception).
   **NFR-29 met:** the face came at or before the first word on 250/250 turns. The output check was late 0/374 at

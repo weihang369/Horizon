@@ -1,5 +1,5 @@
 // O15 Summon reveal (CHR-11 AC2, VMD §2.4 "Summon (1800)"): the wizard's climax; the finished card then holds until
-// the tagline is typed plus 1.8 s (≥ 4.2 s in all, U-73). Owner: Builder B.
+// the tagline is typed plus 1.8 s (≥ 4.2 s in all, U-73).
 //   0     palette flood (setAppPalette, R10) + ink stage
 //   350   slash band sweeps
 //   500   portrait slides in from +40vw (380 ms) with three ghost copies collapsing as motion blur

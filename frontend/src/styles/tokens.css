@@ -1,4 +1,4 @@
-/* Horizon design tokens (doc 04 §2 + VMD paper §2.1). Owner: VMD.
+/* Horizon design tokens (doc 04 §2 + VMD paper §2.1).
  * Every colour a component uses comes from here or from a palette class (palettes.css).
  * Root data attributes (set by motion/prefs.ts → applyDisplayPrefs):
  *   data-motion="full|reduced"  data-vfx="full|subtle|off"  data-flash="full|low|off"

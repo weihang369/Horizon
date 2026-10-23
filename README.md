@@ -2,7 +2,7 @@
 
 Horizon is an open-source multi-agent character sandbox. You summon AI personas, give them faces, moods and theme songs, and have them advise you, debate each other, or just live their lives.
 
-> **Status:** the frontend is complete and runs on a built-in mock client with seeded demo data, which is what the live demo serves: no backend, API key or GPU needed. The local FastAPI backend ([docs/backend/](docs/backend/)) now runs the same app end to end: live chat, debates, character creation, knowledge upload and memory, with every paid call metered against your caps. The LangGraph agents come next.
+> **Status:** in testing before v1.0. The app runs end to end on a local FastAPI backend with your own OpenRouter key: live chat, group chat, debates and Watch mode, character creation with generated art and theme songs, knowledge from your documents, and memory across sessions, with every paid call metered against your caps. The live demo runs the same frontend on a built-in mock client with recorded sessions: no backend, API key or GPU needed.
 
 **Live demo:** <https://horizon-seven-mauve.vercel.app> (desktop browser, 1280 × 720 or larger).
 
@@ -150,14 +150,22 @@ Horizon/
 │       ├── features/  Screens: shell, worlds, wizard, profile, session, ensemble, insight, settings, dev
 │       ├── ui/ theme/ motion/ audio/ vfx/ character/   Design system and engines
 │       └── router/    Hash router (#/w/:world/...)
-├── backend/           FastAPI + SQLite local backend (uv); `horizon` CLI, tests, contract/schema.json
-├── seed/              Demo worlds, characters, sessions, assets (served at /assets)
-└── docs/
-    ├── requirements/  Vision, functional requirements, screens, data contract, decision log
-    └── ui-ux/         UI/UX design notes
+├── backend/           FastAPI + SQLite local backend (uv)
+│   ├── horizon/       The app: api/, sessions/, ai/ (agents, Jev decisions, memory), gateway/, services/, evals/
+│   ├── tests/         pytest (fake provider, no spend)
+│   └── manual/        Paid OpenRouter and real Docling checks, run by hand
+├── seed/              The shipped demo: worlds, characters, recorded sessions, art, songs, documents
+├── evals/             Evaluation data: datasets, scripted scenes, transcripts, a frozen seed
+├── openspec/          Specs (current behaviour) and each milestone's archived design
+├── scripts/           Repo-level scripts (the fresh-clone boot timing CI runs)
+└── docs/              Requirements, UI/UX, backend and AI designs, measured checks: see docs/README.md
 ```
 
-The UI talks only to the typed `HorizonClient` interface. `frontend/src/client/index.ts` picks the `MockClient` by default (and on Vercel) or the `HttpClient` when built with `VITE_HORIZON_CLIENT=http`.
+The UI talks only to the typed `HorizonClient` interface. `frontend/src/client/index.ts` picks the `MockClient` by default (and on Vercel) or the `HttpClient` when built with `VITE_HORIZON_CLIENT=http`. [docs/README.md](docs/README.md) maps the design docs and explains the codes (`D-118`, `CHAT-02`, `M13`) that comments cite.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, the checks to run before a pull request and how changes are made. Report security problems privately, as [SECURITY.md](SECURITY.md) describes.
 
 ## Privacy
 
@@ -182,10 +190,12 @@ third-party hosts, which may be slower or cost more.
 
 ## Roadmap
 
-1. **Requirements (BA).** Done. See [`docs/requirements/`](docs/requirements/).
-2. **UI/UX.** The hardcoded frontend on the mock client (this stage).
-3. **Backend.** FastAPI + SQLite that implements the same data contract.
-4. **AI.** LangGraph multi-agent orchestration through OpenRouter (bring your own key; the key stays on the server).
+1. **Requirements.** Done. See [`docs/requirements/`](docs/requirements/).
+2. **UI/UX.** Done: the frontend on the mock client ([`docs/ui-ux/`](docs/ui-ux/)).
+3. **Backend.** Done: FastAPI + SQLite implementing the same data contract ([`docs/backend/`](docs/backend/), milestones M1–M6).
+4. **AI.** Done: LangGraph agents through OpenRouter, with Jev making the decisions ([`docs/ai/`](docs/ai/), milestones M7–M15).
+5. **Testing (now).** Every flow driven by hand in a real browser, then v1.0.
+6. **Later.** Ideas left out of v1 are in [`docs/v2/`](docs/v2/README.md).
 
 ## License
 

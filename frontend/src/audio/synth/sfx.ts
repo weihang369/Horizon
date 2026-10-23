@@ -1,4 +1,4 @@
-// Procedural SFX recipes (R11, D-52; doc 04 §7.2, VMD paper §2.6). Owner: VMD.
+// Procedural SFX recipes (R11, D-52; doc 04 §7.2, VMD paper §2.6).
 // Every id renders once with OfflineAudioContext into a short AudioBuffer ("SKETCH" quality):
 // soft attacks, band-limited (≤ 9 kHz master lowpass), compressed, then peak-normalised per recipe
 // so nothing clips and UI ticks sit well below stings. Browser only.

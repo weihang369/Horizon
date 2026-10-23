@@ -1,4 +1,4 @@
-// Overlay + toast API (README §3.3). Owner: EE.
+// Overlay + toast API (README §3.3).
 // One LayerStack in the ui store; LayerStack.tsx renders it with central Esc order and focus trap/restore.
 import { audio } from "../audio/engine";
 import type { SfxId } from "../audio/synth/sfx";

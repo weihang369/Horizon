@@ -1,6 +1,6 @@
 // Mini-player chip (MUS-04/06/07, R11): skewed chip at the top right with a mini equaliser, the track name,
 // "· SKETCH" for procedural tracks, and mute. Click → O09 volume popover. Driven by audio.getState/subscribe.
-// Owner: Builder A. Statically imported by App (entry bundle): keep it light.
+// Statically imported by App (entry bundle): keep it light.
 import { useSyncExternalStore } from "react";
 import { openOverlay } from "../../app/layers";
 import { audio } from "../../audio/engine";

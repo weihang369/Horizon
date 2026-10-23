@@ -261,7 +261,7 @@ someone runs a single suite by hand with `--decision-model`.
     `guardrail` under 1k);
   - near 10k and near 25k: 5 bodies each, as a limit check. They are only there to see the large end and the
     oversize behaviour, never to set a deadline.
-  - **Found in phase 4, the user's choice (2026-10-20): padded top-ups.** The manifest holds only 9 distinct bodies
+  - **Found in phase 4, the maintainer's choice (2026-10-20): padded top-ups.** The manifest holds only 9 distinct bodies
     over 2.5k (emotion asks; a choice's two orders hash alike), one near 10k (an 8.2k judge body) and none near 25k.
     The manifest's bodies fill each bucket first; 2.5k–4k, ~10k and ~25k are then topped up with *padded* bodies: a
     manifest body whose longest text field repeats its own lines up to the target (3.2k, 10k, 25k). Both models get
@@ -271,7 +271,7 @@ someone runs a single suite by hand with `--decision-model`.
 - **The order:** each body is sent on both models back to back, alternating which model goes first. The first 5
   requests per model per window are warm-up and are discarded.
 - **The windows:** two, ≥ 3 h apart. One may be daytime (D6).
-  - **The user's choice (2026-10-20): report now, window B later.** The report, the write-up and the gate go ahead
+  - **The maintainer's choice (2026-10-20): report now, window B later.** The report, the write-up and the gate go ahead
     on window A (20:45 KL); window B runs when convenient and is added by a $0 re-cut (`--report-only`). It can only
     change the timing table. Window A showed the hour matters more than the model (1.13 ≈ 700 ms at 20:45 KL against
     ≈ 440 ms in M15's 07:35 KL run), so window B is best taken in a morning. After the gate (1.13 kept, no LinkedIn post) the user dropped window B:
@@ -293,7 +293,7 @@ someone runs a single suite by hand with `--decision-model`.
 ### D12. Deadlines: what the comparison can say before a switch, and what is measured after one
 
 - **Before the gate:** the timing probe gives Jev's own latency at live sizes. The report projects each deadline's
-  miss rate from it (D10). That is enough for the user's choice. It is not a deadline setting.
+  miss rate from it (D10). That is enough for the maintainer's choice. It is not a deadline setting.
 - **After a switch:** one `horizon eval latency --part blended` (M15's must-pass run, with DeepSeek, off-peak,
   ≈ $0.12–0.17, store bypassed). It re-measures the per-stage Jev times. Every 1.13-measured deadline is then put to
   the user, with the new value chosen by the rule each milestone used:

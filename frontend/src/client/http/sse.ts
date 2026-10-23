@@ -1,4 +1,4 @@
-// SSE for the HttpClient (doc backend/03 §4–§5): at most two EventSources (global + the open session). Owner: SWE.
+// SSE for the HttpClient (doc backend/03 §4–§5): at most two EventSources (global + the open session).
 // - Global: one shared EventSource, opened by the first `onGlobal` subscriber and closed after the last leaves.
 // - Session: one stream at a time. Subscribers of the same session share it; a later subscriber that asks for older
 //   events gets that backlog over HTTP while live events are held back, then everything is de-duplicated by `seq`.
@@ -10,8 +10,15 @@ export interface EventSourceLike {
   addEventListener(type: string, listener: (e: Event) => void): void;
   close(): void;
   onmessage: ((e: MessageEvent) => void) | null;
+  readyState?: number;
 }
 export type EventSourceCtor = new (url: string) => EventSourceLike;
+
+/** U-92: the browser reconnects after a network drop by itself, but an HTTP error answer (the dev proxy's 502 while
+ * the backend starts or restarts) closes an EventSource for good: no more events until a reload. A closed stream is
+ * reopened every RETRY_MS while anyone listens. */
+export const RETRY_MS = 2000;
+const CLOSED = 2;
 
 export const SESSION_EVENT_TYPES: StreamEventType[] = [
   "turn.next", "turn.thinking", "turn.start", "token", "emotion", "turn.end", "energy", "reaction", "insight", "phase",
@@ -32,42 +39,67 @@ export class GlobalStream {
     this.ES = ES;
   }
 
+  private retry: ReturnType<typeof setTimeout> | null = null;
+  private missed = false;
+
   subscribe(cb: (e: GlobalEvent) => void): Unsubscribe {
     this.subs.add(cb);
-    if (!this.es) {
-      this.es = new this.ES(this.url);
-      this.es.onmessage = (m) => {
-        let e: GlobalEvent;
-        try {
-          e = JSON.parse(m.data as string) as GlobalEvent;
-        } catch {
-          return;
-        }
-        for (const s of [...this.subs]) s(e);
-      };
-    }
+    if (!this.es && !this.retry) this.open();
     return () => {
       this.subs.delete(cb);
-      if (!this.subs.size && this.es) {
-        this.es.close();
-        this.es = null;
-      }
+      if (!this.subs.size) this.stop();
     };
+  }
+
+  private open(): void {
+    const es = new this.ES(this.url);
+    this.es = es;
+    es.onmessage = (m) => {
+      let e: GlobalEvent;
+      try {
+        e = JSON.parse(m.data as string) as GlobalEvent;
+      } catch {
+        return;
+      }
+      for (const s of [...this.subs]) s(e);
+    };
+    // Reopened after a closed stream: whatever changed meanwhile was never announced, so every screen re-queries in
+    // place (`mock.reset`'s meaning, as after Reset demo data).
+    es.addEventListener("open", () => {
+      if (!this.missed) return;
+      this.missed = false;
+      for (const s of [...this.subs]) s({ type: "mock.reset" });
+    });
+    es.addEventListener("error", () => {
+      if (es.readyState !== CLOSED || this.es !== es) return;
+      this.es = null;
+      this.missed = true;
+      this.retry = setTimeout(() => {
+        this.retry = null;
+        if (this.subs.size && !this.es) this.open();
+      }, RETRY_MS);
+    });
+  }
+
+  private stop(): void {
+    if (this.retry) clearTimeout(this.retry);
+    this.retry = null;
+    this.es?.close();
+    this.es = null;
   }
 
   get size(): number { return this.subs.size; }
 
   close(): void {
     this.subs.clear();
-    this.es?.close();
-    this.es = null;
+    this.stop();
   }
 }
 
 interface Sub { cb: (e: SessionEvent) => void; last: number; ready: boolean; held: SessionEvent[] }
 
 export class SessionStreams {
-  private current: { sessionId: string; es: EventSourceLike; subs: Set<Sub> } | null = null;
+  private current: { sessionId: string; es: EventSourceLike; subs: Set<Sub>; seq: number } | null = null;
 
   private readonly urlFor: (sessionId: string, sinceSeq: number) => string;
   private readonly ES: EventSourceCtor;
@@ -90,7 +122,6 @@ export class SessionStreams {
     if (this.current && this.current.sessionId !== sessionId) this.closeCurrent();
     const sub: Sub = { cb, last: sinceSeq, ready: true, held: [] };
     if (!this.current) {
-      const es = new this.ES(this.urlFor(sessionId, sinceSeq));
       const subs = new Set<Sub>();
       const onFrame = (m: Event) => {
         if (!isMessage(m)) return; // a connection error (EventSource reconnects by itself)
@@ -100,10 +131,23 @@ export class SessionStreams {
         } catch {
           return;
         }
+        if (this.current?.subs === subs && typeof e.seq === "number") this.current.seq = Math.max(this.current.seq, e.seq);
         for (const s of [...subs]) push(s, e);
       };
-      for (const t of SESSION_EVENT_TYPES) es.addEventListener(t, onFrame);
-      this.current = { sessionId, es, subs };
+      // U-92: closed for good (see RETRY_MS): reopen from the last event seen; `emit` drops anything already delivered
+      const open = (since: number): EventSourceLike => {
+        const es = new this.ES(this.urlFor(sessionId, since));
+        for (const t of SESSION_EVENT_TYPES) es.addEventListener(t, onFrame);
+        es.addEventListener("error", () => {
+          if (es.readyState !== CLOSED || this.current?.es !== es) return;
+          setTimeout(() => {
+            const cur = this.current;
+            if (cur && cur.es === es && cur.subs.size) cur.es = open(cur.seq);
+          }, RETRY_MS);
+        });
+        return es;
+      };
+      this.current = { sessionId, es: open(sinceSeq), subs, seq: sinceSeq };
     } else {
       // Joining an open stream: fetch what this subscriber is missing, holding live events until it's delivered.
       sub.ready = false;

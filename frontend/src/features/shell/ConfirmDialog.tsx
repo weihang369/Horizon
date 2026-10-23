@@ -1,5 +1,5 @@
 // O03 Destructive confirmation (doc 03 §2): typed (delete world / character permanently / all data) or simple
-// (delete a session). Cancel is focused first; Esc cancels; errors stay in the dialog. Owner: Builder A.
+// (delete a session). Cancel is focused first; Esc cancels; errors stay in the dialog.
 import { useState } from "react";
 import type { OverlayComponentProps } from "../../app/overlayTypes";
 import type { HorizonErrorShape } from "../../contract/errors";

@@ -4,7 +4,7 @@
 // tape is up it sets `data-demo-tape` on <html>, and the mini-player drops 10 px to sit under it (both stay inside
 // the 56 px header band). So the tape never lands on a header, a portrait, a log or a dock, on any screen.
 // Hover/focus drops the full AC1 copy beneath it. Click → Settings → Connection. Hidden on Onboarding (its key card
-// already explains demo mode). Owner: Builder A. Statically imported by App (entry bundle): keep it light.
+// already explains demo mode). Statically imported by App (entry bundle): keep it light.
 import { useEffect } from "react";
 import type { OverlayComponentProps } from "../../app/overlayTypes";
 import { getRoute, navigate, useRoute } from "../../router";

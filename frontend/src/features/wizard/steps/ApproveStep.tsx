@@ -1,5 +1,5 @@
 // S05h APPROVE (CHR-11): summary card (portrait, plate, role, tagline, palette, emotion thumbs, song, warnings) and
-// "Approve & Summon" → O15. Editing an approved character ends with "Save changes" instead (PRF-03 AC4). Owner: Builder B.
+// "Approve & Summon" → O15. Editing an approved character ends with "Save changes" instead (PRF-03 AC4).
 import { useEffect, useState } from "react";
 import type { CSSProperties } from "react";
 import { openOverlay, toast } from "@/app/layers";
@@ -15,7 +15,7 @@ import { cx } from "@/ui/cx";
 import { Composing, ThemePlayer } from "@/features/profile/ThemePlayer";
 import { ActionBar } from "../ActionBar";
 import { useWizard } from "../context";
-import { createdThisSession, isRunning } from "../generate";
+import { createdThisSession, isRunning, summoning } from "../generate";
 import { canApprove, missingEmotions, validateProfile } from "../gates";
 import s from "./steps.module.css";
 
@@ -39,6 +39,7 @@ export function ApproveStep() {
 
   const approve = async () => {
     setBusy(true);
+    summoning.add(c.id);
     try {
       if (!(await save({ quiet: true }))) return;
       await client.characters.approve(c.id);
@@ -48,6 +49,7 @@ export function ApproveStep() {
     } catch (err) {
       reportError(err);
     } finally {
+      summoning.delete(c.id);
       setBusy(false);
     }
   };

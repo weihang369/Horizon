@@ -1,6 +1,6 @@
 // M14 (safety D14, task 4.2): a refused motion or premise answers `POST /sessions` with 451 `content_refused`; the
 // setup screen's existing `reportError` shows the server's message as a toast (no overlay, no new UI), and the typed
-// text stays in the form (the screen only resets `starting`). Owner: SWE.
+// text stays in the form (the screen only resets `starting`).
 import { describe, expect, it } from "vitest";
 import { reportError } from "../../app/errors";
 import { HttpClient } from "../../client/http/HttpClient";

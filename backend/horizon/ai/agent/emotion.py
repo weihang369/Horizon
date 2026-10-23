@@ -48,7 +48,7 @@ def candidates(probs: Mapping[str, float], base: str, n: int = 3) -> list[dict[s
     return [{"label": k, "p": _r(v)} for k, v in ranked[:n]]
 
 
-# M11 (debate D20, D33: the user's choice): these questions don't merge neutral + none; `none` keeps, `neutral` is its own
+# M11 (debate D20, D33: the maintainer's choice): these questions don't merge neutral + none; `none` keeps, `neutral` is its own
 NO_MERGE = frozenset({"emotion_line"})
 
 

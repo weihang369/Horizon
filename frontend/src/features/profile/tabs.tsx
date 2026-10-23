@@ -1,4 +1,4 @@
-// S06 tab panels: Profile · Gallery · Theme · Sessions · Memory · Knowledge (PRF-01..08). Owner: Builder B.
+// S06 tab panels: Profile · Gallery · Theme · Sessions · Memory · Knowledge (PRF-01..08).
 import { useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import { openOverlay, toast } from "@/app/layers";

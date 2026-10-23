@@ -1,4 +1,4 @@
-// Wizard context shared by the step components. Owner: Builder B.
+// Wizard context shared by the step components.
 import { createContext, useContext } from "react";
 import type { Character, CreationStep, World } from "@/contract/types";
 import type { GateFacts } from "./gates";

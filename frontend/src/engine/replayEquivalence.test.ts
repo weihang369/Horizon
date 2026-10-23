@@ -1,5 +1,5 @@
 // Replay equivalence (EE paper §2.10): reducing a recording's events from its replay base reproduces its
-// messages.json exactly and its session.json (status, state, participants, cost, counts). Owner: EE.
+// messages.json exactly and its session.json (status, state, participants, cost, counts).
 import { readdirSync, readFileSync, existsSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
@@ -37,6 +37,14 @@ describe("replay equivalence", () => {
     const raw = timelineFromEvents(events, { trimGapsMs: null });
     for (let i = 1; i < trimmed.length; i++) expect(trimmed[i].t - trimmed[i - 1].t).toBeLessThanOrEqual(2500);
     expect(raw.at(-1)!.t).toBeGreaterThanOrEqual(trimmed.at(-1)!.t);
+  });
+
+  it("a break between visits plays short even with the trim off (U-97)", () => {
+    const at = (iso: string, seq: number) => ({ id: `e${seq}`, sessionId: "s", seq, at: iso, type: "session.resumed", payload: {} } as SessionEvent);
+    const events = [at("2026-09-27T10:00:00.000Z", 1), at("2026-09-27T10:00:20.000Z", 2), at("2026-10-23T04:00:00.000Z", 3)];
+    const raw = timelineFromEvents(events, { trimGapsMs: null });
+    expect(raw.map((x) => x.t)).toEqual([0, 20_000, 22_500]);   // the 20 s pause kept, the 26 days as 2.5 s
+    expect(timelineFromEvents(events).map((x) => x.t)).toEqual([0, 2500, 5000]);
   });
 
   it("Mei's bar reads 996 right after msg_seedD08 (doc 05 §8 trace.energy.remaining)", () => {

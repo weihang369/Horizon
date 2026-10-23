@@ -1,4 +1,4 @@
-// O13 Unsaved draft prompt (CHR-01 AC2): Save as draft / Discard / Cancel when leaving mid-wizard. Owner: Builder B.
+// O13 Unsaved draft prompt (CHR-01 AC2): Save as draft / Discard / Cancel when leaving mid-wizard.
 import { useState } from "react";
 import type { OverlayComponentProps } from "@/app/overlayTypes";
 import { useCharacter } from "@/client/hooks";

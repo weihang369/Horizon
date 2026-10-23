@@ -57,7 +57,7 @@ SKIP_TOO_LARGE = "skipped: the plan's state was too large"
 
 
 def skipped_row(qid: str, *, purpose: str, reason: str, about: str | None = None) -> dict[str, Any]:
-    """U-49 (the user's choice): a question this turn didn't ask, greyed in Insight with its reason, so every turn of a
+    """U-49 (the maintainer's choice): a question this turn didn't ask, greyed in Insight with its reason, so every turn of a
     mode lists the same rows."""
     e = bank().get(qid)
     row: dict[str, Any] = {"purpose": purpose, "id": qid, "version": e.version, "label": e.label}

@@ -41,7 +41,7 @@ PROMPT_VERSION_DEBATE_MOOD = "agent-8"
 TURN_CUE_SENTENCES = {
     "second": "{first} has just answered. Don't repeat them; add your own angle, or answer {first} directly.",
     "next": "Nobody asked you directly; say something that moves the talk on. You may answer anyone.",
-    # M11 (debate D10, the user's choice of 2026-10-13): M10 found the old steer closed scenes
+    # M11 (debate D10, the maintainer's choice of 2026-10-13): M10 found the old steer closed scenes
     "steer": ("This thread has run its course. Bring in something new that fits the premise: an event, a discovery or "
               "a change of plan. Don't wrap up, say goodbye or wait for {user} to decide."),
 }
@@ -355,7 +355,7 @@ def _session(inp: PersonaInput) -> str:
         lines.append(f"This is a group chat with {user} and: {_who(inp.others)}.")
     elif inp.mode == "watch":
         premise = f" Premise: {_sentence(inp.premise)}" if inp.premise.strip() else ""
-        # U-64 (the user's choice): the watcher is off-stage until they step in, so lines aren't addressed to them
+        # U-64 (the maintainer's choice): the watcher is off-stage until they step in, so lines aren't addressed to them
         lines.append(f"{user[0].upper() + user[1:]} is watching this scene from outside it and may step in. Until "
                      f"{user} speaks in it, talk to each other, not to {user}.{premise} With you: {_who(inp.others)}.")
     elif inp.mode == "debate" and inp.debate is not None:

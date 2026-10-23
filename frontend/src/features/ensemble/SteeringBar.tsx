@@ -3,7 +3,8 @@
 // Ask…/Interject open O12 DockExpansions (they hold the queue at the next boundary). Space = pause/resume, → = Next.
 import { client } from "../../client";
 import type { DebateConfig, DebateState } from "../../contract/types";
-import { run } from "../../app/errors";
+import { reportError, run } from "../../app/errors";
+import { toHorizonError } from "../../contract/errors";
 import { openOverlay } from "../../app/layers";
 import { useShortcut } from "../../app/shortcuts";
 import { navigate } from "../../router";
@@ -30,7 +31,13 @@ export function SteeringBar({ rt, sessionId, worldId }: DockProps) {
   const end = () => {
     if (atVerdict) navigate({ name: "verdict", worldId, sessionId });
     else if (beforeClosing) openOverlay("O26", { sessionId });
-    else void run(() => client.debate.endDebate(sessionId, true)).then(() => navigate({ name: "verdict", worldId, sessionId }));
+    else {
+      // U-88: the last closing can finish and the debate move to its verdict while the click is on its way; the 409
+      // "This session has ended." then only means the verdict is already there, so no error toast.
+      void client.debate.endDebate(sessionId, true)
+        .catch((err) => { if (toHorizonError(err).code !== "conflict") reportError(err); })
+        .then(() => navigate({ name: "verdict", worldId, sessionId }));
+    }
   };
 
   useShortcut("space", togglePause, { when: () => !ended });

@@ -373,7 +373,7 @@ Doc 01 A3 rule 6: Jev gets less accurate as irrelevant content grows, so the sta
   questions declare. Measured sizes with the gates: [m12.md](checks/m12.md) (a group of five with four gated: state
   1,022 tokens, 12 questions).*
   *Built in M13 (OpenSpec `memory` D26–D28): the `earlier` gates are declared beside the `docs` gates in every plan
-  state, and X9's cuts drop them together. For debate states only, X9's order changes (the user's choice, U2): the
+  state, and X9's cuts drop them together. For debate states only, X9's order changes (the maintainer's choice, U2): the
   arguments are cut first (each member's latest to 30 words, then the last opposing argument to 120 tokens), and only
   then the gates. On M11's 90 debate states this keeps all 193 member gates, where M12's order kept 167
   ([m13.md](checks/m13.md)).*
@@ -457,7 +457,7 @@ internal.
   M13 (`memory`).*
 - ~~The retrieval block's size: k, the passage length and Jev call 2 (task 10).~~ Resolved by doc 10 K1, K7, K8:
   ≤ 1,400 tokens. *Built in M12 (`rag` D16; X1's note). Found in M12: X9's 2,000-token cap drops every member's
-  gate late in the panel and three-a-side debates, so those turns can't go deep; the user's choice was to record it
+  gate late in the panel and three-a-side debates, so those turns can't go deep; the maintainer's choice was to record it
   for M13, which sets the memory block's budget, and leave X9's order unchanged (D32.5). Resolved in M13 (`memory`
   D28): debate states now cut their arguments before any gate (X9's note).*
 - ~~The quoted-content wording in the Jev state and the prompts, and prompt injection through summaries (task 11).~~

@@ -787,7 +787,7 @@ send.
 
 **Rejected:** G10's rejections stand (bullets, reusing the rolling summary, canned text on failure, the `error` event).
 
-*Built note (task 10.6, the user's choice of 2026-10-13):* the paid run wrote all 10 recaps in other languages
+*Built note (task 10.6, the maintainer's choice of 2026-10-13):* the paid run wrote all 10 recaps in other languages
 (Chinese for Meridian, Japanese for Sunny Hollow, one Romanian): DeepSeek read "in the language the characters used"
 as the language of their names. The prompt is now `episode-2`, "…in the language most of the lines use; keep names as
 they are…", and the cut and its check count each Chinese or Japanese character as one word (`word_count`), so a CJK
@@ -1069,7 +1069,7 @@ rule).
 - **D23's labels:** the B2 review is **delegated to me**, as in M8 and M9: a recorded pass in `evals/reviews/`, with
   the held-out test split as the safeguard.
 
-### D28. The user's choices during the apply (2026-10-13)
+### D28. The maintainer's choices during the apply (2026-10-13)
 
 - **D15's wording:** a plan made ahead whose inputs changed is "not used" (it has already settled by the turn's due
   time); only `clear()` and a Pause record it `cancelled`. Kept as built (the watch-direction scenario reworded).

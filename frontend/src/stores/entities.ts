@@ -1,4 +1,4 @@
-// Entities store: normalised client query results (EE paper §2.6). Owner: EE.
+// Entities store: normalised client query results (EE paper §2.6).
 // Resources are keyed strings ("worlds", "characters:<wid>:all", …). `entity.changed` / `mock.reset` from the client
 // invalidate matching keys; mounted hooks refetch them in place (no skeleton flash on refetch).
 import { createStore } from "zustand/vanilla";

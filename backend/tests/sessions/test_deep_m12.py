@@ -174,7 +174,7 @@ async def test_the_rewrite_shares_the_reply_prefix(api: Api) -> None:
 
 
 async def test_a_short_message_starts_its_rewrite_with_the_plan_and_the_deep_path_joins_it(api: Api) -> None:
-    """rag 11.9 (K15's trim 1, the user's choice): in 1:1 a short message to a speaker with documents has its rewrite
+    """rag 11.9 (K15's trim 1, the maintainer's choice): in 1:1 a short message to a speaker with documents has its rewrite
     started beside Jev call 1. A quick turn still pays for it; a deep turn joins it, so there is one call either way."""
     sid = await agent(api, "one_on_one", [AMARA])
     gate(api, AMARA, 0.1)
@@ -380,7 +380,7 @@ async def _indexed_source(api: Api, cid: str) -> None:
 
 
 async def test_the_embedding_starts_with_the_plan_even_when_the_gate_says_no(api: Api) -> None:
-    """rag 11.5 (the user's choice, reversing D-100's "never before"): the message's embedding starts with Jev call 1,
+    """rag 11.5 (the maintainer's choice, reversing D-100's "never before"): the message's embedding starts with Jev call 1,
     so a quick turn still has its one early embedding, linked to the message; the deep path adds none."""
     await api.set_key()
     await _indexed_source(api, HANA)
@@ -428,7 +428,7 @@ async def test_a_late_embedding_searches_by_keywords_and_is_still_recorded(api: 
 
 
 async def test_a_documents_search_waits_for_its_vector(api: Api, monkeypatch: pytest.MonkeyPatch) -> None:
-    """U-45 (the user's choice): the query vector arriving 3 s in (OpenRouter's 0.9-13 s, far past the old 200 ms) is
+    """U-45 (the maintainer's choice): the query vector arriving 3 s in (OpenRouter's 0.9-13 s, far past the old 200 ms) is
     waited for, so the documents search is hybrid."""
     from horizon.ai.agent import deep
 

@@ -16,10 +16,10 @@ superseding message or `clear()` cancels both. A recall-only request skips gathe
   together. A rewrite in time joins the terms; a failed or late one is a fallback query (the message, and the two
   earlier lines with it). The search waits for the message's vector at most `retrieval.agent.queryEmbedWaitMs`
   (200 ms, rag 11.9) from when it needs it; a late one is still recorded, and the search runs on keywords.
-- **No wait for a text born after the gate** (rag 11.9, the user's choice): the rewrite's vector and the fallback's
+- **No wait for a text born after the gate** (rag 11.9, the maintainer's choice): the rewrite's vector and the fallback's
   "earlier lines + message" vector are requested but never waited for. Check 2 measured the query embedding at p50
   6.8 s that evening, so that wait only ever added time; a vector already served (the LRU, on regenerate) is used.
-- **The early start** (rag 11.5, the user's choice of 2026-10-15): from Malaysia a query embedding takes ≈ 1.1 s at
+- **The early start** (rag 11.5, the maintainer's choice of 2026-10-15): from Malaysia a query embedding takes ≈ 1.1 s at
   the median, so the 1:1, cast (group) and follow plans start the user message's embedding with Jev call 1, for a
   candidate with vectors (`start_early_embedding`). In 1:1 the rewrite of a short message starts there too
   (`rewrite.start_early`, rag 11.9), and gather joins it. gather's own request for the same text joins it through the
@@ -144,7 +144,7 @@ class DeepSteps:
     # ── gather ──
     async def gather(self, req: DeepRequest) -> tuple[QueryBundle, rw.Rewrite | None]:
         knobs = self.knobs()
-        # U-45 (the user's choice): a turn that searches its documents waits for its query vectors (up to the cap),
+        # U-45 (the maintainer's choice): a turn that searches its documents waits for its query vectors (up to the cap),
         # so the search is hybrid as designed; turns with no documents keep the quick wait (recall's)
         wait = _seconds(knobs.wait_ms(knobs.docs_embed_wait_ms))
         began = self.deps.clock().now()
@@ -236,7 +236,7 @@ class DeepSteps:
         dense: dict[int, list[float]] = {}
         waits: dict[str, float] = {}
         # the message's own vector (the early start's, usually already served) when the documents' search had none;
-        # U-56 (the user's choice): waited for to the end like the documents' (D-111), else `queryEmbedWaitMs`
+        # U-56 (the maintainer's choice): waited for to the end like the documents' (D-111), else `queryEmbedWaitMs`
         if (docs_bundle is None or not docs_bundle.dense.get(space_id)) and io.key_set():
             space = await io.space(space_id)
             if space is not None:

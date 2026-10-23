@@ -1,6 +1,6 @@
 // HttpClient unit tests (http-client spec): errors, idempotency keys, paging, streams and the not-yet methods,
-// against a stubbed fetch and a fake EventSource. The end-to-end run is clientContract.http.test.ts. Owner: SWE.
-import { describe, expect, it } from "vitest";
+// against a stubbed fetch and a fake EventSource. The end-to-end run is clientContract.http.test.ts.
+import { describe, expect, it, vi } from "vitest";
 import { HorizonError } from "../../contract/errors";
 import type { SessionEvent } from "../../contract/types";
 import type { HorizonClient } from "../HorizonClient";
@@ -24,6 +24,7 @@ class FakeES implements EventSourceLike {
   static all: FakeES[] = [];
   onmessage: ((e: MessageEvent) => void) | null = null;
   closed = false;
+  readyState = 1;
   private listeners = new Map<string, ((e: Event) => void)[]>();
   readonly url: string;
   constructor(url: string) {
@@ -34,6 +35,10 @@ class FakeES implements EventSourceLike {
     this.listeners.set(type, [...(this.listeners.get(type) ?? []), fn]);
   }
   close(): void { this.closed = true; }
+  /** A connection error: a plain Event, no data (unlike a server-sent `error` frame). */
+  fail(): void {
+    for (const fn of this.listeners.get("error") ?? []) fn(new Event("error"));
+  }
   emit(type: string, data: unknown): void {
     const e = { data: JSON.stringify(data) } as MessageEvent;
     if (type === "message") this.onmessage?.(e);
@@ -265,6 +270,38 @@ describe("HttpClient", () => {
     expect(got).toEqual([["mock.reset"], ["mock.reset"], ["mock.reset"]]);
     unsubs.forEach((u) => u());
     expect(open()).toHaveLength(0);
+  });
+
+  it("a stream closed for good (an HTTP error, e.g. the dev proxy's 502) reopens, and screens re-query (U-92)", () => {
+    vi.useFakeTimers();
+    try {
+      FakeES.all = [];
+      const { c } = make(() => json(200, {}));
+      const got: string[] = [];
+      const seen: number[] = [];
+      c.onGlobal((e) => got.push(e.type));
+      c.sessions.subscribe("ses_a", { sinceSeq: 0 }, (e) => seen.push(e.seq));
+      const [g1, s1] = FakeES.all;
+      s1.emit("session.resumed", evt(1));
+      s1.emit("session.resumed", evt(2));
+      for (const es of [g1, s1]) {
+        es.readyState = 1;   // a dropped connection the browser retries itself: nothing to do
+        es.fail();
+        es.readyState = 2;
+        es.fail();
+      }
+      expect(FakeES.all).toHaveLength(2);
+      vi.advanceTimersByTime(2000);
+      const [g2, s2] = FakeES.all.slice(2);
+      expect(g2.url).toBe(g1.url);
+      expect(s2.url).toBe("http://h/api/v1/sessions/ses_a/stream?sinceSeq=2");
+      g2.emit("open", {});
+      expect(got).toEqual(["mock.reset"]);
+      for (const s of [2, 3]) s2.emit("session.resumed", evt(s));
+      expect(seen).toEqual([1, 2, 3]);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("a session stream delivers each seq once, and another session closes it (≤ 2 EventSources)", () => {

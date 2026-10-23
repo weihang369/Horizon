@@ -1,5 +1,5 @@
 // Theme song player (CHR-10 AC3, PRF-04): waveform from the decoded buffer, ▶/❚❚ on the music bus, loop region,
-// "SKETCH" for procedural placeholders (R11), model + licence small print. Owner: Builder B.
+// "SKETCH" for procedural placeholders (R11), model + licence small print.
 import { useSyncExternalStore } from "react";
 import type { CSSProperties } from "react";
 import { audio } from "@/audio/engine";

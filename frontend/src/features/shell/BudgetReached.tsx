@@ -1,5 +1,5 @@
 // O21 Budget reached (STATE-06): pauses the session/generation; "Raise cap" deep-links to Settings → Cost,
-// "Stop here" leaves it paused (the session shows its daily_budget banner). Owner: Builder A.
+// "Stop here" leaves it paused (the session shows its daily_budget banner).
 import type { OverlayComponentProps } from "../../app/overlayTypes";
 import { formatUsd } from "../../domain/format";
 import { getRoute, navigate } from "../../router";

@@ -2,7 +2,7 @@
 // Log 640/560 between the NEXT strip (40) and the dock; wings 400/360, bottom-anchored portraits ≥ 38 % vh,
 // overlapping ≤ 45 %; a 5th seat stacks behind at 0.8. Speaker: scale 1.08 + 24 px toward centre (MULTI-02 AC2).
 // The NEXT strip carries the responder policy, "Everyone answer" and "Next ▸" (MULTI-03, MULTI-16).
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { CSSProperties } from "react";
 import { client } from "../../client";
 import type { GroupConfig } from "../../contract/types";
@@ -15,6 +15,8 @@ import type { LayoutProps } from "../session/registry";
 import { StageCard } from "./StageCard";
 import { activeSpeakerId, firstName, latestReactions, lastSpeakerId, splitWings, useCharMap } from "./shared";
 import s from "./GroupLayout.module.css";
+
+const ROUND_SETTLE_MS = 1500;   // past the turn gap (400 ms) and a prefetched speaker's start
 
 const POLICY: { value: GroupConfig["responderPolicy"]; label: string; hint: string }[] = [
   { value: "auto", label: "Auto", hint: "The AI picks up to 2" },
@@ -32,11 +34,23 @@ export function GroupLayout({ rt, replay, insightOpen }: LayoutProps) {
   const bandId = active ?? lastSpeakerId(rt.list);
   const reactions = useMemo(() => latestReactions(rt.list), [rt.list]);
   const byId = useMemo(() => Object.fromEntries(rt.participants.map((p) => [p.characterId, p])), [rt.participants]);
-  const next = rt.nextSpeakerId;
+  const busy = !!rt.streamingId || !!rt.thinkingId;
+  // U-82: `turn.next` names a speaker as its turn starts and nothing clears it, so once that speaker has replied and
+  // nothing runs, the floor is the user's (it read "Next ▸ Mei" right after Mei's answer). Another speaker of the same
+  // round may still start after the turn gap, so the strip waits a moment ("…") before saying "Your turn".
+  const replied = !!rt.nextSpeakerId && !busy && rt.nextSpeakerId === lastSpeakerId(rt.list);
+  const round = `${rt.nextSpeakerId}:${rt.list.length}`;
+  const [settledAt, setSettledAt] = useState<string | null>(null);
+  useEffect(() => {
+    if (!replied) return;
+    const t = setTimeout(() => setSettledAt(round), ROUND_SETTLE_MS);
+    return () => clearTimeout(t);
+  }, [replied, round]);
+  const settled = replied && settledAt === round;
+  const next = replied ? undefined : rt.nextSpeakerId;
   const nextChar = next ? chars[next] : undefined;
   // Who the stage is about when nobody is speaking: the overlapping seats bring this card forward (QA-06).
   const focusId = active ?? next ?? bandId;
-  const busy = !!rt.streamingId || !!rt.thinkingId;
   const live = !replay && session.status !== "ended";
 
   const wing = (side: "left" | "right", list: string[]) => (
@@ -103,7 +117,7 @@ export function GroupLayout({ rt, replay, insightOpen }: LayoutProps) {
               <span className={s.nextName}>{firstName(nextChar)}</span>
             </>
           ) : (
-            <span className={s.nextName}>{busy ? "…" : "Your turn"}</span>
+            <span className={s.nextName}>{busy || (replied && !settled) ? "…" : "Your turn"}</span>
           )}
         </div>
         {live && (

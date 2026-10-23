@@ -1,5 +1,5 @@
 // Prefs: per-browser display/audio/presenter settings, persisted separately from the mock DB (Lead gap ruling).
-// Every change re-applies the VMD's root data attributes (applyDisplayPrefs) and the audio engine volumes. Owner: EE.
+// Every change re-applies the VMD's root data attributes (applyDisplayPrefs) and the audio engine volumes.
 import { createStore } from "zustand/vanilla";
 import { useStore } from "zustand";
 import type { AppSettings } from "../contract/types";

@@ -1,6 +1,6 @@
 // S05a SEED (CHR-02): one line, an optional intent, "Surprise me", Draft with AI. U-77: "Write it myself" left the
 // step at the user's ask (it read as unclickable beside the disabled draft); a failed draft still leaves the profile
-// form to fill by hand. Owner: Builder B.
+// form to fill by hand.
 import { useEffect, useRef, useState } from "react";
 import { openOverlay } from "@/app/layers";
 import { reportError } from "@/app/errors";

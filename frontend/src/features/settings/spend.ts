@@ -1,4 +1,4 @@
-// Spend view helpers (SET-09). Owner: Builder A.
+// Spend view helpers (SET-09).
 export interface SpendRow { id: string; usd: number }
 
 /** Top-N rows by spend, largest first; zero rows dropped. */

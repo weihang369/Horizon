@@ -1,4 +1,4 @@
-// Generation jobs (doc 05 GenerationJob, CHR-03..10, APP-07 timings). Owner: EE.
+// Generation jobs (doc 05 GenerationJob, CHR-03..10, APP-07 timings).
 // Tasks run N-in-parallel on the virtual clock with a progress tick, a preview at 50 %, per-task cost and ledger
 // rows, and scenario faults (all / partial / song). Jobs live in the client, so they survive navigation.
 import type {

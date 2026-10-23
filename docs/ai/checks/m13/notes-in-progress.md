@@ -59,7 +59,7 @@
     ≈ $0.079, dup ≈ $0.001, check 2 ≈ $0.021, recall ≈ $0.027, arms ≤ $0.045, checkMs tail ≈ $0.019, check 4 + D33
     ≈ $0.047, layer 3 ≈ $0.120, the provider probe ≈ $0.0001 (with one free GET of the provider list). Total ≤ $0.37
     (D41 ≈ $0.27: the arms' fixed transcript embeddings and check 4's both-gates turns priced in full here).
-18. Phase 10's first results and the user's choices (2026-10-16, 19:4x KL):
+18. Phase 10's first results and the maintainer's choices (2026-10-16, 19:4x KL):
     - `importance`: passes (balanced 0.88 dev / 0.87 test; within one level 0.89 / 0.89). No change.
     - `memory_guard`: the rule gave `t_keep` 0.40; but the real rewrite run showed 0.70 holding back 16 of 35
       legitimate changes (p 0.27–0.68): the set had no changed-value items, and the question didn't say a changed

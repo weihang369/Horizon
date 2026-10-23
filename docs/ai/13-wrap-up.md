@@ -10,7 +10,7 @@
 >     design.md must still write;
 >   - **the paid checks**, in two groups.
 > - Decisions are numbered **W1–W14**, each with the alternatives we rejected.
-> - **The user's choices:**
+> - **The maintainer's choices:**
 >   - **four, at the start** (all four were the recommendation):
 >     - System 1 is **one generic list** of questions;
 >     - the **face-and-words check goes live**, while citations stay evaluation-only;
@@ -62,7 +62,7 @@ Docs 01–12 each added Jev questions, and each left items "for task 13". What i
 
 ## 2. Decisions
 
-### W1. The System 1 section: one generic list of Jev questions (the user's choice)
+### W1. The System 1 section: one generic list of Jev questions (the maintainer's choice)
 
 **The contract (rev 1.4, additive):**
 
@@ -206,7 +206,7 @@ The frontend resolves a piece's ID to its title through `knowledge.retrieved`, a
 - **Text in `about`:** Forget's substring scan would miss truncated text.
 - **Fabricated rows in the seed traces:** the recorded seed sessions would show decisions nothing made.
 
-### W2. The face-and-words check goes live (the user's choice)
+### W2. The face-and-words check goes live (the maintainer's choice)
 
 - **Purpose `face_check`:**
   - a new decision purpose in `PURPOSE_CATEGORY` (category `decision`);
@@ -251,7 +251,7 @@ The frontend resolves a piece's ID to its title through `knowledge.retrieved`, a
 - **Checking neutral faces too:** "neutral" against calm words is uninformative. The evaluation also leaves them out.
 - **Sharing the reactions task:** a new user message drops reactions (doc 06 E5), and it would drop the check with them.
 
-### W3. "Doesn't look like them" adds one fixed identity line (the user's choice)
+### W3. "Doesn't look like them" adds one fixed identity line (the maintainer's choice)
 
 - **The backend:** an `emotion_regenerate` job with any non-empty `prompt` (the button's hint, `StartJobInput.prompt`)
   compiles `emotion_edit(profile, emotion, identity=True)`. That adds one line after `KEEP`:
@@ -278,7 +278,7 @@ The frontend resolves a piece's ID to its title through `knowledge.retrieved`, a
 provider prompt and none of the hint's words. No `guardrail` request is sent. `emotion_set` and the blinks are
 unchanged, and the golden fixture `identity_edit` pins the bytes. The edit itself is tried by eye in the v1 endgame.*
 
-### W4. The build plan: nine OpenSpec changes, M7–M15 (the user's choice)
+### W4. The build plan: nine OpenSpec changes, M7–M15 (the maintainer's choice)
 
 Each change is one milestone and one `feat/` branch, cut from dev and squash-merged into dev, in this order. "M7" to
 "M15" always mean **milestones**. Doc 09's decisions M1–M13 are always written "doc 09 M…".
@@ -648,28 +648,28 @@ save it and reuse it. Never pay for the same result twice.
 |---|---|---|---|
 | who-speaks, emotion, reaction floors; `floor.second`, `floor.member` | bank | 0.6 (found in M10: `who_first`, `who_scene`, `who_next`, `emotion_line`, `emotion_opening` **0.2**; `floor.second` **0.3**; [m10.md](checks/m10.md). Found in M11: `floor.member` **0.5**, `emotion_debate_opening` **0.2**; `who_scene`, `who_next` and `emotion_line` at v3 keep 0.2; [m11.md](checks/m11.md)) | M9–M11 |
 | `t_gate` (documents) / `t_confident` | bank | 0.35 / 0.8 (found in M12: **0.45** / **0.80**, test recall 0.93 / precision 1.00, `docs` v2; [m12.md](checks/m12.md) 11.3) | M12 |
-| `t_gate` (earlier lines) | bank | 0.4 (found in M13: **0.15**, `earlier` v2, recall-first by the user's choice; test recall 1.00, precision 0.55; [m13.md](checks/m13.md) 10.2) | M13 |
+| `t_gate` (earlier lines) | bank | 0.4 (found in M13: **0.15**, `earlier` v2, recall-first by the maintainer's choice; test recall 1.00, precision 0.55; [m13.md](checks/m13.md) 10.2) | M13 |
 | `t_standalone`; English | bank | 0.5; 0.5 (fixed) (found in M12: `t_standalone` **0.35**, test follow-ups rewritten 0.94, `standalone` v2; English 40/40 at 0.5) | M12 |
 | `t_keep` / `t_found` / `t_set` (doc 10) | bank | 0.6 / 0.6 / 0.5 (found in M12: **0.9 / 0.5**, `passage` v2, by K7's leave-one-out on dev with every answer back; `t_set` stays 0.5 with 18 set checks; test: 1 wrong abstain in 57, 13 of 14 abstained; [m12.md](checks/m12.md) 11.5, 11.6) | M12 |
 | `t_recall` | bank | 0.5 (M13: **stays 0.5**; the rule's 0.30 had test precision 0.75; a clear standout below it is kept by `recall.standoutP` / `standoutRatio`; [m13.md](checks/m13.md) 10.2, 10.4) | M13 |
 | `t_keep` (doc 09 guard) | bank | 0.7 (found in M13: **0.35**, `memory_guard` v3, which counts a changed detail as kept; test lossy let through 0.04; [m13.md](checks/m13.md) 10.2) | M13 |
-| `t_same` (doc 09 duplicates, phase 10) | bank | 0.5 (M13: **stays 0.5** by the user's choice; the rule's 0.05 is perfect on the 122 pairs but sits against the "different" pairs) | M13 |
+| `t_same` (doc 09 duplicates, phase 10) | bank | 0.5 (M13: **stays 0.5** by the maintainer's choice; the rule's 0.05 is perfect on the 122 pairs but sits against the "different" pairs) | M13 |
 | `t_end` | bank | 0.8 (found in M10: **0.5**, precision 1.00 / recall 0.91 on test) | M10 |
-| `safety.tSteer` / `tCare` / `tMotion` | bank | 0.7 / 0.3 / 0.7 (M14: **all kept** by the user's choice; every target met with no false steer, care or refusal; the leave-one-out proposals 0.25 / 0.35 / 0.15 came from small sets and are recorded, [m14.md](checks/m14.md) 8.1) | M14 |
+| `safety.tSteer` / `tCare` / `tMotion` | bank | 0.7 / 0.3 / 0.7 (M14: **all kept** by the maintainer's choice; every target met with no false steer, care or refusal; the leave-one-out proposals 0.25 / 0.35 / 0.15 came from small sets and are recorded, [m14.md](checks/m14.md) 8.1) | M14 |
 | `safety.tFlag` / `tBlock` | bank | 0.5 / 0.9 (M14: **kept**; 0 of 51 fine replies blocked, 21 of them hard negatives) | M14 |
 | `safety.tImage*` / `tSong` | bank | 0.5 / 0.6 (M14: **kept**; 10/10 refused per measured noul, 0/60 and 0/20 false; nudity not measured) | M14 |
-| `memory.tInstruction` | bank | 0.7 (M14: **kept, not cross-validated**: 5 memory plants, all safe; the user's choice) | M14 |
+| `memory.tInstruction` | bank | 0.7 (M14: **kept, not cross-validated**: 5 memory plants, all safe; the maintainer's choice) | M14 |
 | `verdict.margin` | bank | 0.5 (doc 08). *Found in M11: **0.25**, chosen on the debate suite's dev debates* | M11 |
 | `turn_plan` deadline | pricing | **700** ([group A](checks/group-a.md) A2: p50 ≈ 420, p99 ≈ 500 ms; the user chose p99 over p90, 2026-10-10). *M15: kept at 700: 3 of 300 late outside watch in the must-pass run, against M12's 29 of 277 deep turns ([m15.md](checks/m15.md) 8.13)* | M15 |
-| `follow_plan` / `debate_plan` | pricing | 400 / **500** (A2: the follow plan starts at the stream's end, so 400 after `turn.end` is ample; the debate plan starts at `turn.end`, so 500, with an NFR-02 exception). *Found in M10: `follow_plan` **483** (every request missed 400, Jev p90 495 ms; G2's rule and an NFR-02 exception, [m10.md](checks/m10.md) 10.7)*. *Found in M11: `debate_plan` **651** (every bench plan missed 500, Jev p90 651 ms; V2's rule and an NFR-02 exception, [m11.md](checks/m11.md) 10.7)*. *M14: `follow_plan` back to **400** and M10's exception dropped: with the output check before `turn.end`, 1 of 50 missed (the user's choice); `debate_plan` 651 kept, 2 of 30 past 500 ms ([m14.md](checks/m14.md) 8.4)*. *M15: `debate_plan` **735** (6 of 15 plans with a deadline missed 651 under the must-pass run's load, p90 735 ms; V2's rule; `follow_plan` 400, `turn_plan` 700 and the output check's 800 kept, [m15.md](checks/m15.md) 8.13)* | M10, M11, M14, M15 |
-| `guardrail` / `guardrail_prompt` | pricing | 700 (A2: p99 ≈ 560) / 1,500. *Found in M14: **800** / 1,500. Alone the check is p90 485 ms, but beside the next debate plan it is p90 735 ms, 10 of 30 past 700; the user's choice ([m14.md](checks/m14.md) 8.4)* | M14 / — |
+| `follow_plan` / `debate_plan` | pricing | 400 / **500** (A2: the follow plan starts at the stream's end, so 400 after `turn.end` is ample; the debate plan starts at `turn.end`, so 500, with an NFR-02 exception). *Found in M10: `follow_plan` **483** (every request missed 400, Jev p90 495 ms; G2's rule and an NFR-02 exception, [m10.md](checks/m10.md) 10.7)*. *Found in M11: `debate_plan` **651** (every bench plan missed 500, Jev p90 651 ms; V2's rule and an NFR-02 exception, [m11.md](checks/m11.md) 10.7)*. *M14: `follow_plan` back to **400** and M10's exception dropped: with the output check before `turn.end`, 1 of 50 missed (the maintainer's choice); `debate_plan` 651 kept, 2 of 30 past 500 ms ([m14.md](checks/m14.md) 8.4)*. *M15: `debate_plan` **735** (6 of 15 plans with a deadline missed 651 under the must-pass run's load, p90 735 ms; V2's rule; `follow_plan` 400, `turn_plan` 700 and the output check's 800 kept, [m15.md](checks/m15.md) 8.13)* | M10, M11, M14, M15 |
+| `guardrail` / `guardrail_prompt` | pricing | 700 (A2: p99 ≈ 560) / 1,500. *Found in M14: **800** / 1,500. Alone the check is p90 485 ms, but beside the next debate plan it is p90 735 ms, 10 of 30 past 700; the maintainer's choice ([m14.md](checks/m14.md) 8.4)* | M14 / — |
 | `reaction` / `face_check` | pricing | 1,500 / 1,500 | — |
 | `episode` / `verdict` (`timeoutsMs`, not decisions) | pricing | 30,000 / 30,000 (docs 07, 08). *M11: the verdict's wait p50 3.9 s, max 6.6 s; kept* | — |
-| `retrieval.agent.deepCheckMs` / `rewriteMs` | runtime | 700 (A2: p99 ≈ 520) / 1,500 (doc 10). *Found in M12: **1,500** (the slowest of 8 is p90 ≈ 1.3 s; at 700 ms only 13 of 26 dev unanswerable questions abstained) / **1,200** (check 2's p90 1,172 ms); the user's choices, [m12.md](checks/m12.md) 11.5, 11.9* | M12 / M12 |
+| `retrieval.agent.deepCheckMs` / `rewriteMs` | runtime | 700 (A2: p99 ≈ 520) / 1,500 (doc 10). *Found in M12: **1,500** (the slowest of 8 is p90 ≈ 1.3 s; at 700 ms only 13 of 26 dev unanswerable questions abstained) / **1,200** (check 2's p90 1,172 ms); the maintainer's choices, [m12.md](checks/m12.md) 11.5, 11.9* | M12 / M12 |
 | `debate.hostWelcomeWaitMs` / `hostBannerWaitMs` | runtime | 3,000 / 1,500 (doc 08 V6). *M11: bridges 10/10 within the 1,500; kept* | — |
 | `emotion.fade` | runtime | `["surprised", "embarrassed"]` (doc 06 E3) | — |
 | `persona.repeatHint` / `context.voiceReminder` | runtime | off / off (docs 04 P8, 05) | — |
-| `memory.*`, `retrieval.agent.*` | runtime | doc 09 §6, doc 10 K5. *M12 adds `retrieval.agent.queryEmbedWaitMs`, first **800** with the early start (`rag` D32.2: the query embedding from Malaysia took ≈ 1.1 s at the median), then **200** after check 2 measured p50 6.8 s that evening (D32.9); `mmrLambda` **1.0** (D32.7); `naive` and `scripted` keep `queryEmbedWaitMs` 400. M13 adds `memory.dupCosine` **0.85** (now a pre-filter for the `same_fact` noul: no cosine separates a rewording from an extension) and `retrieval.agent.recall.*` (pool 10, candidates 6, λ 0.7, keep 3, `checkMs` **1,500**, kept by the user's choice over the tail's 3,200; `linesDense` **true**; `standoutP` **0.25**; `standoutRatio` **3**); [m13.md](checks/m13.md)* | M12, M13 |
+| `memory.*`, `retrieval.agent.*` | runtime | doc 09 §6, doc 10 K5. *M12 adds `retrieval.agent.queryEmbedWaitMs`, first **800** with the early start (`rag` D32.2: the query embedding from Malaysia took ≈ 1.1 s at the median), then **200** after check 2 measured p50 6.8 s that evening (D32.9); `mmrLambda` **1.0** (D32.7); `naive` and `scripted` keep `queryEmbedWaitMs` 400. M13 adds `memory.dupCosine` **0.85** (now a pre-filter for the `same_fact` noul: no cosine separates a rewording from an extension) and `retrieval.agent.recall.*` (pool 10, candidates 6, λ 0.7, keep 3, `checkMs` **1,500**, kept by the maintainer's choice over the tail's 3,200; `linesDense` **true**; `standoutP` **0.25**; `standoutRatio` **3**); [m13.md](checks/m13.md)* | M12, M13 |
 
 The noul starting values are chosen by each noul's cost of being wrong:
 - low where a miss is worse than a false alarm (`tCare`, the gates);

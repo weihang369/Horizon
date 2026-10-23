@@ -1,7 +1,7 @@
 // The mock build (the public demo on Vercel, and `npm run dev:mock`) runs on recorded data in the browser. It has no
 // backend: a key typed there is never sent anywhere (only its last 4 characters are kept, for the hint), and nothing
 // calls an AI; any `sk-or-…` text unlocks the scripted live mode (R15). Settings → Connection and the key prompt say so,
-// so nobody pastes a real key into a public page. Owner: SWE.
+// so nobody pastes a real key into a public page.
 import { client } from "../../client";
 
 export const NO_BACKEND = client.kind === "mock";

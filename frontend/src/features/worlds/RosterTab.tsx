@@ -1,5 +1,5 @@
 // S04 Roster tab (WLD-05 AC3/AC4, ENG-01, PRF-06): portrait cards with plate, energy, tagline, quick Chat and the
-// background-job pill slot; drafts resume the wizard; "Archived" filter with Restore / Delete permanently. Owner: Builder A.
+// background-job pill slot; drafts resume the wizard; "Archived" filter with Restore / Delete permanently.
 import type { ComponentType } from "react";
 import { openOverlay, toast } from "../../app/layers";
 import { PortraitCard } from "../../character/PortraitCard";

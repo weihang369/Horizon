@@ -1,4 +1,4 @@
-// Settings layout atoms: a titled section and a label/control row. Owner: Builder A.
+// Settings layout atoms: a titled section and a label/control row.
 import { useCallback, useState } from "react";
 import type { ReactNode } from "react";
 import { toast } from "../../app/layers";

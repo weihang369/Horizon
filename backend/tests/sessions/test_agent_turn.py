@@ -87,7 +87,8 @@ def test_own_lines_are_assistant_without_a_name_and_a_trailing_cue_follows() -> 
     recent = [mv(1, "user", "hi"), mv(2, "character", "Hello.", "chr_a", "Amara Okafor")]
     req, prefix = engine().request(ctx(recent, mode="one_on_one", others=False))
     assert req.messages[len(prefix) + 1] == {"role": "assistant", "content": "Hello."}
-    assert req.messages[-1] == {"role": "system", "content": "Continue with your next message, in character."}
+    assert req.messages[-1] == {"role": "system", "content": "Continue with your next message, in character.\n"
+                                                             "Kai wrote in English. Reply in English."}   # U-84
 
 
 def test_huge_message_is_clipped_in_the_prompt() -> None:
@@ -145,13 +146,16 @@ def test_language_detection_is_cautious() -> None:
     assert detect_language("ok") is None
 
 
-def test_a_malay_line_ends_the_request_with_the_cue_and_english_has_none() -> None:
+def test_the_request_ends_with_the_user_lines_language_english_too() -> None:
+    """D35; U-84: an English (or unsure) line gets the English cue in the agent engine, so a reply can't drift."""
     eng = engine()
     malay, _ = eng.request(ctx([mv(1, "user", "Hujan tak berhenti dari pagi, saya penat.")], mode="one_on_one",
                                others=False))
     assert str(malay.messages[-1]["content"]).endswith("Kai wrote in Malay. Reply in Malay.")
     english, _ = eng.request(ctx([mv(1, "user", "It rained all day.")], mode="one_on_one", others=False))
-    assert "Reply in" not in json.dumps(english.messages[-1])
+    assert str(english.messages[-1]["content"]).endswith("Kai wrote in English. Reply in English.")
+    mixed, _ = eng.request(ctx([mv(1, "user", "Morning! Selamat pagi.")], mode="one_on_one", others=False))
+    assert str(mixed.messages[-1]["content"]).endswith("Kai wrote in English. Reply in English.")
 
 
 # ── 3.3–3.5: through the runtime ──
@@ -175,9 +179,12 @@ async def test_agent_profile_resolves_its_own_turn_engine(api: Api) -> None:
 async def test_agent_reply_through_the_runtime(api: Api) -> None:
     sid = await _agent(api)
     assert api.rt.fake is not None
-    # M9: the plan asks Jev first; a fixture answers it, so the queued response reaches the reply
-    await api.post(f"{API}/_test/decider-fixtures", {"set": [{"purpose": "turn_plan", "question": "emotion_reply:chr_seedAmara",
-                                                             "answer": {"choice": "none", "confidence": 0.9}}]})
+    # M9: the plan asks Jev first; a fixture answers it, so the queued response reaches the reply. The face check
+    # (D-112) is answered too: unscripted, the fake picks the first of its shuffled options, seeded by the random
+    # message id, so a "sad" read clashed with `happy` in some runs and switched the face.
+    await api.post(f"{API}/_test/decider-fixtures", {"set": [
+        {"purpose": "turn_plan", "question": "emotion_reply:chr_seedAmara", "answer": {"choice": "none", "confidence": 0.9}},
+        {"purpose": "face_check", "question": "face_check", "answer": {"choice": "happy", "confidence": 0.9}}]})
     api.rt.fake.queued.append(sse(["<e:happy>Hey", " there."]))
     await command(api, sid, "send", {"text": "Morning, how are you?"})
     await api.drive(12000)

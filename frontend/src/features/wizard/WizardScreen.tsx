@@ -1,4 +1,4 @@
-// S05 Character Creation Wizard (doc 02 CHR epic: seed → AI draft → human edit → approve). Owner: Builder B.
+// S05 Character Creation Wizard (doc 02 CHR epic: seed → AI draft → human edit → approve).
 // Layout (UXA §2.2): step rail 64 · spec card column 440/360 · work area · action bar 80. The wizard themes the
 // whole app root with the provisional palette (R9, D-50). Leaving mid-wizard asks O13 via the router leave guard.
 import { useCallback, useEffect, useMemo, useRef } from "react";
@@ -15,7 +15,7 @@ import { setAppPalette } from "@/theme";
 import { EmptyState } from "@/ui";
 import { seedDraft, WizardContext } from "./context";
 import type { WizardCtx } from "./context";
-import { createdThisSession, useCharacterJobs } from "./generate";
+import { createdThisSession, summoning, useCharacterJobs } from "./generate";
 import { furthestReachable, gateFacts, laterStep, profileValid, reachable } from "./gates";
 import { SpecCard } from "./SpecCard";
 import { StepRail } from "./StepRail";
@@ -147,6 +147,8 @@ export function WizardScreen({ route }: { route: WizardRoute }) {
       return false;
     }
     if (to.name === "wizard" && to.worldId === route.worldId && to.characterId === cur.id) return true;
+    // Mid-summon: stay put without asking; the approve then opens the profile (a prompt here outlived the wizard, U-98).
+    if (summoning.has(cur.id)) return false;
     const approved = cur.status === "approved";
     if (approved && !wk.dirty) return true;
     if (cur.deletedAt) return true;

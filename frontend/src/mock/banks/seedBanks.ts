@@ -1,4 +1,4 @@
-// Emotion-tagged lines for the six seed characters (doc 06 §2 voices). Owner: EE (builders may extend).
+// Emotion-tagged lines for the six seed characters (doc 06 §2 voices).
 // `tags` are keywords matched against the user's text; untagged lines rotate.
 import type { BankLine } from "./types";
 

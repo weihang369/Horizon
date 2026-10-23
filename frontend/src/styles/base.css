@@ -1,4 +1,4 @@
-/* Base: resets, body, focus ring that follows clip-path, scrollbars, utilities. Owner: VMD. */
+/* Base: resets, body, focus ring that follows clip-path, scrollbars, utilities. */
 *, *::before, *::after { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
 html { color-scheme: dark; -webkit-text-size-adjust: 100%; }

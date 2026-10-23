@@ -90,7 +90,9 @@ export function WatchLayout({ rt, replay }: LayoutProps) {
           if (!c) return null;
           const speaking = active === p.characterId;
           const energy = rt.energyById[p.characterId]?.state ?? c.energy.state;
-          const next = rt.nextSpeakerId === p.characterId && !speaking && !ended;
+          // U-93: `turn.next` names a speaker as its turn starts and nothing clears it, so once the line is said the
+          // badge would sit on the one who just spoke through the whole pause; it shows only for a speaker yet to talk
+          const next = rt.nextSpeakerId === p.characterId && !speaking && !ended && p.characterId !== lastSpeakerId(rt.list);
           return (
             <div key={p.characterId} className={cx(s.actor, speaking && s.speaking, p.leanIn && s.lean)} style={{ "--i": i } as CSSProperties}>
               {next && <span className={s.cue} aria-hidden="true">Cue</span>}

@@ -1,5 +1,5 @@
 // The wizard's local working copy (human edits between saves). Server → local sync happens per slice while that
-// slice is clean, so an arriving AI draft fills the form but never overwrites a human edit (CHR-04 AC3). Owner: Builder B.
+// slice is clean, so an arriving AI draft fills the form but never overwrites a human edit (CHR-04 AC3).
 import { useCallback, useEffect, useMemo, useReducer } from "react";
 import type { Appearance, Character, CharacterProfile, SongBrief } from "@/contract/types";
 import type { CharacterPatch } from "@/client/HorizonClient";

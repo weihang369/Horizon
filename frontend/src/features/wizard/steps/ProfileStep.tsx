@@ -1,4 +1,4 @@
-// S05b PROFILE (CHR-03 drafting state, CHR-04 edit profile = system prompt, CHR-05 prompt preview). Owner: Builder B.
+// S05b PROFILE (CHR-03 drafting state, CHR-04 edit profile = system prompt, CHR-05 prompt preview).
 import { useEffect, useMemo, useState } from "react";
 import type { CSSProperties } from "react";
 import { openOverlay } from "@/app/layers";

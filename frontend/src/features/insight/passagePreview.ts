@@ -1,5 +1,5 @@
-// U-59 (the user's choice): a Knowledge row shows the part of its passage that matched, not the passage's first lines
-// (Hana's cited ¶ 2 began "p. 6. Fishing-day rice balls…" while the line it was cited for is its last). Owner: AI.
+// U-59 (the maintainer's choice): a Knowledge row shows the part of its passage that matched, not the passage's first lines
+// (Hana's cited ¶ 2 began "p. 6. Fishing-day rice balls…" while the line it was cited for is its last).
 
 const STOP = new Set([
   "about", "after", "again", "also", "and", "because", "been", "before", "being", "could", "does", "doing", "from", "have",

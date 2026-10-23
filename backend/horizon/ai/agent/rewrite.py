@@ -5,7 +5,7 @@ debate and watch never rewrite. The request is this speaker's `agent` reply pref
 the summary, the history window), then K4's instruction, so it shares (and warms) the reply's cached prefix. Purpose
 `query_rewrite`, `runtime.llm.calls.query_rewrite` (thinking off, temperature 0.0, 60 tokens).
 
-- **The instruction** is `rewrite-2` (rag 11.7, the user's choice): check 3 found DeepSeek answering follow-ups in
+- **The instruction** is `rewrite-2` (rag 11.7, the maintainer's choice): check 3 found DeepSeek answering follow-ups in
   character when K4's wording came as a trailing system message, so it is now the last *user* message and says it is
   a search step, not a chat line, and asks for keywords.
 - **Checks** (K4): one line, at most 30 words, at least 60 % of its letters Latin script, not empty; and (11.7) not
@@ -14,7 +14,7 @@ the summary, the history window), then K4's instruction, so it shares (and warms
   tracked task, is still billed and recorded, and is discarded (`late`).
 - **Cancelled with the turn:** cancelling the caller cancels the call (billed as the gateway bills a cancelled call).
 - **Reuse:** a stored rewrite (the runtime reads it per user message and speaker) is used with no call (`stored`).
-- **The early start** (doc 10 K15's trim 1; rag 11.9, the user's choice): in 1:1, a short user message (<= 6 words)
+- **The early start** (doc 10 K15's trim 1; rag 11.9, the maintainer's choice): in 1:1, a short user message (<= 6 words)
   to a speaker with documents has its rewrite started beside Jev call 1 (`start_early`), before anyone knows a rewrite
   is needed. gather joins it (`run(early=...)`), with `rewriteMs` counted from the call's own start. When the turn is
   quick or the message needs no rewrite, the call is still billed and its answer unused (about $0.00005).

@@ -1,4 +1,4 @@
-// Route & palette transitions (spec §3.2, VMD paper §2.4). Owner: VMD.
+// Route & palette transitions (spec §3.2, VMD paper §2.4).
 // Imperative WAAPI on a single fixed host (TransitionLayer); transform + opacity only.
 // A new route transition supersedes the previous one (its onCover is dropped, R3).
 import { DUR, EASE, FLASH_PEAK, STAGGER } from "./tokens";

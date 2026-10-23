@@ -201,7 +201,7 @@ async def complete_json[T](gw: Any, req: ChatRequest, ctx: CallContext, parse: C
     return out["v"]
 
 
-# persona-context D33 (the user's choice after the paid drafter run): DeepSeek often leaves `personality` open, writes
+# persona-context D33 (the maintainer's choice after the paid drafter run): DeepSeek often leaves `personality` open, writes
 # the rest of the profile inside it and ends one `}` short. A free structural repair runs before C7's paid retry.
 TOP_KEYS = ("attributes", "appearanceSummary", "paletteId", "advisory", "brief")
 PROFILE_KEYS = ("backstory", "speakingStyle", "expertise", "goals", "boundaries", "greeting", "exampleLines",

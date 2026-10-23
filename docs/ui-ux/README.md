@@ -39,7 +39,7 @@ All three papers are adopted, with these rulings on overlaps and conflicts.
 
 ### Lead rulings on gaps none of the papers settled
 - **Types:** [`frontend/src/contract/types.ts`](../../frontend/src/contract/types.ts) is the hand-written TypeScript transcription of doc 05 (rev 1.1) and is canonical. Zod schemas in `contract/schemas.ts` validate fixtures and are checked against those types (`satisfies z.ZodType<T>`).
-- **`SessionEvent.at` is ISO-8601**, as everywhere else. Replay derives pacing from the deltas, clamping gaps over 2.5 s (the trim can be switched off).
+- **`SessionEvent.at` is ISO-8601**, as everywhere else. Replay derives pacing from the deltas, clamping gaps over 2.5 s (the trim can be switched off; a break over a minute plays as 2.5 s either way, U-97).
 - **Persistence:** the mock DB snapshots to `localStorage`, keyed by a fixture hash. "Reset demo data" clears it. Prefs are persisted separately.
 - **First run:** no key, so demo mode, so Onboarding. The O18 switcher has a "Set mock key" shortcut for reviewers.
 - **Visual QA:** the foundation ships a **Kit Gallery** at `#/dev/kit` (every primitive, all portraits × 7 emotions, every VFX, energy state and transition). It's used for screenshot review and hidden in Presenter Mode.

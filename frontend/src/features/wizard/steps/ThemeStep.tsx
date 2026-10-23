@@ -1,5 +1,5 @@
 // S05g THEME (CHR-10, D-44): one theme song per character. The AI drafts an editable brief; Compose runs in the
-// background; Regenerate replaces; failures offer Retry or "Approve without song". Owner: Builder B.
+// background; Regenerate replaces; failures offer Retry or "Approve without song".
 import { useEffect } from "react";
 import { useJob, useSong } from "@/client/hooks";
 import type { SongBrief } from "@/contract/types";

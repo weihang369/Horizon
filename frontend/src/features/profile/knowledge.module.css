@@ -1,4 +1,4 @@
-/* S06 Knowledge tab (PRF-08): evidence cards. Owner: Builder B. */
+/* S06 Knowledge tab (PRF-08): evidence cards. */
 .wrap { display: grid; gap: 12px; padding-bottom: 18px; }
 .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .sum { margin: 0; font: 500 12px/1 var(--font-mono); color: var(--paper-300); letter-spacing: 0.04em; }

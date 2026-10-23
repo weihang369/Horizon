@@ -1,4 +1,4 @@
-// Modal (frame), Drawer (frame), ToastView, ErrorTape, EmptyState (spec §3.7). Owner: VMD.
+// Modal (frame), Drawer (frame), ToastView, ErrorTape, EmptyState (spec §3.7).
 // Stacking, focus trap/restore and Esc routing are the EE's LayerStack; these are presentational frames.
 import { useId, useMemo, useRef, type HTMLAttributes, type ReactNode } from "react";
 import s from "./Panels.module.css";

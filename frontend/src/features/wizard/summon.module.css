@@ -1,4 +1,4 @@
-/* O15 Summon reveal (VMD §2.4). transform/opacity only; palette vars snap under the flood (R10). Owner: Builder B. */
+/* O15 Summon reveal (VMD §2.4). transform/opacity only; palette vars snap under the flood (R10). */
 .root {
   --sm-w: calc(min(74vh, 700px) * 0.75);
   --sm-name: clamp(72px, 8.6vw, 150px);

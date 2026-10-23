@@ -1,5 +1,5 @@
 // Fixture validation (EE paper §2.10): zod over every seed/ file + integrity (NFR-23 world isolation, monotonic
-// seq/at, a trace on every character message) + msg_seedD08 = doc 05 §8. Owner: EE.
+// seq/at, a trace on every character message) + msg_seedD08 = doc 05 §8.
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";

@@ -156,7 +156,7 @@ class AgentRetrieval:
     deep_check_ms: float = 1500.0
     query_embed_wait_ms: float = 200.0   # rag 11.5: the agent path's own wait (naive and scripted keep theirs)
     docs_embed_wait_ms: float = 10000.0   # U-45: a documents search waits for its query vectors, up to this cap
-    # U-45 (the user's choice: "deep insight waits for every stage"): with this on, a turn that searches its documents
+    # U-45 (the maintainer's choice: "deep insight waits for every stage"): with this on, a turn that searches its documents
     # waits for each stage to finish (the query vectors, the rewrite, every passage check, the set check), under
     # `DEEP_WAIT_CAP_MS` only; the measured deadlines above apply when it's off
     docs_wait_all: bool = True
@@ -167,7 +167,7 @@ class AgentRetrieval:
         return DEEP_WAIT_CAP_MS if self.docs_wait_all else measured
 
     def plan_wait_s(self, base_s: float, gated: bool) -> float:
-        """U-46 (the user's choice): a plan that asks "needs documents?" is waited for to the end (the safety cap) when
+        """U-46 (the maintainer's choice): a plan that asks "needs documents?" is waited for to the end (the safety cap) when
         `docs_wait_all`; any other plan keeps its measured deadline `base_s`."""
         return DEEP_WAIT_CAP_MS / 1000 if gated and self.docs_wait_all else base_s
 

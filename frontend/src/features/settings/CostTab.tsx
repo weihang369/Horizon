@@ -1,6 +1,5 @@
 // Settings → Cost (SET-06/07/08) and the Spend view (SET-09): generation mode, cost toggles, daily / creation caps,
 // warn %, default character energy; spend today and to date by category, character and session, estimated vs actual.
-// Owner: Builder A.
 import { useEffect, useState } from "react";
 import { client } from "../../client";
 import { useCharacter, useUsage } from "../../client/hooks";

@@ -71,6 +71,7 @@ export function Composer({
   const session = rt?.session;
   const streaming = !!rt?.streamingId && !onSend;
   const busy = streaming || (!!rt?.thinkingId && !onSend);
+  const mentionsOnly = session?.mode === "group" && (session.config as { responderPolicy?: string } | null)?.responderPolicy === "mentioned";
 
   const candidates = useMemo<MentionCandidate[]>(() => {
     const parts = session?.participants ?? [];
@@ -166,6 +167,8 @@ export function Composer({
     if (ok) {
       audio.playSfx("ui_send");
       setText("");
+      // U-83: under "Mentioned only" a message without an @mention gets no reply; say so instead of a silent stage
+      if (mentionsOnly && !onSend && !ids.length) toast({ variant: "info", text: "Mentioned only: nobody answers until you @mention someone." });
     }
   };
 
@@ -231,7 +234,9 @@ export function Composer({
   }, [text, spans, chars]);
 
   const firstChar = session?.participants[0] ? chars[session.participants[0].characterId] : undefined;
-  const ph = placeholder ?? (session?.mode === "one_on_one" && firstChar ? `Talk to ${firstName(firstChar.profile.name)}…` : candidates.length ? "Say something… (@ to mention)" : "Say something…");
+  const ph = placeholder ?? (session?.mode === "one_on_one" && firstChar ? `Talk to ${firstName(firstChar.profile.name)}…`
+    : mentionsOnly ? "@mention who should answer… (Mentioned only)"
+    : candidates.length ? "Say something… (@ to mention)" : "Say something…");
   const count = text.length;
   const label = sendLabel ?? "Send";
   const showStop = streaming;
