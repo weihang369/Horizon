@@ -14,6 +14,8 @@ import { navigate } from "@/router";
 
 /** Drafts created during this app session: "Discard" deletes them (resumed drafts only drop unsaved edits). */
 export const createdThisSession = new Set<string>();
+/** Characters whose "Approve & Summon" is in flight: the leave guard holds without O13, as the profile follows (U-98). */
+export const summoning = new Set<string>();
 
 // ── Job memory ───────────────────────────────────────────────────────────────
 type JobMap = Partial<Record<GenerationJobKind, string>>;

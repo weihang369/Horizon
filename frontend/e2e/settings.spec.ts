@@ -292,7 +292,8 @@ test("Data: Trim long pauses reaches replays; Reset keeps your own character; De
   await page.getByRole("button", { name: "Next: Approve ▸" }).click();
   await page.getByRole("button", { name: "Approve & Summon ▸" }).click();
   await page.keyboard.press("Enter");
-  await expect(page.getByRole("heading", { name: "Sarah", level: 1 })).toBeVisible();
+  // The profile itself: the Approve step has a "Sarah" h1 too, and leaving before the summon landed raced it (U-98).
+  await expect(page.getByRole("main", { name: "Sarah, profile" })).toBeVisible();
 
   // Reset demo data: the demo goes back to as shipped, and Sarah stays.
   await page.evaluate(() => { location.hash = "#/settings/data"; });

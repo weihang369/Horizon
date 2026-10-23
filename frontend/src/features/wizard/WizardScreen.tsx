@@ -15,7 +15,7 @@ import { setAppPalette } from "@/theme";
 import { EmptyState } from "@/ui";
 import { seedDraft, WizardContext } from "./context";
 import type { WizardCtx } from "./context";
-import { createdThisSession, useCharacterJobs } from "./generate";
+import { createdThisSession, summoning, useCharacterJobs } from "./generate";
 import { furthestReachable, gateFacts, laterStep, profileValid, reachable } from "./gates";
 import { SpecCard } from "./SpecCard";
 import { StepRail } from "./StepRail";
@@ -147,6 +147,8 @@ export function WizardScreen({ route }: { route: WizardRoute }) {
       return false;
     }
     if (to.name === "wizard" && to.worldId === route.worldId && to.characterId === cur.id) return true;
+    // Mid-summon: stay put without asking; the approve then opens the profile (a prompt here outlived the wizard, U-98).
+    if (summoning.has(cur.id)) return false;
     const approved = cur.status === "approved";
     if (approved && !wk.dirty) return true;
     if (cur.deletedAt) return true;
