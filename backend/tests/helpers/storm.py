@@ -74,12 +74,16 @@ async def storm_during_write(api: Any, sid: str, run: Callable[[], Awaitable[Any
                              window_s: float = 0.03, seed: int = 11) -> int:
     """Run `run()` in a task of its own `storms` times, each storm starting at a random point in its first `window_s`
     seconds, so cancels land in its writes (BEGIN, the body, COMMIT). D2's checks follow each storm. Returns how many
-    storms ended the task cancelled (a storm that starts after the task finished cuts nothing)."""
+    storms ended the task cancelled (a storm that starts after the task finished cuts nothing).
+
+    The first storm starts at once and the last at `window_s`, so both sides are always hit: on the CI runner (23 Oct)
+    the asleep-side pause's writes took a few ms, and 20 random starts in 0.25 s all landed after them."""
     rng = random.Random(seed)
     cut = 0
-    for _ in range(storms):
+    for i in range(storms):
         task = asyncio.ensure_future(run())
-        await storm(task, after_s=rng.uniform(0.0, window_s))
+        start = 0.0 if i == 0 else window_s if i == storms - 1 and storms > 1 else rng.uniform(0.0, window_s)
+        await storm(task, after_s=start)
         if task.cancelled():
             cut += 1
         elif task.exception() is not None:
