@@ -105,6 +105,7 @@ def _wants_audio(request: httpx.Request) -> bool:
 SAFETY_QUESTIONS = ("unsafe_request", "unsafe_note", "at_risk", "output_rules", "motion_rules", "image_likeness", "image_nudity",
                     "image_gore", "image_young", "song_copy", "instruction")
 SAFETY_DEFAULT_P = 0.02   # M14 (safety D13): below every safety threshold
+FACE_CHECK_KEY = "face_check"
 
 
 def _noul_default(key: str) -> float:
@@ -412,7 +413,11 @@ class FakeOpenRouter:
             if kind == "choice":
                 opts = list(crit or {})
                 p = 1 / len(opts) if opts else 1.0
-                answers[key] = {"type": "choice", "choice": opts[0] if opts else None, "confidence": p,
+                # The face check's options are shuffled by a seed holding the random message id, so its first option
+                # was a random read: "sad" or "angry" against a `happy` face is a clash that switches it (D-112) in
+                # some runs only. Unscripted, the words read neutral, which never switches a face.
+                first = "neutral" if key == FACE_CHECK_KEY and "neutral" in opts else (opts[0] if opts else None)
+                answers[key] = {"type": "choice", "choice": first, "confidence": p,
                                 "probabilities": dict.fromkeys(opts, p)}
             elif kind == "noul":
                 answers[key] = {"type": "noul", "noul": _noul_default(key)}

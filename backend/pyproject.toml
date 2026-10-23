@@ -34,6 +34,8 @@ dev = [
   "mypy>=1.13",
   "types-jsonschema>=4.23",
   "respx>=0.21",
+  # The OCR-per-page test reads PDFs with it; otherwise it only arrives with the optional docling group.
+  "pypdfium2>=5.13",
 ]
 # Setup step 2 (optional, D-62): document conversion on the CPU. Synced by `npm run setup:docling`, never by `setup`.
 docling = [
