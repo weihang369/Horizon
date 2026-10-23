@@ -53,5 +53,7 @@ export function stepTurn(markers: ReplayMarker[], pos: number, dir: 1 | -1): num
 
 export function formatClock(ms: number): string {
   const s = Math.max(0, Math.floor(ms / 1000));
-  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+  const ss = String(s % 60).padStart(2, "0");
+  if (s < 3600) return `${Math.floor(s / 60)}:${ss}`;
+  return `${Math.floor(s / 3600)}:${String(Math.floor(s / 60) % 60).padStart(2, "0")}:${ss}`;   // U-97: hours, not 600+ minutes
 }

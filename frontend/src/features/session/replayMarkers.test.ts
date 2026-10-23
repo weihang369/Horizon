@@ -31,5 +31,6 @@ describe("replay markers (O23)", () => {
     expect(stepTurn(m, 1000, 1)).toBe(3500);
     expect(stepTurn(m, 3500, -1)).toBe(1000);
     expect(formatClock(65_400)).toBe("1:05");
+    expect(formatClock(3_725_000)).toBe("1:02:05");   // U-97
   });
 });

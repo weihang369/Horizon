@@ -193,7 +193,7 @@ export function ReplayDock({ rt, sessionId, worldId }: DockProps) {
         ))}
       </div>
 
-      <Tooltip content={trim ? "Long pauses are trimmed to 2.5 s" : "Original pacing, pauses kept"}>
+      <Tooltip content={trim ? "Long pauses are trimmed to 2.5 s" : "Original pacing, pauses kept (a break over a minute plays as 2.5 s)"}>
         <button type="button" className={cx(s.trim, trim && s.trimOn)} aria-pressed={trim} onClick={retime}>
           <span className={s.trimBox} aria-hidden="true" />Trim gaps
         </button>

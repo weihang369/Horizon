@@ -191,6 +191,11 @@ export class ScriptPlayer<T> {
 /** Default gap trim for Replay (Lead ruling: gaps over 2.5 s are clamped; the trim can be switched off). */
 export const REPLAY_GAP_TRIM_MS = 2500;
 
+/** U-97: a gap longer than this is a break between visits (the session left and resumed, days later even), not a pause
+ * inside the talk, so it plays as a trimmed gap even with the trim off. Rin's "Raid Night", continued 26 days after its
+ * recording, read 37363:05 / 38434:08 untrimmed. */
+export const REPLAY_BREAK_MS = 60_000;
+
 /** Build a replay timeline from recorded events: t from `at` deltas, long gaps clamped. */
 export function timelineFromEvents(events: SessionEvent[], opts?: { trimGapsMs?: number | null }): TimelineEntry<SessionEvent>[] {
   const trim = opts?.trimGapsMs === undefined ? REPLAY_GAP_TRIM_MS : opts.trimGapsMs;
@@ -201,6 +206,7 @@ export function timelineFromEvents(events: SessionEvent[], opts?: { trimGapsMs?:
     const at = Date.parse(e.at);
     if (prev !== null) {
       let gap = Math.max(0, at - prev);
+      if (gap > REPLAY_BREAK_MS) gap = Math.min(trim ?? REPLAY_GAP_TRIM_MS, REPLAY_GAP_TRIM_MS);
       if (trim !== null && gap > trim) gap = trim;
       t += gap;
     }
