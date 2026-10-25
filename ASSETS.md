@@ -17,6 +17,10 @@ Where every asset Horizon ships comes from, and under which licence. Settings â†
 
 **Sound effects** have no files: they are synthesised at runtime in `frontend/src/audio/synth/` (procedural, MIT).
 
+**The demo documents** the seed characters cite (`seed/knowledge/files/`) are fictional, written for Horizon's two
+demo worlds from the sources in `frontend/scripts/seed-build/data/knowledge-docs/` (MIT). Their organisations, people
+and figures are made up.
+
 <!-- assets:begin -->
 | Pattern | Kind | Source | Credit / provenance | Licence |
 |---|---|---|---|---|
