@@ -49,6 +49,8 @@ def _serve(args: argparse.Namespace) -> int:
 def _port_free(host: str, port: int) -> bool:
     family = socket.AF_INET6 if ":" in host else socket.AF_INET
     with socket.socket(family, socket.SOCK_STREAM) as probe:
+        if os.name != "nt":   # as uvicorn binds: a port in TIME_WAIT after a restart is free, a listener is not
+            probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         try:
             probe.bind((host, port))
         except OSError:

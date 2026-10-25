@@ -196,7 +196,7 @@ generation_tasks id PK (task_…), job_id FK→generation_jobs (CASCADE), ord IN
      - a task with **`provider_called_at` set but no `result_ref` becomes `failed` (retryable)**.
 
      Only an explicit user Retry pays again.
-- **Only the creation job kinds use these tables** (`services/jobs/plans.py`). Document indexing is one runtime task per source, with the `knowledge_sources` row as its record (§3.8, `services/knowledge/worker.py`), and the embedding of seed text is the embedding space build (`services/knowledge/build.py`). (`memory_consolidate` was dropped at the AI stage: nothing is merged or deleted automatically, [docs/ai/09](../ai/09-memory.md) M5.) *M13 (`memory` D8): memory is written by runtime tasks at session pauses (`memory_run`), not by job rows; a run's checkpoint is `sessions.memory_seq`.*
+- **Only the creation job kinds use these tables** (`services/jobs/plans.py`). Document indexing is one runtime task per source, with the `knowledge_sources` row as its record (§3.8, `services/knowledge/worker.py`), and a seed document goes through the same pipeline when the user chooses to index it (D-91), reusing its cached seed embeddings in `data/cache` (D31). (`memory_consolidate` was dropped at the AI stage: nothing is merged or deleted automatically, [docs/ai/09](../ai/09-memory.md) M5.) *M13 (`memory` D8): memory is written by runtime tasks at session pauses (`memory_run`), not by job rows; a run's checkpoint is `sessions.memory_seq`.*
 
 ### 3.6 Ledger
 

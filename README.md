@@ -40,9 +40,9 @@ npm run setup      # npm installs (root + frontend) and `uv sync` for backend/
 npm run dev        # backend on http://127.0.0.1:8000 + the app on http://localhost:5173, talking to it
 ```
 
-The commands are the same in a Unix shell. Open <http://localhost:5173>: the two demo worlds load from the backend in demo mode.
+The commands are the same in a Unix shell. Open <http://localhost:5173>: the two demo worlds load from the backend in demo mode. Ctrl-C stops both processes. The backend keeps its data in `data/` at the repo root (git-ignored) and seeds the demo worlds on first start.
 
-**Ports already in use?** Copy `.env.example` to `.env` and change `HORIZON_PORT` (the backend, default 8000) or `HORIZON_WEB_PORT` (the page you open, default 5173). Both servers read them from that one file; nothing else needs editing. Ctrl-C stops both processes. The backend keeps its data in `data/` at the repo root (git-ignored) and seeds the demo worlds on first start.
+**Ports already in use?** Copy `.env.example` to `.env` and change `HORIZON_PORT` (the backend, default 8000) or `HORIZON_WEB_PORT` (the page you open, default 5173). Both servers read them from that one file; nothing else needs editing.
 
 **Your OpenRouter key (optional).** Live chat and creation need a key from [openrouter.ai/keys](https://openrouter.ai/keys). Paste it in **Settings → Connection**: it's stored in `data/secrets.local.json` on this machine only. Alternatively, copy `.env.example` to `.env` and set `OPENROUTER_API_KEY` there; a key in `.env` or the environment wins over the one in Settings. Without a key, everything recorded still plays.
 
