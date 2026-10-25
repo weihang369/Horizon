@@ -1,7 +1,8 @@
 """`horizon` CLI (doc 01 §7): serve | migrate | seed | reset [--factory --yes] | export-schema --check | models fetch |
 space build [--space ID] [--yes] (rag D5).
 
-`serve` binds to loopback only (NFR-13); any other host is refused.
+`serve` binds to loopback only (NFR-13); any other host is refused. A port already taken stops it with the fix
+(`HORIZON_PORT` in `.env`) instead of uvicorn's bind error.
 """
 
 from __future__ import annotations
@@ -9,6 +10,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import os
+import socket
 import sys
 from pathlib import Path
 
@@ -27,6 +29,10 @@ def _serve(args: argparse.Namespace) -> int:
         os.environ["HORIZON_PORT"] = str(args.port)
     cfg = load_config()
     port = args.port or cfg.port
+    if not _port_free(args.host, port):
+        print(f"horizon: port {port} on {args.host} is already in use (another app, or Horizon still running). "
+              "Set HORIZON_PORT in .env to a free port; the app's dev server follows it.", file=sys.stderr)
+        return 2
     if args.reload:
         # Dev reload through watchfiles, not uvicorn's reloader: on Windows that one stops its worker with a console
         # Ctrl+C, which reaches every process in the console (`npm run dev` loses both servers) or, with no console,
@@ -38,6 +44,16 @@ def _serve(args: argparse.Namespace) -> int:
         return 0
     _uvicorn(args.host, port)
     return 0
+
+
+def _port_free(host: str, port: int) -> bool:
+    family = socket.AF_INET6 if ":" in host else socket.AF_INET
+    with socket.socket(family, socket.SOCK_STREAM) as probe:
+        try:
+            probe.bind((host, port))
+        except OSError:
+            return False
+    return True
 
 
 def _uvicorn(host: str, port: int) -> None:

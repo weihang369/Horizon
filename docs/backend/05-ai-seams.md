@@ -145,7 +145,7 @@ class AiStateHooks(Protocol):            # implemented by the AI layer; called f
 ```
 
 - **Delivery.** Lifecycle services commit, then write an `ai_purge_queue` row. The worker calls the hooks **at least once**, with retries at startup, so hook implementations must be idempotent.
-- **Rule:** `graph.db` and any AI cache store **IDs, never memory text**. A test greps `graph.db` for forgotten text after Forget.
+- **Rule:** any AI cache stores **IDs, never memory text**. (v1 has no `graph.db`: the LangGraph graphs keep no checkpoints, docs/ai/01 A9.)
 
 **What the backend guarantees:**
 - **A frozen `TurnContext`** with:
@@ -156,7 +156,7 @@ class AiStateHooks(Protocol):            # implemented by the AI layer; called f
   - `call_ctx(purpose)`.
 - **A post-turn queue per character** for memory ops; reactions go through the session actor. *AI stage: memory is written at session pauses by `memory_run` tasks instead ([docs/ai/09](../ai/09-memory.md) M1).* *Built in M13 (`memory` D7–D11): `MemoryRuns`, runtime-level tasks through `rt.spawn` (at most 2 at once, one per session, outside `llmConcurrency`), started by the pause triggers, cancelled by deletes and resets, and committed with `MemoryStore.apply_run`; the per-reply `_remember` is removed.*
 - **Storage:** memory (+ `MemoryStore.apply`), knowledge sections and chunks, embedding spaces (+ dual-write while building), `session_summaries`, traces with version columns, `message_citations`, the ledger with `purpose`.
-- **`data/graph.db`**, reserved for LangGraph checkpoints, which are closed and deleted correctly by Factory reset.
+- **`data/graph.db`** was reserved for LangGraph checkpoints; v1 never creates it (docs/ai/01 A9).
 - **Caps, reservations and energy** enforced around every call; `gateway.on_call` is the hook for evaluation logging.
 
 **Built in M7 (`ai-foundation`):**

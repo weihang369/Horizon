@@ -24,7 +24,7 @@ Open the URL Vite prints, usually <http://localhost:5173>.
 
 ## Run locally with the backend
 
-**You need:** Node.js **24** (pinned in [`.nvmrc`](.nvmrc)) and [uv](https://docs.astral.sh/uv/). uv installs Python 3.12 for the backend by itself, so your system Python is untouched. Nothing else: no Docker, database server, GPU or PyTorch.
+**You need:** Node.js **24** (pinned in [`.nvmrc`](.nvmrc)) and [uv](https://docs.astral.sh/uv/). uv installs Python 3.12 for the backend by itself, so your system Python is untouched. Nothing else: no Docker, database server or GPU. PyTorch (CPU) comes only with the optional step 2 below.
 
 | | Windows (PowerShell) | macOS / Linux |
 |---|---|---|
@@ -40,7 +40,9 @@ npm run setup      # npm installs (root + frontend) and `uv sync` for backend/
 npm run dev        # backend on http://127.0.0.1:8000 + the app on http://localhost:5173, talking to it
 ```
 
-The commands are the same in a Unix shell. Open <http://localhost:5173>: the two demo worlds load from the backend in demo mode. Ctrl-C stops both processes. The backend keeps its data in `data/` at the repo root (git-ignored) and seeds the demo worlds on first start.
+The commands are the same in a Unix shell. Open <http://localhost:5173>: the two demo worlds load from the backend in demo mode.
+
+**Ports already in use?** Copy `.env.example` to `.env` and change `HORIZON_PORT` (the backend, default 8000) or `HORIZON_WEB_PORT` (the page you open, default 5173). Both servers read them from that one file; nothing else needs editing. Ctrl-C stops both processes. The backend keeps its data in `data/` at the repo root (git-ignored) and seeds the demo worlds on first start.
 
 **Your OpenRouter key (optional).** Live chat and creation need a key from [openrouter.ai/keys](https://openrouter.ai/keys). Paste it in **Settings → Connection**: it's stored in `data/secrets.local.json` on this machine only. Alternatively, copy `.env.example` to `.env` and set `OPENROUTER_API_KEY` there; a key in `.env` or the environment wins over the one in Settings. Without a key, everything recorded still plays.
 
@@ -59,7 +61,7 @@ uv run --project backend horizon models fetch
 | `npm run setup:docling` | Optional step 2: CPU PyTorch + Docling, then `horizon models fetch` (above) |
 | `npm run dev` | Backend with auto-reload + the app on the backend (`VITE_HORIZON_CLIENT=http`, proxied `/api`) |
 | `npm run dev:mock` | The app alone on the mock client, no backend (what the live demo runs) |
-| `npm run demo` | Build the app and serve it and the API on one port, <http://127.0.0.1:8000> |
+| `npm run demo` | Build the app and serve it and the API on one port, <http://127.0.0.1:8000> (`HORIZON_PORT`) |
 | `npm test` | Backend tests (pytest), frontend unit tests, then the client contract against a real test-mode backend |
 
 - **Reset:** Settings → Data → "Reset demo data" restores the shipped demo and keeps your own worlds. `uv run --project backend horizon reset --factory --yes` wipes `data/` (except downloaded models).
@@ -72,7 +74,7 @@ uv run --project backend horizon models fetch
 Nothing about your conversations leaves your machine except the model calls to OpenRouter. Two developer switches, both off by default, change that locally or remotely:
 
 - `HORIZON_CAPTURE_AI_CALLS=1` keeps each AI call's redacted prompt and reply in the local database for 7 days, for debugging with `horizon eval capture`. Forget and deletes clear it.
-- `HORIZON_LANGSMITH=1` (plus `LANGSMITH_API_KEY`; the package ships with the backend from M9) **sends** chat and document text to LangSmith for tracing. Leave it off unless you mean to share that text.
+- `HORIZON_LANGSMITH=1` (plus `LANGSMITH_API_KEY` and the optional package, `uv sync --project backend --group tracing`) **sends** chat and document text to LangSmith for tracing. Leave it off unless you mean to share that text.
 
 ### Secret hygiene
 

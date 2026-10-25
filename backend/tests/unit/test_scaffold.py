@@ -25,6 +25,18 @@ def test_serve_refuses_non_loopback(capsys: pytest.CaptureFixture[str]) -> None:
     assert "local-only" in capsys.readouterr().err
 
 
+def test_serve_names_the_setting_when_the_port_is_taken(capsys: pytest.CaptureFixture[str],
+                                                         monkeypatch: pytest.MonkeyPatch) -> None:
+    import socket
+
+    with socket.socket() as taken:
+        taken.bind(("127.0.0.1", 0))
+        taken.listen()
+        monkeypatch.setenv("HORIZON_PORT", str(taken.getsockname()[1]))
+        assert cli.main(["serve"]) == 2
+    assert "HORIZON_PORT" in capsys.readouterr().err
+
+
 def test_factory_reset_needs_yes(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("HORIZON_DATA_DIR", str(tmp_path / "data"))
     (tmp_path / "data").mkdir()
