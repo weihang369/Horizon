@@ -1,0 +1,15 @@
+{
+  "name": "name_without_tag",
+  "doc": "Own name and no tag: stripped, default face",
+  "chunks": [
+    "Mei: Hi there"
+  ],
+  "previous": "thinking",
+  "speaker": "Mei",
+  "perLine": false,
+  "expected": {
+    "emotion": "thinking",
+    "source": "default",
+    "text": "Hi there"
+  }
+}

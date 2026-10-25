@@ -1,0 +1,64 @@
+{
+  "id": "reaction",
+  "version": 3,
+  "purpose": "reaction",
+  "type": "choice",
+  "label": "reaction",
+  "instructions": "How does {name} visibly react to quoted_line as they hear it? A line aimed at {name} or about them (their name with news, praise, blame, a correction or a hard question), or news that changes their day, usually shows on their face: pick that face. In a debate, a pointed line at their side usually reads as thinking or angry. Choose none only when the line doesn't touch them: small talk, logistics, or a calm point about something else.",
+  "options": {
+    "kind": "static",
+    "items": {
+      "neutral": {
+        "what": "Calm, at rest; a plain exchange with nothing to feel strongly about.",
+        "not_for": "A line that clearly pleases, hurts or startles them.",
+        "examples": ["Let's meet at the station.", "The rain stopped an hour ago."]
+      },
+      "happy": {
+        "what": "Pleased, amused, warm, relieved, proud.",
+        "not_for": "Polite agreement with nothing to be glad about.",
+        "examples": ["Your idea was the one that worked.", "That joke landed, everyone laughed."]
+      },
+      "sad": {
+        "what": "Hurt, disappointed, sorry, missing someone, low.",
+        "not_for": "Mild disagreement; being tired.",
+        "examples": ["The old bakery closed for good.", "Nobody remembered your birthday."]
+      },
+      "angry": {
+        "what": "Annoyed, offended, frustrated, defensive.",
+        "not_for": "Firm disagreement said calmly.",
+        "examples": ["You took credit for my work.", "That was a cheap shot at your family."]
+      },
+      "surprised": {
+        "what": "Caught off guard by news, a twist or an unexpected question.",
+        "not_for": "Something they already knew or expected.",
+        "examples": ["She quit and moved to Iceland.", "Turns out the twins are triplets."]
+      },
+      "thinking": {
+        "what": "Weighing a hard question, unsure, working something out.",
+        "not_for": "An ordinary question with an easy answer.",
+        "examples": ["Is honesty always kinder in the end?", "Maybe the map was drawn upside down."]
+      },
+      "embarrassed": {
+        "what": "Flustered, shy, caught out, praised more than they can take.",
+        "not_for": "Being wrong in a calm, matter-of-fact way.",
+        "examples": ["Remember when you sang at the wedding?", "You're the smartest one here, easily."]
+      },
+      "none": {
+        "what": "No visible reaction: the line doesn't move them.",
+        "not_for": "A line aimed at them, or one that clearly pleases, hurts or startles them.",
+        "examples": ["Pass the salt.", "It's about four o'clock."]
+      }
+    }
+  },
+  "shuffle": true,
+  "state": {
+    "mode": "label",
+    "quoted_line": "quoted",
+    "quoted_before": "quoted",
+    "quoted_listeners": "quoted"
+  },
+  "deadline": "reaction",
+  "floor": 0.2,
+  "thresholds": {},
+  "fallback": "no_reaction"
+}

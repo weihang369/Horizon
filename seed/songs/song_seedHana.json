@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "data": {
+    "id": "song_seedHana",
+    "characterId": "chr_seedHana",
+    "status": "ready",
+    "url": "/assets/themes/chr_seedHana.mp3",
+    "brief": {
+      "genres": [
+        "city-pop"
+      ],
+      "moods": [
+        "playful",
+        "romantic"
+      ],
+      "bpm": 120,
+      "instruments": [
+        "synth",
+        "bells",
+        "bass"
+      ],
+      "vibe": "Bright city-pop, synth bells, slap bass"
+    },
+    "instrumental": true,
+    "durationSec": 28.996,
+    "format": "mp3",
+    "bytes": 702029,
+    "generation": {
+      "model": "google/lyria-3-clip-preview",
+      "prompt": "Instrumental theme music for a character. Genres: city-pop. Mood: playful, romantic. Instruments: synth, bells, bass. Tempo: about 120 BPM. Feel: Bright city-pop, synth bells, slap bass. An original piece: do not imitate any named artist, band or existing song. No vocals, no lyrics. A 30-second piece that loops cleanly.",
+      "costUsd": 0.04
+    },
+    "licenseNote": "Composed by google/lyria-3-clip-preview through OpenRouter (D-87)."
+  }
+}

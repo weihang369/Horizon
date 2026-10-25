@@ -1,0 +1,214 @@
+# demo-data Specification
+
+## Purpose
+
+Defines the shipped seed dataset (its models, prices, sources and identifiers) and what "Reset demo data" restores, so the demo is reproducible without destroying user work.
+
+## Requirements
+
+### Requirement: Seed models and prices match the decision log
+The seed SHALL record the following:
+- **Image model:** `bytedance-seed/seedream-5-0-flash` at $0.018 per image, for every image generation price (D-61).
+- **Decision model:** `typesafe/jev-1.13` at $0.042 per million input tokens, $0 output.
+- **Embedding model:** a model with its price per million tokens.
+
+#### Scenario: Pricing file
+- **WHEN** `seed/pricing.json` is read
+- **THEN** `decision.inputPerM` is `0.042`, `decision.outputPerM` is `0`, each image price is `0.018`, and an `embedding` entry exists
+
+#### Scenario: Settings models
+- **WHEN** `seed/settings.json` is read
+- **THEN** `models.image` is `bytedance-seed/seedream-5-0-flash` and `models.embedding` is set
+
+### Requirement: Seed knowledge uses supported types only
+Seed knowledge sources SHALL be `file` or `text` only:
+- Amara's "ED triage guidelines" is a `file` source;
+- the seed SHALL contain no CSV source.
+
+#### Scenario: No url or csv in the seed
+- **WHEN** all seed knowledge sources are listed
+- **THEN** none has `type: "url"`, and none has a title ending in `.csv`
+
+### Requirement: Seed IDs are globally unique
+Every ID in the seed SHALL be unique across the whole dataset, including portrait candidate IDs.
+
+#### Scenario: Candidate IDs
+- **WHEN** every `appearance.candidates[].id` in the seed is collected
+- **THEN** no ID appears twice, and each one matches the contract ID format
+
+### Requirement: Seed check guards the generated files
+`seed:check` SHALL fail whenever the committed `seed/` differs from what the seed build generates.
+
+#### Scenario: Stale seed
+- **WHEN** a seed-build source changes and `seed:build` is not run
+- **THEN** `seed:check` exits non-zero and lists the differing files
+
+### Requirement: Reset demo data restores seed records only
+Reset SHALL be available as `admin.resetDemo()` on both clients and SHALL do the following:
+- restore every seed world, character, session, memory, knowledge source and seed ledger row to its shipped state, upserting seed records in place;
+- keep user-created worlds, characters, sessions (including forks of seed sessions), memories (including memories a seed character earned in user sessions), knowledge sources and ledger rows;
+- on the backend, cancel any non-terminal job on a seed character, and keep the user-generated asset versions of seed characters as inactive versions (they were paid for);
+- on the backend, stop any indexing of seed sources and restore them as shipped: their stored sections and passages, and, when the active embedding space is the one the shipped vectors were made in, those vectors (`indexed`); on another space `keyword_only` until they are indexed again. Seed memories get their shipped vectors the same way;
+- leave settings and the API key unchanged;
+- emit `mock.reset` afterwards.
+
+#### Scenario: Fork survives reset
+- **WHEN** the user forks a seed session, edits a seed character, then resets demo data
+- **THEN** the fork still exists and opens, the seed character is back to its shipped profile, and `mock.reset` is emitted
+
+#### Scenario: User world survives reset
+- **WHEN** the user creates a world with a character, then resets demo data
+- **THEN** that world and character are unchanged
+
+#### Scenario: Renamed and deleted seed worlds come back
+- **WHEN** the user renames one seed world, deletes the other, then resets demo data
+- **THEN** both seed worlds are listed with their shipped names, characters and sessions
+
+#### Scenario: Regenerated seed emotion after reset
+- **WHEN** on the backend the user regenerates and accepts a new happy emotion for Hana, then resets demo data
+- **THEN** Hana shows her shipped happy portrait, and `characters.assets` still lists the generated version as inactive
+
+#### Scenario: Indexed seed source after reset
+- **WHEN** on the backend the user indexes one of Amara's seed sources, adds a source of their own to Amara, then resets demo data
+- **THEN** the seed source is `indexed` with its shipped passages and vectors, and the user's source is unchanged
+
+#### Scenario: Continue, reset, continue again
+- **WHEN** on the backend the user continues a seed session, a memory is earned in it, the user resets demo data and
+  continues the same session and the seed session again, twice
+- **THEN** after each reset every shipped document is `indexed` with one vector per passage, every shipped memory has its
+  vector, the user's session and memory (with its vector) are unchanged, no trace reads "(forgotten)", and both
+  sessions take new turns; Delete all data then gives the same fresh demo
+
+#### Scenario: Forgotten seed memory comes back
+- **WHEN** the user forgets one of Hana's seed memories, then resets demo data
+- **THEN** Hana's memory list shows that seed memory again
+
+### Requirement: Seed import is validated
+The backend SHALL validate every seed file against the contract schema before writing anything. If any file is invalid, the import SHALL write nothing and SHALL name the file. Imported seed records SHALL be marked as seed records. Seed knowledge passages and seed memories SHALL be searchable by keyword as soon as the import finishes.
+
+#### Scenario: Invalid seed file
+- **WHEN** a seed character file is missing `profile` and the backend starts on an empty database
+- **THEN** startup fails with an error naming that file, and the database holds no seed rows
+
+#### Scenario: Keyword search after import
+- **WHEN** the seed has been imported
+- **THEN** a full-text search within Amara's knowledge for a word in her "ED triage guidelines" passages returns those passages
+
+#### Scenario: The full demo in a normal run, without fixture jobs
+- **WHEN** the backend starts without `HORIZON_TEST=1`
+- **THEN** the `chr_mock*` characters and `ses_mock*` sessions exist, no `job_mock*` job exists, and no character has an active job
+
+### Requirement: Every run carries the mock overlays; test mode also carries their jobs
+The backend SHALL also import the default-scenario records from `seed/_mock/**` (characters, sessions, songs and ledger rows) in every run and SHALL treat them as seed records, so a local install shows the same full demo as the web demo (D-104). When `HORIZON_TEST=1`, it SHALL also import the overlay's jobs. This lets the portable suite see the same dataset on both clients. In a normal run the overlay's jobs SHALL NOT be imported and its characters SHALL carry no `activeJobId`.
+
+#### Scenario: Archived mock character in test mode
+- **WHEN** the backend runs with `HORIZON_TEST=1` and the Sunny Hollow roster is listed with `includeArchived=true`
+- **THEN** an archived character is present, as on the MockClient
+
+### Requirement: Shipped seed world names are reserved
+A user world SHALL NOT take the shipped name of a seed world (case-insensitive, ignoring surrounding spaces), even while that seed world is renamed or deleted. Creating or renaming a world to such a name SHALL reject with `conflict`, so a reset can always restore the seed names.
+
+#### Scenario: Taking a seed name after renaming the seed world
+- **WHEN** the user renames "Meridian Council" to "Council B", then creates a world named "meridian council"
+- **THEN** the create rejects with `conflict`, and `details.field` is `"name"`
+
+### Requirement: Test-mode overlay jobs resume
+In test mode, a seed overlay job that is shipped as `running` (Kenji's emotion set) SHALL be recovered like any job after a restart: its tasks that were never sent run, and its finished tasks keep their results.
+
+#### Scenario: Kenji's job finishes
+- **WHEN** the backend starts in test mode and the clock is advanced by 60 seconds
+- **THEN** `job_mockKenjiEmotions` is terminal, and its three shipped emotions are unchanged
+
+### Requirement: Seed chat replies carry line breaks
+The seed transcripts' 1:1, group and watch character replies SHALL include line breaks where a texting split is natural, generated from the seed-build sources. Debate arguments and host lines SHALL stay single blocks. The regenerated sessions SHALL still reduce to their shipped messages in both languages.
+
+#### Scenario: Regenerated seed matches
+- **WHEN** `npm run seed:build` runs after the screenplay edits, and then `seed:check` and the replay-equivalence tests run
+- **THEN** all pass, and no debate message contains a line break
+
+### Requirement: The System 1 fixture is generated and checked
+`seed/system1.fixture.json` SHALL be generated by seed-build from the question bank's labels and versions, and guarded by `seed:check`. It SHALL hold one row per question that a turn can ask, including the emotion questions and the face check, and none for evaluation-only questions (purpose `eval_judge`) or for the listener reaction (which has no System 1 row). The scripted profile and the MockClient SHALL both read it. The recorded seed sessions' traces SHALL NOT gain `system1` rows.
+
+#### Scenario: Bank edit without rebuild
+- **WHEN** the `route` entry's label changes, and seed-build is not re-run
+- **THEN** `seed:check` fails and names `system1.fixture.json`
+
+#### Scenario: Seed traces untouched
+- **WHEN** a seed group session's Insight is opened
+- **THEN** it has no System 1 section
+
+#### Scenario: Judges are not turn rows
+- **WHEN** the bank holds `eval_judge` entries and seed-build runs
+- **THEN** the fixture has no row for any of them
+
+#### Scenario: Emotion and face-check rows
+- **WHEN** seed-build runs on M9's bank
+- **THEN** the fixture has rows for `emotion_reply`, `emotion_greeting` and `face_check`, and none for `reaction`
+
+#### Scenario: Retrieval rows
+- **WHEN** seed-build runs on M12's bank
+- **THEN** the fixture has rows for `docs`, `standalone`, `english`, `passage` and `passage_set`
+
+### Requirement: The MockClient greets like the backend
+The MockClient SHALL apply the same first-chat rule as the backend, over its own dataset. On a first chat it SHALL stream the stored greeting word for word with emotion `happy` from source `default`, no simulated cost, no `energy` event and no `model` trace section. Otherwise it SHALL greet as before.
+
+#### Scenario: Mock first chat
+- **WHEN** a new 1:1 session with Amara is created in the MockClient
+- **THEN** her greeting is her stored greeting, the session's cost stays $0, and its Insight shows no Model section
+
+### Requirement: Scripted and mock drafts teach the voice
+Scripted and MockClient drafts SHALL include 2–3 example lines and a plain greeting with no actions and no assistant phrasing, SHALL NOT fill `systemPromptPreview`, and SHALL stay byte-identical to each other through the committed draft fixtures.
+
+#### Scenario: Plain greeting
+- **WHEN** the scripted drafter drafts any of the committed fixture seeds
+- **THEN** the greeting contains no `*` and no "What can I do for you", the draft has 2 or 3 example lines, and it equals the fixture byte for byte
+
+### Requirement: The MockClient plans, reacts and checks like the scripted profile
+In 1:1, the MockClient SHALL charge a simulated `turn_plan` call and add the emotion row, with its answer set to the face its reply shows. After a reply the agent rule would check, it SHALL charge a simulated `face_check` call and add the face-check row after `faceCheckMs`. In group, debate and watch, it SHALL charge a simulated `reaction` call per message with listeners, and apply the backend's drop rules.
+
+#### Scenario: Mock 1:1 turn
+- **WHEN** a message is sent in a MockClient 1:1 session in AUTO mode and the reply's face is `happy`
+- **THEN** the mock ledger (Settings → Cost) has one `turn_plan` and one `face_check` decision charge, the session's reply-cost counter is unchanged by them, and Insight shows both rows
+
+#### Scenario: Mock reactions dropped by a user message
+- **WHEN** the user sends a message in a MockClient group session while reactions are pending
+- **THEN** none of those reactions is shown
+
+### Requirement: The MockClient's group follows the shared group rules
+The MockClient's group engine SHALL answer an all-asleep mention with the asleep notes only, and SHALL drop replies to an earlier message that have not emitted `turn.next` when a new user message arrives, matching the scripted backend on the shared portable contract tests.
+
+#### Scenario: Asleep mention in the mock
+- **WHEN** a MockClient group message mentions only an asleep character
+- **THEN** that character gets the asleep note, and no other character replies
+
+#### Scenario: Supersede in the mock
+- **WHEN** the shared supersede contract test runs on the MockClient
+- **THEN** its event types and speakers equal the scripted backend's
+
+### Requirement: The mock recap's charge
+The MockClient's watch Summarise SHALL keep its canned recap and charge one simulated call with purpose `episode_summary`, matching the scripted backend.
+
+#### Scenario: Mock recap
+- **WHEN** a MockClient watch is summarised
+- **THEN** its ledger has one `episode_summary` charge in category `summary`, and the canned recap is posted
+
+### Requirement: The MockClient's debate follows the shared debate rules
+The MockClient's debate engine SHALL fill phase slots by the same rule as the scripted backend (the first eligible member in fixed order, the skip note when the side has been heard), pause when a slot's side has nobody awake (keeping the slot), and show a fixed verdict lead-in with Auto host, matching the scripted backend on the shared portable contract tests.
+
+#### Scenario: Asleep side in the mock
+- **WHEN** the shared asleep-side contract test runs on the MockClient
+- **THEN** its event types, notes, speakers and pause equal the scripted backend's
+
+### Requirement: The mock verdict's charge
+The MockClient's Arbiter verdict SHALL charge one simulated call with purpose `verdict` in category `chat`, matching the scripted backend. A pick SHALL charge nothing.
+
+#### Scenario: Mock verdict
+- **WHEN** a MockClient debate with Arbiter verdict ends
+- **THEN** its ledger has one `verdict` charge in category `chat`, and no `decision` charge for the verdict
+
+### Requirement: The MockClient chunks like the backend
+The MockClient SHALL cut added Markdown and text into passages by the same rules as the backend (see `knowledge-sources`), checked by fixtures both clients read.
+
+#### Scenario: Same pieces in both clients
+- **WHEN** the same Markdown text is added through the MockClient and through the backend
+- **THEN** both produce the same passages, with the same texts and locators

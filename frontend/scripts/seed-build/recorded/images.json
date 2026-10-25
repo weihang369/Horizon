@@ -1,0 +1,514 @@
+{
+  "chr_mockAoi": {
+    "variants": [
+      "angry",
+      "happy",
+      "neutral"
+    ],
+    "model": "bytedance-seed/seedream-5-0-flash",
+    "appearance": {
+      "body": {
+        "ageBand": "young_adult",
+        "build": "slim",
+        "height": "petite",
+        "skinTone": "fair"
+      },
+      "face": {
+        "shape": "round",
+        "baseline": "soft",
+        "marks": []
+      },
+      "eyes": {
+        "shape": "round",
+        "color": "hazel",
+        "glasses": "round"
+      },
+      "hair": {
+        "length": "shoulder",
+        "style": "twin tails",
+        "color": "lavender",
+        "fringe": "wispy"
+      },
+      "outfit": {
+        "archetype": "uniform",
+        "primaryColor": "#F5F2EA",
+        "secondaryColor": "#B388EB"
+      },
+      "accessories": [
+        "hairpin"
+      ],
+      "vibe": [
+        "gentle",
+        "sleepy"
+      ]
+    },
+    "summary": "An adult woman with lavender twin tails, round glasses and a white pastry-chef jacket.",
+    "exportedAt": "2026-10-21"
+  },
+  "chr_mockElena": {
+    "variants": [
+      "angry",
+      "blink",
+      "happy",
+      "neutral",
+      "sad"
+    ],
+    "model": "bytedance-seed/seedream-5-0-flash",
+    "appearance": {
+      "body": {
+        "ageBand": "middle_aged",
+        "build": "average",
+        "height": "tall",
+        "skinTone": "olive"
+      },
+      "face": {
+        "shape": "oval",
+        "baseline": "neutral",
+        "marks": []
+      },
+      "eyes": {
+        "shape": "almond",
+        "color": "brown",
+        "glasses": "half_rim"
+      },
+      "hair": {
+        "length": "shoulder",
+        "style": "wavy",
+        "color": "silver",
+        "fringe": "side-swept"
+      },
+      "outfit": {
+        "archetype": "business",
+        "primaryColor": "#6286BA",
+        "secondaryColor": "#F5F2EA"
+      },
+      "accessories": [
+        "scarf"
+      ],
+      "vibe": [
+        "elegant"
+      ]
+    },
+    "summary": "A middle-aged woman with wavy silver shoulder-length hair, half-rim glasses and a silk scarf over a navy blazer.",
+    "exportedAt": "2026-10-21"
+  },
+  "chr_mockKenji": {
+    "variants": [
+      "angry",
+      "blink",
+      "happy",
+      "neutral",
+      "sad"
+    ],
+    "model": "bytedance-seed/seedream-5-0-flash",
+    "appearance": {
+      "body": {
+        "ageBand": "adult",
+        "build": "slim",
+        "height": "average",
+        "skinTone": "light-warm"
+      },
+      "face": {
+        "shape": "square",
+        "baseline": "sharp",
+        "marks": []
+      },
+      "eyes": {
+        "shape": "narrow",
+        "color": "black",
+        "glasses": "square"
+      },
+      "hair": {
+        "length": "short",
+        "style": "undercut",
+        "color": "black",
+        "fringe": "none"
+      },
+      "outfit": {
+        "archetype": "formal",
+        "primaryColor": "#7FD1FF",
+        "secondaryColor": "#0A1520"
+      },
+      "accessories": [
+        "watch"
+      ],
+      "vibe": [
+        "stern"
+      ]
+    },
+    "summary": "An adult man with a black undercut, square glasses and a crisp pale-blue shirt.",
+    "exportedAt": "2026-10-21"
+  },
+  "chr_mockMochi": {
+    "variants": [
+      "angry",
+      "blink",
+      "happy",
+      "neutral",
+      "sad"
+    ],
+    "model": "bytedance-seed/seedream-5-0-flash",
+    "appearance": {
+      "body": {
+        "ageBand": "adult",
+        "build": "average",
+        "height": "average",
+        "skinTone": "golden-brown"
+      },
+      "face": {
+        "shape": "round",
+        "baseline": "soft",
+        "marks": [
+          "freckles"
+        ]
+      },
+      "eyes": {
+        "shape": "round",
+        "color": "brown",
+        "glasses": "none"
+      },
+      "hair": {
+        "length": "short",
+        "style": "curly",
+        "color": "honey blonde",
+        "fringe": "wispy"
+      },
+      "outfit": {
+        "archetype": "cosy",
+        "primaryColor": "#FF9F1C",
+        "secondaryColor": "#F5F2EA"
+      },
+      "accessories": [
+        "bracelet"
+      ],
+      "vibe": [
+        "energetic"
+      ]
+    },
+    "summary": "An adult barista with short curly honey-blonde hair, freckles and an orange apron.",
+    "exportedAt": "2026-10-21"
+  },
+  "chr_seedAmara": {
+    "variants": [
+      "angry",
+      "blink",
+      "cand-2",
+      "embarrassed",
+      "happy",
+      "neutral",
+      "sad",
+      "surprised",
+      "thinking"
+    ],
+    "model": "bytedance-seed/seedream-5-0-flash",
+    "appearance": {
+      "body": {
+        "ageBand": "adult",
+        "build": "average",
+        "height": "average",
+        "skinTone": "deep brown"
+      },
+      "face": {
+        "shape": "oval",
+        "baseline": "soft",
+        "marks": []
+      },
+      "eyes": {
+        "shape": "almond",
+        "color": "dark brown",
+        "glasses": "round"
+      },
+      "hair": {
+        "length": "short",
+        "style": "coily",
+        "color": "black",
+        "fringe": "none"
+      },
+      "outfit": {
+        "archetype": "medical",
+        "primaryColor": "#2EC4B6",
+        "secondaryColor": "#F5F2EA"
+      },
+      "accessories": [
+        "stethoscope",
+        "earrings"
+      ],
+      "vibe": [
+        "warm",
+        "confident"
+      ],
+      "extraDetails": "Round gold-rim glasses, white coat over teal scrubs, gold stud earrings."
+    },
+    "summary": "An adult woman with deep brown skin and short natural black curls, round gold-rim glasses, a white coat over teal scrubs and a stethoscope.",
+    "exportedAt": "2026-10-21"
+  },
+  "chr_seedHana": {
+    "variants": [
+      "angry",
+      "blink",
+      "cand-2",
+      "embarrassed",
+      "happy",
+      "neutral",
+      "sad",
+      "surprised",
+      "thinking"
+    ],
+    "model": "bytedance-seed/seedream-5-0-flash",
+    "appearance": {
+      "body": {
+        "ageBand": "young_adult",
+        "build": "slim",
+        "height": "petite",
+        "skinTone": "fair"
+      },
+      "face": {
+        "shape": "round",
+        "baseline": "soft",
+        "marks": [
+          "dimples"
+        ]
+      },
+      "eyes": {
+        "shape": "round",
+        "color": "green",
+        "glasses": "none"
+      },
+      "hair": {
+        "length": "chin",
+        "style": "bob",
+        "color": "pink",
+        "fringe": "straight"
+      },
+      "outfit": {
+        "archetype": "casual",
+        "primaryColor": "#F5E9D7",
+        "secondaryColor": "#4A6FA5"
+      },
+      "accessories": [
+        "hairpin"
+      ],
+      "vibe": [
+        "warm",
+        "energetic"
+      ],
+      "extraDetails": "Pink-tinted chestnut bob, cherry-blossom hairpin, denim apron over a cream sundress."
+    },
+    "summary": "An adult woman with a pink-tinted chestnut bob, green eyes, a cherry-blossom hairpin and a denim apron over a cream sundress.",
+    "exportedAt": "2026-10-21"
+  },
+  "chr_seedMei": {
+    "variants": [
+      "angry",
+      "blink",
+      "embarrassed",
+      "happy",
+      "neutral",
+      "sad",
+      "surprised",
+      "thinking"
+    ],
+    "model": "bytedance-seed/seedream-5-0-flash",
+    "appearance": {
+      "body": {
+        "ageBand": "adult",
+        "build": "average",
+        "height": "average",
+        "skinTone": "light-warm"
+      },
+      "face": {
+        "shape": "heart",
+        "baseline": "neutral",
+        "marks": [
+          "beauty mark"
+        ]
+      },
+      "eyes": {
+        "shape": "almond",
+        "color": "amber",
+        "glasses": "square"
+      },
+      "hair": {
+        "length": "long",
+        "style": "low bun",
+        "color": "black",
+        "fringe": "side-swept"
+      },
+      "outfit": {
+        "archetype": "academic",
+        "primaryColor": "#D4A017",
+        "secondaryColor": "#2F5D8A"
+      },
+      "accessories": [
+        "pendant"
+      ],
+      "vibe": [
+        "mischievous",
+        "cool"
+      ],
+      "extraDetails": "A pencil through the bun, rectangular glasses, oversized mustard cardigan over a striped shirt."
+    },
+    "summary": "An adult woman with long black hair in a low bun with a pencil through it, amber eyes behind rectangular glasses and an oversized mustard cardigan.",
+    "exportedAt": "2026-10-21"
+  },
+  "chr_seedRin": {
+    "variants": [
+      "angry",
+      "blink",
+      "embarrassed",
+      "happy",
+      "neutral",
+      "sad",
+      "surprised",
+      "thinking"
+    ],
+    "model": "bytedance-seed/seedream-5-0-flash",
+    "appearance": {
+      "body": {
+        "ageBand": "young_adult",
+        "build": "slim",
+        "height": "average",
+        "skinTone": "light"
+      },
+      "face": {
+        "shape": "oval",
+        "baseline": "sharp",
+        "marks": []
+      },
+      "eyes": {
+        "shape": "upturned",
+        "color": "violet",
+        "glasses": "none"
+      },
+      "hair": {
+        "length": "shoulder",
+        "style": "straight",
+        "color": "black",
+        "streakColor": "teal",
+        "fringe": "curtain"
+      },
+      "outfit": {
+        "archetype": "street",
+        "primaryColor": "#36454F",
+        "secondaryColor": "#00E5C7"
+      },
+      "accessories": [
+        "headphones",
+        "ear cuff"
+      ],
+      "vibe": [
+        "cool",
+        "sleepy"
+      ],
+      "extraDetails": "Fitted charcoal bomber jacket over a graphic tee, over-ear headphones around her neck, adult proportions."
+    },
+    "summary": "An adult woman with sleek shoulder-length black hair and a teal streak, violet eyes, a charcoal bomber jacket and headphones around her neck.",
+    "exportedAt": "2026-10-21"
+  },
+  "chr_seedTakeshi": {
+    "variants": [
+      "angry",
+      "blink",
+      "embarrassed",
+      "happy",
+      "neutral",
+      "sad",
+      "surprised",
+      "thinking"
+    ],
+    "model": "bytedance-seed/seedream-5-0-flash",
+    "appearance": {
+      "body": {
+        "ageBand": "senior",
+        "build": "stocky",
+        "height": "average",
+        "skinTone": "tan"
+      },
+      "face": {
+        "shape": "square",
+        "baseline": "sharp",
+        "marks": []
+      },
+      "eyes": {
+        "shape": "hooded",
+        "color": "dark brown",
+        "glasses": "none"
+      },
+      "hair": {
+        "length": "buzz",
+        "style": "straight",
+        "color": "grey",
+        "fringe": "none"
+      },
+      "outfit": {
+        "archetype": "casual",
+        "primaryColor": "#556B2F",
+        "secondaryColor": "#8B2E2E"
+      },
+      "accessories": [
+        "hat"
+      ],
+      "vibe": [
+        "stern",
+        "warm"
+      ],
+      "extraDetails": "Thick moustache, weathered tan, olive fishing vest over a flannel shirt, bucket hat."
+    },
+    "summary": "An older man with a grey crew cut and thick moustache, an olive fishing vest over a flannel shirt and a bucket hat.",
+    "exportedAt": "2026-10-21"
+  },
+  "chr_seedVictor": {
+    "variants": [
+      "angry",
+      "blink",
+      "embarrassed",
+      "happy",
+      "neutral",
+      "sad",
+      "surprised",
+      "thinking"
+    ],
+    "model": "bytedance-seed/seedream-5-0-flash",
+    "appearance": {
+      "body": {
+        "ageBand": "middle_aged",
+        "build": "slim",
+        "height": "tall",
+        "skinTone": "light"
+      },
+      "face": {
+        "shape": "long",
+        "baseline": "sharp",
+        "marks": []
+      },
+      "eyes": {
+        "shape": "narrow",
+        "color": "grey",
+        "glasses": "none"
+      },
+      "hair": {
+        "length": "short",
+        "style": "slicked back",
+        "color": "black",
+        "streakColor": "silver",
+        "fringe": "none"
+      },
+      "outfit": {
+        "archetype": "formal",
+        "primaryColor": "#1C2A4A",
+        "secondaryColor": "#D4A017"
+      },
+      "accessories": [
+        "tie pin",
+        "watch"
+      ],
+      "vibe": [
+        "elegant",
+        "confident"
+      ],
+      "extraDetails": "Three-piece navy suit, gold tie pin, pocket-watch chain."
+    },
+    "summary": "An adult man with slicked-back black hair and a silver streak, sharp grey eyes, a three-piece navy suit and a gold tie pin.",
+    "exportedAt": "2026-10-21"
+  }
+}

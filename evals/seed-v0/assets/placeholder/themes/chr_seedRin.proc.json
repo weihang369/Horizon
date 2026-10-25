@@ -1,0 +1,22 @@
+{
+  "kind": "horizon.theme",
+  "version": 1,
+  "seed": "chr_seedRin",
+  "title": "Rin's Theme",
+  "brief": {
+    "genres": [
+      "chiptune",
+      "EDM"
+    ],
+    "moods": [
+      "energetic",
+      "tense"
+    ],
+    "bpm": 140,
+    "instruments": [
+      "synth",
+      "drums"
+    ],
+    "vibe": "Chiptune-electro, punchy drums, arpeggiated synth"
+  }
+}

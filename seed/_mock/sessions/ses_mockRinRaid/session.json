@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "data": {
+    "id": "ses_mockRinRaid",
+    "worldId": "wld_seedSunnyHollow",
+    "title": "Raid night",
+    "titleIsCustom": false,
+    "mode": "one_on_one",
+    "status": "paused",
+    "participants": [
+      {
+        "characterId": "chr_seedRin",
+        "role": "speaker",
+        "currentEmotion": "angry",
+        "mutedByUser": false
+      }
+    ],
+    "emotionMode": "llm",
+    "musicPolicy": "character_theme",
+    "readableMode": false,
+    "config": null,
+    "state": null,
+    "isSeed": false,
+    "costUsd": 0.000106,
+    "messageCount": 7,
+    "createdAt": "2026-09-26T11:29:59.968Z",
+    "updatedAt": "2026-09-26T11:31:18.957Z",
+    "pausedReason": "navigated_away",
+    "lastMessageAt": "2026-09-26T11:31:01.226Z"
+  }
+}

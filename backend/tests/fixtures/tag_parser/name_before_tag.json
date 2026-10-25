@@ -1,0 +1,15 @@
+{
+  "name": "name_before_tag",
+  "doc": "Own name before the tag (docs/ai/03 C6): stripped, and the emotion is kept",
+  "chunks": [
+    "Mei: <e:happy>Hi"
+  ],
+  "previous": "neutral",
+  "speaker": "Mei",
+  "perLine": false,
+  "expected": {
+    "emotion": "happy",
+    "source": "llm",
+    "text": "Hi"
+  }
+}

@@ -1,0 +1,429 @@
+{
+ "chunker": "pack@2",
+ "pdfs": [
+  {
+   "doc": "bls-empsit.pdf",
+   "pieces": 687,
+   "pages": 39,
+   "tokens": {
+    "min": 10,
+    "median": 323,
+    "max": 399
+   },
+   "headings": [
+    "- Continued",
+    "1. Why are there two monthly measures of employment?",
+    "2. Are undocumented immigrants counted in the surveys?",
+    "3. Why does the establishment survey have revisions?",
+    "4. Does the establishment survey sample include small firms?",
+    "5. Does the establishment survey account for employment from new businesses?",
+    "6. Is the count of unemployed people limited to just those receiving unemployment insurance benefits?",
+    "7. Does the official unemployment rate exclude people who want a job but are not currently looking for work?",
+    "8. How can unusually severe weather affect employment and hours estimates?",
+    "Coverage, definitions, and differences between surveys",
+    "ESTABLISHMENT DATA",
+    "Establishment Survey Data"
+   ],
+   "pieces_starting_with_a_heading": 48,
+   "table_pieces": 595,
+   "table_pieces_repeating_the_header": 557,
+   "pp_locators": [
+    "pp. 1–2"
+   ],
+   "locators": [
+    "p. 1",
+    "p. 10",
+    "p. 11",
+    "p. 12",
+    "p. 13",
+    "p. 14",
+    "p. 15",
+    "p. 16",
+    "p. 17",
+    "p. 18",
+    "p. 19",
+    "p. 2",
+    "p. 20",
+    "p. 21",
+    "p. 22",
+    "p. 23",
+    "p. 24",
+    "p. 25",
+    "p. 26",
+    "p. 27"
+   ]
+  },
+  {
+   "doc": "cdc-monkeypox-self-care-zh.pdf",
+   "pieces": 4,
+   "pages": 1,
+   "tokens": {
+    "min": 3,
+    "median": 323,
+    "max": 348
+   },
+   "headings": [
+    "控制疼痛症状",
+    "照顾好自己",
+    "皮疹缓解"
+   ],
+   "pieces_starting_with_a_heading": 3,
+   "table_pieces": 0,
+   "table_pieces_repeating_the_header": 0,
+   "pp_locators": [],
+   "locators": [
+    "p. 1"
+   ],
+   "chinese_piece_endings": [
+    "痊愈。",
+    "供者。",
+    "作用。",
+    "猴 痘"
+   ]
+  }
+ ],
+ "corpus": [
+  {
+   "doc": "amara/niosh-module-1-introduction.md",
+   "pieces": 2,
+   "pages": null,
+   "tokens": {
+    "min": 83,
+    "median": 312,
+    "max": 312
+   },
+   "headings": [
+    "NIOSH Training for Nurses on Shift Work and Long Work Hours: Module 1 › Module 1. Introduction – NIOSH Training for Nurses on Shift Work and Long Work Hours"
+   ],
+   "pieces_starting_with_a_heading": 1,
+   "table_pieces": 0,
+   "table_pieces_repeating_the_header": 0,
+   "pp_locators": []
+  },
+  {
+   "doc": "amara/niosh-module-2-health-and-safety-risks.md",
+   "pieces": 15,
+   "pages": null,
+   "tokens": {
+    "min": 3,
+    "median": 212,
+    "max": 368
+   },
+   "headings": [
+    "NIOSH Training for Nurses on Shift Work and Long Work Hours: Module 2 › Module 2. How Shift Work and Long Work Hours Increase Health and Safety Risks › How Much Sleep Do You Need?",
+    "NIOSH Training for Nurses on Shift Work and Long Work Hours: Module 2 › Module 2. How Shift Work and Long Work Hours Increase Health and Safety Risks › Impacts on Metabolism and Endocrine Function",
+    "NIOSH Training for Nurses on Shift Work and Long Work Hours: Module 2 › Module 2. How Shift Work and Long Work Hours Increase Health and Safety Risks › Objectives",
+    "NIOSH Training for Nurses on Shift Work and Long Work Hours: Module 2 › Module 2. How Shift Work and Long Work Hours Increase Health and Safety Risks › Objectives (Continued)",
+    "NIOSH Training for Nurses on Shift Work and Long Work Hours: Module 2 › Module 2. How Shift Work and Long Work Hours Increase Health and Safety Risks › Sleep and the Immune System",
+    "NIOSH Training for Nurses on Shift Work and Long Work Hours: Module 2 › Module 2. How Shift Work and Long Work Hours Increase Health and Safety Risks › Sleep and the Immune System (Continued)",
+    "NIOSH Training for Nurses on Shift Work and Long Work Hours: Module 2 › Module 2. How Shift Work and Long Work Hours Increase Health and Safety Risks › Sleep is a Basic Need",
+    "NIOSH Training for Nurses on Shift Work and Long Work Hours: Module 2 › Module 2. How Shift Work and Long Work Hours Increase Health and Safety Risks › Your Body is Busy During Sleep"
+   ],
+   "pieces_starting_with_a_heading": 8,
+   "table_pieces": 0,
+   "table_pieces_repeating_the_header": 0,
+   "pp_locators": []
+  },
+  {
+   "doc": "amara/niosh-module-3.md",
+   "pieces": 13,
+   "pages": null,
+   "tokens": {
+    "min": 56,
+    "median": 234,
+    "max": 331
+   },
+   "headings": [
+    "NIOSH Training for Nurses on Shift Work and Long Work Hours: Module 3 › Module 3. Risks Associated With Shift Work and Long Work Hours › Common and Critical Misconceptions and Individual Differences",
+    "NIOSH Training for Nurses on Shift Work and Long Work Hours: Module 3 › Module 3. Risks Associated With Shift Work and Long Work Hours › Functioning",
+    "NIOSH Training for Nurses on Shift Work and Long Work Hours: Module 3 › Module 3. Risks Associated With Shift Work and Long Work Hours › Functioning (Continued) › Sleep deprivation impairs your information processing and learning.8",
+    "NIOSH Training for Nurses on Shift Work and Long Work Hours: Module 3 › Module 3. Risks Associated With Shift Work and Long Work Hours › Functioning (Continued) › Sleep deprivation impairs your mood and communication skills.11,12",
+    "NIOSH Training for Nurses on Shift Work and Long Work Hours: Module 3 › Module 3. Risks Associated With Shift Work and Long Work Hours › Functioning (Continued) › Sleep deprivation impairs your performance.8",
+    "NIOSH Training for Nurses on Shift Work and Long Work Hours: Module 3 › Module 3. Risks Associated With Shift Work and Long Work Hours › Impairments due to sleep deprivation are similar to impairments due to alcohol intoxication!",
+    "NIOSH Training for Nurses on Shift Work and Long Work Hours: Module 3 › Module 3. Risks Associated With Shift Work and Long Work Hours › Negative Impacts on Sleep",
+    "NIOSH Training for Nurses on Shift Work and Long Work Hours: Module 3 › Module 3. Risks Associated With Shift Work and Long Work Hours › Negative Impacts on Sleep (Continued) › Microsleeps",
+    "NIOSH Training for Nurses on Shift Work and Long Work Hours: Module 3 › Module 3. Risks Associated With Shift Work and Long Work Hours › Objectives"
+   ],
+   "pieces_starting_with_a_heading": 9,
+   "table_pieces": 0,
+   "table_pieces_repeating_the_header": 0,
+   "pp_locators": []
+  },
+  {
+   "doc": "amara/niosh-module-5-work-organization.md",
+   "pieces": 15,
+   "pages": null,
+   "tokens": {
+    "min": 71,
+    "median": 211,
+    "max": 400
+   },
+   "headings": [
+    "NIOSH Training for Nurses on Shift Work and Long Work Hours: Module 5 › Extended Shifts",
+    "NIOSH Training for Nurses on Shift Work and Long Work Hours: Module 5 › Extended Shifts (Continued)",
+    "NIOSH Training for Nurses on Shift Work and Long Work Hours: Module 5 › Improving Work Schedules",
+    "NIOSH Training for Nurses on Shift Work and Long Work Hours: Module 5 › Improving Work Schedules › Direction of Rotation:",
+    "NIOSH Training for Nurses on Shift Work and Long Work Hours: Module 5 › Improving Work Schedules › Speed of Shift Rotation:",
+    "NIOSH Training for Nurses on Shift Work and Long Work Hours: Module 5 › Key Points",
+    "NIOSH Training for Nurses on Shift Work and Long Work Hours: Module 5 › Objectives (Continued)",
+    "NIOSH Training for Nurses on Shift Work and Long Work Hours: Module 5 › Researchers have proposed these guidelines for designing work schedules: (Continued)",
+    "NIOSH Training for Nurses on Shift Work and Long Work Hours: Module 5 › Researchers have proposed these guidelines for designing work schedules:12-14"
+   ],
+   "pieces_starting_with_a_heading": 9,
+   "table_pieces": 0,
+   "table_pieces_repeating_the_header": 0,
+   "pp_locators": []
+  },
+  {
+   "doc": "hana/ars-choose-myplate.md",
+   "pieces": 4,
+   "pages": null,
+   "tokens": {
+    "min": 80,
+    "median": 365,
+    "max": 381
+   },
+   "headings": [
+    "USDA ARS: Choose MYPLATE to Improve Health for Life"
+   ],
+   "pieces_starting_with_a_heading": 1,
+   "table_pieces": 0,
+   "table_pieces_repeating_the_header": 0,
+   "pp_locators": []
+  },
+  {
+   "doc": "hana/ars-eat-fish.md",
+   "pieces": 4,
+   "pages": null,
+   "tokens": {
+    "min": 122,
+    "median": 348,
+    "max": 379
+   },
+   "headings": [
+    "USDA ARS: Eat fish! Which Fish? That Fish! Go Fish!"
+   ],
+   "pieces_starting_with_a_heading": 1,
+   "table_pieces": 0,
+   "table_pieces_repeating_the_header": 0,
+   "pp_locators": []
+  },
+  {
+   "doc": "hana/ars-go-nuts.md",
+   "pieces": 6,
+   "pages": null,
+   "tokens": {
+    "min": 272,
+    "median": 330,
+    "max": 337
+   },
+   "headings": [
+    "USDA ARS: Go Nuts!"
+   ],
+   "pieces_starting_with_a_heading": 1,
+   "table_pieces": 0,
+   "table_pieces_repeating_the_header": 0,
+   "pp_locators": []
+  },
+  {
+   "doc": "hana/ars-popcorn-whole-grain-snack.md",
+   "pieces": 4,
+   "pages": null,
+   "tokens": {
+    "min": 135,
+    "median": 291,
+    "max": 338
+   },
+   "headings": [
+    "USDA ARS: Popcorn: A Healthy, Whole Grain Snack"
+   ],
+   "pieces_starting_with_a_heading": 1,
+   "table_pieces": 0,
+   "table_pieces_repeating_the_header": 0,
+   "pp_locators": []
+  },
+  {
+   "doc": "mei/opm-alternative-work-schedules-handbook.md",
+   "pieces": 100,
+   "pages": null,
+   "tokens": {
+    "min": 23,
+    "median": 246,
+    "max": 399
+   },
+   "headings": [
+    "OPM: Alternative Work Schedules › Handbook on Alternative Work Schedules",
+    "OPM: Alternative Work Schedules › Handbook on Alternative Work Schedules › Introduction",
+    "OPM: Alternative Work Schedules › Note 1:",
+    "OPM: Alternative Work Schedules › Note 2:",
+    "OPM: Alternative Work Schedules › Note 2: › Authority and Responsibilities",
+    "OPM: Alternative Work Schedules › Note 2: › Changes in Payroll Procedures and Personnel Policies",
+    "OPM: Alternative Work Schedules › Note 2: › Definitions",
+    "OPM: Alternative Work Schedules › Note 2: › Exceptions",
+    "OPM: Alternative Work Schedules › Note 2: › Flexible Work Schedules (FWS) › Basic Work Requirement",
+    "OPM: Alternative Work Schedules › Note 2: › Flexible Work Schedules (FWS) › Tour of Duty",
+    "OPM: Alternative Work Schedules › Note 2: › Policy/Guidance",
+    "OPM: Alternative Work Schedules › Note 2: › Procedures for Establishing Alternative Work Schedules"
+   ],
+   "pieces_starting_with_a_heading": 61,
+   "table_pieces": 14,
+   "table_pieces_repeating_the_header": 0,
+   "pp_locators": []
+  },
+  {
+   "doc": "mei/opm-compressed-work-schedules.md",
+   "pieces": 11,
+   "pages": null,
+   "tokens": {
+    "min": 39,
+    "median": 91,
+    "max": 220
+   },
+   "headings": [
+    "OPM: Compressed Work Schedules › Fact Sheet: Compressed Work Schedules › Compensatory Time Off",
+    "OPM: Compressed Work Schedules › Fact Sheet: Compressed Work Schedules › Credit Hours",
+    "OPM: Compressed Work Schedules › Fact Sheet: Compressed Work Schedules › Description",
+    "OPM: Compressed Work Schedules › Fact Sheet: Compressed Work Schedules › Employee Coverage",
+    "OPM: Compressed Work Schedules › Fact Sheet: Compressed Work Schedules › Holiday Premium Pay",
+    "OPM: Compressed Work Schedules › Fact Sheet: Compressed Work Schedules › Holidays",
+    "OPM: Compressed Work Schedules › Fact Sheet: Compressed Work Schedules › Implementation Restrictions",
+    "OPM: Compressed Work Schedules › Fact Sheet: Compressed Work Schedules › Night Pay",
+    "OPM: Compressed Work Schedules › Fact Sheet: Compressed Work Schedules › Overtime",
+    "OPM: Compressed Work Schedules › Fact Sheet: Compressed Work Schedules › References",
+    "OPM: Compressed Work Schedules › Fact Sheet: Compressed Work Schedules › Sunday Premium Pay"
+   ],
+   "pieces_starting_with_a_heading": 11,
+   "table_pieces": 0,
+   "table_pieces_repeating_the_header": 0,
+   "pp_locators": []
+  },
+  {
+   "doc": "mei/opm-flexible-work-schedules.md",
+   "pieces": 11,
+   "pages": null,
+   "tokens": {
+    "min": 50,
+    "median": 106,
+    "max": 333
+   },
+   "headings": [
+    "OPM: Flexible Work Schedules › Fact Sheet: Flexible Work Schedules › Compensatory Time Off",
+    "OPM: Flexible Work Schedules › Fact Sheet: Flexible Work Schedules › Credit Hours",
+    "OPM: Flexible Work Schedules › Fact Sheet: Flexible Work Schedules › Description",
+    "OPM: Flexible Work Schedules › Fact Sheet: Flexible Work Schedules › Employee Coverage",
+    "OPM: Flexible Work Schedules › Fact Sheet: Flexible Work Schedules › Holiday Premium Pay",
+    "OPM: Flexible Work Schedules › Fact Sheet: Flexible Work Schedules › Holidays",
+    "OPM: Flexible Work Schedules › Fact Sheet: Flexible Work Schedules › Night Pay",
+    "OPM: Flexible Work Schedules › Fact Sheet: Flexible Work Schedules › Overtime Hours",
+    "OPM: Flexible Work Schedules › Fact Sheet: Flexible Work Schedules › References",
+    "OPM: Flexible Work Schedules › Fact Sheet: Flexible Work Schedules › Sunday Premium Pay",
+    "OPM: Flexible Work Schedules › Fact Sheet: Flexible Work Schedules › Types of FWS"
+   ],
+   "pieces_starting_with_a_heading": 11,
+   "table_pieces": 0,
+   "table_pieces_repeating_the_header": 0,
+   "pp_locators": []
+  },
+  {
+   "doc": "mei/opm-holidays-work-schedules-and-pay.md",
+   "pieces": 31,
+   "pages": null,
+   "tokens": {
+    "min": 48,
+    "median": 250,
+    "max": 387
+   },
+   "headings": [
+    "OPM: Holidays Work Schedules and Pay › Fact Sheet: Federal Holidays - Work Schedules and Pay › Designation of Holidays › \"In Lieu of\" Holidays",
+    "OPM: Holidays Work Schedules and Pay › Fact Sheet: Federal Holidays - Work Schedules and Pay › Designation of Holidays › Holiday Tour of Duty",
+    "OPM: Holidays Work Schedules and Pay › Fact Sheet: Federal Holidays - Work Schedules and Pay › Designation of Holidays › Holidays for Employees Outside the United States",
+    "OPM: Holidays Work Schedules and Pay › Fact Sheet: Federal Holidays - Work Schedules and Pay › Designation of Holidays › Holidays for Federal Employees",
+    "OPM: Holidays Work Schedules and Pay › Fact Sheet: Federal Holidays - Work Schedules and Pay › Designation of Holidays › Presidential Inauguration Day",
+    "OPM: Holidays Work Schedules and Pay › Fact Sheet: Federal Holidays - Work Schedules and Pay › Designation of Holidays › Two (or more) Holidays in One Pay Period",
+    "OPM: Holidays Work Schedules and Pay › Fact Sheet: Federal Holidays - Work Schedules and Pay › Holiday Not Worked as Scheduled",
+    "OPM: Holidays Work Schedules and Pay › Fact Sheet: Federal Holidays - Work Schedules and Pay › Holiday Premium Pay",
+    "OPM: Holidays Work Schedules and Pay › Fact Sheet: Federal Holidays - Work Schedules and Pay › Holiday Work",
+    "OPM: Holidays Work Schedules and Pay › Fact Sheet: Federal Holidays - Work Schedules and Pay › Introduction",
+    "OPM: Holidays Work Schedules and Pay › Fact Sheet: Federal Holidays - Work Schedules and Pay › Night Work on a Holiday",
+    "OPM: Holidays Work Schedules and Pay › Fact Sheet: Federal Holidays - Work Schedules and Pay › Overtime Work on a Holiday"
+   ],
+   "pieces_starting_with_a_heading": 20,
+   "table_pieces": 0,
+   "table_pieces_repeating_the_header": 0,
+   "pp_locators": []
+  },
+  {
+   "doc": "victor/fre-article-iv-relevance.md",
+   "pieces": 23,
+   "pages": null,
+   "tokens": {
+    "min": 41,
+    "median": 211,
+    "max": 370
+   },
+   "headings": [
+    "Federal Rules of Evidence, ARTICLE IV. RELEVANCE AND ITS LIMITS (rule text, notes omitted) › Rule 401. Test for Relevant Evidence",
+    "Federal Rules of Evidence, ARTICLE IV. RELEVANCE AND ITS LIMITS (rule text, notes omitted) › Rule 402. General Admissibility of Relevant Evidence",
+    "Federal Rules of Evidence, ARTICLE IV. RELEVANCE AND ITS LIMITS (rule text, notes omitted) › Rule 403. Excluding Relevant Evidence for Prejudice, Confusion, Waste of Time, or Other Reasons",
+    "Federal Rules of Evidence, ARTICLE IV. RELEVANCE AND ITS LIMITS (rule text, notes omitted) › Rule 404. Character Evidence; Other Crimes, Wrongs, or Acts.",
+    "Federal Rules of Evidence, ARTICLE IV. RELEVANCE AND ITS LIMITS (rule text, notes omitted) › Rule 405. Methods of Proving Character",
+    "Federal Rules of Evidence, ARTICLE IV. RELEVANCE AND ITS LIMITS (rule text, notes omitted) › Rule 406. Habit; Routine Practice",
+    "Federal Rules of Evidence, ARTICLE IV. RELEVANCE AND ITS LIMITS (rule text, notes omitted) › Rule 407. Subsequent Remedial Measures",
+    "Federal Rules of Evidence, ARTICLE IV. RELEVANCE AND ITS LIMITS (rule text, notes omitted) › Rule 408. Compromise Offers and Negotiations",
+    "Federal Rules of Evidence, ARTICLE IV. RELEVANCE AND ITS LIMITS (rule text, notes omitted) › Rule 409. Offers to Pay Medical and Similar Expenses",
+    "Federal Rules of Evidence, ARTICLE IV. RELEVANCE AND ITS LIMITS (rule text, notes omitted) › Rule 410. Pleas, Plea Discussions, and Related Statements",
+    "Federal Rules of Evidence, ARTICLE IV. RELEVANCE AND ITS LIMITS (rule text, notes omitted) › Rule 411. Liability Insurance",
+    "Federal Rules of Evidence, ARTICLE IV. RELEVANCE AND ITS LIMITS (rule text, notes omitted) › Rule 412. Sex-Offense Cases: The Victim's Sexual Behavior or Predisposition"
+   ],
+   "pieces_starting_with_a_heading": 15,
+   "table_pieces": 0,
+   "table_pieces_repeating_the_header": 0,
+   "pp_locators": []
+  },
+  {
+   "doc": "victor/fre-article-vii-opinions.md",
+   "pieces": 7,
+   "pages": null,
+   "tokens": {
+    "min": 157,
+    "median": 239,
+    "max": 340
+   },
+   "headings": [
+    "Federal Rules of Evidence, ARTICLE VII. OPINIONS AND EXPERT TESTIMONY (rule text, notes omitted) › Rule 701. Opinion Testimony by Lay Witnesses",
+    "Federal Rules of Evidence, ARTICLE VII. OPINIONS AND EXPERT TESTIMONY (rule text, notes omitted) › Rule 702. Testimony by Expert Witnesses",
+    "Federal Rules of Evidence, ARTICLE VII. OPINIONS AND EXPERT TESTIMONY (rule text, notes omitted) › Rule 703. Bases of an Expert's Opinion Testimony",
+    "Federal Rules of Evidence, ARTICLE VII. OPINIONS AND EXPERT TESTIMONY (rule text, notes omitted) › Rule 704. Opinion on an Ultimate Issue",
+    "Federal Rules of Evidence, ARTICLE VII. OPINIONS AND EXPERT TESTIMONY (rule text, notes omitted) › Rule 705. Disclosing the Facts or Data Underlying an Expert's Opinion",
+    "Federal Rules of Evidence, ARTICLE VII. OPINIONS AND EXPERT TESTIMONY (rule text, notes omitted) › Rule 706. Court-Appointed Expert Witnesses"
+   ],
+   "pieces_starting_with_a_heading": 6,
+   "table_pieces": 0,
+   "table_pieces_repeating_the_header": 0,
+   "pp_locators": []
+  },
+  {
+   "doc": "victor/fre-article-viii-hearsay.md",
+   "pieces": 22,
+   "pages": null,
+   "tokens": {
+    "min": 37,
+    "median": 309,
+    "max": 342
+   },
+   "headings": [
+    "Federal Rules of Evidence, ARTICLE VIII. HEARSAY (rule text, notes omitted) › Rule 801. Definitions That Apply to This Article; Exclusions from Hearsay",
+    "Federal Rules of Evidence, ARTICLE VIII. HEARSAY (rule text, notes omitted) › Rule 802. The Rule Against Hearsay",
+    "Federal Rules of Evidence, ARTICLE VIII. HEARSAY (rule text, notes omitted) › Rule 803. Exceptions to the Rule Against Hearsay—Regardless of Whether the Declarant Is Available as a Witness",
+    "Federal Rules of Evidence, ARTICLE VIII. HEARSAY (rule text, notes omitted) › Rule 804. Exceptions to the Rule Against Hearsay—When the Declarant Is Unavailable as a Witness",
+    "Federal Rules of Evidence, ARTICLE VIII. HEARSAY (rule text, notes omitted) › Rule 805. Hearsay Within Hearsay",
+    "Federal Rules of Evidence, ARTICLE VIII. HEARSAY (rule text, notes omitted) › Rule 806. Attacking and Supporting the Declarant's Credibility",
+    "Federal Rules of Evidence, ARTICLE VIII. HEARSAY (rule text, notes omitted) › Rule 807. Residual Exception"
+   ],
+   "pieces_starting_with_a_heading": 7,
+   "table_pieces": 0,
+   "table_pieces_repeating_the_header": 0,
+   "pp_locators": []
+  }
+ ]
+}

@@ -1,0 +1,17 @@
+{
+  "verified": false,
+  "source": "Moderation refusal: OpenRouter API docs (chat completions / streaming / usage accounting), 2026-10; doc backend/04 §1",
+  "status": 403,
+  "body": {
+    "error": {
+      "code": 403,
+      "message": "Input was flagged",
+      "metadata": {
+        "reasons": [
+          "harassment"
+        ],
+        "provider_name": "DeepSeek"
+      }
+    }
+  }
+}

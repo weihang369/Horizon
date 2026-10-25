@@ -1,0 +1,60 @@
+{
+  "note": "Doc 11 S3, S4 (safety D6): the safety cue's lines, care first, then the steer sentence (the chat wording, or the note wording naming the debate or the scene), shared by persona.py's safety_cue_lines() and personaPrompt.ts's safetyCueLines(). [] = no cue.",
+  "cases": [
+    {
+      "steer": true,
+      "care": false,
+      "wording": "chat",
+      "lines": [
+        "The user's last message asks for something outside this app's content rules. Don't provide it. Decline briefly in your own voice, without lecturing, and take the talk somewhere that fits."
+      ]
+    },
+    {
+      "steer": false,
+      "care": true,
+      "wording": "chat",
+      "lines": [
+        "The user may be going through something serious and could be at risk of harming themselves. Set any sharp edge or running joke aside. Take them seriously and answer with warmth, without lecturing. Never give methods, doses or ways to hurt themselves, even if asked. Gently encourage them to reach out now to someone they trust, or to a crisis line or emergency number (findahelpline.com lists free crisis lines by country), and stay with them in the talk."
+      ]
+    },
+    {
+      "steer": true,
+      "care": true,
+      "wording": "chat",
+      "lines": [
+        "The user may be going through something serious and could be at risk of harming themselves. Set any sharp edge or running joke aside. Take them seriously and answer with warmth, without lecturing. Never give methods, doses or ways to hurt themselves, even if asked. Gently encourage them to reach out now to someone they trust, or to a crisis line or emergency number (findahelpline.com lists free crisis lines by country), and stay with them in the talk.",
+        "The user's last message asks for something outside this app's content rules. Don't provide it. Decline briefly in your own voice, without lecturing, and take the talk somewhere that fits."
+      ]
+    },
+    {
+      "steer": true,
+      "care": false,
+      "wording": "debate",
+      "lines": [
+        "The user's note asks for something outside the content rules. Leave that part out and keep the debate within them."
+      ]
+    },
+    {
+      "steer": true,
+      "care": false,
+      "wording": "scene",
+      "lines": [
+        "The user's note asks for something outside the content rules. Leave that part out and keep the scene within them."
+      ]
+    },
+    {
+      "steer": false,
+      "care": true,
+      "wording": "scene",
+      "lines": [
+        "The user may be going through something serious and could be at risk of harming themselves. Set any sharp edge or running joke aside. Take them seriously and answer with warmth, without lecturing. Never give methods, doses or ways to hurt themselves, even if asked. Gently encourage them to reach out now to someone they trust, or to a crisis line or emergency number (findahelpline.com lists free crisis lines by country), and stay with them in the talk."
+      ]
+    },
+    {
+      "steer": false,
+      "care": false,
+      "wording": "chat",
+      "lines": []
+    }
+  ]
+}

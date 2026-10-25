@@ -1,0 +1,134 @@
+# Horizon CI (continuous-integration spec; http-client-parity D18): one Linux job, the "one Unix" evidence for NFR-10.
+# - No secrets: nothing here reads repository or organisation secrets, no .env is created, and every test uses the
+#   fake provider and fake keys.
+# - Order matters: the timed fresh-clone boot runs first, with its own empty caches, so restored caches can't flatter it.
+# - Docling (setup step 2) and paid live tests never run here.
+name: CI
+
+on:
+  push:
+    branches: [main, dev, "feat/**"]
+  pull_request:
+    branches: [dev, "feat/**"]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: Gates, E2E on both clients, fresh-clone boot
+    runs-on: ubuntu-latest
+    # 2026-10-20: the backend suite alone reached ~43 min (M13-M15 added ~1,500 tests) and the run was cancelled at 45.
+    # The whole job takes ~60 min; 90 leaves room without hiding a hang.
+    # 2026-10-23: the backend suite took 66 min on the runner (2,369 tests), leaving too little of 90 for the E2E.
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Node (from .nvmrc)
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+
+      - name: uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.11.25"
+          enable-cache: false
+
+      # Cold: a clone of this commit, empty npm/uv/Python-install caches, then `npm run setup` + `npm run dev` until the
+      # two seed worlds answer through the app. Fails over 300 s; the timings go to the job summary.
+      - name: Fresh-clone boot to demo mode (cold, budget 300 s)
+        run: node scripts/boot-timing.mjs --cold
+
+      - name: Cache npm downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json', 'frontend/package-lock.json') }}
+
+      - name: Cache uv downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/uv
+          key: uv-${{ runner.os }}-${{ hashFiles('backend/uv.lock') }}
+
+      - name: Setup (step 1)
+        run: npm run setup
+
+      - name: Backend lint and types
+        working-directory: backend
+        run: |
+          uv run ruff check .
+          uv run mypy
+
+      # The live and Docling checks are manual scripts under backend/manual/, outside pytest's test paths.
+      - name: Backend tests
+        working-directory: backend
+        run: uv run pytest -q
+
+      # ai-foundation D38: the free eval checks. No secrets, no network (the fake provider in test mode), < 1 min.
+      # Smoke never compares with evals/baselines.
+      - name: Eval smoke, overlap and corpus licence check
+        working-directory: backend
+        env:
+          HORIZON_TEST: "1"
+        run: |
+          uv run horizon eval smoke --limit 5 --yes
+          uv run horizon eval overlap
+          uv run horizon eval corpus-check
+
+      - name: Frontend type check and lint
+        working-directory: frontend
+        run: |
+          npm run typecheck
+          npm run lint
+
+      - name: Frontend unit tests and the mock contract
+        working-directory: frontend
+        run: npm test
+
+      - name: Client contract over HTTP (test-mode backend)
+        working-directory: frontend
+        run: npm run test:http
+
+      - name: Seed, fixtures, schema export and asset credits
+        working-directory: frontend
+        run: |
+          npm run seed:check
+          npm run fixtures:check
+          npm run export-schema:check
+          npm run assets:check
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('frontend/package-lock.json') }}
+
+      - name: Playwright Chromium
+        working-directory: frontend
+        run: npx playwright install --with-deps chromium
+
+      # Both clients: the mock projects and the HttpClient against a throwaway test-mode backend. No Edge on the runner,
+      # so the bundled Chromium (PW_CHANNEL="").
+      - name: E2E on both clients
+        working-directory: frontend
+        env:
+          PW_CHANNEL: ""
+        run: npm run e2e
+
+      - name: Upload Playwright traces and report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-${{ github.run_id }}
+          path: |
+            frontend/test-results
+            frontend/playwright-report
+          retention-days: 7
+          if-no-files-found: ignore

@@ -1,0 +1,21 @@
+{
+ "source": "synthetic (group-watch task 9.7): stand-in recaps until the summary suite's paid run (task 10.6) records real ones",
+ "recorded": "2026-10-13",
+ "model": "none (synthetic)",
+ "note": "The fake provider answers `episode_summary` chat calls with these, in turn (doc 13 W14). The third is 135 words: the summariser must cut it to at most 120 at a sentence end before the suite checks it.",
+ "purpose": "episode_summary",
+ "responses": [
+  {
+   "item": "any",
+   "content": "The storm trapped Amara, Mei and Victor at the old inn. Victor argued they should leave at first light, while Mei insisted the road was unsafe and Amara checked on a guest with a fever. By midnight they agreed to wait for the radio's morning report. Things now stand with the three of them waiting out the night, the question of the road still open."
+  },
+  {
+   "item": "any",
+   "content": "Hana, Rin and Takeshi spent a rainy Sunday at the flower shop trying to open a stuck till. Rin wanted to force it, Takeshi wanted to read the manual, and Hana kept selling flowers for cash. They finally found the key in a vase. Things stand with the till open and the family laughing about it."
+  },
+  {
+   "item": "any",
+   "content": "The storm kept them at the inn while they argued over the road, the radio and whose turn it was to fetch more wood. The storm kept them at the inn while they argued over the road, the radio and whose turn it was to fetch more wood. The storm kept them at the inn while they argued over the road, the radio and whose turn it was to fetch more wood. The storm kept them at the inn while they argued over the road, the radio and whose turn it was to fetch more wood. The storm kept them at the inn while they argued over the road, the radio and whose turn it was to fetch more wood. The storm kept them at the inn while they argued over the road, the radio."
+  }
+ ]
+}

@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "data": {
+    "id": "ses_mockPanelPhones",
+    "worldId": "wld_seedMeridian",
+    "title": "Panel: Phones in schools",
+    "titleIsCustom": false,
+    "mode": "debate",
+    "status": "ended",
+    "participants": [
+      {
+        "characterId": "chr_seedAmara",
+        "role": "debater",
+        "side": null,
+        "currentEmotion": "neutral",
+        "mutedByUser": false
+      },
+      {
+        "characterId": "chr_seedVictor",
+        "role": "debater",
+        "side": null,
+        "currentEmotion": "neutral",
+        "mutedByUser": false
+      },
+      {
+        "characterId": "chr_seedMei",
+        "role": "debater",
+        "side": null,
+        "currentEmotion": "thinking",
+        "mutedByUser": false
+      }
+    ],
+    "emotionMode": "llm",
+    "musicPolicy": "arena",
+    "readableMode": false,
+    "config": {
+      "motion": "This house would ban smartphones in schools",
+      "format": "panel",
+      "roundsPreset": "quick",
+      "phases": [
+        "opening",
+        "closing"
+      ],
+      "turnLength": "short",
+      "moderator": "user",
+      "verdictBy": "arbiter",
+      "rubric": [
+        {
+          "id": "evidence",
+          "label": "Evidence"
+        },
+        {
+          "id": "rebuttal",
+          "label": "Rebuttal"
+        },
+        {
+          "id": "clarity",
+          "label": "Clarity"
+        },
+        {
+          "id": "persuasion",
+          "label": "Persuasion"
+        }
+      ],
+      "autoAdvance": true,
+      "pauseMs": 1500
+    },
+    "state": {
+      "phase": "ended",
+      "round": 3,
+      "iteration": 1,
+      "verdict": {
+        "summary": [
+          {
+            "subjectId": "chr_seedAmara",
+            "points": [
+              "A blanket ban is a blunt instrument; better to have phones off during instruction and teach managed use.",
+              "Notification-driven pull on attention is real and lands hardest on struggling kids.",
+              "Phones are a lifeline to counselors or parents in a bad situation; a total ban strips that away.",
+              "The tool is not the problem; unmanaged use is, so teach the skill."
+            ]
+          },
+          {
+            "subjectId": "chr_seedVictor",
+            "points": [
+              "Banning the device is not banning the distraction; it bans the object and hopes behaviour follows.",
+              "A smartphone cannot be defined; a locked handset is inert metal, so enforcement will be arbitrary against the poor child with the older phone.",
+              "Schools already possess narrower means—confiscation, signal-blocking, locked pouches—and need no statute.",
+              "A blanket ban teaches pupils that difficult things are removed rather than governed, and the same logic will next ban the tools we require them to learn with."
+            ]
+          },
+          {
+            "subjectId": "chr_seedMei",
+            "points": [
+              "Schools are workplaces, and banning devices is a working-time intervention.",
+              "Attendance and focus gains look real but modest, maybe 0.05 to 0.1 standard deviations on test scores.",
+              "Enforcement costs land on teachers, not on us.",
+              "The kids who lose most are the ones who already lack supervision elsewhere; ban inside the building but understand it is a blunt instrument with real distributional edges."
+            ]
+          }
+        ],
+        "keyDisagreement": "Whether a blanket ban as drafted is stronger than narrower school-level controls, given its unresolved definition, enforcement funding, and exception set.",
+        "decidedBy": "arbiter",
+        "strongerCase": null,
+        "rationale": "The debate turned on whether the motion's blunt instrument could survive its own gaps in definition, enforcement, and exceptions, or whether narrower school-level controls already reach the same behaviour without those gaps. No side established that its factual premises were correct; the argument hinged on which instrument was left unfinished and which was already sufficient."
+      }
+    },
+    "isSeed": false,
+    "costUsd": 0.002136,
+    "messageCount": 10,
+    "createdAt": "2026-09-24T10:59:59.455Z",
+    "updatedAt": "2026-09-24T11:00:41.790Z",
+    "lastMessageAt": "2026-09-24T11:00:41.790Z"
+  }
+}

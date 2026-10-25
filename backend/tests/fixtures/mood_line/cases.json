@@ -1,0 +1,14 @@
+{
+  "note": "docs/ai/06 E4 (turn-plan-emotion D16): the mood line per face, shared by persona.py and personaPrompt.ts. null = no line.",
+  "cases": [
+    {"face": "happy", "manual": false, "line": "Your mood right now: in a good mood. Let it show in how you word this reply; don't name the feeling."},
+    {"face": "sad", "manual": false, "line": "Your mood right now: a bit low. Let it show in how you word this reply; don't name the feeling."},
+    {"face": "angry", "manual": false, "line": "Your mood right now: a bit annoyed. Let it show in how you word this reply; don't name the feeling."},
+    {"face": "surprised", "manual": false, "line": "Your mood right now: caught off guard. Let it show in how you word this reply; don't name the feeling."},
+    {"face": "thinking", "manual": false, "line": "Your mood right now: thoughtful, turning something over. Let it show in how you word this reply; don't name the feeling."},
+    {"face": "embarrassed", "manual": false, "line": "Your mood right now: a little embarrassed. Let it show in how you word this reply; don't name the feeling."},
+    {"face": "neutral", "manual": false, "line": null},
+    {"face": "happy", "manual": true, "line": null},
+    {"face": "unknown", "manual": false, "line": null}
+  ]
+}

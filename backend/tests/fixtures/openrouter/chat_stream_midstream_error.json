@@ -1,0 +1,58 @@
+{
+  "verified": false,
+  "source": "Mid-stream error chunk (status already 200): OpenRouter API docs (chat completions / streaming / usage accounting), 2026-10; doc backend/04 §1",
+  "status": 200,
+  "sse": [
+    {
+      "id": "gen-rec-000005",
+      "provider": "DeepSeek",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "object": "chat.completion.chunk",
+      "created": 1791000000,
+      "choices": [
+        {
+          "index": 0,
+          "delta": {
+            "role": "assistant",
+            "content": "Hello "
+          },
+          "finish_reason": null
+        }
+      ]
+    },
+    {
+      "id": "gen-rec-000005",
+      "provider": "DeepSeek",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "object": "chat.completion.chunk",
+      "created": 1791000000,
+      "choices": [
+        {
+          "index": 0,
+          "delta": {
+            "content": "the"
+          },
+          "finish_reason": null
+        }
+      ]
+    },
+    {
+      "id": "gen-rec-000005",
+      "object": "chat.completion.chunk",
+      "provider": "DeepSeek",
+      "error": {
+        "code": "server_error",
+        "message": "Provider disconnected"
+      },
+      "choices": [
+        {
+          "index": 0,
+          "delta": {
+            "content": ""
+          },
+          "finish_reason": "error"
+        }
+      ]
+    }
+  ]
+}

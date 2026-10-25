@@ -1,0 +1,171 @@
+{
+ "who_speaks/who_first": {
+  "seed": 1010,
+  "sample": [
+   "whf1-006",
+   "whf1-010",
+   "whf1-011",
+   "whf1-014",
+   "whf1-016",
+   "whf1-027",
+   "whf1-028",
+   "whf1-035",
+   "whf1-039",
+   "whf1-043",
+   "whf1-047",
+   "whf1-052",
+   "whf1-053",
+   "whf1-055",
+   "whf1-057"
+  ],
+  "disagree": []
+ },
+ "who_speaks/who_second": {
+  "seed": 1011,
+  "sample": [
+   "whs1-004",
+   "whs1-015",
+   "whs1-016",
+   "whs1-023",
+   "whs1-033",
+   "whs1-034",
+   "whs1-038",
+   "whs1-045",
+   "whs1-047",
+   "whs1-049",
+   "whs1-052",
+   "whs1-054",
+   "whs1-057",
+   "whs1-060",
+   "whs1-065",
+   "whs1-080",
+   "whs1-085",
+   "whs1-088"
+  ],
+  "disagree": []
+ },
+ "talk_finished/talk_finished": {
+  "seed": 1012,
+  "sample": [
+   "tlk-001",
+   "tlk-004",
+   "tlk-014",
+   "tlk-019",
+   "tlk-020",
+   "tlk-021",
+   "tlk-026",
+   "tlk-027",
+   "tlk-033",
+   "tlk-044",
+   "tlk-045",
+   "tlk-052",
+   "tlk-054",
+   "tlk-056",
+   "tlk-057",
+   "tlk-059",
+   "tlk-062",
+   "tlk-069",
+   "tlk-076",
+   "tlk-078",
+   "tlk-083",
+   "tlk-084",
+   "tlk-109",
+   "tlk-117"
+  ],
+  "disagree": []
+ },
+ "emotion/emotion_watch": {
+  "seed": 1013,
+  "sample": [
+   "emw-001",
+   "emw-002",
+   "emw-003",
+   "emw-004",
+   "emw-009",
+   "emw-011",
+   "emw-012",
+   "emw-016",
+   "emw-017",
+   "emw-021",
+   "emw-025",
+   "emw-029",
+   "emw-032",
+   "emw-035",
+   "emw-037"
+  ],
+  "disagree": [
+   "emw-002"
+  ]
+ },
+ "who_speaks/who_scene": {
+  "note": "Sampled by source (history#cut), because the item ids were renumbered when the set was relabelled. Pass 1 found two disagreements, so the whole set was relabelled (doc 02 B2) and sampled again; pass 2 found one, replaced.",
+  "seed": 1015,
+  "sample": [
+   "watch:meridian_long#12",
+   "watch:meridian_long#37",
+   "watch:meridian_long#39",
+   "watch:meridian_long#52",
+   "watch:meridian_long#56",
+   "watch:meridian_long#71",
+   "watch:meridian_long#78",
+   "watch:sunnyhollow#1",
+   "watch:sunnyhollow#7",
+   "watch:sunnyhollow#8",
+   "watch:sunnyhollow#10",
+   "watch:sunnyhollow#14",
+   "watch:sunnyhollow#22",
+   "watch:sunnyhollow#32",
+   "watch:sunnyhollow#34"
+  ],
+  "disagree": [
+   "watch:meridian_long#39"
+  ],
+  "earlier": [
+   {
+    "seed": 1014,
+    "sample": [
+     "watch:meridian_long#1",
+     "watch:meridian_long#3",
+     "watch:meridian_long#22",
+     "watch:meridian_long#27",
+     "watch:meridian_long#29",
+     "watch:meridian_long#67",
+     "watch:meridian_long#69",
+     "watch:meridian_long#71",
+     "watch:meridian_long#72",
+     "watch:sunnyhollow#4",
+     "watch:sunnyhollow#8",
+     "watch:sunnyhollow#22",
+     "watch:sunnyhollow#30",
+     "watch:sunnyhollow#33",
+     "watch:sunnyhollow#39"
+    ],
+    "disagree": [
+     "watch:meridian_long#22",
+     "watch:meridian_long#72"
+    ]
+   }
+  ]
+ },
+ "who_speaks/who_scene_growth": {
+  "seed": 1016,
+  "sample": [
+   "wsc1-062",
+   "wsc1-065",
+   "wsc1-071",
+   "wsc1-075",
+   "wsc1-076",
+   "wsc1-077",
+   "wsc1-079",
+   "wsc1-083",
+   "wsc1-084",
+   "wsc1-085",
+   "wsc1-092",
+   "wsc1-095",
+   "wsc1-096",
+   "wsc1-097",
+   "wsc1-099"
+  ],
+  "disagree": []
+ }
+}

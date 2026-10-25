@@ -1,0 +1,23 @@
+{
+ "input": {
+  "characterId": "chr_x",
+  "kind": "portrait_candidates"
+ },
+ "mode": "standard",
+ "parallel": 2,
+ "estimatedCostUsd": 0.036,
+ "tasks": [
+  {
+   "type": "portrait_candidate",
+   "ms": 20000,
+   "cost": 0.018,
+   "category": "image"
+  },
+  {
+   "type": "portrait_candidate",
+   "ms": 20000,
+   "cost": 0.018,
+   "category": "image"
+  }
+ ]
+}

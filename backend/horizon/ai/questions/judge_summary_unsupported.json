@@ -1,0 +1,22 @@
+{
+ "id": "judge_summary_unsupported",
+ "version": 2,
+ "purpose": "eval_judge",
+ "type": "noul",
+ "label": "unsupported claim?",
+ "instructions": "Does quoted_summary state anything that quoted_lines, quoted_previous and quoted_premise don't support?",
+ "true": "The summary states something the lines, the previous notes and the premise don't say.",
+ "false": "Everything in the summary is supported by the lines, the previous notes or the premise.",
+ "state": {
+  "quoted_lines": "quoted",
+  "quoted_previous": "quoted",
+  "quoted_premise": "quoted",
+  "quoted_summary": "quoted"
+ },
+ "deadline": "default",
+ "floor": null,
+ "thresholds": {
+  "t": 0.5
+ },
+ "fallback": "none (evaluation only)"
+}

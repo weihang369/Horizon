@@ -1,0 +1,14 @@
+{
+  "name": "bare_lookalike_is_text",
+  "doc": "D37: only the 7 labels count; <neat> is released as text with the previous face",
+  "chunks": [
+    "<ne",
+    "at> trick"
+  ],
+  "previous": "sad",
+  "expected": {
+    "emotion": "sad",
+    "source": "default",
+    "text": "<neat> trick"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "standalone",
+  "version": 2,
+  "purpose": "turn_plan",
+  "type": "noul",
+  "label": "standalone?",
+  "instructions": "Can the latest message be understood on its own, without the earlier lines?",
+  "true": "Yes: it says what it is about and makes sense read alone.",
+  "false": "No: it leans on earlier lines, with words like 'it', 'that' or 'there', or a missing subject, as in 'and nights?'.",
+  "examples": {
+    "true": [
+      "How long should a nurse rest after three night shifts?"
+    ],
+    "false": [
+      "what about weekends then?"
+    ]
+  },
+  "state": {
+    "mode": "label",
+    "quoted_user": "quoted",
+    "quoted_cast": "quoted",
+    "quoted_documents": "quoted",
+    "quoted_latest": "quoted",
+    "quoted_recent": "quoted",
+    "quoted_premise": "quoted",
+    "quoted_summary": "quoted",
+    "quoted_message": "quoted"
+  },
+  "deadline": "turn_plan",
+  "floor": null,
+  "thresholds": {
+    "t_standalone": 0.35
+  },
+  "fallback": "no_rewrite",
+  "state_note": "rag 11.3: t_standalone 0.35 chosen on dev by B5 (docs/ai/checks/m12.md)."
+}

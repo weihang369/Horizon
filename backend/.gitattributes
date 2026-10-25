@@ -1,0 +1,3 @@
+# Generated contract + cross-language fixtures: byte-exact across OSes (export-schema:check compares bytes).
+horizon/contract/schema.json text eol=lf
+tests/fixtures/** text eol=lf

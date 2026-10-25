@@ -1,0 +1,33 @@
+{
+ "source": "synthetic (rag task 5.4): K4's own examples and their kind; replaced by recorded rewrites after check 3 (task 11.7)",
+ "recorded": "2026-10-15",
+ "model": "none (synthetic until check 3 records DeepSeek's)",
+ "note": "The fake provider answers `query_rewrite` chat calls with these, in turn (doc 13 W14): one line, English, standalone, under 20 words, so each passes K4's output checks. The last two are the failures the checks catch (two lines; mostly not Latin script).",
+ "purpose": "query_rewrite",
+ "responses": [
+  {
+   "item": "and nights?",
+   "content": "how night shifts affect staff fatigue scores in the shift fatigue review"
+  },
+  {
+   "item": "夜班会更累吗？",
+   "content": "do night shifts increase staff fatigue"
+  },
+  {
+   "item": "what about the second one?",
+   "content": "triage category for chest pain in the ED triage guidelines"
+  },
+  {
+   "item": "and on weekends?",
+   "content": "weekend rota cover rules for night nurses"
+  },
+  {
+   "item": "(a failure)",
+   "content": "night shift fatigue\nstaff rest days"
+  },
+  {
+   "item": "(a failure)",
+   "content": "夜班疲劳和休息日"
+  }
+ ]
+}

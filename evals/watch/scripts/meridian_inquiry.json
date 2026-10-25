@@ -1,0 +1,11 @@
+{
+ "id": "meridian_inquiry",
+ "note": "group-watch D23 / G11's growth: 50 turns with three characters, generated once with naive through the store (task 10.3, the user's choice of 2026-10-13), so who_scene grows by B2's 40 items. Not a recap source.",
+ "world": "wld_seedMeridian",
+ "cast": ["chr_seedAmara", "chr_seedMei", "chr_seedVictor"],
+ "premise": "A week after a heatwave filled the hospital, Amara, Mei and Victor prepare the town's public inquiry: Amara has the admissions, Mei has the cost of the closed factories, and Victor must decide who testifies first.",
+ "language": "en",
+ "turns": 50,
+ "paceMs": 500,
+ "notes": {"25": "The mayor's office emails: the inquiry starts tomorrow morning, a day early."}
+}

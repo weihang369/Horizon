@@ -1,0 +1,21 @@
+{
+ "id": "judge_memory_missed",
+ "version": 1,
+ "purpose": "eval_judge",
+ "type": "noul",
+ "label": "change missed?",
+ "instructions": "quoted_expected is a change the new messages make to a character's memories. Is it missing from the lines in quoted_written, so that nothing written records it?",
+ "true": "Missed: no written line records the change, or a line records it wrongly.",
+ "false": "Covered: a written line records the change, in any wording.",
+ "state": {
+  "quoted_expected": "quoted",
+  "quoted_written": "quoted"
+ },
+ "deadline": "default",
+ "floor": null,
+ "thresholds": {
+  "t": 0.5
+ },
+ "fallback": "none (evaluation only)",
+ "state_note": "memory D40 (B4 'Memory rewrite', covered): one per expected change, against everything the character's run wrote."
+}

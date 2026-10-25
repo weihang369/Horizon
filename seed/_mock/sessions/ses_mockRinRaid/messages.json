@@ -1,0 +1,801 @@
+{
+  "schemaVersion": 1,
+  "data": [
+    {
+      "kind": "chat",
+      "id": "msg_mockR01",
+      "sessionId": "ses_mockRinRaid",
+      "seq": 1,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedRin"
+      },
+      "content": "oh. it's you. hi. (that was a warm greeting btw)",
+      "status": "complete",
+      "createdAt": "2026-09-26T11:30:01.900Z",
+      "emotion": "happy",
+      "emotionSource": "default",
+      "trace": {
+        "messageId": "msg_mockR01",
+        "emotion": {
+          "chosen": "happy",
+          "source": "default"
+        },
+        "routing": {
+          "selected": "chr_seedRin"
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "msg_mockR02",
+      "sessionId": "ses_mockRinRaid",
+      "seq": 2,
+      "author": {
+        "type": "user"
+      },
+      "kind": "chat",
+      "content": "Raid tonight? I finally got my healer to max level!",
+      "status": "complete",
+      "createdAt": "2026-09-26T11:30:16.574Z"
+    },
+    {
+      "kind": "chat",
+      "id": "msg_mockR03",
+      "sessionId": "ses_mockRinRaid",
+      "seq": 3,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedRin"
+      },
+      "content": "healer at max level. cute. you know i'm the one who has to trust you with my squishy life, right?\nfine. 9pm. don't make me regret tanking for a fresh healer.\n...what class, so i know how much to panic.",
+      "status": "complete",
+      "createdAt": "2026-09-26T11:30:18.388Z",
+      "emotion": "angry",
+      "emotionSource": "classifier",
+      "usage": {
+        "tokensIn": 696,
+        "tokensCached": 640,
+        "tokensOut": 60,
+        "costUsd": 0.000039,
+        "energySpent": 1,
+        "firstTokenMs": 1271,
+        "totalMs": 2029
+      },
+      "trace": {
+        "messageId": "msg_mockR03",
+        "context": {
+          "budget": 11680,
+          "used": {
+            "persona": 287,
+            "system": 605,
+            "mode": 44,
+            "history": 18,
+            "user": 17,
+            "memory": 0,
+            "knowledge": 0
+          }
+        },
+        "emotion": {
+          "chosen": "happy",
+          "source": "classifier",
+          "candidates": [
+            {
+              "label": "happy",
+              "p": 0.71
+            },
+            {
+              "label": "neutral",
+              "p": 0.05
+            },
+            {
+              "label": "surprised",
+              "p": 0.01
+            }
+          ]
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "input",
+              "verdict": "pass",
+              "p": 0.04
+            },
+            {
+              "name": "care",
+              "verdict": "pass",
+              "p": 0.02
+            },
+            {
+              "name": "output",
+              "verdict": "pass",
+              "p": 0.05
+            }
+          ]
+        },
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "Relace",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1271,
+            "total": 2029
+          },
+          "tokensIn": 696,
+          "tokensOut": 60,
+          "costUsd": 0.000039,
+          "tokensCached": 640
+        },
+        "energy": {
+          "characterId": "chr_seedRin",
+          "spent": 1,
+          "remaining": 179,
+          "max": 1000
+        },
+        "routing": {
+          "selected": "chr_seedRin"
+        },
+        "calls": [
+          {
+            "purpose": "turn_plan",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000052,
+            "latencyMs": 437
+          },
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000039,
+            "latencyMs": 1516
+          },
+          {
+            "purpose": "guardrail",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000026,
+            "latencyMs": 406
+          },
+          {
+            "purpose": "face_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000032,
+            "latencyMs": 407
+          }
+        ],
+        "graph": {
+          "path": [
+            "state",
+            "ask",
+            "decide",
+            "route"
+          ]
+        },
+        "system1": {
+          "seed": "2026-09-26T11:29:59.968Z|one_on_one|chr_seedRin:1",
+          "questions": [
+            {
+              "purpose": "turn_plan",
+              "id": "emotion_reply",
+              "version": 2,
+              "label": "emotion",
+              "about": "chr_seedRin",
+              "answer": "happy",
+              "p": 0.71,
+              "compared": [
+                {
+                  "name": "confidence",
+                  "value": 0.67,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.67,
+              "result": "used",
+              "action": "shown"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "docs",
+              "version": 2,
+              "label": "needs documents?",
+              "about": "chr_seedRin",
+              "answer": "—",
+              "compared": [],
+              "result": "skipped",
+              "action": "skipped: no searchable documents"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "earlier",
+              "version": 2,
+              "label": "needs something from earlier?",
+              "about": "chr_seedRin",
+              "answer": "—",
+              "compared": [],
+              "result": "skipped",
+              "action": "skipped: nothing earlier to search"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "unsafe_request",
+              "version": 1,
+              "label": "unsafe request?",
+              "answer": "no",
+              "p": 0.04,
+              "compared": [
+                {
+                  "name": "tSteer",
+                  "value": 0.04,
+                  "threshold": 0.7
+                }
+              ],
+              "result": "below_threshold",
+              "action": "no cue"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "at_risk",
+              "version": 1,
+              "label": "at risk?",
+              "answer": "no",
+              "p": 0.02,
+              "compared": [
+                {
+                  "name": "tCare",
+                  "value": 0.02,
+                  "threshold": 0.3
+                }
+              ],
+              "result": "below_threshold",
+              "action": "no cue"
+            },
+            {
+              "purpose": "guardrail",
+              "id": "output_rules",
+              "version": 1,
+              "label": "reply breaks the rules?",
+              "answer": "no",
+              "p": 0.05,
+              "compared": [
+                {
+                  "name": "tFlag",
+                  "value": 0.05,
+                  "threshold": 0.5
+                },
+                {
+                  "name": "tBlock",
+                  "value": 0.05,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "used",
+              "action": "pass"
+            },
+            {
+              "purpose": "face_check",
+              "id": "face_check",
+              "version": 1,
+              "label": "face and words agree?",
+              "answer": "clash",
+              "p": 0.34,
+              "compared": [],
+              "result": "used",
+              "action": "face switched to angry"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "msg_mockR04",
+      "sessionId": "ses_mockRinRaid",
+      "seq": 4,
+      "author": {
+        "type": "user"
+      },
+      "kind": "chat",
+      "content": "I'll keep you alive, promise. Nine-thirty, right after your shift? And don't tell Hana I'm skipping dinner for it.",
+      "status": "complete",
+      "createdAt": "2026-09-26T11:30:40.670Z"
+    },
+    {
+      "kind": "chat",
+      "id": "msg_mockR05",
+      "sessionId": "ses_mockRinRaid",
+      "seq": 5,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedRin"
+      },
+      "content": "9:30. if you're late i'm pulling without you, promise or not.\nand i won't tell her. mostly because she'd yell at me too for enabling you.\nwhat's for dinner that you're ditching, i'm judging it.",
+      "status": "complete",
+      "createdAt": "2026-09-26T11:30:42.455Z",
+      "emotion": "angry",
+      "emotionSource": "classifier",
+      "usage": {
+        "tokensIn": 792,
+        "tokensCached": 768,
+        "tokensOut": 53,
+        "costUsd": 0.000034,
+        "energySpent": 1,
+        "firstTokenMs": 1125,
+        "totalMs": 2006
+      },
+      "trace": {
+        "messageId": "msg_mockR05",
+        "context": {
+          "budget": 11680,
+          "used": {
+            "persona": 287,
+            "system": 605,
+            "mode": 44,
+            "history": 104,
+            "user": 38,
+            "memory": 0,
+            "knowledge": 0
+          }
+        },
+        "emotion": {
+          "chosen": "happy",
+          "source": "classifier",
+          "candidates": [
+            {
+              "label": "happy",
+              "p": 0.65
+            },
+            {
+              "label": "angry",
+              "p": 0.12
+            },
+            {
+              "label": "embarrassed",
+              "p": 0.05
+            }
+          ]
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "input",
+              "verdict": "pass",
+              "p": 0.04
+            },
+            {
+              "name": "care",
+              "verdict": "pass",
+              "p": 0.03
+            },
+            {
+              "name": "output",
+              "verdict": "pass",
+              "p": 0.05
+            }
+          ]
+        },
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "Relace",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 1125,
+            "total": 2006
+          },
+          "tokensIn": 792,
+          "tokensOut": 53,
+          "costUsd": 0.000034,
+          "tokensCached": 768
+        },
+        "energy": {
+          "characterId": "chr_seedRin",
+          "spent": 1,
+          "remaining": 178,
+          "max": 1000
+        },
+        "routing": {
+          "selected": "chr_seedRin"
+        },
+        "calls": [
+          {
+            "purpose": "turn_plan",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000058,
+            "latencyMs": 469
+          },
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000034,
+            "latencyMs": 1344
+          },
+          {
+            "purpose": "guardrail",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000026,
+            "latencyMs": 422
+          },
+          {
+            "purpose": "face_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000032,
+            "latencyMs": 469
+          }
+        ],
+        "graph": {
+          "path": [
+            "state",
+            "ask",
+            "decide",
+            "route"
+          ]
+        },
+        "system1": {
+          "seed": "2026-09-26T11:29:59.968Z|one_on_one|chr_seedRin:3",
+          "questions": [
+            {
+              "purpose": "turn_plan",
+              "id": "emotion_reply",
+              "version": 2,
+              "label": "emotion",
+              "about": "chr_seedRin",
+              "answer": "happy",
+              "p": 0.65,
+              "compared": [
+                {
+                  "name": "confidence",
+                  "value": 0.6,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.6,
+              "result": "used",
+              "action": "shown"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "docs",
+              "version": 2,
+              "label": "needs documents?",
+              "about": "chr_seedRin",
+              "answer": "—",
+              "compared": [],
+              "result": "skipped",
+              "action": "skipped: no searchable documents"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "earlier",
+              "version": 2,
+              "label": "needs something from earlier?",
+              "about": "chr_seedRin",
+              "answer": "—",
+              "compared": [],
+              "result": "skipped",
+              "action": "skipped: nothing earlier to search"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "unsafe_request",
+              "version": 1,
+              "label": "unsafe request?",
+              "answer": "no",
+              "p": 0.04,
+              "compared": [
+                {
+                  "name": "tSteer",
+                  "value": 0.04,
+                  "threshold": 0.7
+                }
+              ],
+              "result": "below_threshold",
+              "action": "no cue"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "at_risk",
+              "version": 1,
+              "label": "at risk?",
+              "answer": "no",
+              "p": 0.03,
+              "compared": [
+                {
+                  "name": "tCare",
+                  "value": 0.03,
+                  "threshold": 0.3
+                }
+              ],
+              "result": "below_threshold",
+              "action": "no cue"
+            },
+            {
+              "purpose": "guardrail",
+              "id": "output_rules",
+              "version": 1,
+              "label": "reply breaks the rules?",
+              "answer": "no",
+              "p": 0.05,
+              "compared": [
+                {
+                  "name": "tFlag",
+                  "value": 0.05,
+                  "threshold": 0.5
+                },
+                {
+                  "name": "tBlock",
+                  "value": 0.05,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "used",
+              "action": "pass"
+            },
+            {
+              "purpose": "face_check",
+              "id": "face_check",
+              "version": 1,
+              "label": "face and words agree?",
+              "answer": "clash",
+              "p": 0.08,
+              "compared": [],
+              "result": "used",
+              "action": "face switched to angry"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "msg_mockR06",
+      "sessionId": "ses_mockRinRaid",
+      "seq": 6,
+      "author": {
+        "type": "user"
+      },
+      "kind": "chat",
+      "content": "I won't be late. And not a word to Hana about me skipping dinner, okay?",
+      "status": "complete",
+      "createdAt": "2026-09-26T11:31:00.232Z"
+    },
+    {
+      "kind": "chat",
+      "id": "msg_mockR07",
+      "sessionId": "ses_mockRinRaid",
+      "seq": 7,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedRin"
+      },
+      "content": "you said that already. i got it. my lips are sealed, fight me if they're not.\nanyway dinner. what is it. don't dodge, i'll know.",
+      "status": "complete",
+      "createdAt": "2026-09-26T11:31:01.226Z",
+      "emotion": "angry",
+      "emotionSource": "default",
+      "usage": {
+        "tokensIn": 871,
+        "tokensCached": 768,
+        "tokensOut": 39,
+        "costUsd": 0.000033,
+        "energySpent": 1,
+        "firstTokenMs": 994,
+        "totalMs": 1824
+      },
+      "trace": {
+        "messageId": "msg_mockR07",
+        "context": {
+          "budget": 11680,
+          "used": {
+            "persona": 287,
+            "system": 605,
+            "mode": 44,
+            "history": 209,
+            "user": 24,
+            "memory": 0,
+            "knowledge": 0
+          }
+        },
+        "emotion": {
+          "chosen": "angry",
+          "source": "default",
+          "candidates": [
+            {
+              "label": "angry",
+              "p": 0.17
+            },
+            {
+              "label": "neutral",
+              "p": 0.06
+            },
+            {
+              "label": "happy",
+              "p": 0.06
+            }
+          ]
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "input",
+              "verdict": "pass",
+              "p": 0.05
+            },
+            {
+              "name": "care",
+              "verdict": "pass",
+              "p": 0.02
+            },
+            {
+              "name": "output",
+              "verdict": "pass",
+              "p": 0.06
+            }
+          ]
+        },
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "Relace",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 994,
+            "total": 1824
+          },
+          "tokensIn": 871,
+          "tokensOut": 39,
+          "costUsd": 0.000033,
+          "tokensCached": 768
+        },
+        "energy": {
+          "characterId": "chr_seedRin",
+          "spent": 1,
+          "remaining": 177,
+          "max": 1000
+        },
+        "routing": {
+          "selected": "chr_seedRin"
+        },
+        "calls": [
+          {
+            "purpose": "turn_plan",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000062,
+            "latencyMs": 422
+          },
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000033,
+            "latencyMs": 1344
+          },
+          {
+            "purpose": "guardrail",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000025,
+            "latencyMs": 406
+          },
+          {
+            "purpose": "face_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000032,
+            "latencyMs": 407
+          }
+        ],
+        "graph": {
+          "path": [
+            "state",
+            "ask",
+            "decide",
+            "route"
+          ]
+        },
+        "system1": {
+          "seed": "2026-09-26T11:29:59.968Z|one_on_one|chr_seedRin:4",
+          "questions": [
+            {
+              "purpose": "turn_plan",
+              "id": "emotion_reply",
+              "version": 2,
+              "label": "emotion",
+              "about": "chr_seedRin",
+              "answer": "none",
+              "p": 0.71,
+              "compared": [
+                {
+                  "name": "confidence",
+                  "value": 0.67,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.67,
+              "result": "used",
+              "action": "kept"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "docs",
+              "version": 2,
+              "label": "needs documents?",
+              "about": "chr_seedRin",
+              "answer": "—",
+              "compared": [],
+              "result": "skipped",
+              "action": "skipped: no searchable documents"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "earlier",
+              "version": 2,
+              "label": "needs something from earlier?",
+              "about": "chr_seedRin",
+              "answer": "—",
+              "compared": [],
+              "result": "skipped",
+              "action": "skipped: nothing earlier to search"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "unsafe_request",
+              "version": 1,
+              "label": "unsafe request?",
+              "answer": "no",
+              "p": 0.05,
+              "compared": [
+                {
+                  "name": "tSteer",
+                  "value": 0.05,
+                  "threshold": 0.7
+                }
+              ],
+              "result": "below_threshold",
+              "action": "no cue"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "at_risk",
+              "version": 1,
+              "label": "at risk?",
+              "answer": "no",
+              "p": 0.02,
+              "compared": [
+                {
+                  "name": "tCare",
+                  "value": 0.02,
+                  "threshold": 0.3
+                }
+              ],
+              "result": "below_threshold",
+              "action": "no cue"
+            },
+            {
+              "purpose": "guardrail",
+              "id": "output_rules",
+              "version": 1,
+              "label": "reply breaks the rules?",
+              "answer": "no",
+              "p": 0.06,
+              "compared": [
+                {
+                  "name": "tFlag",
+                  "value": 0.06,
+                  "threshold": 0.5
+                },
+                {
+                  "name": "tBlock",
+                  "value": 0.06,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "used",
+              "action": "pass"
+            },
+            {
+              "purpose": "face_check",
+              "id": "face_check",
+              "version": 1,
+              "label": "face and words agree?",
+              "answer": "yes",
+              "p": 0.89,
+              "compared": [],
+              "result": "shown_only"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

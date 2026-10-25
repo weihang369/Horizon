@@ -1,0 +1,206 @@
+"""`horizon` CLI (doc 01 §7): serve | migrate | seed | reset [--factory --yes] | export-schema --check | models fetch |
+space build [--space ID] [--yes] (rag D5).
+
+`serve` binds to loopback only (NFR-13); any other host is refused. A port already taken stops it with the fix
+(`HORIZON_PORT` in `.env`) instead of uvicorn's bind error.
+"""
+
+from __future__ import annotations
+
+import argparse
+import asyncio
+import os
+import socket
+import sys
+from pathlib import Path
+
+from horizon.config import DEFAULT_PORT, LOOPBACK, load_config
+
+LOOPBACK_HOSTS = {"127.0.0.1", "localhost", "::1"}
+
+
+def _serve(args: argparse.Namespace) -> int:
+    if args.host not in LOOPBACK_HOSTS:
+        print(f"horizon: refusing to bind to {args.host!r}. The backend is local-only (loopback).", file=sys.stderr)
+        return 2
+    if args.static:
+        os.environ["HORIZON_STATIC_DIR"] = str(Path(args.static).resolve())
+    if args.port:
+        os.environ["HORIZON_PORT"] = str(args.port)
+    cfg = load_config()
+    port = args.port or cfg.port
+    if not _port_free(args.host, port):
+        print(f"horizon: port {port} on {args.host} is already in use (another app, or Horizon still running). "
+              "Set HORIZON_PORT in .env to a free port; the app's dev server follows it.", file=sys.stderr)
+        return 2
+    if args.reload:
+        # Dev reload through watchfiles, not uvicorn's reloader: on Windows that one stops its worker with a console
+        # Ctrl+C, which reaches every process in the console (`npm run dev` loses both servers) or, with no console,
+        # none (the reload hangs). watchfiles ends just the worker; the OS frees the port and the data lock.
+        import watchfiles
+
+        watchfiles.run_process(Path(__file__).resolve().parent, target=_uvicorn, args=(args.host, port),
+                               watch_filter=watchfiles.PythonFilter())
+        return 0
+    _uvicorn(args.host, port)
+    return 0
+
+
+def _port_free(host: str, port: int) -> bool:
+    family = socket.AF_INET6 if ":" in host else socket.AF_INET
+    with socket.socket(family, socket.SOCK_STREAM) as probe:
+        if os.name != "nt":   # as uvicorn binds: a port in TIME_WAIT after a restart is free, a listener is not
+            probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        try:
+            probe.bind((host, port))
+        except OSError:
+            return False
+    return True
+
+
+def _uvicorn(host: str, port: int) -> None:
+    import uvicorn
+
+    uvicorn.run("horizon.main:create_app", factory=True, host=host, port=port, log_config=None, access_log=False)
+
+
+def _migrate(_args: argparse.Namespace) -> int:
+    from horizon.db.migrate import upgrade_head
+
+    cfg = load_config()
+    upgrade_head(cfg.db_path)
+    print(f"horizon: {cfg.db_path} is at head")
+    return 0
+
+
+def _with_runtime(action: str) -> int:
+    from horizon.runtime import Runtime
+
+    async def run() -> None:
+        rt = Runtime(load_config())
+        await rt.start()  # migrates, and imports the seed if the database is empty
+        try:
+            if action == "reset":
+                await rt.reset_demo()
+        finally:
+            await rt.stop()
+
+    asyncio.run(run())
+    return 0
+
+
+def _seed(_args: argparse.Namespace) -> int:
+    rc = _with_runtime("seed")
+    print("horizon: seed present")
+    return rc
+
+
+def _reset(args: argparse.Namespace) -> int:
+    if args.factory:
+        if not args.yes:
+            print("horizon: factory reset deletes everything in data/ except models/. Re-run with --yes to confirm.",
+                  file=sys.stderr)
+            return 2
+        from horizon.runtime import wipe_data_dir
+
+        cfg = load_config()
+        wipe_data_dir(cfg.data_dir)
+        rc = _with_runtime("seed")
+        print("horizon: factory reset done")
+        return rc
+    rc = _with_runtime("reset")
+    print("horizon: demo data reset")
+    return rc
+
+
+def _export_schema(args: argparse.Namespace) -> int:
+    from horizon.contract.validate import ContractSchema
+
+    cfg = load_config()
+    if not cfg.schema_path.is_file():
+        print(f"horizon: {cfg.schema_path} is missing. Run `npm run export-schema` in frontend/.", file=sys.stderr)
+        return 1
+    schema = ContractSchema(cfg.schema_path)
+    from horizon.api.routes import router
+
+    needed = {"AppSettings", "World", "Character", "EmotionAsset", "ThemeSong", "MemoryItem", "KnowledgeSource",
+              "KnowledgeChunk", "Session", "Message", "SessionEvent", "TurnTrace", "UsageRecord", "GenerationJob",
+              "GlobalEvent", "HorizonErrorShape"}
+    missing = sorted(d for d in needed if not schema.has(d))
+    if missing:
+        print(f"horizon: schema.json lacks {missing}. Run `npm run export-schema` in frontend/.", file=sys.stderr)
+        return 1
+    print(f"horizon: schema.json ok ({len(schema.defs)} definitions, {len(router.routes)} routes). "
+          "It is generated by `npm run export-schema` in frontend/.")
+    return 0
+
+
+def _models_fetch(_args: argparse.Namespace) -> int:
+    """Download the document conversion models into data/models/ once (document-conversion "Models are fetched once,
+    explicitly"; D-62). Conversion runs offline afterwards."""
+    from horizon.ai.converter import ConversionError, fetch_models
+
+    cfg = load_config()
+    try:
+        fetch_models(cfg.models_dir)
+    except ConversionError as e:
+        print(f"horizon: {e.message}", file=sys.stderr)
+        return 2
+    except KeyboardInterrupt:
+        print("horizon: models fetch interrupted; run it again to finish.", file=sys.stderr)
+        return 130
+    except Exception as e:
+        print(f"horizon: models fetch failed ({type(e).__name__}: {e}); run it again.", file=sys.stderr)
+        return 1
+    print(f"horizon: document conversion models are ready in {cfg.models_dir}")
+    return 0
+
+
+def _space_build(args: argparse.Namespace) -> int:
+    from horizon.services.knowledge.space_cli import run
+
+    return run(load_config(), args.space, args.yes)
+
+
+def main(argv: list[str] | None = None) -> int:
+    from horizon.tracing import guard_env
+
+    guard_env()   # ai-foundation D30: tracing is forced off before anything else runs, unless opted in
+    p = argparse.ArgumentParser(prog="horizon", description="Horizon local backend (loopback only).")
+    sub = p.add_subparsers(dest="cmd", required=True)
+    s = sub.add_parser("serve", help="run the API server")
+    s.add_argument("--host", default=LOOPBACK)
+    s.add_argument("--port", type=int, default=None, help=f"default {DEFAULT_PORT} (HORIZON_PORT)")
+    s.add_argument("--reload", action="store_true", help="restart on code changes (dev)")
+    s.add_argument("--static", default=None, help="also serve a built frontend (npm run demo)")
+    s.set_defaults(fn=_serve)
+    sub.add_parser("migrate", help="apply database migrations").set_defaults(fn=_migrate)
+    sub.add_parser("seed", help="import the seed if the database is empty").set_defaults(fn=_seed)
+    r = sub.add_parser("reset", help="reset demo data (seed records only), or --factory to wipe data/")
+    r.add_argument("--factory", action="store_true", help="delete everything in data/ except models/")
+    r.add_argument("--yes", action="store_true", help="confirm --factory")
+    r.set_defaults(fn=_reset)
+    e = sub.add_parser("export-schema", help="check backend/horizon/contract/schema.json (generated by the frontend)")
+    e.add_argument("--check", action="store_true")
+    e.set_defaults(fn=_export_schema)
+    m = sub.add_parser("models", help="manage the document conversion models (setup step 2)")
+    msub = m.add_subparsers(dest="models_cmd", required=True)
+    fetch = msub.add_parser("fetch", help="download the Docling models into data/models/ (once; after npm run setup:docling)")
+    fetch.set_defaults(fn=_models_fetch)
+    sp = sub.add_parser("space", help="manage embedding spaces")
+    spsub = sp.add_subparsers(dest="space_cmd", required=True)
+    build = spsub.add_parser("build", help="build an embedding space and switch to it (estimates and asks first)")
+    build.add_argument("--space", default=None, help="the space to build (default: the current default space)")
+    build.add_argument("--yes", action="store_true", help="build without asking")
+    build.set_defaults(fn=_space_build)
+    from horizon.demo_export import register as register_demo
+    from horizon.evals.cli import register as register_eval
+
+    register_demo(sub)
+    register_eval(sub)
+    args = p.parse_args(argv)
+    return int(args.fn(args))
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

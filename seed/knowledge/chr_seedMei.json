@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "data": [
+    {
+      "characterId": "chr_seedMei",
+      "worldId": "wld_seedMeridian",
+      "title": "Working-time pilots appendix.pdf",
+      "type": "file",
+      "status": "failed",
+      "bytes": 1011,
+      "addedAt": "2026-09-24T14:05:00.984Z",
+      "error": "This PDF is password-protected. Remove the password and add it again.",
+      "id": "kno_seedMei1"
+    },
+    {
+      "characterId": "chr_seedMei",
+      "worldId": "wld_seedMeridian",
+      "title": "Four-day week pilot summaries.pdf",
+      "type": "file",
+      "status": "indexed",
+      "bytes": 85731,
+      "pages": 9,
+      "addedAt": "2026-09-24T14:11:00.989Z",
+      "id": "kno_seedMei2",
+      "chunks": 12,
+      "citedCount": 7
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+ "source": "synthetic (memory task 3.9, design D19): one add, one rewrite and one confirm for a two-character stretch; replaced by recorded memory-1 answers after the phase 10 runs where they exist",
+ "recorded": "2026-10-16",
+ "model": "none (synthetic until phase 10 records DeepSeek's)",
+ "note": "The fake provider answers `memory` chat calls with these, in turn (doc 13 W14). Character 1 gets an add and a confirm of m1, character 2 a rewrite of its m1; a run with one character drops character 2's change as an unknown character.",
+ "purpose": "memory",
+ "responses": [
+  {
+   "item": "add + rewrite + confirm",
+   "content": "{\"changes\": [{\"for\": 1, \"op\": \"add\", \"kind\": \"about_user\", \"about\": \"user\", \"text\": \"Kai sleeps badly before exams and is trying to cut back on coffee.\", \"source\": 1, \"weight\": 4}, {\"for\": 1, \"op\": \"confirm\", \"target\": \"m1\", \"source\": 1}, {\"for\": 2, \"op\": \"rewrite\", \"target\": \"m1\", \"kind\": \"fact\", \"about\": null, \"text\": \"Kai is studying for his finals and sleeps badly before exams.\", \"source\": 1, \"weight\": 3}]}"
+  }
+ ]
+}

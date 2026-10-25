@@ -1,0 +1,360 @@
+{
+ "name": "dinner_mid_stream",
+ "doc": "A group recording cut inside a reply.",
+ "source": "ses_seedDinner",
+ "atSeq": 10,
+ "newSessionId": "ses_forkFixture1",
+ "now": "2026-10-03T03:00:00.000Z",
+ "expected": {
+  "events": [
+   {
+    "id": "evt_forkFixture1e1",
+    "sessionId": "ses_forkFixture1",
+    "seq": 1,
+    "at": "2026-09-30T10:30:00.000Z",
+    "type": "session.state",
+    "payload": {
+     "status": "active",
+     "participants": [
+      {
+       "characterId": "chr_seedHana",
+       "role": "speaker",
+       "currentEmotion": "neutral",
+       "mutedByUser": false
+      },
+      {
+       "characterId": "chr_seedTakeshi",
+       "role": "speaker",
+       "currentEmotion": "neutral",
+       "mutedByUser": false
+      },
+      {
+       "characterId": "chr_seedRin",
+       "role": "speaker",
+       "currentEmotion": "neutral",
+       "mutedByUser": false
+      }
+     ]
+    }
+   },
+   {
+    "id": "evt_forkFixture1e2",
+    "sessionId": "ses_forkFixture1",
+    "seq": 2,
+    "at": "2026-09-30T10:30:00.000Z",
+    "type": "energy",
+    "payload": {
+     "characterId": "chr_seedHana",
+     "current": 920,
+     "max": 1000,
+     "state": "active"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e3",
+    "sessionId": "ses_forkFixture1",
+    "seq": 3,
+    "at": "2026-09-30T10:30:00.000Z",
+    "type": "energy",
+    "payload": {
+     "characterId": "chr_seedTakeshi",
+     "current": 1000,
+     "max": 1000,
+     "state": "active"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e4",
+    "sessionId": "ses_forkFixture1",
+    "seq": 4,
+    "at": "2026-09-30T10:30:00.000Z",
+    "type": "energy",
+    "payload": {
+     "characterId": "chr_seedRin",
+     "current": 1000,
+     "max": 1000,
+     "state": "active"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e5",
+    "sessionId": "ses_forkFixture1",
+    "seq": 5,
+    "at": "2026-09-30T10:30:14.781Z",
+    "type": "message",
+    "payload": {
+     "message": {
+      "id": "msg_forkFixture1m0",
+      "sessionId": "ses_forkFixture1",
+      "seq": 1,
+      "author": {
+       "type": "user"
+      },
+      "kind": "chat",
+      "content": "Dinner's on me tonight, everyone. What should we order?",
+      "status": "complete",
+      "createdAt": "2026-09-30T10:30:14.781Z"
+     }
+    }
+   },
+   {
+    "id": "evt_forkFixture1e6",
+    "sessionId": "ses_forkFixture1",
+    "seq": 6,
+    "at": "2026-09-30T10:30:16.099Z",
+    "type": "turn.next",
+    "payload": {
+     "nextSpeakerId": "chr_seedHana"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e7",
+    "sessionId": "ses_forkFixture1",
+    "seq": 7,
+    "at": "2026-09-30T10:30:16.168Z",
+    "type": "turn.thinking",
+    "payload": {
+     "characterId": "chr_seedHana"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e8",
+    "sessionId": "ses_forkFixture1",
+    "seq": 8,
+    "at": "2026-09-30T10:30:16.997Z",
+    "type": "turn.start",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "author": {
+      "type": "character",
+      "characterId": "chr_seedHana"
+     }
+    }
+   },
+   {
+    "id": "evt_forkFixture1e9",
+    "sessionId": "ses_forkFixture1",
+    "seq": 9,
+    "at": "2026-09-30T10:30:16.997Z",
+    "type": "emotion",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "characterId": "chr_seedHana",
+     "emotion": "happy",
+     "source": "classifier"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e10",
+    "sessionId": "ses_forkFixture1",
+    "seq": 10,
+    "at": "2026-09-30T10:30:17.063Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": "Ooh, you're spo"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e11",
+    "sessionId": "ses_forkFixture1",
+    "seq": 11,
+    "at": "2026-09-30T10:30:17.116Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": "iling us!! I vote fo"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e12",
+    "sessionId": "ses_forkFixture1",
+    "seq": 12,
+    "at": "2026-09-30T10:30:17.184Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": "r the lit"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e13",
+    "sessionId": "ses_forkFixture1",
+    "seq": 13,
+    "at": "2026-09-30T10:30:17.237Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": "tle Thai place by the station — remember the b"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e14",
+    "sessionId": "ses_forkFixture1",
+    "seq": 14,
+    "at": "2026-09-30T10:30:17.300Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": "asil noodles? Rin demolis"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e15",
+    "sessionId": "ses_forkFixture1",
+    "seq": 15,
+    "at": "2026-09-30T10:30:17.396Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": "hed a whole plate last time"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e16",
+    "sessionId": "ses_forkFixture1",
+    "seq": 16,
+    "at": "2026-09-30T10:30:17.614Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": ".\n\nAlso, Dad wil"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e17",
+    "sessionId": "ses_forkFixture1",
+    "seq": 17,
+    "at": "2026-09-30T10:30:17.709Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": "l say \"anything's fine\" and then compla"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e18",
+    "sessionId": "ses_forkFixture1",
+    "seq": 18,
+    "at": "2026-09-30T10:30:17.926Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": "in it's too spicy, so m"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e19",
+    "sessionId": "ses_forkFixture1",
+    "seq": 19,
+    "at": "2026-09-30T10:30:17.960Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "delta": "aybe grab him the mild curry. Probably."
+    }
+   },
+   {
+    "id": "evt_forkFixture1e20",
+    "sessionId": "ses_forkFixture1",
+    "seq": 20,
+    "at": "2026-09-30T10:30:18.597Z",
+    "type": "turn.end",
+    "payload": {
+     "messageId": "msg_forkFixture1m1",
+     "status": "complete",
+     "usage": {
+      "tokensIn": 726,
+      "tokensCached": 640,
+      "tokensOut": 62,
+      "costUsd": 0.000042,
+      "energySpent": 1,
+      "firstTokenMs": 900,
+      "totalMs": 1893
+     }
+    }
+   }
+  ],
+  "session": {
+   "id": "ses_forkFixture1",
+   "worldId": "wld_seedSunnyHollow",
+   "title": "Dinner's on me · live",
+   "titleIsCustom": false,
+   "mode": "group",
+   "status": "active",
+   "participants": [
+    {
+     "characterId": "chr_seedHana",
+     "role": "speaker",
+     "currentEmotion": "happy",
+     "mutedByUser": false
+    },
+    {
+     "characterId": "chr_seedTakeshi",
+     "role": "speaker",
+     "currentEmotion": "neutral",
+     "mutedByUser": false
+    },
+    {
+     "characterId": "chr_seedRin",
+     "role": "speaker",
+     "currentEmotion": "neutral",
+     "mutedByUser": false
+    }
+   ],
+   "emotionMode": "llm",
+   "musicPolicy": "follow_speaker",
+   "readableMode": false,
+   "config": {
+    "responderPolicy": "auto",
+    "maxAutoResponders": 2
+   },
+   "state": null,
+   "isSeed": false,
+   "costUsd": 0.000042,
+   "messageCount": 2,
+   "createdAt": "2026-10-03T03:00:00.000Z",
+   "updatedAt": "2026-09-30T10:30:18.597Z",
+   "lastMessageAt": "2026-09-30T10:30:16.997Z",
+   "continuedFrom": "ses_seedDinner"
+  },
+  "messages": [
+   {
+    "id": "msg_forkFixture1m0",
+    "sessionId": "ses_forkFixture1",
+    "seq": 1,
+    "author": {
+     "type": "user"
+    },
+    "kind": "chat",
+    "content": "Dinner's on me tonight, everyone. What should we order?",
+    "status": "complete",
+    "createdAt": "2026-09-30T10:30:14.781Z"
+   },
+   {
+    "kind": "chat",
+    "id": "msg_forkFixture1m1",
+    "sessionId": "ses_forkFixture1",
+    "seq": 2,
+    "author": {
+     "type": "character",
+     "characterId": "chr_seedHana"
+    },
+    "content": "Ooh, you're spoiling us!! I vote for the little Thai place by the station — remember the basil noodles? Rin demolished a whole plate last time.\n\nAlso, Dad will say \"anything's fine\" and then complain it's too spicy, so maybe grab him the mild curry. Probably.",
+    "status": "complete",
+    "createdAt": "2026-09-30T10:30:16.997Z",
+    "emotion": "happy",
+    "emotionSource": "classifier",
+    "usage": {
+     "tokensIn": 726,
+     "tokensCached": 640,
+     "tokensOut": 62,
+     "costUsd": 0.000042,
+     "energySpent": 1,
+     "firstTokenMs": 900,
+     "totalMs": 1893
+    }
+   }
+  ]
+ }
+}

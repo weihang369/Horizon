@@ -1,0 +1,21 @@
+{
+  "kind": "horizon.theme",
+  "version": 1,
+  "seed": "chr_seedTakeshi",
+  "title": "Takeshi's Theme",
+  "brief": {
+    "genres": [
+      "acoustic folk"
+    ],
+    "moods": [
+      "calm",
+      "nostalgic"
+    ],
+    "bpm": 95,
+    "instruments": [
+      "guitar",
+      "harmonica"
+    ],
+    "vibe": "Acoustic folk guitar, harmonica, laid-back shuffle"
+  }
+}

@@ -1,0 +1,26 @@
+Moot court notes: "This house would adopt a nationwide four-day work week"
+V. Hale, for the Meridian Bar Society exhibition debate. Private notes.
+
+¶ 1. Expect the opposition to say the evidence base is narrow. Concede scope early, then shift the burden: the status quo is also a policy and has to justify itself.
+
+¶ 2. Historical anchor: the Meridian Working Hours Act 1931 made the two-day weekend the default. It gave agriculture and shipping a ten-year transition and exempted continuous services.
+
+¶ 3. Continuous-coverage sectors already run on shift rules under Part IV of the Working Time Code: rest periods, a cap on consecutive shifts, and averaging over a reference period. A shorter standard week sits inside that structure.
+
+¶ 4. Phase-in precedent: sector-by-sector timetables, collective agreements first, the public sector as model employer. Courts have upheld staged duties where the end point is clear.
+
+¶ 5. Watch for the "speed, not direction" turn. Once the opposition accepts the goal, the debate is about implementation, and the side with a timetable wins it.
+
+¶ 6. Closing options: res ipsa loquitur; "the destination is agreed". Don't sound triumphant. Judges reward conceding a fair point gracefully.
+
+¶ 7. Definitions first. "Nationwide" means the default standard week in law, not an identical schedule for every employer. "Adopt" means legislate a standard with a transition, not switch overnight. If the opposition reads "nationwide" as "identical", correct it in the first rebuttal and keep correcting it.
+
+¶ 8. Their best argument is cost in coverage sectors. Do not deny it. Reframe it: the cost of exhaustion is already being paid, in sickness absence, agency fees and resignations. Ask for their number for the status quo.
+
+¶ 9. Questions to put to an economist: What is the cost of doing nothing? Which of your figures come from volunteers? Would you accept a staged timetable with sector trials written into it?
+
+¶ 10. Questions to expect from a physician on my own side: patient safety on longer shifts. Answer: the standard week limits total hours; Part IV still caps consecutive shifts.
+
+¶ 11. Latin, sparingly. "Res ipsa loquitur" (the thing speaks for itself) for the close. "Audi alteram partem" (hear the other side) if accused of ignoring their evidence. Always translate.
+
+¶ 12. Structure for every speech: three points, numbered, each with one example. Finish on the burden of proof.

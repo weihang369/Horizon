@@ -1,0 +1,21 @@
+{
+ "source": "recorded (debate task 10.7, run 20261014T112102-latency-176f0b): the bridge into the closings of d04 (the smoke debate's motion), DeepSeek via the agent host; the welcome and the verdict lead-in stay synthetic, since the timing part records bridges only",
+ "recorded": "2026-10-14",
+ "model": "deepseek/deepseek-v4.1-flash (the bridge); none (the welcome and lead-in)",
+ "note": "The fake provider answers `host` chat calls with these, in turn (doc 13 W14): neutral, under V6's 60 words, naming only what a debate's arguments would hold.",
+ "purpose": "host",
+ "responses": [
+  {
+   "item": "any",
+   "content": "Welcome, everyone. Tonight's motion is on the table, and both sides are ready. Let's hear the openings."
+  },
+  {
+   "item": "d04 → closing 1 (recorded)",
+   "content": "Proposition argued that a levy cuts purchases and should be paired with reformulation and marketing limits; Opposition argued it is regressive and insufficient without shelf and contract reform. We now move to closing statements."
+  },
+  {
+   "item": "any",
+   "content": "That's the closings done. Time to weigh what each side argued."
+  }
+ ]
+}

@@ -1,0 +1,10 @@
+* text eol=lf
+*.webp binary
+*.avif binary
+*.png binary
+*.opus binary
+*.mp3 binary
+*.pdf binary
+*.docx binary
+# Knowledge originals and their extracted text: byte-exact copies of frontend/scripts/seed-build/recorded/knowledge-files.
+knowledge/files/** -text

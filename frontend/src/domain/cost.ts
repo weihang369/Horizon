@@ -1,0 +1,99 @@
+// Chat/generation cost maths (doc 05 §8 worked example, doc 06 §8 mock pricing table).
+import type { PricePeriod } from "./rushHour";
+import { periodMultiplier } from "./rushHour";
+import { pointsForCost, USD_PER_POINT } from "./energy";
+
+export interface ChatPrice {
+  model: string; provider: string;
+  /** USD per million tokens, off-peak. Peak = × 2. */
+  inputPerM: number; cachedInputPerM: number; outputPerM: number;
+}
+
+export interface GenerationPrices {
+  portrait: number; emotionEdit: number; tweak: number; expressionSheet: number; song: number; profileDraft: number;
+  blinkFrame: number;
+}
+
+/** rev 1.3: embeddings bill input tokens only (D-64). */
+export interface EmbeddingPrice { model: string; provider: string; inputPerM: number }
+
+/** DeepSeek peak pricing (R-23, ENG-06): windows are [start, end) minutes of the day in `tz`, Mon–Fri. */
+export interface PeakConfig { multiplier: number; tz: string; windows: [number, number][] }
+
+/** Backend-only gateway config (doc backend/04 §1): pinned routing, timeouts, embedding batching. The mock ignores it. */
+export interface GatewayConfig {
+  routing: {
+    order: string[]; require_parameters: boolean; allow_fallbacks: boolean;
+    quantizations: string[]; data_collection: "allow" | "deny";
+  };
+  embeddingProvider: string;
+  embedBatch: number;
+  timeoutsMs: {
+    chatFirstToken: number; chatIdle: number; image: number; music: number; embedding: number; meta: number;
+    /** M10 (group-watch D19): watch's recap, the whole non-streamed call. */
+    episode: number;
+    /** M11 (debate D13): the verdict's prose, the whole non-streamed JSON call. */
+    verdict: number;
+    /** Jev deadlines per question deadline key (docs/ai/13 W12; group A A2). Keys a change doesn't call yet are inert. */
+    decision: {
+      route: number; turn_plan: number; follow_plan: number; debate_plan: number; guardrail: number;
+      guardrail_prompt: number; reaction: number; face_check: number; default: number;
+      /** M11 (debate D12): the rubric's scores, a background purpose. */
+      rubric: number;
+      /** M13 (memory D14, D15): the pause runs' Jev questions, background purposes. */
+      importance: number; memory_guard: number;
+    };
+  };
+}
+
+export interface PricingTable {
+  chat: ChatPrice;
+  decision: ChatPrice;
+  embedding: EmbeddingPrice;
+  generation: GenerationPrices;
+  /** M2 additive: read by the backend's pricing clock and estimates. */
+  peak?: PeakConfig;
+  /** M2 additive: read by the backend gateway only. */
+  gateway?: GatewayConfig;
+}
+
+/** Typical Jev routing question size (state + one choice question). Output is free (D-66). */
+export const ROUTE_DECISION_TOKENS = 600;
+
+/** M9 (turn-plan-emotion D21): the simulated `reaction` decision, the backend's REACTION_DECISION_TOKENS. */
+export const REACTION_DECISION_TOKENS = 600;
+
+/** M9 (doc 13 W2; turn-plan-emotion D24): the simulated `face_check` decision, the backend's FACE_CHECK_DECISION_TOKENS. */
+export const FACE_CHECK_DECISION_TOKENS = 600;
+
+/** M9 (turn-plan-emotion D25): the simulated 1:1 `turn_plan` decision (Jev call 1), the backend's TURN_PLAN_DECISION_TOKENS. */
+export const TURN_PLAN_DECISION_TOKENS = 900;
+
+/** Cost of one Jev decision call: input tokens only (no output charge, no peak multiplier). */
+export function decisionCostUsd(tokensIn: number, price: ChatPrice): number {
+  return round6((tokensIn * price.inputPerM) / 1e6);
+}
+
+/** Cost of embedding `tokens` input tokens (no output, no peak multiplier). */
+export function embeddingCostUsd(tokens: number, price: EmbeddingPrice): number {
+  return round6((tokens * price.inputPerM) / 1e6);
+}
+
+export interface TokenUsage { tokensIn: number; tokensCached?: number; tokensOut: number }
+
+/** Cost of one chat call. Uncached input = tokensIn − tokensCached. */
+export function chatCostUsd(u: TokenUsage, price: ChatPrice, period: PricePeriod = "off_peak"): number {
+  const cached = u.tokensCached ?? 0;
+  const uncached = Math.max(0, u.tokensIn - cached);
+  const raw = (uncached * price.inputPerM + cached * price.cachedInputPerM + u.tokensOut * price.outputPerM) / 1e6;
+  return round6(raw * periodMultiplier(period));
+}
+
+export function chatEnergy(u: TokenUsage, price: ChatPrice, period: PricePeriod = "off_peak", usdPerPoint = USD_PER_POINT): number {
+  return pointsForCost(chatCostUsd(u, price, period), usdPerPoint);
+}
+
+export const round6 = (n: number) => Math.round(n * 1e6) / 1e6;
+
+/** Rough token estimate for mock text (≈ 4 chars per token). */
+export const estimateTokens = (text: string): number => Math.max(1, Math.round(text.length / 4));

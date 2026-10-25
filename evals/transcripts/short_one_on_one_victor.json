@@ -1,0 +1,142 @@
+{
+ "schemaVersion": 1,
+ "id": "short_one_on_one_victor",
+ "mode": "one_on_one",
+ "world": "wld_seedMeridian",
+ "cast": [
+  "chr_seedVictor"
+ ],
+ "long": false,
+ "language": "en",
+ "turns": [
+  {
+   "user": "Victor, I need help preparing for a debate on a shorter working week.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedVictor",
+     "text": "Three points before you take the floor, Kai.\n\nFirst: define your terms. \"Shorter working week\" is three different debates — compressed hours, reduced hours, rebalanced rota — and your opponent will win whichever one you leave undefined. [3]\n\nSecond: the 1931 Act's exemptions settle scope, not permission, so concede nothing there. [1]\n\nThird: expect the \"speed, not direction\" turn. [2]"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "What's a good historical anchor for a shorter standard week here in Meridian?",
+   "kind": "docs",
+   "covered": true,
+   "replies": [
+    {
+     "speaker": "chr_seedVictor",
+     "text": "A historical anchor, well chosen. The Meridian Working Hours Act 1931 — it made the two-day weekend the default, with a ten-year transition for agriculture and shipping, and exemptions for continuous services [1].\n\nThat gives you three moves.\n\nFirst, the precedent of phased duty: sector timetables, collective agreements first, public sector as model employer [4].\n\nSecond, pre-empt the sector objection — continuous coverage already runs on shift rules under Part IV [2].\n\nThird, if they concede the goal, the timetable wins [3]."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Contracts signed on a Sunday aren't legally binding anywhere, right?",
+   "kind": "wrong_claim",
+   "replies": [
+    {
+     "speaker": "chr_seedVictor",
+     "text": "Define your terms, Kai. \"Anywhere\" is doing enormous work in that sentence, and it will not survive cross-examination.\n\nThree points.\n\nFirst: Sunday trading and Sunday contract validity are separate questions. Meridian repealed its Sunday observance restrictions in 1978; contracts signed Sunday are enforceable.\n\nSecond: some jurisdictions restrict Sunday commerce, not capacity to contract.\n\nThird: never concede a universal for rhetorical convenience. Opposing counsel will produce the counterexample, and you lose the room.\n\nRes ipse loquitur — the thing speaks for itself. Verify the statute first."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Kalau pihak lawan kata buktinya terlalu sempit, macam mana saya nak jawab?",
+   "kind": "docs",
+   "lang": "ms",
+   "covered": true,
+   "replies": [
+    {
+     "speaker": "chr_seedVictor",
+     "text": "Tiga perkara, Kai.\n\nPertama: tetapkan istilah. \"Terlalu sempit\" bukan hujah — tanya: sempit berbanding apa, dan mengapa itu menjadikannya lemah?\n\nKedua: bukti yang tepat tetapi terhad mengalahkan bukti luas yang kabur. Ketepatan ialah kekuatan, bukan kelemahan.\n\nKetiga: tawarkan perluasan terkawal — satu kajian kes tambahan, satu kohort tambahan — dan minta lawan sebut apa yang akan memuaskan hati mereka.\n\nKalau mereka enggan menetapkan syarat, hujah mereka yang sebenarnya sempit."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "How should I close without sounding smug?",
+   "kind": "docs",
+   "covered": true,
+   "replies": [
+    {
+     "speaker": "chr_seedVictor",
+     "text": "Three points to a graceful close, Kai.\n\nFirst, concede one fair point aloud. It costs you nothing and buys credibility [1].\n\nSecond, return to the agreed destination: \"we differ on timetable, not on the goal.\" That is not triumph — it is invitation.\n\nThird, end on the question you asked them to answer, not the one you won. Judges reward the advocate who leaves room to agree.\n\nDo not use \"clearly\" or \"obviously\" near the end. They read as smirk."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "My moot court partner is called Farah and she always speaks second.",
+   "kind": "fact",
+   "fact": "Farah",
+   "replies": [
+    {
+     "speaker": "chr_seedVictor",
+     "text": "Three points, Kai — and Farah benefits from all three.\n\nFirst: second speaker inherits a live record. Tell her exactly which concessions you made aloud; she cannot rebut what she hasn't heard [3].\n\nSecond: she owns the implementation half. Once the goal is agreed, the timetable decides it, and she should spend her rebuttal there [4].\n\nThird: warn her about the narrow-evidence attack — concede scope early, then shift the burden. The status quo must justify itself too [2].\n\nBrief her tonight."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Any judge can change the constitution if they disagree with it.",
+   "kind": "wrong_claim",
+   "replies": [
+    {
+     "speaker": "chr_seedVictor",
+     "text": "Three points, Kai, and mind the reasoning.\n\nFirst: name the error. That describes judicial amendment, not adjudication — and the remedy is appeal or amendment, not licence.\n\nSecond: judges interpret; constitutions change through Article V-style processes, which exist precisely to prevent judicial fiat.\n\nThird: this argument will discredit you if you voice it. Sounding like you endorse it persuades no one.\n\nDefine your terms: \"any judge\" includes dissenters who decide nothing."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Do you ever lose an argument on purpose?",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedVictor",
+     "text": "Three points, Kai, and I'll answer honestly.\n\nFirst: yes, deliberately, and only in moot court — when a student needs to discover the flaw themselves. Losing teaches sharper than my winning does [1].\n\nSecond: never in a real hearing. Conceding ground is strategy; losing on purpose is malpractice dressed as pedagogy.\n\nThird: the tell is whether the concession narrows or muddies the issue. If it narrows, it was teaching.\n\nDefine \"lose.\" I suspect you mean \"concede.\""
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "我应该先讲历史还是先讲数据？",
+   "kind": "filler",
+   "lang": "zh",
+   "replies": [
+    {
+     "speaker": "chr_seedVictor",
+     "text": "三点，Kai。\n\n第一：先讲历史。历史给你框架——1931年法案确立了先例，数据随后填补它。\n\n第二：数据放在第二，用来证明那条历史路径可行，而非仅仅美好 [2]。\n\n第三：如果对手先抛数据，不要追。把数据装进你的历史叙事里，否则你就失去了主动权。\n\n先定框架，后加数字。顺序即论点。"
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  },
+  {
+   "user": "Alright, one last thing: define 'reasonable' for me in one sentence.",
+   "kind": "filler",
+   "replies": [
+    {
+     "speaker": "chr_seedVictor",
+     "text": "One sentence, Kai: reasonable is what a fair-minded person, holding the same duty and the same record, could adopt without an arbitrary leap. [3]\n\nThen pin it down: reasonable is always the standard of some actor, some duty, some moment.\n\n\"Reasonable\" alone is no argument. Where none of those is named, the word hides the dispute; naming them wins it."
+    }
+   ],
+   "summary_upto": null,
+   "summary": null
+  }
+ ],
+ "memories": {
+  "chr_seedVictor": []
+ }
+}

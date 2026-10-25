@@ -1,0 +1,128 @@
+[project]
+name = "horizon-backend"
+version = "1.0.0"
+description = "Horizon local backend (FastAPI + SQLite). Local-only, loopback-bound."
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.32",
+  "sse-starlette>=2.1",
+  "pydantic>=2.9",
+  "sqlalchemy[asyncio]>=2.0.36",
+  "aiosqlite>=0.20",
+  "alembic>=1.14",
+  "sqlite-vec>=0.1.6",
+  "python-ulid>=3.0",
+  "httpx>=0.27",
+  "jsonschema>=4.23",
+  "python-dotenv>=1.0",
+  "tzdata>=2024.2",
+  "pillow>=12.3.0",
+  "python-multipart>=0.0.32",
+  "langgraph==1.2.12",
+]
+
+[project.scripts]
+horizon = "horizon.cli:main"
+
+[dependency-groups]
+dev = [
+  "pytest>=8.3",
+  "pytest-asyncio>=0.24",
+  "asgi-lifespan>=2.1",
+  "ruff>=0.8",
+  "mypy>=1.13",
+  "types-jsonschema>=4.23",
+  "respx>=0.21",
+  # The OCR-per-page test reads PDFs with it; otherwise it only arrives with the optional docling group.
+  "pypdfium2>=5.13",
+]
+# Setup step 2 (optional, D-62): document conversion on the CPU. Synced by `npm run setup:docling`, never by `setup`.
+docling = [
+  "docling>=2.15",
+  "torch>=2.5",
+  "torchvision>=0.20",
+]
+# Optional (ai-foundation D30): LangSmith tracing, only with HORIZON_LANGSMITH=1. Never synced by `setup`.
+tracing = [
+  "langsmith>=0.3",
+]
+
+[tool.uv]
+default-groups = ["dev"]
+# M9 (turn-plan-emotion D1): langgraph's own dependencies stay at releases at least two weeks old when it was added.
+exclude-newer-package = { jsonpatch = "2026-09-28T00:00:00Z", jsonpointer = "2026-09-28T00:00:00Z", langchain-core = "2026-09-28T00:00:00Z", langgraph-sdk = "2026-09-28T00:00:00Z", tenacity = "2026-09-28T00:00:00Z" }
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu", marker = "sys_platform != 'darwin'" }]
+torchvision = [{ index = "pytorch-cpu", marker = "sys_platform != 'darwin'" }]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["horizon"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+filterwarnings = ["ignore::DeprecationWarning:aiosqlite.*"]
+# A test's data/ holds a full horizon.db (~43 MB: sqlite-vec preallocates its vector chunks). pytest keeps every
+# tmp_path until the session ends, so the whole suite filled the CI runner's disk (22 Oct). Passing tests' folders are
+# removed as they finish; a failing test's folder stays for inspection.
+tmp_path_retention_policy = "failed"
+# The paid live checks and the real Docling conversions are manual scripts under manual/ (see manual/README.md):
+# outside testpaths, so a normal run collects and deselects nothing. Their markers stay for `-m` selection there.
+markers = ["live: calls the real OpenRouter API with the key from the environment (manual, <= $0.05; never in CI)",
+           "docling: needs the optional Docling install and its fetched models (manual, local; never in CI)"]
+
+[tool.ruff]
+line-length = 140
+target-version = "py312"
+extend-exclude = ["horizon/db/migrations/versions"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "ASYNC", "RUF", "TID"]
+ignore = ["RUF001", "RUF002", "RUF003"]
+
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+"httpx".msg = "Outbound HTTP lives only in horizon/gateway/ (doc 01 §2): call the gateway instead."
+
+[tool.ruff.lint.per-file-ignores]
+"horizon/gateway/**" = ["TID251"]
+"tests/**" = ["TID251"]
+"manual/**" = ["TID251"]   # the manual checks drive the app in process, as tests/ does
+# The smoke suite drives the app in process (httpx.ASGITransport): no outbound HTTP; paid calls still go through the gateway.
+"horizon/evals/suites.py" = ["TID251"]
+"horizon/evals/content.py" = ["TID251"]   # M8: the long and transcript suites drive the in-process app, as smoke does
+"horizon/evals/latency.py" = ["TID251"]   # M9 (D31): the latency suite drives the in-process app the same way
+"horizon/evals/watch_suites.py" = ["TID251"]   # M10: watch-history, freerun and the timing parts drive the in-process app too
+"horizon/evals/debate_suites.py" = ["TID251"]   # M11: debate-history, the debate free runs and timing do the same
+"horizon/evals/notfound_suite.py" = ["TID251"]   # M12: the Not-found reply end to end drives the in-process app too
+"horizon/evals/deep_timing.py" = ["TID251"]   # M12: latency --part deep drives the in-process app too
+"horizon/evals/memory_suite.py" = ["TID251"]
+"horizon/evals/recall_timing.py" = ["TID251"]   # M13: latency --part recall drives the in-process app too   # M13: layer 3's two sessions drive the in-process app too
+"horizon/evals/safety_e2e.py" = ["TID251"]   # M14: the safety suite's end-to-end parts drive the in-process app too
+"horizon/evals/conversations.py" = ["TID251"]   # M15: conversations replies through the in-process app too
+"horizon/evals/faithfulness.py" = ["TID251"]   # M15: faithfulness drives the deep turns the same way
+"horizon/evals/blended.py" = ["TID251"]   # M15: latency --part blended drives the in-process app too
+"horizon/demo_export.py" = ["TID251"]   # v1 endgame: reads a local Horizon's public API (loopback only, refused otherwise)
+
+[tool.mypy]
+python_version = "3.12"
+packages = ["horizon"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["horizon.domain.*", "horizon.contract.*", "horizon.services.runtime.reducer", "horizon.gateway.*", "horizon.ai.*",
+          "horizon.sessions.*", "horizon.services.jobs.*", "horizon.services.assets", "horizon.services.characters",
+          "horizon.services.theme", "horizon.storage.*", "horizon.services.knowledge.*", "horizon.services.memory.*",
+          "horizon.db.spaces", "horizon.db.fts"]
+strict = true

@@ -1,0 +1,35 @@
+{
+ "input": {
+  "characterId": "chr_x",
+  "kind": "profile_draft"
+ },
+ "mode": "lean",
+ "parallel": 1,
+ "estimatedCostUsd": 0.002,
+ "tasks": [
+  {
+   "type": "profile",
+   "ms": 1000,
+   "cost": 0.0005,
+   "category": "profile"
+  },
+  {
+   "type": "appearance_summary",
+   "ms": 1000,
+   "cost": 0.0005,
+   "category": "profile"
+  },
+  {
+   "type": "palette_pick",
+   "ms": 1000,
+   "cost": 0.0005,
+   "category": "profile"
+  },
+  {
+   "type": "song_brief",
+   "ms": 1000,
+   "cost": 0.0005,
+   "category": "profile"
+  }
+ ]
+}

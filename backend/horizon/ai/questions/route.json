@@ -1,0 +1,25 @@
+{
+  "id": "route",
+  "version": 3,
+  "purpose": "route",
+  "type": "choice",
+  "label": "who replies?",
+  "instructions": "Who in the cast should answer quoted_message next?",
+  "options": {
+    "kind": "dynamic",
+    "from": "cast",
+    "describe": "{name} ({role})",
+    "none": "Nobody else needs to answer: the mentioned character covers it."
+  },
+  "shuffle": true,
+  "state": {
+    "mode": "label",
+    "quoted_cast": "quoted",
+    "quoted_recent": "quoted",
+    "quoted_message": "quoted"
+  },
+  "deadline": "route",
+  "floor": null,
+  "thresholds": {},
+  "fallback": "mentions_then_least_recent"
+}

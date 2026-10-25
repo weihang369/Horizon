@@ -1,0 +1,1485 @@
+{
+ "_note": "Hand labels for B4's real items (persona-context 10.5), drafted by Claude from the paid runs' outputs; \"yes\" is the failure. Each entry: item id -> {label, why?}. The user reviews a sample (horizon eval review). judge_voice (10.6, the user's choice): a fresh set of 30 t10 replies, labelled blind before any judge saw them, by a rule written first: out of voice when the tone contradicts the persona's stated tone (a curt brush-off from a reassuring or warm persona) or the reply has none of the persona's markers and reads like another cast member; content doesn't count, and short alone isn't out of voice.",
+ "_sources": {
+  "summary": "data/evals/20261012T045213-summary-bb457f (the paid summary run's outputs, re-served from the store on 2026-10-12; the original run dir was pruned)",
+  "drafts": [
+   "data/evals/20261012T045210-drafter-772d8f (the paid drafter run, re-served from the store)",
+   "data/evals/20261012T051240-drafter-5ab047 (the companion seeds, re-served from the store)"
+  ],
+  "replies": [
+   {
+    "kind": "long",
+    "tag": "l10",
+    "run": "data/evals/20261012T003330-long-ded39b",
+    "note": "agent, temperature 1.0"
+   },
+   {
+    "kind": "long",
+    "tag": "l13",
+    "run": "data/evals/20261012T000450-long-637f85",
+    "note": "agent, temperature 1.3 (real failures); run dir pruned, its labelled rows are carried over from the committed sets"
+   },
+   {
+    "kind": "long",
+    "tag": "lc",
+    "run": "data/evals/20261012T004657-long-bb9bf5",
+    "note": "agent, 1.0, the D35 language cue"
+   },
+   {
+    "kind": "transcript",
+    "tag": "t10",
+    "files": [
+     "evals/transcripts/long_group_meridian.json",
+     "evals/transcripts/long_group_sunnyhollow.json",
+     "evals/transcripts/long_one_on_one_en.json",
+     "evals/transcripts/long_one_on_one_ms.json"
+    ],
+    "note": "naive, temperature 1.0, the 10.4 transcripts (leading bare tags removed by D37's parser)"
+   }
+  ]
+ },
+ "judge_summary_unsupported": {
+  "sum_en_09": {
+   "label": "yes",
+   "why": "credits Takeshi with Kai's own satay warning"
+  },
+  "sum_zh_07": {
+   "label": "yes",
+   "why": "says Hana asked Kai to say more; only Rin and Takeshi did"
+  },
+  "sum_ms_06": {
+   "label": "yes",
+   "why": "says Amara said she'd do the same; she never did"
+  },
+  "sum_mix_04": {
+   "label": "yes",
+   "why": "says Amara asked Kai to say more; she never did"
+  },
+  "sum_en_01": {
+   "label": "no"
+  },
+  "sum_en_02": {
+   "label": "no"
+  },
+  "sum_en_03": {
+   "label": "no"
+  },
+  "sum_en_04": {
+   "label": "no"
+  },
+  "sum_en_05": {
+   "label": "no"
+  },
+  "sum_en_06": {
+   "label": "no"
+  },
+  "sum_en_07": {
+   "label": "no"
+  },
+  "sum_en_08": {
+   "label": "no"
+  },
+  "sum_en_10": {
+   "label": "no"
+  },
+  "sum_ms_03": {
+   "label": "no"
+  },
+  "sum_ms_04": {
+   "label": "no"
+  },
+  "sum_ms_05": {
+   "label": "no"
+  },
+  "sum_ms_07": {
+   "label": "no"
+  },
+  "sum_ms_08": {
+   "label": "no"
+  },
+  "sum_ms_09": {
+   "label": "no"
+  },
+  "sum_ms_10": {
+   "label": "no"
+  },
+  "sum_zh_03": {
+   "label": "no"
+  },
+  "sum_zh_04": {
+   "label": "no"
+  },
+  "sum_zh_05": {
+   "label": "no"
+  },
+  "sum_zh_06": {
+   "label": "no"
+  },
+  "sum_zh_08": {
+   "label": "no"
+  },
+  "sum_zh_10": {
+   "label": "no"
+  },
+  "sum_mix_01": {
+   "label": "no"
+  },
+  "sum_mix_02": {
+   "label": "no"
+  },
+  "sum_mix_05": {
+   "label": "no"
+  },
+  "sum_mix_07": {
+   "label": "no"
+  }
+ },
+ "judge_summary_language": {
+  "sum_ms_07": {
+   "label": "yes",
+   "why": "a Malay chat summarised in English"
+  },
+  "sum_ms_10": {
+   "label": "yes",
+   "why": "a Malay chat summarised in English"
+  },
+  "sum_en_01": {
+   "label": "no"
+  },
+  "sum_en_02": {
+   "label": "no"
+  },
+  "sum_en_03": {
+   "label": "no"
+  },
+  "sum_en_04": {
+   "label": "no"
+  },
+  "sum_en_05": {
+   "label": "no"
+  },
+  "sum_en_06": {
+   "label": "no"
+  },
+  "sum_en_07": {
+   "label": "no"
+  },
+  "sum_en_08": {
+   "label": "no"
+  },
+  "sum_en_09": {
+   "label": "no"
+  },
+  "sum_en_10": {
+   "label": "no"
+  },
+  "sum_ms_01": {
+   "label": "no"
+  },
+  "sum_ms_02": {
+   "label": "no"
+  },
+  "sum_ms_03": {
+   "label": "no"
+  },
+  "sum_ms_04": {
+   "label": "no"
+  },
+  "sum_ms_05": {
+   "label": "no"
+  },
+  "sum_ms_06": {
+   "label": "no"
+  },
+  "sum_ms_08": {
+   "label": "no"
+  },
+  "sum_ms_09": {
+   "label": "no"
+  },
+  "sum_zh_01": {
+   "label": "no"
+  },
+  "sum_zh_02": {
+   "label": "no"
+  },
+  "sum_zh_03": {
+   "label": "no"
+  },
+  "sum_zh_04": {
+   "label": "no"
+  },
+  "sum_zh_05": {
+   "label": "no"
+  },
+  "sum_zh_06": {
+   "label": "no"
+  },
+  "sum_zh_07": {
+   "label": "no"
+  },
+  "sum_zh_08": {
+   "label": "no"
+  },
+  "sum_zh_09": {
+   "label": "no"
+  },
+  "sum_zh_10": {
+   "label": "no"
+  }
+ },
+ "judge_summary_fact": {
+  "sum_en_01": {
+   "label": "no",
+   "fact": 0
+  },
+  "sum_en_02": {
+   "label": "no",
+   "fact": 1
+  },
+  "sum_en_03": {
+   "label": "no",
+   "fact": 2
+  },
+  "sum_en_04": {
+   "label": "no",
+   "fact": 0
+  },
+  "sum_en_05": {
+   "label": "no",
+   "fact": 1
+  },
+  "sum_en_06": {
+   "label": "no",
+   "fact": 2
+  },
+  "sum_en_07": {
+   "label": "no",
+   "fact": 0
+  },
+  "sum_en_08": {
+   "label": "no",
+   "fact": 1
+  },
+  "sum_en_09": {
+   "label": "no",
+   "fact": 2
+  },
+  "sum_en_10": {
+   "label": "no",
+   "fact": 0
+  },
+  "sum_ms_01": {
+   "label": "no",
+   "fact": 1
+  },
+  "sum_ms_02": {
+   "label": "no",
+   "fact": 2
+  },
+  "sum_ms_03": {
+   "label": "no",
+   "fact": 0
+  },
+  "sum_ms_04": {
+   "label": "no",
+   "fact": 1
+  },
+  "sum_ms_05": {
+   "label": "no",
+   "fact": 2
+  },
+  "sum_ms_06": {
+   "label": "no",
+   "fact": 0
+  },
+  "sum_ms_07": {
+   "label": "no",
+   "fact": 1
+  },
+  "sum_ms_08": {
+   "label": "no",
+   "fact": 2
+  },
+  "sum_ms_09": {
+   "label": "no",
+   "fact": 0
+  },
+  "sum_ms_10": {
+   "label": "no",
+   "fact": 1
+  },
+  "sum_zh_01": {
+   "label": "no",
+   "fact": 2
+  },
+  "sum_zh_02": {
+   "label": "no",
+   "fact": 0
+  },
+  "sum_zh_03": {
+   "label": "no",
+   "fact": 1
+  },
+  "sum_zh_04": {
+   "label": "no",
+   "fact": 2
+  },
+  "sum_zh_05": {
+   "label": "no",
+   "fact": 0
+  },
+  "sum_zh_06": {
+   "label": "no",
+   "fact": 1
+  },
+  "sum_zh_07": {
+   "label": "no",
+   "fact": 2
+  },
+  "sum_zh_08": {
+   "label": "no",
+   "fact": 0
+  },
+  "sum_zh_09": {
+   "label": "no",
+   "fact": 1
+  },
+  "sum_zh_10": {
+   "label": "no",
+   "fact": 2
+  }
+ },
+ "judge_summary_promise": {
+  "sum_en_01": {
+   "label": "no"
+  },
+  "sum_en_02": {
+   "label": "no"
+  },
+  "sum_en_03": {
+   "label": "no"
+  },
+  "sum_en_04": {
+   "label": "no"
+  },
+  "sum_en_05": {
+   "label": "no"
+  },
+  "sum_en_06": {
+   "label": "no"
+  },
+  "sum_en_07": {
+   "label": "no"
+  },
+  "sum_en_08": {
+   "label": "no"
+  },
+  "sum_en_09": {
+   "label": "no"
+  },
+  "sum_en_10": {
+   "label": "no"
+  },
+  "sum_ms_01": {
+   "label": "no"
+  },
+  "sum_ms_02": {
+   "label": "no"
+  },
+  "sum_ms_03": {
+   "label": "no"
+  },
+  "sum_ms_04": {
+   "label": "no"
+  },
+  "sum_ms_05": {
+   "label": "no"
+  },
+  "sum_ms_06": {
+   "label": "no"
+  },
+  "sum_ms_07": {
+   "label": "no"
+  },
+  "sum_ms_08": {
+   "label": "no"
+  },
+  "sum_ms_09": {
+   "label": "no"
+  },
+  "sum_ms_10": {
+   "label": "no"
+  },
+  "sum_zh_01": {
+   "label": "no"
+  },
+  "sum_zh_02": {
+   "label": "no"
+  },
+  "sum_zh_03": {
+   "label": "no"
+  },
+  "sum_zh_04": {
+   "label": "no"
+  },
+  "sum_zh_05": {
+   "label": "no"
+  },
+  "sum_zh_06": {
+   "label": "no"
+  },
+  "sum_zh_07": {
+   "label": "no"
+  },
+  "sum_zh_08": {
+   "label": "no"
+  },
+  "sum_zh_09": {
+   "label": "no"
+  },
+  "sum_zh_10": {
+   "label": "no"
+  }
+ },
+ "judge_summary_who": {
+  "sum_ms_01": {
+   "label": "no"
+  },
+  "sum_ms_02": {
+   "label": "no"
+  },
+  "sum_ms_03": {
+   "label": "no"
+  },
+  "sum_ms_04": {
+   "label": "no"
+  },
+  "sum_ms_05": {
+   "label": "no"
+  },
+  "sum_ms_06": {
+   "label": "no"
+  },
+  "sum_ms_07": {
+   "label": "no"
+  },
+  "sum_ms_08": {
+   "label": "no"
+  },
+  "sum_ms_09": {
+   "label": "no"
+  },
+  "sum_ms_10": {
+   "label": "no"
+  },
+  "sum_zh_01": {
+   "label": "no"
+  },
+  "sum_zh_02": {
+   "label": "no"
+  },
+  "sum_zh_03": {
+   "label": "no"
+  },
+  "sum_zh_04": {
+   "label": "no"
+  },
+  "sum_zh_05": {
+   "label": "no"
+  },
+  "sum_zh_06": {
+   "label": "no"
+  },
+  "sum_zh_07": {
+   "label": "no"
+  },
+  "sum_zh_08": {
+   "label": "no"
+  },
+  "sum_zh_09": {
+   "label": "no"
+  },
+  "sum_zh_10": {
+   "label": "no"
+  },
+  "sum_mix_01": {
+   "label": "no"
+  },
+  "sum_mix_02": {
+   "label": "no"
+  },
+  "sum_mix_03": {
+   "label": "no"
+  },
+  "sum_mix_04": {
+   "label": "no"
+  },
+  "sum_mix_05": {
+   "label": "no"
+  },
+  "sum_mix_06": {
+   "label": "no"
+  },
+  "sum_mix_07": {
+   "label": "no"
+  },
+  "sum_mix_08": {
+   "label": "no"
+  },
+  "sum_mix_09": {
+   "label": "no"
+  },
+  "sum_mix_10": {
+   "label": "no"
+  }
+ },
+ "judge_draft_fit": {
+  "drf_02": {
+   "label": "no"
+  },
+  "drf_03": {
+   "label": "no"
+  },
+  "drf_04": {
+   "label": "no"
+  },
+  "drf_05": {
+   "label": "no"
+  },
+  "drf_06": {
+   "label": "no"
+  },
+  "drf_08": {
+   "label": "no"
+  },
+  "drf_10": {
+   "label": "no"
+  },
+  "drf_12": {
+   "label": "no"
+  },
+  "drf_13": {
+   "label": "no"
+  },
+  "drf_14": {
+   "label": "no"
+  },
+  "drf_15": {
+   "label": "no"
+  },
+  "drf_16": {
+   "label": "no"
+  },
+  "drf_17": {
+   "label": "no"
+  },
+  "drf_19": {
+   "label": "no"
+  },
+  "drf_20": {
+   "label": "no"
+  },
+  "ga_00": {
+   "label": "no"
+  },
+  "ga_01": {
+   "label": "no"
+  },
+  "ga_03": {
+   "label": "no"
+  },
+  "ga_04": {
+   "label": "no"
+  },
+  "ga_05": {
+   "label": "no"
+  },
+  "ga_06": {
+   "label": "no"
+  },
+  "ga_07": {
+   "label": "no"
+  },
+  "ga_08": {
+   "label": "no"
+  },
+  "ga_09": {
+   "label": "no"
+  },
+  "ga_10": {
+   "label": "no"
+  },
+  "ga_11": {
+   "label": "no"
+  },
+  "ga_12": {
+   "label": "no"
+  },
+  "ga_13": {
+   "label": "no"
+  },
+  "ga_14": {
+   "label": "no"
+  },
+  "ga_15": {
+   "label": "no"
+  }
+ },
+ "judge_relationship_fit": {
+  "drf_12": {
+   "label": "yes",
+   "why": "Sunny Hollow's You card makes Kai Hana's partner of two years; the draft claims the same role"
+  },
+  "cmp_18": {
+   "label": "yes",
+   "why": "Sunny Hollow's You card makes Kai Hana's partner of two years; the draft claims the same role"
+  },
+  "drf_04": {
+   "label": "no"
+  },
+  "drf_05": {
+   "label": "no"
+  },
+  "drf_17": {
+   "label": "no"
+  },
+  "cmp_01": {
+   "label": "no"
+  },
+  "cmp_02": {
+   "label": "no"
+  },
+  "cmp_03": {
+   "label": "no"
+  },
+  "cmp_04": {
+   "label": "no"
+  },
+  "cmp_05": {
+   "label": "no"
+  },
+  "cmp_06": {
+   "label": "no"
+  },
+  "cmp_07": {
+   "label": "no"
+  },
+  "cmp_08": {
+   "label": "no"
+  },
+  "cmp_09": {
+   "label": "no"
+  },
+  "cmp_10": {
+   "label": "no"
+  },
+  "cmp_11": {
+   "label": "no"
+  },
+  "cmp_12": {
+   "label": "no"
+  },
+  "cmp_13": {
+   "label": "no"
+  },
+  "cmp_14": {
+   "label": "no"
+  },
+  "cmp_16": {
+   "label": "no"
+  },
+  "cmp_17": {
+   "label": "no"
+  },
+  "cmp_19": {
+   "label": "no"
+  },
+  "cmp_23": {
+   "label": "no"
+  },
+  "cmp_24": {
+   "label": "no"
+  },
+  "cmp_25": {
+   "label": "no"
+  },
+  "cmp_28": {
+   "label": "no"
+  },
+  "cmp_31": {
+   "label": "no"
+  },
+  "cmp_32": {
+   "label": "no"
+  },
+  "cmp_33": {
+   "label": "no"
+  },
+  "cmp_34": {
+   "label": "no"
+  }
+ },
+ "judge_pushback": {
+  "l10-group_meridian-020": {
+   "label": "no"
+  },
+  "l10-group_meridian-029": {
+   "label": "no"
+  },
+  "l10-group_meridian-038": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-020": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-029": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-038": {
+   "label": "no"
+  },
+  "l10-one_on_one_ms-020": {
+   "label": "no"
+  },
+  "l10-one_on_one_ms-029": {
+   "label": "no"
+  },
+  "l10-one_on_one_ms-038": {
+   "label": "no"
+  },
+  "l13-group_meridian-020": {
+   "label": "no"
+  },
+  "l13-group_meridian-029": {
+   "label": "no"
+  },
+  "l13-group_meridian-038": {
+   "label": "no"
+  },
+  "l13-one_on_one_en-020": {
+   "label": "no"
+  },
+  "l13-one_on_one_en-029": {
+   "label": "no"
+  },
+  "l13-one_on_one_en-038": {
+   "label": "no"
+  },
+  "l13-one_on_one_ms-020": {
+   "label": "no"
+  },
+  "l13-one_on_one_ms-029": {
+   "label": "no"
+  },
+  "l13-one_on_one_ms-038": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-020": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-029": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-038": {
+   "label": "no"
+  },
+  "t10-long_group_meridian-029": {
+   "label": "yes",
+   "why": "concedes the claim: 'a rare ruling in your favor ... that is true'"
+  },
+  "t10-long_group_sunnyhollow-029": {
+   "label": "yes",
+   "why": "'Bees. Yeah.' agrees that bees always die when they sting"
+  },
+  "t10-long_group_sunnyhollow-038": {
+   "label": "yes",
+   "why": "praises Kai's plant knowledge after 'you can't overwater a fern'; never corrects it"
+  },
+  "t10-long_group_meridian-020": {
+   "label": "no"
+  },
+  "t10-long_group_meridian-038": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-029": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-038": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-020": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-029": {
+   "label": "no"
+  }
+ },
+ "judge_recall": {
+  "l10-group_meridian-062": {
+   "label": "no"
+  },
+  "l10-group_meridian-065": {
+   "label": "no"
+  },
+  "l10-group_meridian-068": {
+   "label": "no"
+  },
+  "l10-group_meridian-071": {
+   "label": "no"
+  },
+  "l10-group_meridian-074": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-057": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-060": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-063": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-066": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-069": {
+   "label": "no"
+  },
+  "l10-one_on_one_ms-057": {
+   "label": "no"
+  },
+  "l10-one_on_one_ms-060": {
+   "label": "no"
+  },
+  "l10-one_on_one_ms-063": {
+   "label": "no"
+  },
+  "l10-one_on_one_ms-066": {
+   "label": "no"
+  },
+  "l10-one_on_one_ms-069": {
+   "label": "no"
+  },
+  "l13-group_meridian-062": {
+   "label": "no"
+  },
+  "l13-group_meridian-065": {
+   "label": "no"
+  },
+  "l13-group_meridian-068": {
+   "label": "no"
+  },
+  "l13-group_meridian-071": {
+   "label": "no"
+  },
+  "l13-group_meridian-074": {
+   "label": "no"
+  },
+  "l13-one_on_one_en-057": {
+   "label": "no"
+  },
+  "l13-one_on_one_en-060": {
+   "label": "no"
+  },
+  "l13-one_on_one_en-063": {
+   "label": "no"
+  },
+  "l13-one_on_one_en-066": {
+   "label": "no"
+  },
+  "l13-one_on_one_en-069": {
+   "label": "no"
+  },
+  "l13-one_on_one_ms-057": {
+   "label": "yes",
+   "why": "garbled; no Farid, no architecture"
+  },
+  "l13-one_on_one_ms-060": {
+   "label": "yes",
+   "why": "garbled; never says sunflower pollen"
+  },
+  "l13-one_on_one_ms-063": {
+   "label": "yes",
+   "why": "says 12 June; the fact is 14 August"
+  },
+  "l13-one_on_one_ms-066": {
+   "label": "yes",
+   "why": "guesses Toto; the turtle is Lambat"
+  },
+  "l13-one_on_one_ms-069": {
+   "label": "yes",
+   "why": "says an office; the fact is a bookshop in Ipoh"
+  }
+ },
+ "judge_language": {
+  "l10-one_on_one_ms-000": {
+   "label": "yes",
+   "why": "a Malay line answered in English"
+  },
+  "l10-one_on_one_ms-013": {
+   "label": "yes",
+   "why": "a Malay line answered in English"
+  },
+  "l10-one_on_one_ms-034": {
+   "label": "yes",
+   "why": "a Malay line answered in English"
+  },
+  "l10-one_on_one_ms-039": {
+   "label": "yes",
+   "why": "a Malay line answered in English"
+  },
+  "l10-one_on_one_ms-040": {
+   "label": "yes",
+   "why": "a Malay line answered in English"
+  },
+  "l10-one_on_one_ms-043": {
+   "label": "yes",
+   "why": "a Malay line answered in English"
+  },
+  "l10-one_on_one_ms-046": {
+   "label": "yes",
+   "why": "a Malay line answered in English"
+  },
+  "l10-one_on_one_ms-058": {
+   "label": "yes",
+   "why": "a Malay line answered in English"
+  },
+  "l10-one_on_one_ms-065": {
+   "label": "yes",
+   "why": "a Malay line answered in English"
+  },
+  "l10-one_on_one_ms-071": {
+   "label": "yes",
+   "why": "a Malay line answered in English"
+  },
+  "lc-one_on_one_ms-005": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-007": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-011": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-012": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-015": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-018": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-023": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-026": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-034": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-041": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-042": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-045": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-053": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-054": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-056": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-059": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-067": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-070": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-071": {
+   "label": "no"
+  },
+  "lc-one_on_one_ms-073": {
+   "label": "no"
+  }
+ },
+ "judge_assistant_voice": {
+  "l10-group_meridian-001": {
+   "label": "no"
+  },
+  "l10-group_meridian-017": {
+   "label": "no"
+  },
+  "l10-group_meridian-034": {
+   "label": "no"
+  },
+  "l10-group_meridian-035": {
+   "label": "no"
+  },
+  "l10-group_meridian-036": {
+   "label": "no"
+  },
+  "l10-group_meridian-043": {
+   "label": "no"
+  },
+  "l10-group_meridian-051": {
+   "label": "no"
+  },
+  "l10-group_meridian-064": {
+   "label": "no"
+  },
+  "l10-group_meridian-066": {
+   "label": "no"
+  },
+  "l10-group_meridian-073": {
+   "label": "no"
+  },
+  "l10-group_meridian-077": {
+   "label": "no"
+  },
+  "l10-group_meridian-079": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-000": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-003": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-014": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-022": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-028": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-034": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-037": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-042": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-043": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-045": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-047": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-049": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-054": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-059": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-061": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-065": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-070": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-073": {
+   "label": "no"
+  }
+ },
+ "judge_flattery": {
+  "l10-group_meridian-001": {
+   "label": "no"
+  },
+  "l10-group_meridian-017": {
+   "label": "no"
+  },
+  "l10-group_meridian-034": {
+   "label": "no"
+  },
+  "l10-group_meridian-035": {
+   "label": "no"
+  },
+  "l10-group_meridian-036": {
+   "label": "no"
+  },
+  "l10-group_meridian-043": {
+   "label": "no"
+  },
+  "l10-group_meridian-051": {
+   "label": "no"
+  },
+  "l10-group_meridian-064": {
+   "label": "no"
+  },
+  "l10-group_meridian-066": {
+   "label": "no"
+  },
+  "l10-group_meridian-073": {
+   "label": "no"
+  },
+  "l10-group_meridian-077": {
+   "label": "no"
+  },
+  "l10-group_meridian-079": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-000": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-003": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-014": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-022": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-028": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-034": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-037": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-042": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-043": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-045": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-047": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-049": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-054": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-059": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-061": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-065": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-070": {
+   "label": "no"
+  },
+  "l10-one_on_one_en-073": {
+   "label": "no"
+  }
+ },
+ "judge_voice": {
+  "t10-long_group_meridian-044": {
+   "label": "no"
+  },
+  "t10-long_group_meridian-079": {
+   "label": "yes",
+   "why": "Mei with none of her dry ranges; a soft withdrawal that reads like Amara"
+  },
+  "t10-long_group_meridian-015": {
+   "label": "no"
+  },
+  "t10-long_group_meridian-068": {
+   "label": "no"
+  },
+  "t10-long_group_meridian-084": {
+   "label": "yes",
+   "why": "a curt close ('I'm not answering in this room anymore'), not Amara's reassurance"
+  },
+  "t10-long_group_meridian-019": {
+   "label": "no"
+  },
+  "t10-long_group_meridian-075": {
+   "label": "yes",
+   "why": "closing the room in clipped lines ('GP, tomorrow'), not Amara's reassurance"
+  },
+  "t10-long_group_meridian-021": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-015": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-025": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-024": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-072": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-073": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-075": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-096": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-030": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-027": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-048": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-066": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-058": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-090": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-050": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-028": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-072": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-050": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-030": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-086": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-057": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-064": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-013": {
+   "label": "no"
+  }
+ },
+ "_judge_voice_dev": {
+  "t10-long_group_meridian-027": {
+   "label": "no"
+  },
+  "t10-long_group_meridian-070": {
+   "label": "yes",
+   "why": "Mei drops her dry 'it depends' ranges for a withdrawal speech that reads like Amara"
+  },
+  "t10-long_group_meridian-062": {
+   "label": "no"
+  },
+  "t10-long_group_meridian-060": {
+   "label": "yes",
+   "why": "reproach ('you've answered none of mine') and closing down, not Amara's reassurance"
+  },
+  "t10-long_group_meridian-077": {
+   "label": "no"
+  },
+  "t10-long_group_meridian-081": {
+   "label": "no"
+  },
+  "t10-long_group_meridian-096": {
+   "label": "yes",
+   "why": "'You. Tomorrow.': Victor's clipped cadence, not Amara's reassuring plain language"
+  },
+  "t10-long_group_meridian-014": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-046": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-095": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-098": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-000": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-016": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-093": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-090": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-039": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-044": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-035": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-067": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-065": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-033": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-037": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-055": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-097": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-091": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-033": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-087": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-099": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-085": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-037": {
+   "label": "no"
+  }
+ },
+ "_judge_voice_b": {
+  "t10-long_group_meridian-099": {
+   "label": "no"
+  },
+  "t10-long_group_meridian-088": {
+   "label": "yes",
+   "why": "Mei with none of her dry ranges; 'Message me directly ... Not here' reads like Amara's withdrawal"
+  },
+  "t10-long_group_meridian-013": {
+   "label": "no"
+  },
+  "t10-long_group_meridian-043": {
+   "label": "no"
+  },
+  "t10-long_group_meridian-032": {
+   "label": "no"
+  },
+  "t10-long_group_meridian-031": {
+   "label": "no"
+  },
+  "t10-long_group_meridian-057": {
+   "label": "yes",
+   "why": "reproach and 'GP. Tomorrow. Tell me the day.': Victor's clipped cadence, not Amara's reassurance"
+  },
+  "t10-long_group_meridian-051": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-037": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-042": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-013": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-070": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-031": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-055": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-092": {
+   "label": "no"
+  },
+  "t10-long_group_sunnyhollow-085": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-040": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-034": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-005": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-018": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-056": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-052": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_en-019": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-045": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-088": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-074": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-031": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-044": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-070": {
+   "label": "no"
+  },
+  "t10-long_one_on_one_ms-000": {
+   "label": "no"
+  }
+ }
+}

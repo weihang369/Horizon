@@ -1,0 +1,174 @@
+{
+ "schemaVersion": 1,
+ "id": "cut_debate_d11",
+ "mode": "debate",
+ "world": "wld_seedMeridian",
+ "cast": [
+  "chr_evalDaniel",
+  "chr_seedAmara",
+  "chr_seedMei",
+  "chr_seedVictor"
+ ],
+ "language": "en",
+ "source": {
+  "history": "debates/d11.json",
+  "id": "d11",
+  "from_seq": 2,
+  "to_seq": 10
+ },
+ "motion": "This house would abolish homework",
+ "format": "two_sided",
+ "roundsPreset": "quick",
+ "phases": [
+  "opening",
+  "closing"
+ ],
+ "sides": {
+  "prop": [
+   "chr_evalDaniel",
+   "chr_seedAmara"
+  ],
+  "opp": [
+   "chr_seedMei",
+   "chr_seedVictor"
+  ]
+ },
+ "memories": {
+  "chr_evalDaniel": [],
+  "chr_seedAmara": [
+   {
+    "id": "mem_seedAmara1",
+    "text": "Kai cut back on coffee recently; had temple headaches"
+   }
+  ],
+  "chr_seedMei": [
+   {
+    "id": "mem_seedMei1",
+    "text": "Argued that pilot evidence comes from self-selected firms"
+   }
+  ],
+  "chr_seedVictor": []
+ },
+ "lines": [
+  {
+   "seq": 2,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_evalDaniel",
+   "name": "Daniel Osei",
+   "text": "Thank you, Kai. I'll start where I always start: Monday morning. Last term I stood in our staffroom and watched a Year 9 boy, Callum, fall asleep at his desk before registration. He'd been up until midnight finishing three subjects' worth of worksheets. His mum works nights. Who does that homework, I asked the teachers — Callum, or his exhausted family? The evidence is blunt: homework barely helps primary pupils and shows only modest gains in secondary, while it widens the gap between kids with quiet bedrooms and kids without. Tonight I'm not asking you to ban learning. I'm asking: what would we teach differently if the school day were the honest unit of work? Let's find out.",
+   "emotion": "thinking",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 3,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedMei",
+   "name": "Mei Tanaka-Ruiz",
+   "text": "It depends, and here's on what: the design of the abolition and what replaces it. I'll grant you homework is unevenly distributed and often poorly designed — the evidence on that is real. But the leap from \"badly designed homework exists\" to \"abolish it\" is where Daniel and Amara will need to do work, because the second-order effect is consolidation: time reallocated to households that can buy tutoring, and displaced to the same students already ahead. Anyone who gives you one number on learning outcomes is selling something; the literature gives ranges, and the ranges shift by age, subject and dose. Worth noting, too, that ambitious working-time pilots skew heavily toward sectors where work is self-paced — seventy-one percent professional services, only nine round-the-clock [1]. Schools are not that. So the burden on the motion is to show the replacement actually reaches the students who need it.",
+   "emotion": "thinking",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 4,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_seedAmara",
+   "name": "Amara Okafor",
+   "text": "Thanks, Kai. Let's figure out what's actually going on with homework, because the honest answer is we've inherited it, not tested it. The evidence base is weak and inconsistent, yet the load keeps growing — and the burden falls hardest on kids with fewer resources at home. My question for the room: what problem is homework actually solving that class time can't? If we can't answer that, we're mandating something on faith. What does hold up: sleep loss, family stress, and widening gaps. I'm not against practice — I'm against unproven volume. Abolish the default, keep what we can defend with evidence.",
+   "emotion": "thinking",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 5,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedVictor",
+   "name": "Victor Hale",
+   "text": "Kai, before I concede anything, I define my terms, because Daniel has just handed us a gift and I intend to unwrap it carefully. Three points. First, note the \"speed, not direction\" turn [1]: Daniel no longer defends homework's value; he indicts its excess. Once both sides accept the goal — rest, fairness, family time — this debate is about implementation, not abolition, and the side with a timetable wins it. Second, abolition is an amputation offered where a dosage adjustment suffices. Third, we can commit to a phase-in: sector-by-sector timetables, collective agreements first, the public sector as a model employer [2]. So I ask the house, and I ask Daniel directly: do you oppose homework, or do you oppose too much homework? Define your terms.",
+   "emotion": "thinking",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 7,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 2,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_evalDaniel",
+   "name": "Daniel Osei",
+   "text": "Victor asks me to define my terms, so I will, plainly. I oppose homework as a default, because the default is what hurts Callum. But I'll take his challenge seriously: if we abolished it outright and replaced it with nothing, the kids with tutors would win, and that's not a win. So here's our answer: abolition means the school day becomes the honest unit of work — a longer, protected study period, staffed, on site, before the gates close. Mei, you're right that replacements decide everything. Ours is timetabled, not handed to households. Victor, that's not an amputation, it's moving the work to where every child gets a fair share of it. And I'll say it once more: a policy that hasn't met a Year 9 class hasn't met reality. Who does the work on Monday morning? The school.",
+   "emotion": "thinking",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 8,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 2,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedMei",
+   "name": "Mei Tanaka-Ruiz",
+   "text": "It depends, and here's on what: whether the \"staffed, on-site\" study period is actually funded, staffed, and supervised — because that's the load-bearing wall. Daniel's reframe is honest, and I'll credit it: we've both moved to dosage and placement, not abolition. But note the second-order effect he skips. A protected study period is a timetable change, and timetable changes eat staffing. Who supervises it? Where do the hours come from? The pilots we do have never tested schools, never tested shift-based settings, and the surveys themselves decayed from seventy-four to fifty-eight percent response by the final wave [4] — thin evidence, thinner in the places Daniel's students actually live. And on the motion as written: \"abolish homework\" is the demand. Daniel has just described a replacement, which is an argument for redesign, not abolition. So I'd ask the house to read the motion literally. Anyone who gives you one number is selling something — including \"abolish it, we'll staff it.\"",
+   "emotion": "thinking",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 9,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 2,
+   "iteration": 1,
+   "side": "prop",
+   "speaker": "chr_seedAmara",
+   "name": "Amara Okafor",
+   "text": "Kai, here's my closing for the proposition, and I'll be precise about what we're actually claiming. Abolition means ending homework as the default mode of learning, not ending practice. Daniel has shown the replacement: protected, staffed study on site. But Mei and Victor are right that the load-bearing question is who supervises it. And there I want to flag something we've all been circling — schools attempt to reform homework, not take a genuine interest in the evidence, and that is catastrophic for the families it burdens most. The honest unit of work should be the school day, not the kitchen table at nine at night. So I ask the house: vote for the motion, and hold us to the replacement, not just the slogan.",
+   "emotion": "thinking",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  },
+  {
+   "seq": 10,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 2,
+   "iteration": 1,
+   "side": "opp",
+   "speaker": "chr_seedVictor",
+   "name": "Victor Hale",
+   "text": "Kai, I do not sound triumphant, because a fair point deserves a graceful concession. Daniel's \"staffed, on-site study period\" is not abolition; it is homework relocated — same assignment, same volume, different address. Three points. First, define your terms: the motion says abolish, and Daniel has just argued for redesign, which is our case wearing his jacket. Second, the pilots never tested schools — seventy-one percent professional services, nine percent round-the-clock [1]; a staffed study period is a timetable change, and timetable changes eat staffing budgets. Third, we have done this before: the Meridian Working Hours Act 1931 made the two-day weekend default through a ten-year phase-in, sector by sector [3] — the destination was agreed and the timetable won it. Res ipsa loquitur: the thing speaks for itself. Kai, vote against the motion, and vote for dosage, design, and a timetable we can fund [5].",
+   "emotion": "thinking",
+   "summary_upto": null,
+   "summary": null,
+   "compared": true
+  }
+ ]
+}

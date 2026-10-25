@@ -1,0 +1,61 @@
+/* DemoDock (C): a recorded session's dock. Looks like a dock, not a wall of disabled buttons (R15). */
+.dock {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  column-gap: 18px;
+  row-gap: 8px;
+  align-items: center;
+  padding: 12px 28px 16px;
+}
+.fake {
+  grid-column: 1;
+  grid-row: 2;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  background: repeating-linear-gradient(104deg, var(--ink-900) 0 10px, color-mix(in srgb, var(--ink-700) 70%, var(--ink-900)) 10px 20px);
+  border: 1px dashed var(--ink-500);
+  border-left: 4px solid var(--paper-300);
+}
+.fakeText { font-size: var(--text-sm); color: var(--paper-300); font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.copy { grid-column: 1 / -1; grid-row: 1; display: flex; align-items: center; gap: 12px; }
+.note { font-size: var(--text-sm); color: var(--paper-300); }
+.actions { grid-column: 2; grid-row: 2; display: flex; gap: 10px; }
+
+.btn {
+  --h: 46px;
+  position: relative;
+  isolation: isolate;
+  height: var(--h);
+  padding: 0 22px;
+  color: var(--paper-50);
+  font: 400 18px/1 var(--font-display);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.shape {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--ink-700);
+  border: 0;
+  clip-path: polygon(calc(var(--h) * var(--tan-tilt)) 0, 100% 0, calc(100% - var(--h) * var(--tan-tilt)) 100%, 0 100%);
+  overflow: hidden;
+}
+.shape::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--paper-50);
+  transform: translateX(-101%);
+  transition: transform var(--t-fast) var(--ease-wipe);
+}
+.btn:hover .shape::after { transform: none; }
+.btn:hover .content { color: var(--ink-900); }
+.content { position: relative; display: inline-flex; align-items: center; gap: 8px; transition: color var(--t-fast); }
+.primary { color: var(--c-on-primary); }
+.primary .shape { background: var(--c-primary); }
+.btn:focus-visible { outline: 2px solid var(--c-glow); outline-offset: 4px; }

@@ -1,0 +1,21 @@
+{
+ "schemaVersion": 1,
+ "mode": "watch",
+ "note": "Smoke conversation (ai-foundation D34): 3 user lines through an isolated runtime. Never a measurement.",
+ "world": "wld_seedSunnyHollow",
+ "cast": [
+  "chr_seedTakeshi",
+  "chr_seedRin"
+ ],
+ "config": {
+  "premise": "Rainy Sunday. Takeshi wants to take Rin fishing; Rin is mid-raid.",
+  "maxTurns": 10,
+  "paceMs": 1500,
+  "openingSpeaker": "chr_seedTakeshi"
+ },
+ "lines": [
+  "The rain suddenly stops.",
+  "A neighbour knocks with a bag of oranges.",
+  "The power goes out."
+ ]
+}

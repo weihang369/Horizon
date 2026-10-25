@@ -1,0 +1,52 @@
+name: Bug report
+description: Something in Horizon doesn't work as it should.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. Please don't paste your OpenRouter key, your `.env` or files from `data/`.
+        A security problem goes through [SECURITY.md](https://github.com/weihang369/Horizon/blob/main/SECURITY.md), not an issue.
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where did it happen?
+      options:
+        - The live demo (Vercel)
+        - Running locally (npm run dev or npm run demo)
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: What did you do?
+      description: The steps from opening the app, so someone else can repeat them.
+      placeholder: |
+        1. Open the Meridian Council world
+        2. Start a debate
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect, and what happened instead?
+      description: A screenshot helps. For a live session, the Insight drawer (I) shows the turn's details.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      description: The release, or `git rev-parse --short HEAD`.
+  - type: input
+    id: system
+    attributes:
+      label: OS and browser
+      placeholder: Windows 11, Edge 141
+  - type: textarea
+    id: logs
+    attributes:
+      label: Backend output
+      description: Anything the backend printed around the problem. It never prints your key.
+      render: text

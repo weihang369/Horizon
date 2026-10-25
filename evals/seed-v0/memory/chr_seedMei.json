@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "data": [
+    {
+      "id": "mem_seedMei1",
+      "characterId": "chr_seedMei",
+      "worldId": "wld_seedMeridian",
+      "kind": "fact",
+      "text": "Argued that pilot evidence comes from self-selected firms",
+      "importance": 0.8,
+      "sourceSessionId": "ses_seedDebate4Day",
+      "sourceMessageId": "msg_seedD03",
+      "createdAt": "2026-10-01T10:00:30Z"
+    }
+  ]
+}

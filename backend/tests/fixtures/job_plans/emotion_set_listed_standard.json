@@ -1,0 +1,35 @@
+{
+ "input": {
+  "characterId": "chr_x",
+  "kind": "emotion_set",
+  "emotions": [
+   "thinking",
+   "happy"
+  ]
+ },
+ "mode": "standard",
+ "parallel": 2,
+ "estimatedCostUsd": 0.054,
+ "tasks": [
+  {
+   "type": "emotion_image",
+   "emotion": "thinking",
+   "ms": 15000,
+   "cost": 0.018,
+   "category": "image"
+  },
+  {
+   "type": "emotion_image",
+   "emotion": "happy",
+   "ms": 15000,
+   "cost": 0.018,
+   "category": "image"
+  },
+  {
+   "type": "blink_frame",
+   "ms": 15000,
+   "cost": 0.018,
+   "category": "image"
+  }
+ ]
+}

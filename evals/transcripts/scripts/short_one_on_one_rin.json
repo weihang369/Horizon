@@ -1,0 +1,57 @@
+{
+ "schemaVersion": 1,
+ "id": "short_one_on_one_rin",
+ "mode": "one_on_one",
+ "world": "wld_seedSunnyHollow",
+ "cast": [
+  "chr_seedRin"
+ ],
+ "language": "en",
+ "policy": null,
+ "short": true,
+ "lines": [
+  {
+   "text": "Rin, are you awake? It's only ten in the morning.",
+   "kind": "filler"
+  },
+  {
+   "text": "I just started a new co-op game with my cousin Dev.",
+   "kind": "fact",
+   "fact": "Dev"
+  },
+  {
+   "text": "Lag is caused by your monitor's refresh rate, nothing else.",
+   "kind": "wrong_claim"
+  },
+  {
+   "text": "Main game sampai pukul tiga pagi semalam, mata aku sakit gila.",
+   "kind": "filler",
+   "lang": "ms"
+  },
+  {
+   "text": "What's the worst boss fight you've ever had?",
+   "kind": "filler"
+  },
+  {
+   "text": "Speedrunners never use glitches, it's against every category's rules.",
+   "kind": "wrong_claim"
+  },
+  {
+   "text": "Your sister Hana keeps telling me to sleep more.",
+   "kind": "filler"
+  },
+  {
+   "text": "ゲームの締め切りはいつ？",
+   "kind": "filler",
+   "lang": "ja"
+  },
+  {
+   "text": "Should I main a healer or a tank?",
+   "kind": "filler"
+  },
+  {
+   "text": "Okay, last question: what snack gets you through a night shift?",
+   "kind": "filler"
+  }
+ ]
+}

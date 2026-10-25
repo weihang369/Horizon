@@ -1,0 +1,278 @@
+"""AI profile selection (doc 05 §1; ai-ports "AI profile selection"; design OQ-3, OQ-14; ai-foundation design D12).
+
+`HORIZON_AI_PROFILE` (`scripted` | `naive` | `agent`) selects every port; without it the profile is `agent` when a key is
+set and `scripted` otherwise (M15, images-music D3; `naive` was the default until then). `HORIZON_AI_<PORT>` overrides
+one port. The turn engine, the router (M3), the profile drafter, the image generator (M4) and the song generator
+(Lyria 3 Clip, D-87) have naive implementations; every other port is scripted in both profiles. The scripted song is
+the free procedural theme (D-83). The creation port is called `drafter`, not `profile`, because `HORIZON_AI_PROFILE`
+is the selector itself. In test mode, `POST /_test/ai-profile`
+replaces the selection at runtime.
+
+M7 (ai-foundation design D12): `agent`, the AI stage's profile, was opt-in until M15. Each port uses its `agent`
+implementation when one exists (`AGENT_PORTS`), else its naive one, else its scripted one; without a key every port is
+scripted, as for `naive`. `resolved()` (in the start-up log and every eval report) says what actually ran.
+M8 (persona-context design D1): `AGENT_PORTS` gains `turn` (the `agent` persona prompt); routing, retrieval, the
+guardrail and the memory writer stay what `naive` resolves to. M9 (turn-plan-emotion D5): `planner` (Jev call 1 in
+1:1), `reactions` (Jev, design D18, D19) and `face_check` (doc 13 W2, D23, D24); `naive` gets explicit no-op planner
+and face check so the scripted stand-ins never bill it.
+
+M5 (knowledge-memory-storage design D4, D7, D17): the `embedder` and the memory and knowledge retrievers have naive
+implementations. M13 (memory D18): the `memory_writer` is `naive` (the one rewrite call) and `agent` (the graph with
+Jev); M15 (D3) dropped its test-mode special case, since the default now gives the `agent` writer. The document
+`converter` does not follow the profile or the key (conversion is local and free, D-62): it is the real converter
+unless overridden, and in test mode it defaults to the deterministic scripted one, so CI never starts a conversion
+process.
+"""
+
+from __future__ import annotations
+
+from collections.abc import Callable, Mapping
+from dataclasses import dataclass, field
+from typing import Any, Literal
+
+from horizon.ai.converter import ScriptedConverter
+from horizon.ai.embedder import HashEmbedder
+from horizon.ai.naive.noop import NoFaceCheck, NoPlanner
+from horizon.ai.retrieval import ScriptedKnowledgeRetriever, ScriptedMemoryRetriever
+from horizon.ai.scripted.creation import ProceduralSong, ScriptedDrafter, ScriptedImageGenerator
+from horizon.ai.scripted.ports import (
+    AiDeps,
+    NoMemoryWriter,
+    ScriptedDebateHost,
+    ScriptedFaceCheck,
+    ScriptedGuardrail,
+    ScriptedReactions,
+    ScriptedRouter,
+    ScriptedSummariser,
+    ScriptedTurnEngine,
+    ScriptedTurnPlanner,
+    ScriptedWatchDirector,
+)
+
+Impl = Literal["scripted", "naive", "agent"]
+PORTS = ("turn", "router", "reactions", "host", "director", "summariser", "guardrail", "drafter", "image", "song",
+         "embedder", "knowledge_retriever", "memory_retriever", "memory_writer", "converter", "planner", "face_check")
+NAIVE_PORTS = frozenset({"turn", "router", "drafter", "image", "song", "embedder", "knowledge_retriever",
+                         "memory_retriever", "converter", "summariser",   # M8: the DeepSeek rolling summary (X3)
+                         "planner", "face_check",   # M9 (design D5): naive's own no-ops, never the scripted stand-ins
+                         "host",   # M11 (debate D11): the DeepSeek host lines
+                         "memory_writer",   # M13 (memory D18): the one rewrite call, no Jev
+                         "guardrail"})   # M14 (safety D12): naive's own guardrail: pass, no checks (the yardstick)
+KEYLESS_PORTS = frozenset({"converter"})   # chosen by availability, not by the profile or the key (D-96)
+AGENT_PORTS = frozenset({"turn", "planner", "reactions", "face_check",   # `agent` implementations (M8 turn; M9 the rest)
+                         "host",   # M11 (debate D11): the same host lines; its verdict half differs (D14)
+                         "memory_writer",   # M13 (memory D17): the graph, with Jev's importance and guard
+                         "guardrail"})   # M14 (safety D9): the live Jev output check
+ENV_PROFILE = "HORIZON_AI_PROFILE"
+
+
+def env_name(port: str) -> str:
+    return f"HORIZON_AI_{port.upper()}"
+
+
+ENV_VARS = (ENV_PROFILE, *(env_name(p) for p in PORTS))
+
+
+def _impl(value: str | None) -> Impl | None:
+    v = (value or "").strip().lower()
+    if v in ("scripted", "naive", "agent"):
+        return v  # type: ignore[return-value]
+    return None
+
+
+@dataclass(frozen=True)
+class ProfileSpec:
+    profile: Impl | None = None
+    overrides: Mapping[str, Impl] = field(default_factory=dict)
+    test_mode: bool = False
+
+    @staticmethod
+    def from_env(env: Mapping[str, str], *, test_mode: bool = False) -> ProfileSpec:
+        overrides: dict[str, Impl] = {}
+        for p in PORTS:
+            impl = _impl(env.get(env_name(p)))
+            if impl is not None:
+                overrides[p] = impl
+        return ProfileSpec(profile=_impl(env.get(ENV_PROFILE)), overrides=overrides, test_mode=test_mode)
+
+    def choose(self, port: str, *, key_set: bool) -> Impl:
+        if port in KEYLESS_PORTS:
+            return self.overrides.get(port) or ("scripted" if self.test_mode else "naive")
+        impl: Impl = self.overrides.get(port) or self.profile or ("agent" if key_set else "scripted")   # M15 (D3)
+        if impl == "agent":
+            if not key_set:
+                return "scripted"
+            if port in AGENT_PORTS:
+                return "agent"
+            impl = "naive"
+        return impl if impl == "scripted" or port in NAIVE_PORTS else "scripted"
+
+
+class AiPorts:
+    """Resolves each port per call from the profile and the key status; instances are cached per implementation."""
+
+    def __init__(self, deps: AiDeps, spec: ProfileSpec) -> None:
+        self.deps = deps
+        self.spec = spec
+        self._cache: dict[tuple[str, str, bool], Any] = {}   # (port, implementation, may simulate spend)
+
+    def impl(self, port: str, *, key_set: bool) -> Impl:
+        return self.spec.choose(port, key_set=key_set)
+
+    def resolved(self, *, key_set: bool) -> dict[str, str]:
+        """Each port's implementation as it would resolve now (/health, eval reports: design D12)."""
+        return {p: self.impl(p, key_set=key_set) for p in PORTS}
+
+    def _get(self, port: str, key_set: bool) -> Any:
+        impl = self.impl(port, key_set=key_set)
+        simulate = self.simulates(key_set=key_set)
+        k = (port, impl, simulate)
+        if k not in self._cache:
+            self._cache[k] = self._build(port, impl, simulate=simulate)
+        return self._cache[k]
+
+    def simulates(self, *, key_set: bool) -> bool:
+        """M9 (design D5, D21): may a scripted port record simulated spend? Only for the `scripted` profile or with no
+        key, never when it stands in for a missing naive implementation under a key (a fake row in a real ledger)."""
+        return self.spec.profile == "scripted" or not key_set
+
+    def _build(self, port: str, impl: Impl, *, simulate: bool = True) -> Any:
+        d = self.deps
+        if impl == "agent":
+            if port == "turn":
+                from horizon.ai.agent.turn import AgentTurnEngine
+                return AgentTurnEngine(d)
+            if port == "planner":
+                from horizon.ai.agent.planner import JevTurnPlanner
+                return JevTurnPlanner(d)
+            if port == "reactions":
+                from horizon.ai.agent.reactions import JevReactions
+                return JevReactions(d)
+            if port == "face_check":
+                from horizon.ai.agent.face_check import JevFaceCheck
+                return JevFaceCheck(d)
+            if port == "host":
+                from horizon.ai.naive.host import AgentDebateHost
+                return AgentDebateHost(d)
+            if port == "memory_writer":
+                from horizon.ai.memory.writers import AgentMemoryWriter
+                return AgentMemoryWriter(d)
+            if port == "guardrail":
+                from horizon.ai.agent.guardrail import AgentGuardrail
+                return AgentGuardrail(d)
+            raise KeyError(f"no agent implementation for port {port!r}")
+        if impl == "naive":
+            if port == "turn":
+                from horizon.ai.naive.turn import NaiveTurnEngine
+                return NaiveTurnEngine(d)
+            if port == "drafter":
+                from horizon.ai.naive.creation import NaiveDrafter
+                return NaiveDrafter(d, d.schema, d.palette_ids)
+            if port == "song":
+                from horizon.ai.naive.creation import NaiveSong
+                return NaiveSong(d)
+            if port == "image":
+                from horizon.ai.naive.creation import NaiveImageGenerator
+                return NaiveImageGenerator(d)
+            if port == "embedder":
+                from horizon.ai.embedder import QwenEmbedder
+                return QwenEmbedder(d)
+            if port == "knowledge_retriever":
+                from horizon.ai.retrieval import NaiveKnowledgeRetriever
+                return NaiveKnowledgeRetriever()
+            if port == "memory_retriever":
+                from horizon.ai.retrieval import NaiveMemoryRetriever
+                return NaiveMemoryRetriever()
+            if port == "converter":
+                from horizon.ai.converter import DoclingConverter
+                return DoclingConverter(d.models_dir(), timeout_s=d.convert_timeout_s)
+            if port == "router":
+                from horizon.ai.naive.router import JevRouter
+                return JevRouter(d)
+            if port == "summariser":
+                from horizon.ai.naive.summary import NaiveSummariser
+                return NaiveSummariser(d)
+            if port == "planner":
+                return NoPlanner()
+            if port == "face_check":
+                return NoFaceCheck()
+            if port == "host":
+                from horizon.ai.naive.host import NaiveDebateHost
+                return NaiveDebateHost(d)
+            if port == "memory_writer":
+                from horizon.ai.memory.writers import NaiveMemoryWriter
+                return NaiveMemoryWriter(d)
+            if port == "guardrail":
+                from horizon.ai.naive.noop import NoGuardrail
+                return NoGuardrail()
+            raise KeyError(f"no naive implementation for port {port!r}")
+        builders: dict[str, Callable[[], Any]] = {
+            "turn": lambda: ScriptedTurnEngine(d), "router": lambda: ScriptedRouter(d),
+            "reactions": lambda: ScriptedReactions(d, simulate=simulate), "host": lambda: ScriptedDebateHost(d),
+            "director": lambda: ScriptedWatchDirector(), "summariser": lambda: ScriptedSummariser(d),
+            "guardrail": lambda: ScriptedGuardrail(), "drafter": lambda: ScriptedDrafter(d, d.palette_ids),
+            "image": lambda: ScriptedImageGenerator(d), "song": lambda: ProceduralSong(),
+            "embedder": lambda: HashEmbedder(d), "memory_writer": lambda: NoMemoryWriter(),
+            "converter": lambda: ScriptedConverter(lambda s: d.clock().sleep(s)),
+            "knowledge_retriever": lambda: ScriptedKnowledgeRetriever(), "memory_retriever": lambda: ScriptedMemoryRetriever(),
+            # M9: the fixture's emotion row and a simulated plan call (D25); the face check after faceCheckMs (D24)
+            "planner": lambda: ScriptedTurnPlanner(d, simulate=simulate),
+            "face_check": lambda: ScriptedFaceCheck(d, simulate=simulate)}
+        return builders[port]()
+
+    def turn(self, key_set: bool) -> Any:
+        return self._get("turn", key_set)
+
+    def router(self, key_set: bool) -> Any:
+        return self._get("router", key_set)
+
+    def planner(self, key_set: bool) -> Any:
+        return self._get("planner", key_set)
+
+    def face_check(self, key_set: bool) -> Any:
+        return self._get("face_check", key_set)
+
+    def reactions(self, key_set: bool) -> Any:
+        return self._get("reactions", key_set)
+
+    def host(self, key_set: bool) -> Any:
+        return self._get("host", key_set)
+
+    def director(self, key_set: bool) -> Any:
+        return self._get("director", key_set)
+
+    def summariser(self, key_set: bool) -> Any:
+        return self._get("summariser", key_set)
+
+    def guardrail(self, key_set: bool) -> Any:
+        return self._get("guardrail", key_set)
+
+    def drafter(self, key_set: bool) -> Any:
+        return self._get("drafter", key_set)
+
+    def image(self, key_set: bool) -> Any:
+        return self._get("image", key_set)
+
+    def song(self, key_set: bool) -> Any:
+        return self._get("song", key_set)
+
+    def embedder(self, key_set: bool) -> Any:
+        return self._get("embedder", key_set)
+
+    def memory_writer(self, key_set: bool) -> Any:
+        return self._get("memory_writer", key_set)
+
+    def converter(self, key_set: bool) -> Any:
+        return self._get("converter", key_set)
+
+    def knowledge_retriever(self, key_set: bool) -> Any:
+        return self._get("knowledge_retriever", key_set)
+
+    def memory_retriever(self, key_set: bool) -> Any:
+        return self._get("memory_retriever", key_set)
+
+    def override(self, port: str, impl: Any) -> None:
+        """Tests: inject one port's implementation for every profile (e.g. a blocking guardrail, design D13)."""
+        for name in ("scripted", "naive", "agent"):
+            for simulate in (True, False):
+                self._cache[(port, name, simulate)] = impl

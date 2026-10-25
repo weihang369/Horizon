@@ -1,0 +1,62 @@
+{
+  "verified": false,
+  "source": "group A A3 (2026-10-10): max_tokens 8 ended with finish_reason length, matching native_finish_reason; reasoning off gave 0 reasoning tokens",
+  "status": 200,
+  "sse": [
+    {
+      "id": "gen-rec-000012",
+      "provider": "DeepSeek",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "object": "chat.completion.chunk",
+      "created": 1791000000,
+      "choices": [
+        {
+          "index": 0,
+          "delta": {
+            "content": "Morning! Tea is"
+          },
+          "finish_reason": null
+        }
+      ]
+    },
+    {
+      "id": "gen-rec-000012",
+      "provider": "DeepSeek",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "object": "chat.completion.chunk",
+      "created": 1791000000,
+      "choices": [
+        {
+          "index": 0,
+          "delta": {
+            "content": " ready and"
+          },
+          "finish_reason": null
+        }
+      ]
+    },
+    {
+      "id": "gen-rec-000012",
+      "provider": "DeepSeek",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "object": "chat.completion.chunk",
+      "created": 1791000000,
+      "choices": [
+        {
+          "index": 0,
+          "delta": {},
+          "finish_reason": "length"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 900,
+        "completion_tokens": 8,
+        "total_tokens": 908,
+        "cost": 0.00014,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      }
+    }
+  ]
+}

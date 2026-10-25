@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "data": {
+    "id": "song_seedVictor",
+    "characterId": "chr_seedVictor",
+    "status": "ready",
+    "url": "/assets/themes/chr_seedVictor.mp3",
+    "brief": {
+      "genres": [
+        "orchestral"
+      ],
+      "moods": [
+        "confident",
+        "playful"
+      ],
+      "bpm": 110,
+      "instruments": [
+        "strings",
+        "brass"
+      ],
+      "vibe": "Orchestral swing with pizzicato strings and confident brass"
+    },
+    "instrumental": true,
+    "durationSec": 30.772,
+    "format": "mp3",
+    "bytes": 744660,
+    "generation": {
+      "model": "google/lyria-3-clip-preview",
+      "prompt": "Instrumental theme music for a character. Genres: orchestral. Mood: confident, playful. Instruments: strings, brass. Tempo: about 110 BPM. Feel: Orchestral swing with pizzicato strings and confident brass. An original piece: do not imitate any named artist, band or existing song. No vocals, no lyrics. A 30-second piece that loops cleanly.",
+      "costUsd": 0.04
+    },
+    "licenseNote": "Composed by google/lyria-3-clip-preview through OpenRouter (D-87)."
+  }
+}

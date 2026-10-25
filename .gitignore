@@ -1,0 +1,31 @@
+# Private / non-public material (launch & marketing notes, demo scripts)
+private/
+
+# Runtime data & secrets
+data/
+# ...but the seed build's source data is code, not runtime data
+!frontend/scripts/seed-build/data/
+.env
+*.local.json
+# Image-model test output (generated images, can be large)
+docs/ai/image-model-test/output/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Python (backend/)
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node (root workspace scripts)
+/node_modules/
+
+# M12 check 4 (rag D22, D31.3): downloaded public-domain PDFs, used locally only, never committed
+evals/check4/

@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "data": [
+    {
+      "id": "mem_seedHana1",
+      "characterId": "chr_seedHana",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "event",
+      "text": "Kai is treating everyone to Thai dinner tonight; Hana voted for the little Thai place by the station.",
+      "importance": 0.2925,
+      "sourceSessionId": "ses_seedDinner",
+      "sourceMessageId": "msg_seedC02",
+      "createdAt": "2026-09-30T10:32:35.903Z"
+    },
+    {
+      "id": "mem_seedHana2",
+      "characterId": "chr_seedHana",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "preference",
+      "text": "Takeshi will say \"anything's fine\" then complain it's too spicy, so Hana suggests getting him the mild curry.",
+      "importance": 0.4875,
+      "sourceSessionId": "ses_seedDinner",
+      "sourceMessageId": "msg_seedC02",
+      "createdAt": "2026-09-30T10:32:35.903Z"
+    },
+    {
+      "id": "mem_seedHana3",
+      "characterId": "chr_seedHana",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "preference",
+      "text": "Rin demolished a whole plate of basil noodles at the Thai place last time.",
+      "importance": 0.4175,
+      "sourceSessionId": "ses_seedDinner",
+      "sourceMessageId": "msg_seedC02",
+      "createdAt": "2026-09-30T10:32:35.903Z"
+    },
+    {
+      "id": "mem_seedHana4",
+      "characterId": "chr_seedHana",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "fact",
+      "text": "Hana's grandma's rule: one dish everyone loves and one dish someone has never tried; arguments about the second are part of the meal.",
+      "importance": 0.63,
+      "sourceSessionId": "ses_seedDinner",
+      "sourceMessageId": "msg_seedC07",
+      "createdAt": "2026-09-30T10:32:35.903Z"
+    },
+    {
+      "id": "mem_seedHana5",
+      "characterId": "chr_seedHana",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "event",
+      "text": "Hana picked lotus root as the unknown dish; Rin can veto after tasting.",
+      "importance": 0.5425,
+      "sourceSessionId": "ses_seedDinner",
+      "sourceMessageId": "msg_seedC07",
+      "createdAt": "2026-09-30T10:32:35.903Z"
+    },
+    {
+      "id": "mem_seedHana6",
+      "characterId": "chr_seedHana",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "event",
+      "text": "Hana dropped a cheap vase while closing the shop; the floor was fine, only her dignity bruised.",
+      "importance": 0.27,
+      "sourceSessionId": "ses_seedHanaLongDay",
+      "sourceMessageId": "msg_seedH07",
+      "createdAt": "2026-09-30T19:04:35.233Z"
+    },
+    {
+      "id": "mem_seedHana7",
+      "characterId": "chr_seedHana",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "fact",
+      "text": "Hana is oddly nervous about tonight's Thai dinner with family, though she can't say why.",
+      "importance": 0.555,
+      "sourceSessionId": "ses_seedHanaLongDay",
+      "sourceMessageId": "msg_seedH07",
+      "createdAt": "2026-09-30T19:04:35.233Z"
+    },
+    {
+      "id": "mem_seedHana8",
+      "characterId": "chr_seedHana",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "event",
+      "text": "Rin texted Hana a photo of herself practicing a serious face for the lotus root tasting.",
+      "importance": 0.3425,
+      "sourceSessionId": "ses_seedHanaLongDay",
+      "sourceMessageId": "msg_seedH09",
+      "createdAt": "2026-09-30T19:04:35.233Z"
+    }
+  ]
+}

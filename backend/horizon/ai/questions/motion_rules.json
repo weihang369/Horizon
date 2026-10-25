@@ -1,0 +1,21 @@
+{
+  "id": "motion_rules",
+  "version": 1,
+  "purpose": "guardrail",
+  "type": "noul",
+  "label": "motion breaks the rules?",
+  "instructions": "Does the debate motion or watch premise in quoted_premise (kind says which) ask for content outside the content rules? A hard or divisive topic is inside the rules when it can be argued or played without graphic detail. Outside the content rules: sexual content; graphic gore; real, usable instructions for seriously hurting people (weapons, making drugs, poisoning, breaking into systems); methods, doses or means of self-harm or suicide, whoever asks. Inside the rules: talking about war, illness, crime, drugs, death and other hard topics without graphic detail; dark or violent fiction told without graphic detail; swearing that fits the character; medical, legal and financial information.",
+  "true": "Yes: arguing or playing it means content outside the rules.",
+  "false": "No: it can be argued or played inside the rules.",
+  "state": {
+    "kind": "label",
+    "quoted_premise": "quoted"
+  },
+  "deadline": "guardrail_prompt",
+  "floor": null,
+  "thresholds": {
+    "tMotion": 0.7
+  },
+  "fallback": "start",
+  "state_note": "safety D14: asked once when a debate or watch is created (kind is \"debate motion\" or \"watch premise\"); skipped for a text the world already used. p >= tMotion refuses with content_refused; late or failed starts."
+}

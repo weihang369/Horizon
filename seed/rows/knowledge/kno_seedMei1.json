@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "data": {
+    "space": "qwen3-emb-8b@1024+h",
+    "source": {
+      "id": "kno_seedMei1",
+      "character_id": "chr_seedMei",
+      "world_id": "wld_seedMeridian",
+      "title": "Working-time pilots appendix.pdf",
+      "type": "file",
+      "url": null,
+      "mime": "application/pdf",
+      "original_name": "Working-time pilots appendix.pdf",
+      "bytes": 1011,
+      "pages": null,
+      "sha256": "5954edac3f24dbc92010327aa0ccd71daaccc22517a04c9f9006ce38c759046a",
+      "status": "failed",
+      "chunk_count": 0,
+      "extractor_version": null,
+      "chunker_version": "pack@2",
+      "tokenizer": "utf8/4",
+      "embedding_space_id": null,
+      "has_original": 1,
+      "error": "{\"message\":\"This PDF is password-protected. Remove the password and add it again.\"}",
+      "added_at": "2026-09-24T14:05:00.984Z",
+      "indexed_at": null,
+      "embed_sent_at": null
+    },
+    "files": [
+      "original.pdf"
+    ],
+    "sections": [],
+    "chunks": []
+  }
+}

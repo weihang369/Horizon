@@ -1,0 +1,23 @@
+{
+ "id": "judge_over_mention",
+ "version": 2,
+ "purpose": "eval_judge",
+ "type": "noul",
+ "label": "brought up out of place?",
+ "instructions": "The character's reply in quoted_reply answers quoted_message, which follows the lines in quoted_recent. Does it bring up something about the user from quoted_memories that neither quoted_message nor quoted_recent gives a reason to mention?",
+ "true": "Out of place: it drags in a remembered detail about the user that the moment has nothing to do with.",
+ "false": "Fine: it mentions nothing remembered about the user, talks about the character's own life, follows up on what was just said, or mentions what the message calls for.",
+ "state": {
+  "quoted_memories": "quoted",
+  "quoted_recent": "quoted",
+  "quoted_message": "quoted",
+  "quoted_reply": "quoted"
+ },
+ "deadline": "default",
+ "floor": null,
+ "thresholds": {
+  "t": 0.5
+ },
+ "fallback": "none (evaluation only)",
+ "state_note": "memory D40 (B4 'Over-mention'): layer 3's unrelated turns in session 2. v2 (phase 10, the user's choice): sees the session's last lines; v1 counted follow-ups and the character's own life (B4 real 0.63)."
+}

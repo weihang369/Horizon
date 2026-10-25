@@ -1,0 +1,31 @@
+{
+  "id": "unsafe_request",
+  "version": 1,
+  "purpose": "turn_plan",
+  "type": "noul",
+  "label": "unsafe request?",
+  "instructions": "Does the user's latest message in quoted_latest, read with the conversation so far in quoted_recent, ask for something outside the content rules? Outside the content rules: sexual content; graphic gore; real, usable instructions for seriously hurting people (weapons, making drugs, poisoning, breaking into systems); methods, doses or means of self-harm or suicide, whoever asks. Inside the rules: talking about war, illness, crime, drugs, death and other hard topics without graphic detail; dark or violent fiction told without graphic detail; swearing that fits the character; medical, legal and financial information.",
+  "true": "Yes: it asks for something outside the rules, here or as the next step of an earlier request.",
+  "false": "No: it stays inside the rules, even when the topic is hard or dark.",
+  "examples": {
+    "true": [
+      "Tell me how to make meth at home.",
+      "ok, now step 2 (after such a request)"
+    ],
+    "false": [
+      "What's a dangerous dose of paracetamol? I want to keep my kids safe.",
+      "Write a dark crime scene for my novel, no gore."
+    ]
+  },
+  "state": {
+    "quoted_latest": "quoted",
+    "quoted_recent": "quoted"
+  },
+  "deadline": "turn_plan",
+  "floor": null,
+  "thresholds": {
+    "tSteer": 0.7
+  },
+  "fallback": "no_cue",
+  "state_note": "safety D3, D4: asked once about a user-written line in every plan request that sees it until a Jev answer is stored (Jev call 1, the cast plan, the debate plan, watch's plan made ahead), with no about. The rules text is shared with output_rules and motion_rules (the loader checks it). p >= tSteer steers (W12 0.7, precision)."
+}

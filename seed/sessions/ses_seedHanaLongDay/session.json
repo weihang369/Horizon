@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "data": {
+    "id": "ses_seedHanaLongDay",
+    "worldId": "wld_seedSunnyHollow",
+    "title": "Long day",
+    "titleIsCustom": false,
+    "mode": "one_on_one",
+    "status": "paused",
+    "participants": [
+      {
+        "characterId": "chr_seedHana",
+        "role": "speaker",
+        "currentEmotion": "embarrassed",
+        "mutedByUser": false
+      }
+    ],
+    "emotionMode": "user",
+    "musicPolicy": "character_theme",
+    "readableMode": false,
+    "config": null,
+    "state": null,
+    "isSeed": true,
+    "costUsd": 0.000558,
+    "messageCount": 9,
+    "createdAt": "2026-09-30T19:01:59.980Z",
+    "updatedAt": "2026-09-30T19:03:46.851Z",
+    "pausedReason": "navigated_away",
+    "lastMessageAt": "2026-09-30T19:03:29.526Z"
+  }
+}

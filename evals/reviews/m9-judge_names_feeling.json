@@ -1,0 +1,22 @@
+{
+ "set": "judge_names_feeling",
+ "seed": 9,
+ "sample": [
+  "nf-real-no-01",
+  "nf-real-no-02",
+  "nf-real-no-03",
+  "nf-real-no-05",
+  "nf-real-no-06",
+  "nf-real-no-09",
+  "nf-real-no-11",
+  "nf-real-no-12",
+  "nf-real-no-13",
+  "nf-real-no-15",
+  "nf-real-no-17",
+  "nf-real-no-20",
+  "nf-real-no-22",
+  "nf-real-yes-02",
+  "nf-real-yes-08"
+ ],
+ "disagree": []
+}

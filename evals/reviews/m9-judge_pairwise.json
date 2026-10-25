@@ -1,0 +1,22 @@
+{
+ "set": "judge_pairwise",
+ "seed": 9,
+ "sample": [
+  "pw-off_topic-16",
+  "pw-off_topic-17",
+  "pw-off_topic-18",
+  "pw-off_topic-20",
+  "pw-off_topic-21",
+  "pw-off_topic-24",
+  "pw-off_topic-26",
+  "pw-off_topic-27",
+  "pw-off_topic-28",
+  "pw-off_topic-30",
+  "pw-persona-02",
+  "pw-persona-05",
+  "pw-persona-07",
+  "pw-persona-09",
+  "pw-persona-15"
+ ],
+ "disagree": []
+}

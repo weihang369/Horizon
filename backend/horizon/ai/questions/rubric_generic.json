@@ -1,0 +1,29 @@
+{
+  "id": "rubric_generic",
+  "version": 2,
+  "purpose": "rubric",
+  "type": "score",
+  "label": "criterion score",
+  "instructions": "How strong is the {side} on the criterion numbered {n} in quoted_criteria?",
+  "levels": [
+    "Very weak on it.",
+    "Weak.",
+    "Adequate.",
+    "Strong.",
+    "Excellent."
+  ],
+  "shuffle": false,
+  "state": {
+    "mode": "label",
+    "quoted_motion": "quoted",
+    "quoted_criteria": "quoted",
+    "quoted_sides": "quoted",
+    "quoted_moderator": "quoted"
+  },
+  "deadline": "rubric",
+  "floor": null,
+  "thresholds": {
+    "margin": 0.25
+  },
+  "fallback": "summary_only"
+}

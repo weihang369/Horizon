@@ -1,0 +1,11 @@
+{
+  "verified": false,
+  "source": "Invalid key: OpenRouter API docs (chat completions / streaming / usage accounting), 2026-10; doc backend/04 §1",
+  "status": 401,
+  "body": {
+    "error": {
+      "code": 401,
+      "message": "No auth credentials found"
+    }
+  }
+}

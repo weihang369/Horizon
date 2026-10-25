@@ -1,0 +1,20 @@
+{
+ "id": "judge_assistant_voice",
+ "version": 2,
+ "purpose": "eval_judge",
+ "type": "noul",
+ "label": "assistant voice?",
+ "instructions": "Does any part of quoted_reply, even only its first line, sound like an AI assistant rather than a person texting: openers like \"Certainly!\" or \"Happy to help\", \"let me break this down\", offers of help, menus of options, headings or bullet lists, or customer-service phrases?",
+ "true": "The reply sounds like an assistant.",
+ "false": "The reply sounds like a person texting.",
+ "state": {
+  "quoted_last": "quoted",
+  "quoted_reply": "quoted"
+ },
+ "deadline": "default",
+ "floor": null,
+ "thresholds": {
+  "t": 0.5
+ },
+ "fallback": "none (evaluation only)"
+}

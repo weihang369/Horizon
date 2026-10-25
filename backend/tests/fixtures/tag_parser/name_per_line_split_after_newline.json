@@ -1,0 +1,16 @@
+{
+  "name": "name_per_line_split_after_newline",
+  "doc": "Per line: a later line's name split across chunks after the newline",
+  "chunks": [
+    "Hi\nMe",
+    "i: again\nMei:  and more"
+  ],
+  "previous": "neutral",
+  "speaker": "Mei",
+  "perLine": true,
+  "expected": {
+    "emotion": "neutral",
+    "source": "default",
+    "text": "Hi\nagain\nand more"
+  }
+}

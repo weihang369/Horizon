@@ -1,0 +1,23 @@
+{
+ "set": "judges/judge_summary_fact",
+ "sample": [
+  {
+   "short": "SUM1",
+   "id": "judge_summary_fact-real-sum_ms_03"
+  },
+  {
+   "short": "SUM2",
+   "id": "judge_summary_fact-real-sum_ms_04"
+  },
+  {
+   "short": "SUM3",
+   "id": "judge_summary_fact-real-sum_zh_03"
+  },
+  {
+   "short": "SUM4",
+   "id": "judge_summary_fact-real-sum_zh_06"
+  }
+ ],
+ "disagree": [],
+ "reviewer": "Claude, second pass (the user delegated the review on 2026-10-12)"
+}

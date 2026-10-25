@@ -1,0 +1,85 @@
+{
+  "model": "bytedance-seed/seedream-5-0-flash",
+  "resolution": "1K",
+  "aspectRatio": "3:4",
+  "seed": null,
+  "character": "Hana Morisaki, a 26-year-old florist. Pink-tinted chestnut bob, green eyes, cherry-blossom hairpin. Denim apron over a cream sundress. Sunny, affectionate vibe.",
+  "startedAt": "2026-10-03T08:31:22.062Z",
+  "budget": 0.6,
+  "results": [
+    {
+      "name": "neutral",
+      "file": "00-neutral.jpg",
+      "prompt": "Modern Japanese anime illustration, clean confident line art, soft cel shading with subtle gradients, bright saturated but natural colours, expressive eyes with glossy highlights, fashionable contemporary clothing with fabric detail, slice-of-life romantic-comedy aesthetic. Adult character with adult proportions and a mature face.\n\nSubject: Hana Morisaki, a 26-year-old florist. Pink-tinted chestnut bob, green eyes, cherry-blossom hairpin. Denim apron over a cream sundress. Sunny, affectionate vibe.\n\nComposition: single character, vertical 3:4 portrait, waist-up, centred, body turned slightly (three-quarter view) with face toward the viewer, eyes about one third from the top of the image, head and shoulders fully inside the frame with a little headroom, arms relaxed at the sides and hands out of frame.\nExpression: calm neutral, mouth closed, attentive eyes looking at the viewer.\nBackground: plain seamless flat light warm-grey studio background, no scenery, no props, no cast shadow.\nLighting: soft even front key light with a gentle rim light.\n\nAvoid: text, letters, logos, watermark, signature, border, frame, extra people, visible hands, cropped head, childlike or teenage features, photorealism, 3D render look.",
+      "edit": false,
+      "cost": 0.018,
+      "ms": 16944,
+      "kb": 210
+    },
+    {
+      "name": "happy",
+      "file": "01-happy.jpg",
+      "prompt": "Edit this image. Keep the exact same character: identical face shape, eye colour, hairstyle, hair colour, skin tone, outfit, accessories, pose, framing, camera angle, lighting, background and art style. Change ONLY the facial expression to: a warm open smile showing a little of the upper teeth, eyes softly crinkled.\nDo not add hands, props, text, tears streaming, or any new objects. Do not change the crop.",
+      "edit": true,
+      "cost": 0.018,
+      "ms": 7733,
+      "kb": 215
+    },
+    {
+      "name": "sad",
+      "file": "02-sad.jpg",
+      "prompt": "Edit this image. Keep the exact same character: identical face shape, eye colour, hairstyle, hair colour, skin tone, outfit, accessories, pose, framing, camera angle, lighting, background and art style. Change ONLY the facial expression to: inner brows raised, eyes lowered and slightly glossy, mouth gently downturned.\nDo not add hands, props, text, tears streaming, or any new objects. Do not change the crop.",
+      "edit": true,
+      "cost": 0.018,
+      "ms": 8096,
+      "kb": 215
+    },
+    {
+      "name": "angry",
+      "file": "03-angry.jpg",
+      "prompt": "Edit this image. Keep the exact same character: identical face shape, eye colour, hairstyle, hair colour, skin tone, outfit, accessories, pose, framing, camera angle, lighting, background and art style. Change ONLY the facial expression to: brows drawn down and together, narrowed eyes, tight mouth, faint flush on the cheeks.\nDo not add hands, props, text, tears streaming, or any new objects. Do not change the crop.",
+      "edit": true,
+      "cost": 0.018,
+      "ms": 7381,
+      "kb": 216
+    },
+    {
+      "name": "surprised",
+      "file": "04-surprised.jpg",
+      "prompt": "Edit this image. Keep the exact same character: identical face shape, eye colour, hairstyle, hair colour, skin tone, outfit, accessories, pose, framing, camera angle, lighting, background and art style. Change ONLY the facial expression to: eyebrows high, eyes wide open, mouth in a small open \"o\".\nDo not add hands, props, text, tears streaming, or any new objects. Do not change the crop.",
+      "edit": true,
+      "cost": 0.018,
+      "ms": 8606,
+      "kb": 217
+    },
+    {
+      "name": "thinking",
+      "file": "05-thinking.jpg",
+      "prompt": "Edit this image. Keep the exact same character: identical face shape, eye colour, hairstyle, hair colour, skin tone, outfit, accessories, pose, framing, camera angle, lighting, background and art style. Change ONLY the facial expression to: eyes glancing up and to the side, one eyebrow raised, lips pursed slightly to one side.\nDo not add hands, props, text, tears streaming, or any new objects. Do not change the crop.",
+      "edit": true,
+      "cost": 0.018,
+      "ms": 7821,
+      "kb": 210
+    },
+    {
+      "name": "embarrassed",
+      "file": "06-embarrassed.jpg",
+      "prompt": "Edit this image. Keep the exact same character: identical face shape, eye colour, hairstyle, hair colour, skin tone, outfit, accessories, pose, framing, camera angle, lighting, background and art style. Change ONLY the facial expression to: a blush across the cheeks and nose, an awkward small smile, eyes glancing away.\nDo not add hands, props, text, tears streaming, or any new objects. Do not change the crop.",
+      "edit": true,
+      "cost": 0.018,
+      "ms": 7810,
+      "kb": 214
+    },
+    {
+      "name": "blink",
+      "file": "07-blink.jpg",
+      "prompt": "Edit this image. Keep the exact same character: identical face shape, eye colour, hairstyle, hair colour, skin tone, outfit, accessories, pose, framing, camera angle, lighting, background and art style. Change ONLY the facial expression to: eyes fully closed and relaxed, otherwise identical to the original.\nDo not add hands, props, text, tears streaming, or any new objects. Do not change the crop.",
+      "edit": true,
+      "cost": 0.018,
+      "ms": 7766,
+      "kb": 213
+    }
+  ],
+  "spent": 0.144,
+  "finishedAt": "2026-10-03T08:32:34.357Z"
+}

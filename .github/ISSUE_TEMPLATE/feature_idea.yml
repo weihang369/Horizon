@@ -1,0 +1,22 @@
+name: Idea
+description: Suggest something Horizon could do.
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Ideas already left out of v1 are listed in [docs/v2/](https://github.com/weihang369/Horizon/blob/main/docs/v2/README.md); have a look first.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What would you like to do?
+      description: What you were trying to do, and what got in the way.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: Your idea
+      description: How it could work. Rough is fine.
+    validations:
+      required: true

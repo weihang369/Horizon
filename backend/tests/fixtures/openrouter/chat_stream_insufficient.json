@@ -1,0 +1,43 @@
+{
+  "verified": false,
+  "source": "DeepSeek API docs: finish_reason insufficient_system_resource (docs/ai/03 C4); shape follows chat_stream_ok",
+  "status": 200,
+  "sse": [
+    {
+      "id": "gen-rec-000011",
+      "provider": "DeepSeek",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "object": "chat.completion.chunk",
+      "created": 1791000000,
+      "choices": [
+        {
+          "index": 0,
+          "delta": {
+            "content": "Well"
+          },
+          "finish_reason": null
+        }
+      ]
+    },
+    {
+      "id": "gen-rec-000011",
+      "provider": "DeepSeek",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "object": "chat.completion.chunk",
+      "created": 1791000000,
+      "choices": [
+        {
+          "index": 0,
+          "delta": {},
+          "finish_reason": "insufficient_system_resource"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 900,
+        "completion_tokens": 2,
+        "total_tokens": 902,
+        "cost": 0.00014
+      }
+    }
+  ]
+}

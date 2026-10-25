@@ -1,0 +1,293 @@
+"""Watch (session-modes "Watch pacing and the turn cap", "Watch controls"; a port of `mock/engines/watch.ts`).
+
+The premise is posted as a `direction` message; speakers take turns round-robin from the opening speaker, `paceMs` of
+clock time apart. Each turn raises `turnsTaken` (`watch.state` + `session.state`); reaching `turnLimit` pauses with
+`turn_cap`. A director's note colours the next 2 turns; Step in pauses and lets up to 2 characters reply.
+"""
+
+from __future__ import annotations
+
+import logging
+import random
+from datetime import timedelta
+from typing import TYPE_CHECKING, Any
+
+from horizon.ai.contexts import CastPlan, LineHint
+from horizon.gateway.errors import ProviderError
+from horizon.sessions.context import session_context
+from horizon.sessions.follow import answer_then_follow, second_reply
+from horizon.sessions.modes.common import (
+    asleep_note,
+    checked_s,
+    gap,
+    is_asleep,
+    message_event,
+    note,
+    patch_settings,
+    runner,
+    user_message,
+)
+from horizon.sessions.modes.group import run_speakers
+from horizon.sessions.plans import cast_request, plan_cast, plans_cast
+from horizon.sessions.turn import TurnSpec
+from horizon.sessions.watch_plan import ScenePick, drop_deep_ahead, drop_plan_ahead, start_plan_ahead, take_plan
+
+if TYPE_CHECKING:
+    from horizon.sessions.actor import SessionActor
+
+log = logging.getLogger("horizon.sessions")
+
+Wire = dict[str, Any]
+SUMMARY_DELAY_MS = 1200
+RECAP_FAILED = "The recap couldn't be written this time. Try Summarise again."   # doc 07 G10, verbatim (no fake recap)
+
+
+def cfg_of(actor: SessionActor) -> Wire:
+    c: Wire = actor.session.get("config") or {}
+    return c
+
+
+def state_of(actor: SessionActor) -> Wire:
+    st: Wire = actor.session.get("state") or {"status": "paused", "turnsTaken": 0,
+                                              "turnLimit": int(cfg_of(actor).get("maxTurns", 20))}
+    return st
+
+
+def watch_state(actor: SessionActor, patch: Wire) -> list[Wire]:
+    st = {**state_of(actor), **patch}
+    for k, v in list(st.items()):
+        if v is None:
+            del st[k]
+    return [{"type": "watch.state", "payload": {"status": st["status"], "paceMs": cfg_of(actor).get("paceMs", 1500),
+                                                "turnsTaken": st["turnsTaken"], "turnLimit": st["turnLimit"]}},
+            {"type": "session.state", "payload": {"state": st}}]
+
+
+def start(actor: SessionActor) -> None:
+    async def job() -> None:
+        await actor.rt.clock.sleep(actor.rt.runtime_cfg.timing.watch_start_ms / 1000)
+        premise = str(cfg_of(actor).get("premise", ""))
+        await actor.emit(message_event(note(actor, premise, "direction")), *watch_state(actor, {"status": "playing"}))
+        turn(actor)
+
+    actor.enqueue(job)
+
+
+async def pick_speaker(actor: SessionActor) -> str | None:
+    m = actor.mode
+    if m.nudge:
+        n: str = m.nudge
+        m.nudge = None
+        return n
+    cast = [p["characterId"] for p in actor.session["participants"] if not p.get("mutedByUser")]
+    if not cast:
+        return None
+    if m.watch_idx is None:
+        opening = cfg_of(actor).get("openingSpeaker", "auto")
+        director = actor.rt.ai.director(runner(actor).key_set())
+        order = director.order(cast, opening if opening != "auto" else None)
+        m.watch_idx = cast.index(order[0]) + int(state_of(actor).get("turnsTaken", 0))
+    for _ in range(len(cast)):
+        cid = str(cast[m.watch_idx % len(cast)])
+        m.watch_idx += 1
+        if not await is_asleep(actor, cid):
+            return cid
+    return None
+
+
+def turn(actor: SessionActor, manual: bool = False) -> None:
+    """One scene turn. `manual` (Step) runs while paused and doesn't chain."""
+    async def job() -> None:
+        st = state_of(actor)
+        if not manual and (actor.held or st.get("status") != "playing"):
+            return
+        if int(st["turnsTaken"]) >= int(st["turnLimit"]):
+            await actor.emit(*watch_state(actor, {"status": "ended", "nextSpeakerId": None}),
+                             {"type": "session.paused", "payload": {"reason": "turn_cap"}})
+            return
+        planned = plans_cast(actor)
+        plan: CastPlan | None = None
+        pick: ScenePick | None = None
+        if planned:   # M10 (D13): a nudge, else the guard, else Jev's pick; the plan may have been made ahead (D15)
+            plan, pick, deep = await take_plan(actor)
+            cid = plan.order[0] if plan is not None and plan.order else None
+            if plan is None:
+                cid = await pick_speaker(actor)
+        else:
+            cid = await pick_speaker(actor)
+        if cid is None:
+            parts = actor.session["participants"]
+            if parts:
+                await asleep_note(actor, parts[0]["characterId"], skipping=False)
+            await actor.emit(message_event(note(actor, "Everyone's asleep. Top someone up to continue the scene.")),
+                             *watch_state(actor, {"status": "paused"}),
+                             {"type": "session.paused", "payload": {"reason": "user"}})
+            actor.held = True
+            return
+        m = actor.mode
+        if pick is not None and pick.forced is not None and m.nudge == pick.forced:
+            m.nudge = None   # the nudge is spent by the turn that uses it
+        direction = None
+        if m.direction is not None and m.direction[1] > 0:
+            direction = m.direction[0]
+        if m.direction is not None:
+            m.direction = (m.direction[0], m.direction[1] - 1)
+        spec = TurnSpec(speaker=cid, line=LineHint(kind="scene"), direction_note=direction)
+        if plan is not None and pick is not None:
+            spec.plan = plan.for_speaker(cid)
+            spec.routing = scene_routing(plan, pick, cid)
+            spec.forced_by = pick.forced_by
+            if deep is not None and deep.req.speaker.id == cid:   # M12 (rag D15): made with the plan ahead
+                spec.deep = deep
+            elif deep is not None:
+                deep.cancel()
+        out = await runner(actor).run(actor, spec)
+        if out.status not in ("complete", "interrupted", "error"):
+            return
+        taken = int(state_of(actor)["turnsTaken"]) + 1
+        ended = taken >= int(state_of(actor)["turnLimit"])
+        # M14 (safety D10): the turn gap and `paceMs` count from the stream's end, so the output check is hidden in them
+        timing = actor.rt.runtime_cfg.timing
+        gap_s, pace_s, check_s = timing.turn_gap_ms / 1000, float(cfg_of(actor).get("paceMs", 1500)) / 1000, checked_s(out)
+        if (planned and not manual and not ended and not actor.held and out.ended_at is not None
+                and actor.session.get("status") == "active"):
+            start = out.stream_end or out.ended_at
+            due = max(out.ended_at, start + timedelta(seconds=gap_s + pace_s))
+            await start_plan_ahead(actor, due)   # G8: the next plan runs during the wait, never the next reply
+        await gap(actor, None, max(0.0, gap_s - check_s))
+        await actor.emit(*watch_state(actor, {"turnsTaken": taken, "status": "ended" if ended else state_of(actor)["status"]}))
+        if ended:
+            await actor.emit({"type": "session.paused", "payload": {"reason": "turn_cap"}})
+        if not ended and not manual and not actor.held:
+            actor.after(max(0.0, pace_s - max(0.0, check_s - gap_s)) * 1000, lambda: turn(actor))
+
+    actor.enqueue(job)
+
+
+async def play(actor: SessionActor) -> None:
+    actor.held = False
+    await actor.emit(*watch_state(actor, {"status": "playing"}), {"type": "session.resumed", "payload": {"reason": "user"}})
+    if not actor.busy and len(actor.turns) == 0:
+        turn(actor)
+
+
+async def pause(actor: SessionActor) -> None:
+    actor.held = True
+    drop_plan_ahead(actor)   # D15: Play plans afresh (a pause outlasts any plan made ahead); M12: its deep work too
+    await actor.emit(*watch_state(actor, {"status": "paused"}), {"type": "session.paused", "payload": {"reason": "user"}})
+
+
+def scene_routing(plan: CastPlan, pick: ScenePick, cid: str) -> Wire | None:
+    """The trace's routing for a planned scene turn: forced (a nudge, the guard: its reason), or Jev's pick."""
+    if pick.forced is not None:
+        r: Wire = {"selected": cid}
+        if pick.forced_by:
+            r["forcedBy"] = pick.forced_by
+        if pick.reason:
+            r["reason"] = pick.reason
+        return r
+    who = plan.who
+    if who is None or not who.question:
+        return None
+    r = {"question": who.label, "selected": cid}
+    fell = who.source in ("fallback", "late")
+    if who.candidates and not fell:
+        r["candidates"] = who.candidates
+    if fell:
+        r["reason"] = "fallback"
+    return r
+
+
+def step_once(actor: SessionActor) -> None:
+    turn(actor, manual=True)
+
+
+async def set_pace(actor: SessionActor, pace_ms: float) -> None:
+    await actor.emit(patch_settings({"config": {**cfg_of(actor), "paceMs": pace_ms}}))
+    await actor.emit(*watch_state(actor, {}))
+
+
+async def direct(actor: SessionActor, text: str) -> None:
+    # M12 (rag D15): the note makes any plan made ahead stale (its fingerprint holds the note), so its deep work goes
+    # now, while its requests are in flight; the plan itself runs out as M10 left it, and the turn plans afresh
+    drop_deep_ahead(actor)
+    actor.mode.direction = (text, 2)
+    await actor.emit(message_event(user_message(actor, text, "direction")))
+
+
+async def step_in(actor: SessionActor, text: str) -> None:
+    """Step in: pause, post the user's line, then answer it. Under a planner that plans the cast (D11): `who_first`
+    over the awake, unmuted cast and every face in one call, then the follow plan for an optional second reply.
+    Otherwise up to 2 random characters (G13). A Step in supersedes earlier unannounced replies (G5)."""
+    if not actor.held:
+        await pause(actor)
+    epoch = await actor.supersede()
+    await actor.emit(message_event(user_message(actor, text)))
+    awake = [p["characterId"] for p in actor.session["participants"]
+             if not p.get("mutedByUser") and not await is_asleep(actor, p["characterId"])]
+    if plans_cast(actor):
+        actor.enqueue(lambda: _planned_step_in(actor, text, awake, epoch), epoch=epoch)
+        return
+    random.Random(f"{actor.seed}:stepin:{actor.mode.turn}").shuffle(awake)
+    chosen = awake[:2]
+
+    async def job() -> None:
+        await run_speakers(actor, chosen, text, reply_epoch=epoch)
+
+    actor.enqueue(job, epoch=epoch)
+
+
+async def _planned_step_in(actor: SessionActor, text: str, awake: list[str], epoch: int) -> None:
+    if not awake:
+        return
+    plan = await plan_cast(actor, await cast_request(actor, "step_in", awake, latest=text))
+    if plan is None or not plan.order:
+        return
+    who = plan.who
+    routing: Wire | None = None
+    if who is not None and who.question:
+        routing = {"question": who.label, "selected": plan.order[0]}
+        if who.candidates and who.source not in ("fallback", "late"):
+            routing["candidates"] = who.candidates
+        if who.source in ("fallback", "late"):
+            routing["reason"] = "fallback"
+    from horizon.sessions.safety import one_voice
+
+    reason = one_voice(plan)   # M14 (safety D7, U1): a steered or care Step in line gets one voice
+    if reason is not None:
+        routing = {**(routing or {"selected": plan.order[0]}), "reason": reason}
+    first = TurnSpec(speaker=plan.order[0], prompt=text, routing=routing, plan=plan.for_speaker(plan.order[0]),
+                     epoch=epoch)
+    await answer_then_follow(actor, first, text, lambda fp, cid, name: second_reply(fp, cid, name, prompt=text))
+
+
+async def extend(actor: SessionActor, turns: int = 10) -> None:
+    st = state_of(actor)
+    actor.held = False
+    # U-94: "Continue +10" is 10 more turns from here. Stopped early (5 of 40), adding to the limit gave 45 more.
+    taken = min(int(st["turnsTaken"]), int(st["turnLimit"]))
+    await actor.emit(*watch_state(actor, {"turnLimit": taken + turns, "status": "playing"}),
+                     {"type": "session.resumed", "payload": {"reason": "extend"}})
+    turn(actor)
+
+
+async def summarise(actor: SessionActor) -> None:
+    await actor.clear(keep_current=True)
+
+    async def job() -> None:
+        await actor.rt.clock.sleep(SUMMARY_DELAY_MS / 1000)
+        sctx = await session_context(actor.rt, actor)
+        try:
+            text = await actor.rt.ai.summariser(runner(actor).key_set()).episode(sctx)
+        except ProviderError as e:
+            if e.code == "daily_budget_exceeded":
+                return   # the cap pause answers it, as for any capped call
+            await actor.emit(message_event(note(actor, RECAP_FAILED)))
+            return
+        except Exception:
+            log.exception("the recap failed in %s", actor.sid)
+            await actor.emit(message_event(note(actor, RECAP_FAILED)))
+            return
+        await actor.emit(message_event(note(actor, text, "summary")))
+
+    actor.enqueue(job)

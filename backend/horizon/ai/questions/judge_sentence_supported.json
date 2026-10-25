@@ -1,0 +1,21 @@
+{
+ "id": "judge_sentence_supported",
+ "version": 1,
+ "purpose": "eval_judge",
+ "type": "noul",
+ "label": "sentence unsupported?",
+ "instructions": "quoted_sentence is one sentence from a character's reply, and quoted_passages are the document passages the reply was given. Does quoted_sentence state a fact that quoted_passages don't support? A fact the passages state in other words is supported. Opinions, feelings, questions, advice and small talk state no fact.",
+ "true": "Yes: the sentence states a fact the passages don't support.",
+ "false": "No: the passages support the sentence, or it states no fact.",
+ "state": {
+  "quoted_passages": "quoted",
+  "quoted_sentence": "quoted"
+ },
+ "deadline": "default",
+ "floor": null,
+ "thresholds": {
+  "t": 0.5
+ },
+ "fallback": "none (evaluation only)",
+ "state_note": "images-music D16 (doc 10 K14's sentence-faithfulness note): asked once per factual sentence of a deep reply, B4-validated on 30 real + 30 planted items before its figures count."
+}

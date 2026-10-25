@@ -1,0 +1,101 @@
+/* Energy bar: skewed (−8°) track, scaleX fill, 10 % notches, damage ghost, regen sheen. */
+.root {
+  --bar-h: 10px;
+  --fill-c: var(--c-primary);
+  position: relative;
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+.stage { --bar-h: 6px; }
+.chat { --bar-h: 10px; }
+.tone_amber { --fill-c: var(--energy-amber); }
+.tone_red { --fill-c: var(--energy-red); }
+
+.track {
+  position: relative;
+  display: block;
+  height: var(--bar-h);
+  overflow: hidden;
+  background: var(--ink-500);
+  clip-path: polygon(calc(var(--bar-h) * var(--tan-tilt-soft) * 2) 0, 100% 0, calc(100% - var(--bar-h) * var(--tan-tilt-soft) * 2) 100%, 0 100%);
+}
+.fill, .ghost {
+  position: absolute;
+  inset: 0;
+  transform-origin: left center;
+}
+.fill { background: var(--fill-c); overflow: hidden; will-change: transform; }
+.ghost { background: var(--paper-50); opacity: 0; transform: scaleX(0); }
+.notches {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(90deg, transparent 0 calc(10% - 1px), var(--ink-900) calc(10% - 1px) 10%);
+  opacity: 0.55;
+  pointer-events: none;
+}
+.sheen {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 22%;
+  background: linear-gradient(104deg, transparent 0 30%, rgba(245, 242, 234, 0.55) 50%, transparent 70%);
+  animation: global(hz-sheen) 2.8s var(--ease-breathe) infinite;
+}
+.exhausted .track { animation: global(hz-pulse-red) 1.6s var(--ease-breathe) infinite; }
+.exhausted { --fill-c: var(--energy-red); }
+
+.meta { display: flex; align-items: center; gap: 8px; min-height: 16px; }
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--paper-50);
+}
+.label svg { color: var(--fill-c); }
+.stage .label { font-size: 11px; color: var(--paper-300); }
+.topup {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 16px;
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--c-on-primary);
+  background: var(--c-primary);
+  clip-path: polygon(3px 0, 100% 0, calc(100% - 3px) 100%, 0 100%);
+}
+.topup:hover { background: var(--paper-50); color: var(--ink-900); }
+.topup:focus-visible { outline: 2px solid var(--c-glow); outline-offset: 2px; }
+
+.fx { position: absolute; left: 0; right: 0; top: 0; height: var(--bar-h); pointer-events: none; }
+.float {
+  position: absolute;
+  bottom: calc(100% + 2px);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--paper-50);
+  text-shadow: 1px 1px 0 var(--ink-900), -1px 0 0 var(--ink-900), 0 -1px 0 var(--ink-900);
+}
+.spark {
+  position: absolute;
+  top: -2px;
+  width: 6px;
+  height: 6px;
+  background: var(--c-glow);
+  box-shadow: 0 0 6px var(--c-glow);
+}
+
+:global(:root[data-motion="reduced"]) .sheen,
+:global(:root[data-motion="reduced"]) .exhausted .track { animation: none; }

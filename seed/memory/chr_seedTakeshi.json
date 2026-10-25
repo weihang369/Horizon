@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "data": [
+    {
+      "id": "mem_seedTakeshi1",
+      "characterId": "chr_seedTakeshi",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "event",
+      "text": "Rainy Sunday, Takeshi asked Rin to go fishing; Rin finished the raid first, then they agreed to go out together rain or not.",
+      "importance": 0.3875,
+      "sourceSessionId": "ses_seedRainySunday",
+      "sourceMessageId": "msg_seedW04",
+      "createdAt": "2026-09-27T02:40:48.374Z"
+    },
+    {
+      "id": "mem_seedTakeshi2",
+      "characterId": "chr_seedTakeshi",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "preference",
+      "text": "Rin dislikes sitting in a wet boat for fish that could be bought for six bucks.",
+      "importance": 0.4,
+      "sourceSessionId": "ses_seedRainySunday",
+      "sourceMessageId": "msg_seedW05",
+      "createdAt": "2026-09-27T02:40:48.374Z"
+    },
+    {
+      "id": "mem_seedTakeshi3",
+      "characterId": "chr_seedTakeshi",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "fact",
+      "text": "Rin is twenty-two, not thirty-something; Takeshi has been rounding up since Rin's birthday.",
+      "importance": 0.55,
+      "sourceSessionId": "ses_seedRainySunday",
+      "sourceMessageId": "msg_seedW10",
+      "createdAt": "2026-09-27T02:40:48.374Z"
+    },
+    {
+      "id": "mem_seedTakeshi4",
+      "characterId": "chr_seedTakeshi",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "event",
+      "text": "Rin finished the raid boss and said Rin carried the whole fight.",
+      "importance": 0.355,
+      "sourceSessionId": "ses_seedRainySunday",
+      "sourceMessageId": "msg_seedW12",
+      "createdAt": "2026-09-27T02:40:48.374Z"
+    },
+    {
+      "id": "mem_seedTakeshi5",
+      "characterId": "chr_seedTakeshi",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "fact",
+      "text": "Takeshi spent thirty years eating what's on the menu, not what he wanted, so he tells people not to fuss over him.",
+      "importance": 0.73,
+      "sourceSessionId": "ses_seedDinner",
+      "sourceMessageId": "msg_seedC04",
+      "createdAt": "2026-09-30T10:32:35.903Z"
+    },
+    {
+      "id": "mem_seedTakeshi6",
+      "characterId": "chr_seedTakeshi",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "preference",
+      "text": "Rin insists on basil noodles or nothing, and allows the mild curry for Takeshi.",
+      "importance": 0.3725,
+      "sourceSessionId": "ses_seedDinner",
+      "sourceMessageId": "msg_seedC05",
+      "createdAt": "2026-09-30T10:32:35.903Z"
+    },
+    {
+      "id": "mem_seedTakeshi7",
+      "characterId": "chr_seedTakeshi",
+      "worldId": "wld_seedSunnyHollow",
+      "kind": "event",
+      "text": "Hana picked lotus root as the unknown dish; Rin can veto after tasting.",
+      "importance": 0.27,
+      "sourceSessionId": "ses_seedDinner",
+      "sourceMessageId": "msg_seedC07",
+      "createdAt": "2026-09-30T10:32:35.903Z"
+    }
+  ]
+}

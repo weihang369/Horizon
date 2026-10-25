@@ -1,0 +1,38 @@
+{
+ "id": "d04",
+ "note": "debate D21: Standard 2 v 2, generated once with naive through the store (task 10.1). Moderator You and no verdict: the histories feed the member slice, the rubric suite and the debate-quality judge, which need only the arguments.",
+ "world": "wld_seedMeridian",
+ "cast": [
+  "chr_seedAmara",
+  "chr_seedMei",
+  "chr_seedVictor",
+  "chr_evalDaniel"
+ ],
+ "language": "en",
+ "config": {
+  "motion": "This house would tax sugary drinks",
+  "format": "two_sided",
+  "roundsPreset": "standard",
+  "phases": [
+   "opening",
+   "rebuttal",
+   "closing"
+  ],
+  "turnLength": "medium",
+  "moderator": "user",
+  "verdictBy": "none",
+  "rubric": [],
+  "autoAdvance": true,
+  "pauseMs": 1500,
+  "sides": {
+   "prop": [
+    "chr_seedAmara",
+    "chr_seedMei"
+   ],
+   "opp": [
+    "chr_seedVictor",
+    "chr_evalDaniel"
+   ]
+  }
+ }
+}

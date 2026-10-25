@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "data": [
+    {
+      "id": "mem_seedMei1",
+      "characterId": "chr_seedMei",
+      "worldId": "wld_seedMeridian",
+      "kind": "event",
+      "text": "In the smartphone-ban debate, Mei argued the ban is a working-time intervention with real but modest test-score gains of about 0.05 to 0.1 standard deviations.",
+      "importance": 0.62,
+      "sourceSessionId": "ses_mockPanelPhones",
+      "sourceMessageId": "msg_mockP04",
+      "createdAt": "2026-09-24T11:00:51.017Z"
+    },
+    {
+      "id": "mem_seedMei2",
+      "characterId": "chr_seedMei",
+      "worldId": "wld_seedMeridian",
+      "kind": "fact",
+      "text": "Mei argued enforcement costs fall on teachers and the kids who lose most already lack supervision elsewhere.",
+      "importance": 0.5875,
+      "sourceSessionId": "ses_mockPanelPhones",
+      "sourceMessageId": "msg_mockP04",
+      "createdAt": "2026-09-24T11:00:51.017Z"
+    },
+    {
+      "id": "mem_seedMei3",
+      "characterId": "chr_seedMei",
+      "worldId": "wld_seedMeridian",
+      "kind": "fact",
+      "text": "Mei closed that the ban is weaker than its advocates think and could support it only if the cap, enforcement, and override were defined.",
+      "importance": 0.625,
+      "sourceSessionId": "ses_mockPanelPhones",
+      "sourceMessageId": "msg_mockP06",
+      "createdAt": "2026-09-24T11:00:51.017Z"
+    },
+    {
+      "id": "mem_seedMei4",
+      "characterId": "chr_seedMei",
+      "worldId": "wld_seedMeridian",
+      "kind": "fact",
+      "text": "Amara argued for phones off during instruction, taught use, and a spelled-out red-flag exception instead of a blanket ban.",
+      "importance": 0.5,
+      "sourceSessionId": "ses_mockPanelPhones",
+      "sourceMessageId": "msg_mockP07",
+      "createdAt": "2026-09-24T11:00:51.017Z"
+    },
+    {
+      "id": "mem_seedMei5",
+      "characterId": "chr_seedMei",
+      "worldId": "wld_seedMeridian",
+      "kind": "event",
+      "text": "In the compulsory-voting debate, Mei argued turnout gaps track registration rules and ease of voting, not mandates; fines fall on the poor, and coerced ballots are not consent.",
+      "importance": 0.6925,
+      "sourceSessionId": "ses_mockYouDecideVoting",
+      "sourceMessageId": "msg_mockV03",
+      "createdAt": "2026-09-25T15:06:54.872Z"
+    },
+    {
+      "id": "mem_seedMei6",
+      "characterId": "chr_seedMei",
+      "worldId": "wld_seedMeridian",
+      "kind": "fact",
+      "text": "Mei closed that design can fix fines but not the premise: pricing a right admits the invoice, not the claim, is the point, and compliant ballots are not consent.",
+      "importance": 0.7225,
+      "sourceSessionId": "ses_mockYouDecideVoting",
+      "sourceMessageId": "msg_mockV06",
+      "createdAt": "2026-09-25T15:06:54.872Z"
+    },
+    {
+      "id": "mem_seedMei7",
+      "characterId": "chr_seedMei",
+      "worldId": "wld_seedMeridian",
+      "kind": "fact",
+      "text": "Mei cited evidence that four-day week pilots are knowledge-work based and nearly silent on hospitals, transport and residential care, where service happens at fixed times.",
+      "importance": 0.68,
+      "sourceSessionId": "ses_seedDebate4Day",
+      "sourceMessageId": "msg_seedD03",
+      "createdAt": "2026-10-01T09:59:52.855Z"
+    },
+    {
+      "id": "mem_seedMei8",
+      "characterId": "chr_seedMei",
+      "worldId": "wld_seedMeridian",
+      "kind": "fact",
+      "text": "Mei argued a nationwide four-day mandate redistributes labour rather than creating it: hire at recurring cost, or compress hours and hand the queue to stretched staff.",
+      "importance": 0.7275,
+      "sourceSessionId": "ses_seedDebate4Day",
+      "sourceMessageId": "msg_seedD03",
+      "createdAt": "2026-10-01T09:59:52.855Z"
+    },
+    {
+      "id": "mem_seedMei9",
+      "characterId": "chr_seedMei",
+      "worldId": "wld_seedMeridian",
+      "kind": "fact",
+      "text": "Mei measured extra staffed hours at 18–27% across nine shift-based organisations holding coverage constant; two of nine partially recovered costs through sickness and turnover.",
+      "importance": 0.715,
+      "sourceSessionId": "ses_seedDebate4Day",
+      "sourceMessageId": "msg_seedD08",
+      "createdAt": "2026-10-01T09:59:52.855Z"
+    },
+    {
+      "id": "mem_seedMei10",
+      "characterId": "chr_seedMei",
+      "worldId": "wld_seedMeridian",
+      "kind": "fact",
+      "text": "Mei argued the 1931 Act phased over a decade with carve-outs, and the Working Time Code manages hours but does not pay for them.",
+      "importance": 0.6375,
+      "sourceSessionId": "ses_seedDebate4Day",
+      "sourceMessageId": "msg_seedD08",
+      "createdAt": "2026-10-01T09:59:52.855Z"
+    },
+    {
+      "id": "mem_seedMei11",
+      "characterId": "chr_seedMei",
+      "worldId": "wld_seedMeridian",
+      "kind": "fact",
+      "text": "Amara conceded the rota was paid for with longer shifts, said two of nine recovered part of the cost, and agreed sector trials should start with health and care.",
+      "importance": 0.5175,
+      "sourceSessionId": "ses_seedDebate4Day",
+      "sourceMessageId": "msg_seedD09",
+      "createdAt": "2026-10-01T09:59:52.855Z"
+    }
+  ]
+}

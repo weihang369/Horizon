@@ -1,0 +1,26 @@
+{
+  "note": "Doc 08 V4 (debate D10): a debate argument's cue, shared by persona.py's debate_cue() and personaPrompt.ts's debateCue(). Lines are joined with a newline; null = no cue.",
+  "cases": [
+    {"phase": "opening", "panel": false, "extended": false, "teammates": [], "afterInterject": false,
+     "cue": "Give your opening statement: your case in two or three reasons."},
+    {"phase": "rebuttal", "panel": false, "extended": false, "teammates": [], "afterInterject": false,
+     "cue": "Give your rebuttal: name the strongest point the other side has made so far and answer it, then strengthen your own case."},
+    {"phase": "closing", "panel": false, "extended": false, "teammates": [], "afterInterject": false,
+     "cue": "Give your closing statement: why your side's case is the stronger one. Answer what is still open, and add no new arguments."},
+    {"phase": "rebuttal", "panel": true, "extended": false, "teammates": [], "afterInterject": false,
+     "cue": "Give your rebuttal: name the strongest point you disagree with so far and answer it, then strengthen your own case."},
+    {"phase": "closing", "panel": true, "extended": false, "teammates": [], "afterInterject": false,
+     "cue": "Give your closing statement: why your position is the stronger one. Answer what is still open, and add no new arguments."},
+    {"phase": "opening", "panel": true, "extended": false, "teammates": [], "afterInterject": false,
+     "cue": "Give your opening statement: your case in two or three reasons."},
+    {"phase": "rebuttal", "panel": false, "extended": false, "teammates": ["Amara"], "afterInterject": false,
+     "cue": "Give your rebuttal: name the strongest point the other side has made so far and answer it, then strengthen your own case.\nAmara has already spoken for your side this round: add to it, don't repeat it."},
+    {"phase": "closing", "panel": false, "extended": false, "teammates": ["Amara", "Rin"], "afterInterject": false,
+     "cue": "Give your closing statement: why your side's case is the stronger one. Answer what is still open, and add no new arguments.\nAmara and Rin have already spoken for your side this round: add to it, don't repeat it."},
+    {"phase": "rebuttal", "panel": false, "extended": true, "teammates": [], "afterInterject": true,
+     "cue": "Give your rebuttal: name the strongest point the other side has made so far and answer it, then strengthen your own case.\nThe round was extended: make a point not yet made.\nTake the moderator's last note into account."},
+    {"phase": "rebuttal", "panel": false, "extended": true, "teammates": ["Amara", "Rin", "Jo"], "afterInterject": true,
+     "cue": "Give your rebuttal: name the strongest point the other side has made so far and answer it, then strengthen your own case.\nThe round was extended: make a point not yet made.\nAmara, Rin and Jo have already spoken for your side this round: add to it, don't repeat it.\nTake the moderator's last note into account."},
+    {"phase": "verdict", "panel": false, "extended": false, "teammates": [], "afterInterject": false, "cue": null}
+  ]
+}

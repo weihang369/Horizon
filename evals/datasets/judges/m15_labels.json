@@ -1,0 +1,389 @@
+{
+ "_note": "Hand labels for M15's real judge items (images-music D12, D16; task 5.4), drafted by Claude blind: each item was read and labelled by the rule below before any judge saw it. \"yes\" is the failure. The user spot-checks a sample (evals/reviews/m15-labels.md).",
+ "_rules": {
+  "judge_voice": "M8's rule (10.6), unchanged: out of voice when the tone contradicts the persona's stated tone (a curt brush-off from a reassuring or warm persona) or the reply has none of the persona's markers and reads like another cast member; content doesn't count, and short alone isn't out of voice.",
+  "judge_persona_fact": "yes only when the reply states something about the speaker that a listed fact rules out (job, age, family, history); hyperbole that fits the facts, opinions and new details don't count.",
+  "judge_answers_last": "yes only when nothing in the reply responds to the user's latest line; a brief, dismissive or refusing response still responds.",
+  "judge_sentence_supported": "yes when the sentence states a fact (a number, a rule, a claim about the world) that the passages don't state, in any words; opinions, advice, feelings, hedges and small talk state no fact (no)."
+ },
+ "judge_voice-real-m15-01": {
+  "label": "no"
+ },
+ "judge_voice-real-m15-02": {
+  "label": "no"
+ },
+ "judge_voice-real-m15-03": {
+  "label": "no"
+ },
+ "judge_voice-real-m15-04": {
+  "label": "no"
+ },
+ "judge_voice-real-m15-05": {
+  "label": "no"
+ },
+ "judge_voice-real-m15-06": {
+  "label": "no"
+ },
+ "judge_voice-real-m15-07": {
+  "label": "no"
+ },
+ "judge_voice-real-m15-08": {
+  "label": "no"
+ },
+ "judge_voice-real-m15-09": {
+  "label": "no"
+ },
+ "judge_voice-real-m15-10": {
+  "label": "no"
+ },
+ "judge_voice-real-m15-11": {
+  "label": "no"
+ },
+ "judge_voice-real-m15-12": {
+  "label": "no"
+ },
+ "judge_voice-real-m15-13": {
+  "label": "no"
+ },
+ "judge_voice-real-m15-14": {
+  "label": "no"
+ },
+ "judge_voice-real-m15-15": {
+  "label": "no"
+ },
+ "judge_voice-real-m15-16": {
+  "label": "no"
+ },
+ "judge_voice-real-m15-17": {
+  "label": "no"
+ },
+ "judge_voice-real-m15-18": {
+  "label": "no"
+ },
+ "judge_voice-real-m15-19": {
+  "label": "no"
+ },
+ "judge_voice-real-m15-20": {
+  "label": "no"
+ },
+ "judge_voice-real-m15-21": {
+  "label": "no"
+ },
+ "judge_voice-real-m15-22": {
+  "label": "no"
+ },
+ "judge_voice-real-m15-23": {
+  "label": "no"
+ },
+ "judge_voice-real-m15-24": {
+  "label": "no"
+ },
+ "judge_voice-real-m15-25": {
+  "label": "no"
+ },
+ "judge_voice-real-m15-26": {
+  "label": "no"
+ },
+ "judge_voice-real-m15-27": {
+  "label": "no"
+ },
+ "judge_voice-real-m15-28": {
+  "label": "no"
+ },
+ "judge_voice-real-m15-29": {
+  "label": "no"
+ },
+ "judge_voice-real-m15-30": {
+  "label": "no"
+ },
+ "judge_persona_fact-real-01": {
+  "label": "no",
+  "why": "'farmed fifty-eight years' at 58: third generation, raised on the farm; fits"
+ },
+ "judge_persona_fact-real-02": {
+  "label": "no"
+ },
+ "judge_persona_fact-real-03": {
+  "label": "no"
+ },
+ "judge_persona_fact-real-04": {
+  "label": "no"
+ },
+ "judge_persona_fact-real-05": {
+  "label": "no"
+ },
+ "judge_persona_fact-real-06": {
+  "label": "no"
+ },
+ "judge_persona_fact-real-07": {
+  "label": "no"
+ },
+ "judge_persona_fact-real-08": {
+  "label": "no"
+ },
+ "judge_persona_fact-real-09": {
+  "label": "no"
+ },
+ "judge_persona_fact-real-10": {
+  "label": "no"
+ },
+ "judge_persona_fact-real-11": {
+  "label": "no"
+ },
+ "judge_persona_fact-real-12": {
+  "label": "no"
+ },
+ "judge_persona_fact-real-13": {
+  "label": "no"
+ },
+ "judge_persona_fact-real-14": {
+  "label": "no"
+ },
+ "judge_persona_fact-real-15": {
+  "label": "no"
+ },
+ "judge_persona_fact-real-16": {
+  "label": "no"
+ },
+ "judge_persona_fact-real-17": {
+  "label": "no"
+ },
+ "judge_persona_fact-real-18": {
+  "label": "no"
+ },
+ "judge_persona_fact-real-19": {
+  "label": "no"
+ },
+ "judge_persona_fact-real-20": {
+  "label": "no"
+ },
+ "judge_persona_fact-real-21": {
+  "label": "no"
+ },
+ "judge_persona_fact-real-22": {
+  "label": "no"
+ },
+ "judge_persona_fact-real-23": {
+  "label": "no"
+ },
+ "judge_persona_fact-real-24": {
+  "label": "no"
+ },
+ "judge_persona_fact-real-25": {
+  "label": "no"
+ },
+ "judge_persona_fact-real-26": {
+  "label": "no"
+ },
+ "judge_persona_fact-real-27": {
+  "label": "no"
+ },
+ "judge_persona_fact-real-28": {
+  "label": "no"
+ },
+ "judge_persona_fact-real-29": {
+  "label": "no"
+ },
+ "judge_persona_fact-real-30": {
+  "label": "no"
+ },
+ "judge_answers_last-real-01": {
+  "label": "no"
+ },
+ "judge_answers_last-real-02": {
+  "label": "no"
+ },
+ "judge_answers_last-real-03": {
+  "label": "no"
+ },
+ "judge_answers_last-real-04": {
+  "label": "no"
+ },
+ "judge_answers_last-real-05": {
+  "label": "no"
+ },
+ "judge_answers_last-real-06": {
+  "label": "no"
+ },
+ "judge_answers_last-real-07": {
+  "label": "no"
+ },
+ "judge_answers_last-real-08": {
+  "label": "no"
+ },
+ "judge_answers_last-real-09": {
+  "label": "no"
+ },
+ "judge_answers_last-real-10": {
+  "label": "no",
+  "why": "refuses, but responds to the free-Sunday line"
+ },
+ "judge_answers_last-real-11": {
+  "label": "no"
+ },
+ "judge_answers_last-real-12": {
+  "label": "no"
+ },
+ "judge_answers_last-real-13": {
+  "label": "no"
+ },
+ "judge_answers_last-real-14": {
+  "label": "no"
+ },
+ "judge_answers_last-real-15": {
+  "label": "no"
+ },
+ "judge_answers_last-real-16": {
+  "label": "no"
+ },
+ "judge_answers_last-real-17": {
+  "label": "no"
+ },
+ "judge_answers_last-real-18": {
+  "label": "no"
+ },
+ "judge_answers_last-real-19": {
+  "label": "no",
+  "why": "'not durian': dismissive, but responds"
+ },
+ "judge_answers_last-real-20": {
+  "label": "no"
+ },
+ "judge_answers_last-real-21": {
+  "label": "no"
+ },
+ "judge_answers_last-real-22": {
+  "label": "no"
+ },
+ "judge_answers_last-real-23": {
+  "label": "no"
+ },
+ "judge_answers_last-real-24": {
+  "label": "no"
+ },
+ "judge_answers_last-real-25": {
+  "label": "yes",
+  "why": "Victor never mentions the umbrella"
+ },
+ "judge_answers_last-real-26": {
+  "label": "no"
+ },
+ "judge_answers_last-real-27": {
+  "label": "no"
+ },
+ "judge_answers_last-real-28": {
+  "label": "no"
+ },
+ "judge_answers_last-real-29": {
+  "label": "yes",
+  "why": "Rin never mentions the voice note"
+ },
+ "judge_answers_last-real-30": {
+  "label": "no"
+ },
+ "judge_sentence_supported-real-01": {
+  "label": "no"
+ },
+ "judge_sentence_supported-real-02": {
+  "label": "no"
+ },
+ "judge_sentence_supported-real-03": {
+  "label": "no"
+ },
+ "judge_sentence_supported-real-04": {
+  "label": "no"
+ },
+ "judge_sentence_supported-real-05": {
+  "label": "no"
+ },
+ "judge_sentence_supported-real-06": {
+  "label": "no"
+ },
+ "judge_sentence_supported-real-07": {
+  "label": "yes",
+  "why": "'more mercury than salmon or shrimp' isn't in the passages (M12's real citation failure)"
+ },
+ "judge_sentence_supported-real-08": {
+  "label": "no",
+  "why": "two 3.5 oz servings are well under the 12 oz limit: the passage says so"
+ },
+ "judge_sentence_supported-real-09": {
+  "label": "no"
+ },
+ "judge_sentence_supported-real-10": {
+  "label": "yes",
+  "why": "the baking time and temperature aren't in the passages"
+ },
+ "judge_sentence_supported-real-11": {
+  "label": "no"
+ },
+ "judge_sentence_supported-real-12": {
+  "label": "no"
+ },
+ "judge_sentence_supported-real-13": {
+  "label": "yes",
+  "why": "the 20–30 minute nap isn't in the passages"
+ },
+ "judge_sentence_supported-real-14": {
+  "label": "no",
+  "why": "'the honest answer is: short' is advice, borderline"
+ },
+ "judge_sentence_supported-real-15": {
+  "label": "yes",
+  "why": "grade 3 or 4 for a wrist isn't in the passage"
+ },
+ "judge_sentence_supported-real-16": {
+  "label": "no"
+ },
+ "judge_sentence_supported-real-17": {
+  "label": "yes",
+  "why": "morning light resetting the clock isn't in the passage"
+ },
+ "judge_sentence_supported-real-18": {
+  "label": "no"
+ },
+ "judge_sentence_supported-real-19": {
+  "label": "no"
+ },
+ "judge_sentence_supported-real-20": {
+  "label": "no"
+ },
+ "judge_sentence_supported-real-21": {
+  "label": "yes",
+  "why": "agencies' approval habits aren't in the passages"
+ },
+ "judge_sentence_supported-real-22": {
+  "label": "no"
+ },
+ "judge_sentence_supported-real-23": {
+  "label": "yes",
+  "why": "variation by grade and locality isn't in the passages"
+ },
+ "judge_sentence_supported-real-24": {
+  "label": "no",
+  "why": "supported by [3] in substance (part-timers have no in-lieu holiday)"
+ },
+ "judge_sentence_supported-real-25": {
+  "label": "yes",
+  "why": "state holiday rules aren't in the passages"
+ },
+ "judge_sentence_supported-real-26": {
+  "label": "yes",
+  "why": "the exclusionary rule isn't in the passage"
+ },
+ "judge_sentence_supported-real-27": {
+  "label": "yes",
+  "why": "English hearsay law isn't in the passages"
+ },
+ "judge_sentence_supported-real-28": {
+  "label": "yes",
+  "why": "the Criminal Justice Act 2003 isn't in the passages"
+ },
+ "judge_sentence_supported-real-29": {
+  "label": "no"
+ },
+ "judge_sentence_supported-real-30": {
+  "label": "yes",
+  "why": "circuits allowing polygraphs on a stipulation isn't in the passages"
+ }
+}

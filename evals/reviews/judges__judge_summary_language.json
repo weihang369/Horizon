@@ -1,0 +1,31 @@
+{
+ "set": "judges/judge_summary_language",
+ "sample": [
+  {
+   "short": "SUM1",
+   "id": "judge_summary_language-real-sum_ms_07"
+  },
+  {
+   "short": "SUM2",
+   "id": "judge_summary_language-real-sum_ms_10"
+  },
+  {
+   "short": "SUM3",
+   "id": "judge_summary_language-real-sum_en_03"
+  },
+  {
+   "short": "SUM4",
+   "id": "judge_summary_language-real-sum_ms_01"
+  },
+  {
+   "short": "SUM5",
+   "id": "judge_summary_language-real-sum_zh_05"
+  },
+  {
+   "short": "SUM6",
+   "id": "judge_summary_language-real-sum_zh_09"
+  }
+ ],
+ "disagree": [],
+ "reviewer": "Claude, second pass (the user delegated the review on 2026-10-12)"
+}

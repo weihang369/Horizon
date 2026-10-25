@@ -1,0 +1,755 @@
+"""The backend runtime: everything the app holds between requests, and the startup lifespan (doc 01 §8).
+
+Startup (in order): create `data/` → logging → `alembic upgrade head` → SpaceManager → seed if empty →
+close leftover `streaming` messages → build the gateway, sessions and job scheduler → recover jobs (M4, step 6: never
+sent → requeued; result stored → derived only; sent without a result → failed, retryable) → drain the AI purge queue
+(M3) → resume cost corrections (M2) → sweeper.
+
+M4 (generation-jobs design D1): the JobScheduler, `image_slots` (2) and `music_slots` (1) beside the shared
+`llm_slots`, and the test-mode job faults. `stop()` and the factory reset stop the scheduler first.
+
+M2 (design D15): the key store, the gateway (the in-process fake provider in test mode), the reservation book, the
+ledger writer, per-character energy locks and the cost corrector are built on start and torn down on stop, so a factory
+reset drops reservations, the rejected-key memory and the secrets file together.
+
+`factory_reset()` runs the Windows-safe sequence (doc 02 §4, design D12) behind a lifecycle gate: new requests
+wait, in-flight requests drain, the engines and log file are closed, `data/` is removed except `models/`, and
+startup runs again in the same process.
+"""
+
+from __future__ import annotations
+
+import asyncio
+import json
+import logging
+import os
+import shutil
+import sqlite3
+import stat
+import time
+from collections.abc import AsyncIterator, Coroutine
+from contextlib import asynccontextmanager
+from pathlib import Path
+from typing import Any, TypeVar
+
+from sqlalchemy import select, text
+
+from horizon import logs
+from horizon.ai.decider import Decider, DeciderFixtures
+from horizon.ai.hooks import AiStateHooks, CompositeHooks
+from horizon.ai.image_prompt import ImagePromptCompiler
+from horizon.ai.profile import AiPorts, ProfileSpec
+from horizon.ai.scripted.ports import AiDeps
+from horizon.config import Config
+from horizon.contract import mappers as mp
+from horizon.contract.validate import ContractSchema, default_schema
+from horizon.db import fts, spaces
+from horizon.db import tables as t
+from horizon.db.migrate import upgrade_head
+from horizon.db.uow import Database
+from horizon.domain.clock import Clock, FrozenClock, SystemClock, calendar_for
+from horizon.domain.energy import energy_day as _energy_day_ms
+from horizon.domain.ids import new_id
+from horizon.domain.pricing import PriceTable, load_price_table
+from horizon.domain.runtime_config import RuntimeConfig, load_runtime_config
+from horizon.domain.timeutil import ms_from_iso, to_iso
+from horizon.domain.vclock import Slots
+from horizon.evals.store import ResponseStore
+from horizon.events.bus import GLOBAL, EventBus, session_channel
+from horizon.gateway.client import HttpCore
+from horizon.gateway.fake import FakeOpenRouter, deny_transport
+from horizon.gateway.pipeline import Caps, Gateway
+from horizon.gateway.reservations import ReservationBook
+from horizon.gateway.types import GatewayConfig
+from horizon.services import seed as seeding
+from horizon.services.capture import Capture, CaptureHooks
+from horizon.services.corrector import CostCorrector
+from horizon.services.energy_writes import EnergyLocks, EnergyParams
+from horizon.services.keys import KeyStore
+from horizon.services.ledger import LedgerWriter
+from horizon.services.purge import PurgeWorker
+from horizon.services.runtime.reducer import apply_event, initial_runtime, ordered_messages
+from horizon.services.settings import deep_merge, local_day, read_local_settings, read_seed_settings
+from horizon.sessions.system1 import fixture_row
+from horizon.storage.datalock import DataLock
+from horizon.tracing import TRACER
+from horizon.tracing import configure as configure_tracing
+
+log = logging.getLogger("horizon.runtime")
+T = TypeVar("T")
+
+
+class Gate:
+    """Lifecycle gate: closed during a factory reset. Requests wait for it, and the reset waits for in-flight ones."""
+
+    def __init__(self) -> None:
+        self._open = asyncio.Event()
+        self._open.set()
+        self._inflight = 0
+        self._idle = asyncio.Event()
+        self._idle.set()
+
+    @asynccontextmanager
+    async def request(self) -> AsyncIterator[None]:
+        await self._open.wait()
+        self._inflight += 1
+        self._idle.clear()
+        try:
+            yield
+        finally:
+            self._inflight -= 1
+            if self._inflight == 0:
+                self._idle.set()
+
+    @asynccontextmanager
+    async def closed(self) -> AsyncIterator[None]:
+        """Close the gate and wait for every in-flight request. The reset's own request is not gated (middleware
+        `UNGATED_SUFFIXES`), so there is none to leave out: counting one let the reset dispose the database under a
+        request still writing, whose connection then kept `horizon.db` open."""
+        self._open.clear()
+        try:
+            await self._idle.wait()
+            yield
+        finally:
+            self._open.set()
+
+
+class Runtime:
+    def __init__(self, cfg: Config, *, clock: Clock | None = None, schema: ContractSchema | None = None) -> None:
+        self.cfg = cfg
+        self.schema = schema or default_schema()
+        self.prices: PriceTable = load_price_table(cfg.seed_dir)
+        peak = self.prices.peak
+        cal = calendar_for(cfg.tz, peak_tz=peak.tz, windows=peak.windows)
+        # Test mode: a released FrozenClock, so `/_test/clock` can freeze it in place (everything holding it follows).
+        self.clock: Clock = clock or (FrozenClock(cal, released=True) if cfg.test_mode else SystemClock(cal))
+        self.bus = EventBus()
+        self.gate = Gate()
+        self._db: Database | None = None
+        self._data_lock: DataLock | None = None
+        self.space_id: str | None = None
+        self.piece_size: tuple[int, int] | None = None   # M12 (rag D23): an evaluation arm's piece target and ceiling
+        self.fts_secure_delete = True   # migration 0002 on SQLite >= 3.44; else Forget optimizes (design D16)
+        self.seed_settings: dict[str, Any] = {}
+        self._seed: seeding.SeedData | None = None
+        self.started = False
+        self.sse_ping_sec = 15.0
+        self.loop: asyncio.AbstractEventLoop | None = None
+        # M2: built in start(), torn down in stop().
+        self.energy_locks = EnergyLocks()
+        self.book = ReservationBook()
+        self._keys: KeyStore | None = None
+        self._gateway: Gateway | None = None
+        self._corrector: CostCorrector | None = None
+        self._decider: Decider | None = None
+        self.decider_fixtures = DeciderFixtures()
+        self.test_parks: dict[tuple[str, int], asyncio.Event] = {}   # /_test/park (test mode only)
+        self.settings_lock = asyncio.Lock()
+        self.fake: FakeOpenRouter | None = None
+        self.probe_blocked: list[str] = []          # M15 (images-music D13): requests a probe refused to send
+        # M3 (session-runtime design D1): the pacing table, LLM slots, AI ports, the live sessions and the purge worker.
+        self.runtime_cfg: RuntimeConfig = load_runtime_config(cfg.seed_dir)
+        self.llm_slots = Slots(self.runtime_cfg.runtime.llm_concurrency)
+        self.profile = ProfileSpec.from_env(cfg.ai_env, test_mode=cfg.test_mode)
+        # M7 (ai-foundation D27–D29): opt-in AI call capture, and the first real AiStateHooks (capture's deletes).
+        self.capture = Capture(lambda: self.db, self.now_iso, enabled=cfg.capture_ai_calls,
+                               sleep=lambda s: self.clock.sleep(s), spawn=lambda n, c: self.spawn(n, c))
+        self.hooks: AiStateHooks = CompositeHooks([CaptureHooks(lambda: self.db)])
+        self._ledger: LedgerWriter | None = None
+        self._sessions: Any = None
+        self._ai: AiPorts | None = None
+        self._purge: PurgeWorker | None = None
+        self.stream_faults: list[int] = []   # test mode: `stream_cut` one-shot faults (afterTokens), consumed per turn
+        # M4 (generation-jobs design D1): the scheduler, provider slots, scenario faults, palettes and the compiler.
+        self.image_slots = Slots(2)
+        self.music_slots = Slots(1)
+        self.job_faults: str | None = None   # test mode: "partial" | "all" | "song" (design D12)
+        self._jobs: Any = None
+        self.palettes: dict[str, tuple[str, str, str]] = load_palettes(cfg.seed_dir)
+        self.prompt_compiler = ImagePromptCompiler(load_style_presets(cfg.seed_dir))
+        # M5 (knowledge-memory-storage design D1): the ingestion worker and its slots (doc 01 §4.4).
+        self.docling_slots = Slots(1)
+        self.embed_slots = Slots(2)
+        self._ingest: Any = None
+        self._memory: Any = None
+        self._memory_runs: Any = None   # M13 (memory D8): the pause runs
+        self._key_status = "missing"
+
+    # ── accessors ──
+    @property
+    def db(self) -> Database:
+        if self._db is None:
+            raise RuntimeError("runtime not started")
+        return self._db
+
+    @property
+    def keys(self) -> KeyStore:
+        if self._keys is None:
+            raise RuntimeError("runtime not started")
+        return self._keys
+
+    @property
+    def gateway(self) -> Gateway:
+        if self._gateway is None:
+            raise RuntimeError("runtime not started")
+        return self._gateway
+
+    @property
+    def corrector(self) -> CostCorrector:
+        if self._corrector is None:
+            raise RuntimeError("runtime not started")
+        return self._corrector
+
+    @property
+    def decider(self) -> Decider:
+        if self._decider is None:
+            raise RuntimeError("runtime not started")
+        return self._decider
+
+    @property
+    def ledger(self) -> LedgerWriter:
+        if self._ledger is None:
+            raise RuntimeError("runtime not started")
+        return self._ledger
+
+    @property
+    def sessions(self) -> Any:
+        """The LiveSessionManager (`horizon.sessions.manager`)."""
+        if self._sessions is None:
+            raise RuntimeError("runtime not started")
+        return self._sessions
+
+    @property
+    def ai(self) -> AiPorts:
+        if self._ai is None:
+            raise RuntimeError("runtime not started")
+        return self._ai
+
+    @property
+    def jobs(self) -> Any:
+        """The JobScheduler (`horizon.services.jobs.scheduler`)."""
+        if self._jobs is None:
+            raise RuntimeError("runtime not started")
+        return self._jobs
+
+    @property
+    def memory(self) -> Any:
+        """The MemoryStore (`horizon.services.memory.store`)."""
+        if self._memory is None:
+            raise RuntimeError("runtime not started")
+        return self._memory
+
+    @property
+    def memory_runs(self) -> Any:
+        """The MemoryRuns scheduler (`horizon.services.memory.runs`, M13)."""
+        if self._memory_runs is None:
+            raise RuntimeError("runtime not started")
+        return self._memory_runs
+
+    @property
+    def ingest(self) -> Any:
+        """The IngestionWorker (`horizon.services.knowledge.worker`)."""
+        if self._ingest is None:
+            raise RuntimeError("runtime not started")
+        return self._ingest
+
+    def palette_ids(self) -> list[str]:
+        return list(self.palettes)
+
+    def palette(self, palette_id: str) -> tuple[str, str, str]:
+        """(stage, primary, secondary) colours for the scripted placeholder portrait."""
+        return self.palettes.get(palette_id) or next(iter(self.palettes.values()), ("#1A1A22", "#FF4D2E", "#FFB199"))
+
+    @property
+    def purge(self) -> PurgeWorker:
+        if self._purge is None:
+            raise RuntimeError("runtime not started")
+        return self._purge
+
+    def take_stream_fault(self) -> int | None:
+        """The next character turn's `stream_cut` fault (afterTokens), consumed once."""
+        return self.stream_faults.pop(0) if self.stream_faults else None
+
+    def set_profile(self, spec: ProfileSpec) -> None:
+        self.profile = spec
+        if self._ai is not None:
+            self._ai = AiPorts(self._ai.deps, spec)
+
+    def settings_doc(self) -> dict[str, Any]:
+        """Seed settings overlaid by the local file (the editable layer; computed fields come from services/settings)."""
+        return deep_merge(self.seed_settings, self.local_settings())
+
+    def caps(self) -> Caps:
+        b = self.settings_doc()["budget"]
+        return Caps(daily_cap_usd=float(b["dailyCapUsd"]), creation_cap_usd=float(b["perCharacterCreationCapUsd"]),
+                    warn_at_pct=float(b["warnAtPct"]))
+
+    def utc_offset_min(self) -> int:
+        offset = self.clock.calendar.local(self.clock.now()).utcoffset()
+        return int(offset.total_seconds() // 60) if offset is not None else 0
+
+    def energy_params(self) -> EnergyParams:
+        return EnergyParams(now_ms=ms_from_iso(self.now_iso()), frozen=self.keys.demo_mode(),
+                            est_reply_points=self.est_reply_points(),
+                            usd_per_point=float(self.settings_doc()["energy"]["usdPerPoint"]),
+                            utc_offset_min=self.utc_offset_min())
+
+    def _settings_changed(self) -> None:
+        self.publish(GLOBAL, {"type": "entity.changed", "kind": "settings"})
+        status = self._keys.status() if self._keys is not None else "missing"
+        became_set = status == "set" and self._key_status != "set"
+        self._key_status = status
+        if became_set and self._ingest is not None and self.started:
+            from horizon.services.knowledge.recovery import reembed_user_sources
+
+            self.spawn("knowledge:reembed", reembed_user_sources(self))  # D8: user sources, now that a key is set
+
+    def _build_m2(self) -> None:
+        cfg = self.cfg
+        models = self.seed_settings["models"]
+        self._keys = KeyStore(cfg.openrouter_key, cfg.data_dir, on_change=self._settings_changed)
+        self.fake = (FakeOpenRouter(models=models.values(), image_cost=self.prices.generation["portrait"])
+                     if cfg.test_mode else None)
+        transport: Any = self.fake.transport() if self.fake else None
+        if cfg.probe and self.fake is None:
+            # M15 (images-music D13): a probe never reaches the network. Store kinds stop at their miss; anything else
+            # (images, music, cost lookups) is refused here and counted as a request the probe couldn't price
+            transport = deny_transport(self.probe_blocked)
+        core = HttpCore(self._keys, transport=transport, label_purpose=cfg.test_mode)
+        ledger = self._ledger = LedgerWriter(self.db, self.clock, self.energy_locks, self.energy_params)
+        self.book.clear()
+        self._gateway = Gateway(core=core, cfg=GatewayConfig.from_mapping(self.prices.gateway), prices=self.prices,
+                                book=self.book, ledger=ledger, caps=self.caps, period=self.clock.pricing_period,
+                                publish=lambda ev: self.publish(GLOBAL, ev), decision_model=str(models["decision"]),
+                                on_estimate_row=lambda row_id: self.corrector.enqueue(row_id))
+        if not cfg.test_mode:   # D31: seed knowledge embeddings are paid once, then reused from data/cache
+            self._gateway.seed_store = ResponseStore.seed_view(cfg.data_dir / "cache")
+        if self.capture.enabled:
+            self._gateway.capture_bodies = True
+            self._gateway.on_call = self.capture.on_call
+        self._corrector = CostCorrector(self.db, self.clock, self._gateway.meta.generation, self.energy_locks,
+                                        self.energy_params)
+        self._decider = Decider(self._gateway.decide, self._gateway.cfg.timeouts, self.decider_fixtures,
+                                clock=self.clock, spawn=self.spawn)
+
+    def _build_m3(self) -> None:
+        from horizon.sessions.manager import LiveSessionManager
+
+        manager = LiveSessionManager(self)
+        self._sessions = manager
+        self.gateway.on_spend = manager.on_spend
+        self.gateway.on_budget = manager.on_budget
+        deps = AiDeps(gateway=lambda: self.gateway, decider=lambda: self.decider, prices=self.prices,
+                      timing=self.runtime_cfg.timing, clock=lambda: self.clock,
+                      palette_ids=self.palette_ids,
+                      schema=lambda: self.schema, models_dir=lambda: self.cfg.models_dir,
+                      llm=self.runtime_cfg.runtime.llm,
+                      system1_row=lambda qid, answer: fixture_row(self.cfg.seed_dir, qid, answer),
+                      switch=lambda name: self.runtime_cfg.runtime.switch(name),
+                      windows=lambda: self.runtime_cfg.runtime.window_tokens.as_dict(),
+                      memory_block_tokens=lambda: int(self.runtime_cfg.runtime.memory.block_tokens),
+                      memory_knobs=lambda: self.runtime_cfg.runtime.memory,
+                      emotion_fade=lambda: self.runtime_cfg.runtime.emotion_fade, spawn=self.spawn,
+                      retrieval=lambda: self.runtime_cfg.runtime.retrieval, deep_io=lambda: self.deep_io)
+        self._ai = AiPorts(deps, self.profile)
+        chat = str(self.settings_doc()["models"].get("chat") or "")
+        if chat and chat != self.prices.chat.model:   # docs/ai/03 C9: one chat-model source; tell the developer
+            log.error("seed/settings.json names chat model %s but seed/pricing.json prices %s; replies, the drafter "
+                      "and the probe use %s", chat, self.prices.chat.model, self.prices.chat.model)
+        # ai-foundation design D12: say what each port resolves to, so an opt-in `agent` profile can't hide what runs.
+        log.info("AI profile %s; ports: %s", self.profile.profile or "default",
+                 ", ".join(f"{p}={i}" for p, i in self._ai.resolved(key_set=self.keys.status() == "set").items()))
+        if self.profile.profile is None:   # M15 (images-music D3): name the default and the way back to the baseline
+            log.info("AI profile: %s", "agent (default with a key; set HORIZON_AI_PROFILE=naive for the baseline)"
+                     if self.keys.status() == "set" else "scripted (default without a key)")
+        self._purge = PurgeWorker(self.db, self.hooks, self.now_iso)
+        self._purge.start()
+
+    def _build_m4(self) -> None:
+        from horizon.services.jobs.scheduler import JobScheduler
+
+        self._jobs = JobScheduler(self)
+
+    async def _recover_m5(self) -> None:
+        """M5 startup (design D2, D8): resume sources left indexing, then re-embed user sources if a key is set."""
+        from horizon.services.knowledge.recovery import recover, reembed_user_sources
+
+        self._key_status = self.keys.status()
+        await recover(self)
+        await reembed_user_sources(self)
+
+    def _build_m5(self) -> None:
+        from horizon.services.knowledge.worker import IngestionWorker
+        from horizon.services.memory.runs import MemoryRuns
+        from horizon.services.memory.store import MemoryStore
+
+        self._ingest = IngestionWorker(self)
+        self._memory = MemoryStore(self)
+        self._memory_runs = MemoryRuns(self)
+
+    async def _stop_m5(self) -> None:
+        if self._memory_runs is not None:   # M13: never waits on DeepSeek; the next start-up sweep reads the lines
+            await self._memory_runs.stop()
+        self._memory_runs = None
+        if self._ingest is not None and hasattr(self._ingest, "stop"):
+            await self._ingest.stop()
+        self._ingest = None
+
+    async def _stop_m4(self) -> None:
+        if self._jobs is not None:
+            await self._jobs.stop()
+        self._jobs = None
+
+    async def _stop_m3(self) -> None:
+        if self._sessions is not None:
+            await self._sessions.shutdown()
+        if self._purge is not None:
+            await self._purge.stop()
+        self._sessions = self._purge = None
+
+    async def _stop_m2(self) -> None:
+        if self._decider is not None:
+            await self._decider.stop()  # late decisions are recorded at their estimate on the way out
+        if self._gateway is not None:
+            await self._gateway.drain_background()  # before the corrector stops: a late row may still enqueue into it
+        if self._corrector is not None:
+            await self._corrector.stop()
+        if self._gateway is not None:
+            await self._gateway.core.aclose()
+        self.book.clear()
+        self._gateway = self._corrector = self._keys = self._decider = None
+
+    @property
+    def deep_io(self) -> Any:
+        """M12 (rag D15): the deep work's reads (the speaker's scoped index, the space, the embedder)."""
+        from horizon.sessions.deep_io import RuntimeDeepIO
+
+        return RuntimeDeepIO(self)
+
+    def spawn(self, name: str, coro: Coroutine[Any, Any, T]) -> asyncio.Task[T]:
+        """The only way `sessions/` and `ai/` start background work: the task holds an activity token while it runs,
+        so a virtual-time advance waits for it (session-runtime D2)."""
+        return self.clock.activity.spawn(name, coro)
+
+    def publish(self, channel: str, event: dict[str, Any]) -> None:
+        if self.cfg.test_mode:
+            def_name = "GlobalEvent" if channel == GLOBAL else None
+            if def_name:
+                self.schema.check(def_name, event)
+        self.bus.publish(channel, event)
+
+    def local_settings(self) -> dict[str, Any]:
+        return read_local_settings(self.cfg.settings_local_path)
+
+    def est_reply_points(self) -> float:
+        return float(self.seed_settings["energy"]["estReplyPoints"][self.clock.pricing_period()])
+
+    def energy_day(self, at_iso: str) -> str:
+        offset = self.clock.calendar.local(self.clock.now()).utcoffset()
+        minutes = int(offset.total_seconds() // 60) if offset is not None else 0
+        return _energy_day_ms(ms_from_iso(at_iso), minutes)
+
+    def local_day(self, at_iso: str) -> str:
+        return local_day(self.clock, at_iso)
+
+    def now_iso(self) -> str:
+        return to_iso(self.clock.now())
+
+    # ── lifecycle ──
+    async def start(self) -> None:
+        cfg = self.cfg
+        self.loop = asyncio.get_running_loop()
+        cfg.data_dir.mkdir(parents=True, exist_ok=True)
+        logs.setup_logging(cfg.logs_dir, cfg.log_level)
+        self._data_lock = DataLock(cfg.data_dir)
+        if not self._data_lock.acquire():   # rag D5: advisory, so `horizon space build` can tell a backend is running
+            log.warning("another backend holds %s; offline commands can't tell this one is running", cfg.data_dir)
+        self.seed_settings = read_seed_settings(cfg.seed_dir)
+        await asyncio.to_thread(upgrade_head, cfg.db_path)
+        self._db = Database(cfg.db_path, publish=self.publish)
+        async with self.db.write() as tx:
+            await spaces.drop_retired(tx.conn)
+            self.space_id = await spaces.ensure_active(tx.conn, self.now_iso())
+            self.fts_secure_delete = await fts.secure_delete_active(tx.conn)
+            if not self.fts_secure_delete:
+                log.warning("FTS5 secure-delete is unavailable (SQLite %s); Forget will optimize the index instead",
+                            sqlite3.sqlite_version)
+            space = await spaces.active(tx.conn)
+            await tx.conn.execute(t.idempotency_keys.delete().where(
+                (t.idempotency_keys.c.state == "in_flight") | (t.idempotency_keys.c.expires_at < self.now_iso())))
+        configured = str(self.settings_doc().get("models", {}).get("embedding") or "")
+        if configured and configured != space.model:
+            # D-95: the active space decides the model; a different setting only takes effect through a space switch.
+            log.warning("settings models.embedding is %s but the active embedding space %s uses %s; embeddings keep "
+                        "using %s", configured, space.id, space.model, space.model)
+        async with self.db.read() as conn:
+            empty = not await seeding.has_worlds(conn)
+        if empty:
+            await self.import_seed()
+        await self.close_interrupted_streams()
+        self.clear_scenario_state()
+        self._build_m2()
+        self._build_m3()  # step 7 (drain ai_purge_queue) starts with the purge worker
+        self._build_m4()
+        self._build_m5()
+        await self.jobs.recover()  # step 6, before the first request is served
+        await self._recover_m5()
+        self.memory_runs.start()          # M13 (memory D7): the stream-left grace and the triggers
+        await self.memory_runs.sweep()    # trigger 6: after close_interrupted_streams
+        await self.corrector.scan()
+        await asyncio.to_thread(sweep, cfg.data_dir, self.referenced_files_sync())
+        self.capture.start()
+        log.info("AI call capture %s", "ON (HORIZON_CAPTURE_AI_CALLS=1: prompts and replies kept 7 days in ai_calls)"
+                 if self.capture.enabled else "off")
+        configure_tracing({"HORIZON_LANGSMITH": "1" if cfg.langsmith else "",
+                           "LANGSMITH_API_KEY": "set" if cfg.langsmith_key is not None else ""})
+        if cfg.langsmith and cfg.langsmith_key is not None and TRACER.enabled:
+            os.environ["LANGSMITH_API_KEY"] = cfg.langsmith_key.get_secret_value()   # langsmith reads it from env
+            os.environ["LANGSMITH_TRACING"] = "true"
+        self.started = True
+        log.info("horizon backend ready (data=%s, test_mode=%s)", cfg.data_dir, cfg.test_mode)
+
+    async def stop(self) -> None:
+        if self._db is not None:
+            await self.capture.stop()   # the last queued rows are flushed while the database is open
+        await self._stop_m5()
+        await self._stop_m4()
+        await self._stop_m3()
+        await self._stop_m2()
+        self.bus.close_all()
+        if self._db is not None:
+            await self._db.dispose()
+            self._db = None
+        if self._data_lock is not None:
+            self._data_lock.release()
+            self._data_lock = None
+        self.started = False
+
+    # ── seed ──
+    async def load_seed(self) -> seeding.SeedData:
+        """D-104: every run ships the full demo (the `_mock` overlay too, as the web demo does). Outside test mode the
+        overlay's fixture jobs stay out, so no character shows a generation that never runs."""
+        if self._seed is None:
+            data = await asyncio.to_thread(seeding.load_seed, self.cfg.seed_dir, self.schema, include_mock=True)
+            if not self.cfg.test_mode:
+                data.jobs = []
+                for c in data.characters:
+                    c.pop("activeJobId", None)
+            self._seed = data
+        return self._seed
+
+    async def import_seed(self) -> list[str]:
+        data = await self.load_seed()
+        async with self.db.write() as tx:
+            sids = await seeding.apply_seed(tx.conn, data, energy_day=self.energy_day, local_day=self.local_day)
+        await asyncio.to_thread(seeding.install_knowledge_files, data, self.cfg.knowledge_dir)   # D-110
+        return sids
+
+    async def reset_demo(self) -> None:
+        """POST /admin/reset-demo (doc 02 §4): re-seed seed records in place; user data survives. In test mode it also
+        clears the active scenario, as the MockClient's reset does (M6 design D3)."""
+        if self.cfg.test_mode:
+            self.clear_scenario_state()
+        data = await self.load_seed()
+        if self._sessions is not None:  # seed sessions are replay-only, but drop any actor that read their old events
+            for sid in [s.session["id"] for s in data.sessions]:
+                await self._sessions.release(sid)
+        if self._jobs is not None:  # M4: user jobs on seed characters are cancelled; overlay jobs are re-adopted below
+            await self._jobs.before_reset({c["id"] for c in data.characters}, {j["id"] for j in data.jobs})
+        if self._ingest is not None:  # M5: seed sources are replaced (back to keyword_only, design D11)
+            await self._ingest.cancel_for(source_ids=[k["id"] for k in data.knowledge])
+        if self._memory_runs is not None:  # M13 (memory D8): both resets cancel running pause runs
+            self._memory_runs.cancel_all()
+        await self._drop_retired_demo_sessions({s.session["id"] for s in data.sessions})
+        async with self.db.write() as tx:
+            sids = await seeding.apply_seed(tx.conn, data, energy_day=self.energy_day, local_day=self.local_day)
+            if sids:
+                await tx.conn.execute(t.ai_purge_queue.insert().values(scope="session", ids=sids, created_at=self.now_iso(),
+                                                                       attempts=0, done_at=None))
+            tx.publish(GLOBAL, {"type": "mock.reset"})
+        await asyncio.to_thread(seeding.install_knowledge_files, data, self.cfg.knowledge_dir)   # D-110
+        if sids and self._purge is not None:
+            self._purge.notify()   # audit 01-06: the replaced seed sessions' AI rows are purged now, not at the next start
+        if self._jobs is not None:
+            await self._jobs.recover()
+
+    async def _drop_retired_demo_sessions(self, shipped: set[str]) -> None:
+        """D-117: reset only upserts what still ships, so a demo session that left the `_mock` overlay (the two
+        hand-made debates) would stay in an existing database for good. Shipped overlay ids start `ses_mock`; a user's
+        own sessions never do (ULIDs), so only retired demo sessions go, the normal delete way."""
+        from horizon.sessions.lifecycle import delete_session
+
+        async with self.db.read() as conn:
+            ids = [r[0] for r in await conn.execute(select(t.sessions.c.id).where(t.sessions.c.id.like("ses_mock%")))]
+        for sid in (x for x in ids if x not in shipped):
+            await delete_session(self, sid)
+
+    def clear_scenario_state(self) -> None:
+        """Forget every test-scenario fault and override (M6 design D3): scenarios replace each other, as on the mock."""
+        self.clock.period_override = None
+        self.clock.spend_bias_usd = 0.0
+        self.stream_faults = []
+        self.job_faults = None
+
+    async def delete_all_worlds(self) -> None:
+        """The `no_worlds` test scenario (M6 design D4): every world, user worlds included, goes through the world-delete
+        path, as the mock's overlay empties every collection. Settings, the key and ledger rows stay; reset-demo brings
+        the seed worlds back."""
+        from horizon.services import worlds as worlds_svc
+        from horizon.services.jobs.scheduler import ACTIVE
+
+        if self._sessions is not None:
+            for sid in list(self._sessions.actors):
+                await self._sessions.release(sid)
+        async with self.db.read() as conn:
+            jobs = (await conn.execute(select(t.generation_jobs.c.id)
+                                       .where(t.generation_jobs.c.status.in_(ACTIVE)))).scalars().all()
+            world_ids = (await conn.execute(select(t.worlds.c.id))).scalars().all()
+        for job_id in jobs:
+            await self.jobs.cancel(job_id)
+        if self._memory_runs is not None:
+            self._memory_runs.cancel_all()
+        for world_id in world_ids:
+            await self.ingest.cancel_for(world_id=world_id)
+            async with self.db.write() as tx:
+                await worlds_svc.delete_world(tx, world_id, now=self.now_iso())
+            worlds_svc.remove_world_files(self.cfg.data_dir, world_id)
+        if world_ids and self._purge is not None:
+            self._purge.notify()   # audit 01-06
+        self.publish(GLOBAL, {"type": "mock.reset"})
+
+    async def factory_reset(self) -> None:
+        """Wipe `data/` except `models/` and start again in-process (Windows-safe)."""
+        async with self.gate.closed():
+            await self.stop()
+            logs.close_file_logging()
+            await asyncio.to_thread(wipe_data_dir, self.cfg.data_dir)
+            self._seed = None
+            await self.start()
+
+    # ── recovery ──
+    async def close_interrupted_streams(self) -> None:
+        """Startup step 5: a message left `streaming` by a crash is closed with `turn.end` (interrupted by error)."""
+        async with self.db.read() as conn:
+            open_sessions = (await conn.execute(select(t.messages.c.session_id).where(t.messages.c.status == "streaming")
+                                                .distinct())).scalars().all()
+        for sid in open_sessions:
+            async with self.db.write() as tx:
+                await self._close_streams(tx.conn, sid, tx.publish)
+
+    async def _close_streams(self, conn: Any, sid: str, publish: Any) -> None:
+        srow = (await conn.execute(select(t.sessions).where(t.sessions.c.id == sid))).mappings().one()
+        parts = (await conn.execute(select(t.participants).where(t.participants.c.session_id == sid))).mappings().all()
+        mrows = (await conn.execute(select(t.messages).where(t.messages.c.session_id == sid))).mappings().all()
+        last_seq = (await conn.execute(text("SELECT COALESCE(MAX(seq), 0) FROM session_events WHERE session_id = :s"),
+                                       {"s": sid})).scalar_one()
+        state = initial_runtime(mp.session_wire(srow, parts), [mp.message_wire(m) for m in mrows])
+        state["lastSeq"] = last_seq
+        for m in [m for m in mrows if m["status"] == "streaming"]:
+            last_seq += 1
+            evt = {"id": new_id("evt"), "sessionId": sid, "seq": last_seq, "at": self.now_iso(),
+                   "type": "turn.end", "payload": {"messageId": m["id"], "status": "interrupted", "interruptedBy": "error"}}
+            state = apply_event(state, evt)
+            await conn.execute(t.session_events.insert().values(**mp.event_row(evt)))
+            publish(session_channel(sid), evt)
+        for msg in ordered_messages(state):
+            row = mp.message_row(msg)
+            await conn.execute(t.messages.update().where(t.messages.c.id == msg["id"]).values(
+                **{k: v for k, v in row.items() if k != "id"}))
+        srow2, _ = mp.session_rows(state["session"], is_seed=bool(srow["is_seed"]))
+        await conn.execute(t.sessions.update().where(t.sessions.c.id == sid).values(
+            **{k: v for k, v in srow2.items() if k not in ("id", "is_seed")}))
+
+    def referenced_files_sync(self) -> set[str]:
+        """Relative paths under `data/assets/` that rows point at, and `knowledge/…` source folders (the sweeper keeps these)."""
+        refs: set[str] = set()
+        if not self.cfg.db_path.is_file():
+            return refs
+        con = sqlite3.connect(self.cfg.db_path)
+        try:
+            for (rel,) in con.execute("SELECT rel_path FROM image_assets WHERE rel_path IS NOT NULL "
+                                      "UNION SELECT rel_path FROM theme_songs WHERE rel_path IS NOT NULL"):
+                refs.add(str(rel))
+            for (cover,) in con.execute("SELECT cover FROM worlds"):
+                url = (json.loads(cover) if cover else {}).get("url")
+                if url:
+                    refs.add(mp.url_to_rel(url) or "")
+            # M5: a knowledge folder is `knowledge/{world}/{character}/{source}`; it is kept while its source exists.
+            for (w, c, sid) in con.execute("SELECT world_id, character_id, id FROM knowledge_sources"):
+                refs.add(f"knowledge/{w}/{c}/{sid}")
+        finally:
+            con.close()
+        return refs
+
+
+def load_palettes(seed_dir: Path) -> dict[str, tuple[str, str, str]]:
+    doc = json.loads((seed_dir / "palettes.json").read_text(encoding="utf-8"))
+    return {str(p["id"]): (str(p.get("stage", "#1A1A22")), str(p["primary"]), str(p["secondary"])) for p in doc["data"]}
+
+
+def load_style_presets(seed_dir: Path) -> list[dict[str, Any]]:
+    doc = json.loads((seed_dir / "style-presets.json").read_text(encoding="utf-8"))
+    return list(doc["data"])
+
+
+def sweep(data_dir: Path, referenced: set[str], *, max_age_s: float = 3600) -> int:
+    """Startup sweeper (doc 02 §2): remove `*.tmp` files, and unreferenced generated files, knowledge folders and abandoned
+    uploads older than an hour."""
+    removed = 0
+    now = time.time()
+    for root in (data_dir / "assets", data_dir / "knowledge", data_dir / "originals"):
+        if not root.is_dir():
+            continue
+        for p in root.rglob("*"):
+            if not p.is_file():
+                continue
+            if p.suffix == ".tmp":
+                p.unlink(missing_ok=True)
+                removed += 1
+                continue
+            if root.name == "assets":
+                rel = p.relative_to(root).as_posix()
+                if rel.startswith("gen/") and rel not in referenced and now - p.stat().st_mtime > max_age_s:
+                    p.unlink(missing_ok=True)
+                    removed += 1
+    # M5 (design D18): source folders whose row is gone, and uploads abandoned in data/tmp, after an hour.
+    knowledge = data_dir / "knowledge"
+    if knowledge.is_dir():
+        for folder in knowledge.glob("*/*/*"):
+            rel = "knowledge/" + folder.relative_to(knowledge).as_posix()
+            if folder.is_dir() and rel not in referenced and now - folder.stat().st_mtime > max_age_s:
+                shutil.rmtree(folder, ignore_errors=True)
+                removed += 1
+    tmp = data_dir / "tmp"
+    if tmp.is_dir():
+        for p in tmp.glob("*.upload"):
+            if now - p.stat().st_mtime > max_age_s:
+                p.unlink(missing_ok=True)
+                removed += 1
+    return removed
+
+
+def _on_rm_error(func: Any, path: str, _exc: Any) -> None:
+    os.chmod(path, stat.S_IWRITE)
+    func(path)
+
+
+def wipe_data_dir(data_dir: Path, *, attempts: int = 10, delay: float = 0.2) -> None:
+    """Delete everything in `data/` except `models/`, retrying for Windows file locks (doc 02 §4). The back-off grows
+    (≈ 11 s in all): a virus scan or the indexer can hold `horizon.db` for a moment after a burst of writes."""
+    if not data_dir.is_dir():
+        return
+    for child in list(data_dir.iterdir()):
+        if child.name == "models":
+            continue
+        for i in range(attempts):
+            try:
+                if child.is_dir():
+                    shutil.rmtree(child, onexc=_on_rm_error)
+                else:
+                    child.unlink(missing_ok=True)
+                break
+            except OSError:
+                if i == attempts - 1:
+                    raise
+                time.sleep(delay * (i + 1))

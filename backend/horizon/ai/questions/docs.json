@@ -1,0 +1,43 @@
+{
+  "id": "docs",
+  "version": 2,
+  "purpose": "turn_plan",
+  "type": "noul",
+  "label": "needs documents?",
+  "instructions": "Does {name}'s next line need facts that {name}'s own documents, named in quoted_documents, may hold?",
+  "true": "Yes: the line being answered asks about, or turns on, facts, figures, rules or details that those documents could hold.",
+  "false": "No: small talk, feelings, plans or opinions that need nothing looked up in them.",
+  "examples": {
+    "true": [
+      "What does the review say about rest days after nights?",
+      "How many nurses cover the ward at night?"
+    ],
+    "false": [
+      "I had such a long day, honestly.",
+      "Do you want to grab dinner later?"
+    ]
+  },
+  "state": {
+    "mode": "label",
+    "phase": "label",
+    "side": "label",
+    "quoted_user": "quoted",
+    "quoted_cast": "quoted",
+    "quoted_documents": "quoted",
+    "quoted_latest": "quoted",
+    "quoted_recent": "quoted",
+    "quoted_premise": "quoted",
+    "quoted_summary": "quoted",
+    "quoted_message": "quoted",
+    "quoted_motion": "quoted",
+    "quoted_arguments": "quoted"
+  },
+  "deadline": "turn_plan",
+  "floor": null,
+  "thresholds": {
+    "t_gate": 0.45,
+    "t_confident": 0.8
+  },
+  "fallback": "quick",
+  "state_note": "rag D7, D8: asked in the 1:1 plan, the cast plan, the follow plan and the debate plan, so it declares every plan state field. rag 11.3: t_gate 0.45 and t_confident 0.80 chosen on dev by B5 (docs/ai/checks/m12.md)."
+}

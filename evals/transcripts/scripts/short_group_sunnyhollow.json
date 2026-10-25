@@ -1,0 +1,59 @@
+{
+ "schemaVersion": 1,
+ "id": "short_group_sunnyhollow",
+ "mode": "group",
+ "world": "wld_seedSunnyHollow",
+ "cast": [
+  "chr_seedHana",
+  "chr_seedRin",
+  "chr_seedTakeshi"
+ ],
+ "language": "en",
+ "policy": "auto",
+ "short": true,
+ "lines": [
+  {
+   "text": "Hi all, it's raining again in Sunny Hollow.",
+   "kind": "filler"
+  },
+  {
+   "text": "I'm cooking dinner for six on Saturday and I'm nervous.",
+   "kind": "fact",
+   "fact": "six"
+  },
+  {
+   "text": "Rice should always be washed in hot water to make it fluffy.",
+   "kind": "wrong_claim"
+  },
+  {
+   "text": "Ada sesiapa nak tolong saya masak Sabtu ni?",
+   "kind": "filler",
+   "lang": "ms"
+  },
+  {
+   "text": "What should I make if one of the guests is vegetarian?",
+   "kind": "filler"
+  },
+  {
+   "text": "Rin, will you come, or is there a raid?",
+   "kind": "filler"
+  },
+  {
+   "text": "Takeshi, could you bring some fish from the pier?",
+   "kind": "filler"
+  },
+  {
+   "text": "大家周末有什么计划？",
+   "kind": "filler",
+   "lang": "zh"
+  },
+  {
+   "text": "What's a dessert that's hard to get wrong?",
+   "kind": "filler"
+  },
+  {
+   "text": "Okay, I feel better now, thank you.",
+   "kind": "filler"
+  }
+ ]
+}

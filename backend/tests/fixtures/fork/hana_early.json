@@ -1,0 +1,179 @@
+{
+ "name": "hana_early",
+ "doc": "An early playhead in a 1:1 recording.",
+ "source": "ses_seedHanaLongDay",
+ "atSeq": 5,
+ "newSessionId": "ses_forkFixture1",
+ "now": "2026-10-03T03:00:00.000Z",
+ "expected": {
+  "events": [
+   {
+    "id": "evt_forkFixture1e1",
+    "sessionId": "ses_forkFixture1",
+    "seq": 1,
+    "at": "2026-09-30T19:02:00.000Z",
+    "type": "session.state",
+    "payload": {
+     "status": "active",
+     "participants": [
+      {
+       "characterId": "chr_seedHana",
+       "role": "speaker",
+       "currentEmotion": "neutral",
+       "mutedByUser": false
+      }
+     ]
+    }
+   },
+   {
+    "id": "evt_forkFixture1e2",
+    "sessionId": "ses_forkFixture1",
+    "seq": 2,
+    "at": "2026-09-30T19:02:00.000Z",
+    "type": "energy",
+    "payload": {
+     "characterId": "chr_seedHana",
+     "current": 1000,
+     "max": 1000,
+     "state": "active"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e3",
+    "sessionId": "ses_forkFixture1",
+    "seq": 3,
+    "at": "2026-09-30T19:02:00.323Z",
+    "type": "turn.next",
+    "payload": {
+     "nextSpeakerId": "chr_seedHana"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e4",
+    "sessionId": "ses_forkFixture1",
+    "seq": 4,
+    "at": "2026-09-30T19:02:00.387Z",
+    "type": "turn.thinking",
+    "payload": {
+     "characterId": "chr_seedHana"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e5",
+    "sessionId": "ses_forkFixture1",
+    "seq": 5,
+    "at": "2026-09-30T19:02:01.917Z",
+    "type": "turn.start",
+    "payload": {
+     "messageId": "msg_forkFixture1m0",
+     "author": {
+      "type": "character",
+      "characterId": "chr_seedHana"
+     }
+    }
+   },
+   {
+    "id": "evt_forkFixture1e6",
+    "sessionId": "ses_forkFixture1",
+    "seq": 6,
+    "at": "2026-09-30T19:02:01.917Z",
+    "type": "emotion",
+    "payload": {
+     "messageId": "msg_forkFixture1m0",
+     "characterId": "chr_seedHana",
+     "emotion": "happy",
+     "source": "default"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e7",
+    "sessionId": "ses_forkFixture1",
+    "seq": 7,
+    "at": "2026-09-30T19:02:01.971Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m0",
+     "delta": "You're back"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e8",
+    "sessionId": "ses_forkFixture1",
+    "seq": 8,
+    "at": "2026-09-30T19:02:02.046Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m0",
+     "delta": "! Come here, tell me"
+    }
+   },
+   {
+    "id": "evt_forkFixture1e9",
+    "sessionId": "ses_forkFixture1",
+    "seq": 9,
+    "at": "2026-09-30T19:02:02.130Z",
+    "type": "token",
+    "payload": {
+     "messageId": "msg_forkFixture1m0",
+     "delta": " everything."
+    }
+   },
+   {
+    "id": "evt_forkFixture1e10",
+    "sessionId": "ses_forkFixture1",
+    "seq": 10,
+    "at": "2026-09-30T19:02:02.146Z",
+    "type": "turn.end",
+    "payload": {
+     "messageId": "msg_forkFixture1m0",
+     "status": "complete"
+    }
+   }
+  ],
+  "session": {
+   "id": "ses_forkFixture1",
+   "worldId": "wld_seedSunnyHollow",
+   "title": "Long day · live",
+   "titleIsCustom": false,
+   "mode": "one_on_one",
+   "status": "active",
+   "participants": [
+    {
+     "characterId": "chr_seedHana",
+     "role": "speaker",
+     "currentEmotion": "neutral",
+     "mutedByUser": false
+    }
+   ],
+   "emotionMode": "user",
+   "musicPolicy": "character_theme",
+   "readableMode": false,
+   "config": null,
+   "state": null,
+   "isSeed": false,
+   "costUsd": 0,
+   "messageCount": 1,
+   "createdAt": "2026-10-03T03:00:00.000Z",
+   "updatedAt": "2026-09-30T19:02:02.146Z",
+   "lastMessageAt": "2026-09-30T19:02:01.917Z",
+   "continuedFrom": "ses_seedHanaLongDay"
+  },
+  "messages": [
+   {
+    "kind": "chat",
+    "id": "msg_forkFixture1m0",
+    "sessionId": "ses_forkFixture1",
+    "seq": 1,
+    "author": {
+     "type": "character",
+     "characterId": "chr_seedHana"
+    },
+    "content": "You're back! Come here, tell me everything.",
+    "status": "complete",
+    "createdAt": "2026-09-30T19:02:01.917Z",
+    "emotion": "happy",
+    "emotionSource": "default"
+   }
+  ]
+ }
+}

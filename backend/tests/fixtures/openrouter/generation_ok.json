@@ -1,0 +1,15 @@
+{
+  "verified": true,
+  "source": "GET /api/v1/generation?id=: OpenRouter API docs (chat completions / streaming / usage accounting), 2026-10; doc backend/04 §1 Confirmed by the live run on 2026-10-04.",
+  "status": 200,
+  "body": {
+    "data": {
+      "id": "gen-rec-000001",
+      "total_cost": 0.00041,
+      "provider_name": "DeepSeek",
+      "tokens_prompt": 1200,
+      "tokens_completion": 31,
+      "native_tokens_cached": 1024
+    }
+  }
+}

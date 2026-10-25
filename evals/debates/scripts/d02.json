@@ -1,0 +1,38 @@
+{
+ "id": "d02",
+ "note": "debate D21: Standard 2 v 2, generated once with naive through the store (task 10.1). Moderator You and no verdict: the histories feed the member slice, the rubric suite and the debate-quality judge, which need only the arguments.",
+ "world": "wld_seedMeridian",
+ "cast": [
+  "chr_evalDaniel",
+  "chr_seedAmara",
+  "chr_seedMei",
+  "chr_evalSofia"
+ ],
+ "language": "en",
+ "config": {
+  "motion": "This house would start the secondary-school day at ten",
+  "format": "two_sided",
+  "roundsPreset": "standard",
+  "phases": [
+   "opening",
+   "rebuttal",
+   "closing"
+  ],
+  "turnLength": "medium",
+  "moderator": "user",
+  "verdictBy": "none",
+  "rubric": [],
+  "autoAdvance": true,
+  "pauseMs": 1500,
+  "sides": {
+   "prop": [
+    "chr_evalDaniel",
+    "chr_seedAmara"
+   ],
+   "opp": [
+    "chr_seedMei",
+    "chr_evalSofia"
+   ]
+  }
+ }
+}

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "data": [
+    {
+      "characterId": "chr_seedVictor",
+      "worldId": "wld_seedMeridian",
+      "title": "Moot court notes",
+      "type": "text",
+      "status": "indexed",
+      "bytes": 2443,
+      "addedAt": "2026-09-22T22:30:00.962Z",
+      "id": "kno_seedVictor1",
+      "chunks": 3,
+      "citedCount": 2
+    }
+  ]
+}

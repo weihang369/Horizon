@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "data": {
+    "id": "ses_seedAmaraHeadache",
+    "worldId": "wld_seedMeridian",
+    "title": "Three-day headache",
+    "titleIsCustom": false,
+    "mode": "one_on_one",
+    "status": "paused",
+    "participants": [
+      {
+        "characterId": "chr_seedAmara",
+        "role": "speaker",
+        "currentEmotion": "thinking",
+        "mutedByUser": false
+      }
+    ],
+    "emotionMode": "llm",
+    "musicPolicy": "character_theme",
+    "readableMode": false,
+    "config": null,
+    "state": null,
+    "isSeed": true,
+    "costUsd": 0.000762,
+    "messageCount": 9,
+    "createdAt": "2026-09-29T21:13:59.966Z",
+    "updatedAt": "2026-09-29T21:15:35.799Z",
+    "pausedReason": "navigated_away",
+    "lastMessageAt": "2026-09-29T21:15:18.238Z"
+  }
+}

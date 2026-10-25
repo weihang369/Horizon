@@ -1,0 +1,13 @@
+{
+  "name": "missing_close",
+  "doc": "The stream ends before >: released as text",
+  "chunks": [
+    "<e:happ"
+  ],
+  "previous": "happy",
+  "expected": {
+    "emotion": "happy",
+    "source": "default",
+    "text": "<e:happ"
+  }
+}

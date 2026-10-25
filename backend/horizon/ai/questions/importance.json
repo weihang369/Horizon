@@ -1,0 +1,28 @@
+{
+  "id": "importance",
+  "version": 1,
+  "purpose": "importance",
+  "type": "score",
+  "label": "how much does it matter?",
+  "instructions": "How much will it matter for {name} to remember line {n} of quoted_lines in future conversations with quoted_user?",
+  "levels": [
+    "Not at all: small talk, or true only in the moment.",
+    "A little: a passing detail.",
+    "Somewhat: worth recalling now and then.",
+    "A lot: worth keeping in mind in later talks.",
+    "Central: it is central to who they are, or to what they share."
+  ],
+  "shuffle": false,
+  "state": {
+    "quoted_name": "quoted",
+    "role": "label",
+    "quoted_about": "quoted",
+    "quoted_user": "quoted",
+    "quoted_lines": "quoted"
+  },
+  "deadline": "importance",
+  "floor": null,
+  "thresholds": {},
+  "fallback": "weight_hint",
+  "state_note": "memory D14: one request per character per piece, keyed importance:l{n}; importance = unit (W11). Level 4 says 'worth keeping in mind' rather than naming the character, because the loader fills {name} in the instructions only. M14 adds instruction:l{n} beside it through extra_questions, so this entry is never re-versioned for it (D38)."
+}

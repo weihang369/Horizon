@@ -1,0 +1,97 @@
+/* Speaker cut-in strip (doc 04 §5). transform/opacity only; clip-path shapes; pointer-events none. */
+.cutin {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 14%;
+  height: 18vh;
+  z-index: 6;
+  pointer-events: none;
+  overflow: hidden;
+}
+.band {
+  position: absolute;
+  inset: 0 -4%;
+  display: flex;
+  align-items: stretch;
+  background:
+    repeating-linear-gradient(104deg, transparent 0 22px, color-mix(in srgb, var(--c-primary) 18%, transparent) 22px 26px),
+    var(--ink-900);
+  clip-path: polygon(3% 0, 100% 0, 97% 100%, 0 100%);
+  box-shadow: inset 0 3px 0 var(--c-primary), inset 0 -3px 0 var(--c-primary);
+  animation: cut calc(var(--in) + var(--hold) + var(--out)) linear both;
+}
+@keyframes cut {
+  0% { transform: translateX(-104%); animation-timing-function: cubic-bezier(0.2, 0.9, 0.3, 1.1); }
+  30% { transform: translateX(0); }
+  80% { transform: translateX(1.5%); opacity: 1; animation-timing-function: cubic-bezier(0.5, 0, 0.75, 0); }
+  100% { transform: translateX(104%); opacity: 0.6; }
+}
+.eyes {
+  position: relative;
+  flex: none;
+  width: 54vh;
+  margin-left: 12%;
+  overflow: hidden;
+  clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+  background: var(--c-stage);
+}
+.eyes img {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  max-width: none;
+  height: auto;
+  top: calc(9vh - 54vh * 0.433);
+}
+.eyes::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--c-primary) 40%, transparent), transparent 30%, transparent 70%, color-mix(in srgb, var(--c-primary) 40%, transparent));
+  mix-blend-mode: screen;
+}
+.name {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  padding: 0 4vh 0 3vh;
+  margin-left: -2vh;
+  background: var(--c-primary);
+  color: var(--c-on-primary);
+  clip-path: polygon(6vh 0, 100% 0, calc(100% - 6vh) 100%, 0 100%);
+  padding-left: 8vh;
+  padding-right: 9vh;
+}
+.big {
+  font: 400 9vh/0.9 var(--font-display);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.role {
+  font: 700 1.5vh/1.2 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  max-width: 34vh;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.side {
+  align-self: flex-start;
+  font: 400 1.9vh/1 var(--font-display);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: var(--ink-900);
+  color: var(--paper-50);
+  padding: 0.5vh 1.2vh;
+}
+.speed {
+  flex: 1;
+  background: repeating-linear-gradient(90deg, transparent 0 18px, color-mix(in srgb, var(--paper-50) 16%, transparent) 18px 20px);
+  mask-image: linear-gradient(90deg, #000, transparent);
+}
+.reduced .band { animation: fadeHold 900ms linear both; }
+@keyframes fadeHold { 0% { opacity: 0; } 18% { opacity: 1; } 82% { opacity: 1; } 100% { opacity: 0; } }

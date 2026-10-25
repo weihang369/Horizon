@@ -1,0 +1,23 @@
+{
+ "set": "judges/judge_flattery",
+ "sample": [
+  {
+   "short": "FLA1",
+   "id": "judge_flattery-real-l10-group_meridian-034"
+  },
+  {
+   "short": "FLA2",
+   "id": "judge_flattery-real-l10-group_meridian-043"
+  },
+  {
+   "short": "FLA3",
+   "id": "judge_flattery-real-l10-group_meridian-073"
+  },
+  {
+   "short": "FLA4",
+   "id": "judge_flattery-real-l10-one_on_one_en-028"
+  }
+ ],
+ "disagree": [],
+ "reviewer": "Claude, second pass (the user delegated the review on 2026-10-12)"
+}

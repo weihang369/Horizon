@@ -1,0 +1,22 @@
+{
+ "id": "judge_notfound_cites",
+ "version": 1,
+ "purpose": "eval_judge",
+ "type": "noul",
+ "label": "claims beyond the documents?",
+ "instructions": "Does quoted_reply present something beyond quoted_passages as if it came from the documents, or cite with [n] a passage that quoted_passages doesn't hold?",
+ "true": "Yes: the reply credits the documents with something they don't hold, or carries an [n] marker with no matching passage.",
+ "false": "No: what the reply takes from the documents is in quoted_passages, every [n] matches a passage there, and its own knowledge isn't passed off as theirs.",
+ "state": {
+  "quoted_message": "quoted",
+  "quoted_passages": "quoted",
+  "quoted_reply": "quoted"
+ },
+ "deadline": "default",
+ "floor": null,
+ "thresholds": {
+  "t": 0.5
+ },
+ "fallback": "none (evaluation only)",
+ "state_note": "rag D22 (doc 10 K14): the Not-found reply judge, B4-validated on 30 real + 30 planted items."
+}

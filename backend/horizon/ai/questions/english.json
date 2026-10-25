@@ -1,0 +1,35 @@
+{
+  "id": "english",
+  "version": 1,
+  "purpose": "turn_plan",
+  "type": "noul",
+  "label": "English?",
+  "instructions": "Is the latest message written in English?",
+  "true": "Yes: its sentences are in English; a name or a borrowed word from another language doesn't change that.",
+  "false": "No: it is mostly in another language, or mixes languages within its sentences.",
+  "examples": {
+    "true": [
+      "Did the audit mention the pager rota?"
+    ],
+    "false": [
+      "Berapa lama kena rehat lepas syif malam?"
+    ]
+  },
+  "state": {
+    "mode": "label",
+    "quoted_user": "quoted",
+    "quoted_cast": "quoted",
+    "quoted_documents": "quoted",
+    "quoted_latest": "quoted",
+    "quoted_recent": "quoted",
+    "quoted_premise": "quoted",
+    "quoted_summary": "quoted",
+    "quoted_message": "quoted"
+  },
+  "deadline": "turn_plan",
+  "floor": null,
+  "thresholds": {
+    "english": 0.5
+  },
+  "fallback": "no_rewrite"
+}

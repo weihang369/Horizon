@@ -1,0 +1,1636 @@
+{
+  "schemaVersion": 1,
+  "data": [
+    {
+      "id": "msg_mockV01",
+      "sessionId": "ses_mockYouDecideVoting",
+      "seq": 1,
+      "author": {
+        "type": "system"
+      },
+      "kind": "system_note",
+      "content": "ROUND 1 · OPENING",
+      "status": "complete",
+      "createdAt": "2026-09-25T15:05:02.141Z"
+    },
+    {
+      "kind": "chat",
+      "debate": {
+        "phase": "opening",
+        "round": 1,
+        "iteration": 1,
+        "side": "prop"
+      },
+      "id": "msg_mockV02",
+      "sessionId": "ses_mockYouDecideVoting",
+      "seq": 2,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedVictor"
+      },
+      "content": "Compulsion is not coercion; it is the completion of a duty already owed. Three points. First, voting is the mechanism by which the governed consent, and a right exercised by half the house is a veto handed to the indifferent. Second, compulsory attendance corrects the turnout gap that lets organized interests outvote the poor. Third, and decisively, compulsion is what finally gives everyone a reason to demand a ballot that is easy, equal, and worth casting.",
+      "status": "complete",
+      "createdAt": "2026-09-25T15:05:04.649Z",
+      "emotion": "neutral",
+      "emotionSource": "classifier",
+      "usage": {
+        "tokensIn": 1017,
+        "tokensCached": 0,
+        "tokensOut": 94,
+        "costUsd": 0.00046,
+        "energySpent": 5,
+        "firstTokenMs": 2492,
+        "totalMs": 4126
+      },
+      "trace": {
+        "messageId": "msg_mockV02",
+        "context": {
+          "budget": 14680,
+          "used": {
+            "persona": 351,
+            "system": 694,
+            "mode": 114,
+            "history": 11,
+            "user": 0,
+            "memory": 342,
+            "knowledge": 0
+          }
+        },
+        "search": {
+          "vectorMs": 1015
+        },
+        "emotion": {
+          "chosen": "neutral",
+          "source": "classifier",
+          "candidates": [
+            {
+              "label": "neutral",
+              "p": 0.85
+            },
+            {
+              "label": "happy",
+              "p": 0.14
+            },
+            {
+              "label": "thinking",
+              "p": 0.01
+            }
+          ]
+        },
+        "knowledge": {
+          "query": "This house would make voting compulsory",
+          "trigger": "gated",
+          "retrieved": [
+            {
+              "chunkId": "kch_victorMoot01",
+              "sourceId": "kno_seedVictor1",
+              "title": "Moot court notes",
+              "locator": "¶ 1",
+              "text": "Moot court notes: \"This house would adopt a nationwide four-day work week\" V. Hale, for the Meridian Bar Society exhibition debate. Private notes.\n\n¶ 1. Expect the opposition to say the evidence base is narrow. Concede scope early, then shift the burden: the status quo is also a policy and has to justify itself.\n\n¶ 2. Historical anchor: the Meridian Working Hours Act 1931 made the two-day weekend the default. It gave agriculture and shipping a ten-year transition and exempted continuous services.\n\n¶ 3. Continuous-coverage sectors already run on shift rules under Part IV of the Working Time Code: rest periods, a cap on consecutive shifts, and averaging over a reference period. A shorter standard week sits inside that structure.\n\n¶ 4. Phase-in precedent: sector-by-sector timetables, collective agreements first, the public sector as model employer. Courts have upheld staged duties where the end point is clear.",
+              "score": 0.03,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_victorMoot02",
+              "sourceId": "kno_seedVictor1",
+              "title": "Moot court notes",
+              "locator": "¶ 2",
+              "text": "¶ 5. Watch for the \"speed, not direction\" turn. Once the opposition accepts the goal, the debate is about implementation, and the side with a timetable wins it.\n\n¶ 6. Closing options: res ipsa loquitur; \"the destination is agreed\". Don't sound triumphant. Judges reward conceding a fair point gracefully.\n\n¶ 7. Definitions first. \"Nationwide\" means the default standard week in law, not an identical schedule for every employer. \"Adopt\" means legislate a standard with a transition, not switch overnight. If the opposition reads \"nationwide\" as \"identical\", correct it in the first rebuttal and keep correcting it.\n\n¶ 8. Their best argument is cost in coverage sectors. Do not deny it. Reframe it: the cost of exhaustion is already being paid, in sickness absence, agency fees and resignations. Ask for their number for the status quo.\n\n¶ 9. Questions to put to an economist: What is the cost of doing nothing? Which of your figures come from volunteers? Would you accept a staged timetable with sector trials written into it?",
+              "score": 0.085,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_victorMoot03",
+              "sourceId": "kno_seedVictor1",
+              "title": "Moot court notes",
+              "locator": "¶ 3",
+              "text": "¶ 10. Questions to expect from a physician on my own side: patient safety on longer shifts. Answer: the standard week limits total hours; Part IV still caps consecutive shifts.\n\n¶ 11. Latin, sparingly. \"Res ipsa loquitur\" (the thing speaks for itself) for the close. \"Audi alteram partem\" (hear the other side) if accused of ignoring their evidence. Always translate.\n\n¶ 12. Structure for every speech: three points, numbered, each with one example. Finish on the burden of proof.",
+              "score": 0.02,
+              "cited": false
+            }
+          ]
+        },
+        "memory": {
+          "recalled": [
+            {
+              "memoryItemId": "mem_01M5H55P43M1W2HR5TGYMQ7Z52",
+              "text": "Victor argued the tax is a regressive sin levy on the poor, that evidence of causation is association, and that reformulation undercuts the health claim.",
+              "via": "block"
+            },
+            {
+              "memoryItemId": "mem_01M5H582CARKTQ0Q9T93X3M2QP",
+              "text": "In the smartphone-ban debate, Victor argued a ban cannot define its target, is disproportionate since schools have narrower means, and teaches removal over governance.",
+              "via": "block"
+            },
+            {
+              "memoryItemId": "mem_01M5H582CBGV0KZ4KRFWQWHF1V",
+              "text": "Victor closed that the motion as drafted leaves enforcement, the override, and the definition of the banned object unresolved, and that this gap cuts against the ban.",
+              "via": "block"
+            },
+            {
+              "memoryItemId": "mem_01M5H55P43M1W2HR5TGYMQ7Z54",
+              "text": "Victor closed that the levy can lower purchases and raise revenue, but health outcomes are unproven; the tax is plausible, not just.",
+              "via": "block"
+            },
+            {
+              "memoryItemId": "mem_01M5H55P3M57MT29EF5HBHH8RS",
+              "text": "Amara argued for taxing sugary drinks: price cuts consumption, reformulation, and funds prevention; costs of diabetes and heart disease fall on everyone.",
+              "via": "block"
+            },
+            {
+              "memoryItemId": "mem_01M5H55P43M1W2HR5TGYMQ7Z53",
+              "text": "Amara conceded the regressivity point but argued disease costs fall hardest on the poorest, so the levy is still justified.",
+              "via": "block"
+            }
+          ]
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "output",
+              "verdict": "pass",
+              "p": 0.04
+            }
+          ]
+        },
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "Alibaba",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 2492,
+            "total": 4126
+          },
+          "tokensIn": 1017,
+          "tokensOut": 94,
+          "costUsd": 0.00046,
+          "tokensCached": 0
+        },
+        "energy": {
+          "characterId": "chr_seedVictor",
+          "spent": 5,
+          "remaining": 995,
+          "max": 1000
+        },
+        "routing": {
+          "selected": "chr_seedVictor",
+          "forcedBy": "round_order"
+        },
+        "calls": [
+          {
+            "purpose": "turn_plan",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000042,
+            "latencyMs": 422
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000029,
+            "latencyMs": 406
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000027,
+            "latencyMs": 437
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000024,
+            "latencyMs": 453
+          },
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.00046,
+            "latencyMs": 2593
+          },
+          {
+            "purpose": "guardrail",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000027,
+            "latencyMs": 406
+          }
+        ],
+        "graph": {
+          "path": [
+            "state",
+            "ask",
+            "decide",
+            "route",
+            "gather",
+            "search",
+            "check",
+            "keep"
+          ]
+        },
+        "system1": {
+          "seed": "2026-09-25T15:04:59.525Z|debate|chr_seedVictor,chr_seedMei:0",
+          "questions": [
+            {
+              "purpose": "turn_plan",
+              "id": "emotion_debate_opening",
+              "version": 2,
+              "label": "emotion",
+              "about": "chr_seedVictor",
+              "answer": "neutral",
+              "p": 0.85,
+              "compared": [
+                {
+                  "name": "p_neutral+p_none",
+                  "value": 0.85,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.41,
+              "result": "used",
+              "action": "shown"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "docs",
+              "version": 2,
+              "label": "needs documents?",
+              "about": "chr_seedVictor",
+              "answer": "yes",
+              "p": 0.51,
+              "compared": [
+                {
+                  "name": "t_gate",
+                  "value": 0.51,
+                  "threshold": 0.45
+                }
+              ],
+              "result": "used",
+              "action": "search the documents"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "earlier",
+              "version": 2,
+              "label": "needs something from earlier?",
+              "about": "chr_seedVictor",
+              "answer": "—",
+              "compared": [],
+              "result": "skipped",
+              "action": "skipped: nothing earlier to search"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "unsafe_note",
+              "version": 1,
+              "label": "unsafe note?",
+              "answer": "—",
+              "compared": [],
+              "result": "skipped",
+              "action": "skipped: no Interject this turn"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_victorMoot01",
+              "answer": "doesn't help",
+              "p": 0.06,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0.06,
+                  "threshold": 0.9
+                },
+                {
+                  "name": "t_found",
+                  "value": 0,
+                  "threshold": 0.5
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_victorMoot02",
+              "answer": "doesn't help",
+              "p": 0.17,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0.17,
+                  "threshold": 0.9
+                },
+                {
+                  "name": "t_found",
+                  "value": 0,
+                  "threshold": 0.5
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_victorMoot03",
+              "answer": "doesn't help",
+              "p": 0.04,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0.04,
+                  "threshold": 0.9
+                },
+                {
+                  "name": "t_found",
+                  "value": 0,
+                  "threshold": 0.5
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "guardrail",
+              "id": "output_rules",
+              "version": 1,
+              "label": "reply breaks the rules?",
+              "answer": "no",
+              "p": 0.04,
+              "compared": [
+                {
+                  "name": "tFlag",
+                  "value": 0.04,
+                  "threshold": 0.5
+                },
+                {
+                  "name": "tBlock",
+                  "value": 0.04,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "used",
+              "action": "pass"
+            },
+            {
+              "purpose": "face_check",
+              "id": "face_check",
+              "version": 1,
+              "label": "face and words agree?",
+              "answer": "—",
+              "compared": [],
+              "result": "skipped",
+              "action": "skipped: neutral face"
+            }
+          ]
+        }
+      },
+      "reactions": [
+        {
+          "characterId": "chr_seedMei",
+          "emotion": "thinking",
+          "p": 0.66,
+          "at": "2026-09-25T15:05:07.426Z"
+        }
+      ]
+    },
+    {
+      "kind": "chat",
+      "debate": {
+        "phase": "opening",
+        "round": 1,
+        "iteration": 1,
+        "side": "opp"
+      },
+      "id": "msg_mockV03",
+      "sessionId": "ses_mockYouDecideVoting",
+      "seq": 3,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedMei"
+      },
+      "content": "Compulsion treats a symptom as the disease: turnout gaps track registration rules, scheduling, and whether voting is easy, not whether it's mandatory. Turnout effects run maybe a few points, and the people most likely to be fined are those already squeezed, so enforcement costs land on the poor and on administrators. And a formal ballot is not consent; coerced votes, donkey votes, and blank ballots inflate numbers without improving representation. We'd be buying optics with liberty.",
+      "status": "complete",
+      "createdAt": "2026-09-25T15:05:08.253Z",
+      "emotion": "neutral",
+      "emotionSource": "classifier",
+      "usage": {
+        "tokensIn": 965,
+        "tokensCached": 896,
+        "tokensOut": 95,
+        "costUsd": 0.000178,
+        "energySpent": 2,
+        "firstTokenMs": 46,
+        "totalMs": 2062
+      },
+      "trace": {
+        "messageId": "msg_mockV03",
+        "context": {
+          "budget": 14680,
+          "used": {
+            "persona": 358,
+            "system": 711,
+            "mode": 110,
+            "history": 11,
+            "user": 0,
+            "memory": 217,
+            "knowledge": 0
+          }
+        },
+        "emotion": {
+          "chosen": "neutral",
+          "source": "classifier",
+          "candidates": [
+            {
+              "label": "neutral",
+              "p": 0.84
+            },
+            {
+              "label": "thinking",
+              "p": 0.16
+            },
+            {
+              "label": "happy",
+              "p": 0
+            }
+          ]
+        },
+        "memory": {
+          "recalled": [
+            {
+              "memoryItemId": "mem_01M5H582CENX0HM4K87MFVPF40",
+              "text": "Mei closed that the ban is weaker than its advocates think and could support it only if the cap, enforcement, and override were defined.",
+              "via": "block"
+            },
+            {
+              "memoryItemId": "mem_01M5H582CDPZDNEMKBN2WJPXKP",
+              "text": "In the smartphone-ban debate, Mei argued the ban is a working-time intervention with real but modest test-score gains of about 0.05 to 0.1 standard deviations.",
+              "via": "block"
+            },
+            {
+              "memoryItemId": "mem_01M5H582CENX0HM4K87MFVPF3Z",
+              "text": "Mei argued enforcement costs fall on teachers and the kids who lose most already lack supervision elsewhere.",
+              "via": "block"
+            },
+            {
+              "memoryItemId": "mem_01M5H582CNAHNWEGQVG5Z5203N",
+              "text": "Amara argued for phones off during instruction, taught use, and a spelled-out red-flag exception instead of a blanket ban.",
+              "via": "block"
+            }
+          ]
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "output",
+              "verdict": "pass",
+              "p": 0.04
+            }
+          ]
+        },
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "Alibaba",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 46,
+            "total": 2062
+          },
+          "tokensIn": 965,
+          "tokensOut": 95,
+          "costUsd": 0.000178,
+          "tokensCached": 896
+        },
+        "energy": {
+          "characterId": "chr_seedMei",
+          "spent": 2,
+          "remaining": 998,
+          "max": 1000
+        },
+        "routing": {
+          "selected": "chr_seedMei",
+          "forcedBy": "round_order"
+        },
+        "calls": [
+          {
+            "purpose": "turn_plan",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000043,
+            "latencyMs": 437
+          },
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000178,
+            "latencyMs": 3078
+          },
+          {
+            "purpose": "guardrail",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000027,
+            "latencyMs": 438
+          }
+        ],
+        "graph": {
+          "path": [
+            "state",
+            "ask",
+            "decide",
+            "route"
+          ]
+        },
+        "system1": {
+          "seed": "2026-09-25T15:04:59.525Z|debate|chr_seedVictor,chr_seedMei:1",
+          "questions": [
+            {
+              "purpose": "turn_plan",
+              "id": "emotion_debate_opening",
+              "version": 2,
+              "label": "emotion",
+              "about": "chr_seedMei",
+              "answer": "neutral",
+              "p": 0.84,
+              "compared": [
+                {
+                  "name": "p_neutral+p_none",
+                  "value": 0.84,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.39,
+              "result": "used",
+              "action": "shown"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "docs",
+              "version": 2,
+              "label": "needs documents?",
+              "about": "chr_seedMei",
+              "answer": "no",
+              "p": 0.3,
+              "compared": [
+                {
+                  "name": "t_gate",
+                  "value": 0.3,
+                  "threshold": 0.45
+                }
+              ],
+              "result": "used",
+              "action": "quick reply"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "earlier",
+              "version": 2,
+              "label": "needs something from earlier?",
+              "about": "chr_seedMei",
+              "answer": "—",
+              "compared": [],
+              "result": "skipped",
+              "action": "skipped: nothing earlier to search"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "unsafe_note",
+              "version": 1,
+              "label": "unsafe note?",
+              "answer": "—",
+              "compared": [],
+              "result": "skipped",
+              "action": "skipped: no Interject this turn"
+            },
+            {
+              "purpose": "guardrail",
+              "id": "output_rules",
+              "version": 1,
+              "label": "reply breaks the rules?",
+              "answer": "no",
+              "p": 0.04,
+              "compared": [
+                {
+                  "name": "tFlag",
+                  "value": 0.04,
+                  "threshold": 0.5
+                },
+                {
+                  "name": "tBlock",
+                  "value": 0.04,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "used",
+              "action": "pass"
+            },
+            {
+              "purpose": "face_check",
+              "id": "face_check",
+              "version": 1,
+              "label": "face and words agree?",
+              "answer": "—",
+              "compared": [],
+              "result": "skipped",
+              "action": "skipped: neutral face"
+            }
+          ]
+        }
+      },
+      "reactions": [
+        {
+          "characterId": "chr_seedVictor",
+          "emotion": "thinking",
+          "p": 0.55,
+          "at": "2026-09-25T15:05:10.718Z"
+        }
+      ]
+    },
+    {
+      "id": "msg_mockV04",
+      "sessionId": "ses_mockYouDecideVoting",
+      "seq": 4,
+      "author": {
+        "type": "system"
+      },
+      "kind": "system_note",
+      "content": "ROUND 2 · CLOSING",
+      "status": "complete",
+      "createdAt": "2026-09-25T15:05:12.221Z"
+    },
+    {
+      "kind": "chat",
+      "debate": {
+        "phase": "closing",
+        "round": 2,
+        "iteration": 1,
+        "side": "prop"
+      },
+      "id": "msg_mockV05",
+      "sessionId": "ses_mockYouDecideVoting",
+      "seq": 5,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedVictor"
+      },
+      "content": "The reply concedes the mechanism and disputes only the magnitude, which is the concession that matters. Turnout rises; that was never seriously denied. What remains open is whether a few points justify the cost, and here the ledger favors us: the objections raised, fines and donkey votes, are problems of design, not of principle, and they are fixed by civil penalties, a free vote, and no-fault abstention. What cannot be fixed by design is the status quo, where the franchise goes unpriced precisely for those it would empower most. Res ipsa loquitur: a system that asks nothing of anyone gets exactly that. The motion stands.",
+      "status": "complete",
+      "createdAt": "2026-09-25T15:05:17.716Z",
+      "emotion": "thinking",
+      "emotionSource": "classifier",
+      "usage": {
+        "tokensIn": 1243,
+        "tokensCached": 896,
+        "tokensOut": 132,
+        "costUsd": 0.000318,
+        "energySpent": 4,
+        "firstTokenMs": 3551,
+        "totalMs": 6064
+      },
+      "trace": {
+        "messageId": "msg_mockV05",
+        "context": {
+          "budget": 14680,
+          "used": {
+            "persona": 351,
+            "system": 694,
+            "mode": 134,
+            "history": 344,
+            "user": 0,
+            "memory": 342,
+            "knowledge": 0
+          }
+        },
+        "search": {
+          "vectorMs": 875
+        },
+        "emotion": {
+          "chosen": "thinking",
+          "source": "classifier",
+          "candidates": [
+            {
+              "label": "thinking",
+              "p": 0.52
+            },
+            {
+              "label": "angry",
+              "p": 0.22
+            },
+            {
+              "label": "neutral",
+              "p": 0.01
+            }
+          ]
+        },
+        "knowledge": {
+          "query": "This house would make voting compulsory Mei Tanaka-Ruiz: Compulsion treats a symptom as the disease: turnout gaps track…",
+          "trigger": "gated",
+          "retrieved": [
+            {
+              "chunkId": "kch_victorMoot01",
+              "sourceId": "kno_seedVictor1",
+              "title": "Moot court notes",
+              "locator": "¶ 1",
+              "text": "Moot court notes: \"This house would adopt a nationwide four-day work week\" V. Hale, for the Meridian Bar Society exhibition debate. Private notes.\n\n¶ 1. Expect the opposition to say the evidence base is narrow. Concede scope early, then shift the burden: the status quo is also a policy and has to justify itself.\n\n¶ 2. Historical anchor: the Meridian Working Hours Act 1931 made the two-day weekend the default. It gave agriculture and shipping a ten-year transition and exempted continuous services.\n\n¶ 3. Continuous-coverage sectors already run on shift rules under Part IV of the Working Time Code: rest periods, a cap on consecutive shifts, and averaging over a reference period. A shorter standard week sits inside that structure.\n\n¶ 4. Phase-in precedent: sector-by-sector timetables, collective agreements first, the public sector as model employer. Courts have upheld staged duties where the end point is clear.",
+              "score": 0.015,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_victorMoot02",
+              "sourceId": "kno_seedVictor1",
+              "title": "Moot court notes",
+              "locator": "¶ 2",
+              "text": "¶ 5. Watch for the \"speed, not direction\" turn. Once the opposition accepts the goal, the debate is about implementation, and the side with a timetable wins it.\n\n¶ 6. Closing options: res ipsa loquitur; \"the destination is agreed\". Don't sound triumphant. Judges reward conceding a fair point gracefully.\n\n¶ 7. Definitions first. \"Nationwide\" means the default standard week in law, not an identical schedule for every employer. \"Adopt\" means legislate a standard with a transition, not switch overnight. If the opposition reads \"nationwide\" as \"identical\", correct it in the first rebuttal and keep correcting it.\n\n¶ 8. Their best argument is cost in coverage sectors. Do not deny it. Reframe it: the cost of exhaustion is already being paid, in sickness absence, agency fees and resignations. Ask for their number for the status quo.\n\n¶ 9. Questions to put to an economist: What is the cost of doing nothing? Which of your figures come from volunteers? Would you accept a staged timetable with sector trials written into it?",
+              "score": 0.055,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_victorMoot03",
+              "sourceId": "kno_seedVictor1",
+              "title": "Moot court notes",
+              "locator": "¶ 3",
+              "text": "¶ 10. Questions to expect from a physician on my own side: patient safety on longer shifts. Answer: the standard week limits total hours; Part IV still caps consecutive shifts.\n\n¶ 11. Latin, sparingly. \"Res ipsa loquitur\" (the thing speaks for itself) for the close. \"Audi alteram partem\" (hear the other side) if accused of ignoring their evidence. Always translate.\n\n¶ 12. Structure for every speech: three points, numbered, each with one example. Finish on the burden of proof.",
+              "score": 0.015,
+              "cited": false
+            }
+          ]
+        },
+        "memory": {
+          "recalled": [
+            {
+              "memoryItemId": "mem_01M5H55P43M1W2HR5TGYMQ7Z52",
+              "text": "Victor argued the tax is a regressive sin levy on the poor, that evidence of causation is association, and that reformulation undercuts the health claim.",
+              "via": "block"
+            },
+            {
+              "memoryItemId": "mem_01M5H582CARKTQ0Q9T93X3M2QP",
+              "text": "In the smartphone-ban debate, Victor argued a ban cannot define its target, is disproportionate since schools have narrower means, and teaches removal over governance.",
+              "via": "block"
+            },
+            {
+              "memoryItemId": "mem_01M5H582CBGV0KZ4KRFWQWHF1V",
+              "text": "Victor closed that the motion as drafted leaves enforcement, the override, and the definition of the banned object unresolved, and that this gap cuts against the ban.",
+              "via": "block"
+            },
+            {
+              "memoryItemId": "mem_01M5H55P43M1W2HR5TGYMQ7Z54",
+              "text": "Victor closed that the levy can lower purchases and raise revenue, but health outcomes are unproven; the tax is plausible, not just.",
+              "via": "block"
+            },
+            {
+              "memoryItemId": "mem_01M5H55P3M57MT29EF5HBHH8RS",
+              "text": "Amara argued for taxing sugary drinks: price cuts consumption, reformulation, and funds prevention; costs of diabetes and heart disease fall on everyone.",
+              "via": "block"
+            },
+            {
+              "memoryItemId": "mem_01M5H55P43M1W2HR5TGYMQ7Z53",
+              "text": "Amara conceded the regressivity point but argued disease costs fall hardest on the poorest, so the levy is still justified.",
+              "via": "block"
+            }
+          ]
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "output",
+              "verdict": "pass",
+              "p": 0.06
+            }
+          ]
+        },
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "Alibaba",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 3551,
+            "total": 6064
+          },
+          "tokensIn": 1243,
+          "tokensOut": 132,
+          "costUsd": 0.000318,
+          "tokensCached": 896
+        },
+        "energy": {
+          "characterId": "chr_seedVictor",
+          "spent": 4,
+          "remaining": 991,
+          "max": 1000
+        },
+        "routing": {
+          "selected": "chr_seedVictor",
+          "forcedBy": "round_order"
+        },
+        "calls": [
+          {
+            "purpose": "turn_plan",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000051,
+            "latencyMs": 422
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000032,
+            "latencyMs": 406
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000033,
+            "latencyMs": 422
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000028,
+            "latencyMs": 469
+          },
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000318,
+            "latencyMs": 4672
+          },
+          {
+            "purpose": "guardrail",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000033,
+            "latencyMs": 468
+          },
+          {
+            "purpose": "face_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000036,
+            "latencyMs": 437
+          }
+        ],
+        "graph": {
+          "path": [
+            "state",
+            "ask",
+            "decide",
+            "route",
+            "gather",
+            "search",
+            "check",
+            "keep"
+          ]
+        },
+        "system1": {
+          "seed": "2026-09-25T15:04:59.525Z|debate|chr_seedVictor,chr_seedMei:2",
+          "questions": [
+            {
+              "purpose": "turn_plan",
+              "id": "emotion_line",
+              "version": 3,
+              "label": "emotion",
+              "about": "chr_seedVictor",
+              "answer": "thinking",
+              "p": 0.52,
+              "compared": [
+                {
+                  "name": "confidence",
+                  "value": 0.45,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.45,
+              "result": "used",
+              "action": "shown"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "docs",
+              "version": 2,
+              "label": "needs documents?",
+              "about": "chr_seedVictor",
+              "answer": "yes",
+              "p": 0.59,
+              "compared": [
+                {
+                  "name": "t_gate",
+                  "value": 0.59,
+                  "threshold": 0.45
+                }
+              ],
+              "result": "used",
+              "action": "search the documents"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "earlier",
+              "version": 2,
+              "label": "needs something from earlier?",
+              "about": "chr_seedVictor",
+              "answer": "—",
+              "compared": [],
+              "result": "skipped",
+              "action": "skipped: nothing earlier to search"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "unsafe_note",
+              "version": 1,
+              "label": "unsafe note?",
+              "answer": "—",
+              "compared": [],
+              "result": "skipped",
+              "action": "skipped: no Interject this turn"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_victorMoot01",
+              "answer": "doesn't help",
+              "p": 0.03,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0.03,
+                  "threshold": 0.9
+                },
+                {
+                  "name": "t_found",
+                  "value": 0,
+                  "threshold": 0.5
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_victorMoot02",
+              "answer": "doesn't help",
+              "p": 0.11,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0.11,
+                  "threshold": 0.9
+                },
+                {
+                  "name": "t_found",
+                  "value": 0,
+                  "threshold": 0.5
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_victorMoot03",
+              "answer": "doesn't help",
+              "p": 0.03,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0.03,
+                  "threshold": 0.9
+                },
+                {
+                  "name": "t_found",
+                  "value": 0,
+                  "threshold": 0.5
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "guardrail",
+              "id": "output_rules",
+              "version": 1,
+              "label": "reply breaks the rules?",
+              "answer": "no",
+              "p": 0.06,
+              "compared": [
+                {
+                  "name": "tFlag",
+                  "value": 0.06,
+                  "threshold": 0.5
+                },
+                {
+                  "name": "tBlock",
+                  "value": 0.06,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "used",
+              "action": "pass"
+            },
+            {
+              "purpose": "face_check",
+              "id": "face_check",
+              "version": 1,
+              "label": "face and words agree?",
+              "answer": "no (words read: neutral)",
+              "p": 0.1,
+              "compared": [],
+              "result": "shown_only"
+            }
+          ]
+        }
+      },
+      "reactions": [
+        {
+          "characterId": "chr_seedMei",
+          "emotion": "thinking",
+          "p": 0.62,
+          "at": "2026-09-25T15:05:21.539Z"
+        }
+      ]
+    },
+    {
+      "kind": "chat",
+      "debate": {
+        "phase": "closing",
+        "round": 2,
+        "iteration": 1,
+        "side": "opp"
+      },
+      "id": "msg_mockV06",
+      "sessionId": "ses_mockYouDecideVoting",
+      "seq": 6,
+      "author": {
+        "type": "character",
+        "characterId": "chr_seedMei"
+      },
+      "content": "Design fixes the fines; it can't fix the premise. If you must price a right to make people claim it, you've admitted the claim isn't the point, the invoice is. Sweep in a few points of turnout and you sweep in compliant ballots, not consent, and the House has purchased the appearance of legitimacy with the reality of liberty. Victor says the status quo asks nothing; I'd rather ask nothing and get an honest half than demand attendance and mistake it for a mandate.",
+      "status": "complete",
+      "createdAt": "2026-09-25T15:05:25.103Z",
+      "emotion": "thinking",
+      "emotionSource": "classifier",
+      "usage": {
+        "tokensIn": 1324,
+        "tokensCached": 896,
+        "tokensOut": 99,
+        "costUsd": 0.000301,
+        "energySpent": 4,
+        "firstTokenMs": 2425,
+        "totalMs": 3989
+      },
+      "trace": {
+        "messageId": "msg_mockV06",
+        "context": {
+          "budget": 14680,
+          "used": {
+            "persona": 358,
+            "system": 711,
+            "mode": 130,
+            "history": 557,
+            "user": 0,
+            "memory": 217,
+            "knowledge": 0
+          }
+        },
+        "search": {
+          "vectorMs": 871.6
+        },
+        "emotion": {
+          "chosen": "thinking",
+          "source": "classifier",
+          "candidates": [
+            {
+              "label": "thinking",
+              "p": 0.61
+            },
+            {
+              "label": "angry",
+              "p": 0.17
+            },
+            {
+              "label": "neutral",
+              "p": 0.01
+            }
+          ]
+        },
+        "knowledge": {
+          "query": "This house would make voting compulsory Victor Hale: The reply concedes the mechanism and disputes only the magnitude,…",
+          "trigger": "gated",
+          "retrieved": [
+            {
+              "chunkId": "kch_meiPilot12",
+              "sourceId": "kno_seedMei2",
+              "title": "Four-day week pilot summaries",
+              "locator": "p. 9",
+              "text": "## 8. Method and limitations\n\nResults come from employee surveys at the start, midpoint and end of each pilot, alongside finance data reported by each organisation. Survey response fell from 74% to 58% by the final wave.\n\nFalling response rates are a common problem in workplace trials. Workers who were unhappy with the pilot may have been less likely to answer the final survey, which would make results look better than they were.\n\nFinance data was reported by the organisations themselves and was not audited. Output measures differed between firms; fewer than half used one consistent measure for the whole pilot.",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_meiPilot06",
+              "sourceId": "kno_seedMei2",
+              "title": "Four-day week pilot summaries",
+              "locator": "p. 5",
+              "text": "## 4. The gap in the evidence\n\nNone of the pilots included an acute hospital, a public transport operator or a residential care provider. The authors flag this as the main gap in the evidence.\n\nThese sectors share a feature that most pilot firms did not: service must be provided at fixed times, whatever happens to productivity. A software team can finish a task faster; a bus still has to leave at 7:42.\n\nThe pilots therefore tell us a great deal about knowledge work, and much less about the sectors where a national standard would be hardest to apply.",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_meiPilot08",
+              "sourceId": "kno_seedMei2",
+              "title": "Four-day week pilot summaries",
+              "locator": "p. 7",
+              "text": "## 6. After the pilots\n\nNinety-two percent of organisations kept the four-day week after the pilot. Participants were not randomly selected, so the authors warn against reading this as a national estimate.\n\nOrganisations that volunteer for a four-day week pilot are likely to be the ones best placed to make it work. A firm that expects it to fail does not sign up.",
+              "score": 0.005,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_meiPilot11",
+              "sourceId": "kno_seedMei2",
+              "title": "Four-day week pilot summaries",
+              "locator": "p. 8",
+              "text": "## In particular:\n\n1. Run trials where the gap is. Fund at least one trial each in an acute hospital trust, a public transport operator and a group of residential care homes.\n2. Measure output independently. Self-reported productivity is not enough. Use service-level data: waiting times, punctuality, care-quality inspections.\n3. Count both sides of the ledger. Record the cost of extra staffed hours and savings from reduced sickness, agency use and turnover.\n4. Randomise where possible. Assign wards, depots or homes to start dates at random, so that results can be compared fairly.\n5. Publish everything, including trials that are stopped early.",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_meiPilot07",
+              "sourceId": "kno_seedMei2",
+              "title": "Four-day week pilot summaries",
+              "locator": "p. 6",
+              "text": "## 5. Shift-based organisations\n\nIn the nine shift-based organisations, holding coverage constant took between 18% and 27% more staffed hours, met through new hires, overtime or agency workers.\n\nThe nine were three private clinics, two call centres, two security firms, a hotel group and a logistics depot. In each, managers redesigned rotas rather than hours, and the cost came from covering the hours that productivity gains could not replace.\n\nTwo of the nine reported that reduced sickness and turnover paid back part of that cost within the six months. The others did not measure it.",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_meiPilot02",
+              "sourceId": "kno_seedMei2",
+              "title": "Four-day week pilot summaries",
+              "locator": "p. 1",
+              "text": "## Overview\n\nThis compendium summarises fourteen four-day week pilots run in Meridian between 2023 and 2025, covering 212 organisations and about 9,800 workers. Every participating organisation volunteered.\n\nEach pilot used the \"100-80-100\" model: workers kept 100% of their pay for 80% of their usual hours, in exchange for a commitment to keep 100% of their output. Pilots ran for six months, and organisations then chose whether to continue.\n\nThe compendium is written for policymakers. It reports what the pilots found and, just as carefully, what they could not find.",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_meiPilot09",
+              "sourceId": "kno_seedMei2",
+              "title": "Four-day week pilot summaries",
+              "locator": "p. 7",
+              "text": "## 6.1 Retention\n\nWorker retention improved in most pilots: voluntary resignations fell from 6.1% to 4.3% on average over the trial period.\n\nRecruitment also became easier. Several firms reported more applications per vacancy and fewer offers declined.",
+              "score": 0,
+              "cited": false
+            },
+            {
+              "chunkId": "kch_meiPilot10",
+              "sourceId": "kno_seedMei2",
+              "title": "Four-day week pilot summaries",
+              "locator": "p. 8",
+              "text": "## 7. Recommendations\n\nThe authors recommend sector-specific trials in health, transport and care, with independent measurement of output and service quality, before any national standard is set.",
+              "score": 0,
+              "cited": false
+            }
+          ]
+        },
+        "memory": {
+          "recalled": [
+            {
+              "memoryItemId": "mem_01M5H582CENX0HM4K87MFVPF40",
+              "text": "Mei closed that the ban is weaker than its advocates think and could support it only if the cap, enforcement, and override were defined.",
+              "via": "block"
+            },
+            {
+              "memoryItemId": "mem_01M5H582CDPZDNEMKBN2WJPXKP",
+              "text": "In the smartphone-ban debate, Mei argued the ban is a working-time intervention with real but modest test-score gains of about 0.05 to 0.1 standard deviations.",
+              "via": "block"
+            },
+            {
+              "memoryItemId": "mem_01M5H582CENX0HM4K87MFVPF3Z",
+              "text": "Mei argued enforcement costs fall on teachers and the kids who lose most already lack supervision elsewhere.",
+              "via": "block"
+            },
+            {
+              "memoryItemId": "mem_01M5H582CNAHNWEGQVG5Z5203N",
+              "text": "Amara argued for phones off during instruction, taught use, and a spelled-out red-flag exception instead of a blanket ban.",
+              "via": "block"
+            }
+          ]
+        },
+        "guardrail": {
+          "checks": [
+            {
+              "name": "output",
+              "verdict": "pass",
+              "p": 0.05
+            }
+          ]
+        },
+        "model": {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "provider": "Alibaba",
+          "pricePeriod": "off_peak",
+          "latencyMs": {
+            "firstToken": 2425,
+            "total": 3989
+          },
+          "tokensIn": 1324,
+          "tokensOut": 99,
+          "costUsd": 0.000301,
+          "tokensCached": 896
+        },
+        "energy": {
+          "characterId": "chr_seedMei",
+          "spent": 4,
+          "remaining": 994,
+          "max": 1000
+        },
+        "routing": {
+          "selected": "chr_seedMei",
+          "forcedBy": "round_order"
+        },
+        "calls": [
+          {
+            "purpose": "turn_plan",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000058,
+            "latencyMs": 469
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000028,
+            "latencyMs": 500
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000029,
+            "latencyMs": 500
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.00003,
+            "latencyMs": 531
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000026,
+            "latencyMs": 516
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000027,
+            "latencyMs": 563
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000031,
+            "latencyMs": 579
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.00003,
+            "latencyMs": 594
+          },
+          {
+            "purpose": "deep_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.00003,
+            "latencyMs": 625
+          },
+          {
+            "purpose": "reply",
+            "model": "deepseek/deepseek-v4.1-flash",
+            "costUsd": 0.000301,
+            "latencyMs": 2422
+          },
+          {
+            "purpose": "guardrail",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000033,
+            "latencyMs": 468
+          },
+          {
+            "purpose": "face_check",
+            "model": "typesafe/jev-1.13-20260917",
+            "costUsd": 0.000034,
+            "latencyMs": 422
+          }
+        ],
+        "graph": {
+          "path": [
+            "state",
+            "ask",
+            "decide",
+            "route",
+            "gather",
+            "search",
+            "check",
+            "keep"
+          ]
+        },
+        "system1": {
+          "seed": "2026-09-25T15:04:59.525Z|debate|chr_seedVictor,chr_seedMei:3",
+          "questions": [
+            {
+              "purpose": "turn_plan",
+              "id": "emotion_line",
+              "version": 3,
+              "label": "emotion",
+              "about": "chr_seedMei",
+              "answer": "thinking",
+              "p": 0.61,
+              "compared": [
+                {
+                  "name": "confidence",
+                  "value": 0.55,
+                  "threshold": 0.2
+                }
+              ],
+              "confidence": 0.55,
+              "result": "used",
+              "action": "shown"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "docs",
+              "version": 2,
+              "label": "needs documents?",
+              "about": "chr_seedMei",
+              "answer": "yes",
+              "p": 0.71,
+              "compared": [
+                {
+                  "name": "t_gate",
+                  "value": 0.71,
+                  "threshold": 0.45
+                }
+              ],
+              "result": "used",
+              "action": "search the documents"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "earlier",
+              "version": 2,
+              "label": "needs something from earlier?",
+              "about": "chr_seedMei",
+              "answer": "—",
+              "compared": [],
+              "result": "skipped",
+              "action": "skipped: nothing earlier to search"
+            },
+            {
+              "purpose": "turn_plan",
+              "id": "unsafe_note",
+              "version": 1,
+              "label": "unsafe note?",
+              "answer": "—",
+              "compared": [],
+              "result": "skipped",
+              "action": "skipped: no Interject this turn"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_meiPilot12",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                },
+                {
+                  "name": "t_found",
+                  "value": 0,
+                  "threshold": 0.5
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_meiPilot06",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                },
+                {
+                  "name": "t_found",
+                  "value": 0,
+                  "threshold": 0.5
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_meiPilot08",
+              "answer": "doesn't help",
+              "p": 0.01,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0.01,
+                  "threshold": 0.9
+                },
+                {
+                  "name": "t_found",
+                  "value": 0,
+                  "threshold": 0.5
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_meiPilot11",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                },
+                {
+                  "name": "t_found",
+                  "value": 0,
+                  "threshold": 0.5
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_meiPilot07",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                },
+                {
+                  "name": "t_found",
+                  "value": 0,
+                  "threshold": 0.5
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_meiPilot02",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                },
+                {
+                  "name": "t_found",
+                  "value": 0,
+                  "threshold": 0.5
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_meiPilot09",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                },
+                {
+                  "name": "t_found",
+                  "value": 0,
+                  "threshold": 0.5
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "deep_check",
+              "id": "passage",
+              "version": 2,
+              "label": "does this passage answer it?",
+              "about": "kch_meiPilot10",
+              "answer": "doesn't help",
+              "p": 0,
+              "compared": [
+                {
+                  "name": "t_keep",
+                  "value": 0,
+                  "threshold": 0.9
+                },
+                {
+                  "name": "t_found",
+                  "value": 0,
+                  "threshold": 0.5
+                }
+              ],
+              "result": "below_threshold",
+              "action": "dropped"
+            },
+            {
+              "purpose": "guardrail",
+              "id": "output_rules",
+              "version": 1,
+              "label": "reply breaks the rules?",
+              "answer": "no",
+              "p": 0.05,
+              "compared": [
+                {
+                  "name": "tFlag",
+                  "value": 0.05,
+                  "threshold": 0.5
+                },
+                {
+                  "name": "tBlock",
+                  "value": 0.05,
+                  "threshold": 0.9
+                }
+              ],
+              "result": "used",
+              "action": "pass"
+            },
+            {
+              "purpose": "face_check",
+              "id": "face_check",
+              "version": 1,
+              "label": "face and words agree?",
+              "answer": "no (words read: angry)",
+              "p": 0.15,
+              "compared": [],
+              "result": "shown_only"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "msg_mockV07",
+      "sessionId": "ses_mockYouDecideVoting",
+      "seq": 7,
+      "author": {
+        "type": "system"
+      },
+      "kind": "system_note",
+      "content": "ROUND 3 · VERDICT",
+      "status": "complete",
+      "createdAt": "2026-09-25T15:05:28.585Z"
+    }
+  ]
+}

@@ -1,0 +1,315 @@
+{
+  "schemaVersion": 1,
+  "name": "insight-replacement",
+  "description": "A later insight for the same messageId replaces the earlier trace (doc 05 §6, rev 1.3).",
+  "session": {
+    "id": "ses_fx",
+    "worldId": "wld_fx",
+    "title": "Fixture",
+    "titleIsCustom": false,
+    "mode": "group",
+    "status": "active",
+    "participants": [
+      {
+        "characterId": "chr_a",
+        "role": "speaker",
+        "currentEmotion": "neutral",
+        "mutedByUser": false
+      },
+      {
+        "characterId": "chr_b",
+        "role": "speaker",
+        "currentEmotion": "neutral",
+        "mutedByUser": false
+      }
+    ],
+    "emotionMode": "llm",
+    "musicPolicy": "character_theme",
+    "readableMode": false,
+    "config": {
+      "responderPolicy": "auto",
+      "maxAutoResponders": 2
+    },
+    "state": null,
+    "isSeed": false,
+    "costUsd": 0,
+    "messageCount": 0,
+    "createdAt": "2026-10-01T10:00:00Z",
+    "updatedAt": "2026-10-01T10:00:00Z"
+  },
+  "events": [
+    {
+      "id": "evt_fx1",
+      "sessionId": "ses_fx",
+      "seq": 1,
+      "at": "2026-10-01T10:00:00.000Z",
+      "type": "message",
+      "payload": {
+        "message": {
+          "id": "msg_fxu1",
+          "sessionId": "ses_fx",
+          "seq": 1,
+          "author": {
+            "type": "user"
+          },
+          "kind": "chat",
+          "content": "Hi both!",
+          "status": "complete",
+          "createdAt": "2026-10-01T10:00:00.000Z"
+        }
+      }
+    },
+    {
+      "id": "evt_fx2",
+      "sessionId": "ses_fx",
+      "seq": 2,
+      "at": "2026-10-01T10:00:00.250Z",
+      "type": "turn.next",
+      "payload": {
+        "nextSpeakerId": "chr_a"
+      }
+    },
+    {
+      "id": "evt_fx3",
+      "sessionId": "ses_fx",
+      "seq": 3,
+      "at": "2026-10-01T10:00:00.500Z",
+      "type": "turn.thinking",
+      "payload": {
+        "characterId": "chr_a"
+      }
+    },
+    {
+      "id": "evt_fx4",
+      "sessionId": "ses_fx",
+      "seq": 4,
+      "at": "2026-10-01T10:00:00.750Z",
+      "type": "turn.start",
+      "payload": {
+        "messageId": "msg_fx1",
+        "author": {
+          "type": "character",
+          "characterId": "chr_a"
+        }
+      }
+    },
+    {
+      "id": "evt_fx5",
+      "sessionId": "ses_fx",
+      "seq": 5,
+      "at": "2026-10-01T10:00:01.000Z",
+      "type": "emotion",
+      "payload": {
+        "messageId": "msg_fx1",
+        "characterId": "chr_a",
+        "emotion": "happy",
+        "source": "llm"
+      }
+    },
+    {
+      "id": "evt_fx6",
+      "sessionId": "ses_fx",
+      "seq": 6,
+      "at": "2026-10-01T10:00:01.250Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_fx1",
+        "delta": "Hello "
+      }
+    },
+    {
+      "id": "evt_fx7",
+      "sessionId": "ses_fx",
+      "seq": 7,
+      "at": "2026-10-01T10:00:01.500Z",
+      "type": "token",
+      "payload": {
+        "messageId": "msg_fx1",
+        "delta": "there."
+      }
+    },
+    {
+      "id": "evt_fx8",
+      "sessionId": "ses_fx",
+      "seq": 8,
+      "at": "2026-10-01T10:00:01.750Z",
+      "type": "turn.end",
+      "payload": {
+        "messageId": "msg_fx1",
+        "status": "complete",
+        "usage": {
+          "tokensIn": 900,
+          "tokensCached": 600,
+          "tokensOut": 40,
+          "costUsd": 0.0004,
+          "energySpent": 4,
+          "firstTokenMs": 800,
+          "totalMs": 1600
+        }
+      }
+    },
+    {
+      "id": "evt_fx9",
+      "sessionId": "ses_fx",
+      "seq": 9,
+      "at": "2026-10-01T10:00:02.000Z",
+      "type": "insight",
+      "payload": {
+        "messageId": "msg_fx1",
+        "trace": {
+          "messageId": "msg_fx1",
+          "routing": {
+            "selected": "chr_a",
+            "reason": "draft"
+          }
+        }
+      }
+    },
+    {
+      "id": "evt_fx10",
+      "sessionId": "ses_fx",
+      "seq": 10,
+      "at": "2026-10-01T10:00:02.250Z",
+      "type": "insight",
+      "payload": {
+        "messageId": "msg_fx1",
+        "trace": {
+          "messageId": "msg_fx1",
+          "routing": {
+            "selected": "chr_a",
+            "candidates": [
+              {
+                "characterId": "chr_a",
+                "p": 0.8
+              },
+              {
+                "characterId": "chr_b",
+                "p": 0.2
+              }
+            ]
+          },
+          "calls": [
+            {
+              "purpose": "route",
+              "model": "typesafe/jev-1.13",
+              "costUsd": 0.00002,
+              "latencyMs": 180
+            },
+            {
+              "purpose": "reply",
+              "model": "deepseek/deepseek-v4.1-flash",
+              "costUsd": 0.0004,
+              "latencyMs": 1600
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "expected": {
+    "session": {
+      "id": "ses_fx",
+      "worldId": "wld_fx",
+      "title": "Fixture",
+      "titleIsCustom": false,
+      "mode": "group",
+      "status": "active",
+      "participants": [
+        {
+          "characterId": "chr_a",
+          "role": "speaker",
+          "currentEmotion": "happy",
+          "mutedByUser": false
+        },
+        {
+          "characterId": "chr_b",
+          "role": "speaker",
+          "currentEmotion": "neutral",
+          "mutedByUser": false
+        }
+      ],
+      "emotionMode": "llm",
+      "musicPolicy": "character_theme",
+      "readableMode": false,
+      "config": {
+        "responderPolicy": "auto",
+        "maxAutoResponders": 2
+      },
+      "state": null,
+      "isSeed": false,
+      "costUsd": 0.0004,
+      "messageCount": 2,
+      "createdAt": "2026-10-01T10:00:00Z",
+      "updatedAt": "2026-10-01T10:00:02.250Z",
+      "lastMessageAt": "2026-10-01T10:00:00.750Z"
+    },
+    "messages": [
+      {
+        "id": "msg_fxu1",
+        "sessionId": "ses_fx",
+        "seq": 1,
+        "author": {
+          "type": "user"
+        },
+        "kind": "chat",
+        "content": "Hi both!",
+        "status": "complete",
+        "createdAt": "2026-10-01T10:00:00.000Z"
+      },
+      {
+        "kind": "chat",
+        "id": "msg_fx1",
+        "sessionId": "ses_fx",
+        "seq": 2,
+        "author": {
+          "type": "character",
+          "characterId": "chr_a"
+        },
+        "content": "Hello there.",
+        "status": "complete",
+        "createdAt": "2026-10-01T10:00:00.750Z",
+        "emotion": "happy",
+        "emotionSource": "llm",
+        "usage": {
+          "tokensIn": 900,
+          "tokensCached": 600,
+          "tokensOut": 40,
+          "costUsd": 0.0004,
+          "energySpent": 4,
+          "firstTokenMs": 800,
+          "totalMs": 1600
+        },
+        "trace": {
+          "messageId": "msg_fx1",
+          "routing": {
+            "selected": "chr_a",
+            "candidates": [
+              {
+                "characterId": "chr_a",
+                "p": 0.8
+              },
+              {
+                "characterId": "chr_b",
+                "p": 0.2
+              }
+            ]
+          },
+          "calls": [
+            {
+              "purpose": "route",
+              "model": "typesafe/jev-1.13",
+              "costUsd": 0.00002,
+              "latencyMs": 180
+            },
+            {
+              "purpose": "reply",
+              "model": "deepseek/deepseek-v4.1-flash",
+              "costUsd": 0.0004,
+              "latencyMs": 1600
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

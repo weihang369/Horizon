@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "data": [
+    {
+      "id": "trk_mainTheme",
+      "kind": "main_theme",
+      "url": "placeholder:system/main_theme",
+      "durationSec": 19.2,
+      "source": "free_library",
+      "credit": "Procedural WebAudio sketch by Horizon (placeholder, D-52)",
+      "licence": "CC0-1.0"
+    },
+    {
+      "id": "trk_arena",
+      "kind": "arena",
+      "url": "placeholder:system/arena",
+      "durationSec": 15,
+      "source": "free_library",
+      "credit": "Procedural WebAudio sketch by Horizon (placeholder, D-52)",
+      "licence": "CC0-1.0"
+    },
+    {
+      "id": "trk_ambientBed",
+      "kind": "ambient_bed",
+      "url": "placeholder:system/ambient_bed",
+      "durationSec": 32,
+      "source": "free_library",
+      "credit": "Procedural WebAudio sketch by Horizon (placeholder, D-52)",
+      "licence": "CC0-1.0"
+    }
+  ]
+}

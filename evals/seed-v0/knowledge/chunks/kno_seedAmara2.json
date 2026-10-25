@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "data": [
+    {
+      "id": "kch_amaraTri01",
+      "sourceId": "kno_seedAmara2",
+      "index": 0,
+      "locator": "§ 1.2",
+      "text": "Triage assigns urgency, not diagnosis. Nurses grade each presentation from 1 (immediate) to 5 (non-urgent) using the presenting complaint and the observations taken on arrival."
+    },
+    {
+      "id": "kch_amaraTri02",
+      "sourceId": "kno_seedAmara2",
+      "index": 1,
+      "locator": "§ 2.1",
+      "text": "Most headaches seen in the department are primary headaches: tension-type, migraine, or medication- and caffeine-related. A dull, pressing pain on both sides without neurological signs is typical of tension-type or withdrawal headache."
+    },
+    {
+      "id": "kch_amaraTri03",
+      "sourceId": "kno_seedAmara2",
+      "index": 2,
+      "locator": "§ 2.4",
+      "text": "Caffeine withdrawal headache usually begins 12 to 24 hours after a sharp cut in intake and can last two to nine days. Gradual tapering, fluids and simple painkillers are usually enough; it rarely needs emergency care."
+    },
+    {
+      "id": "kch_amaraTri04",
+      "sourceId": "kno_seedAmara2",
+      "index": 3,
+      "locator": "§ 3.1",
+      "text": "Escalate any headache that is sudden and severe (\"thunderclap\"), or that comes with fever, neck stiffness, confusion, new weakness or changes in vision. These patients are graded 2 or higher and seen by a doctor without delay."
+    },
+    {
+      "id": "kch_amaraTri05",
+      "sourceId": "kno_seedAmara2",
+      "index": 4,
+      "locator": "§ 3.3",
+      "text": "A first severe headache after age 50, a headache after a head injury, or one that wakes the patient from sleep should also be reviewed the same day, even when observations are normal."
+    },
+    {
+      "id": "kch_amaraTri06",
+      "sourceId": "kno_seedAmara2",
+      "index": 5,
+      "locator": "§ 4.2",
+      "text": "Advice given by phone or chat must say clearly that it is not an examination. Tell the patient which symptoms mean they should come in person."
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "purpose": "eval_judge",
+  "type": "noul",
+  "deadline": "default",
+  "floor": null,
+  "thresholds": {
+    "t": 0.5
+  },
+  "fallback": "none (evaluation only)",
+  "id": "judge_engages",
+  "label": "answers nothing said?",
+  "instructions": "Does quoted_argument fail to answer any specific point made in quoted_previous?",
+  "true": "Yes: the argument ignores what the other side said; it only restates its own case.",
+  "false": "No: the argument names or plainly answers a specific point the other side made.",
+  "state": {
+    "quoted_motion": "quoted",
+    "quoted_previous": "quoted",
+    "quoted_argument": "quoted"
+  }
+}

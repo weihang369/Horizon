@@ -1,0 +1,15 @@
+{
+  "name": "name_only_starts_the_same",
+  "doc": "A word that only starts like the name is text",
+  "chunks": [
+    "<e:happy>Meilin says hi"
+  ],
+  "previous": "neutral",
+  "speaker": "Mei",
+  "perLine": false,
+  "expected": {
+    "emotion": "happy",
+    "source": "llm",
+    "text": "Meilin says hi"
+  }
+}

@@ -1,0 +1,206 @@
+{
+ "schemaVersion": 1,
+ "id": "d13",
+ "mode": "debate",
+ "world": "wld_seedMeridian",
+ "cast": [
+  "chr_seedAmara",
+  "chr_seedMei",
+  "chr_seedVictor",
+  "chr_evalSofia"
+ ],
+ "language": "en",
+ "motion": "This house would spend the city's surplus on a new hospital rather than more clinics",
+ "format": "panel",
+ "roundsPreset": "standard",
+ "phases": [
+  "opening",
+  "rebuttal",
+  "closing"
+ ],
+ "sides": null,
+ "lines": [
+  {
+   "seq": 2,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": null,
+   "speaker": "chr_seedAmara",
+   "name": "Amara Okafor",
+   "text": "Let's figure out what's actually going on before we spend the money. A hospital is where you go when something has already gone badly wrong; a clinic is where you go so it doesn't. If this house spends the surplus on one gleaming building downtown, we buy inpatient beds and a ribbon-cutting, but we don't buy earlier blood-pressure checks, earlier diabetes care, earlier mental-health visits, and all the costly emergency admissions those prevent. I'd want to ask the proposers two things: what's your current wait time for a routine appointment, and what share of your ER visits are conditions a clinic could have managed? If those numbers are ugly, the surplus is better spent on clinics. That said, I'll flag one caveat: if your ICU or trauma capacity is genuinely collapsing, that changes the evidence. What does your data actually show?",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 3,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": null,
+   "speaker": "chr_seedMei",
+   "name": "Mei Tanaka-Ruiz",
+   "text": "It depends, and here's on what. The motion frames this as hospital versus clinics, but the real question is marginal returns at the system level, and the honest answer is a range, not a number. Capital-heavy hospitals buy you acute capacity and high fixed costs; distributed clinics buy you throughput, earlier intervention, and cheaper marginal visits, but only if you can staff them, which is the binding constraint nobody puts on the poster. The plausible effect sizes I'd entertain are modest and genuinely uncertain, so I'd want to know the catchment's case-mix, its avoidable-admissions rate, and its vacancy data before committing. And note the second-order effect: a shiny new hospital can cannibalise the workforce that would otherwise make clinics function, so you may buy beds and lose primary care. Anyone who gives you one number is selling something.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 4,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": null,
+   "speaker": "chr_seedVictor",
+   "name": "Victor Hale",
+   "text": "Three points, and a preamble, because a debate is won at the definitional threshold. First: define \"surplus.\" A one-time windfall is not a recurring revenue stream, and a hospital is a capital commitment with decades of operating costs behind it. Second: define \"rather than.\" If the proposition means exclusively, it forbids the cheaper, faster, more distributable option — clinics — in favor of the most expensive, slowest, most concentrated one. Third: define \"spend.\" Money placed into concrete is money removed from flexibility. My friends will speak of beds and healing; I ask only that we count. Cui bono — who benefits? The district with the ribbon-cutting, not necessarily the patient. I reserve the remainder of my time.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 5,
+   "kind": "argument",
+   "phase": "opening",
+   "round": 1,
+   "iteration": 1,
+   "side": null,
+   "speaker": "chr_evalSofia",
+   "name": "Sofia Brandt",
+   "text": "Draw it on a map first, Kai — a hospital is a point on a map, clinics are a network of points, and those are different geometries. A hospital catches everyone who arrives, but only once they're already sick; a clinic network catches people where they live, before the trip becomes an emergency. My instinct is you don't get that network back once you've spent the surplus on one destination build. Show me the ambulance travel times across the wards and the routine-appointment waits and I'll tell you which one the city actually needs. But if the acute capacity is genuinely failing, say so — I'll change my mind on the data, not on the slogan.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 7,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": null,
+   "speaker": "chr_seedAmara",
+   "name": "Amara Okafor",
+   "text": "I'll take Mei's constraint seriously: staffing is binding, and Victor's right that a windfall isn't a revenue stream. That actually strengthens my case, not weakens it. A hospital's decades of operating costs are people; if you can't staff beds, you've built a monument. Sofia, I'll move on one condition — if the ambulance travel times show whole wards beyond any safe acute window, that's a genuine access failure and I'd change my emphasis. But absent that, the evidence still favors distributed clinics, because they buy earlier intervention and cheaper marginal visits. So my question back to the house: define \"rather than\" as exclusive, and show me the vacancy data. Otherwise we're financing concrete and calling it care.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 8,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": null,
+   "speaker": "chr_seedMei",
+   "name": "Mei Tanaka-Ruiz",
+   "text": "It depends, and here's on what. I'll back Amara's staffing point with the closest analogue I have: in the shift-based organisations in our pilot compendium, holding coverage constant cost between 18% and 27% more staffed hours, met through hires, overtime or agency workers [5]. A hospital is the ultimate round-the-clock operation, so that range is the number I'd apply to its operating side, and it's not small. One caveat: that evidence base skews toward non-shift professional services, only nine of two hundred twelve organisations [3], so the transfer here is thin and I",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 9,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": null,
+   "speaker": "chr_seedVictor",
+   "name": "Victor Hale",
+   "text": "Three points on the rebuttal. First, both my friends have now conceded the terrain I wanted: Amara accepts a windfall is not a stream, Mei concedes the staffing constraint bites, and Sofia asks for a map. Once a debater accepts my frame, they argue inside it — and inside it, the clinic network wins on marginal cost, and the hospital's build time loses on marginal urgency. Second, note the burden. The status quo is itself a policy and must justify itself; \"we like clinics\" is not evidence, but neither is \"we fear a crisis\" [5]. Third, res ipsa loquitur: the thing speaks for itself. A one-time surplus spent on a decades-long obligation is the definition of imprudence. Define \"rather than\" as exclusive, and the proposition is dead on arrival.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 10,
+   "kind": "argument",
+   "phase": "rebuttal",
+   "round": 2,
+   "iteration": 1,
+   "side": null,
+   "speaker": "chr_evalSofia",
+   "name": "Sofia Brandt",
+   "text": "Victor's frame isn't the only map, and his windfall point only bites if you assume one build replaces the network. Draw it: a hospital sets a catchment's whole travel-time geography — a clinic adds a junction to a network you already have. That asymmetry is real, not sentimental. But he's right that a one-time surplus underwriting decades of operating cost is imprudence, so I won't pretend the hospital is free. Here's my pilot: ring-fence the surplus, publish ward-by-ward ambulance travel times and routine-appointment waits, and commit to the build that closes the worst three gaps. Amara, that answers your access question with data, not a slogan.",
+   "emotion": "thinking"
+  },
+  {
+   "seq": 12,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": null,
+   "speaker": "chr_seedAmara",
+   "name": "Amara Okafor",
+   "text": "Let's figure out what's actually going on: three of us started in different places and have genuinely converged. I accept Victor's windfall point and Sofia's map, and I'll take her pilot as-is. So here's my closing position, held honestly. If the ward-by-ward travel times show whole communities beyond any safe acute window, then yes — this house should build the hospital, and I'd vote for it without sentiment. But absent that evidence, my vote stays with clinics, for one reason that survived every rebuttal: they buy earlier intervention at cheaper marginal cost, and they don't require the round-the-clock staffing that Mei's range shows is the real expense. One red flag: if acute capacity is genuinely collapsing now, that's same-day urgency, not a debate. Otherwise: publish the data, ring-fence the windfall, close the worst gaps first.",
+   "emotion": "neutral"
+  },
+  {
+   "seq": 13,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": null,
+   "speaker": "chr_seedMei",
+   "name": "Mei Tanaka-Ruiz",
+   "text": "It depends, and here's on what. My closing vote is conditional, not tribal, because the motion forces a false precision. On the evidence I can defend, the honest range runs from \"clearly clinics\" if the mapping shows no ward beyond a safe acute window, to \"clearly hospital\" if it shows the opposite — and I suspect the real answer is a hybrid, which neither side of a binary motion lets you buy. The staffing constraint remains binding either way, and the second-order effect I keep flagging is substitution: acute build pulls nurses from the clinic network you also need. So I'd vote against the exclusive framing, not against hospitals. Publish the travel times and vacancy data [5], ring-fence the windfall as recurring, and buy the worst gaps first. Anyone who gives you one number is selling something.",
+   "emotion": "angry"
+  },
+  {
+   "seq": 14,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": null,
+   "speaker": "chr_seedVictor",
+   "name": "Victor Hale",
+   "text": "Three points, and then I shall sit down. First, define your terms: the motion says \"rather than,\" and my friends have spent three rounds quietly rewording it into \"first\" or \"in addition to.\" That is the concession, and I accept it. Second, we have converged on process — ring-fence the windfall, publish the travel times, staff before you build — and process is what survives contact with a budget. Third, res ipsa loquitur: a sum that arrives once cannot carry an obligation that renews forever. If this house truly means \"rather than,\" it votes No; if it means \"first,\" it has already voted No. Either way, the ayes cannot carry the exclusive wording they drafted. I thank the chair, Amara, Mei, and Sofia.",
+   "emotion": "neutral"
+  },
+  {
+   "seq": 15,
+   "kind": "argument",
+   "phase": "closing",
+   "round": 3,
+   "iteration": 1,
+   "side": null,
+   "speaker": "chr_evalSofia",
+   "name": "Sofia Brandt",
+   "text": "Kai, closing this round means landing the map somewhere concrete, so here goes. I accept Victor's definitional point — \"rather than\" is exclusive and that's the motion's flaw. But I don't duck it, because the geometry actually answers it. Acute capacity is a junction on the network; clinics are the streets feeding it; you'd never argue that adding sidings to one junction replaces the road grid, and you'd never argue one gleaming junction serves a whole city's trips. So my vote is against the exclusive wording, but for spending first where the map screams worst: the three wards with travel times past a safe acute window. Publish the times, ring-fence the surplus, and pilot the build. Draw it on a map first, then vote — and Kai, get me the boarding data and I'll bring a pilot proposal to the next session.",
+   "emotion": "thinking"
+  }
+ ],
+ "verdict": {
+  "summary": [
+   {
+    "subjectId": "chr_seedAmara",
+    "points": [
+     "Let's figure out what's actually going on before we spend the money.",
+     "Mei and I agree on more than the framing suggests, and Victor's point about one-time versus recurring money is",
+     "Let's figure out what's actually going on: three of us started in different places and have genuinely converge"
+    ]
+   },
+   {
+    "subjectId": "chr_seedMei",
+    "points": [
+     "It depends, and here's on what.",
+     "Let me give my rebuttal.",
+     "It depends, and here's on what."
+    ]
+   },
+   {
+    "subjectId": "chr_seedVictor",
+    "points": [
+     "Three points, and a preamble, because a debate is won at the definitional threshold.",
+     "Three points on the rebuttal.",
+     "Three points, and then I shall sit down."
+    ]
+   },
+   {
+    "subjectId": "chr_evalSofia",
+    "points": [
+     "Draw it on a map first, Kai — a hospital is a point on a map, clinics are a network of points, and those are d",
+     "Victor wants me to accept the frame, but I'm in it already — and my frame is a map, not a ledger.",
+     "Kai, closing this round means landing the map somewhere concrete, so here goes."
+    ]
+   }
+  ],
+  "decidedBy": "none",
+  "strongerCase": null
+ }
+}

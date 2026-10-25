@@ -1,0 +1,21 @@
+{
+  "kind": "horizon.theme",
+  "version": 1,
+  "seed": "chr_seedVictor",
+  "title": "Victor's Theme",
+  "brief": {
+    "genres": [
+      "orchestral"
+    ],
+    "moods": [
+      "confident",
+      "playful"
+    ],
+    "bpm": 110,
+    "instruments": [
+      "strings",
+      "brass"
+    ],
+    "vibe": "Orchestral swing with pizzicato strings and confident brass"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "id": "member_closing",
+  "version": 2,
+  "purpose": "debate_plan",
+  "type": "choice",
+  "label": "who sums up?",
+  "instructions": "Which of these {side} speakers is best placed to sum up the {side}'s case and answer what is still open?",
+  "options": {
+    "kind": "dynamic",
+    "from": "cast",
+    "describe": "{name} ({role}). Not for: when their own latest argument already covers this point, or another speaker's field fits it better."
+  },
+  "shuffle": true,
+  "state": {
+    "mode": "label",
+    "phase": "label",
+    "side": "label",
+    "quoted_user": "quoted",
+    "quoted_cast": "quoted",
+    "quoted_motion": "quoted",
+    "quoted_arguments": "quoted",
+    "quoted_recent": "quoted"
+  },
+  "deadline": "debate_plan",
+  "floor": 0.5,
+  "thresholds": {},
+  "fallback": "next_in_order"
+}

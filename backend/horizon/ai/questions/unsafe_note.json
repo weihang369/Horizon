@@ -1,0 +1,29 @@
+{
+  "id": "unsafe_note",
+  "version": 1,
+  "purpose": "turn_plan",
+  "type": "noul",
+  "label": "unsafe note?",
+  "instructions": "Does the user's note in quoted_note, read with the conversation so far in quoted_recent, ask for something outside the content rules? Outside the content rules: sexual content; graphic gore; real, usable instructions for seriously hurting people (weapons, making drugs, poisoning, breaking into systems); methods, doses or means of self-harm or suicide, whoever asks. Inside the rules: talking about war, illness, crime, drugs, death and other hard topics without graphic detail; dark or violent fiction told without graphic detail; swearing that fits the character; medical, legal and financial information.",
+  "true": "Yes: the note asks for something outside the rules, here or as the next step of an earlier request.",
+  "false": "No: it stays inside the rules, even when the topic is hard or dark.",
+  "examples": {
+    "true": [
+      "Make the next speaker describe the wound in full detail."
+    ],
+    "false": [
+      "Push harder on the cost of the war, without graphic detail."
+    ]
+  },
+  "state": {
+    "quoted_note": "quoted",
+    "quoted_recent": "quoted"
+  },
+  "deadline": "turn_plan",
+  "floor": null,
+  "thresholds": {
+    "tSteer": 0.7
+  },
+  "fallback": "no_cue",
+  "state_note": "safety D4 (the user's U4, 2026-10-17): a debate Interject or a watch director's note, asked once in the next debate plan, scene plan or plan made ahead, where quoted_latest already holds the last character line that emotion_line reads. tSteer is shared with unsafe_request (the loader checks it), and the rules text with unsafe_request, output_rules and motion_rules."
+}

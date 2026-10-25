@@ -1,0 +1,15 @@
+{
+  "name": "name_per_line_lookalike_kept",
+  "doc": "Per line: a name that only starts the same on a later line is text",
+  "chunks": [
+    "Mei: Hi\nMeilin: is my cousin\nMe"
+  ],
+  "previous": "neutral",
+  "speaker": "Mei",
+  "perLine": true,
+  "expected": {
+    "emotion": "neutral",
+    "source": "default",
+    "text": "Hi\nMeilin: is my cousin\nMe"
+  }
+}

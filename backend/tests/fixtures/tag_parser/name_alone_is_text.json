@@ -1,0 +1,15 @@
+{
+  "name": "name_alone_is_text",
+  "doc": "The stream ends while the held text could still be the name: it is text",
+  "chunks": [
+    "<e:happy>Mei"
+  ],
+  "previous": "neutral",
+  "speaker": "Mei",
+  "perLine": false,
+  "expected": {
+    "emotion": "happy",
+    "source": "llm",
+    "text": "Mei"
+  }
+}

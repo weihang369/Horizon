@@ -1,0 +1,21 @@
+{
+ "id": "judge_persona_fact",
+ "version": 1,
+ "purpose": "eval_judge",
+ "type": "noul",
+ "label": "contradicts a persona fact?",
+ "instructions": "quoted_facts lists stated facts about the character who wrote quoted_reply: their job, history, family and other details. Does quoted_reply say something about the character that contradicts one of those facts? New details that fit, opinions, moods and things said about other people don't count.",
+ "true": "Yes: the reply states something about the character that conflicts with a listed fact.",
+ "false": "No: nothing the reply says about the character conflicts with the listed facts.",
+ "state": {
+  "quoted_facts": "quoted",
+  "quoted_reply": "quoted"
+ },
+ "deadline": "default",
+ "floor": null,
+ "thresholds": {
+  "t": 0.5
+ },
+ "fallback": "none (evaluation only)",
+ "state_note": "images-music D12 (doc 02 B4): one of the four stays-in-character nouls of layer 3, B4-validated on 30 real + 30 planted items before its figures count."
+}
