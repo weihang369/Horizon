@@ -7,10 +7,14 @@ Defines the repository's continuous integration: the Linux job that runs every g
 ## Requirements
 
 ### Requirement: CI runs on pushes and pull requests
-A GitHub Actions workflow SHALL run one job on Linux (`ubuntu-latest`) for every push and pull request on `dev` and on `feat/**` branches. A newer run for the same ref SHALL cancel an older one that is still in progress. The job SHALL have a time limit, and SHALL only be able to read the repository.
+A GitHub Actions workflow SHALL run one job on Linux (`ubuntu-latest`) for every push and pull request on `dev` and on `feat/**` branches, and for every push to `main` (each release gets its own green run). A newer run for the same ref SHALL cancel an older one that is still in progress. The job SHALL have a time limit, and SHALL only be able to read the repository.
 
 #### Scenario: Feature branch push
 - **WHEN** a commit is pushed to `feat/http-client-parity`
+- **THEN** the CI job runs on Linux for that commit
+
+#### Scenario: Release push
+- **WHEN** `dev` is squash-merged into `main` and pushed
 - **THEN** the CI job runs on Linux for that commit
 
 #### Scenario: Superseded push
