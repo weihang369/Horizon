@@ -26,7 +26,7 @@ These are recorded as D-62 to D-75 in the [decision log](../requirements/09-deci
 
 | Topic | Decision |
 |---|---|
-| Storage split | **SQLite** (`data/horizon.db`, WAL) is the source of truth. The **filesystem** holds binaries only. **JSON columns** hold value objects that are read and written whole. **LangGraph checkpoints** go in a separate `data/graph.db` |
+| Storage split | **SQLite** (`data/horizon.db`, WAL) is the source of truth. The **filesystem** holds binaries only. **JSON columns** hold value objects that are read and written whole. **LangGraph** keeps no checkpoints: every graph runs without one ([docs/ai/01](../ai/01-agent-architecture.md) A9), so `data/graph.db` was never created |
 | Vectors | **sqlite-vec**, exact (flat) KNN, partitioned by character; one `vec0` table per *embedding space*; **FTS5 BM25** in the same database |
 | Embedding model | **Qwen3 Embedding 8B** via OpenRouter is the default; the final model and dimension count are chosen at the AI stage (re-index is cheap) |
 | Document ingestion | **Docling, run locally on the CPU** (exception to D-38 for ingestion only). Accepts PDF, DOCX, MD/TXT and pasted text. **No URLs, no CSV.** Limits are 10 MB / 300 pages per file and 20 sources per character. The original file is kept |
@@ -48,7 +48,7 @@ The backend representative (senior principal SWE) and the AI representative (sen
 | Area | Change |
 |---|---|
 | **Index safety** | Tables indexed by FTS5 or vec0 get `rid INTEGER PRIMARY KEY`. The hidden rowid isn't stable across VACUUM, which would have mis-mapped vectors across worlds |
-| **Forget means gone** | The scrub also covers the `insight` events in `session_events`, the supersede chain and `graph.db` (via the `AiStateHooks` outbox). A test greps both databases for the forgotten text |
+| **Forget means gone** | The scrub also covers the `insight` events in `session_events`, the supersede chain and any AI state (via the `AiStateHooks` outbox; there is no `graph.db`, docs/ai/01 A9). A test greps the database for the forgotten text |
 | **Event-sourced sessions** | `session_events` is the truth; messages are derived by a Python port of `sessionReducer.ts`. Fork = cut events + re-reduce; crash recovery = re-reduce (D-79) |
 | **Seed importable** | Unique candidate IDs, candidate batches by `job_id`, synthetic knowledge sections, seed SVGs allowed |
 | **Milestones** | M1 split into a frontend contract step and the backend foundation; every milestone ships its own HttpClient methods; EventBus and world CRUD moved to M1b |

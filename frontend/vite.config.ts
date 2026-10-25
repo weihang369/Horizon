@@ -56,13 +56,15 @@ function seedAssets(): Plugin {
     };
   }
 
-  // The local backend behind `/api` and `/assets/gen`: :8000 for `npm run dev`; the E2E HTTP project points it at its own
-  // test backend (http-client-parity D8).
-  const API_TARGET = process.env.HORIZON_API_TARGET || "http://127.0.0.1:8000";
-
   export default defineConfig(({ mode, command }) => {
     // Fails a dev server or build whose client choice is a typo, or that would ship the HttpClient where it must not (D14).
     resolveClient({ value: loadEnv(mode, here, "VITE_").VITE_HORIZON_CLIENT, mode, command, vercel: process.env.VERCEL === "1" });
+    // The ports live in ONE place, the repo-root `.env` (environment > .env, like the backend's config): HORIZON_PORT is
+    // the backend the proxy forwards to, HORIZON_WEB_PORT the page you open. Only HORIZON_* names are read, so the key
+    // in the same file never reaches this config. The E2E HTTP project points the proxy at its own test backend with
+    // HORIZON_API_TARGET (http-client-parity D8).
+    const ports = loadEnv(mode, path.resolve(here, ".."), "HORIZON_");
+    const API_TARGET = process.env.HORIZON_API_TARGET || `http://127.0.0.1:${ports.HORIZON_PORT || 8000}`;
     return {
     plugins: [react(), seedAssets()],
     resolve: {
@@ -72,9 +74,11 @@ function seedAssets(): Plugin {
       },
     },
     server: {
+      // A taken port moves to the next free one, and Vite prints the URL.
+      port: Number(ports.HORIZON_WEB_PORT) || 5173,
       fs: { allow: [here, SEED_DIR] },
       // `npm run dev` at the repo root (doc backend/01 §8): the API and generated assets come from the backend
-      // (API_TARGET, :8000 by default). SSE passes through unbuffered (the backend sends no-cache +
+      // (API_TARGET, HORIZON_PORT, :8000 by default). SSE passes through unbuffered (the backend sends no-cache +
       // X-Accel-Buffering: no). Seed placeholders under /assets/placeholder are still served by the seedAssets plugin.
       proxy: {
         "/api": { target: API_TARGET, changeOrigin: true },

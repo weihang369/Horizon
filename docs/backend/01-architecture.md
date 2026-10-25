@@ -20,7 +20,7 @@ FastAPI app (ONE uvicorn worker, 127.0.0.1:8000)
    ├─ gateway/      the ONLY network code: OpenRouter chat, decisions (Jev), images, embeddings, music, meta
    ├─ events/       EventBus: append → reduce → publish (session / global channels)
    └─ ai/           ports.py (Protocols), decider.py, placeholders/, naive/   ← the AI team adds graphs/ later
-data/   horizon.db · graph.db · secrets.local.json · settings.local.json · assets/ · originals/ · knowledge/ · models/ · logs/
+data/   horizon.db · secrets.local.json · settings.local.json · assets/ · originals/ · knowledge/ · models/ · logs/
 seed/   read-only fixtures + seed assets (imported on first run; seed assets served as-is)
 ```
 
@@ -78,6 +78,10 @@ seed/   read-only fixtures + seed assets (imported on first run; seed assets ser
      - **Query embedding (D-97).** On `send` (1:1 and group only) the actor spawns **one** query embedding for the user message, in parallel with routing and the thinking delay. It runs only when the knowledge retriever uses vectors, a key is set and a possible responder has a source indexed in the active space. Debate, watch and greeting turns never embed.
      - A reply waits for that vector at most `retrieval.queryEmbedWaitMs` (400 ms, on the runtime clock); past that it retrieves by keyword alone. The late call is still billed and recorded. A cap refusal or provider error also means keyword-only, with no `error` event.
      - The `query_embed` call is listed on the **first** responder's `trace.calls`, like the route decision.
+     - *The bullets above are the `naive` path. With the `agent` profile (the default with a key) the deep graph searches
+       instead (docs/ai/01 A6, `ai/agent/deep.py`): in 1:1 and group the message's embedding starts with Jev call 1, the
+       search waits for it to the end (`retrieval.agent.docsWaitAll`, D-111, U-56; `queryEmbedWaitMs` 200 ms applies
+       only with that switch off), and debate and watch embed too when their plan goes deep.*
   6. Run `TurnEngine` and map its `TurnEvent`s (doc 05 §2) onto contract events.
   7. Merge `TracePatch`es and emit the **full** `insight`.
   8. Queue post-turn work: reactions (via the actor), memory ops (per-character queue) and the guardrail output check.
@@ -108,7 +112,7 @@ One session may **stream** at a time. A command that would start generation else
 Doc [04](04-gateway-budget-energy.md). Every paid call does preflight (caps, **reservations**) → request → ledger (actual or estimate with correction) → energy drain (only `purpose == 'reply'`) → events.
 
 ### 4.6 AI purge outbox
-- `ai_purge_queue` rows are written by lifecycle services **after** their commit (graph.db can't share a transaction with horizon.db).
+- `ai_purge_queue` rows are written by lifecycle services **after** their commit (AI state outside horizon.db can't share its transaction; v1 has none: no `graph.db`, docs/ai/01 A9).
 - A worker calls `AiStateHooks` (doc 05 §4) at least once, and retries on startup.
 
 ### 4.7 Clock

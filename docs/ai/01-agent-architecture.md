@@ -404,7 +404,7 @@ follow plan, the plan made ahead, the member fixed); debate and watch never rewr
 | **Turn plan graph** (A4, A6): Jev call 1 → quick/deep branch → embed → search → parallel Jev call 2 → keep or drop | **The reply:** one DeepSeek stream (today's engine, extended in A5) |
 | **Post-turn check graph:** emotion check ∥ citation check → merge into Insight. **Superseded:** no post-turn graph is left in v1. The face check is one plain Jev call after `turn.end` ([doc 13](13-wrap-up.md) W2), and the citation check is evaluation only (doc 10 K10) | **Listener reactions** (one Jev call, doc 06 E5) |
 | **Memory graph** (doc 09 M1–M5), **at a session pause, not after `turn.end`**: DeepSeek rewrites each present character's list (keep / confirm / rewrite / add) → Jev importance ∥ Jev guard on each rewrite ("keeps every still-true fact?", else keep both) ∥ duplicate check → ops | **Rolling summary** (one DeepSeek call) |
-| **Verdict graph** (doc 08 V7–V9): Jev rubric scores in parallel → code picks the stronger case → DeepSeek writes the prose (JSON) | **Profile drafter, image, song** |
+| **Verdict graph** (doc 08 V7–V9): Jev rubric scores in parallel → code picks the stronger case → DeepSeek writes the prose (JSON). **Not built as a graph:** the verdict is plain code (the M11 note below) | **Profile drafter, image, song** |
 
 **Built in M9** (OpenSpec `turn-plan-emotion`, design D3): the turn plan graph has its final shape, `state → ask →
 decide → route`, with `route` always `quick` until M12 adds the deep branch. In M9 it is one Jev call, which by this

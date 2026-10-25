@@ -1,171 +1,49 @@
 # Horizon
 
-Horizon is an open-source multi-agent character sandbox. You summon AI personas, give them faces, moods and theme songs, and have them advise you, debate each other, or just live their lives.
+![Horizon's title screen](docs/images/title.jpg)
 
-> **Status:** in testing before v1.0. The app runs end to end on a local FastAPI backend with your own OpenRouter key: live chat, group chat, debates and Watch mode, character creation with generated art and theme songs, knowledge from your documents, and memory across sessions, with every paid call metered against your caps. The live demo runs the same frontend on a built-in mock client with recorded sessions: no backend, API key or GPU needed.
+Horizon is an open-source app where you create AI characters, then talk to them, put them in a room together, have them debate each other, or watch them play out a scene on their own.
 
-**Live demo:** <https://horizon-seven-mauve.vercel.app> (desktop browser, 1280 × 720 or larger).
+**Live demo:** <https://horizon-seven-mauve.vercel.app> (desktop browser, 1280 × 720 or larger). It plays recorded sessions on a mock client: no install, no key. Press <kbd>?</kbd> in the app for the keyboard shortcuts.
 
-## Quick start
+## What you can do
 
-**You need:** Node.js **20.19+** or **22.12+** (Vite 8 requires one of these) and npm.
+- **Create a character from one line.** Horizon drafts the profile, paints a portrait, six emotions and a blink from the face you lock, and composes a theme song. Every paid step shows its price first; a whole character costs about $0.20.
+- **Four ways to talk:** 1:1 chat, a group that answers and reacts to each other, a debate with a host, rounds and a verdict, and Watch mode, where they play out a scene without you.
+- **Memory:** when a session pauses, each character keeps what mattered in long-term memory.
+- **Documents:** give a character PDFs, Word, Markdown or text, and it cites the passages it uses.
+- **See inside:** the Insight drawer (<kbd>I</kbd>) shows who was picked to speak and why, what was recalled, the context budget and the cost of every turn.
 
-```bash
-git clone https://github.com/weihang369/Horizon.git
-cd Horizon/frontend
-npm install
-npm run dev
-```
+## How it works
 
-Open the URL Vite prints, usually <http://localhost:5173>.
+![How Horizon works: the browser, the backend on your machine, storage in data/, and five models through OpenRouter](docs/images/architecture.png)
 
-- **Window size:** use a desktop browser window of at least **1280 × 720**. Smaller viewports show a "screen too small" notice.
-- **Audio:** sound starts after your first click or key press, because of the browser's autoplay rules.
+Everything runs on your machine; only the model calls go out, through OpenRouter with your own key. DeepSeek writes the text and TypeSafe's Jev model makes the quick decisions. [docs/README.md](docs/README.md) maps the designs behind each part.
 
-## Run locally with the backend
+## Run it locally
 
-**You need:** Node.js **24** (pinned in [`.nvmrc`](.nvmrc)) and [uv](https://docs.astral.sh/uv/). uv installs Python 3.12 for the backend by itself, so your system Python is untouched. Nothing else: no Docker, database server, GPU or PyTorch.
+**You need:** Node.js **24** (pinned in [`.nvmrc`](.nvmrc)) and [uv](https://docs.astral.sh/uv/), which installs Python 3.12 for the backend by itself. No Docker, database server or GPU.
 
 | | Windows (PowerShell) | macOS / Linux |
 |---|---|---|
 | Node.js 24 | `winget install OpenJS.NodeJS.LTS` | your package manager, [nvm](https://github.com/nvm-sh/nvm) or [nodejs.org](https://nodejs.org) |
 | uv | `winget install --id=astral-sh.uv -e` | `curl -LsSf https://astral.sh/uv/install.sh \| sh` |
 
-**Step 1: the demo (about 5 minutes on a fresh clone).**
-
-```powershell
+```bash
 git clone https://github.com/weihang369/Horizon.git
 cd Horizon
-npm run setup      # npm installs (root + frontend) and `uv sync` for backend/
-npm run dev        # backend on http://127.0.0.1:8000 + the app on http://localhost:5173, talking to it
+npm run setup      # npm installs (root + frontend) and uv sync for backend/
+npm run dev        # the backend on http://127.0.0.1:8000 and the app on http://localhost:5173
 ```
 
-The commands are the same in a Unix shell. Open <http://localhost:5173>: the two demo worlds load from the backend in demo mode. Ctrl-C stops both processes. The backend keeps its data in `data/` at the repo root (git-ignored) and seeds the demo worlds on first start.
+Open <http://localhost:5173>: the two demo worlds load in demo mode. Ctrl-C stops both servers. Your data stays in `data/` at the repo root (git-ignored).
 
-**Your OpenRouter key (optional).** Live chat and creation need a key from [openrouter.ai/keys](https://openrouter.ai/keys). Paste it in **Settings → Connection**: it's stored in `data/secrets.local.json` on this machine only. Alternatively, copy `.env.example` to `.env` and set `OPENROUTER_API_KEY` there; a key in `.env` or the environment wins over the one in Settings. Without a key, everything recorded still plays.
+- **Your OpenRouter key (optional).** Live chat and creation need a key from [openrouter.ai/keys](https://openrouter.ai/keys). Paste it in **Settings → Connection** (stored in `data/secrets.local.json`), or set `OPENROUTER_API_KEY` in `.env`. Without a key, everything recorded still plays.
+- **Ports already in use?** Copy `.env.example` to `.env` and change `HORIZON_PORT` (the backend, default 8000) or `HORIZON_WEB_PORT` (the page, default 5173). Both servers read them from that one file.
+- **PDF and Word documents (optional).** Markdown and text work straight away. PDF and DOCX need Docling on CPU PyTorch and its models, about 1.4 GB, downloaded once: `npm run setup:docling`, then `uv run --project backend horizon models fetch`.
+- **Reset:** Settings → Data → "Reset demo data" restores the demo and keeps your own worlds.
 
-**Step 2: PDF and DOCX knowledge (optional, separate).** Markdown, plain text and pasted text work after step 1. PDF and DOCX uploads (including scanned PDFs, through OCR) need Docling with CPU PyTorch (no GPU) and its conversion models, about 1.4 GB, downloaded once:
-
-```powershell
-npm run setup:docling
-uv run --project backend horizon models fetch
-```
-
-`GET /api/v1/health` reports `docling` as `not_installed`, `models_missing` or `ready`. A PDF or DOCX added before step 2 ends `failed`; **↻ Retry** converts it afterwards.
-
-| Command (repo root) | What it does |
-|---|---|
-| `npm run setup` | Step 1: everything the demo needs |
-| `npm run setup:docling` | Optional step 2: CPU PyTorch + Docling, then `horizon models fetch` (above) |
-| `npm run dev` | Backend with auto-reload + the app on the backend (`VITE_HORIZON_CLIENT=http`, proxied `/api`) |
-| `npm run dev:mock` | The app alone on the mock client, no backend (what the live demo runs) |
-| `npm run demo` | Build the app and serve it and the API on one port, <http://127.0.0.1:8000> |
-| `npm test` | Backend tests (pytest), frontend unit tests, then the client contract against a real test-mode backend |
-
-- **Reset:** Settings → Data → "Reset demo data" restores the shipped demo and keeps your own worlds. `uv run --project backend horizon reset --factory --yes` wipes `data/` (except downloaded models).
-- **Local only:** the backend binds to `127.0.0.1` and refuses any other address. The key never appears in logs, errors, exports or the ledger.
-- **Tests never spend:** every automated test uses a fake provider and a fake key. Paid live checks and real Docling conversions are manual scripts under [`backend/manual/`](backend/manual/README.md), outside the test paths, so a normal run never collects them.
-- **AI profile:** with a key, the app uses the `agent` profile (Jev decides, DeepSeek speaks); without one, `scripted`. Set `HORIZON_AI_PROFILE=naive` for the baseline (plain DeepSeek replies, the Jev router), or `HORIZON_AI_<PORT>` to change one port. The backend's start-up log names the profile and lists what every port resolved to.
-
-### Privacy switches
-
-Nothing about your conversations leaves your machine except the model calls to OpenRouter. Two developer switches, both off by default, change that locally or remotely:
-
-- `HORIZON_CAPTURE_AI_CALLS=1` keeps each AI call's redacted prompt and reply in the local database for 7 days, for debugging with `horizon eval capture`. Forget and deletes clear it.
-- `HORIZON_LANGSMITH=1` (plus `LANGSMITH_API_KEY`; the package ships with the backend from M9) **sends** chat and document text to LangSmith for tracing. Leave it off unless you mean to share that text.
-
-### Secret hygiene
-
-Your key belongs in Settings, `.env` or `data/`, all of which are git-ignored. As a second line of defence, we recommend [gitleaks](https://github.com/gitleaks/gitleaks) as a **pre-commit hook**. It is optional, and the repository doesn't install it for you.
-
-1. Install it: `winget install gitleaks` (Windows), `brew install gitleaks` (macOS), or a release binary (Linux).
-2. Create `.git/hooks/pre-commit` (no extension; Git for Windows runs it with its bundled shell):
-
-   ```sh
-   #!/bin/sh
-   # Block a commit whose staged changes contain a secret.
-   exec gitleaks git --pre-commit --staged --redact --verbose
-   ```
-
-   On Unix, make it executable: `chmod +x .git/hooks/pre-commit`. Older gitleaks 8.x releases spell the command `gitleaks protect --staged --redact --verbose`; check `gitleaks --help` for your version.
-
-## A 5-minute tour
-
-1. **Watch a debate.** On World Select, click **▶ Watch a 60-second AI debate**, then **Watch** (or press <kbd>Space</kbd>).
-   - <kbd>Space</kbd> pauses and resumes.
-   - **×2** and **×4** change the speed.
-   - <kbd>I</kbd> opens the Insight drawer, which shows routing, recalled memory, context budget and cost.
-   - **See the verdict** jumps to the outcome screen.
-2. **Summon a character.** On a world's hub, choose **New character** and go through the 8-step wizard to the Summon reveal.
-3. **Hang out.** **Sunny Hollow** has replays of a group chat, a Watch-mode scene and 1:1 chats.
-4. **Go "live" without a key.** Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd> to open the dev switcher.
-   - Set a mock API key, then choose **Continue live** in a replay. The mock client streams replies as if a model were behind it.
-   - You can also switch scenarios there, such as an empty world, an exhausted character, a rate limit or a cut-off stream.
-
-### Keyboard shortcuts
-
-| Key | Action |
-|---|---|
-| <kbd>?</kbd> | Show every shortcut |
-| <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd> | Open the mock state switcher (scenarios, mock key, demo speed) |
-| <kbd>Space</kbd> | Play/pause a replay or debate |
-| <kbd>←</kbd> / <kbd>→</kbd> | Previous/next turn in a replay; move between worlds on World Select |
-| <kbd>I</kbd> | Open or close the Insight drawer in a session |
-| <kbd>L</kbd> | Open the session log |
-| <kbd>Ctrl</kbd>+<kbd>.</kbd> | Stop a streaming reply |
-| <kbd>[</kbd> / <kbd>]</kbd> | Previous / next tab on a character profile |
-| any key or click | Skip a ceremony (VS splash, round banner, Summon) |
-
-To see the shared UI components, open `#/dev/kit`.
-
-## Scripts
-
-Run these inside `frontend/`:
-
-| Command | What it does |
-|---|---|
-| `npm run dev` | Start the dev server with hot reload |
-| `npm run build` | Type-check and build a production bundle into `frontend/dist/` |
-| `npm run preview` | Serve the production build locally |
-| `npm test` | Run the unit and contract tests (Vitest) |
-| `npm run e2e` | Run the Playwright end-to-end suite in Microsoft Edge on both clients: the mock (its own dev server on port 5186) and a throwaway test-mode backend (ports 8786 and 5187) |
-| `npm run e2e:mock` | The end-to-end suite on the mock only |
-| `npm run e2e:http` | The end-to-end suite on the backend only (scripted AI, temporary data, never your `data/` or `.env`) |
-| `npm run typecheck` | Run the TypeScript project build with no output |
-| `npm run lint` | Run oxlint |
-| `npm run seed:build` | Regenerate `seed/` from the screenplays and fixtures in `frontend/scripts/seed-build/` |
-| `npm run assets:check` | Fail if a shipped asset has no credit or provenance row in [`ASSETS.md`](ASSETS.md) |
-| `npm run seed:check` | Regenerate in memory and fail if `seed/` is out of date |
-| `npm run budget` | Check bundle sizes after a build: entry ≤ 150 KB gzip, each lazy chunk ≤ 60 KB |
-
-## Repository layout
-
-```
-Horizon/
-├── frontend/          React 19 + TypeScript + Vite app
-│   └── src/
-│       ├── client/    HorizonClient interface; index.ts picks the implementation
-│       ├── mock/      MockClient: in-browser fake backend, scripted replies, scenarios
-│       ├── contract/  Shared types for the data contract
-│       ├── features/  Screens: shell, worlds, wizard, profile, session, ensemble, insight, settings, dev
-│       ├── ui/ theme/ motion/ audio/ vfx/ character/   Design system and engines
-│       └── router/    Hash router (#/w/:world/...)
-├── backend/           FastAPI + SQLite local backend (uv)
-│   ├── horizon/       The app: api/, sessions/, ai/ (agents, Jev decisions, memory), gateway/, services/, evals/
-│   ├── tests/         pytest (fake provider, no spend)
-│   └── manual/        Paid OpenRouter and real Docling checks, run by hand
-├── seed/              The shipped demo: worlds, characters, recorded sessions, art, songs, documents
-├── evals/             Evaluation data: datasets, scripted scenes, transcripts, a frozen seed
-├── openspec/          Specs (current behaviour) and each milestone's archived design
-├── scripts/           Repo-level scripts (the fresh-clone boot timing CI runs)
-└── docs/              Requirements, UI/UX, backend and AI designs, measured checks: see docs/README.md
-```
-
-The UI talks only to the typed `HorizonClient` interface. `frontend/src/client/index.ts` picks the `MockClient` by default (and on Vercel) or the `HttpClient` when built with `VITE_HORIZON_CLIENT=http`. [docs/README.md](docs/README.md) maps the design docs and explains the codes (`D-118`, `CHAT-02`, `M13`) that comments cite.
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, the checks to run before a pull request and how changes are made. Report security problems privately, as [SECURITY.md](SECURITY.md) describes.
+Developer commands, tests and the rest of the setup are in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Privacy
 
@@ -181,22 +59,22 @@ Horizon runs on your machine; what leaves it goes through your own OpenRouter ke
   message you search with is embedded too.
 - **Images and music:** portrait and expression prompts go to the image model, and a song brief to the music model.
 - **Everything else stays in `data/`** on your machine (NFR-13): sessions, memories, documents, the cost ledger and
-  your key.
+  your key. The backend listens on `127.0.0.1` only, and the key never appears in logs, errors, exports or the ledger.
 
-The app says this in two places: under the key field in Settings → Connection, and in each character's Knowledge drop
-zone. To keep your text away from providers that train on it, set `data.gateway.routing.data_collection` to `"deny"` in
-`seed/pricing.json` and restart the backend. DeepSeek's own endpoint then won't take the requests, so they go to
-third-party hosts, which may be slower or cost more.
+The app says this under the key field in Settings → Connection and in each character's Knowledge drop zone. To keep
+your text away from providers that train on it, set `data.gateway.routing.data_collection` to `"deny"` in
+`seed/pricing.json` and restart the backend; requests then go to third-party hosts, which may be slower or cost more.
+Two developer switches that change what is kept or sent are off by default; see
+[CONTRIBUTING.md](CONTRIBUTING.md#developer-switches).
 
-## Roadmap
+## Credits
 
-1. **Requirements.** Done. See [`docs/requirements/`](docs/requirements/).
-2. **UI/UX.** Done: the frontend on the mock client ([`docs/ui-ux/`](docs/ui-ux/)).
-3. **Backend.** Done: FastAPI + SQLite implementing the same data contract ([`docs/backend/`](docs/backend/), milestones M1–M6).
-4. **AI.** Done: LangGraph agents through OpenRouter, with Jev making the decisions ([`docs/ai/`](docs/ai/), milestones M7–M15).
-5. **Testing (now).** Every flow driven by hand in a real browser, then v1.0.
-6. **Later.** Ideas left out of v1 are in [`docs/v2/`](docs/v2/README.md).
+The look is inspired by Persona 5: ransom-note titles, slanted panels, red and black everywhere. Big respect to Atlus's UI team. Every shipped asset's source is listed in [ASSETS.md](ASSETS.md).
 
-## License
+## Contributing, security and license
+
+- [CONTRIBUTING.md](CONTRIBUTING.md): setup, the checks before a pull request, and how changes are made.
+- [SECURITY.md](SECURITY.md): report security problems privately.
+- Ideas left out of v1 are in [docs/v2/](docs/v2/README.md).
 
 [MIT](LICENSE) © 2026 Tan Wei Hang

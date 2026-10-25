@@ -35,7 +35,6 @@
 ```
 data/                                       gitignored (NFR-22)
   horizon.db  (+ -wal, -shm)                domain source of truth
-  graph.db                                  LangGraph checkpointer (AI-owned; stores IDs, never memory text)
   secrets.local.json                        { "openRouterKey": "sk-or-…" }, written by PUT /settings/key
   settings.local.json                       UI-edited AppSettings overrides
   assets/gen/{worldId}/cover_v{n}.webp
@@ -197,7 +196,7 @@ generation_tasks id PK (task_…), job_id FK→generation_jobs (CASCADE), ord IN
      - a task with **`provider_called_at` set but no `result_ref` becomes `failed` (retryable)**.
 
      Only an explicit user Retry pays again.
-- **Internal job kinds** reuse these tables and are never exposed as `GenerationJob` on the wire: `knowledge_index`, `knowledge_reindex`, `seed_embed`. (`memory_consolidate` was dropped at the AI stage: nothing is merged or deleted automatically, [docs/ai/09](../ai/09-memory.md) M5.) *M13 (`memory` D8): memory is written by runtime tasks at session pauses (`memory_run`), not by job rows; a run's checkpoint is `sessions.memory_seq`.*
+- **Only the creation job kinds use these tables** (`services/jobs/plans.py`). Document indexing is one runtime task per source, with the `knowledge_sources` row as its record (§3.8, `services/knowledge/worker.py`), and a seed document goes through the same pipeline when the user chooses to index it (D-91), reusing its cached seed embeddings in `data/cache` (D31). (`memory_consolidate` was dropped at the AI stage: nothing is merged or deleted automatically, [docs/ai/09](../ai/09-memory.md) M5.) *M13 (`memory` D8): memory is written by runtime tasks at session pauses (`memory_run`), not by job rows; a run's checkpoint is `sessions.memory_seq`.*
 
 ### 3.6 Ledger
 
@@ -351,7 +350,7 @@ embedding_spaces  id PK ('qwen3-emb-8b@1024'), model, provider, dims, dtype ('fl
 
 - Repository methods for characters, sessions, memory and knowledge **require `world_id`** (and `character_id` where relevant). Vector KNN always binds the partition key, and the join back re-checks the scope.
 - `tests/isolation/` builds two near-identical worlds and asserts that no API call, recall or retrieval in world A ever returns world B data.
-- It also asserts that **after Forget, the forgotten text appears nowhere** in `horizon.db` or `graph.db`.
+- It also asserts that **after Forget, the forgotten text appears nowhere** in `horizon.db` (there is no `graph.db`: the LangGraph graphs keep no checkpoints, docs/ai/01 A9).
 
 ## 4. Lifecycles (D-70)
 
@@ -364,7 +363,7 @@ embedding_spaces  id PK ('qwen3-emb-8b@1024'), model, provider, dims, dtype ('fl
 | **Forget a memory** | §3.7 |
 | **Guardrail block after streaming** | `turn.end` with `status:"error"`, `content_refused`. The message content **and its persisted `token` events are scrubbed** (the Forget path, by `message_id`), and the message is excluded from memory: the memory writer isn't called for it, and any memory sourced from it is forgotten in the scrub's transaction (M5) |
 | **Reset demo data** | **Upserts** seed worlds and characters in place (user forks may reference them). **Deletes and re-inserts seed sessions.** Replaces seed ledger rows (`is_seed`). Seed memory and knowledge are restored, while **user-earned memories on seed characters (`is_seed = 0`) survive**. Indexing of seed sources is stopped first; re-inserted seed sources come back with their shipped sections, pieces and vectors under new `rid`s (D-110, replacing D-98's keyword-only reset), as do the seed memories' vectors. Queues an AI purge for the seed sessions. Emits a global `mock.reset` so screens re-query |
-| **Factory reset** | Double-confirmed:<ol><li>stop the actors, the scheduler and any Docling process;</li><li>close the `graph.db` checkpointer;</li><li>dispose the engines and close the log handlers (Windows file locks);</li><li>`rmtree data/` except `models/`, with retries;</li><li>re-run the startup lifespan in-process.</li></ol> |
+| **Factory reset** | Double-confirmed:<ol><li>stop the actors, the scheduler and any Docling process;</li><li>dispose the engines and close the log handlers (Windows file locks);</li><li>`rmtree data/` except `models/`, with retries;</li><li>re-run the startup lifespan in-process.</li></ol> |
 
 ## 5. Migrations and seed import
 

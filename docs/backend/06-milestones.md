@@ -125,7 +125,7 @@
 - PDF, DOCX, MD and pasted text reach `indexed`, and O28 shows chunks with the right locators.
 - A scanned PDF yields text through Docling OCR.
 - Deleting a source leaves no rows, vectors or files.
-- **After Forget, the text appears nowhere in `horizon.db` or `graph.db`.**
+- **After Forget, the text appears nowhere in `horizon.db`.** (v1 has no `graph.db`, docs/ai/01 A9.)
 - The isolation suite covers FTS and vector retrieval.
 
 ## M6: `http-client-parity`
