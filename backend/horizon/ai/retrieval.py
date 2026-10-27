@@ -178,7 +178,7 @@ def hits_json(hits: list[Any]) -> list[dict[str, Any]]:
 # ── M12: the shared search pipeline (doc 10 K5; rag design D12; retrieval "The agent search pipeline") ──
 @dataclass(frozen=True)
 class SearchParams:
-    """The pipeline's numbers come from the caller: `agent` documents pass `retrieval.agent` (20, 8, 0.7); recall (M13)
+    """The pipeline's numbers come from the caller: `agent` documents pass `retrieval.agent` (20, 8, λ 1 shipped); recall (M13)
     passes doc 09 M9's own (10, 6)."""
 
     pool: int = 20

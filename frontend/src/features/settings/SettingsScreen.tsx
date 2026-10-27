@@ -20,6 +20,7 @@ import { RansomText } from "../../ui/RansomText";
 import { Tape } from "../../ui/Tape";
 import { BackIcon } from "../../ui/icons";
 import { useHouseScreen } from "../shell/house";
+import { saveKeyHint } from "../shell/keyHint";
 import { NO_BACKEND } from "../shell/onlineDemo";
 import { APP_VERSION } from "../shell/TitleScreen";
 import { ConnectionTab } from "./ConnectionTab";
@@ -202,6 +203,7 @@ function DataTab() {
         for (const w of worlds) await deleteWorld(w.id);
         try {
           await client.settings.setKey(null);
+          saveKeyHint(null); // audit A-10: the deleted key's last 4 left this browser's storage too
           toast({ variant: "info", text: "All data deleted." });
         } catch (e) {
           // Audit 02-07: a key from OPENROUTER_API_KEY (.env) can't be cleared here (409); the data is gone, so say so.

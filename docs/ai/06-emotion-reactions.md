@@ -5,6 +5,10 @@
 > - It resolves OQ-AI-07 (the AUTO emotion source; doc 01 A5 already chose Jev first) and the two items doc 01 left
 >   to this task: **the mood line's wording** and **the emotion evaluation**. It also designs the listener reactions
 >   (MULTI-04) that doc 01 A7 made one Jev call.
+> - **As shipped (v1.0):** the mood line (E4) is built but off (`persona.moodLine` false in `seed/runtime.json`, M9
+>   D40), so DeepSeek is not told the face. The face check (E8, doc 13 W2) runs in the app, not only in evaluation: on
+>   a clash (happy against sad or angry) the face switches to the words' emotion (D-112), and a reply it skips gets a
+>   `skipped` row saying why (U-49).
 > - Decisions are numbered **E1–E9**, each with the alternatives we rejected.
 > - It builds on [01-agent-architecture](01-agent-architecture.md) (A1–A14),
 >   [02-evaluation-observability](02-evaluation-observability.md) (B1–B12),

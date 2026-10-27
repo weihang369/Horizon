@@ -48,8 +48,6 @@ const switchedTo = (trace?: TurnTrace): string | null => {
 const firstName = (n?: string) => (n ? n.split(" ").find((w) => !/^(dr|prof|mr|ms|mrs)\.?$/i.test(w)) ?? n : "");
 const isChar = (m?: Message): m is Message => !!m && m.author.type === "character" && !!m.author.characterId;
 
-const traceCache = new Map<string, Promise<TurnTrace | null>>();
-
 /** Values arm one frame after a selection change, so bars fill from zero ("watch it think"). */
 function useArmed(key: string | undefined): boolean {
   const [armed, setArmed] = useState<string | undefined>(undefined);
@@ -295,6 +293,9 @@ export function InsightDrawer({ sessionId, close }: OverlayComponentProps<"O08">
   const { reduced } = useMotionPrefs();
   const selected = useUi((u) => u.insight.messageId);
   const [fetched, setFetched] = useState<Record<string, TurnTrace | null>>({});
+  // One fetch per message while the drawer is open (StrictMode's second effect run reuses it). Not kept across opens:
+  // a trace fetched before a Regenerate or a late System 1 append, or a failed fetch, would be shown forever (D-16).
+  const [traceCache] = useState(() => new Map<string, Promise<TurnTrace | null>>());
   useShortcut("i", close);
 
   const list = useMemo(() => (runtime ? runtime.order.map((id) => runtime.messages[id]).filter(Boolean) : []), [runtime]);
@@ -316,7 +317,7 @@ export function InsightDrawer({ sessionId, close }: OverlayComponentProps<"O08">
     }
     const id = m.id;
     void p.then((t) => setFetched((f) => ({ ...f, [id]: t })));
-  }, [m, fetched]);
+  }, [m, fetched, traceCache]);
 
   const armed = useArmed(reduced ? "static" : `${m?.id}:${m?.trace ? 1 : 0}`) || reduced;
   const go = (d: number) => {

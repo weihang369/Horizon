@@ -156,6 +156,7 @@ export function SessionLog({ rt, variant = "chat", className, hideThinking, empt
               variant={variant}
               selected={m.id === selectedId}
               canRegenerate={m.id === regenId}
+              chat={mode === "one_on_one" || mode === "group"}
               fresh={!!initial.current && !initial.current.has(m.id)}
               stale={staleNotes.has(m.id)}
               onOpenInsight={variant === "chat" ? openInsight : undefined}

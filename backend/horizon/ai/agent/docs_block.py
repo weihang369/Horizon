@@ -107,10 +107,13 @@ def _fit(pieces: list[str], budget: int, prefix_tokens: int) -> list[str]:
     while out and prefix_tokens + sum(count_tokens(p) for p in out) > budget:
         i = max(range(len(out)), key=lambda k: len(out[k]))
         spans = sentences(out[i])
+        before = out[i]
         if len(spans) <= 1:
             out[i] = out[i][:max(1, len(out[i]) * 3 // 4)]
         else:
             out[i] = out[i][:spans[-2][1]].rstrip()
+        if out[i] == before:
+            break   # every piece is down to a character: the frame alone is over budget, so stop (never spin)
     return out
 
 

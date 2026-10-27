@@ -161,3 +161,36 @@ async def test_every_command_route_is_served(api: Api) -> None:
         assert "availableIn" not in str(body), (name, body)
         assert r.status_code in (202, 409), (name, r.status_code, body)  # 409: a debate/watch command in a 1:1
         await command(api, one, "stop")
+
+
+async def test_pause_then_play_in_the_pace_wait_keeps_one_chain(api: Api) -> None:
+    """Audit D-C01: Pause then Play while the pace timer waits must not start a second chain of turns (the timer
+    still runs its turn; Play adds none), so every turn keeps the turn gap plus the pace."""
+    from horizon.domain.timeutil import ms_from_iso
+
+    sid = await _watch(api, paceMs=3000)
+    while not any(e["type"] == "turn.end" for e in await events(api, sid)):
+        await api.drive(100)
+    await api.drive(1000)   # inside the pace wait: the next turn's timer is pending
+    await command(api, sid, "watch/pause")
+    await command(api, sid, "watch/play")
+    await api.drive(60000)
+    evs = await events(api, sid)
+    ends = [e for e in evs if e["type"] == "turn.end"]
+    nexts = [e for e in evs if e["type"] == "turn.next"]
+    gaps = [ms_from_iso(n["at"]) - ms_from_iso(e["at"]) for e, n in zip(ends, nexts[1:], strict=False)]
+    assert len(ends) == 10 and gaps and all(g == 400 + 3000 for g in gaps), gaps
+
+
+async def test_step_in_at_the_turn_cap_keeps_the_episode_ended(api: Api) -> None:
+    """Audit D-08: a Step in after the turn cap is answered, and the episode stays ended (`turn_cap`), not paused."""
+    sid = await _watch(api)
+    await api.drive(200000)
+    assert (await snapshot(api, sid))["session"]["pausedReason"] == "turn_cap"
+    await command(api, sid, "watch/step-in", {"text": "That was quite a day."})
+    await api.drive(30000)
+    snap = await snapshot(api, sid)
+    assert snap["session"]["pausedReason"] == "turn_cap" and snap["session"]["state"]["status"] == "ended"
+    user = [m for m in snap["messages"] if m["author"]["type"] == "user"]
+    assert any(m["seq"] > user[-1]["seq"] for m in chars(snap["messages"]))
+    await assert_reduces(api, sid)

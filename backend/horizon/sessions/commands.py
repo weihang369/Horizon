@@ -6,7 +6,7 @@ from __future__ import annotations
 from collections.abc import Awaitable, Callable
 from typing import TYPE_CHECKING, Any
 
-from horizon.api.errors import HorizonHTTPError, not_found
+from horizon.api.errors import HorizonHTTPError, conflict, not_found
 from horizon.sessions import debate_verdict
 from horizon.sessions.after_turn import REACTIONS
 from horizon.sessions.modes import debate, group, one_on_one, watch
@@ -54,6 +54,8 @@ async def _regenerate(a: SessionActor, b: Wire) -> None:
     m = a.state["messages"].get(mid)
     if m is None or m["author"]["type"] != "character" or m["status"] == "streaming":
         raise not_found("Message")
+    if a.mode_name not in ("one_on_one", "group"):   # a debate argument or a scene line would come back as a chat reply
+        raise conflict("Regenerate is only for 1:1 and group chat.")
     one_on_one.regenerate(a, mid)
 
 

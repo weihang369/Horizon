@@ -153,7 +153,7 @@ planted wrong claims), repetition rates on free runs only, and three `agent`-onl
 Jev question is validated as B4 describes before it is trusted.
 
 Doc 05 X10 also adds a rare **`long` suite** (`agent` only, two 1:1 runs and one group run with scripted user lines,
-each past two drops; not part of `all`) for fact recall, voice drift and the real cache-hit %, and makes 4 of the 20
+each past two drops; `all` only probes it) for fact recall, voice drift and the real cache-hit %, and makes 4 of the 20
 frozen transcripts start from a long committed history.
 
 **How each number is reported:**

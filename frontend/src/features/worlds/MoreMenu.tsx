@@ -30,7 +30,8 @@ export function MoreMenu<V extends string>({ label, items, onSelect, align = "ri
         className={menuClassName}
         onClose={close}
         onSelect={(v) => {
-          setOpen(false);
+          // Focus back on ⋯ first (as Esc does): the menu unmounts, and a dialog the item opens must return focus here.
+          close();
           onSelect(v);
         }}
       />

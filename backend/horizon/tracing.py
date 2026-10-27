@@ -19,6 +19,8 @@ import os
 from collections.abc import Iterator, Mapping
 from typing import Any
 
+from horizon.gateway.redact import redact as redact_key
+
 log = logging.getLogger("horizon.tracing")
 
 SWITCHES = ("LANGSMITH_TRACING_V2", "LANGCHAIN_TRACING_V2", "LANGSMITH_TRACING", "LANGCHAIN_TRACING")
@@ -67,12 +69,24 @@ def startup_log(env: Mapping[str, str] | None = None) -> bool:
     return on
 
 
+def switch_on(api_key: str, env: dict[str, str] | None = None) -> None:
+    """The opt-in's side of `guard_env`. An opt-in from `.env` is read after `guard_env` ran, which already set every
+    switch to "false", and langsmith reads `*_TRACING_V2` before `*_TRACING`: so all of them go back on (audit A-13)."""
+    target: Any = env if env is not None else os.environ
+    target["LANGSMITH_API_KEY"] = api_key   # langsmith reads it from the environment
+    for name in SWITCHES:
+        target[name] = "true"
+
+
 def redact(value: Any) -> Any:
-    """Drop anything that looks like a credential, at any depth."""
+    """Drop anything that looks like a credential, at any depth; an `sk-or-` key inside any text is masked with the
+    shared rule (local-backend "The API key never leaks", audit A-02)."""
     if isinstance(value, Mapping):
         return {k: redact(v) for k, v in value.items() if str(k).lower() not in SECRET_KEYS}
     if isinstance(value, list | tuple):
         return [redact(v) for v in value]
+    if isinstance(value, str):
+        return redact_key(value)
     return value
 
 

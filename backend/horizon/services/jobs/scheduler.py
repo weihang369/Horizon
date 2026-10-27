@@ -629,6 +629,7 @@ class JobScheduler:
                             await assets.fail_candidate(tx.conn, x["id"])
                         self._publish_task(tx, job["id"], {**x, "status": "failed", "error": err})
                 # `running` with a stored result stays running: the worker finishes it from the original (no call).
+                await self._skip_unsliced(tx, job["id"], now)
             remaining = await self._remaining_estimate(job["id"], job["kind"])
             async with self.rt.db.read() as conn:
                 chrow = (await conn.execute(select(t.characters).where(C.id == job["character_id"]))).mappings().first()
@@ -640,6 +641,18 @@ class JobScheduler:
             self.launch(job["id"], wait_first=True)
             recovered.append(job["id"])
         return recovered
+
+    async def _skip_unsliced(self, tx: Any, job_id: str, now: str) -> None:
+        """A failed sheet's queued emotions can't be sliced: skipped, as the worker's `fail` does. The runner never starts
+        them itself, so left queued they kept the job running forever (also heals a job an older start left so)."""
+        tasks = await self._task_rows(tx.conn, job_id)
+        if not any(x["type"] == "expression_sheet" and x["status"] == "failed" for x in tasks):
+            return
+        for x in tasks:
+            if x["type"] == "emotion_image" and x["status"] == "queued":
+                await tx.conn.execute(update(t.generation_tasks).where(T.id == x["id"]).values(status="skipped",
+                                                                                               finished_at=now))
+                self._publish_task(tx, job_id, {**x, "status": "skipped"})
 
     async def _remaining_estimate(self, job_id: str, kind: str) -> float:
         async with self.rt.db.read() as conn:

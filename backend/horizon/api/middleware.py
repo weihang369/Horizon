@@ -97,6 +97,10 @@ class Idempotency:
         more = True
         while more:
             msg = await receive()
+            if msg["type"] == "http.disconnect":
+                # The client left mid-body: run nothing and keep nothing under its key, so its retry (same key, the
+                # whole body) runs as new instead of meeting a 409 for a body that was only ever half sent.
+                return
             body += msg.get("body", b"")
             more = bool(msg.get("more_body", False))
             if limit is not None and len(body) > limit:
@@ -108,7 +112,10 @@ class Idempotency:
             async with rt.db.write() as tx:
                 row = (await tx.conn.execute(select(t.idempotency_keys).where(t.idempotency_keys.c.key == key))).mappings().first()
                 now = rt.now_iso()
-                if row is not None and row["expires_at"] < now:
+                # Expired, or in flight with no owner in this process (its cleanup failed; startup clears the rest):
+                # nobody will finish it, so this request takes the key over instead of polling for 24 h.
+                orphan = row is not None and row["state"] == "in_flight" and key not in self._waiting
+                if row is not None and (row["expires_at"] < now or orphan):
                     await tx.conn.execute(delete(t.idempotency_keys).where(t.idempotency_keys.c.key == key))
                     row = None
                 if row is None:
@@ -146,16 +153,19 @@ class Idempotency:
         try:
             await self.app(scope, _receive, _send)
         finally:
-            async with rt.db.write() as tx:
-                if captured["status"] >= 500:
-                    await tx.conn.execute(delete(t.idempotency_keys).where(t.idempotency_keys.c.key == key))
-                else:
-                    await tx.conn.execute(t.idempotency_keys.update().where(t.idempotency_keys.c.key == key).values(
-                        state="done", status=captured["status"], response=captured["body"].decode("utf-8"),
-                        content_type=captured["ctype"]))
-            ev = self._waiting.pop(key, None)
-            if ev is not None:
-                ev.set()
+            try:
+                async with rt.db.write() as tx:
+                    if captured["status"] >= 500:
+                        await tx.conn.execute(delete(t.idempotency_keys).where(t.idempotency_keys.c.key == key))
+                    else:
+                        await tx.conn.execute(t.idempotency_keys.update().where(t.idempotency_keys.c.key == key).values(
+                            state="done", status=captured["status"], response=captured["body"].decode("utf-8"),
+                            content_type=captured["ctype"]))
+            finally:
+                # Waiters wake even when that write failed or was cancelled; they then find the row orphaned (above).
+                ev = self._waiting.pop(key, None)
+                if ev is not None:
+                    ev.set()
 
 
 async def _send_error(send: Send, err: HorizonHTTPError) -> None:

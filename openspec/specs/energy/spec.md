@@ -83,7 +83,7 @@ Writes to one character's energy (drain, top-up, set-max, correction) SHALL be s
 - **THEN** the character ends with 595 ⚡ (allowing for regeneration in between)
 
 ### Requirement: Demo mode freezes energy writes
-While `demoMode` is true, no energy write SHALL apply regeneration or a drain: stored energy stays as it is.
+While `demoMode` is true, no energy write SHALL apply regeneration: stored energy stays as it is, except that a reply paid for before the key went away still drains its cost.
 
 #### Scenario: Set-max in demo mode
 - **WHEN** in demo mode the max of a character with 300 ⚡ stored a day ago is set to 1200

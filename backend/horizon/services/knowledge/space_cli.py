@@ -42,7 +42,7 @@ async def _run(cfg: Config, spec: SpaceSpec, yes: bool, ask: Callable[[str], str
     from horizon.services.knowledge.build import build_space, plan_build
 
     rt = Runtime(cfg)
-    await rt.start()
+    await rt.start(offline=True)   # audit C-P1-6: nothing paid starts before the estimate and the confirmation
     try:
         async with rt.db.read() as conn:
             active = await spaces.active(conn)

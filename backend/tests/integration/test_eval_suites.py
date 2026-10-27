@@ -63,6 +63,34 @@ async def test_decisions_asks_both_orders_and_skips_unchanged_versions(api: Api,
     assert len(third.rows) == 4 and fake.counts["decisions"] == 14
 
 
+async def test_a_run_stopped_at_its_cap_leaves_its_question_unmeasured(api: Api, tmp_path: Path,
+                                                                         monkeypatch: pytest.MonkeyPatch) -> None:
+    """Audit F-02: a question is marked measured only when every one of its items was answered."""
+    await api.set_key()
+    monkeypatch.setattr(suites, "DATASETS", tmp_path / "datasets")
+    dataset(tmp_path / "datasets")
+    d = suites.Decisions()
+    env = env_for(api, tmp_path)
+    checks = 0
+
+    async def cap_after_one() -> bool:
+        nonlocal checks
+        checks += 1
+        return checks > 1
+
+    async def no_cap() -> bool:
+        return False
+
+    monkeypatch.setattr(env, "over_budget", cap_after_one)
+    first = await d.run(env, d.plan(Options("decisions"), api.rt.prices, paid=True))
+    assert first.status == "incomplete" and len(first.rows) == 1
+    assert "route" not in json.loads(suites.measured_path(env).read_text(encoding="utf-8"))
+    monkeypatch.setattr(env, "over_budget", no_cap)
+    second = await d.run(env, d.plan(Options("decisions"), api.rt.prices, paid=True))
+    assert len(second.rows) == 3 and "route" in json.loads(suites.measured_path(env).read_text(encoding="utf-8"))
+    assert any(s.startswith("- order bias: ") and s.split()[3].endswith("/3") for s in second.summary)   # shuffled too
+
+
 async def test_smoke_items_are_never_a_measurement(api: Api, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     await api.set_key()
     monkeypatch.setattr(suites, "DATASETS", tmp_path / "datasets")

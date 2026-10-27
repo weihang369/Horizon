@@ -1,5 +1,5 @@
 // Flow F1 (first run) and the intro replays (APP-04).
-import { expect, open, pressStartOnTitle, test } from "./fixtures";
+import { clientFor, expect, open, pressStartOnTitle, test } from "./fixtures";
 
 test("first visit: title → five onboarding cards → World Select; the second launch skips the intro @layout", async ({ page, context }) => {
   await page.goto("/");
@@ -15,8 +15,15 @@ test("first visit: title → five onboarding cards → World Select; the second 
   }
 
   await expect(page.getByRole("heading", { name: "YOUR KEY", level: 1 })).toBeVisible();
-  await expect(page.getByRole("textbox", { name: "OpenRouter key" })).toBeVisible();
-  await page.getByRole("button", { name: "Explore demo first" }).click();
+  if (clientFor(page) === "mock") {
+    // the online demo never asks for a key: the notice and the run-locally link instead (2026-10-20)
+    await expect(page.getByText(/This online demo never uses a key/)).toBeVisible();
+    await expect(page.getByRole("textbox", { name: "OpenRouter key" })).toHaveCount(0);
+    await page.getByRole("button", { name: "Explore the demo ▸" }).click();
+  } else {
+    await expect(page.getByRole("textbox", { name: "OpenRouter key" })).toBeVisible();
+    await page.getByRole("button", { name: "Explore demo first" }).click();
+  }
 
   await expect(page).toHaveURL(/#\/worlds$/);
   const worlds = page.getByRole("list", { name: "Worlds" });
@@ -45,7 +52,7 @@ test("“How it works” on World Select and in the Esc menu both replay the int
   await expect(page.getByRole("heading", { name: "WORLDS", level: 1 })).toBeVisible();
 
   await page.getByRole("button", { name: "Skip intro" }).click();
-  await page.getByRole("button", { name: "Explore demo first" }).click();
+  await page.getByRole("button", { name: clientFor(page) === "mock" ? "Explore the demo ▸" : "Explore demo first" }).click();
   await expect(page.getByRole("list", { name: "Worlds" })).toBeVisible();
 
   await page.keyboard.press("Escape");

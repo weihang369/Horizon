@@ -92,7 +92,7 @@ class ModeState:
     picked: str | None = None                     # M11 (debate D14): You decide's click, delivered when the work is done
     verdict_checked: bool = False                 # M11 (debate D14): the resume rule ran on this actor's first command
     debate_armed: bool = False                    # U-43: this actor started or stepped the debate (its chain is its own)
-    plan_ahead: tuple[Any, Any, Any] | None = None   # M10 watch (D15): (fingerprint, task, M12's deep work) ahead
+    plan_ahead: tuple[Any, Any, Any, Any] | None = None   # M10 watch (D15): (fingerprint, task, M12's deep work, faces)
 
 
 class SessionActor:

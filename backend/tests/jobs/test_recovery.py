@@ -20,16 +20,18 @@ from tests.conftest import Api
 from tests.jobs.kit import API, cancel_overlay_jobs, character, job, ledger, rows, start, until
 
 
-async def stored_job(api: Api, kind: str = "portrait_candidates", cid: str = "chr_mockSarah") -> dict[str, Any]:
+async def stored_job(api: Api, kind: str = "portrait_candidates", cid: str = "chr_mockSarah",
+                     **extra: Any) -> dict[str, Any]:
     """A job written straight to the database (no runner), as a crash would leave it."""
     rt = api.rt
-    plan = rt.jobs.plan({"characterId": cid, "kind": kind})
+    job_input = {"characterId": cid, "kind": kind, **extra}
+    plan = rt.jobs.plan(job_input)
     from horizon.domain.ids import new_id
 
     job_id = new_id("job")
     async with rt.db.write() as tx:
         ch = (await tx.conn.execute(text("SELECT * FROM characters WHERE id = :c"), {"c": cid})).mappings().one()
-        await rt.jobs.insert_job(tx, ch, job_id, {"characterId": cid, "kind": kind}, plan)
+        await rt.jobs.insert_job(tx, ch, job_id, job_input, plan)
         await tx.conn.execute(text("UPDATE generation_jobs SET status = 'running' WHERE id = :j"), {"j": job_id})
     out: dict[str, Any] = await job(api, job_id)
     return out
@@ -90,6 +92,35 @@ async def test_recover_sent_without_a_result_fails_retryably(api: Api) -> None:
     assert done["tasks"][0]["error"] == {"code": "provider_error", "message": INTERRUPTED, "retryable": True}
     assert (await character(api, "chr_mockSarah"))["appearance"]["candidates"][0]["status"] == "failed"
     assert await ledger(api, j["id"]) == []
+
+
+async def test_recover_a_sheet_sent_without_a_result_skips_its_emotions(api: Api) -> None:
+    """Audit C-P0-1: the sheet fails retryably and the emotions it would have sliced are skipped, so the job finishes
+    and the character is free again (left queued, they kept the runner ticking forever)."""
+    await api.set_key()
+    await cancel_overlay_jobs(api)
+    j = await stored_job(api, "emotion_set", technique="expression_sheet")
+    assert j["tasks"][0]["type"] == "expression_sheet"
+    await set_task(api, j["tasks"][0]["id"], status="running", attempt=1, provider_called_at="2026-10-03T02:59:00.000Z")
+    await api.rt.jobs.recover()
+    await api.drive(1500)
+    done = await job(api, j["id"])
+    assert done["status"] == "failed" and done["tasks"][0]["error"]["retryable"] is True
+    assert {t["status"] for t in done["tasks"][1:]} == {"skipped"}
+    assert (await character(api, "chr_mockSarah")).get("activeJobId") is None
+    assert await ledger(api, j["id"]) == []
+
+
+async def test_recover_heals_a_sheet_job_an_older_start_left_running(api: Api) -> None:
+    """Audit C-P0-1: a sheet already failed by an earlier start, its emotions still queued: this start finishes it."""
+    await api.set_key()
+    await cancel_overlay_jobs(api)
+    j = await stored_job(api, "emotion_set", technique="expression_sheet")
+    await set_task(api, j["tasks"][0]["id"], status="failed", attempt=1, provider_called_at="2026-10-03T02:59:00.000Z")
+    await api.rt.jobs.recover()
+    await api.drive(1500)
+    done = await job(api, j["id"])
+    assert done["status"] == "failed" and {t["status"] for t in done["tasks"][1:]} == {"skipped"}
 
 
 # ── 5.2: kill tests (a SQLite online backup + a copy of data/ while a request is in flight) ──

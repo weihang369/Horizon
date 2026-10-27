@@ -230,6 +230,11 @@ class Pipeline:
                 await self._embed_missing(row)
         except ProviderError as e:
             log.info("knowledge source %s stays keyword-only: embedding failed (%s)", self.sid, e.code)
+            if not e.maybe_charged and e.cost_usd is None:
+                # nothing was billed (a 401, a refusal before sending): the next start may re-embed it with no
+                # double charge, so the in-flight marker goes (audit A, cross-cluster)
+                async with rt.db.write() as tx:
+                    await tx.conn.execute(update(t.knowledge_sources).where(S.id == self.sid).values(embed_sent_at=None))
         await self._end()
 
     async def _embed_missing(self, row: Any) -> None:

@@ -64,7 +64,8 @@ const DEFAULT_ATTRS: Appearance["attributes"] = {
 
 const emptyProfile = (p: CharacterProfile) => !p.role && !p.tagline && !p.backstory;
 
-function reducer(w: Working, a: Action): Working {
+/** Exported for tests. */
+export function reducer(w: Working, a: Action): Working {
   switch (a.type) {
     case "reset": return fromCharacter(a.c);
     case "sync": {
@@ -79,7 +80,10 @@ function reducer(w: Working, a: Action): Working {
     }
     case "field": {
       const editedFields = a.human ? [...new Set([...w.editedFields, a.field])] : w.editedFields.filter((f) => f !== a.field);
-      return { ...w, profile: { ...w.profile, [a.field]: a.value }, editedFields, dirty: { ...w.dirty, profile: true } };
+      // An AI field the server already saved (a field regenerate) leaves a clean form clean; it only needs a save when
+      // it clears the field's edited mark, which the server doesn't store.
+      const dirty = a.human || w.dirty.profile || editedFields.length !== w.editedFields.length;
+      return { ...w, profile: { ...w.profile, [a.field]: a.value }, editedFields, dirty: { ...w.dirty, profile: dirty } };
     }
     case "advisory": return { ...w, advisory: a.value, dirty: { ...w.dirty, profile: true } };
     case "attr": {

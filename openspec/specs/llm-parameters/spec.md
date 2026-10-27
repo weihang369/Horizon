@@ -11,7 +11,7 @@ Every DeepSeek call SHALL take its thinking setting, temperature and output kind
 
 | Key | Thinking | Temperature | Output |
 |---|---|---|---|
-| `reply.chat` | off | 1.3 | stream |
+| `reply.chat` | off | 1.0 | stream |
 | `reply.debate` | off | 1.0 | stream |
 | `host` | off | 1.0 | text |
 | `verdict` | off | 0.7 | JSON |
@@ -26,7 +26,7 @@ The `summary` row SHALL cap output at 600 tokens. `top_p`, penalties, `seed` and
 
 #### Scenario: Chat reply parameters
 - **WHEN** a naive 1:1 reply request is sent
-- **THEN** its body has `temperature: 1.3` and `reasoning: {enabled: false}`, and no `top_p`, `presence_penalty` or `frequency_penalty`
+- **THEN** its body has `temperature: 1.0` and `reasoning: {enabled: false}`, and no `top_p`, `presence_penalty` or `frequency_penalty`
 
 #### Scenario: Rolling summary parameters
 - **WHEN** a rolling summary request is sent

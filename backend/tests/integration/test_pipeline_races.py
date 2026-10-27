@@ -131,3 +131,72 @@ async def test_a_hold_released_during_the_spend_read_still_counts(api: Api) -> N
         await gw._preflight(call_ctx("host", world_id="wld_seedMeridian"), 0.004)
     assert e.value.code == "daily_budget_exceeded"
     assert gw.book.total() == 0
+
+
+async def _paid_waiting_for_the_writer(api: Api, gw: Any, send: Any) -> asyncio.Task[Any]:
+    """A paid call started while the test holds the writer lock, so its ledger write has to queue."""
+    task = asyncio.create_task(gw.paid(call_ctx("host", world_id="wld_seedMeridian"), 0.004, send, model="m"))
+    for _ in range(50):
+        await asyncio.sleep(0)
+    return task
+
+
+async def test_a_twice_cancelled_call_keeps_its_hold_until_its_row_is_in(api: Api) -> None:
+    """Audit A-03: the first cancel stops the request, the second ends the wait for the shielded write. The write is
+    still queued for the writer, so the call must stay reserved until its row commits, never in neither place."""
+    gw = build_gateway(api)
+    sent = asyncio.Event()
+
+    async def send() -> Any:
+        sent.set()
+        await asyncio.Event().wait()   # the provider never answers
+
+    await api.rt.db.write_lock.acquire()
+    try:
+        task = await _paid_waiting_for_the_writer(api, gw, send)
+        await sent.wait()
+        task.cancel()                  # Stop: the estimate row is queued behind the writer
+        for _ in range(20):
+            await asyncio.sleep(0)
+        task.cancel()                  # a second cancel (teardown) ends the wait
+        with pytest.raises(asyncio.CancelledError):
+            await task
+        assert gw.book.total() == pytest.approx(0.004)
+        assert await ledger(api) == []
+    finally:
+        api.rt.db.write_lock.release()
+    await gw.drain_background()
+    (row,) = await ledger(api)
+    assert row["cost_source"] == "estimate" and row["cost_usd"] == 0.004
+    assert gw.book.total() == 0
+
+
+async def test_a_stop_while_a_finished_call_waits_for_the_writer_still_records_it(api: Api) -> None:
+    """Audit A-C02: the provider answered and charged; a cancel landing while its row waits for the writer used to
+    roll the row back, so the spend was never counted."""
+    from horizon.gateway.pipeline import Billing
+    from horizon.gateway.types import Usage
+
+    gw = build_gateway(api)
+    sent = asyncio.Event()
+
+    async def send() -> Any:
+        sent.set()
+        return "ok", Billing("gen-late-1", Usage(cost_usd=0.003), "DeepSeek", "m")
+
+    await api.rt.db.write_lock.acquire()
+    try:
+        task = await _paid_waiting_for_the_writer(api, gw, send)
+        await sent.wait()
+        for _ in range(20):
+            await asyncio.sleep(0)     # the row is queued behind the writer
+        task.cancel()
+        with pytest.raises(asyncio.CancelledError):
+            await task
+        assert gw.book.total() == pytest.approx(0.004)   # still held: the row isn't in yet
+    finally:
+        api.rt.db.write_lock.release()
+    await gw.drain_background()
+    (row,) = await ledger(api)
+    assert row["cost_source"] == "provider" and row["cost_usd"] == 0.003 and row["generation_id"] == "gen-late-1"
+    assert gw.book.total() == 0

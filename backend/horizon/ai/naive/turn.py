@@ -57,6 +57,15 @@ EMPTY_REPLY = "The model sent an empty reply."
 FALLBACK_ROW = LlmCall(thinking="off", temperature=1.0, output="stream")   # only when no table is wired (unit tests)
 
 
+def turn_user_line(ctx: TurnContext) -> str:
+    """X7's `user`: the latest user message the turn has. Watch and debate turns have one only when the line just
+    before them is the user's (a Step in, an Ask, a note); an older one is history (docs/ai/05 X7, audit B-04)."""
+    recent = ctx.session.recent
+    if ctx.session.mode in ("watch", "debate") and not (recent and recent[-1].author_type == "user"):
+        return ""
+    return next((m.content for m in reversed(recent) if m.author_type == "user"), "")
+
+
 def stop_sequences(ctx: TurnContext, you: str, messages: list[dict[str, Any]]) -> list[str]:
     """docs/ai/03 C6: the prefixes the history writes for everyone but the speaker. Never a bare "\\n[" (a line may
     start with a citation marker), deduplicated, at most 16 (a cast of 5 needs about 8)."""
@@ -209,9 +218,14 @@ class NaiveTurnEngine:
         tail = req.messages[len(prefix):]
         block_msg = next((m for m in tail if block is not None and m["role"] == "system" and m["content"] == block.content),
                          None)
-        cue_msg = tail[-1] if tail and tail[-1]["role"] == "system" and tail[-1] is not block_msg else None
-        history_msgs = [m for m in tail if m is not block_msg and m is not cue_msg]
-        latest = next((m.content for m in reversed(ctx.session.recent) if m.author_type == "user"), "")
+        # the turn cue and the language cue are each their own system message at the end (B-04: both are `mode`)
+        cue_msgs: list[dict[str, Any]] = []
+        for m in reversed(tail):
+            if m["role"] != "system" or m is block_msg or len(cue_msgs) == 2:
+                break
+            cue_msgs.append(m)
+        history_msgs = [m for m in tail if m is not block_msg and all(m is not c for c in cue_msgs)]
+        latest = turn_user_line(ctx)
         user = count_tokens(latest) if latest else 0
         summary = count_tokens(prefix[1]["content"]) if len(prefix) > 1 else 0
         history = summary + max(0, sum(count_tokens(m["content"]) for m in history_msgs) - user)
@@ -221,7 +235,7 @@ class NaiveTurnEngine:
             "context": {"budget": planned_input(ctx.session.mode, self.deps.windows()),
                         "used": {"system": count_tokens(prefix[0]["content"]), "persona": 0, "memory": memory_tokens,
                                  "knowledge": block_tokens - memory_tokens, "history": history, "user": user,
-                                 "mode": count_tokens(cue_msg["content"]) if cue_msg is not None else 0}},
+                                 "mode": sum(count_tokens(m["content"]) for m in cue_msgs)}},
         }
         if chosen is not None:
             patch["emotion"] = {"chosen": chosen.emotion, "source": chosen.source}

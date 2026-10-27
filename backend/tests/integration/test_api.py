@@ -159,6 +159,47 @@ async def test_keys_survive_a_restart(make_api: Any, tmp_path: Path) -> None:
     assert [w["name"] for w in await second.json("/api/v1/worlds")].count("Survivor") == 1
 
 
+async def test_a_body_cut_off_by_a_disconnect_leaves_the_key_free(api: Api) -> None:
+    """The client left mid-body: nothing runs and nothing is kept, so the retry (same key, whole body) is not a 409."""
+    msgs = iter([{"type": "http.request", "body": b'{"name": "Cut', "more_body": True}, {"type": "http.disconnect"}])
+    sent: list[Any] = []
+
+    async def receive() -> Any:
+        return next(msgs)
+
+    async def send(msg: Any) -> None:
+        sent.append(msg)
+
+    scope = {"type": "http", "asgi": {"version": "3.0"}, "http_version": "1.1", "method": "POST", "scheme": "http",
+             "path": "/api/v1/worlds", "raw_path": b"/api/v1/worlds", "query_string": b"", "root_path": "",
+             "headers": [(b"content-type", b"application/json"), (b"idempotency-key", b"k-cut")],
+             "server": ("127.0.0.1", 8000), "client": ("127.0.0.1", 50000)}
+    await api.app(scope, receive, send)
+    assert not [m for m in sent if m["type"] == "http.response.start"]
+    r = await api.client.post("/api/v1/worlds", json={"name": "Cut Short", "cover": COVER},
+                              headers={"Idempotency-Key": "k-cut"})
+    assert r.status_code == 201
+
+
+async def test_an_orphaned_in_flight_key_is_taken_over(api: Api) -> None:
+    """An in-flight row nobody in this process owns (its cleanup failed) doesn't make the next request poll for 24 h."""
+    import asyncio
+    import hashlib
+    import json
+
+    from horizon.db import tables as t
+
+    raw = json.dumps({"name": "Orphan", "cover": COVER}).encode()
+    async with api.rt.db.write() as tx:
+        await tx.conn.execute(t.idempotency_keys.insert().values(
+            key="k-orphan", method="POST", path="/api/v1/worlds", body_sha256=hashlib.sha256(raw).hexdigest(),
+            status=None, response=None, content_type=None, state="in_flight", created_at=api.rt.now_iso(),
+            expires_at="9999-12-31T00:00:00.000Z"))
+    r = await asyncio.wait_for(api.client.post("/api/v1/worlds", content=raw, headers={
+        "Content-Type": "application/json", "Idempotency-Key": "k-orphan"}), timeout=5)
+    assert r.status_code == 201
+
+
 # ── 5.5 assets ──
 async def test_seed_asset_served_with_type(api: Api) -> None:
     r = await api.get("/assets/portraits/chr_seedHana/neutral.webp")   # the real portrait (v1 test stage)
@@ -220,6 +261,8 @@ async def test_create_rename_delete(api: Api) -> None:
     assert r.status_code == 200  # renaming to its own name is fine
     r = await api.client.patch(f"/api/v1/worlds/{w['id']}", json={"name": "Elm Street", "you": {"displayName": "Kai"}})
     assert r.json()["name"] == "Elm Street" and r.json()["you"] == {"displayName": "Kai"}
+    r = await api.client.patch(f"/api/v1/worlds/{w['id']}", json={"name": "Elm Street", "you": None})
+    assert r.status_code == 200 and "you" not in r.json()  # null clears the card (the HttpClient sends it, E-05)
     assert (await api.client.delete(f"/api/v1/worlds/{w['id']}")).status_code == 204
     r = await api.get(f"/api/v1/worlds/{w['id']}")
     assert r.status_code == 404

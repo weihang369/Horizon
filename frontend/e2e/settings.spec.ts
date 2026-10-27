@@ -1,10 +1,20 @@
 // Settings → Connection (SET-01, APP-09): every control, on both clients. A key starting `sk-or-bad` is rejected by the
 // MockClient and by the test backend's fake OpenRouter alike.
-import { E2E_KEY, expect, expectHttpError, genTimeout, open, setKey, test } from "./fixtures";
+import { E2E_KEY, clientFor, expect, expectHttpError, genTimeout, open, setKey, test } from "./fixtures";
 
 test("Connection: Show, Save (empty, wrong, rejected, good), Test, Clear and the key link all work", async ({ page }) => {
   await open(page, "/settings");
   const status = page.locator("[data-status]");
+  if (clientFor(page) === "mock") {
+    // The online demo never uses a key: the notice and the run-locally link stand where the key field is (2026-10-20).
+    await expect(status).toHaveAttribute("data-status", "missing");
+    await expect(page.getByText(/This online demo never uses a key/)).toBeVisible();
+    await expect(page.getByRole("link", { name: /How to run it locally/ }))
+      .toHaveAttribute("href", "https://github.com/weihang369/Horizon#run-it-locally");
+    await expect(page.getByLabel(/^(Key|Replace key)$/)).toHaveCount(0);
+    await expect(page.getByRole("button", { name: /Test connection$/ })).toHaveCount(0);
+    return;
+  }
   const field = page.getByLabel(/^(Key|Replace key)$/);
   const save = page.getByRole("button", { name: "Save key" });
   const testBtn = page.getByRole("button", { name: /Test connection$/ });
@@ -159,7 +169,7 @@ test("Display: every control changes the page, the preview follows reduced motio
   // Presenter Mode: text L (the Text size control locked on L), and Connection shows neither the key's last four nor a Show button.
   await setKey(page);
   await page.evaluate(() => { location.hash = "#/settings/connection"; });
-  await expect(page.locator("[data-status]")).toContainText("sk-or-…0001");
+  await expect(page.locator("[data-status]")).toContainText(clientFor(page) === "http" ? "sk-or-…0001" : "KEY SET");
   await page.evaluate(() => { location.hash = "#/settings/display"; });
   await toggle("Presenter Mode").click();
   await expect(root).toHaveAttribute("data-text-size", "l");

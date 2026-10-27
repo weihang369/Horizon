@@ -101,6 +101,49 @@ export function checkJobBudget(h: JobHost, c: Character, estimate: number): void
   }
 }
 
+/** A started job's plans, rebuilt from its stored tasks (a resume after a reload, a retry): the same per-task time,
+ *  price, category and model as `planTasks` gave it at the start, and the input fields `apply` reads. */
+export function replan(h: JobHost, job: GenerationJob): { plans: Map<string, Plan>; parallel: number; input: StartJobInput } {
+  const g = h.pricing.generation;
+  const t = h.timing;
+  const { image: img, music, chat } = h.db.settings.models;
+  const sheet = job.tasks.some((x) => x.type === "expression_sheet");
+  const plans = new Map<string, Plan>();
+  for (const task of job.tasks) {
+    const p = (ms: number, cost: number, category: UsageRecord["category"], model: string): Plan => ({ task, ms, cost, category, model });
+    switch (task.type) {
+      case "profile":
+      case "appearance_summary":
+      case "palette_pick":
+      case "song_brief":
+        plans.set(task.id, p(job.kind === "profile_regenerate" ? t.fieldRegenerateMs : t.profileDraftMs / 4, g.profileDraft / 4, "profile", chat));
+        break;
+      case "portrait_candidate":
+        plans.set(task.id, p(t.portraitMs, job.kind === "portrait_tweak" ? g.tweak : g.portrait, "image", img));
+        break;
+      case "expression_sheet":
+        plans.set(task.id, p(t.sheetMs, g.expressionSheet, "image", img));
+        break;
+      case "emotion_image": // sliced from a sheet: the sheet carries the time and the price
+        plans.set(task.id, sheet ? p(0, 0, "image", img) : p(t.emotionMs, g.emotionEdit, "image", img));
+        break;
+      case "blink_frame":
+        plans.set(task.id, p(t.emotionMs, g.blinkFrame, "image", img));
+        break;
+      case "theme_song":
+        plans.set(task.id, p(t.songMs, g.song, "music", music));
+        break;
+    }
+  }
+  const parallel = job.kind === "portrait_candidates" ? t.portraitParallel : job.kind === "emotion_set" && !sheet ? t.emotionParallel : 1;
+  const input: StartJobInput = {
+    characterId: job.characterId, kind: job.kind,
+    ...(job.targetField ? { targetField: job.targetField } : {}),
+    ...(sheet ? { technique: "expression_sheet" as const } : {}),
+  };
+  return { plans, parallel, input };
+}
+
 interface Running { job: GenerationJob; plans: Map<string, Plan>; progress: Map<string, number>; parallel: number; input: StartJobInput; failPlan: Set<string>; stop?: () => void }
 
 export class JobRunner {
@@ -133,17 +176,9 @@ export class JobRunner {
 
   /** Re-attach jobs that were running when the DB was loaded (the seed's in-progress emotion set). */
   resume(job: GenerationJob): void {
-    const h = this.h;
-    const c = h.db.characters[job.characterId];
-    if (!c) return;
-    const g = h.pricing.generation;
-    const plans = new Map<string, Plan>();
-    for (const task of job.tasks) {
-      const ms = task.type === "emotion_image" ? h.timing.emotionMs : task.type === "theme_song" ? h.timing.songMs : h.timing.portraitMs;
-      const cost = task.type === "emotion_image" ? g.emotionEdit : task.type === "theme_song" ? g.song : g.portrait;
-      plans.set(task.id, { task, ms, cost, category: task.type === "theme_song" ? "music" : "image", model: h.db.settings.models.image });
-    }
-    this.run(job, plans, h.timing.emotionParallel, { characterId: job.characterId, kind: job.kind }, 0.35);
+    if (!this.h.db.characters[job.characterId]) return;
+    const { plans, parallel, input } = replan(this.h, job);
+    this.run(job, plans, parallel, input, 0.35);
   }
 
   cancel(jobId: string): void {
@@ -171,20 +206,18 @@ export class JobRunner {
     if (task.attempt >= task.maxAttempts) throw new HorizonError("conflict", "This task has used all its retries.", { retryable: false });
     task.status = "queued";
     task.error = undefined;
+    // A failed sheet skipped the emotions sliced from it: they come back with it.
+    if (task.type === "expression_sheet") {
+      for (const x of job.tasks) if (x.type === "emotion_image" && x.status === "skipped") x.status = "queued";
+    }
     const r = this.running.get(jobId);
     if (r) return; // the runner picks it up
     const c = this.h.db.characters[job.characterId];
-    const plans = new Map<string, Plan>();
-    const g = this.h.pricing.generation;
-    for (const t of job.tasks) {
-      const ms = t.type === "theme_song" ? this.h.timing.songMs : t.type === "portrait_candidate" ? this.h.timing.portraitMs : this.h.timing.emotionMs;
-      const cost = t.type === "theme_song" ? g.song : t.type === "portrait_candidate" ? g.portrait : g.emotionEdit;
-      plans.set(t.id, { task: t, ms, cost, category: t.type === "theme_song" ? "music" : "image", model: this.h.db.settings.models.image });
-    }
+    const { plans, parallel, input } = replan(this.h, job);
     if (c) c.activeJobId = job.id;
     job.status = "running";
     job.finishedAt = undefined;
-    this.run(job, plans, 2, { characterId: job.characterId, kind: job.kind });
+    this.run(job, plans, parallel, input);
   }
 
   stopAll(): void {

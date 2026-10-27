@@ -376,7 +376,7 @@ async def _nothing(api: Api, sid: str, actor: SessionActor, mp: Any) -> None:
 
 @pytest.mark.parametrize(("change", "redo"), [
     (_clear_epoch, True), (_reply_epoch, True), (_note_line, True), (_direction, True), (_nudge, True),
-    (_mode, True), (_awake, True), (_mute, True), (_face, True), (_nothing, False)],
+    (_mode, True), (_awake, True), (_mute, True), (_face, False), (_nothing, False)],
     ids=["clear epoch", "reply epoch", "last message", "director's note", "nudge", "emotion mode", "awake", "muted",
          "face", "unchanged"])
 async def test_each_fingerprint_field_forces_a_redo(api: Api, monkeypatch: Any, change: Any, redo: bool) -> None:
@@ -391,7 +391,7 @@ async def test_each_fingerprint_field_forces_a_redo(api: Api, monkeypatch: Any, 
     await start_plan_ahead(actor, api.rt.clock.now() + timedelta(seconds=10))
     await api.drive(50)
     assert actor.mode.plan_ahead is not None
-    fp, stored, _deep = actor.mode.plan_ahead
+    fp, stored, _deep, _faces = actor.mode.plan_ahead
     n = len(plan_bodies(api))
     await change(api, sid, actor, monkeypatch)
     assert (fp != await fingerprint(actor)) is redo
@@ -403,7 +403,37 @@ async def test_each_fingerprint_field_forces_a_redo(api: Api, monkeypatch: Any, 
     plan, _, _d = await task
     assert plan is not None
     assert stored.cancelled() is redo
-    assert len(plan_bodies(api)) == n + (1 if redo else 0)
+    # a face change alone keeps the plan; only the planned speaker's own face is asked again
+    again = change is _face and plan.order[0] == MEI
+    assert len(plan_bodies(api)) == n + (1 if redo or again else 0)
+
+
+async def test_a_changed_face_keeps_the_speaker_and_asks_only_that_face(api: Api) -> None:
+    """Listeners' reactions change faces after `turn.end`: the plan made ahead and its pick stay, and one request asks
+    the planned speaker's face again, with no who, talk-finished, gate or recall question."""
+    sid = await agent_watch(api, maxTurns=20, paceMs=1500)
+    await _until_turn_end(api, sid, 1)
+    await command(api, sid, "watch/pause")
+    await api.drive(5000)
+    actor: SessionActor = await api.rt.sessions.get(sid)
+    await start_plan_ahead(actor, api.rt.clock.now() + timedelta(seconds=10))
+    await api.drive(1000)
+    assert actor.mode.plan_ahead is not None
+    _fp, stored, _deep, faces = actor.mode.plan_ahead
+    assert stored.done()
+    ahead, _pick = stored.result()
+    cid = ahead.order[0]
+    await command(api, sid, "set-emotion", {"characterId": cid, "emotion": "sad" if faces[cid] == "happy" else "happy"})
+    n = len(plan_bodies(api))
+    task = api.rt.spawn("take", take_plan(actor))
+    await asyncio.sleep(0)
+    await api.drive(2000)
+    plan, _, _d = await task
+    assert plan is not None and plan.order == ahead.order and plan.who == ahead.who
+    assert not stored.cancelled()
+    asked = plan_bodies(api)[n:]
+    assert [unsafe_free(b["questions"]) for b in asked] == [[f"emotion_line:{cid}"]]
+    assert len(plan.calls) == len(ahead.calls) + 1
 
 
 # ── M11 (debate design D17; watch-direction "Who speaks next is judged on fit, not on turns since") ──

@@ -41,7 +41,7 @@ from horizon.ai.language import language_cue
 from horizon.ai.llm import llm_request
 from horizon.ai.naive.prompt import SUMMARY_HEADING, TRAILING_CUE, turn_cue
 from horizon.ai.naive.tag_parser import ParsedEmotion, TagParser
-from horizon.ai.naive.turn import NaiveTurnEngine
+from horizon.ai.naive.turn import NaiveTurnEngine, turn_user_line
 from horizon.domain.pricing import count_tokens
 from horizon.gateway.chat import ChatRequest
 
@@ -301,7 +301,7 @@ class AgentTurnEngine(NaiveTurnEngine):
         tail = str(req.messages[-1]["content"]) if has_tail else ""
         history_msgs = req.messages[len(prefix):len(req.messages) - (1 if has_tail else 0)]
         history = sum(count_tokens(str(m["content"])) for m in history_msgs)
-        latest = next((clip(m.content) for m in reversed(ctx.session.recent) if m.author_type == "user"), "")
+        latest = clip(turn_user_line(ctx))
         user = count_tokens(latest) if latest else 0
         block_tokens = count_tokens(block.content) if block is not None and block.content else 0
         tail_memory = count_tokens(block.memory_text) if block is not None and block.memory_text else 0

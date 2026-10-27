@@ -303,7 +303,7 @@ already exist.
 | `system` | the world block and the reply rules (blocks 2 and 4) |
 | `mode` | the session block (block 3) plus the tail's mood line, cue, and any repeat hint or voice reminder |
 | `history` | the summary plus the history window, **without** the latest user message |
-| `user` | the latest user message (0 when the turn has none, as in watch) |
+| `user` | the latest user message (0 when the turn has none; in watch and debate a turn has one only when the line just before it is the user's: a Step-in, an Ask, a note) |
 | `memory` | the memory list in system message 1 (doc 09 M8), plus any older memories the search added (M9) |
 | `knowledge` | the passages in the retrieval block |
 | `budget` | the mode's planned input (X1) |

@@ -15,7 +15,7 @@ import type {
 } from "../client/HorizonClient";
 import { chatCostUsd, round6 } from "../domain/cost";
 import {
-  canTopUp, energyDay, energyState, EST_REPLY_POINTS, fullAt, makeEnergy, pointsForCost, regenAt, settle, topUp, toWireEnergy, withMax,
+  canTopUp, energyDay, energyState, EST_REPLY_POINTS, fullAt, makeEnergy, pointsForCost, settle, topUp, toWireEnergy, withMax,
 } from "../domain/energy";
 import { MODELS } from "./pricing.config";
 import { pricePeriod, rushHourInfo } from "../domain/rushHour";
@@ -608,11 +608,13 @@ export class MockClient implements HorizonClient {
     return c;
   }
 
-  /** Read view: `energy.state` is derived at read time for the current price period (D-78), like the backend. */
+  /** Read view: `energy.state` is derived at read time for the current price period (D-78), like the backend. Outside
+   *  demo mode the read settles regen and the day roll (backend `read_energy`), so `current`, `fullAt`, `spentToday`
+   *  and `state` all describe the same moment. */
   private charView(c: Character): Character {
     const e = c.energy;
-    const current = this.db.settings.demoMode ? e.current : regenAt(e, this.sched.wallNow());
-    return { ...c, energy: { ...e, state: energyState(current, e.max, this.est().estReplyPoints) } };
+    if (this.db.settings.demoMode) return { ...c, energy: { ...e, state: energyState(e.current, e.max, this.est().estReplyPoints) } };
+    return { ...c, energy: settle(e, this.sched.wallNow(), this.est()) };
   }
 
   private touchChar(c: Character, bump = false): Character {
@@ -1087,7 +1089,7 @@ export class MockClient implements HorizonClient {
     lines.push("");
     const notes: string[] = [];
     for (const m of messages) {
-      const who = m.author.type === "user" ? (m.kind === "chat" ? "You" : "MODERATOR") : m.author.type === "character" ? name(m.author.characterId) : m.author.type === "host" ? "HOST" : "—";
+      const who = m.author.type === "user" ? (m.kind === "chat" ? "You" : m.kind === "direction" ? "DIRECTOR" : "MODERATOR") : m.author.type === "character" ? name(m.author.characterId) : m.author.type === "host" ? "HOST" : "—";
       lines.push(`**${who}**${m.emotion ? ` [${m.emotion}]` : ""}: ${footnoteCitations(m.content, m.citations, notes)}`, "");
     }
     const v = s.state && "verdict" in s.state ? s.state.verdict : undefined;
@@ -1109,7 +1111,9 @@ export class MockClient implements HorizonClient {
     }),
     stop: (sid) => this.command(() => this.stop(sid)),
     regenerate: (sid, messageId) => this.live(() => {
-      this.liveSession(sid);
+      const mode = this.liveSession(sid).state.session.mode;
+      // a debate argument or a scene line would come back as a chat reply (the backend refuses it too)
+      if (mode !== "one_on_one" && mode !== "group") throw conflict("Regenerate is only for 1:1 and group chat.");
       oneEngine.regenerate(this.host, sid, messageId);
     }),
     setEmotion: (sid, cid, emotion) => this.command(() => {

@@ -45,7 +45,7 @@ Each HTTP test SHALL start from freshly seeded data with the test-mode overlays,
 
 ### Requirement: Client-specific steps live in fixtures
 Steps that differ between clients SHALL be fixtures with one name and the same visible effect on both clients:
-- **Setting a key** enters a fake key in Settings → Connection on both clients.
+- **Setting a key** enters a fake key in Settings → Connection on the HTTP client, and uses the mock state switcher's Set mock key on the mock client (the online demo has no key field).
 - **Applying a scenario** uses the mock state switcher on the MockClient and the backend's test route on HTTP.
 - **Waiting for a generation job** allows the backend's real-time pacing on HTTP.
 

@@ -450,7 +450,8 @@ class PlanRequest(Frozen):
 
 # ── The cast plan and the follow plan (M10: doc 07 G1–G8; group-watch design D3, D8, D22) ──
 CastKind = Literal["group_first", "group_mentioned", "everyone", "next", "step_in", "scene", "opening",
-                   "debate_opening", "debate_ask", "debate_line"]   # M11 (debate D5, D8): forced, the face only
+                   "debate_opening", "debate_ask", "debate_line",   # M11 (debate D5, D8): forced, the face only
+                   "scene_face"]   # watch D15: a plan made ahead whose speaker's face changed: the face only
 WhoSource = Literal["jev", "below_floor", "fallback", "late", "forced", "single"]
 SteerBlock = Literal["recent", "note"]
 

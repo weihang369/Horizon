@@ -53,16 +53,18 @@ TALK = "talk_finished"
 WHO_QUESTION: dict[CastKind, str | None] = {
     "group_first": "who_first", "everyone": "who_first", "step_in": "who_first", "group_mentioned": None,
     "next": "who_next", "scene": "who_scene", "opening": "who_scene",
-    "debate_opening": None, "debate_ask": None, "debate_line": None}   # M11: debate turns are forced (debate D8)
+    "debate_opening": None, "debate_ask": None, "debate_line": None,   # M11: debate turns are forced (debate D8)
+    "scene_face": None}
 FACE_QUESTION: dict[CastKind, str] = {
     "group_first": "emotion_reply", "group_mentioned": "emotion_reply", "everyone": "emotion_reply",
     "step_in": "emotion_reply", "next": "emotion_line", "scene": "emotion_line", "opening": "emotion_opening",
     # M11 (doc 06 E1; debate D7): an opening's side of the motion, an Ask answer, a line re-asked at its turn
-    "debate_opening": "emotion_debate_opening", "debate_ask": "emotion_reply", "debate_line": "emotion_line"}
+    "debate_opening": "emotion_debate_opening", "debate_ask": "emotion_reply", "debate_line": "emotion_line",
+    "scene_face": "emotion_line"}
 WHO_ACTION: dict[CastKind, str] = {
     "group_first": "answers first", "step_in": "answers first", "everyone": "sets the order",
     "next": "speaks next", "scene": "speaks next", "opening": "speaks next", "group_mentioned": "answers first",
-    "debate_opening": "speaks", "debate_ask": "answers", "debate_line": "speaks"}
+    "debate_opening": "speaks", "debate_ask": "answers", "debate_line": "speaks", "scene_face": "speaks next"}
 
 
 # ── pure rules, shared with the evaluation ──
@@ -171,7 +173,8 @@ def recent_lines(session: SessionContext, skip_last: bool) -> list[dict[str, str
 
 
 # M11 (debate design D17): the plans whose who-speaks question is judged on fit alone see no `last_spoke` label
-NO_LAST_SPOKE: frozenset[str] = frozenset({"scene", "opening", "next", "debate_opening", "debate_ask", "debate_line"})
+NO_LAST_SPOKE: frozenset[str] = frozenset({"scene", "opening", "next", "debate_opening", "debate_ask", "debate_line",
+                                           "scene_face"})
 DEBATE_KINDS: frozenset[str] = frozenset({"debate_opening", "debate_ask", "debate_line"})
 
 
@@ -385,7 +388,7 @@ class CastSteps:
                         nouls=nouls, recall_gates=recall, safety=sf.decide(req.safety, res))
 
     def route(self, req: CastRequest, plan: CastPlan) -> Branch:
-        return "quick"   # M12 adds "deep"
+        return "quick"   # each reply's branch comes from its own gate (`CastPlan.for_speaker`)
 
 
 def fallback_plan(req: CastRequest, deps: Any) -> CastPlan:

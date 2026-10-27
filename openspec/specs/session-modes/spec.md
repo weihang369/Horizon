@@ -207,7 +207,7 @@ When a slot comes up and nobody on its side is awake (in a panel, nobody on the 
 - **THEN** the debate pauses again with the same notes
 
 ### Requirement: The verdict knows the missed turns
-When a debate reaches its verdict, the turns each side missed SHALL be computed from the log (the slots of every reached phase-iteration minus that side's arguments), with the reason "asleep" when the side had a skip or pause note there, or "the debate ended early". The verdict's prose SHALL say so plainly.
+When a debate reaches its verdict, the turns each side missed SHALL be computed from the log (the slots of every reached phase-iteration minus that side's arguments), with the reason "asleep" when most of them were missed in a phase-iteration where the side had a skip or pause note (an Ask to an asleep member uses no slot and gives no reason), or "the debate ended early". The verdict's prose SHALL say so plainly.
 
 #### Scenario: A side that slept through a round
 - **WHEN** the Opposition missed both rebuttal slots asleep and the user ended the debate during the pause

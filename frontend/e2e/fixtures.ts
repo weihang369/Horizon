@@ -133,9 +133,18 @@ export const E2E_KEY = "sk-or-test-e2e-0001";
  */
 export async function setKey(page: Page): Promise<void> {
   await page.evaluate(() => { location.hash = "#/settings"; });
-  await page.getByLabel(/^(Key|Replace key)$/).fill(E2E_KEY);
-  await page.getByRole("button", { name: "Save key" }).click();
-  await expect(page.getByText("KEY SET")).toBeVisible();
+  if (clientFor(page) === "mock") {
+    // The online demo has no key field (the user's decision, 2026-10-20): the mock state switcher sets its key.
+    await page.keyboard.press("Control+Shift+D");
+    const panel = page.getByRole("complementary", { name: /MOCK STATE/ });
+    await panel.getByRole("button", { name: "Set mock key" }).click();
+    await panel.getByRole("button", { name: "Close", exact: true }).click();
+    await expect(panel).toBeHidden();
+  } else {
+    await page.getByLabel(/^(Key|Replace key)$/).fill(E2E_KEY);
+    await page.getByRole("button", { name: "Save key" }).click();
+  }
+  await expect(page.locator("[data-status]")).toHaveAttribute("data-status", "set");
   await page.goBack();
 }
 

@@ -149,6 +149,28 @@ async def test_a_regenerate_rewrites_and_reembeds_an_indexed_line(api: Api) -> N
     assert (await vectors(api, [reply["rid"]]))[reply["rid"]] != before
 
 
+async def test_a_regenerate_without_a_new_vector_drops_the_old_one(api: Api) -> None:
+    """Audit C-P1-8: with no key (or a failed embedding) the regenerated line is keyword-only, never found by the old
+    variant's vector."""
+    from horizon.services.memory.index import follow_regenerate
+
+    sid = await dropped_chat(api)
+    reply = next(r for r in await index_rows(api, sid) if r["author"] == "character")
+    assert await vectors(api, [reply["rid"]])
+    status = api.rt.keys.status
+
+    def unset() -> str:
+        return "unset"
+
+    api.rt.keys.status = unset  # type: ignore[method-assign]
+    try:
+        await follow_regenerate(api.rt, sid, "wld_seedMeridian", reply["message_id"], "A brand new answer.")
+    finally:
+        api.rt.keys.status = status  # type: ignore[method-assign]
+    after = next(r for r in await index_rows(api, sid) if r["rid"] == reply["rid"])
+    assert after["text"].endswith(": A brand new answer.") and await vectors(api, [reply["rid"]]) == {}
+
+
 async def test_a_blocked_scrub_deletes_the_line(api: Api) -> None:
     sid = await dropped_chat(api)
     rows = await index_rows(api, sid)

@@ -65,6 +65,18 @@ async def test_malformed_meta_is_not_charged(meta: MetaClient) -> None:
     assert e.value.code == "provider_error" and not e.value.maybe_charged
 
 
+@respx.mock
+@pytest.mark.parametrize("path", ["/v1/key", "/v1/credits", "/v1/generation", "/v1/models"])
+async def test_a_200_that_is_not_json_is_a_provider_error(meta: MetaClient, path: str) -> None:
+    """Audit A-09: a proxy's HTML page (or a cut body) raised a bare ValueError, a 500 on saving the key."""
+    respx.get(f"{BASE_URL}{path}").mock(return_value=httpx.Response(200, text="<html>captive portal</html>"))
+    call = {"/v1/key": meta.key_info, "/v1/credits": meta.credits,
+            "/v1/generation": lambda: meta.generation("gen-1"), "/v1/models": lambda: meta.model_exists("m")}[path]
+    with pytest.raises(ProviderError) as e:
+        await call()
+    assert e.value.code == "provider_error" and not e.value.maybe_charged
+
+
 def test_meta_never_touches_ledger_or_reservations() -> None:
     src = Path(__file__).resolve().parents[2] / "horizon" / "gateway" / "meta.py"
     imported = {n.module for n in ast.walk(ast.parse(src.read_text(encoding="utf-8"))) if isinstance(n, ast.ImportFrom)}

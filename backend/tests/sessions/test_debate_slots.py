@@ -14,6 +14,7 @@ from tests.sessions.kit import API, assert_reduces, chars, command, create, even
 
 AMARA, MEI, VICTOR = "chr_seedAmara", "chr_seedMei", "chr_seedVictor"
 TWO_V_ONE = {"format": "two_sided", "sides": {"prop": [AMARA, MEI], "opp": [VICTOR]}}
+CLOSING = {"phase": "closing", "round": 2, "iteration": 1}
 
 
 # ── pure rules ──
@@ -50,11 +51,27 @@ def test_the_cursor_counts_arguments_and_skips_since_the_banner() -> None:
 def test_missed_turns_by_side_and_reason() -> None:
     log = [_m(1, "system", "system_note", "ROUND 1 · OPENING"), _m(2, AMARA), _m(3, VICTOR), _m(4, MEI),
            _m(5, "system", "system_note", "ROUND 2 · CLOSING"), _m(6, AMARA),
-           _m(7, "system", "system_note", "Victor is asleep (⚡ 0).", targetCharacterId=VICTOR)]
+           _m(7, "system", "system_note", "Victor is asleep (⚡ 0).", targetCharacterId=VICTOR, debate=CLOSING)]
     missed = missed_turns(log, TWO_V_ONE, [AMARA, MEI, VICTOR])
     assert missed == {"prop": {"missed": 1, "reason": "the debate ended early"}, "opp": {"missed": 1, "reason": "asleep"}}
     assert missed_sentence(missed) == ("Proposition: 1 turn missed, the debate ended early; "
                                        "Opposition: 1 turn missed, everyone on that side was asleep")
+
+
+def test_missed_turns_reason_is_per_phase_and_ignores_an_ask() -> None:
+    """Audit D-07: an asleep note from an Ask (no phase tag, no slot) is no reason, and a skip in the opening doesn't
+    explain the turns missed when the debate ended early later."""
+    asked = [_m(1, "system", "system_note", "ROUND 1 · OPENING"), _m(2, AMARA), _m(3, VICTOR),
+             _m(4, "user", "steer", "Victor?"), _m(5, "system", "system_note", "Victor is asleep (⚡ 0).",
+                                                   targetCharacterId=VICTOR)]
+    assert missed_turns(asked, TWO_V_ONE, [AMARA, MEI, VICTOR]) == {
+        "prop": {"missed": 1, "reason": "the debate ended early"}}
+    opening = {"phase": "opening", "round": 1, "iteration": 1}
+    skipped = [_m(1, "system", "system_note", "ROUND 1 · OPENING"), _m(2, AMARA), _m(3, VICTOR),
+               _m(4, "system", "system_note", "Mei is asleep, skipping.", targetCharacterId=MEI, debate=opening),
+               _m(5, "system", "system_note", "ROUND 2 · REBUTTAL"), _m(6, "system", "system_note", "ROUND 3 · CLOSING")]
+    missed = missed_turns(skipped, TWO_V_ONE, [AMARA, MEI, VICTOR])
+    assert missed["prop"] == {"missed": 5, "reason": "the debate ended early"}   # 1 asleep in the opening, 4 ended
 
 
 # ── the runtime ──

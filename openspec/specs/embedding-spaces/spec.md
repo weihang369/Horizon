@@ -109,7 +109,7 @@ When a space is built from the active one with the same model and dimensions, me
 Every embedding request for a space SHALL pin that space's own provider, with no fallbacks; the configured embedding provider SHALL be used only when a caller names no space.
 
 #### Scenario: A space on another provider
-- **WHEN** `horizon space build` builds `bge-m3@1024+h`, whose provider is DeepInfra, while the configured provider is Nebius
+- **WHEN** `horizon space build` builds a space whose provider differs from the configured embedding provider
 - **THEN** its embedding requests pin DeepInfra, and the default space's requests still pin Nebius
 
 ### Requirement: Dropped lines have vectors in the space

@@ -130,6 +130,30 @@ async def test_a_bridge_made_for_something_else_is_dropped(api: Api) -> None:
     await assert_reduces(api, sid)
 
 
+async def test_extend_cancels_the_bridge_at_the_click(api: Api) -> None:
+    """Audit D-03: Extend cancels the bridge being written for the next phase at once (recorded `cancelled`), before
+    the extended round begins, so it doesn't run on through the pause."""
+    sid = await debate(api)
+    can(api, ["Welcome.", "On to rebuttals.", "Extended: one more rebuttal each.", "On to closings.", "Thanks all."])
+    assert api.rt.fake is not None
+
+    async def rebuttals(n: int) -> bool:
+        return len([m for m in chars(await messages(api, sid)) if m["debate"]["phase"] == "rebuttal"]) >= n
+    while not await rebuttals(1):
+        await api.drive(50)
+    release = api.rt.fake.park_chat("host")              # the next host request: the bridge to the closing
+    while not api.rt.fake.chat_parked.is_set():
+        await api.drive(20)
+    await command(api, sid, "debate/extend-round")
+    await api.drive(50)
+    assert not any(m["content"] == "ROUND 2 · REBUTTAL · EXTENDED" for m in await messages(api, sid))
+    assert "cancelled" in {r["finish_reason"] for r in await ledger(api) if r["purpose"] == "host"}
+    release.set()
+    await api.drive(200000)
+    assert any(m["content"] == "ROUND 2 · REBUTTAL · EXTENDED" for m in await messages(api, sid))
+    await assert_reduces(api, sid)
+
+
 async def test_too_long_shows_the_fixed_welcome(api: Api) -> None:
     sid = await debate(api)
     can(api, [" ".join(["word"] * 75)])

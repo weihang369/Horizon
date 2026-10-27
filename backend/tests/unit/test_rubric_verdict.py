@@ -73,6 +73,16 @@ def test_bars_are_unit_times_ten_and_a_near_tie_is_too_close() -> None:
     assert rubric.bars(fb, crit) is None
 
 
+def test_a_lead_of_exactly_the_margin_wins() -> None:
+    # 15.9 / 4 - 16.9 / 4 is -0.24999999999999956 in floats: the bars' one decimal decides, not the float error
+    def side(s: str, *values: float) -> list[dict[str, object]]:
+        return [{"subjectId": s, "value": v} for v in values]
+
+    prop = side("prop", 2.7, 3.4, 8.6, 1.2)
+    assert rubric.decide(prop + side("opp", 2.7, 3.4, 8.6, 2.2), 0.25)[1] == "opp"
+    assert rubric.decide(prop + side("opp", 2.7, 3.4, 8.6, 2.1), 0.25)[1] is None
+
+
 def test_the_worst_case_fits_or_is_summary_only() -> None:
     """5 debaters, 4 extensions per phase (5 iterations), every argument at the long cap, 10 Asks."""
     long_text = " ".join(f"word{i}" for i in range(380))   # ≈ the 480-token long cap

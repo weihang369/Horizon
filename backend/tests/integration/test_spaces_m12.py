@@ -223,6 +223,30 @@ async def test_space_build_declined_spends_nothing(make_api: Any, tmp_path: Path
     assert await ledger(second, "embed_doc") == []
 
 
+async def test_space_build_starts_nothing_that_could_spend(make_api: Any, tmp_path: Path,
+                                                          monkeypatch: pytest.MonkeyPatch) -> None:
+    """Audit C-P1-6: the command's start-up recovers no job, re-embeds nothing, runs no memory pass and no cost
+    correction before the estimate and the "N" (the next real start does them)."""
+    from horizon.runtime import Runtime
+    from horizon.services.corrector import CostCorrector
+    from horizon.services.jobs.scheduler import JobScheduler
+
+    data = tmp_path / "offline"
+    first: Api = await make_api(data_dir=data)
+    await first.set_key()
+    cfg = first.rt.cfg
+    await first.rt.stop()
+    started: list[str] = []
+
+    async def mark(name: str) -> None:
+        started.append(name)
+    monkeypatch.setattr(JobScheduler, "recover", lambda self: mark("jobs"))
+    monkeypatch.setattr(Runtime, "_recover_m5", lambda self: mark("re-embed"))
+    monkeypatch.setattr(CostCorrector, "scan", lambda self: mark("corrector"))
+    rc = await asyncio.to_thread(space_cli.run, cfg, PLAIN_SPACE.id, False, ask=lambda _q: "n", out=lambda _l: None)
+    assert rc == 1 and started == []
+
+
 async def test_space_build_yes_on_the_fake_provider(make_api: Any, tmp_path: Path) -> None:
     data = tmp_path / "yes"
     first: Api = await make_api(data_dir=data)

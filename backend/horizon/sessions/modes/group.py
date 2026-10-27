@@ -1,8 +1,9 @@
 """Group (session-modes "Group responders", "Group routing is traced", "Group steering commands"; a port of
 `mock/engines/group.ts`).
 
-`send` posts the user's message, then one queued job asks the router (mentions first, then the policy: `auto` up to 2
-responders in all, `everyone`, `mentioned`), and runs the speakers in order. Muted participants are skipped as `muted`,
+`send` posts the user's message, then one queued job picks the speakers and runs them in order. Under a planner that
+plans the cast (`agent`) one cast plan does it; otherwise, or when it gives no plan, the router answers (mentions
+first, then the policy: `auto` up to 2 responders in all, `everyone`, `mentioned`). Muted participants are skipped as `muted`,
 exhausted unmentioned ones as `exhausted`; every reply of the send carries the routing trace and the route call.
 """
 

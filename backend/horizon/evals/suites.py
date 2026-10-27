@@ -17,6 +17,7 @@ import asyncio
 import datetime as dt
 import hashlib
 import json
+from collections import Counter
 from collections.abc import Iterator
 from pathlib import Path
 from typing import Any
@@ -122,16 +123,11 @@ def reordered(q: Question) -> Question:
     return Choice(q.instructions, dict(reversed(list(q.options.items()))), meta=q.meta)
 
 
-def order_line(flips: int, total: int, items: list[dict[str, Any]]) -> str:
-    """B6's lean report. Not measured for shuffled choice questions (turn-plan-emotion D38, the maintainer's choice): the
-    store key sorts JSON keys, so the reversed request returns the first order's stored answer. The key fix is its
-    own change."""
-    shuffled = sorted({str(i["question_id"]) for i in items
-                       if bank().get(str(i["question_id"])).type == "choice" and bank().get(str(i["question_id"])).shuffle})
-    if shuffled:
-        return (f"- order bias: not measured for shuffled choices ({', '.join(shuffled)}): the store key ignores option "
-                "order, so the reversed request returns the first answer (D38)")
-    return f"- order bias: {flips}/{total} answers changed when the options were reversed"
+def order_line(flips: int, asked: int) -> str:
+    """B6's lean report: of the choice items asked in both orders, how many answers changed. D38 left shuffled choices
+    unmeasured while the store key ignored option order; since M15 (images-music D13) the reversed ask keys on its own
+    order, so every choice is measured."""
+    return f"- order bias: {flips}/{asked} answers changed when the options were reversed"
 
 
 # ── canary ──
@@ -245,7 +241,7 @@ class Decisions:
         res = Result()
         done_path = measured_path(env)
         measured: dict[str, Any] = json.loads(done_path.read_text(encoding="utf-8")) if done_path.is_file() else {}
-        correct = total = flips = 0
+        correct = total = flips = reversed_n = 0
         bins: dict[int, list[int]] = {}
         skipped: set[str] = set()
         from horizon.evals import m12_sets
@@ -301,7 +297,7 @@ class Decisions:
                     row.update(answer=said, p=ans.p, correct=said == item["label"])
                     total += 1
                     correct += said == item["label"]
-                    bins.setdefault(min(9, int(ans.p * 10)), []).append(int(said == "yes"))
+                    bins.setdefault(min(9, int(ans.p * 10)), []).append(int(item["label"] == "yes"))   # p is p(yes)
                 else:
                     row["invalid"] = True
                 res.rows.append(row)
@@ -349,19 +345,26 @@ class Decisions:
                 row.update(answer=a.choice, answer_reversed=b.choice, confidence=a.confidence,
                            probabilities=dict(a.probabilities or {}))
                 flips += a.choice != b.choice
+                reversed_n += len(answers) == 2
             elif isinstance(a, ChoiceAnswer) and isinstance(b, ChoiceAnswer):
                 row.update(answer=a.choice, answer_reversed=b.choice, confidence=a.confidence)
                 total += 1
                 correct += a.choice == item["label"]
                 flips += a.choice != b.choice
+                reversed_n += len(answers) == 2
                 p = float((a.probabilities or {}).get(a.choice, a.confidence or 0.0))
                 bins.setdefault(min(9, int(p * 10)), []).append(int(a.choice == item["label"]))
             else:
                 row["invalid"] = True
             res.rows.append(row)
         if not self.smoke and not env.opts.probe:   # M15 (D13): a probe never marks items measured
-            for qid in {r["question_id"] for r in res.rows}:
-                measured[mark_key(qid)] = mark[mark_key(qid)]
+            # a question is measured only when every one of its items was answered: a run stopped at its cap, or an
+            # item left unanswered, leaves it to be asked again (the store serves the items already answered)
+            want = Counter(str(i["question_id"]) for i in plan.items)
+            got = Counter(r["question_id"] for r in res.rows if not r.get("invalid"))
+            for qid, n in got.items():
+                if n == want[qid]:
+                    measured[mark_key(qid)] = mark[mark_key(qid)]
             done_path.parent.mkdir(parents=True, exist_ok=True)
             done_path.write_text(json.dumps(measured, indent=1), encoding="utf-8")
         if (env.opts.set or "").partition(":")[0] == JUDGES_SET and not self.smoke:
@@ -406,8 +409,8 @@ class Decisions:
         elif total:
             lo, hi = wilson(correct, total)
             res.summary += [f"## Decisions: policy accuracy {correct}/{total} (95% Wilson {lo:.2f}–{hi:.2f})",
-                            order_line(flips, total, plan.items),
-                            "- calibration (p bin → accuracy): " + ", ".join(
+                            order_line(flips, reversed_n),
+                            "- calibration (p bin → how often it held: a choice right, a noul's label yes): " + ", ".join(
                                 f"{k / 10:.1f}: {sum(v)}/{len(v)}" for k, v in sorted(bins.items()))]
         elif not n_policy:
             res.summary.append("## Decisions: nothing to measure" + (f" (unchanged: {', '.join(sorted(skipped))})"

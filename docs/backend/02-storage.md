@@ -367,7 +367,7 @@ embedding_spaces  id PK ('qwen3-emb-8b@1024'), model, provider, dims, dtype ('fl
 
 ## 5. Migrations and seed import
 
-- **Alembic** `0001_initial` creates every ordinary table and the FTS tables (vec tables are left to the SpaceManager). The app runs `upgrade head` at startup. There are no downgrades; backup is a copy of `data/`.
+- **Alembic** `0001_initial` creates every ordinary table and the FTS tables (vec tables are left to the SpaceManager). The app runs `upgrade head` at startup. The app never downgrades (some migrations have a `downgrade()` for development); backup is a copy of `data/`.
 - **Seed import** (`services/seed.py`):
   1. **Validate** every file against the contract schema.
   2. **Normalise** timestamps to milliseconds.

@@ -158,3 +158,36 @@ async def test_a_character_delete_reaches_the_hook_through_the_outbox(api: Api) 
             break
         await api.drive(1000)
     assert await rows(api, "character_id = 'chr_seedRin'") == []
+
+
+async def test_a_turn_links_its_call_rows_even_after_they_were_flushed(api: Api) -> None:
+    """Audit A-06: a real turn takes longer than the 2 s flush, so its route row was stored with no message ID: the
+    message's delete hook missed it (the user's quoted text stayed in ai_calls)."""
+    cap = api.rt.capture
+    cap.enabled = True
+    async with api.rt.db.read() as conn:
+        sid, wid = (await conn.execute(text("SELECT id, world_id FROM sessions LIMIT 1"))).one()
+    cap.on_call(call_ctx("route", world_id=wid, session_id=sid), {"kind": "decision", "model": "m"}, {})
+    await cap.flush()                                         # the 2 s flush, mid-turn
+    cap.on_turn(world_id=wid, session_id=sid, character_id="chr_seedHana", message_id="msg_late", request={},
+                response={})
+    assert {r["kind"] for r in await rows(api, "message_id = 'msg_late'")} == {"call", "turn"}
+    await api.rt.hooks.on_delete("message", ["msg_late"])
+    assert await rows(api) == []
+
+
+async def test_rows_recorded_while_stopping_never_reach_the_database_after_a_factory_reset(api: Api,
+                                                                                          monkeypatch: Any) -> None:
+    """Audit A-05: capture stopped first, so a call cancelled by the later shutdown steps stayed queued in memory and a
+    factory reset wrote it into the fresh database."""
+    rt = api.rt
+    rt.capture.enabled = True
+    stop_m2 = rt._stop_m2
+
+    async def stopping() -> None:
+        rt.capture.on_call(call_ctx("reply", world_id="wld_seedMeridian"), {"kind": "chat", "model": "m"}, {})
+        await stop_m2()
+
+    monkeypatch.setattr(rt, "_stop_m2", stopping)
+    await rt.factory_reset()
+    assert not rt.capture.queue and await rows(api) == []

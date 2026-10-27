@@ -112,9 +112,9 @@ def start(actor: SessionActor) -> Work:
 
 
 async def checked(actor: SessionActor, req: VerdictRequest, a: Assessment) -> Assessment:
-    """M14 (safety D10): the prose is checked inside the work, after it is written (≤ 0.7 s on a screen that already
-    waits). A block takes the existing "failed prose" fallback: the scores and the winner stay, each side's first
-    sentences are quoted, and the note says so. Late or failed: the prose stands."""
+    """M14 (safety D10): the prose is checked inside the work, after it is written (the `guardrail` deadline, 0.8 s, on
+    a screen that already waits). A block takes the existing "failed prose" fallback: the scores and the winner stay,
+    each side's first sentences are quoted, and the note says so. Late or failed: the prose stands."""
     from horizon.ai.naive.verdict import NOTE_PROSE, quoted_summary
 
     if a.refused or a.simulated is not None or NOTE_PROSE in a.notes:

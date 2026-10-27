@@ -65,7 +65,7 @@ COMMANDS: dict[str, Rule] = {
     "watch/pace": Rule(mode="watch"),
     "watch/direct": Rule(mode="watch", text=True),
     "watch/step-in": Rule(generating=True, live_session=True, mode="watch", text=True),
-    "watch/extend": Rule(generating=True, mode="watch"),
+    "watch/extend": Rule(generating=True, live_session=True, mode="watch"),   # it plays on, as Play does
     "watch/summarise": Rule(generating=True, mode="watch"),
 }
 

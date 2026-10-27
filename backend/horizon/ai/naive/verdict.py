@@ -6,12 +6,13 @@
   contradict the banner; under You decide the rationale is the arbiter's view.
 - **`naive`'s single call** (D15, the yardstick): the same call also writes the 0–10 scores and the stronger case, used
   as written.
-- **Validation:** every subject; 3–5 points per side (2 for a side with one or two arguments), 2–4 per panellist;
-  longer lists cut; `keyDisagreement` ≤ 30 words, `rationale` ≤ 60. Invalid → the local quote repair (M7) → one paid
-  retry with the error → failed.
-- **Fallbacks** (D13's table): the prose failed → the scores and winner stand, with each side's first sentences quoted
-  from the real arguments; the scores failed → summary only (Arbiter) or the pick alone (You decide); each with its note.
-  A cap refusal delivers nothing: the session pauses and the work runs again on resume (D14).
+- **Validation:** every subject; 3–5 points per side (as few as its arguments when it made fewer than 3), 2–4 per
+  panellist; longer lists cut; `keyDisagreement` ≤ 30 words, `rationale` ≤ 60. Invalid → the local quote repair (M7) →
+  one paid retry with the error → failed.
+- **Fallbacks** (D13's table): the prose failed → the scores and winner stand, quoting the first sentence (≤ 110
+  characters) of each of a side's first 4 arguments; the scores failed → summary only (Arbiter) or the pick alone (You
+  decide); each with its note. A cap refusal delivers nothing: the session pauses and the work runs again on resume
+  (D14).
 """
 
 from __future__ import annotations

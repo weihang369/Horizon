@@ -140,6 +140,14 @@ async def test_failures_map_to_readable_reasons(tmp_path: Path, mode: str, reaso
     assert gone(conv.pid())
 
 
+async def test_a_worker_killed_mid_write_leaves_no_part_file(tmp_path: Path) -> None:
+    """Audit C-P2-3: document-conversion "a stopped conversion leaves no partial output", the `.part` file included."""
+    conv = StubDocling(tmp_path, "part")
+    with pytest.raises(ConversionError):
+        await conv.convert(pdf_file(tmp_path), "pdf", title="doc.pdf")
+    assert not leftovers(tmp_path)
+
+
 async def test_plain_text_never_starts_a_process(tmp_path: Path) -> None:
     p = tmp_path / "a.md"
     p.write_text("# Soups\n\nMiso first.", encoding="utf-8")

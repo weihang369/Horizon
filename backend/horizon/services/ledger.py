@@ -79,12 +79,14 @@ class LedgerWriter:
                                                       U.counts_to_creation_cap.is_(True))
                 row_id = new_id("use")
                 job_id = row.job_id if row.job_id and await self._has(tx.conn, t.generation_jobs, row.job_id) else None
+                session_id = (row.session_id if row.session_id and await self._has(tx.conn, t.sessions, row.session_id)
+                              else None)   # audit A-01: a late row of a deleted session failed its foreign key
                 character_id = (row.character_id if row.character_id and await self._has(tx.conn, t.characters, row.character_id)
                                 else None)
                 await tx.conn.execute(t.usage_records.insert().values(
                     id=row_id, at=to_iso(now), local_day=day, category=row.category, purpose=row.purpose,
                     model=_r(row.model), provider=_r(row.provider), price_period=row.price_period,
-                    generation_id=_r(row.generation_id), session_id=row.session_id, character_id=character_id,
+                    generation_id=_r(row.generation_id), session_id=session_id, character_id=character_id,
                     job_id=job_id, message_id=row.message_id, tokens_in=row.tokens_in, tokens_cached=row.tokens_cached,
                     tokens_out=row.tokens_out, cost_usd=row.cost_usd, cost_source=row.cost_source,
                     estimated_cost_usd=row.estimated_cost_usd, energy_points=None, latency_ms=row.latency_ms,
@@ -101,7 +103,7 @@ class LedgerWriter:
 
     @staticmethod
     async def _has(conn: AsyncConnection, table: Any, row_id: str) -> bool:
-        """A late row (a shielded call landing after its job or world was deleted) keeps its spend: a reference to a row
+        """A late row (a shielded call landing after its job, session or world was deleted) keeps its spend: a reference to a row
         that no longer exists is stored as NULL, like ON DELETE SET NULL would have done (generation-jobs design D6)."""
         return (await conn.execute(select(table.c.id).where(table.c.id == row_id))).first() is not None
 

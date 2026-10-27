@@ -6,7 +6,7 @@ the weighted score `unit` (ties by the fused order).
 
 | Outcome | When | Kept |
 |---|---|---|
-| found | a found passage, or a set check that said yes | the usable ones, best first, at most k |
+| found | a found passage, or a set check that said yes | the usable and the found ones, best first, at most k |
 | partly | none found, some usable | up to k |
 | not found | no usable passage, every check back (or the search found nothing) | none |
 | fallback | Jev call 2 failed, or some checks missing and none found | the top k in search order, no scores |
@@ -80,7 +80,9 @@ def keep(checked: Sequence[Checked], *, k: int, t_keep: float, t_found: float, s
     any_found = any(found(c, t_found) for c in checked)
     all_back = all(c.back for c in checked)
     if any_found or set_yes:
-        return Kept("found", [c.rid for c in use[:k]], [c.rid for c in use], False, False)
+        # a found passage is kept even when it isn't usable (p_answers 0.6, p_partly 0.2): it answers the question
+        keepers = best_first([c for c in checked if usable(c, t_keep) or found(c, t_found)])
+        return Kept("found", [c.rid for c in keepers[:k]], [c.rid for c in use], False, False)
     if not all_back:
         # some missing and none found: never decide "not found" (or "partly") on partial evidence (K6)
         return Kept("fallback", [c.rid for c in by_search[:k]], [c.rid for c in use], False, False)

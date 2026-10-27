@@ -84,3 +84,22 @@ def test_config_reads_the_capture_and_tracing_switches(tmp_path: Path) -> None:
     assert "ls-test-123" not in repr(cfg)
     off = load_config({"HORIZON_ROOT": str(tmp_path / "none")})
     assert off.capture_ai_calls is False and off.langsmith is False and off.langsmith_key is None
+
+
+def test_a_key_inside_traced_text_is_masked() -> None:
+    """Audit A-02: a key pasted into a message reached LangSmith; strings now pass the shared redaction rule."""
+    stub = StubClient()
+    t = tracing.Tracer(enabled=True, client=stub)
+    with t.traced("x", {"messages": [{"role": "user", "content": "my key is sk-or-v1-abc_123"}]}) as out:
+        out["text"] = "you said sk-or-v1-abc_123"
+    dumped = json.dumps(stub.runs)
+    assert "sk-or-v1-abc_123" not in dumped and dumped.count("sk-or-***") == 2
+
+
+def test_an_opt_in_from_dotenv_turns_every_switch_back_on() -> None:
+    """Audit A-13: `guard_env` runs before `.env` is read, so it had set *_TRACING_V2 to "false", which langsmith reads
+    before *_TRACING; the opt-in turned only LANGSMITH_TRACING back on and nothing was traced."""
+    env: dict[str, str] = {}
+    tracing.guard_env(env)
+    tracing.switch_on("ls-test-123", env)
+    assert all(env[k] == "true" for k in tracing.SWITCHES) and env["LANGSMITH_API_KEY"] == "ls-test-123"

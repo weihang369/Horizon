@@ -135,6 +135,33 @@ async def test_the_full_comparison_on_the_fake(tmp_path: Path, monkeypatch: pyte
     assert await c.step("sets") == 0 and len(run_folders()) == n_runs   # finished runs are skipped
 
 
+async def test_a_drifted_base_canary_runs_again(tmp_path: Path) -> None:
+    """Audit F-03: the base canary's drift stops the comparison; once the user has dealt with it, the next
+    `compare-models` re-runs that canary instead of reading the old drift forever. The candidate's is kept."""
+    def meta(run_id: str, status: str) -> None:
+        folder = tmp_path / "evals" / run_id / "naive"
+        folder.mkdir(parents=True, exist_ok=True)
+        (folder / "run.json").write_text(json.dumps({"status": status}), encoding="utf-8")
+
+    asked: list[str] = []
+
+    class Stub:
+        base = type("Base", (), {"test_mode": True})()
+        last_run_id: str | None = None
+
+        async def run(self, opts: Options) -> int:
+            asked.append(opts.suite)
+            self.last_run_id = "run-new"
+            meta("run-new", "ok")
+            return 0
+
+    meta("run-drift", "drift")
+    c = compare.Comparison(tmp_path, PINNED, CANDIDATE, "m.json", runner_for=Stub, out=lambda _s: None)
+    c.state["runs"] = {"canary:base": "run-drift", "canary:new": "run-drift"}
+    assert await c._run("canary:base", Options("canary"), prices=None) == (0, "run-new")
+    assert await c._run("canary:new", Options("canary"), prices=None) == (0, "run-drift") and asked == ["canary"]
+
+
 # ── 4.3: pairing and scoring ──
 def test_the_paired_mcnemar_example() -> None:
     """The spec's example: 40 test items, 1.13 right on 30, the candidate on 34; b 2, c 6."""

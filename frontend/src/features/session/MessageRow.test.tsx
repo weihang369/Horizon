@@ -68,3 +68,19 @@ describe("MessageRow bubbles (C5)", () => {
     expect(count(render(msg("Hey\nYou up?", { status: "streaming" })), /data-bubble="/g)).toBe(2);
   });
 });
+
+describe("MessageRow cut actions (audit D-11)", () => {
+  const live: SessionCtx = { ...ctx, replay: false, demo: false };
+  const cut = msg("Half a tho", { status: "interrupted", interruptedBy: "error" });
+  const actions = (chat: boolean) => renderToStaticMarkup(createElement(SessionContext.Provider, { value: live },
+    createElement(MessageRow, { m: cut, chars: {}, variant: "chat", selected: false, canRegenerate: false, chat, fresh: false })));
+
+  it("offers Continue · Regenerate on an interrupted chat reply", () => {
+    expect(actions(true)).toContain(">Regenerate<");
+  });
+
+  it("offers neither on a cut debate argument or scene line (Regenerate is a chat command)", () => {
+    expect(actions(false)).not.toContain(">Regenerate<");
+    expect(actions(false)).not.toContain(">Continue<");
+  });
+});

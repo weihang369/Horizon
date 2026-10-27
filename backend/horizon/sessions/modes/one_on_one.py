@@ -120,7 +120,13 @@ def regenerate(actor: SessionActor, message_id: str) -> None:
         from horizon.services.memory.undo import undo_read
 
         await undo_read(actor.rt, actor.sid, message_id)   # M13 (memory D20): an already-read reply, before it streams
-        out = await speak_then(actor, TurnSpec(speaker=cid, prompt=f"{prompt}{REGENERATE_SUFFIX}",
+        hint = LineHint()
+        impl = actor.rt.ai.impl("turn", key_set=actor.rt.keys.status() == "set")
+        if not prompt and impl != "scripted" and actor.mode_name == "one_on_one":
+            # no user line before it: the greeting, so a new take is a generated greeting (as `greet`), not a reply
+            # to nothing (audit 04-01 item 3). The scripted bank has one greeting, so it keeps its varied chat line.
+            hint = LineHint(kind="greeting", last_time=await last_time(actor, cid) if impl == "agent" else [])
+        out = await speak_then(actor, TurnSpec(speaker=cid, prompt=f"{prompt}{REGENERATE_SUFFIX}", line=hint,
                                                variant_of=message_id))
         done = actor.state["messages"].get(message_id)
         if out.status == "complete" and done is not None:   # M13 (memory D29): an indexed line follows, off the queue

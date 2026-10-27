@@ -67,7 +67,8 @@ export class HttpClient implements HorizonClient {
     list: () => this.t.get<World[]>("/worlds"),
     get: (id) => this.t.get<World>(`/worlds/${enc(id)}`),
     create: (input) => this.t.post<World>("/worlds", input),
-    update: (id, patch) => this.t.patch<World>(`/worlds/${enc(id)}`, patch),
+    // `you` present but undefined clears the card (as on the MockClient); JSON drops undefined, so it goes as null.
+    update: (id, patch) => this.t.patch<World>(`/worlds/${enc(id)}`, "you" in patch && patch.you === undefined ? { ...patch, you: null } : patch),
     delete: (id) => this.t.delete(`/worlds/${enc(id)}`),
     // M4: multipart, one `file` part; the backend checks the content (magic bytes) and re-encodes it.
     uploadCover: (id, file) => {

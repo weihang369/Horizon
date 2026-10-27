@@ -1,7 +1,8 @@
 // Settings → Connection (SET-01, APP-09): masked key with Show/Hide, Save, Test connection (✓ / ✗ with reason), Clear.
 // After saving only `sk-or-…a1b2` is shown. Mock: any `sk-or-*` is valid, `sk-or-bad*` invalid (R15). A key from
 // OPENROUTER_API_KEY (.env) can't be saved over or cleared here, so the form and Clear give way to where to change it
-// (D-106). Presenter Mode (SET-12) hides the key: no last four, no Show.
+// (D-106). Presenter Mode (SET-12) hides the key: no last four, no Show. The mock build (the public online demo) never
+// uses a key, so it shows the shared online-demo notice instead of the key field and Test (the user's call, 2026-10-20).
 import { useState } from "react";
 import { openOverlay, toast } from "../../app/layers";
 import { client } from "../../client";
@@ -16,7 +17,7 @@ import { ErrorTape } from "../../ui/Panels";
 import { Tape } from "../../ui/Tape";
 import { CheckIcon, KeyIcon } from "../../ui/icons";
 import { maskKey, readKeyHint, saveKeyHint } from "../shell/keyHint";
-import { NO_BACKEND, ONLINE_DEMO_NOTICE, RUN_LOCALLY_URL } from "../shell/onlineDemo";
+import { NO_BACKEND, ONLINE_DEMO_NOTICE, RUN_LOCALLY_LABEL, RUN_LOCALLY_URL } from "../shell/onlineDemo";
 import { Row, Section } from "./parts";
 import { CONNECTION_NOTICE } from "./privacyNotice";
 import s from "./Settings.module.css";
@@ -86,14 +87,6 @@ export function ConnectionTab({ settings }: { settings: AppSettings }) {
 
   return (
     <>
-      {NO_BACKEND && (
-        <ErrorTape
-          tone="warn"
-          label="ONLINE DEMO"
-          className={s.demoNotice}
-          message={<>{ONLINE_DEMO_NOTICE} <a className={s.link} href={RUN_LOCALLY_URL} target="_blank" rel="noreferrer">How to run it locally ↗</a></>}
-        />
-      )}
       <div className={s.status} data-status={status}>
         {status === "set" ? (
           <>
@@ -110,13 +103,17 @@ export function ConnectionTab({ settings }: { settings: AppSettings }) {
         ) : (
           <>
             <Tape tone="brand" size="md">DEMO MODE</Tape>
-            <span className={s.statusText}>Browsing seed data. Add your OpenRouter key to chat &amp; create.</span>
+            <span className={s.statusText}>{NO_BACKEND ? "Browsing recorded data." : <>Browsing seed data. Add your OpenRouter key to chat &amp; create.</>}</span>
           </>
         )}
       </div>
 
-      <Section title="OpenRouter key" desc={<>Stored on this machine only, never in the repo. Get one at <a className={s.link} href="https://openrouter.ai/keys" target="_blank" rel="noreferrer">openrouter.ai/keys ↗</a></>}>
-        {fromEnv ? (
+      <Section title="OpenRouter key" desc={NO_BACKEND ? undefined : <>Stored on this machine only, never in the repo. Get one at <a className={s.link} href="https://openrouter.ai/keys" target="_blank" rel="noreferrer">openrouter.ai/keys ↗</a></>}>
+        {NO_BACKEND ? (
+          <p className={s.envKey} role="note">
+            {ONLINE_DEMO_NOTICE} <a className={s.link} href={RUN_LOCALLY_URL} target="_blank" rel="noreferrer">{RUN_LOCALLY_LABEL}</a>
+          </p>
+        ) : fromEnv ? (
           <p className={s.envKey} role="note">
             This key comes from <code>OPENROUTER_API_KEY</code> in <code>.env</code> (or the environment), so it can't be changed here.
             To change or remove it, edit <code>.env</code> and restart the backend.
@@ -142,12 +139,15 @@ export function ConnectionTab({ settings }: { settings: AppSettings }) {
         <p className={s.sectionDesc}>{CONNECTION_NOTICE}</p>
       </Section>
 
+      {(!NO_BACKEND || status !== "missing") && (
       <Section title="Check it">
+        {!NO_BACKEND && (
         <Row label="Test connection" desc="Pings OpenRouter with your key and reports latency and balance.">
           <Button variant="secondary" keyLocked={status === "missing"} disabled={test.kind === "busy"} onClick={() => void runTest()}>
             {test.kind === "busy" ? "Testing…" : "Test connection"}
           </Button>
         </Row>
+        )}
         {test.kind === "ok" && (
           <p className={s.testOk} role="status"><CheckIcon /> Connected · {test.r.latencyMs} ms{test.r.creditsUsd !== undefined ? ` · balance ${formatUsd(test.r.creditsUsd)}` : ""}</p>
         )}
@@ -158,6 +158,7 @@ export function ConnectionTab({ settings }: { settings: AppSettings }) {
           </Row>
         )}
       </Section>
+      )}
     </>
   );
 }

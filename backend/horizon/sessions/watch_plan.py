@@ -9,7 +9,9 @@ The plan for the next turn starts right after a turn's `turn.end` (`actor.backgr
 Jev until that turn is due. It is stored with a fingerprint of its inputs; at turn time a different fingerprint
 cancels it (ledger outcome `cancelled`) and the turn plans again with the normal deadline. M12 (rag D15): when the plan
 made ahead picks a speaker whose gate says yes, their deep work starts as soon as the plan lands and is stored with
-it; a stale plan cancels both.
+it; a stale plan cancels both. The faces are not in the fingerprint: listeners' reactions land 300–800 ms after
+`turn.end` and would spoil nearly every plan. When the planned speaker's face changed, the plan and its deep work stay
+and only that face is asked again (v1.1, as the debate does for an announced member).
 """
 
 from __future__ import annotations
@@ -166,15 +168,33 @@ async def plan_scene(actor: SessionActor, *, deadline_at: datetime | None = None
 
 # ── the plan made ahead (D15) ──
 async def fingerprint(actor: SessionActor) -> tuple[Any, ...]:
-    """D15's exact list: the clear epoch, the reply epoch, the last message's seq, the director's note and its turns
-    left, the nudge, the emotion mode, and per participant in cast order: ID, awake, muted, the face now."""
+    """D15's list without the faces: the clear epoch, the reply epoch, the last message's seq, the director's note and
+    its turns left, the nudge, the emotion mode, and per participant in cast order: ID, awake, muted."""
     msgs = _ordered(actor)
     parts = []
     for p in actor.session["participants"]:
         cid = p["characterId"]
-        parts.append((cid, not await is_asleep(actor, cid), bool(p.get("mutedByUser")), p.get("currentEmotion")))
+        parts.append((cid, not await is_asleep(actor, cid), bool(p.get("mutedByUser"))))
     return (actor.epoch, actor.reply_epoch, int(msgs[-1]["seq"]) if msgs else 0, actor.mode.direction,
             actor.mode.nudge, actor.session.get("emotionMode"), tuple(parts))
+
+
+def faces_now(actor: SessionActor) -> dict[str, Any]:
+    return {p["characterId"]: p.get("currentEmotion") for p in actor.session["participants"]}
+
+
+async def face_again(actor: SessionActor, plan: CastPlan, cid: str) -> CastPlan:
+    """The planned speaker's face changed since the plan was made: ask only their face again (`turn_plan` deadline)
+    and keep the rest of the plan, its gates and its deep work."""
+    msgs = _ordered(actor)
+    req = await cast_request(actor, "scene_face", [], forced=[cid], latest=await latest_line(actor, msgs),
+                             scene_start=scene_start(msgs))
+    again = await plan_cast(actor, req.model_copy(update={"documents": {}, "recallable": []}))   # no gate, no recall
+    if again is None or cid not in again.faces:
+        return plan
+    return plan.model_copy(update={"faces": {**plan.faces, cid: again.faces[cid]},
+                                   "face_rows": {**plan.face_rows, cid: again.face_rows[cid]},
+                                   "calls": [*plan.calls, *again.calls]})
 
 
 async def _plan_ahead(actor: SessionActor, due: datetime, holder: list[Any]) -> tuple[CastPlan | None, ScenePick]:
@@ -198,7 +218,7 @@ async def start_plan_ahead(actor: SessionActor, due: datetime) -> None:
     fp = await fingerprint(actor)
     holder: list[Any] = []
     task = actor.background(PLAN_AHEAD, _plan_ahead(actor, due, holder))
-    actor.mode.plan_ahead = (fp, task, holder)
+    actor.mode.plan_ahead = (fp, task, holder, faces_now(actor))
 
 
 def _drop_deep(holder: list[Any]) -> None:
@@ -208,15 +228,19 @@ def _drop_deep(holder: list[Any]) -> None:
 
 
 async def take_plan(actor: SessionActor) -> tuple[CastPlan | None, ScenePick, Any]:
-    """At turn time: the stored plan (and its speaker's deep work) when its fingerprint still matches; else cancel
-    both and plan now (700 ms)."""
+    """At turn time: the stored plan (and its speaker's deep work) when its fingerprint still matches, with the
+    speaker's face asked again if it changed; else cancel both and plan now (700 ms)."""
     stored, actor.mode.plan_ahead = actor.mode.plan_ahead, None
     if stored is not None:
-        fp, task, holder = stored
+        fp, task, holder, faces = stored
         if fp == await fingerprint(actor) and not task.cancelled():
             try:
                 got: tuple[CastPlan | None, ScenePick] = await vclock.join(task)
-                return got[0], got[1], holder[0] if holder else None
+                plan = got[0]
+                if (plan is not None and plan.kind == "scene" and plan.order
+                        and faces.get(plan.order[0]) != faces_now(actor).get(plan.order[0])):
+                    plan = await face_again(actor, plan, plan.order[0])
+                return plan, got[1], holder[0] if holder else None
             except asyncio.CancelledError:
                 if not task.cancelled():
                     raise

@@ -59,7 +59,7 @@ def export_markdown(session: dict[str, Any], messages: list[dict[str, Any]], nam
     for m in messages:
         a = m["author"]
         if a["type"] == "user":
-            who = "You" if m["kind"] == "chat" else "MODERATOR"
+            who = "You" if m["kind"] == "chat" else "DIRECTOR" if m["kind"] == "direction" else "MODERATOR"
         elif a["type"] == "character":
             who = name(a.get("characterId"))
         elif a["type"] == "host":

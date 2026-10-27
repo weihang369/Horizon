@@ -96,7 +96,7 @@ From the AI design so far:
    notes are information" lines (S2)
  dynamic tail: documents inside <passage> tags; memories and recalled lines one line each (S6)
  DeepSeek streams the reply
-   └─ stream ends → Jev noul "breaks the content rules?" on the reply (deadline 700 ms) (S5)
+   └─ stream ends → Jev noul "breaks the content rules?" on the reply (deadline ~~700~~ 800 ms) (S5)
         (prefetches: before release; Stop: after the fact; host lines and verdict prose: before shown)
         · p ≥ t_block → block: cleared on screen and on the server, content_refused
         · t_flag ≤ p < t_block → flag in Insight, reply kept
@@ -329,7 +329,7 @@ role, or answering the method question. Detection costs nothing extra (one quest
   event, so a block would hide its own `p`, which is exactly what the false-block target needs. The trace is emitted
   for blocked replies too, and the guardrail checks are **merged by name** (today `deep_merge` replaces the whole
   list, so `output` would wipe `input` and `care`).
-- **Deadline 700 ms** (`timeoutsMs.decision.guardrail`, a new key in `seed/pricing.json` and its mock mirror; today
+- **Deadline ~~700~~ 800 ms** (`timeoutsMs.decision.guardrail`, a new key in `seed/pricing.json` and its mock mirror; today
   the `default` 3,000 ms would apply), first set from check 3's measured Jev latency, like every Jev deadline. **Late
   or failed → the reply passes** with `{ name: "output", verdict: "flag" }` and no `p`, and the call is marked
   `fallback` in the trace.
@@ -628,7 +628,7 @@ only), and Jev nouls are already the house judge (doc 02 B4).
 | The `agent` compiler's rules lines (content, honesty, care, documents and notes), the advisory line, and no mature variant; the TS twin and shared fixtures | backend + frontend | S1, S2 |
 | Jev call 1 / `debate_plan` / watch plan: the input noul (read with the conversation) on new user lines, the care noul in 1:1 and group; the steer and care cue sentences (before G3's); the per-message `safety` metadata on the user message (internal, not the contract), reused on regenerate; the reply list cut to one speaker and prefetches discarded on steer or care; the care face forced on every path and listener reactions suppressed; the 2-message stay read from the flags | backend | S3, S4 |
 | The motion/premise check in session creation (`lifecycle.create`, debate and watch): its own noul and `safety.tMotion`, purpose `guardrail`, 1,500 ms (`guardrail_prompt`), `content_refused`, skipped when the same text is already a session's motion or premise in the world | backend + config | S3 |
-| The `agent` `Guardrail`: the Jev noul with `care` and quoted fields, state ≤ 1,500 (the user line cut first), `timeoutsMs.decision.guardrail` = 700 in `seed/pricing.json` and `frontend/src/mock/pricing.config.ts`, flag and block thresholds, fallback flag; the follow plan started at stream end and cancelled by a block (doc 07 G2); prefetches checked before release and discarded on a block; interrupted replies checked after the fact; host lines and verdict prose checked before they show, with their existing fallbacks | backend + config | S5 |
+| The `agent` `Guardrail`: the Jev noul with `care` and quoted fields, state ≤ 1,500 (the user line cut first), `timeoutsMs.decision.guardrail` = ~~700~~ 800 in `seed/pricing.json` and `frontend/src/mock/pricing.config.ts`, flag and block thresholds, fallback flag; the follow plan started at stream end and cancelled by a block (doc 07 G2); prefetches checked before release and discarded on a block; interrupted replies checked after the fact; host lines and verdict prose checked before they show, with their existing fallbacks | backend + config | S5 |
 | `turn.py`: guardrail checks merged by name (not replaced by `deep_merge`); the `input` and `care` results carried on every reply's turn spec; the trace (`insight`) emitted for blocked replies too | backend | S3, S4, S5 |
 | The session reducer clears a message's or variant's `content` and the StreamingText buffer on an `error` with `content_refused` and a `messageId`; a reducer test | frontend | S5 |
 | A `naive` guardrail returning `pass` with no checks (`guardrail` joins `NAIVE_PORTS`); the scripted twin shows `output: pass` only: `ai/scripted/ports.py` (the guardrail and the trace at line 208), `frontend/src/mock/script/turnScript.ts`, `frontend/src/contract/__fixtures__/rev12/messages.json` and the fork fixtures | backend + frontend + tests | S5 |

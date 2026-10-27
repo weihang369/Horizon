@@ -7,9 +7,10 @@ design D18–D24; listener-reactions and face-check specs).
   a reaction can never land after its listener's own `turn.start` (D20). The task is dropped (cancelled) by `clear()`,
   a new user message and MANUAL; a failure is logged and never touches the session.
 - **The face check (doc 13 W2; D23, D24):** one named task after a completed AUTO reply whose face isn't neutral. It
-  asks which emotion the words show and appends one display-only System 1 row with `append_system1` (which drops it
-  for a regenerated variant). `clear()` cancels it; a user message and the next turn don't. A late, failed or refused
-  check adds nothing and never touches the session.
+  asks which emotion the words show and appends one System 1 row with `append_system1` (which drops it for a
+  regenerated variant); on a clash the face switches to the words' emotion (D-112). `clear()` cancels it; a user
+  message and the next turn don't. A late, failed or refused check never touches the session; a checker that reports
+  skips adds a `skipped` row saying why (U-49).
 """
 
 from __future__ import annotations

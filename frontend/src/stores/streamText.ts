@@ -58,6 +58,13 @@ export function clearStream(messageIds?: string[]): void {
     streamText.setState({ text: {} });
     return;
   }
+  // Mark each one revealed and finished, so the next tick drops it from the smoother without writing it back; an
+  // unfinished entry left there (a session closed mid-reply) kept the ticker running every frame for good.
+  for (const id of messageIds) {
+    smoother.flush(id);
+    const v = smoother.visible(id);
+    if (v !== undefined) smoother.setTarget(id, v, true);
+  }
   streamText.setState((s) => {
     const text = { ...s.text };
     for (const id of messageIds) delete text[id];

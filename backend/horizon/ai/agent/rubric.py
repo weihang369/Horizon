@@ -3,8 +3,8 @@ criterion, and code decides the winner.
 
 - **One Jev request** (purpose `rubric`, deadline `rubric` = 10 s): one 5-level `score` question per side per criterion,
   keyed `rubric_evidence:prop`, …, or `rubric_generic:prop:{n}` for a criterion the config names without a known id
-  (its label goes in `quoted_criteria`, never in the instructions: S6). A 429 is retried once after 1 s, inside the
-  deadline: the Decider's rule for background purposes (W11; ai-foundation D8).
+  (its label goes in `quoted_criteria`, never in the instructions: S6). A 429 is retried once after its Retry-After (at least
+  1 s, at most 5 s), inside the deadline: the Decider's rule for background purposes (W11; ai-foundation D8).
 - **The state:** the motion, the criteria labels (only with a generic question), the sides as an ORDERED LIST of blocks
   (each side's members, its arguments in speaking order with phase and speaker, Ask answers inside their speaker's block,
   and its missed turns), and the moderator's notes and questions apart. A list, because the store key sorts dict keys
@@ -86,9 +86,9 @@ def criteria(cfg: dict[str, Any]) -> list[Criterion]:
 
 
 def margin() -> float:
-    """`verdict.margin`: the rubric entries' shared `thresholds.margin` (kept equal by the loader)."""
+    """`verdict.margin`: the rubric entries' shared `thresholds.margin` (kept equal by the loader; 0.25 shipped)."""
     th = bank().get("rubric_evidence").raw.get("thresholds") or {}
-    return float(th.get("margin", 0.5))
+    return float(th.get("margin", 0.25))
 
 
 def first_words(text: str, n: int) -> str:
@@ -187,12 +187,12 @@ def decide(values: list[dict[str, Any]], margin_: float) -> tuple[dict[str, floa
     means = {s: sum(v["value"] for v in values if v["subjectId"] == s) / max(1, sum(1 for v in values
                                                                                 if v["subjectId"] == s))
              for s in SIDES}
-    diff = means["prop"] - means["opp"]
+    diff = round(means["prop"] - means["opp"], 6)   # bars have one decimal: a lead of exactly the margin wins
     return means, (None if abs(diff) < margin_ else "prop" if diff > 0 else "opp")
 
 
 async def score(deps: Any, req: VerdictRequest) -> Scores:
-    """Ask Jev (one request, its 429 retried once after 1 s inside the deadline) and decide the winner in code."""
+    """Ask Jev (one request, its 429 retried once inside the deadline) and decide the winner in code."""
     from horizon.ai.agent.cast_plan import ledger_call
 
     crit = criteria(req.session.config or {})
@@ -206,7 +206,7 @@ async def score(deps: Any, req: VerdictRequest) -> Scores:
 
     call = decider.start(state, qs, req.session.call_ctx(PURPOSE), purpose=PURPOSE, fallback=None)
     try:
-        res = await call.by(deadline)   # a 429 is retried once after 1 s inside the deadline (the Decider's D8 rule)
+        res = await call.by(deadline)   # a 429 is retried once inside the deadline (the Decider's D8 rule)
     except DecisionCancelled:
         raise asyncio.CancelledError() from None
     except asyncio.CancelledError:

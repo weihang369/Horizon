@@ -228,8 +228,11 @@ export function System1Rows({ trace, nameOf }: { trace?: TurnTrace; nameOf: (id:
   const groups = groupSystem1(trace);
   const nothing = searchedNothing(trace, groups);
   const waits = searchWaits(trace);
-  // U-58: after the plan that sent the search (the first plan group), or first when no plan group is on this trace
-  const waitsAfter = groups.find((g) => PLAN_TAG[g.purpose])?.purpose ?? null;
+  // U-58: after the plan that sent the search (its "needs documents?" said yes; else the first plan group), or first
+  // when no plan group is on this trace. A paused debate's turn keeps the debate plan's member row and asks its face
+  // and gate again in a turn plan, which is the one that searched (audit D-17).
+  const plans = groups.filter((g) => PLAN_TAG[g.purpose]);
+  const waitsAfter = (plans.find((g) => g.rows.some((r) => r.id === "docs" && r.answer === "yes" && r.result === "used")) ?? plans[0])?.purpose ?? null;
   const waitsGroup = waits.length > 0 && (
     <div className={s.s1Group} data-purpose="search">
       <p className={s.s1Head}>search query<span className={s.s1Lat}>{secs(Math.max(...waits.map((w) => w.ms)))}</span></p>

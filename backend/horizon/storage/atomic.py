@@ -24,11 +24,15 @@ def tmp_path(path: Path) -> Path:
 def write_atomic(path: Path, data: bytes) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = tmp_path(path)
-    with open(tmp, "wb") as f:
-        f.write(data)
-        f.flush()
-        os.fsync(f.fileno())
-    replace(tmp, path)
+    try:
+        with open(tmp, "wb") as f:
+            f.write(data)
+            f.flush()
+            os.fsync(f.fileno())
+        replace(tmp, path)
+    except BaseException:
+        tmp.unlink(missing_ok=True)   # a failed write leaves nothing behind (audit A-22)
+        raise
 
 
 def replace(tmp: Path, path: Path) -> None:

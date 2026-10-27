@@ -13,6 +13,8 @@ V2, V3; doc 13 W5 row 11, W11; debate design D5–D9, D27; debate-plan spec).
 - **The gate** (M12, rag D8): "needs documents?" about each eligible member with a searchable source rides the same
   request (no "standalone?" or "English?": debate never rewrites), with their titles in `quoted_documents`. The member's
   deadline is unchanged; the gate is read with the faces at the turn's start, and one still missing then is quick.
+- M13 (memory D26, D27): "needs something from earlier?" (`earlier`) about each eligible member with something to
+  search. M14 (safety D4, U4): "unsafe note?" about an Interject not yet checked, in the same request.
 """
 
 from __future__ import annotations
@@ -174,7 +176,7 @@ class DebateSteps:
         return h.plan_from(result[0], result[1], member=None)
 
     def route(self, run: dict[str, Any], plan: DebatePlan) -> Branch:
-        return "quick"   # M12 adds "deep"
+        return "quick"   # each argument's branch comes from its own gate (`DebatePlan.for_speaker`)
 
 
 class JevDebateCall:
@@ -240,7 +242,9 @@ class JevDebateCall:
             return None
         if res.failure is not None or self.fixed is None:
             return None
-        plan = self.plan_from(res, {"call": None, "deadline_ms": 0.0}, member=self.fixed, late=True)
+        # the call itself goes on the trace too (W1: a call that lands after `turn.end` shows its latency and cost)
+        call = await ledger_call(self.steps.deps, res.generation_id, PURPOSE)
+        plan = self.plan_from(res, {"call": call, "deadline_ms": 0.0}, member=self.fixed, late=True)
         return plan
 
     def cancel(self) -> None:

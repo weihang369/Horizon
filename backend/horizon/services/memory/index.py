@@ -131,7 +131,8 @@ async def zero_vectors(conn: AsyncConnection, rids: Sequence[int]) -> None:
 # ── following their messages (D29) ──
 async def follow_regenerate(rt: Runtime, session_id: str, world_id: str, message_id: str, content: str) -> None:
     """The new active variant's text replaces the row's (FTS by trigger, the speaker's label kept), and its vector is
-    embedded again. A message that was never indexed has nothing to follow."""
+    embedded again. The old variant's vectors go first, so with no key or a failed embedding the line is keyword-only
+    rather than found by the old text's meaning. A message that was never indexed has nothing to follow."""
     async with rt.db.write() as tx:
         row = (await tx.conn.execute(select(X.rid, X.text).where(X.message_id == message_id))).first()
         if row is None:
@@ -139,6 +140,8 @@ async def follow_regenerate(rt: Runtime, session_id: str, world_id: str, message
         rid = int(row[0])
         body = line_text(str(row[1]).split(": ", 1)[0], content)
         await tx.conn.execute(t.message_index.update().where(X.rid == rid).values(text=body))
+        for space in await spaces.non_retired(tx.conn):
+            await tx.conn.execute(text(f"DELETE FROM {spaces.message_vec_table(space.id)} WHERE rid = :r"), {"r": rid})
     await embed_lines(rt, session_id, world_id, [(int(rid), body)])
 
 

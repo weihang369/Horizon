@@ -128,3 +128,22 @@ async def test_too_many_passages_fails_and_keeps_the_others(api: Api) -> None:
     async with api.rt.db.read() as conn:
         total = (await conn.execute(text("SELECT count(*) FROM knowledge_chunks WHERE character_id = :c"), {"c": HANA})).scalar_one()
     assert total == 2990
+
+
+async def test_an_unbilled_embedding_failure_drops_the_in_flight_marker(api: Api) -> None:
+    """A batch refused with nothing billed (a 401) leaves no `embed_sent_at`, so the next start's re-embed picks the
+    source up again instead of waiting for a manual Retry (audit A, cross-cluster)."""
+    from horizon.ai.embedder import Batch
+    from horizon.gateway.errors import ProviderError
+
+    class Rejected:
+        async def embed(self, texts: list[str], *, hooks: Any = None, **_kw: Any) -> Any:
+            await hooks(Batch(indices=list(range(len(texts))))).before_send()   # the batch is sent…
+            raise ProviderError("invalid_key", "OpenRouter rejected this key.")   # …and refused unbilled
+
+    await api.set_key()
+    api.rt.ai.override("embedder", Rejected())
+    src = await add_file(api, "soups.md", b"# Soups\n\nMiso first.\n\nThen tofu.", "text/markdown")
+    await settle(api)
+    r = await row(api, src["id"])
+    assert r["status"] == "keyword_only" and r["embed_sent_at"] is None

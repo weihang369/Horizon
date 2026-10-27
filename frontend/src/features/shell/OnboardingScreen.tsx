@@ -1,4 +1,5 @@
-// S02 Onboarding (APP-04): 4 intro cards (copy: doc 06 §8) + a key step ("Enter key" / "Explore demo first").
+// S02 Onboarding (APP-04): 4 intro cards (copy: doc 06 §8) + a key step ("Enter key" / "Explore demo first"; the
+// online demo shows its notice and "Explore the demo" instead).
 // Shown once (prefs.seenOnboarding), replayable from World Select ("How it works"), the Esc menu and Settings → About.
 // ←/→ page, Enter = next. A replay with a key already set ends on "You're live" instead of the key form.
 import { useEffect, useState } from "react";
@@ -20,6 +21,7 @@ import { Tape } from "../../ui/Tape";
 import { WorldCover } from "../../ui/WorldCover";
 import { useHouseScreen } from "./house";
 import { saveKeyHint } from "./keyHint";
+import { NO_BACKEND, ONLINE_DEMO_NOTICE, RUN_LOCALLY_LABEL, RUN_LOCALLY_URL } from "./onlineDemo";
 import s from "./Onboarding.module.css";
 
 interface Card { id: string; word: string; lead: string; body: string; art: () => ReactNode }
@@ -134,10 +136,21 @@ function KeyStep({ onDone, onBack }: { onDone: (to: Route) => void; onBack: () =
         <h1 id="onb-title" className={s.word}>
           <RansomText text="YOUR KEY" size="var(--word-size)" tone="mixed" slam staggerMs={35} />
         </h1>
-        <p className={s.line}>
-          Horizon thinks with your own <strong>OpenRouter</strong> key. No key? Every recording still plays: browse the seed worlds and replay their sessions.
-        </p>
-        {live ? (
+        {NO_BACKEND ? (
+          <p className={s.line}>
+            {ONLINE_DEMO_NOTICE} <a href={RUN_LOCALLY_URL} target="_blank" rel="noreferrer">{RUN_LOCALLY_LABEL}</a>
+          </p>
+        ) : (
+          <p className={s.line}>
+            Horizon thinks with your own <strong>OpenRouter</strong> key. No key? Every recording still plays: browse the seed worlds and replay their sessions.
+          </p>
+        )}
+        {NO_BACKEND && !live ? (
+          // the online demo never asks for a key (the user's decision, 2026-10-20)
+          <div className={s.nav}>
+            <Button onClick={() => onDone({ name: "worlds" })} autoFocus>Explore the demo ▸</Button>
+          </div>
+        ) : live ? (
           <div className={s.nav}>
             <Button onClick={() => onDone({ name: "worlds" })} autoFocus>You're live · To worlds ▸</Button>
           </div>

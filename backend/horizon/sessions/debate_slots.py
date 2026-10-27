@@ -119,14 +119,16 @@ def fill(side_members: Sequence[str], heard: Sequence[str], awake: Mapping[str, 
 
 
 def missed_turns(messages: Sequence[Mapping[str, Any]], cfg: Mapping[str, Any], cast: Sequence[str]) -> dict[str, Wire]:
-    """V5 / V8: per side, the slots of every reached phase-iteration minus its arguments, with why ("asleep" when the
-    side had a skip or an asleep note there, else "the debate ended early"). Two-sided debates only."""
+    """V5 / V8: per side, the slots of every reached phase-iteration minus its arguments, with why: "asleep" when most
+    of them were missed in a phase-iteration where the side had a skip or an asleep note, else "the debate ended early".
+    Only a slot's notes count (they carry the phase tag); an Ask to an asleep member uses no slot (audit D-07). Two-sided
+    debates only."""
     if not two_sided(cfg):
         return {}
     slots = phase_slots(cfg, cast)
     per_side = {s: slots.count(s) for s in ("prop", "opp")}
     side_of = {c: s for s in ("prop", "opp") for c in (cfg["sides"].get(s) or [])}
-    out: dict[str, Wire] = {s: {"missed": 0, "asleep": False} for s in ("prop", "opp")}
+    out: dict[str, Wire] = {s: {"missed": 0, "asleep": 0} for s in ("prop", "opp")}
     segments: list[list[Mapping[str, Any]]] = []
     for m in messages:
         if is_banner(m):
@@ -137,18 +139,23 @@ def missed_turns(messages: Sequence[Mapping[str, Any]], cfg: Mapping[str, Any], 
             segments[-1].append(m)
     for seg in segments:
         spoke = {"prop": 0, "opp": 0}
+        asleep = {"prop": False, "opp": False}
         for m in seg:
             if is_argument(m):
                 s = side_of.get(str(m["author"].get("characterId")))
                 if s:
                     spoke[s] += 1
-            elif m["author"]["type"] == "system" and m.get("targetCharacterId") and "is asleep" in str(m.get("content")):
+            elif (m["author"]["type"] == "system" and m.get("targetCharacterId") and m.get("debate")
+                  and "is asleep" in str(m.get("content"))):
                 s = side_of.get(str(m["targetCharacterId"]))
                 if s:
-                    out[s]["asleep"] = True
+                    asleep[s] = True
         for s in ("prop", "opp"):
-            out[s]["missed"] += max(0, per_side[s] - spoke[s])
-    return {s: {"missed": v["missed"], "reason": "asleep" if v["asleep"] else "the debate ended early"}
+            n = max(0, per_side[s] - spoke[s])
+            out[s]["missed"] += n
+            if asleep[s]:
+                out[s]["asleep"] += n
+    return {s: {"missed": v["missed"], "reason": "asleep" if v["asleep"] * 2 > v["missed"] else "the debate ended early"}
             for s, v in out.items() if v["missed"]}
 
 

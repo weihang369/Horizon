@@ -58,11 +58,15 @@ After an `agent` watch turn's `turn.end`, the next turn's plan SHALL start at on
 - **THEN** no further `turn_plan` request is made
 
 ### Requirement: A plan made ahead is redone when its inputs change
-A plan made ahead SHALL be stored with a fingerprint of its inputs: the actor's clear epoch, the reply epoch, the last message's sequence number, the director's note and its turns left, the nudge, the emotion mode, and each participant's awake, muted and face state. At turn time, a different fingerprint SHALL discard the stored plan (cancelling its request if it is still waiting, recorded `cancelled`) and plan again.
+A plan made ahead SHALL be stored with a fingerprint of its inputs: the actor's clear epoch, the reply epoch, the last message's sequence number, the director's note and its turns left, the nudge, the emotion mode, and each participant's awake and muted state. At turn time, a different fingerprint SHALL discard the stored plan (cancelling its request if it is still waiting, recorded `cancelled`) and plan again. Faces SHALL NOT be part of the fingerprint (listeners' reactions change them after `turn.end`): when only the planned speaker's face changed, the stored plan, its pick and its deep work SHALL be kept, and one `turn_plan` request with the `turn_plan` deadline SHALL ask only that speaker's face again.
 
 #### Scenario: A director's note in the gap
 - **WHEN** a director's note is posted while the next plan is being made ahead
 - **THEN** that plan is not used: a new `turn_plan` request is made for the turn, and the turn uses the new plan
+
+#### Scenario: A reaction changes the planned speaker's face
+- **WHEN** a listener reaction changes the face of the character the plan made ahead picked
+- **THEN** the turn keeps that pick and makes one more request, asking only that character's emotion
 
 #### Scenario: Unchanged inputs
 - **WHEN** nothing happens between `turn.end` and the next turn

@@ -1,9 +1,13 @@
 // DemoDock (R15, APP-09 AC5/AC6): "Recorded · ▶ Replay · Continue live (needs key)".
 // A seed recording stays replay-only even with a key; Continue live forks it (whole recording, R16).
-// A user's own session in demo mode (key removed) gets the Composer, whose Send asks for a key.
+// A user's own session in demo mode (key removed) gets its mode's dock: the Composer (whose Send asks for a key), or the
+// debate's SteeringBar / watch's Transport, so a finished debate's Verdict ▸ and an episode's end stay reachable (their
+// live commands answer missing_key, which opens O05).
 import { navigate } from "../../router";
 import { Tape } from "../../ui/Tape";
 import { KeyIcon, PlayIcon, ChevronRightIcon } from "../../ui/icons";
+import { SteeringBar } from "../ensemble/SteeringBar";
+import { Transport } from "../ensemble/Transport";
 import { Composer } from "./Composer";
 import { continueLive } from "./ReplayTransport";
 import { useSessionCtx } from "./sessionContext";
@@ -15,6 +19,8 @@ export function DemoDock(props: DockProps) {
   const ctx = useSessionCtx();
   const seed = rt.session?.isSeed ?? true;
   const demo = ctx?.demo ?? true;
+  if (!seed && rt.session?.mode === "debate") return <SteeringBar {...props} />;
+  if (!seed && rt.session?.mode === "watch") return <Transport {...props} />;
   if (!seed) return <Composer {...props} variant={rt.session?.mode === "one_on_one" ? "inline" : "dock"} />;
   return (
     <div className={s.dock} role="group" aria-label="Recorded session">

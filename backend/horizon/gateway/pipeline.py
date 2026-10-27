@@ -388,16 +388,25 @@ class Gateway:
             log.exception("on_call hook failed (ignored)")
 
     async def _record_shielded(self, ctx: CallContext, row: LedgerRow, summary: Mapping[str, Any],
-                               on_recorded: Callable[[str], None] | None = None) -> None:
-        """Record even while being cancelled: the write runs as its own task, and a second cancel can't abort it."""
-        task = asyncio.get_running_loop().create_task(self._record(ctx, row, summary, on_recorded))
+                               on_recorded: Callable[[str], None] | None = None, *, hold: Hold | None = None,
+                               extra: CommitWith | None = None, reraise: bool = False) -> RecordResult | None:
+        """Record even while being cancelled: the write runs as its own task, and a cancel can't abort it. A cancel ends
+        only the wait (`reraise` passes it on; otherwise the caller re-raises its own). The task may still be queued for
+        the writer then, so the call's `hold` is copied and kept until the row is in: the caller's `finally` releases
+        the original, and `_preflight` must never see the call in neither place (audit A-03)."""
+        task = asyncio.get_running_loop().create_task(self._record(ctx, row, summary, on_recorded, extra))
         vclock.track(task, "ledger-record")  # a virtual-time advance waits for the row (session-runtime D2)
         self._background.add(task)
         task.add_done_callback(self._background.discard)
         try:
-            await asyncio.shield(task)
+            return await asyncio.shield(task)
         except asyncio.CancelledError:
-            pass  # the task keeps running; the caller re-raises its own cancellation
+            if hold is not None and not task.done():
+                keep = self.book.reserve(hold.amount, character_id=hold.character_id, creation=hold.creation)
+                task.add_done_callback(lambda _t: self.book.release(keep))
+            if reraise:
+                raise
+            return None  # the task keeps running
 
     async def drain_background(self) -> None:
         """Wait for shielded ledger writes still in flight (shutdown, tests)."""
@@ -433,11 +442,12 @@ class Gateway:
             except ProviderError as e:
                 if e.cost_usd is not None or e.maybe_charged:
                     await self._record_shielded(ctx, row_of(ctx, estimate, cost=e.cost_usd, bill=None, model=model,
-                                                               generation_id=e.generation_id, latency_ms=ms()), summ)
+                                                               generation_id=e.generation_id, latency_ms=ms()), summ,
+                                                hold=hold)
                 raise
             except asyncio.CancelledError:
                 await self._record_shielded(ctx, row_of(ctx, estimate, cost=None, bill=None, model=model,
-                                                           generation_id=None, latency_ms=ms()), summ)
+                                                           generation_id=None, latency_ms=ms()), summ, hold=hold)
                 raise
             finally:
                 CALL_PURPOSE.reset(token)
@@ -446,14 +456,16 @@ class Gateway:
                 try:
                     await after_response(value)
                 except BaseException:
-                    await self._record_shielded(ctx, row, summ)  # the provider charged: the row is never lost
+                    await self._record_shielded(ctx, row, summ, hold=hold)  # the provider charged: never lost
                     raise
             try:
-                await self._record(ctx, row, summ, extra=commit_with)
+                # shielded too (audit A-C02): a Stop landing while the row waits for the writer would roll it back
+                await self._record_shielded(ctx, row, summ, hold=hold, extra=commit_with, reraise=True)
             except Exception:
                 if commit_with is None:
                     raise
-                await self._record_shielded(ctx, row, summ)  # the caller's step rolled back with its row: keep the spend
+                # the caller's step rolled back with its row: keep the spend
+                await self._record_shielded(ctx, row, summ, hold=hold)
                 raise
             return value
         finally:
@@ -558,10 +570,10 @@ class Gateway:
             except ProviderError as e:
                 gid = e.generation_id or gid
                 if e.cost_usd is not None or e.maybe_charged:
-                    await self._record_shielded(ctx, row(e.cost_usd, None), summ, on_recorded)
+                    await self._record_shielded(ctx, row(e.cost_usd, None), summ, on_recorded, hold=hold)
                 raise
             except (asyncio.CancelledError, GeneratorExit):
-                await self._record_shielded(ctx, row(None, None), summ, on_recorded)
+                await self._record_shielded(ctx, row(None, None), summ, on_recorded, hold=hold)
                 raise
             if done:
                 self._check_thinking(req, usage)
@@ -569,7 +581,8 @@ class Gateway:
                     store.put("chat", skey, {"messages": req.messages},
                               {"choices": [{"message": {"role": "assistant", "content": "".join(parts)}}]},
                               {"cost": usage.cost_usd if usage else None})
-                await self._record(ctx, row(None, Billing(gid, usage, provider, req.model, finish_reason)), summ, on_recorded)
+                await self._record_shielded(ctx, row(None, Billing(gid, usage, provider, req.model, finish_reason)), summ,
+                                            on_recorded, hold=hold, reraise=True)
         finally:
             with contextlib.suppress(ValueError):   # a generator can be closed from another context
                 CALL_PURPOSE.reset(label)
@@ -606,9 +619,9 @@ class Gateway:
                     yield ChatChunk(generation_id=gid, content=chunk, provider=SCRIPTED_PROVIDER)
                 await sleep(max(0.0, spec.tail_ms) / 1000)
             except (asyncio.CancelledError, GeneratorExit, ProviderError):
-                await self._record_shielded(ctx, row(final=False), summ, on_recorded)
+                await self._record_shielded(ctx, row(final=False), summ, on_recorded, hold=hold)
                 raise
-            await self._record(ctx, row(final=True), summ, on_recorded)
+            await self._record_shielded(ctx, row(final=True), summ, on_recorded, hold=hold, reraise=True)
         finally:
             self.book.release(hold)
 

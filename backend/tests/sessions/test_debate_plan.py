@@ -251,6 +251,9 @@ async def test_too_late_for_the_face_keeps_the_fallback_and_writes_the_late_rows
     late = [r for r in rows if r["id"] == "emotion_line" and r.get("about") == AMARA and r["result"] == "fallback"
             and r.get("answer") == "happy"]
     assert late, json.dumps(rows, indent=1)
+    # audit D-05: the late call itself is on the trace, beside the deadline's fallback entry
+    calls = [c for c in amara["trace"]["calls"] if c["purpose"] == "debate_plan"]
+    assert any(not c.get("fallback") and c["latencyMs"] > 0 for c in calls), calls
     await assert_reduces(api, sid)
 
 

@@ -74,6 +74,7 @@ from horizon.sessions.system1 import fixture_row
 from horizon.storage.datalock import DataLock
 from horizon.tracing import TRACER
 from horizon.tracing import configure as configure_tracing
+from horizon.tracing import switch_on as switch_tracing_on
 
 log = logging.getLogger("horizon.runtime")
 T = TypeVar("T")
@@ -456,7 +457,9 @@ class Runtime:
         return to_iso(self.clock.now())
 
     # ── lifecycle ──
-    async def start(self) -> None:
+    async def start(self, *, offline: bool = False) -> None:
+        """`offline` (`horizon space build`): nothing that may call a provider starts (job recovery, re-embedding,
+        memory runs, the cost corrector), so an estimate or a "N" spends nothing; the next real start recovers them."""
         cfg = self.cfg
         self.loop = asyncio.get_running_loop()
         cfg.data_dir.mkdir(parents=True, exist_ok=True)
@@ -492,11 +495,12 @@ class Runtime:
         self._build_m3()  # step 7 (drain ai_purge_queue) starts with the purge worker
         self._build_m4()
         self._build_m5()
-        await self.jobs.recover()  # step 6, before the first request is served
-        await self._recover_m5()
-        self.memory_runs.start()          # M13 (memory D7): the stream-left grace and the triggers
-        await self.memory_runs.sweep()    # trigger 6: after close_interrupted_streams
-        await self.corrector.scan()
+        if not offline:
+            await self.jobs.recover()  # step 6, before the first request is served
+            await self._recover_m5()
+            self.memory_runs.start()          # M13 (memory D7): the stream-left grace and the triggers
+            await self.memory_runs.sweep()    # trigger 6: after close_interrupted_streams
+            await self.corrector.scan()
         await asyncio.to_thread(sweep, cfg.data_dir, self.referenced_files_sync())
         self.capture.start()
         log.info("AI call capture %s", "ON (HORIZON_CAPTURE_AI_CALLS=1: prompts and replies kept 7 days in ai_calls)"
@@ -504,18 +508,19 @@ class Runtime:
         configure_tracing({"HORIZON_LANGSMITH": "1" if cfg.langsmith else "",
                            "LANGSMITH_API_KEY": "set" if cfg.langsmith_key is not None else ""})
         if cfg.langsmith and cfg.langsmith_key is not None and TRACER.enabled:
-            os.environ["LANGSMITH_API_KEY"] = cfg.langsmith_key.get_secret_value()   # langsmith reads it from env
-            os.environ["LANGSMITH_TRACING"] = "true"
+            switch_tracing_on(cfg.langsmith_key.get_secret_value())
         self.started = True
         log.info("horizon backend ready (data=%s, test_mode=%s)", cfg.data_dir, cfg.test_mode)
 
     async def stop(self) -> None:
-        if self._db is not None:
-            await self.capture.stop()   # the last queued rows are flushed while the database is open
         await self._stop_m5()
         await self._stop_m4()
         await self._stop_m3()
         await self._stop_m2()
+        if self._db is not None:
+            # the last queued rows are flushed while the database is open, after the calls cancelled above recorded
+            # theirs (audit A-05: before, those stayed queued and a factory reset wrote them into the new database)
+            await self.capture.stop()
         self.bus.close_all()
         if self._db is not None:
             await self._db.dispose()

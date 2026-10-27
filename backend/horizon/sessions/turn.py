@@ -264,7 +264,9 @@ class TurnRunner:
                 if plan is not None:   # a planner that leaves retrieval alone (the scripted one): its rows only
                     spec.calls.extend(plan.calls)
                     spec.system1 = system1_section(spec.system1, plan.rows, seed=plan.seed)
-                got = await retrieve(rt, actor, sctx, spec.speaker, spec.prompt)   # M5 design D10: the speaker's scope
+                # M5 design D10: the speaker's scope. A regenerate searches the plain line (its marker is only for
+                # the scripted line's variety), so the message's query vector is reused and "again" is never searched
+                got = await retrieve(rt, actor, sctx, spec.speaker, spec.prompt.removesuffix(REGENERATE_SUFFIX))
                 spec.calls.extend(got.calls)
                 ctx = TurnContext(session=sctx, speaker=await speaker_view(rt, actor, row), message_id=mid, variant_id=vid,
                                   prompt=spec.prompt, line=spec.line, turn_index=actor.mode.turn,

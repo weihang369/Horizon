@@ -16,9 +16,10 @@ superseding message or `clear()` cancels both. A recall-only request skips gathe
   together. A rewrite in time joins the terms; a failed or late one is a fallback query (the message, and the two
   earlier lines with it). The search waits for the message's vector at most `retrieval.agent.queryEmbedWaitMs`
   (200 ms, rag 11.9) from when it needs it; a late one is still recorded, and the search runs on keywords.
-- **No wait for a text born after the gate** (rag 11.9, the maintainer's choice): the rewrite's vector and the fallback's
-  "earlier lines + message" vector are requested but never waited for. Check 2 measured the query embedding at p50
-  6.8 s that evening, so that wait only ever added time; a vector already served (the LRU, on regenerate) is used.
+- **The rewrite's vector and the fallback's "earlier lines + message" vector** are waited for up to the same gather
+  deadline as the message's (U-45, the maintainer's choice: `docsEmbedWaitMs`, 5 min under `docsWaitAll`, 10 s
+  without), so a turn that searches its documents searches hybrid. (rag 11.9 first waited for neither: check 2 measured
+  the query embedding at p50 6.8 s that evening.) A vector already served (the LRU, on regenerate) is used.
 - **The early start** (rag 11.5, the maintainer's choice of 2026-10-15): from Malaysia a query embedding takes ≈ 1.1 s at
   the median, so the 1:1, cast (group) and follow plans start the user message's embedding with Jev call 1, for a
   candidate with vectors (`start_early_embedding`). In 1:1 the rewrite of a short message starts there too
