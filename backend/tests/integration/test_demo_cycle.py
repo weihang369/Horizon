@@ -149,3 +149,23 @@ async def test_delete_all_stays_deleted_after_a_restart(make_api: Any, tmp_path:
     assert await b.json(f"{API}/worlds") == []
     assert (await b.client.post("/api/v1/admin/reset-demo", json={"confirm": True})).status_code == 204
     assert {w["id"] for w in await b.json(f"{API}/worlds")} == {"wld_seedMeridian", "wld_seedSunnyHollow"}
+
+
+async def test_a_first_start_cut_before_the_file_copy_gets_its_files_next_time(make_api: Any, tmp_path: Any) -> None:
+    """Pass 2 J6-08: the seed committed but the shipped documents' folders were never copied (the first start was
+    stopped in between, so no marker). The next start copies them."""
+    import shutil
+
+    data = tmp_path / "cut"
+    a: Api = await make_api(data_dir=data)
+    seed = await a.rt.load_seed()
+    k = next(k for k in seed.knowledge if seed.rows and seed.rows.knowledge.get(k["id"], {}).get("files"))
+    folder = a.rt.cfg.knowledge_dir / k["worldId"] / k["characterId"] / k["id"]
+    assert folder.is_dir()
+    await a.rt.stop()
+    shutil.rmtree(folder)
+    (data / ".demo-seeded").unlink()
+    b: Api = await make_api(data_dir=data)
+    assert folder.is_dir() and any(folder.iterdir())
+    assert (data / ".demo-seeded").exists()
+    assert {w["id"] for w in await b.json(f"{API}/worlds")} == {"wld_seedMeridian", "wld_seedSunnyHollow"}

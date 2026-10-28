@@ -499,6 +499,14 @@ class Runtime:
         marker = cfg.data_dir / SEEDED_MARKER
         if empty and not marker.exists():
             await self.import_seed()
+        elif not marker.exists():
+            # J6-08: a first start stopped between the seed's commit and its file copy left the shipped documents
+            # without their folders, and later starts never copied them (the marker is written only after both)
+            data = await self.load_seed()
+            async with self.db.read() as conn:
+                kept = set((await conn.execute(select(t.knowledge_sources.c.id).where(
+                    t.knowledge_sources.c.id.in_([k["id"] for k in data.knowledge])))).scalars())
+            await asyncio.to_thread(seeding.install_knowledge_files, data, cfg.knowledge_dir, kept)
         marker.touch()
         await self.close_interrupted_streams()
         await self.pause_playing_watches()

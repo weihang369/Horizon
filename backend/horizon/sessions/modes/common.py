@@ -58,6 +58,10 @@ async def asleep_note(actor: SessionActor, character_id: str, *, skipping: bool,
     (M11, debate design D3), so the slot cursor can read them from the log."""
     name = await name_of(actor, character_id)
     energy = await runner(actor).energy_now(character_id)
+    if energy is None and not skipping:   # pass 2 J3-08: deleted, not asleep, so no Top up (the skip note's wording
+        #                                   stays: the debate's slot cursor counts it)
+        await actor.emit(message_event(note(actor, f"{name} has left.", targetCharacterId=character_id, debate=debate)))
+        return
     current = int(energy["current"]) if energy else 0
     text = f"{name} is asleep, skipping." if skipping else f"{name} is asleep (⚡ {current})."
     msg = note(actor, text, targetCharacterId=character_id, debate=debate)

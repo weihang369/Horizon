@@ -203,8 +203,13 @@ async def pause_side(actor: SessionActor, side: str | None, asleep: tuple[str, .
     and the debate pauses with reason `user`. The slot is kept: play runs it again."""
     for cid in asleep:
         await asleep_note(actor, cid, skipping=False, debate=meta(actor))
-    text = ("Everyone on the panel is asleep. Top someone up to continue the debate." if side is None else
-            f"The {SIDE_NAME[side]} is asleep. Top someone up to continue the debate.")
+    gone = [cid for cid in asleep if await runner(actor).energy_now(cid) is None]
+    if asleep and len(gone) == len(asleep):   # pass 2 J3-08: deleted members can't be topped up; only End helps
+        text = ("Everyone on the panel has left. End the debate to finish." if side is None else
+                f"The {SIDE_NAME[side]} has no one left. End the debate to finish.")
+    else:
+        text = ("Everyone on the panel is asleep. Top someone up to continue the debate." if side is None else
+                f"The {SIDE_NAME[side]} is asleep. Top someone up to continue the debate.")
     actor.held = True
     await actor.emit(message_event(note(actor, text)), {"type": "session.paused", "payload": {"reason": "user"}})
 

@@ -209,3 +209,19 @@ async def test_a_fresh_debate_first_command_does_not_start_a_second_chain(api: A
     await command(api, sid, "debate/interject", {"text": "Numbers, please."})
     await api.drive(120000)
     assert speakers(await messages(api, sid)) == [AMARA, VICTOR, MEI, AMARA, VICTOR, MEI]
+
+
+async def test_a_deleted_debater_has_left_rather_than_asleep(api: Api) -> None:
+    """Pass 2 J3-08: a side whose only member was deleted mid-debate says so and offers End, with no Top up."""
+    sid = await debate(api, cast=[AMARA, VICTOR], sides={"prop": [AMARA], "opp": [VICTOR]}, autoAdvance=False)
+    await api.drive(20000)
+    assert (await api.client.delete(f"{API}/characters/{VICTOR}")).status_code == 204
+    for _ in range(3):
+        await command(api, sid, "debate/next")
+        await api.drive(20000)
+    msgs = await messages(api, sid)
+    assert any(m["content"] == "Victor has left." for m in msgs)
+    assert any(m["content"] == "The Opposition has no one left. End the debate to finish." for m in msgs)
+    assert not any("Victor is asleep (" in m["content"] for m in msgs)
+    evs = await events(api, sid)
+    assert not any(e["type"] == "error" and e["payload"]["code"] == "energy_exhausted" for e in evs)
