@@ -200,3 +200,39 @@ async def test_a_stop_while_a_finished_call_waits_for_the_writer_still_records_i
     (row,) = await ledger(api)
     assert row["cost_source"] == "provider" and row["cost_usd"] == 0.003 and row["generation_id"] == "gen-late-1"
     assert gw.book.total() == 0
+
+
+async def test_a_stopped_call_whose_step_fails_still_records_its_spend(api: Api) -> None:
+    """Pass 2: the row waits for the writer together with the caller's step (`commit_with`); Stop ends the caller's
+    wait, then the step fails and rolls the row back with it. Nobody is left to record the spend on its own, so the
+    shielded write does it: the provider charged."""
+    from horizon.gateway.pipeline import Billing
+    from horizon.gateway.types import Usage
+
+    gw = build_gateway(api)
+    sent = asyncio.Event()
+
+    async def send() -> Any:
+        sent.set()
+        return "ok", Billing("gen-step-1", Usage(cost_usd=0.003), "DeepSeek", "m")
+
+    async def step(_conn: Any, _row_id: str) -> None:
+        raise RuntimeError("the source was deleted meanwhile")
+
+    await api.rt.db.write_lock.acquire()
+    try:
+        task = asyncio.create_task(gw.paid(call_ctx("host", world_id="wld_seedMeridian"), 0.004, send, model="m",
+                                           commit_with=step))
+        await sent.wait()
+        for _ in range(20):
+            await asyncio.sleep(0)     # the row and the step are queued behind the writer
+        task.cancel()
+        with pytest.raises(asyncio.CancelledError):
+            await task
+        assert gw.book.total() == pytest.approx(0.004)
+    finally:
+        api.rt.db.write_lock.release()
+    await gw.drain_background()
+    (row,) = await ledger(api)
+    assert row["cost_source"] == "provider" and row["cost_usd"] == 0.003 and row["generation_id"] == "gen-step-1"
+    assert gw.book.total() == 0

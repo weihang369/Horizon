@@ -401,12 +401,34 @@ class Gateway:
         try:
             return await asyncio.shield(task)
         except asyncio.CancelledError:
-            if hold is not None and not task.done():
-                keep = self.book.reserve(hold.amount, character_id=hold.character_id, creation=hold.creation)
-                task.add_done_callback(lambda _t: self.book.release(keep))
+            if not task.done():
+                keep = self._keep(hold)
+                task.add_done_callback(lambda t: self._after_orphan(t, ctx, row, summary, on_recorded, extra, keep))
             if reraise:
                 raise
             return None  # the task keeps running
+
+    def _keep(self, hold: Hold | None) -> Hold | None:
+        return None if hold is None else self.book.reserve(hold.amount, character_id=hold.character_id,
+                                                            creation=hold.creation)
+
+    def _after_orphan(self, task: asyncio.Task[RecordResult], ctx: CallContext, row: LedgerRow,
+                      summary: Mapping[str, Any], on_recorded: Callable[[str], None] | None, extra: CommitWith | None,
+                      keep: Hold | None) -> None:
+        """A shielded write whose caller has gone: release its copied hold once it lands. When the caller's own step
+        (`extra`) failed it, the row rolled back with that step, and nobody is left to record the spend alone as `paid`
+        does for a caller still waiting; so it goes in again without the step (the provider charged: never lost)."""
+        failed = not task.cancelled() and task.exception() is not None
+        if failed and extra is not None:
+            again = asyncio.get_running_loop().create_task(self._record(ctx, row, summary, on_recorded))
+            vclock.track(again, "ledger-record")
+            self._background.add(again)
+            again.add_done_callback(self._background.discard)
+            again.add_done_callback(lambda _t: self.book.release(keep))
+            return
+        if failed:
+            log.error("a shielded ledger write failed after its caller left", exc_info=task.exception())
+        self.book.release(keep)
 
     async def drain_background(self) -> None:
         """Wait for shielded ledger writes still in flight (shutdown, tests)."""
