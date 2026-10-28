@@ -236,6 +236,9 @@ context limit.
 **Decision:**
 - **Rendering on the `agent` path:** the speaker's own lines are `assistant` messages; everyone else's are `user`
   messages as `Name: text`; system notes, narration and directions stay `[kind] text`.
+  Notes about the app rather than the scene ("X is muted.", "Top someone up…", "End the debate to finish.", a
+  recap or verdict that failed) are left out of every prompt and summary (v1.1, `context.app_note`): a character
+  once read "Takeshi is muted." and said "dad's muted" in the scene. Story notes ("X is asleep", "X has left.") stay.
   **Consecutive messages with the same role are merged into one.** In a merged `user` message **every line carries
   its speaker's name**: a reply shown as several bubbles (doc 03 C5) becomes several `Name: line` lines, so no line is
   left unattributed. Own lines (`assistant`) carry no name, which matches doc 04 P6's name stripping. A fixture test
