@@ -117,6 +117,11 @@ function relationOf(user: string, rel: string): string {
   const r = strip(strip(rel).replace(/\.+$/, "")); // the list ends in one full stop
   return r.slice(0, 5).toLowerCase() === "your " ? `${user}'s ${strip(r.slice(5))}` : r;
 }
+/** The speaker's own relation, from their side: "your girlfriend" → "You are Kai's girlfriend." (persona.py `you_are`). */
+export function youAre(user: string, rel: string): string {
+  const r = strip(strip(rel).replace(/\.+$/, ""));
+  return sentence(r.slice(0, 5).toLowerCase() === "your " ? `You are ${user}'s ${strip(r.slice(5))}` : `To ${user}, you are: ${r}`);
+}
 /** Audit T-03: in a group chat each speaker learns how the others relate to the user (persona.py `relations_line`). */
 export function relationsLine(user: string, members: CastMember[]): string | null {
   const rels = members.filter((m) => strip(m.relation ?? "")).map((m) => `${m.name} is ${relationOf(user, m.relation ?? "")}`);
@@ -232,9 +237,9 @@ function worldBlock(inp: PersonaInput): string {
   if (you && strip(you.displayName ?? "")) {
     parts.push(`The user is ${sentence(you.displayName ?? "")}`);
     if (strip(you.about ?? "")) parts.push(`About them: ${sentence(you.about ?? "")}`);
-    if (rel) parts.push(`To you, they are: ${sentence(rel)}`);
+    if (rel) parts.push(youAre(userOf(inp), rel));
   } else if (rel) {
-    parts.push(`To you, the user is: ${sentence(rel)}`);
+    parts.push(youAre(userOf(inp), rel));
   }
   if (parts.length) lines.push(parts.join(" "));
   return lines.join("\n");

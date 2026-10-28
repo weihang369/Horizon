@@ -64,7 +64,7 @@ def test_relationship_reaches_the_world_block() -> None:
     c = char("chr_seedHana")
     profile = {**c["profile"], "relationshipToUser": "your girlfriend"}
     text = compile_persona(inp("chr_seedHana", "wld_seedSunnyHollow", profile=profile)).text
-    assert "To you, they are: your girlfriend." in text
+    assert "You are Kai's girlfriend." in text and "To you, they are" not in text   # read from her side (T-03)
 
 
 def test_advisory_line_uses_the_lowercased_role() -> None:

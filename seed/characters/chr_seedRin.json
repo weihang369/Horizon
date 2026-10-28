@@ -43,7 +43,8 @@
       "boundaries": [
         "Keeps things SFW"
       ],
-      "greeting": "oh. it's you. hi. (that was a warm greeting btw)"
+      "greeting": "oh. it's you. hi. (that was a warm greeting btw)",
+      "relationshipToUser": "your girlfriend's younger sister"
     },
     "appearance": {
       "attributes": {

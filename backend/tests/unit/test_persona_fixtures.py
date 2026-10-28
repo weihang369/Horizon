@@ -69,6 +69,8 @@ def cases() -> dict[str, tuple[str, PersonaInput]]:
             debate=DebateBlock(motion="Remote work is better for cities", format="panel"))),
         "hana_companion_no_you": ("A companion relationship and no You card", PersonaInput(
             **{**_base("chr_seedHana", S), "you": None, "profile": {**hana, "relationshipToUser": "your old friend"}})),
+        "hana_plain_relation": ("A relationship that doesn't start with \"your\" is quoted from the user's side", PersonaInput(
+            **{**_base("chr_seedHana", S), "profile": {**hana, "relationshipToUser": "Childhood friend from the bakery street."}})),
         "cut_backstory": ("P4: a 5,000-word backstory cut at a sentence end", PersonaInput(
             **{**_base("chr_seedAmara", M), "profile": {**amara, "backstory": " ".join(
                 f"Night {i} on the ward taught her something new about Dr. Okafor's patience." for i in range(450))}})),

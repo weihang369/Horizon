@@ -215,10 +215,10 @@ async def test_scripted_and_naive_groups_make_no_cast_or_follow_plan(api: Api) -
     assert "route" in purposes and not purposes & {"turn_plan", "follow_plan"}
 
 
-async def test_a_speaker_whose_others_relate_to_the_user_is_labelled(api: Api) -> None:
-    """Audit T-03: the group persona names how the others relate to the user, and the trace's label follows the bytes
-    sent (`+rel-1`). Hana's "Relationship to you" reaches Takeshi's prompt; Takeshi and Rin have none, so Hana's
-    prompt carries no relations line."""
+async def test_every_speaker_reads_how_the_cast_relates_to_the_user(api: Api) -> None:
+    """Audit T-03: each speaker's own "Relationship to you" is read from their side ("You are Kai's girlfriend's dad.")
+    and the group block names how the others relate to Kai, so Hana knows Takeshi is Kai's girlfriend's dad, not his.
+    The trace's label follows the bytes sent (`+rel-1`)."""
     from sqlalchemy import text
 
     from tests.sessions.test_gates_m12 import agent, send
@@ -226,13 +226,16 @@ async def test_a_speaker_whose_others_relate_to_the_user_is_labelled(api: Api) -
     sid = await agent(api, "group", ["chr_seedHana", "chr_seedTakeshi", "chr_seedRin"], world="wld_seedSunnyHollow")
     for cid, name in (("chr_seedTakeshi", "Takeshi"), ("chr_seedHana", "Hana")):
         await send(api, sid, f"{name}, how was your day?", mentions=[cid])
-    labels: dict[str, str] = {}
     async with api.rt.db.read() as conn:
         for m in chars(await messages(api, sid)):
-            labels[m["author"]["characterId"]] = str((await conn.execute(text(
+            label = str((await conn.execute(text(
                 "SELECT prompt_version FROM turn_traces WHERE message_id = :m"), {"m": m["id"]})).scalar_one())
-    assert "+rel-1" in labels["chr_seedTakeshi"] and "+rel-1" not in labels["chr_seedHana"], labels
+            assert label.endswith("+rel-1"), (m["author"]["characterId"], label)
     assert api.rt.fake is not None
     systems = [json.loads(r.content)["messages"][0]["content"] for r in api.rt.fake.requests
                if r.url.path.endswith("/chat/completions") and r.headers.get("x-horizon-purpose") == "reply"]
-    assert any("How they relate to Kai: Hana Morisaki is Kai's girlfriend of two years." in x for x in systems)
+    hana = next(x for x in systems if "You are Kai's girlfriend of two years." in x)
+    assert ("How they relate to Kai: Takeshi Morisaki is Kai's girlfriend's dad; Rin Morisaki is Kai's girlfriend's "
+            "younger sister.") in hana
+    assert any("You are Kai's girlfriend's dad." in x and "Hana Morisaki is Kai's girlfriend of two years" in x
+               for x in systems)

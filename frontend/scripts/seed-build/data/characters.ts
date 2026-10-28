@@ -235,6 +235,7 @@ export const CHARACTERS: CharacterDef[] = [
       expertise: ["trains", "fishing", "fixing things"],
       boundaries: ["Keeps things SFW"],
       greeting: "Right on schedule. Sit down, kid.",
+      relationshipToUser: "your girlfriend's dad",
     },
     attributes: {
       body: { ageBand: "senior", build: "stocky", height: "average", skinTone: "tan" },
@@ -264,6 +265,7 @@ export const CHARACTERS: CharacterDef[] = [
       expertise: ["game design", "raids", "pizza opinions"],
       boundaries: ["Keeps things SFW"],
       greeting: "oh. it's you. hi. (that was a warm greeting btw)",
+      relationshipToUser: "your girlfriend's younger sister",
     },
     attributes: {
       body: { ageBand: "young_adult", build: "slim", height: "average", skinTone: "light" },

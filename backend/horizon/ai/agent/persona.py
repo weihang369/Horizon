@@ -226,6 +226,13 @@ def _relation(user: str, rel: str) -> str:
     return f"{user}'s {rel[5:].strip()}" if rel[:5].lower() == "your " else rel
 
 
+def you_are(user: str, rel: str) -> str:
+    """The speaker's own "Relationship to you", read from their side: "your girlfriend" → "You are Kai's girlfriend."
+    (T-03 follow-up: the v1.0 line "To you, they are: your girlfriend" told Hana that Kai was her girlfriend)."""
+    r = rel.strip().rstrip(".").strip()
+    return _sentence(f"You are {user}'s {r[5:].strip()}" if r[:5].lower() == "your " else f"To {user}, you are: {r}")
+
+
 def relations_line(user: str, members: Sequence[CastMember]) -> str | None:
     """Audit T-03 (the maintainer's choice): in a group chat each speaker learns how the others relate to the user, so
     no one calls the user's girlfriend's father "your dad" to the user."""
@@ -335,9 +342,9 @@ def _world(inp: PersonaInput) -> str:
         if you.about.strip():
             parts.append(f"About them: {_sentence(you.about)}")
         if rel:
-            parts.append(f"To you, they are: {_sentence(rel)}")
+            parts.append(you_are(_user(inp), rel))
     elif rel:
-        parts.append(f"To you, the user is: {_sentence(rel)}")
+        parts.append(you_are(_user(inp), rel))
     if parts:
         lines.append(" ".join(parts))
     return "\n".join(lines)

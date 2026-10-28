@@ -170,7 +170,7 @@ How you sound (style only; don't copy these word for word):
 
 # Your world and the user
 World: Meridian.
-The user is <You card name>. About them: <You card line>. To you, they are: <relationshipToUser>.
+The user is <You card name>. About them: <You card line>. You are <name>'s <relationshipToUser without "your">.
 ```
 
 - **Added:** `relationshipToUser` (the bug in §2), and a "Looks" line from `appearanceSummary`, so self-descriptions
