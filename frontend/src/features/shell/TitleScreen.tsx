@@ -15,8 +15,8 @@ import { NO_BACKEND } from "./onlineDemo";
 import s from "./Title.module.css";
 
 const IGNORED_KEYS = new Set(["Shift", "Control", "Alt", "Meta", "Tab", "CapsLock", "Fn", "OS", "ContextMenu", "Escape"]);
-// v1.0: the first release with the backend (the mock build is the online demo).
-export const APP_VERSION = NO_BACKEND ? "v1.0 · ONLINE DEMO" : "v1.0";
+// v1.0 was the first release with the backend (the mock build is the online demo); v1.1 is the current one.
+export const APP_VERSION = NO_BACKEND ? "v1.1 · ONLINE DEMO" : "v1.1";
 
 export function TitleScreen() {
   useHouseScreen({ music: false });
