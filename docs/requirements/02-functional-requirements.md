@@ -269,7 +269,7 @@ As Jun, I want Sims-style pickers for appearance, so I can shape the look withou
 **CHAT-02: Streaming replies** · Must
 - AC1: My bubble appears instantly with a send SFX. The "…" typing state appears within 100 ms, and text streams token by token.
 - AC2: Auto-scroll follows unless I've scrolled up, in which case a "↓ New message" pill appears.
-- AC3: While streaming, Send becomes **Stop**. Stopping keeps the partial text and marks it "(stopped)" (`interruptedBy: "user"`; no further actions). A network or provider cut is shown differently: "(interrupted)" with Continue · Regenerate (STATE-03).
+- AC3: While streaming, Send becomes **Stop**. Stopping keeps the partial text and marks it "(stopped)" (`interruptedBy: "user"`; no further actions). A network or provider cut is shown differently: "(interrupted)" with Regenerate (STATE-03; one chip, since a "Continue" would only regenerate, D-58).
 - AC4: Markdown is rendered (bold, italics, lists, code, links). Raw HTML is not.
 - AC5: The composer is capped at **4,000 characters**, with a counter from 3,500. A longer paste is truncated with a warning toast. Enter sends, and Shift+Enter adds a new line (APP-10).
 
@@ -378,7 +378,7 @@ As Priya, I want long expert answers to be comfortable to read.
 
 ### Watch them talk
 **MULTI-09: Watch configuration** · Must
-- Premise/scene (required, ≤ 300 chars) · Length **10 / 20 / 40 turns** (default 20) · Pace **Slow / Normal / Fast** (3 s / 1.5 s / 0.5 s between turns) · Opening speaker (Auto / choose) · Music (Follow speaker / Scene bed).
+- Premise/scene (required, ≤ 300 chars) · Length **10 / 20 / 40 turns** (default 20) · Pace **Slow / Normal / Fast** (3 s / 1.5 s / 0.5 s, plus the 0.4 s turn gap: the setup shows "About 3.4 s / 1.9 s / 0.9 s between lines") · Opening speaker (Auto / choose) · Music (Follow speaker / Scene bed).
 
 **MULTI-10: Playback controls** · Must
 - AC1: Transport: ❚❚/▶ · Step · Pace **Slow / Normal / Fast** · Stop. *(×1/×2/×4 is reserved for Replay and the mock demo speed, never the Watch pace.)*
@@ -582,7 +582,7 @@ As Alex (and anyone watching a demo), I want a drawer that shows what the AI did
 | `content_refused` | "The model declined this request. Try different wording." | Rephrase · Regenerate |
 | `provider_error` (image) | Per-slot "FAILED" slash | Retry slot |
 | song failed | "The composer stalled." | Retry · Skip |
-| stream cut | Partial text kept + "(interrupted)" | Continue · Regenerate |
+| stream cut | Partial text kept + "(interrupted)" | Regenerate |
 | `timeout` | "That took too long." | Retry |
 | `energy_exhausted` | "{name} is asleep (⚡ 0)." (inline system note) | Top up · Wait |
 | job resumed after restart | Toast: "Picked up where we left off." | n/a |

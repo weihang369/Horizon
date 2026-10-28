@@ -80,6 +80,8 @@ async def session_context(rt: Runtime, actor: SessionActor, *, recent: int | Non
                              role=p["role"], side=p.get("side"), muted=bool(p.get("mutedByUser")),
                              character_role=str(chars[p["characterId"]]["profile"].get("role") or "")
                              if p["characterId"] in chars else "",
+                             relation=str(chars[p["characterId"]]["profile"].get("relationshipToUser") or "")
+                             if p["characterId"] in chars else "",
                              emotion=str(p.get("currentEmotion") or "neutral"),
                              energy=energy_of(rt, chars[p["characterId"]]) if p["characterId"] in chars else {})
              for p in s["participants"]]

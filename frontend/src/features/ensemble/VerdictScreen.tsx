@@ -7,7 +7,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import { client } from "../../client";
 import { useCharacters, useSessionRuntime } from "../../client/hooks";
-import type { Character, DebateConfig, DebateState, Message, Side, ThemeSong, Verdict } from "../../contract/types";
+import type { Character, DebateConfig, DebateState, Message, Session, Side, ThemeSong, Verdict } from "../../contract/types";
 import { reportError, run } from "../../app/errors";
 import { toast } from "../../app/layers";
 import { useShortcut } from "../../app/shortcuts";
@@ -83,7 +83,7 @@ export function VerdictScreen({ route }: { route: Extract<Route, { name: "verdic
         </div>
       )}
       {!youDecide && (
-        <Actions sessionId={route.sessionId} worldId={route.worldId} cfg={cfg} cast={session.participants.map((p) => p.characterId)} verdict={verdict} chars={chars} />
+        <Actions sessionId={route.sessionId} worldId={route.worldId} cfg={cfg} cast={session.participants.map((p) => p.characterId)} emotionMode={session.emotionMode} verdict={verdict} chars={chars} />
       )}
     </main>
   );
@@ -395,7 +395,7 @@ const trim = (t: string, n: number) => {
 };
 
 // ── Actions dock (88) ────────────────────────────────────────────────────────
-function Actions({ sessionId, worldId, cfg, cast, verdict, chars }: { sessionId: string; worldId: string; cfg: DebateConfig; cast: string[]; verdict: Verdict | null; chars: Record<string, Character> }) {
+function Actions({ sessionId, worldId, cfg, cast, emotionMode, verdict, chars }: { sessionId: string; worldId: string; cfg: DebateConfig; cast: string[]; emotionMode: Session["emotionMode"]; verdict: Verdict | null; chars: Record<string, Character> }) {
   const [busy, setBusy] = useState<string | null>(null);
   const exportMd = async () => {
     const md = await run(() => client.sessions.export(sessionId));
@@ -411,7 +411,8 @@ function Actions({ sessionId, worldId, cfg, cast, verdict, chars }: { sessionId:
   const rematch = async () => {
     setBusy("rematch");
     const sides = Object.fromEntries([...(cfg.sides?.prop ?? []).map((id) => [id, "prop"]), ...(cfg.sides?.opp ?? []).map((id) => [id, "opp"])]) as Record<string, Side>;
-    const snap = await run(() => client.sessions.create({ worldId, mode: "debate", characterIds: cast, config: { ...cfg }, sides, continuedFrom: undefined }));
+    // A rematch is the same debate again, so it keeps the faces mode; the group chat after it takes the default (audit D-12).
+    const snap = await run(() => client.sessions.create({ worldId, mode: "debate", characterIds: cast, config: { ...cfg }, sides, emotionMode, continuedFrom: undefined }));
     setBusy(null);
     if (snap) navigate({ name: "session", worldId, sessionId: snap.session.id }, { transition: "slash" });
   };

@@ -1,5 +1,6 @@
 // LayerStack (R4, UXA D1): renders the ui store's layers with central Esc order and focus trap/restore.
-// Esc: popover → dock expansion → modal → drawer → blur text field → pause menu (O01; Esc again resumes).
+// Esc: popover → dock expansion → modal → drawer → blur text field → pause menu (O01; Esc again resumes). A modal opened
+// after the dock expanded is on top of it, so it closes first (audit 03-F10).
 import { Suspense, useEffect, useLayoutEffect, useRef } from "react";
 import type { ComponentType, ReactNode } from "react";
 import { getRoute } from "../router";
@@ -28,8 +29,8 @@ export function handleEscape(e: KeyboardEvent): void {
   };
   const pop = topOf(st.layers, "popover");
   if (pop) return done(), closeOverlay(pop.key);
-  if (st.dockExpansion) return done(), closeOverlay("O12");
   const modal = topOf(st.layers, "modal");
+  if (st.dockExpansion && !(modal && modal.key > st.dockExpansion.order)) return done(), closeOverlay("O12");
   if (modal) return done(), closeOverlay(modal.key);
   const drawer = topOf(st.layers, "drawer");
   if (drawer) return done(), closeOverlay(drawer.key);

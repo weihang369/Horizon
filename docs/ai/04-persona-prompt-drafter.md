@@ -223,7 +223,7 @@ very long backstory also drowns the speaking style.
 | Mode | The block says | Length line (C4) |
 |---|---|---|
 | 1:1 | "This is a private one-to-one chat with {user}." | "Write 1–3 short messages, each on its own line, about 70 words in all." |
-| Group | "This is a group chat with {user} and: Hana (barista), Rin (…)." Names with profile roles. | "Write 1–2 short messages, each on its own line, about 50 words in all." |
+| Group | "This is a group chat with {user} and: Hana (barista), Rin (…)." Names with profile roles. Then, when any of them has a "Relationship to you": "How they relate to {user}: Hana is {user}'s girlfriend of two years; …" (a leading "your" is read as "{user}'s"; audit T-03, label `+rel-1`). | "Write 1–2 short messages, each on its own line, about 50 words in all." |
 | Watch | "{user} is watching this scene from outside it and may step in. Until {user} speaks in it, talk to each other, not to {user}. Premise: … With you: …" (U-64) | "Write 1–2 short lines, each on its own line, about 50 words in all." |
 | Debate | The motion, your side and teammates, your opponents (worded in doc 08 V4). | "Write one paragraph, no line breaks, about {80 / 140 / 220} words." |
 

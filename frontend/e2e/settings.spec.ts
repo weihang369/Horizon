@@ -8,8 +8,9 @@ test("Connection: Show, Save (empty, wrong, rejected, good), Test, Clear and the
   if (clientFor(page) === "mock") {
     // The online demo never uses a key: the notice and the run-locally link stand where the key field is (2026-10-20).
     await expect(status).toHaveAttribute("data-status", "missing");
-    await expect(page.getByText(/This online demo never uses a key/)).toBeVisible();
-    await expect(page.getByRole("link", { name: /How to run it locally/ }))
+    const keyRegion = page.getByRole("region", { name: "OpenRouter key" });   // the demo tape's flyout says it too
+    await expect(keyRegion.getByText(/This online demo never uses a key/)).toBeVisible();
+    await expect(keyRegion.getByRole("link", { name: /How to run it locally/ }))
       .toHaveAttribute("href", "https://github.com/weihang369/Horizon#run-it-locally");
     await expect(page.getByLabel(/^(Key|Replace key)$/)).toHaveCount(0);
     await expect(page.getByRole("button", { name: /Test connection$/ })).toHaveCount(0);

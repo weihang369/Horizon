@@ -29,7 +29,7 @@ export interface MessageRowProps {
   selected: boolean;
   /** Offer ↻ (last character message of a live 1:1 / group session). */
   canRegenerate: boolean;
-  /** A 1:1 or group session: an interrupted reply offers Continue · Regenerate (CHAT-02 AC3). Regenerate is a chat
+  /** A 1:1 or group session: an interrupted reply offers Regenerate (CHAT-02 AC3; one chip, audit D-11). Regenerate is a chat
    * command, so a cut debate argument or scene line offers neither (audit D-11). */
   chat?: boolean;
   /** Row appeared after mount (animate in). */
@@ -105,7 +105,7 @@ function ErrorActions({ m, char, chat }: { m: Message; char?: Character; chat: b
   const sid = m.sessionId;
   const regen = () => void run(() => client.chat.regenerate(sid, m.id));
   if (m.error.code === "energy_exhausted") return null;
-  // A cut stream offers Continue · Regenerate on the row itself (STATE-03), so the tape carries no second button.
+  // A cut stream offers Regenerate on the row itself (STATE-03), so the tape carries no second button.
   // Retry and Regenerate redo a chat reply: a debate or watch turn moves on instead (Regenerate is 1:1 and group only).
   const label = !chat || m.status === "interrupted" ? null
     : m.error.code === "content_refused" ? "Regenerate" : m.error.retryable ? "Retry" : null;
@@ -337,8 +337,7 @@ function MessageRowImpl({ m, chars, variant, selected, canRegenerate, chat = fal
             )}
             {cutActions && (
               <span className={s.cutActions}>
-                <button type="button" className={cx(s.chipBtn, s.chipPrimary)} onClick={(e) => { e.stopPropagation(); regen(); }}>Continue</button>
-                <button type="button" className={s.chipBtn} onClick={(e) => { e.stopPropagation(); regen(); }}>Regenerate</button>
+                <button type="button" className={cx(s.chipBtn, s.chipPrimary)} onClick={(e) => { e.stopPropagation(); regen(); }}>Regenerate</button>
               </span>
             )}
             <span className={s.actions}>

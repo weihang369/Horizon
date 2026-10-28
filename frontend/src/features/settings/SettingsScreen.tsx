@@ -195,7 +195,7 @@ function DataTab() {
   const wipe = () =>
     openOverlay("O03", {
       title: "Delete all data?",
-      body: "Every world, character, session, memory and your saved key are deleted from this machine. This can't be undone.",
+      body: "Every world, character, session, memory and your saved key are deleted from this machine. Your spend history and settings stay. This can't be undone.",
       typed: "DELETE ALL",
       confirmLabel: "Delete everything",
       onConfirm: async () => {

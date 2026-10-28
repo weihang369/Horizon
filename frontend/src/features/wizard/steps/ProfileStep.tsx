@@ -17,7 +17,7 @@ import { PromptPreview } from "./PromptPreview";
 import s from "./steps.module.css";
 
 export function ProfileStep() {
-  const { character: c, jobs, work, goStep, facts, edit, world } = useWizard();
+  const { character: c, jobs, work, goStep, facts, edit, world, save } = useWizard();
   const draftJob = useJob(jobs.profile_draft).data;
   const drafting = isRunning(draftJob);
   const failed = draftJob?.status === "failed";
@@ -48,6 +48,8 @@ export function ProfileStep() {
   const regenerate = (field: ProfileField) => {
     if (!c || regen) return;
     const go = async () => {
+      // The rewrite reads the saved card, so unsaved edits (a new role) are saved first, as Next does (audit C-P1-5).
+      if (work.dirty && !(await save())) return;
       const job = await startGeneration({ characterId: c.id, kind: "profile_regenerate", targetField: field }, `Regenerate ${field}`, { confirm: false });
       if (job) {
         rememberJob(job);

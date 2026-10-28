@@ -88,7 +88,7 @@ def name_of(prof: dict[str, Any], who: str) -> str:
 
 
 def profiles() -> dict[str, dict[str, Any]]:
-    seed = ROOT / "seed" / "characters"
+    seed = ROOT / "evals" / "seed-v0" / "characters"   # the seed the sets were labelled on (evals/README.md)
     return {cid: json.loads((seed / f"{cid}.json").read_text(encoding="utf-8"))["data"]["profile"]
             for cid in WHO.values()}
 

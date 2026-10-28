@@ -7,7 +7,7 @@ Defines what each session command does in each mode (1:1, group, debate and watc
 ## Requirements
 
 ### Requirement: 1:1 conversation
-In a 1:1 session, `chat.send` SHALL post the user's message and queue one reply from the single participant. `chat.regenerate(messageId)` SHALL stream a new variant into the same message, keeping earlier variants (D-58: "Continue" means regenerate). Sending to a paused 1:1 session SHALL resume it first (`session.resumed`), unless it is paused by the daily cap and the cap is still reached. Under the `agent` profile in M9, a 1:1 turn SHALL retrieve no knowledge and no memories, and a sent message SHALL start no query embedding, until the plan's gates exist.
+In a 1:1 session, `chat.send` SHALL post the user's message and queue one reply from the single participant. `chat.regenerate(messageId)` SHALL stream a new variant into the same message, keeping earlier variants (D-58; an interrupted reply offers one chip, Regenerate). Sending to a paused 1:1 session SHALL resume it first (`session.resumed`), unless it is paused by the daily cap and the cap is still reached. Under the `agent` profile in M9, a 1:1 turn SHALL retrieve no knowledge and no memories, and a sent message SHALL start no query embedding, until the plan's gates exist.
 
 #### Scenario: Regenerate keeps the original
 - **WHEN** a completed reply is regenerated

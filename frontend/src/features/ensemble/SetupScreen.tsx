@@ -298,7 +298,7 @@ export function SetupScreen({ route }: { route: SetupRoute }) {
                   </Row>
                   <Row label="Pace">
                     <Segmented label="Pace" value={String(pace)} onChange={(v) => setPace(Number(v) as WatchConfig["paceMs"])} options={PACE_OPTIONS.map((o) => ({ value: o.value, label: o.label }))} />
-                    <span className={s.note}>{pace === 3000 ? "3 s" : pace === 1500 ? "1.5 s" : "0.5 s"} between turns</span>
+                    <span className={s.note}>About {pace === 3000 ? "3.4 s" : pace === 1500 ? "1.9 s" : "0.9 s"} between lines</span>
                   </Row>
                   <Row label="Opening speaker">
                     <Select label="Opening speaker" hideLabel value={opener} onChange={setOpener} options={[{ value: "auto", label: "Auto" }, ...cast.map((id) => ({ value: id, label: byId[id]?.profile.name ?? id }))]} />

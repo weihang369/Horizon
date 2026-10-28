@@ -255,7 +255,7 @@ export const CHARACTERS: CharacterDef[] = [
     profile: {
       name: "Rin Morisaki", role: "Game-design grad student & junior game developer", age: 22, pronouns: "she/her",
       tagline: "I'm not antisocial, I'm in a raid.",
-      personality: { summary: "Deadpan, sarcastic, competitive gamer, secretly protective of Hana, hates mornings.", traits: ["deadpan", "sarcastic", "competitive", "protective"] },
+      personality: { summary: "Deadpan with a dry humour and rarely actually angry: a sarcastic, competitive gamer, secretly protective of Hana, who hates mornings.", traits: ["deadpan", "sarcastic", "competitive", "protective"] },
       backstory: "Hana's younger sister. Grad student by day, junior dev on an indie studio's night shift, raid tank always.",
       speakingStyle: {
         summary: "Short replies in lowercase, gamer slang used sparingly, an occasional sincere moment she immediately undercuts.", tone: "deadpan", formality: "casual",

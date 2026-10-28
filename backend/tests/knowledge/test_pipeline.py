@@ -147,3 +147,22 @@ async def test_an_unbilled_embedding_failure_drops_the_in_flight_marker(api: Api
     await settle(api)
     r = await row(api, src["id"])
     assert r["status"] == "keyword_only" and r["embed_sent_at"] is None
+
+
+async def test_a_source_being_reindexed_still_counts_where_search_finds_it(api: Api) -> None:
+    """A re-indexing or failed source's old passages stay searchable, so the rarity counts and MMR's stored vectors read
+    them too: ranking doesn't shift while a source re-indexes (audit C-P1-2, the user's option 1)."""
+    await api.set_key()
+    src = await add_file(api, "soups.md", b"# Soups\n\nKombuzzle first.\n\nThen tofu.", "text/markdown")
+    await settle(api)
+    index = api.rt.deep_io.index("wld_seedSunnyHollow", HANA)
+    async with api.rt.db.read() as conn:
+        rids = [int(r[0]) for r in (await conn.execute(
+            text("SELECT rid FROM knowledge_chunks WHERE source_id = :s"), {"s": src["id"]})).all()]
+    before = (await index.term_counts(["kombuzzle"]), await index.vectors(rids))
+    assert before[0] == {"kombuzzle": 1} and set(before[1]) == set(rids)
+    for status in ("embedding", "failed"):
+        async with api.rt.db.write() as tx:
+            await tx.conn.execute(text("UPDATE knowledge_sources SET status = :x WHERE id = :s"),
+                                  {"x": status, "s": src["id"]})
+        assert (await index.term_counts(["kombuzzle"]), await index.vectors(rids)) == before

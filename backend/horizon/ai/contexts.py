@@ -57,6 +57,7 @@ class ParticipantView(Frozen):
     name: str
     role: str                       # the participant role: speaker | debater
     character_role: str = ""        # M8 (doc 04 P5): the profile's role, e.g. "barista"
+    relation: str = ""              # the profile's `relationshipToUser` (the group persona's relations line, audit T-03)
     side: str | None = None
     muted: bool = False
     emotion: str = "neutral"        # the face shown now (the naive engine's default when no tag arrives)

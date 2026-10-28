@@ -104,6 +104,7 @@ class _In(BaseModel):
 class CastMember(_In):
     name: str
     role: str = ""
+    relation: str = ""   # the profile's `relationshipToUser` ("your girlfriend…"); the group block names it (T-03)
 
 
 class You(_In):
@@ -216,6 +217,20 @@ def _join_or(names: Sequence[str]) -> str:
 
 def _who(members: Sequence[CastMember]) -> str:
     return ", ".join(f"{m.name} ({_lower_first(m.role)})" if m.role.strip() else m.name for m in members)
+
+
+def _relation(user: str, rel: str) -> str:
+    """A "Relationship to you" text is written to the user ("your girlfriend"), so another speaker reads it with the
+    user's name ("Kai's girlfriend")."""
+    rel = rel.strip().rstrip(".").strip()   # the list ends in one full stop
+    return f"{user}'s {rel[5:].strip()}" if rel[:5].lower() == "your " else rel
+
+
+def relations_line(user: str, members: Sequence[CastMember]) -> str | None:
+    """Audit T-03 (the maintainer's choice): in a group chat each speaker learns how the others relate to the user, so
+    no one calls the user's girlfriend's father "your dad" to the user."""
+    rels = [f"{m.name} is {_relation(user, m.relation)}" for m in members if m.relation.strip()]
+    return _sentence(f"How they relate to {user}: " + "; ".join(rels)) if rels else None
 
 
 # ── the card ──
@@ -353,6 +368,8 @@ def _session(inp: PersonaInput) -> str:
     lines = ["# This session"]
     if inp.mode == "group":
         lines.append(f"This is a group chat with {user} and: {_who(inp.others)}.")
+        if (rel := relations_line(user, inp.others)) is not None:
+            lines.append(rel)
     elif inp.mode == "watch":
         premise = f" Premise: {_sentence(inp.premise)}" if inp.premise.strip() else ""
         # U-64 (the maintainer's choice): the watcher is off-stage until they step in, so lines aren't addressed to them
@@ -446,7 +463,7 @@ def persona_input(ctx: TurnContext) -> PersonaInput:
         profile=ctx.speaker.profile, appearance_summary=ctx.speaker.appearance_summary, advisory=ctx.speaker.advisory,
         world_name=s.world.name, mode=s.mode,  # type: ignore[arg-type]
         you=You(display_name=str(you.get("displayName") or ""), about=str(you.get("about") or "")) if you else None,
-        others=[CastMember(name=p.name, role=p.character_role) for p in others],
+        others=[CastMember(name=p.name, role=p.character_role, relation=p.relation) for p in others],
         premise=str(cfg.get("premise", "")), debate=debate,
         turn_length=str(cfg.get("turnLength")) if s.mode == "debate" and cfg.get("turnLength") else None,
         content_rating=s.content_rating, memories=[m.text for m in ctx.speaker.memories])

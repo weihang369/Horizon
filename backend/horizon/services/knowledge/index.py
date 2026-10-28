@@ -78,31 +78,30 @@ class ScopedIndex:
     # ── M12 (rag D10, D12): the agent pipeline's reads, still bound to the speaker ──
     async def term_counts(self, terms: list[str]) -> dict[str, int]:
         """How many of the speaker's searchable pieces hold each term (one scoped FTS5 count per term), for the rarity
-        order. Terms are quoted, so they are plain words to FTS."""
+        order. Terms are quoted, so they are plain words to FTS. It counts what search finds: a source being re-indexed,
+        or whose re-index failed, keeps its old passages searchable, so they count too (audit C-P1-2)."""
         out: dict[str, int] = {}
         async with self.rt.db.read() as conn:
             for term in terms:
                 n = (await conn.execute(text(
                     "SELECT count(*) FROM knowledge_fts f JOIN knowledge_chunks c ON c.rid = f.rowid "
-                    "JOIN knowledge_sources s ON s.id = c.source_id "
-                    "WHERE knowledge_fts MATCH :q AND c.world_id = :w AND c.character_id = :c "
-                    "AND s.status IN ('indexed', 'keyword_only')"),
+                    "WHERE knowledge_fts MATCH :q AND c.world_id = :w AND c.character_id = :c"),
                     {"q": '"' + term.replace('"', "") + '"', **self._scope})).scalar_one()
                 out[term] = int(n)
         return out
 
     async def vectors(self, rids: list[int]) -> dict[int, list[float]]:
         """The stored vectors of these pieces in this index's space, the speaker's partition only (keyword-only pieces
-        have none). The space is the one the index was built with, so a switch mid-turn never mixes spaces."""
+        have none). The space is the one the index was built with, so a switch mid-turn never mixes spaces. Like search,
+        it reads a re-indexing or failed source's old vectors too, so MMR sees every piece search can return (C-P1-2)."""
         if not rids:
             return {}
         _, kno = spaces.vec_tables(self.active_space)
         marks = ", ".join(str(int(r)) for r in rids)
         async with self.rt.db.read() as conn:
-            own = {int(r[0]) for r in (await conn.execute(text(   # keyword-only pieces have no vector
-                f"SELECT c.rid FROM knowledge_chunks c JOIN knowledge_sources s ON s.id = c.source_id "
-                f"WHERE c.rid IN ({marks}) AND c.world_id = :w AND c.character_id = :c "
-                f"AND s.status = 'indexed'"), self._scope)).all()}
+            own = {int(r[0]) for r in (await conn.execute(text(   # keyword-only pieces have no vector row
+                f"SELECT c.rid FROM knowledge_chunks c "
+                f"WHERE c.rid IN ({marks}) AND c.world_id = :w AND c.character_id = :c"), self._scope)).all()}
             if not own:
                 return {}
             # one statement of primary-key lookups: vec0 scans the partition for an IN list (≈ 20 ms on 3,000

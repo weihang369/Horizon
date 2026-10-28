@@ -38,7 +38,7 @@
 
 **Back (◂, browser Back, Alt+←):** in-app history clamped to the world; never re-enters a ceremony or finished wizard; empty history → logical parent (hub). Leaving a live session pauses it (MULTI-13) with toast "Paused · *{title}*".
 
-**Esc precedence:** (1) popover/picker (O11, O24, O09) → (2) DockExpansion (collapses, draft kept) → (3) Modal → (4) Drawer (top-most opened last) → (5) focused text field: **blur only** → (6) O01 Pause (Esc again resumes). O19 undismissable.
+**Esc precedence:** (1) popover/picker (O11, O24, O09) → (2) DockExpansion (collapses, draft kept; a modal opened after it closes first) → (3) Modal → (4) Drawer (top-most opened last) → (5) focused text field: **blur only** → (6) O01 Pause (Esc again resumes). O19 undismissable.
 
 ### 2.2 Compositions (W×H in px; gutter 32 @1440, 24 @1280; DEMO tape adds 28px on top and shrinks Stage, never Dock)
 

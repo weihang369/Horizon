@@ -75,8 +75,9 @@ describe("MessageRow cut actions (audit D-11)", () => {
   const actions = (chat: boolean) => renderToStaticMarkup(createElement(SessionContext.Provider, { value: live },
     createElement(MessageRow, { m: cut, chars: {}, variant: "chat", selected: false, canRegenerate: false, chat, fresh: false })));
 
-  it("offers Continue · Regenerate on an interrupted chat reply", () => {
+  it("offers one chip, Regenerate, on an interrupted chat reply", () => {
     expect(actions(true)).toContain(">Regenerate<");
+    expect(actions(true)).not.toContain(">Continue<");
   });
 
   it("offers neither on a cut debate argument or scene line (Regenerate is a chat command)", () => {

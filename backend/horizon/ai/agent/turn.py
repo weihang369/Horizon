@@ -147,12 +147,15 @@ class AgentTurnEngine(NaiveTurnEngine):
         """M10 (group-watch D10): the label of the bytes this turn sent. A G3 "second" or "next" sentence in the cue
         makes it `agent-3`; M11 (debate D10): the reworded steer sentence `agent-5`, a debate argument's cue `agent-7`;
         each one higher with the mood line on. Every other request keeps M9's `agent-1` / `agent-2`. M12 (rag D16):
-        a request carrying the documents block adds `+docs-1`, the not-found block `+nodocs-1`."""
+        a request carrying the documents block adds `+docs-1`, the not-found block `+nodocs-1`. A group persona that
+        names how the others relate to the user adds `+rel-1` (audit T-03)."""
         base = self._base_version(ctx)
         block = self.block(ctx) if ctx is not None else None
         label = getattr(block, "label", None)
         safety = ctx.plan.safety if ctx is not None and ctx.plan is not None else None
-        return (f"{base}+{label}-1" if label else base) + (safety.label if safety is not None else "")  # M14 (D6)
+        rel = "+rel-1" if ctx is not None and ctx.session.mode == "group" and any(
+            p.relation.strip() for p in ctx.session.participants if p.character_id != ctx.speaker.id) else ""
+        return (f"{base}+{label}-1" if label else base) + rel + (safety.label if safety is not None else "")  # M14 (D6)
 
     def block(self, ctx: TurnContext) -> Any:
         """M12 (rag D16): the documents block from the frozen plan, never a retriever (ai-ports)."""

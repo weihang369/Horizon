@@ -52,7 +52,7 @@ CUT = ("cut_debate_d06", "cut_debate_d09", "cut_debate_d10", "cut_debate_d11", "
 
 def profiles() -> dict[str, dict[str, Any]]:
     out = {p.stem: json.loads(p.read_text(encoding="utf-8"))["data"]["profile"]
-           for p in (ROOT / "seed" / "characters").glob("*.json")}
+           for p in (ROOT / "evals" / "seed-v0" / "characters").glob("*.json")}
     for c in json.loads((ROOT / "evals" / "debates" / "cast.json").read_text(encoding="utf-8"))["characters"]:
         out[c["id"]] = c["profile"]
     return out

@@ -25,10 +25,10 @@ export function ledgerFor(
     push(target, { at: add(created, 5_000), category: "profile", model: PRICING.chat.model, characterId: cid, costUsd: g.profileDraft, estimatedCostUsd: g.profileDraft, latencyMs: 4100 });
     if (c.character.appearance.basePortraitUrl) {
       const cands = c.character.appearance.candidates.length || 1;
-      for (let i = 0; i < cands; i++) push(target, { at: add(created, 60_000 + i * 1000), category: "image", model: "qwen/qwen-image-3", characterId: cid, costUsd: g.portrait, estimatedCostUsd: g.portrait, latencyMs: 19_800 });
+      for (let i = 0; i < cands; i++) push(target, { at: add(created, 60_000 + i * 1000), category: "image", model: MODELS.image, characterId: cid, costUsd: g.portrait, estimatedCostUsd: g.portrait, latencyMs: 19_800 });
       const emos = Object.entries(c.character.emotions).filter(([e, v]) => e !== "neutral" && v).length;
-      for (let i = 0; i < emos; i++) push(target, { at: add(created, 180_000 + i * 16_000), category: "image", model: "qwen/qwen-image-3", characterId: cid, costUsd: g.emotionEdit, estimatedCostUsd: g.emotionEdit, latencyMs: 15_200 });
-      if (c.renderBlink) push(target, { at: add(created, 300_000), category: "image", model: "qwen/qwen-image-3", characterId: cid, costUsd: g.blinkFrame, estimatedCostUsd: g.blinkFrame, latencyMs: 14_900 });
+      for (let i = 0; i < emos; i++) push(target, { at: add(created, 180_000 + i * 16_000), category: "image", model: MODELS.image, characterId: cid, costUsd: g.emotionEdit, estimatedCostUsd: g.emotionEdit, latencyMs: 15_200 });
+      if (c.renderBlink) push(target, { at: add(created, 300_000), category: "image", model: MODELS.image, characterId: cid, costUsd: g.blinkFrame, estimatedCostUsd: g.blinkFrame, latencyMs: 14_900 });
     }
     if (c.song) push(target, { at: add(created, 420_000), category: "music", model: MODELS.music, characterId: cid, costUsd: g.song, estimatedCostUsd: g.song, latencyMs: 41_000 });
   }

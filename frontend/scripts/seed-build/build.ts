@@ -115,11 +115,14 @@ export async function buildSeed(): Promise<{ outputs: Outputs; copies: Copies; w
   const memoryIds: Record<string, string> = {};
   const memory = RECORDED_MEMORY ? recordedMemory(RECORDED_MEMORY, recordings, memoryIds) : MEMORY;
   for (const owner of MEMORY_OWNERS) put(`memory/${owner}.json`, json(memory.filter((m) => m.characterId === owner)));
-  // D-59: citedCount = citation markers across the shipped (non-mock) sessions; chunks per source.
+  // D-59: citedCount = replies citing the source across the shipped (non-mock) sessions, once per reply as the backend
+  // counts (audit C-P1-3); chunks per source.
   const citedCount: Record<string, number> = {};
   for (const { c, mock } of compiled) {
     if (mock) continue;
-    for (const m of c.messages) for (const ct of m.citations ?? []) citedCount[ct.sourceId] = (citedCount[ct.sourceId] ?? 0) + 1;
+    for (const m of c.messages) {
+      for (const id of new Set((m.citations ?? []).map((ct) => ct.sourceId))) citedCount[id] = (citedCount[id] ?? 0) + 1;
+    }
   }
   const sources = KNOWLEDGE.map((k) => {
     const chunks = KNOWLEDGE_CHUNKS[k.id];

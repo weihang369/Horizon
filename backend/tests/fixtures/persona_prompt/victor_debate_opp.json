@@ -57,11 +57,13 @@
   "others": [
    {
     "name": "Amara Okafor",
-    "role": "Emergency physician & public-health researcher"
+    "role": "Emergency physician & public-health researcher",
+    "relation": ""
    },
    {
     "name": "Mei Tanaka-Ruiz",
-    "role": "Macroeconomist (labour markets)"
+    "role": "Macroeconomist (labour markets)",
+    "relation": ""
    }
   ],
   "premise": "",
@@ -73,11 +75,13 @@
    "opponents": [
     {
      "name": "Amara Okafor",
-     "role": "Emergency physician & public-health researcher"
+     "role": "Emergency physician & public-health researcher",
+     "relation": ""
     },
     {
      "name": "Mei Tanaka-Ruiz",
-     "role": "Macroeconomist (labour markets)"
+     "role": "Macroeconomist (labour markets)",
+     "relation": ""
     }
    ]
   },

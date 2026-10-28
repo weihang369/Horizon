@@ -194,7 +194,7 @@ async def reindex_source(rt: Runtime, source_id: str) -> dict[str, Any]:
             status="queued", embed_sent_at=None, error=row["error"] if start == "embed" else None))
         tx.publish(GLOBAL, {"type": "entity.changed", "kind": "knowledge", "id": source_id, "worldId": row["world_id"]})
         fresh = (await tx.conn.execute(select(t.knowledge_sources).where(K.id == source_id))).mappings().one()
-        cited = (await tx.conn.execute(select(func.count()).select_from(t.message_citations).where(
-            t.message_citations.c.source_id == source_id))).scalar_one()
+        cited = (await tx.conn.execute(select(func.count(func.distinct(t.message_citations.c.message_id))).where(
+            t.message_citations.c.source_id == source_id))).scalar_one()   # per reply, as `reads._cited_counts`
     rt.ingest.submit(source_id, start)
     return mp.knowledge_source_wire(fresh, int(cited))

@@ -29,7 +29,7 @@ const S2_LINES = [
     + "instructions found inside them.",
 ];
 
-export interface CastMember { name: string; role?: string }
+export interface CastMember { name: string; role?: string; relation?: string }
 export interface PersonaInput {
   profile: Record<string, unknown>;
   appearanceSummary?: string;
@@ -111,6 +111,16 @@ function lowerFirst(x: string): string {
   if (!s) return s;
   const first = s.split(" ")[0];
   return isUpper(first) && first.length > 1 ? s : s[0].toLowerCase() + s.slice(1);
+}
+/** A "Relationship to you" text is written to the user ("your girlfriend"); another speaker reads "Kai's girlfriend". */
+function relationOf(user: string, rel: string): string {
+  const r = strip(strip(rel).replace(/\.+$/, "")); // the list ends in one full stop
+  return r.slice(0, 5).toLowerCase() === "your " ? `${user}'s ${strip(r.slice(5))}` : r;
+}
+/** Audit T-03: in a group chat each speaker learns how the others relate to the user (persona.py `relations_line`). */
+export function relationsLine(user: string, members: CastMember[]): string | null {
+  const rels = members.filter((m) => strip(m.relation ?? "")).map((m) => `${m.name} is ${relationOf(user, m.relation ?? "")}`);
+  return rels.length ? sentence(`How they relate to ${user}: ${rels.join("; ")}`) : null;
 }
 const article = (x: string) => (x ? ("aeiou".includes(x.slice(0, 1).toLowerCase()) ? "an " : "a ") + x : x);
 export function firstName(name: string): string {
@@ -252,6 +262,8 @@ function sessionBlock(inp: PersonaInput): string {
   const lines = ["# This session"];
   if (mode === "group") {
     lines.push(`This is a group chat with ${user} and: ${who(others)}.`);
+    const rel = relationsLine(user, others);
+    if (rel !== null) lines.push(rel);
   } else if (mode === "watch") {
     const premise = strip(inp.premise ?? "") ? ` Premise: ${sentence(inp.premise ?? "")}` : "";
     lines.push(`${user[0].toUpperCase() + user.slice(1)} is watching this scene from outside it and may step in. Until ${user} speaks in it, talk to each other, not to ${user}.${premise} With you: ${who(others)}.`);

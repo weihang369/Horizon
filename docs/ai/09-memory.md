@@ -84,7 +84,7 @@ From the code:
    "In-session recall" section (INS-01) are already in the contract.
 4. **Any character message can be regenerated**, not only the last one: `_regenerate`
    ([commands.py](../../backend/horizon/sessions/commands.py)) accepts any non-streaming character message, and the UI
-   offers **Continue** and **Regenerate** on any interrupted or failed reply (STATE-03, CHAT-02 AC3); only the ↻
+   offers **Regenerate** on any interrupted or failed chat reply (STATE-03, CHAT-02 AC3); only the ↻
    button is limited to the last message (CHAT-06).
 5. **Two `seq` counters exist:** `messages.seq` numbers a session's messages; `session_events.seq` numbers every
    event, tokens included. The rolling summary's `upto_seq` uses the message number

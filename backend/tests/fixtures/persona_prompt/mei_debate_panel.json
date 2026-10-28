@@ -57,7 +57,8 @@
   "others": [
    {
     "name": "Victor Hale",
-    "role": "Constitutional litigator"
+    "role": "Constitutional litigator",
+    "relation": ""
    }
   ],
   "premise": "",
