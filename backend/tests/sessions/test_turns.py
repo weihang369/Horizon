@@ -225,6 +225,11 @@ async def test_a_muted_participant_mentioned_stays_silent(api: Api) -> None:
     msgs = await messages(api, sid)
     assert any(m["kind"] == "system_note" and m["content"] == "Victor is muted." for m in msgs)
     assert chars(msgs) == []
+    # the note is for the user: no prompt or summary reads it (the hunt saw "dad's muted" said in the story)
+    from horizon.sessions.context import session_context
+
+    ctx = await session_context(api.rt, await api.rt.sessions.get(sid))
+    assert not any(v.content.endswith(" is muted.") for v in ctx.recent)
     await command(api, sid, "send", {"text": "Both of you?", "mentions": ["chr_seedVictor", "chr_seedAmara"]})
     await api.drive(20000)
     assert {m["author"]["characterId"] for m in chars(await messages(api, sid))} == {"chr_seedAmara"}

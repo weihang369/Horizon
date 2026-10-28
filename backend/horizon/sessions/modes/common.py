@@ -10,7 +10,7 @@ from horizon.ai.scripted.bank import first_name
 from horizon.domain import vclock
 from horizon.domain.ids import new_id
 from horizon.sessions.after_turn import on_user_message
-from horizon.sessions.context import characters
+from horizon.sessions.context import MUTED_SUFFIX, characters
 from horizon.sessions.turn import TurnOutcome, TurnRunner, TurnSpec
 
 if TYPE_CHECKING:
@@ -75,7 +75,7 @@ async def muted_mentions(actor: SessionActor, mentions: list[str]) -> list[str]:
     muted = {p["characterId"] for p in actor.session["participants"] if p.get("mutedByUser")}
     for m in mentions:
         if m in muted:
-            await actor.emit(message_event(note(actor, f"{await name_of(actor, m)} is muted.", targetCharacterId=m)))
+            await actor.emit(message_event(note(actor, f"{await name_of(actor, m)}{MUTED_SUFFIX}", targetCharacterId=m)))
     return [m for m in mentions if m not in muted]
 
 

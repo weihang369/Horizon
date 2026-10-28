@@ -27,11 +27,20 @@ async def _latest_summary(rt: Runtime, sid: str) -> tuple[int, str | None]:
     return (int(r[0]), str(r[1])) if r is not None else (0, None)
 
 
+MUTED_SUFFIX = " is muted."   # the note a muted @mention gets (J3-11): about the app's controls, not the scene
+
+
+def app_note(m: Any) -> bool:
+    """A note for the user only, kept out of every prompt: the runtime hunt saw a character read "Takeshi is muted."
+    and say "dad's muted" in the story."""
+    return m["author"]["type"] == "system" and str(m.get("content") or "").endswith(MUTED_SUFFIX)
+
+
 def _views(msgs: list[Any], names: dict[str, Any]) -> list[MessageView]:
     return [MessageView(id=m["id"], seq=m["seq"], author_type=m["author"]["type"],
                         character_id=m["author"].get("characterId"),
                         name=str(names.get(m["author"].get("characterId") or "", "") or m["author"]["type"]),
-                        kind=m["kind"], content=m["content"], emotion=m.get("emotion")) for m in msgs]
+                        kind=m["kind"], content=m["content"], emotion=m.get("emotion")) for m in msgs if not app_note(m)]
 
 
 async def characters(rt: Runtime, ids: list[str]) -> dict[str, Any]:
