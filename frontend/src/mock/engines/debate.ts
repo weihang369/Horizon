@@ -6,7 +6,7 @@ import type {
 import { chatCostUsd } from "../../domain/cost";
 import { answerTo, debateLine } from "../banks";
 import type { EngineHost, LiveSession } from "./host";
-import { asleepNote, clearLive, enqueue, isAsleep, speakThen, systemNote, userMessage } from "./host";
+import { asleepNote, clearLive, enqueue, hasLeft, isAsleep, speakThen, systemNote, userMessage } from "./host";
 
 const LABEL: Record<DebatePhase, string> = { setup: "SETUP", opening: "OPENING", rebuttal: "REBUTTAL", closing: "CLOSING", verdict: "VERDICT", ended: "ENDED" };
 export const DEFAULT_RUBRIC = [
@@ -105,8 +105,12 @@ function pauseSide(h: EngineHost, sid: string, side: Slot, asleep: string[]): vo
   const live = h.live(sid);
   for (const cid of asleep) asleepNote(h, sid, cid, false, meta(live));
   live.held = true;
+  const gone = asleep.length > 0 && asleep.every((cid) => hasLeft(h, cid));   // pass 2 J3-08: only End helps
+  const text = gone
+    ? (side === null ? "Everyone on the panel has left. End the debate to finish." : `The ${SIDE_NAME[side]} has no one left. End the debate to finish.`)
+    : (side === null ? "Everyone on the panel is asleep. Top someone up to continue the debate." : `The ${SIDE_NAME[side]} is asleep. Top someone up to continue the debate.`);
   h.emit(sid,
-    { type: "message", payload: { message: systemNote(h, sid, side === null ? "Everyone on the panel is asleep. Top someone up to continue the debate." : `The ${SIDE_NAME[side]} is asleep. Top someone up to continue the debate.`) } },
+    { type: "message", payload: { message: systemNote(h, sid, text) } },
     { type: "session.paused", payload: { reason: "user" } },
   );
 }

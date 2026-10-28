@@ -31,7 +31,7 @@ In a group session, `chat.send` SHALL post the user's message, then answer with:
 
 Muted participants SHALL be skipped as `muted`, and exhausted unmentioned ones as `exhausted`. A muted participant SHALL
 never reply, even when mentioned: each muted mention SHALL get the note "{name} is muted." and be dropped from the mentions,
-and when every mention was muted nobody else SHALL answer. That note is for the user: it SHALL NOT enter any prompt or summary. When every mentioned participant is asleep, each SHALL get the
+and when every mention was muted nobody else SHALL answer. That note is for the user: it SHALL NOT enter any prompt or summary, and neither SHALL any other note about the app rather than the scene ("Top someone up…", "End the debate to finish.", a recap or verdict that failed); story notes such as "{name} is asleep" or "{name} has left." stay. When every mentioned participant is asleep, each SHALL get the
 asleep note and nobody else SHALL answer, in every profile.
 
 #### Scenario: A muted participant is mentioned

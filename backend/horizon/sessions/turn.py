@@ -67,6 +67,15 @@ _MARKER = re.compile(r"\[(\d+)\]")
 
 
 @dataclass
+class _Answered:
+    """An output check that already answered, in the shape the after-the-fact check reads (pass 2 J2-06)."""
+    res: Any
+
+    async def final(self) -> Any:
+        return self.res
+
+
+@dataclass
 class TurnSpec:
     speaker: str
     line: LineHint = field(default_factory=LineHint)
@@ -564,7 +573,9 @@ class TurnRunner:
                 status, scrub = "error", True
                 err = ProviderError("content_refused", "The reply was blocked by the safety check.")
         elif status == "interrupted" and ctx is not None and not verbatim and info.content.strip():
-            after = info.guard if info.guard is not None else self._start_guard(info, ctx, info.content)
+            # pass 2 J2-06: a Stop landing after the check answered reuses that answer (never paid twice, a block kept)
+            after = (_Answered(info.checked) if info.checked is not None else
+                     info.guard if info.guard is not None else self._start_guard(info, ctx, info.content))
         info.guard = None
         if checks:
             trace = {**trace, "guardrail": {**(trace.get("guardrail") or {}), "checks": checks}}
@@ -668,18 +679,19 @@ class TurnRunner:
         return status
 
     def _scrubber(self, actor: SessionActor, info: TurnInfo) -> Any:
-        """D13: the blocked reply's text leaves the stored token events and the message (same transaction)."""
+        """D13: the blocked reply's text leaves the stored token events and the message (same transaction). The
+        in-memory edit is made inside the transaction too (pass 2 J2-06): a cancel while waiting for the lock or mid-write
+        reloads the state, so memory never shows a scrub the rows don't have."""
         from sqlalchemy import and_, select, update
 
         from horizon.db import tables as t
 
-        msg = actor.state["messages"].get(info.message_id)
-        if msg is not None:
-            msg["content"] = ""
-            if info.variant_id and msg.get("variants"):
-                msg["variants"] = [{**v, "content": ""} if v["id"] == info.variant_id else v for v in msg["variants"]]
-
         async def scrub(tx: Any, _stamped: list[Wire]) -> None:
+            msg = actor.state["messages"].get(info.message_id)
+            if msg is not None:
+                msg["content"] = ""
+                if info.variant_id and msg.get("variants"):
+                    msg["variants"] = [{**v, "content": ""} if v["id"] == info.variant_id else v for v in msg["variants"]]
             E = t.session_events.c
             rows = (await tx.conn.execute(select(E.id, E.payload).where(and_(
                 E.session_id == actor.sid, E.message_id == info.message_id, E.type == "token")))).all()
@@ -725,6 +737,7 @@ class TurnRunner:
         info.guard = call
         res = await call.by(call.deadline())
         info.guard = None
+        info.checked = res   # pass 2 J2-06: a Stop after this point reads the answer instead of asking again
         return res
 
     async def _check_after(self, actor: SessionActor, info: TurnInfo, call: Any) -> None:

@@ -260,11 +260,15 @@ The runtime SHALL read each `agent` speaker's memory list once per sitting, when
 - **THEN** B's next Amara turn shows the new memory in its list, and the turn after it sends the same system message
 
 ### Requirement: An interrupted reply is checked after the fact
-Under `agent`, a reply ended by Stop (including Stop during its check) SHALL be checked by a named after-turn task that reuses any check already in flight, so nothing is paid twice. The task SHALL survive Stop, End, a cap pause, leave and Reset demo (which keeps user sessions), and SHALL be cancelled by a session, character or world delete and by shutdown. A block SHALL scrub the reply as a live block does.
+Under `agent`, a reply ended by Stop (including Stop during its check) SHALL be checked by a named after-turn task that reuses any check already in flight or already answered, so nothing is paid twice. The task SHALL survive Stop, End, a cap pause, leave and Reset demo (which keeps user sessions), and SHALL be cancelled by a session, character or world delete and by shutdown. A block SHALL scrub the reply as a live block does.
 
 #### Scenario: Stop during the check
 - **WHEN** the user presses Stop while a finished reply's output check is in flight, and the check then answers p 0.95
 - **THEN** exactly one `guardrail` ledger row exists for that message, and the message ends with empty content and status `error`
+
+#### Scenario: Stop after the check answered
+- **WHEN** the output check has answered p 0.95 and Stop lands before `turn.end` is written
+- **THEN** that answer is reused: exactly one `guardrail` ledger row exists for that message, and the message ends with empty content and status `error`
 
 #### Scenario: Deleted meanwhile
 - **WHEN** a session is deleted while an after-the-fact check is in flight

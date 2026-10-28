@@ -118,7 +118,8 @@ async def backfill_lines(rt: Runtime) -> int:
         have = set((await conn.execute(text(f"SELECT rid FROM {table}"))).scalars())
         missing = [int(r) for r in (await conn.execute(select(X.rid).order_by(X.rid))).scalars() if r not in have]
     done = 0
-    for i in range(0, min(len(missing), BACKFILL_MAX), BACKFILL_BATCH):
+    missing = missing[:BACKFILL_MAX]   # the cap counts lines, not batch starts (a last batch ran 48 over)
+    for i in range(0, len(missing), BACKFILL_BATCH):
         async with rt.db.read() as conn:
             rows = (await conn.execute(select(X.rid, X.session_id, t.sessions.c.world_id, X.text)
                                        .join(t.sessions, t.sessions.c.id == X.session_id)

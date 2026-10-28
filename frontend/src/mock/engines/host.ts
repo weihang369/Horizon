@@ -135,8 +135,11 @@ export function energyNow(h: EngineHost, cid: string): { current: number; max: n
   return { current: e.current, max: e.max };
 }
 
+/** Deleted (a tombstone): it never speaks again, and no top-up brings it back (pass 2 J3-08). */
+export const hasLeft = (h: EngineHost, cid: string): boolean => !h.db.characters[cid] || !!h.db.characters[cid].deletedAt;
+
 export function isAsleep(h: EngineHost, cid: string): boolean {
-  return energyNow(h, cid).current < EST_REPLY_POINTS[h.period()];
+  return hasLeft(h, cid) || energyNow(h, cid).current < EST_REPLY_POINTS[h.period()];
 }
 
 export function systemNote(h: EngineHost, sid: string, content: string, kind: Message["kind"] = "system_note", author: Message["author"] = { type: "system" }, extra?: Partial<Message>): Message {
@@ -345,6 +348,10 @@ export function asleepNote(h: EngineHost, sid: string, cid: string, skipping: bo
   const c = h.db.characters[cid];
   if (!c) return;
   const name = firstName(c);
+  if (hasLeft(h, cid) && !skipping) {   // pass 2 J3-08: deleted, not asleep, so no Top up (the skip note stays: the cursor counts it)
+    h.emit(sid, { type: "message", payload: { message: systemNote(h, sid, `${name} has left.`, "system_note", { type: "system" }, { targetCharacterId: cid, ...(debate ? { debate } : {}) }) } });
+    return;
+  }
   const msg = systemNote(h, sid, skipping ? `${name} is asleep, skipping.` : `${name} is asleep (⚡ ${energyNow(h, cid).current}).`, "system_note", { type: "system" }, { targetCharacterId: cid, ...(debate ? { debate } : {}) });
   h.emit(sid,
     { type: "message", payload: { message: msg } },

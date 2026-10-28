@@ -21,6 +21,7 @@ from horizon.ai.contexts import (
     TurnPlan,
     WorldView,
 )
+from horizon.domain import vclock
 from horizon.domain.pricing import count_tokens
 from tests.conftest import Api
 from tests.helpers.storm import after_storm
@@ -221,6 +222,44 @@ async def test_stop_during_the_check_blocks_after_the_fact_with_one_ledger_row(a
     assert end["payload"]["status"] == "interrupted" and err["seq"] > end["seq"]
     tokens = [e for e in evs if e["type"] == "token" and e["payload"]["messageId"] == reply["id"]]
     assert all(e["payload"]["delta"] == "" for e in tokens)                     # scrubbed in the stored events too
+    await after_storm(api, sid)
+
+
+async def test_a_stop_after_the_check_answered_keeps_its_block_and_pays_once(api: Api) -> None:
+    """Pass 2 J2-06: Stop lands after the check answered but before the turn closed (here: the usage read). The
+    interrupted close reuses that answer: no second request, and the block still scrubs the reply."""
+    sid = await agent(api, "one_on_one", [AMARA])
+    answer(api, "output_rules", BLOCK)
+    real, gate, reached = api.rt.ledger.reply_usage, asyncio.Event(), asyncio.Event()
+
+    async def held_once(message_id: str, since: str | None = None) -> Any:
+        if guard_requests(api) and not reached.is_set():
+            reached.set()
+            holder = vclock.current_holder()   # parked like the fake's holds, so virtual time can still settle
+            if holder is not None:
+                holder.drop()
+            try:
+                await gate.wait()
+            finally:
+                if holder is not None:
+                    holder.hold()
+        return await real(message_id, since=since)
+
+    api.rt.ledger.reply_usage = held_once  # type: ignore[method-assign]
+    await command(api, sid, "send", {"text": "Tell me about the night shift."})
+    for _ in range(400):
+        await api.drive(10)
+        if reached.is_set():
+            break
+    assert reached.is_set()
+    await command(api, sid, "stop")
+    gate.set()
+    await api.drive(3000)
+    reply = chars(await messages(api, sid))[-1]
+    assert reply["status"] == "error" and reply["content"] == ""
+    assert checks_of(reply)["output"]["verdict"] == "block"
+    assert len(guard_requests(api)) == 1
+    assert len([r for r in await ledger(api) if r["purpose"] == "guardrail"]) == 1
     await after_storm(api, sid)
 
 

@@ -28,12 +28,22 @@ async def _latest_summary(rt: Runtime, sid: str) -> tuple[int, str | None]:
 
 
 MUTED_SUFFIX = " is muted."   # the note a muted @mention gets (J3-11): about the app's controls, not the scene
+# Notes written to the user about the app (its controls, a step that failed), not about the scene. The runtime hunt saw
+# a character read "Takeshi is muted." and say "dad's muted" in the story; a captured request carried "Top someone up
+# to continue the scene." into every speaker's history. The user chose (28 Oct) to keep all of them out of every prompt
+# and summary; story notes ("Hana is asleep", "has left", the round banners) stay.
+APP_NOTE_ENDINGS = (MUTED_SUFFIX, "Top someone up to continue the scene.", "Top someone up to continue the debate.",
+                    "End the debate to finish.", "Try Summarise again.")
+APP_NOTES = frozenset({"The arbiter's notes couldn't be written; the summary quotes the speakers.",
+                       "The arbiter couldn't score this debate; here is the summary."})
 
 
 def app_note(m: Any) -> bool:
-    """A note for the user only, kept out of every prompt: the runtime hunt saw a character read "Takeshi is muted."
-    and say "dad's muted" in the story."""
-    return m["author"]["type"] == "system" and str(m.get("content") or "").endswith(MUTED_SUFFIX)
+    """A note for the user only, kept out of every prompt and summary."""
+    if m["author"]["type"] != "system":
+        return False
+    text = str(m.get("content") or "")
+    return text in APP_NOTES or text.endswith(APP_NOTE_ENDINGS)
 
 
 def _views(msgs: list[Any], names: dict[str, Any]) -> list[MessageView]:

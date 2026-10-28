@@ -891,6 +891,24 @@ export function runPortableContract(label: string, makeHarness: MakeHarness, opt
       expect(await c.sessions.export("ses_seedDebate4Day")).toContain((await c.characters.get("chr_seedVictor")).profile.name);
     });
 
+    test("M4", "a debater deleted mid-debate has left: no asleep note, the side offers End (pass 2 J3-08)", async () => {
+      const { c, tick } = await make({ key: true });
+      const s = await c.sessions.create({
+        worldId: "wld_seedMeridian", mode: "debate", characterIds: ["chr_seedAmara", "chr_seedVictor"],
+        config: { motion: "This house would tax sugary drinks", format: "two_sided", sides: { prop: ["chr_seedAmara"], opp: ["chr_seedVictor"] }, roundsPreset: "quick", phases: ["opening", "closing"], turnLength: "short", moderator: "user", verdictBy: "arbiter", rubric: [], autoAdvance: false, pauseMs: 1500 },
+      });
+      await tick(20000);
+      await c.characters.delete("chr_seedVictor");
+      for (let i = 0; i < 3; i++) {
+        await c.debate.next(s.session.id);
+        await tick(20000);
+      }
+      const texts = (await c.sessions.messages(s.session.id)).map((m) => m.content);
+      expect(texts).toContain("Victor has left.");
+      expect(texts).toContain("The Opposition has no one left. End the debate to finish.");
+      expect(texts.some((t) => t.startsWith("Victor is asleep ("))).toBe(false);
+    });
+
     test("M4", "deleting a character who is speaking in the live session is a conflict", async () => {
       const { c, tick } = await make({ key: true });
       const s = await c.sessions.create({ worldId: "wld_seedMeridian", mode: "one_on_one", characterIds: ["chr_seedVictor"] });
