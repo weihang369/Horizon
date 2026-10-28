@@ -26,6 +26,7 @@ import os
 import shutil
 import sqlite3
 import stat
+import sys
 import time
 from collections.abc import AsyncIterator, Coroutine
 from contextlib import asynccontextmanager
@@ -814,7 +815,7 @@ def long_path_warning(data_dir: Path, *, windows: bool, long_paths: bool) -> str
 
 def _long_paths_enabled() -> bool:
     """Windows' `LongPathsEnabled` (Python's own manifest already opts in); False when it can't be read."""
-    if os.name != "nt":
+    if sys.platform != "win32":   # sys.platform, not os.name: mypy on Linux then skips the winreg calls
         return True
     try:
         import winreg
