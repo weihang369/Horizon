@@ -64,9 +64,10 @@ export function PortraitStep() {
     }
   };
   const generate = () => void startGeneration({ characterId: c.id, kind: "portrait_candidates" }, "Generate portrait");
+  const tweakOff = !!wait || !tweak.trim() || !c.appearance.basePortraitUrl && !cands.some((x) => x.status === "ready");
   const applyTweak = async () => {
     const text = tweak.trim();
-    if (!text) return;
+    if (tweakOff) return;   // pass 2 J5-09: Enter obeys the button's rule
     const job = await startGeneration({ characterId: c.id, kind: "portrait_tweak", prompt: text }, "Tweak portrait");
     if (job) setTweak("");
   };
@@ -153,7 +154,7 @@ export function PortraitStep() {
               onChange={(e) => setTweak(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && void applyTweak()}
             />
-            <Button variant="secondary" disabled={!!wait || !tweak.trim() || !c.appearance.basePortraitUrl && !cands.some((x) => x.status === "ready")} cost={estTweak ?? undefined} onClick={() => void applyTweak()}>Apply tweak</Button>
+            <Button variant="secondary" disabled={tweakOff} cost={estTweak ?? undefined} onClick={() => void applyTweak()}>Apply tweak</Button>
             <Button variant="ghost" cost={estGen ?? undefined} disabled={busy || !!wait} onClick={generate}>↻ New candidates</Button>
           </div>
         )}

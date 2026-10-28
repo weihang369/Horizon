@@ -153,11 +153,17 @@ export async function offerPortraitFirst(err: unknown, characterId: string): Pro
 }
 
 
+const retrying = new Set<string>();   // pass 2 J5-09: a second ↻ press while the first is in flight sends nothing
+
 export async function retryJobTask(jobId: string, taskId: string): Promise<void> {
+  if (retrying.has(taskId)) return;
+  retrying.add(taskId);
   try {
     await client.jobs.retryTask(jobId, taskId);
   } catch (err) {
     reportError(err);
+  } finally {
+    retrying.delete(taskId);
   }
 }
 
