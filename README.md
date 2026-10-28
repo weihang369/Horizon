@@ -39,6 +39,9 @@ npm run dev        # the backend on http://127.0.0.1:8000 and the app on http://
 Open <http://localhost:5173>: the two demo worlds load in demo mode. Ctrl-C stops both servers. Your data stays in `data/` at the repo root (git-ignored).
 
 - **Your OpenRouter key (optional).** Live chat and creation need a key from [openrouter.ai/keys](https://openrouter.ai/keys). Paste it in **Settings → Connection** (stored in `data/secrets.local.json`), or set `OPENROUTER_API_KEY` in `.env`. Without a key, everything recorded still plays.
+- **Windows: keep the folder path short.** Generated images are saved about 140 characters below the repo folder, and
+  Windows stops at 260 unless long paths are on. A clone in a deep folder (a path over about 120 characters) can't save
+  them; clone to a short path such as `C:\Horizon`, or turn on Windows long paths. The backend warns at start-up.
 - **Ports already in use?** Copy `.env.example` to `.env` and change `HORIZON_PORT` (the backend, default 8000) or `HORIZON_WEB_PORT` (the page, default 5173). Both servers read them from that one file.
 - **PDF and Word documents (optional).** Markdown and text work straight away. PDF and DOCX need Docling on CPU PyTorch and its models, about 1.4 GB, downloaded once: `npm run setup:docling`, then `uv run --project backend horizon models fetch`.
 - **Reset:** Settings → Data → "Reset demo data" restores the demo and keeps your own worlds.

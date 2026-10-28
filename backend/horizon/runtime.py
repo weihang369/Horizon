@@ -524,6 +524,8 @@ class Runtime:
             await self.corrector.scan()
         await asyncio.to_thread(sweep, cfg.data_dir, self.referenced_files_sync())
         self.capture.start()
+        if (warning := long_path_warning(cfg.data_dir, windows=os.name == "nt", long_paths=_long_paths_enabled())):
+            log.warning(warning)
         log.info("AI call capture %s", "ON (HORIZON_CAPTURE_AI_CALLS=1: prompts and replies kept 7 days in ai_calls)"
                  if self.capture.enabled else "off")
         configure_tracing({"HORIZON_LANGSMITH": "1" if cfg.langsmith else "",
@@ -791,6 +793,36 @@ def sweep(data_dir: Path, referenced: set[str], *, max_age_s: float = 3600) -> i
 def _on_rm_error(func: Any, path: str, _exc: Any) -> None:
     os.chmod(path, stat.S_IWRITE)
     func(path)
+
+
+# The deepest file Horizon writes sits about this far below `data/` (a generated portrait's temp file:
+# `assets\gen\<world>\<character>\candidate_cand_<ulid>.webp.<hex>.tmp`), and Windows stops at 260 characters.
+DEEPEST_BELOW_DATA = 140
+WINDOWS_MAX_PATH = 260
+
+
+def long_path_warning(data_dir: Path, *, windows: bool, long_paths: bool) -> str | None:
+    """The v1.1 runtime hunt: on Windows with long paths off, a clone in a deep folder can't write its generated images
+    ("The image provider returned an error"). Say so at start-up, with the two ways out."""
+    n = len(str(data_dir))
+    if not windows or long_paths or n + DEEPEST_BELOW_DATA < WINDOWS_MAX_PATH:
+        return None
+    return (f"The data folder's path is {n} characters long ({data_dir}). Windows can't write files more than "
+            f"{WINDOWS_MAX_PATH} characters deep unless long paths are on, so generated images and documents may fail "
+            "to save. Move the clone to a shorter folder (such as C:\\Horizon) or turn on Windows long paths.")
+
+
+def _long_paths_enabled() -> bool:
+    """Windows' `LongPathsEnabled` (Python's own manifest already opts in); False when it can't be read."""
+    if os.name != "nt":
+        return True
+    try:
+        import winreg
+
+        with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Control\FileSystem") as k:
+            return int(winreg.QueryValueEx(k, "LongPathsEnabled")[0]) == 1
+    except OSError:
+        return False
 
 
 def wipe_data_dir(data_dir: Path, *, attempts: int = 10, delay: float = 0.2) -> None:
